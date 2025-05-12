@@ -50,7 +50,6 @@
 #include "chrome/browser/ui/lens/lens_overlay_theme_utils.h"
 #include "chrome/browser/ui/lens/lens_overlay_untrusted_ui.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
-#include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/lens_searchbox_controller.h"
@@ -900,27 +899,6 @@ void LensOverlayController::ShowUI(
 
   // If a different tab-modal is showing, do nothing.
   if (!tab_->CanShowModalUI()) {
-    return;
-  }
-
-  // Request user permission before grabbing a screenshot.
-  CHECK(pref_service_);
-  // If contextual serachbox is enabled, show permission bubble again informing
-  // users of other information that will be shared. The contextual searchbox
-  // pref is a different pref.
-  if (!lens::CanSharePageScreenshotWithLensOverlay(pref_service_) ||
-      (lens::features::IsLensOverlayContextualSearchboxEnabled() &&
-       !lens::CanSharePageContentWithLensOverlay(pref_service_))) {
-    if (!permission_bubble_controller_) {
-      permission_bubble_controller_ =
-          std::make_unique<lens::LensPermissionBubbleController>(
-              *tab_, pref_service_, invocation_source);
-    }
-    permission_bubble_controller_->RequestPermission(
-        tab_->GetContents(),
-        base::BindRepeating(&LensOverlayController::ShowUI,
-                            weak_factory_.GetWeakPtr(), invocation_source,
-                            lens_overlay_query_controller));
     return;
   }
 
@@ -2236,7 +2214,6 @@ void LensOverlayController::CloseUIPart2(
     permission_request_manager->RestorePrompt();
   }
 
-  permission_bubble_controller_.reset();
   results_side_panel_coordinator_ = nullptr;
   side_panel_in_use_.reset();
   pre_initialization_suggest_inputs_.reset();

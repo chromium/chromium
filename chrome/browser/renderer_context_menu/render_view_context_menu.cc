@@ -4438,7 +4438,7 @@ void RenderViewContextMenu::OpenLensOverlayWithPreselectedRegion(
   LensSearchController* const controller =
       LensSearchController::FromTabWebContents(source_web_contents_);
   CHECK(controller);
-  controller->OpenLensOverlayWithPendingRegion(
+  controller->OpenLensOverlayWithPendingRegionFromBounds(
       lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
       tab_bounds, view_bounds, scaled_region_bounds, region_bitmap);
 }

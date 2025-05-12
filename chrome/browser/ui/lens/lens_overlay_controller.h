@@ -476,11 +476,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
     return initialization_data_->significant_region_boxes_;
   }
 
-  lens::LensPermissionBubbleController*
-  get_lens_permission_bubble_controller_for_testing() {
-    return permission_bubble_controller_.get();
-  }
-
   views::Widget* get_preselection_widget_for_testing() {
     return preselection_widget_.get();
   }
@@ -1178,10 +1173,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Tracks the state of the overlay when it is backgrounded. This is the state
   // that the overlay will return to when the tab is foregrounded.
   State backgrounded_state_ = State::kOff;
-
-  // Controller for showing the page screenshot permission bubble.
-  std::unique_ptr<lens::LensPermissionBubbleController>
-      permission_bubble_controller_;
 
   // The assembly data needed for the overlay to be created and shown.
   std::unique_ptr<OverlayInitializationData> initialization_data_;

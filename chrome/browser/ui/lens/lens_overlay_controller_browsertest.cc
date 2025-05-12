@@ -1023,24 +1023,29 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Wait for the bubble to become visible.
   views::test::WidgetVisibleWaiter(bubble_widget).Wait();
   ASSERT_TRUE(bubble_widget->IsVisible());
-  ASSERT_TRUE(controller->get_lens_permission_bubble_controller_for_testing()
-                  ->HasOpenDialogWidget());
+
+  auto* search_controller = GetLensSearchController();
+  ASSERT_TRUE(
+      search_controller->get_lens_permission_bubble_controller_for_testing()
+          ->HasOpenDialogWidget());
 
   // Verify attempting to show the UI again does not close the bubble widget.
   OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
   // State should remain off.
   ASSERT_EQ(controller->state(), State::kOff);
   ASSERT_TRUE(bubble_widget->IsVisible());
-  ASSERT_TRUE(controller->get_lens_permission_bubble_controller_for_testing()
-                  ->HasOpenDialogWidget());
+  ASSERT_TRUE(
+      search_controller->get_lens_permission_bubble_controller_for_testing()
+          ->HasOpenDialogWidget());
 
   // Simulate click on the accept button.
   auto* bubble_widget_delegate =
       bubble_widget->widget_delegate()->AsBubbleDialogDelegate();
   ClickBubbleDialogButton(bubble_widget_delegate,
                           bubble_widget_delegate->GetOkButton());
-  ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
-                   ->HasOpenDialogWidget());
+  ASSERT_FALSE(
+      search_controller->get_lens_permission_bubble_controller_for_testing()
+          ->HasOpenDialogWidget());
 
   // Verify sharing the page content and screenshot are now permitted.
   ASSERT_TRUE(lens::CanSharePageContentWithLensOverlay(prefs));
@@ -1084,24 +1089,29 @@ IN_PROC_BROWSER_TEST_F(
   // Wait for the bubble to become visible.
   views::test::WidgetVisibleWaiter(bubble_widget).Wait();
   ASSERT_TRUE(bubble_widget->IsVisible());
-  ASSERT_TRUE(controller->get_lens_permission_bubble_controller_for_testing()
-                  ->HasOpenDialogWidget());
+
+  auto* search_controller = GetLensSearchController();
+  ASSERT_TRUE(
+      search_controller->get_lens_permission_bubble_controller_for_testing()
+          ->HasOpenDialogWidget());
 
   // Verify attempting to show the UI again does not close the bubble widget.
   OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
   // State should remain off.
   ASSERT_EQ(controller->state(), State::kOff);
   ASSERT_TRUE(bubble_widget->IsVisible());
-  ASSERT_TRUE(controller->get_lens_permission_bubble_controller_for_testing()
-                  ->HasOpenDialogWidget());
+  ASSERT_TRUE(
+      search_controller->get_lens_permission_bubble_controller_for_testing()
+          ->HasOpenDialogWidget());
 
   // Simulate click on the accept button.
   auto* bubble_widget_delegate =
       bubble_widget->widget_delegate()->AsBubbleDialogDelegate();
   ClickBubbleDialogButton(bubble_widget_delegate,
                           bubble_widget_delegate->GetOkButton());
-  ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
-                   ->HasOpenDialogWidget());
+  ASSERT_FALSE(
+      search_controller->get_lens_permission_bubble_controller_for_testing()
+          ->HasOpenDialogWidget());
 
   // Verify sharing the page content and screenshot are now permitted.
   ASSERT_TRUE(lens::CanSharePageContentWithLensOverlay(prefs));
@@ -1143,24 +1153,29 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Wait for the bubble to become visible.
   views::test::WidgetVisibleWaiter(bubble_widget).Wait();
   ASSERT_TRUE(bubble_widget->IsVisible());
-  ASSERT_TRUE(controller->get_lens_permission_bubble_controller_for_testing()
-                  ->HasOpenDialogWidget());
+
+  auto* search_controller = GetLensSearchController();
+  ASSERT_TRUE(
+      search_controller->get_lens_permission_bubble_controller_for_testing()
+          ->HasOpenDialogWidget());
 
   // Verify attempting to show the UI again does not close the bubble widget.
   OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
   // State should remain off.
   ASSERT_EQ(controller->state(), State::kOff);
   ASSERT_TRUE(bubble_widget->IsVisible());
-  ASSERT_TRUE(controller->get_lens_permission_bubble_controller_for_testing()
-                  ->HasOpenDialogWidget());
+  ASSERT_TRUE(
+      search_controller->get_lens_permission_bubble_controller_for_testing()
+          ->HasOpenDialogWidget());
 
   // Simulate click on the reject button.
   auto* bubble_widget_delegate =
       bubble_widget->widget_delegate()->AsBubbleDialogDelegate();
   ClickBubbleDialogButton(bubble_widget_delegate,
                           bubble_widget_delegate->GetCancelButton());
-  ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
-                   ->HasOpenDialogWidget());
+  ASSERT_FALSE(
+      search_controller->get_lens_permission_bubble_controller_for_testing()
+          ->HasOpenDialogWidget());
 
   // Verify sharing the page screenshot is still permitted.
   ASSERT_TRUE(lens::CanSharePageScreenshotWithLensOverlay(prefs));
@@ -8504,24 +8519,29 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
   // Wait for the bubble to become visible.
   views::test::WidgetVisibleWaiter(bubble_widget).Wait();
   ASSERT_TRUE(bubble_widget->IsVisible());
-  ASSERT_TRUE(controller->get_lens_permission_bubble_controller_for_testing()
-                  ->HasOpenDialogWidget());
+
+  auto* search_controller = GetLensSearchController();
+  ASSERT_TRUE(
+      search_controller->get_lens_permission_bubble_controller_for_testing()
+          ->HasOpenDialogWidget());
 
   // Verify attempting to show the UI again does not close the bubble widget.
   OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
   // State should remain off.
   ASSERT_EQ(controller->state(), State::kOff);
   ASSERT_TRUE(bubble_widget->IsVisible());
-  ASSERT_TRUE(controller->get_lens_permission_bubble_controller_for_testing()
-                  ->HasOpenDialogWidget());
+  ASSERT_TRUE(
+      search_controller->get_lens_permission_bubble_controller_for_testing()
+          ->HasOpenDialogWidget());
 
   // Simulate click on the accept button.
   auto* bubble_widget_delegate =
       bubble_widget->widget_delegate()->AsBubbleDialogDelegate();
   ClickBubbleDialogButton(bubble_widget_delegate,
                           bubble_widget_delegate->GetOkButton());
-  ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
-                   ->HasOpenDialogWidget());
+  ASSERT_FALSE(
+      search_controller->get_lens_permission_bubble_controller_for_testing()
+          ->HasOpenDialogWidget());
 
   // Verify sharing the page screenshot is now permitted.
   ASSERT_TRUE(lens::CanSharePageScreenshotWithLensOverlay(prefs));
@@ -8562,24 +8582,29 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
   // Wait for the bubble to become visible.
   views::test::WidgetVisibleWaiter(bubble_widget).Wait();
   ASSERT_TRUE(bubble_widget->IsVisible());
-  ASSERT_TRUE(controller->get_lens_permission_bubble_controller_for_testing()
-                  ->HasOpenDialogWidget());
+
+  auto* search_controller = GetLensSearchController();
+  ASSERT_TRUE(
+      search_controller->get_lens_permission_bubble_controller_for_testing()
+          ->HasOpenDialogWidget());
 
   // Verify attempting to show the UI again does not close the bubble widget.
   OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
   // State should remain off.
   ASSERT_EQ(controller->state(), State::kOff);
   ASSERT_TRUE(bubble_widget->IsVisible());
-  ASSERT_TRUE(controller->get_lens_permission_bubble_controller_for_testing()
-                  ->HasOpenDialogWidget());
+  ASSERT_TRUE(
+      search_controller->get_lens_permission_bubble_controller_for_testing()
+          ->HasOpenDialogWidget());
 
   // Simulate click on the reject button.
   auto* bubble_widget_delegate =
       bubble_widget->widget_delegate()->AsBubbleDialogDelegate();
   ClickBubbleDialogButton(bubble_widget_delegate,
                           bubble_widget_delegate->GetCancelButton());
-  ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
-                   ->HasOpenDialogWidget());
+  ASSERT_FALSE(
+      search_controller->get_lens_permission_bubble_controller_for_testing()
+          ->HasOpenDialogWidget());
 
   // Verify sharing the page screenshot is still not permitted.
   ASSERT_FALSE(lens::CanSharePageScreenshotWithLensOverlay(prefs));

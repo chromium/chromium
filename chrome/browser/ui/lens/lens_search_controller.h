@@ -10,8 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
-#include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -26,6 +26,7 @@ class GURL;
 namespace lens {
 class LensOverlayGen204Controller;
 class LensOverlaySidePanelCoordinator;
+class LensPermissionBubbleController;
 class LensSearchboxController;
 }  // namespace lens
 
@@ -92,7 +93,7 @@ class LensSearchController {
 
   // Convenience method for calling OpenLensOverlayWithPendingRegion, that will
   // convert the bounds into a CenterRotated Box to pass to the overlay.
-  void OpenLensOverlayWithPendingRegion(
+  void OpenLensOverlayWithPendingRegionFromBounds(
       lens::LensOverlayInvocationSource invocation_source,
       const gfx::Rect& tab_bounds,
       const gfx::Rect& view_bounds,
@@ -154,6 +155,11 @@ class LensSearchController {
   void set_page_context_eligibility_for_testing(
       optimization_guide::PageContextEligibility* page_context_eligibility) {
     page_context_eligibility_ = page_context_eligibility;
+  }
+
+  lens::LensPermissionBubbleController*
+  get_lens_permission_bubble_controller_for_testing() {
+    return lens_permission_bubble_controller_.get();
   }
 
  protected:
@@ -241,6 +247,14 @@ class LensSearchController {
   std::unique_ptr<lens::LensOverlayQueryController> CreateLensQueryController(
       lens::LensOverlayInvocationSource invocation_source);
 
+  // Runs the eligibility checks necessary for Lens to open on this tab. If the
+  // user has not granted permission to use Lens on this tab, the permission
+  // request will be shown and callback will be called after the user accepts.
+  // Returns true if the checks pass and its safe to open Lens, false otherwise.
+  bool RunLensEligibilityChecks(
+      lens::LensOverlayInvocationSource invocation_source,
+      base::RepeatingClosure permission_granted_callback);
+
   // Callback used by the query controller to notify the search controller of
   // the response to the initial image upload request.
   void HandleStartQueryResponse(
@@ -284,6 +298,9 @@ class LensSearchController {
   // duration of a Lens feature being active on this tab.
   std::unique_ptr<lens::LensOverlayQueryController>
       lens_overlay_query_controller_;
+
+  std::unique_ptr<lens::LensPermissionBubbleController>
+      lens_permission_bubble_controller_;
 
   // The overlay controller for the Lens Search feature on this tab.
   std::unique_ptr<LensOverlayController> lens_overlay_controller_;
