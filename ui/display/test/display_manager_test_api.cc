@@ -189,9 +189,11 @@ void DisplayManagerTestApi::UpdateDisplayWithDisplayInfoList(
     }
   }
 
-  display_manager_->OnNativeDisplaysChanged(display_list_copy);
+  bool tasks = display_manager_->OnNativeDisplaysChanged(display_list_copy);
   display_manager_->UpdateInternalManagedDisplayModeListForTest();
-  display_manager_->RunPendingTasksForTest();
+  if (tasks) {
+    display_manager_->RunPendingTasksForTest();
+  }
 }
 
 int64_t DisplayManagerTestApi::SetFirstDisplayAsInternalDisplay() {
