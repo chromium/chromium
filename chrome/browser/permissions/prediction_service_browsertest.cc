@@ -386,6 +386,7 @@ IN_PROC_BROWSER_TEST_P(SignatureModelPredictionServiceBrowserTest,
   metadata.mutable_not_grant_thresholds()->set_max_likely(
       GetParam().max_likely_threshold);
   metadata.set_holdback_probability(GetParam().holdback_probability);
+  metadata.set_version(2);
   metadata.SerializeToString(&serialized_metadata);
 
   auto any = std::make_optional<optimization_guide::proto::Any>();

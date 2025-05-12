@@ -961,6 +961,19 @@ chromium-metrics-reviews@google.com.
   <token key="PermissionType" variants="Top2PermissionTypes"/>
 </histogram>
 
+<histogram name="Permissions.PredictionService.SignatureModel.Mismatch"
+    enum="Boolean" expires_after="2026-04-28">
+  <owner>ravjit@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded when the client does the on-device permission prediction using the
+    signature runner. The histogram records whether the model that is downloaded
+    is compatible with the signature runner or not. A value of true means its a
+    mismatch, i.e. the model is not the signature runner model. False means
+    otherwise.
+  </summary>
+</histogram>
+
 <histogram
     name="Permissions.Prompt.Accepted.PriorDismissCount2{PermissionTypes}"
     units="units" expires_after="2025-01-25">
