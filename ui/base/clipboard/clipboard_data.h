@@ -51,7 +51,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
   ~ClipboardData();
 
   bool operator==(const ClipboardData& that) const;
-  bool operator!=(const ClipboardData& that) const;
 
   const ClipboardSequenceNumberToken& sequence_number_token() const {
     return sequence_number_token_;
