@@ -98,15 +98,6 @@ class DumpAccessibilityEventsTest : public DumpAccessibilityTestBase {
     // spurious focus events (regardless of what the implementation does).
     property_filters.emplace_back("AutomationFocusChanged on role=region",
                                   AXPropertyFilter::DENY);
-
-    // Various tests are flaky because the following events are sometimes
-    // emitted unexpectedly on mac14.
-    property_filters.emplace_back(
-        "AXValueChanged on AXStaticText AXValue='Back'",
-        AXPropertyFilter::DENY);
-    property_filters.emplace_back(
-        "AXValueChanged on AXStaticText AXValue='Stop'",
-        AXPropertyFilter::DENY);
     return property_filters;
   }
 
