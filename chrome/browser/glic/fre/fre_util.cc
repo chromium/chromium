@@ -35,7 +35,13 @@ GURL GetFreURL(Profile* profile) {
   }
 
   // Add the hotkey configuration to the URL as a query parameter.
-  std::string hotkey_param_value = GetHotkeyString();
+  std::string hotkey_param_value;
+#if !BUILDFLAG(IS_MAC)
+  hotkey_param_value = GetHotkeyString();
+#else
+  hotkey_param_value = GetLongFormMacHotkeyString();
+#endif
+
   if (!hotkey_param_value.empty()) {
     base_url = net::AppendOrReplaceQueryParameter(base_url, "hotkey",
                                                   hotkey_param_value);
