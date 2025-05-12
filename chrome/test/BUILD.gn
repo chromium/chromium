@@ -1657,7 +1657,6 @@ if (is_android) {
       "../browser/enterprise/reporting/cloud_profile_reporting_browsertest.cc",
       "../browser/fast_checkout/fast_checkout_tab_helper_browsertest.cc",
       "../browser/feed/rss_links_fetcher_browsertest.cc",
-      "../browser/fingerprinting_protection/fingerprinting_protection_filter_android_browsertest.cc",
       "../browser/metrics/dwa_browsertest.cc",
       "../browser/metrics/metrics_service_user_demographics_browsertest.cc",
       "../browser/metrics/ukm_browsertest.cc",
