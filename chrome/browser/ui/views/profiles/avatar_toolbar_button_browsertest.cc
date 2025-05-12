@@ -1289,6 +1289,32 @@ class AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest
 
 // TODO(crbug.com/331746545): Check the flaky test issue on Windows.
 #if BUILDFLAG(IS_WIN)
+#define MAYBE_CollapsesOnSyncTurnedOn DISABLED_CollapsesOnSyncTurnedOn
+#else
+#define MAYBE_CollapsesOnSyncTurnedOn CollapsesOnSyncTurnedOn
+#endif
+IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
+                       MAYBE_CollapsesOnSyncTurnedOn) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  // Normal state.
+  ASSERT_TRUE(avatar->GetText().empty());
+  const std::u16string email(u"test@gmail.com");
+  const std::u16string account_name(u"Account name");
+  const AccountInfo account_info = SigninWithImage(email, account_name);
+  EXPECT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
+                                   IDS_AVATAR_BUTTON_GREETING, account_name));
+  avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  // The greeting should be followed by the history sync opt-in entry point.
+  EXPECT_EQ(
+      avatar->GetText(),
+      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
+  EnableSync(email, account_name);
+  // Once sync is turned on, the button should return to the normal state.
+  EXPECT_TRUE(avatar->GetText().empty());
+}
+
+// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_HistorySyncOptinShowsAfterGreetingAndOnInactivity \
   DISABLED_HistorySyncOptinShowsAfterGreetingAndOnInactivity
 #else

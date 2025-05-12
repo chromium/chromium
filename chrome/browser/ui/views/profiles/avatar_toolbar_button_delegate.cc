@@ -510,7 +510,8 @@ class ShowIdentityNameStateProvider : public StateProvider,
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class HistorySyncOptinCoordinator : public base::SupportsUserData::Data,
-                                    public StateManagerObserver {
+                                    public StateManagerObserver,
+                                    public signin::IdentityManager::Observer {
  public:
   static HistorySyncOptinCoordinator& GetOrCreateForProfile(Profile& profile) {
     HistorySyncOptinCoordinator* coordinator =
@@ -593,6 +594,22 @@ class HistorySyncOptinCoordinator : public base::SupportsUserData::Data,
     }
   }
 
+  // IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override {
+    if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
+        signin::PrimaryAccountChangeEvent::Type::kSet) {
+      // Needed to prevent the promo from showing when it is already triggered
+      // and the user turns on sync from a different entry point (e.g.
+      // settings).
+      Collapse();
+    }
+  }
+
+  void OnIdentityManagerShutdown(signin::IdentityManager*) override {
+    identity_manager_observation_.Reset();
+  }
+
  private:
   constexpr static const void* const kHistorySyncOptinCoordinatorKey =
       &kHistorySyncOptinCoordinatorKey;
@@ -609,6 +626,8 @@ class HistorySyncOptinCoordinator : public base::SupportsUserData::Data,
                 // This is safe because `HistorySyncOptinCoordinator`
                 // owns `CallbackListSubscription`.
                 base::Unretained(this)));
+    identity_manager_observation_.Observe(
+        IdentityManagerFactory::GetForProfile(&profile));
   }
 
   void Trigger(signin_metrics::AccessPoint access_point) {
@@ -708,6 +727,10 @@ class HistorySyncOptinCoordinator : public base::SupportsUserData::Data,
   // Callbacks to be triggered when the history sync opt-in state (`triggered_`)
   // changes.
   base::RepeatingCallbackList<void()> state_changed_callbacks;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 };
 
 class HistorySyncOptinStateProvider : public StateProvider {
