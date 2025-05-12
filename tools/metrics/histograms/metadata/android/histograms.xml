@@ -4945,6 +4945,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.StyleUtils.FontLoadingOutcome"
+    enum="FontLoadingOutcome" expires_after="2025-11-28">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records the outcome for loading font using applyTextAppearanceToTextPaint.
+    Recorded during layout initialization on tablets.
+  </summary>
+</histogram>
+
 <histogram name="Android.Survey.DownloadRequested2" enum="BooleanRequested"
     expires_after="2025-10-19">
   <owner>wenyufu@chromium.org</owner>
