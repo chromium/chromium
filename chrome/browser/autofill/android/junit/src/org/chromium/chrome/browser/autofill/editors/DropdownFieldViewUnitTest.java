@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.components.autofill.DropdownKeyValue;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -140,6 +141,7 @@ public final class DropdownFieldViewUnitTest {
 
     /** Test that the content description for dropdown elements is correctly set. */
     @Test
+    @DisabledTest(message = "Flaky test. See https://crbug.com/416758468")
     public void testContentDescriptionIsCorrect() {
         PropertyModel model = buildDefaultPropertyModel();
         DropdownFieldView field = attachDropdownFieldView(model);
@@ -157,6 +159,7 @@ public final class DropdownFieldViewUnitTest {
      * is empty.
      */
     @Test
+    @DisabledTest(message = "Flaky test. See https://crbug.com/416761636")
     public void testContentDescriptionIsCorrectDropdownListEmpty() {
         PropertyModel model = buildPropertyModelNoValues();
         DropdownFieldView field = attachDropdownFieldView(model);
