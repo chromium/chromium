@@ -151,7 +151,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private static final Object ORIGIN_SPAN = new Object();
     private ImageView mIncognitoImageView;
     private LinearLayout mCustomActionButtons;
-    private LinearLayout mCloseMinimizeLayout;
     private ImageButton mCloseButton;
     private ImageButton mMinimizeButton;
     private MenuButton mMenuButton;
@@ -290,9 +289,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         if (mCloseButton != null) {
             mCloseButton.setOnLongClickListener(this);
         }
-        mCloseMinimizeLayout = findViewById(R.id.close_minimize_layout);
         mMenuButton = findViewById(R.id.menu_button_wrapper);
-
         mLocationBar.onFinishInflate(this);
 
         if (!ChromeFeatureList.sCctIntentFeatureOverrides.isEnabled()) {
@@ -615,6 +612,14 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         button.setVisibility(VISIBLE);
 
         updateCustomActionButtonVisuals(button, drawable, description);
+
+        int buttonWidth = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+        button.setLayoutParams(new ViewGroup.LayoutParams(buttonWidth, LayoutParams.MATCH_PARENT));
+        int paddingStart =
+                getResources().getDimensionPixelSize(R.dimen.custom_tabs_toolbar_button_spacer_16);
+        int paddingEnd =
+                getResources().getDimensionPixelSize(R.dimen.custom_tabs_toolbar_button_spacer_8);
+        button.setPaddingRelative(paddingStart, /* top= */ 0, paddingEnd, /* bottom= */ 0);
 
         // Add the view at the beginning of the child list.
         mCustomActionButtons.addView(button, 0);
@@ -1044,25 +1049,32 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         if (mCloseButtonPosition != CLOSE_BUTTON_POSITION_END) return;
 
         final View closeButton = findViewById(R.id.close_button);
-        final View minButton = findViewById(R.id.custom_tabs_minimize_button);
-        final ViewGroup closeMinButton = (ViewGroup) closeButton.getParent();
-        final int closeButtonIndex = indexOfChild(closeButton);
-        final View menuButton = findViewById(R.id.menu_button_wrapper);
-        final int menuButtonIndex = indexOfChild(menuButton);
-        final ViewGroup.LayoutParams menuButtonLayoutParams = menuButton.getLayoutParams();
+        final View menuButtonWrapper = findViewById(R.id.menu_button_wrapper);
+        final View menuButton = findViewById(R.id.menu_button);
+        final int menuButtonIndex = indexOfChild(menuButtonWrapper);
+        final var menuButtonLayoutParams =
+                (FrameLayout.LayoutParams) menuButtonWrapper.getLayoutParams();
+        int padding16 =
+                getResources().getDimensionPixelSize(R.dimen.custom_tabs_toolbar_button_spacer_16);
+        int padding8 =
+                getResources().getDimensionPixelSize(R.dimen.custom_tabs_toolbar_button_spacer_8);
         removeViewAt(menuButtonIndex);
-        addView(menuButton, closeButtonIndex, menuButtonLayoutParams);
-        closeMinButton.removeView(closeButton);
-        if (minButton != null) {
-            closeMinButton.removeView(minButton);
-        }
+        int paddingStart = padding16;
+        int paddingEnd = padding8;
+        menuButton.setPaddingRelative(paddingStart, /* top= */ 0, paddingEnd, /* bottom= */ 0);
+        int closeButtonIndex = indexOfChild(closeButton);
+        int buttonWidth = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+        menuButtonLayoutParams.setMarginEnd(buttonWidth);
+        addView(menuButtonWrapper, closeButtonIndex, menuButtonLayoutParams);
 
-        if (MinimizedFeatureUtils.isMinimizedCustomTabAvailable(
-                        getContext(), mFeatureOverridesManager)
-                && minButton != null) {
-            closeMinButton.addView(minButton);
-        }
-        closeMinButton.addView(closeButton);
+        var closeButtonLayoutParams = (FrameLayout.LayoutParams) closeButton.getLayoutParams();
+        paddingStart = padding8;
+        paddingEnd = padding16;
+        closeButton.setPaddingRelative(paddingStart, /* top= */ 0, paddingEnd, /* bottom= */ 0);
+        closeButtonIndex = indexOfChild(closeButton);
+        removeViewAt(closeButtonIndex);
+        closeButtonLayoutParams.gravity = Gravity.CENTER_VERTICAL | Gravity.END;
+        addView(closeButton, menuButtonIndex, closeButtonLayoutParams);
     }
 
     private void maybeAdjustButtonSpacingForCloseButtonPosition() {
@@ -1078,21 +1090,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mMenuButton.setLayoutParams(menuButtonLayoutParams);
         mMenuButton.setPaddingRelative(0, 0, 0, 0);
 
-        FrameLayout.LayoutParams closeMinLayout =
-                (FrameLayout.LayoutParams) mCloseMinimizeLayout.getLayoutParams();
-        closeMinLayout.gravity = Gravity.CENTER_VERTICAL | Gravity.END;
-        closeMinLayout.setMarginStart(closeMinLayout.getMarginEnd());
-        closeMinLayout.setMarginEnd(0);
-        mCloseMinimizeLayout.setLayoutParams(closeMinLayout);
-
         FrameLayout.LayoutParams actionButtonsLayoutParams =
                 (FrameLayout.LayoutParams) mCustomActionButtons.getLayoutParams();
         if (MinimizedFeatureUtils.isMinimizedCustomTabAvailable(
                 getContext(), mFeatureOverridesManager)) {
-            actionButtonsLayoutParams.setMarginEnd(
-                    mMinimizeButton == null || mMinimizeButton.getVisibility() == View.GONE
-                            ? buttonWidth
-                            : buttonWidth * 2);
+            actionButtonsLayoutParams.setMarginEnd(buttonWidth);
             var lpTitle = (ViewGroup.MarginLayoutParams) mLocationBar.mTitleBar.getLayoutParams();
             var lpUrl = (ViewGroup.MarginLayoutParams) mLocationBar.mUrlBar.getLayoutParams();
             LayoutParams lp = (LayoutParams) mLocationBar.getLayout().getLayoutParams();
@@ -1105,21 +1107,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 var lpSecurity =
                         (ViewGroup.MarginLayoutParams)
                                 mLocationBar.getSecurityIconView().getLayoutParams();
-                var lpTitleUrlContainer =
-                        (ViewGroup.MarginLayoutParams)
-                                mLocationBar.mTitleUrlContainer.getLayoutParams();
                 lpTitle.setMarginEnd(0);
                 lpUrl.setMarginEnd(0);
-                if (mMinimizeButton != null && mMinimizeButton.getVisibility() != View.GONE) {
-                    lpSecurity.leftMargin = buttonWidth;
-                    lpTitleUrlContainer.leftMargin += buttonWidth;
-                    mLocationBar.mTitleUrlContainer.setLayoutParams(lpTitleUrlContainer);
-                } else {
-                    // No minimize button, don't need the extra affordance since minimize button is
-                    // gone
-                    lpSecurity.leftMargin = 0;
-                    mLocationBar.updateLeftMarginOfTitleUrlContainer();
-                }
                 mLocationBar.getSecurityIconView().setLayoutParams(lpSecurity);
             }
             mLocationBar.getLayout().setLayoutParams(lp);
@@ -1174,14 +1163,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             int heightMeasureSpec = calcHeightMeasure(childLayoutParams);
             childView.measure(widthMeasureSpec, heightMeasureSpec);
             int width = childView.getMeasuredWidth();
-            // close_minimize_layout is the first child view in the toolbar.
-            // It includes two buttons when minimized is enabled, but when they are positioned at
-            // the end our start margin is doubly large.
-            if (mMinimizeButtonEnabled
-                    && mCloseButtonPosition == CLOSE_BUTTON_POSITION_END
-                    && i == 0) {
-                width /= 2;
-            }
             startMargin += width;
         }
         updateStartMarginOfLocationBarFrameLayout(startMargin);
@@ -1551,6 +1532,31 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             if (optionalButtonStub == null) return;
             optionalButtonStub.setLayoutResource(R.layout.optional_button_layout);
             View optionalButton = optionalButtonStub.inflate();
+            var lp = (LinearLayout.LayoutParams) optionalButton.getLayoutParams();
+            lp.width = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+            optionalButton.setLayoutParams(lp);
+
+            // Make the icon/menu button off-centered for even spacing.
+            View icon = optionalButton.findViewById(R.id.swappable_icon_animation_image);
+            View menu = optionalButton.findViewById(R.id.optional_toolbar_button);
+            int padding =
+                    getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.custom_tabs_adaptive_button_spacer_start);
+            setViewPaddingStart(icon, padding);
+            setViewPaddingStart(menu, padding);
+
+            // Update dev button spacing if present.
+            View firstButton = mCustomActionButtons.getChildAt(0);
+            if (firstButton != optionalButton) {
+                // Give 24dp/0dp padding to the first button to have even 16dp spacing.
+                int paddingStart =
+                        getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.custom_tabs_toolbar_button_spacer_24);
+                firstButton.setPaddingRelative(
+                        paddingStart, /* top= */ 0, /* end= */ 0, /* bottom= */ 0);
+            }
             mOptionalButtonCoordinator =
                     new OptionalButtonCoordinator(
                             optionalButton,
@@ -1576,6 +1582,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                         }
                         CustomTabToolbar.this.requestLayout();
                     });
+        }
+
+        private static void setViewPaddingStart(View v, int paddingStart) {
+            v.setPaddingRelative(
+                    paddingStart, v.getPaddingTop(), v.getPaddingEnd(), v.getPaddingBottom());
         }
 
         private void updateOptionalButton(ButtonData buttonData) {

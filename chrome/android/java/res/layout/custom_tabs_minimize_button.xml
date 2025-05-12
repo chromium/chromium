@@ -8,5 +8,11 @@ found in the LICENSE file.
 <ImageButton
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/custom_tabs_minimize_button"
+    android:layout_height="match_parent"
+    android:layout_width="@dimen/toolbar_button_width"
+    android:paddingStart="8dp"
+    android:paddingEnd="16dp"
+    android:layout_marginStart="@dimen/toolbar_button_width"
+    android:layout_gravity="start|center_vertical"
     style="@style/ToolbarButton"
     android:contentDescription="@string/custom_tab_minimize"/>
