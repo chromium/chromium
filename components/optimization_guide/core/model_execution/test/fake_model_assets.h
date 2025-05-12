@@ -30,6 +30,7 @@ class FakeBaseModelAsset {
     uint32_t weight = 0;
     proto::OnDeviceModelExecutionConfig config;
     std::string version = "0.0.1";
+    uint32_t cache_weight = 0;
   };
   FakeBaseModelAsset();
   explicit FakeBaseModelAsset(Content&& content);

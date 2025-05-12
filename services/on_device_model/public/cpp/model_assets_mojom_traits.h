@@ -29,6 +29,10 @@ struct COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
     return std::move(assets.sp_model_path);
   }
 
+  static base::File cache(on_device_model::ModelAssets& assets) {
+    return std::move(assets.cache);
+  }
+
   static bool Read(on_device_model::mojom::ModelAssetsDataView data,
                    on_device_model::ModelAssets* assets);
 };

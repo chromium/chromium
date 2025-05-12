@@ -44,10 +44,14 @@ BASE_FEATURE(kForceLoadOnDeviceModelFromFilePathForTesting,
 #if BUILDFLAG(IS_FUCHSIA)
 constexpr uint32_t kWeightsFlags =
     base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE;
+constexpr uint32_t kCacheFlags = kWeightsFlags;
 #else
 constexpr uint32_t kWeightsFlags =
     base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_ASYNC |
     base::File::FLAG_WIN_SEQUENTIAL_SCAN;
+constexpr uint32_t kCacheFlags = base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                 base::File::FLAG_ASYNC |
+                                 base::File::FLAG_WRITE;
 #endif
 
 // Attempts to make sure `file` will be read from disk quickly when needed.
@@ -135,9 +139,17 @@ ModelAssets::ModelAssets(ModelFile weights) : weights(std::move(weights)) {}
 
 ModelAssets::ModelAssets(mojo::DefaultConstruct::Tag tag) : weights(tag) {}
 
-ModelAssets::ModelAssets(const ModelAssets& other) = default;
+ModelAssets::ModelAssets(const ModelAssets& other)
+    : weights(other.weights),
+      sp_model_path(other.sp_model_path),
+      cache(other.cache.Duplicate()) {}
 
-ModelAssets& ModelAssets::operator=(const ModelAssets& other) = default;
+ModelAssets& ModelAssets::operator=(const ModelAssets& other) {
+  weights = other.weights;
+  sp_model_path = other.sp_model_path;
+  cache = other.cache.Duplicate();
+  return *this;
+}
 
 ModelAssets::ModelAssets(ModelAssets&&) = default;
 ModelAssets& ModelAssets::operator=(ModelAssets&&) = default;
@@ -148,13 +160,19 @@ ModelAssets LoadModelAssets(const ModelAssetPaths& paths) {
     PrefetchFile(paths.weights);
   }
 
-  if (paths.weights.empty() ||
-      base::FeatureList::IsEnabled(
-          kForceLoadOnDeviceModelFromFilePathForTesting)) {
-    return ModelAssets::FromPath(std::move(paths.weights));
+  auto assets =
+      paths.weights.empty() ||
+              base::FeatureList::IsEnabled(
+                  kForceLoadOnDeviceModelFromFilePathForTesting)
+          ? ModelAssets::FromPath(std::move(paths.weights))
+          : ModelAssets::FromFile(base::File(paths.weights, kWeightsFlags));
+
+  if (!paths.cache.empty()) {
+    PrefetchFile(paths.cache);
+    assets.cache = base::File(paths.cache, kCacheFlags);
   }
 
-  return ModelAssets::FromFile(base::File(paths.weights, kWeightsFlags));
+  return assets;
 }
 
 AdaptationAssetPaths::AdaptationAssetPaths() = default;

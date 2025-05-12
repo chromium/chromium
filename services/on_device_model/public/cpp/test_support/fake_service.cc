@@ -194,6 +194,11 @@ void FakeOnDeviceSession::GenerateImpl(
         "Adaptation model: " + model_->data().adaptation_model_weight + "\n";
     remote->OnResponse(std::move(chunk));
   }
+  if (!model_->data().cache_weight.empty()) {
+    auto chunk = mojom::ResponseChunk::New();
+    chunk->text = "Cache weight: " + model_->data().cache_weight + "\n";
+    remote->OnResponse(std::move(chunk));
+  }
 
   if (priority_ == on_device_model::mojom::Priority::kBackground) {
     auto chunk = mojom::ResponseChunk::New();
@@ -389,6 +394,9 @@ void FakeOnDeviceModelService::LoadModel(
   }
   FakeOnDeviceModel::Data data;
   data.base_weight = ReadFile(params->assets.weights.file());
+  if (params->assets.cache.IsValid()) {
+    data.cache_weight = ReadFile(params->assets.cache);
+  }
   auto test_model = std::make_unique<FakeOnDeviceModel>(
       settings_, std::move(data), params->performance_hint);
   model_receivers_.Add(std::move(test_model), std::move(model));

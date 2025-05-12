@@ -15,7 +15,7 @@ import "services/on_device_model/public/mojom/on_device_model.mojom";
 union ModelFile {
   // This should be used with the GPU backend.
   //
-  // TODO(b/313919363): This should be a ReadOnlyFile.
+  // TODO(crbug.com/313919363): This should be a ReadOnlyFile.
   mojo_base.mojom.File file;
 
   // This should be used with the APU backend.
@@ -29,6 +29,11 @@ struct ModelAssets {
 
   // Currently the only usage of sp model will be passed by file path.
   mojo_base.mojom.FilePath? sp_model_path;
+
+  // File which may be used to store a backend-specific cache of the model
+  // weights or to load previously-cached model weights from. This file must be
+  // writable to allow the backend to write out its custom data.
+  mojo_base.mojom.File? cache;
 };
 
 // Type of the backend to run the model.

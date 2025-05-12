@@ -541,6 +541,11 @@ LoadModelResult OnDeviceModelExecutor::Init(
     data.model_path = weights_path_str.data();
     data.sentencepiece_model_path = sp_model_path_str.data();
   }
+  // TODO(crbug.com/400998489): Cache files are experimental for now.
+  if (optimization_guide::features::ForceCpuBackendForOnDeviceModel() &&
+      assets.cache.IsValid()) {
+    data.cache_file = assets.cache.TakePlatformFile();
+  }
   ChromeMLModelDescriptor descriptor = {
       .backend_type = params->backend_type,
       .model_data = &data,

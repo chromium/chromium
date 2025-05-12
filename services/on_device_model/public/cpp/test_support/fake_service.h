@@ -122,6 +122,7 @@ class FakeOnDeviceModel : public mojom::OnDeviceModel {
   struct Data {
     std::string base_weight = "";
     std::string adaptation_model_weight = "";
+    std::string cache_weight = "";
   };
   explicit FakeOnDeviceModel(FakeOnDeviceServiceSettings* settings,
                              Data&& data,

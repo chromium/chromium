@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/files/file_path.h"
+#include "mojo/public/cpp/base/file_mojom_traits.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom-shared.h"
@@ -22,7 +23,8 @@ bool StructTraits<on_device_model::mojom::ModelAssetsDataView,
   // optional.
   std::optional<base::FilePath> sp_model_path;
   bool ok = data.ReadWeights(&assets->weights) &&
-            data.ReadSpModelPath(&sp_model_path);
+            data.ReadSpModelPath(&sp_model_path) &&
+            data.ReadCache(&assets->cache);
   if (!ok) {
     return false;
   }

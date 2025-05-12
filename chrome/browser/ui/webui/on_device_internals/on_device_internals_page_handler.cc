@@ -49,6 +49,11 @@ on_device_model::ModelAssets LoadModelAssets(const base::FilePath& model_path) {
     model_paths.weights = model_path;
   }
 
+  if (optimization_guide::features::ForceCpuBackendForOnDeviceModel()) {
+    model_paths.cache =
+        model_paths.weights.AddExtension(FILE_PATH_LITERAL("cache"));
+  }
+
   return on_device_model::LoadModelAssets(model_paths);
 }
 #endif

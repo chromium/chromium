@@ -517,6 +517,13 @@ on_device_model::ModelAssetPaths
 OnDeviceModelServiceController::BaseModelController::PopulateModelPaths() {
   on_device_model::ModelAssetPaths model_paths;
   model_paths.weights = model_metadata_->model_path().Append(kWeightsFile);
+
+  // TODO(crbug.com/400998489): Cache files are experimental for now.
+  if (features::ForceCpuBackendForOnDeviceModel()) {
+    model_paths.cache =
+        model_metadata_->model_path().Append(kExperimentalCacheFile);
+  }
+
   return model_paths;
 }
 

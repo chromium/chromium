@@ -76,6 +76,10 @@ extern const char kOptimizationGuideModelExecutionDebugLogsHeaderKey[];
 // Files expected to be in the on device model bundle.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FilePath::CharType kWeightsFile[];
+// TODO(crbug.com/400998489): Cache files are experimental. Eventually we
+// probably want a cache path per-backend. This is here now for testing.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const base::FilePath::CharType kExperimentalCacheFile[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FilePath::CharType kOnDeviceModelExecutionConfigFile[];
 

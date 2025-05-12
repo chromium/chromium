@@ -39,6 +39,10 @@ FakeBaseModelAsset::~FakeBaseModelAsset() = default;
 void FakeBaseModelAsset::Write(Content&& content) {
   CHECK(base::WriteFile(temp_dir_.GetPath().Append(kWeightsFile),
                         base::NumberToString(content.weight)));
+  if (content.cache_weight) {
+    CHECK(base::WriteFile(temp_dir_.GetPath().Append(kExperimentalCacheFile),
+                          base::NumberToString(content.cache_weight)));
+  }
   CHECK(base::WriteFile(
       temp_dir_.GetPath().Append(kOnDeviceModelExecutionConfigFile),
       content.config.SerializeAsString()));
