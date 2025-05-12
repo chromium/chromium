@@ -4,6 +4,7 @@
 
 package org.chromium.base;
 
+import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 

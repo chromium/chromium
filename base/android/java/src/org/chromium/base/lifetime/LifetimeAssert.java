@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.base;
+package org.chromium.base.lifetime;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -22,6 +22,7 @@ import java.util.Set;
  * Used to assert that clean-up logic has been run before an object is GC'ed.
  *
  * <p>Usage:
+ *
  * <pre>
  * class MyClassWithCleanup {
  *     private final mLifetimeAssert = LifetimeAssert.create(this);

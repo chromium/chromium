@@ -224,7 +224,7 @@ Custom finalizers:
 * causes additional garbage collector jank.
 
 Classes that need destructor logic should provide an explicit `destroy()`
-method. Use [LifetimeAssert](https://chromium.googlesource.com/chromium/src/+/main/base/android/java/src/org/chromium/base/LifetimeAssert.java)
+method. Use [LifetimeAssert](https://chromium.googlesource.com/chromium/src/+/main/base/android/java/src/org/chromium/base/lifetime/LifetimeAssert.java)
 to ensure in debug builds and tests that `destroy()` is called.
 
 [Google's Java style guide]: https://google.github.io/styleguide/javaguide.html#s6.4-finalizers

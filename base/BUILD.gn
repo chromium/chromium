@@ -4903,9 +4903,9 @@ if (is_android) {
 
   android_library("lifetime_java") {
     sources = [
-      "android/java/src/org/chromium/base/LifetimeAssert.java",
       "android/java/src/org/chromium/base/lifetime/DestroyChecker.java",
       "android/java/src/org/chromium/base/lifetime/Destroyable.java",
+      "android/java/src/org/chromium/base/lifetime/LifetimeAssert.java",
     ]
     deps = [
       ":tasks_java",
@@ -5587,7 +5587,6 @@ if (is_android) {
       "android/junit/src/org/chromium/base/FeatureOverridesUnitTest.java",
       "android/junit/src/org/chromium/base/FileUtilsTest.java",
       "android/junit/src/org/chromium/base/FlagUnitTest.java",
-      "android/junit/src/org/chromium/base/LifetimeAssertTest.java",
       "android/junit/src/org/chromium/base/LogTest.java",
       "android/junit/src/org/chromium/base/MathUtilsTest.java",
       "android/junit/src/org/chromium/base/MutableBooleanParamWithSafeDefaultUnitTest.java",
@@ -5612,6 +5611,7 @@ if (is_android) {
       "android/junit/src/org/chromium/base/jank_tracker/JankReportingRunnableTest.java",
       "android/junit/src/org/chromium/base/jank_tracker/JankReportingSchedulerTest.java",
       "android/junit/src/org/chromium/base/library_loader/LinkerTest.java",
+      "android/junit/src/org/chromium/base/lifetime/LifetimeAssertUnitTest.java",
       "android/junit/src/org/chromium/base/memory/MemoryPressureMonitorTest.java",
       "android/junit/src/org/chromium/base/memory/MemoryPurgeManagerTest.java",
       "android/junit/src/org/chromium/base/metrics/CachingUmaRecorderTest.java",
