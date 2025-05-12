@@ -201,6 +201,7 @@ struct StickyPositionNodeData {
   gfx.mojom.RectF constraint_box_rect;
   gfx.mojom.RectF scroll_container_relative_sticky_box_rect;
   gfx.mojom.RectF scroll_container_relative_containing_block_rect;
+  gfx.mojom.Vector2dF pixel_snap_offset;
   int32 nearest_node_shifting_sticky_box;
   int32 nearest_node_shifting_containing_block;
   gfx.mojom.Vector2dF total_sticky_box_sticky_offset;

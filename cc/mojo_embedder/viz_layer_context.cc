@@ -339,6 +339,7 @@ std::vector<viz::mojom::StickyPositionNodeDataPtr> SerializeStickyPositionData(
         data.constraints.scroll_container_relative_sticky_box_rect;
     wire->scroll_container_relative_containing_block_rect =
         data.constraints.scroll_container_relative_containing_block_rect;
+    wire->pixel_snap_offset = data.constraints.pixel_snap_offset;
     wire->nearest_node_shifting_sticky_box =
         data.nearest_node_shifting_sticky_box;
     wire->nearest_node_shifting_containing_block =

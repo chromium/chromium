@@ -345,6 +345,7 @@ DeserializeStickyPositionData(
         wire->scroll_container_relative_sticky_box_rect;
     data.constraints.scroll_container_relative_containing_block_rect =
         wire->scroll_container_relative_containing_block_rect;
+    data.constraints.pixel_snap_offset = wire->pixel_snap_offset;
     data.nearest_node_shifting_sticky_box =
         wire->nearest_node_shifting_sticky_box;
     data.nearest_node_shifting_containing_block =
