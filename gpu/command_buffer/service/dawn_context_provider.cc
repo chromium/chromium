@@ -159,6 +159,9 @@ std::vector<const char*> GetEnabledToggles(
     // Use packed D24_UNORM_S8_UINT DXGI format for Depth24PlusStencil8
     // format.
     enabled_toggles.push_back("use_packed_depth24_unorm_stencil8_format");
+    // Tell Dawn to defer sending commands to GPU until swapchain's Present.
+    // This will batch the commands better.
+    enabled_toggles.push_back("d3d11_delay_flush_to_gpu");
   }
 #endif
 
