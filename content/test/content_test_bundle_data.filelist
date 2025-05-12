@@ -3350,6 +3350,16 @@ data/accessibility/html/canvas-fallback-expected-mac.txt
 data/accessibility/html/canvas-fallback-expected-uia-win.txt
 data/accessibility/html/canvas-fallback-expected-win.txt
 data/accessibility/html/canvas-fallback.html
+data/accessibility/html/canvas-interactive-fallback-expected-android-assist-data.txt
+data/accessibility/html/canvas-interactive-fallback-expected-android-external.txt
+data/accessibility/html/canvas-interactive-fallback-expected-android.txt
+data/accessibility/html/canvas-interactive-fallback-expected-auralinux.txt
+data/accessibility/html/canvas-interactive-fallback-expected-blink.txt
+data/accessibility/html/canvas-interactive-fallback-expected-fuchsia.txt
+data/accessibility/html/canvas-interactive-fallback-expected-mac.txt
+data/accessibility/html/canvas-interactive-fallback-expected-uia-win.txt
+data/accessibility/html/canvas-interactive-fallback-expected-win.txt
+data/accessibility/html/canvas-interactive-fallback.html
 data/accessibility/html/canvas.html
 data/accessibility/html/caption-expected-android-assist-data.txt
 data/accessibility/html/caption-expected-android-external.txt

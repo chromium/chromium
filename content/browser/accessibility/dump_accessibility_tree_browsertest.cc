@@ -87,6 +87,10 @@ std::vector<ui::AXPropertyFilter> DumpAccessibilityTreeTest::DefaultFilters()
   return property_filters;
 }
 
+DumpAccessibilityTreeTest::DumpAccessibilityTreeTest()
+    : DumpAccessibilityTestBase() {}
+DumpAccessibilityTreeTest::~DumpAccessibilityTreeTest() {}
+
 void DumpAccessibilityTreeTest::SetUpCommandLine(
     base::CommandLine* command_line) {
   DumpAccessibilityTestBase::SetUpCommandLine(command_line);
@@ -131,6 +135,11 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
   // Enable layout of canvas children with the layoutsubtree attribute.
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "CanvasElementDrawElement");
+}
+
+void DumpAccessibilityTreeTest::SetUpOnMainThread() {
+  ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+  DumpAccessibilityTestBase::SetUpOnMainThread();
 }
 
 std::vector<std::string> DumpAccessibilityTreeTest::Dump() {
@@ -2220,7 +2229,32 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityButtonNameCalc) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCanvas) {
+  // No UKM logs initially.
+  auto entries =
+      recorder().GetEntriesByName("Accessibility.CanvasHasNonTrivialFallback");
+  EXPECT_EQ(entries.size(), 0ul);
+
   RunHtmlTest(FILE_PATH_LITERAL("canvas.html"));
+
+  // And still none because only a single text child.
+  entries =
+      recorder().GetEntriesByName("Accessibility.CanvasHasNonTrivialFallback");
+  EXPECT_EQ(entries.size(), 0ul);
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCanvasInteractiveFallback) {
+  // No UKM logs initially.
+  auto entries =
+      recorder().GetEntriesByName("Accessibility.CanvasHasNonTrivialFallback");
+  EXPECT_EQ(entries.size(), 0ul);
+
+  RunHtmlTest(FILE_PATH_LITERAL("canvas-interactive-fallback.html"));
+
+  // The child is not a text element, so report.
+  entries =
+      recorder().GetEntriesByName("Accessibility.CanvasHasNonTrivialFallback");
+  EXPECT_EQ(entries.size(), 1ul);
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
@@ -2229,7 +2263,19 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
     // TODO(crbug.com/376720477)
     // AXCustomContent is not returned until macOS 12, so this test
     // will fail on macOS 11
+
+    // No UKM logs initially.
+    auto entries = recorder().GetEntriesByName(
+        "Accessibility.CanvasHasNonTrivialFallback");
+    EXPECT_EQ(entries.size(), 0ul);
+
     RunHtmlTest(FILE_PATH_LITERAL("canvas-complex-fallback.html"));
+
+    entries = recorder().GetEntriesByName(
+        "Accessibility.CanvasHasNonTrivialFallback");
+    EXPECT_EQ(entries.size(), 1ul);
+    EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(entries[0], "Seen"));
+    EXPECT_GT(*ukm::TestUkmRecorder::GetEntryMetric(entries[0], "Seen"), 0l);
   }
 }
 
@@ -2239,7 +2285,19 @@ IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
     // TODO(crbug.com/376720477)
     // AXCustomContent is not returned until macOS 12, so this test
     // will fail on macOS 11
+
+    // No UKM logs initially.
+    auto entries = recorder().GetEntriesByName(
+        "Accessibility.CanvasHasNonTrivialFallback");
+    EXPECT_EQ(entries.size(), 0ul);
+
     RunHtmlTest(FILE_PATH_LITERAL("canvas-complex-fallback.html"));
+
+    entries = recorder().GetEntriesByName(
+        "Accessibility.CanvasHasNonTrivialFallback");
+    EXPECT_EQ(entries.size(), 1ul);
+    EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(entries[0], "Seen"));
+    EXPECT_GT(*ukm::TestUkmRecorder::GetEntryMetric(entries[0], "Seen"), 0l);
   }
 }
 

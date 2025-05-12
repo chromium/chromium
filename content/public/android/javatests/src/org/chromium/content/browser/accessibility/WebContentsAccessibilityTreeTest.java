@@ -1518,6 +1518,13 @@ public class WebContentsAccessibilityTreeTest {
     @Test
     @SmallTest
     @CommandLineFlags.Add({"enable-blink-features=CanvasElementDrawElement"})
+    public void test_canvasInteractiveFallback() {
+        performHtmlTest("canvas-interactive-fallback.html");
+    }
+
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add({"enable-blink-features=CanvasElementDrawElement"})
     public void test_canvasFallback() {
         performHtmlTest("canvas-fallback.html");
     }

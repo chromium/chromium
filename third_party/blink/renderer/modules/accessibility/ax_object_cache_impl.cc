@@ -5810,7 +5810,7 @@ void AXObjectCacheImpl::MaybeSendCanvasHasNonTrivialFallbackUKM(
   }
 
   HTMLCanvasElement* canvas = To<HTMLCanvasElement>(ax_canvas->GetNode());
-  if (!canvas->HasPlacedElements()) {
+  if (canvas->HasPlacedElements()) {
     // If it has placed elements, then the descendents are not a fallback.
     return;
   }
