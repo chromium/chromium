@@ -520,8 +520,18 @@ IN_PROC_BROWSER_TEST_F(RuntimeAPIUpdateTest,
 // Tests that when the last active tab in the window belongs to the extension
 // with an uninstall URL, uninstalling the extension does not close the current
 // browser. Regression test for crbug.com/362452856
-IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
-                       OpenUninstallUrlWhenExtensionPageIsTheOnlyActiveTab) {
+//
+// TODO(crbug.com/415617543): Test is flaky on Linux ASan.
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_OpenUninstallUrlWhenExtensionPageIsTheOnlyActiveTab \
+  DISABLED_OpenUninstallUrlWhenExtensionPageIsTheOnlyActiveTab
+#else
+#define MAYBE_OpenUninstallUrlWhenExtensionPageIsTheOnlyActiveTab \
+  OpenUninstallUrlWhenExtensionPageIsTheOnlyActiveTab
+#endif
+IN_PROC_BROWSER_TEST_P(
+    RuntimeApiTest,
+    MAYBE_OpenUninstallUrlWhenExtensionPageIsTheOnlyActiveTab) {
   ExtensionTestMessageListener ready_listener("ready");
   // Load an extension that has set an uninstall url.
   scoped_refptr<const Extension> extension =
