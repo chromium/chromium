@@ -39,6 +39,7 @@ chromium-metrics-reviews@google.com.
 <variants name="CertificateProvisioningScenario">
   <variant name="CertificateCreation" summary="certificate creation"/>
   <variant name="CertificateRenewal" summary="certificate renewal"/>
+  <variant name="ExistingIdentity" summary="existing identity"/>
   <variant name="Unknown" summary="unknown"/>
 </variants>
 

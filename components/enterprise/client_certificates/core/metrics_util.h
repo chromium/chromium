@@ -32,6 +32,7 @@ enum class ProvisioningScenario {
   kUnknown = 0,
   kCertificateCreation = 1,
   kCertificateRenewal = 2,
+  kExistingIdentity = 3,
 };
 
 struct ProvisioningContext {
