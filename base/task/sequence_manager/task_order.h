@@ -9,8 +9,7 @@
 #include "base/task/sequence_manager/enqueue_order.h"
 #include "base/time/time.h"
 
-namespace base {
-namespace sequence_manager {
+namespace base::sequence_manager {
 
 struct Task;
 
@@ -64,12 +63,11 @@ class BASE_EXPORT TaskOrder {
                                     int sequence_num);
   static TaskOrder CreateForTesting(EnqueueOrder enqueue_order);
 
+  friend bool operator==(const TaskOrder&, const TaskOrder&) = default;
   bool operator>(const TaskOrder& other) const;
   bool operator<(const TaskOrder& other) const;
   bool operator<=(const TaskOrder& other) const;
   bool operator>=(const TaskOrder& other) const;
-  bool operator==(const TaskOrder& other) const;
-  bool operator!=(const TaskOrder& other) const;
 
  protected:
   TaskOrder(EnqueueOrder enqueue_order,
@@ -85,7 +83,6 @@ class BASE_EXPORT TaskOrder {
   int sequence_num_;
 };
 
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager
 
 #endif  // BASE_TASK_SEQUENCE_MANAGER_TASK_ORDER_H_

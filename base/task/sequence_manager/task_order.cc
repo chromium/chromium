@@ -76,14 +76,4 @@ bool TaskOrder::operator>=(const TaskOrder& other) const {
   return Compare<std::greater_equal<>>(*this, other);
 }
 
-bool TaskOrder::operator==(const TaskOrder& other) const {
-  return enqueue_order_ == other.enqueue_order_ &&
-         delayed_run_time_ == other.delayed_run_time_ &&
-         sequence_num_ == other.sequence_num_;
-}
-
-bool TaskOrder::operator!=(const TaskOrder& other) const {
-  return !(*this == other);
-}
-
 }  // namespace base::sequence_manager

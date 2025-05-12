@@ -27,10 +27,6 @@ bool SequenceToken::operator==(const SequenceToken& other) const {
   return token_ == other.token_ && IsValid();
 }
 
-bool SequenceToken::operator!=(const SequenceToken& other) const {
-  return !(*this == other);
-}
-
 bool SequenceToken::IsValid() const {
   return token_ != kInvalidSequenceToken;
 }

@@ -202,8 +202,6 @@ class ObserverList {
              (list_.get() == other.list_.get() && index_ == other.index_);
     }
 
-    bool operator!=(const Iter& other) const { return !(*this == other); }
-
     Iter& operator++() {
       if (list_) {
         ++index_;

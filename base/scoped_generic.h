@@ -249,9 +249,6 @@ class ScopedGeneric {
   bool operator==(const element_type& value) const {
     return data_.generic == value;
   }
-  bool operator!=(const element_type& value) const {
-    return data_.generic != value;
-  }
 
   Traits& get_traits() LIFETIME_BOUND { return data_; }
   const Traits& get_traits() const LIFETIME_BOUND { return data_; }

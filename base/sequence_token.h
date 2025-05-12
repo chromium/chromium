@@ -25,7 +25,6 @@ class BASE_EXPORT SequenceToken {
   // An invalid SequenceToken is not equal to any other SequenceToken, including
   // other invalid SequenceTokens.
   bool operator==(const SequenceToken& other) const;
-  bool operator!=(const SequenceToken& other) const;
 
   // Returns true if this is a valid SequenceToken.
   bool IsValid() const;

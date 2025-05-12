@@ -59,10 +59,6 @@ bool operator==(const dict_iterator& lhs, const dict_iterator& rhs) {
   return lhs.dict_iter_ == rhs.dict_iter_;
 }
 
-bool operator!=(const dict_iterator& lhs, const dict_iterator& rhs) {
-  return !(lhs == rhs);
-}
-
 // ----------------------------------------------------------------------------
 // const_dict_iterator.
 
@@ -114,11 +110,6 @@ const_dict_iterator const_dict_iterator::operator--(int) {
 bool operator==(const const_dict_iterator& lhs,
                 const const_dict_iterator& rhs) {
   return lhs.dict_iter_ == rhs.dict_iter_;
-}
-
-bool operator!=(const const_dict_iterator& lhs,
-                const const_dict_iterator& rhs) {
-  return !(lhs == rhs);
 }
 
 }  // namespace base::detail

@@ -186,10 +186,6 @@ bool operator==(const Version& v1, const Version& v2) {
   return v1.CompareTo(v2) == 0;
 }
 
-bool operator!=(const Version& v1, const Version& v2) {
-  return !(v1 == v2);
-}
-
 bool operator<(const Version& v1, const Version& v2) {
   return v1.CompareTo(v2) < 0;
 }
