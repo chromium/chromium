@@ -1632,17 +1632,52 @@ if (enable_extensions) {
       "//chrome/test:test_support",
     ]
   }
+}  # if (enable_extensions)
 
-  # ChromeExtensionsBrowserClient.
-  source_set("chrome_extensions_browser_client") {
-    sources = [
+# ChromeExtensionsBrowserClient.
+source_set("chrome_extensions_browser_client") {
+  sources = [
+    # TODO(crbug.com/415033270): Move chrome_extensions_browser_client.h/cc
+    # here once it only contains cross-platform code.
+  ]
+
+  deps = []
+
+  if (enable_desktop_android_extensions) {
+    sources += [
+      "desktop_android/desktop_android_extensions_browser_client.cc",
+
+      # TODO(crbug.com/415033270): Delete this header.
+      "desktop_android/desktop_android_extensions_browser_client.h",
+    ]
+
+    deps += [
+      "//chrome/browser:browser_process",
+      "//chrome/browser/extensions",
+      "//chrome/browser/extensions/api/runtime",
+      "//chrome/browser/profiles",
+      "//chrome/browser/ui",
+      "//chrome/common",
+      "//components/signin/core/browser",
+      "//components/update_client",
+      "//components/version_info",
+      "//extensions/browser",
+      "//extensions/browser/kiosk",
+      "//extensions/browser/updater",
+      "//extensions/browser/updater:keepalive",
+    ]
+  }
+
+  if (enable_extensions) {
+    sources += [
       "chrome_extensions_browser_client.cc",
       "chrome_extensions_browser_client.h",
+      "chrome_extensions_browser_client_non_android.cc",
     ]
 
     public_deps = [ "//chrome/browser/safe_browsing" ]
 
-    deps = [
+    deps += [
       "//chrome/browser:browser_process",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/extensions",
@@ -1668,4 +1703,4 @@ if (enable_extensions) {
       ]
     }
   }
-}  # if (enable_extensions)
+}

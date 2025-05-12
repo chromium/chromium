@@ -51,6 +51,9 @@ class ScopedExtensionUpdaterKeepAlive;
 // NOTE: Methods that do not require knowledge of browser concepts should be
 // implemented in ChromeExtensionsClient even if they are only used in the
 // browser process (see chrome/common/extensions/chrome_extensions_client.h).
+//
+// TODO(crbug.com/415033270): Migrate code not supported on Android out to
+// chrome_extensions_browser_client_non_android.cc
 class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
  public:
   ChromeExtensionsBrowserClient();

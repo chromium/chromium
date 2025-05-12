@@ -7445,6 +7445,8 @@ static_library("browser") {
     # Any circular includes must depend on the target
     # "browser_public_dependencies".
     allow_circular_includes_from += [
+      "//chrome/browser/extensions:chrome_extensions_browser_client",
+
       # Has dependencies on signin code in //chrome/browser.
       "//chrome/browser/extensions/api/browsing_data",
 
@@ -7452,6 +7454,7 @@ static_library("browser") {
       "//chrome/browser/extensions/api/notifications",
     ]
     public_deps += [
+      "//chrome/browser/extensions:chrome_extensions_browser_client",
       "//chrome/browser/extensions/api",
       "//chrome/browser/extensions/api:api_registration",
       "//chrome/browser/extensions/keyed_services:keyed_service_factories",
@@ -7642,7 +7645,6 @@ static_library("browser") {
       "//chrome/browser/apps/platform_apps/api",
       "//chrome/browser/controlled_frame",
       "//chrome/browser/extensions",
-      "//chrome/browser/extensions:chrome_extensions_browser_client",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
       "//ui/base/mojom:ui_base_types",
     ]
@@ -7659,7 +7661,6 @@ static_library("browser") {
       "//chrome/browser/apps/platform_apps/api",
 
       "//chrome/browser/extensions",
-      "//chrome/browser/extensions:chrome_extensions_browser_client",
 
       # TODO(crbug.com/40761673): Remove cycles and simplify all dependencies.
       "//chrome/browser/web_applications/extensions",
@@ -7720,8 +7721,6 @@ static_library("browser") {
       # They should be removed.
       "extensions/desktop_android/desktop_android_extension_host_delegate.cc",
       "extensions/desktop_android/desktop_android_extension_host_delegate.h",
-      "extensions/desktop_android/desktop_android_extensions_browser_client.cc",
-      "extensions/desktop_android/desktop_android_extensions_browser_client.h",
     ]
 
     deps += [

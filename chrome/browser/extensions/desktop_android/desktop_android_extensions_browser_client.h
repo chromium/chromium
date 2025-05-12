@@ -46,6 +46,8 @@ class ExtensionsAPIClient;
 //   cannot be included in desktop-android (such as dependencies on `Browser`
 //   or native UI code).
 //
+// TODO(https://crbug.com/415033270): Delete this header and just use
+// chrome_extensions_browser_client.h.
 // TODO(https://crbug.com/356905053): Delete this class once desktop-android
 // properly leverages the extension system.
 ////////////////////////////////////////////////////////////////////////////////
