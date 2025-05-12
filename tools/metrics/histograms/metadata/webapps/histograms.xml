@@ -119,7 +119,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppBanners.InstallEvent" enum="AppBannersInstallEvent"
-    expires_after="2025-07-13">
+    expires_after="2026-07-13">
   <owner>dominickn@chromium.org</owner>
   <owner>pjmclachlan@google.com</owner>
   <owner>pcovell@google.com</owner>
@@ -402,7 +402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.DedupeInstallUrls.AppsDeduped" units="apps"
-    expires_after="2025-05-19">
+    expires_after="2026-05-19">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -414,7 +414,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.DedupeInstallUrls.InstallUrlsDeduped"
-    units="install URLs" expires_after="2025-05-19">
+    units="install URLs" expires_after="2026-05-19">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -426,7 +426,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.DedupeInstallUrls.SessionRunCount" units="runs"
-    expires_after="2025-05-19">
+    expires_after="2026-05-19">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -974,7 +974,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.IconDownloader.Result"
-    enum="WebAppIconDownloaderResult" expires_after="2025-08-04">
+    enum="WebAppIconDownloaderResult" expires_after="2026-08-04">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -1120,7 +1120,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.InstallConfirmation.CloseReason"
-    enum="WidgetClosedReason" expires_after="2025-07-13">
+    enum="WidgetClosedReason" expires_after="2026-07-13">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -1775,7 +1775,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.NewDiyAppInstalled.ByUser" enum="BooleanSuccess"
-    expires_after="2025-05-25">
+    expires_after="2026-05-25">
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -1800,7 +1800,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.OsSettingsUninstallRegistration.Result"
-    enum="BooleanSuccess" expires_after="2025-07-13">
+    enum="BooleanSuccess" expires_after="2026-07-13">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -1818,7 +1818,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.OsSettingsUninstallUnregistration.Result"
-    enum="BooleanSuccess" expires_after="2025-06-30">
+    enum="BooleanSuccess" expires_after="2026-06-30">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -1835,7 +1835,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.OsSettingsUninstallUnregistration.WinOSResult"
-    enum="WinRegistryErrorCode" expires_after="2025-08-02">
+    enum="WinRegistryErrorCode" expires_after="2026-08-02">
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2053,7 +2053,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.RunOnOsLogin.CommandCompletionState"
-    enum="RunOnOSLoginCommandCompletionState" expires_after="2025-07-15">
+    enum="RunOnOSLoginCommandCompletionState" expires_after="2026-07-15">
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2078,7 +2078,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.RunOnOsLogin.Unregistration.Result"
-    enum="BooleanSuccess" expires_after="2025-07-07">
+    enum="BooleanSuccess" expires_after="2026-07-07">
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2128,7 +2128,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.ShortcutsMenu.Win.Results"
-    enum="ShortcutsMenuWinRegistrationResult" expires_after="2025-08-11">
+    enum="ShortcutsMenuWinRegistrationResult" expires_after="2026-08-11">
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2138,7 +2138,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.ShortcutsMenuBitmapAndItemCount.Results"
-    enum="ShortcutsMenuIconAndDataDifference" expires_after="2025-07-13">
+    enum="ShortcutsMenuIconAndDataDifference" expires_after="2026-07-13">
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2152,14 +2152,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.ShortcutsMenuRegistration.Result" enum="BooleanSuccess"
-    expires_after="2025-07-21">
+    expires_after="2026-07-21">
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>Records the result of shortcuts menu registration for PWAs.</summary>
 </histogram>
 
 <histogram name="WebApp.ShortcutsMenuUnregistered.Result" enum="BooleanSuccess"
-    expires_after="2025-07-21">
+    expires_after="2026-07-21">
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2179,7 +2179,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Sync.CorruptSyncEntity"
-    enum="WebAppManifestIdParseResult" expires_after="2025-05-25">
+    enum="WebAppManifestIdParseResult" expires_after="2026-05-25">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2191,7 +2191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Sync.InvalidEntity" enum="WebAppStorageKeyParseResult"
-    expires_after="2025-05-25">
+    expires_after="2026-05-25">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
