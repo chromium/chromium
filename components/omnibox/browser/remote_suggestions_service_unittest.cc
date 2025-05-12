@@ -94,6 +94,16 @@ class MockDelegate : public NiceMock<RemoteSuggestionsService::Delegate> {
        std::unique_ptr<std::string> response_body,
        RemoteSuggestionsService::CompletionCallback completion_callback),
       (override));
+
+  MOCK_METHOD(
+      void,
+      OnIndexedRequestCompleted,
+      (const int request_index,
+       const network::SimpleURLLoader* source,
+       const int response_code,
+       std::unique_ptr<std::string> response_body,
+       RemoteSuggestionsService::IndexedCompletionCallback completion_callback),
+      (override));
 };
 
 }  // namespace

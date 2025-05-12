@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/variations/net/variations_http_headers.h"
@@ -101,11 +102,15 @@ class EnterpriseSearchAggregatorSuggestionsServiceTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<EnterpriseSearchAggregatorSuggestionsService>
       enterprise_search_aggregator_suggestions_service_;
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::SearchAggregatorProvider>
+      scoped_config_;
 };
 
 TEST_F(EnterpriseSearchAggregatorSuggestionsServiceTest,
        ValidateKeywordModeRequest) {
   SetUpPrimaryAccount();
+  scoped_config_.Get().multiple_requests = false;
 
   network::ResourceRequest resource_request;
   test_url_loader_factory_.SetInterceptor(
@@ -129,23 +134,26 @@ TEST_F(EnterpriseSearchAggregatorSuggestionsServiceTest,
   const GURL test_endpoint = GURL("https://fake_url.com");
 
   base::test::TestFuture<network::ResourceRequest*> request_future;
-  base::test::TestFuture<std::unique_ptr<network::SimpleURLLoader>,
+  base::test::TestFuture<int, std::unique_ptr<network::SimpleURLLoader>,
                          const std::string&>
       loader_future;
-  base::test::TestFuture<const network::SimpleURLLoader*,
+  base::test::TestFuture<const network::SimpleURLLoader*, int,
                          std::unique_ptr<std::string>>
       complete_future;
 
   enterprise_search_aggregator_suggestions_service_
       ->CreateEnterpriseSearchAggregatorSuggestionsRequest(
-          query, test_endpoint, request_future.GetCallback(),
-          loader_future.GetCallback(), complete_future.GetCallback(), true);
+          query, test_endpoint, request_future.GetRepeatingCallback(),
+          loader_future.GetRepeatingCallback(),
+          complete_future.GetRepeatingCallback(),
+          std::vector<std::vector<int>>{std::vector<int>{1, 2, 3, 5}});
 
   ASSERT_TRUE(request_future.Wait());
   ASSERT_TRUE(loader_future.Wait());
 
-  complete_future.SetValue(nullptr,
-                           std::make_unique<std::string>(mock_response));
+  const std::string mock_response_body = mock_response;
+  test_url_loader_factory_.AddResponse(test_endpoint.spec(), mock_response_body,
+                                       net::HTTP_OK);
   ASSERT_TRUE(complete_future.Wait());
 
   EXPECT_TRUE(resource_request.site_for_cookies.IsEquivalent(
@@ -167,6 +175,7 @@ TEST_F(EnterpriseSearchAggregatorSuggestionsServiceTest,
 TEST_F(EnterpriseSearchAggregatorSuggestionsServiceTest,
        ValidateNonKeywordModeRequest) {
   SetUpPrimaryAccount();
+  scoped_config_.Get().multiple_requests = false;
 
   network::ResourceRequest resource_request;
   test_url_loader_factory_.SetInterceptor(
@@ -190,23 +199,25 @@ TEST_F(EnterpriseSearchAggregatorSuggestionsServiceTest,
   const GURL test_endpoint = GURL("https://fake_url.com");
 
   base::test::TestFuture<network::ResourceRequest*> request_future;
-  base::test::TestFuture<std::unique_ptr<network::SimpleURLLoader>,
+  base::test::TestFuture<int, std::unique_ptr<network::SimpleURLLoader>,
                          const std::string&>
       loader_future;
-  base::test::TestFuture<const network::SimpleURLLoader*,
+  base::test::TestFuture<const network::SimpleURLLoader*, int,
                          std::unique_ptr<std::string>>
       complete_future;
 
   enterprise_search_aggregator_suggestions_service_
       ->CreateEnterpriseSearchAggregatorSuggestionsRequest(
-          query, test_endpoint, request_future.GetCallback(),
-          loader_future.GetCallback(), complete_future.GetCallback(), false);
-
+          query, test_endpoint, request_future.GetRepeatingCallback(),
+          loader_future.GetRepeatingCallback(),
+          complete_future.GetRepeatingCallback(),
+          std::vector<std::vector<int>>{std::vector<int>{2, 3, 5}});
   ASSERT_TRUE(request_future.Wait());
   ASSERT_TRUE(loader_future.Wait());
 
-  complete_future.SetValue(nullptr,
-                           std::make_unique<std::string>(mock_response));
+  const std::string mock_response_body = mock_response;
+  test_url_loader_factory_.AddResponse(test_endpoint.spec(), mock_response_body,
+                                       net::HTTP_OK);
   ASSERT_TRUE(complete_future.Wait());
 
   EXPECT_TRUE(resource_request.site_for_cookies.IsEquivalent(

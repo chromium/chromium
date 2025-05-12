@@ -20,6 +20,7 @@
 #include "base/unguessable_token.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/enterprise_search_aggregator_suggestions_service.h"
 #include "components/search_engines/template_url.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -27,6 +28,9 @@
 
 class DocumentSuggestionsService;
 class EnterpriseSearchAggregatorSuggestionsService;
+
+using EnterpriseSearchAggregatorSuggestionType =
+    AutocompleteMatch::EnterpriseSearchAggregatorType;
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -128,6 +132,18 @@ class RemoteSuggestionsService : public KeyedService {
       base::OnceCallback<void(const network::SimpleURLLoader* source,
                               const int response_code,
                               std::unique_ptr<std::string> response_body)>;
+  // Same as `StartCallback` but for requests that are associated with a
+  // `request_index`.
+  using IndexedStartCallback = base::RepeatingCallback<void(
+      const int request_index,
+      std::unique_ptr<network::SimpleURLLoader> loader)>;
+  // Same as `CompletionCallback` but for requests that are associated with a
+  // `request_index`.
+  using IndexedCompletionCallback =
+      base::RepeatingCallback<void(const int request_index,
+                                   const network::SimpleURLLoader* source,
+                                   const int response_code,
+                                   std::unique_ptr<std::string> response_body)>;
 
   class Delegate {
    public:
@@ -142,6 +158,13 @@ class RemoteSuggestionsService : public KeyedService {
                                     const int response_code,
                                     std::unique_ptr<std::string> response_body,
                                     CompletionCallback completion_callback) = 0;
+
+    virtual void OnIndexedRequestCompleted(
+        const int request_index,
+        const network::SimpleURLLoader* source,
+        const int response_code,
+        std::unique_ptr<std::string> response_body,
+        IndexedCompletionCallback completion_callback) = 0;
 
    protected:
     base::WeakPtrFactory<Delegate> weak_ptr_factory_{this};
@@ -223,9 +246,9 @@ class RemoteSuggestionsService : public KeyedService {
       const std::u16string& query,
       const GURL& suggest_url,
       metrics::OmniboxEventProto::PageClassification page_classification,
-      StartCallback start_callback,
-      CompletionCallback completion_callback,
-      bool in_keyword_mode);
+      IndexedStartCallback start_callback,
+      IndexedCompletionCallback completion_callback,
+      std::vector<std::vector<int>> suggestion_types);
 
   // Stops creating the request. Already created requests aren't affected.
   void StopCreatingEnterpriseSearchAggregatorSuggestionsRequest();
@@ -270,6 +293,14 @@ class RemoteSuggestionsService : public KeyedService {
       StartCallback start_callback,
       std::unique_ptr<network::SimpleURLLoader> loader,
       const std::string& request_body);
+  void OnIndexedRequestStartedAsync(
+      const base::UnguessableToken& request_id,
+      RemoteRequestType request_type,
+      metrics::OmniboxEventProto::PageClassification page_classification,
+      IndexedStartCallback start_callback,
+      int request_index,
+      std::unique_ptr<network::SimpleURLLoader> loader,
+      const std::string& request_body);
   // Called when the transfer is done. Notifies `observers_` and calls
   // `completion_callback` passing the response to the caller.
   void OnRequestCompleted(
@@ -279,6 +310,16 @@ class RemoteSuggestionsService : public KeyedService {
       metrics::OmniboxEventProto::PageClassification page_classification,
       CompletionCallback completion_callback,
       const network::SimpleURLLoader* source,
+      std::unique_ptr<std::string> response_body);
+
+  void OnIndexedRequestCompleted(
+      const base::UnguessableToken& request_id,
+      RemoteRequestType request_type,
+      metrics::OmniboxEventProto::PageClassification page_classification,
+      base::TimeTicks start_time,
+      IndexedCompletionCallback completion_callback,
+      const network::SimpleURLLoader* source,
+      int request_index,
       std::unique_ptr<std::string> response_body);
 
   // May be nullptr in OTR profiles. Otherwise guaranteed to outlive this due to

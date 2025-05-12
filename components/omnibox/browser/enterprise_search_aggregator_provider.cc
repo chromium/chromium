@@ -54,6 +54,12 @@
 
 namespace {
 
+// Whether to make multiple requests to the backend.
+bool kMultipleRequests() {
+  return omnibox_feature_configs::SearchAggregatorProvider::Get()
+      .multiple_requests;
+}
+
 // Limit the number matches created for each type, not total, as a performance
 // guard.
 size_t kMaxMatchesCreatedPerType() {
@@ -390,35 +396,30 @@ EnterpriseSearchAggregatorProvider::RelevanceData CalculateRelevanceData(
   return {relevance, strong_word_matches, weak_word_matches, "local"};
 }
 
-void LogResultCounts(const base::Value::List* queryResults,
-                     const base::Value::List* peopleResults,
-                     const base::Value::List* contentResults) {
-  size_t query_count = (queryResults ? queryResults->size() : 0);
-  size_t people_count = (peopleResults ? peopleResults->size() : 0);
-  size_t content_count = (contentResults ? contentResults->size() : 0);
-
-  base::UmaHistogramExactLinear(
-      "Omnibox.SuggestRequestsSent.ResultCount."
-      "EnterpriseSearchAggregatorSuggest.Query",
-      query_count, 50);
-
-  base::UmaHistogramExactLinear(
-      "Omnibox.SuggestRequestsSent.ResultCount."
-      "EnterpriseSearchAggregatorSuggest.People",
-      people_count, 50);
-
-  base::UmaHistogramExactLinear(
-      "Omnibox.SuggestRequestsSent.ResultCount."
-      "EnterpriseSearchAggregatorSuggest.Content",
-      content_count, 50);
-
-  base::UmaHistogramExactLinear(
-      "Omnibox.SuggestRequestsSent.ResultCount."
-      "EnterpriseSearchAggregatorSuggest",
-      query_count + people_count + content_count, 150);
+std::string SearchAggregatorSuggestionTypeToHistogramSuffix(
+    EnterpriseSearchAggregatorProvider::SuggestionType type) {
+  switch (type) {
+    case EnterpriseSearchAggregatorProvider::SuggestionType::PEOPLE:
+      return ".People";
+    case EnterpriseSearchAggregatorProvider::SuggestionType::CONTENT:
+      return ".Content";
+    case EnterpriseSearchAggregatorProvider::SuggestionType::QUERY:
+      return ".Query";
+    case EnterpriseSearchAggregatorProvider::SuggestionType::NONE:
+      return "";
+  }
 }
 
 }  // namespace
+
+EnterpriseSearchAggregatorProvider::SearchAggregatorRequest::
+    SearchAggregatorRequest() = default;
+
+EnterpriseSearchAggregatorProvider::SearchAggregatorRequest::
+    ~SearchAggregatorRequest() = default;
+
+EnterpriseSearchAggregatorProvider::SearchAggregatorRequest::
+    SearchAggregatorRequest(SearchAggregatorRequest&&) = default;
 
 EnterpriseSearchAggregatorProvider::EnterpriseSearchAggregatorProvider(
     AutocompleteProviderClient* client,
@@ -442,6 +443,9 @@ void EnterpriseSearchAggregatorProvider::Start(const AutocompleteInput& input,
 
   if (!IsProviderAllowed(input)) {
     // Clear old matches if provider is not allowed.
+    for (auto& request : requests_) {
+      request.matches.clear();
+    }
     matches_.clear();
     return;
   }
@@ -469,6 +473,9 @@ void EnterpriseSearchAggregatorProvider::Start(const AutocompleteInput& input,
   // TODO(crbug.com/393480150): Update this check once recent suggestions are
   //   supported.
   if (adjusted_input_.IsZeroSuggest() || adjusted_input_.text().empty()) {
+    for (auto& request : requests_) {
+      request.matches.clear();
+    }
     matches_.clear();
     return;
   }
@@ -496,9 +503,9 @@ void EnterpriseSearchAggregatorProvider::Stop(
         ->StopCreatingEnterpriseSearchAggregatorSuggestionsRequest();
   }
 
-  if (loader_) {
+  if (requests_.size() > 0) {
     LogResponseTime(true);
-    loader_.reset();
+    requests_.clear();
   }
 }
 
@@ -539,32 +546,53 @@ bool EnterpriseSearchAggregatorProvider::IsProviderAllowed(
 }
 
 void EnterpriseSearchAggregatorProvider::Run(const AutocompleteInput& input) {
-  // Don't clear `matches_` until a new successful response is ready to replace
-  // them.
+  // For now, exclude recent suggestions (4) and, outside of keyword mode,
+  // search suggestions (1).
+  // TODO(crbug.com/393480150): Support recent suggestions.
+  std::vector<int> people = std::vector<int>{2};
+  std::vector<int> content = std::vector<int>{3, 5};
+  std::vector<int> query = std::vector<int>{1};
+  std::vector<int> all_types = adjusted_input_.InKeywordMode()
+                                   ? std::vector<int>{1, 2, 3, 5}
+                                   : std::vector<int>{2, 3, 5};
+  std::vector<std::vector<int>> request_types =
+      kMultipleRequests()
+          ? std::vector<std::vector<int>>{people, content, query}
+          : std::vector<std::vector<int>>{all_types};
+
+  for (size_t i = 0; i < request_types.size(); ++i) {
+    requests_.push_back({});
+  }
+
   client_->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
       ->CreateEnterpriseSearchAggregatorSuggestionsRequest(
           adjusted_input_.text(), GURL(template_url_->suggestions_url()),
-          input.current_page_classification(),
-          base::BindOnce(&EnterpriseSearchAggregatorProvider::RequestStarted,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::BindOnce(
+          adjusted_input_.current_page_classification(),
+          base::BindRepeating(
+              &EnterpriseSearchAggregatorProvider::RequestStarted,
+              weak_ptr_factory_.GetWeakPtr()),
+          base::BindRepeating(
               &EnterpriseSearchAggregatorProvider::RequestCompleted,
               base::Unretained(this) /* this owns SimpleURLLoader */),
-          adjusted_input_.InKeywordMode());
+          request_types);
 }
 
 void EnterpriseSearchAggregatorProvider::RequestStarted(
+    int request_index,
     std::unique_ptr<network::SimpleURLLoader> loader) {
   SetTimeRequestSent();
-  loader_ = std::move(loader);
+  requests_[request_index].loader = std::move(loader);
 }
 
 void EnterpriseSearchAggregatorProvider::RequestCompleted(
+    int request_index,
     const network::SimpleURLLoader* source,
     int response_code,
     std::unique_ptr<std::string> response_body) {
   DCHECK(!done_);
-  DCHECK_EQ(loader_.get(), source);
+  DCHECK(requests_.size() > 0);
+  DCHECK_EQ(requests_[request_index].loader.get(), source);
+
   LogResponseTime(false);
   if (response_code == 200) {
     // Parse `response_body` in utility process if feature param is true.
@@ -576,33 +604,33 @@ void EnterpriseSearchAggregatorProvider::RequestCompleted(
           json_data,
           base::BindOnce(
               &EnterpriseSearchAggregatorProvider::OnJsonParsedIsolated,
-              base::Unretained(this)));
+              base::Unretained(this), request_index));
     } else {
       std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
           json_data, base::JSON_ALLOW_TRAILING_COMMAS);
-      UpdateResults(value, response_code);
+      UpdateResults(request_index, value, response_code);
     }
   } else {
     // TODO(crbug.com/380642693): Add backoff if needed. This could be done by
     //   tracking the number of consecutive errors and only clearing matches if
     //   the number of errors exceeds a certain threshold. Or verifying backoff
     //   conditions from the server-side team.
-    UpdateResults(std::nullopt, response_code);
+    UpdateResults(request_index, std::nullopt, response_code);
   }
 }
 
 void EnterpriseSearchAggregatorProvider::OnJsonParsedIsolated(
+    int request_index,
     base::expected<base::Value, std::string> result) {
   std::optional<base::Value::Dict> value = std::nullopt;
-  if (result.has_value()) {
-    if (result.value().is_dict()) {
-      value = std::move(result.value().GetDict());
-    }
+  if (result.has_value() && result.value().is_dict()) {
+    value = std::move(result.value().GetDict());
   }
-  UpdateResults(value, 200);
+  UpdateResults(request_index, value, 200);
 }
 
 void EnterpriseSearchAggregatorProvider::UpdateResults(
+    int request_index,
     const std::optional<base::Value::Dict>& response_value,
     int response_code) {
   bool updated_matches = false;
@@ -610,8 +638,9 @@ void EnterpriseSearchAggregatorProvider::UpdateResults(
   if (response_value.has_value()) {
     // Clear old matches if received a successful response, even if the response
     // is empty.
-    matches_.clear();
-    ParseEnterpriseSearchAggregatorSearchResults(response_value.value());
+    requests_[request_index].matches.clear();
+    ParseEnterpriseSearchAggregatorSearchResults(request_index,
+                                                 response_value.value());
     updated_matches = true;
   } else if (response_code != 200) {
     // Clear matches for any response that is an error.
@@ -619,13 +648,29 @@ void EnterpriseSearchAggregatorProvider::UpdateResults(
     updated_matches = true;
   }
 
-  loader_.reset();
-  done_ = true;
-  NotifyListeners(/*updated_matches=*/updated_matches);
+  requests_[request_index].done = true;
+  requests_[request_index].loader.reset();
+  bool requests_pending =
+      std::any_of(requests_.begin(), requests_.end(),
+                  [](auto& request) { return !request.done; });
+
+  if (!requests_pending) {
+    // Log total results after all requests are done.
+    int num_total_results = 0;
+    for (auto& request : requests_) {
+      num_total_results += request.result_count;
+    }
+    LogResultCounts(/*histogram_suffix=*/"", num_total_results);
+
+    done_ = true;
+    requests_.clear();
+    NotifyListeners(/*updated_matches=*/updated_matches);
+  }
 }
 
 void EnterpriseSearchAggregatorProvider::
     ParseEnterpriseSearchAggregatorSearchResults(
+        int request_index,
         const base::Value::Dict& root_val) {
   // Break the input into words to avoid redoing this for every match.
   std::set<std::u16string> input_words = GetWords({adjusted_input_.text()});
@@ -636,18 +681,26 @@ void EnterpriseSearchAggregatorProvider::
       root_val.FindList("peopleSuggestions");
   const base::Value::List* contentResults =
       root_val.FindList("contentSuggestions");
+  if (request_index == 0 || !kMultipleRequests()) {
+    ParseResultList(request_index, input_words, peopleResults,
+                    /*suggestion_type=*/SuggestionType::PEOPLE,
+                    /*is_navigation=*/true);
+  }
+  if (request_index == 1 || !kMultipleRequests()) {
+    ParseResultList(request_index, input_words, contentResults,
+                    /*suggestion_type=*/SuggestionType::CONTENT,
+                    /*is_navigation=*/true);
+  }
+  if (request_index == 2 || !kMultipleRequests()) {
+    ParseResultList(request_index, input_words, queryResults,
+                    /*suggestion_type=*/SuggestionType::QUERY,
+                    /*is_navigation=*/false);
+  }
 
-  ParseResultList(input_words, queryResults,
-                  /*suggestion_type=*/SuggestionType::QUERY,
-                  /*is_navigation=*/false);
-  ParseResultList(input_words, peopleResults,
-                  /*suggestion_type=*/SuggestionType::PEOPLE,
-                  /*is_navigation=*/true);
-  ParseResultList(input_words, contentResults,
-                  /*suggestion_type=*/SuggestionType::CONTENT,
-                  /*is_navigation=*/true);
-
-  LogResultCounts(queryResults, peopleResults, contentResults);
+  matches_.clear();
+  for (auto& request : requests_) {
+    std::ranges::copy(request.matches, std::back_inserter(matches_));
+  }
 
   // Limit low-quality suggestions. See comment for
   // `kScopedMaxLowQualityMatches`.
@@ -667,6 +720,7 @@ void EnterpriseSearchAggregatorProvider::
 }
 
 void EnterpriseSearchAggregatorProvider::ParseResultList(
+    int request_index,
     std::set<std::u16string> input_words,
     const base::Value::List* results,
     SuggestionType suggestion_type,
@@ -674,6 +728,12 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
   if (!results) {
     return;
   }
+
+  requests_[request_index].result_count += results ? results->size() : 0;
+
+  LogResultCounts(
+      SearchAggregatorSuggestionTypeToHistogramSuffix(suggestion_type),
+      requests_[request_index].result_count);
 
   // Limit # of matches created. See comment for `kMaxMatchesCreatedPerType`.
   size_t num_results = std::min(results->size(), kMaxMatchesCreatedPerType());
@@ -779,7 +839,8 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
     matches.erase(matches.begin() + matches_to_add, matches.end());
   }
 
-  std::ranges::move(matches, std::back_inserter(matches_));
+  std::ranges::move(matches,
+                    std::back_inserter(requests_[request_index].matches));
 }
 
 std::string EnterpriseSearchAggregatorProvider::GetMatchDestinationUrl(
@@ -1005,4 +1066,14 @@ void EnterpriseSearchAggregatorProvider::LogResponseTime(bool interrupted) {
   client_->GetRemoteSuggestionsService(/*create_if_necessary=*/false)
       ->LogResponseTime(RemoteRequestType::kEnterpriseSearchAggregatorSuggest,
                         interrupted);
+}
+
+void EnterpriseSearchAggregatorProvider::LogResultCounts(
+    std::string histogram_suffix,
+    size_t result_count) {
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("Omnibox.SuggestRequestsSent.ResultCount."
+                         "EnterpriseSearchAggregatorSuggest%s",
+                         histogram_suffix),
+      result_count, 50);
 }

@@ -48,25 +48,31 @@ class FakeEnterpriseSearchAggregatorProvider
   FakeEnterpriseSearchAggregatorProvider(AutocompleteProviderClient* client,
                                          AutocompleteProviderListener* listener)
       : EnterpriseSearchAggregatorProvider(client, listener) {}
-
   using EnterpriseSearchAggregatorProvider::CreateMatch;
   using EnterpriseSearchAggregatorProvider::EnterpriseSearchAggregatorProvider;
   using EnterpriseSearchAggregatorProvider::IsProviderAllowed;
+  using EnterpriseSearchAggregatorProvider::kNumMultipleRequests;
   using EnterpriseSearchAggregatorProvider::
       ParseEnterpriseSearchAggregatorSearchResults;
   using EnterpriseSearchAggregatorProvider::RequestCompleted;
   using EnterpriseSearchAggregatorProvider::RequestStarted;
+  using EnterpriseSearchAggregatorProvider::SearchAggregatorRequest;
 
   using EnterpriseSearchAggregatorProvider::adjusted_input_;
   using EnterpriseSearchAggregatorProvider::done_;
   using EnterpriseSearchAggregatorProvider::matches_;
+  using EnterpriseSearchAggregatorProvider::requests_;
   using EnterpriseSearchAggregatorProvider::template_url_;
 
-  void UpdateResults(const std::optional<base::Value::Dict>& response_value,
+  void UpdateResults(const int request_index,
+                     const std::optional<base::Value::Dict>& response_value,
                      const int response_code) override {
-    EnterpriseSearchAggregatorProvider::UpdateResults(std::move(response_value),
-                                                      response_code);
-    update_results_future_.SetValue();
+    EnterpriseSearchAggregatorProvider::UpdateResults(
+        request_index, std::move(response_value), response_code);
+    // Wait until all requests are completed.
+    if (done_) {
+      update_results_future_.SetValue();
+    }
   }
 
   bool WaitForUpdateResults() { return update_results_future_.Wait(); }
@@ -481,11 +487,43 @@ class EnterpriseSearchAggregatorProviderTest : public testing::Test {
   }
 
   void ParseResponse(const std::string& response_string) {
+    InitRequests();
+    StartAllRequests();
     provider_->matches_.clear();
+    for (auto& request : provider_->requests_) {
+      request.matches.clear();
+    }
+
     std::optional<base::Value::Dict> response =
         base::JSONReader::ReadDict(response_string);
     ASSERT_TRUE(response);
-    provider_->ParseEnterpriseSearchAggregatorSearchResults(*response);
+    if (omnibox_feature_configs::SearchAggregatorProvider::Get()
+            .multiple_requests) {
+      provider_->ParseEnterpriseSearchAggregatorSearchResults(2, *response);
+      provider_->ParseEnterpriseSearchAggregatorSearchResults(1, *response);
+    }
+    provider_->ParseEnterpriseSearchAggregatorSearchResults(0, *response);
+  }
+
+  void InitRequests() {
+    int num_requests = omnibox_feature_configs::SearchAggregatorProvider::Get()
+                               .multiple_requests
+                           ? provider_->kNumMultipleRequests
+                           : 1;
+    for (int i = 0; i < num_requests; ++i) {
+      EnterpriseSearchAggregatorProvider::SearchAggregatorRequest request;
+      provider_->requests_.push_back(std::move(request));
+    }
+  }
+
+  void StartAllRequests() {
+    int num_requests = omnibox_feature_configs::SearchAggregatorProvider::Get()
+                               .multiple_requests
+                           ? provider_->kNumMultipleRequests
+                           : 1;
+    for (int i = 0; i < num_requests; ++i) {
+      provider_->RequestStarted(i, nullptr);
+    }
   }
 
   std::vector<std::u16string> GetMatches() {
@@ -502,6 +540,18 @@ class EnterpriseSearchAggregatorProviderTest : public testing::Test {
       matches.emplace_back(base::UTF8ToUTF16(m.destination_url.spec()),
                            m.relevance);
     return matches;
+  }
+
+  void RequestsStartAndComplete(int response_code, std::string response) {
+    int num_requests = omnibox_feature_configs::SearchAggregatorProvider::Get()
+                               .multiple_requests
+                           ? provider_->kNumMultipleRequests
+                           : 1;
+    for (int i = 0; i < num_requests; ++i) {
+      provider_->RequestStarted(i, nullptr);
+      provider_->RequestCompleted(i, nullptr, response_code,
+                                  std::make_unique<std::string>(response));
+    }
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -704,7 +754,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest,
 }
 
 // Test that a call to `Start()` will not send a new request if input is zero
-// suggest.
+// suggest. This test also checks that both code paths, when `multiple_requests`
+// equals true or false, work.
 TEST_F(EnterpriseSearchAggregatorProviderTest, StartCallsStopForZeroSuggest) {
   AutocompleteInput input = CreateInput(u"", false);
   input.set_focus_type(metrics::INTERACTION_FOCUS);
@@ -840,10 +891,10 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, ParseWithNonDict) {
   EXPECT_CALL(*mock_listener_.get(), OnProviderUpdate(false, provider_.get()))
       .Times(1);
 
+  InitRequests();
   provider_->done_ = false;
-  provider_->RequestStarted(nullptr);
-  provider_->RequestCompleted(
-      nullptr, 200, std::make_unique<std::string>(kNonDictJsonResponse));
+  RequestsStartAndComplete(/*response_code=*/200,
+                           /*response=*/kNonDictJsonResponse);
   ASSERT_TRUE(provider_->WaitForUpdateResults());
   EXPECT_THAT(GetMatches(), testing::ElementsAre());
 }
@@ -874,10 +925,10 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, CacheMatches_ErrorResponse) {
       .Times(0);
 
   // Complete request with error, old match should be cleared.
-  provider_->RequestStarted(nullptr);
+  InitRequests();
   provider_->done_ = false;
-  provider_->RequestCompleted(nullptr, 404,
-                              std::make_unique<std::string>("bad"));
+  RequestsStartAndComplete(/*response_code=*/404,
+                           /*response=*/"bad");
   EXPECT_THAT(GetMatches(), testing::ElementsAre());
 }
 
@@ -896,10 +947,10 @@ TEST_F(EnterpriseSearchAggregatorProviderTest,
       .Times(0);
 
   // Complete request with error, old match should be cleared.
+  InitRequests();
   provider_->done_ = false;
-  provider_->RequestStarted(nullptr);
-  provider_->RequestCompleted(nullptr, 404,
-                              std::make_unique<std::string>("bad"));
+  RequestsStartAndComplete(/*response_code=*/404,
+                           /*response=*/"bad");
   EXPECT_THAT(GetMatches(), testing::ElementsAre());
 }
 
@@ -917,10 +968,10 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, CacheMatches_EmptyResponse) {
       .Times(0);
 
   // Complete request with empty results, old match should be cleared.
+  InitRequests();
   provider_->done_ = false;
-  provider_->RequestStarted(nullptr);
-  provider_->RequestCompleted(
-      nullptr, 200, std::make_unique<std::string>(kGoodEmptyJsonResponse));
+  RequestsStartAndComplete(/*response_code=*/200,
+                           /*response=*/kGoodEmptyJsonResponse);
   ASSERT_TRUE(provider_->WaitForUpdateResults());
   EXPECT_THAT(GetMatches(), testing::ElementsAre());
 }
@@ -940,9 +991,9 @@ TEST_F(EnterpriseSearchAggregatorProviderTest,
 
   // Complete request with non-empty results, old match should be replaced.
   provider_->done_ = false;
-  provider_->RequestStarted(nullptr);
-  provider_->RequestCompleted(nullptr, 200,
-                              std::make_unique<std::string>(kGoodJsonResponse));
+  InitRequests();
+  RequestsStartAndComplete(/*response_code=*/200,
+                           /*response=*/kGoodJsonResponse);
   ASSERT_TRUE(provider_->WaitForUpdateResults());
   EXPECT_THAT(
       GetMatches(),
@@ -972,9 +1023,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, UnfeaturedKeyword) {
       .Times(0);
 
   provider_->Start(input, false);
-  provider_->RequestStarted(nullptr);
-  provider_->RequestCompleted(nullptr, 200,
-                              std::make_unique<std::string>(kGoodJsonResponse));
+  RequestsStartAndComplete(/*response_code=*/200,
+                           /*response=*/kGoodJsonResponse);
   ASSERT_TRUE(provider_->WaitForUpdateResults());
   EXPECT_EQ(provider_->matches_[0].keyword, u"unfeatured");
   EXPECT_THAT(GetMatches(), testing::ElementsAre(
@@ -993,9 +1043,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, UnscopedMode) {
       .Times(0);
 
   provider_->Start(input, false);
-  provider_->RequestStarted(nullptr);
-  provider_->RequestCompleted(nullptr, 200,
-                              std::make_unique<std::string>(kGoodJsonResponse));
+  RequestsStartAndComplete(/*response_code=*/200,
+                           /*response=*/kGoodJsonResponse);
   ASSERT_TRUE(provider_->WaitForUpdateResults());
   EXPECT_THAT(
       GetMatches(),
@@ -1709,9 +1758,11 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Logging) {
     SCOPED_TRACE("Case: Stop() before response.");
     base::HistogramTester histogram_tester;
     provider_->done_ = false;
-    provider_->RequestStarted(network::SimpleURLLoader::Create(
-        std::make_unique<network::ResourceRequest>(),
-        net::DefineNetworkTrafficAnnotation("test", "test")));
+    InitRequests();
+    provider_->RequestStarted(
+        0, network::SimpleURLLoader::Create(
+               std::make_unique<network::ResourceRequest>(),
+               net::DefineNetworkTrafficAnnotation("test", "test")));
     provider_->Stop(AutocompleteStopReason::kClobbered);
     histogram_tester.ExpectTotalCount(
         "Omnibox.SuggestRequestsSent.ResponseTime2.RequestState."
@@ -1727,9 +1778,9 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Logging) {
     SCOPED_TRACE("Case: Request complete ");
     base::HistogramTester histogram_tester;
     provider_->done_ = false;
-    provider_->RequestStarted(nullptr);
-    provider_->RequestCompleted(
-        nullptr, 200, std::make_unique<std::string>(kNonDictJsonResponse));
+    InitRequests();
+    RequestsStartAndComplete(/*response_code=*/200,
+                             /*response=*/kNonDictJsonResponse);
     histogram_tester.ExpectTotalCount(
         "Omnibox.SuggestRequestsSent.ResponseTime2.RequestState."
         "EnterpriseSearchAggregatorSuggest.Interrupted",
@@ -1737,7 +1788,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Logging) {
     histogram_tester.ExpectTotalCount(
         "Omnibox.SuggestRequestsSent.ResponseTime2.RequestState."
         "EnterpriseSearchAggregatorSuggest.Completed",
-        1);
+        scoped_config_.Get().multiple_requests ? provider_->kNumMultipleRequests
+                                               : 1);
   }
 
   // The below test case checks that number of results logged is expected.
@@ -1745,12 +1797,25 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Logging) {
     SCOPED_TRACE("Case: Parsing complete ");
     base::HistogramTester histogram_tester;
     provider_->done_ = false;
-    ParseResponse(kGoodJsonResponse);
+    provider_->requests_.clear();
 
+    InitRequests();
+    for (auto& request : provider_->requests_) {
+      request.result_count =
+          omnibox_feature_configs::SearchAggregatorProvider::Get()
+                  .multiple_requests
+              ? 1
+              : provider_->kNumMultipleRequests;
+    }
+    RequestsStartAndComplete(/*response_code=*/200,
+                             /*response=*/kNonDictJsonResponse);
+    ASSERT_TRUE(provider_->WaitForUpdateResults());
     histogram_tester.ExpectBucketCount(
         "Omnibox.SuggestRequestsSent.ResultCount."
         "EnterpriseSearchAggregatorSuggest",
         3, 1);
+
+    ParseResponse(kGoodJsonResponse);
     histogram_tester.ExpectTotalCount(
         "Omnibox.SuggestRequestsSent.ResultCount."
         "EnterpriseSearchAggregatorSuggest.Query",

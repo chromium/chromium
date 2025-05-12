@@ -48,34 +48,40 @@ class EnterpriseSearchAggregatorSuggestionsService : public KeyedService {
   //   across document_suggestions_service and
   //   enterprise_search_aggregator_suggestions_service.
   using CreationCallback =
-      base::OnceCallback<void(network::ResourceRequest* request)>;
-  using StartCallback =
-      base::OnceCallback<void(std::unique_ptr<network::SimpleURLLoader> loader,
-                              const std::string& request_body)>;
+      base::RepeatingCallback<void(network::ResourceRequest* request)>;
+  using StartCallback = base::RepeatingCallback<void(
+      int request_index,
+      std::unique_ptr<network::SimpleURLLoader> loader,
+      const std::string& request_body)>;
   using CompletionCallback =
-      base::OnceCallback<void(const network::SimpleURLLoader* source,
-                              std::unique_ptr<std::string> response_body)>;
+      base::RepeatingCallback<void(const network::SimpleURLLoader* source,
+                                   int request_index,
+                                   std::unique_ptr<std::string> response_body)>;
 
+  // Creates one request for each list within `suggestion_types`. Each request
+  // will request types in `suggestion_types[i]`.
   void CreateEnterpriseSearchAggregatorSuggestionsRequest(
       const std::u16string& query,
       const GURL& suggest_url,
       CreationCallback creation_callback,
       StartCallback start_callback,
       CompletionCallback completion_callback,
-      bool in_keyword_mode);
+      std::vector<std::vector<int>> suggestion_types);
 
   // Stops creating the request. Already created requests aren't affected.
   void StopCreatingEnterpriseSearchAggregatorSuggestionsRequest();
 
  private:
   // Called when an access token request completes (successfully or not).
-  void AccessTokenAvailable(std::unique_ptr<network::ResourceRequest> request,
-                            std::string request_body,
-                            net::NetworkTrafficAnnotationTag traffic_annotation,
-                            StartCallback start_callback,
-                            CompletionCallback completion_callback,
-                            GoogleServiceAuthError error,
-                            signin::AccessTokenInfo access_token_info);
+  void AccessTokenAvailable(
+      std::vector<std::unique_ptr<network::ResourceRequest>> requests,
+      const std::u16string& query,
+      std::vector<std::vector<int>> suggestion_types,
+      net::NetworkTrafficAnnotationTag traffic_annotation,
+      StartCallback start_callback,
+      CompletionCallback completion_callback,
+      GoogleServiceAuthError error,
+      signin::AccessTokenInfo access_token_info);
 
   // TODO(crbug.com/385756623): Factor out this method so it can be used across
   //   document_suggestions_service and
@@ -85,7 +91,8 @@ class EnterpriseSearchAggregatorSuggestionsService : public KeyedService {
       std::string request_body,
       net::NetworkTrafficAnnotationTag traffic_annotation,
       StartCallback start_callback,
-      CompletionCallback completion_callback);
+      CompletionCallback completion_callback,
+      int request_index);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

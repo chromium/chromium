@@ -280,7 +280,12 @@ void RemoteSuggestionsService::LogResponseTime(RemoteRequestType request_type,
       base::StringPrintf("%s.%s", kResponseTimeHistogramName,
                          kEnterpriseRequestTypeString),
       elapsed_time);
-  SetTimeRequestSent(request_type, base::TimeTicks());
+  // Since the `EnterpriseSearchAggregator` makes more than one request, don't
+  // override `request_time_sent_[request_type]`. This is handled in the
+  // provider.
+  if (request_type != RemoteRequestType::kEnterpriseSearchAggregatorSuggest) {
+    SetTimeRequestSent(request_type, base::TimeTicks());
+  }
 }
 
 // static
@@ -519,9 +524,9 @@ void RemoteSuggestionsService::
         const std::u16string& query,
         const GURL& suggest_url,
         metrics::OmniboxEventProto::PageClassification page_classification,
-        StartCallback start_callback,
-        CompletionCallback completion_callback,
-        bool in_keyword_mode) {
+        IndexedStartCallback start_callback,
+        IndexedCompletionCallback completion_callback,
+        std::vector<std::vector<int>> suggestion_types) {
   if (!enterprise_search_aggregator_suggestions_service_) {
     return;
   }
@@ -529,24 +534,25 @@ void RemoteSuggestionsService::
   // Create a unique identifier for the request.
   const base::UnguessableToken request_id = base::UnguessableToken::Create();
 
-  base::ElapsedTimer request_timer;
   enterprise_search_aggregator_suggestions_service_
       ->CreateEnterpriseSearchAggregatorSuggestionsRequest(
           query, suggest_url,
-          base::BindOnce(&RemoteSuggestionsService::OnRequestCreated,
-                         weak_ptr_factory_.GetWeakPtr(), request_id),
-          base::BindOnce(&RemoteSuggestionsService::OnRequestStartedAsync,
-                         weak_ptr_factory_.GetWeakPtr(), request_id,
-                         /*request_type=*/
-                         RemoteRequestType::kEnterpriseSearchAggregatorSuggest,
-                         page_classification, std::move(start_callback)),
-          base::BindOnce(&RemoteSuggestionsService::OnRequestCompleted,
-                         weak_ptr_factory_.GetWeakPtr(), request_id,
-                         /*request_type=*/
-                         RemoteRequestType::kEnterpriseSearchAggregatorSuggest,
-                         std::move(request_timer), page_classification,
-                         std::move(completion_callback)),
-          in_keyword_mode);
+          base::BindRepeating(&RemoteSuggestionsService::OnRequestCreated,
+                              weak_ptr_factory_.GetWeakPtr(), request_id),
+          base::BindRepeating(
+              &RemoteSuggestionsService::OnIndexedRequestStartedAsync,
+              weak_ptr_factory_.GetWeakPtr(), request_id,
+              /*request_type=*/
+              RemoteRequestType::kEnterpriseSearchAggregatorSuggest,
+              page_classification, start_callback),
+          base::BindRepeating(
+              &RemoteSuggestionsService::OnIndexedRequestCompleted,
+              weak_ptr_factory_.GetWeakPtr(), request_id,
+              /*request_type=*/
+              RemoteRequestType::kEnterpriseSearchAggregatorSuggest,
+              metrics::OmniboxEventProto::INVALID_SPEC, base::TimeTicks::Now(),
+              std::move(completion_callback)),
+          suggestion_types);
 }
 
 void RemoteSuggestionsService::
@@ -679,6 +685,19 @@ void RemoteSuggestionsService::OnRequestStartedAsync(
   std::move(start_callback).Run(std::move(loader));
 }
 
+void RemoteSuggestionsService::OnIndexedRequestStartedAsync(
+    const base::UnguessableToken& request_id,
+    RemoteRequestType request_type,
+    metrics::OmniboxEventProto::PageClassification page_classification,
+    IndexedStartCallback start_callback,
+    int request_index,
+    std::unique_ptr<network::SimpleURLLoader> loader,
+    const std::string& request_body) {
+  OnRequestStarted(request_id, request_type, page_classification, loader.get(),
+                   request_body);
+  std::move(start_callback).Run(request_index, std::move(loader));
+}
+
 void RemoteSuggestionsService::OnRequestCompleted(
     const base::UnguessableToken& request_id,
     RemoteRequestType request_type,
@@ -707,5 +726,36 @@ void RemoteSuggestionsService::OnRequestCompleted(
   } else {
     std::move(completion_callback)
         .Run(source, response_code, std::move(response_body));
+  }
+}
+
+void RemoteSuggestionsService::OnIndexedRequestCompleted(
+    const base::UnguessableToken& request_id,
+    RemoteRequestType request_type,
+    metrics::OmniboxEventProto::PageClassification page_classification,
+    base::TimeTicks start_time,
+    IndexedCompletionCallback completion_callback,
+    const network::SimpleURLLoader* source,
+    int request_index,
+    std::unique_ptr<std::string> response_body) {
+  const int response_code =
+      source->ResponseInfo() && source->ResponseInfo()->headers
+          ? source->ResponseInfo()->headers->response_code()
+          : 0;
+  // Notify the observers that the transfer is done.
+  observers_.Notify(&Observer::OnRequestCompleted, request_id, response_code,
+                    response_body);
+  LogResponseCode(request_type, response_code, page_classification);
+  LogResponseTimeAndCode(page_classification, request_type,
+                         base::TimeTicks::Now() - start_time, response_code);
+
+  // Call the completion callback or delegate it.
+  if (delegate_) {
+    delegate_->OnIndexedRequestCompleted(request_index, source, response_code,
+                                         std::move(response_body),
+                                         completion_callback);
+  } else {
+    std::move(completion_callback)
+        .Run(request_index, source, response_code, std::move(response_body));
   }
 }

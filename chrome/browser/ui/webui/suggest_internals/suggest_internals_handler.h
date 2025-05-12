@@ -65,6 +65,13 @@ class SuggestInternalsHandler : public suggest_internals::mojom::PageHandler,
                           std::unique_ptr<std::string> response_body,
                           RemoteSuggestionsService::CompletionCallback
                               completion_callback) override;
+  void OnIndexedRequestCompleted(
+      const int request_index,
+      const network::SimpleURLLoader* source,
+      const int response_code,
+      std::unique_ptr<std::string> response_body,
+      RemoteSuggestionsService::IndexedCompletionCallback completion_callback)
+      override;
 
  private:
   raw_ptr<Profile> profile_;

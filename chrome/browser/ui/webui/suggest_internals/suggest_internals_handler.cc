@@ -137,3 +137,37 @@ void SuggestInternalsHandler::OnRequestCompleted(
           std::move(completion_callback)),
       delay);
 }
+
+void SuggestInternalsHandler::OnIndexedRequestCompleted(
+    const int request_index,
+    const network::SimpleURLLoader* source,
+    const int response_code,
+    std::unique_ptr<std::string> response_body,
+    RemoteSuggestionsService::IndexedCompletionCallback completion_callback) {
+  CHECK(hardcoded_response_and_delay_);
+  const auto [hardcoded_response, delay] = *hardcoded_response_and_delay_;
+
+  // Override the response with the hardcoded response given by the page.
+  if (response_code == 200) {
+    *response_body = hardcoded_response;
+  }
+
+  // Call the completion callback after the delay given by the page.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<const network::SimpleURLLoader> weak_source,
+             const int request_index, const int response_code,
+             std::unique_ptr<std::string> response_body,
+             RemoteSuggestionsService::IndexedCompletionCallback
+                 completion_callback) {
+            if (weak_source) {
+              std::move(completion_callback)
+                  .Run(request_index, weak_source.get(), response_code,
+                       std::move(response_body));
+            }
+          },
+          source->GetWeakPtr(), request_index, response_code,
+          std::move(response_body), std::move(completion_callback)),
+      delay);
+}

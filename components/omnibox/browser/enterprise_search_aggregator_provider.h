@@ -36,6 +36,8 @@ class TemplateURLService;
 
 class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
  public:
+  using SuggestionType = AutocompleteMatch::EnterpriseSearchAggregatorType;
+
   // Relevance along with info for `AutocompleteMatch::additional_info`.
   struct RelevanceData {
     int relevance;
@@ -43,6 +45,28 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
     size_t weak_word_matches;
     std::string source;
   };
+
+  // Holds the matches and loader for a single request.
+  struct SearchAggregatorRequest {
+    SearchAggregatorRequest();
+    ~SearchAggregatorRequest();
+
+    SearchAggregatorRequest(SearchAggregatorRequest&&);
+
+    SearchAggregatorRequest(const SearchAggregatorRequest&) = delete;
+
+    std::vector<AutocompleteMatch> matches;
+    std::unique_ptr<network::SimpleURLLoader> loader;
+    // Can't use `loader != nullptr` as a proxy for `done` because loader is
+    // null both before the request starts and after the request completes.
+    bool done = false;
+    // Only used for logging. Can't use `matches.size()` as it may contain a
+    // filtered down set of results from the response.
+    int result_count = 0;
+  };
+
+  // The number of requests to make if we are making multiple requests.
+  static const int kNumMultipleRequests = 3;
 
   EnterpriseSearchAggregatorProvider(AutocompleteProviderClient* client,
                                      AutocompleteProviderListener* listener);
@@ -53,8 +77,6 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
 
  private:
   friend class FakeEnterpriseSearchAggregatorProvider;
-
-  using SuggestionType = AutocompleteMatch::EnterpriseSearchAggregatorType;
 
   ~EnterpriseSearchAggregatorProvider() override;
 
@@ -67,24 +89,33 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
 
   // Callback for when the loader is available with a valid token. Takes
   // ownership of the loader.
-  void RequestStarted(std::unique_ptr<network::SimpleURLLoader> loader);
+  void RequestStarted(int request_index,
+                      std::unique_ptr<network::SimpleURLLoader> loader);
 
   // Called when the network request for suggestions has completed.
-  void RequestCompleted(const network::SimpleURLLoader* source,
+  // `request_index` corresponds to the type of request sent:
+  // - 0 for people suggesions
+  // - 1 for content suggestions
+  // - 2 for query suggestions.
+  void RequestCompleted(int request_index,
+                        const network::SimpleURLLoader* source,
                         int response_code,
                         std::unique_ptr<std::string> response_body);
 
   // The function updates `matches_` with data parsed from `response_value`.
   // The update is not performed if `response_value` is invalid.
   virtual void UpdateResults(
+      int request_index,
       const std::optional<base::Value::Dict>& response_value,
       int response_code);
 
   // Callback for handling parsed json from response.
-  void OnJsonParsedIsolated(base::expected<base::Value, std::string> result);
+  void OnJsonParsedIsolated(int request_index,
+                            base::expected<base::Value, std::string> result);
 
   // Parses enterprise search aggregator response JSON and updates `matches_`.
   void ParseEnterpriseSearchAggregatorSearchResults(
+      int request_index,
       const base::Value::Dict& root_val);
 
   // Helper method to parse query, people, and content suggestions and populate
@@ -110,7 +141,8 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
   //  - `match.image_url` = `icon_url` from EnterpriseSearchAggregatorSettings
   //  policy,
   //  - `match.relevance` = 1001.
-  void ParseResultList(std::set<std::u16string> input_words,
+  void ParseResultList(int request_index,
+                       std::set<std::u16string> input_words,
                        const base::Value::List* results,
                        SuggestionType suggestion_type,
                        bool is_navigation);
@@ -165,6 +197,10 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
   // interrupted or not.
   void LogResponseTime(bool interrupted);
 
+  // Helper function for logging the number of results received from the
+  // request.
+  void LogResultCounts(std::string histogram_suffix, size_t result_count);
+
   // Owned by AutocompleteController.
   const raw_ptr<AutocompleteProviderClient> client_;
 
@@ -176,10 +212,10 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
   AutocompleteInput adjusted_input_;
   raw_ptr<const TemplateURL> template_url_;
 
-  // Loader used to retrieve results.
-  std::unique_ptr<network::SimpleURLLoader> loader_;
-
   raw_ptr<TemplateURLService> template_url_service_;
+
+  // The most recent set of requests.
+  std::vector<SearchAggregatorRequest> requests_;
 
   base::WeakPtrFactory<EnterpriseSearchAggregatorProvider> weak_ptr_factory_{
       this};
