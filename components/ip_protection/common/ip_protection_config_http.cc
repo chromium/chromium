@@ -142,7 +142,7 @@ void IpProtectionConfigHttp::DoRequest(
 void IpProtectionConfigHttp::OnDoRequestCompleted(
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     quiche::BlindSignMessageCallback callback,
-    std::unique_ptr<std::string> response) {
+    std::optional<std::string> response) {
   int response_code = 0;
   if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers) {
     response_code = url_loader->ResponseInfo()->headers->response_code();
@@ -156,7 +156,7 @@ void IpProtectionConfigHttp::OnDoRequestCompleted(
     return;
   }
 
-  if (!response) {
+  if (!response.has_value()) {
     std::move(callback)(
         absl::InternalError("Failed Request to Authentication Server"));
     return;
