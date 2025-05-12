@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -650,9 +651,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          OpticalCharacterRecognizerResultsTest,
                          testing::ValuesIn(kTestFilenames));
 
-// TODO(https://crbug.com/408145905): Flaky and failing on mac-osxbeta-rel and
-// Linux Tests (dbg)(1).
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
+// This test is slow and most probably failing on debug builds and ASAN builds
+// which are slower than the other tests.
+#if !defined(NDEBUG) || defined(ADDRESS_SANITIZER)
 #define MAYBE_PerformOCRLargeImage DISABLED_PerformOCRLargeImage
 #else
 #define MAYBE_PerformOCRLargeImage PerformOCRLargeImage
@@ -661,6 +662,9 @@ IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
                        MAYBE_PerformOCRLargeImage) {
   base::HistogramTester histograms;
 
+  // Since this test processes a huge image, it can be slow and overrun the
+  // timeout.
+  base::test::ScopedDisableRunLoopTimeout disable_timeout;
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   ASSERT_TRUE(CreateAndInitOCR());
