@@ -5266,8 +5266,6 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
     self._driver.Load(
         self.GetHttpsUrlForFile('/chromedriver/display_features_test.html'))
     self._driver.ExecuteScript('addViewportSegmentsChangeListener()')
-    original_segments = self._driver.ExecuteScript(
-        'return window.viewport.segments')
     self._driver.SetDisplayFeatures([
         { 'orientation': 'vertical', 'maskLength': 20, 'offset': 20 }
     ])
@@ -5277,22 +5275,17 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
     self.assertTrue(
         self.WaitForCondition(lambda: self._driver.ExecuteScript(
             'return window.viewport.segments.length === 2')))
-    self.assertNotEqual(
-        original_segments, self._driver.ExecuteScript(
-            'return window.viewport.segments'))
     self._driver.ExecuteScript('changeEventReceived = false')
     self._driver.ClearDisplayFeatures()
     self.assertTrue(
         self.WaitForCondition(lambda: self._driver.ExecuteScript(
             'return changeEventReceived == true')))
     script = """
-      return (window.viewport.segments[0].width === arguments[0][0].width
-        && window.viewport.segments[0].height === arguments[0][0].height)
+      return (window.viewport.segments[0].width === window.innerWidth
+        && window.viewport.segments[0].height === window.innerHeight)
     """
     self.assertTrue(
-      self.WaitForCondition(lambda: self._driver.ExecuteScript(
-          script,
-          original_segments)))
+      self.WaitForCondition(lambda: self._driver.ExecuteScript(script)))
 
   def testCreateVirtualPressureSourceNotConnected(self):
     script = """
