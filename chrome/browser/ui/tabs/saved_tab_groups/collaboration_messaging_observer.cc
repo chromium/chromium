@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_observer.h"
 
+#include <set>
+
+#include "base/uuid.h"
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
@@ -255,6 +258,11 @@ void CollaborationMessagingObserver::DisplayInstantaneousMessage(
     InstantMessageSuccessCallback success_callback) {
   instant_message_queue_processor_.Enqueue(message,
                                            std::move(success_callback));
+}
+
+void CollaborationMessagingObserver::HideInstantaneousMessage(
+    const std::set<base::Uuid>& message_ids) {
+  // TODO(crbug.com/416265338): Implement this.
 }
 
 void CollaborationMessagingObserver::ReopenTabForCurrentInstantMessage() {

@@ -19,6 +19,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /** Implementation of {@link MessagingBackendService} that connects to the native counterpart. */
 @JNINamespace("collaboration::messaging::android")
@@ -236,6 +237,14 @@ import java.util.Optional;
                                     nativeCallback,
                                     success);
                 });
+    }
+
+    @CalledByNative
+    private void hideInstantaneousMessage(Set<String> messageIds) {
+        if (mInstantMessageDelegate == null) {
+            return;
+        }
+        mInstantMessageDelegate.hideInstantaneousMessage(messageIds);
     }
 
     @NativeMethods

@@ -29,6 +29,8 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Helper class meant to be called by native. Used to create Java objects from C++ objects. Do not
@@ -127,6 +129,16 @@ class ConversionUtils {
         message.attributions = attributions;
 
         return message;
+    }
+
+    @CalledByNative
+    private static Set<String> createStringSet() {
+        return new TreeSet<String>();
+    }
+
+    @CalledByNative
+    private static void addStringToStringSet(Set<String> set, String string) {
+        set.add(string);
     }
 
     @CalledByNative

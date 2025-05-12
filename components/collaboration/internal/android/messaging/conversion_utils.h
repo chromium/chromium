@@ -30,6 +30,10 @@ base::android::ScopedJavaLocalRef<jobject> InstantMessageToJava(
     JNIEnv* env,
     const InstantMessage& message);
 
+base::android::ScopedJavaLocalRef<jobject> UuidSetToJavaStringSet(
+    JNIEnv* env,
+    const std::set<base::Uuid>& uuids);
+
 // Helper method to convert a ActivityLogItem C++ list to a
 // List<ActivityLogItem> Java object.
 base::android::ScopedJavaLocalRef<jobject> ActivityLogItemsToJava(

@@ -112,6 +112,10 @@ class MessagingBackendServiceBridgeTest : public testing::Test {
             base::Unretained(this), expected_success_value));
   }
 
+  void HideInstantaneousMessage(const std::set<base::Uuid>& message_ids) {
+    bridge()->HideInstantaneousMessage(message_ids);
+  }
+
   // Member accessors.
   MessagingBackendServiceBridge* bridge() { return bridge_.get(); }
   MockMessagingBackendService& service() { return service_; }
@@ -310,6 +314,37 @@ TEST_F(MessagingBackendServiceBridgeTest, TestDisplayingInstantMessageFailure) {
   Java_MessagingBackendServiceBridgeUnitTestCompanion_invokeInstantMessageSuccessCallback(
       base::android::AttachCurrentThread(), j_companion(), /*success=*/false);
   EXPECT_EQ(1U, success_callback_invocation_count());
+}
+
+TEST_F(MessagingBackendServiceBridgeTest, TestHideInstantMessage) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  // Set up the delegate for instant messages in Java.
+  Java_MessagingBackendServiceBridgeUnitTestCompanion_setInstantMessageDelegate(
+      env, j_companion());
+
+  // Create a set of UUIDs to hide.
+  std::set<base::Uuid> uuids_to_hide;
+  base::Uuid uuid1 = base::Uuid::GenerateRandomV4();
+  base::Uuid uuid2 = base::Uuid::GenerateRandomV4();
+  uuids_to_hide.insert(uuid1);
+  uuids_to_hide.insert(uuid2);
+
+  // Call the C++ bridge method. This will propagate to the Java delegate.
+  HideInstantaneousMessage(uuids_to_hide);
+
+  // Prepare the expected IDs for Java verification.
+  // The order in this vector doesn't strictly matter as it's converted to a Set
+  // in Java for comparison, but it's good practice to be consistent.
+  std::vector<std::string> expected_ids_str_vector;
+  expected_ids_str_vector.push_back(uuid1.AsLowercaseString());
+  expected_ids_str_vector.push_back(uuid2.AsLowercaseString());
+  base::android::ScopedJavaLocalRef<jobjectArray> j_expected_ids =
+      base::android::ToJavaArrayOfStrings(env, expected_ids_str_vector);
+
+  // Verify on the Java side that hideInstantaneousMessage was called with the
+  // correct set of IDs.
+  Java_MessagingBackendServiceBridgeUnitTestCompanion_verifyHideInstantMessageCalledWithIds(
+      env, j_companion(), j_expected_ids);
 }
 
 TEST_F(MessagingBackendServiceBridgeTest, TestGetMessages) {

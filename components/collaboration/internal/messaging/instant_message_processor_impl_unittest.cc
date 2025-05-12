@@ -5,6 +5,7 @@
 #include "components/collaboration/internal/messaging/instant_message_processor_impl.h"
 
 #include <optional>
+#include <set>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -13,6 +14,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
+#include "base/uuid.h"
 #include "components/collaboration/public/messaging/message.h"
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
 #include "components/collaboration/test_support/mock_messaging_backend_service.h"
@@ -34,6 +36,10 @@ class MockInstantMessageDelegate
   MOCK_METHOD(void,
               DisplayInstantaneousMessage,
               (InstantMessage message, SuccessCallback success_callback),
+              (override));
+  MOCK_METHOD(void,
+              HideInstantaneousMessage,
+              (const std::set<base::Uuid>& message_ids),
               (override));
 };
 
@@ -415,6 +421,89 @@ TEST_F(InstantMessageProcessorImplTest,
             actual_messages[1].collaboration_event);
   EXPECT_EQ(CollaborationEvent::TAB_GROUP_REMOVED,
             actual_messages[0].collaboration_event);
+}
+
+// Test for HideInstantMessage when the message is in the queue.
+TEST_F(InstantMessageProcessorImplTest, HideInstantMessage_MessageInQueue) {
+  SetupInstantMessageDelegate();
+  InstantMessage message_to_hide = CreateInstantMessage();
+  message_to_hide.attributions[0].id = msg_id1_;
+  // Use a non-aggregatable type to simplify verification.
+  message_to_hide.collaboration_event = CollaborationEvent::TAB_REMOVED;
+  message_to_hide.localized_message = u"Message to be hidden";
+
+  InstantMessage message_to_keep = CreateInstantMessage();
+  message_to_keep.attributions[0].id = msg_id2_;
+  message_to_keep.collaboration_event = CollaborationEvent::TAB_REMOVED;
+  message_to_keep.localized_message = u"Message to be kept";
+
+  // Add both messages to the queue.
+  processor_->DisplayInstantMessage(message_to_hide);
+  processor_->DisplayInstantMessage(message_to_keep);
+
+  std::set<base::Uuid> ids_to_hide = {msg_id1_};
+
+  // Expect the delegate to be asked to hide the first message.
+  EXPECT_CALL(mock_instant_message_delegate_,
+              HideInstantaneousMessage(Eq(ids_to_hide)))
+      .Times(1);
+
+  // Expect DisplayInstantaneousMessage to be called only for the message
+  // that was not hidden.
+  InstantMessage displayed_message;
+  EXPECT_CALL(mock_instant_message_delegate_, DisplayInstantaneousMessage(_, _))
+      .WillOnce(SaveArg<0>(&displayed_message));
+
+  // Hide the first message. This should happen before ProcessQueue runs.
+  processor_->HideInstantMessage(ids_to_hide);
+
+  // Fast forward time to allow ProcessQueue to run.
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  // Verify that the correct message was displayed.
+  ASSERT_FALSE(displayed_message.attributions.empty());
+  EXPECT_EQ(msg_id2_, displayed_message.attributions[0].id);
+  EXPECT_EQ(message_to_keep.localized_message,
+            displayed_message.localized_message);
+}
+
+// Test for HideInstantMessage when the message is NOT in the queue.
+TEST_F(InstantMessageProcessorImplTest, HideInstantMessage_NoMessageInQueue) {
+  SetupInstantMessageDelegate();
+
+  InstantMessage message_in_queue = CreateInstantMessage();
+  message_in_queue.attributions[0].id = msg_id2_;
+  message_in_queue.collaboration_event = CollaborationEvent::TAB_REMOVED;
+  message_in_queue.localized_message = u"Message in queue";
+
+  // Add one message to the queue.
+  processor_->DisplayInstantMessage(message_in_queue);
+
+  // Attempt to hide a different message (msg_id1_) that is not in the queue.
+  std::set<base::Uuid> ids_to_hide = {msg_id1_};
+
+  // Expect the delegate to be asked to hide msg_id1_, even if it's not in
+  // the queue.
+  EXPECT_CALL(mock_instant_message_delegate_,
+              HideInstantaneousMessage(Eq(ids_to_hide)))
+      .Times(1);
+
+  // Expect DisplayInstantaneousMessage to be called for the message
+  // that was in the queue and not targeted by HideInstantMessage.
+  InstantMessage displayed_message;
+  EXPECT_CALL(mock_instant_message_delegate_, DisplayInstantaneousMessage(_, _))
+      .WillOnce(SaveArg<0>(&displayed_message));
+
+  processor_->HideInstantMessage(ids_to_hide);
+
+  // Fast forward time to allow ProcessQueue to run.
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  // Verify that the message originally in the queue was displayed.
+  ASSERT_FALSE(displayed_message.attributions.empty());
+  EXPECT_EQ(msg_id2_, displayed_message.attributions[0].id);
+  EXPECT_EQ(message_in_queue.localized_message,
+            displayed_message.localized_message);
 }
 
 }  // namespace collaboration::messaging

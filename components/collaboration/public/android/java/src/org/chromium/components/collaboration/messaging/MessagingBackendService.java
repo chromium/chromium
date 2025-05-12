@@ -11,6 +11,7 @@ import org.chromium.components.tab_group_sync.EitherId.EitherTabId;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Java shim for a MessagingBackendService. See
@@ -52,6 +53,17 @@ public interface MessagingBackendService {
          * be given to the garbage collector without invoking it first.
          */
         void displayInstantaneousMessage(InstantMessage message, Callback<Boolean> successCallback);
+
+        /**
+         * Invoked when the frontend should hide instant messages. This is intended to be a no-op if
+         * the message is not currently displayed or not in the queue to be displayed. The provided
+         * {@code messageIds} are the IDs of the messages that should be hidden. These correspond to
+         * the {@link MessageAttribution#id id} values from the {@link MessageAttribution} objects
+         * within the {@link InstantMessage#attributions attributions} list of the {@link
+         * InstantMessage} argument originally passed to {@link
+         * #displayInstantaneousMessage(InstantMessage, Callback) displayInstantaneousMessage}.
+         */
+        void hideInstantaneousMessage(Set<String> messageIds);
     }
 
     /** Sets the delegate for instant (one-off) messages. */

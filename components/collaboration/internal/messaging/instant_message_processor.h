@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_COLLABORATION_INTERNAL_MESSAGING_INSTANT_MESSAGE_PROCESSOR_H_
 #define COMPONENTS_COLLABORATION_INTERNAL_MESSAGING_INSTANT_MESSAGE_PROCESSOR_H_
 
+#include <set>
+
+#include "base/uuid.h"
 #include "components/collaboration/public/messaging/message.h"
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
 
@@ -32,6 +35,10 @@ class InstantMessageProcessor {
   // Notifies the InstantMessageDelegate to display the message for all the
   // provided levels.
   virtual void DisplayInstantMessage(const InstantMessage& message) = 0;
+
+  // Notifies the InstantMessageDelegate to hide the messages with the provided
+  // IDs.
+  virtual void HideInstantMessage(const std::set<base::Uuid>& message_ids) = 0;
 };
 
 }  // namespace collaboration::messaging

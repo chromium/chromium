@@ -5,8 +5,11 @@
 #ifndef COMPONENTS_COLLABORATION_INTERNAL_ANDROID_MESSAGING_MESSAGING_BACKEND_SERVICE_BRIDGE_H_
 #define COMPONENTS_COLLABORATION_INTERNAL_ANDROID_MESSAGING_MESSAGING_BACKEND_SERVICE_BRIDGE_H_
 
+#include <set>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/supports_user_data.h"
+#include "base/uuid.h"
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
 
 namespace collaboration::messaging::android {
@@ -89,6 +92,8 @@ class MessagingBackendServiceBridge
   void DisplayInstantaneousMessage(
       InstantMessage message,
       InstantMessageDelegate::SuccessCallback success_callback) override;
+  void HideInstantaneousMessage(
+      const std::set<base::Uuid>& message_ids) override;
 
   raw_ptr<MessagingBackendService> service_;
 

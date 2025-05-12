@@ -56,6 +56,7 @@ import org.chromium.ui.util.ColorUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -221,6 +222,11 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                 onSuccess.run();
             }
         }
+    }
+
+    @Override
+    public void hideInstantaneousMessage(Set<String> messageIds) {
+        // TODO(crbug.com/416264627): Implement this.
     }
 
     private @Nullable AttachedWindowInfo getAttachedWindowInfo(

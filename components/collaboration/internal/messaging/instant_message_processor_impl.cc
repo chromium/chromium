@@ -5,9 +5,11 @@
 #include "components/collaboration/internal/messaging/instant_message_processor_impl.h"
 
 #include <optional>
+#include <set>
 #include <unordered_map>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
 #include "base/strings/utf_string_conversions.h"
@@ -117,6 +119,29 @@ void InstantMessageProcessorImpl::DisplayInstantMessage(
   ScheduleProcessing();
 }
 
+void InstantMessageProcessorImpl::HideInstantMessage(
+    const std::set<base::Uuid>& message_ids) {
+  // Remove the messages from the queue that have MessageAttribution IDs that
+  // match.
+  message_queue_.erase(
+      std::remove_if(message_queue_.begin(), message_queue_.end(),
+                     [&message_ids](const InstantMessage& message) {
+                       CHECK(IsSingleMessage(message));
+                       std::optional<base::Uuid> current_message_id =
+                           message.attributions[0].id;
+
+                       if (!current_message_id.has_value()) {
+                         return false;
+                       }
+                       return base::Contains(message_ids, *current_message_id);
+                     }),
+      message_queue_.end());
+
+  // In case the message was displayed previously, we still tell the UI about
+  // every message ID, even if it might have been removed from the queue.
+  instant_message_delegate_->HideInstantaneousMessage(message_ids);
+}
+
 void InstantMessageProcessorImpl::ScheduleProcessing() {
   if (processing_scheduled_) {
     return;
@@ -132,6 +157,10 @@ void InstantMessageProcessorImpl::ScheduleProcessing() {
 
 void InstantMessageProcessorImpl::ProcessQueue() {
   processing_scheduled_ = false;
+  if (message_queue_.empty()) {
+    // The queue might have been cleared by HideInstantMessage.
+    return;
+  }
   std::vector<InstantMessage> aggregated_messages =
       AggregateMessages(message_queue_);
   message_queue_.clear();

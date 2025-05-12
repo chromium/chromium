@@ -174,6 +174,20 @@ ScopedJavaLocalRef<jobject> InstantMessageToJava(
       j_attribution_list);
 }
 
+ScopedJavaLocalRef<jobject> UuidSetToJavaStringSet(
+    JNIEnv* env,
+    const std::set<base::Uuid>& uuids) {
+  ScopedJavaLocalRef<jobject> j_string_set =
+      Java_ConversionUtils_createStringSet(env);
+
+  for (const auto& uuid : uuids) {
+    Java_ConversionUtils_addStringToStringSet(
+        env, j_string_set,
+        ConvertUTF8ToJavaString(env, uuid.AsLowercaseString()));
+  }
+  return j_string_set;
+}
+
 ScopedJavaLocalRef<jobject> ActivityLogItemsToJava(
     JNIEnv* env,
     const std::vector<ActivityLogItem>& activity_log_items) {

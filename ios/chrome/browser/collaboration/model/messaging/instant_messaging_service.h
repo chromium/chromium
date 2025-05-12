@@ -5,7 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_COLLABORATION_MODEL_MESSAGING_INSTANT_MESSAGING_SERVICE_H_
 #define IOS_CHROME_BROWSER_COLLABORATION_MODEL_MESSAGING_INSTANT_MESSAGING_SERVICE_H_
 
+#import <set>
+
 #import "base/memory/raw_ptr.h"
+#import "base/uuid.h"
 #import "components/collaboration/public/messaging/messaging_backend_service.h"
 #import "components/keyed_service/core/keyed_service.h"
 
@@ -31,6 +34,8 @@ class InstantMessagingService
       collaboration::messaging::InstantMessage message,
       MessagingBackendService::InstantMessageDelegate::SuccessCallback
           success_callback) override;
+  void HideInstantaneousMessage(
+      const std::set<base::Uuid>& message_ids) override;
 
  private:
   // Shows a collaboration group infobar for the given `instant_message`.

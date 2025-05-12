@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
@@ -14,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/uuid.h"
 #include "components/collaboration/internal/android/messaging/conversion_utils.h"
 #include "components/collaboration/public/messaging/activity_log.h"
 #include "components/collaboration/public/messaging/message.h"
@@ -266,6 +268,17 @@ void MessagingBackendServiceBridge::DisplayInstantaneousMessage(
 
   Java_MessagingBackendServiceBridge_displayInstantaneousMessage(
       env, java_ref_, InstantMessageToJava(env, message), j_native_ptr);
+}
+
+void MessagingBackendServiceBridge::HideInstantaneousMessage(
+    const std::set<base::Uuid>& message_ids) {
+  if (java_ref_.is_null()) {
+    return;
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_MessagingBackendServiceBridge_hideInstantaneousMessage(
+      env, java_ref_, UuidSetToJavaStringSet(env, message_ids));
 }
 
 }  // namespace collaboration::messaging::android

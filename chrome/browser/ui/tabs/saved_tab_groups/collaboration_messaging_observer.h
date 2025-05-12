@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_COLLABORATION_MESSAGING_OBSERVER_H_
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_COLLABORATION_MESSAGING_OBSERVER_H_
 
+#include <set>
+
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/uuid.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/instant_message_queue_processor.h"
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -88,6 +91,8 @@ class CollaborationMessagingObserver
   void DisplayInstantaneousMessage(
       InstantMessage message,
       InstantMessageSuccessCallback success_callback) override;
+  void HideInstantaneousMessage(
+      const std::set<base::Uuid>& message_ids) override;
 
  private:
   // Finds the tab group designated by this message and sets/hides an
