@@ -300,3 +300,8 @@ source_set("unit_tests") {
     "//third_party/ocmock",
   ]
 }
+
+source_set("autofill_ui_constants") {
+  sources = [ "autofill_ui_constants.h" ]
+  deps = [ "//base" ]
+}

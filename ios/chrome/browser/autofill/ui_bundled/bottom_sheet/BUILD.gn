@@ -61,6 +61,7 @@ source_set("bottom_sheet") {
     "//ios/chrome/browser/autofill/model:model_internal",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/autofill/model/credit_card",
+    "//ios/chrome/browser/autofill/ui_bundled:autofill_ui_constants",
     "//ios/chrome/browser/autofill/ui_bundled/address_editor:autofill_shared_ui",
     "//ios/chrome/browser/autofill/ui_bundled/address_editor:constants",
     "//ios/chrome/browser/autofill/ui_bundled/address_editor/cells",

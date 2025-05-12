@@ -8,6 +8,7 @@
 
 #import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/alert_view/ui_bundled/alert_action.h"
@@ -15,6 +16,10 @@
 #import "ios/chrome/browser/autofill/ui_bundled/progress_dialog/autofill_progress_dialog_mediator_delegate.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ui/base/l10n/l10n_util.h"
+
+// The delay between showing the confirmation and dismissing the progress
+// dialog.
+constexpr base::TimeDelta kConfirmationDismissDelayInSeconds = base::Seconds(1);
 
 AutofillProgressDialogMediator::AutofillProgressDialogMediator(
     base::WeakPtr<autofill::AutofillProgressDialogControllerImpl>
@@ -40,9 +45,12 @@ void AutofillProgressDialogMediator::Dismiss(
     [consumer_ setActions:@[]];
     consumer_.confirmationAccessibilityLabel = l10n_util::GetNSString(
         IDS_IOS_AUTOFILL_PROGRESS_DIALOG_CONFIRMATION_ACCESSIBILITY_ANNOUNCEMENT);
-    // TODO(crbug.com/413453967): Add dismiss delay logic to IOS autofill
-    // progress dialog
-    [delegate_ dismissDialog];
+    dispatch_after(
+        dispatch_time(DISPATCH_TIME_NOW,
+                      kConfirmationDismissDelayInSeconds.InNanoseconds()),
+        dispatch_get_main_queue(), ^{
+          [delegate_ dismissDialog];
+        });
   } else {
     [delegate_ dismissDialog];
   }
