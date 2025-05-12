@@ -27,7 +27,6 @@
 #include <algorithm>
 #include <array>
 #include <atomic>
-#include <cwchar>
 #include <ios>
 #include <memory>
 #include <ostream>
@@ -425,8 +424,7 @@ LogMessage& LogMessage::operator<< <const wchar_t*>(
     CopyToEncodedBuffer<StringType::kNotLiteral>(
         absl::string_view(kCharNull.data(), kCharNull.size() - 1));
   } else {
-    CopyToEncodedBuffer<StringType::kNotLiteral>(
-        std::wstring_view(v, wcsnlen(v, data_->encoded_remaining().size())));
+    CopyToEncodedBuffer<StringType::kNotLiteral>(v);
   }
   return *this;
 }

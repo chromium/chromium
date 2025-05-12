@@ -103,8 +103,21 @@ std::vector<WideToUtf8TestCase> GetWideToUtf8TestCases() {
       {"BMP_MaxBeforeSurrogates_D7FF", L'\uD7FF', "\xED\x9F\xBF", 3},
       {"BMP_FFFF", L'\uFFFF', "\xEF\xBF\xBF", 3},
 
-      {"IsolatedHighSurr_D800", L'\xD800', "\xF0\x90", 2, {true, 0}, {true, 0}},
-      {"IsolatedHighSurr_DBFF", L'\xDBFF', "\xF4\x8F", 2, {true, 3}, {true, 3}},
+      {"IsolatedHighSurr_D800", L'\xD800', "\xF0\x90", 2, {}, {true, 0}},
+      {"IsolatedHighSurr_DBFF", L'\xDBFF', "\xF4\x8F", 2, {}, {true, 3}},
+
+      {"HighSurr_D800_after_HighD800",
+       L'\xD800',
+       "\xF0\x90",
+       2,
+       {true, 0},
+       {true, 0}},
+      {"HighSurr_DBFF_after_HighDBFF",
+       L'\xDBFF',
+       "\xF4\x8F",
+       2,
+       {true, 3},
+       {true, 3}},
 
       {"LowSurr_DC00_after_HighD800", L'\xDC00', "\x80\x80", 2, {true, 0}, {}},
       {"LowSurr_DFFD_after_HighDBFF", L'\xDFFD', "\xBF\xBD", 2, {true, 3}, {}},

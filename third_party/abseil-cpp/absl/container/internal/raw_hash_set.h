@@ -3607,7 +3607,7 @@ class raw_hash_set {
     static constexpr PolicyFunctions value = {
         static_cast<uint32_t>(sizeof(key_type)),
         static_cast<uint32_t>(sizeof(value_type)),
-        static_cast<uint16_t>(sizeof(slot_type)),
+        static_cast<uint32_t>(sizeof(slot_type)),
         static_cast<uint16_t>(alignof(slot_type)), SooEnabled(),
         ShouldSampleHashtablezInfoForAlloc<CharAlloc>(),
         // TODO(b/328722020): try to type erase

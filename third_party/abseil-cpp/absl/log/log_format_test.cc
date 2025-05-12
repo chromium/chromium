@@ -1009,12 +1009,80 @@ TEST(WideStringLogFormatTest, Literal) {
 #undef ABSL_LOG_INTERNAL_WIDE_LITERAL
 #undef ABSL_LOG_INTERNAL_UTF8_LITERAL
 
-TYPED_TEST(WideStringLogFormatTest, InvalidCharactersAreReplaced) {
+TYPED_TEST(WideStringLogFormatTest, IsolatedLowSurrogatesAreReplaced) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
 
   TypeParam value = L"AAA \xDC00 BBB";
   // NOLINTNEXTLINE(readability/utf8)
   absl::string_view utf8_value = "AAA � BBB";
+
+  EXPECT_CALL(test_sink, Send(AllOf(TextMessage(Eq(utf8_value)),
+                                    ENCODED_MESSAGE(HasValues(ElementsAre(
+                                        ValueWithStr(Eq(utf8_value))))))));
+
+  test_sink.StartCapturingLogs();
+  LOG(INFO) << value;
+}
+
+TYPED_TEST(WideStringLogFormatTest,
+           DISABLED_IsolatedHighSurrogatesAreReplaced) {
+  absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+
+  TypeParam value = L"AAA \xD800 BBB";
+  // NOLINTNEXTLINE(readability/utf8)
+  absl::string_view utf8_value = "AAA � BBB";
+  // Currently, this is "AAA \xF0\x90 BBB".
+
+  EXPECT_CALL(test_sink, Send(AllOf(TextMessage(Eq(utf8_value)),
+                                    ENCODED_MESSAGE(HasValues(ElementsAre(
+                                        ValueWithStr(Eq(utf8_value))))))));
+
+  test_sink.StartCapturingLogs();
+  LOG(INFO) << value;
+}
+
+TYPED_TEST(WideStringLogFormatTest,
+           DISABLED_ConsecutiveHighSurrogatesAreReplaced) {
+  absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+
+  TypeParam value = L"AAA \xD800\xD800 BBB";
+  // NOLINTNEXTLINE(readability/utf8)
+  absl::string_view utf8_value = "AAA �� BBB";
+  // Currently, this is "AAA \xF0\x90\xF0\x90 BBB".
+
+  EXPECT_CALL(test_sink, Send(AllOf(TextMessage(Eq(utf8_value)),
+                                    ENCODED_MESSAGE(HasValues(ElementsAre(
+                                        ValueWithStr(Eq(utf8_value))))))));
+
+  test_sink.StartCapturingLogs();
+  LOG(INFO) << value;
+}
+
+TYPED_TEST(WideStringLogFormatTest,
+           DISABLED_HighHighLowSurrogateSequencesAreReplaced) {
+  absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+
+  TypeParam value = L"AAA \xD800\xD800\xDC00 BBB";
+  // NOLINTNEXTLINE(readability/utf8)
+  absl::string_view utf8_value = "AAA �𐀀 BBB";
+  // Currently, this is "AAA \xF0\x90𐀀 BBB".
+
+  EXPECT_CALL(test_sink, Send(AllOf(TextMessage(Eq(utf8_value)),
+                                    ENCODED_MESSAGE(HasValues(ElementsAre(
+                                        ValueWithStr(Eq(utf8_value))))))));
+
+  test_sink.StartCapturingLogs();
+  LOG(INFO) << value;
+}
+
+TYPED_TEST(WideStringLogFormatTest,
+           DISABLED_TrailingHighSurrogatesAreReplaced) {
+  absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+
+  TypeParam value = L"AAA \xD800";
+  // NOLINTNEXTLINE(readability/utf8)
+  absl::string_view utf8_value = "AAA �";
+  // Currently, this is "AAA \xF0\x90".
 
   EXPECT_CALL(test_sink, Send(AllOf(TextMessage(Eq(utf8_value)),
                                     ENCODED_MESSAGE(HasValues(ElementsAre(

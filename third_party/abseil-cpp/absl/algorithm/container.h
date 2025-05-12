@@ -75,8 +75,8 @@ using ContainerIter = decltype(begin(std::declval<C&>()));
 // An MSVC bug involving template parameter substitution requires us to use
 // decltype() here instead of just std::pair.
 template <typename C1, typename C2>
-using ContainerIterPairType =
-    decltype(std::make_pair(ContainerIter<C1>(), ContainerIter<C2>()));
+using ContainerIterPairType = decltype(std::make_pair(
+    std::declval<ContainerIter<C1>>(), std::declval<ContainerIter<C2>>()));
 
 template <typename C>
 using ContainerDifferenceType = decltype(std::distance(
