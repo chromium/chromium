@@ -61,7 +61,9 @@ class CONTENT_EXPORT PressureServiceBase
 
   // Verifies if the data should be delivered according to focus status.
   virtual bool ShouldDeliverUpdate() const = 0;
-  device::mojom::PressureState CalculateState(double cpu_utilization);
+  virtual double CalculateOwnContributionEstimate(
+      double global_cpu_utilization) = 0;
+  device::mojom::PressureState CalculateState(double global_cpu_utilization);
 
   // Returns a token for use with automation calls when one is set.
   virtual std::optional<base::UnguessableToken> GetTokenFor(

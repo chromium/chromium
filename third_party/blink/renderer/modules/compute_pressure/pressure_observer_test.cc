@@ -181,7 +181,7 @@ TEST(PressureObserverTest, RateObfuscationMitigation) {
       const auto& state = kPressureStates[i];
       pressure_service.SendUpdate(mojom::blink::WebPressureUpdate::New(
           device::mojom::blink::PressureSource::kCpu, state,
-          base::TimeTicks::Now()));
+          /*own_contribution_estimate=*/0.5, base::TimeTicks::Now()));
       task_environment.FastForwardBy(base::Milliseconds(0));
       EXPECT_EQ(pressure_records.size(), i + 1);
 
@@ -211,7 +211,7 @@ TEST(PressureObserverTest, RateObfuscationMitigation) {
     // obfuscation code instead.
     pressure_service.SendUpdate(mojom::blink::WebPressureUpdate::New(
         device::mojom::blink::PressureSource::kCpu, PressureState::kNominal,
-        base::TimeTicks::Now()));
+        /*own_contribution_estimate=*/0.5, base::TimeTicks::Now()));
     task_environment.FastForwardBy(base::Milliseconds(0));
     EXPECT_EQ(pressure_records.size(), original_callback_count);
 
@@ -224,7 +224,8 @@ TEST(PressureObserverTest, RateObfuscationMitigation) {
     // penalty: the new update must replace the previously queued one.
     pressure_service.SendUpdate(mojom::blink::WebPressureUpdate::New(
         device::mojom::blink::PressureSource::kCpu, PressureState::kFair,
-        base::TimeTicks::Now()));
+        /*own_contribution_estimate=*/0.5, base::TimeTicks::Now()));
+
     // If we advance another 200ms, we are still 3600s short of the penalty
     // duration, after which we will finally send an update.
     task_environment.FastForwardBy(kSamplingInterval);
@@ -254,7 +255,7 @@ TEST(PressureObserverTest, RateObfuscationMitigation) {
     // Send an update and verify it has been delivered with no delay again.
     pressure_service.SendUpdate(mojom::blink::WebPressureUpdate::New(
         device::mojom::blink::PressureSource::kCpu, PressureState::kSerious,
-        base::TimeTicks::Now()));
+        /*own_contribution_estimate=*/0.5, base::TimeTicks::Now()));
     task_environment.FastForwardBy(base::Milliseconds(0));
     EXPECT_EQ(pressure_records.size(), original_callback_count + 1U);
     EXPECT_EQ(pressure_records.back()->state().AsString(),
@@ -295,7 +296,7 @@ TEST(PressureObserverTest, PressureObserverDisconnectBeforePenaltyEnd) {
   task_environment.FastForwardBy(kDelayTime);
   pressure_service.SendUpdate(mojom::blink::WebPressureUpdate::New(
       device::mojom::blink::PressureSource::kCpu, PressureState::kCritical,
-      base::TimeTicks::Now()));
+      /*own_contribution_estimate=*/0.5, base::TimeTicks::Now()));
 
   callback_run_loop.Run();
 
@@ -303,7 +304,8 @@ TEST(PressureObserverTest, PressureObserverDisconnectBeforePenaltyEnd) {
   task_environment.FastForwardBy(kDelayTime);
   pressure_service.SendUpdate(mojom::blink::WebPressureUpdate::New(
       device::mojom::blink::PressureSource::kCpu, PressureState::kNominal,
-      base::TimeTicks::Now()));
+      /*own_contribution_estimate=*/0.5, base::TimeTicks::Now()));
+
   // The number of seconds here should not exceed the penalty time, we just
   // want to run some code like OnUpdate() but not the pending delayed task
   // that it should have created.
@@ -347,7 +349,7 @@ TEST(PressureObserverTest, PressureObserverUnobserveBeforePenaltyEnd) {
   task_environment.FastForwardBy(kDelayTime);
   pressure_service.SendUpdate(mojom::blink::WebPressureUpdate::New(
       device::mojom::blink::PressureSource::kCpu, PressureState::kNominal,
-      base::TimeTicks::Now()));
+      /*own_contribution_estimate=*/0.5, base::TimeTicks::Now()));
 
   callback_run_loop.Run();
 
@@ -355,7 +357,8 @@ TEST(PressureObserverTest, PressureObserverUnobserveBeforePenaltyEnd) {
   task_environment.FastForwardBy(kDelayTime);
   pressure_service.SendUpdate(mojom::blink::WebPressureUpdate::New(
       device::mojom::blink::PressureSource::kCpu, PressureState::kCritical,
-      base::TimeTicks::Now()));
+      /*own_contribution_estimate=*/0.5, base::TimeTicks::Now()));
+
   // The number of seconds here should not exceed the penalty time, we just
   // want to run some code like OnUpdate() but not the pending delayed task
   // that it should have created.

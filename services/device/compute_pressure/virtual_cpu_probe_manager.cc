@@ -91,7 +91,8 @@ void VirtualCpuProbeManager::OnCpuSampleAvailable(
   // by InvalidateWeakPtrs().
   CHECK(timer_.IsRunning());
   if (sample.has_value()) {
-    mojom::PressureData data(sample.value().cpu_utilization);
+    mojom::PressureData data(sample.value().cpu_utilization,
+                             own_contribution_estimate_);
     sampling_callback_.Run(data.Clone());
   }
 }
@@ -107,6 +108,15 @@ void VirtualCpuProbeManager::SetPressureState(
   cpu_utilization -= converter_.hysteresis_threshold_delta();
   static_cast<VirtualCpuProbe*>(cpu_probe())
       ->SetSample(system_cpu::CpuSample{cpu_utilization});
+}
+
+void VirtualCpuProbeManager::SetOwnContributionEstimate(
+    double desired_estimate) {
+  if (desired_estimate < 0.0 || desired_estimate > 1.0) {
+    own_contribution_estimate_ = -1.0;
+  } else {
+    own_contribution_estimate_ = desired_estimate;
+  }
 }
 
 }  // namespace device

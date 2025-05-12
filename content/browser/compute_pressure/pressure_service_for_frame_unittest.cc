@@ -181,7 +181,8 @@ TEST_F(PressureServiceForFrameTest, AddClient) {
             device::mojom::PressureManagerAddClientResult::kOk);
 
   const base::TimeTicks time = base::TimeTicks::Now();
-  auto data = PressureData::New(/*cpu_utilization=*/0.4);
+  auto data = PressureData::New(/*cpu_utilization=*/0.4,
+                                /*own_contribution_estimate=*/0.20);
   PressureUpdate update(PressureSource::kCpu, std::move(data), time);
   pressure_manager_overrider_->UpdateClients(update);
   client.WaitForUpdate();
@@ -189,6 +190,7 @@ TEST_F(PressureServiceForFrameTest, AddClient) {
   ASSERT_EQ(client.updates().size(), 1u);
   EXPECT_EQ(client.updates()[0].source, update.source);
   EXPECT_EQ(client.updates()[0].state, device::mojom::PressureState::kNominal);
+  EXPECT_EQ(client.updates()[0].own_contribution_estimate, 0.20);
   EXPECT_EQ(client.updates()[0].timestamp, update.timestamp);
 }
 

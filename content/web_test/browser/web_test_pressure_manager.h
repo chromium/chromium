@@ -43,10 +43,11 @@ class WebTestPressureManager
   void RemoveVirtualPressureSource(
       device::mojom::PressureSource source,
       RemoveVirtualPressureSourceCallback callback) override;
-  void UpdateVirtualPressureSourceState(
+  void UpdateVirtualPressureSourceData(
       device::mojom::PressureSource source,
       device::mojom::PressureState state,
-      UpdateVirtualPressureSourceStateCallback callback) override;
+      double own_contribution_estimate,
+      UpdateVirtualPressureSourceDataCallback callback) override;
 
  private:
   explicit WebTestPressureManager(WebContents* web_contents);

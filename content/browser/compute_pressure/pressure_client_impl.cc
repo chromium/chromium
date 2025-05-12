@@ -25,14 +25,22 @@ void PressureClientImpl::OnPressureUpdated(
     device::mojom::PressureState state;
     switch (update->source) {
       case device::mojom::PressureSource::kCpu:
+        // No update from the virtual pressure source.
+        if (update->data->own_contribution_estimate ==
+            device::mojom::kDefaultOwnContributionEstimate) {
+          update->data->own_contribution_estimate =
+              service_->CalculateOwnContributionEstimate(
+                  update->data->cpu_utilization);
+        }
         state = service_->CalculateState(update->data->cpu_utilization);
         break;
       default:
         NOTREACHED();
     }
     client_associated_remote_->OnPressureUpdated(
-        blink::mojom::WebPressureUpdate::New(update->source, state,
-                                             update->timestamp));
+        blink::mojom::WebPressureUpdate::New(
+            update->source, state, update->data->own_contribution_estimate,
+            update->timestamp));
   }
 }
 

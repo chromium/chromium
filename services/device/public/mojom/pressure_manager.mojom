@@ -38,12 +38,13 @@ interface PressureManager {
   RemoveVirtualPressureSource(
       mojo_base.mojom.UnguessableToken token, PressureSource source) => ();
 
-  // Sends a state update for a virtual pressure source corresponding to
-  // |token| and |source|. Does nothing if |token| does not contain a pressure
-  // source of type |source|.
-  UpdateVirtualPressureSourceState(
+  // Sends state update and own contribution estimate update for a virtual
+  // pressure source corresponding to |token| and |source|.
+  // Does nothing if |token| does not  contain a pressure source of type
+  // |source|.
+  UpdateVirtualPressureSourceData(
       mojo_base.mojom.UnguessableToken token, PressureSource source,
-      PressureState state) => ();
+      PressureState state, double own_contribution_estimate) => ();
 
   // Add a client that will be notified when a new PressureUpdate for `source`
   // is obtained.

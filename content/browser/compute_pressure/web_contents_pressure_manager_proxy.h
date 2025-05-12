@@ -85,9 +85,10 @@ class CONTENT_EXPORT ScopedVirtualPressureSourceForDevTools final {
 
   base::UnguessableToken token() const;
 
-  void UpdateVirtualPressureSourceState(
+  void UpdateVirtualPressureSourceData(
       device::mojom::PressureState,
-      device::mojom::PressureManager::UpdateVirtualPressureSourceStateCallback
+      double own_contribution_estimate,
+      device::mojom::PressureManager::UpdateVirtualPressureSourceDataCallback
           callback);
 
  private:

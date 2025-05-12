@@ -13,8 +13,7 @@ enum CreateVirtualPressureSourceResult {
   kSourceTypeAlreadyOverridden,
 };
 
-// Result of UpdateVirtualPressureSourceState
-enum UpdateVirtualPressureSourceStateResult {
+enum UpdateVirtualPressureSourceDataResult {
   kSuccess,
   kSourceTypeNotOverridden,
 };
@@ -35,8 +34,10 @@ interface WebPressureManagerAutomation {
   // Removes a previously created virtual pressure source.
   RemoveVirtualPressureSource(device.mojom.PressureSource source) => ();
 
-  // Sends a state update for a given virtual pressure source.
-  UpdateVirtualPressureSourceState(
-      device.mojom.PressureSource source, device.mojom.PressureState state) =>
-      (UpdateVirtualPressureSourceStateResult result);
+  // Sends a state and estimate update for a given virtual pressure source.
+  UpdateVirtualPressureSourceData(
+      device.mojom.PressureSource source,
+      device.mojom.PressureState state,
+      double own_contribution_estimate) =>
+      (UpdateVirtualPressureSourceDataResult result);
 };

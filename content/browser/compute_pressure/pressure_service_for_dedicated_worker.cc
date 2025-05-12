@@ -4,16 +4,28 @@
 
 #include "content/browser/compute_pressure/pressure_service_for_dedicated_worker.h"
 
+#include "base/system/sys_info.h"
 #include "content/browser/compute_pressure/web_contents_pressure_manager_proxy.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
+#include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace content {
 
 PressureServiceForDedicatedWorker::PressureServiceForDedicatedWorker(
     DedicatedWorkerHost* host)
-    : worker_host_(host) {
+    : worker_host_(host),
+      metrics_(
+#if BUILDFLAG(IS_MAC)
+          base::ProcessMetrics::CreateProcessMetrics(
+              host->GetProcessHost()->GetProcess().Handle(),
+              BrowserChildProcessHost::GetPortProvider())
+#else
+          base::ProcessMetrics::CreateProcessMetrics(
+              host->GetProcessHost()->GetProcess().Handle())
+#endif  // BUILDFLAG(IS_MAC)
+      ) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
@@ -50,6 +62,15 @@ RenderFrameHost* PressureServiceForDedicatedWorker::GetRenderFrameHost() const {
 
   return RenderFrameHostImpl::FromID(
       worker_host_->GetAncestorRenderFrameHostId());
+}
+
+double PressureServiceForDedicatedWorker::CalculateOwnContributionEstimate(
+    double global_cpu_utilization) {
+  double process_pressure =
+      metrics_->GetPlatformIndependentCPUUsage().value_or(-1.0) /
+      static_cast<double>(base::SysInfo::NumberOfProcessors());
+
+  return process_pressure / (global_cpu_utilization * 100);
 }
 
 }  // namespace content

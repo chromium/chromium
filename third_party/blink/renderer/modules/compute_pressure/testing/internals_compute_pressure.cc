@@ -6,7 +6,7 @@
 
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/pressure_manager.mojom-blink.h"
-#include "services/device/public/mojom/pressure_update.mojom-shared.h"
+#include "services/device/public/mojom/pressure_update.mojom-blink.h"
 #include "third_party/blink/public/test/mojom/compute_pressure/web_pressure_manager_automation.test-mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -154,22 +154,22 @@ InternalsComputePressure::updateVirtualPressureSource(ScriptState* script_state,
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
   auto* raw_pressure_manager_automation = web_pressure_manager_automation.get();
-  raw_pressure_manager_automation->UpdateVirtualPressureSourceState(
+  raw_pressure_manager_automation->UpdateVirtualPressureSourceData(
       ToMojoPressureSource(source.AsEnum()),
-      ToMojoPressureState(state.AsEnum()),
+      ToMojoPressureState(state.AsEnum()), /*own_contribution_estimate=*/0.0,
       WTF::BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
           [](ScriptPromiseResolver<IDLUndefined>* resolver,
              mojo::Remote<test::mojom::blink::WebPressureManagerAutomation>,
-             test::mojom::UpdateVirtualPressureSourceStateResult result) {
+             test::mojom::UpdateVirtualPressureSourceDataResult result) {
             switch (result) {
-              case test::mojom::blink::UpdateVirtualPressureSourceStateResult::
+              case test::mojom::blink::UpdateVirtualPressureSourceDataResult::
                   kSuccess: {
                 resolver->Resolve();
                 break;
               }
-              case test::mojom::blink::UpdateVirtualPressureSourceStateResult::
+              case test::mojom::blink::UpdateVirtualPressureSourceDataResult::
                   kSourceTypeNotOverridden:
                 resolver->Reject(
                     "A virtual pressure source with this type has not been "

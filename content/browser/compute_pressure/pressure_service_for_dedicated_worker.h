@@ -30,6 +30,8 @@ class CONTENT_EXPORT PressureServiceForDedicatedWorker
 
   // PressureServiceBase overrides.
   bool ShouldDeliverUpdate() const override;
+  double CalculateOwnContributionEstimate(
+      double global_cpu_utilization) override;
   std::optional<base::UnguessableToken> GetTokenFor(
       device::mojom::PressureSource) const override;
   RenderFrameHost* GetRenderFrameHost() const override;
@@ -38,6 +40,9 @@ class CONTENT_EXPORT PressureServiceForDedicatedWorker
   // DedicatedWorkerHost owns an instance of this class.
   raw_ptr<DedicatedWorkerHost> GUARDED_BY_CONTEXT(sequence_checker_)
       worker_host_;
+
+  // |metrics_| is used to gather process based metrics.
+  std::unique_ptr<base::ProcessMetrics> metrics_;
 };
 
 }  // namespace content

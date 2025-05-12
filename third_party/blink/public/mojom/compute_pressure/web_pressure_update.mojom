@@ -12,6 +12,12 @@ import "services/device/public/mojom/pressure_update.mojom";
 // renderer process.
 struct WebPressureUpdate {
   device.mojom.PressureSource source;
+  // Calculated pressure state from `cpu_utilization`.
+  // The calculation is done in CpuPressureConverter class defined in:
+  //services/device/public/cpp/compute_pressure/cpu_pressure_converter.h
   device.mojom.PressureState state;
+  // Contribution estimate of current process from 0.0 to 1.0.
+  // If no data or data out of range, the value is set to -1.0 (default).
+  double own_contribution_estimate = -1.0;
   mojo_base.mojom.TimeTicks timestamp;
 };

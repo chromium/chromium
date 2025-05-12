@@ -49,11 +49,12 @@ class FakePressureManager : public mojom::PressureManager {
       const base::UnguessableToken& token,
       mojom::PressureSource source,
       RemoveVirtualPressureSourceCallback callback) override {}
-  void UpdateVirtualPressureSourceState(
+  void UpdateVirtualPressureSourceData(
       const base::UnguessableToken& token,
       mojom::PressureSource source,
       mojom::PressureState state,
-      UpdateVirtualPressureSourceStateCallback callback) override {}
+      double own_contribution_estimate,
+      UpdateVirtualPressureSourceDataCallback callback) override {}
 
   bool is_supported_ = true;
   mojo::ReceiverSet<mojom::PressureManager> manager_receivers_;

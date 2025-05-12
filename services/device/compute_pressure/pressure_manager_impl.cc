@@ -115,17 +115,18 @@ void PressureManagerImpl::RemoveVirtualPressureSource(
   std::move(callback).Run();
 }
 
-void PressureManagerImpl::UpdateVirtualPressureSourceState(
+void PressureManagerImpl::UpdateVirtualPressureSourceData(
     const base::UnguessableToken& token,
     mojom::PressureSource source,
     mojom::PressureState state,
-    UpdateVirtualPressureSourceStateCallback callback) {
+    double own_contribution_estimate,
+    UpdateVirtualPressureSourceDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = virtual_probes_managers_.find(token);
   if (it != virtual_probes_managers_.end() &&
       it->second->IsOverriding(source)) {
-    it->second->AddUpdate(source, state);
+    it->second->AddDataUpdate(source, state, own_contribution_estimate);
   }
   std::move(callback).Run();
 }

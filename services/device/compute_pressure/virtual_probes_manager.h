@@ -30,10 +30,12 @@ class VirtualProbesManager final : public ProbesManager {
   // is not being overridden.
   void RemoveOverrideForSource(mojom::PressureSource source);
 
-  // Adds a new sample for the given |source| and updates any
-  // mojom::PressureClient instances waiting for updates.
+  // Adds a new sample and own contribution estimate for the given |source| and
+  // updates any mojom::PressureClient instances waiting for updates.
   // Does nothing if |source| is not being overridden.
-  void AddUpdate(mojom::PressureSource source, mojom::PressureState state);
+  void AddDataUpdate(mojom::PressureSource source,
+                     mojom::PressureState state,
+                     double own_contribution_estimate);
 
   // Returns true if |source| has a corresponding VirtualProbe instance, and
   // false otherwise.

@@ -518,9 +518,10 @@ void EmulationHandler::SetPressureStateOverride(
         Response::InvalidParams(kPressureSourceIsNotOverridden));
     return;
   }
-  it->second->UpdateVirtualPressureSourceState(
-      mojo_state, base::BindOnce(&SetPressureStateOverrideCallback::sendSuccess,
-                                 std::move(callback)));
+  it->second->UpdateVirtualPressureSourceData(
+      mojo_state, /*own_contribution_estimate=*/0.0,
+      base::BindOnce(&SetPressureStateOverrideCallback::sendSuccess,
+                     std::move(callback)));
 #else
   callback->sendFailure(Response::InternalError());
 #endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
