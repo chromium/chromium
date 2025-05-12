@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/rust.gni")
+import("//build/rust/rust_bindgen.gni")
 import("//build/rust/rust_static_library.gni")
 
 rust_allocator_uses_partition_alloc = false
@@ -44,49 +45,66 @@ buildflag_header("buildflags") {
 
 if (toolchain_has_rust) {
   # All targets which depend on Rust code but are not linked by rustc must
-  # depend on this. Usually, this dependency will come from the rust_target() GN
-  # template. However, cargo_crate() does *not* include this dependency so any
-  # C++ targets which directly depend on a cargo_crate() must depend on this.
+  # depend on this. Usually, this dependency will come from a `rust_target` or
+  # `cargo_crate` GN template, but note that this may be overridden by setting
+  # `no_allocator_crate` of `rust_static_library` or `no_std` of `cargo_crate`.
   rust_static_library("allocator") {
     sources = [ "lib.rs" ]
     crate_root = "lib.rs"
-    cxx_bindings = [ "lib.rs" ]
-
-    deps = [ ":alloc_error_handler_impl" ]
-    if (rust_allocator_uses_allocator_impls_h) {
-      deps += [ ":allocator_impls" ]
-    }
-
-    no_chromium_prelude = true
-    no_allocator_crate = true
-    allow_unsafe = true
 
     rustflags = []
+    deps = [ ":alloc_error_handler_impl_ffi" ]
     if (rust_allocator_uses_allocator_impls_h) {
+      deps += [ ":allocator_impls_ffi" ]
       rustflags += [ "--cfg=rust_allocator_uses_allocator_impls_h" ]
-      cxx_bindings += [ "allocator_impls_ffi.rs" ]
-      sources += [ "allocator_impls_ffi.rs" ]
     }
+
+    # Avoid cyclic dependencies:
+    no_chromium_prelude = true
+    no_allocator_crate = true
+
+    # Allow `unsafe` for FFI calls:
+    allow_unsafe = true
 
     # TODO(https://crbug.com/410596442): Stop using unstable features here.
     configs -= [ "//build/config/compiler:disallow_unstable_features" ]
   }
 
   if (rust_allocator_uses_allocator_impls_h) {
+    rust_bindgen("allocator_impls_ffi") {
+      deps = [ ":allocator_impls" ]
+      header = "allocator_impls.h"
+      cpp = true
+      visibility = [ ":*" ]
+
+      # Giving an explicit `crate_name`, because `allocator` target needs to
+      # set `no_chromium_prelude` and cannot import mangled crate names.
+      crate_name = "allocator_impls_ffi"
+    }
+
     static_library("allocator_impls") {
-      public_deps = []
+      deps = [ ":buildflags" ]
       if (rust_allocator_uses_partition_alloc) {
-        public_deps +=
-            [ "//base/allocator/partition_allocator:partition_alloc" ]
+        deps += [ "//base/allocator/partition_allocator:partition_alloc" ]
       }
 
       sources = [
         "allocator_impls.cc",
         "allocator_impls.h",
       ]
-      deps = [ ":buildflags" ]
       visibility = [ ":*" ]
     }
+  }
+
+  rust_bindgen("alloc_error_handler_impl_ffi") {
+    deps = [ ":alloc_error_handler_impl" ]
+    header = "alloc_error_handler_impl.h"
+    cpp = true
+    visibility = [ ":*" ]
+
+    # Giving an explicit `crate_name`, because `allocator` target needs to
+    # set `no_chromium_prelude` and cannot import mangled crate names.
+    crate_name = "alloc_error_handler_impl_ffi"
   }
 
   static_library("alloc_error_handler_impl") {

@@ -5,7 +5,7 @@
 #ifndef BUILD_RUST_ALLOCATOR_ALLOCATOR_IMPLS_H_
 #define BUILD_RUST_ALLOCATOR_ALLOCATOR_IMPLS_H_
 
-#include <cstddef>
+#include <stddef.h>
 
 // This header exposes a C++ allocator (e.g. PartitionAlloc) to Rust.
 // The APIs below are called from `impl GlobalAlloc` in `lib.rs`.

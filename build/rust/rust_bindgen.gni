@@ -59,6 +59,11 @@ if (host_os == "win") {
 #   build. Additionally, `get_target_outputs` will return both the Rust file and
 #   a generated C file, but callers can rely on the Rust file being first.
 #
+# crate_name: (optional)
+#   If set, then specified the name of the auto-generated crate, so that it
+#   doesn't need to be imported using `chromium::import!` macro.  This should
+#   be used sparingly - typically only in low-level, foundational libraries
+#   that cannot depend on Chromium prelude (such as `//build/rust/allocator`).
 #
 # For a small, self-contained example please see:
 # * C header: //build/rust/tests/bindgen_test
@@ -69,6 +74,9 @@ template("rust_bindgen") {
   _wrap_static_fns = false
   if (defined(invoker.wrap_static_fns) && invoker.wrap_static_fns) {
     _wrap_static_fns = true
+  }
+  if (defined(invoker.crate_name)) {
+    _crate_name = invoker.crate_name
   }
   rust_bindgen_generator(_rust_bindgen_generator_name) {
     forward_variables_from(invoker,
@@ -96,6 +104,9 @@ template("rust_bindgen") {
                                  "cpp",
                                ])
 
+    if (defined(_crate_name)) {
+      crate_name = _crate_name
+    }
     crate_root = "//build/rust/bindings.rs"
     sources = [ crate_root ]
     bindgen_deps = [ ":$_rust_bindgen_generator_name" ]
@@ -118,5 +129,10 @@ template("rust_bindgen") {
         "cpp",
       ]
     }
+
+    # The generated crate doesn't need these dependencies.
+    # And avoiding them avoids dependency cycles.
+    no_allocator_crate = true
+    no_chromium_prelude = true
   }
 }

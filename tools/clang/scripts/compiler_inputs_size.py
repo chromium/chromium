@@ -180,7 +180,7 @@ def parse_commands(build_dir, commands_output):
   ...  'clang-cl.exe /Fobaz.o /c baz.cc\n'.splitlines(keepends=True)))
   ['bar.c', 'dir1/dir2/baz.cc', 'foo.cc']
   """
-  COMPILE_RE = re.compile(r'.*clang.* [/-]c (\S+)')
+  COMPILE_RE = re.compile(r'.*\bclang\b.* [/-]c (\S+)')
   files = set()
   for line in commands_output:
     m = COMPILE_RE.match(line)
