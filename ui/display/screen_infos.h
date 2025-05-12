@@ -21,8 +21,7 @@ struct DISPLAY_EXPORT ScreenInfos {
   ~ScreenInfos();
   ScreenInfos& operator=(const ScreenInfos& other);
 
-  bool operator==(const ScreenInfos& other) const;
-  bool operator!=(const ScreenInfos& other) const;
+  friend bool operator==(const ScreenInfos&, const ScreenInfos&) = default;
 
   // Helpers to access the current ScreenInfo element.
   ScreenInfo& mutable_current();

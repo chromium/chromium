@@ -224,18 +224,6 @@ TouchDeviceIdentifier& TouchDeviceIdentifier::operator=(
   return *this;
 }
 
-bool TouchDeviceIdentifier::operator<(const TouchDeviceIdentifier& rhs) const {
-  return std::tie(id_, secondary_id_) < std::tie(rhs.id_, rhs.secondary_id_);
-}
-
-bool TouchDeviceIdentifier::operator==(const TouchDeviceIdentifier& rhs) const {
-  return id_ == rhs.id_ && secondary_id_ == rhs.secondary_id_;
-}
-
-bool TouchDeviceIdentifier::operator!=(const TouchDeviceIdentifier& rhs) const {
-  return !(*this == rhs);
-}
-
 std::string TouchDeviceIdentifier::ToString() const {
   return base::NumberToString(id_);
 }

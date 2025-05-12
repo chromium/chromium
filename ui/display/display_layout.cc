@@ -397,18 +397,6 @@ DisplayPlacement::DisplayPlacement(const DisplayPlacement&) = default;
 DisplayPlacement& DisplayPlacement::operator=(const DisplayPlacement&) =
     default;
 
-bool DisplayPlacement::operator==(const DisplayPlacement& other) const {
-  return display_id == other.display_id &&
-         parent_display_id == other.parent_display_id &&
-         position == other.position &&
-         offset == other.offset &&
-         offset_reference == other.offset_reference;
-}
-
-bool DisplayPlacement::operator!=(const DisplayPlacement& other) const {
-  return !operator==(other);
-}
-
 DisplayPlacement& DisplayPlacement::Swap() {
   switch (position) {
     case TOP:

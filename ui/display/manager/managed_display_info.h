@@ -73,11 +73,6 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayMode {
   float device_scale_factor_ = 1.0f;  // The device scale factor of the mode.
 };
 
-inline bool operator!=(const ManagedDisplayMode& lhs,
-                       const ManagedDisplayMode& rhs) {
-  return !(lhs == rhs);
-}
-
 // ManagedDisplayInfo contains metadata for each display. This is used to create
 // |Display| as well as to maintain extra infomation to manage displays in ash
 // environment. This class is intentionally made copiable.
