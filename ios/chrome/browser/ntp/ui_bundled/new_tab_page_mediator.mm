@@ -10,6 +10,8 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/image_fetcher/core/image_fetcher.h"
+#import "components/image_fetcher/core/image_fetcher_service.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/regional_capabilities/regional_capabilities_service.h"
@@ -23,6 +25,8 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service_observer_bridge.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
@@ -59,6 +63,7 @@
 #import "url/gurl.h"
 
 @interface NewTabPageMediator () <BrowserViewVisibilityObserving,
+                                  HomeBackgroundCustomizationServiceObserving,
                                   IdentityManagerObserverBridgeDelegate,
                                   PrefObserverDelegate,
                                   SearchEngineObserving,
@@ -102,6 +107,13 @@
   // Used to check feed configuration based on the country.
   raw_ptr<regional_capabilities::RegionalCapabilitiesService>
       _regionalCapabilitiesService;
+  // Used to get and observe the background image or other state.
+  raw_ptr<HomeBackgroundCustomizationService> _backgroundCustomizationService;
+  // Observer for the customization service.
+  std::unique_ptr<HomeBackgroundCustomizationServiceObserverBridge>
+      _backgroundCustomizationServiceObserverBridge;
+  // Used to fetch and cache images for the background.
+  raw_ptr<image_fetcher::ImageFetcherService> _imageFetcherService;
   // Observer to keep track of the syncing status.
   std::unique_ptr<SyncObserverBridge> _syncObserver;
   raw_ptr<signin::IdentityManager> _identityManager;
@@ -112,23 +124,27 @@
 @synthesize scrollPositionToSave = _scrollPositionToSave;
 
 - (instancetype)
-       initWithTemplateURLService:(TemplateURLService*)templateURLService
-                        URLLoader:(UrlLoadingBrowserAgent*)URLLoader
-                      authService:(AuthenticationService*)authService
-                  identityManager:(signin::IdentityManager*)identityManager
-            accountManagerService:
-                (ChromeAccountManagerService*)accountManagerService
-         identityDiscImageUpdater:
-             (id<UserAccountImageUpdateDelegate>)imageUpdater
-              discoverFeedService:(DiscoverFeedService*)discoverFeedService
-                      prefService:(PrefService*)prefService
-                      syncService:(syncer::SyncService*)syncService
-      regionalCapabilitiesService:
-          (regional_capabilities::RegionalCapabilitiesService*)
-              regionalCapabilitiesService
-    browserViewVisibilityNotifier:(BrowserViewVisibilityNotifierBrowserAgent*)
-                                      browserViewVisibilityNotifierBrowserAgent
-                       isSafeMode:(BOOL)isSafeMode {
+        initWithTemplateURLService:(TemplateURLService*)templateURLService
+                         URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                       authService:(AuthenticationService*)authService
+                   identityManager:(signin::IdentityManager*)identityManager
+             accountManagerService:
+                 (ChromeAccountManagerService*)accountManagerService
+          identityDiscImageUpdater:
+              (id<UserAccountImageUpdateDelegate>)imageUpdater
+               discoverFeedService:(DiscoverFeedService*)discoverFeedService
+                       prefService:(PrefService*)prefService
+                       syncService:(syncer::SyncService*)syncService
+       regionalCapabilitiesService:
+           (regional_capabilities::RegionalCapabilitiesService*)
+               regionalCapabilitiesService
+    backgroundCustomizationService:
+        (HomeBackgroundCustomizationService*)backgroundCustomizationService
+               imageFetcherService:
+                   (image_fetcher::ImageFetcherService*)imageFetcherService
+     browserViewVisibilityNotifier:(BrowserViewVisibilityNotifierBrowserAgent*)
+                                       browserViewVisibilityNotifierBrowserAgent
+                        isSafeMode:(BOOL)isSafeMode {
   self = [super init];
   if (self) {
     CHECK(identityManager);
@@ -155,6 +171,8 @@
     _discoverFeedService = discoverFeedService;
     _prefService = prefService;
     _regionalCapabilitiesService = regionalCapabilitiesService;
+    _backgroundCustomizationService = backgroundCustomizationService;
+    _imageFetcherService = imageFetcherService;
     _isSafeMode = isSafeMode;
     _signedInIdentity =
         _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
@@ -175,6 +193,11 @@
   [self startObservingPrefs];
   _browserViewVisibilityNotifierBrowserAgent->AddObserver(
       _browserViewVisibilityObserverBridge.get());
+  if (IsNTPBackgroundCustomizationEnabled()) {
+    _backgroundCustomizationServiceObserverBridge =
+        std::make_unique<HomeBackgroundCustomizationServiceObserverBridge>(
+            _backgroundCustomizationService, self);
+  }
 }
 
 - (void)shutdown {
@@ -193,6 +216,9 @@
   _regionalCapabilitiesService = nullptr;
   _identityManager = nullptr;
   self.feedControlDelegate = nil;
+  _backgroundCustomizationServiceObserverBridge = nullptr;
+  _backgroundCustomizationService = nullptr;
+  _imageFetcherService = nullptr;
 }
 
 - (void)saveNTPStateForWebState:(web::WebState*)webState {
@@ -286,6 +312,29 @@
   [self updateAccountErrorBadge];
 }
 
+#pragma mark - HomeBackgroundCustomizationServiceObserving
+
+- (void)onBackgroundChanged {
+  const sync_pb::ThemeSpecifics::NtpCustomBackground& background =
+      _backgroundCustomizationService->GetCurrentBackground();
+
+  GURL imageURL = GURL(background.url());
+
+  image_fetcher::ImageFetcher* imageFetcher =
+      _imageFetcherService->GetImageFetcher(
+          image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
+
+  __weak __typeof(self) weakSelf = self;
+  imageFetcher->FetchImage(
+      imageURL,
+      base::BindOnce(^(const gfx::Image& image,
+                       const image_fetcher::RequestMetadata& metadata) {
+        [weakSelf handleBackgroundImageFetch:image];
+      }),
+      // TODO (crbug.com/417234848): Add annotation.
+      image_fetcher::ImageFetcherParams(NO_TRAFFIC_ANNOTATION_YET, "Test"));
+}
+
 #pragma mark - Private
 
 // Fetches and update user's avatar on NTP, or use default avatar if user is
@@ -376,6 +425,12 @@
       updateADPBadgeWithErrorFound:primaryIdentityHasError
                               name:_signedInIdentity.userFullName
                              email:_signedInIdentity.userEmail];
+}
+
+// Helper method to handle the image response after fetching the background
+// image for the new tab page.
+- (void)handleBackgroundImageFetch:(const gfx::Image&)image {
+  [self.consumer setBackgroundImage:image.ToUIImage()];
 }
 
 @end

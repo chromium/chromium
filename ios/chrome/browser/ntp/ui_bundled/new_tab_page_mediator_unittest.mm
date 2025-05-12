@@ -26,6 +26,8 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
+#import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
@@ -103,21 +105,28 @@ class NewTabPageMediatorTest : public PlatformTest {
     test_discover_feed_service_ = static_cast<TestDiscoverFeedService*>(
         DiscoverFeedServiceFactory::GetForProfile(profile_.get()));
     prefs_ = profile_->GetPrefs();
+    HomeBackgroundCustomizationService* background_customization_service =
+        HomeBackgroundCustomizationServiceFactory::GetForProfile(
+            profile_.get());
+    image_fetcher::ImageFetcherService* image_fetcher_service =
+        ImageFetcherServiceFactory::GetForProfile(profile_.get());
     mediator_ = [[NewTabPageMediator alloc]
-           initWithTemplateURLService:ios::TemplateURLServiceFactory::
-                                          GetForProfile(profile_.get())
-                            URLLoader:url_loader_
-                          authService:auth_service_
-                      identityManager:identity_manager_
-                accountManagerService:account_manager_service
-             identityDiscImageUpdater:image_updater_
-                  discoverFeedService:test_discover_feed_service_
-                          prefService:prefs_
-                          syncService:&test_sync_service_
-          regionalCapabilitiesService:ios::RegionalCapabilitiesServiceFactory::
-                                          GetForProfile(profile_.get())
-        browserViewVisibilityNotifier:browser_view_visibility_notifier_
-                           isSafeMode:NO];
+            initWithTemplateURLService:ios::TemplateURLServiceFactory::
+                                           GetForProfile(profile_.get())
+                             URLLoader:url_loader_
+                           authService:auth_service_
+                       identityManager:identity_manager_
+                 accountManagerService:account_manager_service
+              identityDiscImageUpdater:image_updater_
+                   discoverFeedService:test_discover_feed_service_
+                           prefService:prefs_
+                           syncService:&test_sync_service_
+           regionalCapabilitiesService:ios::RegionalCapabilitiesServiceFactory::
+                                           GetForProfile(profile_.get())
+        backgroundCustomizationService:background_customization_service
+                   imageFetcherService:image_fetcher_service
+         browserViewVisibilityNotifier:browser_view_visibility_notifier_
+                            isSafeMode:NO];
     header_consumer_ = OCMProtocolMock(@protocol(NewTabPageHeaderConsumer));
     mediator_.headerConsumer = header_consumer_;
     feature_engagement::Tracker* tracker =

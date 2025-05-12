@@ -9,6 +9,9 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mutator.h"
 
+namespace image_fetcher {
+class ImageFetcherService;
+}  // namespace image_fetcher
 namespace regional_capabilities {
 class RegionalCapabilitiesService;
 }  // namespace regional_capabilities
@@ -28,6 +31,7 @@ class ChromeAccountManagerService;
 class DiscoverFeedService;
 @protocol FeedControlDelegate;
 @class FeedMetricsRecorder;
+class HomeBackgroundCustomizationService;
 @protocol NewTabPageConsumer;
 @protocol NewTabPageContentDelegate;
 @protocol NewTabPageHeaderConsumer;
@@ -42,23 +46,27 @@ class UrlLoadingBrowserAgent;
 @interface NewTabPageMediator : NSObject <NewTabPageMutator>
 
 - (instancetype)
-       initWithTemplateURLService:(TemplateURLService*)templateURLService
-                        URLLoader:(UrlLoadingBrowserAgent*)URLLoader
-                      authService:(AuthenticationService*)authService
-                  identityManager:(signin::IdentityManager*)identityManager
-            accountManagerService:
-                (ChromeAccountManagerService*)accountManagerService
-         identityDiscImageUpdater:
-             (id<UserAccountImageUpdateDelegate>)imageUpdater
-              discoverFeedService:(DiscoverFeedService*)discoverFeedService
-                      prefService:(PrefService*)prefService
-                      syncService:(syncer::SyncService*)syncService
-      regionalCapabilitiesService:
-          (regional_capabilities::RegionalCapabilitiesService*)
-              regionalCapabilitiesService
-    browserViewVisibilityNotifier:(BrowserViewVisibilityNotifierBrowserAgent*)
-                                      browserViewVisibilityNotifierBrowserAgent
-                       isSafeMode:(BOOL)isSafeMode NS_DESIGNATED_INITIALIZER;
+        initWithTemplateURLService:(TemplateURLService*)templateURLService
+                         URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                       authService:(AuthenticationService*)authService
+                   identityManager:(signin::IdentityManager*)identityManager
+             accountManagerService:
+                 (ChromeAccountManagerService*)accountManagerService
+          identityDiscImageUpdater:
+              (id<UserAccountImageUpdateDelegate>)imageUpdater
+               discoverFeedService:(DiscoverFeedService*)discoverFeedService
+                       prefService:(PrefService*)prefService
+                       syncService:(syncer::SyncService*)syncService
+       regionalCapabilitiesService:
+           (regional_capabilities::RegionalCapabilitiesService*)
+               regionalCapabilitiesService
+    backgroundCustomizationService:
+        (HomeBackgroundCustomizationService*)backgroundCustomizationService
+               imageFetcherService:
+                   (image_fetcher::ImageFetcherService*)imageFetcherService
+     browserViewVisibilityNotifier:(BrowserViewVisibilityNotifierBrowserAgent*)
+                                       browserViewVisibilityNotifierBrowserAgent
+                        isSafeMode:(BOOL)isSafeMode NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

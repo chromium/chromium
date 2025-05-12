@@ -17,6 +17,8 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
+#import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ntp/shared/metrics/new_tab_page_metrics_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_header_view_controller.h"
@@ -125,24 +127,31 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
   regional_capabilities::RegionalCapabilitiesService*
       regionalCapabilitiesService =
           ios::RegionalCapabilitiesServiceFactory::GetForProfile(profile);
+  HomeBackgroundCustomizationService* backgroundCustomizationService =
+      HomeBackgroundCustomizationServiceFactory::GetForProfile(profile);
+  image_fetcher::ImageFetcherService* imageFetcherService =
+      ImageFetcherServiceFactory::GetForProfile(profile);
   BOOL isSafeMode =
       [browser->GetSceneState().profileState.appState resumingFromSafeMode];
   return [[NewTabPageMediator alloc]
-         initWithTemplateURLService:templateURLService
-                          URLLoader:UrlLoadingBrowserAgent::FromBrowser(browser)
-                        authService:authService
-                    identityManager:IdentityManagerFactory::GetForProfile(
-                                        profile)
-              accountManagerService:ChromeAccountManagerServiceFactory::
-                                        GetForProfile(profile)
-           identityDiscImageUpdater:imageUpdater
-                discoverFeedService:discoverFeedService
-                        prefService:prefService
-                        syncService:syncService
-        regionalCapabilitiesService:regionalCapabilitiesService
-      browserViewVisibilityNotifier:BrowserViewVisibilityNotifierBrowserAgent::
-                                        FromBrowser(browser)
-                         isSafeMode:isSafeMode];
+          initWithTemplateURLService:templateURLService
+                           URLLoader:UrlLoadingBrowserAgent::FromBrowser(
+                                         browser)
+                         authService:authService
+                     identityManager:IdentityManagerFactory::GetForProfile(
+                                         profile)
+               accountManagerService:ChromeAccountManagerServiceFactory::
+                                         GetForProfile(profile)
+            identityDiscImageUpdater:imageUpdater
+                 discoverFeedService:discoverFeedService
+                         prefService:prefService
+                         syncService:syncService
+         regionalCapabilitiesService:regionalCapabilitiesService
+      backgroundCustomizationService:backgroundCustomizationService
+                 imageFetcherService:imageFetcherService
+       browserViewVisibilityNotifier:BrowserViewVisibilityNotifierBrowserAgent::
+                                         FromBrowser(browser)
+                          isSafeMode:isSafeMode];
 }
 
 - (NewTabPageViewController*)NTPViewController {

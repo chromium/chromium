@@ -173,6 +173,10 @@ CGFloat SpaceBetweenModules() {
   UILayoutGuide* _moduleLayoutGuide;
   // Constraint controlling the width of modules on the NTP.
   NSLayoutConstraint* _moduleWidth;
+  // The current background image.
+  UIImage* _backgroundImage;
+  // The image view to display the current background image.
+  UIImageView* _backgroundImageView;
 }
 
 // Properties synthesized from NewTabPageConsumer.
@@ -221,6 +225,15 @@ CGFloat SpaceBetweenModules() {
   [self updateModularHomeBackgroundColorForUserInterfaceStyle:
             self.traitCollection.userInterfaceStyle];
   self.view.backgroundColor = [UIColor colorNamed:@"ntp_background_color"];
+
+  if (IsNTPBackgroundCustomizationEnabled()) {
+    _backgroundImageView = [[UIImageView alloc] init];
+    _backgroundImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    _backgroundImageView.contentMode = UIViewContentModeScaleAspectFill;
+    [self updateBackgroundImageView];
+    [self.view addSubview:_backgroundImageView];
+    AddSameConstraints(_backgroundImageView, self.view);
+  }
 
   [self registerNotifications];
 
@@ -777,6 +790,12 @@ CGFloat SpaceBetweenModules() {
     [self.headerViewController omniboxDidResignFirstResponder];
     [self shiftTilesDownForOmniboxDefocus];
   }
+}
+
+- (void)setBackgroundImage:(UIImage*)backgroundImage {
+  _backgroundImage = backgroundImage;
+
+  [self updateBackgroundImageView];
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -1582,6 +1601,12 @@ CGFloat SpaceBetweenModules() {
       [self.magicStackCollectionView moduleWidthDidUpdate];
     }
   }
+}
+
+// Updates the background image view's state based on the current data.
+- (void)updateBackgroundImageView {
+  _backgroundImageView.image = _backgroundImage;
+  _backgroundImageView.hidden = !_backgroundImage;
 }
 
 #pragma mark - Helpers

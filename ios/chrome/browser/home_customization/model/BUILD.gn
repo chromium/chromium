@@ -11,6 +11,8 @@ source_set("model") {
     "home_background_customization_service_factory.h",
     "home_background_customization_service_factory.mm",
     "home_background_customization_service_observer.h",
+    "home_background_customization_service_observer_bridge.h",
+    "home_background_customization_service_observer_bridge.mm",
   ]
   deps = [
     "//base",

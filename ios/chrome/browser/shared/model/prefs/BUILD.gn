@@ -46,6 +46,7 @@ source_set("browser_prefs") {
     "//components/gcm_driver",
     "//components/handoff",
     "//components/history/core/common",
+    "//components/image_fetcher/core/cache",
     "//components/invalidation/impl:impl",
     "//components/language/core/browser",
     "//components/lens:enterprise_policy",
