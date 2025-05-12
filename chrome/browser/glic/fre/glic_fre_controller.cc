@@ -134,12 +134,13 @@ void GlicFreController::ShowFreDialogAfterAuthCheck(
   if (!browser) {
     return;
   }
-  source_browser_ = browser.get();
 
   // Close any existing FRE dialog before showing.
   if (IsShowingDialog()) {
     DismissFre();
   }
+
+  source_browser_ = browser.get();
 
   CreateView();
 
