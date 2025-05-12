@@ -235,10 +235,6 @@ export class SettingsSyncAccountControlElement extends
   // trimmed using ellipsis for potentially long texts, whereas fixed
   // information needs to be fully displayed regardless of the length.
   private shouldHideSubtitleWithAccountInfoText_() {
-    if (!loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled')) {
-      return false;
-    }
-
     if (this.hideButtons) {
       // When buttons are hidden, only show basic account information. Avoid
       // showing the full subtitle because it references the buttons.
@@ -265,10 +261,6 @@ export class SettingsSyncAccountControlElement extends
   private getAvatarSubtitleLabel_(
       accountAwareRowSubtitle: string, pendingStateSubtitle: string,
       email: string): string {
-    if (!loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled')) {
-      return '';
-    }
-
     if (this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN) {
       return loadTimeData.substituteString(accountAwareRowSubtitle, email);
     }
@@ -294,18 +286,9 @@ export class SettingsSyncAccountControlElement extends
         accountAwareSigninButtonLabel, givenName);
   }
 
-  private getTurnOnSyncLabel_(peopleSignIn: string, turnOnSync: string):
-      string {
-    return loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') ?
-        turnOnSync :
-        peopleSignIn;
-  }
-
-
   private getProfileImageSrc_(image: string|null, profileAvatarURL: string):
       string {
-    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
-        (this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN)) {
+    if (this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN) {
       return profileAvatarURL;
     }
 
@@ -357,13 +340,11 @@ export class SettingsSyncAccountControlElement extends
       accountName: string, syncErrorLabel: string,
       syncPasswordsOnlyErrorLabel: string, authErrorLabel: string,
       disabledLabel: string, webOnlySignedInAccountRowTitle: string): string {
-    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
-        (this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN)) {
+    if (this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN) {
       return webOnlySignedInAccountRowTitle;
     }
 
-    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
-        this.syncStatus && this.syncStatus.hasError &&
+    if (this.syncStatus && this.syncStatus.hasError &&
         this.syncStatus.statusText) {
       return accountName;
     }
@@ -391,8 +372,7 @@ export class SettingsSyncAccountControlElement extends
    * Determines if the signout button should be hidden.
    */
   private shouldHideSignoutButton_(): boolean {
-    if (this.hideButtons ||
-        !loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled')) {
+    if (this.hideButtons) {
       return true;
     }
 
@@ -423,13 +403,6 @@ export class SettingsSyncAccountControlElement extends
         !this.getPref('signin.allowed_on_next_startup').value;
   }
 
-  private getSignInLabel_(
-      peopleSignIn: string, peopleSignInNoAccountAwareness: string): string {
-    return loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') ?
-        peopleSignInNoAccountAwareness :
-        peopleSignIn;
-  }
-
   /**
    * Determines whether the banner should be hidden, in the case where the user
    * has sync enabled or if the property to hide the banner was explicitly set.
@@ -437,10 +410,6 @@ export class SettingsSyncAccountControlElement extends
   private shouldHideBanner_(): boolean {
     if (this.hideBanner) {
       return true;
-    }
-
-    if (!loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled')) {
-      return !!this.syncStatus && this.isSyncing_();
     }
 
     if (this.syncStatus && this.syncStatus.hasError &&
@@ -467,13 +436,11 @@ export class SettingsSyncAccountControlElement extends
    * the banner was explicitly set.
    */
   private shouldHideSyncButton_(): boolean {
-    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
-        this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN) {
+    if (this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN) {
       return true;
     }
 
-    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
-        this.syncStatus.statusAction !== StatusAction.NO_ACTION) {
+    if (this.syncStatus.statusAction !== StatusAction.NO_ACTION) {
       return true;
     }
 
@@ -489,8 +456,7 @@ export class SettingsSyncAccountControlElement extends
       return false;
     }
 
-    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
-        this.syncStatus.statusAction !== StatusAction.NO_ACTION) {
+    if (this.syncStatus.statusAction !== StatusAction.NO_ACTION) {
       return true;
     }
 
@@ -498,8 +464,7 @@ export class SettingsSyncAccountControlElement extends
   }
 
   private getTurnOffSyncLabel_(turnOffSync: string): string {
-    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
-        this.syncStatus.hasError && this.syncStatus.secondaryButtonActionText &&
+    if (this.syncStatus.hasError && this.syncStatus.secondaryButtonActionText &&
         this.isSyncing_()) {
       return this.syncStatus.secondaryButtonActionText;
     }
@@ -509,15 +474,6 @@ export class SettingsSyncAccountControlElement extends
       return this.syncStatus.secondaryButtonActionText;
     }
     return turnOffSync;
-  }
-
-  private getSigninPausedLabel_(peopleSignOut: string, removeAccount: string):
-      string {
-    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled')) {
-      return removeAccount;
-    }
-
-    return peopleSignOut;
   }
 
   private shouldShowErrorActionButton_(): boolean {
@@ -531,8 +487,7 @@ export class SettingsSyncAccountControlElement extends
       return false;
     }
 
-    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
-        this.syncStatus.statusAction !== StatusAction.NO_ACTION) {
+    if (this.syncStatus.statusAction !== StatusAction.NO_ACTION) {
       return true;
     }
 
@@ -543,7 +498,6 @@ export class SettingsSyncAccountControlElement extends
   private shouldShowAccountAwareSigninButton_(): boolean {
     // Only show the button when user is in sync paused state
     return !this.hideButtons &&
-        loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
         this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN;
   }
 
@@ -563,9 +517,8 @@ export class SettingsSyncAccountControlElement extends
         return true;
       case SignedInState.SIGNED_IN_PAUSED:
       case SignedInState.SYNCING:
-        return false;
       case SignedInState.SIGNED_IN:
-        return !loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled');
+        return false;
     }
 
     assertNotReached('Invalid SignedInState');
@@ -583,23 +536,12 @@ export class SettingsSyncAccountControlElement extends
     if (this.storedAccounts_ === undefined || this.syncStatus === undefined) {
       return false;
     }
-    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
-        this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN) {
+    if (this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN) {
       return true;
     }
 
-    return (this.isSyncing_() || this.storedAccounts_.length > 0) &&
-        this.syncStatus.signedInState !== SignedInState.WEB_ONLY_SIGNED_IN;
+    return (this.isSyncing_() || this.storedAccounts_.length > 0);
   }
-
-  private shouldHideSignoutDropdownButton_(): boolean {
-    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled')) {
-      return true;
-    }
-
-    return !!this.syncStatus.domain;
-  }
-
 
   private onErrorButtonClick_() {
     const router = Router.getInstance();
@@ -615,11 +557,7 @@ export class SettingsSyncAccountControlElement extends
         this.syncBrowserProxy_.startKeyRetrieval();
         break;
       case StatusAction.ENTER_PASSPHRASE:
-        if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled')) {
-          this.syncBrowserProxy_.showSyncPassphraseDialog();
-        } else {
-          router.navigateTo(routes.SYNC);
-        }
+        this.syncBrowserProxy_.showSyncPassphraseDialog();
         break;
       case StatusAction.CONFIRM_SYNC_SETTINGS:
       default:
@@ -666,8 +604,7 @@ export class SettingsSyncAccountControlElement extends
 
   private onTurnOffButtonClick_() {
     /* This will route to people_page's disconnect dialog. */
-    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
-        !this.isSyncing_() &&
+    if (!this.isSyncing_() &&
         this.syncStatus.statusAction !== StatusAction.NO_ACTION) {
       this.onSignoutClick_();
     }

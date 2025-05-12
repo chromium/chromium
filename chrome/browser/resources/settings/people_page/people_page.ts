@@ -309,17 +309,6 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
         this.shadowRoot!.querySelector('#profile-row')!;
   }
 
-  private getSyncAndGoogleServicesSubtext_(): string {
-    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled')) {
-      return '';
-    }
-    if (this.syncStatus && this.syncStatus.hasError &&
-        this.syncStatus.statusText) {
-      return this.syncStatus.statusText;
-    }
-    return '';
-  }
-
   /**
    * Handler for when the profile's icon and name is updated.
    */
