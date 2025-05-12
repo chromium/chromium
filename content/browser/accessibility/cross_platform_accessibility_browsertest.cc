@@ -191,11 +191,6 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
     return nullptr;
   }
 
-  std::string GetAttr(const ui::AXNode* node,
-                      const ax::mojom::StringAttribute attr);
-  int GetIntAttr(const ui::AXNode* node, const ax::mojom::IntAttribute attr);
-  bool GetBoolAttr(const ui::AXNode* node, const ax::mojom::BoolAttribute attr);
-
   void PressTabAndWaitForFocusChange() {
     AccessibilityNotificationWaiter waiter(
         shell()->web_contents(), ui::AXEventGenerator::Event::FOCUS_CHANGED);
@@ -252,48 +247,6 @@ void CrossPlatformAccessibilityBrowserTest::TearDownOnMainThread() {
   accessibility_mode_.reset();
 }
 
-// Convenience method to get the value of a particular AXNode
-// attribute as a UTF-8 string.
-std::string CrossPlatformAccessibilityBrowserTest::GetAttr(
-    const ui::AXNode* node,
-    const ax::mojom::StringAttribute attr) {
-  const ui::AXNodeData& data = node->data();
-  for (size_t i = 0; i < data.string_attributes.size(); ++i) {
-    if (data.string_attributes[i].first == attr) {
-      return data.string_attributes[i].second;
-    }
-  }
-  return std::string();
-}
-
-// Convenience method to get the value of a particular AXNode
-// integer attribute.
-int CrossPlatformAccessibilityBrowserTest::GetIntAttr(
-    const ui::AXNode* node,
-    const ax::mojom::IntAttribute attr) {
-  const ui::AXNodeData& data = node->data();
-  for (size_t i = 0; i < data.int_attributes.size(); ++i) {
-    if (data.int_attributes[i].first == attr) {
-      return data.int_attributes[i].second;
-    }
-  }
-  return -1;
-}
-
-// Convenience method to get the value of a particular AXNode
-// boolean attribute.
-bool CrossPlatformAccessibilityBrowserTest::GetBoolAttr(
-    const ui::AXNode* node,
-    const ax::mojom::BoolAttribute attr) {
-  const ui::AXNodeData& data = node->data();
-  for (size_t i = 0; i < data.bool_attributes.size(); ++i) {
-    if (data.bool_attributes[i].first == attr) {
-      return data.bool_attributes[i].second;
-    }
-  }
-  return false;
-}
-
 namespace {
 
 // Convenience method to find a node by its role value.
@@ -343,31 +296,36 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 
   // Check properties of the root element of the tree.
   EXPECT_EQ("Accessibility Test",
-            GetAttr(root, ax::mojom::StringAttribute::kName));
+            root->GetStringAttribute(ax::mojom::StringAttribute::kName));
   EXPECT_EQ(ax::mojom::Role::kRootWebArea, root->data().role);
 
   // Check properties of the BODY element.
   ASSERT_EQ(1u, root->GetUnignoredChildCount());
   const ui::AXNode* body = root->GetUnignoredChildAtIndex(0);
   EXPECT_EQ(ax::mojom::Role::kGenericContainer, body->data().role);
-  EXPECT_EQ("body", GetAttr(body, ax::mojom::StringAttribute::kHtmlTag));
-  EXPECT_EQ("block", GetAttr(body, ax::mojom::StringAttribute::kDisplay));
+  EXPECT_EQ("body",
+            body->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
+  EXPECT_EQ("block",
+            body->GetStringAttribute(ax::mojom::StringAttribute::kDisplay));
 
   // Check properties of the two children of the BODY element.
   ASSERT_EQ(2u, body->GetUnignoredChildCount());
 
   const ui::AXNode* button = body->GetUnignoredChildAtIndex(0);
   EXPECT_EQ(ax::mojom::Role::kButton, button->data().role);
-  EXPECT_EQ("input", GetAttr(button, ax::mojom::StringAttribute::kHtmlTag));
-  EXPECT_EQ("push", GetAttr(button, ax::mojom::StringAttribute::kName));
+  EXPECT_EQ("input",
+            button->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
+  EXPECT_EQ("push",
+            button->GetStringAttribute(ax::mojom::StringAttribute::kName));
   EXPECT_EQ("inline-block",
-            GetAttr(button, ax::mojom::StringAttribute::kDisplay));
+            button->GetStringAttribute(ax::mojom::StringAttribute::kDisplay));
 
   const ui::AXNode* checkbox = body->GetUnignoredChildAtIndex(1);
   EXPECT_EQ(ax::mojom::Role::kCheckBox, checkbox->data().role);
-  EXPECT_EQ("input", GetAttr(checkbox, ax::mojom::StringAttribute::kHtmlTag));
+  EXPECT_EQ("input",
+            checkbox->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
   EXPECT_EQ("inline-block",
-            GetAttr(checkbox, ax::mojom::StringAttribute::kDisplay));
+            checkbox->GetStringAttribute(ax::mojom::StringAttribute::kDisplay));
 }
 
 // Android's text representation is different, so disable the test there.
@@ -431,10 +389,11 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   ASSERT_EQ(1u, body->GetUnignoredChildCount());
   const ui::AXNode* text = body->GetUnignoredChildAtIndex(0);
   EXPECT_EQ(ax::mojom::Role::kTextField, text->data().role);
-  EXPECT_STREQ("input",
-               GetAttr(text, ax::mojom::StringAttribute::kHtmlTag).c_str());
-  EXPECT_EQ(0, GetIntAttr(text, ax::mojom::IntAttribute::kTextSelStart));
-  EXPECT_EQ(0, GetIntAttr(text, ax::mojom::IntAttribute::kTextSelEnd));
+  EXPECT_STREQ(
+      "input",
+      text->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag).c_str());
+  EXPECT_EQ(0, text->GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart));
+  EXPECT_EQ(0, text->GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd));
   EXPECT_STREQ("Hello, world.", text->GetValueForControl().c_str());
 
   // TODO(dmazzoni): as soon as more accessibility code is cross-platform,
@@ -459,10 +418,11 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   ASSERT_EQ(1u, body->GetUnignoredChildCount());
   const ui::AXNode* text = body->GetUnignoredChildAtIndex(0);
   EXPECT_EQ(ax::mojom::Role::kTextField, text->data().role);
-  EXPECT_STREQ("input",
-               GetAttr(text, ax::mojom::StringAttribute::kHtmlTag).c_str());
-  EXPECT_EQ(0, GetIntAttr(text, ax::mojom::IntAttribute::kTextSelStart));
-  EXPECT_EQ(13, GetIntAttr(text, ax::mojom::IntAttribute::kTextSelEnd));
+  EXPECT_STREQ(
+      "input",
+      text->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag).c_str());
+  EXPECT_EQ(0, text->GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart));
+  EXPECT_EQ(13, text->GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd));
   EXPECT_STREQ("Hello, world.", text->GetValueForControl().c_str());
 }
 
@@ -522,12 +482,14 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 
   const ui::AXNode* button1 = body->GetUnignoredChildAtIndex(0);
   EXPECT_EQ(ax::mojom::Role::kButton, button1->data().role);
-  EXPECT_STREQ("Button 1",
-               GetAttr(button1, ax::mojom::StringAttribute::kName).c_str());
+  EXPECT_STREQ(
+      "Button 1",
+      button1->GetStringAttribute(ax::mojom::StringAttribute::kName).c_str());
 
   const ui::AXNode* iframe = body->GetUnignoredChildAtIndex(1);
-  EXPECT_STREQ("iframe",
-               GetAttr(iframe, ax::mojom::StringAttribute::kHtmlTag).c_str());
+  EXPECT_STREQ(
+      "iframe",
+      iframe->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag).c_str());
 
   // Iframes loaded via the "srcdoc" attribute, (or the now deprecated method of
   // "src=data:text/html,..."), create a new origin context and are thus loaded
@@ -535,7 +497,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   // iframes in Chromium documentation.)
   ASSERT_EQ(0u, iframe->children().size());
   const ui::AXTreeID iframe_tree_id = ui::AXTreeID::FromString(
-      GetAttr(iframe, ax::mojom::StringAttribute::kChildTreeId));
+      iframe->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId));
   const ui::BrowserAccessibilityManager* iframe_manager =
       ui::BrowserAccessibilityManager::FromID(iframe_tree_id);
   ASSERT_NE(nullptr, iframe_manager);
@@ -552,13 +514,15 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 
   const ui::AXNode* button2 = sub_body->GetUnignoredChildAtIndex(0);
   EXPECT_EQ(ax::mojom::Role::kButton, button2->data().role);
-  EXPECT_STREQ("Button 2",
-               GetAttr(button2, ax::mojom::StringAttribute::kName).c_str());
+  EXPECT_STREQ(
+      "Button 2",
+      button2->GetStringAttribute(ax::mojom::StringAttribute::kName).c_str());
 
   const ui::AXNode* button3 = body->GetUnignoredChildAtIndex(2);
   EXPECT_EQ(ax::mojom::Role::kButton, button3->data().role);
-  EXPECT_STREQ("Button 3",
-               GetAttr(button3, ax::mojom::StringAttribute::kName).c_str());
+  EXPECT_STREQ(
+      "Button 3",
+      button3->GetStringAttribute(ax::mojom::StringAttribute::kName).c_str());
 }
 
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
@@ -844,12 +808,12 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   EXPECT_EQ(ax::mojom::Role::kButton, button1->GetRole());
   EXPECT_STREQ(
       "Button 1",
-      GetAttr(button1->node(), ax::mojom::StringAttribute::kName).c_str());
+      button1->GetStringAttribute(ax::mojom::StringAttribute::kName).c_str());
 
   const ui::BrowserAccessibility* iframe = body->PlatformGetChild(1);
   EXPECT_STREQ(
       "iframe",
-      GetAttr(iframe->node(), ax::mojom::StringAttribute::kHtmlTag).c_str());
+      iframe->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag).c_str());
   EXPECT_EQ(1U, iframe->PlatformChildCount());
 
   const ui::BrowserAccessibility* sub_document = iframe->PlatformGetChild(0);
@@ -863,13 +827,13 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   EXPECT_EQ(ax::mojom::Role::kButton, button2->GetRole());
   EXPECT_STREQ(
       "Button 2",
-      GetAttr(button2->node(), ax::mojom::StringAttribute::kName).c_str());
+      button2->GetStringAttribute(ax::mojom::StringAttribute::kName).c_str());
 
   const ui::BrowserAccessibility* button3 = body->PlatformGetChild(2);
   EXPECT_EQ(ax::mojom::Role::kButton, button3->GetRole());
   EXPECT_STREQ(
       "Button 3",
-      GetAttr(button3->node(), ax::mojom::StringAttribute::kName).c_str());
+      button3->GetStringAttribute(ax::mojom::StringAttribute::kName).c_str());
 }
 
 // Android's text representation is different, so disable the test there.
@@ -1610,28 +1574,30 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   it = (*it).PlatformChildrenBegin();
   EXPECT_STREQ(
       "Button 1",
-      GetAttr((*it).node(), ax::mojom::StringAttribute::kName).c_str());
+      (*it).GetStringAttribute(ax::mojom::StringAttribute::kName).c_str());
   ++it;
   EXPECT_STREQ(
       "iframe",
-      GetAttr((*it).node(), ax::mojom::StringAttribute::kHtmlTag).c_str());
+      (*it).GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag).c_str());
   EXPECT_EQ(1U, (*it).PlatformChildCount());
   auto iframe_iterator = (*it).PlatformChildrenBegin();
   EXPECT_EQ(ax::mojom::Role::kRootWebArea, (*iframe_iterator).GetRole());
   iframe_iterator = (*iframe_iterator).PlatformChildrenBegin();
   EXPECT_EQ(ax::mojom::Role::kGenericContainer, (*iframe_iterator).GetRole());
   iframe_iterator = (*iframe_iterator).PlatformChildrenBegin();
-  EXPECT_STREQ("Button 2", GetAttr((*iframe_iterator).node(),
-                                   ax::mojom::StringAttribute::kName)
-                               .c_str());
+  EXPECT_STREQ("Button 2",
+               (*iframe_iterator)
+                   .GetStringAttribute(ax::mojom::StringAttribute::kName)
+                   .c_str());
   ++iframe_iterator;
-  EXPECT_STREQ("Button 3", GetAttr((*iframe_iterator).node(),
-                                   ax::mojom::StringAttribute::kName)
-                               .c_str());
+  EXPECT_STREQ("Button 3",
+               (*iframe_iterator)
+                   .GetStringAttribute(ax::mojom::StringAttribute::kName)
+                   .c_str());
   ++it;
   EXPECT_STREQ(
       "Button 4",
-      GetAttr((*it).node(), ax::mojom::StringAttribute::kName).c_str());
+      (*it).GetStringAttribute(ax::mojom::StringAttribute::kName).c_str());
 }
 
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
@@ -1707,16 +1673,18 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   const ui::AXNode* header5 = row->GetUnignoredChildAtIndex(4);
 
   EXPECT_EQ(static_cast<int>(ax::mojom::SortDirection::kAscending),
-            GetIntAttr(header1, ax::mojom::IntAttribute::kSortDirection));
+            header1->GetIntAttribute(ax::mojom::IntAttribute::kSortDirection));
 
   EXPECT_EQ(static_cast<int>(ax::mojom::SortDirection::kDescending),
-            GetIntAttr(header2, ax::mojom::IntAttribute::kSortDirection));
+            header2->GetIntAttribute(ax::mojom::IntAttribute::kSortDirection));
 
   EXPECT_EQ(static_cast<int>(ax::mojom::SortDirection::kOther),
-            GetIntAttr(header3, ax::mojom::IntAttribute::kSortDirection));
+            header3->GetIntAttribute(ax::mojom::IntAttribute::kSortDirection));
 
-  EXPECT_EQ(-1, GetIntAttr(header4, ax::mojom::IntAttribute::kSortDirection));
-  EXPECT_EQ(-1, GetIntAttr(header5, ax::mojom::IntAttribute::kSortDirection));
+  ASSERT_FALSE(
+      header4->HasIntAttribute(ax::mojom::IntAttribute::kSortDirection));
+  ASSERT_FALSE(
+      header5->HasIntAttribute(ax::mojom::IntAttribute::kSortDirection));
 }
 
 // Fuchsia WebEngine (currently the only content embedder on the platform)
@@ -1934,18 +1902,22 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   const ui::AXNode* input2 = root->GetUnignoredChildAtIndex(1);
 
   EXPECT_EQ(static_cast<int>(ax::mojom::NameFrom::kTitle),
-            GetIntAttr(input1, ax::mojom::IntAttribute::kNameFrom));
-  EXPECT_STREQ("title",
-               GetAttr(input1, ax::mojom::StringAttribute::kName).c_str());
-  EXPECT_STREQ("",
-               GetAttr(input1, ax::mojom::StringAttribute::kTooltip).c_str());
+            input1->GetIntAttribute(ax::mojom::IntAttribute::kNameFrom));
+  EXPECT_STREQ(
+      "title",
+      input1->GetStringAttribute(ax::mojom::StringAttribute::kName).c_str());
+  EXPECT_STREQ(
+      "",
+      input1->GetStringAttribute(ax::mojom::StringAttribute::kTooltip).c_str());
 
   EXPECT_EQ(static_cast<int>(ax::mojom::NameFrom::kRelatedElement),
-            GetIntAttr(input2, ax::mojom::IntAttribute::kNameFrom));
-  EXPECT_STREQ("aria-labelledby",
-               GetAttr(input2, ax::mojom::StringAttribute::kName).c_str());
-  EXPECT_STREQ("title",
-               GetAttr(input2, ax::mojom::StringAttribute::kTooltip).c_str());
+            input2->GetIntAttribute(ax::mojom::IntAttribute::kNameFrom));
+  EXPECT_STREQ(
+      "aria-labelledby",
+      input2->GetStringAttribute(ax::mojom::StringAttribute::kName).c_str());
+  EXPECT_STREQ(
+      "title",
+      input2->GetStringAttribute(ax::mojom::StringAttribute::kTooltip).c_str());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1971,15 +1943,19 @@ IN_PROC_BROWSER_TEST_F(
   using ax::mojom::StringAttribute;
 
   EXPECT_EQ(static_cast<int>(ax::mojom::NameFrom::kPlaceholder),
-            GetIntAttr(input1, ax::mojom::IntAttribute::kNameFrom));
-  EXPECT_STREQ("placeholder", GetAttr(input1, StringAttribute::kName).c_str());
-  EXPECT_STREQ("", GetAttr(input1, StringAttribute::kPlaceholder).c_str());
+            input1->GetIntAttribute(ax::mojom::IntAttribute::kNameFrom));
+  EXPECT_STREQ("placeholder",
+               input1->GetStringAttribute(StringAttribute::kName).c_str());
+  EXPECT_STREQ(
+      "", input1->GetStringAttribute(StringAttribute::kPlaceholder).c_str());
 
   EXPECT_EQ(static_cast<int>(ax::mojom::NameFrom::kAttribute),
-            GetIntAttr(input2, ax::mojom::IntAttribute::kNameFrom));
-  EXPECT_STREQ("label", GetAttr(input2, StringAttribute::kName).c_str());
-  EXPECT_STREQ("placeholder",
-               GetAttr(input2, StringAttribute::kPlaceholder).c_str());
+            input2->GetIntAttribute(ax::mojom::IntAttribute::kNameFrom));
+  EXPECT_STREQ("label",
+               input2->GetStringAttribute(StringAttribute::kName).c_str());
+  EXPECT_STREQ(
+      "placeholder",
+      input2->GetStringAttribute(StringAttribute::kPlaceholder).c_str());
 }
 
 // On Android root scroll offset is handled by the Java layer. The final rect
@@ -2279,19 +2255,19 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest, GeneratedText) {
   EXPECT_EQ(ax::mojom::Role::kStaticText, static1->GetRole());
   EXPECT_STREQ(
       "[ ",
-      GetAttr(static1->node(), ax::mojom::StringAttribute::kName).c_str());
+      static1->GetStringAttribute(ax::mojom::StringAttribute::kName).c_str());
 
   const ui::BrowserAccessibility* static2 = heading->PlatformGetChild(1);
   EXPECT_EQ(ax::mojom::Role::kStaticText, static2->GetRole());
   EXPECT_STREQ(
       "Foo",
-      GetAttr(static2->node(), ax::mojom::StringAttribute::kName).c_str());
+      static2->GetStringAttribute(ax::mojom::StringAttribute::kName).c_str());
 
   const ui::BrowserAccessibility* static3 = heading->PlatformGetChild(2);
   EXPECT_EQ(ax::mojom::Role::kStaticText, static3->GetRole());
   EXPECT_STREQ(
       " ]",
-      GetAttr(static3->node(), ax::mojom::StringAttribute::kName).c_str());
+      static3->GetStringAttribute(ax::mojom::StringAttribute::kName).c_str());
 }
 
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
