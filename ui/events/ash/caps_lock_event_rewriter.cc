@@ -96,11 +96,15 @@ std::unique_ptr<KeyEvent> CapsLockEventRewriter::RewritePressKeyEvent(
     remapped_keys_.insert_or_assign(physical_key, remapped_key);
   }
 
+  // In JPN layouts the CapsLock key is DomKey::ALPHANUMERIC (eisu_toggle).
+  // Allow CapsLock toggling for the Alphanumeric JPN layouts.
+  const bool is_jpn_capslock = remapped_key.key_code == VKEY_CAPITAL &&
+                               remapped_key.key == DomKey::ALPHANUMERIC;
   // When the keyboard rewriter fix is enabled, the `CapsLockEventRewriter`
   // is responsible for toggling CapsLock when CapsLock DomKeys are
   // encountered in the input stream. These can originate from other event
   // rewriters as well as physical CapsLock keys.
-  if (remapped_key.key == DomKey::CAPS_LOCK) {
+  if (remapped_key.key == DomKey::CAPS_LOCK || is_jpn_capslock) {
     if (pressed_modifier_keys_.insert_or_assign(physical_key, EF_MOD3_DOWN)
             .second) {
       ime_keyboard_->SetCapsLockEnabled(!ime_keyboard_->IsCapsLockEnabled());

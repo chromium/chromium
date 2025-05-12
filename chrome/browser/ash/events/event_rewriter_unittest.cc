@@ -371,6 +371,10 @@ using KeyCapsLock = TestKey<ui::DomCode::CAPS_LOCK,
                             ui::DomKey::CAPS_LOCK,
                             ui::VKEY_CAPITAL,
                             ui::EF_MOD3_DOWN>;
+using KeyJpnAlphanumeric = TestKey<ui::DomCode::LAUNCH_ASSISTANT,
+                                   ui::DomKey::ALPHANUMERIC,
+                                   ui::VKEY_CAPITAL,
+                                   ui::EF_MOD3_DOWN>;
 using KeyFunction = TestKey<ui::DomCode::FN,
                             ui::DomKey::FN,
                             ui::VKEY_FUNCTION,
@@ -4865,6 +4869,26 @@ TEST_P(EventRewriterTest, CapsLockRemappingFnBased) {
                           ui::EF_FUNCTION_DOWN | flag));
     EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
   }
+}
+
+TEST_P(EventRewriterTest, CapsLockRemappingFnBasedJpnLayout) {
+  if (!features::IsModifierSplitEnabled()) {
+    GTEST_SKIP() << "Test is only valid with the modifier split flag enabled";
+  }
+
+  SetUpKeyboard(kInternalChromeSplitModifierLayoutKeyboard);
+
+  EXPECT_EQ(KeyCapsLock::Typed(ui::EF_CAPS_LOCK_ON),
+            RunRewriter(
+                KeyJpnAlphanumeric::Typed(ui::EF_NONE, {kPropertyQuickInsert}),
+                ui::EF_FUNCTION_DOWN));
+  EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
+
+  EXPECT_EQ(KeyCapsLock::Typed(),
+            RunRewriter(KeyJpnAlphanumeric::Typed(ui::EF_CAPS_LOCK_ON,
+                                                  {kPropertyQuickInsert}),
+                        ui::EF_FUNCTION_DOWN));
+  EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
 }
 
 TEST_P(EventRewriterTest, FnDiscarded) {
