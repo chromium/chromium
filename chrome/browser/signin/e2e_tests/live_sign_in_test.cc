@@ -172,8 +172,9 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignInAndSignOut) {
       accounts_in_cookie_jar_1.GetPotentiallyInvalidSignedInAccounts()[0];
   EXPECT_TRUE(gaia::AreEmailsSame(test_account->user, account_1.email));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_1.id));
+  // Web signin does not automatically propagate to Chrome.
   EXPECT_FALSE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   std::optional<TestAccountSigninCredentials> test_account_2 =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_2");
@@ -195,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignInAndSignOut) {
   EXPECT_TRUE(gaia::AreEmailsSame(test_account_2->user, account_2.email));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_2.id));
   EXPECT_FALSE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   sign_in_functions.SignOutFromWeb();
 
@@ -319,26 +320,33 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CancelSyncWithWebAccount) {
 // See crbug.com/1025335.
 // Starts the sign in flow from the settings page, enters credentials on the
 // login page but cancels the Sync confirmation dialog. Checks that Sync is
-// disabled and no account was added to Chrome.
+// disabled but the account is still signed in to Chrome.
 IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CancelSync) {
   std::optional<TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
   CHECK(test_account.has_value());
   sign_in_functions.SignInFromSettings(*test_account, 0);
 
-  SignInTestObserver observer(identity_manager(), account_reconcilor());
   EXPECT_TRUE(login_ui_test_utils::CancelSyncConfirmationDialog(
       browser(), kDialogTimeout));
-  observer.WaitForAccountChanges(0, PrimarySyncAccountWait::kWaitForCleared);
+  // The account is still signed in, but not syncing.
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  EXPECT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   const AccountsInCookieJarInfo& accounts_in_cookie_jar =
       identity_manager()->GetAccountsInCookieJar();
   EXPECT_TRUE(accounts_in_cookie_jar.AreAccountsFresh());
-  EXPECT_TRUE(
-      accounts_in_cookie_jar.GetPotentiallyInvalidSignedInAccounts().empty());
-  EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
-  EXPECT_FALSE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  ASSERT_EQ(
+      1u,
+      accounts_in_cookie_jar.GetPotentiallyInvalidSignedInAccounts().size());
+  EXPECT_TRUE(accounts_in_cookie_jar.GetSignedOutAccounts().empty());
+  const gaia::ListedAccount& account =
+      accounts_in_cookie_jar.GetPotentiallyInvalidSignedInAccounts()[0];
+  EXPECT_TRUE(gaia::AreEmailsSame(test_account->user, account.email));
+  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account.id));
+  EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
 }
 
 // This test can pass. Marked as manual because it TIMED_OUT on Win7.
@@ -487,8 +495,8 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
 // This test can pass. Marked as manual because it TIMED_OUT on Win7.
 // See crbug.com/1025335.
 // Enables and disables sync to account 1. Enables sync to account 2 and clicks
-// on "Cancel" in the email confirmation dialog. Checks that the signin flow is
-// canceled and no accounts are added to Chrome.
+// on "Cancel" in the email confirmation dialog. Checks that the account is left
+// signed in without syncing.
 IN_PROC_BROWSER_TEST_F(LiveSignInTest,
                        MANUAL_SyncSecondAccount_CancelOnEmailConfirmation) {
   // Enable and disable sync for the first account.
@@ -509,26 +517,35 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
   EXPECT_EQ(profile_manager->GetNumberOfProfiles(), 1U);
   EXPECT_EQ(chrome::GetTotalBrowserCount(), 1U);
 
-  // Click "Cancel" on the email confirmation dialog and wait for an account to
-  // removed from Chrome.
-  SignInTestObserver observer(identity_manager(), account_reconcilor());
+  // Click "Cancel" on the email confirmation dialog.
   EXPECT_TRUE(login_ui_test_utils::CompleteSigninEmailConfirmationDialog(
       browser(), kDialogTimeout, SigninEmailConfirmationDialog::CLOSE));
-  observer.WaitForAccountChanges(0, PrimarySyncAccountWait::kWaitForCleared);
 
   // Check no profile was created.
   EXPECT_EQ(profile_manager->GetNumberOfProfiles(), 1U);
   EXPECT_EQ(chrome::GetTotalBrowserCount(), 1U);
 
-  // Check Chrome has no accounts.
+  // The account is still signed in, but not syncing.
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  EXPECT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
   const AccountsInCookieJarInfo& accounts_in_cookie_jar =
       identity_manager()->GetAccountsInCookieJar();
   EXPECT_TRUE(accounts_in_cookie_jar.AreAccountsFresh());
-  EXPECT_TRUE(
-      accounts_in_cookie_jar.GetPotentiallyInvalidSignedInAccounts().empty());
-  EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
-  EXPECT_FALSE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  ASSERT_EQ(
+      1u,
+      accounts_in_cookie_jar.GetPotentiallyInvalidSignedInAccounts().size());
+  ASSERT_EQ(1u, accounts_in_cookie_jar.GetSignedOutAccounts().size());
+  EXPECT_TRUE(gaia::AreEmailsSame(
+      test_account_1->user,
+      accounts_in_cookie_jar.GetSignedOutAccounts()[0].email));
+  const gaia::ListedAccount& account =
+      accounts_in_cookie_jar.GetPotentiallyInvalidSignedInAccounts()[0];
+  EXPECT_TRUE(gaia::AreEmailsSame(test_account_2->user, account.email));
+  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account.id));
+  EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(LiveSignInTest,
