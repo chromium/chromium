@@ -21,9 +21,6 @@ class WebContents;
 namespace gfx {
 class Size;
 }  // namespace gfx
-namespace extensions {
-class WebViewGuest;
-}  // namespace extensions
 
 namespace glic {
 class GlicKeyedService;
@@ -79,7 +76,6 @@ class GlicPageHandler : public glic::mojom::PageHandler {
   std::unique_ptr<GlicWebClientHandler> web_client_handler_;
   raw_ptr<content::WebContents> webui_contents_;
   raw_ptr<content::BrowserContext> browser_context_;
-  base::WeakPtr<extensions::WebViewGuest> guest_;
   mojo::Receiver<glic::mojom::PageHandler> receiver_;
   mojo::Remote<glic::mojom::Page> page_;
   mojo::Remote<glic::mojom::WebClient> web_client_;

@@ -217,11 +217,16 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testCreateTabByClickingOnLink() {
     assertTrue(!!this.host.setAudioDucking);
+    // Check that audio ducking still works after clicking a link.
+    this.host.setAudioDucking(true);
     const link = document.createElement('a');
     link.setAttribute('href', 'https://www.chromium.org');
     link.setAttribute('target', '_blank');
     document.body.appendChild(link);
     link.click();
+
+    await this.advanceToNextStep();
+    this.host.setAudioDucking(false);
   }
 
   async testOpenGlicSettingsPage() {
