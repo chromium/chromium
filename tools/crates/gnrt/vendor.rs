@@ -140,7 +140,11 @@ fn download_crates(args: &VendorCommandArgs, paths: &paths::ChromiumPaths) -> Re
             if skip_patches {
                 log::warn!("Skipped applying patches for {}", &crate_dirname);
             } else {
-                apply_patches(p.name(), p.version(), paths)?
+                apply_patches(p.name(), p.version(), paths).context(
+                    "Applying patches failed - hopefully \
+                     `third_party/rust/chromium_crates_io/patches/README.md` \
+                     provides some useful guidance for the next steps...",
+                )?;
             }
         }
     }
