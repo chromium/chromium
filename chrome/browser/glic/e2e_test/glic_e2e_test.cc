@@ -4,6 +4,8 @@
 
 #include "chrome/browser/glic/e2e_test/glic_e2e_test.h"
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -40,15 +42,13 @@
 #include "chrome/browser/glic/e2e_test/internal_test_placeholder_constants.h"  // nogncheck
 #endif
 
-#include <optional>
-
 namespace glic::test {
 
 namespace {
 
 using glic::test::internal::kGlicWindowControllerState;
 
-base::FilePath::StringViewType kRecordingDirectoryPath =
+constexpr base::FilePath::StringViewType kRecordingDirectoryPath =
     FILE_PATH_LITERAL("chrome/browser/glic/e2e_test/internal/wpr_recordings");
 
 const char kGlicE2ETestModeSwitch[] = "glic-e2e-test-mode";
@@ -215,7 +215,7 @@ void GlicE2ETest::MaybeStartWebPageReplayForRecordingPath(
   base::FilePath recording_dir_path =
       base::MakeAbsoluteFilePath(root_path.Append(kRecordingDirectoryPath));
   base::FilePath recording_path = recording_dir_path.Append(
-      base::FilePath::FromUTF8Unsafe((recording_filename)));
+      base::FilePath::FromUTF8Unsafe(recording_filename));
   if (test_mode_ == kReplay) {
     CHECK(base::PathExists(recording_path))
         << recording_filename << " does not exist.";
