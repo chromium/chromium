@@ -587,7 +587,7 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 //
 // See also:
 //   https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p1144r8.html
-//   https://clang.llvm.org/docs/LanguageExtensions.html#:~:text=__is_trivially_relocatable
+//   https://clang.llvm.org/docs/LanguageExtensions.html#:~:text=__builtin_is_cpp_trivially_relocatable
 //
 // Usage:
 // ```
@@ -595,7 +595,11 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 //     // This block will only be executed if type `T` is trivially relocatable.
 //   }
 // ```
-#if HAS_BUILTIN(__is_trivially_relocatable)
+#if HAS_BUILTIN(__builtin_is_cpp_trivially_relocatable)
+#define IS_TRIVIALLY_RELOCATABLE(t) __builtin_is_cpp_trivially_relocatable(t)
+#elif HAS_BUILTIN(__is_trivially_relocatable)
+// TODO(crbug.com/416394845): This is deprecated. Remove once all toolchains
+// have __builtin_is_cpp_trivially_relocatable.
 #define IS_TRIVIALLY_RELOCATABLE(t) __is_trivially_relocatable(t)
 #else
 #define IS_TRIVIALLY_RELOCATABLE(t) false
