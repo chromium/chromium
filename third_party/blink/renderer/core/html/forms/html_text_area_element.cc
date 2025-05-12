@@ -364,6 +364,7 @@ void HTMLTextAreaElement::DefaultEventHandler(Event& event) {
 }
 
 void HTMLTextAreaElement::SubtreeHasChanged() {
+  AdjustPlaceholderBreakElement();
 #if DCHECK_IS_ON()
   // The innerEditor should have either Text nodes or a placeholder break
   // element. If we see other nodes, it's a bug in editing code and we should
@@ -382,7 +383,6 @@ void HTMLTextAreaElement::SubtreeHasChanged() {
     }
   }
 #endif
-  AddPlaceholderBreakElementIfNecessary();
   SetValueBeforeFirstUserEditIfNotSet();
   UpdateValue();
   CheckIfValueWasReverted(Value());

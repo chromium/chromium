@@ -195,7 +195,7 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   virtual void SubtreeHasChanged() = 0;
 
   void SetLastChangeWasNotUserEdit() { last_change_was_user_edit_ = false; }
-  void AddPlaceholderBreakElementIfNecessary();
+  void AdjustPlaceholderBreakElement();
   String ValueWithHardLineBreaks() const;
 
   void CloneNonAttributePropertiesFrom(const Element&,
