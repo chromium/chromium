@@ -229,10 +229,6 @@ Task WorkQueue::TakeTaskFromWorkQueue() {
 }
 
 bool WorkQueue::RemoveCancelledTasks(RemoveCancelledTasksPolicy policy) {
-  if (!work_queue_sets_) {
-    return false;
-  }
-
   // Since task destructors could have a side-effect of deleting this task queue
   // we move cancelled tasks into a temporary container which can be emptied
   // without accessing |this|.
@@ -286,6 +282,7 @@ bool WorkQueue::RemoveCancelledTasks(RemoveCancelledTasksPolicy policy) {
   // If we have a valid |heap_handle_| (i.e. we're not blocked by a fence or
   // disabled) then |work_queue_sets_| needs to be told.
   if (heap_handle_.IsValid()) {
+    CHECK(work_queue_sets_);
     work_queue_sets_->OnQueuesFrontTaskChanged(this);
   }
   task_queue_->TraceQueueSize();
