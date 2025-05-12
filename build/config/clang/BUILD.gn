@@ -6,19 +6,15 @@ import("//build/config/pch.gni")
 import("//build/config/rust.gni")
 import("clang.gni")
 
-declare_args() {
-  # Whether to use Clang runtime libraries from the ChromeOS chroot.
-  # This should be true iff using the compiler from the chroot.
-  use_cros_sysroot_libs =
-      is_chromeos_device && current_toolchain == default_toolchain
-}
-
 if (is_ios) {
   # For `target_environment` and `target_platform`.
   import("//build/config/apple/mobile_config.gni")
 }
 
-if (use_cros_sysroot_libs) {
+_use_cros_sysroot_libs =
+    is_chromeos_device && current_toolchain == default_toolchain
+
+if (_use_cros_sysroot_libs) {
   import("//build/toolchain/cros_toolchain.gni")  # For `cros_target_cc`
 }
 
@@ -151,10 +147,10 @@ group("llvm-symbolizer_data") {
 }
 
 _cros_resource_dir = ""
-if (use_cros_sysroot_libs) {
+if (_use_cros_sysroot_libs) {
   _cros_resource_dir =
       exec_script(rebase_path("../../toolchain/cros/get_resource_dir.py"),
-                  [ rebase_path(cros_target_cc, root_build_dir) ],
+                  [ cros_target_cc ],
                   "trim string",
                   [])
 }
@@ -188,7 +184,7 @@ template("clang_lib") {
         }
       } else if (is_apple) {
         _dir = "darwin"
-      } else if (use_cros_sysroot_libs) {
+      } else if (_use_cros_sysroot_libs) {
         _clang_lib_dir = _cros_resource_dir
         _dir = "lib/linux"
         if (current_cpu == "x64") {
@@ -249,7 +245,7 @@ template("clang_lib") {
       # HACK: using ChromeOS' compiler-rt results in DSOs exporting
       # compiler-rt symbols; figure out why it's (presumably) not using hidden
       # visibility for most symbols.
-      if (use_cros_sysroot_libs) {
+      if (_use_cros_sysroot_libs) {
         ldflags = [ "-Wl,--exclude-libs=$_lib_file" ]
       }
     }
