@@ -1440,6 +1440,7 @@
 <translation id="5672890847723042801">အထောက်အကူပြု ဆော့ဖ်ဝဲလ်များ</translation>
 <translation id="5673434351075758678">သင့်ဆက်တင်များ စင့်ခ်လုပ်ပြီးနောက် "<ph name="FROM_LOCALE" />" မှ "<ph name="TO_LOCALE" />" သို့။</translation>
 <translation id="5675363643668471212">စင်ပစ္စည်း</translation>
+<translation id="5677022547882470786">ရှာမည့်အပိုင်းရွေးရန် ဖိဆွဲပါ (သို့) နေရာခြားခလုတ်နှိပ်ပါ</translation>
 <translation id="5677928146339483299">ပိတ်ဆို့ထား</translation>
 <translation id="5678564054339031017">လာမည့်ယခင်သီတင်းပတ်ကို ပြပါ</translation>
 <translation id="5679050765726761783">ပါဝါနိမ့် ကြားခံကိရိယာ ချိတ်ဆက်ထားသည်</translation>
@@ -1872,7 +1873,7 @@
 <translation id="7061457967428964661">ကင်မရာ အစမ်းကြည့်မှု၊ control + မြားခလုတ်များနှိပ်၍ အစမ်းကြည့်မှုကို အခြားထောင့်များသို့ ရွှေ့ပါ</translation>
 <translation id="7064351585062927183">လာမည့် <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">ဤကွန်ယက်ကို သင့်စီမံခန့်ခွဲသူမှ ပိတ်ခဲ့သည်။</translation>
-<translation id="7067196344162293536">အလိုအလျောက် လှည့်ရန်</translation>
+<translation id="7067196344162293536">အော်တိုလှည့်ရန်</translation>
 <translation id="7068360136237591149">ဖိုင်များ ဖွင့်ပါ</translation>
 <translation id="7076293881109082629">အကောင့်ထံဝင်ရောက်နေသည်</translation>
 <translation id="7076878155205969899">အသံတိတ်ပါ</translation>
@@ -2301,7 +2302,7 @@
 <translation id="8507563469658346379">လူတိုင်း၊ <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">မျက်နှာပြင်အသစ် ပြုလုပ်ရန်</translation>
 <translation id="85123341071060231">သင့် Chromebook ၏ ဘလူးတုသ်ပိတ်ထားသည်။ Chromebook လော့ခ်ဖွင့်ရန် စကားဝှက်ထည့်ပါ။</translation>
-<translation id="8513108775083588393">အော်တို-လှည့်</translation>
+<translation id="8513108775083588393">အော်တိုလှည့်</translation>
 <translation id="851458219935658693">ဝင်းဒိုးများကို လက်ရှိ မျက်နှာပြင်နေရာမှ ပြရန်၊ ရေဒီယိုခလုတ်ကို ရွေးထားသည်</translation>
 <translation id="851660987304951246">အကြောင်းအရာများ အမြန်အနှစ်ချုပ်ရန် (သို့) မေးခွန်းများမေးရန် ‘ကူဖတ်ပေးပါ’ သုံးနိုင်သည်</translation>
 <translation id="8517041960877371778">သင်၏ <ph name="DEVICE_TYPE" /> ကိရိယာမှာ ဖွင့်ထားလျှင် အားသွင်း၍ ရချင်မှရမည်.</translation>
@@ -2433,6 +2434,7 @@
 <translation id="8934418770423095813">Google Doc ပြုလုပ်ရန်</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{ဖိုင် ၁ ဖိုင်}other{ဖိုင် # ဖိုင်}}</translation>
 <translation id="8936501819958976551">ရပ်ထားသည်</translation>
+<translation id="8937312474322077653">ဖန်သားပြင် ပုံဖမ်းခြင်းတွင် <ph name="SOURCE" /> <ph name="TYPE" /> သို့ သတ်မှတ်ပါ။ ရိုက်ကူးမှုအမျိုးအစားရွေးရန် တဘ်ခလုတ်နှိပ်ပါ။ အပိုင်းရွေးရန် နေရာခြားခလုတ်နှိပ်ပါ။ ရိုက်ကူးရန် Enter ခလုတ်နှိပ်ပါ။</translation>
 <translation id="8938800817013097409">USB-C ကိရိယာ (ကျောဘက် ညာ ပို့တ်)</translation>
 <translation id="8939855324412367560">အသံဝင်မည့် ကိရိယာသည် “<ph name="INPUT_DEVICE_NAME" />” ဖြစ်ပြီး အသံထွက်မည့် ကိရိယာသည် “<ph name="OUTPUT_DEVICE_NAME" />” ဖြစ်သည်။ ပြောင်းရန် ဆက်တင်များသို့ သွားပါ။</translation>
 <translation id="8940956008527784070">ဓာတ်ခဲအားနည်း (<ph name="PERCENTAGE" />%)</translation>

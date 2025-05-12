@@ -10,6 +10,7 @@
 <translation id="1807863182207623884">Hồng ngọc</translation>
 <translation id="1921351128855867012">Tua nhanh <ph name="NUMBER_OF_SECONDS" /> giây</translation>
 <translation id="1984328900355667246">Không thể phát</translation>
+<translation id="2019727681730021602">Phát theo cách thông thường</translation>
 <translation id="2224347680315897176">Ổn định</translation>
 <translation id="2611765907167846862">Êm ả</translation>
 <translation id="3023502830214299618">Rất tiếc, hiện không thể phát trang này. Vui lòng thử lại sau.</translation>
@@ -32,6 +33,7 @@
 <translation id="5596627076506792578">Tùy chọn khác</translation>
 <translation id="5694491020339060116">Trình đơn tốc độ phát</translation>
 <translation id="6315170314923504164">Thoại</translation>
+<translation id="6330455646577575965">Phát âm thanh bằng AI</translation>
 <translation id="6343633247422081848">Rêu</translation>
 <translation id="6550675742724504774">Tùy chọn</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -44,7 +46,6 @@
 <translation id="7221920857098237570">Dịu dàng</translation>
 <translation id="7237590978482584900">Nhẹ nhàng</translation>
 <translation id="7282547042039404307">Mượt mà</translation>
-<translation id="7587250070160020374">Chrome đang phát</translation>
 <translation id="8004767876552422827">Cánh đồng</translation>
 <translation id="8136852699834914183">Không thể phát trang này.</translation>
 <translation id="8198036737896977997">Không khí</translation>

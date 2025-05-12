@@ -10,6 +10,7 @@
 <translation id="1807863182207623884">Рубин</translation>
 <translation id="1921351128855867012">Премотај напред <ph name="NUMBER_OF_SECONDS" /> секунди</translation>
 <translation id="1984328900355667246">Репродукцијата е недостапна</translation>
+<translation id="2019727681730021602">Стандардно пуштање</translation>
 <translation id="2224347680315897176">Стабилен</translation>
 <translation id="2611765907167846862">Смирен</translation>
 <translation id="3023502830214299618">За жал, репродукцијата е недостапна за страницава во моментов. Обидете се повторно подоцна.</translation>
@@ -28,9 +29,11 @@
 <translation id="5026371835667036198">Јасен</translation>
 <translation id="5234971936051226002">Плеерот на „Слушајте ја страницава“ е минимизиран.</translation>
 <translation id="5251803541071282808">Облак</translation>
+<translation id="5526614127710223793">Избирач на „Режим на пуштање“</translation>
 <translation id="5596627076506792578">Повеќе опции</translation>
 <translation id="5694491020339060116">Мени за брзина на репродукција</translation>
 <translation id="6315170314923504164">Глас</translation>
+<translation id="6330455646577575965">Пуштање AI-аудио</translation>
 <translation id="6343633247422081848">Мов</translation>
 <translation id="6550675742724504774">Опции</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -43,7 +46,6 @@
 <translation id="7221920857098237570">Нежен</translation>
 <translation id="7237590978482584900">Весел</translation>
 <translation id="7282547042039404307">Мазен</translation>
-<translation id="7587250070160020374">Сега е пуштен Chrome</translation>
 <translation id="8004767876552422827">Поле</translation>
 <translation id="8136852699834914183">Репродукцијата е недостапна за страницава.</translation>
 <translation id="8198036737896977997">Воздух</translation>

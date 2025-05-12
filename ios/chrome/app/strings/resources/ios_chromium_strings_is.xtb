@@ -47,7 +47,6 @@
 <translation id="2042889939382983733">Skoða Chromium-ferilinn þinn</translation>
 <translation id="2052320862053429062">Chromium athugar aðgangsorðin þín reglulega og ber þau saman við lista sem hafa verið birtir á netinu. Meðan á þessu stendur eru aðgangsorðin þín og notandanöfnin dulkóðuð svo enginn geti lesið þau, þ.m.t. Google.</translation>
 <translation id="2059365270911640413">Ljúktu við uppsetningu Chromium</translation>
-<translation id="2147210759439165826">Fylgstu með efni og gagnlegum ábendingum fyrir Chromium.</translation>
 <translation id="2168108852149185974">Einhverjar viðbætur valda því að Chromium hrynur. Fjarlægðu:</translation>
 <translation id="2168593389981132306">Fáðu enn meira út úr Chromium</translation>
 <translation id="2178608107313874732">Chromium getur ekki notað myndavélina sem stendur</translation>
@@ -157,6 +156,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chromium-
 <translation id="4828317641996116749">Chromium gat ekki athugað öll aðgangsorð. Reyndu aftur síðar.</translation>
 <translation id="4856138222358683580">Chromium-aðgerðir</translation>
 <translation id="4904452304169763785">Viðvaranir varðandi öll persónuverndar- eða öryggismál sem Chromium greinir fyrir þig.</translation>
+<translation id="4908570938463711775">Kynntu þér grunnatriði Chromium til að hefjast handa</translation>
 <translation id="4962295957157529683">Ljúktu því sem þú ert að gera í öðrum opnum Chromium-glugga.</translation>
 <translation id="4985291216379576555">Ótengt, Chromium getur ekki leitað að uppfærslum.</translation>
 <translation id="4996471330284142407">Komdu meiru í verk með einfaldari, öruggari og hraðari Chromium.</translation>
@@ -197,6 +197,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chromium-
 <translation id="5688047395118852662">Þetta spjald sýnir þér tillögur um hvernig þú getur nýtt þér Chromium til fulls.</translation>
 <translation id="5700709190537129682">Chromium getur ekki athugað aðgangsorðin þín</translation>
 <translation id="584550191241316896">Innskráning í Chromium virk</translation>
+<translation id="5862307444128926510">Velkomin(n) í Chromium</translation>
 <translation id="5889847953983052353">Þegar kveikt er á þessu:
 <ph name="BEGIN_INDENT" />  • Hjálpaðu til við að bæta Chromium fyrir fólk sem notar það eins og þú.<ph name="END_INDENT" />
 
@@ -223,6 +224,7 @@ Hafðu í huga:
 <translation id="6301717043141881464">Veldu Chromium fyrir sjálfvirka útfyllingu til að fá aðgang að vistuðum aðgangsorðum í öðrum forritum á einfaldan hátt</translation>
 <translation id="6324041800010509197">Opna flipayfirlit í Chromium</translation>
 <translation id="6325378625795868881">Notaðu Chromium þegar þú ýtir á tengla í skilaboðum og öðrum forritum.</translation>
+<translation id="6387994184698195448">Fáðu gagnlegar ábendingar frá Chromium og fleira til að vera með á nótunum.</translation>
 <translation id="6424492062988593837">Chromium er nú enn betra! Ný útgáfa er í boði.</translation>
 <translation id="6433172051771630690">Ráð um að fá sem mest út úr Chromium.</translation>
 <translation id="65045991564554105">Sjá bókamerki í Chromium</translation>
@@ -317,6 +319,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="8860548555286245440">Opnaðu vefslóðir í Chromium í huliðsstillingu</translation>
 <translation id="8880024619507699923">Fyrirtækið þitt krefst þess að þú skráir þig inn til að nota Chromium. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Fáðu hámarksöryggi Chromium</translation>
+<translation id="8925569192291721236">Fáðu tilkynningar um verðrakningu og ábendingar frá Chromium til að vera með á nótunum.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Þetta gerist þegar Chromium er ekki í notkun í {THRESHOLD} mín.}one{Þetta gerist þegar Chromium er ekki í notkun í {THRESHOLD} mín.}other{Þetta gerist þegar Chromium er ekki í notkun í {THRESHOLD} mín.}}</translation>
 <translation id="8963279154877372067">Leyfa Chromium-tilkynningar til að fá tilkynningar um verðlækkanir</translation>
 <translation id="8975812008711371178">Leita með röddinni í Chromium</translation>

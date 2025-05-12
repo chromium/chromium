@@ -1440,6 +1440,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="5672890847723042801">Utilitare</translation>
 <translation id="5673434351075758678">Din „<ph name="FROM_LOCALE" />” în „<ph name="TO_LOCALE" />” după sincronizarea setărilor.</translation>
 <translation id="5675363643668471212">Elementul din raft</translation>
+<translation id="5677022547882470786">Trage sau apasă pe tasta de spațiu pentru a selecta o zonă pentru căutare</translation>
 <translation id="5677928146339483299">Blocat</translation>
 <translation id="5678564054339031017">Afișează săptămâna următoare</translation>
 <translation id="5679050765726761783">A fost conectat un adaptor de curent de putere joasă</translation>
@@ -2432,6 +2433,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8934418770423095813">Creează un document Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{Un fișier}few{# fișiere}other{# de fișiere}}</translation>
 <translation id="8936501819958976551">dezactivată</translation>
+<translation id="8937312474322077653">În captura de ecran, setează la <ph name="SOURCE" /> <ph name="TYPE" />. Apasă pe Tab pentru a alege tipul de captură. Apasă pe tasta de spațiu pentru a selecta regiunea. Apasă pe Enter pentru a captura.</translation>
 <translation id="8938800817013097409">Dispozitiv USB-C (portul din dreapta în spate)</translation>
 <translation id="8939855324412367560">Intrarea audio provine de la <ph name="INPUT_DEVICE_NAME" />, iar conținutul se redă pe <ph name="OUTPUT_DEVICE_NAME" />. Accesează Setările pentru a le modifica.</translation>
 <translation id="8940956008527784070">Baterie slabă (<ph name="PERCENTAGE" /> %)</translation>

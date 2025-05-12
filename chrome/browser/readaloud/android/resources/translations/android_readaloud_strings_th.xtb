@@ -10,6 +10,7 @@
 <translation id="1807863182207623884">ทับทิม</translation>
 <translation id="1921351128855867012">กรอไปข้างหน้า <ph name="NUMBER_OF_SECONDS" /> วินาที</translation>
 <translation id="1984328900355667246">เล่นเสียงไม่ได้</translation>
+<translation id="2019727681730021602">การเล่นมาตรฐาน</translation>
 <translation id="2224347680315897176">คงที่</translation>
 <translation id="2611765907167846862">เรียบๆ</translation>
 <translation id="3023502830214299618">ขออภัย ไม่สามารถเล่นเสียงสำหรับหน้านี้ได้ในขณะนี้ โปรดลองอีกครั้งภายหลัง</translation>
@@ -32,6 +33,7 @@
 <translation id="5596627076506792578">ตัวเลือกเพิ่มเติม</translation>
 <translation id="5694491020339060116">เมนูความเร็วในการเล่น</translation>
 <translation id="6315170314923504164">เสียง</translation>
+<translation id="6330455646577575965">การเล่นเสียง AI</translation>
 <translation id="6343633247422081848">มอส</translation>
 <translation id="6550675742724504774">ตัวเลือก</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -44,7 +46,6 @@
 <translation id="7221920857098237570">อ่อนโยน</translation>
 <translation id="7237590978482584900">สดชื่น</translation>
 <translation id="7282547042039404307">ราบรื่น</translation>
-<translation id="7587250070160020374">กําลังเล่น Chrome</translation>
 <translation id="8004767876552422827">ทุ่งหญ้า</translation>
 <translation id="8136852699834914183">การเล่นไม่พร้อมใช้งานสำหรับหน้านี้</translation>
 <translation id="8198036737896977997">ลม</translation>

@@ -1440,6 +1440,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="5672890847723042801">Utilitas</translation>
 <translation id="5673434351075758678">Dari "<ph name="FROM_LOCALE" />" ke "<ph name="TO_LOCALE" />" setelah menyinkronkan setelan Anda.</translation>
 <translation id="5675363643668471212">Item rak</translation>
+<translation id="5677022547882470786">Tarik atau tekan Spasi untuk memilih area yang akan ditelusuri</translation>
 <translation id="5677928146339483299">Diblokir</translation>
 <translation id="5678564054339031017">Tampilkan minggu berikutnya</translation>
 <translation id="5679050765726761783">Adaptor daya rendah terhubung</translation>
@@ -2432,6 +2433,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="8934418770423095813">Buat Dokumen Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 file}other{# file}}</translation>
 <translation id="8936501819958976551">dinonaktifkan</translation>
+<translation id="8937312474322077653">Di screenshot, setel ke <ph name="TYPE" /> <ph name="SOURCE" />. Tekan tab untuk memilih jenis pengambilan screenshot. Tekan spasi untuk memilih wilayah. Tekan enter untuk mengambil screenshot.</translation>
 <translation id="8938800817013097409">Perangkat USB-C (port belakang sebelah kanan)</translation>
 <translation id="8939855324412367560">Audio input adalah "<ph name="INPUT_DEVICE_NAME" />" dan audio output adalah "<ph name="OUTPUT_DEVICE_NAME" />". Buka Setelan untuk mengubah.</translation>
 <translation id="8940956008527784070">Baterai lemah (<ph name="PERCENTAGE" />%)</translation>

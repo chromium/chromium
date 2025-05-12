@@ -1441,6 +1441,7 @@
 <translation id="5672890847723042801">ਉਪਯੋਗਤਾਵਾਂ</translation>
 <translation id="5673434351075758678">ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਸਿੰਕ ਕਰਨ ਤੋਂ ਬਾਅਦ ਭਾਸ਼ਾ "<ph name="FROM_LOCALE" />" ਤੋਂ "<ph name="TO_LOCALE" />" ਹੋਈ।</translation>
 <translation id="5675363643668471212">ਸ਼ੈਲਫ ਆਈਟਮ</translation>
+<translation id="5677022547882470786">ਖੋਜਣ ਵਾਲਾ ਖੇਤਰ ਚੁਣਨ ਲਈ ਘਸੀਟੋ ਜਾਂ Space ਦਬਾਓ</translation>
 <translation id="5677928146339483299">ਬਲੌਕ ਕੀਤਾ</translation>
 <translation id="5678564054339031017">ਅਗਲਾ ਹਫ਼ਤਾ ਦਿਖਾਓ</translation>
 <translation id="5679050765726761783">ਘੱਟ-ਪਾਵਰ ਦਾ ਅਡਾਪਟਰ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
@@ -2433,6 +2434,7 @@
 <translation id="8934418770423095813">Google ਡੌਕ ਬਣਾਓ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ਫ਼ਾਈਲ}one{# ਫ਼ਾਈਲ}other{# ਫ਼ਾਈਲਾਂ}}</translation>
 <translation id="8936501819958976551">ਅਕਿਰਿਆਸ਼ੀਲ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="8937312474322077653">ਸਕ੍ਰੀਨ ਕੈਪਚਰ ਵਿੱਚ, <ph name="SOURCE" /> <ph name="TYPE" /> 'ਤੇ ਸੈੱਟ ਕਰੋ। ਕੈਪਚਰ ਦੀ ਕਿਸਮ ਚੁਣਨ ਲਈ Tab ਦਬਾਓ। ਖੇਤਰ ਚੁਣਨ ਲਈ Space ਦਬਾਓ। ਕੈਪਚਰ ਕਰਨ ਲਈ Enter ਦਬਾਓ।</translation>
 <translation id="8938800817013097409">USB-C ਡੀਵਾਈਸ (ਪਿੱਛੇ ਸੱਜਾ ਪੋਰਟ)</translation>
 <translation id="8939855324412367560">ਇਨਪੁੱਟ ਆਡੀਓ "<ph name="INPUT_DEVICE_NAME" />" ਹੈ ਅਤੇ ਆਊਟਪੁੱਟ ਆਡੀਓ "<ph name="OUTPUT_DEVICE_NAME" />" ਹੈ। ਤਬਦੀਲੀ ਕਰਨ ਲਈ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।</translation>
 <translation id="8940956008527784070">ਬੈਟਰੀ ਘੱਟ (<ph name="PERCENTAGE" />%)</translation>

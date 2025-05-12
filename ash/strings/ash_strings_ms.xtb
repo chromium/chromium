@@ -1440,6 +1440,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="5672890847723042801">Utiliti</translation>
 <translation id="5673434351075758678">Daripada "<ph name="FROM_LOCALE" />" kepada "<ph name="TO_LOCALE" />" selepas menyegerakkan tetapan anda.</translation>
 <translation id="5675363643668471212">Item rak</translation>
+<translation id="5677022547882470786">Seret atau tekan Ruang untuk memilih kawasan untuk membuat carian</translation>
 <translation id="5677928146339483299">Disekat</translation>
 <translation id="5678564054339031017">Tunjukkan minggu depan</translation>
 <translation id="5679050765726761783">Penyesuai kuasa rendah disambungkan</translation>
@@ -2432,6 +2433,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8934418770423095813">Buat Dokumen Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fail}other{# fail}}</translation>
 <translation id="8936501819958976551">dinyahaktifkan</translation>
+<translation id="8937312474322077653">Dalam tangkapan skrin, tetapkan kepada <ph name="SOURCE" /> <ph name="TYPE" />. Tekan tab untuk memilih jenis tangkapan. Tekan ruang untuk memilih rantau. Tekan enter untuk menangkap.</translation>
 <translation id="8938800817013097409">Peranti USB-C (port kanan di belakang)</translation>
 <translation id="8939855324412367560">Audio input ialah "<ph name="INPUT_DEVICE_NAME" />" dan audio output ialah "<ph name="OUTPUT_DEVICE_NAME" />". Akses Tetapan untuk membuat perubahan.</translation>
 <translation id="8940956008527784070">Bateri lemah (<ph name="PERCENTAGE" />%)</translation>

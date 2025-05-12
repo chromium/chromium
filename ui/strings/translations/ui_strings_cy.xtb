@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{Mae 1 Hysbysiad sydd heb ei Ddarllen}zero{Mae # Hysbysiad sydd heb eu Darllen}two{Mae # Hysbysiad sydd heb eu Darllen}few{Mae # Hysbysiad sydd heb eu Darllen}many{Mae # Hysbysiad sydd heb eu Darllen}other{Mae # Hysbysiad sydd heb eu Darllen}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Trowch yr estyniad canlynol ymlaen yn y modd Anhysbys:}zero{Trowch yr estyniadau canlynol ymlaen yn y modd Anhysbys:}two{Trowch yr estyniadau canlynol ymlaen yn y modd Anhysbys:}few{Trowch yr estyniadau canlynol ymlaen yn y modd Anhysbys:}many{Trowch yr estyniadau canlynol ymlaen yn y modd Anhysbys:}other{Trowch yr estyniadau canlynol ymlaen yn y modd Anhysbys:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 mis yn ôl}zero{# mis yn ôl}two{# fis yn ôl}few{# mis yn ôl}many{# mis yn ôl}other{# mis yn ôl}}</translation>
+<translation id="4277033906326892359">Mae'r golofn <ph name="COLUMN_NAME" /> wedi'i threfnu mewn trefn esgynnol</translation>
 <translation id="4289300219472526559">Dechrau Siarad</translation>
 <translation id="4289540628985791613">Trosolwg</translation>
 <translation id="4491109536499578614">Llun</translation>
@@ -171,6 +172,7 @@
 <translation id="654149438358937226">Rhwystro pob hysbysiad</translation>
 <translation id="6620110761915583480">Cadw'r Ffeil</translation>
 <translation id="6699343763173986273">Trac Cyfryngau Nesaf</translation>
+<translation id="6807086321996342431">Colofn <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">Stopio Cyfryngau</translation>
 <translation id="6845383723252244143">Dewiswch Ffolder</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 awr ar ôl}zero{# awr ar ôl}two{# awr ar ôl}few{# awr ar ôl}many{# awr ar ôl}other{# awr ar ôl}}</translation>
@@ -202,11 +204,11 @@
 <translation id="7969046989155602842">Command</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Mae mwy nag 1 hysbysiad sydd heb eu darllen}zero{Mae mwy na # hysbysiad sydd heb eu darllen}two{Mae mwy na # hysbysiad sydd heb eu darllen}few{Mae mwy na # hysbysiad sydd heb eu darllen}many{Mae mwy na # hysbysiad sydd heb eu darllen}other{Mae mwy na # hysbysiad sydd heb eu darllen}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{mewn 1m}zero{mewn #m}two{mewn #f}few{mewn #m}many{mewn #m}other{mewn #m}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Rhif o <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 awr yn ôl}zero{# awr yn ôl}two{# awr yn ôl}few{# awr yn ôl}many{# awr yn ôl}other{# awr yn ôl}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 eiliad ar ôl}zero{# eiliad ar ôl}two{# eiliad ar ôl}few{# eiliad ar ôl}many{# eiliad ar ôl}other{# eiliad ar ôl}}</translation>
 <translation id="8134065097954893699">Wrthi'n ail-lwytho'r dudalen hon</translation>
+<translation id="813785873406874127">Ni threfnwyd y golofn <ph name="COLUMN_NAME" /></translation>
 <translation id="815598010540052116">Sgrolio i Lawr</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Page Down</translation>
@@ -218,6 +220,7 @@
 <translation id="8393700583063109961">Anfon neges</translation>
 <translation id="8394908167088220973">Chwarae/Seibio Cyfryngau</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1f}zero{#b}two{#f}few{#b}many{#b}other{#b}}</translation>
+<translation id="8582972250170726813">Mae'r golofn <ph name="COLUMN_NAME" /> wedi'i threfnu mewn trefn ddisgynnol</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623">Ffeil <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> kB/e</translation>

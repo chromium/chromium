@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 непрочитане сповіщення}one{# непрочитане сповіщення}few{# непрочитані сповіщення}many{# непрочитаних сповіщень}other{# непрочитаного сповіщення}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Увімкніть наведене нижче розширення в анонімному режимі.}one{Увімкніть наведені нижче розширення в анонімному режимі.}few{Увімкніть наведені нижче розширення в анонімному режимі.}many{Увімкніть наведені нижче розширення в анонімному режимі.}other{Увімкніть наведені нижче розширення в анонімному режимі.}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 місяць тому}one{# місяць тому}few{# місяці тому}many{# місяців тому}other{# місяця тому}}</translation>
+<translation id="4277033906326892359">Стовпець "<ph name="COLUMN_NAME" />" відсортовано в порядку зростання</translation>
 <translation id="4289300219472526559">Start Speaking</translation>
 <translation id="4289540628985791613">Огляд</translation>
 <translation id="4491109536499578614">Зображення</translation>
@@ -171,6 +172,7 @@
 <translation id="654149438358937226">Блокувати всі сповіщення</translation>
 <translation id="6620110761915583480">Зберегти файл</translation>
 <translation id="6699343763173986273">Наступна композиція</translation>
+<translation id="6807086321996342431">Стовпець "<ph name="COLUMN_NAME" />"</translation>
 <translation id="6808150112686056157">Зупинити</translation>
 <translation id="6845383723252244143">Вибір папки</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{Залишилась 1 година}one{Залишилася # година}few{Залишилося # години}many{Залишилося # годин}other{Залишилося # години}}</translation>
@@ -202,11 +204,11 @@
 <translation id="7969046989155602842">Клавіша Command</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Понад 1 непрочитане сповіщення}one{Понад # непрочитане сповіщення}few{Понад # непрочитані сповіщення}many{Понад # непрочитаних сповіщень}other{Понад # непрочитаного сповіщення}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{через 1 хв}one{через # хв}few{через # хв}many{через # хв}other{через # хв}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" /> + <ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Номер із сайту <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 годину тому}one{# годину тому}few{# години тому}many{# годин тому}other{# години тому}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{Залишилась 1 с}one{Залишилася # с}few{Залишилося # с}many{Залишилося # с}other{Залишилося # с}}</translation>
 <translation id="8134065097954893699">Оновити цю сторінку</translation>
+<translation id="813785873406874127">Стовпець "<ph name="COLUMN_NAME" />" не відсортовано</translation>
 <translation id="815598010540052116">Прокрутка вниз</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Сторінка вниз</translation>
@@ -218,6 +220,7 @@
 <translation id="8393700583063109961">Надіслати повідомлення</translation>
 <translation id="8394908167088220973">Відтворити чи призупинити</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 р.}one{# р.}few{# р.}many{# р.}other{# р.}}</translation>
+<translation id="8582972250170726813">Стовпець "<ph name="COLUMN_NAME" />" відсортовано в порядку спадання</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623">файл <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> КБ/сек.</translation>

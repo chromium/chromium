@@ -47,7 +47,6 @@
 <translation id="2042889939382983733">Переглянути історію Chromium</translation>
 <translation id="2052320862053429062">Chromium періодично зіставляє ваші паролі зі списками, які були опубліковані онлайн. Під час цього ваші паролі й імена користувачів шифруються, тож їх ніхто не може прочитати, навіть Google.</translation>
 <translation id="2059365270911640413">Завершіть налаштування Chromium</translation>
-<translation id="2147210759439165826">Стежте за контентом і корисними порадами щодо Chromium.</translation>
 <translation id="2168108852149185974">Через деякі доповнення Chromium аварійно завершує роботу. Видаліть:</translation>
 <translation id="2168593389981132306">Покращте Chromium</translation>
 <translation id="2178608107313874732">Зараз Chromium не може використовувати камеру</translation>
@@ -157,6 +156,7 @@
 <translation id="4828317641996116749">Chromium не вдалося перевірити всі паролі. Повторіть спробу пізніше.</translation>
 <translation id="4856138222358683580">Дії в Chromium</translation>
 <translation id="4904452304169763785">Отримувати сповіщення про будь-які проблеми з конфіденційністю чи безпекою, які виявляє Chromium.</translation>
+<translation id="4908570938463711775">Дізнайтеся про основні функції Chromium, щоб почати роботу</translation>
 <translation id="4962295957157529683">Завершіть те, що ви робили в іншому відкритому вікні Chromium.</translation>
 <translation id="4985291216379576555">Офлайн, Chromium не може перевірити наявність оновлень</translation>
 <translation id="4996471330284142407">Більше можливостей у простому, безпечному та швидкому веб-переглядачі Chromium.</translation>
@@ -197,6 +197,7 @@
 <translation id="5688047395118852662">Ця картка містить рекомендації щодо того, як користуватися всіма можливостями Chromium.</translation>
 <translation id="5700709190537129682">Chromium не може перевірити паролі</translation>
 <translation id="584550191241316896">Ви ввійшли в Chromium</translation>
+<translation id="5862307444128926510">Вітаємо в Chromium</translation>
 <translation id="5889847953983052353">Якщо правило ввімкнено
 <ph name="BEGIN_INDENT" /> • Ви допомагаєте покращувати Chromium для інших користувачів.<ph name="END_INDENT" />
 
@@ -223,6 +224,7 @@
 <translation id="6301717043141881464">Щоб легко використовувати збережені паролі в інших додатках, увімкніть функцію автозаповнення в Chromium</translation>
 <translation id="6324041800010509197">Відкрити сітку вкладок у Chromium</translation>
 <translation id="6325378625795868881">Відкривайте посилання з повідомлень і інших додатків за допомогою Chromium.</translation>
+<translation id="6387994184698195448">Отримуйте поради щодо Chromium і іншу корисну інформацію.</translation>
 <translation id="6424492062988593837">Chromium став ще кращим! Доступна нова версія.</translation>
 <translation id="6433172051771630690">Поради з ефективного використання Chromium.</translation>
 <translation id="65045991564554105">Переглянути закладки в Chromium</translation>
@@ -317,6 +319,7 @@
 <translation id="8860548555286245440">Відкривати URL-адреси в Chromium в анонімному режимі</translation>
 <translation id="8880024619507699923">За вимогами вашої організації, ви повинні ввійти в обліковий запис, щоб використовувати Chromium. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Отримайте найвищий рівень безпеки в Chromium</translation>
+<translation id="8925569192291721236">Отримуйте оновлення про відстежувані ціни й поради щодо Chromium.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Таке трапляється, коли Chromium не використовується протягом {THRESHOLD} хвилини}one{Таке трапляється, коли Chromium не використовується протягом {THRESHOLD} хвилини}few{Таке трапляється, коли Chromium не використовується протягом {THRESHOLD} хвилин}many{Таке трапляється, коли Chromium не використовується протягом {THRESHOLD} хвилин}other{Таке трапляється, коли Chromium не використовується протягом {THRESHOLD} хвилини}}</translation>
 <translation id="8963279154877372067">Дозвольте сповіщення Chromium, щоб отримувати повідомлення про зниження цін</translation>
 <translation id="8975812008711371178">Шукати за допомогою голосу в Chromium</translation>

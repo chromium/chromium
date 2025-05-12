@@ -20,6 +20,7 @@
 <translation id="1059913517121127803">Ezin izan da hasi eskaneatzen</translation>
 <translation id="1061864016440983342">Erabili kokapenik gabe</translation>
 <translation id="1062823486781306604"><ph name="COUNT" /> elementutatik <ph name="INDEX" />garrena, <ph name="NAME" />.</translation>
+<translation id="106558928761833284">nebulosa kosmikoz betetako galaxia eder bat, espazio-ontzi futurista bizkor batekin, tonu urdin, arrosa eta moreetan</translation>
 <translation id="1069150558259542054">Txertatze bizkorra ezin da erabili lasterbide pertsonalizatuetarako.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">suebakia hauteman da</translation>
@@ -27,6 +28,7 @@
 <translation id="1082009148392559545">Pantaila-babeslea deskargatzen</translation>
 <translation id="1094693127011229778">IP helbidea ez dago erabilgarri</translation>
 <translation id="1100902271996134409">Irudiak sortzen…</translation>
+<translation id="1102946598597843031">laku baten gainean dagoen ilargiaren argazkia, gereziondo-lorearen petaloak erortzen ari direla, 4k</translation>
 <translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> audioa</translation>
 <translation id="1116694919640316211">Honi buruz</translation>
 <translation id="1118572504348554005">Salatzen dituzun akatsak eta bestelako arazoak konpontzeko, baliteke inprimaki honen bidez bidalitako oharrak gure bazkideekin partekatzea. Ez eman kontuzko informaziorik, hala nola pasahitzak.</translation>
@@ -67,6 +69,7 @@
 <translation id="1238163879850290856">Berrezarri hau besteei datuak atzitzea galarazteko. Erabili idazketa-metodo fidagarriak soilik.</translation>
 <translation id="1238612778414822719">HTTPS eskaeren latentzia</translation>
 <translation id="1252766349417594414">Joko-palanka</translation>
+<translation id="1261045951892393759">katu bat V formako gitarra bat jotzen adarbakar baten gainean dagoela eta atzeko planoan tximista bat duela</translation>
 <translation id="1270369111467284986">Sare-zerbitzuaren ataria dirudi</translation>
 <translation id="1274654146705270731">laranjak</translation>
 <translation id="1275718070701477396">Hautatua</translation>
@@ -177,7 +180,7 @@
 <translation id="1668469839109562275">VPN integratua</translation>
 <translation id="1669047024429367828">Ikusgaitasuna</translation>
 <translation id="1670478569471758522">Informazio gehiago zure hautapenari buruz</translation>
-<translation id="1672499492233627739">Web-kameraren bideo-jarioa</translation>
+<translation id="1672499492233627739">Webcamaren bideo-jarioa</translation>
 <translation id="1676557873873341166">Bideoa grabatzen</translation>
 <translation id="1684279041537802716">Nabarmentzeko kolorea</translation>
 <translation id="1697278726914783200">Grabatu</translation>
@@ -273,6 +276,7 @@
 <translation id="2045814230297767491">mahai-tresnak</translation>
 <translation id="2047316797244836561">Konektatu sare batera eta kargatu berriro orria pantaila-babeslea ikusteko.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
+<translation id="2068472557797646626">Kromozko esferen eta forma esferikoen 3D-ko errendatzea, kromozko elementu arkitektonikoen atzeko planoaren aurrean. Konposizioa publizitaterako, marka baterako edo aurkezpen baterako kontzeptu minimalista modernoa da eta testua gehitzeko tokia du. Arku handi bat dago atzeko plano abstraktu baten aurrean, estilo minimalistan. Estudioko argiztapena. Lehen planoa.</translation>
 <translation id="2073232437457681324">Ozeano zabal</translation>
 <translation id="2080070583977670716">Ezarpen gehiago</translation>
 <translation id="2082932131694554252">Esleitutako teklatuko tekla</translation>
@@ -390,7 +394,6 @@
 <translation id="2584559707064218956">Konfiguratzeko, joan Ezarpenak atalera</translation>
 <translation id="2586146417912237930">urdina eta anila</translation>
 <translation id="2589921777872778654">Editatu eta ezabatzeko menua</translation>
-<translation id="2590424100019931043">Ikasgela honetatik kendu zaituzte</translation>
 <translation id="2597774443162333062">Google-ra bidaliko dira fitxategiak, bertan araztu ahal izateko</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Amaitu da eskaneatzen. 1 orri eskaneatu da.}other{Amaitu da eskaneatzen. {NUMBER_OF_PAGES} orri eskaneatu dira.}}</translation>
 <translation id="261322795497077164">Hizlarien identifikazioa</translation>
@@ -430,6 +433,7 @@
 <translation id="2805756323405976993">Aplikazioak</translation>
 <translation id="28232023175184696">Ezin da konektatu Internetera. Berriro saiatzeko, sakatu hau.</translation>
 <translation id="2855718259207180827">artilea</translation>
+<translation id="2856429654176718363">Espazio-ontzi erraldoi bat askotariko argiak dituen hiri baten gainean flotatzen. Eszena osoak olio-pinturaren estiloa du, eta tonu ilunak. Giro misteriotsua sortzen du, zientzia-fikziozko elementu futuristekin. Artelan hau C4D softwarea eta OC errendatzailea erabilita sortu da bereizmen handia eta xehetasun ugariak nabarmentzeko. Halaber, hiriko eraikin batzuk gertu daude, eremu-sakoneraren efektua gehituz. Eszena olio-pintura baten estiloan dago errendatuta; tonu ilunak ditu eta giro misteriotsu bat sortzen du zientzia-fikziozko elementu futuristekin.</translation>
 <translation id="2859243502336719778">Eguneratze garrantzitsua</translation>
 <translation id="2860473693272905224">Jarri beste orri bat eskanerrean</translation>
 <translation id="286265581261662583">Egin klik eskuineko botoiarekin edo eduki sakatuta definizioak, itzulpenak edo unitate-bihurketak lortzeko</translation>
@@ -446,9 +450,11 @@
 <translation id="2895772081848316509">ilun</translation>
 <translation id="2915996080311180594">Berrabiarazi geroago</translation>
 <translation id="2926057806159140518">Idatzi erabiltzaile-izena eta pasahitza, edo eskaneatu QR kodea</translation>
+<translation id="2927007463545347013">anime estiloko bide bat ozeanoaren aurrean, gereziondo-lorearen petaloak erortzen ari direla</translation>
 <translation id="2940811910881150316">Ezin da probatu gailua. Probak egiteko, ireki berriro estalkia.</translation>
 <translation id="2941112035454246133">Txikia</translation>
 <translation id="2956070106555335453">Laburpena</translation>
+<translation id="2968959705684615497">tigre zuri surrealista bat, urre-koloreko begi eta marrekin, harea zuriko duna batean eserita</translation>
 <translation id="299385721391037602">arrosa eta hori</translation>
 <translation id="3008341117444806826">FRESKATU</translation>
 <translation id="3009958530611748826">Hautatu zer karpetatan gorde nahi duzun</translation>
@@ -518,6 +524,7 @@
 <translation id="3321030238473337787">Erreprodukzio-abiadura</translation>
 <translation id="3327613592010997943">Egun honetan erabili ahalko duzu berriro gailua: <ph name="DAY" /> (<ph name="TIME" />).</translation>
 <translation id="3328783797891415197">Abian da proba</translation>
+<translation id="3332683265015995419">steampunk estiloko espazio-ontzi bat hondar-ekaitz batean zehar hegan</translation>
 <translation id="3340011300870565703">Bateriaren ehuneko <ph name="BATTERY_PERCENTAGE" /> geratzen zaio gailuaren eskuineko aurikularrari.</translation>
 <translation id="3340978935015468852">ezarpenak</translation>
 <translation id="3347558044552027859">modernoa</translation>
@@ -529,6 +536,7 @@
 <translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">Lurraren fluxua erakusten duen horma-papera</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> koloreko atzeko plano bat, <ph name="LETTERS_LETTER" /> hizkiarekin</translation>
+<translation id="3382806462014639823"><ph name="TEACHER_NAME" /> zure pantaila ikusten ari da</translation>
 <translation id="3383623117265110236">Esklusiboa</translation>
 <translation id="3404249063913988450">Gaitu pantaila-babeslea</translation>
 <translation id="3413935475507503304">Eguneratzeko, sakatu Hurrengoa.</translation>
@@ -561,6 +569,7 @@
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> minutu inguru geratzen dira</translation>
 <translation id="3533790840489634638">igerileku</translation>
 <translation id="3547264467365135390">Formula</translation>
+<translation id="3552832331940389362">arratsaldeko euriari begira leiho-ertz baten gainean eserita dagoen katu baten ilustrazioa, animazio japoniarraren estiloan</translation>
 <translation id="3557205324756024651">Tokiko identitatea (aukerakoa)</translation>
 <translation id="3565064564551103223">Baimena duten IPak</translation>
 <translation id="3569407787324516067">Pantaila-babeslea</translation>
@@ -636,12 +645,14 @@
 <translation id="38811596981744338">Legezko arazoa</translation>
 <translation id="3885327323343477505">Aldatu pantaila-babeslea</translation>
 <translation id="3889914174935857450">Berrezartzeko data</translation>
+<translation id="3889954687526985291">paper beltzez egindako motozikleta futurista bat, neonezko argiak dituen atzeko plano ilun batekin</translation>
 <translation id="3897092660631435901">Menua</translation>
 <translation id="3902271751020176019">Transkripzioaren hizkuntza</translation>
 <translation id="390890062090528082">izarrez betetako zerua</translation>
 <translation id="391412459402535266">Ezin da probatu gailua. Probak egiteko, aldatu ordenagailu eramangarriaren modura.</translation>
 <translation id="3916998944874125962">atera pantaila-argazkia</translation>
 <translation id="3923184630988645767">Datu-erabilera</translation>
+<translation id="392943705803418306">Klaseko tresnak atalean saioa amaitu dizute</translation>
 <translation id="3932043219784172185">Ez dago gailurik konektatuta</translation>
 <translation id="3934185438132762746">Esleitu gabeko <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Ezin izan da ebatzi ostalaria</translation>
@@ -808,6 +819,7 @@
 <translation id="4593212453765072419">Proxy-autentifikazioa behar da</translation>
 <translation id="4594021849294327751">Sortu transkripzioa</translation>
 <translation id="4594541568452132351">Hautatu transkripzio-hizkuntza eta deskargatu eredua</translation>
+<translation id="4600301862817165514">neon-argiak dituen Delorean bat galaxia batean zehar ibiltzen, izarrak haren aldamenetik ziztu bizian pasatzen direla</translation>
 <translation id="4609350030397390689">Teklatuaren distira jaisteko tekla</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" /> (<ph name="CREATION_TIME" />) - <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> orri Sakatu Sartu inprimatze-lana bertan behera uzteko.</translation>
 <translation id="463791356324567266">Eskaneatzeko prozesua bertan behera uzten…</translation>
@@ -830,6 +842,7 @@
 <translation id="4697260493945012995">Hautatu kontrolatzeko aukera mota</translation>
 <translation id="4712940987669302829">bokeh efektua</translation>
 <translation id="4731797938093519117">Gurasoen sarbidea</translation>
+<translation id="4733200407105375152">Ez zaude Klaseko tresnak atalean</translation>
 <translation id="4734982181169850310">pastel koloreak</translation>
 <translation id="473775607612524610">Eguneratu</translation>
 <translation id="4744944742468440486">Zure hautapenarekin erlazionatutako informazioa</translation>
@@ -1006,6 +1019,7 @@
 <translation id="5499762266711462226">Teklatuaren kolorea horma-paperean oinarrituta dago</translation>
 <translation id="5502931783115429516">Android-ek ez du funtzionatzen</translation>
 <translation id="550600468576850160">Larre</translation>
+<translation id="5507504956167780539">harea beltz distiratsuzko dunen argazki profesional minimalista, itzal dramatikoekin</translation>
 <translation id="551689408806449779">Deskonektatu da gailua. Proba egiteko, konekta ezazu berriro.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="552644173505433109">Lortu laburbiltzeari eta izenak sortzeari buruzko informazio gehiago</translation>
@@ -1077,6 +1091,7 @@
 <translation id="5876385649737594562">Aukerak hautatzeko, aktiba ezazu</translation>
 <translation id="5877503382465267833">Pausatu <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Pantaila osoa</translation>
+<translation id="5889539348012432386">Klaseko tresnak atalaren orri nagusia</translation>
 <translation id="5893975327266416093">Esleitzeko, sakatu teklatuko tekla bat</translation>
 <translation id="5895138241574237353">Berrabiarazi</translation>
 <translation id="5896602941605730551">Erreproduzitu</translation>
@@ -1125,6 +1140,7 @@
 <translation id="6075872808778243331">HTTP eskaeren latentzia (Android)</translation>
 <translation id="6078323886959318429">Gehitu lasterbidea</translation>
 <translation id="6079693086494835199">Berrezarri hau orri nagusi lehenetsia phishing-webgune bat ez dela ziurtatzeko. Erabili webgune fidagarriak soilik.</translation>
+<translation id="6090672065638047175">izarrez egindako zuhaitz distiratsu baten argazki bat, atzeko planoan gau-zeru eder bat eta galaxia bat dituela</translation>
 <translation id="6091080061796993741">kolore horiko</translation>
 <translation id="6104112872696127344">Bertan behera utzi da eskaneatzeko prozesua</translation>
 <translation id="6106186594183574873">Amaitzeko, idatzi pasahitz zaharra</translation>
@@ -1310,6 +1326,7 @@
 <translation id="6900701049656042631">Ez dago argazkirik albumean. Argazkiak gehitzeko, joan <ph name="LINK" /> helbidera.</translation>
 <translation id="6902359863093437070">Sortu atzeko planoa AA bidez</translation>
 <translation id="6905163627763043954">Probatu</translation>
+<translation id="6905275015682612674">esposizio luzeko argazki bat: hondartza bioluminiszente bat ilunabarrean, zeruan izarrak, pastel kolore ederrak, 4k</translation>
 <translation id="6905724422583748843">Itzuli <ph name="PAGE_NAME" /> orrira</translation>
 <translation id="6910312834584889076">Eskanerraren estalkia irekita dago. Itxi ezazu eta saiatu berriro.</translation>
 <translation id="6910845598686542904">Grabaketan hautemandako ahotsen eredua sortu.</translation>
@@ -1319,6 +1336,7 @@
 <translation id="6930597342185648547">Atzeko planoari buruz</translation>
 <translation id="6931666215260956151">galaxia</translation>
 <translation id="6939766318048400022">Kafetegia</translation>
+<translation id="6940212863873359282">organdi zati zuri bat erdialdean flotatzen marmolezko arku zuri baten gainean, krema-koloreko atzeko plano batekin</translation>
 <translation id="6942253772720771875">Partekatu iritzia edo azaldu zer arazo duzun</translation>
 <translation id="6943893908656559156">Kendu identitatea (aukerakoa)</translation>
 <translation id="694981048020558038">Bilatu grabaketaren izena</translation>
@@ -1405,6 +1423,7 @@
 <translation id="7271040990581020067">Eskanerra erabiltzen ari zara. Saiatu berriro geroago.</translation>
 <translation id="7271932918253517778">Goiko errenkadako teklak darabiltzaten lasterbideetan <ph name="META_KEY" /> tekla ere erabili behar da.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7275707758336796649">txakur dalmaziar bat atzeko plano arrosa baten aurrean, gorputz osoko jarrera dinamiko batean, bereizmen handiko argazki gisa, artxiboko argazkiekin eta kolore-gradazioarekin egindako atzeko plano hiperrealista batekin</translation>
 <translation id="7281657306185710294">Sentitu haize gozoa</translation>
 <translation id="7287310195820267359">Horma-paperen bildumak</translation>
 <translation id="7293429513719260019">Hautatu hizkuntza</translation>
@@ -1414,6 +1433,7 @@
 <translation id="7302860742311162920">ICCIDa</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Galdetu Chromebook-en laguntza-foroko adituei</translation>
+<translation id="7309823890857024809">kristalezko loreontzi batean dauden mitxoleta-zutoin batzuen natura hil minimalista, atzeko plano beltz baten aurrean</translation>
 <translation id="7311368985037279727">teklatuaren kolorea</translation>
 <translation id="7317831949569936035">Ikastetxeko gailuaren erregistroa</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -1431,6 +1451,7 @@
 <translation id="7353413232959255829"><ph name="LIST_POSITION" />/<ph name="LIST_SIZE" /> bilaketa-emaitza: "<ph name="SEARCH_RESULT_TEXT" />". Lasterbidera nabigatzeko, sakatu Sartu.</translation>
 <translation id="7359657277149375382">Fitxategi mota</translation>
 <translation id="73631062356239394">Partekatu diagnostiko-datuak</translation>
+<translation id="7369648056634183167">Euripean, ihintzez estalita dagoen urmael-lili baten lehen planoa, xehetasun oso zehatzez egina. Fokua petalotxoetan eta argia islatzen duten ur-tantetan dago; haien pastel-kolore leunak atzeko plano urdin baten aurrean islatzen dira. Begien paretik aterata dago argazkia, argi naturalean.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378170410161264436">Grabagailuak ahotsak dituzten grabaketen transkripzioak egin ditzake.
 Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 MB).</translation>
@@ -1601,6 +1622,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8135609423982943441">Balio lehenetsi seguruak berrezarri dira Chromebook-ean. Aldaketa horiek doitzeko, joan ezarpenetara.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">Sortu zeurea</translation>
+<translation id="8142182840415860496">hainbat lore zuri eta horiren lehen planoa; animaziozko film bateko fotograma bat; loretxo arrosa argi bat petalo luzeekin eta zurtoin berde batekin bi tulipa hori handiren artean, zeru urdin baten aurrean, hostorik edo belarrik gabe, kolore pasteletan; bereizmen handia eta xehetasun oso zehatzak dituen fotograma zinematografiko bat, OctaneRender argiztatze ederrarekin, argi bolumetrikoarekin eta argi goibelarekin.</translation>
 <translation id="8143951647992294073">Hautatu <ph name="TOPIC_SOURCE" /> zerbitzuko <ph name="TOPIC_SOURCE_DESC" /> aukera</translation>
 <translation id="8151185429379586178">Garatzaileentzako tresnak</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
@@ -1681,6 +1703,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8503813439785031346">Erabiltzaile-izena</translation>
 <translation id="8503836310948963452">Minutu gutxi batzuk baino ez…</translation>
 <translation id="8505011850330200833">Gemini-ren ereduak 2 GB behar ditu transkripzioak prozesatu eta laburpenak sortu ahal izateko</translation>
+<translation id="8506063704538210734">gaueko zeru baten argazkia; lehen planoan ozar-izar bat eta zuhaitz batzuk daude, tonu more eta arrosekin</translation>
 <translation id="8506394543220680287">elurrez estalita</translation>
 <translation id="8508640263392900755">APNaren xehetasunak</translation>
 <translation id="8522687886059337719">Orain, <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />horma-paper<ph name="END_LINK_WALLPAPER_SUBPAGE" /> eta <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />pantaila-babesle<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> berriak erabil ditzakezu</translation>

@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 Hindi Pa Nababasang Notification}one{# Hindi Pa Nababasang Notification}other{# na Hindi Pa Nababasang Notification}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{I-on ang sumusunod na extension sa Incognito:}one{I-on ang mga sumusunod na extension sa Incognito:}other{I-on ang mga sumusunod na extension sa Incognito:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 buwan ang nakalipas}one{# buwan ang nakalipas}other{# na buwan ang nakalipas}}</translation>
+<translation id="4277033906326892359">Pinagbukod-bukod ang column na <ph name="COLUMN_NAME" /> sa pataas na ayos</translation>
 <translation id="4289300219472526559">Simulan ang Pagsasalita</translation>
 <translation id="4289540628985791613">Pangkalahatang-ideya</translation>
 <translation id="4491109536499578614">Larawan</translation>
@@ -171,6 +172,7 @@
 <translation id="654149438358937226">I-block ang lahat ng notification</translation>
 <translation id="6620110761915583480">I-save ang File</translation>
 <translation id="6699343763173986273">Susunod na Track ng Media</translation>
+<translation id="6807086321996342431">Column <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">Media Ihinto</translation>
 <translation id="6845383723252244143">Piliin ang Folder</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 oras na lang ang natitira}one{# oras na lang ang natitira}other{# na oras na lang ang natitira}}</translation>
@@ -202,11 +204,11 @@
 <translation id="7969046989155602842">Command</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Mahigit sa 1 hindi pa nababasang notification}one{Mahigit sa # hindi pa nababasang notification}other{Mahigit sa # na hindi pa nababasang notification}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{sa loob ng 1 minuto}one{sa loob ng # minuto}other{sa loob ng # na minuto}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Numero mula sa <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 oras ang nakalipas}one{# oras ang nakalipas}other{# na oras ang nakalipas}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 segundo na lang ang natitira}one{# segundo na lang ang natitira}other{# na segundo na lang ang natitira}}</translation>
 <translation id="8134065097954893699">Nire-reload ang page na ito</translation>
+<translation id="813785873406874127">Na-unsort ang column na <ph name="COLUMN_NAME" /></translation>
 <translation id="815598010540052116">Mag-scroll Pababa</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Page Down</translation>
@@ -218,6 +220,7 @@
 <translation id="8393700583063109961">Ipadala ang mensahe</translation>
 <translation id="8394908167088220973">I-Play/I-Pause ang Media</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 taon}one{# taon}other{# na taon}}</translation>
+<translation id="8582972250170726813">Pinagbukod-bukod ang column na <ph name="COLUMN_NAME" /> sa pababang ayos</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> File (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>

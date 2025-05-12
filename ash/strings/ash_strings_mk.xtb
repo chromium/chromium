@@ -229,7 +229,7 @@
 <translation id="1719094688023114093">„Автоматските титлови“ се вклучени.</translation>
 <translation id="1720011244392820496">Вклучете синхронизирање на Wi-Fi</translation>
 <translation id="1720230731642245863">Точката на пристап е исклучена</translation>
-<translation id="1731815243805539470">Префрлете на претходниот корисник</translation>
+<translation id="1731815243805539470">Префрлете се на претходниот корисник</translation>
 <translation id="1733996486177697563">Сменете на темна и светла тема. Допрете и задржете на работната површина, а потоа изберете „Тапети и стил“.</translation>
 <translation id="1735992454301033090">Избрана е област, користете ги копчињата со стрелки за да ја преместувате</translation>
 <translation id="1736898441010944794">„<ph name="NAME" />“ е видлив за уреди со Bluetooth.</translation>
@@ -293,7 +293,7 @@
 <translation id="1928739107511554905">За да го добиете ажурирањето, користете го екранот на допир за да го рестартирате Chromebook додека тастатурата е прикачена.</translation>
 <translation id="1929331825127010451">Назад на прашањето</translation>
 <translation id="1946615340060705561">Притиснете „C“ за да пуштите</translation>
-<translation id="1948405482892809935">Префрлете на следниот корисник</translation>
+<translation id="1948405482892809935">Префрлете се на следниот корисник</translation>
 <translation id="1951012854035635156">Помошник</translation>
 <translation id="1954252331066828794">Снимањето на екранот заврши</translation>
 <translation id="1956087014741188812">Паузирај ја „Копчиња за глувче“</translation>
@@ -1441,6 +1441,7 @@
 <translation id="5672890847723042801">Услужни програми</translation>
 <translation id="5673434351075758678">Од „<ph name="FROM_LOCALE" />“ на „<ph name="TO_LOCALE" />“ по синхронизацијата на поставките.</translation>
 <translation id="5675363643668471212">Ставка од полица</translation>
+<translation id="5677022547882470786">Повлечете или притиснете Space за да изберете област на пребарување</translation>
 <translation id="5677928146339483299">Блокирано</translation>
 <translation id="5678564054339031017">Прикажи ја следната седмица</translation>
 <translation id="5679050765726761783">Поврзан е слаб адаптер за напојување</translation>
@@ -2433,6 +2434,7 @@
 <translation id="8934418770423095813">Создај документ на Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 датотека}one{# датотека}other{# датотеки}}</translation>
 <translation id="8936501819958976551">деактивирано</translation>
+<translation id="8937312474322077653">Во „Снимање на екранот“, поставете на <ph name="SOURCE" /> <ph name="TYPE" />. Притиснете Tab за да го изберете типот снимање. Притиснете Space за да го изберете регионот. Притиснете Enter за да снимате.</translation>
 <translation id="8938800817013097409">USB-Ц уред (десна порта од задната страна)</translation>
 <translation id="8939855324412367560">Влезот за аудио е „<ph name="INPUT_DEVICE_NAME" />“, а излезот за аудио е „<ph name="OUTPUT_DEVICE_NAME" />“. Одете во „Поставки“ за да промените.</translation>
 <translation id="8940956008527784070">Слаба батерија (<ph name="PERCENTAGE" />%)</translation>

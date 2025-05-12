@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 nieprzeczytane powiadomienie}few{# nieprzeczytane powiadomienia}many{# nieprzeczytanych powiadomień}other{# nieprzeczytanego powiadomienia}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Włącz to rozszerzenie w trybie incognito:}few{Włącz te rozszerzenia w trybie incognito:}many{Włącz te rozszerzenia w trybie incognito:}other{Włącz te rozszerzenia w trybie incognito:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{miesiąc temu}few{# miesiące temu}many{# miesięcy temu}other{# miesiąca temu}}</translation>
+<translation id="4277033906326892359">Kolumna <ph name="COLUMN_NAME" /> została posortowana rosnąco</translation>
 <translation id="4289300219472526559">Zacznij mówić</translation>
 <translation id="4289540628985791613">Przegląd</translation>
 <translation id="4491109536499578614">Obraz</translation>
@@ -171,6 +172,7 @@
 <translation id="654149438358937226">Blokuj wszystkie powiadomienia</translation>
 <translation id="6620110761915583480">Zapisz plik</translation>
 <translation id="6699343763173986273">Następny utwór multimedialny</translation>
+<translation id="6807086321996342431">Kolumna <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">Zatrzymaj multimedia</translation>
 <translation id="6845383723252244143">Wybierz folder</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{Pozostała 1 godzina}few{Pozostały # godziny}many{Pozostało # godzin}other{Pozostało # godziny}}</translation>
@@ -202,11 +204,11 @@
 <translation id="7969046989155602842">Command</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Więcej niż 1 nieprzeczytane powiadomienie}few{Więcej niż # nieprzeczytane powiadomienia}many{Więcej niż # nieprzeczytanych powiadomień}other{Więcej niż # nieprzeczytanego powiadomienia}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{za 1 min}few{za # min}many{za # min}other{za # min}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Numer ze strony <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 godzinę temu}few{# godziny temu}many{# godzin temu}other{# godziny temu}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{Pozostała 1 s}few{Pozostały # s}many{Pozostało # s}other{Pozostało # s}}</translation>
 <translation id="8134065097954893699">Wczytaj ponownie tę stronę</translation>
+<translation id="813785873406874127">Kolumna <ph name="COLUMN_NAME" /> nie została posortowana</translation>
 <translation id="815598010540052116">Przewiń w dół</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Strona w dół</translation>
@@ -218,6 +220,7 @@
 <translation id="8393700583063109961">Wyślij wiadomość</translation>
 <translation id="8394908167088220973">Odtwórz/wstrzymaj multimedia</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 rok}few{# lata}many{# lat}other{# roku}}</translation>
+<translation id="8582972250170726813">Kolumna <ph name="COLUMN_NAME" /> została posortowana malejąco</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623">Plik <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> kB/s</translation>

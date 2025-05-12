@@ -10,6 +10,7 @@
 <translation id="1807863182207623884">Rubinas</translation>
 <translation id="1921351128855867012">Prasukti pirmyn <ph name="NUMBER_OF_SECONDS" /> sek.</translation>
 <translation id="1984328900355667246">Atkūrimas nepasiekiamas</translation>
+<translation id="2019727681730021602">Standartinis atkūrimas</translation>
 <translation id="2224347680315897176">Vienodas</translation>
 <translation id="2611765907167846862">Tylus</translation>
 <translation id="3023502830214299618">Deja, šiuo metu šio puslapio atkūrimas nepasiekiamas. Vėliau bandykite dar kartą.</translation>
@@ -28,9 +29,11 @@
 <translation id="5026371835667036198">Ryškus</translation>
 <translation id="5234971936051226002">Leistuvė „Klausyti šio puslapio“ sumažinta.</translation>
 <translation id="5251803541071282808">Debesis</translation>
+<translation id="5526614127710223793">Atkūrimo režimo parinkiklis</translation>
 <translation id="5596627076506792578">Daugiau parinkčių</translation>
 <translation id="5694491020339060116">Atkūrimo spartos meniu</translation>
 <translation id="6315170314923504164">Balsas</translation>
+<translation id="6330455646577575965">DI garso įrašo atkūrimas</translation>
 <translation id="6343633247422081848">Samanos</translation>
 <translation id="6550675742724504774">Parinktys</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -43,7 +46,6 @@
 <translation id="7221920857098237570">Švelnus</translation>
 <translation id="7237590978482584900">Linksmas</translation>
 <translation id="7282547042039404307">Leidžiama sklandžiai</translation>
-<translation id="7587250070160020374">Dabar „Chrome“ leidžiama</translation>
 <translation id="8004767876552422827">Laukas</translation>
 <translation id="8136852699834914183">Šio puslapio negalima atkurti.</translation>
 <translation id="8198036737896977997">Oras</translation>

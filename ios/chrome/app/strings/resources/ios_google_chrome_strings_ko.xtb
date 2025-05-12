@@ -123,6 +123,7 @@
 <translation id="3984746313391923992">조직에서 Chrome 로그아웃 상태를 유지할 것을 요청합니다.</translation>
 <translation id="3988789688219830639">Chrome이 사진 또는 동영상에 액세스할 수 없습니다. 'iOS 설정 &gt; 개인 정보 보호 &gt; 사진'에서 액세스를 허용하세요.</translation>
 <translation id="4064699917955374540">Google 계정에서 Chrome 데이터를 사용하고 저장하려면 본인 확인 절차를 거치세요.</translation>
+<translation id="411154422556990518">가격 추적 업데이트 및 Chrome 도움말을 확인하세요.</translation>
 <translation id="417201473131094001">Chrome Canary에서 지원되지 않습니다.</translation>
 <translation id="424864128008805179">Chrome에서 로그아웃하시겠습니까?</translation>
 <translation id="4430797724889237570">Gmail, 지도, YouTube 및 기타 앱의 링크를 Chrome에서 엽니다</translation>
@@ -133,6 +134,7 @@
 <translation id="4636900170638246267">이 사이트 및 Chrome에 로그인하세요.</translation>
 <translation id="4647910807533196601">Chrome에서 최신 내 탭을 엽니다.</translation>
 <translation id="4693084815234024320">Chrome 시크릿 모드 사용 중</translation>
+<translation id="4713907610796204963">시작하는 데 도움이 되는 Chrome 기본사항 알아보기</translation>
 <translation id="4724297637870447613">어디서나 Chrome 사용</translation>
 <translation id="4738647308035481133">Chrome 페이지</translation>
 <translation id="4742795653798179840">Chrome 데이터 삭제됨</translation>
@@ -177,7 +179,7 @@
 <translation id="5709557627224531708">Chrome을 기본 브라우저로 설정</translation>
 <translation id="571296537125272375">오프라인 상태이므로 Chrome에서 업데이트를 확인할 수 없습니다.</translation>
 <translation id="5716154293141027663">다른 앱에서 링크를 탭할 때마다 Chrome을 엽니다.</translation>
-<translation id="5752489513673657785">Google에서 나를 위해 제공하는 맞춤 피드</translation>
+<translation id="5752489513673657785">Google에서 나를 위해 제공하는 맞춤 피드입니다</translation>
 <translation id="5772407442571703917">여기에서 Chrome을 다운로드하세요.</translation>
 <translation id="5777468213129569553">Chrome 열기</translation>
 <translation id="5779767936254214055">Chrome을 종료하거나 다른 앱으로 전환할 때 시크릿 탭을 잠급니다</translation>
@@ -239,7 +241,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7175129790242719365">Chrome 도움말: Chrome에 로그인하기</translation>
 <translation id="7187993566681480880">로그인 상태일 때 Chrome에서 사용자를 보호하고 기타 Google 앱에서 사용자의 보안을 강화하는 데 사용될 수 있습니다.</translation>
 <translation id="7200524487407690471">Chrome은 매일 자동으로 안전 확인을 실행하여 정보 유출 및 안전하지 않은 웹사이트 등으로부터 사용자를 보호합니다. 설정에서 안전 확인에 관해 자세히 알아볼 수 있습니다.</translation>
-<translation id="7203324561587388418">콘텐츠와 유용한 Chrome 도움말을 놓치지 마세요.</translation>
 <translation id="72119412072970160">Google 비밀번호 관리자에 저장된 비밀번호를 iPad의 다른 앱에서 사용할 수 있습니다</translation>
 <translation id="7214019116829172458">Chrome 시크릿 탭 열기</translation>
 <translation id="722167379782941918">Chrome에서는 향상된 보호 모드를 권장합니다.</translation>
@@ -252,6 +253,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7299681342915173313">이제 언제든 이메일, 문서 및 다른 앱에서 링크를 탭하여 Chrome을 사용할 수 있습니다</translation>
 <translation id="7344094882820374540">위험한 사이트로부터 보호하는 Chrome의 가장 강력한 보안 기능을 이용하세요</translation>
 <translation id="7349129508108954623">Chrome에서 Google 지도를 사용하여 감지된 주소의 경로 및 지역 정보를 제공하도록 허용합니다</translation>
+<translation id="7371674917547846460">유용한 Chrome 도움말 등을 확인하세요.</translation>
 <translation id="7394108421562933108">Chrome의 지도</translation>
 <translation id="7400722733683201933">Chrome 정보</translation>
 <translation id="7466693328838535498">검색 위젯 상자에 Chrome을 입력합니다.</translation>
@@ -262,6 +264,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7581063337314642333">Chrome에서 탭 그리드로 이동</translation>
 <translation id="7599894504325210080">Chrome 자동 완성 펼쳐 보기</translation>
 <translation id="7617512710641355143">Chrome이 관리됨</translation>
+<translation id="7626032353295482388">Chrome에 오신 것을 환영합니다</translation>
 <translation id="7642373780953416937">Chrome에서 자동으로 감지한 개인 정보 보호 또는 보안 문제에 대한 알림을 받습니다.</translation>
 <translation id="7660356333829433649">이곳으로 다시 돌아와 Chrome을 최대한 활용하는 데 도움이 되는 유용한 팁을 확인하세요.</translation>
 <translation id="7662994914830945754">Chrome을 사용하는 어느 곳에서나 탭을 확인하려면 로그인한 후 동기화를 사용 설정하세요.</translation>
@@ -328,7 +331,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8897749957032330183">비밀번호가 이 기기의 Google 비밀번호 관리자에 저장됩니다.</translation>
 <translation id="9004772704776174843">Chrome에서 로그아웃됨</translation>
 <translation id="9068336935206019333">Chrome 시크릿 모드에서 열기</translation>
-<translation id="909127538042363610">Chrome의 가장 강력한 보안 기능 이용하기</translation>
+<translation id="909127538042363610">Chrome의 가장 강력한 보안 기능 이용</translation>
 <translation id="9122931302567044771">Chrome에서 데스크톱 사이트를 매번 요청함을 의미합니다</translation>
 <translation id="9176561303811134420">Chrome에서 결제 수단 관리</translation>
 <translation id="9181628561061032322">Chrome 최근 탭을 엽니다.</translation>

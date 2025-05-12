@@ -47,7 +47,6 @@
 <translation id="2042889939382983733">Je Chromium-geschiedenis bekijken</translation>
 <translation id="2052320862053429062">Chromium vergelijkt periodiek je wachtwoorden met lijsten die online zijn gepubliceerd. Als dit wordt gedaan, zijn je wachtwoorden en gebruikersnamen versleuteld, zodat ze door niemand (inclusief Google) kunnen worden gelezen.</translation>
 <translation id="2059365270911640413">Chromium instellen afronden</translation>
-<translation id="2147210759439165826">Blijf op de hoogte van content en nuttige Chromium-tips.</translation>
 <translation id="2168108852149185974">Sommige add-ons kunnen ervoor zorgen dat Chromium crasht. Verwijder de volgende add-ons:</translation>
 <translation id="2168593389981132306">Chromium verbeteren</translation>
 <translation id="2178608107313874732">Chromium kan je camera momenteel niet gebruiken</translation>
@@ -157,6 +156,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="4828317641996116749">Chromium kan niet alle wachtwoorden checken. Probeer het later opnieuw.</translation>
 <translation id="4856138222358683580">Chromium-acties</translation>
 <translation id="4904452304169763785">Meldingen over privacy- of beveiligingsproblemen die Chromium voor je opspoort.</translation>
+<translation id="4908570938463711775">Ontdek nuttige basisprincipes van Chromium om aan de slag te gaan</translation>
 <translation id="4962295957157529683">Maak af wat je aan het doen was in het andere geopende Chrome-venster.</translation>
 <translation id="4985291216379576555">Offline. Chromium kan niet checken op updates</translation>
 <translation id="4996471330284142407">Krijg meer gedaan met Chromium. Nu nog makkelijker, veiliger en sneller dan ooit.</translation>
@@ -197,6 +197,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="5688047395118852662">Op deze kaart zie je suggesties voor hoe je het maximale uit Chromium kunt halen.</translation>
 <translation id="5700709190537129682">Chromium kan je wachtwoorden niet checken</translation>
 <translation id="584550191241316896">Ingelogd bij Chromium</translation>
+<translation id="5862307444128926510">Welkom bij Chromium</translation>
 <translation id="5889847953983052353">Als dit aanstaat:
 <ph name="BEGIN_INDENT" />  • Help Chromium beter te maken voor mensen die de functie gebruiken zoals jij dat doet.<ph name="END_INDENT" />
 
@@ -223,6 +224,7 @@ Aandachtspunten:
 <translation id="6301717043141881464">Kies Chromium voor automatisch invullen om je opgeslagen wachtwoorden makkelijk te gebruiken in je andere apps</translation>
 <translation id="6324041800010509197">Het tabbladraster in Chromium bezoeken</translation>
 <translation id="6325378625795868881">Gebruik Chromium als je op links in berichten en andere apps tikt.</translation>
+<translation id="6387994184698195448">Blijf op de hoogte van nuttige Chromium-tips en meer.</translation>
 <translation id="6424492062988593837">Chromium is nu nog beter! Er is een nieuwe versie beschikbaar.</translation>
 <translation id="6433172051771630690">Tips om het maximale uit Chromium te halen.</translation>
 <translation id="65045991564554105">Chromium-bookmarks bekijken</translation>
@@ -317,6 +319,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="8860548555286245440">URL's in Chromium openen in de incognitomodus</translation>
 <translation id="8880024619507699923">Je organisatie vereist dat je inlogt om Chromium te gebruiken. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Krijg het hoogste beveiligingsniveau van Chromium</translation>
+<translation id="8925569192291721236">Blijf op de hoogte van updates voor prijzen volgen en Chromium-tips.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Dit gebeurt als Chromium {THRESHOLD} minuut niet wordt gebruikt}other{Dit gebeurt als Chromium {THRESHOLD} minuten niet wordt gebruikt}}</translation>
 <translation id="8963279154877372067">Chromium-meldingen toestaan om meldingen over prijsdalingen te krijgen</translation>
 <translation id="8975812008711371178">Zoeken met je stem in Chromium</translation>

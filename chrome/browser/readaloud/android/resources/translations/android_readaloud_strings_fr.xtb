@@ -10,6 +10,7 @@
 <translation id="1807863182207623884">Rubis</translation>
 <translation id="1921351128855867012">Avancer de <ph name="NUMBER_OF_SECONDS" /> secondes</translation>
 <translation id="1984328900355667246">Lecture indisponible</translation>
+<translation id="2019727681730021602">Lecture standard</translation>
 <translation id="2224347680315897176">Stable</translation>
 <translation id="2611765907167846862">Serein</translation>
 <translation id="3023502830214299618">Malheureusement, cette page ne peut pas être lue pour le moment. Veuillez réessayer plus tard.</translation>
@@ -28,9 +29,11 @@
 <translation id="5026371835667036198">Lumineux</translation>
 <translation id="5234971936051226002">Lecteur "Écouter cette page" réduit.</translation>
 <translation id="5251803541071282808">Cloud</translation>
+<translation id="5526614127710223793">Sélecteur de mode de lecture</translation>
 <translation id="5596627076506792578">Plus d'options</translation>
 <translation id="5694491020339060116">Menu de la vitesse de lecture</translation>
 <translation id="6315170314923504164">Voix</translation>
+<translation id="6330455646577575965">Lecture audio par IA</translation>
 <translation id="6343633247422081848">Mousse</translation>
 <translation id="6550675742724504774">Options</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -43,7 +46,6 @@
 <translation id="7221920857098237570">Doux</translation>
 <translation id="7237590978482584900">Enjoué</translation>
 <translation id="7282547042039404307">Fluide</translation>
-<translation id="7587250070160020374">Chrome lit actuellement</translation>
 <translation id="8004767876552422827">Champ</translation>
 <translation id="8136852699834914183">La lecture n'est pas disponible pour cette page.</translation>
 <translation id="8198036737896977997">Air</translation>

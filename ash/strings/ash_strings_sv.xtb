@@ -1440,6 +1440,7 @@ Inga enheter är anslutna.</translation>
 <translation id="5672890847723042801">Verktyg</translation>
 <translation id="5673434351075758678">Från <ph name="FROM_LOCALE" /> till <ph name="TO_LOCALE" /> efter synkronisering av inställningarna.</translation>
 <translation id="5675363643668471212">Hyllobjekt</translation>
+<translation id="5677022547882470786">Dra eller tryck på mellanslag för att välja ett sökområde</translation>
 <translation id="5677928146339483299">Blockerat</translation>
 <translation id="5678564054339031017">Visa nästa vecka</translation>
 <translation id="5679050765726761783">En nätadapter med låg effekt upptäcktes</translation>
@@ -2432,6 +2433,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8934418770423095813">Skapa Google-dokument</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fil}other{# filer}}</translation>
 <translation id="8936501819958976551">inaktiverad</translation>
+<translation id="8937312474322077653">Ange <ph name="SOURCE" /> <ph name="TYPE" /> under Skärmbild/skärminspelning. Tryck på Tabb för att välja typ av skärmbild/skärminspelning. Tryck på mellanslag för att välja region. Tryck på Retur för ta en skärmbild eller spela in.</translation>
 <translation id="8938800817013097409">USB-C-enhet (högra porten på baksidan)</translation>
 <translation id="8939855324412367560">Ljudingången är <ph name="INPUT_DEVICE_NAME" /> och ljudutgången är <ph name="OUTPUT_DEVICE_NAME" />. Du kan ändra detta i inställningarna.</translation>
 <translation id="8940956008527784070">Låg batterinivå (<ph name="PERCENTAGE" /> %)</translation>

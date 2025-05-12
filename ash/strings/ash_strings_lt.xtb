@@ -218,7 +218,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1677582821739292812">Kažkas žiūri į jūsų ekraną</translation>
 <translation id="1679841710523778799">Padidinti šviesumą</translation>
 <translation id="1680659827022803830">Vaizdo skambučių valdikliai</translation>
-<translation id="169515659049020177">Antrojo lygio klavišas</translation>
+<translation id="169515659049020177">Lyg2</translation>
 <translation id="1696984622403682083">Galite bet kada išjungti šią funkciją skiltyje „Nustatymai“. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> laikmatis · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">„IPv6“ adresas: <ph name="ADDRESS" /></translation>
@@ -1440,6 +1440,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="5672890847723042801">Paslaugų programos</translation>
 <translation id="5673434351075758678">Po nustatymų sinchronizavimo kalba pakeista iš „<ph name="FROM_LOCALE" />“ į „<ph name="TO_LOCALE" />“.</translation>
 <translation id="5675363643668471212">Lentynos elementas</translation>
+<translation id="5677022547882470786">Vilkdami arba paspaudę tarpo klavišą pasirinkite paieškos sritį</translation>
 <translation id="5677928146339483299">Užblokuoti</translation>
 <translation id="5678564054339031017">Rodyti kitą savaitę</translation>
 <translation id="5679050765726761783">Prijungtas mažos galios adapteris</translation>
@@ -2432,6 +2433,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8934418770423095813">Sukurti „Google“ dokumentą</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{Vienas failas}one{# failas}few{# failai}many{# failo}other{# failų}}</translation>
 <translation id="8936501819958976551">išaktyvinta</translation>
+<translation id="8937312474322077653">Įjungę ekrano fiksavimą nustatykite <ph name="SOURCE" /> <ph name="TYPE" />. Paspauskite tabuliavimo klavišą, kad pasirinktumėte fiksavimo tipą. Paspauskite tarpo klavišą, kad pasirinktumėte sritį. Paspauskite „Enter“, kad užfiksuotumėte.</translation>
 <translation id="8938800817013097409">USB-C įrenginys (prievadas dešinėje, užpakalinėje dalyje)</translation>
 <translation id="8939855324412367560">Įvesties garso įrašas yra „<ph name="INPUT_DEVICE_NAME" />“, o išvesties garsas – „<ph name="OUTPUT_DEVICE_NAME" />“. Eikite į skiltį „Nustatymai“ ir pakeiskite.</translation>
 <translation id="8940956008527784070">Akumuliatorius senka (<ph name="PERCENTAGE" /> %)</translation>

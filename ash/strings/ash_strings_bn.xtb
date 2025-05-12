@@ -1440,6 +1440,7 @@
 <translation id="5672890847723042801">উপযোগিতা</translation>
 <translation id="5673434351075758678">সেটিংস সিঙ্ক করার পরে "<ph name="FROM_LOCALE" />" থেকে "<ph name="TO_LOCALE" />" সেট করা হয়েছে।</translation>
 <translation id="5675363643668471212">শেল্ফ আইটেম</translation>
+<translation id="5677022547882470786">কোনও অংশ সার্চ করার জন্য বেছে নিতে টেনে আনুন বা স্পেস প্রেস করুন</translation>
 <translation id="5677928146339483299">অবরুদ্ধ</translation>
 <translation id="5678564054339031017">পরের সপ্তাহ দেখুন</translation>
 <translation id="5679050765726761783">কম পাওয়ারের অ্যাডাপ্টার কানেক্ট করা হয়েছে</translation>
@@ -1879,7 +1880,7 @@
 <translation id="7083848064787091821">ফোকাস মোড</translation>
 <translation id="7084678090004350185">হটস্পট টগল করুন। হটস্পট চালু আছে, <ph name="DEVICECOUNT" />টি ডিভাইস কানেক্ট করা আছে।</translation>
 <translation id="7086931198345821656">এই আপডেট করার জন্য আপনাকে <ph name="DEVICE_TYPE" /> পাওয়ারওয়াশ করতে হবে। সব ডেটা মুছে যাবে। লেটেস্ট <ph name="SYSTEM_APP_NAME" /> আপডেট সম্পর্কে আরও জানুন।</translation>
-<translation id="7088960765736518739">অ্যাক্সেস পাল্টান</translation>
+<translation id="7088960765736518739">সুইচ অ্যাক্সেস</translation>
 <translation id="709015856939120012">পৃষ্ঠাতে বড় করুন</translation>
 <translation id="7098389117866926363">USB-C ডিভাইস (পিছনের বাঁ পোর্ট)</translation>
 <translation id="7100906357717321275">Files অ্যাপে লুকানো ফাইল দেখান</translation>
@@ -2433,6 +2434,7 @@
 <translation id="8934418770423095813">Google Doc তৈরি করুন</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{১টি ফাইল}one{#টি ফাইল}other{#টি ফাইল}}</translation>
 <translation id="8936501819958976551">বন্ধ আছে</translation>
+<translation id="8937312474322077653">স্ক্রিন ক্যাপচারে, <ph name="SOURCE" /> <ph name="TYPE" />-এ সেট করুন। ক্যাপচার করার ধরন বেছে নিতে ট্যাব প্রেস করুন। অঞ্চল বেছে নিতে স্পেস প্রেস করুন। ক্যাপচার করতে Enter প্রেস করুন।</translation>
 <translation id="8938800817013097409">USB-C ডিভাইস (পিছনের ডান পোর্ট)</translation>
 <translation id="8939855324412367560">"<ph name="INPUT_DEVICE_NAME" />" হল ইনপুট অডিও এবং "<ph name="OUTPUT_DEVICE_NAME" />" হল আউটপুট অডিও। পরিবর্তন করতে 'সেটিংস' মেনু দেখুন।</translation>
 <translation id="8940956008527784070">(<ph name="PERCENTAGE" />%) কম ব্যাটারি</translation>

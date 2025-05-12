@@ -20,6 +20,7 @@
 <translation id="1059913517121127803">Skenování se nepodařilo zahájit</translation>
 <translation id="1061864016440983342">Používat bez polohy</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> z <ph name="COUNT" />, <ph name="NAME" /></translation>
+<translation id="106558928761833284">krásná vesmírná mlhovina s rychlou futuristickou vesmírnou lodí, modrými, růžovými a fialovými odstíny</translation>
 <translation id="1069150558259542054">Rychlé vložení nejde použít pro vlastní zkratky.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Byl zjištěn Firewall</translation>
@@ -27,6 +28,7 @@
 <translation id="1082009148392559545">Stahování spořiče obrazovky</translation>
 <translation id="1094693127011229778">Není k dispozici IP adresa</translation>
 <translation id="1100902271996134409">Vytváření obrázků…</translation>
+<translation id="1102946598597843031">fotografie měsíce nad jezerem s padajícími okvětními lístky třešní, 4k</translation>
 <translation id="1107856713690040084">Zvuk <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">Informace</translation>
 <translation id="1118572504348554005">Zpětnou vazbu odeslanou prostřednictvím tohoto formuláře můžeme za účelem odstraňování chyb a jiných nahlášených problémů sdílet s našimi partnery. Nezahrnujte citlivé informace, jako jsou hesla.</translation>
@@ -67,6 +69,7 @@
 <translation id="1238163879850290856">Pokud ostatním chcete zabránit v přístupu k datům, resetujte nastavení. Používejte jen metody zadávání, kterým důvěřujete.</translation>
 <translation id="1238612778414822719">Latence HTTPS</translation>
 <translation id="1252766349417594414">Joystick</translation>
+<translation id="1261045951892393759">kočka hrající na elektrickou kytaru ve tvaru písmena V a jedoucí na jednorožci s bleskem v pozadí</translation>
 <translation id="1270369111467284986">Podezření na captive portál</translation>
 <translation id="1274654146705270731">pomeranče</translation>
 <translation id="1275718070701477396">Vybráno</translation>
@@ -273,6 +276,7 @@
 <translation id="2045814230297767491">příbory</translation>
 <translation id="2047316797244836561">Pokud chcete zobrazit spořič obrazovky, připojte se k síti a znovu načtěte stránku.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
+<translation id="2068472557797646626">Ve 3D vykreslené chromové koule a kulové tvary na pozadí chromových architektonických prvků. Kompozice je moderní minimalistický koncept pro reklamu, branding nebo prezentaci s místem pro text. Před abstraktním minimalistickým pozadím stojí velký oblouk. Ateliérové osvětlení. Detailní záběr.</translation>
 <translation id="2073232437457681324">obrovský oceán</translation>
 <translation id="2080070583977670716">Další nastavení</translation>
 <translation id="2082932131694554252">Přiřazená klávesa</translation>
@@ -390,7 +394,6 @@
 <translation id="2584559707064218956">Konfiguraci lze provést v sekci Nastavení</translation>
 <translation id="2586146417912237930">modrá a indigová</translation>
 <translation id="2589921777872778654">Nabídka k úpravě a smazání</translation>
-<translation id="2590424100019931043">Z tohoto kurzu jste byli odebráni</translation>
 <translation id="2597774443162333062">Soubory budou odeslány do Googlu k ladění</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Skenování bylo dokončeno. Byla naskenována 1 stránka}few{Skenování bylo dokončeno. Byly naskenovány {NUMBER_OF_PAGES} stránky}many{Skenování bylo dokončeno. Bylo naskenováno {NUMBER_OF_PAGES} stránky}other{Skenování bylo dokončeno. Bylo naskenováno {NUMBER_OF_PAGES} stránek}}</translation>
 <translation id="261322795497077164">Identifikace mluvčího</translation>
@@ -430,6 +433,7 @@
 <translation id="2805756323405976993">Aplikace</translation>
 <translation id="28232023175184696">Nelze se připojit k internetu. Kliknutím to zkuste znovu.</translation>
 <translation id="2855718259207180827">vlna</translation>
+<translation id="2856429654176718363">Nad městem pluje obrovská vesmírná loď osvětlená mnoha světly. Celý výjev je ve stylu olejomalby s tmavými tóny. Vytváří tajemnou atmosféru s futuristickými sci-fi prvky. Tohle umělecké dílo bylo vytvořeno pomocí softwaru C4D a vykreslovače OC ke zvýraznění vysokého rozlišení a podrobných detailů. V těsné blízkosti byly také městské budovy, které přidaly efekt hloubky ostrosti. Výjev je ztvárněn ve stylu olejomalby, prezentuje temné tóny a vytváří tajemnou atmosféru s futuristickými sci-fi prvky.</translation>
 <translation id="2859243502336719778">Kritická aktualizace</translation>
 <translation id="2860473693272905224">Položte na skener další stránku</translation>
 <translation id="286265581261662583">Kliknutím pravým tlačítkem nebo podržením můžete získat definice, překlady nebo převody jednotek</translation>
@@ -446,9 +450,11 @@
 <translation id="2895772081848316509">tmavé</translation>
 <translation id="2915996080311180594">Restartovat později</translation>
 <translation id="2926057806159140518">Zadejte uživatelské jméno nebo heslo nebo naskenujte svůj QR kód</translation>
+<translation id="2927007463545347013">anime cesta s výhledem na oceán s padajícími okvětními lístky třešní</translation>
 <translation id="2940811910881150316">Zařízení nelze otestovat. Znovu otevřete víko.</translation>
 <translation id="2941112035454246133">Nízká</translation>
 <translation id="2956070106555335453">Přehled</translation>
+<translation id="2968959705684615497">surrealistický bílý tygr se zlatýma očima a zlatými pruhy sedící na bílé písečné duně</translation>
 <translation id="299385721391037602">růžová a žlutá</translation>
 <translation id="3008341117444806826">OBNOVIT</translation>
 <translation id="3009958530611748826">Vyberte cílovou složku</translation>
@@ -518,6 +524,7 @@
 <translation id="3321030238473337787">Rychlost přehrávání</translation>
 <translation id="3327613592010997943">Zařízení budete moci znovu použít <ph name="DAY" /> v <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Běží test</translation>
+<translation id="3332683265015995419">steampunková vesmírná loď letící písečnou bouří</translation>
 <translation id="3340011300870565703">Stav baterie pravého sluchátka je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">nastavení</translation>
 <translation id="3347558044552027859">moderní</translation>
@@ -529,6 +536,7 @@
 <translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">Tapeta Plynoucí Země</translation>
 <translation id="33736539805963175">Pozadí v barvě <ph name="LETTERS_COLOR" /> s písmenem <ph name="LETTERS_LETTER" /></translation>
+<translation id="3382806462014639823"><ph name="TEACHER_NAME" /> si prohlíží vaši obrazovku</translation>
 <translation id="3383623117265110236">Exkluzivní</translation>
 <translation id="3404249063913988450">Aktivovat spořič obrazovky</translation>
 <translation id="3413935475507503304">Pokud chcete pokračovat v aktualizaci, klikněte na Další.</translation>
@@ -561,6 +569,7 @@
 <translation id="3532980081107202182">Zbývající minuty: <ph name="MIN_REMAINING" /></translation>
 <translation id="3533790840489634638">bazén</translation>
 <translation id="3547264467365135390">Vzorec</translation>
+<translation id="3552832331940389362">ilustrace kočky sedící na okenním parapetu a pozorující odpolední déšť ve stylu japonských animací</translation>
 <translation id="3557205324756024651">Místní identita (volitelné)</translation>
 <translation id="3565064564551103223">Povolené IP adresy</translation>
 <translation id="3569407787324516067">Spořič obrazovky</translation>
@@ -636,12 +645,14 @@
 <translation id="38811596981744338">Právní problém</translation>
 <translation id="3885327323343477505">Změnit spořič obrazovky</translation>
 <translation id="3889914174935857450">Datum resetování</translation>
+<translation id="3889954687526985291">futuristický motocykl vyrobený z černého papíru s tmavým pozadím s neonovými světly</translation>
 <translation id="3897092660631435901">Nabídka</translation>
 <translation id="3902271751020176019">Jazyk přepisu</translation>
 <translation id="390890062090528082">hvězdná obloha</translation>
 <translation id="391412459402535266">Zařízení nelze otestovat. Přepněte na režim notebooku.</translation>
 <translation id="3916998944874125962">pořídit snímek obrazovky</translation>
 <translation id="3923184630988645767">Využití dat</translation>
+<translation id="392943705803418306">Vaše relace Nástrojů pro výuku skončila</translation>
 <translation id="3932043219784172185">Není připojeno žádné zařízení</translation>
 <translation id="3934185438132762746">Nepřiřazeno <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Hostitele se nepodařilo vyřešit</translation>
@@ -808,6 +819,7 @@
 <translation id="4593212453765072419">Vyžadováno ověření proxy serveru</translation>
 <translation id="4594021849294327751">Vytvořit přepis</translation>
 <translation id="4594541568452132351">Vyberte jazyk přepisu a stáhněte model</translation>
+<translation id="4600301862817165514">Delorean s neonovými světly projíždějící galaxií s hvězdami svištícími okolo</translation>
 <translation id="4609350030397390689">Snížit jas</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Tiskovou úlohu zrušíte stisknutím klávesy Enter.</translation>
 <translation id="463791356324567266">Rušení skenování…</translation>
@@ -830,6 +842,7 @@
 <translation id="4697260493945012995">Vyberte typ ovládání</translation>
 <translation id="4712940987669302829">efekt bokeh</translation>
 <translation id="4731797938093519117">Rodičovský přístup</translation>
+<translation id="4733200407105375152">Mimo Nástroje pro výuku</translation>
 <translation id="4734982181169850310">pastelové barvy</translation>
 <translation id="473775607612524610">Aktualizovat</translation>
 <translation id="4744944742468440486">Informace související s vaším výběrem</translation>
@@ -1006,6 +1019,7 @@
 <translation id="5499762266711462226">Barva klávesnice vychází z tapety</translation>
 <translation id="5502931783115429516">Android neběží</translation>
 <translation id="550600468576850160">louka</translation>
+<translation id="5507504956167780539">minimalistická profesionální fotografie třpytivých černých písečných dun s dramatickými stíny</translation>
 <translation id="551689408806449779">Zařízení bylo odpojeno. Pokud ho chcete otestovat, zkuste se znovu připojit</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="552644173505433109">Další informace o vytváření souhrnů a názvů</translation>
@@ -1077,6 +1091,7 @@
 <translation id="5876385649737594562">Pokud chcete vybrat možnosti, zapněte tuto funkci</translation>
 <translation id="5877503382465267833">Pozastavit nahrávku <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Celá obrazovka</translation>
+<translation id="5889539348012432386">Domovská stránka Nástrojů pro výuku</translation>
 <translation id="5893975327266416093">Stiskněte klávesu, kterou chcete přiřadit</translation>
 <translation id="5895138241574237353">Restartovat</translation>
 <translation id="5896602941605730551">Přehrát</translation>
@@ -1125,6 +1140,7 @@
 <translation id="6075872808778243331">(Android) Latence požadavků HTTP</translation>
 <translation id="6078323886959318429">Přidat zástupce</translation>
 <translation id="6079693086494835199">Resetujte domovskou stránku, abyste měli jistotu, že se nejedná o phishingový web. Používejte jen weby, kterým důvěřujete.</translation>
+<translation id="6090672065638047175">fotografie zářícího stromu z hvězd s krásnou noční oblohou a galaxií v pozadí</translation>
 <translation id="6091080061796993741">žlutá</translation>
 <translation id="6104112872696127344">Skenování bylo zrušeno</translation>
 <translation id="6106186594183574873">Chcete-li akci dokončit, zadejte své staré heslo</translation>
@@ -1310,6 +1326,7 @@
 <translation id="6900701049656042631">Toto album neobsahuje žádné fotografie. Fotky můžete přidat na adrese <ph name="LINK" />.</translation>
 <translation id="6902359863093437070">Vytvořit pozadí pomocí AI</translation>
 <translation id="6905163627763043954">Vyzkoušet</translation>
+<translation id="6905275015682612674">dlouhoexpoziční fotografie bioluminiscenční pláže při západu slunce s hvězdami na obloze, krásné pastelové barvy, 4k</translation>
 <translation id="6905724422583748843">Zpět na stránku <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Kryt skeneru je otevřený. Zavřete kryt a zkuste to znovu.</translation>
 <translation id="6910845598686542904">Vypočítá modely hlasů zjištěných v nahrávce</translation>
@@ -1319,6 +1336,7 @@
 <translation id="6930597342185648547">O pozadí</translation>
 <translation id="6931666215260956151">galaxie</translation>
 <translation id="6939766318048400022">Kavárna</translation>
+<translation id="6940212863873359282">kousek bílé organzy vznášející se uprostřed nad bílým mramorovým obloukem s krémovým pozadím</translation>
 <translation id="6942253772720771875">Sdělte nám svůj názor nebo popište svůj problém</translation>
 <translation id="6943893908656559156">Vzdálená identita (volitelné)</translation>
 <translation id="694981048020558038">Vyhledat název nahrávky</translation>
@@ -1405,6 +1423,7 @@
 <translation id="7271040990581020067">Skener je aktuálně používán. Zkuste to znovu později.</translation>
 <translation id="7271932918253517778">Zkratka s klávesami z horní řady musí zahrnovat klávesu <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7275707758336796649">dalmatin před růžovým pozadím v dynamické póze celého těla zachycený na fotografii ve vysokém rozlišení s hyperrealistickým pozadím s barevným gradientem</translation>
 <translation id="7281657306185710294">Šňůra</translation>
 <translation id="7287310195820267359">Sbírky tapet</translation>
 <translation id="7293429513719260019">Zvolte jazyk</translation>
@@ -1414,6 +1433,7 @@
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Zeptejte se odborníků ve fóru nápovědy pro Chromebooky</translation>
+<translation id="7309823890857024809">minimalistické zátiší s několika květy vlčích máků ve skleněné váze s černým pozadím</translation>
 <translation id="7311368985037279727">barva klávesnice</translation>
 <translation id="7317831949569936035">Registrace do školy</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -1431,6 +1451,7 @@
 <translation id="7353413232959255829">Výsledek vyhledávání <ph name="LIST_POSITION" /> z <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Stisknutím klávesy Enter přejdete na zkratku.</translation>
 <translation id="7359657277149375382">Typ souboru</translation>
 <translation id="73631062356239394">Sdílení diagnostických dat</translation>
+<translation id="7369648056634183167">detailní záběr oroseného leknínu v dešti. Snímek je zaostřený na jemné okvětní lístky a kapky vody odrážející světlo a zachycuje jejich jemné pastelové barvy na modrém pozadí. Pořízeno z úrovně očí v přirozeném světle</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378170410161264436">Diktafon může vytvářet přepisy nahrávek s řečí.
 Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</translation>
@@ -1601,6 +1622,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8135609423982943441">Chromebook byl resetován na bezpečná výchozí nastavení. Tyto změny můžete kdykoli upravit v Nastavení.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">Vytvořit vlastní</translation>
+<translation id="8142182840415860496">detailní záběr několika bílých a žlutých květin, statický snímek z animovaného filmu, jemná světle růžová květina s dlouhými okvětními lístky a zeleným stonkem mezi dvěma velkými žlutými tulipány proti modré obloze bez listů v pastelových barvách, filmový snímek ve vysokém rozlišení s velmi podrobnými složitými detaily, octane render s krásným osvětlením, objemové a náladové osvětlení.</translation>
 <translation id="8143951647992294073">Vybrat možnost <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Nástroje pro vývojáře</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
@@ -1681,6 +1703,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8503813439785031346">Uživatelské jméno</translation>
 <translation id="8503836310948963452">Ještě pár minut…</translation>
 <translation id="8505011850330200833">Model Gemini vyžaduje ke zpracování přepisů a vytváření souhrnů 2 GB úložiště</translation>
+<translation id="8506063704538210734">fotografie noční oblohy s meteorickým rojem a několika stromy v popředí s fialovými a růžovými odstíny</translation>
 <translation id="8506394543220680287">zasněžené</translation>
 <translation id="8508640263392900755">Podrobnosti o APN</translation>
 <translation id="8522687886059337719">Nyní máte přístup k novým <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />tapetám<ph name="END_LINK_WALLPAPER_SUBPAGE" /> a <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />spořiči obrazovky<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>

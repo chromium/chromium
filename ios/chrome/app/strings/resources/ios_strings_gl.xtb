@@ -4,7 +4,6 @@
 <translation id="1005023885865154304">Abre a configuración de AutoFill Password (Autocompletar contrasinal)</translation>
 <translation id="1005230401424685968">AAAA</translation>
 <translation id="1010225406377140704">Ponte en contacto con quen cha enviou para pedirlle que che mande outra</translation>
-<translation id="1012067394176927315">Para ver o contido, vai ao menú e selecciona a opción Activar</translation>
 <translation id="1013952917065545813">Podes volver aquí para abrir de novo as pestanas que pechaches recentemente</translation>
 <translation id="1016495303386450659">Actualizouse o elemento</translation>
 <translation id="102916930470544692">Clave de acceso</translation>
@@ -58,7 +57,6 @@
 <translation id="1231733316453485619">Queres activar a sincronización?</translation>
 <translation id="1253032109800629289">Ocultar Obter notificacións de seguimento de prezos</translation>
 <translation id="1258491128795710625">Novidades</translation>
-<translation id="1259210743048744967">Os datos de navegación actuais estarán dispoñibles despois de pechar sesión en <ph name="USER_EMAIL" />. Non se gardarán nesta conta.</translation>
 <translation id="1262724000444746916">Ocultar Engadir aos marcadores</translation>
 <translation id="1263231323834454256">Lista de lectura</translation>
 <translation id="1263433075299269530">A túa última pestana aberta</translation>
@@ -177,7 +175,6 @@
 <translation id="169048873465870056">Queres quitar a pestana e eliminar o grupo?</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seleccionados</translation>
 <translation id="1709916727352927457">Eliminar a clave de acceso</translation>
-<translation id="1712341189152602203">Os datos de navegación actuais vincularanse a <ph name="USER_EMAIL" />. A túa organización poderá velos.</translation>
 <translation id="1715515772563243997">Se confías en <ph name="SITE" />, podes usar un contrasinal gardado para iniciar sesión.</translation>
 <translation id="1718835860248848330">Última hora</translation>
 <translation id="1728549374069268714">Pegar e acceder</translation>
@@ -200,6 +197,7 @@
 <translation id="1794893174442046596">Grupo de pestanas</translation>
 <translation id="1807893857950749072">Permitir notificacións de seguimento de prezos…</translation>
 <translation id="1810976980198522421">Cancelar</translation>
+<translation id="1812514023095547458">Seleccionar cor</translation>
 <translation id="1815941218935345331">Contrasinal</translation>
 <translation id="1818687879307252150">{count,plural, =0{Ningún contrasinal vulnerado}=1{{count} contrasinal vulnerado}other{{count} contrasinais vulnerados}}</translation>
 <translation id="1819374301217551116">Fai seguimento de prezos e accede a estatísticas</translation>
@@ -257,6 +255,7 @@
 <translation id="1992055602764528852">Inicia sesión para ver as pestanas dos teus outros dispositivos.</translation>
 <translation id="1993126639825654370">Copiar URL da ligazón</translation>
 <translation id="199425419756152024">Ver contrasinal</translation>
+<translation id="1996318269856535896">Podes seguir usando os teus datos de navegación actuais neste dispositivo. Para facelo, pecha a sesión na túa conta xestionada.</translation>
 <translation id="2010008505735295285">Volver cargar</translation>
 <translation id="2015722694326466240">Para ver os contrasinais, en primeiro lugar debes definir un código de desbloqueo no teu dispositivo.</translation>
 <translation id="201759455285471444">Despregar o grupo de pestanas.</translation>
@@ -282,6 +281,7 @@
 <translation id="2119636449201577317">Abrir en…</translation>
 <translation id="2120553909046681540">A túa organización desactivou a navegación privada.</translation>
 <translation id="2122754583996902531">O teu navegador está xestionado. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
+<translation id="2139692631842690197">Se inicias sesión coa túa conta xestionada, poderás separar a navegación relacionada coa túa organización, como as pestanas, os contrasinais e o historial.</translation>
 <translation id="2139867232736819575">Buscar texto que copiaches</translation>
 <translation id="2147127444698817042">Só está dispoñible en iPhone</translation>
 <translation id="2148799636999124959">Inicia sesión de forma rápida en sitios e aplicacións cos contrasinais que teñas gardados.</translation>
@@ -489,6 +489,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar 
 <translation id="3012310354105716927">Algúns datos aínda non se gardaron</translation>
 <translation id="3016518775797983090">Non se puido compartir a páxina</translation>
 <translation id="3020183492814296499">Atallos</translation>
+<translation id="3023690182746510369">Agarda un anaco mentres usamos a IA para darlle un pulo ao teu evento do calendario co contexto da páxina web.</translation>
 <translation id="3030138564564344289">Reintentar a descarga</translation>
 <translation id="3037177537145227281">Estase facendo un seguimento do prezo</translation>
 <translation id="3039671569659952257">Eliminar cartafol</translation>
@@ -511,6 +512,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="310900540163454140">Queres eliminar o contrasinal de <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Marcar como...</translation>
 <translation id="3119874402040566234">Pecharase a túa sesión e eliminaranse os datos de navegación</translation>
+<translation id="3119915634508614502">Os datos de navegación actuais non se transferirán á túa conta do traballo. Podes seguir usando esta función se pechas sesión na túa conta xestionada.</translation>
 <translation id="3124568093781685165">Comparte os teus contrasinais coa familia</translation>
 <translation id="3130863904455712965">Historial e moito máis</translation>
 <translation id="313283613037595347">Crear nova pestana do modo de incógnito.</translation>
@@ -519,7 +521,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3140825265190223781">Contrasinais e claves de acceso gardados</translation>
 <translation id="3143515551205905069">Cancelar sincronización</translation>
 <translation id="3144126448740580210">LISTO</translation>
-<translation id="314837624430314508">Mantente ao día das noticias máis recentes, das actualizacións no seguimento de prezos e moito máis.</translation>
 <translation id="3157387275655328056">Engadir á lista de lectura</translation>
 <translation id="315778507796115851">Historial</translation>
 <translation id="31652791196570636">Pechar</translation>
@@ -553,7 +554,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3324193307694657476">Enderezo 2</translation>
 <translation id="3328801116991980348">Información do sitio</translation>
 <translation id="333229797575847124">Como activar esta función</translation>
-<translation id="3333566504534692948">Non, movelos ao perfil de traballo</translation>
 <translation id="3344485292736684439">{count,plural, =1{O marcador gardouse no cartafol "{title}" da túa conta ({email})}other{Os marcadores gardáronse no cartafol "{title}" da túa conta ({email})}}</translation>
 <translation id="334690320928261823">Pestanas recentes</translation>
 <translation id="3348387552617855658">Nesta tarxeta podes facer un seguimento dos paquetes e consultar as actualizacións de entrega importantes.</translation>
@@ -637,6 +637,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3725081662140949903">Para evitar que outras persoas usen o teu contrasinal, abre a aplicación <ph name="APP" /> e cámbiao</translation>
 <translation id="372676576864368480">Autocompletar o número da tarxeta que acaba en <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Data de creación: <ph name="DATE" /></translation>
+<translation id="3742498336182910186">Carrete da cámara</translation>
 <translation id="3750225824417196283">Nova páxina de pestanas do modo de incógnito</translation>
 <translation id="3753408171347588045">Seguimento de prezos</translation>
 <translation id="3762232513783804601">Deseñado para iPad</translation>
@@ -664,6 +665,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3868495844258915202">Mostrar o URL completo</translation>
 <translation id="3875783148670536197">Ver como facelo</translation>
+<translation id="3878657761594430423">Control da folla</translation>
 <translation id="3885587018298784481">Únete a un grupo familiar</translation>
 <translation id="3888863481921783344">Usarase para mostrarche posibles invitados ao teu evento.</translation>
 <translation id="3891414008432200754">Prezo</translation>
@@ -704,18 +706,20 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4002066346123236978">Título</translation>
 <translation id="4004204301268239848">Os contrasinais gárdanse na túa Conta de Google para que poidas usalos en calquera dispositivo.</translation>
 <translation id="4011489366247192265">Do</translation>
+<translation id="4017599800655151880">Miniatura</translation>
 <translation id="4018440314314549819">Autocompleta os contrasinais gardados</translation>
 <translation id="4021447724486050609">Actualizar o navegador</translation>
 <translation id="4021931095789478915">Engadir ${url} á lista de lectura</translation>
 <translation id="4026496154402824012">Para desactivar esta opción, vai a <ph name="BEGIN_LINK" />Password Options<ph name="END_LINK" /> (Opcións de contrasinais)</translation>
 <translation id="4028871427853484857">Gardar na conta…</translation>
 <translation id="4038354071007134711">Ningunha aplicación do dispositivo pode abrir o ficheiro.</translation>
+<translation id="4039829422386964954">Navegar pola galería</translation>
 <translation id="4042870976416480368">Buscar na páxina</translation>
+<translation id="4045441967987592849">Volver abrir</translation>
 <translation id="4045648459118332842">Usa en calquera aplicación e cun toque os contrasinais gardados</translation>
 <translation id="4047337302138771011">Comparte os teus contrasinais</translation>
 <translation id="4049419681095579435">Xa se está facendo o seguimento deste paquete</translation>
 <translation id="4049507953662678203">Asegúrate de ter conexión de rede e téntao de novo.</translation>
-<translation id="4054572406751135230">Mantente ao día das noticias, os deportes e moito máis.</translation>
 <translation id="4070132839822635162">Non iniciar sesión</translation>
 <translation id="4094361089640885693">Fai un seguimento dos prezos con facilidade e consulta estatísticas.</translation>
 <translation id="4099756562043439968">Definir un recordatorio</translation>
@@ -742,6 +746,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4164514562270305824">Eliminar descargas automaticamente</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> que remata en <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Non permitir</translation>
+<translation id="417138788035229076">Xestionar o grupo</translation>
 <translation id="4172051516777682613">Mostrar sempre</translation>
 <translation id="417273154673973994">{count,plural, =1{Pechouse e gardouse 1 grupo de pestanas}other{Pecháronse e gardáronse {count} grupos de pestanas}}</translation>
 <translation id="417612446554534067">Enviar aos teus dispositivos</translation>
@@ -766,6 +771,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4256782883801055595">Licenzas de código aberto</translation>
 <translation id="4263576668337963058">Mostrar accións da páxina dispoñibles</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{Ignoraches {COUNT} aviso}other{Ignoraches {COUNT} avisos}}</translation>
+<translation id="4268574628540273656">URL:</translation>
 <translation id="4271575273430679392">Toca dúas veces e mantén premido o botón para abrir o historial</translation>
 <translation id="4272631900155121838">Para escanear un código QR, activa a cámara na configuración</translation>
 <translation id="4277990410970811858">Navegación segura</translation>
@@ -821,6 +827,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4495516234578759322">Buscar seguinte</translation>
 <translation id="4502423230170890588">Quitar deste dispositivo</translation>
 <translation id="4508750114462689118">Pecha a promoción de inicio de sesión</translation>
+<translation id="4509345063551561634">Localización:</translation>
 <translation id="4517684186578051919">Información do dispositivo</translation>
 <translation id="4520798012560649652">Máis información sobre o modo de incógnito</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} marcador}other{{count} marcadores}}</translation>
@@ -884,6 +891,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4764612367328936189">A túa organización só che permite iniciar sesión con certas contas. As contas que non están permitidas atópanse ocultas. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover e Seguindo</translation>
 <translation id="4769198578611055647">Axúdache a acceder ás claves de acceso gardadas en calquera dispositivo</translation>
+<translation id="4782952780741793211">Código de confirmación:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Queres abrir a ligazón no modo de incógnito?</translation>
 <translation id="479208892659046780">Sitios principais</translation>
@@ -909,6 +917,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4860895144060829044">Chamar</translation>
 <translation id="4861953997778766866">Todos os membros do grupo poden facer cambios nos grupos de pestanas compartidos</translation>
 <translation id="4865063548323785458">Garda e autocompleta os contrasinais para poder iniciar sesión facilmente nos sitios e nas aplicacións</translation>
+<translation id="4867608294647017606">Quitar a imaxe da busca</translation>
 <translation id="4869146460927742717">Posición da barra de enderezos</translation>
 <translation id="4870911314065352661">Queres pechar todas as pestanas?</translation>
 <translation id="4872664437015695612">Abrir no cartafol de descargas</translation>
@@ -1009,7 +1018,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5271265092610673171">{count,plural, =1{Un campo obrigatorio está en branco. Cúbreo antes de gardar o formulario.}other{Algúns campos obrigatorios están en branco. Cúbreos antes de gardar o formulario.}}</translation>
 <translation id="5271549068863921519">Gardar contrasinal</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) quere que te unas a un grupo de pestanas. Calquera persoa que teña a ligazón poderá editar todas as pestanas, polo que che recomendamos que teñas coidado ao unirte. A ligazón caducará ás 48 horas.</translation>
-<translation id="5279214046729249716">Si, mantelos separados</translation>
 <translation id="5279600392753459966">Bloquear todo</translation>
 <translation id="5282340693022193851">Para recibir notificacións de seguimento de prezos, activa as notificacións na configuración de iOS.</translation>
 <translation id="5294624619177114121">Notificacións para móbil</translation>
@@ -1064,7 +1072,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5548760955356983418">Handoff permíteche comezar a navegar nun sitio web neste dispositivo e despois continuar facilmente no teu Mac. O sitio web aberto actualmente aparecerá no Dock do teu Mac.
 
 Handoff tamén debe estar activado na sección Xeral da configuración e os teus dispositivos deben utilizar a mesma conta iCloud.</translation>
-<translation id="5551825465462320939">Mantente ao día das noticias, os deportes e moito máis en función dos teus intereses.</translation>
 <translation id="5555008247722361784">Sesión iniciada como <ph name="USER_EMAIL" />. Erro na Conta de Google. Abrir menú da conta.</translation>
 <translation id="5556459405103347317">Volver cargar</translation>
 <translation id="555749644339804659">Comprobando contrasinais…</translation>
@@ -1100,6 +1107,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5647702255748985085">Queres saír do grupo?</translation>
 <translation id="5648166631817621825">Últimos 7 días</translation>
 <translation id="5652623411397330904">Os produtos dos que fagas seguimento aparecerán aquí.</translation>
+<translation id="5656431592348714536">Calendario mellorado</translation>
 <translation id="5657156137487675418">Permitir todas as cookies</translation>
 <translation id="5659593005791499971">Correo electrónico</translation>
 <translation id="5666313630530585305">Inicia sesión nun sitio web.</translation>
@@ -1149,7 +1157,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5854790677617711513">Con máis de 30 días</translation>
 <translation id="5857770089550859117">Introduce a frase de acceso para iniciar a sincronización.</translation>
 <translation id="5859715514067755465">Avanzar</translation>
-<translation id="5860033963881614850">Non</translation>
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5868644772996939262">Autocompletar os contrasinais e claves de acceso</translation>
 <translation id="5869522115854928033">Contrasinais gardados</translation>
@@ -1201,6 +1208,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6074656473835429958">Recibe notificacións</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) non se puido cargar</translation>
 <translation id="6077126322656614846">Permítese o acceso á cámara</translation>
+<translation id="6078236141387574983">Reaxusta a altura da folla</translation>
 <translation id="6084848228346514841">Seleccionar pestanas</translation>
 <translation id="6089212833343035912">PIN do xestor de contrasinais de Google</translation>
 <translation id="6090760257419195752">Advertencias ignoradas</translation>
@@ -1217,6 +1225,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6140600850356225166">Preguntar para abrir ligazóns doutras aplicacións no modo de incógnito</translation>
 <translation id="6140948187512243695">Mostrar detalles</translation>
 <translation id="6144589619057374135">Abre ${url} no modo de incógnito</translation>
+<translation id="6145820728009071857">Mostrar modo de lectura</translation>
 <translation id="6147279996212084542">Explicar</translation>
 <translation id="6151006591088192882">Desbloquear as pestanas do modo de incógnito co seguinte método: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Inactivas</translation>
@@ -1226,6 +1235,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6165508094623778733">Máis información</translation>
 <translation id="6168647875670665004">Suxestións de artigos</translation>
 <translation id="6169031022444660352">Para eliminar todas as credenciais gardadas, primeiro debes configurar un contrasinal no teu dispositivo.</translation>
+<translation id="6172428250974276014">Si, manter os datos por separado (opción recomendada)</translation>
 <translation id="6173499589275053515">O contrasinal gardouse na túa Conta de Google, <ph name="EMAIL" /></translation>
 <translation id="6181969657494915430">Buscar na pantalla</translation>
 <translation id="6187302354554850004">Última sincronización: <ph name="LAST_USED_TIME" /></translation>
@@ -1289,6 +1299,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6410005280995367944">Contrasinais doutras aplicacións</translation>
 <translation id="6410390304316730527">A función Navegación segura protéxete contra os piratas informáticos que poden enganarte para que realices accións perigosas, como instalar un software malicioso ou revelar información persoal (por exemplo, contrasinais, números de teléfono ou tarxetas de crédito). Se a desactivas, ten coidado ao consultar sitios descoñecidos ou con mala reputación.</translation>
 <translation id="6410883413783534063">Abre pestanas para visitar páxinas diferentes ao mesmo tempo</translation>
+<translation id="6415646765510136">Escolle que queres facer cos datos de navegación deste dispositivo.</translation>
 <translation id="6416807286621280684">Paquetes dos que se está facendo un seguimento e información actualizada da entrega.</translation>
 <translation id="6418346271604475326">Preparando PDF</translation>
 <translation id="6421038304268477484">Texto traducido</translation>
@@ -1396,6 +1407,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6755733078693946548">Acceder aos contrasinais e claves de acceso desde calquera aplicación</translation>
 <translation id="6759709389246683070">Se queres volver acceder a esta pestana máis tarde, mantena premida para definir un recordatorio</translation>
 <translation id="6761393919622941301">Audio</translation>
+<translation id="6770452996697898492">[RESERVADO]</translation>
 <translation id="6779455296366983087">Eliminaranse os teus datos de navegación</translation>
 <translation id="6790502149545262384">Dentro de pouco verás as historias de <ph name="CHANNEL_NAME" /> cando abras unha pestana nova.</translation>
 <translation id="6791425686608802741">Toca Engadir pestana ao grupo novo</translation>
@@ -1500,6 +1512,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7261217796641151584">Compartir grupo</translation>
 <translation id="7266578100016339897">Axudarache a ter todo organizado. Podes cambialo cando queiras en Configuración.</translation>
 <translation id="7272437679830969316">Non se pode verificar a túa identidade, polo que non se copiou o contrasinal.</translation>
+<translation id="728025568708172005">Iniciar introdución</translation>
 <translation id="7293429513719260019">Seleccionar idioma</translation>
 <translation id="7300448350764260141">Engade unha capa máis de protección contra as ameazas en liña.</translation>
 <translation id="7311244614769792472">Non se encontraron resultados</translation>
@@ -1556,6 +1569,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7512075701202892785">Goza en iPad do navegador que tanto che gusta</translation>
 <translation id="7512909159512473473">Poñer frase de acceso…</translation>
 <translation id="7514365320538308">Descargar</translation>
+<translation id="7514530647142300459">Sigue usando os contrasinais na túa Conta de Google <ph name="EMAIL" /></translation>
 <translation id="7522948500476882302">Cando descargues un ficheiro, selecciona que se elimine automaticamente ao cabo dun mes</translation>
 <translation id="7524055474074101597">Accede aos teus contrasinais e moito máis en todas as aplicacións.</translation>
 <translation id="75362970626182391">Novo grupo de pestanas</translation>
@@ -1596,6 +1610,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7669493687462784703">Queres seguir descargando un perfil de configuración de <ph name="WEBSITE" />?</translation>
 <translation id="7673346542062368520">Podes pasar o dedo cara á esquerda para navegar no modo de incógnito.</translation>
 <translation id="7679915578945954324">Copiáronse os enderezos dos sitios</translation>
+<translation id="7695953765525234038">Barra de busca</translation>
 <translation id="7696316012653762532">Opcións para traducir a páxina</translation>
 <translation id="7700527812567437847">Buscar pantalla con Google Lens</translation>
 <translation id="7701040980221191251">Ningunha</translation>
@@ -1738,7 +1753,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8230355548492839438">Buscar anterior</translation>
 <translation id="8232956427053453090">Conservar datos</translation>
 <translation id="8233237502828137700">Pechar o báner de promoción</translation>
-<translation id="8238711781852526820">Ocultar Seguimento de prezos</translation>
 <translation id="8258999165172757081">Engadiuse</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="82619448491672958">Ver outras pestanas</translation>
@@ -1883,6 +1897,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8775144690796719618">URL non válido</translation>
 <translation id="8781834595282316166">Nova pestana no grupo</translation>
 <translation id="8786100550345425552">Modificar permisos</translation>
+<translation id="878871978861915380">Ocultar Seguimento de prezos</translation>
 <translation id="8792626944327216835">micrófono</translation>
 <translation id="8803526663383843427">Se a función está activada</translation>
 <translation id="8803639129939845298">Seguro</translation>
@@ -2011,7 +2026,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="961856697154696964">Eliminar datos navegación</translation>
 <translation id="963102227019621224">Actividade web e das aplicacións</translation>
 <translation id="966593914872420832">Busca por voz</translation>
-<translation id="968653181266955408">Recibe notificacións de contido</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{Unirte ao grupo de pestanas con <ph name="OWNER_NAME" />}=1{Unirte ao grupo de pestanas con <ph name="OWNER_NAME" /> e {COUNT} persoa máis}other{Unirte ao grupo de pestanas con <ph name="OWNER_NAME" /> e {COUNT} persoas máis}}</translation>
 <translation id="973493300226275298">Fai un seguimento do prezo dun produto nas tendas en liña. Recibirás alertas se baixa o prezo.</translation>
 <translation id="973788791897303708">Este grupo de pestanas está cheo</translation>

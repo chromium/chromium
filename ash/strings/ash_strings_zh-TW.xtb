@@ -1437,6 +1437,7 @@
 <translation id="5672890847723042801">公用程式</translation>
 <translation id="5673434351075758678">同步處理設定後，「<ph name="FROM_LOCALE" />」已變更為「<ph name="TO_LOCALE" />」。</translation>
 <translation id="5675363643668471212">檔案櫃項目</translation>
+<translation id="5677022547882470786">拖曳滑鼠或按下空格鍵，選取要搜尋的區域</translation>
 <translation id="5677928146339483299">已封鎖</translation>
 <translation id="5678564054339031017">顯示後一週的活動</translation>
 <translation id="5679050765726761783">已連接低功率電源變壓器</translation>
@@ -2427,6 +2428,7 @@
 <translation id="8934418770423095813">建立 Google 文件</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 個檔案}other{# 個檔案}}</translation>
 <translation id="8936501819958976551">已停用</translation>
+<translation id="8937312474322077653">在螢幕畫面擷取中，設為<ph name="SOURCE" />的<ph name="TYPE" />。按下 Tab 鍵選擇擷取類型。按下空格鍵選取區域。按下 Enter 鍵擷取。</translation>
 <translation id="8938800817013097409">USB-C 裝置 (背面右側連接埠)</translation>
 <translation id="8939855324412367560">音訊輸入裝置為「<ph name="INPUT_DEVICE_NAME" />」，音訊輸出裝置為「<ph name="OUTPUT_DEVICE_NAME" />」。如要變更，請前往「設定」。</translation>
 <translation id="8940956008527784070">電池電量不足 (<ph name="PERCENTAGE" />%)</translation>

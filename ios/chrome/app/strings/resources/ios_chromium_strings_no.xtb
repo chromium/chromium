@@ -47,7 +47,6 @@
 <translation id="2042889939382983733">Se Chromium-loggen din</translation>
 <translation id="2052320862053429062">Chromium sjekker passordene dine regelmessig opp mot lister som er lagt ut på nett. Når dette gjøres, er passordene og brukernavnene dine kryptert. Det betyr at ingen kan lese dem, ikke engang Google.</translation>
 <translation id="2059365270911640413">Fullfør konfigureringen av Chromium</translation>
-<translation id="2147210759439165826">Få med deg innhold og nyttige Chromium-tips.</translation>
 <translation id="2168108852149185974">Noen tillegg fører til at Chrome krasjer. Avinstaller dette:</translation>
 <translation id="2168593389981132306">Gjør Chromium bedre</translation>
 <translation id="2178608107313874732">Chromium kan ikke bruke kameraet akkurat nå</translation>
@@ -157,6 +156,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chromium-dataene
 <translation id="4828317641996116749">Chromium kunne ikke sjekke alle passordene. Prøv på nytt senere.</translation>
 <translation id="4856138222358683580">Chromium-handlinger</translation>
 <translation id="4904452304169763785">Varsler om eventuelle personvern- eller sikkerhetsproblemer som Chromium oppdager for deg.</translation>
+<translation id="4908570938463711775">Lær deg det grunnleggende om Chromium for å komme i gang</translation>
 <translation id="4962295957157529683">Gjør deg ferdig med det du holdt på med i det andre åpne Chromium-vinduet.</translation>
 <translation id="4985291216379576555">Uten nett – Chromium kan ikke se etter oppdateringer</translation>
 <translation id="4996471330284142407">Få mer gjort med Chromium-nettleseren, som er enkel, sikker og raskere enn noensinne.</translation>
@@ -197,6 +197,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chromium-dataene
 <translation id="5688047395118852662">På dette kortet ser du forslag til hvordan du får mest mulig ut av Chromium.</translation>
 <translation id="5700709190537129682">Chromium kan ikke sjekke passordene dine</translation>
 <translation id="584550191241316896">Logget på Chromium</translation>
+<translation id="5862307444128926510">Velkommen til Chromium</translation>
 <translation id="5889847953983052353">Når dette er på,
 <ph name="BEGIN_INDENT" /> • bidrar du til å gjøre Chromium bedre for folk som bruker nettleseren slik du gjør.<ph name="END_INDENT" />
 
@@ -223,6 +224,7 @@ Du bør tenke på følgende:
 <translation id="6301717043141881464">Bruk Chromium for Autoutfyll for å få enkel tilgang til de lagrede passordene dine i de andre appene dine</translation>
 <translation id="6324041800010509197">Gå til fanerutenettet i Chromium</translation>
 <translation id="6325378625795868881">Bruk Chromium hver gang du trykker på linker i meldinger og andre apper.</translation>
+<translation id="6387994184698195448">Få med deg nyttige Chromium-tips med mer.</translation>
 <translation id="6424492062988593837">Chromium har blitt enda bedre. En ny versjon er nå tilgjengelig.</translation>
 <translation id="6433172051771630690">Tips for å få mest mulig ut av Chromium.</translation>
 <translation id="65045991564554105">Se Chromium-bokmerker</translation>
@@ -317,6 +319,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="8860548555286245440">Åpne nettadresser i Chromium i Inkognito</translation>
 <translation id="8880024619507699923">Organisasjonen din krever at du logger på for å bruke Chromium. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Få den sterkeste sikkerheten i Chromium</translation>
+<translation id="8925569192291721236">Få med deg oppdateringer om prissporing og Chromium-tips.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Dette skjer når Chromium ikke har vært i bruk på {THRESHOLD} minutt}other{Dette skjer når Chromium ikke har vært i bruk på {THRESHOLD} minutter}}</translation>
 <translation id="8963279154877372067">Tillat at Chromium-varsler får varsler om prisavslag</translation>
 <translation id="8975812008711371178">Søk med stemmen i Chromium</translation>

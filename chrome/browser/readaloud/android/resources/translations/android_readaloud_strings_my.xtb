@@ -10,6 +10,7 @@
 <translation id="1807863182207623884">Ruby</translation>
 <translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> စက္ကန့် ရှေ့သို့အမြန်ရစ်ရန်</translation>
 <translation id="1984328900355667246">ဖွင့်မရပါ</translation>
+<translation id="2019727681730021602">ပုံမှန်ဖွင့်ခြင်း</translation>
 <translation id="2224347680315897176">တည်ငြိမ်</translation>
 <translation id="2611765907167846862">တည်ငြိမ်သည်</translation>
 <translation id="3023502830214299618">ဤစာမျက်နှာအတွက် ဖွင့်ခြင်းကို လောလောဆယ် မရနိုင်ပါ။ နောက်မှ ထပ်စမ်းကြည့်ပါ။</translation>
@@ -28,9 +29,11 @@
 <translation id="5026371835667036198">ကျယ်သည်</translation>
 <translation id="5234971936051226002">“ဤစာမျက်နှာကို နားထောင်ရန်” ဖွင့်စနစ်ကို ချုံ့ထားသည်။</translation>
 <translation id="5251803541071282808">မိုးတိမ်</translation>
+<translation id="5526614127710223793">ဖွင့်ခြင်းမုဒ် ရွေးချယ်စနစ်</translation>
 <translation id="5596627076506792578">ပိုမို ရွေးချယ်စရာများ</translation>
 <translation id="5694491020339060116">ဖွင့်သည့်မြန်နှုန်း မီနူး</translation>
 <translation id="6315170314923504164">အသံ</translation>
+<translation id="6330455646577575965">AI အသံဖွင့်ခြင်း</translation>
 <translation id="6343633247422081848">Moss</translation>
 <translation id="6550675742724504774">ရွေးစရာများ</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />၊ <ph name="TONE" /></translation>
@@ -43,7 +46,6 @@
 <translation id="7221920857098237570">သိမ်မွေ့သည်</translation>
 <translation id="7237590978482584900">ရွှင်ပျသည်</translation>
 <translation id="7282547042039404307">ချောမွေ့</translation>
-<translation id="7587250070160020374">Chrome ယခု ဖွင့်နေသည်များ</translation>
 <translation id="8004767876552422827">Field</translation>
 <translation id="8136852699834914183">ဤစာမျက်နှာအတွက် ဖွင့်ခြင်း မရနိုင်ပါ။</translation>
 <translation id="8198036737896977997">Air</translation>

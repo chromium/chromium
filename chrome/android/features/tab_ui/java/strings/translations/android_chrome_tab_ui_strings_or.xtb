@@ -8,6 +8,7 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> ବର୍ଷ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}other{<ph name="NUM_YEARS_MANY" /> ବର୍ଷ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}}</translation>
 <translation id="1173894706177603556">ରିନେମ୍ କରନ୍ତୁ</translation>
 <translation id="1197088940767939838">କମଳା</translation>
+<translation id="1245862538775272968">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT2" /> ଟାବ ସହ <ph name="TITLE_OF_GROUP" />କୁ ଖୋଲନ୍ତୁ}other{<ph name="TAB_COUNT2" /> ଟାବ ସହ <ph name="TITLE_OF_GROUP" />କୁ ଖୋଲନ୍ତୁ}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ଟାବ ଗ୍ରୁପ ବିକଳ୍ପ</translation>
 <translation id="1329584516321524826">ଏହିକ୍ଷଣି ଅପଡେଟ୍ ହେଲା</translation>
 <translation id="1340839264183302272">ଗୋଷ୍ଠୀ ଛାଡ଼ନ୍ତୁ</translation>
@@ -16,7 +17,6 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> ମିନିଟ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}other{<ph name="NUM_MINS_MANY" /> ମିନିଟ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}}</translation>
 <translation id="1499635324672558517">ସମସ୍ତ ଇନକଗ୍ନିଟୋ ଟାବକୁ ବନ୍ଦ କରିବେ?</translation>
 <translation id="1501480321619201731">ଗୋଷ୍ଠୀ ଡିଲିଟ୍ କରନ୍ତୁ</translation>
-<translation id="1505526451013346974"><ph name="TITLE_OF_GROUP" />ରେ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="1555130319947370107">ନୀଳ</translation>
 <translation id="161042844686301425">ସାୟାନ୍</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" />ଟି ଟାବ୍ ଏକତ୍ର କରାଯାଇଛି</translation>
@@ -43,6 +43,7 @@
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" ଏବଂ "<ph name="TAB_GROUP_NAME_2" />" ଟାବ ଗ୍ରୁପ ଆଉ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଟାବ୍ ସଙ୍କୁଚିତ କରନ୍ତୁ।}other{<ph name="TABS_COUNT_MANY" />ଟି ଟାବ୍ ଥିବା ଟାବ୍ ଗ୍ରୁପକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ।}}</translation>
 <translation id="2569352796411618312">ପ୍ରସ୍ତାବ: ଆପଣଙ୍କର <ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ନିକଟରେ ବ୍ୟବହୃତ ହୋଇନାହିଁ। ସେଗୁଡ଼ିକୁ ବନ୍ଦ କରିବେ?</translation>
+<translation id="2656693375914502139">ଗୋଷ୍ଠୀକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ରେଟିଂ</translation>
 <translation id="266935134738038806">ସାଇଟକୁ ଭିଜିଟ କରନ୍ତୁ</translation>
 <translation id="2671423594960767771">ଗୋଷ୍ଠୀ ସେୟାର୍‌ କରନ୍ତୁ</translation>
@@ -75,7 +76,6 @@
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ନୂଆ ଟାବ, <ph name="ANY_CLOSED" /> ବନ୍ଦ ଅଛି}other{<ph name="MANY_ADDED" /> ନୂଆ ଟାବ, <ph name="ANY_CLOSED" /> ବନ୍ଦ ଅଛି}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ଟାବକୁ ଗୋଷ୍ଠୀଭୁକ୍ତ କରନ୍ତୁ}other{ଟାବଗୁଡ଼ିକୁ ଗୋଷ୍ଠୀଭୁକ୍ତ କର}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ନିଷ୍କ୍ରିୟ ଟାବ}other{<ph name="TABS_COUNT_MANY" /> ନିଷ୍କ୍ରିୟ ଟାବ}}</translation>
-<translation id="3969565576924904454"><ph name="TITLE_OF_GROUP" /> ଖୋଲନ୍ତୁ</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> ଦିନ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}other{<ph name="NUM_DAYS_MANY" /> ଦିନ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}}</translation>
 <translation id="4076226664360336092">ଟାବ ଗ୍ରୁପ ତାଲିକା ସମ୍ପୂର୍ଣ୍ଣ ଭାବେ ଖୋଲାଯାଇଛି</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ସମ୍ବନ୍ଧିତ ଥିଲା ପରି ଲାଗୁଛି। ସେଗୁଡ଼ିକୁ ଗ୍ରୁପ୍ କରିବେ?</translation>
@@ -139,7 +139,9 @@
 <translation id="6590332670428149473">ସେୟାର କରାଯାଇଥିବା <ph name="TITLE_OF_GROUP" /> ଟାବ ଗ୍ରୁପ, <ph name="COLOR_NAME" /> ରଙ୍ଗ ପାଇଁ ଟାବ ଗ୍ରୁପ ଆକ୍ସନ ମେନୁ ଖୋଲନ୍ତୁ।</translation>
 <translation id="6615455863669487791">ମୋତେ ଦେଖାନ୍ତୁ</translation>
 <translation id="6694634756612002311">ସେୟାର କରିବା ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="6709297274997495821">ଟାବ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="6744956528665271406">ଗୋଷ୍ଠୀର ରଙ୍ଗ ଏଡିଟ କରନ୍ତୁ</translation>
+<translation id="6784585810034073638">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT1" /> ଟାବ ସହ <ph name="TITLE_OF_GROUP" /> ନାମକ ଗୋଷ୍ଠୀରେ ଯୋଗ କରନ୍ତୁ}other{<ph name="TAB_COUNT1" /> ଟାବ ସହ <ph name="TITLE_OF_GROUP" /> ନାମକ ଗୋଷ୍ଠୀରେ ଯୋଗ କରନ୍ତୁ}}</translation>
 <translation id="6856809498882026482">ଏକାଧିକ-ଚୟନ ମୋଡକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> ରଙ୍ଗର <ph name="TABS_COUNT_ONE" /> ଟାବ ଥିବା ସେୟାର କରାଯାଇଥିବା <ph name="TITLE_OF_GROUP" /> ଟାବ ଗ୍ରୁପକୁ ବିସ୍ତାର କରନ୍ତୁ।}other{<ph name="COLOR_NAME" /> ରଙ୍ଗର <ph name="TABS_COUNT_MANY" /> ଟାବ ଥିବା ସେୟାର କରାଯାଇଥିବା <ph name="TITLE_OF_GROUP" /> ଟାବ ଗ୍ରୁପକୁ ବିସ୍ତାର କରନ୍ତୁ।}}</translation>
 <translation id="709473454666962555">ଟାବ ଗ୍ରୁପକୁ ଚୟନ କରନ୍ତୁ</translation>

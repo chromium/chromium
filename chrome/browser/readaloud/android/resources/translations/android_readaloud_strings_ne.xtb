@@ -10,6 +10,7 @@
 <translation id="1807863182207623884">रुबी</translation>
 <translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> सेकेन्ड फास्ट फर्वार्ड गर्नुहोस्</translation>
 <translation id="1984328900355667246">प्लेब्याक उपलब्ध छैन</translation>
+<translation id="2019727681730021602">डिफल्ट प्लेब्याक</translation>
 <translation id="2224347680315897176">स्थिर</translation>
 <translation id="2611765907167846862">स्थिर</translation>
 <translation id="3023502830214299618">दुर्भाग्यवश, अहिले यो पेजमा प्लेब्याक उपलब्ध छैन। कृपया पछि फेरि प्रयास गर्नुहोस्।</translation>
@@ -28,9 +29,11 @@
 <translation id="5026371835667036198">चहकिलो</translation>
 <translation id="5234971936051226002">“यो पेजमा भएको टेक्स्ट सुन्नुहोस्” प्लेयर मिनिमाइज गरिएको छ।</translation>
 <translation id="5251803541071282808">क्लाउड</translation>
+<translation id="5526614127710223793">प्लेब्याक मोड सेलेक्टर</translation>
 <translation id="5596627076506792578">अन्य विकल्पहरू</translation>
 <translation id="5694491020339060116">प्लेब्याकको गतिसम्बन्धी मेनु</translation>
 <translation id="6315170314923504164">भ्वाइस</translation>
+<translation id="6330455646577575965">AI अडियो प्लेब्याक</translation>
 <translation id="6343633247422081848">मस</translation>
 <translation id="6550675742724504774">विकल्पहरू</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -43,7 +46,6 @@
 <translation id="7221920857098237570">नम्र</translation>
 <translation id="7237590978482584900">फुर्तिलो</translation>
 <translation id="7282547042039404307">निर्बाध</translation>
-<translation id="7587250070160020374">Chrome अहिले चलिरहेको छ</translation>
 <translation id="8004767876552422827">फिल्ड</translation>
 <translation id="8136852699834914183">यो पेजमा प्लेब्याक सुविधा उपलब्ध छैन।</translation>
 <translation id="8198036737896977997">एयर</translation>

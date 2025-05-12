@@ -20,6 +20,7 @@
 <translation id="1059913517121127803">无法启动扫描</translation>
 <translation id="1061864016440983342">在不开启位置信息服务的情况下使用</translation>
 <translation id="1062823486781306604">第 <ph name="INDEX" /> 个，共 <ph name="COUNT" /> 个，<ph name="NAME" />。</translation>
+<translation id="106558928761833284">美丽的宇宙星云星系中有一艘疾速的未来派飞船，采用蓝色、粉色和紫色调</translation>
 <translation id="1069150558259542054">快捷插入键不能用作自定义快捷键。</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">检测到防火墙</translation>
@@ -27,6 +28,7 @@
 <translation id="1082009148392559545">正在下载屏保</translation>
 <translation id="1094693127011229778">IP 地址缺失</translation>
 <translation id="1100902271996134409">正在生成图像…</translation>
+<translation id="1102946598597843031">一张 4K 分辨率的照片，照片中月亮悬挂在湖面上，空中樱花瓣轻盈飘落</translation>
 <translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> 音频</translation>
 <translation id="1116694919640316211">关于</translation>
 <translation id="1118572504348554005">我们可能会与合作伙伴分享通过本表单提交的反馈，以便排查您向我们报告的错误和其他问题。请勿包含密码等敏感信息。</translation>
@@ -67,6 +69,7 @@
 <translation id="1238163879850290856">重置可防止他人访问数据。请仅使用您信任的输入法。</translation>
 <translation id="1238612778414822719">HTTPS 延迟</translation>
 <translation id="1252766349417594414">操纵杆</translation>
+<translation id="1261045951892393759">一只猫骑在独角兽上弹 Flying V 电吉他，背景有一道闪电</translation>
 <translation id="1270369111467284986">疑似存在强制门户</translation>
 <translation id="1274654146705270731">橙子</translation>
 <translation id="1275718070701477396">已选择</translation>
@@ -273,6 +276,7 @@
 <translation id="2045814230297767491">餐具</translation>
 <translation id="2047316797244836561">若要查看屏保，请连接到网络并重新加载此页面。</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
+<translation id="2068472557797646626">3D 渲染的铬球体和球形物体，背景是铬制建筑元素。这幅作品构图现代简约，留有文案空间，适合用于广告、品牌塑造或演示文稿。极简主义风格的抽象背景前矗立着一座大型拱门。摄影棚灯效。特写镜头。</translation>
 <translation id="2073232437457681324">浩瀚大海</translation>
 <translation id="2080070583977670716">更多设置</translation>
 <translation id="2082932131694554252">已分配的键盘按键</translation>
@@ -390,7 +394,6 @@
 <translation id="2584559707064218956">若要进行设置，请转到“设置”</translation>
 <translation id="2586146417912237930">蓝色和靛蓝色</translation>
 <translation id="2589921777872778654">“修改和删除”菜单</translation>
-<translation id="2590424100019931043">您已被移出此课程</translation>
 <translation id="2597774443162333062">文件将被发送到 Google 进行调试</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{已完成扫描。扫描了 1 页}other{已完成扫描。扫描了 {NUMBER_OF_PAGES} 页}}</translation>
 <translation id="261322795497077164">说话人识别</translation>
@@ -430,6 +433,7 @@
 <translation id="2805756323405976993">应用</translation>
 <translation id="28232023175184696">无法连接到互联网。点击即可重试。</translation>
 <translation id="2855718259207180827">羊毛</translation>
+<translation id="2856429654176718363">一艘巨大的飞船漂浮在被无数灯光照亮的城市上空。整个场景采用油画风格，呈现暗色调。以未来派科幻元素营造神秘氛围。这件作品运用 C4D 软件和 OC 渲染程序创作，以突显高分辨率的震撼细节。附近还有一些城市建筑，增添了景深效果。该场景采用油画风格渲染，呈现暗色调，营造出带有未来科幻元素的神秘氛围。</translation>
 <translation id="2859243502336719778">重要更新</translation>
 <translation id="2860473693272905224">将另一个页面放置在扫描仪上</translation>
 <translation id="286265581261662583">右键点击或按住即可获取定义、翻译或单位换算结果</translation>
@@ -446,9 +450,11 @@
 <translation id="2895772081848316509">深色</translation>
 <translation id="2915996080311180594">暂不重启</translation>
 <translation id="2926057806159140518">输入您的用户名和密码，或扫描您的二维码</translation>
+<translation id="2927007463545347013">动漫风的小径，沿途可俯瞰海景，画面中有樱花瓣飘落</translation>
 <translation id="2940811910881150316">无法测试设备。重新打开设备的盖子即可进行测试。</translation>
 <translation id="2941112035454246133">低</translation>
 <translation id="2956070106555335453">摘要</translation>
+<translation id="2968959705684615497">一只超现实白虎，金眸金纹，踞于洁白的沙丘之上</translation>
 <translation id="299385721391037602">粉色和黄色</translation>
 <translation id="3008341117444806826">刷新</translation>
 <translation id="3009958530611748826">选择要保存到的文件夹</translation>
@@ -518,6 +524,7 @@
 <translation id="3321030238473337787">播放速度</translation>
 <translation id="3327613592010997943">您在<ph name="DAY" /><ph name="TIME" /> 后将能够再次使用此设备。</translation>
 <translation id="3328783797891415197">正在运行测试</translation>
+<translation id="3332683265015995419">一艘朋克风格的蒸汽飞船在沙尘暴中穿行</translation>
 <translation id="3340011300870565703">设备右侧耳机的电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="3340978935015468852">设置</translation>
 <translation id="3347558044552027859">现代</translation>
@@ -529,6 +536,7 @@
 <translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">“地球的风景变化”壁纸</translation>
 <translation id="33736539805963175">包含字母 <ph name="LETTERS_LETTER" /> 的<ph name="LETTERS_COLOR" />背景</translation>
+<translation id="3382806462014639823"><ph name="TEACHER_NAME" />正在查看您的屏幕</translation>
 <translation id="3383623117265110236">专有</translation>
 <translation id="3404249063913988450">启用屏保功能</translation>
 <translation id="3413935475507503304">若要继续更新，请点击“下一步”。</translation>
@@ -561,6 +569,7 @@
 <translation id="3532980081107202182">还剩大约 <ph name="MIN_REMAINING" /> 分钟</translation>
 <translation id="3533790840489634638">水池</translation>
 <translation id="3547264467365135390">公式</translation>
+<translation id="3552832331940389362">一幅日式动漫插图，描绘了一只猫坐在午后的窗台上观雨</translation>
 <translation id="3557205324756024651">本地身份（可选）</translation>
 <translation id="3565064564551103223">允许使用的 IP</translation>
 <translation id="3569407787324516067">屏保</translation>
@@ -636,12 +645,14 @@
 <translation id="38811596981744338">法律问题</translation>
 <translation id="3885327323343477505">更换屏保</translation>
 <translation id="3889914174935857450">重置日期</translation>
+<translation id="3889954687526985291">一辆黑色纸制的未来派摩托车，搭配有霓虹灯的深色背景</translation>
 <translation id="3897092660631435901">菜单</translation>
 <translation id="3902271751020176019">转写语言</translation>
 <translation id="390890062090528082">星空</translation>
 <translation id="391412459402535266">无法测试设备。切换到笔记本电脑模式即可进行测试。</translation>
 <translation id="3916998944874125962">截取屏幕截图</translation>
 <translation id="3923184630988645767">流量使用</translation>
+<translation id="392943705803418306">你的课堂工具会话已结束</translation>
 <translation id="3932043219784172185">未连接任何设备</translation>
 <translation id="3934185438132762746">未分配的<ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">未能解析主机</translation>
@@ -808,6 +819,7 @@
 <translation id="4593212453765072419">需要验证代理身份</translation>
 <translation id="4594021849294327751">创建转写文本</translation>
 <translation id="4594541568452132351">选择转写语言并下载模型</translation>
+<translation id="4600301862817165514">一辆装有霓虹灯的 Delorean 汽车在银河系中飞驰，星星从身边呼啸而过</translation>
 <translation id="4609350030397390689">调低键盘亮度</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，已打印 <ph name="PRINTED_PAGE_NUMBER" /> 页，共 <ph name="TOTAL_PAGE_NUMBER" /> 页。按 Enter 键即可取消这项打印任务。</translation>
 <translation id="463791356324567266">正在取消扫描…</translation>
@@ -830,6 +842,7 @@
 <translation id="4697260493945012995">选择控件类型</translation>
 <translation id="4712940987669302829">焦外成像效果</translation>
 <translation id="4731797938093519117">家长访问</translation>
+<translation id="4733200407105375152">不在课堂工具中</translation>
 <translation id="4734982181169850310">粉彩色调</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4744944742468440486">与您所选内容相关的信息</translation>
@@ -1006,6 +1019,7 @@
 <translation id="5499762266711462226">键盘颜色基于壁纸</translation>
 <translation id="5502931783115429516">Android 未运行</translation>
 <translation id="550600468576850160">草地</translation>
+<translation id="5507504956167780539">一张极简风格的专业照片，展现了闪闪发光的黑色沙丘，光影对比强烈</translation>
 <translation id="551689408806449779">设备已断开连接。请尝试重新连接以进行测试</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="552644173505433109">详细了解摘要和标题创建</translation>
@@ -1077,6 +1091,7 @@
 <translation id="5876385649737594562">开启后才能选择所需选项</translation>
 <translation id="5877503382465267833">暂停“<ph name="RECORDING_NAME" />”</translation>
 <translation id="588258955323874662">全屏</translation>
+<translation id="5889539348012432386">课堂工具首页</translation>
 <translation id="5893975327266416093">点按键盘按键即可进行分配</translation>
 <translation id="5895138241574237353">重新启动</translation>
 <translation id="5896602941605730551">播放</translation>
@@ -1125,6 +1140,7 @@
 <translation id="6075872808778243331">(Android) HTTP 延迟时间</translation>
 <translation id="6078323886959318429">添加快捷方式</translation>
 <translation id="6079693086494835199">重置可确保默认主页不是钓鱼式攻击网站。请仅使用您信任的网站。</translation>
+<translation id="6090672065638047175">一张由星星组成的发光树的照片，背景是美丽的夜空和星系</translation>
 <translation id="6091080061796993741">黄色</translation>
 <translation id="6104112872696127344">已取消扫描</translation>
 <translation id="6106186594183574873">要完成更改，请输入您的旧密码</translation>
@@ -1310,6 +1326,7 @@
 <translation id="6900701049656042631">此相册内尚无任何照片。若要添加照片，请前往 <ph name="LINK" /></translation>
 <translation id="6902359863093437070">利用 AI 创建背景</translation>
 <translation id="6905163627763043954">试用一下</translation>
+<translation id="6905275015682612674">一张 4K 分辨率的长曝光照片，画面为日落时分的生物发光海滩，天空中繁星点点，色彩柔和美丽</translation>
 <translation id="6905724422583748843">返回“<ph name="PAGE_NAME" />”</translation>
 <translation id="6910312834584889076">扫描仪的盖子没合上。请合上盖子，然后重试。</translation>
 <translation id="6910845598686542904">根据在录音中检测到的语音计算模型</translation>
@@ -1319,6 +1336,7 @@
 <translation id="6930597342185648547">关于背景</translation>
 <translation id="6931666215260956151">星系</translation>
 <translation id="6939766318048400022">咖啡馆</translation>
+<translation id="6940212863873359282">一块白色欧根纱漂浮在画面中间，下方是白色大理石拱门，采用奶油色背景</translation>
 <translation id="6942253772720771875">分享您的反馈或描述您的问题</translation>
 <translation id="6943893908656559156">远程身份（可选）</translation>
 <translation id="694981048020558038">搜索录制标题</translation>
@@ -1405,6 +1423,7 @@
 <translation id="7271040990581020067">扫描仪正在使用中。请稍后再试。</translation>
 <translation id="7271932918253517778">使用顶行按键的快捷键必须包含<ph name="META_KEY" />键。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7275707758336796649">一只斑点狗站在粉红色背景前，全身入镜，姿势有动态感，采用高分辨率摄影技术拍摄，背景为经过调色的超写实图库风格</translation>
 <translation id="7281657306185710294">微风拂面</translation>
 <translation id="7287310195820267359">壁纸集</translation>
 <translation id="7293429513719260019">选择语言</translation>
@@ -1414,6 +1433,7 @@
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">在 Chromebook 帮助论坛中向专家提问</translation>
+<translation id="7309823890857024809">极简风静物画，几枝虞美人花放在玻璃花瓶中，采用黑色背景</translation>
 <translation id="7311368985037279727">键盘颜色</translation>
 <translation id="7317831949569936035">学校注册</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -1431,6 +1451,7 @@
 <translation id="7353413232959255829">共 <ph name="LIST_SIZE" /> 条搜索结果，所选结果是第 <ph name="LIST_POSITION" /> 条，内容为：<ph name="SEARCH_RESULT_TEXT" />。按 Enter 键即可进入快捷键。</translation>
 <translation id="7359657277149375382">文件类型</translation>
 <translation id="73631062356239394">分享诊断数据</translation>
+<translation id="7369648056634183167">雨中一朵沾满露珠的精致睡莲的特写。镜头聚焦于纤柔的花瓣和晶莹的水滴，捕捉它们在蓝色背景下，那柔美的粉彩色泽。利用自然光线，从平视角度拍摄</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378170410161264436">录音机可以为包含语音的录制内容创建转写文本。
 下载转写模型（最多 100 MB）即可获取这些转写文本。</translation>
@@ -1601,6 +1622,7 @@
 <translation id="8135609423982943441">Chromebook 已重置为安全的默认设置。您可以随时在“设置”中调整这些设置。</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">创建您自己的壁纸</translation>
+<translation id="8142182840415860496">几朵白色和黄色花朵的特写，取自一部动画电影中的定格画面。一朵精致的淡粉色花朵有细长的花瓣和绿色的茎干，夹在没有枝叶的两株大朵黄色郁金香之间，背景是蓝天，色调柔和。这个电影定格镜头具有极高的分辨率，细节繁复，采用 Octane Render 产生极美的光效、体积光和情感光。</translation>
 <translation id="8143951647992294073">选择 <ph name="TOPIC_SOURCE" /> - <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">开发者工具</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />，<ph name="ACCELERATOR_INFO" />。</translation>
@@ -1681,6 +1703,7 @@
 <translation id="8503813439785031346">用户名</translation>
 <translation id="8503836310948963452">只需再等几分钟…</translation>
 <translation id="8505011850330200833">Gemini 模型需要 2GB 的存储空间，才能处理转写文稿和创建摘要</translation>
+<translation id="8506063704538210734">夜空流星雨的照片，前景有几棵树，采用紫色和粉色色调</translation>
 <translation id="8506394543220680287">被雪覆盖</translation>
 <translation id="8508640263392900755">APN 详细信息</translation>
 <translation id="8522687886059337719">现在，您可以享用新的<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />壁纸<ph name="END_LINK_WALLPAPER_SUBPAGE" />和<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />屏保<ph name="END_LINK_SCREENSAVER_SUBPAGE" />了</translation>

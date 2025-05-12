@@ -1440,6 +1440,7 @@
 <translation id="5672890847723042801">Կոմունալ ծառայություններ</translation>
 <translation id="5673434351075758678">Կարգավորումների համաժամացման արդյունքում լեզուն փոխվել է: Ընթացիկ լեզուն՝ <ph name="TO_LOCALE" /> (նախկինում՝ <ph name="FROM_LOCALE" />):</translation>
 <translation id="5675363643668471212">Դարակի տարր</translation>
+<translation id="5677022547882470786">Որոնման հատվածն ընտրելու համար քաշեք նշորդը կամ սեղմեք բացատի ստեղնը</translation>
 <translation id="5677928146339483299">Արգելափակված է</translation>
 <translation id="5678564054339031017">Ցուցադրել հաջորդ շաբաթը</translation>
 <translation id="5679050765726761783">Միացվել է էներգախնայող ադապտեր</translation>
@@ -2432,6 +2433,7 @@
 <translation id="8934418770423095813">Ստեղծել Google փաստաթուղթ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ֆայլ}one{# ֆայլ}other{# ֆայլ}}</translation>
 <translation id="8936501819958976551">անջատվեց</translation>
+<translation id="8937312474322077653">Էկրանի տեսագրման պարամետրեր՝ <ph name="SOURCE" />, <ph name="TYPE" />։ Տեսագրման տեսակն ընտրելու համար սեղմեք Tab։ Էկրանի հատվածն ընտրելու համար սեղմեք բացատի ստեղնը։ Տեսագրումը սկսելու համար սեղմեք Enter։</translation>
 <translation id="8938800817013097409">USB-C սարք (հետևի աջ միացք)</translation>
 <translation id="8939855324412367560">Աուդիոյի ներածման համար ընտրված է «<ph name="INPUT_DEVICE_NAME" />» սարքը, իսկ արտածման համար՝ «<ph name="OUTPUT_DEVICE_NAME" />» սարքը։ Փոխելու համար անցեք Կարգավորումներ։</translation>
 <translation id="8940956008527784070">Մարտկոցի լիցքն սպառվում է (<ph name="PERCENTAGE" />%)</translation>

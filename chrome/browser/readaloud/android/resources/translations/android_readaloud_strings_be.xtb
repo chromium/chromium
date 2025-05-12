@@ -10,6 +10,7 @@
 <translation id="1807863182207623884">Рубін</translation>
 <translation id="1921351128855867012">Пераматаць уперад на наступную колькасць секунд: <ph name="NUMBER_OF_SECONDS" /></translation>
 <translation id="1984328900355667246">Прайграванне недаступнае</translation>
+<translation id="2019727681730021602">Стандартнае прайграванне</translation>
 <translation id="2224347680315897176">Ураўнаважаны голас</translation>
 <translation id="2611765907167846862">Ціхамірны</translation>
 <translation id="3023502830214299618">На жаль, прайграванне для гэтай старонкі зараз недаступнае. Паўтарыце спробу пазней.</translation>
@@ -32,6 +33,7 @@
 <translation id="5596627076506792578">Дадатковыя параметры</translation>
 <translation id="5694491020339060116">Меню хуткасці прайгравання</translation>
 <translation id="6315170314923504164">Галасавы ўвод</translation>
+<translation id="6330455646577575965">Прайграванне аўдыя, створанага з дапамогай штучнага інтэлекту</translation>
 <translation id="6343633247422081848">Мох</translation>
 <translation id="6550675742724504774">Параметры</translation>
 <translation id="6727569846535331147"><ph name="TONE" />, <ph name="PITCH" /></translation>
@@ -44,7 +46,6 @@
 <translation id="7221920857098237570">Мяккі</translation>
 <translation id="7237590978482584900">Бестурботны</translation>
 <translation id="7282547042039404307">Добрая</translation>
-<translation id="7587250070160020374">Зараз прайграецца ў Chrome</translation>
 <translation id="8004767876552422827">Поле</translation>
 <translation id="8136852699834914183">Прайграванне на гэтай старонцы недаступнае.</translation>
 <translation id="8198036737896977997">Паветра</translation>

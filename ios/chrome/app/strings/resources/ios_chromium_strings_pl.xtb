@@ -47,7 +47,6 @@
 <translation id="2042889939382983733">Wyświetl historię Chromium</translation>
 <translation id="2052320862053429062">Co jakiś czas Chromium sprawdza, czy Twoje hasła nie pojawiły się na listach opublikowanych w internecie. Aby nikt (nawet Google) nie mógł odczytać haseł ani nazw użytkowników, podczas sprawdzania są one zaszyfrowane.</translation>
 <translation id="2059365270911640413">Dokończ konfigurowanie Chromium</translation>
-<translation id="2147210759439165826">Bądź na bieżąco z treściami i przydatnymi wskazówkami dotyczącymi Chromium.</translation>
 <translation id="2168108852149185974">Niektóre dodatki mogą powodować awarie Chromium. Odinstaluj je.</translation>
 <translation id="2168593389981132306">Ulepszaj Chromium</translation>
 <translation id="2178608107313874732">Chromium nie może teraz użyć aparatu</translation>
@@ -157,6 +156,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chromium na swoim
 <translation id="4828317641996116749">Przeglądarce Chromium nie udało się sprawdzić wszystkich haseł. Spróbuj ponownie później.</translation>
 <translation id="4856138222358683580">Działania w Chromium</translation>
 <translation id="4904452304169763785">Alerty dotyczące wszelkich problemów z prywatnością i bezpieczeństwem, które wykrywa Chromium.</translation>
+<translation id="4908570938463711775">Aby zacząć, zapoznaj się z najważniejszymi przydatnymi informacjami o Chromium</translation>
 <translation id="4962295957157529683">Dokończ czynności rozpoczęte w innym otwartym oknie Chromium.</translation>
 <translation id="4985291216379576555">Tryb offline. Chromium nie może sprawdzić dostępności aktualizacji.</translation>
 <translation id="4996471330284142407">Zwiększ produktywność, korzystając z prostej, bezpiecznej i wyjątkowo szybkiej przeglądarki Chromium.</translation>
@@ -197,6 +197,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chromium na swoim
 <translation id="5688047395118852662">Ta karta zawiera sugestie, które pomogą Ci w pełni wykorzystać możliwości Chromium.</translation>
 <translation id="5700709190537129682">Chromium nie może sprawdzić Twoich haseł</translation>
 <translation id="584550191241316896">Zalogowano w Chromium</translation>
+<translation id="5862307444128926510">Chromium – witamy!</translation>
 <translation id="5889847953983052353">Po włączeniu:
 <ph name="BEGIN_INDENT" /> • Pomagaj w udoskonalaniu Chromium pod kątem potrzeb użytkowników, którzy korzystają z przeglądarki w taki sam sposób jak Ty.<ph name="END_INDENT" />
 
@@ -223,6 +224,7 @@ Pamiętaj, że:
 <translation id="6301717043141881464">Aby mieć łatwy dostęp do zapisanych haseł w innych aplikacjach, użyj autouzupełniania w Chromium</translation>
 <translation id="6324041800010509197">Wyświetl siatkę kart w Chromium</translation>
 <translation id="6325378625795868881">Używaj Chromium, zawsze gdy klikasz linki w wiadomościach i w innych aplikacjach.</translation>
+<translation id="6387994184698195448">Otrzymuj przydatne wskazówki dotyczące Chromium i inne informacje.</translation>
 <translation id="6424492062988593837">Chromium jest teraz jeszcze lepsze! Dostępna jest nowa wersja.</translation>
 <translation id="6433172051771630690">Wskazówki na temat pełnego wykorzystania możliwości Chromium.</translation>
 <translation id="65045991564554105">Zobacz zakładki Chromium</translation>
@@ -317,6 +319,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="8860548555286245440">Otwieraj adresy URL w Chromium w trybie incognito</translation>
 <translation id="8880024619507699923">Twoja organizacja wymaga od Ciebie zalogowania się w Chromium. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Korzystaj z najlepszych zabezpieczeń Chromium</translation>
+<translation id="8925569192291721236">Otrzymuj powiadomienia ze śledzenia cen i wskazówki dotyczące Chromium.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Dzieje się tak, gdy nie korzystasz z Chromium przez {THRESHOLD} minutę}few{Dzieje się tak, gdy nie korzystasz z Chromium przez {THRESHOLD} minuty}many{Dzieje się tak, gdy nie korzystasz z Chromium przez {THRESHOLD} minut}other{Dzieje się tak, gdy nie korzystasz z Chromium przez {THRESHOLD} minuty}}</translation>
 <translation id="8963279154877372067">Zezwalaj na powiadomienia Chromium, aby otrzymywać alerty o obniżkach cen</translation>
 <translation id="8975812008711371178">Wyszukaj głosowo w Chromium</translation>

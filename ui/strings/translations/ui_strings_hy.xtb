@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 չկարդացված ծանուցում}one{# չկարդացված ծանուցում}other{# չկարդացված ծանուցում}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Միացրեք հետևյալ ընդլայնումը ինկոգնիտո ռեժիմում՝}one{Միացրեք հետևյալ ընդլայնումը ինկոգնիտո ռեժիմում՝}other{Միացրեք հետևյալ ընդլայնումները ինկոգնիտո ռեժիմում՝}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 ամիս առաջ}one{# ամիս առաջ}other{# ամիս առաջ}}</translation>
+<translation id="4277033906326892359">«<ph name="COLUMN_NAME" />» սյունակի արժեքները դասավորված են աճման կարգով</translation>
 <translation id="4289300219472526559">Start Speaking</translation>
 <translation id="4289540628985791613">Համատեսք</translation>
 <translation id="4491109536499578614">Պատկեր</translation>
@@ -171,6 +172,7 @@
 <translation id="654149438358937226">Արգելափակել բոլոր ծանուցումները</translation>
 <translation id="6620110761915583480">Պահել ֆայլը</translation>
 <translation id="6699343763173986273">Հաջորդ կատարումը</translation>
+<translation id="6807086321996342431">Սյունակ <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">Դադարեցնել</translation>
 <translation id="6845383723252244143">Ընտրեք պանակը</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{Մնացել է 1 ժամ}one{Մնացել է # ժամ}other{Մնացել է # ժամ}}</translation>
@@ -202,11 +204,11 @@
 <translation id="7969046989155602842">Command</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Ավելի քան 1 չկարդացված ծանուցում}one{Ավելի քան # չկարդացված ծանուցում}other{Ավելի քան # չկարդացված ծանուցում}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{1 ր-ից}one{# ր-ից}other{# ր-ից}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Համարը բեռնված է <ph name="ORIGIN" /> կայքից</translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 ժամ առաջ}one{# ժամ առաջ}other{# ժամ առաջ}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{Մնացել է 1 վրկ}one{Մնացել է # վրկ}other{Մնացել է # վրկ}}</translation>
 <translation id="8134065097954893699">Այս էջը վերաբեռնվում է</translation>
+<translation id="813785873406874127">«<ph name="COLUMN_NAME" />» սյունակի արժեքները դասավորված չեն</translation>
 <translation id="815598010540052116">Թերթել ներքև</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Էջը վար</translation>
@@ -218,6 +220,7 @@
 <translation id="8393700583063109961">Ուղարկել հաղորդագրություն</translation>
 <translation id="8394908167088220973">Մեդիայի նվագարկում/դադար</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 տ}one{# տ}other{# տ}}</translation>
+<translation id="8582972250170726813">«<ph name="COLUMN_NAME" />» սյունակի արժեքները դասավորված են նվազման կարգով</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> ֆայլ (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> ԿԲ/վ</translation>

@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 ongelese kennisgewing}other{# ongelese kennisgewings}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Skakel die volgende uitbreiding in Incognito aan:}other{Skakel die volgende uitbreidings in Incognito aan:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 maand gelede}other{# maande gelede}}</translation>
+<translation id="4277033906326892359">Kolom <ph name="COLUMN_NAME" /> is gesorteer in stygende volgorde</translation>
 <translation id="4289300219472526559">Begin praat</translation>
 <translation id="4289540628985791613">Oorsig</translation>
 <translation id="4491109536499578614">Prent</translation>
@@ -164,13 +165,14 @@
 <translation id="6394627529324717982">Komma</translation>
 <translation id="6397363302884558537">Hou op praat</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{1 sek. gelede}other{# sek. gelede}}</translation>
-<translation id="6430678249303439055">Blokkeer alle kennisgewings van hierdie program af</translation>
+<translation id="6430678249303439055">Blokkeer alle kennisgewings van hierdie app af</translation>
 <translation id="6483402905448010557">{SECONDS,plural, =1{1 sekonde gelede}other{# sekondes gelede}}</translation>
 <translation id="6503257047630241175">RTF-inhoud</translation>
 <translation id="6539092367496845964">Iets is fout. Probeer later weer.</translation>
 <translation id="654149438358937226">Blokkeer alle kennisgewings</translation>
 <translation id="6620110761915583480">Stoor lêer</translation>
 <translation id="6699343763173986273">Media se volgende snit</translation>
+<translation id="6807086321996342431">Kolom <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">Mediastop</translation>
 <translation id="6845383723252244143">Kies vouer</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 uur oor}other{# uur oor}}</translation>
@@ -182,7 +184,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6974053822202609517">Regs na links</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7170202025028120564">Jou program se skerminstellings sal in werking tree wanneer dit weer herbegin word.</translation>
+<translation id="7170202025028120564">Jou app se skerminstellings sal in werking tree wanneer dit weer herbegin word.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 min. oor}other{# min. oor}}</translation>
 <translation id="7252604552361840748">Kry die uitbreiding hier bo</translation>
@@ -202,11 +204,11 @@
 <translation id="7969046989155602842">Command</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Meer as 1 ongelese kennisgewing}other{Meer as # ongelese kennisgewings}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{oor 1 m.}other{oor # m.}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Nommer vanaf <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 uur gelede}other{# uur gelede}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 sek. oor}other{# sek. oor}}</translation>
 <translation id="8134065097954893699">Herlaai tans hierdie bladsy</translation>
+<translation id="813785873406874127">Kolom <ph name="COLUMN_NAME" /> is nie gesorteer nie</translation>
 <translation id="815598010540052116">Rollees na onder</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Bladsy af</translation>
@@ -218,6 +220,7 @@
 <translation id="8393700583063109961">Stuur boodskap</translation>
 <translation id="8394908167088220973">Media speel/laat wag</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 j.}other{# j.}}</translation>
+<translation id="8582972250170726813">Kolom <ph name="COLUMN_NAME" /> is gesorteer in dalende volgorde</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> Lêer (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>

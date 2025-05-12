@@ -10,6 +10,7 @@
 <translation id="1807863182207623884">Rubin</translation>
 <translation id="1921351128855867012">Premotavanje <ph name="NUMBER_OF_SECONDS" /> s naprijed</translation>
 <translation id="1984328900355667246">Reprodukcija nije dostupna</translation>
+<translation id="2019727681730021602">Standardna reprodukcija</translation>
 <translation id="2224347680315897176">Stabilno</translation>
 <translation id="2611765907167846862">Spokojno</translation>
 <translation id="3023502830214299618">Nažalost, reprodukcija trenutno nije dostupna za ovu stranicu. Pokušajte ponovo kasnije.</translation>
@@ -28,10 +29,11 @@
 <translation id="5026371835667036198">Veselo</translation>
 <translation id="5234971936051226002">Plejer "Poslušajte ovu stranicu je minimiziran".</translation>
 <translation id="5251803541071282808">Oblak</translation>
-<translation id="5526614127710223793">Alat za odabir načina reprodukcije</translation>
+<translation id="5526614127710223793">Birač načina rada reprodukcije</translation>
 <translation id="5596627076506792578">Više opcija</translation>
 <translation id="5694491020339060116">Meni brzine reprodukcije</translation>
 <translation id="6315170314923504164">Govor</translation>
+<translation id="6330455646577575965">AI reprodukcija zvuka</translation>
 <translation id="6343633247422081848">Mahovina</translation>
 <translation id="6550675742724504774">Opcije</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -44,7 +46,6 @@
 <translation id="7221920857098237570">Nježno</translation>
 <translation id="7237590978482584900">Živahno</translation>
 <translation id="7282547042039404307">Glatko</translation>
-<translation id="7587250070160020374">Chrome trenutno reproducira</translation>
 <translation id="8004767876552422827">Polje</translation>
 <translation id="8136852699834914183">Reprodukcija nije dostupna za ovu stranicu.</translation>
 <translation id="8198036737896977997">Zrak</translation>

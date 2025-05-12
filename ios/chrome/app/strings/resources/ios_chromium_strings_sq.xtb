@@ -47,7 +47,6 @@
 <translation id="2042889939382983733">Shiko historikun tënd të Chromium</translation>
 <translation id="2052320862053429062">Chromium i kontrollon në mënyrë periodike fjalëkalimet e tua për t'i krahasuar me listat që janë publikuar online. Kur vepron kështu, fjalëkalimet dhe emrat e tu të përdoruesit enkriptohen, në mënyrë që të mos lexohen nga askush, duke përfshirë Google.</translation>
 <translation id="2059365270911640413">Përfundo konfigurimin e Chromium</translation>
-<translation id="2147210759439165826">Qëndro i informuar për përmbajtjet dhe merr këshilla të dobishme për Chromium.</translation>
 <translation id="2168108852149185974">Disa përbërës shtesë shkaktojnë ndërprerje aksidentale të Chromium. Çinstalo:</translation>
 <translation id="2168593389981132306">Përmirëso Chromium</translation>
 <translation id="2178608107313874732">Chromium nuk mund të përdorë kamerën tënde për momentin</translation>
@@ -157,6 +156,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="4828317641996116749">Chromium nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo sërish më vonë.</translation>
 <translation id="4856138222358683580">Veprimet në Chromium</translation>
 <translation id="4904452304169763785">Sinjalizimet për çdo problem të privatësisë ose sigurisë që Chromium zbulon për ty.</translation>
+<translation id="4908570938463711775">Mëso bazat e dobishme për Chromium për të filluar</translation>
 <translation id="4962295957157529683">Përfundo atë që po bën në dritaren tjetër të hapur të Chromium.</translation>
 <translation id="4985291216379576555">Offline. Chromium nuk mund të kontrollojë për përditësime</translation>
 <translation id="4996471330284142407">Bëj më shumë me një Chromium të thjeshtë, të sigurt dhe më të shpejtë se kurrë.</translation>
@@ -197,6 +197,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="5688047395118852662">Kjo kartë të shfaq sugjerime se si të përfitosh sa më shumë nga Chromium.</translation>
 <translation id="5700709190537129682">Chromium nuk mund t'i kontrollojë fjalëkalimet e tua</translation>
 <translation id="584550191241316896">Identifikuar në Chromium</translation>
+<translation id="5862307444128926510">Mirë se vjen në Chromium</translation>
 <translation id="5889847953983052353">Kur aktivizohet:
 <ph name="BEGIN_INDENT" />  • Ndihmo në përmirësimin e Chromium për njerëzit që e përdorin atë ashtu si ti.<ph name="END_INDENT" />
 
@@ -222,6 +223,7 @@ Gjëra për të pasur parasysh:
 <translation id="6301717043141881464">Për t'i marrë me lehtësi fjalëkalimet e tua të ruajtura në aplikacionet e tjera, zgjidh Chromium për "Plotësimin automatik"</translation>
 <translation id="6324041800010509197">Vizito rrjetën e skedave në Chromium</translation>
 <translation id="6325378625795868881">Përdor Chromium sa herë që troket te lidhjet në mesazhe dhe aplikacione të tjera.</translation>
+<translation id="6387994184698195448">Qëndro i informuar me këshilla të dobishme për Chromium dhe më shumë.</translation>
 <translation id="6424492062988593837">Chromium sapo është përmirësuar! Ofrohet një version i ri.</translation>
 <translation id="6433172051771630690">Këshilla për të përfituar sa më shumë nga Chromium.</translation>
 <translation id="65045991564554105">Shiko faqeshënuesit e Chromium</translation>
@@ -316,6 +318,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="8860548555286245440">Hap URL-të në Chromium në modalitetin "I fshehtë"</translation>
 <translation id="8880024619507699923">Organizata jote kërkon që të identifikohesh për të përdorur Chromium. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Merr sigurinë më të fortë të Chromium</translation>
+<translation id="8925569192291721236">Qëndro i informuar me përditësimet e monitorimit të çmimeve dhe këshillat për Chromium.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Kjo ndodh kur Chromium nuk përdoret për {THRESHOLD} minutë}other{Kjo ndodh kur Chromium nuk përdoret për {THRESHOLD} minuta}}</translation>
 <translation id="8963279154877372067">Lejo që njoftimet e Chromium të shfaqin sinjalizime për uljen e çmimeve</translation>
 <translation id="8975812008711371178">Kërko me zë në Chromium</translation>

@@ -8,6 +8,7 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Δημιουργήθηκε πριν από <ph name="NUM_YEARS_ONE" /> έτος}other{Δημιουργήθηκε πριν από <ph name="NUM_YEARS_MANY" /> έτη}}</translation>
 <translation id="1173894706177603556">Μετονομασία</translation>
 <translation id="1197088940767939838">Πορτοκαλί</translation>
+<translation id="1245862538775272968">{TAB_COUNT,plural, =1{Άνοιγμα της ομάδας <ph name="TITLE_OF_GROUP" /> με <ph name="TAB_COUNT2" /> καρτέλα}other{Άνοιγμα της ομάδας <ph name="TITLE_OF_GROUP" /> με <ph name="TAB_COUNT2" /> καρτέλες}}</translation>
 <translation id="1273910660700874265">Επιλογές ομάδας καρτελών <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1329584516321524826">Ενημερώθηκε μόλις τώρα</translation>
 <translation id="1340839264183302272">Αποχώρηση από την ομάδα</translation>
@@ -16,7 +17,6 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Δημιουργήθηκε πριν από <ph name="NUM_MINS_ONE" /> λεπτό}other{Δημιουργήθηκε πριν από <ph name="NUM_MINS_MANY" /> λεπτά}}</translation>
 <translation id="1499635324672558517">Θέλετε να κλείσετε όλες τις καρτέλες ανώνυμης περιήγησης;</translation>
 <translation id="1501480321619201731">Διαγραφή ομάδας</translation>
-<translation id="1505526451013346974">Προσθήκη σε <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1555130319947370107">Μπλε</translation>
 <translation id="161042844686301425">Κυανό</translation>
 <translation id="1645759014353344461">Ομαδοποιήθηκαν <ph name="TABS_COUNT_MANY" /> καρτέλες</translation>
@@ -43,6 +43,7 @@
 <translation id="2536366509642644298">Οι ομάδες καρτελών <ph name="TAB_GROUP_NAME_1" /> και <ph name="TAB_GROUP_NAME_2" /> δεν διατίθενται πλέον</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Συμπτύξτε <ph name="TABS_COUNT_ONE" /> καρτέλα.}other{Συμπτύξτε την ομάδα καρτελών με τις <ph name="TABS_COUNT_MANY" /> καρτέλες.}}</translation>
 <translation id="2569352796411618312">Πρόταση: <ph name="NUMBER_OF_TABS" /> από τις καρτέλες σας δεν έχουν χρησιμοποιηθεί πρόσφατα. Κλείσιμο αυτών των καρτελών;</translation>
+<translation id="2656693375914502139">Μετακίνηση σε ομάδα</translation>
 <translation id="2662028055331606429">Αξιολόγηση <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Μετάβαση στον ιστότοπο</translation>
 <translation id="2671423594960767771">Κοινοποίηση ομάδας</translation>
@@ -75,7 +76,6 @@
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> νέα καρτέλα, <ph name="ANY_CLOSED" /> έκλεισε}other{<ph name="MANY_ADDED" /> νέα καρτέλα, <ph name="ANY_CLOSED" /> έκλεισαν}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Ομαδοποίηση καρτέλας}other{Ομαδοποίηση καρτελών}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ανενεργή καρτέλα}other{<ph name="TABS_COUNT_MANY" /> ανενεργές καρτέλες}}</translation>
-<translation id="3969565576924904454">Άνοιγμα <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Δημιουργήθηκε πριν από <ph name="NUM_DAYS_ONE" /> ημέρα}other{Δημιουργήθηκε πριν από <ph name="NUM_DAYS_MANY" /> ημέρες}}</translation>
 <translation id="4076226664360336092">Η λίστα ομάδων καρτελών άνοιξε σε πλήρες ύψος</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> καρτέλες φαίνονται σχετικές. Να γίνει ομαδοποίηση;</translation>
@@ -139,7 +139,9 @@
 <translation id="6590332670428149473">Άνοιγμα του μενού ενεργειών ομάδας καρτελών για την κοινόχρηστη ομάδα καρτελών <ph name="TITLE_OF_GROUP" />, με χρώμα <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Εμφάνιση</translation>
 <translation id="6694634756612002311">Διαχείριση κοινοποίησης</translation>
+<translation id="6709297274997495821">Επιλογή καρτέλας</translation>
 <translation id="6744956528665271406">Επεξεργασία χρώματος ομάδας</translation>
+<translation id="6784585810034073638">{TAB_COUNT,plural, =1{Προσθήκη στην ομάδα με όνομα <ph name="TITLE_OF_GROUP" /> και <ph name="TAB_COUNT1" /> καρτέλα}other{Προσθήκη στην ομάδα με όνομα <ph name="TITLE_OF_GROUP" /> και <ph name="TAB_COUNT1" /> καρτέλες}}</translation>
 <translation id="6856809498882026482">Απόκρυψη λειτουργίας πολλαπλής επιλογής</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Ανάπτυξη κοινόχρηστης ομάδας καρτελών <ph name="TITLE_OF_GROUP" /> με <ph name="TABS_COUNT_ONE" /> καρτέλα, <ph name="COLOR_NAME" /> χρώμα.}other{Ανάπτυξη κοινόχρηστης ομάδας καρτελών <ph name="TITLE_OF_GROUP" /> με <ph name="TABS_COUNT_MANY" /> καρτέλες, <ph name="COLOR_NAME" /> χρώμα.}}</translation>
 <translation id="709473454666962555">Επιλογή ομάδας καρτελών</translation>

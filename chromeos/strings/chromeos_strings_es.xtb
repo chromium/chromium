@@ -20,6 +20,7 @@
 <translation id="1059913517121127803">No se ha podido empezar a escanear</translation>
 <translation id="1061864016440983342">Usar sin ubicación</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> de <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="106558928761833284">Una hermosa galaxia de nebulosas cósmicas con una nave espacial futurista y rápida, en tonos azul, rosa y morado.</translation>
 <translation id="1069150558259542054">Insertar Rápido no se puede usar en combinaciones de teclas personalizadas.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">cortafuegos detectado</translation>
@@ -27,6 +28,7 @@
 <translation id="1082009148392559545">Descargando el salvapantallas</translation>
 <translation id="1094693127011229778">La dirección IP no está disponible</translation>
 <translation id="1100902271996134409">Creando imágenes...</translation>
+<translation id="1102946598597843031">Fotografía en 4K de una luna sobre un lago con pétalos de cerezo cayendo.</translation>
 <translation id="1107856713690040084">Audio: <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">Información</translation>
 <translation id="1118572504348554005">Es posible que compartamos con nuestros partners los comentarios enviados a través de este formulario para solucionar errores y otros problemas que nos comuniques. No incluyas información sensible, como contraseñas.</translation>
@@ -67,6 +69,7 @@
 <translation id="1238163879850290856">Restablece para evitar que otras personas accedan a los datos. Usa solo métodos de introducción de texto de confianza.</translation>
 <translation id="1238612778414822719">Latencia de HTTPS</translation>
 <translation id="1252766349417594414">Joystick</translation>
+<translation id="1261045951892393759">Un gato tocando una Flying V montado en un unicornio con un rayo de fondo.</translation>
 <translation id="1270369111467284986">Posible portal cautivo</translation>
 <translation id="1274654146705270731">naranjas</translation>
 <translation id="1275718070701477396">Seleccionado</translation>
@@ -273,6 +276,7 @@
 <translation id="2045814230297767491">cubertería</translation>
 <translation id="2047316797244836561">Conéctate a una red y vuelve a cargar la página para ver el salvapantallas.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
+<translation id="2068472557797646626">Representación en 3D de esferas y formas esféricas cromadas sobre un fondo de elementos arquitectónicos cromados. La composición es un concepto minimalista moderno para publicidad, branding o presentaciones con espacio para texto. Un gran arco se encuentra frente a un fondo abstracto al estilo minimalista. Iluminación de estudio. Primer plano.</translation>
 <translation id="2073232437457681324">vasto océano</translation>
 <translation id="2080070583977670716">Más ajustes</translation>
 <translation id="2082932131694554252">Tecla del teclado asignada</translation>
@@ -390,7 +394,6 @@
 <translation id="2584559707064218956">Para configurar la red, ve a Configuración</translation>
 <translation id="2586146417912237930">azul e índigo</translation>
 <translation id="2589921777872778654">Menús Editar y Eliminar</translation>
-<translation id="2590424100019931043">Se te ha quitado de esta clase</translation>
 <translation id="2597774443162333062">Los archivos se enviarán a Google para depurarlos</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Escaneo completado. 1 página escaneada}other{Escaneo completado. {NUMBER_OF_PAGES} páginas escaneadas}}</translation>
 <translation id="261322795497077164">Identificación de quién habla</translation>
@@ -430,6 +433,7 @@
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="28232023175184696">No es posible conectarse a Internet. Haz clic aquí para volver a intentarlo.</translation>
 <translation id="2855718259207180827">lana</translation>
+<translation id="2856429654176718363">Una enorme nave espacial flota sobre la ciudad, que está iluminada por muchas luces. Toda la escena tiene un estilo de pintura al óleo y presenta tonos oscuros. Crea una atmósfera misteriosa con elementos futuristas de ciencia ficción. Esta obra se ha creado con el software C4D y el renderizador OC para destacar la alta resolución y los detalles. También había algunos edificios urbanos cerca, lo que aporta un efecto de profundidad de campo. La escena se ha renderizado con un estilo de pintura al óleo, con tonos oscuros y una atmósfera misteriosa con elementos futuristas de ciencia ficción.</translation>
 <translation id="2859243502336719778">Actualización importante</translation>
 <translation id="2860473693272905224">Coloca otra página en el escáner</translation>
 <translation id="286265581261662583">Haz clic con el botón derecho o mantén pulsado para consultar definiciones, traducciones o conversiones de unidades</translation>
@@ -446,9 +450,11 @@
 <translation id="2895772081848316509">de color oscuro</translation>
 <translation id="2915996080311180594">Reiniciar más tarde</translation>
 <translation id="2926057806159140518">Escribe tu nombre de usuario y tu contraseña o escanea tu código QR</translation>
+<translation id="2927007463545347013">Camino de anime con vistas al océano y hojas de cerezo en flor cayendo.</translation>
 <translation id="2940811910881150316">No se puede probar el dispositivo. Vuelve a abrir la tapa para hacer la prueba.</translation>
 <translation id="2941112035454246133">Baja</translation>
 <translation id="2956070106555335453">Resumen</translation>
+<translation id="2968959705684615497">Tigre blanco surrealista con ojos y rayas dorados tumbado en una duna de arena blanca.</translation>
 <translation id="299385721391037602">rosa y amarillo</translation>
 <translation id="3008341117444806826">RENOVAR</translation>
 <translation id="3009958530611748826">Selecciona la carpeta donde quieras guardar</translation>
@@ -518,6 +524,7 @@
 <translation id="3321030238473337787">Velocidad de reproducción</translation>
 <translation id="3327613592010997943">Podrás volver a usar este dispositivo <ph name="DAY" /> a las <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Prueba en curso</translation>
+<translation id="3332683265015995419">Una nave espacial steampunk volando a través de una tormenta de arena.</translation>
 <translation id="3340011300870565703">Nivel de batería del auricular derecho del dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">configuración</translation>
 <translation id="3347558044552027859">moderna</translation>
@@ -529,6 +536,7 @@
 <translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">Fondo de pantalla Movimiento de la Tierra</translation>
 <translation id="33736539805963175">Fondo <ph name="LETTERS_COLOR" /> con la letra <ph name="LETTERS_LETTER" /></translation>
+<translation id="3382806462014639823"><ph name="TEACHER_NAME" /> está viendo tu pantalla</translation>
 <translation id="3383623117265110236">Exclusivos</translation>
 <translation id="3404249063913988450">Habilitar salvapantallas</translation>
 <translation id="3413935475507503304">Para continuar con la actualización, haz clic en Siguiente.</translation>
@@ -561,6 +569,7 @@
 <translation id="3532980081107202182">Quedan unos <ph name="MIN_REMAINING" /> minutos</translation>
 <translation id="3533790840489634638">piscina</translation>
 <translation id="3547264467365135390">Fórmula</translation>
+<translation id="3552832331940389362">Ilustración de animación japonesa de un gato sentado en el alféizar de una ventana observando la lluvia por la tarde.</translation>
 <translation id="3557205324756024651">Identidad local (opcional)</translation>
 <translation id="3565064564551103223">IPs permitidas</translation>
 <translation id="3569407787324516067">Salvapantallas</translation>
@@ -636,12 +645,14 @@
 <translation id="38811596981744338">Problema legal</translation>
 <translation id="3885327323343477505">Cambiar salvapantallas</translation>
 <translation id="3889914174935857450">Fecha de reinicio</translation>
+<translation id="3889954687526985291">Una motocicleta futurista hecha de papel negro con luces de neón sobre un fondo oscuro.</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3902271751020176019">Idioma de la transcripción</translation>
 <translation id="390890062090528082">cielo estrellado</translation>
 <translation id="391412459402535266">No se puede probar el dispositivo. Cambia al modo Portátil para hacer la prueba.</translation>
 <translation id="3916998944874125962">hacer captura de pantalla</translation>
 <translation id="3923184630988645767">Uso de datos</translation>
+<translation id="392943705803418306">La sesión de Herramientas de clase ha finalizado</translation>
 <translation id="3932043219784172185">Ningún dispositivo conectado</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> sin asignar</translation>
 <translation id="3941014780699102620">No se ha podido resolver el host</translation>
@@ -808,6 +819,7 @@
 <translation id="4593212453765072419">Se requiere autenticación de proxy</translation>
 <translation id="4594021849294327751">Crear transcripción</translation>
 <translation id="4594541568452132351">Seleccionar idioma de transcripción y descargar modelo</translation>
+<translation id="4600301862817165514">Un DeLorean con luces de neón que se desplaza por la galaxia con estrellas pasando a toda velocidad.</translation>
 <translation id="4609350030397390689">Reducir el brillo del teclado</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Pulsa Intro para cancelar el trabajo de impresión.</translation>
 <translation id="463791356324567266">Cancelando escaneado...</translation>
@@ -830,6 +842,7 @@
 <translation id="4697260493945012995">Selecciona el tipo de control</translation>
 <translation id="4712940987669302829">efecto bokeh</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
+<translation id="4733200407105375152">No está en Herramientas de clase</translation>
 <translation id="4734982181169850310">colores pastel</translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4744944742468440486">Información relacionada con tu selección</translation>
@@ -933,7 +946,7 @@
 <translation id="5145331109270917438">Fecha de modificación</translation>
 <translation id="5154917547274118687">Memoria</translation>
 <translation id="5160857336552977725">Inicia sesión en tu <ph name="DEVICE_TYPE" /></translation>
-<translation id="5168185087976003268">Salud de la batería</translation>
+<translation id="5168185087976003268">Estado de la batería</translation>
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
 <translation id="517075088756846356">Desconecta y vuelve a conectar el cable de alimentación de tu <ph name="DEVICE_NAME" /> para continuar con el proceso de actualización</translation>
 <translation id="5180108905184566358">baobabs</translation>
@@ -1006,6 +1019,7 @@
 <translation id="5499762266711462226">El color del teclado se basa en el fondo de pantalla</translation>
 <translation id="5502931783115429516">Android no se está ejecutando</translation>
 <translation id="550600468576850160">pradera</translation>
+<translation id="5507504956167780539">Foto profesional minimalista de dunas de arena negra brillante con sombras dramáticas.</translation>
 <translation id="551689408806449779">El dispositivo se ha desconectado. Prueba a conectarlo de nuevo para probarlo.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="552644173505433109">Más información sobre la creación de resúmenes y títulos</translation>
@@ -1077,6 +1091,7 @@
 <translation id="5876385649737594562">Actívalo para seleccionar opciones</translation>
 <translation id="5877503382465267833">Pausar <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Pantalla completa</translation>
+<translation id="5889539348012432386">Página principal de Herramientas de clase</translation>
 <translation id="5893975327266416093">Toca una tecla del teclado para asignarla</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5896602941605730551">Reproducir</translation>
@@ -1125,6 +1140,7 @@
 <translation id="6075872808778243331">(Android) Latencia de HTTP</translation>
 <translation id="6078323886959318429">Acceso directo</translation>
 <translation id="6079693086494835199">Restablece para asegurarte de que la página principal predeterminada no sea un sitio de phishing. Usa solo sitios web de confianza.</translation>
+<translation id="6090672065638047175">Una foto de un árbol brillante hecho de estrellas con un hermoso cielo nocturno y una galaxia de fondo.</translation>
 <translation id="6091080061796993741">amarillo</translation>
 <translation id="6104112872696127344">Se ha cancelado el análisis</translation>
 <translation id="6106186594183574873">Para finalizar, introduce tu contraseña anterior</translation>
@@ -1310,6 +1326,7 @@
 <translation id="6900701049656042631">Este álbum no tiene ninguna foto. Para añadir fotos, visita <ph name="LINK" /></translation>
 <translation id="6902359863093437070">Crear fondo con IA</translation>
 <translation id="6905163627763043954">Probar</translation>
+<translation id="6905275015682612674">Foto en 4K de larga exposición de una playa bioluminiscente al atardecer con estrellas en el cielo, hermosos colores paste.</translation>
 <translation id="6905724422583748843">Volver a <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">La cubierta del escáner está abierta. Ciérrala y vuelve a intentarlo.</translation>
 <translation id="6910845598686542904">Computará los modelos de las voces que detecta en la grabación</translation>
@@ -1319,6 +1336,7 @@
 <translation id="6930597342185648547">Información sobre el fondo</translation>
 <translation id="6931666215260956151">galaxia</translation>
 <translation id="6939766318048400022">Cafetería</translation>
+<translation id="6940212863873359282">Trozo de organza blanca flotando en el centro sobre un arco de mármol blanco con un fondo color crema.</translation>
 <translation id="6942253772720771875">Envíanos tus comentarios o describe tu problema</translation>
 <translation id="6943893908656559156">Identidad remota (opcional)</translation>
 <translation id="694981048020558038">Buscar título de grabación</translation>
@@ -1405,6 +1423,7 @@
 <translation id="7271040990581020067">El escáner se está usando en este momento. Vuelve a intentarlo más tarde.</translation>
 <translation id="7271932918253517778">Las combinaciones con teclas de la fila superior deben incluir la tecla <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7275707758336796649">Un dálmata delante de un fondo rosa en una pose dinámica de cuerpo entero, fotografiado con un fondo de stock hiperrealista de alta resolución con gradación de color.</translation>
 <translation id="7281657306185710294">Siente la brisa</translation>
 <translation id="7287310195820267359">Colecciones de fondos de pantalla</translation>
 <translation id="7293429513719260019">Seleccionar idioma</translation>
@@ -1414,6 +1433,7 @@
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Pregunta a los expertos en el foro de ayuda de Chromebook</translation>
+<translation id="7309823890857024809">Bodegón minimalista de unos tallos de amapola en un jarrón de cristal sobre un fondo negro.</translation>
 <translation id="7311368985037279727">color del teclado</translation>
 <translation id="7317831949569936035">Registro de cuenta de centro educativo</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -1431,6 +1451,7 @@
 <translation id="7353413232959255829">Resultado de búsqueda <ph name="LIST_POSITION" /> de <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Pulsa Intro para ir al acceso directo.</translation>
 <translation id="7359657277149375382">Tipo de archivo</translation>
 <translation id="73631062356239394">Compartir datos de diagnóstico</translation>
+<translation id="7369648056634183167">Primer plano de un detallado nenúfar cubierto de rocío bajo la lluvia. El enfoque está en los delicados pétalos y las gotas de agua que reflejan la luz, capturando sus suaves colores pastel sobre un fondo azul. Imagen tomada a la altura de los ojos con luz natural.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378170410161264436">Grabadora puede crear transcripciones de grabaciones con voz.
 Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcripciones.</translation>
@@ -1601,6 +1622,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="8135609423982943441">Se ha restablecido tu Chromebook a los valores predeterminados seguros. Puedes cambiar estos ajustes en cualquier momento desde Configuración.</translation>
 <translation id="8138405288920084977">LTE Advanced</translation>
 <translation id="8140591278915222789">Crea el tuyo</translation>
+<translation id="8142182840415860496">Primer plano de varias flores blancas y amarillas, un fotograma de una película de animación, una delicada flor rosa pálido con pétalos largos y un tallo verde situada entre dos grandes tulipanes amarillos sobre un cielo azul sin hojas ni follaje en colores pastel, una foto fija cinematográfica con alta resolución y detalles complejos muy bien definidos, renderizado de Octane con una iluminación preciosa y luces volumétricas y tenues.</translation>
 <translation id="8143951647992294073">Seleccionar <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">DevTools</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
@@ -1681,6 +1703,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="8503813439785031346">Nombre de usuario</translation>
 <translation id="8503836310948963452">Solo unos minutos más...</translation>
 <translation id="8505011850330200833">El modelo de Gemini necesita 2 GB de almacenamiento para procesar transcripciones y crear resúmenes</translation>
+<translation id="8506063704538210734">Foto de un cielo nocturno con una lluvia de meteoritos y algunos árboles en primer plano con tonos morados y rosas.</translation>
 <translation id="8506394543220680287">cubierto de nieve</translation>
 <translation id="8508640263392900755">Detalles de APN</translation>
 <translation id="8522687886059337719">Ahora tienes acceso a nuevos <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fondos de pantalla<ph name="END_LINK_WALLPAPER_SUBPAGE" /> y <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />salvapantallas<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>

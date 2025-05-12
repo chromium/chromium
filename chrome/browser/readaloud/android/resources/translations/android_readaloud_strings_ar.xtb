@@ -10,6 +10,7 @@
 <translation id="1807863182207623884">ياقوت</translation>
 <translation id="1921351128855867012">التقديم سريعًا بمقدار <ph name="NUMBER_OF_SECONDS" /> ثانية</translation>
 <translation id="1984328900355667246">لا تتوفّر إمكانية التشغيل.</translation>
+<translation id="2019727681730021602">التشغيل العادي</translation>
 <translation id="2224347680315897176">نبرة ثابتة</translation>
 <translation id="2611765907167846862">صافٍ</translation>
 <translation id="3023502830214299618">لا يمكن تشغيل هذه الصفحة في الوقت الحالي. يُرجى إعادة المحاولة لاحقًا.</translation>
@@ -28,9 +29,11 @@
 <translation id="5026371835667036198">جليّ</translation>
 <translation id="5234971936051226002">تم تصغير مشغِّل خيار "الاستماع إلى هذه الصفحة".</translation>
 <translation id="5251803541071282808">السحابة الإلكترونية</translation>
+<translation id="5526614127710223793">أداة اختيار وضع التشغيل</translation>
 <translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="5694491020339060116">قائمة سرعة التشغيل</translation>
 <translation id="6315170314923504164">الصوت</translation>
+<translation id="6330455646577575965">تشغيل الصوت باستخدام الذكاء الاصطناعي</translation>
 <translation id="6343633247422081848">طحلب</translation>
 <translation id="6550675742724504774">خيارات</translation>
 <translation id="6727569846535331147"><ph name="PITCH" /> و<ph name="TONE" /></translation>
@@ -43,7 +46,6 @@
 <translation id="7221920857098237570">ناعم</translation>
 <translation id="7237590978482584900">مبتهج</translation>
 <translation id="7282547042039404307">سلسة</translation>
-<translation id="7587250070160020374">‏يقرأ Chrome الآن محتوى صفحة</translation>
 <translation id="8004767876552422827">حقل</translation>
 <translation id="8136852699834914183">تعذّرت قراءة محتوى هذه الصفحة بصوت عالٍ.</translation>
 <translation id="8198036737896977997">هواء</translation>

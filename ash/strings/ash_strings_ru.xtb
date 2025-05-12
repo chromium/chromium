@@ -1440,6 +1440,7 @@
 <translation id="5672890847723042801">Утилиты</translation>
 <translation id="5673434351075758678">В результате синхронизации настроек язык изменен. Теперь используется <ph name="TO_LOCALE" />, а не <ph name="FROM_LOCALE" />.</translation>
 <translation id="5675363643668471212">Объект на панели запуска</translation>
+<translation id="5677022547882470786">Чтобы выбрать область поиска, перетащите курсор или нажмите Пробел.</translation>
 <translation id="5677928146339483299">Заблокировано</translation>
 <translation id="5678564054339031017">Показать следующую неделю</translation>
 <translation id="5679050765726761783">Подключен маломощный адаптер питания</translation>
@@ -2432,6 +2433,7 @@
 <translation id="8934418770423095813">Создать документ Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}one{# файл}few{# файла}many{# файлов}other{# файла}}</translation>
 <translation id="8936501819958976551">отключила</translation>
+<translation id="8937312474322077653">Параметры записи экрана: <ph name="SOURCE" />, <ph name="TYPE" />. Чтобы изменить тип записи, нажмите Tab. Чтобы выбрать область экрана, нажмите Пробел. Чтобы начать запись, нажмите Ввод.</translation>
 <translation id="8938800817013097409">Устройство USB-C (порт справа на задней панели)</translation>
 <translation id="8939855324412367560">Устройство ввода – "<ph name="INPUT_DEVICE_NAME" />", устройство вывода – "<ph name="OUTPUT_DEVICE_NAME" />". Изменить их можно в настройках.</translation>
 <translation id="8940956008527784070">Низкий заряд батареи (<ph name="PERCENTAGE" />%)</translation>

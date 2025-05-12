@@ -47,7 +47,6 @@
 <translation id="2042889939382983733">ເບິ່ງປະຫວັດ Chromium ຂອງທ່ານ</translation>
 <translation id="2052320862053429062">Chromium ຈະກວດສອບລະຫັດຜ່ານຂອງທ່ານເປັນໄລຍະໆເພື່ອທຽບກັບລາຍຊື່ທີ່ມີການເຜີຍແຜ່ອອນລາຍ. ໃນເວລາກວດສອບ, ລະຫັດຜ່ານ ແລະ ຊື່ຜູ້ໃຊ້ຂອງທ່ານຈະຖືກເຂົ້າລະຫັດໄວ້, ເພື່ອບໍ່ໃຫ້ໃຜກໍຕາມສາມາດອ່ານພວກມັນໄດ້, ຮວມທັງ Google ນຳ.</translation>
 <translation id="2059365270911640413">ຕັ້ງຄ່າ Chromium ໃຫ້ສຳເລັດ</translation>
-<translation id="2147210759439165826">ຕິດຕາມເນື້ອຫາ ແລະ ເຄັດລັບ Chromium ທີ່ມີປະໂຫຍດ.</translation>
 <translation id="2168108852149185974">ບາງສ່ວນເສີມເຮັດໃຫ້ Chromium ຂັດຂ້ອງ. ກະລຸນາຖອນການຕິດຕັ້ງ:</translation>
 <translation id="2168593389981132306">ປັບປຸງ Chromium ໃຫ້ດີຂຶ້ນ</translation>
 <translation id="2178608107313874732">Chromium ບໍ່ສາມາດໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານໄດ້ໃນຂະນະນີ້</translation>
@@ -157,6 +156,7 @@
 <translation id="4828317641996116749">Chromium ບໍ່ສາມາດກວດລະຫັດຜ່ານທັງໝົດໄດ້. ລອງໃໝ່ໃນພາຍຫລັງ.</translation>
 <translation id="4856138222358683580">ຄຳສັ່ງໃນ Chromium</translation>
 <translation id="4904452304169763785">ການແຈ້ງເຕືອນກ່ຽວກັບບັນຫາດ້ານຄວາມເປັນສ່ວນຕົວ ຫຼື ຄວາມປອດໄພທີ່ Chromium ກວດຫາໃຫ້ທ່ານ.</translation>
+<translation id="4908570938463711775">ສຶກສາພື້ນຖານ Chromium ທີ່ເປັນປະໂຫຍດເພື່ອໃຫ້ທ່ານເລີ່ມຕົ້ນ</translation>
 <translation id="4962295957157529683">ສຳເລັດສິ່ງທີ່ທ່ານກຳລັງເຮັດໃນໜ້າຈໍອື່ນຂອງ Chromium ທີ່ີເປີດຢູ່.</translation>
 <translation id="4985291216379576555">ອອບລາຍຢູ່, Chromium ບໍ່ສາມາດກວດຫາການອັບເດດໄດ້</translation>
 <translation id="4996471330284142407">ເຮັດສິ່ງຕ່າງໆໃຫ້ແລ້ວຫຼາຍຂຶ້ນດ້ວຍ Chromium ທີ່ງ່າຍ, ປອດໄພ ແລະ ໄວກວ່າທີ່ເຄີຍ.</translation>
@@ -197,6 +197,7 @@
 <translation id="5688047395118852662">ບັດນີ້ຈະສະແດງການແນະນຳໃຫ້ທ່ານກ່ຽວກັບວິທີໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chromium.</translation>
 <translation id="5700709190537129682">Chromium ບໍ່ສາມາດກວດລະຫັດຜ່ານຂອງທ່ານໄດ້</translation>
 <translation id="584550191241316896">ເຂົ້າສູ່ລະບົບຫາ Chromium ແລ້ວ</translation>
+<translation id="5862307444128926510">ຍິນ​ດີ​ຕ້ອນ​ຮັບສູ່ Chromium</translation>
 <translation id="5889847953983052353">ເມື່ອເປີດ:
 <ph name="BEGIN_INDENT" />  • ຊ່ວຍປັບປຸງ Chromium ໃຫ້ດີຂຶ້ນສຳລັບຜູ້ທີ່ນຳໃຊ້ໃນລັກສະນະດຽວກັບທ່ານ.<ph name="END_INDENT" />
 
@@ -223,6 +224,7 @@
 <translation id="6301717043141881464">ເພື່ອເບິ່ງລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໃນແອັບອື່ນໆຂອງທ່ານໄດ້ຢ່າງງ່າຍດາຍ, ໃຫ້ເລືອກ Chromium ສຳລັບການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
 <translation id="6324041800010509197">ເຂົ້າເບິ່ງໂຄງຮ່າງຕາຕະລາງຂອງແຖບໃນ Chromium</translation>
 <translation id="6325378625795868881">ໃຊ້ Chromium ໄດ້ທຸກເວລາທີ່ທ່ານແຕະລິ້ງໃນຂໍ້ຄວາມ ແລະ ແອັບອື່ນໆ.</translation>
+<translation id="6387994184698195448">ຕິດຕາມເຄັດລັບ Chromium ທີ່ມີປະໂຫຍດ ແລະ ອື່ນໆອີກຫຼາກຫຼາຍ.</translation>
 <translation id="6424492062988593837">Chromium ​ດີກ​ວ່າເກົ່າແລ້ວ​! ມີລຸ້ນ​ໃຫມ່​ໃຫ້​​ໃຊ້​.</translation>
 <translation id="6433172051771630690">ເຄັດລັບໃນການໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chromium.</translation>
 <translation id="65045991564554105">ເບິ່ງບຸກມາກ Chromium</translation>
@@ -317,6 +319,7 @@
 <translation id="8860548555286245440">ເປີດ URL ໃນ Chromium ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="8880024619507699923">ອົງກອນຂອງທ່ານກຳນົດໃຫ້ທ່ານຕ້ອງເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ Chromium. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">ຮັບການຮັກສາຄວາມປອດໄພທີ່ເຂັ້ມງວດທີ່ສຸດຂອງ Chromium</translation>
+<translation id="8925569192291721236">ຕິດຕາມຂໍ້ມູນອັບເດດກ່ຽວກັບການຕິດຕາມລາຄາ ແລະ ເຄັດລັບ Chromium.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{ສິ່ງນີ້ເກີດຂຶ້ນເມື່ອບໍ່ໄດ້ນຳໃຊ້ Chromium ເປັນເວລາ {THRESHOLD} ນາທີ}other{ສິ່ງນີ້ເກີດຂຶ້ນເມື່ອບໍ່ໄດ້ນຳໃຊ້ Chromium ເປັນເວລາ {THRESHOLD} ນາທີ}}</translation>
 <translation id="8963279154877372067">ອະນຸຍາດການແຈ້ງເຕືອນ Chromium ເພື່ອຮັບການແຈ້ງເຕືອນການຫຼຸດລາຄາ</translation>
 <translation id="8975812008711371178">ຊອກຫາດ້ວຍສຽງໃນ Chromium</translation>

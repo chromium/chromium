@@ -47,7 +47,6 @@
 <translation id="2042889939382983733">Visa Chromium-historiken</translation>
 <translation id="2052320862053429062">Chromium kontrollerar regelbundet om dina lösenord finns med på listor som har publicerats online. Under kontrollen krypteras dina lösenord och användarnamn så att varken Google eller någon annan kan läsa dem.</translation>
 <translation id="2059365270911640413">Slutför inställningen av Chromium</translation>
-<translation id="2147210759439165826">Håll koll på innehåll och användbara tips om Chromium.</translation>
 <translation id="2168108852149185974">Några tillägg har fått Chromium att krascha. Avinstallera följande:</translation>
 <translation id="2168593389981132306">Gör Chromium bättre</translation>
 <translation id="2178608107313874732">Chromium kan inte använda kameran just nu</translation>
@@ -157,6 +156,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="4828317641996116749">Chromium kunde inte kontrollera alla lösenord. Försök igen senare.</translation>
 <translation id="4856138222358683580">Chromium-åtgärder</translation>
 <translation id="4904452304169763785">Varningar om integritets- eller säkerhetsproblem som identifieras av Chromium.</translation>
+<translation id="4908570938463711775">Lär dig grunderna i Chromium för att komma igång</translation>
 <translation id="4962295957157529683">Gör klart det du höll på med i det andra öppna Chromium-fönstret.</translation>
 <translation id="4985291216379576555">Chromium kan inte söka efter uppdateringar offline</translation>
 <translation id="4996471330284142407">Få mer gjort med Chromium, som är enklare, säkrare och snabbare än någonsin.</translation>
@@ -197,6 +197,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="5688047395118852662">Det här kortet visar förslag på hur du får ut mesta möjliga av Chromium.</translation>
 <translation id="5700709190537129682">Chromium kan inte kontrollera dina lösenord</translation>
 <translation id="584550191241316896">Inloggad i Chromium</translation>
+<translation id="5862307444128926510">Välkommen till Chromium</translation>
 <translation id="5889847953983052353">När detta är aktiverat:
 <ph name="BEGIN_INDENT" /> • Du hjälper oss att göra Chromium bättre för den som använder programmet på samma sätt som du.<ph name="END_INDENT" />
 
@@ -223,6 +224,7 @@ Tänk på detta:
 <translation id="6301717043141881464">Välj Chromium för autofyll så att du enkelt får tillgång till dina sparade lösenord i andra appar</translation>
 <translation id="6324041800010509197">Öppna rutnätet med flikar i Chromium</translation>
 <translation id="6325378625795868881">Använd Chromium varje gång du trycker på länkar i meddelanden och andra appar.</translation>
+<translation id="6387994184698195448">Få användbara tips för Chromium med mera.</translation>
 <translation id="6424492062988593837">Chrome har blivit ännu bättre! En ny version finns tillgänglig.</translation>
 <translation id="6433172051771630690">Tips om hur du får ut mesta möjliga av Chromium.</translation>
 <translation id="65045991564554105">Se bokmärken i Chromium</translation>
@@ -317,6 +319,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="8860548555286245440">Öppna webbadresser i Chromium i inkognitoläge</translation>
 <translation id="8880024619507699923">Organisationen kräver att du loggar in för att använda Chromium. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Få det bästa skyddet i Chromium</translation>
+<translation id="8925569192291721236">Få uppdateringar om prisbevakningar och tips för Chromium.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Detta händer när Chromium inte har använts på {THRESHOLD} minut}other{Detta händer när Chromium inte har använts på {THRESHOLD} minuter}}</translation>
 <translation id="8963279154877372067">Tillåt Chromium-aviseringar om sänkt pris</translation>
 <translation id="8975812008711371178">Sök med rösten i Chromium</translation>

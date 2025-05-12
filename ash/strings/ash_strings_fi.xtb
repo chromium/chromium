@@ -1440,6 +1440,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="5672890847723042801">Apusovellukset</translation>
 <translation id="5673434351075758678">Muutos asetusten synkronoinnin yhteydessä: <ph name="FROM_LOCALE" /> – <ph name="TO_LOCALE" /></translation>
 <translation id="5675363643668471212">Hyllyn kohde</translation>
+<translation id="5677022547882470786">Valitse hakualue vetämällä tai painamalla välilyöntiä</translation>
 <translation id="5677928146339483299">Estetty</translation>
 <translation id="5678564054339031017">Näytä seuraava viikko</translation>
 <translation id="5679050765726761783">Pienitehoinen sovitin liitetty</translation>
@@ -2431,6 +2432,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8934418770423095813">Luo Google-dokumentti</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 tiedosto}other{# tiedostoa}}</translation>
 <translation id="8936501819958976551">poistettu käytöstä</translation>
+<translation id="8937312474322077653">Kuvakaappauksessa, <ph name="SOURCE" /> <ph name="TYPE" /> valittu. Valitse tallennustyyppi painamalla välilehteä. Valitse alue painamalla välilyöntiä. Tallenna painamalla Enter.</translation>
 <translation id="8938800817013097409">C-tyypin USB-laite (oikeanpuoleinen takaportti)</translation>
 <translation id="8939855324412367560">Äänitulo on "<ph name="INPUT_DEVICE_NAME" />" ja äänentoisto on "<ph name="OUTPUT_DEVICE_NAME" />". Muuta sitä asetuksista.</translation>
 <translation id="8940956008527784070">Akku vähissä (<ph name="PERCENTAGE" /> %)</translation>

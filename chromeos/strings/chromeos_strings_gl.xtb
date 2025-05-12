@@ -20,6 +20,7 @@
 <translation id="1059913517121127803">Non se puido iniciar o escaneamento</translation>
 <translation id="1061864016440983342">Usar sen localización</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> de <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="106558928761833284">bonita galaxia de nebulosa cósmica cunha nave espacial futurista rápida, en tons azuis, rosas e violetas</translation>
 <translation id="1069150558259542054">Inserción rápida non se pode usar cos atallos personalizados.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Detectouse un firewall</translation>
@@ -27,6 +28,7 @@
 <translation id="1082009148392559545">Descargando o protector de pantalla</translation>
 <translation id="1094693127011229778">O enderezo IP non está dispoñible</translation>
 <translation id="1100902271996134409">Creando imaxes...</translation>
+<translation id="1102946598597843031">fotografía da lúa sobre un lago no que caen follas dunha cerdeira, 4k</translation>
 <translation id="1107856713690040084">Audio <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">Acerca de</translation>
 <translation id="1118572504348554005">Podemos compartir os comentarios que se envíen a través deste formulario cos nosos socios para solucionar erros e outros problemas dos que nos informes. Non inclúas información confidencial, como os contrasinais.</translation>
@@ -67,6 +69,7 @@
 <translation id="1238163879850290856">Fai un restablecemento para evitar que outras persoas accedan aos datos. Usa só métodos de introdución nos que confíes.</translation>
 <translation id="1238612778414822719">Latencia de HTTPS</translation>
 <translation id="1252766349417594414">Panca de control</translation>
+<translation id="1261045951892393759">gato tocando unha guitarra Flying V mentres monta un unicornio, cun lóstrego no fondo</translation>
 <translation id="1270369111467284986">Posible portal cativo</translation>
 <translation id="1274654146705270731">laranxas</translation>
 <translation id="1275718070701477396">Seleccionado</translation>
@@ -273,6 +276,7 @@
 <translation id="2045814230297767491">cubertos</translation>
 <translation id="2047316797244836561">Para ver o protector de pantalla, conéctate a unha rede e volve cargar a páxina.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
+<translation id="2068472557797646626">Renderización en 3D de esferas e formas esféricas cromadas nun fondo con elementos arquitectónicos cromados. A composición é un concepto minimalista moderno para publicidade, construción de marca ou presentación con espazo para texto. Un grande arco en fronte dun fondo abstracto de estilo minimalista. Iluminación de estudo. Primeiro plano.</translation>
 <translation id="2073232437457681324">amplo océano</translation>
 <translation id="2080070583977670716">Máis opcións de configuración</translation>
 <translation id="2082932131694554252">Tecla do teclado asignada</translation>
@@ -390,7 +394,6 @@
 <translation id="2584559707064218956">Para axustar as opcións, vai a Configuración</translation>
 <translation id="2586146417912237930">azul e índigo</translation>
 <translation id="2589921777872778654">Editar e eliminar o menú</translation>
-<translation id="2590424100019931043">Quitáronche desta clase</translation>
 <translation id="2597774443162333062">Enviaranse os ficheiros a Google para proceder á depuración</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{A operación rematou. Explorouse 1 páxina}other{A operación rematou. Exploráronse {NUMBER_OF_PAGES} páxinas}}</translation>
 <translation id="261322795497077164">Identificación de interlocutores</translation>
@@ -430,6 +433,7 @@
 <translation id="2805756323405976993">Aplicacións</translation>
 <translation id="28232023175184696">Non foi posible conectarse a Internet. Facer clic para tentalo de novo.</translation>
 <translation id="2855718259207180827">la</translation>
+<translation id="2856429654176718363">Unha enorme nave espacial flota sobre a cidade, que está iluminada con moitas luces. Toda a escena ten un estilo de pintura ao óleo e presenta tons escuros. Créase unha atmosfera misteriosa con elementos de ciencia ficción futuristas. Este material gráfico creouse co software C4D e o renderizador OC que permite salientar a alta resolución e os detalles elevados. Preto hai algúns edificios urbanos que engaden un efecto de profundidade de campo. A escena renderizouse no estilo dunha pintura ao óleo, presentando tons escuros e creando unha atmosfera misteriosa con elementos de ciencia ficción futuristas.</translation>
 <translation id="2859243502336719778">Actualización esencial</translation>
 <translation id="2860473693272905224">Coloca outra páxina no escáner</translation>
 <translation id="286265581261662583">Fai clic co botón dereito ou mantén premido o texto para facer conversións entre unidades ou obter definicións e traducións</translation>
@@ -446,9 +450,11 @@
 <translation id="2895772081848316509">escura</translation>
 <translation id="2915996080311180594">Reiniciar máis tarde</translation>
 <translation id="2926057806159140518">Escribe o teu nome de usuario e contrasinal ou escanea o código QR</translation>
+<translation id="2927007463545347013">camiño de anime con vistas do océano e as follas dunha cerdeira caendo</translation>
 <translation id="2940811910881150316">Non se puido realizar a proba do dispositivo. Abre a tapa de novo para realizala.</translation>
 <translation id="2941112035454246133">Baixa</translation>
 <translation id="2956070106555335453">Resumo</translation>
+<translation id="2968959705684615497">tigre branco surrealista con ollos e liñas douradas sentado nunha duna de area branca</translation>
 <translation id="299385721391037602">rosa e amarela</translation>
 <translation id="3008341117444806826">ACTUALIZAR</translation>
 <translation id="3009958530611748826">Seleccionar un cartafol para gardar os ficheiros</translation>
@@ -518,6 +524,7 @@
 <translation id="3321030238473337787">Velocidade de reprodución</translation>
 <translation id="3327613592010997943">Poderás usar este dispositivo de novo o seguinte día: <ph name="DAY" />, <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Proba en curso</translation>
+<translation id="3332683265015995419">nave espacial steampunk voando nunha tormenta de area</translation>
 <translation id="3340011300870565703">Nivel de batería do auricular dereito do dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">configuración</translation>
 <translation id="3347558044552027859">moderna</translation>
@@ -529,6 +536,7 @@
 <translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">Fondo de pantalla Fluxo da Terra</translation>
 <translation id="33736539805963175">Fondo de cor <ph name="LETTERS_COLOR" /> coa letra <ph name="LETTERS_LETTER" /></translation>
+<translation id="3382806462014639823"><ph name="TEACHER_NAME" /> está vendo a túa pantalla</translation>
 <translation id="3383623117265110236">Exclusivos</translation>
 <translation id="3404249063913988450">Activar protector de pantalla</translation>
 <translation id="3413935475507503304">Para continuar coa actualización, fai clic en Seguinte.</translation>
@@ -561,6 +569,7 @@
 <translation id="3532980081107202182">Quedan <ph name="MIN_REMAINING" /> minutos aproximadamente</translation>
 <translation id="3533790840489634638">estanque</translation>
 <translation id="3547264467365135390">Fórmula</translation>
+<translation id="3552832331940389362">ilustración de animación xaponesa dun gato sentado no peitoril dunha ventá mirando a chuvia pola tarde</translation>
 <translation id="3557205324756024651">Identidade local (opcional)</translation>
 <translation id="3565064564551103223">Enderezos IP permitidos</translation>
 <translation id="3569407787324516067">Protector de pantalla</translation>
@@ -636,12 +645,14 @@
 <translation id="38811596981744338">Problema legal</translation>
 <translation id="3885327323343477505">Cambiar protector de pantalla</translation>
 <translation id="3889914174935857450">Restablecer data</translation>
+<translation id="3889954687526985291">moto futurista feita de papel negro con luces de neon sobre fondo escuro</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3902271751020176019">Idioma da transcrición</translation>
 <translation id="390890062090528082">ceo estrelado</translation>
 <translation id="391412459402535266">Non se puido realizar a proba do dispositivo. Cambia ao modo de ordenador portátil para realizala.</translation>
 <translation id="3916998944874125962">facer unha captura de pantalla</translation>
 <translation id="3923184630988645767">Uso de datos</translation>
+<translation id="392943705803418306">Finalizou a túa sesión de Ferramentas de clase</translation>
 <translation id="3932043219784172185">Ningún dispositivo conectado</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> sen asignar</translation>
 <translation id="3941014780699102620">Produciuse un erro ao resolver o host</translation>
@@ -808,6 +819,7 @@
 <translation id="4593212453765072419">Requírese autenticación proxy</translation>
 <translation id="4594021849294327751">Crear transcrición</translation>
 <translation id="4594541568452132351">Selecciona o idioma de transcrición e descarga o modelo</translation>
+<translation id="4600301862817165514">Delorean con luces de neon viaxando pola galaxia e estrelas pasando</translation>
 <translation id="4609350030397390689">Reducir brillo do teclado</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Para cancelar o traballo de impresión, preme Intro.</translation>
 <translation id="463791356324567266">Cancelando escaneamento…</translation>
@@ -830,6 +842,7 @@
 <translation id="4697260493945012995">Selecciona o tipo de control</translation>
 <translation id="4712940987669302829">efecto bokeh</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
+<translation id="4733200407105375152">Non está en Ferramentas de clase</translation>
 <translation id="4734982181169850310">cores pastel</translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4744944742468440486">Información relacionada coa túa selección</translation>
@@ -1006,6 +1019,7 @@
 <translation id="5499762266711462226">A cor do teclado baséase no fondo de pantalla</translation>
 <translation id="5502931783115429516">Android non se está executando</translation>
 <translation id="550600468576850160">prado</translation>
+<translation id="5507504956167780539">foto profesional minimalista de dunas de area negra brillante con sombras dramáticas</translation>
 <translation id="551689408806449779">Desconectouse o dispositivo. Tenta conectalo de novo para facer a proba</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="552644173505433109">Máis información sobre a creación de títulos e resumos</translation>
@@ -1077,6 +1091,7 @@
 <translation id="5876385649737594562">Actívao para seleccionar as opcións</translation>
 <translation id="5877503382465267833">Pór <ph name="RECORDING_NAME" /> en pausa</translation>
 <translation id="588258955323874662">Pantalla completa</translation>
+<translation id="5889539348012432386">Inicio de Ferramentas de clase</translation>
 <translation id="5893975327266416093">Tocar unha tecla do teclado para aplicarlle unha asignación</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5896602941605730551">Reproducir</translation>
@@ -1125,6 +1140,7 @@
 <translation id="6075872808778243331">(Android) latencia de HTTP</translation>
 <translation id="6078323886959318429">Engadir atallo</translation>
 <translation id="6079693086494835199">Fai un restablecemento para garantir que a páxina de inicio predeterminada non sexa un sitio de phishing. Usa só sitios web nos que confíes.</translation>
+<translation id="6090672065638047175">foto dunha árbore brillante feita de estrelas cun bonito ceo nocturno e unha galaxia no fondo</translation>
 <translation id="6091080061796993741">amarela</translation>
 <translation id="6104112872696127344">Cancelouse o escaneamento</translation>
 <translation id="6106186594183574873">Para finalizar, introduce o teu antigo contrasinal</translation>
@@ -1310,6 +1326,7 @@
 <translation id="6900701049656042631">Este álbum non ten ningunha foto. Para engadir fotos, vai a <ph name="LINK" /></translation>
 <translation id="6902359863093437070">Crear un fondo con IA</translation>
 <translation id="6905163627763043954">Probar</translation>
+<translation id="6905275015682612674">foto de exposición prolongada dunha praia bioluminescente cun solpor con estrelas no ceo, bonitas cores pastel, 4K</translation>
 <translation id="6905724422583748843">Volver a <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">A tapa do escáner está aberta. Péchaa e téntao de novo.</translation>
 <translation id="6910845598686542904">Procesar os modelos das voces que se detecten na gravación</translation>
@@ -1319,6 +1336,7 @@
 <translation id="6930597342185648547">Acerca do fondo</translation>
 <translation id="6931666215260956151">galaxia</translation>
 <translation id="6939766318048400022">Café</translation>
+<translation id="6940212863873359282">unha peza de organdí branco flotando no centro sobre un arco de mármore branca cun fondo crema</translation>
 <translation id="6942253772720771875">Comparte os teus comentarios ou describe o problema</translation>
 <translation id="6943893908656559156">Identidade remota (opcional)</translation>
 <translation id="694981048020558038">Busca o título dunha gravación</translation>
@@ -1405,6 +1423,7 @@
 <translation id="7271040990581020067">Nestes momentos, o escáner está en uso. Téntao de novo máis tarde.</translation>
 <translation id="7271932918253517778">Os atallos con teclas da fila superior deben incluír a tecla <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7275707758336796649">dálmata en fronte dun fondo rosa nunha pose dinámica de corpo enteiro, capturado dun fondo fotográfico de alta resolución e hiperrealista con gradación de cor</translation>
 <translation id="7281657306185710294">Brisa</translation>
 <translation id="7287310195820267359">Colección de fondos de pantalla</translation>
 <translation id="7293429513719260019">Seleccionar idioma</translation>
@@ -1414,6 +1433,7 @@
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Pregúntalles ás persoas expertas do foro de axuda de Chromebook</translation>
+<translation id="7309823890857024809">bodegón minimalista duns poucos tallos de papoulas dentro dun vaso de vidro con fondo negro</translation>
 <translation id="7311368985037279727">cor do teclado</translation>
 <translation id="7317831949569936035">Inscrición do centro educativo</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -1431,6 +1451,7 @@
 <translation id="7353413232959255829">Resultado da busca <ph name="LIST_POSITION" /> de <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Preme Introducir para navegar ata o atallo.</translation>
 <translation id="7359657277149375382">Tipo de ficheiro</translation>
 <translation id="73631062356239394">Compartir datos de diagnóstico</translation>
+<translation id="7369648056634183167">primeiro plano dun nenúfar cuberto de orballo baixo a chuvia. O foco está nos delicados pétalos e as pingas que reflicten a luz, capturando as súas cores pastel contra un fondo azul. Foto á altura da vista con luz natural</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378170410161264436">A gravadora pode crear transcricións de gravacións nas que se fale.
 Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas transcricións.</translation>
@@ -1601,6 +1622,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8135609423982943441">Restableceuse o teu Chromebook aos valores predeterminados seguros. Podes axustar estes cambios cando queiras na configuración.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">Crear un propio</translation>
+<translation id="8142182840415860496">primeiro plano de varias flores brancas e amarelas, imaxe estática dunha película de animación, delicada flor de cor rosa pálida con pétalos longos e tallo verde colocada entre dous tulipáns amarelos grandes contra un ceo azul sen follas ni follaxe en tons pastel, imaxe estática cinematográfica en alta resolución e con moitos detalles complexos, OctaneRender cunha bonita iluminación, luz volumétrica e luz melancólica.</translation>
 <translation id="8143951647992294073">Seleccionar <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Ferramentas para programadores</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
@@ -1681,6 +1703,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8503813439785031346">Nome de usuario</translation>
 <translation id="8503836310948963452">Só faltan uns minutos…</translation>
 <translation id="8505011850330200833">O modelo de Gemini ocupa 2 GB de almacenamento para procesar transcricións e crear resumos</translation>
+<translation id="8506063704538210734">foto dun ceo nocturno cunha choiva de meteoritos e unhas poucas árbores no fondo, en tons púrpuras e rosas</translation>
 <translation id="8506394543220680287">cuberto de neve</translation>
 <translation id="8508640263392900755">Detalles do APN</translation>
 <translation id="8522687886059337719">Xa podes acceder a novos <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fondos<ph name="END_LINK_WALLPAPER_SUBPAGE" /> e <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />protectores de pantalla<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>

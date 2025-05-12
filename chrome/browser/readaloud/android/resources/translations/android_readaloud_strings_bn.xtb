@@ -10,6 +10,7 @@
 <translation id="1807863182207623884">Ruby</translation>
 <translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> সেকেন্ড ফাস্ট ফরওয়ার্ড করুন</translation>
 <translation id="1984328900355667246">প্লেব্যাক উপলভ্য নেই</translation>
+<translation id="2019727681730021602">স্ট্যান্ডার্ড প্লেব্যাক</translation>
 <translation id="2224347680315897176">স্থির</translation>
 <translation id="2611765907167846862">শান্ত</translation>
 <translation id="3023502830214299618">এই সময়ে, এই পৃষ্ঠার জন্য প্লেব্যাক উপলভ্য নেই। পরে আবার চেষ্টা করে দেখুন।</translation>
@@ -32,6 +33,7 @@
 <translation id="5596627076506792578">আরও বিকল্পগুলি</translation>
 <translation id="5694491020339060116">'প্লেব্যাক স্পিড' মেনু</translation>
 <translation id="6315170314923504164">ভয়েস</translation>
+<translation id="6330455646577575965">AI অডিও প্লেব্যাক</translation>
 <translation id="6343633247422081848">শ্যাওলা</translation>
 <translation id="6550675742724504774">বিকল্পসমূহ</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -44,7 +46,6 @@
 <translation id="7221920857098237570">মৃদু</translation>
 <translation id="7237590978482584900">মৃদুমন্দ</translation>
 <translation id="7282547042039404307">মসৃণ</translation>
-<translation id="7587250070160020374">Chrome এখন চলছে</translation>
 <translation id="8004767876552422827">ফিল্ড</translation>
 <translation id="8136852699834914183">এই পৃষ্ঠায় প্লেব্যাকের সুবিধা উপলভ্য নেই।</translation>
 <translation id="8198036737896977997">বায়ু</translation>

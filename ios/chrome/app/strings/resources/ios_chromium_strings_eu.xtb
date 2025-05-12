@@ -47,7 +47,6 @@
 <translation id="2042889939382983733">Ikusi Chromium-eko historia</translation>
 <translation id="2052320862053429062">Sarean argitaratu diren zerrendetan ea zure pasahitzak dauden egiaztatzen du noizean behin Chromium-ek. Horretarako, pasahitzak eta erabiltzaile-izenak enkriptatzen ditu inork irakurri ezin ditzan, ezta Google-k ere.</translation>
 <translation id="2059365270911640413">Amaitu Chromium konfiguratzen</translation>
-<translation id="2147210759439165826">Egin edukien eta Chromium-i buruzko aholku lagungarrien jarraipena.</translation>
 <translation id="2168108852149185974">Gehigarri batzuek huts eginarazten diote Chromium-i. Desinstala itzazu.</translation>
 <translation id="2168593389981132306">Hobetu Chromium</translation>
 <translation id="2178608107313874732">Chromium-ek ezin du erabili kamera une honetan</translation>
@@ -157,6 +156,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chromium-eko dat
 <translation id="4828317641996116749">Chromium-ek ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro geroago.</translation>
 <translation id="4856138222358683580">Chromium-en ekintzak</translation>
 <translation id="4904452304169763785">Chromium-ek zuretzat hautematen dituen pribatutasun- edo segurtasun-arazoei buruzko alertak.</translation>
+<translation id="4908570938463711775">Erabiltzen hasteko, lortu Chromium-i buruzko oinarrizko ezagutza lagungarriak</translation>
 <translation id="4962295957157529683">Amaitu egiten ari zarena irekita daukazun Chromium-eko beste leihoan.</translation>
 <translation id="4985291216379576555">Interneteko konexiorik gabe, Chromium-ek ezin ditu bilatu eguneratzeak</translation>
 <translation id="4996471330284142407">Egin gauza gehiago Chromium-ekin: sinplea, segurua eta inoiz baino bizkorragoa da.</translation>
@@ -197,6 +197,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chromium-eko dat
 <translation id="5688047395118852662">Txartel horretan, Chromium-i ahalik eta etekin handiena ateratzeko iradokizunak agertzen dira.</translation>
 <translation id="5700709190537129682">Chromium-ek ezin ditu egiaztatu pasahitzak</translation>
 <translation id="584550191241316896">Chromium-en saioa hasita daukazu</translation>
+<translation id="5862307444128926510">Ongi etorri Chromium-era</translation>
 <translation id="5889847953983052353">Aktibatuta dagoenean:
 <ph name="BEGIN_INDENT" />  • Chromium zuk bezala erabiltzen dutenentzat hobetzen laguntzen duzu.<ph name="END_INDENT" />
 
@@ -223,6 +224,7 @@ Kontuan hartu beharrekoak:
 <translation id="6301717043141881464">Gordetako pasahitzak beste aplikazioetan erraz lortzeko, aukeratu Chromium betetze automatikorako</translation>
 <translation id="6324041800010509197">Bisitatu fitxen sareta Chromium-en</translation>
 <translation id="6325378625795868881">Erabili Chromium mezuetako eta beste aplikazioetako estekak sakatzen dituzunean.</translation>
+<translation id="6387994184698195448">Egin Chromium-i buruzko aholku lagungarrien eta abarren jarraipena.</translation>
 <translation id="6424492062988593837">Chromium hobetu egin dugu! Bertsio berria duzu erabilgarri.</translation>
 <translation id="6433172051771630690">Chromium-i etekinik handiena ateratzeko aholkuak.</translation>
 <translation id="65045991564554105">Ikusi Chromium-eko laster-markak</translation>
@@ -317,6 +319,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="8860548555286245440">Ireki URLak Chromium-en ezkutuko moduan</translation>
 <translation id="8880024619507699923">Erakundeak saioa hastea eskatzen du Chromium erabiltzeko. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Lortu Chromium-en segurtasun-aukerarik sendoena</translation>
+<translation id="8925569192291721236">Egin prezioen jarraipenaren informazio eguneratuaren eta Chromium-i buruzko aholku lagungarrien jarraipena.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Chromium {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori}other{Chromium {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori}}</translation>
 <translation id="8963279154877372067">Prezio-jaitsierei buruzko alertak jasotzeko, eman jakinarazpenak bidaltzeko baimena Chromium-i</translation>
 <translation id="8975812008711371178">Bilatu ahotsarekin Chromium-en</translation>

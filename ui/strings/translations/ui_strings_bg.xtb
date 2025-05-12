@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 непрочетено известие}other{# непрочетени известия}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Включете следното разширение в режим „инкогнито“:}other{Включете следните разширения в режим „инкогнито“:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Преди 1 месец}other{Преди # месеца}}</translation>
+<translation id="4277033906326892359">Колоната <ph name="COLUMN_NAME" /> е сортирана във възходящ ред</translation>
 <translation id="4289300219472526559">Start Speaking</translation>
 <translation id="4289540628985791613">Общ преглед</translation>
 <translation id="4491109536499578614">Изображение</translation>
@@ -171,6 +172,7 @@
 <translation id="654149438358937226">Блокиране на всички известия</translation>
 <translation id="6620110761915583480">Запазване на файл</translation>
 <translation id="6699343763173986273">Мултимедия, следващият запис</translation>
+<translation id="6807086321996342431">Колона <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">Мултимедия, стоп</translation>
 <translation id="6845383723252244143">Избор на папка</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{Остава 1 час}other{Остават # часа}}</translation>
@@ -202,11 +204,11 @@
 <translation id="7969046989155602842">Command</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Повече от 1 непрочетено известие}other{Повече от # непрочетени известия}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{след 1 м}other{след # м}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" /> + <ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Номер от <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{Преди 1 час}other{Преди # часа}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{Остава 1 сек}other{Остават # сек}}</translation>
 <translation id="8134065097954893699">Презаредете страницата</translation>
+<translation id="813785873406874127">Сортирането на колоната <ph name="COLUMN_NAME" /> е отменено</translation>
 <translation id="815598010540052116">Превъртане надолу</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Страница надолу</translation>
@@ -218,6 +220,7 @@
 <translation id="8393700583063109961">Изпратете съобщение</translation>
 <translation id="8394908167088220973">Мултимедия, пускане/пауза</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 г.}other{# г.}}</translation>
+<translation id="8582972250170726813">Колоната <ph name="COLUMN_NAME" /> е сортирана в низходящ ред</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> файл (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> КБ/сек</translation>

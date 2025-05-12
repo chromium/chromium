@@ -168,7 +168,7 @@
 <translation id="2304820083631266885">Planeet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> is uitgegooi.</translation>
 <translation id="2307462900900812319">Stel netwerk op</translation>
-<translation id="2325650632570794183">Hierdie lêertipe word nie gesteun nie. Besoek asseblief die Chrome Webwinkel om 'n program te vind wat hierdie tipe lêer kan oopmaak.</translation>
+<translation id="2325650632570794183">Hierdie lêertipe word nie gesteun nie. Besoek asseblief die Chrome Webwinkel om 'n app te vind wat hierdie tipe lêer kan oopmaak.</translation>
 <translation id="2326539130272988168">Bulgaars</translation>
 <translation id="233822363739146957">Daar is te min bergingspasie om al jou lêers te sinkroniseer</translation>
 <translation id="23721837607121582">Laai mobiele profiel af, netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -213,7 +213,7 @@
 <translation id="2653059201992392941">Jy het <ph name="RETRIES" /> pogings oor.</translation>
 <translation id="2663066752008346276">Birmaans/Mianmar met Miansan-sleutelbord</translation>
 <translation id="2664412712123763093">Lêerligging</translation>
-<translation id="2718540689505416944">Installeer program met Linux</translation>
+<translation id="2718540689505416944">Installeer app met Linux</translation>
 <translation id="2719020180254996569">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, besonderhede</translation>
 <translation id="2724954091494693138">Turks met F-sleutelbord</translation>
 <translation id="2732288874651063549">Bestuur <ph name="VM_NAME" />-deling</translation>
@@ -222,7 +222,7 @@
 <translation id="2764206540577097904">Jy het al jou individuele Google Workspace-berging gebruik.</translation>
 <translation id="2771816809568414714">Kaas</translation>
 <translation id="2781645665747935084">Belgiese</translation>
-<translation id="2782104745158847185">Kon nie Linux-program installeer nie</translation>
+<translation id="2782104745158847185">Kon nie Linux-app installeer nie</translation>
 <translation id="2802583107108007218">Kom meer te wete oor hierdie beperkings</translation>
 <translation id="2803375539583399270">Voer PIN in</translation>
 <translation id="2819519502129272135">Lêersinkronisering is afgeskakel</translation>
@@ -534,7 +534,7 @@
 <translation id="5158983316805876233">Gebruik dieselfde instaanbediener vir alle protokolle</translation>
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Moet nog nie jou toestel verwyder nie!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
-   As jy jou toestel verwyder terwyl dit gebruik word, kan dit dataverlies veroorsaak. Wag asseblief tot die aktiwiteit verby is en verwyder die toestel deur die Lêers-program te gebruik.</translation>
+   As jy jou toestel verwyder terwyl dit gebruik word, kan dit dataverlies veroorsaak. Wag asseblief tot die aktiwiteit verby is en verwyder die toestel deur die Lêers-app te gebruik.</translation>
 <translation id="5163869187418756376">Deling het misluk. Gaan jou verbinding na en probeer later weer.</translation>
 <translation id="516592729076796170">VSA-programmeerder-Dvorak</translation>
 <translation id="5177526793333269655">Miniprent-aansig</translation>
@@ -602,7 +602,7 @@
 <translation id="5649768706273821470">Luister</translation>
 <translation id="5650895901941743674">Gaan jou APN-opstelling na</translation>
 <translation id="5669691691057771421">Voer nuwe PIN in</translation>
-<translation id="5678784840044122290">Die Linux-program sal binne jou terminaal beskikbaar wees en kan dalk ook 'n ikoon in jou Lanseerder wys.</translation>
+<translation id="5678784840044122290">Die Linux-app sal binne jou terminaal beskikbaar wees en kan dalk ook 'n ikoon in jou Lanseerder wys.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Kan nie van 'n argief- of virtuele skyf ontkoppel nie<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Maak alle lêers op die argief- of virtuele skyf toe en probeer dan weer.</translation>
@@ -637,7 +637,7 @@
 <translation id="5861477046012235702">Speletjiespeler</translation>
 <translation id="5864471791310927901">DHCP-opsoek het misluk</translation>
 <translation id="5896749729057314184">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />; nie geaktiveer nie; seinsterkte <ph name="SIGNAL_STRENGTH" />%; besonderhede</translation>
-<translation id="5911887972742538906">Kon nie jou Linux-program installeer nie.</translation>
+<translation id="5911887972742538906">Kon nie jou Linux-app installeer nie.</translation>
 <translation id="5912396950572065471">Formaat</translation>
 <translation id="5918480239180455431">Nuwe soekkenmerke is beskikbaar</translation>
 <translation id="5926082595146149752">Nederlands met Internasionale VSA- (rekenaar-) sleutelbord</translation>
@@ -681,7 +681,7 @@
 <translation id="6269630227984243955">Maleis</translation>
 <translation id="6271903698064569429">Lêers kan nie opgelaai word nie omdat “<ph name="SHARED_DRIVE_NAME" />” nie genoeg bergingspasie het nie.</translation>
 <translation id="6279140785485544797">Jou mobieldatapakket het moontlik verval. Kontak jou diensverskaffer vir steun.</translation>
-<translation id="6287852322318138013">Kies 'n program om hierdie lêer oop te maak</translation>
+<translation id="6287852322318138013">Kies 'n app om hierdie lêer oop te maak</translation>
 <translation id="6295542640242147836">Sluit SIM</translation>
 <translation id="6296410173147755564">Ongeldige PUK</translation>
 <translation id="6308243004861726558">Hierdie lêer is vertroulik en onderworpe aan administrateursbeleid. Die volgende lêertoegang en oordraghandelinge geld.</translation>
@@ -806,7 +806,7 @@
 <translation id="7238097264433196391">Skyfnaam</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, besonderhede</translation>
 <translation id="7246947237293279874">FTP-instaanbediener</translation>
-<translation id="7248671827512403053">Program</translation>
+<translation id="7248671827512403053">App</translation>
 <translation id="7256405249507348194">Herken nie fout nie: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Beskikbare dienste</translation>
 <translation id="7291818353625820805">Wil jy hê dat sleutels herhaal word? Skakel aksenttekens af in Sleutelbordinstellings</translation>

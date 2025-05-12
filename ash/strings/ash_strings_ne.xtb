@@ -1440,6 +1440,7 @@
 <translation id="5672890847723042801">युटिलिटीहरू</translation>
 <translation id="5673434351075758678">तपाईंका सेटिङहरू सिंक पश्चात् "<ph name="TO_LOCALE" />" बाट "<ph name="FROM_LOCALE" />" मा परिवर्तन भएका छन्।</translation>
 <translation id="5675363643668471212">सेल्फको वस्तु</translation>
+<translation id="5677022547882470786">खोज्न चाहेको कुनै क्षेत्र चयन गर्न ड्र्याग गर्नुहोस् वा स्पेस थिच्नुहोस्</translation>
 <translation id="5677928146339483299">ब्लक गरिएको छ</translation>
 <translation id="5678564054339031017">आगामी हप्ताका कार्यक्रम देखाउनुहोस्</translation>
 <translation id="5679050765726761783">न्यून पावर भएको एड्याप्टर जोडिएको छ</translation>
@@ -1839,7 +1840,7 @@
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
 <translation id="6945922087561257829">तपाईंको फोनमा मोबाइल नेटवर्क प्रयोग गरिराखिएको छ। तपाईंको फोन र Chromebook एउटै Wi-Fi नेटवर्कमा कनेक्ट गरिएका छन् भन्ने कुरा सुनिश्चित गर्नुहोस्। <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">सक्रिय गरिएको छैन। आफ्नो सेवा प्रदायकमा सम्पर्क गर्नुहोस्।</translation>
-<translation id="6961121602502368900">कार्य प्रोफाइल प्रयोग गरिएका बेला फोन साइलेन्ट बनाउने सुविधा उपलब्ध हुँदैन</translation>
+<translation id="6961121602502368900">वर्क प्रोफाइल प्रयोग गरिएका बेला फोन साइलेन्ट बनाउने सुविधा उपलब्ध हुँदैन</translation>
 <translation id="6961840794482373852">Alt + अप एरो किबोर्ड सर्टकट परिवर्तन गरिएको छ। Page Up की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + अप एरो की थिच्नुहोस्।</translation>
 <translation id="696267987219125751">क्यामेरा फ्रेमिङ अफ छ।</translation>
 <translation id="6965382102122355670">ठिक छ</translation>
@@ -2432,6 +2433,7 @@
 <translation id="8934418770423095813">Google कागजात प्रयोग गरी डकुमेन्ट बनाउनुहोस्</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{एउटा फाइल}other{# वटा फाइल}}</translation>
 <translation id="8936501819958976551">निष्क्रिय पारियो</translation>
+<translation id="8937312474322077653">स्क्रिन क्याप्चरमा गई <ph name="SOURCE" /> <ph name="TYPE" /> सेट गर्नुहोस्। क्याप्चरको प्रकार छनौट गर्न ट्याब थिच्नुहोस्। क्षेत्र चयन गर्न स्पेस थिच्नुहोस्। क्याप्चर गर्न इन्टर थिच्नुहोस्।</translation>
 <translation id="8938800817013097409">USB-C यन्त्र (पछाडिको दायाँ पोर्ट)</translation>
 <translation id="8939855324412367560">इनपुट अडियो "<ph name="INPUT_DEVICE_NAME" />" हो र आउटपुट अडियो "<ph name="OUTPUT_DEVICE_NAME" />" हो। परिवर्तन गर्न "सेटिङ" मा जानुहोस्।</translation>
 <translation id="8940956008527784070">ब्याटरी कम (<ph name="PERCENTAGE" />%)</translation>

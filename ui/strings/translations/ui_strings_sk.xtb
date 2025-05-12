@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 neprečítané upozornenie}few{# neprečítané upozornenia}many{# Unread Notifications}other{# neprečítaných upozornení}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{V režime inkognito zapnite nasledujúce rozšírenie:}few{V režime inkognito zapnite nasledujúce rozšírenia:}many{V režime inkognito zapnite nasledujúce rozšírenia:}other{V režime inkognito zapnite nasledujúce rozšírenia:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{pred mesiacom}few{pred # mesiacmi}many{pred # mesiacom}other{pred # mesiacmi}}</translation>
+<translation id="4277033906326892359">Stĺpec <ph name="COLUMN_NAME" /> je zoradený vzostupne</translation>
 <translation id="4289300219472526559">Začať hovoriť</translation>
 <translation id="4289540628985791613">Prehľad</translation>
 <translation id="4491109536499578614">Obrázok</translation>
@@ -171,6 +172,7 @@
 <translation id="654149438358937226">Blokovať všetky upozornenia</translation>
 <translation id="6620110761915583480">Uložiť súbor</translation>
 <translation id="6699343763173986273">Média – ďalšia stopa</translation>
+<translation id="6807086321996342431">Stĺpec <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">Médiá – zastaviť</translation>
 <translation id="6845383723252244143">Vybrať priečinok</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{Zostáva 1 hodina}few{Zostávajú # hodiny}many{Zostáva # hodiny}other{Zostáva # hodín}}</translation>
@@ -202,11 +204,11 @@
 <translation id="7969046989155602842">Príkaz</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Viac ako 1 neprečítané upozornenie}few{Viac ako # neprečítané upozornenia}many{More than # unread notifications}other{Viac ako # neprečítaných upozornení}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{o 1 mes.}few{o # mes.}many{o # mes.}other{o # mes.}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" /> + <ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Číslo zo zdroja <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{Pred 1 hodinou}few{Pred # hodinami}many{Pred # hodinou}other{Pred # hodinami}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{Zostáva 1 s}few{Zostávajú # s}many{Zostáva # s}other{Zostáva # s}}</translation>
 <translation id="8134065097954893699">Táto stránka sa znova načítava</translation>
+<translation id="813785873406874127">Stĺpec <ph name="COLUMN_NAME" /> nie je zoradený</translation>
 <translation id="815598010540052116">Rolovať nadol</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Stránkovať nadol</translation>
@@ -218,6 +220,7 @@
 <translation id="8393700583063109961">Odoslať správu</translation>
 <translation id="8394908167088220973">Média – prehrať / pozastaviť</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 r.}few{# r.}many{# r.}other{# r.}}</translation>
+<translation id="8582972250170726813">Stĺpec <ph name="COLUMN_NAME" /> je zoradený zostupne</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" /> %</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> Súbor (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> kB/s</translation>

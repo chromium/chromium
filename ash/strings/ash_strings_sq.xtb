@@ -1440,6 +1440,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="5672890847723042801">Aplikacione utilitare</translation>
 <translation id="5673434351075758678">Nga "<ph name="FROM_LOCALE" />" në "<ph name="TO_LOCALE" />" pas sinkronizimit të cilësimeve të tua.</translation>
 <translation id="5675363643668471212">Artikulli në raft</translation>
+<translation id="5677022547882470786">Zvarrit ose shtyp tastin e hapësirës për të zgjedhur një zonë për të kërkuar</translation>
 <translation id="5677928146339483299">Të bllokuara</translation>
 <translation id="5678564054339031017">Shfaq javën tjetër</translation>
 <translation id="5679050765726761783">Është lidhur një përshtatës me fuqi të ulët</translation>
@@ -2432,6 +2433,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8934418770423095813">Krijo "Dokument të Google"</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 skedar}other{# skedarë}}</translation>
 <translation id="8936501819958976551">çaktivizuar</translation>
+<translation id="8937312474322077653">Në regjistrimin e ekranit, cakto te <ph name="TYPE" /> <ph name="SOURCE" />. Shtyp "Tab" për të zgjedhur llojin e regjistrimit. Shtyp tastin e hapësirës për të zgjedhur rajonin. Shtyp "Enter" për të regjistruar.</translation>
 <translation id="8938800817013097409">Pajisja USB-C (porta djathtas, prapa)</translation>
 <translation id="8939855324412367560">Audioja e hyrjes është nga "<ph name="INPUT_DEVICE_NAME" />" dhe audioja e daljes është nga "<ph name="OUTPUT_DEVICE_NAME" />". Shko te "Cilësimet" për ta ndryshuar.</translation>
 <translation id="8940956008527784070">Nivel i ulët baterie (<ph name="PERCENTAGE" />%)</translation>

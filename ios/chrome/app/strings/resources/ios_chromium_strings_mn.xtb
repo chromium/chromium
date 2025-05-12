@@ -47,7 +47,6 @@
 <translation id="2042889939382983733">Chromium-н түүхээ үзэх</translation>
 <translation id="2052320862053429062">Chrome нь таны нууц үгийг онлайнаар нийтэлсэн жагсаалтуудтай үе үе харьцуулж шалгадаг. Үүнийг хийх үед таны нууц үг болон хэрэглэгчийн нэр кодчилогдсон байх бөгөөд ингэснээр Google-г оролцуулаад хэн ч тэдгээрийг унших боломжгүй болно.</translation>
 <translation id="2059365270911640413">Chromium-г тохируулж дуусгаарай</translation>
-<translation id="2147210759439165826">Контент болон Chromium-н хэрэгтэй зөвлөгөөг авч байгаарай.</translation>
 <translation id="2168108852149185974">Зарим нэмэлт онцлог нь Chromium-г эвдрэхэд хүргэдэг. Тиймээс тэдгээрийг устгана уу:</translation>
 <translation id="2168593389981132306">Chromium-г сайжруулах</translation>
 <translation id="2178608107313874732">Chromium одоогоор таны камерыг ашиглах боломжгүй байна</translation>
@@ -157,6 +156,7 @@
 <translation id="4828317641996116749">Chromium бүх нууц үгийг шалгаж чадсангүй. Дараа дахин оролдоно уу.</translation>
 <translation id="4856138222358683580">Chromium-н үйлдлүүд</translation>
 <translation id="4904452304169763785">Chromium-н танд илрүүлж өгсөн нууцлал эсвэл аюулгүй байдлын аливаа асуудлын талаарх сэрэмжлүүлэг.</translation>
+<translation id="4908570938463711775">Эхлэхэд тань туслах Chromium-н хэрэгтэй үндсэн ойлголтуудыг мэдэж аваарай</translation>
 <translation id="4962295957157529683">Chromium-н нээлттэй нөгөө цонхон дээрээ хийж байсан зүйлээ дуусгана уу.</translation>
 <translation id="4985291216379576555">Офлайн байна, Chromium-н шинэчлэлтийг шалгах боломжгүй байна</translation>
 <translation id="4996471330284142407">Энгийн, аюулгүй бөгөөд урьд өмнөхөөс илүү хурдан Chromium-р илүү ихийг хийгээрэй.</translation>
@@ -197,6 +197,7 @@
 <translation id="5688047395118852662">Энэ карт танд Chromium-г хэрхэн бүрэн ашиглах талаар зөвлөмжүүдийг харуулна.</translation>
 <translation id="5700709190537129682">Chromium таны нууц үгнүүдийг шалгах боломжгүй байна</translation>
 <translation id="584550191241316896">Chromium-д нэвтэрсэн</translation>
+<translation id="5862307444128926510">Chromium-д тавтай морил</translation>
 <translation id="5889847953983052353">Асаалттай үед:
 <ph name="BEGIN_INDENT" />  • Chromium-г тантай адил аргаар ашигладаг хүмүүст зориулан сайжруулахад нь туслаарай.<ph name="END_INDENT" />
 
@@ -223,6 +224,7 @@
 <translation id="6301717043141881464">Бусад аппдаа хадгалсан нууц үгээ хялбархан авахын тулд Автоматаар бөглөхөд Chromium-г ашиглахыг сонгоорой</translation>
 <translation id="6324041800010509197">Chromium-н табын хүснэгтэд зочлох</translation>
 <translation id="6325378625795868881">Мессеж болон бусад аппад холбооснуудыг товших бүрдээ Chromium-г ашиглана уу.</translation>
+<translation id="6387994184698195448">Chromium-н тустай зөвлөгөө болон бусад зүйлийн талаар мэдээлэлтэй байгаарай.</translation>
 <translation id="6424492062988593837">Chromium-ыг сайжрууллаа! Одоо шинэ хувилбарыг ашиглах боломжтой.</translation>
 <translation id="6433172051771630690">Chromium-г бүрэн ашиглах зөвлөгөөнүүд.</translation>
 <translation id="65045991564554105">Chromium-н хавчуургыг харах</translation>
@@ -317,6 +319,7 @@
 <translation id="8860548555286245440">URL-уудыг Chromium-д Нууцлалтай горимд нээх</translation>
 <translation id="8880024619507699923">Танай байгууллага танаас Chromium-г ашиглахын тулд нэвтрэхийг шаарддаг. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Chromium-н хамгийн хүчирхэг хамгаалалтыг аваарай</translation>
+<translation id="8925569192291721236">Үнэ мөшгөх талаарх шинэ мэдээлэл, Chromium-н зөвлөгөөний талаар мэдээлэлтэй байгаарай.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Chromium-г {THRESHOLD} минутын турш ашиглаагүй үед ийм зүйл тохиолдоно}other{Chromium-г {THRESHOLD} минутын турш ашиглаагүй үед ийм зүйл тохиолдоно}}</translation>
 <translation id="8963279154877372067">Үнэ буурсан талаарх сэрэмжлүүлэг авахын тулд Chromium-н мэдэгдлийг зөвшөөрнө үү</translation>
 <translation id="8975812008711371178">Chromium-д дуу хоолойгоор хайх</translation>

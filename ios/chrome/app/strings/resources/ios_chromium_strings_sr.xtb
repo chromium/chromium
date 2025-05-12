@@ -47,7 +47,6 @@
 <translation id="2042889939382983733">Прегледајте Chromium историју</translation>
 <translation id="2052320862053429062">Chromium повремено упоређује ваше лозинке са листама које су објављене онлајн. Док то ради, ваше лозинке и корисничка имена су шифровани, па нико не може да их прочита, укључујући Google.</translation>
 <translation id="2059365270911640413">Довршите подешавање Chromium-а</translation>
-<translation id="2147210759439165826">Будите у току са садржајем и корисним саветима за Chromium.</translation>
 <translation id="2168108852149185974">Неки програмски додаци изазивају отказивање Chromium-а. Деинсталирајте:</translation>
 <translation id="2168593389981132306">Побољшајте Chromium</translation>
 <translation id="2178608107313874732">Chromium тренутно не може да користи камеру</translation>
@@ -157,6 +156,7 @@
 <translation id="4828317641996116749">Chromium није успео да провери све лозинке. Пробајте поново касније.</translation>
 <translation id="4856138222358683580">Chromium радње</translation>
 <translation id="4904452304169763785">Обавештења о свим проблемима у вези са приватношћу или безбедношћу које Chromium открије за вас.</translation>
+<translation id="4908570938463711775">Сазнајте корисне основe Chromium-а да бисте започели</translation>
 <translation id="4962295957157529683">Завршите оно што сте радили у другом отвореном Chromium прозору.</translation>
 <translation id="4985291216379576555">Офлајн сте. Chromium не може да тражи ажурирања.</translation>
 <translation id="4996471330284142407">Урадите више помоћу још једноставнијег, безбеднијег и бржег Chromium-а.</translation>
@@ -197,6 +197,7 @@
 <translation id="5688047395118852662">Ова картица вам приказује предлоге о томе како да искористите Chromium-а на најбољи начин.</translation>
 <translation id="5700709190537129682">Chromium не може да вам проверава лозинке</translation>
 <translation id="584550191241316896">Пријављени сте у Chromium</translation>
+<translation id="5862307444128926510">Добро дошли у Chromium</translation>
 <translation id="5889847953983052353">Када је ово укључено:
 <ph name="BEGIN_INDENT" /> • Помозите да побољшамо Chromium за људе који га користе као ви.<ph name="END_INDENT" />
 
@@ -223,6 +224,7 @@
 <translation id="6301717043141881464">Да бисте лако приступали сачуваним лозинкама у другим апликацијама, користите Chromium за аутоматско попуњавање</translation>
 <translation id="6324041800010509197">Посетите мрежу картица у Chromium-у</translation>
 <translation id="6325378625795868881">Користите Chromium сваки пут када додирујете линкове у порукама и другим апликацијама.</translation>
+<translation id="6387994184698195448">Будите у току са корисним саветима за Chromium и другим садржајем.</translation>
 <translation id="6424492062988593837">Chromium је управо постао бољи! Доступна је нова верзија.</translation>
 <translation id="6433172051771630690">Савети како да на најбољи начин користите Chromium.</translation>
 <translation id="65045991564554105">Преглед Chromium обележивача</translation>
@@ -317,6 +319,7 @@
 <translation id="8860548555286245440">Отворите URL-ове у Chromium-у у режиму без архивирања</translation>
 <translation id="8880024619507699923">Организација захтева да се пријавите да бисте користили Chromium. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Набавите најјачу Chromium заштиту</translation>
+<translation id="8925569192291721236">Будите у току са новостима о праћењу цена и саветима за Chromium.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{То се дешава када се Chromium не користи {THRESHOLD} минут}one{То се дешава када се Chromium не користи {THRESHOLD} минут}few{То се дешава када се Chromium не користи {THRESHOLD} минута}other{То се дешава када се Chromium не користи {THRESHOLD} минута}}</translation>
 <translation id="8963279154877372067">Дозволите Chromium обавештења да бисте добијали обавештења о снижењима</translation>
 <translation id="8975812008711371178">Претраживање гласом у Chromium-у</translation>

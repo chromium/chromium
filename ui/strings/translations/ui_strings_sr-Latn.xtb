@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 nepročitano obaveštenje}one{# nepročitano obaveštenje}few{# nepročitana obaveštenja}other{# nepročitanih obaveštenja}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Uključite sledeći dodatak u režimu bez arhiviranja:}one{Uključite sledeće dodatke u režimu bez arhiviranja:}few{Uključite sledeće dodatke u režimu bez arhiviranja:}other{Uključite sledeće dodatke u režimu bez arhiviranja:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Pre mesec dana}one{Pre # mesec}few{Pre # meseca}other{Pre # meseci}}</translation>
+<translation id="4277033906326892359">Sadržaj kolone <ph name="COLUMN_NAME" /> je sortiran po rastućem redosledu</translation>
 <translation id="4289300219472526559">Počnite da govorite</translation>
 <translation id="4289540628985791613">Pregled</translation>
 <translation id="4491109536499578614">Slika</translation>
@@ -171,6 +172,7 @@
 <translation id="654149438358937226">Blokiraj sva obaveštenja</translation>
 <translation id="6620110761915583480">Čuvanje datoteke</translation>
 <translation id="6699343763173986273">Sledeća pesma medija</translation>
+<translation id="6807086321996342431">Kolona <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">Zaustavljanje medija</translation>
 <translation id="6845383723252244143">Izbor direktorijuma</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{Još 1 sat}one{Još # sat}few{Još # sata}other{Još # sati}}</translation>
@@ -202,11 +204,11 @@
 <translation id="7969046989155602842">Command</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Više od 1 nepročitanog obaveštenja}one{Više od # nepročitanog obaveštenja}few{Više od # nepročitana obaveštenja}other{Više od # nepročitanih obaveštenja}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{za 1 min}one{za # min}few{za # min}other{za # min}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Broj sa <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{Pre 1 sat}one{Pre # sat}few{Pre # sata}other{Pre # sati}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{Još 1 sek}one{Još # sek}few{Još # sek}other{Još # sek}}</translation>
 <translation id="8134065097954893699">Ponovo učitajte ovu stranicu</translation>
+<translation id="813785873406874127">Opozvano je sortiranje sadržaja kolone <ph name="COLUMN_NAME" /></translation>
 <translation id="815598010540052116">Pomeri nadole</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Stranica nadole</translation>
@@ -218,6 +220,7 @@
 <translation id="8393700583063109961">Pošaljite poruku</translation>
 <translation id="8394908167088220973">Puštanje/pauziranje medija</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 g}one{# g}few{# g}other{# g}}</translation>
+<translation id="8582972250170726813">Sadržaj kolone <ph name="COLUMN_NAME" /> je sortiran po opadajućem redosledu</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> datoteka (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>

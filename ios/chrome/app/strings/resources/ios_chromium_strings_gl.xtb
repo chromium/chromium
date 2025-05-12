@@ -47,7 +47,6 @@
 <translation id="2042889939382983733">Consulta o teu historial de Chromium</translation>
 <translation id="2052320862053429062">Chromium comproba periodicamente se os teus contrasinais aparecen nas listas que se publican en liña. Cando o fai, os teus contrasinais e os teus nomes de usuario encríptanse, polo que ninguén pode lelos, nin sequera Google.</translation>
 <translation id="2059365270911640413">Termina de configurar Chromium</translation>
-<translation id="2147210759439165826">Mantente ao día do contido e dos consellos útiles de Chromium.</translation>
 <translation id="2168108852149185974">Algúns complementos fan que Chromium falle. Desinstala:</translation>
 <translation id="2168593389981132306">Mellorar Chromium</translation>
 <translation id="2178608107313874732">Chromium non pode usar a cámara neste momento</translation>
@@ -157,6 +156,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="4828317641996116749">Chromium non puido comprobar todos os contrasinais. Téntao de novo máis tarde.</translation>
 <translation id="4856138222358683580">Accións de Chromium</translation>
 <translation id="4904452304169763785">Recibe alertas sobre calquera problema de privacidade ou seguranza que detecte Chromium.</translation>
+<translation id="4908570938463711775">Aprende os conceptos básicos e útiles de Chromium para botar a andar</translation>
 <translation id="4962295957157529683">Acaba o que estabas facendo na outra ventá de Chromium que tiñas aberta.</translation>
 <translation id="4985291216379576555">Non tes conexión. Chromium non puido buscar actualizacións</translation>
 <translation id="4996471330284142407">Realiza máis tarefas cunha versión de Chromium sinxela, segura e máis rápida que nunca.</translation>
@@ -197,6 +197,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="5688047395118852662">Esta tarxeta móstrache suxestións sobre como tirar o máximo proveito de Chromium.</translation>
 <translation id="5700709190537129682">Chromium non puido comprobar os teus contrasinais</translation>
 <translation id="584550191241316896">Tes a sesión iniciada en Chromium</translation>
+<translation id="5862307444128926510">Dámosche a benvida a Chromium</translation>
 <translation id="5889847953983052353">Cando esta opción está activada:
 <ph name="BEGIN_INDENT" />  • Axuda a mellorar Chromium para as persoas que o usan do mesmo xeito ca ti.<ph name="END_INDENT" />
 
@@ -223,6 +224,7 @@ Cuestións que debes ter en conta:
 <translation id="6301717043141881464">Escolle Chromium para autocompletar facilmente noutras aplicacións os teus contrasinais gardados</translation>
 <translation id="6324041800010509197">Visita a grade de pestanas en Chromium</translation>
 <translation id="6325378625795868881">Utiliza Chromium sempre que toques ligazóns en mensaxes e noutras aplicacións.</translation>
+<translation id="6387994184698195448">Recibe consellos útiles relacionados con Chromium e moito máis.</translation>
 <translation id="6424492062988593837">Chromium introduciu melloras. Está dispoñible unha nova versión.</translation>
 <translation id="6433172051771630690">Consellos para tirar o máximo proveito de Chromium.</translation>
 <translation id="65045991564554105">Abre os marcadores de Chromium</translation>
@@ -317,6 +319,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="8860548555286245440">Abrir os URL no modo de incógnito de Chromium</translation>
 <translation id="8880024619507699923">Segundo as políticas da túa organización, cómpre que inicies sesión para usar Chromium. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Goza da máxima seguranza de Chromium</translation>
+<translation id="8925569192291721236">Recibe novidades sobre o seguimento de prezos e consellos relacionados con Chromium.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Isto ocorre cando Chromium non se utiliza durante {THRESHOLD} minuto}other{Isto ocorre cando Chromium non se utiliza durante {THRESHOLD} minutos}}</translation>
 <translation id="8963279154877372067">Permitir que as notificacións de Chromium avisen sobre as baixadas de prezo</translation>
 <translation id="8975812008711371178">Fai buscas por voz en Chromium</translation>

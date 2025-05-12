@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 చదవని నోటిఫికేషన్ ఉంది}other{# చదవని నోటిఫికేషన్‌లు ఉన్నాయి}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{కింది ఎక్స్‌టెన్షన్‌ను అజ్ఞాత మోడ్‌లో ఆన్ చేయండి:}other{కింది ఎక్స్‌టెన్షన్‌లను అజ్ఞాత మోడ్‌లో ఆన్ చేయండి:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 నెల క్రితం}other{# నెలల క్రితం}}</translation>
+<translation id="4277033906326892359"><ph name="COLUMN_NAME" /> నిలువు వరుస ఆరోహణ క్రమంలో అమర్చబడింది</translation>
 <translation id="4289300219472526559">మాట్లాడటాన్ని ప్రారంభించండి</translation>
 <translation id="4289540628985791613">స్థూలదృష్టి</translation>
 <translation id="4491109536499578614">చిత్రం</translation>
@@ -171,6 +172,7 @@
 <translation id="654149438358937226">అన్ని నోటిఫికేషన్‌లను బ్లాక్ చేయండి</translation>
 <translation id="6620110761915583480">ఫైల్‌ను సేవ్ చేయండి</translation>
 <translation id="6699343763173986273">మీడియా తర్వాత ట్రాక్</translation>
+<translation id="6807086321996342431"><ph name="COLUMN_NAME" /> నిలువు వరుస</translation>
 <translation id="6808150112686056157">మీడియా ఆపివేయి</translation>
 <translation id="6845383723252244143">ఫోల్డర్‌ను ఎంచుకో</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 గంట మిగిలి ఉంది}other{# గంటలు మిగిలి ఉన్నాయి}}</translation>
@@ -202,11 +204,11 @@
 <translation id="7969046989155602842">ఆదేశం</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{1 కంటే ఎక్కువ చదవని నోటిఫికేషన్‌లు ఉన్నాయి}other{# కంటే ఎక్కువ చదవని నోటిఫికేషన్‌లు ఉన్నాయి}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{1 నిమిషంలో}other{# నిమిషంలో}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568"><ph name="ORIGIN" /> నుండి నంబర్</translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 గంట క్రితం}other{# గంటల క్రితం}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 సెక. మిగిలి ఉంది}other{# సెక. మిగిలి ఉన్నాయి}}</translation>
 <translation id="8134065097954893699">ఈ పేజీని మళ్లీ లోడ్ చేస్తోంది</translation>
+<translation id="813785873406874127"><ph name="COLUMN_NAME" /> నిలువు వరుస క్రమపద్ధతిలో అమర్చి లేదు</translation>
 <translation id="815598010540052116">కిందికి స్క్రోల్ చేయి</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Page Down</translation>
@@ -218,6 +220,7 @@
 <translation id="8393700583063109961">మెసేజ్‌ను పంపండి</translation>
 <translation id="8394908167088220973">మీడియా ప్లే/పాజ్</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1సం}other{#సం}}</translation>
+<translation id="8582972250170726813"><ph name="COLUMN_NAME" /> నిలువు వరుస అవరోహణ క్రమంలో అమర్చబడింది</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> ఫైల్ (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/సె</translation>

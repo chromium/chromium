@@ -1440,6 +1440,7 @@ Walang nakakonektang device.</translation>
 <translation id="5672890847723042801">Mga Utility</translation>
 <translation id="5673434351075758678">Gagawing "<ph name="TO_LOCALE" />" mula "<ph name="FROM_LOCALE" />" pagkatapos i-sync ang iyong mga setting.</translation>
 <translation id="5675363643668471212">Item sa shelf</translation>
+<translation id="5677022547882470786">I-drag o pindutin ang Space para pumili ng bahagi kung saan maghahanap</translation>
 <translation id="5677928146339483299">Naka-block</translation>
 <translation id="5678564054339031017">Ipakita ang susunod na linggo</translation>
 <translation id="5679050765726761783">Nakakonekta ang low-power adapter</translation>
@@ -2430,6 +2431,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8934418770423095813">Gumawa ng Google Doc</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 file}one{# file}other{# na file}}</translation>
 <translation id="8936501819958976551">na-deactivate</translation>
+<translation id="8937312474322077653">Sa screen capture, itakda sa <ph name="SOURCE" /> <ph name="TYPE" />. Pindutin ang tab para pumili ng uri ng pag-capture. Pindutin ang space para pumili ng rehiyon. Pindutin ang enter para mag-capture.</translation>
 <translation id="8938800817013097409">USB-C device (kanang port sa likod)</translation>
 <translation id="8939855324412367560">Ang input audio ay "<ph name="INPUT_DEVICE_NAME" />" at ang output audio ay "<ph name="OUTPUT_DEVICE_NAME" />." Pumunta sa Mga Setting para baguhin.</translation>
 <translation id="8940956008527784070">Mahina na ang baterya (<ph name="PERCENTAGE" />%)</translation>

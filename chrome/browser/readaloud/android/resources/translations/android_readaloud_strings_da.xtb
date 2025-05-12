@@ -10,6 +10,7 @@
 <translation id="1807863182207623884">Rubin</translation>
 <translation id="1921351128855867012">Spol <ph name="NUMBER_OF_SECONDS" /> sekunder frem</translation>
 <translation id="1984328900355667246">Afspilning er ikke tilgængelig</translation>
+<translation id="2019727681730021602">Standardafspilning</translation>
 <translation id="2224347680315897176">Stabil</translation>
 <translation id="2611765907167846862">Rolig</translation>
 <translation id="3023502830214299618">Afspilning på denne side er ikke tilgængelig i øjeblikket. Prøv igen senere.</translation>
@@ -28,9 +29,11 @@
 <translation id="5026371835667036198">Lys</translation>
 <translation id="5234971936051226002">Afspilleren "Lyt til denne side" er minimeret.</translation>
 <translation id="5251803541071282808">Skyen</translation>
+<translation id="5526614127710223793">Valg af afspilningstilstand</translation>
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
 <translation id="5694491020339060116">Menu for afspilningshastighed</translation>
 <translation id="6315170314923504164">Stemme</translation>
+<translation id="6330455646577575965">AI-lydafspilning</translation>
 <translation id="6343633247422081848">Mos</translation>
 <translation id="6550675742724504774">Valgmuligheder</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -43,7 +46,6 @@
 <translation id="7221920857098237570">Blid</translation>
 <translation id="7237590978482584900">Luftig</translation>
 <translation id="7282547042039404307">Problemfri</translation>
-<translation id="7587250070160020374">Chrome afspiller nu</translation>
 <translation id="8004767876552422827">Mark</translation>
 <translation id="8136852699834914183">Afspilning er ikke tilgængelig for denne side.</translation>
 <translation id="8198036737896977997">Luft</translation>

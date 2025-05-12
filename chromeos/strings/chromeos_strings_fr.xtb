@@ -20,6 +20,7 @@
 <translation id="1059913517121127803">Impossible de lancer la numérisation</translation>
 <translation id="1061864016440983342">Utiliser sans la localisation</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> sur <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="106558928761833284">une belle nébuleuse avec des teintes bleues, roses et violettes, et un vaisseau spatial futuriste qui traverse la galaxie à toute vitesse</translation>
 <translation id="1069150558259542054">Impossible d'utiliser Insertion Rapide pour les raccourcis personnalisés.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Pare-feu détecté</translation>
@@ -27,6 +28,7 @@
 <translation id="1082009148392559545">Téléchargement de l'économiseur d'écran</translation>
 <translation id="1094693127011229778">Adresse IP indisponible</translation>
 <translation id="1100902271996134409">Création d'images...</translation>
+<translation id="1102946598597843031">une photo de la Lune au-dessus d'un lac, avec des pétales de fleurs de cerisiers qui tombent, en 4K</translation>
 <translation id="1107856713690040084">Audio du <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">À propos</translation>
 <translation id="1118572504348554005">Les commentaires que vous transmettez via ce formulaire peuvent être partagés avec nos partenaires afin de résoudre des bugs et d'autres problèmes que vous nous signalez. N'incluez pas d'informations sensibles, comme un mot de passe.</translation>
@@ -67,6 +69,7 @@
 <translation id="1238163879850290856">Réinitialisez pour empêcher un tiers d'accéder à vos données. N'utilisez que les modes de saisie que vous jugez fiables.</translation>
 <translation id="1238612778414822719">Latence des requêtes HTTPS</translation>
 <translation id="1252766349417594414">Joystick</translation>
+<translation id="1261045951892393759">un chat en train de jouer de la musique avec une guitare flying V tout en chevauchant une licorne, avec un éclair en arrière-plan</translation>
 <translation id="1270369111467284986">Un portail captif semble être présent</translation>
 <translation id="1274654146705270731">oranges</translation>
 <translation id="1275718070701477396">Sélectionnée</translation>
@@ -273,6 +276,7 @@
 <translation id="2045814230297767491">couverts</translation>
 <translation id="2047316797244836561">Connectez-vous à un réseau et actualisez la page pour voir l'économiseur d'écran.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
+<translation id="2068472557797646626">Rendu 3D de sphères et formes sphériques chromées sur un fond d'éléments architecturaux chromés. Cette composition est un concept minimaliste moderne pour la publicité, l'image de marque ou une présentation avec un espace pour le texte. Une grande arche qui se dresse devant un arrière-plan abstrait dans un style minimaliste. Éclairage studio. Gros plan.</translation>
 <translation id="2073232437457681324">vaste océan</translation>
 <translation id="2080070583977670716">Plus de paramètres</translation>
 <translation id="2082932131694554252">Touche du clavier attribuée</translation>
@@ -390,7 +394,6 @@
 <translation id="2584559707064218956">Pour configurer, accédez à Paramètres</translation>
 <translation id="2586146417912237930">bleu et indigo</translation>
 <translation id="2589921777872778654">Menu "Modifier et supprimer"</translation>
-<translation id="2590424100019931043">Vous avez été retiré de ce cours</translation>
 <translation id="2597774443162333062">Le fichier sera envoyé à Google pour être débogué</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Numérisation terminée. 1 page numérisée}one{Numérisation terminée. {NUMBER_OF_PAGES} page numérisée}other{Numérisation terminée. {NUMBER_OF_PAGES} pages numérisées}}</translation>
 <translation id="261322795497077164">Identification du locuteur</translation>
@@ -430,6 +433,7 @@
 <translation id="2805756323405976993">Applications</translation>
 <translation id="28232023175184696">Impossible d'établir la connexion Internet. Cliquez ici pour réessayer.</translation>
 <translation id="2855718259207180827">laine</translation>
+<translation id="2856429654176718363">Un vaisseau spatial gigantesque au-dessus de la ville toute illuminée. La scène entière, dans un style peinture à l'huile, présente des tons sombres, ce qui crée une atmosphère mystérieuse avec des éléments de science-fiction futuristes. Cette œuvre a été créée avec le logiciel C4D et le moteur de rendu OC pour mettre en avant les détails et la haute résolution. Des bâtiments urbains en gros plan créent aussi un effet de profondeur de champ. La scène, dans un style peinture à l'huile, présente des tons sombres et crée une atmosphère mystérieuse avec des éléments de science-fiction futuristes.</translation>
 <translation id="2859243502336719778">Mise à jour critique</translation>
 <translation id="2860473693272905224">Placez une autre page sur le scanner</translation>
 <translation id="286265581261662583">Effectuez un clic droit ou appuyez de manière prolongée pour obtenir des définitions, des traductions ou des conversions d'unités</translation>
@@ -446,9 +450,11 @@
 <translation id="2895772081848316509">sombre</translation>
 <translation id="2915996080311180594">Redémarrer plus tard</translation>
 <translation id="2926057806159140518">Saisissez votre nom d'utilisateur et votre mot de passe ou scannez votre QR code</translation>
+<translation id="2927007463545347013">un chemin dans un style anime, qui surplombe l'océan, avec des pétales de fleurs de cerisiers qui tombent</translation>
 <translation id="2940811910881150316">Impossible de tester l'appareil. Rouvrez l'écran pour tester.</translation>
 <translation id="2941112035454246133">Faible</translation>
 <translation id="2956070106555335453">Résumé</translation>
+<translation id="2968959705684615497">un tigre blanc surréaliste aux yeux et rayures dorés, assis sur une dune de sable blanc</translation>
 <translation id="299385721391037602">rose et jaune</translation>
 <translation id="3008341117444806826">ACTUALISER</translation>
 <translation id="3009958530611748826">Sélectionner un dossier de destination</translation>
@@ -518,6 +524,7 @@
 <translation id="3321030238473337787">Vitesse de lecture</translation>
 <translation id="3327613592010997943">Vous pourrez à nouveau utiliser cet appareil <ph name="DAY" /> à <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Test en cours</translation>
+<translation id="3332683265015995419">un vaisseau spatial steampunk qui traverse une tempête de sable</translation>
 <translation id="3340011300870565703">L'écouteur droit de l'appareil a <ph name="BATTERY_PERCENTAGE" /> % de batterie.</translation>
 <translation id="3340978935015468852">paramètres</translation>
 <translation id="3347558044552027859">moderne</translation>
@@ -529,6 +536,7 @@
 <translation id="3369632935976756339"><ph name="INTENT" /> ; <ph name="QUERY_TEXT" /> ; <ph name="SUBTEXT" /> ; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">Fond d'écran Flux terrestre</translation>
 <translation id="33736539805963175">Arrière-plan <ph name="LETTERS_COLOR" /> affichant la lettre <ph name="LETTERS_LETTER" /></translation>
+<translation id="3382806462014639823"><ph name="TEACHER_NAME" /> regarde votre écran</translation>
 <translation id="3383623117265110236">Exclusivité</translation>
 <translation id="3404249063913988450">Activer l'économiseur d'écran</translation>
 <translation id="3413935475507503304">Pour lancer la mise à jour, cliquez sur "Suivant".</translation>
@@ -561,6 +569,7 @@
 <translation id="3532980081107202182">Environ <ph name="MIN_REMAINING" /> minutes restantes</translation>
 <translation id="3533790840489634638">plan d'eau</translation>
 <translation id="3547264467365135390">Formule</translation>
+<translation id="3552832331940389362">une illustration d'animation japonaise représentant un chat assis sur un rebord de fenêtre, en train de regarder la pluie tomber l'après-midi</translation>
 <translation id="3557205324756024651">Identité locale (facultatif)</translation>
 <translation id="3565064564551103223">IP autorisées</translation>
 <translation id="3569407787324516067">Économiseur d'écran</translation>
@@ -636,12 +645,14 @@
 <translation id="38811596981744338">Problème juridique</translation>
 <translation id="3885327323343477505">Modifier l'économiseur d'écran</translation>
 <translation id="3889914174935857450">Date de réinitialisation</translation>
+<translation id="3889954687526985291">une moto futuriste en papier noir avec des néons sur fond sombre</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3902271751020176019">Langue de transcription</translation>
 <translation id="390890062090528082">ciel étoilé</translation>
 <translation id="391412459402535266">Impossible de tester l'appareil. Passez en mode ordinateur portable pour tester.</translation>
 <translation id="3916998944874125962">faire une capture d'écran</translation>
 <translation id="3923184630988645767">Consommation des données</translation>
+<translation id="392943705803418306">La session Outils de cours est terminée pour vous</translation>
 <translation id="3932043219784172185">Aucun appareil connecté</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> non attribué</translation>
 <translation id="3941014780699102620">Impossible de résoudre l'hôte</translation>
@@ -808,6 +819,7 @@
 <translation id="4593212453765072419">L'authentification du proxy est requise.</translation>
 <translation id="4594021849294327751">Créer une transcription</translation>
 <translation id="4594541568452132351">Sélectionner la langue de transcription et télécharger le modèle</translation>
+<translation id="4600301862817165514">une Delorean avec des néons, qui traverse la galaxie pleine d'étoiles filantes</translation>
 <translation id="4609350030397390689">Baisser la luminosité du clavier</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sur <ph name="TOTAL_PAGE_NUMBER" />. Appuyez sur Entrée pour annuler la tâche d'impression.</translation>
 <translation id="463791356324567266">Annulation de la numérisation…</translation>
@@ -830,6 +842,7 @@
 <translation id="4697260493945012995">Sélectionner le type de commande</translation>
 <translation id="4712940987669302829">effet bokeh</translation>
 <translation id="4731797938093519117">Accès parental</translation>
+<translation id="4733200407105375152">Pas dans Outils de cours</translation>
 <translation id="4734982181169850310">couleurs pastel</translation>
 <translation id="473775607612524610">Mettre à jour</translation>
 <translation id="4744944742468440486">Informations sur le texte sélectionné</translation>
@@ -1006,6 +1019,7 @@
 <translation id="5499762266711462226">La couleur du clavier est basée sur le fond d'écran</translation>
 <translation id="5502931783115429516">Android n'est pas exécuté</translation>
 <translation id="550600468576850160">prairie</translation>
+<translation id="5507504956167780539">une photo professionnelle minimaliste illustrant des dunes de sable noir scintillant avec des ombres spectaculaires</translation>
 <translation id="551689408806449779">L'appareil a été déconnecté. Essayez de le reconnecter pour le tester.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="552644173505433109">En savoir plus sur le résumé et la création de titre</translation>
@@ -1077,6 +1091,7 @@
 <translation id="5876385649737594562">Activez pour sélectionner des options</translation>
 <translation id="5877503382465267833">Mettre en pause <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Plein écran</translation>
+<translation id="5889539348012432386">Accueil d'Outils de cours</translation>
 <translation id="5893975327266416093">Appuyez sur une touche du clavier pour l'associer</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
 <translation id="5896602941605730551">Lire</translation>
@@ -1125,6 +1140,7 @@
 <translation id="6075872808778243331">(Android) Latence HTTP</translation>
 <translation id="6078323886959318429">Ajouter un raccourci</translation>
 <translation id="6079693086494835199">Réinitialisez pour vous assurer que la page d'accueil par défaut n'est pas un site d'hameçonnage. N'utilisez que les sites Web que vous jugez fiables.</translation>
+<translation id="6090672065638047175">une photo d'un arbre illuminé d'étoiles sous un beau ciel nocturne avec une galaxie en arrière-plan</translation>
 <translation id="6091080061796993741">jaune</translation>
 <translation id="6104112872696127344">Numérisation annulée</translation>
 <translation id="6106186594183574873">Pour terminer, saisissez votre ancien mot de passe</translation>
@@ -1310,6 +1326,7 @@
 <translation id="6900701049656042631">Cet album ne contient aucune photo. Pour en ajouter, accédez à <ph name="LINK" />.</translation>
 <translation id="6902359863093437070">Créer un arrière-plan avec l'IA</translation>
 <translation id="6905163627763043954">Essayer</translation>
+<translation id="6905275015682612674">une photo à exposition longue d'une plage bioluminescente au coucher du soleil, avec des étoiles dans le ciel et de belles couleurs pastel, en 4K</translation>
 <translation id="6905724422583748843">Revenir à <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Le capot du scanner est ouvert. Refermez-le, puis réessayez.</translation>
 <translation id="6910845598686542904">créer des empreintes vocales des voix détectées dans l'enregistrement ;</translation>
@@ -1319,6 +1336,7 @@
 <translation id="6930597342185648547">À propos de l'arrière-plan</translation>
 <translation id="6931666215260956151">galaxie</translation>
 <translation id="6939766318048400022">Café</translation>
+<translation id="6940212863873359282">un morceau d'organza blanc qui flotte en plein milieu, au-dessus d'une arche en marbre blanc sur fond crème</translation>
 <translation id="6942253772720771875">Partagez vos commentaires ou décrivez votre problème</translation>
 <translation id="6943893908656559156">Identité à distance (facultatif)</translation>
 <translation id="694981048020558038">Rechercher le titre de l'enregistrement</translation>
@@ -1405,6 +1423,7 @@
 <translation id="7271040990581020067">Le scanner est en cours d'utilisation. Réessayez plus tard.</translation>
 <translation id="7271932918253517778">Le raccourci avec des touches supérieures doit inclure la touche <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7275707758336796649">un dalmatien en mouvement sur fond rose dans une prise de vue avec un arrière-plan de stock hyper réaliste en haute résolution, avec correction des couleurs</translation>
 <translation id="7281657306185710294">Brise légère</translation>
 <translation id="7287310195820267359">Collections de fonds d'écran</translation>
 <translation id="7293429513719260019">Sélectionner une langue</translation>
@@ -1414,6 +1433,7 @@
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Posez vos questions aux experts sur le forum d'aide Chromebook</translation>
+<translation id="7309823890857024809">nature morte minimaliste illustrant des tiges de coquelicots dans un vase en verre sur fond noir</translation>
 <translation id="7311368985037279727">couleur clavier</translation>
 <translation id="7317831949569936035">Enregistrement auprès de l'établissement</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -1431,6 +1451,7 @@
 <translation id="7353413232959255829">Résultat de recherche <ph name="LIST_POSITION" /> sur <ph name="LIST_SIZE" /> : <ph name="SEARCH_RESULT_TEXT" />. Appuyez sur Entrée pour accéder au raccourci.</translation>
 <translation id="7359657277149375382">Type de fichier</translation>
 <translation id="73631062356239394">Partager les données de diagnostic</translation>
+<translation id="7369648056634183167">Un gros plan détaillé sur un nénuphar recouvert de rosée par temps de pluie. On y voit avec précision de fins pétales et des gouttes d'eau qui réfléchissent la lumière, capturant leurs douces couleurs pastel sur un fond bleu. Prise de vue à hauteur des yeux avec une lumière naturelle.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378170410161264436">L'Enregistreur peut créer des transcriptions pour les enregistrements vocaux.
 Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces transcriptions.</translation>
@@ -1497,7 +1518,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7683228889864052081">teinte du clavier</translation>
 <translation id="7690294790491645610">Confirmer le nouveau mot de passe</translation>
 <translation id="7696506367342213250">collines d'argile</translation>
-<translation id="7701040980221191251">Désactivée</translation>
+<translation id="7701040980221191251">Désactivé</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
 <translation id="7718231387947923843">lumière du clavier</translation>
@@ -1601,6 +1622,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8135609423982943441">Les paramètres par défaut sécurisés de votre Chromebook ont été rétablis. Vous pouvez les modifier à tout moment dans les paramètres.</translation>
 <translation id="8138405288920084977">LTE Advanced</translation>
 <translation id="8140591278915222789">Créer le vôtre</translation>
+<translation id="8142182840415860496">un gros plan sur plusieurs fleurs blanches et jaunes, une image fixe d'un film d'animation, une fleur rose pâle délicate aux longs pétales et une tige verte entre deux grandes tulipes jaunes sous un ciel bleu sans feuilles aux couleurs pastel, une image fixe cinématographique en haute résolution avec des détails complexes très précis, OctaneRender avec un éclairage d'ambiance magnifique et volumétrique.</translation>
 <translation id="8143951647992294073">Sélectionnez <ph name="TOPIC_SOURCE" /> - <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Outils développeurs</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
@@ -1681,6 +1703,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="8503836310948963452">Plus que quelques minutes…</translation>
 <translation id="8505011850330200833">Le modèle Gemini nécessite 2 Go d'espace de stockage pour traiter les transcriptions et créer des résumés</translation>
+<translation id="8506063704538210734">photo d'un ciel nocturne avec une pluie de météores et quelques arbres au premier plan, avec des teintes violettes et roses</translation>
 <translation id="8506394543220680287">couvert de neige</translation>
 <translation id="8508640263392900755">Informations sur l'APN</translation>
 <translation id="8522687886059337719">Vous avez désormais accès à de nouveaux <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fonds d'écran<ph name="END_LINK_WALLPAPER_SUBPAGE" /> et <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />économiseurs d'écran<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>

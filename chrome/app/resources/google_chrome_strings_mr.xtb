@@ -32,12 +32,14 @@
 <translation id="137466361146087520">Google Chrome बीटा</translation>
 <translation id="1383876407941801731">शोधा</translation>
 <translation id="1399397803214730675">या कॉंप्युटरत आधीपासून Google Chrome ची अगदी अलिकडील आवृत्ती आहे. सॉफ्टवेअर काम करत नसल्यास, कृपया Google Chrome अनइंस्टॉल करा आणि पुन्हा प्रयत्न करा.</translation>
+<translation id="141901961143729572">तुमचे विचार शेअर करा</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome is done updating. You can use the latest version as soon as you relaunch. After, your current tabs will reopen.}=1{Chrome अपडेट केले आहे. तुम्ही पुन्हा लाँच केल्यावर नवीनतम आवृत्ती वापरू शकता. त्यानंतर, तुमचे सद्य टॅब पुन्हा उघडतील. तुमची गुप्त विंडो पुन्हा उघडणार नाही.}other{Chrome अपडेट केले आहे. तुम्ही पुन्हा लाँच केल्यावर नवीनतम आवृत्ती वापरू शकता. त्यानंतर, तुमचे सद्य टॅब पुन्हा उघडतील. तुमच्या # गुप्त विंडो पुन्हा उघडणार नाहीत.}}</translation>
 <translation id="1434626383986940139">Chrome Canary Apps</translation>
 <translation id="146866447420868597">Chrome मध्ये साइन इन करायचे आहे का?</translation>
 <translation id="1492280395845991349">Chrome अपडेट पूर्ण करण्यासाठी पुन्हा लाँच करा</translation>
 <translation id="1497802159252041924">इंस्टॉलसंबंधित एरर: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">तुमची नवीन Chrome प्रोफाइल कस्टमाइझ करा</translation>
+<translation id="1518627427551567882">हे पेज सुरक्षित आहे</translation>
 <translation id="1547295885616600893">ChromeOS हे अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />मुक्त स्रोत सॉफ्टवेअर<ph name="END_LINK_CROS_OSS" /> याद्वारे तयार करण्यात आले आहे.</translation>
 <translation id="1547469039832541117">हायलाइट केलेली टास्क संपवते.</translation>
 <translation id="1553358976309200471">Chrome अपडेट करा</translation>
@@ -171,6 +173,7 @@
 <translation id="3065168410429928842">Chrome टॅब</translation>
 <translation id="3080151273017101988">जेव्हा Google Chrome बंद असेल तेव्हा पार्श्वभूमीत ॲप्लिकेशन चालणे सुरू ठेवा</translation>
 <translation id="3100998948628680988">तुमच्या Chrome प्रोफाइलला नाव द्या</translation>
+<translation id="310459126943037700">टास्क संपवता आले नाही (आली नाहीत).</translation>
 <translation id="3112458742631356345">फाइल सामान्यतः डाउनलोड केली जात नसल्याने Chrome ने हे डाउनलोड ब्लॉक केले आहे आणि ती धोकादायक असू शकते</translation>
 <translation id="3114643501466072395">तुमचे इतर पासवर्ड डेटा भंग आणि इतर सुरक्षा समस्यांपासून सुरक्षित आहेत हे तपासण्यासाठी, <ph name="BEGIN_LINK" />Chrome मध्ये साइन इन करा<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chromium ने हा डाउनलोड ब्लॉक केला आहे, कारण संग्रहित फाइलमध्ये मालवेअर लपवू शकणाऱ्या इतर फाइलचा समावेश असतो</translation>
@@ -231,6 +234,7 @@
 <translation id="3889417619312448367">Google Chrome अनइंस्टॉल करा</translation>
 <translation id="3892148308691398805">मजकूर कॉपी करा</translation>
 <translation id="3941890832296813527">इंस्टॉलसंबंधित एरर: इंस्टॉलर फाइल नाव चुकीचे आहे किंवा त्यास सपोर्ट नाही.</translation>
+<translation id="395904275706073188">सुरक्षित पेज वाचू शकत नाही. वेगळे पेज वापरून पहा.</translation>
 <translation id="3968962723676998462">तुमच्या <ph name="ACCOUNT_EMAIL" /> खात्यामध्ये Chrome डेटा वापरण्यासाठी आणि सेव्ह करण्यासाठी तुमचा पासफ्रेझ एंटर करा</translation>
 <translation id="3973161977468201858">Google Chrome ला तुमचा Google Password Manager डेटा हटवायचा आहे. याला अनुमती देण्यासाठी तुमचा Windows पासवर्ड टाइप करा.</translation>
 <translation id="400161754580828648">तुमची स्क्रीन शेअर करण्यासाठी, सिस्टीम सेटिंग्ज मध्ये Chrome साठी स्क्रीन रेकॉर्डिंगला अनुमती द्या.</translation>
@@ -364,6 +368,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome कॅनरी</translation>
 <translation id="5804318322022881572">Chrome लाँच करता आले नाही. पुन्हा प्रयत्न करा.</translation>
 <translation id="5809516625706423866">इंटरनेटशी कनेक्ट करता आले नाही. HTTP 401 प्रतिबंधित. कृपया तुमचे प्रॉक्सी कॉन्फिगरेशन तपासा.</translation>
+<translation id="5824893331272123205">हे पॅनल लोड करता आले नाही, पुन्हा प्रयत्न करा</translation>
 <translation id="5825922397106002626">Chrome मधून <ph name="EXTENSION_NAME" /> काढून टाका</translation>
 <translation id="58431560289969279">तुम्ही साइन इन केलेले असताना, Chrome मध्ये तुमचे पासवर्ड आणि तुमच्या Google खाते मधील बऱ्याच गोष्टी वापरू शकता. तुम्ही सेटिंग्जमध्ये हे कधीही बदलू शकता.</translation>
 <translation id="5858486459377137936">तुम्ही Chrome वर साइन इन केले असल्यास, सर्व Chrome विंडो बंद केल्यावर तुमचे Google खाते वगळता तुम्हाला बहुतांश साइटवरून साइन आउट केले जाईल. साइटना तुम्हाला लक्षात ठेवू देण्यासाठी, <ph name="SETTINGS_LINK" />.</translation>
@@ -480,6 +485,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7302361266603927550">तुमचा काही Chrome डेटा अद्याप तुमच्या Google खाते मध्ये सेव्ह करण्यात आलेला नाही. साइन आउट करण्यापूर्वी काही मिनिटे प्रतीक्षा करून पहा. तुम्ही आता साइन आउट केल्यास, हा डेटा हटवला जाईल.</translation>
 <translation id="7308322188646931570">फाइल डाउनलोड करण्यासाठी Chrome ला स्टोरेजचा ॲक्सेस हवा आहे</translation>
 <translation id="7339898014177206373">नवीन विंडो</translation>
+<translation id="7352651011704765696">काहीतरी चूक झाली</translation>
 <translation id="7386878009611068389">तुमच्या पालकांच्या निवडींसह ऑनलाइन अधिक सुरक्षित राहण्यासाठी, तुमच्या Chrome प्रोफाइलवर स्विच करा, जिथे तुम्ही <ph name="USER_EMAIL_ADDRESS" /> म्हणून आधीच साइन इन केले आहे</translation>
 <translation id="7398801000654795464">तुम्ही <ph name="USER_EMAIL_ADDRESS" /> या रुपात Chrome मध्ये साइन इन केले होते. कृपया पुन्हा साइन इन करण्यासाठी समान खाते वापरा.</translation>
 <translation id="7412494426921990001">Chrome मेनूवर क्लिक करा</translation>
@@ -515,6 +521,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7661924425853052955">तुम्ही अलीकडे भेट दिलेली नाही. Chrome ने <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> आणि आणखी <ph name="COUNT" /> परवानग्या काढून टाकल्या</translation>
 <translation id="7670287553302121848">Chrome खात्यासाठी री-ऑथेंटिकेशन आवश्यक आहे</translation>
 <translation id="769538538642757151">तुम्ही एखाद्या गोष्टीचे पुनरावलोकन करणे आवश्यक असल्यास, Chrome तुम्हाला कळवेल</translation>
+<translation id="7716950018788545737">टास्क संपले आहे (संपली आहेत).</translation>
 <translation id="77283119132245232"><ph name="BROWSER_NAME" /> साठी सिस्टीम ट्रेसिंगची सेवा पुरवते. ही सेवा बंद केली असल्यास, ब्राउझरद्वारे तयार केलेल्या परफॉर्मन्स ट्रेसमध्ये आशय स्विच आणि तयार थ्रेड इव्हेंट यांसारख्या संपूर्ण सिस्टीममधील इव्हेंटचा समावेश होणार नाही.</translation>
 <translation id="7736869414036750079">तुमच्या संस्थेनुसार तुम्ही Chrome मध्ये साइन इन करणे आवश्यक आहे</translation>
 <translation id="7747138024166251722">इन्स्टॉलर तात्पुरती डिरेक्टरी तयार करू शकत नाही. कृपया सॉफ्टवेअर इंस्टॉल करण्यासाठी रिक्त डिस्क स्थान आणि परवानगी पहा.</translation>
@@ -525,6 +532,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7801699035218095297">Google Chrome पासवर्ड कॉपी करण्याचा प्रयत्‍न करत आहे. हे करू देण्यासाठी तुमचा Windows पासवर्ड टाइप करा.</translation>
 <translation id="7808348361785373670">Chrome मधून काढून टाका...</translation>
 <translation id="7825851276765848807">नमूद न केलेल्या एररमुळे स्थापना अयशस्वी. कृपया Google Chrome पुन्हा डाउनलोड करा.</translation>
+<translation id="7827099906024714326">तुमच्या Google खाते मध्ये काही डेटा सेव्ह करता येण्यापूर्वी आणि तो तुमच्या सर्व डिव्हाइसवर वापरता येण्यापूर्वी, हे तुम्हीच असल्याची पडताळणी Chrome ला करायची आहे. तुम्ही आता साइन आउट केल्यास, हा डेटा हटवला जाईल.</translation>
 <translation id="7845233973568007926">इंस्टॉल केल्याबद्दल धन्यवाद. तुम्ही <ph name="BUNDLE_NAME" /> वापरण्यापूर्वी तुमचा कॉंप्युटर रीस्टार्ट करणे आवश्यक आहे.</translation>
 <translation id="7872446069773932638">डाउनलोड करत आहे... <ph name="SECONDS" /> सेकंद शिल्लक आहे(आहेत)</translation>
 <translation id="7886087451482920026">Google Lens वापरून मजकूर निवडा</translation>
@@ -548,7 +556,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">इतर Chrome प्रोफाइल</translation>
 <translation id="8086881907087796310">इंस्टॉलेशन यशस्वी झाले नाही, कारण तुमचा कॉंप्युटर हा हार्डवेअरच्या किमान आवश्यकतांची पूर्तता करत नाही.</translation>
-<translation id="8111297389482307122">तुमच्या Google खाते मध्ये काही डेटा सेव्ह करता येण्यापूर्वी आणि तो तुमच्या सर्व डिव्हाइसवर वापरता येण्यापूर्वी Chrome ला ते तुम्हीच असल्याची पडताळणी करावी लागेल. तुम्ही साइन आउट केल्यास, हा डेटा या डिव्हाइसवर राहील.</translation>
 <translation id="8113883687556086139">तुमच्या <ph name="ACCOUNT_EMAIL" /> खात्यामध्ये, Chrome वापरण्यासाठी किंवा सेव्ह करण्यासाठी हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="8118331347066725040">Lens वापरून शोधण्यासंबंधित फीडबॅक पाठवा</translation>
 <translation id="8129812357326543296">&amp;Google Chrome विषयी</translation>

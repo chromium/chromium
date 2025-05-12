@@ -10,6 +10,7 @@
 <translation id="1807863182207623884">Rubin</translation>
 <translation id="1921351128855867012">Spola <ph name="NUMBER_OF_SECONDS" /> sekunder framåt</translation>
 <translation id="1984328900355667246">Uppspelning inte tillgänglig</translation>
+<translation id="2019727681730021602">Standarduppspelning</translation>
 <translation id="2224347680315897176">Stadig</translation>
 <translation id="2611765907167846862">Lugn</translation>
 <translation id="3023502830214299618">Det går inte att spela upp den här sidan just nu. Försök igen senare.</translation>
@@ -28,9 +29,11 @@
 <translation id="5026371835667036198">Munter</translation>
 <translation id="5234971936051226002">Spelaren Lyssna på den här sidan har minimerats.</translation>
 <translation id="5251803541071282808">Moln</translation>
+<translation id="5526614127710223793">Väljare för uppspelningsläge</translation>
 <translation id="5596627076506792578">Fler alternativ</translation>
 <translation id="5694491020339060116">Meny för uppspelningshastighet</translation>
 <translation id="6315170314923504164">Mikrofon</translation>
+<translation id="6330455646577575965">AI-ljuduppspelning</translation>
 <translation id="6343633247422081848">Mossa</translation>
 <translation id="6550675742724504774">Alternativ</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -43,7 +46,6 @@
 <translation id="7221920857098237570">Mjuk</translation>
 <translation id="7237590978482584900">Sorglös</translation>
 <translation id="7282547042039404307">Jämn</translation>
-<translation id="7587250070160020374">Spelas upp i Chrome</translation>
 <translation id="8004767876552422827">Fält</translation>
 <translation id="8136852699834914183">Uppspelning är inte tillgängligt på den här sidan.</translation>
 <translation id="8198036737896977997">Luft</translation>

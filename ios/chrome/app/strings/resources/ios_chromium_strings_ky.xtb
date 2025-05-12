@@ -47,7 +47,6 @@
 <translation id="2042889939382983733">Chromium таржымалын көрүү</translation>
 <translation id="2052320862053429062">Chromium Интернетке жарыяланган тизмелерден сырсөздөрүңүздү маал-маалы менен текшерип турат. Мындай учурда сырсөздөрүңүз менен колдонуучу аттарыңыз шифрленет. Аларды эч ким, анын ичинде Google да окуй албайт.</translation>
 <translation id="2059365270911640413">Chromium'ду аягына чейин тууралаңыз</translation>
-<translation id="2147210759439165826">Контентти жана Chromium'дун пайдалуу кеңештерин алып туруңуз.</translation>
 <translation id="2168108852149185974">Айрым көмөкчү жөндөөлөрдөн улам Chromium бузулуп калды. Төмөндөгүлөрдү өчүрүү керек:</translation>
 <translation id="2168593389981132306">Chromium'ду жакшыртууга жардам бериңиз</translation>
 <translation id="2178608107313874732">Учурда Chromium камераны иштете албайт</translation>
@@ -157,6 +156,7 @@ Chromium'дун ишин жакшыртуу үчүн маалыматтарды 
 <translation id="4828317641996116749">Chromium бардык сырсөздөрдү текшере алган жок. Кийинчерээк кайталаңыз.</translation>
 <translation id="4856138222358683580">Chromium аракеттери</translation>
 <translation id="4904452304169763785">Chromium аныктаган купуялык же коопсуздукка байланыштуу көйгөйлөр тууралуу эскертүүлөр.</translation>
+<translation id="4908570938463711775">Баштоо үчүн Chromium'дун негиздери менен таанышып чыгыңыз</translation>
 <translation id="4962295957157529683">Жасап жаткан нерсени Chromium'дун ачык терезесинде улантыңыз.</translation>
 <translation id="4985291216379576555">Оффлайнсыз. Chromium жаңыртууларды текшере алган жок</translation>
 <translation id="4996471330284142407">Бул жөнөкөй, коопсуз жана чагылгандай тез Chromium менен көбүрөөк жумуш бүтүрүңүз.</translation>
@@ -197,6 +197,7 @@ Chromium'дун ишин жакшыртуу үчүн маалыматтарды 
 <translation id="5688047395118852662">Бул карта Chromium'дун бардык мүмкүнчүлүктөрүн колдонуу боюнча сунуштарды көрсөтөт.</translation>
 <translation id="5700709190537129682">Chromium сырсөздөрүңүздү текшере албай жатат</translation>
 <translation id="584550191241316896">Chromium'га кирдиңиз</translation>
+<translation id="5862307444128926510">Chromium'га кош келиңиз</translation>
 <translation id="5889847953983052353">Күйгүзүлгөндө:
 <ph name="BEGIN_INDENT" />  • Chromium'ду пайдаланган адамдар үчүн аны жакшыртууга жардам бериңиз.<ph name="END_INDENT" />
 
@@ -223,6 +224,7 @@ Chromium'дун ишин жакшыртуу үчүн маалыматтарды 
 <translation id="6301717043141881464">Башка колдонмолордо сакталган сырсөздөрдү оңой терүү максатында автотолтуруу үчүн Chromium'ду тандаңыз</translation>
 <translation id="6324041800010509197">Chromium'да өтмөк торчосуна баш багуу</translation>
 <translation id="6325378625795868881">Эми билдирүүлөрдөгү шилтемелерди жана башка колдонмолорду Chromium'да ача аласыз.</translation>
+<translation id="6387994184698195448">Chromium'дун пайдалуу кеңештерин алып жана башка нерселерди билип туруңуз.</translation>
 <translation id="6424492062988593837">Chromium жаңы эле жакшыртылды! Эми жаңы нускасы бар.</translation>
 <translation id="6433172051771630690">Chromium'дун бардык мүмкүнчүлүктөрүн колдонуу боюнча кеңештер.</translation>
 <translation id="65045991564554105">Chromium'дагы кыстармаларды көрүү</translation>
@@ -317,6 +319,7 @@ Chromium'дун ишин жакшыртуу үчүн маалыматтарды 
 <translation id="8860548555286245440">URL даректерин Chromium'да Жашыруун режимде ачыңыз</translation>
 <translation id="8880024619507699923">Уюмуңуз Chromium'ду колдонуу үчүн аккаунтуңузга кирүүнү талап кылат. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Chromium'дун эң күчтүү коопсуздук тутумун орнотуп алыңыз</translation>
+<translation id="8925569192291721236">Бааларга көз салып, Chromium кеңештерин алып туруңуз.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Chromium {THRESHOLD} мүнөт бою колдонулбаса, күтүү режиминде болуп калат}other{Chromium {THRESHOLD} мүнөт бою колдонулбаса, күтүү режиминде болуп калат}}</translation>
 <translation id="8963279154877372067">Баалардын түшкөнүн билип туруу үчүн Chromium билдирмелерине уруксат бериңиз</translation>
 <translation id="8975812008711371178">Chromium'да оозеки издөө</translation>

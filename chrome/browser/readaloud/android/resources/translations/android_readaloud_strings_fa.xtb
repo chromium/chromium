@@ -10,6 +10,7 @@
 <translation id="1807863182207623884">یاقوت</translation>
 <translation id="1921351128855867012">‫<ph name="NUMBER_OF_SECONDS" /> ثانیه سریع به‌جلو بردن</translation>
 <translation id="1984328900355667246">بازپخش دردسترس نیست</translation>
+<translation id="2019727681730021602">بازپخش استاندارد</translation>
 <translation id="2224347680315897176">یکنواخت</translation>
 <translation id="2611765907167846862">با متانت</translation>
 <translation id="3023502830214299618">متأسفانه درحال‌حاضر امکان بازپخش برای این صفحه دردسترس نیست. لطفاً بعداً دوباره امتحان کنید.</translation>
@@ -28,9 +29,11 @@
 <translation id="5026371835667036198">با نشاط</translation>
 <translation id="5234971936051226002">پخش‌کننده «خواندن این صفحه» کوچک شد.</translation>
 <translation id="5251803541071282808">Cloud</translation>
+<translation id="5526614127710223793">گزینشگر حالت بازپخش</translation>
 <translation id="5596627076506792578">گزینه‌های بیشتر</translation>
 <translation id="5694491020339060116">منو سرعت بازپخش</translation>
 <translation id="6315170314923504164">صدا</translation>
+<translation id="6330455646577575965">بازپخش صوتی هوش مصنوعی</translation>
 <translation id="6343633247422081848">خزه</translation>
 <translation id="6550675742724504774">گزینه‌ها</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />، <ph name="TONE" /></translation>
@@ -43,7 +46,6 @@
 <translation id="7221920857098237570">آرام</translation>
 <translation id="7237590978482584900">سرزنده</translation>
 <translation id="7282547042039404307">روان</translation>
-<translation id="7587250070160020374">‏Chrome اکنون درحال پخش است</translation>
 <translation id="8004767876552422827">زمین بازی</translation>
 <translation id="8136852699834914183">بازپخش در این صفحه دردسترس نیست.</translation>
 <translation id="8198036737896977997">هوا</translation>

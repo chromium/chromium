@@ -1440,6 +1440,7 @@
 <translation id="5672890847723042801">ユーティリティ</translation>
 <translation id="5673434351075758678">設定の同期後に「<ph name="FROM_LOCALE" />」から「<ph name="TO_LOCALE" />」に変更されました。</translation>
 <translation id="5675363643668471212">シェルフ アイテム</translation>
+<translation id="5677022547882470786">検索する範囲をドラッグするか、Space キーを押して選択します</translation>
 <translation id="5677928146339483299">ブロック</translation>
 <translation id="5678564054339031017">翌週を表示</translation>
 <translation id="5679050765726761783">低電力アダプターが接続されています</translation>
@@ -2432,6 +2433,7 @@
 <translation id="8934418770423095813">Google ドキュメントを作成</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 件のファイル}other{# 件のファイル}}</translation>
 <translation id="8936501819958976551">無効</translation>
+<translation id="8937312474322077653">スクリーン キャプチャで <ph name="SOURCE" /> <ph name="TYPE" /> に設定します。キャプチャの種類を選択するには Tab キーを押します。範囲を選択するには Space キーを押します。キャプチャするには Enter キーを押します。</translation>
 <translation id="8938800817013097409">USB-C デバイス（背面右のポート）</translation>
 <translation id="8939855324412367560">入力オーディオは "<ph name="INPUT_DEVICE_NAME" />"、出力オーディオは "<ph name="OUTPUT_DEVICE_NAME" />" です。変更するには [設定] に移動してください。</translation>
 <translation id="8940956008527784070">バッテリー残量: 少（<ph name="PERCENTAGE" />%）</translation>

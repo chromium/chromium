@@ -10,6 +10,7 @@
 <translation id="1807863182207623884">රතුකැටය</translation>
 <translation id="1921351128855867012">තත්පර <ph name="NUMBER_OF_SECONDS" />ක් වේගයෙන් ඉදිරියට</translation>
 <translation id="1984328900355667246">පසුධාවනය නොලැබේ</translation>
+<translation id="2019727681730021602">සම්මත පසුධාවනය</translation>
 <translation id="2224347680315897176">ඒකාකාර</translation>
 <translation id="2611765907167846862">ප්‍රසන්න</translation>
 <translation id="3023502830214299618">අවාසනාවන්ත ලෙස, මෙම පිටුව සඳහා මේ අවස්ථාවේ පසුධාවනය නොලැබේ. පසුව නැවත උත්සාහ කරන්න.</translation>
@@ -32,6 +33,7 @@
 <translation id="5596627076506792578">තවත් විකල්ප</translation>
 <translation id="5694491020339060116">පසුධාවන වේගයේ මෙනුව</translation>
 <translation id="6315170314923504164">හඬ</translation>
+<translation id="6330455646577575965">AI ශ්‍රව්‍ය පසුධාවනය</translation>
 <translation id="6343633247422081848">පාසි</translation>
 <translation id="6550675742724504774">අභිප්‍රේත</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -44,7 +46,6 @@
 <translation id="7221920857098237570">මෘදු</translation>
 <translation id="7237590978482584900">පවන ඇති</translation>
 <translation id="7282547042039404307">සුමට</translation>
-<translation id="7587250070160020374">Chrome දැන් වාදනය කරයි</translation>
 <translation id="8004767876552422827">ක්ෂේත්‍රය</translation>
 <translation id="8136852699834914183">මෙම පිටුව සඳහා පසුධාවනය නොමැත.</translation>
 <translation id="8198036737896977997">වාතය</translation>

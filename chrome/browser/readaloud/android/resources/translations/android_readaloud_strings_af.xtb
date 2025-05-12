@@ -10,6 +10,7 @@
 <translation id="1807863182207623884">Ruby</translation>
 <translation id="1921351128855867012">Spoel <ph name="NUMBER_OF_SECONDS" /> sekondes vinnig vorentoe</translation>
 <translation id="1984328900355667246">Terugspeel is nie beskikbaar nie</translation>
+<translation id="2019727681730021602">Standaardterugspeel</translation>
 <translation id="2224347680315897176">Bestendig</translation>
 <translation id="2611765907167846862">Rustig</translation>
 <translation id="3023502830214299618">Ongelukkig is terugspeel nie tans vir hierdie bladsy beskikbaar nie. Probeer later weer.</translation>
@@ -28,9 +29,11 @@
 <translation id="5026371835667036198">Helder</translation>
 <translation id="5234971936051226002">“Luister na hierdie bladsy”-speler is geminimeer.</translation>
 <translation id="5251803541071282808">Wolk</translation>
+<translation id="5526614127710223793">Playback-moduskieser</translation>
 <translation id="5596627076506792578">Meer opsies</translation>
 <translation id="5694491020339060116">Terugspeelspoedkieslys</translation>
 <translation id="6315170314923504164">Stem</translation>
+<translation id="6330455646577575965">KI-oudioterugspeel</translation>
 <translation id="6343633247422081848">Moss</translation>
 <translation id="6550675742724504774">Opsies</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -43,7 +46,6 @@
 <translation id="7221920857098237570">Lig</translation>
 <translation id="7237590978482584900">Winderig</translation>
 <translation id="7282547042039404307">Glad</translation>
-<translation id="7587250070160020374">Chrome speel tans</translation>
 <translation id="8004767876552422827">Field</translation>
 <translation id="8136852699834914183">Terugspeel is nie vir hierdie bladsy beskikbaar nie.</translation>
 <translation id="8198036737896977997">Air</translation>

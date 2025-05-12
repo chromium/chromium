@@ -10,6 +10,7 @@
 <translation id="1807863182207623884">רובי</translation>
 <translation id="1921351128855867012">הרצה <ph name="NUMBER_OF_SECONDS" /> שניות קדימה</translation>
 <translation id="1984328900355667246">ההקראה לא זמינה</translation>
+<translation id="2019727681730021602">הפעלה רגילה</translation>
 <translation id="2224347680315897176">יציב</translation>
 <translation id="2611765907167846862">שלֵו</translation>
 <translation id="3023502830214299618">לצערנו, ההקראה לא זמינה בדף הזה כרגע. אפשר לנסות שוב מאוחר יותר.</translation>
@@ -28,9 +29,11 @@
 <translation id="5026371835667036198">צלול</translation>
 <translation id="5234971936051226002">הנגן 'האזנה לדף הזה' ממוזער.</translation>
 <translation id="5251803541071282808">ענן</translation>
+<translation id="5526614127710223793">בחירת מצב הפעלה</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="5694491020339060116">תפריט מהירות ההפעלה</translation>
 <translation id="6315170314923504164">קול</translation>
+<translation id="6330455646577575965">‏הפעלת אודיו באמצעות AI</translation>
 <translation id="6343633247422081848">מוס</translation>
 <translation id="6550675742724504774">אפשרויות</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />,‏ <ph name="TONE" /></translation>
@@ -43,7 +46,6 @@
 <translation id="7221920857098237570">עדין</translation>
 <translation id="7237590978482584900">קליל</translation>
 <translation id="7282547042039404307">חלקה</translation>
-<translation id="7587250070160020374">‏בהאזנה לדף ב-Chrome</translation>
 <translation id="8004767876552422827">פילד</translation>
 <translation id="8136852699834914183">ההפעלה לא זמינה בדף הזה.</translation>
 <translation id="8198036737896977997">אייר</translation>

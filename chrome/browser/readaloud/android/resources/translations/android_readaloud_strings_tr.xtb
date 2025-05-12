@@ -10,6 +10,7 @@
 <translation id="1807863182207623884">Yakut</translation>
 <translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> saniye ileri sar</translation>
 <translation id="1984328900355667246">Oynatılamıyor</translation>
+<translation id="2019727681730021602">Standart oynatma</translation>
 <translation id="2224347680315897176">Kontrollü</translation>
 <translation id="2611765907167846862">Sakin</translation>
 <translation id="3023502830214299618">Oynatma özelliği maalesef şu anda bu sayfada kullanılamıyor. Lütfen daha sonra tekrar deneyin.</translation>
@@ -28,9 +29,11 @@
 <translation id="5026371835667036198">Canlı</translation>
 <translation id="5234971936051226002">"Bu sayfayı sesli oku" oynatıcısı küçültüldü.</translation>
 <translation id="5251803541071282808">Bulut</translation>
+<translation id="5526614127710223793">Oynatma modu seçici</translation>
 <translation id="5596627076506792578">Diğer seçenekler</translation>
 <translation id="5694491020339060116">Oynatma hızı menüsü</translation>
 <translation id="6315170314923504164">Ses</translation>
+<translation id="6330455646577575965">Yapay zeka ses oynatma</translation>
 <translation id="6343633247422081848">Yosun</translation>
 <translation id="6550675742724504774">Seçenekler</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -43,7 +46,6 @@
 <translation id="7221920857098237570">Yumuşak</translation>
 <translation id="7237590978482584900">Neşeli</translation>
 <translation id="7282547042039404307">Sorunsuz</translation>
-<translation id="7587250070160020374">Chrome şu anda oynatıyor</translation>
 <translation id="8004767876552422827">Kır</translation>
 <translation id="8136852699834914183">Oynatma işlemi bu sayfada kullanılamıyor.</translation>
 <translation id="8198036737896977997">Hava</translation>

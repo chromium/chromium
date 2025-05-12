@@ -10,6 +10,7 @@
 <translation id="1807863182207623884">ৰুবী</translation>
 <translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> ছেকেণ্ড ফাষ্ট ফৰৱাৰ্ড কৰক</translation>
 <translation id="1984328900355667246">প্লে’বেক উপলব্ধ নহয়</translation>
+<translation id="2019727681730021602">মানক প্লে’বেক</translation>
 <translation id="2224347680315897176">স্থিৰ</translation>
 <translation id="2611765907167846862">শান্ত</translation>
 <translation id="3023502830214299618">দুৰ্ভাগ্যবশতঃ, এই সময়ত এই পৃষ্ঠাৰ বাবে প্লে’বেক উপলব্ধ নহয়। অনুগ্ৰহ কৰি পাছত পুনৰ চেষ্টা কৰক।</translation>
@@ -28,9 +29,11 @@
 <translation id="5026371835667036198">উজ্জ্বল</translation>
 <translation id="5234971936051226002">“এই পৃষ্ঠাখন শুনক” প্লে’য়াৰ মিনিমাইজ কৰা হৈছে।</translation>
 <translation id="5251803541071282808">ক্লাউড</translation>
+<translation id="5526614127710223793">প্লে’বেক ম’ড বাছনিকৰ্তা</translation>
 <translation id="5596627076506792578">অধিক বিকল্প</translation>
 <translation id="5694491020339060116">প্লে’বেকৰ বেগৰ মেনু</translation>
 <translation id="6315170314923504164">Voice</translation>
+<translation id="6330455646577575965">AI অডিঅ’ প্লে’বেক</translation>
 <translation id="6343633247422081848">শেলাই</translation>
 <translation id="6550675742724504774">বিকল্প</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -43,7 +46,6 @@
 <translation id="7221920857098237570">সাধাৰণ</translation>
 <translation id="7237590978482584900">আনন্দময়</translation>
 <translation id="7282547042039404307">মসৃণ</translation>
-<translation id="7587250070160020374">Chromeএ এতিয়া প্লে’ কৰি আছে</translation>
 <translation id="8004767876552422827">পথাৰ</translation>
 <translation id="8136852699834914183">এই পৃষ্ঠাখনৰ বাবে প্লে’বেক উপলব্ধ নহয়।</translation>
 <translation id="8198036737896977997">বায়ু</translation>

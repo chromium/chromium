@@ -1440,6 +1440,7 @@
 <translation id="5672890847723042801">યુટિલિટી</translation>
 <translation id="5673434351075758678">તમારી સેટિંગને સિંક કર્યા પછી "<ph name="FROM_LOCALE" />" થી "<ph name="TO_LOCALE" />"માં ફેરવો.</translation>
 <translation id="5675363643668471212">શેલ્ફ આઇટમ</translation>
+<translation id="5677022547882470786">શોધવા માટેનો વિસ્તાર પસંદ કરવા માટે ખેંચો અથવા સ્પેસ બાર દબાવો</translation>
 <translation id="5677928146339483299">બ્લૉક કરેલ</translation>
 <translation id="5678564054339031017">આગલું અઠવાડિયું બતાવો</translation>
 <translation id="5679050765726761783">ઓછી ક્ષમતાવાળું પાવર અડૅપ્ટર કનેક્ટ કરેલું છે</translation>
@@ -2432,6 +2433,7 @@
 <translation id="8934418770423095813">Google Doc બનાવો</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ફાઇલ}one{# ફાઇલ}other{# ફાઇલ}}</translation>
 <translation id="8936501819958976551">નિષ્ક્રિય કરેલું</translation>
+<translation id="8937312474322077653">સ્ક્રીન કૅપ્ચરમાં, <ph name="SOURCE" /> <ph name="TYPE" /> પર સેટ કરો. કૅપ્ચરનો પ્રકાર પસંદ કરવા માટે, Tab દબાવો. પ્રદેશ પસંદ કરવા માટે સ્પેસ બાર દબાવો. કૅપ્ચર કરવા માટે Enter દબાવો.</translation>
 <translation id="8938800817013097409">USB-C ડિવાઇસ (પાછળની બાજુએ જમણું પોર્ટ)</translation>
 <translation id="8939855324412367560">"<ph name="INPUT_DEVICE_NAME" />" ઑડિયો ઇનપુટ છે અને "<ph name="OUTPUT_DEVICE_NAME" />" ઑડિયો આઉટપુટ છે. બદલવા માટે સેટિંગ પર જાઓ.</translation>
 <translation id="8940956008527784070">બૅટરી ઓછી (<ph name="PERCENTAGE" />%)</translation>

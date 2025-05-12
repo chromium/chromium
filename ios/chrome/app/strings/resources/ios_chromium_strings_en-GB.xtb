@@ -47,7 +47,6 @@
 <translation id="2042889939382983733">View Your Chromium History</translation>
 <translation id="2052320862053429062">Chromium periodically checks your passwords against lists that have been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.</translation>
 <translation id="2059365270911640413">Finish setting up Chromium</translation>
-<translation id="2147210759439165826">Keep up with content and helpful Chromium tips.</translation>
 <translation id="2168108852149185974">Some add-ons cause Chromium to crash. Please uninstall:</translation>
 <translation id="2168593389981132306">Make Chromium better</translation>
 <translation id="2178608107313874732">Chromium can't use your camera at the moment</translation>
@@ -157,6 +156,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chromium data in your
 <translation id="4828317641996116749">Chromium couldn't check all passwords. Try again later.</translation>
 <translation id="4856138222358683580">Chromium actions</translation>
 <translation id="4904452304169763785">Alerts on any privacy or security issues that Chromium detects for you.</translation>
+<translation id="4908570938463711775">Learn the helpful Chromium basics to get you started</translation>
 <translation id="4962295957157529683">Finish what you were doing in your other open Chromium window.</translation>
 <translation id="4985291216379576555">Offline, Chromium can't check for updates</translation>
 <translation id="4996471330284142407">Get more done with a simple, secure and faster-than-ever Chromium.</translation>
@@ -197,6 +197,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chromium data in your
 <translation id="5688047395118852662">This card shows you suggestions on how to get the most out of Chromium.</translation>
 <translation id="5700709190537129682">Chromium can't check your passwords</translation>
 <translation id="584550191241316896">Signed in to Chromium</translation>
+<translation id="5862307444128926510">Welcome to Chromium</translation>
 <translation id="5889847953983052353">When on:
 <ph name="BEGIN_INDENT" />  • Help make Chromium better for people who use it the way you do.<ph name="END_INDENT" />
 
@@ -223,6 +224,7 @@ Things to consider:
 <translation id="6301717043141881464">To easily get your saved passwords in your other apps, choose Chromium for Autofill</translation>
 <translation id="6324041800010509197">Visit the Tab Grid in Chromium</translation>
 <translation id="6325378625795868881">Use Chrome anytime that you tap links in messages and other apps.</translation>
+<translation id="6387994184698195448">Keep up with helpful Chromium tips and more.</translation>
 <translation id="6424492062988593837">Chromium just got better! A new version is available.</translation>
 <translation id="6433172051771630690">Tips on getting the most out of Chromium.</translation>
 <translation id="65045991564554105">See Chromium bookmarks</translation>
@@ -317,6 +319,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="8860548555286245440">Open URLs in Chromium in Incognito</translation>
 <translation id="8880024619507699923">Your organisation requires you to sign in to use Chromium. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Get Chromium's strongest security</translation>
+<translation id="8925569192291721236">Keep up with price tracking updates and Chromium tips.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{This happens when Chromium isn't used for {THRESHOLD} minute}other{This happens when Chromium isn't used for {THRESHOLD} minutes}}</translation>
 <translation id="8963279154877372067">Allow Chromium notifications to get price drop alerts</translation>
 <translation id="8975812008711371178">Search with voice in Chromium</translation>

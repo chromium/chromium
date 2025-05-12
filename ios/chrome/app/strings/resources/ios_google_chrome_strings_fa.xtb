@@ -42,7 +42,7 @@
 <translation id="1790080846677398234">‏نشانی‌های وب واردشده را به نشانک‌های شما در Chrome اضافه می‌کند.</translation>
 <translation id="1799920918471566157">‏نکته‌های Chrome</translation>
 <translation id="1830634592642484976">‏این نشانی درحال‌حاضر در Chrome ذخیره شده است. برای استفاده از این نشانی در محصولات Google، آن را در «حساب Google» خود (<ph name="USER_EMAIL" />) ذخیره کنید.</translation>
-<translation id="1891812034154776216">‏پنهان کردن برگه‌های ناشناس باز هنگام خروج از Chrome</translation>
+<translation id="1891812034154776216">‏پنهان کردن برگه‌های ناشناسِ باز هنگام ترک کردن Chrome</translation>
 <translation id="1894434821386148799">‏می‌توانید تنظیمات Chrome و موارد دیگر را اینجا پیدا کنید</translation>
 <translation id="1917964099031477364">‏این حساب و همه داده‌های ذخیره‌نشده از Chrome و دیگر برنامه‌های Google در این دستگاه برداشته می‌شود.</translation>
 <translation id="1919130412786645364">‏مجاز کردن ورود به سیستم Chrome</translation>
@@ -123,6 +123,7 @@
 <translation id="3984746313391923992">‏سازمانتان از شما می‌خواهد خارج از سیستم Chrome باقی بمانید.</translation>
 <translation id="3988789688219830639">‏Google Chrome به عکس‌ها یا ویدیوهای شما دسترسی ندارد. با رفتن به تنظیمات iOS &gt; حریم خصوصی &gt; عکس‌ها دسترسی را فعال کنید.</translation>
 <translation id="4064699917955374540">‏برای استفاده از داده‌های Chrome و ذخیره کردن این داده‌ها در «حساب Google»، هویت خود را به‌تأیید برسانید.</translation>
+<translation id="411154422556990518">‏از به‌روزرسانی‌های ردگیری قیمت و نکات Chrome مطلع شوید.</translation>
 <translation id="417201473131094001">‏در Chrome Canary پشتیبانی نمی‌شود</translation>
 <translation id="424864128008805179">‏از سیستم Chrome خارج می شوید؟</translation>
 <translation id="4430797724889237570">‏پیوندهایی از Gmail،‏ Maps،‏ YouTube و سایر برنامه‌ها را در Chrome باز کنید</translation>
@@ -133,6 +134,7 @@
 <translation id="4636900170638246267">‏به سیستم این سایت و Chrome وارد شوید.</translation>
 <translation id="4647910807533196601">‏باز کردن آخرین برگه من در Chrome.</translation>
 <translation id="4693084815234024320">‏در حالت «ناشناس» Chrome هستید</translation>
+<translation id="4713907610796204963">‏برای شروع، با مفاهیم پایه و مفید Chrome آشنا شوید</translation>
 <translation id="4724297637870447613">‏استفاده از Chrome در همه‌جا</translation>
 <translation id="4738647308035481133">‏صفحه Google Chrome</translation>
 <translation id="4742795653798179840">‏داده‌های Chrome حذف شد</translation>
@@ -239,7 +241,6 @@
 <translation id="7175129790242719365">‏نکته Chrome: به سیستم Chrome وارد شوید</translation>
 <translation id="7187993566681480880">‏وقتی به سیستم وارد شده باشید، امنیت شما را در Chrome حفظ می‌کند و ممکن است برای بهبود امنیت شما در برنامه‌های دیگر Google استفاده شود.</translation>
 <translation id="7200524487407690471">‏‫Chrome هر روز به‌طور خودکار «کنترل ایمنی» را اجرا می‌کند تا از شما دربرابر سرقت اطلاعات شبکه، وب‌سایت‌های ناامن، و تهدیدهای دیگر محافظت کند. در «تنظیمات» می‌توانید اطلاعات بیشتری درباره «کنترل ایمنی» پیدا کنید.</translation>
-<translation id="7203324561587388418">‏با محتوا و نکته‌های مفید Chrome همراه باشید.</translation>
 <translation id="72119412072970160">‏می‌توانید از گذرواژه‌های ذخیره‌شده در «مدیر گذرواژه Google» در برنامه‌های دیگر iPad خودتان استفاده کنید.</translation>
 <translation id="7214019116829172458">‏باز کردن برگه «ناشناس» Chrome</translation>
 <translation id="722167379782941918">‏‫Chrome محافظت بهبودیافته را توصیه می‌کند</translation>
@@ -252,6 +253,7 @@
 <translation id="7299681342915173313">‏اکنون می‌توانید انتخاب کنید پیوندهای موجود در ایمیل‌ها، اسناد، و برنامه‌های دیگر همیشه در Chrome باز شوند.</translation>
 <translation id="7344094882820374540">‏قدرتمندترین امنیت Chrome را دربرابر سایت‌های خطرناک دریافت کنید</translation>
 <translation id="7349129508108954623">‏به Chrome اجازه می‌دهد برای ارائه مسیرها و اطلاعات محلی به شما در نشانی‌های شناسایی‌شده از Google Maps استفاده کند.</translation>
+<translation id="7371674917547846460">‏از نکات مفید Chrome و موارد بیشتر مطلع شوید.</translation>
 <translation id="7394108421562933108">‏Maps در Chrome</translation>
 <translation id="7400722733683201933">‏درباره Google Chrome</translation>
 <translation id="7466693328838535498">‏در چارگوش «ابزارک‌های جستجو»، وارد Chrome شوید</translation>
@@ -262,6 +264,7 @@
 <translation id="7581063337314642333">‏رفتن به شبکه برگه‌ها در Chrome</translation>
 <translation id="7599894504325210080">‏نمای ازهم بازشده تکمیل خودکار Chrome</translation>
 <translation id="7617512710641355143">‏‫Chrome تحت‌مدیریت است</translation>
+<translation id="7626032353295482388">‏به Chrome خوش آمدید</translation>
 <translation id="7642373780953416937">‏برای هر مشکل حریم خصوصی یا امنیتی که Chrome به‌طور خودکار تشخیص می‌دهد هشدار دریافت کنید.</translation>
 <translation id="7660356333829433649">‏برای دریافت نکته‌های مفید بیشتر درباره استفاده حداکثری از Chrome، دوباره به اینجا سر بزنید.</translation>
 <translation id="7662994914830945754">‏در همه دستگاه‌هایی که در آن‌ها از Chrome استفاده می‌کنید، به سیستم وارد شوید و همگام‌سازی را روشن کنید تا بتوانید برگه‌هایتان را ببینید</translation>

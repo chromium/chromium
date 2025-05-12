@@ -20,6 +20,7 @@
 <translation id="1059913517121127803">تعذَّر إجراء عملية المسح الضوئي.</translation>
 <translation id="1061864016440983342">الاستخدام بدون تفعيل الموقع الجغرافي</translation>
 <translation id="1062823486781306604">‫<ph name="INDEX" /> من أصل <ph name="COUNT" />، <ph name="NAME" /></translation>
+<translation id="106558928761833284">مجرة جميلة في سديم كوني ساحر تتخللها مركبة فضائية سريعة من المستقبل بألوان الأزرق والوردي والبنفسجي</translation>
 <translation id="1069150558259542054">لا تتوافق ميزة "الإدراج السريع" مع الاختصارات المخصَّصة.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">تم العثور على جدار حماية.</translation>
@@ -27,6 +28,7 @@
 <translation id="1082009148392559545">جارٍ تنزيل شاشة الاستراحة</translation>
 <translation id="1094693127011229778">‏عنوان IP غير متوفّر.</translation>
 <translation id="1100902271996134409">جارٍ إنشاء الصور...</translation>
+<translation id="1102946598597843031">‏صورة فوتوغرافية للقمر فوق بحيرة تكسوها أوراق أزهار كرز متساقطة بدقة 4k</translation>
 <translation id="1107856713690040084">صوت <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">لمحة</translation>
 <translation id="1118572504348554005">قد نشارك مع شركائنا الملاحظات التي يتم إرسالها من خلال هذا النموذج، وذلك لتحديد وحلّ المشاكل والأخطاء التي يتم الإبلاغ عنها، لذا يُرجى عدم إدراج معلومات حساسة، مثل كلمات المرور.</translation>
@@ -67,6 +69,7 @@
 <translation id="1238163879850290856">يجب إعادة الضبط لمنع الآخرين من الوصول إلى البيانات. ويُرجى استخدام أساليب إدخال موثوقة فقط.</translation>
 <translation id="1238612778414822719">‏وقت استجابة بروتوكول HTTPS</translation>
 <translation id="1252766349417594414">ذراع التحكّم</translation>
+<translation id="1261045951892393759">‏قط يعزف على جيتار Flying V بينما يمتطي وحيد قرن، مع صاعقة برق في الخلفية</translation>
 <translation id="1270369111467284986">اشتباه في مدخل مشروط الوصول إليه</translation>
 <translation id="1274654146705270731">برتقال</translation>
 <translation id="1275718070701477396">تم التحديد</translation>
@@ -273,6 +276,7 @@
 <translation id="2045814230297767491">أدوات مائدة</translation>
 <translation id="2047316797244836561">يُرجى الاتصال بشبكة وإعادة تحميل الصفحة لعرض شاشة الاستراحة.</translation>
 <translation id="2056550196601855911">‫IPv4/IPv6</translation>
+<translation id="2068472557797646626">عرض ثلاثي الأبعاد لكرات كروم وأشكال كروية على خلفية من العناصر المعمارية تحمل علامات كروم. يمثّل التكوين مفهومًا حديثًا وبسيطًا للإعلان أو وضع العلامة التجارية أو العرض مع ترك مساحة للنصوص. قوس كبير أمام خلفية مجردة بأسلوب بسيط. إضاءة استوديو لقطة مقرّبة</translation>
 <translation id="2073232437457681324">محيط شاسع</translation>
 <translation id="2080070583977670716">مزيد من الإعدادات</translation>
 <translation id="2082932131694554252">مفتاح لوحة المفاتيح المخصَّص</translation>
@@ -390,7 +394,6 @@
 <translation id="2584559707064218956">لضبط إعدادات الشبكة، انتقِل إلى "الإعدادات".</translation>
 <translation id="2586146417912237930">الأزرق والنيلي</translation>
 <translation id="2589921777872778654">قائمة التعديل والحذف</translation>
-<translation id="2590424100019931043">تمت إزالتك من هذا الصف</translation>
 <translation id="2597774443162333062">‏سيتم إرسال الملفات إلى Google لتصحيح الأخطاء.</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{اكتمل المسح الضوئي. تم مسح صفحة واحدة ضوئيًا.}zero{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}two{اكتمل المسح الضوئي. تم مسح صفحتَين ({NUMBER_OF_PAGES}) ضوئيًا.}few{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحات ضوئيًا.}many{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}other{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}}</translation>
 <translation id="261322795497077164">تحديد هوية المتحدّث</translation>
@@ -430,6 +433,7 @@
 <translation id="2805756323405976993">التطبيقات</translation>
 <translation id="28232023175184696">تعذَّر الاتصال بالإنترنت. يُرجى النقر لإعادة المحاولة.</translation>
 <translation id="2855718259207180827">الصوف</translation>
+<translation id="2856429654176718363">‏سفينة فضاء ضخمة تطفو فوق المدينة وتشعّ منها أضواء كثيرة. ويتميز المشهد بأكمله بنمط الرسم الزيتي بدرجات ألوان داكنة، ما يولِّد إحساسًا بالغموض مع تضمين عناصر خيال علمي مستقبلية. تم إنشاء هذا العمل الفني باستخدام برنامج C4D وبرنامج Octane Render لإبراز الدقة العالية والتفاصيل الدقيقة. توجد أيضًا بعض المباني الحضرية على مسافة قريبة، ما أضاف تأثيرًا عميقًا للصورة. تم عرض المشهد بنمط الرسم الزيتي بدرجات ألوان داكنة، ما يولِّد إحساسًا بالغموض مع تضمين عناصر خيال علمي مستقبلية.</translation>
 <translation id="2859243502336719778">تحديث مُهم</translation>
 <translation id="2860473693272905224">يُرجى وضع صفحة أخرى على الماسح الضوئي.</translation>
 <translation id="286265581261662583">يمكنك النقر بزر الماوس الأيمن أو الضغط مع الاستمرار للحصول على تعريفات أو ترجمات أو تحويلات الوحدات</translation>
@@ -446,9 +450,11 @@
 <translation id="2895772081848316509">داكنة</translation>
 <translation id="2915996080311180594">إعادة التشغيل لاحقًا</translation>
 <translation id="2926057806159140518">أدخِل اسم المستخدم وكلمة المرور أو امسَح رمز الاستجابة السريعة ضوئيًا.</translation>
+<translation id="2927007463545347013">طريق في عالم الأنمي يطل على المحيط وتتناثر فوقه أوراق أزهار الكرز المتساقطة</translation>
 <translation id="2940811910881150316">يتعذّر اختبار لوحة المفاتيح الخاصة بالجهاز. أعِد فتح غطاء الجهاز لاختبار لوحة المفاتيح.</translation>
 <translation id="2941112035454246133">منخفضة</translation>
 <translation id="2956070106555335453">ملخّص</translation>
+<translation id="2968959705684615497">نمر أبيض سريالي بعيون ذهبية وخطوط ذهبية يجلس على كومة من الرمال البيضاء</translation>
 <translation id="299385721391037602">الوردي والأصفر</translation>
 <translation id="3008341117444806826">إعادة التحميل</translation>
 <translation id="3009958530611748826">اختيار مجلّد لحفظ عمليات المسح الضوئي فيه</translation>
@@ -518,6 +524,7 @@
 <translation id="3321030238473337787">سرعة التشغيل</translation>
 <translation id="3327613592010997943">سيصبح بإمكانك استخدام هذا الجهاز مجددًا <ph name="DAY" /> في <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">الاختبار قيد التشغيل.</translation>
+<translation id="3332683265015995419">سفينة فضاء بخارية تحلّق داخل عاصفة رملية</translation>
 <translation id="3340011300870565703">مستوى شحن بطارية السماعة اليمنى هو %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="3340978935015468852">الإعدادات</translation>
 <translation id="3347558044552027859">عصري</translation>
@@ -529,6 +536,7 @@
 <translation id="3369632935976756339"><ph name="INTENT" />؛ <ph name="QUERY_TEXT" />؛ <ph name="SUBTEXT" />؛ <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">خلفية تعرض منظرًا انسيابيًا للأرض</translation>
 <translation id="33736539805963175">خلفية <ph name="LETTERS_COLOR" /> على شكل حرف <ph name="LETTERS_LETTER" /></translation>
+<translation id="3382806462014639823">تتم مشاهدة شاشتك من قِبل "<ph name="TEACHER_NAME" />"</translation>
 <translation id="3383623117265110236">مجموعة حصرية</translation>
 <translation id="3404249063913988450">تفعيل شاشة التوقف</translation>
 <translation id="3413935475507503304">لمواصلة عملية التحديث، انقر على "التالي".</translation>
@@ -561,6 +569,7 @@
 <translation id="3532980081107202182">يتبقّى حوالي <ph name="MIN_REMAINING" /> دقيقة.</translation>
 <translation id="3533790840489634638">بركة طبيعية</translation>
 <translation id="3547264467365135390">المعادَلة</translation>
+<translation id="3552832331940389362">صورة بأسلوب الرسوم المتحركة اليابانية لقطّة تجلس على حافة نافذة وتشاهد المطر بعد الظهر</translation>
 <translation id="3557205324756024651">هوية الجهاز (اختياري)</translation>
 <translation id="3565064564551103223">‏عناوين IP المسموح بها</translation>
 <translation id="3569407787324516067">شاشة الاستراحة</translation>
@@ -636,12 +645,14 @@
 <translation id="38811596981744338">مشكلة قانونية</translation>
 <translation id="3885327323343477505">تغيير شاشة الاستراحة</translation>
 <translation id="3889914174935857450">إعادة ضبط التاريخ</translation>
+<translation id="3889954687526985291">دراجة نارية عصرية مصنوعة من ورق أسود مع أضواء نيون على خلفية داكنة</translation>
 <translation id="3897092660631435901">قائمة</translation>
 <translation id="3902271751020176019">لغة تحويل الصوت إلى نص</translation>
 <translation id="390890062090528082">سماء مليئة بالنجوم</translation>
 <translation id="391412459402535266">يتعذّر اختبار لوحة المفاتيح الخاصة بالجهاز. يُرجى الانتقال إلى وضع "الكمبيوتر المحمول" لتتمكّن من إجراء الاختبار.</translation>
 <translation id="3916998944874125962">أخذ لقطة شاشة</translation>
 <translation id="3923184630988645767">استخدام البيانات</translation>
+<translation id="392943705803418306">انتهت جلسة "أدوات الدراسة"</translation>
 <translation id="3932043219784172185">لم يتم الاتصال بأي أجهزة</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> غير مخصَّص</translation>
 <translation id="3941014780699102620">تعذّرت مطابقة المضيف.</translation>
@@ -808,6 +819,7 @@
 <translation id="4593212453765072419">مطلوب مصادقة الخادم الوكيل</translation>
 <translation id="4594021849294327751">إنشاء نص</translation>
 <translation id="4594541568452132351">اختيار لغة تحويل الصوت إلى نص وتنزيل النموذج</translation>
+<translation id="4600301862817165514">‏سيارة Delorean مزودة بمصابيح نيون تسير في المجرة مع نجوم تنطلق بسرعة</translation>
 <translation id="4609350030397390689">تقليل سطوع لوحة المفاتيح</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="PRINTED_PAGE_NUMBER" /> من أصل <ph name="TOTAL_PAGE_NUMBER" />. يمكنك الضغط على enter لإلغاء مهمة الطباعة.</translation>
 <translation id="463791356324567266">جارٍ إلغاء المسح الضوئي...</translation>
@@ -830,6 +842,7 @@
 <translation id="4697260493945012995">اختيار نوع عنصر التحكُّم</translation>
 <translation id="4712940987669302829">تأثير خلفية ضبابية</translation>
 <translation id="4731797938093519117">وصول أحد الوالدين</translation>
+<translation id="4733200407105375152">ليس في "أدوات الدراسة"</translation>
 <translation id="4734982181169850310">ألوان باستيل</translation>
 <translation id="473775607612524610">تحديث</translation>
 <translation id="4744944742468440486">معلومات ذات صلة باختيارك</translation>
@@ -1006,6 +1019,7 @@
 <translation id="5499762266711462226">يستند لون لوحة المفاتيح إلى الخلفية.</translation>
 <translation id="5502931783115429516">‏Android لا يعمل.</translation>
 <translation id="550600468576850160">مرج</translation>
+<translation id="5507504956167780539">صورة احترافية ذات طابع بسيط لكثبان رملية سوداء متلألئة مع ظلال درامية</translation>
 <translation id="551689408806449779">انقطع اتصال الجهاز. يُرجى إعادة توصيل الجهاز لاختباره.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="552644173505433109">مزيد من المعلومات حول نموذج إنشاء الملخّص والعنوان</translation>
@@ -1077,6 +1091,7 @@
 <translation id="5876385649737594562">يُرجى تفعيل "وضع الاستراحة" لتحديد الخيارات.</translation>
 <translation id="5877503382465267833">إيقاف تنزيل "<ph name="RECORDING_NAME" />" مؤقتًا</translation>
 <translation id="588258955323874662">ملء الشاشة</translation>
+<translation id="5889539348012432386">الصفحة الرئيسية لـ "أدوات الدراسة"</translation>
 <translation id="5893975327266416093">انقر على مفتاح بلوحة المفاتيح لتخصيصه</translation>
 <translation id="5895138241574237353">إعادة التشغيل</translation>
 <translation id="5896602941605730551">تشغيل</translation>
@@ -1125,6 +1140,7 @@
 <translation id="6075872808778243331">‏(نظام التشغيل Android) اختبار وقت استجابة بروتوكول HTTP</translation>
 <translation id="6078323886959318429">إضافة اختصار</translation>
 <translation id="6079693086494835199">يجب إعادة الضبط للتأكّد من أنّ الصفحة الرئيسية التلقائية ليست موقع تصيّد احتيالي. ويُرجى استخدام المواقع الإلكترونية الموثوقة فقط.</translation>
+<translation id="6090672065638047175">صورة لشجرة متلألئة مصنوعة من النجوم مع سماء ليلية جميلة ومجرة في الخلفية</translation>
 <translation id="6091080061796993741">أصفر</translation>
 <translation id="6104112872696127344">تم إلغاء المسح الضوئي.</translation>
 <translation id="6106186594183574873">يُرجى إدخال كلمة المرور القديمة لإنهاء الإجراء.</translation>
@@ -1310,6 +1326,7 @@
 <translation id="6900701049656042631">لا يتضمّن هذا الألبوم أي صور. لإضافة صور إليه، انتقِل إلى <ph name="LINK" />.</translation>
 <translation id="6902359863093437070">إنشاء خلفية باستخدام الذكاء الاصطناعي</translation>
 <translation id="6905163627763043954">التجربة الآن</translation>
+<translation id="6905275015682612674">‏صورة بتأثير "تمويه الجسم المتحرّك" لشاطئ يشعّ بالضوء الحيوي عند غروب الشمس مع نجوم في السماء بألوان باستيل جميلة بدقة 4k</translation>
 <translation id="6905724422583748843">الرجوع إلى <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">غطاء الماسح الضوئي مفتوح. يُرجى إغلاق الغطاء وإعادة المحاولة.</translation>
 <translation id="6910845598686542904">احتساب نماذج الأصوات التي تم رصدها في التسجيل</translation>
@@ -1319,6 +1336,7 @@
 <translation id="6930597342185648547">لمحة عن الخلفية</translation>
 <translation id="6931666215260956151">مجرة</translation>
 <translation id="6939766318048400022">مقهى</translation>
+<translation id="6940212863873359282">قطعة من الأورجانزا البيضاء تطفو في الوسط، وفوقها قوس رخامي أبيض على خلفية بلون كريمي</translation>
 <translation id="6942253772720771875">يُرجى إخبارنا بملاحظاتك أو توضيح مشكلتك</translation>
 <translation id="6943893908656559156">الهوية عن بُعد (اختياري)</translation>
 <translation id="694981048020558038">البحث عن عنوان تسجيل</translation>
@@ -1405,6 +1423,7 @@
 <translation id="7271040990581020067">يتم حاليًا استخدام الماسح الضوئي. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="7271932918253517778">إنّ الاختصار المكوَّن من أحد مفاتيح الصف العلوي يجب أن يشتمل على مفتاح <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7275707758336796649">‏كلب "مرقش" (Dalmatian) أمام خلفية وردية في وضع ديناميكي يظهِر كامل الجسم، تم تصويره بخلفية تصوير فوتوغرافي عالية الدقة وواقعية للغاية مع تدرُّج لوني</translation>
 <translation id="7281657306185710294">استنشاق النسيم</translation>
 <translation id="7287310195820267359">مجموعات الخلفيات</translation>
 <translation id="7293429513719260019">اختيار لغة</translation>
@@ -1414,6 +1433,7 @@
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">‏شبكة EDGE</translation>
 <translation id="7308203371573257315">‏طرح الأسئلة على الخبراء في منتدى مساعدة Chromebook</translation>
+<translation id="7309823890857024809">صورة ثابتة بسيطة لعدة سيقان من زهرة الخشخاش في مزهرية زجاجية على خلفية سوداء</translation>
 <translation id="7311368985037279727">لون لوحة المفاتيح</translation>
 <translation id="7317831949569936035">تسجيل الجهاز ضمن المؤسسة التعليمية</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -1431,6 +1451,7 @@
 <translation id="7353413232959255829">‏نتيجة البحث <ph name="LIST_POSITION" /> من <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. اضغط على مفتاح Enter للانتقال إلى الاختصار.</translation>
 <translation id="7359657277149375382">نوع الملف</translation>
 <translation id="73631062356239394">مشاركة بيانات التشخيص</translation>
+<translation id="7369648056634183167">صورة قريبة لزهر زنبق مائي مليء بالتفاصيل مغطى بالندى في المطر، مع التركيز على البتلات الرقيقة وقطرات الماء التي تعكس الضوء بألوان الباستيل الناعمة على خلفية زرقاء. تم التقاط الصورة من مستوى العين بإضاءة طبيعية.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378170410161264436">يمكن لتطبيق "المسجّلة الذكية" تحويل الكلام في التسجيلات إلى نصوص.
 يجب تنزيل نموذج تحويل الصوت إلى نص (يصل حجمه إلى 100 ميغابايت) لإنشاء هذه النصوص.</translation>
@@ -1601,6 +1622,7 @@
 <translation id="8135609423982943441">‏تمت إعادة ضبط جهاز Chromebook على الإعدادات التلقائية الآمنة. ويمكنك متى شئت تعديل هذه التغييرات من خلال "الإعدادات".</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">إنشاء خلفيتك الخاصة</translation>
+<translation id="8142182840415860496">‏لقطة قريبة ثابتة سينمائية من فيلم رسوم متحركة لعدة زهور بيضاء وصفراء، وزهرة وردية باهتة رقيقة ذات بتلات طويلة وساق خضراء موضوعة بين زهرتي توليب صفراوين كبيرتين على خلفية سماء زرقاء بدون أوراق أو نباتات بألوان الباستيل بدقة عالية وتفاصيل كثيرة للغاية، باستخدام Octane Render مع إضاءة جميلة حجمية ومؤثرة</translation>
 <translation id="8143951647992294073">اختيار <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">أدوات مطوري البرامج</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />، <ph name="ACCELERATOR_INFO" />.</translation>
@@ -1681,6 +1703,7 @@
 <translation id="8503813439785031346">اسم المستخدم</translation>
 <translation id="8503836310948963452">يُرجى الانتظار بضع دقائق فقط…</translation>
 <translation id="8505011850330200833">‏يتطلّب نموذج Gemini مساحة تخزين تبلغ 2 غيغابايت لمعالجة النصوص وإنشاء الملخّصات</translation>
+<translation id="8506063704538210734">صورة لسماء الليل مع زخة شهب وبعض الأشجار في المقدمة بألوان بنفسجية ووردية</translation>
 <translation id="8506394543220680287">صورة مغطاة بالثلوج</translation>
 <translation id="8508640263392900755">‏تفاصيل APN</translation>
 <translation id="8522687886059337719">يمكنك الآن الوصول إلى <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />خلفيات<ph name="END_LINK_WALLPAPER_SUBPAGE" /> و<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />شاشة استراحة<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> جديدة.</translation>

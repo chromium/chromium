@@ -10,6 +10,7 @@
 <translation id="1807863182207623884">ທັບທິມ</translation>
 <translation id="1921351128855867012">ເລື່ອນໄປໜ້າ <ph name="NUMBER_OF_SECONDS" /> ວິນາທີ</translation>
 <translation id="1984328900355667246">ບໍ່ສາມາດຫຼິ້ນສຽງໄດ້</translation>
+<translation id="2019727681730021602">ການຫຼິ້ນມາດຕະຖານ</translation>
 <translation id="2224347680315897176">ຄົງທີ່</translation>
 <translation id="2611765907167846862">ປອດໂປ່ງ</translation>
 <translation id="3023502830214299618">ຂໍອະໄພ, ບໍ່ສາມາດຫຼິ້ນສຽງສຳລັບໜ້ານີ້ໄດ້ໃນເວລານີ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
@@ -28,9 +29,11 @@
 <translation id="5026371835667036198">ສົດໃສ</translation>
 <translation id="5234971936051226002">ຫຍໍ້ຕົວຫຼິ້ນ “ຟັງໜ້ານີ້” ໄວ້ແລ້ວ.</translation>
 <translation id="5251803541071282808">ຄ​ລາວ</translation>
+<translation id="5526614127710223793">ຕົວເລືອກໂໝດການຫຼິ້ນ</translation>
 <translation id="5596627076506792578">ໂຕ​ເລືອກ​ເພີ່ມ​ເຕີມ</translation>
 <translation id="5694491020339060116">ເມນູຄວາມໄວການຫຼິ້ນ</translation>
 <translation id="6315170314923504164">ສຽງ</translation>
+<translation id="6330455646577575965">ການຫຼິ້ນສຽງ AI</translation>
 <translation id="6343633247422081848">ຫຍ້າມອສ</translation>
 <translation id="6550675742724504774">ທາງ​ເລືອກ</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
@@ -43,7 +46,6 @@
 <translation id="7221920857098237570">ອ່ອນໂຍນ</translation>
 <translation id="7237590978482584900">ສົດຊື່ນ</translation>
 <translation id="7282547042039404307">ຄ່ອງແຄ້ວ</translation>
-<translation id="7587250070160020374">ຕອນນີ້ Chrome ກຳລັງຫຼິ້ນຢູ່</translation>
 <translation id="8004767876552422827">ສະໜາມ</translation>
 <translation id="8136852699834914183">ບໍ່ສາມາດໃຊ້ການຫຼິ້ນສຳລັບໜ້ານີ້ໄດ້.</translation>
 <translation id="8198036737896977997">ອາກາດ</translation>

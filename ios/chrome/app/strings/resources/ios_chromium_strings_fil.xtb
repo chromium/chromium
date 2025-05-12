@@ -47,7 +47,6 @@
 <translation id="2042889939382983733">Tingnan ang Iyong History sa Chromium</translation>
 <translation id="2052320862053429062">Pana-panahong sinusuri ng Chromium ang iyong mga password sa mga listahang na-publish online. Kapag ginagawa ito, naka-encrypt ang iyong mga password at username, para hindi mabasa ng sinuman ang mga ito, kabilang ang Google.</translation>
 <translation id="2059365270911640413">Tapusin ang pag-set up ng Chromium</translation>
-<translation id="2147210759439165826">Maging updated sa content at mga kapaki-pakinabang na tip sa Chromium.</translation>
 <translation id="2168108852149185974">Nagiging dahilan ng pag-crash ng Chromium ang ilang add-on. Paki-uninstall.</translation>
 <translation id="2168593389981132306">Mas pahusayin ang Chromium</translation>
 <translation id="2178608107313874732">Di magamit ng Chromium ang camera mo ngayon</translation>
@@ -157,6 +156,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="4828317641996116749">Hindi masuri ng Chromium ang lahat ng password. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="4856138222358683580">Mga aksyon sa Chromium</translation>
 <translation id="4904452304169763785">Mga alerto sa anumang isyu sa privacy o seguridad na dine-detect ng Chromium para sa iyo.</translation>
+<translation id="4908570938463711775">Alamin ang mga kapaki-pakinabang na pangunahing kaalaman sa Chromium para makapagsimula ka</translation>
 <translation id="4962295957157529683">Tapusin ang ginagawa mo sa iyong iba pang nakabukas na window ng Chromium.</translation>
 <translation id="4985291216379576555">Naka-offline, hindi matingnan ng Chromium kung may mga update</translation>
 <translation id="4996471330284142407">Makagawa ng mas maraming bagay gamit ang simple, secure, at mas mabilis na ngayong Chromium.</translation>
@@ -197,6 +197,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="5688047395118852662">Magpapakita sa iyo ang card na ito ng mga suhestyon sa kung paano masusulit ang Chromium.</translation>
 <translation id="5700709190537129682">Hindi masuri ng Chromium ang iyong mga password</translation>
 <translation id="584550191241316896">Naka-sign in sa Chromium</translation>
+<translation id="5862307444128926510">Maligayang Pagdating sa Chromium</translation>
 <translation id="5889847953983052353">Kapag naka-on:
 <ph name="BEGIN_INDENT" />  • Tumulong na pahusayin ang Chromium para sa mga taong gumagamit nito gaya ng iyong paggamit.<ph name="END_INDENT" />
 
@@ -223,6 +224,7 @@ Mga bagay na dapat isaalang-alang:
 <translation id="6301717043141881464">Para madaling makuha ang iyong mga naka-save na password sa iba mo pang app, piliin ang Chromium para sa Autofill</translation>
 <translation id="6324041800010509197">Bisitahin ang Tab Grid sa Chromium</translation>
 <translation id="6325378625795868881">Gamitin ang Chromium sa tuwing magta-tap ka ng mga link sa mga mensahe at iba pang app.</translation>
+<translation id="6387994184698195448">Maging updated sa mga kapaki-pakinabang na tip sa Chromium at higit pa.</translation>
 <translation id="6424492062988593837">Naging mas mahusay na ang Chromium! Available na ang bagong bersyon.</translation>
 <translation id="6433172051771630690">Mga tip para masulit ang Chromium.</translation>
 <translation id="65045991564554105">Tingnan ang mga bookmark sa Chromium</translation>
@@ -317,6 +319,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="8860548555286245440">Buksan ang mga URL sa Chromium sa Incognito</translation>
 <translation id="8880024619507699923">Nire-require sa iyo ng organisasyon mo na mag-sign in para magamit ang Chromium. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Kunin ang Pinakamaigting na Seguridad ng Chromium</translation>
+<translation id="8925569192291721236">Maging updated sa pagsubaybay sa presyo at mga tip sa Chromium.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} minuto}one{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} minuto}other{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} na minuto}}</translation>
 <translation id="8963279154877372067">Payagan ang mga notification sa Chromium na makatanggap ng mga alerto sa pagbaba ng presyo</translation>
 <translation id="8975812008711371178">Maghanap gamit ang boses sa Chromium.</translation>

@@ -1440,6 +1440,7 @@ Engin tæki eru tengd.</translation>
 <translation id="5672890847723042801">Aukabúnaður</translation>
 <translation id="5673434351075758678">Úr „<ph name="FROM_LOCALE" />“ í „<ph name="TO_LOCALE" />“ eftir að stillingarnar þínar voru samstilltar.</translation>
 <translation id="5675363643668471212">Hilluatriði</translation>
+<translation id="5677022547882470786">Dragðu eða ýttu á bil til að velja svæði til að leita á</translation>
 <translation id="5677928146339483299">Lokað fyrir aðgang</translation>
 <translation id="5678564054339031017">Sýna næstu viku</translation>
 <translation id="5679050765726761783">Afllítill straumbreytir tengdur</translation>
@@ -2432,6 +2433,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8934418770423095813">Búa til Google skjal</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 skrá}one{# skrá}other{# skrár}}</translation>
 <translation id="8936501819958976551">óvirkt</translation>
+<translation id="8937312474322077653">Stilla á <ph name="SOURCE" /> <ph name="TYPE" /> í skjáupptöku. Ýttu á flipa til að velja gerð töku. Ýttu á bil til að velja svæði. Ýttu á enter til að taka mynd.</translation>
 <translation id="8938800817013097409">USB-C tæki (hægra tengi að aftan)</translation>
 <translation id="8939855324412367560">Inntakshljóð er „<ph name="INPUT_DEVICE_NAME" />“ og úttakshljóð er „<ph name="OUTPUT_DEVICE_NAME" />“. Farðu í stillingar til að breyta þessu.</translation>
 <translation id="8940956008527784070">Rafhlaða að tæmast (<ph name="PERCENTAGE" />%)</translation>

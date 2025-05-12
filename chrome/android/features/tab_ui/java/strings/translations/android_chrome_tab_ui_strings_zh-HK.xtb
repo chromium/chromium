@@ -8,6 +8,7 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> 年前建立}other{<ph name="NUM_YEARS_MANY" /> 年前建立}}</translation>
 <translation id="1173894706177603556">重新命名</translation>
 <translation id="1197088940767939838">橙色</translation>
+<translation id="1245862538775272968">{TAB_COUNT,plural, =1{打開有 <ph name="TAB_COUNT2" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」}other{打開有 <ph name="TAB_COUNT2" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" />分頁群組選項</translation>
 <translation id="1329584516321524826">上次更新時間：剛才</translation>
 <translation id="1340839264183302272">離開群組</translation>
@@ -16,7 +17,6 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> 分鐘前建立}other{<ph name="NUM_MINS_MANY" /> 分鐘前建立}}</translation>
 <translation id="1499635324672558517">要關閉所有無痕式分頁嗎？</translation>
 <translation id="1501480321619201731">刪除群組</translation>
-<translation id="1505526451013346974">加去「<ph name="TITLE_OF_GROUP" />」</translation>
 <translation id="1555130319947370107">藍色</translation>
 <translation id="161042844686301425">青色</translation>
 <translation id="1645759014353344461">已將 <ph name="TABS_COUNT_MANY" /> 個分頁加入群組</translation>
@@ -43,6 +43,7 @@
 <translation id="2536366509642644298">「<ph name="TAB_GROUP_NAME_1" />」和「<ph name="TAB_GROUP_NAME_2" />」分頁群組已無法使用</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{收合 <ph name="TABS_COUNT_ONE" /> 個分頁。}other{收合有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅分頁群組。}}</translation>
 <translation id="2569352796411618312">我有建議：你有 <ph name="NUMBER_OF_TABS" /> 個分頁最近冇用過，係咪要閂咗佢？</translation>
+<translation id="2656693375914502139">移至群組</translation>
 <translation id="2662028055331606429">評分：<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">瀏覽網站</translation>
 <translation id="2671423594960767771">分享群組項目</translation>
@@ -75,7 +76,6 @@
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{新增 <ph name="ONE_ADDED" /> 個分頁，關閉 <ph name="ANY_CLOSED" /> 個分頁}other{新增 <ph name="MANY_ADDED" /> 個分頁，關閉 <ph name="ANY_CLOSED" /> 個分頁}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{建立分頁群組}other{建立分頁群組}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個閒置分頁}other{<ph name="TABS_COUNT_MANY" /> 個閒置分頁}}</translation>
-<translation id="3969565576924904454">打開<ph name="TITLE_OF_GROUP" /></translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> 日前建立}other{<ph name="NUM_DAYS_MANY" /> 日前建立}}</translation>
 <translation id="4076226664360336092">分頁群組清單，目前顯示於整個畫面</translation>
 <translation id="4133493477912226187">似乎有 <ph name="NUMBER_OF_TABS" /> 個相關的分頁。要唔要將佢哋分組？</translation>
@@ -139,7 +139,9 @@
 <translation id="6590332670428149473">開啟共享分頁群組「<ph name="TITLE_OF_GROUP" />」的操作選單，顏色為「<ph name="COLOR_NAME" />」。</translation>
 <translation id="6615455863669487791">顯示</translation>
 <translation id="6694634756612002311">管理共用設定</translation>
+<translation id="6709297274997495821">選取分頁</translation>
 <translation id="6744956528665271406">編輯群組顏色</translation>
+<translation id="6784585810034073638">{TAB_COUNT,plural, =1{加去有 <ph name="TAB_COUNT1" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」群組}other{加去有 <ph name="TAB_COUNT1" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」群組}}</translation>
 <translation id="6856809498882026482">隱藏多重選取模式</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{展開有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅共享分頁群組「<ph name="TITLE_OF_GROUP" />」，顏色係<ph name="COLOR_NAME" />。}other{展開有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅共享分頁群組「<ph name="TITLE_OF_GROUP" />」，顏色係<ph name="COLOR_NAME" />。}}</translation>
 <translation id="709473454666962555">選取分頁群組</translation>
