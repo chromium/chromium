@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.pwd_check_wrapper;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID;
 import static org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge.usesSplitStoresAndUPMForLocal;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
@@ -140,7 +142,9 @@ class GmsCorePasswordCheckController
 
         // If using split stores and UPM for local passwords is enabled, the local passwords are
         // stored in the profile store.
-        if (usesSplitStoresAndUPMForLocal(mPrefService)) {
+        // After login db deprecation all users have split stores.
+        if (ChromeFeatureList.isEnabled(LOGIN_DB_DEPRECATION_ANDROID)
+                || usesSplitStoresAndUPMForLocal(mPrefService)) {
             mPasswordsCountAccountStorage.complete(
                     mPasswordStoreBridge.getPasswordStoreCredentialsCountForAccountStore());
             mPasswordsCountLocalStorage.complete(
