@@ -207,6 +207,29 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
     const String seller_name_;
   };
 
+  // Handles resolution of a single promise in perBuyerTkvSignals.
+  //
+  // TODO(crbug.com/412588114): Handle rejected promises by sending
+  // a rejected MaybePromiseBuyerTkvSignals promise, rather than by aborting the
+  // auction.
+  class BuyerTkvSignalsResolved
+      : public AuctionHandleFunctionImpl<IDLAny, BuyerTkvSignalsResolved> {
+   public:
+    BuyerTkvSignalsResolved(
+        AuctionHandle* auction_handle,
+        scoped_refptr<const SecurityOrigin> buyer,
+        const MemberScriptPromise<IDLAny>& promise,
+        mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
+        const String& seller_name);
+
+    void React(ScriptState* script_state, ScriptValue value);
+
+   private:
+    scoped_refptr<const SecurityOrigin> buyer_;
+    const mojom::blink::AuctionAdConfigAuctionIdPtr auction_id_;
+    const String seller_name_;
+  };
+
   // This is used for perBuyerTimeouts and perBuyerCumulativeTimeouts, with
   // `field` indicating which of the two fields an object is being used for.
   class BuyerTimeoutsResolved
@@ -2028,34 +2051,32 @@ void CopyPerBuyerSignalsFromIdlToMojo(
 }
 
 bool CopyPerBuyerTKVSignalsFromIdlToMojo(
-    const ScriptState& script_state,
     ExceptionState& exception_state,
+    NavigatorAuction::AuctionHandle* auction_handle,
+    const mojom::blink::AuctionAdConfigAuctionId* auction_id,
     const AuctionAdConfig& input,
     mojom::blink::AuctionAdConfig& output) {
   if (!input.hasPerBuyerTKVSignals()) {
     return true;
   }
 
-  for (const auto& per_buyer_tkv_signal : input.perBuyerTKVSignals()) {
+  for (const auto& per_buyer_tkv_signals : input.perBuyerTKVSignals()) {
     scoped_refptr<const SecurityOrigin> buyer =
-        ParseOrigin(per_buyer_tkv_signal.first);
+        ParseOrigin(per_buyer_tkv_signals.first);
     if (!buyer) {
       exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
-          input, "perBuyerTKVSignals buyer", per_buyer_tkv_signal.first,
+          input, "perBuyerTKVSignals buyer", per_buyer_tkv_signals.first,
           "must be a valid https origin."));
       return false;
     }
 
-    String tkv_signals_str;
-    if (!Jsonify(script_state, per_buyer_tkv_signal.second.V8Value(),
-                 tkv_signals_str)) {
-      exception_state.ThrowTypeError(ErrorInvalidAuctionConfigSellerJson(
-          input.seller(), "perBuyerTKVSignals"));
-      return false;
-    }
-
+    auction_handle->QueueAttachPromiseHandler(
+        MakeGarbageCollected<
+            NavigatorAuction::AuctionHandle::BuyerTkvSignalsResolved>(
+            auction_handle, buyer, per_buyer_tkv_signals.second,
+            auction_id->Clone(), input.seller()));
     output.auction_ad_config_non_shared_params->per_buyer_tkv_signals.insert(
-        buyer, tkv_signals_str);
+        buyer, mojom::blink::AuctionAdConfigMaybePromiseJson::NewPromise(0));
   }
 
   return true;
@@ -2720,8 +2741,9 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
                                                      *mojo_config) ||
       !CopyPerBuyerRealTimeReportingTypesFromIdlToMojo(exception_state, config,
                                                        *mojo_config) ||
-      !CopyPerBuyerTKVSignalsFromIdlToMojo(script_state, exception_state,
-                                           config, *mojo_config)) {
+      !CopyPerBuyerTKVSignalsFromIdlToMojo(exception_state, auction_handle,
+                                           auction_id.get(), config,
+                                           *mojo_config)) {
     return mojom::blink::AuctionAdConfigPtr();
   }
 
@@ -3244,6 +3266,41 @@ void NavigatorAuction::AuctionHandle::PerBuyerSignalsResolved::React(
   } else {
     auction_handle()->Abort();
   }
+}
+
+NavigatorAuction::AuctionHandle::BuyerTkvSignalsResolved::
+    BuyerTkvSignalsResolved(
+        AuctionHandle* auction_handle,
+        scoped_refptr<const SecurityOrigin> buyer,
+        const MemberScriptPromise<IDLAny>& promise,
+        mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
+        const String& seller_name)
+    : AuctionHandleFunctionImpl(auction_handle, promise, /*is_input=*/true),
+      buyer_(buyer),
+      auction_id_(std::move(auction_id)),
+      seller_name_(seller_name) {}
+
+void NavigatorAuction::AuctionHandle::BuyerTkvSignalsResolved::React(
+    ScriptState* script_state,
+    ScriptValue value) {
+  OnResolved();
+
+  if (!script_state->ContextIsValid()) {
+    return;
+  }
+
+  String maybe_json;
+  if (!value.IsEmpty()) {
+    if (!Jsonify(*script_state, value.V8Value(), maybe_json)) {
+      maybe_json = String();
+      // TODO(crbug.com/412588114): Consider throwing an exception here. It
+      // won't be possible to catch the exception, but it will be visible via an
+      // `unhandledrejection` event.
+    }
+  }
+
+  auction_handle()->mojo_pipe()->ResolvedBuyerTkvSignalsPromise(
+      auction_id_->Clone(), buyer_, maybe_json);
 }
 
 NavigatorAuction::AuctionHandle::DeprecatedRenderURLReplacementsResolved::

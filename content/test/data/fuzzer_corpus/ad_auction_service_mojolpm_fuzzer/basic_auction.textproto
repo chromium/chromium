@@ -177,6 +177,8 @@ actions {
               m_per_buyer_signals {
                 old: 1
               }
+              m_per_buyer_tkv_signals {
+              }
               m_buyer_timeouts {
                 old: 1
               }

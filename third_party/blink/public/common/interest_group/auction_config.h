@@ -290,9 +290,12 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     // Value is opaque JSON data, passed as object to particular buyers.
     MaybePromisePerBuyerSignals per_buyer_signals;
 
-    // Similar as per_buyer_signals, but is not a promise value and can only
-    // used for TKV server for trusted KVv2 bidding signals.
-    base::flat_map<url::Origin, std::string> per_buyer_tkv_signals;
+    // Similar to `per_buyer_signals`, but instead of being a single promise,
+    // allows a promise to be specified for each buyer. Sent to trusted
+    // servers for interest groups owned by the corresponding buyer, when
+    // using trusted key value servers that support the TEE-based version 2 of
+    // the protocol.
+    base::flat_map<url::Origin, MaybePromiseJson> per_buyer_tkv_signals;
 
     // Values restrict the runtime of generateBid() scripts.
     MaybePromiseBuyerTimeouts buyer_timeouts;
@@ -480,7 +483,7 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   // will be sent to V1 trusted seller signals server.
   std::optional<bool> send_creative_scanning_metadata;
 
-  static_assert(__LINE__ == 483, R"(
+  static_assert(__LINE__ == 486, R"(
 If modifying AuctionConfig fields, please make sure to also modify:
 
 * third_party/blink/public/mojom/interest_group/interest_group_types.mojom

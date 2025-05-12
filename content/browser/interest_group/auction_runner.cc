@@ -192,6 +192,42 @@ void AuctionRunner::ResolvedPerBuyerSignalsPromise(
   NotifyPromiseResolved(*auction_id, *config);
 }
 
+void AuctionRunner::ResolvedBuyerTkvSignalsPromise(
+    blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
+    const url::Origin& buyer,
+    const std::optional<std::string>& buyer_tkv_signals) {
+  if (state_ == State::kFailed) {
+    return;
+  }
+
+  blink::AuctionConfig* config =
+      LookupAuction(*owned_auction_config_, *auction_id);
+  if (!config) {
+    mojo::ReportBadMessage(
+        "Invalid auction ID in ResolvedPerBuyerSignalsPromise");
+    return;
+  }
+
+  auto tvk_signals_it =
+      config->non_shared_params.per_buyer_tkv_signals.find(buyer);
+  if (tvk_signals_it == config->non_shared_params.per_buyer_tkv_signals.end() ||
+      !tvk_signals_it->second.is_promise()) {
+    mojo::ReportBadMessage(
+        "ResolvedBuyerTkvSignalsPromise may only update a promise");
+    return;
+  }
+
+  tvk_signals_it->second =
+      blink::AuctionConfig::MaybePromiseJson::FromValue(buyer_tkv_signals);
+
+  // The order these two notifications are send in should not matter.
+  auction_.NotifyBuyerTkvSignalsPromiseResolved(
+      buyer, auction_id->is_main_auction()
+                 ? std::optional<uint32_t>()
+                 : auction_id->get_component_auction());
+  NotifyPromiseResolved(*auction_id, *config);
+}
+
 void AuctionRunner::ResolvedBuyerTimeoutsPromise(
     blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
     blink::mojom::AuctionAdConfigBuyerTimeoutField field,

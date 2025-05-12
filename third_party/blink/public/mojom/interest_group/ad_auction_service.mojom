@@ -54,6 +54,15 @@ interface AbortableAdAuction {
       AuctionAdConfigAuctionId auction,
       map<url.mojom.Origin, string>? per_buyer_signals);
 
+  // Used to provide result of resolving a promise for a single buyer's entry in
+  // the `per_buyer_tkv_signals` field of an AuctionConfig. A nullopt `json_value`
+  // means not to send any signals, either due to the promise being rejected, or
+  // being passed data that is not serializable to JSON.
+  ResolvedBuyerTkvSignalsPromise(
+      AuctionAdConfigAuctionId auction,
+      url.mojom.Origin buyer,
+      string? json_value);
+
   // Used to provide result of resolving a promise specifying
   // `per_buyer_timeouts` or `per_buyer_cumulative_timeouts` field of an
   // AuctionConfig.

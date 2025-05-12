@@ -129,6 +129,13 @@ int AuctionConfig::NumPromises() const {
   if (non_shared_params.deprecated_render_url_replacements.is_promise()) {
     ++total;
   }
+  for (const auto& buyer_tkv_signals :
+       non_shared_params.per_buyer_tkv_signals) {
+    if (buyer_tkv_signals.second.is_promise()) {
+      ++total;
+    }
+  }
+
   if (direct_from_seller_signals.is_promise()) {
     ++total;
   }
@@ -138,6 +145,7 @@ int AuctionConfig::NumPromises() const {
   if (expects_additional_bids) {
     ++total;
   }
+
   for (const blink::AuctionConfig& sub_auction :
        non_shared_params.component_auctions) {
     total += sub_auction.NumPromises();

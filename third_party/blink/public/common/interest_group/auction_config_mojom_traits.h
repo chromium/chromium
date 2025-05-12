@@ -313,8 +313,9 @@ struct BLINK_COMMON_EXPORT
     return params.per_buyer_signals;
   }
 
-  static const base::flat_map<url::Origin, std::string>& per_buyer_tkv_signals(
-      const blink::AuctionConfig::NonSharedParams& params) {
+  static const base::flat_map<url::Origin,
+                              blink::AuctionConfig::MaybePromiseJson>&
+  per_buyer_tkv_signals(const blink::AuctionConfig::NonSharedParams& params) {
     return params.per_buyer_tkv_signals;
   }
 

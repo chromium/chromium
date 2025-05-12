@@ -197,6 +197,10 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
       const std::optional<base::flat_map<url::Origin, std::string>>&
           per_buyer_signals) override;
+  void ResolvedBuyerTkvSignalsPromise(
+      blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
+      const url::Origin& buyer,
+      const std::optional<std::string>& buyer_tkv_signals) override;
   void ResolvedBuyerTimeoutsPromise(
       blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
       blink::mojom::AuctionAdConfigBuyerTimeoutField field,

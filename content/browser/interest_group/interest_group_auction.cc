@@ -2118,6 +2118,21 @@ class InterestGroupAuction::BuyerHelper
         selected_buyer_and_seller_reporting_id, bid_state, auction_);
   }
 
+  void OnBuyerTkvPromiseResolved() {
+    CHECK(!GetTkvSignals()->is_promise());
+
+    // Call MaybeBeginGenerateBid() for all bid states that were waiting on the
+    // promise.
+    for (auto& bid_state : bid_states_) {
+      if (!bid_state->waiting_for_tkv_promise) {
+        continue;
+      }
+
+      bid_state->waiting_for_tkv_promise = false;
+      MaybeBeginGenerateBid(bid_state.get());
+    }
+  }
+
  private:
   // Sorts by descending priority, also grouping entries within each priority
   // band to permit context reuse if the executionMode allows it.
@@ -2203,6 +2218,8 @@ class InterestGroupAuction::BuyerHelper
       // bidding signals from being requested entirely.
       bid_state->bidding_signals_handle.reset();
 
+      bid_state->waiting_for_tkv_promise = false;
+
       OnBeginGenerateBidCalled(bid_state);
     }
 
@@ -2282,9 +2299,25 @@ class InterestGroupAuction::BuyerHelper
       bidder_process_received_ = true;
       MaybeStartCumulativeTimeoutTimer();
     }
+    MaybeBeginGenerateBid(bid_state);
+  }
+
+  void MaybeBeginGenerateBid(BidState* bid_state) {
+    DCHECK(!bid_state->waiting_for_tkv_promise);
 
     const blink::InterestGroup& interest_group =
         bid_state->bidder->interest_group;
+
+    // Delay call to BeginGenerateBid() if need signals but can't request
+    // them from the cache yet.
+    if (NeedsBiddingSignalsFromCache(interest_group)) {
+      const blink::AuctionConfig::MaybePromiseJson* tkv_signals =
+          GetTkvSignals();
+      if (tkv_signals && tkv_signals->is_promise()) {
+        bid_state->waiting_for_tkv_promise = true;
+        return;
+      }
+    }
 
     mojo::PendingAssociatedRemote<auction_worklet::mojom::GenerateBidClient>
         pending_remote;
@@ -2348,16 +2381,22 @@ class InterestGroupAuction::BuyerHelper
     FinishGenerateBidIfReady(bid_state);
   }
 
+  bool NeedsBiddingSignalsFromCache(
+      const blink::InterestGroup& interest_group) {
+    // Only need signals from the cache if there's a coordinator (indicating use
+    // of KVv2 signals), a trusted bidding signals URL, and the cache is enabled
+    // (and thus non-null).
+    return interest_group.trusted_bidding_signals_coordinator &&
+           interest_group.trusted_bidding_signals_url &&
+           auction_->interest_group_manager_->trusted_signals_cache();
+  }
+
   // Requests trusted bidding signals from the browser-side cache if needed.
   auction_worklet::mojom::TrustedSignalsCacheKeyPtr
   MaybeRequestBiddingSignalsFromCache(BidState& bid_state) {
     const blink::InterestGroup& interest_group =
         bid_state.bidder->interest_group;
-    // If the interest group is not using KVv2 bidding signals, or the
-    // TrustedSignalsCache is not enabled, return nullptr.
-    if (!interest_group.trusted_bidding_signals_coordinator ||
-        !interest_group.trusted_bidding_signals_url ||
-        !auction_->interest_group_manager_->trusted_signals_cache()) {
+    if (!NeedsBiddingSignalsFromCache(interest_group)) {
       return nullptr;
     }
 
@@ -2378,6 +2417,11 @@ class InterestGroupAuction::BuyerHelper
                             std::move(optional_pair->second));
     }
 
+    const blink::AuctionConfig::MaybePromiseJson* tkv_signals = GetTkvSignals();
+    // This method must only be called once any applicable buyer TKV signals
+    // promise is resolved.
+    CHECK(!tkv_signals || !tkv_signals->is_promise());
+
     int partition_id;
     bid_state.bidding_signals_handle =
         auction_->interest_group_manager_->trusted_signals_cache()
@@ -2392,7 +2436,8 @@ class InterestGroupAuction::BuyerHelper
                 *interest_group.trusted_bidding_signals_coordinator,
                 interest_group.trusted_bidding_signals_keys,
                 std::move(additional_params),
-                auction_->GetBuyerTKVSignals(owner_), partition_id);
+                tkv_signals ? tkv_signals->value() : std::nullopt,
+                partition_id);
     return auction_worklet::mojom::TrustedSignalsCacheKey::New(
         bid_state.bidding_signals_handle->compression_group_token(),
         partition_id);
@@ -2409,6 +2454,8 @@ class InterestGroupAuction::BuyerHelper
       // still being launched.
       return;
     }
+
+    CHECK(!bid_state->waiting_for_tkv_promise);
 
     SubresourceUrlBuilder* url_builder =
         auction_->SubresourceUrlBuilderIfReady();
@@ -2589,6 +2636,7 @@ class InterestGroupAuction::BuyerHelper
       const std::vector<std::string>& errors) {
     DCHECK(!state->made_bid);
     DCHECK_GT(num_outstanding_bids_, 0);
+    DCHECK(!state->waiting_for_tkv_promise);
 
     // We may not have a trace ID if we timed out before being delivered a
     // worklet.
@@ -3017,6 +3065,11 @@ class InterestGroupAuction::BuyerHelper
     // been closed, and deleting it frees the associated entry in the
     // TrustedSignalsCacheImpl.
     state.bidding_signals_handle.reset();
+  }
+
+  const blink::AuctionConfig::MaybePromiseJson* GetTkvSignals() const {
+    // TODO(crbug.com/412588114): Consider caching a raw pointer to this.
+    return auction_->InterestGroupAuction::GetBuyerTKVSignals(owner_);
   }
 
   size_t size_limit_;
@@ -3889,6 +3942,36 @@ void InterestGroupAuction::NotifyComponentConfigPromisesResolved(uint32_t pos) {
   }
 
   it->second->NotifyConfigPromisesResolved();
+}
+
+void InterestGroupAuction::NotifyBuyerTkvSignalsPromiseResolved(
+    const url::Origin& buyer,
+    std::optional<uint32_t> pos) {
+  if (pos.has_value()) {
+    // If `pos` has a value, this should be a top-level auction.
+    DCHECK(!parent_);
+    auto it = component_auctions_.find(*pos);
+
+    if (it == component_auctions_.end()) {
+      // It's OK if the component auction isn't found; that means it got dropped
+      // at database loading stage.
+      return;
+    }
+
+    it->second->NotifyBuyerTkvSignalsPromiseResolved(buyer, std::nullopt);
+    return;
+  }
+
+  // TODO(https://crbug.com/412588114): Maybe switch to a map, to avoid the
+  // linear search?
+  for (const auto& buyer_helper : buyer_helpers_) {
+    if (buyer_helper->owner() == buyer) {
+      buyer_helper->OnBuyerTkvPromiseResolved();
+      return;
+    }
+  }
+  // It's fine for there not to be a buyer helper for an origin. This can happen
+  // if a buyer has no interest groups that can participate in an auction.
 }
 
 void InterestGroupAuction::NotifyAdditionalBidsConfig(
@@ -4790,19 +4873,19 @@ uint16_t InterestGroupAuction::GetBuyerMultiBidLimit(const url::Origin& buyer) {
   return std::max(val, uint16_t{1});
 }
 
-std::optional<std::string> InterestGroupAuction::GetBuyerTKVSignals(
-    const url::Origin& owner) const {
+const blink::AuctionConfig::MaybePromiseJson*
+InterestGroupAuction::GetBuyerTKVSignals(const url::Origin& owner) const {
   if (!base::FeatureList::IsEnabled(
           blink::features::kFledgeTrustedSignalsKVv2ContextualData)) {
-    return std::nullopt;
+    return nullptr;
   }
 
   auto it = config_->non_shared_params.per_buyer_tkv_signals.find(owner);
-  if (it != config_->non_shared_params.per_buyer_tkv_signals.end()) {
-    return it->second;
+  if (it == config_->non_shared_params.per_buyer_tkv_signals.end()) {
+    return nullptr;
   }
 
-  return std::nullopt;
+  return &it->second;
 }
 
 std::optional<uint16_t> InterestGroupAuction::GetBuyerExperimentId(

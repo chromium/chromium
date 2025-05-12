@@ -62,7 +62,8 @@ AuctionConfig CreateFullAuctionConfig() {
       blink::AuctionConfig::MaybePromisePerBuyerSignals::FromValue(
           std::move(per_buyer_signals));
 
-  non_shared_params.per_buyer_tkv_signals[buyer] = "[8]";
+  non_shared_params.per_buyer_tkv_signals[buyer] =
+      AuctionConfig::MaybePromiseJson::FromValue("[8]");
 
   AuctionConfig::BuyerTimeouts buyer_timeouts;
   buyer_timeouts.per_buyer_timeouts.emplace();
