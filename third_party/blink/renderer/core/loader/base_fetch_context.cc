@@ -260,7 +260,10 @@ BaseFetchContext::CanRequestInternal(
     return ResourceRequestBlockedReason::kCSP;
   }
 
-  if (!IntegrityPolicy::AllowRequest(GetExecutionContext(), request_destination,
+  CHECK(!GetResourceFetcherProperties().IsDetached() ||
+        resource_request.GetKeepalive() || redirect_info.has_value());
+  if (RuntimeEnabledFeatures::IntegrityPolicyScriptEnabled() &&
+      !IntegrityPolicy::AllowRequest(GetExecutionContext(), request_destination,
                                      request_mode, options.integrity_metadata,
                                      url)) {
     return ResourceRequestBlockedReason::kIntegrity;
