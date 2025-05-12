@@ -84,26 +84,7 @@ TEST(ColorFunctionParserTest, RelativeColorWithInvalidChannelReference) {
   EXPECT_EQ(result, nullptr);
 }
 
-TEST(ColorFunctionParserTest, RelativeColorWithCurrentcolorBase_Disabled) {
-  ScopedCSSRelativeColorSupportsCurrentcolorForTest scoped_feature_for_test(
-      false);
-
-  const String test_case = "rgb(from currentcolor r g b)";
-  CSSParserTokenStream stream(test_case);
-
-  const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
-      kHTMLStandardMode, SecureContextMode::kInsecureContext);
-
-  ColorFunctionParser parser;
-  const CSSValue* result =
-      parser.ConsumeFunctionalSyntaxColor(stream, *context);
-  EXPECT_EQ(result, nullptr);
-}
-
 TEST(ColorFunctionParserTest, RelativeColorWithCurrentcolorBase_NoAlpha) {
-  ScopedCSSRelativeColorSupportsCurrentcolorForTest scoped_feature_for_test(
-      true);
-
   const String test_case = "rgb(from currentcolor 1 calc(g) b)";
   CSSParserTokenStream stream(test_case);
 
@@ -140,9 +121,6 @@ TEST(ColorFunctionParserTest, RelativeColorWithCurrentcolorBase_NoAlpha) {
 }
 
 TEST(ColorFunctionParserTest, RelativeColorWithCurrentcolorBase_CalcAlpha) {
-  ScopedCSSRelativeColorSupportsCurrentcolorForTest scoped_feature_for_test(
-      true);
-
   const String test_case =
       "rgb(from currentcolor 1 calc(g) b / calc(alpha / 2))";
   CSSParserTokenStream stream(test_case);
@@ -182,9 +160,6 @@ TEST(ColorFunctionParserTest, RelativeColorWithCurrentcolorBase_CalcAlpha) {
 }
 
 TEST(ColorFunctionParserTest, RelativeColorWithCurrentcolorBase_NoneKeyword) {
-  ScopedCSSRelativeColorSupportsCurrentcolorForTest scoped_feature_for_test(
-      true);
-
   const String test_case = "rgb(from currentcolor none none none / none)";
   CSSParserTokenStream stream(test_case);
 
@@ -223,9 +198,6 @@ TEST(ColorFunctionParserTest, RelativeColorWithCurrentcolorBase_NoneKeyword) {
 }
 
 TEST(ColorFunctionParserTest, RelativeColorWithColorMixWithCurrentColorBase) {
-  ScopedCSSRelativeColorSupportsCurrentcolorForTest scoped_feature_for_test(
-      true);
-
   const String test_case =
       "rgb(from color-mix(in srgb, currentColor 50%, green) r g b)";
   CSSParserTokenStream stream(test_case);

@@ -1359,23 +1359,8 @@
       depends_on: ["CSSReadingFlow"],
     },
     {
-      // https://drafts.csswg.org/css-color-5/#relative-colors
-      name: "CSSRelativeColor",
-      status: "stable",
-    },
-    {
       // crbug.com/359616070
       name: "CSSRelativeColorLateResolveAlways",
-      status: "stable",
-    },
-    {
-      // crbug.com/365818844
-      name: "CSSRelativeColorPreserveNone",
-      status: "stable",
-    },
-    {
-      // crbug.com/325309578
-      name: "CSSRelativeColorSupportsCurrentcolor",
       status: "stable",
     },
     {

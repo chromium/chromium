@@ -296,13 +296,8 @@ Color StyleColor::UnresolvedRelativeColor::Resolve(
       /*is_legacy_syntax=*/false, color_interpolation_space_, params,
       param_alpha);
 
-  Color result = Color::FromColorSpace(color_interpolation_space_, params[0],
-                                       params[1], params[2], param_alpha);
-  if (Color::IsLegacyColorSpace(result.GetColorSpace()) &&
-      !RuntimeEnabledFeatures::CSSRelativeColorPreserveNoneEnabled()) {
-    result.ConvertToColorSpace(Color::ColorSpace::kSRGB);
-  }
-  return result;
+  return Color::FromColorSpace(color_interpolation_space_, params[0], params[1],
+                               params[2], param_alpha);
 }
 
 bool StyleColor::UnresolvedRelativeColor::operator==(

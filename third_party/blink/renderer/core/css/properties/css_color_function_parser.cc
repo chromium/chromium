@@ -222,9 +222,6 @@ bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
     const CSSParserContext& context) {
   // [from <color>]?
   if (css_parsing_utils::ConsumeIdent<CSSValueID::kFrom>(stream)) {
-    if (!RuntimeEnabledFeatures::CSSRelativeColorEnabled()) {
-      return false;
-    }
     unresolved_origin_color_ = css_parsing_utils::ConsumeColor(stream, context);
     if (!unresolved_origin_color_) {
       return false;
@@ -282,11 +279,6 @@ bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
           {CSSValueID::kAlpha, origin_color_->Alpha()},
       };
     } else {
-      if (!origin_color_.has_value() &&
-          !RuntimeEnabledFeatures::
-              CSSRelativeColorSupportsCurrentcolorEnabled()) {
-        return false;
-      }
       // If the origin color is not resolvable at parse time, fill out the map
       // with just the valid channel names. We still need that information to
       // parse the remainder of the color function.
