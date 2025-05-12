@@ -212,6 +212,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
   const bool is_wrap_reverse_;
   const bool is_reverse_direction_;
   const bool is_multi_line_;
+  const bool is_balanced_;
   const bool is_horizontal_flow_;
   const bool is_cross_size_definite_;
   const LogicalSize child_percentage_size_;

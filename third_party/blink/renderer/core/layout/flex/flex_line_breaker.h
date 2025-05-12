@@ -43,7 +43,8 @@ struct FlexLineBreakerResult {
 FlexLineBreakerResult BreakFlexItemsIntoLines(base::span<FlexItem> all_items,
                                               LayoutUnit line_break_size,
                                               LayoutUnit gap_between_items,
-                                              bool is_multi_line);
+                                              bool is_multi_line,
+                                              bool is_balanced);
 
 }  // namespace blink
 

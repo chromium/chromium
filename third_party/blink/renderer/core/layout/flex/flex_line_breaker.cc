@@ -10,7 +10,12 @@ FlexLineBreakerResult BreakFlexItemsIntoLines(
     base::span<FlexItem> all_items,
     const LayoutUnit line_break_size,
     const LayoutUnit gap_between_items,
-    const bool is_multi_line) {
+    const bool is_multi_line,
+    const bool is_balanced) {
+  if (all_items.empty()) {
+    return FlexLineBreakerResult();
+  }
+
   HeapVector<InitialFlexLine, 1> flex_lines;
   LayoutUnit max_sum_hypothetical_main_size;
 
