@@ -29,18 +29,21 @@
 
 .title {
   align-self: center;
+  text-align: center;
   color: var(--cr-primary-text-color);
   font-size: 16px;
   font-weight: 500;
   line-height: 24px;
+  margin: 0 16px;
 }
 
 .body {
   align-self: center;
+  text-align: center;
   font-size: 14px;
   font-weight: 400;
   line-height: 20px;
-  margin-top: 4px;
+  margin: 4px 16px;
 }
 
 .tab-list:not([hidden]) {
@@ -48,7 +51,8 @@
   min-height: 16px;
   background: var(--color-tab-search-background);
   border-radius: 16px;
-  margin: 16px 106px;
+  margin: 16px auto;
+  width: calc(min(100% - 2*16px, 394px));
   padding: 16px 0;
 }
 
