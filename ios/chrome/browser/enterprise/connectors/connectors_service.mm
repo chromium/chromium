@@ -16,6 +16,7 @@
 #import "components/policy/core/common/policy_types.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "google_apis/gaia/gaia_auth_util.h"
+#import "ios/chrome/browser/enterprise/connectors/connectors_util.h"
 #import "ios/chrome/browser/enterprise/connectors/features.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -31,6 +32,7 @@ std::string GetDomainFromEmail(const std::string& email) {
   }
   return gaia::ExtractDomainName(email);
 }
+
 }  // namespace
 
 namespace enterprise_connectors {
@@ -159,8 +161,49 @@ ConnectorsService::GetManagedUserCloudPolicyManager() const {
 
 std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata(
     bool is_cloud) {
-  // TODO(crbug.com/406048604): Build ClientMetadata for iOS.
-  return nullptr;
+  auto reporting_settings = GetReportingSettings();
+  if (is_cloud && !reporting_settings.has_value()) {
+    return GetBasicClientMetadata();
+  }
+
+  auto metadata =
+      std::make_unique<ClientMetadata>(GetContextAsClientMetadata(profile_));
+  if (!is_cloud) {
+    PopulateBrowserMetadata(/*include_device_info=*/true,
+                            metadata->mutable_browser());
+  }
+  metadata->set_is_chrome_os_managed_guest_session(false);
+  bool include_device_info =
+      IncludeDeviceInfo(profile_, reporting_settings.value().per_profile);
+  PopulateBrowserMetadata(include_device_info, metadata->mutable_browser());
+
+  if (include_device_info) {
+    PopulateDeviceMetadata(
+        reporting_settings.value(),
+        policy::BrowserDMTokenStorage::Get()->RetrieveClientId(),
+        metadata->mutable_device());
+  }
+  return metadata;
+}
+
+std::unique_ptr<ClientMetadata> ConnectorsService::GetBasicClientMetadata() {
+  auto metadata = std::make_unique<ClientMetadata>();
+  // We need to return profile and browser DM tokens, even in cases where the
+  // reporting policy is disabled, in order to support merging rules.
+  std::optional<std::string> browser_dm_token = GetBrowserDmToken();
+  if (browser_dm_token.has_value()) {
+    metadata->mutable_device()->set_dm_token(*browser_dm_token);
+  }
+
+  std::optional<std::string> profile_dm_token = GetUserDmToken(profile_);
+  if (profile_dm_token.has_value()) {
+    metadata->mutable_profile()->set_dm_token(*profile_dm_token);
+  }
+
+  // This is to indicate the webProtect that the request is not coming from a
+  // Managed Guest Session on ChromeOS
+  metadata->set_is_chrome_os_managed_guest_session(false);
+  return metadata;
 }
 
 }  // namespace enterprise_connectors

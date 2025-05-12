@@ -76,17 +76,6 @@ namespace enterprise_connectors {
 
 namespace {
 
-void PopulateBrowserMetadata(bool include_device_info,
-                             ClientMetadata::Browser* browser_proto) {
-  base::FilePath browser_id;
-  if (base::PathService::Get(base::DIR_EXE, &browser_id))
-    browser_proto->set_browser_id(browser_id.AsUTF8Unsafe());
-  browser_proto->set_chrome_version(
-      std::string(version_info::GetVersionNumber()));
-  if (include_device_info)
-    browser_proto->set_machine_user(policy::GetOSUsername());
-}
-
 std::string GetClientId(Profile* profile) {
   std::string client_id;
 #if BUILDFLAG(IS_CHROMEOS)
@@ -97,22 +86,6 @@ std::string GetClientId(Profile* profile) {
   client_id = policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
 #endif
   return client_id;
-}
-
-void PopulateDeviceMetadata(const ReportingSettings& reporting_settings,
-                            Profile* profile,
-                            ClientMetadata::Device* device_proto) {
-  if (!reporting_settings.per_profile && !device_proto->has_dm_token()) {
-    device_proto->set_dm_token(reporting_settings.dm_token);
-  }
-  device_proto->set_client_id(GetClientId(profile));
-  device_proto->set_os_version(policy::GetOSVersion());
-  device_proto->set_os_platform(policy::GetOSPlatform());
-  device_proto->set_name(policy::GetDeviceName());
-  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
-    device_proto->set_device_fqdn(policy::GetDeviceFqdn());
-    device_proto->set_network_name(policy::GetNetworkName());
-  }
 }
 
 bool IsURLExemptFromAnalysis(const GURL& url) {
@@ -546,7 +519,7 @@ std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata(
   PopulateBrowserMetadata(include_device_info, metadata->mutable_browser());
 
   if (include_device_info) {
-    PopulateDeviceMetadata(reporting_settings.value(), profile,
+    PopulateDeviceMetadata(reporting_settings.value(), GetClientId(profile),
                            metadata->mutable_device());
   }
 #endif

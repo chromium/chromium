@@ -87,8 +87,9 @@ std::optional<std::u16string> GetManagementMessage(web::WebUIIOS* web_ui) {
 // Connectors should be displayed. This subsection is visible if Enterprise Url
 // filtering is enabled.
 bool IsPageVisitEventEnabled(ConnectorsService* connectors_service) {
-  return enterprise_connectors::IsEnterpriseUrlFilteringEnabled(
-      connectors_service);
+  return connectors_service &&
+         enterprise_connectors::IsEnterpriseUrlFilteringEnabled(
+             connectors_service->GetAppliedRealTimeUrlCheck());
 }
 
 // Whether the "Security event occurs" event subsection under Chrome Enteprise

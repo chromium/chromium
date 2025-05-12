@@ -43,6 +43,9 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   std::optional<std::string> GetBrowserDmToken() const override;
   std::unique_ptr<ClientMetadata> BuildClientMetadata(bool is_cloud) override;
 
+  // Returns ClientMetadata populated with minimum required information
+  std::unique_ptr<ClientMetadata> GetBasicClientMetadata();
+
  protected:
   // ConnectorsServiceBase:
   std::optional<DmToken> GetDmToken(const char* scope_pref) const override;

@@ -14,6 +14,7 @@ source_set("connectors") {
 
   deps = [
     ":features",
+    ":util",
     "//base",
     "//components/enterprise",
     "//components/enterprise/connectors/core",
@@ -62,15 +63,16 @@ source_set("util") {
   ]
 
   deps = [
-    ":connectors",
     ":features",
     "//base",
     "//components/enterprise",
+    "//components/enterprise/common/proto:connectors_proto",
     "//components/enterprise/common/proto:upload_request_response",
     "//components/enterprise/connectors/core",
     "//components/policy/core/common",
     "//components/profile_metrics",
     "//components/security_interstitials/core:unsafe_resource",
+    "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/components/security_interstitials/safe_browsing",

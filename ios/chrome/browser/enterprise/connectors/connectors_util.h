@@ -7,13 +7,13 @@
 
 #import "base/containers/flat_set.h"
 #import "base/values.h"
+#import "components/enterprise/common/proto/connectors.pb.h"
 #import "components/enterprise/common/proto/upload_request_response.pb.h"
+#import "components/enterprise/connectors/core/reporting_constants.h"
 
 class ProfileIOS;
 
 namespace enterprise_connectors {
-
-class ConnectorsService;
 
 // Fetches additional information that is common to every event. Fetches and
 // returns corresponding info to a Device, Browser and Profile protos defined in
@@ -22,6 +22,10 @@ class ConnectorsService;
 // TODO(crbug.com/403335734): Deprecated this method once the migration from
 // using dictionary to proto for the reporting event is done.
 base::Value::Dict GetContext(ProfileIOS* profile);
+
+// Fetches the same information as GetContext, but in a protobuf instead of a
+// Value.
+ClientMetadata GetContextAsClientMetadata(ProfileIOS* profile);
 
 // Returns User DMToken or client id for a given `profile` if:
 // * `profile` is NOT incognito profile.
@@ -43,7 +47,10 @@ base::flat_set<std::string> GetUserAffiliationIds(ProfileIOS* profile);
 
 // Helper that checks feature flags and policies to determine if Enterprise Url
 // Filtering is enabled.
-bool IsEnterpriseUrlFilteringEnabled(ConnectorsService* connectors_service);
+bool IsEnterpriseUrlFilteringEnabled(EnterpriseRealTimeUrlCheckMode mode);
+
+// Returns whether device info should be reported for the profile.
+bool IncludeDeviceInfo(ProfileIOS* profile, bool per_profile);
 
 }  // namespace enterprise_connectors
 

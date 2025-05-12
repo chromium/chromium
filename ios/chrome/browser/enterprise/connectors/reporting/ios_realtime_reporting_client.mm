@@ -147,22 +147,7 @@ std::string IOSRealtimeReportingClient::GetBrowserClientId() {
 }
 
 bool IOSRealtimeReportingClient::ShouldIncludeDeviceInfo(bool per_profile) {
-  if (!per_profile) {
-    return true;
-  }
-
-  // An unmanaged browser shouldn't share its device info for privacy reasons.
-  if (!policy::ChromeBrowserCloudManagementController::IsEnabled() ||
-      !policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid()) {
-    return false;
-  }
-
-  // A managed device can share its info with the profile if they are
-  // affiliated.
-  return policy::IsAffiliated(GetUserAffiliationIds(profile_),
-                              GetApplicationContext()
-                                  ->GetBrowserPolicyConnector()
-                                  ->GetDeviceAffiliationIds());
+  return IncludeDeviceInfo(profile_, per_profile);
 }
 
 void IOSRealtimeReportingClient::UploadCallbackDeprecated(

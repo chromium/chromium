@@ -78,6 +78,7 @@ bool SafeBrowsingClientImpl::OnMainFrameUrlQueryCancellationDecided(
 }
 
 bool SafeBrowsingClientImpl::ShouldForceSyncRealTimeUrlChecks() const {
-  return enterprise_connectors::IsEnterpriseUrlFilteringEnabled(
-      connectors_service_);
+  return connectors_service_ &&
+         enterprise_connectors::IsEnterpriseUrlFilteringEnabled(
+             connectors_service_->GetAppliedRealTimeUrlCheck());
 }
