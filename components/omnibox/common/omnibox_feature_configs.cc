@@ -22,7 +22,7 @@ constexpr auto enabled_by_default_desktop_only =
 
 BASE_FEATURE(AutocompleteControllerMetricsOptimization::
                  kAutocompleteControllerMetricsOptimization,
-             "AutocompleteControlMetricsOptimization",
+             "AutocompleteControllerMetricsOptimization",
              base::FEATURE_ENABLED_BY_DEFAULT);
 AutocompleteControllerMetricsOptimization::
     AutocompleteControllerMetricsOptimization() {
