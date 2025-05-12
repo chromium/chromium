@@ -236,4 +236,9 @@ public class SemanticColorUtils {
     public static @ColorInt int getColorSurfaceDim(Context context) {
         return resolve(R.attr.colorSurfaceDim, context);
     }
+
+    /** Returns the surface color value of the conceptual floating snackbar background color. */
+    public static @ColorInt int getFloatingSnackbarBackgroundColor(Context context) {
+        return resolve(R.attr.colorSurfaceContainerHigh, context);
+    }
 }
