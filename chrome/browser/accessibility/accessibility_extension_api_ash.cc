@@ -571,21 +571,21 @@ AccessibilityPrivateSendSyntheticKeyEventFunction::Run() {
 
   int flags = 0;
   if (key_data->modifiers) {
-    if (key_data->modifiers->ctrl && *key_data->modifiers->ctrl) {
+    if (key_data->modifiers->ctrl.value_or(false)) {
       flags |= ui::EF_CONTROL_DOWN;
     }
-    if (key_data->modifiers->alt && *key_data->modifiers->alt) {
+    if (key_data->modifiers->alt.value_or(false)) {
       flags |= ui::EF_ALT_DOWN;
     }
-    if (key_data->modifiers->search && *key_data->modifiers->search) {
+    if (key_data->modifiers->search.value_or(false)) {
       flags |= ui::EF_COMMAND_DOWN;
     }
-    if (key_data->modifiers->shift && *key_data->modifiers->shift) {
+    if (key_data->modifiers->shift.value_or(false)) {
       flags |= ui::EF_SHIFT_DOWN;
     }
   }
 
-  if (params->is_repeat.has_value() && params->is_repeat.value()) {
+  if (params->is_repeat.value_or(false)) {
     flags |= ui::EF_IS_REPEAT;
   }
 
@@ -607,7 +607,7 @@ AccessibilityPrivateSendSyntheticKeyEventFunction::Run() {
       extension_id() == extension_misc::kAccessibilityCommonExtensionId;
   bool facegaze_enabled = AccessibilityManager::Get()->IsFaceGazeEnabled();
   if ((dictation_enabled || facegaze_enabled) && from_accessibility_common &&
-      params->use_rewriters.has_value() && params->use_rewriters.value()) {
+      params->use_rewriters.value_or(false)) {
     // TODO(b/259397131): Remove the `useRewriters` property.
     // Call SendEventToSink so that the event can be processed by event
     // rewriters, like Game Controls.
@@ -679,26 +679,24 @@ AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
   // the mouse event as synthetic. This should only occur for FaceGaze, which
   // sends mouse events that need to be treated by the system as "real" mouse
   // events in order to interact with layers such as the screen capture layer.
-  bool force_not_synthetic = mouse_data->force_not_synthetic.has_value() &&
-                             mouse_data->force_not_synthetic.value();
+  bool force_not_synthetic = mouse_data->force_not_synthetic.value_or(false);
   if (!force_not_synthetic) {
     flags |= ui::EF_IS_SYNTHESIZED;
   }
 
-  if (mouse_data->touch_accessibility && *(mouse_data->touch_accessibility)) {
+  if (mouse_data->touch_accessibility.value_or(false)) {
     flags |= ui::EF_TOUCH_ACCESSIBILITY;
   }
 
-  if (mouse_data->is_double_click && *(mouse_data->is_double_click)) {
+  if (mouse_data->is_double_click.value_or(false)) {
     flags |= ui::EF_IS_DOUBLE_CLICK;
   }
 
-  if (mouse_data->is_triple_click && *(mouse_data->is_triple_click)) {
+  if (mouse_data->is_triple_click.value_or(false)) {
     flags |= ui::EF_IS_TRIPLE_CLICK;
   }
 
-  bool use_rewriters = mouse_data->use_rewriters.has_value() &&
-                       mouse_data->use_rewriters.value();
+  bool use_rewriters = mouse_data->use_rewriters.value_or(false);
 
   // Locations are assumed to be in screen coordinates.
   gfx::Point location_in_screen(mouse_data->x, mouse_data->y);
@@ -771,7 +769,7 @@ AccessibilityPrivateSetFocusRingsFunction::Run() {
     }
 
     const std::string id = accessibility_manager->GetFocusRingId(
-        at_type, focus_ring_info.id ? *(focus_ring_info.id) : "");
+        at_type, focus_ring_info.id.value_or(""));
 
     if (!content::ParseHexColorString(focus_ring_info.color,
                                       &(focus_ring->color))) {
@@ -1164,12 +1162,11 @@ AccessibilityPrivateUpdateDictationBubbleFunction::Run() {
   // Extract hints.
   std::optional<std::vector<ash::DictationBubbleHintType>> hints;
   if (properties.hints) {
-    std::vector<ash::DictationBubbleHintType> converted_hints;
-    for (size_t i = 0; i < (*properties.hints).size(); ++i) {
-      converted_hints.emplace_back(
-          ConvertDictationHintType((*properties.hints)[i]));
+    hints.emplace();
+    hints->reserve(properties.hints->size());
+    for (const auto& hint : *properties.hints) {
+      hints->emplace_back(ConvertDictationHintType(hint));
     }
-    hints = std::move(converted_hints);
   }
 
   if (hints.has_value() && hints.value().size() > 5) {
@@ -1187,11 +1184,7 @@ AccessibilityPrivateUpdateFaceGazeBubbleFunction::Run() {
       accessibility_private::UpdateFaceGazeBubble::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  bool is_warning = false;
-  if (params->is_warning.has_value()) {
-    is_warning = params->is_warning.value();
-  }
-
+  bool is_warning = params->is_warning.value_or(false);
   ash::AccessibilityController::Get()->UpdateFaceGazeBubble(
       base::UTF8ToUTF16(params->text), is_warning);
   return RespondNow(NoArguments());
