@@ -18910,7 +18910,8 @@
                 {
                     "name": "Enabled_Dogfood",
                     "enable_features": [
-                        "ReadAloudAudioOverviews"
+                        "ReadAloudAudioOverviews",
+                        "ReadAloudAudioOverviewsFeedback"
                     ]
                 }
             ]
