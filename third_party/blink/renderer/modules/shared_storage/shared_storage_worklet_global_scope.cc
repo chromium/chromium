@@ -1138,8 +1138,8 @@ int64_t SharedStorageWorkletGlobalScope::GetCurrentOperationId() {
   ScriptState* script_state = ScriptController()->GetScriptState();
   DCHECK(script_state);
 
-  v8::Local<v8::Value> data =
-      script_state->GetIsolate()->GetContinuationPreservedEmbedderData();
+  v8::Local<v8::Data> data =
+      script_state->GetIsolate()->GetContinuationPreservedEmbedderDataV2();
   return data.As<v8::BigInt>()->Int64Value();
 }
 
@@ -1317,7 +1317,7 @@ SharedStorageWorkletGlobalScope::StartOperation(
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::HandleScope handle_scope(isolate);
 
-  isolate->SetContinuationPreservedEmbedderData(
+  isolate->SetContinuationPreservedEmbedderDataV2(
       v8::BigInt::New(isolate, operation_id));
 
   if (ShouldDefinePrivateAggregationInSharedStorage()) {

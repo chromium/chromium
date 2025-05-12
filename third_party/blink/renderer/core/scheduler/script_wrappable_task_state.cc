@@ -33,8 +33,10 @@ ScriptWrappableTaskState* ScriptWrappableTaskState::GetCurrent(
     return nullptr;
   }
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Value> v8_value =
-      isolate->GetContinuationPreservedEmbedderData();
+  v8::Local<v8::Data> v8_data =
+      isolate->GetContinuationPreservedEmbedderDataV2();
+  DCHECK(v8_data->IsValue());
+  auto v8_value = v8_data.As<v8::Value>();
   if (v8_value->IsNullOrUndefined()) {
     return nullptr;
   }
@@ -67,10 +69,10 @@ void ScriptWrappableTaskState::SetCurrent(
   // TODO(crbug.com/1351643): Since the context no longer matters, change this
   // to a utility context that will always be valid.
   if (!script_state->ContextIsValid() || !task_state) {
-    isolate->SetContinuationPreservedEmbedderData(v8::Undefined(isolate));
+    isolate->SetContinuationPreservedEmbedderDataV2(v8::Undefined(isolate));
   } else {
     ScriptState::Scope scope(script_state);
-    isolate->SetContinuationPreservedEmbedderData(
+    isolate->SetContinuationPreservedEmbedderDataV2(
         ToV8Traits<ScriptWrappableTaskState>::ToV8(script_state, task_state));
   }
 }
