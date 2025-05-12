@@ -182,8 +182,7 @@ void BrowserAccessibilityManagerAndroid::FireFocusEvent(ui::AXNode* node) {
           GetFromAXNode(GetLastFocusedNode())) {
     BrowserAccessibilityAndroid* android_last_focused_node =
         static_cast<BrowserAccessibilityAndroid*>(last_focused_node);
-    wcax->ClearNodeInfoCacheForGivenId(
-        android_last_focused_node->GetUniqueId());
+    ClearNodeInfoCacheForGivenId(android_last_focused_node->GetUniqueId());
   }
 
   BrowserAccessibilityAndroid* android_node =
@@ -248,10 +247,6 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
   DCHECK(wrapper);
   BrowserAccessibilityAndroid* android_node =
       static_cast<BrowserAccessibilityAndroid*>(wrapper);
-
-  if (event_type == ui::AXEventGenerator::Event::CHILDREN_CHANGED) {
-    BrowserAccessibilityAndroid::ResetLeafCache();
-  }
 
   // Always send AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED to notify
   // the Android system that the accessibility hierarchy rooted at this
@@ -342,9 +337,6 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       break;
     }
     case ui::AXEventGenerator::Event::NAME_CHANGED: {
-      // Clear node from cache whenever the name changes to ensure fresh data.
-      wcax->ClearNodeInfoCacheForGivenId(android_node->GetUniqueId());
-
       // If this is a simple text element, also send an event to the framework.
       if (ui::IsText(android_node->GetRole()) ||
           android_node->IsAndroidTextView()) {
@@ -387,10 +379,6 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       }
       break;
 
-    case ui::AXEventGenerator::Event::CHILDREN_CHANGED:
-      wcax->ClearNodeInfoCacheForGivenId(android_node->GetUniqueId());
-      break;
-
     // Currently unused events on this platform.
     case ui::AXEventGenerator::Event::NONE:
     case ui::AXEventGenerator::Event::ACCESS_KEY_CHANGED:
@@ -403,6 +391,7 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::BUSY_CHANGED:
     case ui::AXEventGenerator::Event::CARET_BOUNDS_CHANGED:
     case ui::AXEventGenerator::Event::CHECKED_STATE_DESCRIPTION_CHANGED:
+    case ui::AXEventGenerator::Event::CHILDREN_CHANGED:
     case ui::AXEventGenerator::Event::CONTROLS_CHANGED:
     case ui::AXEventGenerator::Event::DETAILS_CHANGED:
     case ui::AXEventGenerator::Event::DESCRIBED_BY_CHANGED:
@@ -632,36 +621,52 @@ void BrowserAccessibilityManagerAndroid::HandleHoverEvent(
   }
 }
 
-void BrowserAccessibilityManagerAndroid::OnNodeWillBeDeleted(ui::AXTree* tree,
-                                                             ui::AXNode* node) {
-  // https://crbug.com/361196029 looks like a nullptr deref. It's unexpected
-  // that ui::AXTree would pass a null node to an observer, and that the
-  // manager would not have a BrowserAccessibility wrapper for it.
-  DUMP_WILL_BE_CHECK(node);
-  ui::BrowserAccessibility* wrapper = GetFromAXNode(node);
-  DUMP_WILL_BE_CHECK(wrapper);
-
-  BrowserAccessibilityAndroid* android_node =
-      static_cast<BrowserAccessibilityAndroid*>(wrapper);
-
-  ClearNodeInfoCacheForGivenId(android_node->GetUniqueId());
-
-  // When a node will be deleted, clear its parent from the cache as well, or
-  // the parent could erroneously report the cleared node as a child later on.
-  BrowserAccessibilityAndroid* parent_node =
-      static_cast<BrowserAccessibilityAndroid*>(
-          android_node->PlatformGetParent());
-  if (parent_node != nullptr) {
-    ClearNodeInfoCacheForGivenId(parent_node->GetUniqueId());
-  }
-
-  BrowserAccessibilityManager::OnNodeWillBeDeleted(tree, node);
-}
-
 std::unique_ptr<ui::BrowserAccessibility>
 BrowserAccessibilityManagerAndroid::CreateBrowserAccessibility(
     ui::AXNode* node) {
   return ui::BrowserAccessibility::Create(this, node);
+}
+
+void BrowserAccessibilityManagerAndroid::OnAtomicUpdateStarting(
+    ui::AXTree* tree,
+    const std::set<ui::AXNodeID>& deleting_nodes,
+    const std::set<ui::AXNodeID>& reparenting_nodes) {
+  WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
+  if (wcax) {
+    // This set needs to start fresh. This secondary cache is of requests to
+    // java to clear that primary cache of Android objects. The idea being only
+    // such such request is needed for each atomic update to the tree and node
+    // data.
+    nodes_already_cleared_.clear();
+
+    // Update the maximum number of nodes in the cache after each atomic update.
+    wcax->UpdateMaxNodesInCache();
+
+    for (ui::AXNodeID id : deleting_nodes) {
+      ui::BrowserAccessibility* wrapper = GetFromID(id);
+      if (!wrapper) {
+        continue;
+      }
+
+      BrowserAccessibilityAndroid* android_node =
+          static_cast<BrowserAccessibilityAndroid*>(wrapper);
+
+      ClearNodeInfoCacheForGivenId(android_node->GetUniqueId());
+
+      // When a node will be deleted, clear its parent from the cache as well,
+      // or the parent could erroneously report the cleared node as a child
+      // later on.
+      BrowserAccessibilityAndroid* parent_node =
+          static_cast<BrowserAccessibilityAndroid*>(
+              android_node->PlatformGetParent());
+      if (parent_node != nullptr) {
+        ClearNodeInfoCacheForGivenId(parent_node->GetUniqueId());
+      }
+    }
+  }
+
+  BrowserAccessibilityManager::OnAtomicUpdateStarting(tree, deleting_nodes,
+                                                      reparenting_nodes);
 }
 
 void BrowserAccessibilityManagerAndroid::OnAtomicUpdateFinished(
@@ -679,9 +684,6 @@ void BrowserAccessibilityManagerAndroid::OnAtomicUpdateFinished(
   // Reset content changed events counter every time we finish an atomic update.
   wcax->ResetContentChangedEventsCounter();
 
-  // Clear unordered_set of nodes cleared from the cache after atomic update.
-  nodes_already_cleared_.clear();
-
   // When the root changes, send the new root id and a navigate signal to Java.
   if (root_changed) {
     auto* root_manager = static_cast<BrowserAccessibilityManagerAndroid*>(
@@ -695,8 +697,26 @@ void BrowserAccessibilityManagerAndroid::OnAtomicUpdateFinished(
     wcax->HandleNavigate(root->GetUniqueId());
   }
 
-  // Update the maximum number of nodes in the cache after each atomic update.
-  wcax->UpdateMaxNodesInCache();
+  // Invalidate java-side cache for structural generated events. This
+  // encompasses less nodes than `changes`, but includes unignored retargeted
+  // event targets that isn't in `changes`. Eventually, we should prefer
+  // invalidations of generated events to those in
+  // BrowserAccessibility::OnDataChanged.
+  for (const auto& targeted_event : event_generator()) {
+    BrowserAccessibilityAndroid* wrapper =
+        static_cast<BrowserAccessibilityAndroid*>(
+            GetFromID(targeted_event.node_id));
+    CHECK(wrapper);
+
+    auto event_type = targeted_event.event_params->event;
+    if (event_type == ui::AXEventGenerator::Event::CHILDREN_CHANGED ||
+        event_type == ui::AXEventGenerator::Event::PARENT_CHANGED) {
+      // Structural changes in the unignored/platform tree requires the leaf
+      // cache be invalidated.
+      BrowserAccessibilityAndroid::ResetLeafCache();
+      ClearNodeInfoCacheForGivenId(wrapper->GetUniqueId());
+    }
+  }
 }
 
 WebContentsAccessibilityAndroid*
