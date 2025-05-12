@@ -39,26 +39,6 @@ constexpr char kSICreationFailureError[] =
 
 }  // namespace
 
-#if BUILDFLAG(IS_WIN)
-namespace base {
-bool operator<(const scoped_refptr<gfx::D3DSharedFence>& lhs,
-               const scoped_refptr<gfx::D3DSharedFence>& rhs) {
-  return lhs->GetDXGIHandleToken() < rhs->GetDXGIHandleToken();
-}
-
-bool operator<(const gfx::DXGIHandleToken& lhs,
-               const scoped_refptr<gfx::D3DSharedFence>& rhs) {
-  return lhs < rhs->GetDXGIHandleToken();
-}
-
-bool operator<(const scoped_refptr<gfx::D3DSharedFence>& lhs,
-               const gfx::DXGIHandleToken& rhs) {
-  return lhs->GetDXGIHandleToken() < rhs;
-}
-
-}  // namespace base
-#endif
-
 namespace gpu {
 SharedImageStub::SharedImageStub(GpuChannel* channel, int32_t route_id)
     : channel_(channel),
@@ -500,9 +480,9 @@ void SharedImageStub::OnRegisterDxgiFence(const Mailbox& mailbox,
     return;
   }
 
-  mailbox_fences.emplace_hint(mailbox_fences.begin(),
-                              gfx::D3DSharedFence::CreateFromScopedHandle(
-                                  fence_handle.Release(), dxgi_token));
+  mailbox_fences.emplace(dxgi_token,
+                         gfx::D3DSharedFence::CreateFromScopedHandle(
+                             fence_handle.Release(), dxgi_token));
 }
 
 void SharedImageStub::OnUpdateDxgiFence(const Mailbox& mailbox,
@@ -533,7 +513,7 @@ void SharedImageStub::OnUpdateDxgiFence(const Mailbox& mailbox,
     return;
   }
 
-  scoped_refptr<gfx::D3DSharedFence> fence = *fence_it;
+  scoped_refptr<gfx::D3DSharedFence> fence = fence_it->second;
   fence->Update(fence_value);
 
   channel_->gpu_channel_manager()->shared_image_manager()->UpdateExternalFence(
@@ -561,6 +541,10 @@ void SharedImageStub::OnUnregisterDxgiFence(const Mailbox& mailbox,
   }
 
   mailbox_fences.erase(fence_it);
+
+  if (mailbox_fences.empty()) {
+    registered_dxgi_fences_.erase(mailbox_fences_it);
+  }
 }
 
 #endif  // BUILDFLAG(IS_WIN)

@@ -32,6 +32,11 @@ class GPU_EXPORT SharedImagePoolId {
     return token_ <=> other.token_;
   }
 
+  template <typename H>
+  friend H AbslHashValue(H h, const SharedImagePoolId& id) {
+    return H::combine(std::move(h), id.token_);
+  }
+
   bool IsValid() const { return !token_.is_empty(); }
 
   const base::UnguessableToken& GetToken() const { return token_; }

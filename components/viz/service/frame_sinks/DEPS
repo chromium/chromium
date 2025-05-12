@@ -42,5 +42,6 @@ specific_include_rules = {
   ],
   "video_detector_unittest.cc": [
     "+gpu/command_buffer/service/scheduler.h",
+    "+gpu/command_buffer/service/shared_image/shared_image_manager.h",
   ],
 }

@@ -18,7 +18,6 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
@@ -76,6 +75,7 @@ class NativePixmap;
 }  // namespace gfx
 
 namespace gpu {
+class SharedImageManager;
 class TextureBase;
 
 namespace gles2 {

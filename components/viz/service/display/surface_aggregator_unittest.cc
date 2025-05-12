@@ -55,6 +55,7 @@
 #include "components/viz/test/test_shared_image_interface_provider.h"
 #include "components/viz/test/test_surface_id_allocator.h"
 #include "gpu/command_buffer/service/scheduler.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"

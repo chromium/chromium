@@ -10,7 +10,6 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
@@ -26,6 +25,7 @@
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/common/shared_image_pool_client_interface.mojom.h"
 #include "gpu/ipc/common/surface_handle.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/gpu_extra_info.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -159,6 +159,9 @@ class GPU_GLES2_EXPORT SharedImageFactory {
  private:
   bool IsSharedBetweenThreads(gpu::SharedImageUsageSet usage);
 
+  SharedImageRepresentationFactoryRef* GetFactoryRef(
+      const Mailbox& mailbox) const;
+
   SharedImageBackingFactory* GetFactoryByUsage(
       SharedImageUsageSet usage,
       viz::SharedImageFormat format,
@@ -187,36 +190,16 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   // is no shared context.
   const GrContextType gr_context_type_;
 
-  struct SharedImageRepresentationFactoryRefHash {
-    using is_transparent = void;
-    std::size_t operator()(
-        const std::unique_ptr<SharedImageRepresentationFactoryRef>& o) const;
-    std::size_t operator()(const gpu::Mailbox& m) const;
-  };
-
-  struct SharedImageRepresentationFactoryRefKeyEqual {
-    using is_transparent = void;
-    bool operator()(
-        const std::unique_ptr<SharedImageRepresentationFactoryRef>& lhs,
-        const std::unique_ptr<SharedImageRepresentationFactoryRef>& rhs) const;
-    bool operator()(
-        const std::unique_ptr<SharedImageRepresentationFactoryRef>& lhs,
-        const gpu::Mailbox& rhs) const;
-    bool operator()(
-        const gpu::Mailbox& lhs,
-        const std::unique_ptr<SharedImageRepresentationFactoryRef>& rhs) const;
-  };
-
   // The set of SharedImages which have been created (and are being kept alive)
   // by this factory.
-  std::unordered_set<std::unique_ptr<SharedImageRepresentationFactoryRef>,
-                     SharedImageRepresentationFactoryRefHash,
-                     SharedImageRepresentationFactoryRefKeyEqual>
+  absl::flat_hash_map<gpu::Mailbox,
+                      std::unique_ptr<SharedImageRepresentationFactoryRef>>
       shared_images_;
 
   // Map of all the SharedImagePoolService objects corresponding to its unique
   // pool id.
-  base::flat_map<SharedImagePoolId, std::unique_ptr<SharedImagePoolService>>
+  absl::flat_hash_map<SharedImagePoolId,
+                      std::unique_ptr<SharedImagePoolService>>
       shared_image_pool_map_;
 
   // Array of all the backing factories to choose from for creating shared

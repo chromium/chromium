@@ -17,6 +17,10 @@
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "ui/gfx/gpu_extra_info.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#endif
+
 namespace gfx {
 #if BUILDFLAG(IS_WIN)
 class D3DSharedFence;
@@ -162,8 +166,10 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
 #if BUILDFLAG(IS_WIN)
   // Fences held by external processes. Registered and signaled from ipc
   // channel. Using DXGIHandleToken to identify the fence.
-  base::flat_map<Mailbox, base::flat_set<scoped_refptr<gfx::D3DSharedFence>>>
-      registered_dxgi_fences_;
+  using DXGITokenToFenceMap =
+      absl::flat_hash_map<gfx::DXGIHandleToken,
+                          scoped_refptr<gfx::D3DSharedFence>>;
+  absl::flat_hash_map<Mailbox, DXGITokenToFenceMap> registered_dxgi_fences_;
 #endif
 
   base::WeakPtrFactory<SharedImageStub> weak_factory_{this};

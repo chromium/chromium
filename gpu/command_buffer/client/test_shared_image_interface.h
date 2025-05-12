@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -20,6 +18,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace gpu {
 
@@ -171,11 +171,11 @@ class TestSharedImageInterface : public SharedImageInterface {
   gfx::Size most_recent_size_;
   SyncToken most_recent_generated_token_;
   SyncToken most_recent_destroy_token_;
-  base::flat_set<Mailbox> shared_images_;
+  absl::flat_hash_set<Mailbox> shared_images_;
   bool emulate_client_provided_native_buffer_ = false;
 
 #if BUILDFLAG(IS_FUCHSIA)
-  base::flat_map<zx_koid_t, std::unique_ptr<TestBufferCollection>>
+  absl::flat_hash_map<zx_koid_t, std::unique_ptr<TestBufferCollection>>
       sysmem_buffer_collections_;
 #endif
   SharedImageCapabilities shared_image_capabilities_;
@@ -188,8 +188,8 @@ class TestSharedImageInterface : public SharedImageInterface {
   // This is used to simply keep the SharedImagePoolClientInterface alive for
   // the duration of the SharedImagePool. Not keeping it alive and bound
   // triggers diconnect_handlers causing unexpected behaviour in the test.
-  base::flat_map<SharedImagePoolId,
-                 mojo::Remote<mojom::SharedImagePoolClientInterface>>
+  absl::flat_hash_map<SharedImagePoolId,
+                      mojo::Remote<mojom::SharedImagePoolClientInterface>>
       remote_map_;
 };
 

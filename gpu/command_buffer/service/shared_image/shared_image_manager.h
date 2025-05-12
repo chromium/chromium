@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
@@ -18,6 +17,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/vulkan/buildflags.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 #if BUILDFLAG(IS_WIN)
 namespace gfx {
@@ -167,10 +167,15 @@ class GPU_GLES2_EXPORT SharedImageManager
 
  private:
   class AutoLock;
+
+  SharedImageBacking* GetBacking(const gpu::Mailbox& mailbox) const
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
   // The lock for protecting |images_|.
   std::optional<base::Lock> lock_;
 
-  base::flat_set<std::unique_ptr<SharedImageBacking>> images_ GUARDED_BY(lock_);
+  absl::flat_hash_map<gpu::Mailbox, std::unique_ptr<SharedImageBacking>> images_
+      GUARDED_BY(lock_);
 
   const bool display_context_on_another_thread_;
 

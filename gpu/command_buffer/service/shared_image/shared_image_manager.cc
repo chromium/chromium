@@ -60,16 +60,16 @@ namespace {
 
 // `DCHECKS` and dumps without crashing that `backing`'s usage overlaps with
 // `usage`.
-void EnforceSharedImageUsage(const SharedImageBacking& backing,
+void EnforceSharedImageUsage(const SharedImageBacking* backing,
                              SharedImageUsageSet usage) {
-  if (!backing.usage().HasAny(usage)) {
+  if (!backing->usage().HasAny(usage)) {
     SCOPED_CRASH_KEY_STRING32("SharedImageUsage", "debug_label",
-                              backing.debug_label());
-    SCOPED_CRASH_KEY_STRING32("SharedImageUsage", "name", backing.GetName());
+                              backing->debug_label());
+    SCOPED_CRASH_KEY_STRING32("SharedImageUsage", "name", backing->GetName());
     SCOPED_CRASH_KEY_NUMBER("SharedImageUsage", "required_usage",
                             static_cast<uint32_t>(usage));
-    SCOPED_CRASH_KEY_NUMBER("ShareDImageUsage", "actual_usage",
-                            static_cast<uint32_t>(backing.usage()));
+    SCOPED_CRASH_KEY_NUMBER("SharedImageUsage", "actual_usage",
+                            static_cast<uint32_t>(backing->usage()));
     base::debug::DumpWithoutCrashing();
   }
 }
@@ -221,22 +221,6 @@ SharedImageFormatUMA GetSharedImageFormatUMA(viz::SharedImageFormat format) {
 
 }  // namespace
 
-// Overrides for flat_set lookups:
-bool operator<(const std::unique_ptr<SharedImageBacking>& lhs,
-               const std::unique_ptr<SharedImageBacking>& rhs) {
-  return lhs->mailbox() < rhs->mailbox();
-}
-
-bool operator<(const Mailbox& lhs,
-               const std::unique_ptr<SharedImageBacking>& rhs) {
-  return lhs < rhs->mailbox();
-}
-
-bool operator<(const std::unique_ptr<SharedImageBacking>& lhs,
-               const Mailbox& rhs) {
-  return lhs->mailbox() < rhs;
-}
-
 class SCOPED_LOCKABLE SharedImageManager::AutoLock {
   STACK_ALLOCATED();
 
@@ -314,9 +298,17 @@ SharedImageManager::Register(std::unique_ptr<SharedImageBacking> backing,
   // well as thread-checking failures in tests.
   auto factory_ref = std::make_unique<SharedImageRepresentationFactoryRef>(
       this, backing.get(), tracker, /*is_primary=*/true);
-  images_.emplace(std::move(backing));
+  gpu::Mailbox mailbox = backing->mailbox();
+  images_.emplace(std::move(mailbox), std::move(backing));
 
   return factory_ref;
+}
+
+SharedImageBacking* SharedImageManager::GetBacking(
+    const Mailbox& mailbox) const {
+  CALLED_ON_VALID_THREAD();
+  auto it = images_.find(mailbox);
+  return it != images_.end() ? it->second.get() : nullptr;
 }
 
 std::unique_ptr<SharedImageRepresentationFactoryRef>
@@ -325,15 +317,15 @@ SharedImageManager::AddSecondaryReference(const Mailbox& mailbox,
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
-  auto found = images_.find(mailbox);
-  if (found == images_.end()) {
+  auto* backing = GetBacking(mailbox);
+  if (!backing) {
     LOG(ERROR) << "SharedImageManager::AddSecondaryReference: Trying to add "
                   "reference to non-existent mailbox.";
     return nullptr;
   }
 
   return std::make_unique<SharedImageRepresentationFactoryRef>(
-      this, found->get(), tracker, /*is_primary=*/false);
+      this, backing, tracker, /*is_primary=*/false);
 }
 
 std::unique_ptr<GLTextureImageRepresentation>
@@ -342,19 +334,19 @@ SharedImageManager::ProduceGLTexture(const Mailbox& mailbox,
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
-  auto found = images_.find(mailbox);
-  if (found == images_.end()) {
+  auto* backing = GetBacking(mailbox);
+  if (!backing) {
     LOG(ERROR) << "SharedImageManager::ProduceGLTexture: Trying to produce a "
                   "representation from a non-existent mailbox. "
                << mailbox.ToDebugString();
     return nullptr;
   }
 
-  auto representation = (*found)->ProduceGLTexture(this, tracker);
+  auto representation = backing->ProduceGLTexture(this, tracker);
   if (!representation) {
     LOG(ERROR) << "SharedImageManager::ProduceGLTexture: Trying to produce a "
                   "representation from an incompatible backing: "
-               << (*found)->GetName();
+               << backing->GetName();
     return nullptr;
   }
 
@@ -367,18 +359,18 @@ SharedImageManager::ProduceGLTexturePassthrough(const Mailbox& mailbox,
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
-  auto found = images_.find(mailbox);
-  if (found == images_.end()) {
+  auto* backing = GetBacking(mailbox);
+  if (!backing) {
     LOG(ERROR) << "SharedImageManager::ProduceGLTexturePassthrough: Trying to "
                   "produce a representation from a non-existent mailbox.";
     return nullptr;
   }
 
-  auto representation = (*found)->ProduceGLTexturePassthrough(this, tracker);
+  auto representation = backing->ProduceGLTexturePassthrough(this, tracker);
   if (!representation) {
     LOG(ERROR) << "SharedImageManager::ProduceGLTexturePassthrough: Trying to "
                   "produce a representation from an incompatible backing: "
-               << (*found)->GetName();
+               << backing->GetName();
     return nullptr;
   }
 
@@ -392,18 +384,18 @@ std::unique_ptr<SkiaImageRepresentation> SharedImageManager::ProduceSkia(
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
-  auto found = images_.find(mailbox);
-  if (found == images_.end()) {
+  auto* backing = GetBacking(mailbox);
+  if (!backing) {
     LOG(ERROR) << "SharedImageManager::ProduceSkia: Trying to Produce a "
                   "Skia representation from a non-existent mailbox.";
     return nullptr;
   }
 
-  auto representation = (*found)->ProduceSkia(this, tracker, context_state);
+  auto representation = backing->ProduceSkia(this, tracker, context_state);
   if (!representation) {
     LOG(ERROR) << "SharedImageManager::ProduceSkia: Trying to produce a "
                   "Skia representation from an incompatible backing: "
-               << (*found)->GetName();
+               << backing->GetName();
     return nullptr;
   }
 
@@ -420,22 +412,22 @@ std::unique_ptr<DawnImageRepresentation> SharedImageManager::ProduceDawn(
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
-  auto found = images_.find(mailbox);
-  if (found == images_.end()) {
+  auto* backing = GetBacking(mailbox);
+  if (!backing) {
     LOG(ERROR) << "SharedImageManager::ProduceDawn: Trying to Produce a "
                   "Dawn representation from a non-existent mailbox.";
     return nullptr;
   }
 
-  EnforceSharedImageUsage(**found, {SHARED_IMAGE_USAGE_WEBGPU_READ,
+  EnforceSharedImageUsage(backing, {SHARED_IMAGE_USAGE_WEBGPU_READ,
                                     SHARED_IMAGE_USAGE_WEBGPU_WRITE});
   auto representation =
-      (*found)->ProduceDawn(this, tracker, device, backend_type,
-                            std::move(view_formats), context_state);
+      backing->ProduceDawn(this, tracker, device, backend_type,
+                           std::move(view_formats), context_state);
   if (!representation) {
     LOG(ERROR) << "SharedImageManager::ProduceDawn: Trying to produce a "
                   "Dawn representation from an incompatible backing: "
-               << (*found)->GetName();
+               << backing->GetName();
     return nullptr;
   }
 
@@ -450,19 +442,19 @@ std::unique_ptr<DawnBufferRepresentation> SharedImageManager::ProduceDawnBuffer(
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
-  auto found = images_.find(mailbox);
-  if (found == images_.end()) {
+  auto* backing = GetBacking(mailbox);
+  if (!backing) {
     LOG(ERROR) << "SharedImageManager::ProduceDawnBuffer: Trying to produce a "
                   "Dawn buffer representation from a non-existent mailbox.";
     return nullptr;
   }
 
   auto representation =
-      (*found)->ProduceDawnBuffer(this, tracker, device, backend_type);
+      backing->ProduceDawnBuffer(this, tracker, device, backend_type);
   if (!representation) {
     LOG(ERROR) << "SharedImageManager::ProduceDawnBuffer: Trying to produce a "
                   "Dawn buffer representation from an incompatible backing: "
-               << (*found)->GetName();
+               << backing->GetName();
     return nullptr;
   }
 
@@ -475,19 +467,19 @@ std::unique_ptr<OverlayImageRepresentation> SharedImageManager::ProduceOverlay(
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
-  auto found = images_.find(mailbox);
-  if (found == images_.end()) {
+  auto* backing = GetBacking(mailbox);
+  if (!backing) {
     LOG(ERROR) << "SharedImageManager::ProduceOverlay: Trying to Produce a "
                   "Overlay representation from a non-existent mailbox.";
     return nullptr;
   }
 
-  EnforceSharedImageUsage(**found, {SHARED_IMAGE_USAGE_SCANOUT});
-  auto representation = (*found)->ProduceOverlay(this, tracker);
+  EnforceSharedImageUsage(backing, {SHARED_IMAGE_USAGE_SCANOUT});
+  auto representation = backing->ProduceOverlay(this, tracker);
   if (!representation) {
     LOG(ERROR) << "SharedImageManager::ProduceOverlay: Trying to produce a "
                   "Overlay representation from an incompatible backing: "
-               << (*found)->GetName();
+               << backing->GetName();
     return nullptr;
   }
 
@@ -500,8 +492,8 @@ std::unique_ptr<MemoryImageRepresentation> SharedImageManager::ProduceMemory(
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
-  auto found = images_.find(mailbox);
-  if (found == images_.end()) {
+  auto* backing = GetBacking(mailbox);
+  if (!backing) {
     LOG(ERROR) << "SharedImageManager::ProduceMemory: Trying to Produce a "
                   "Memory representation from a non-existent mailbox.";
     return nullptr;
@@ -509,7 +501,7 @@ std::unique_ptr<MemoryImageRepresentation> SharedImageManager::ProduceMemory(
 
   // This is expected to fail based on the SharedImageBacking type, so don't log
   // error here. Caller is expected to handle nullptr.
-  return (*found)->ProduceMemory(this, tracker);
+  return backing->ProduceMemory(this, tracker);
 }
 
 std::unique_ptr<RasterImageRepresentation> SharedImageManager::ProduceRaster(
@@ -518,17 +510,17 @@ std::unique_ptr<RasterImageRepresentation> SharedImageManager::ProduceRaster(
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
-  auto found = images_.find(mailbox);
-  if (found == images_.end()) {
+  auto* backing = GetBacking(mailbox);
+  if (!backing) {
     LOG(ERROR) << "SharedImageManager::ProduceRaster: Trying to Produce a "
                   "Raster representation from a non-existent mailbox.";
     return nullptr;
   }
 
-  EnforceSharedImageUsage(**found, {SHARED_IMAGE_USAGE_RAW_DRAW});
+  EnforceSharedImageUsage(backing, {SHARED_IMAGE_USAGE_RAW_DRAW});
   // This is expected to fail based on the SharedImageBacking type, so don't log
   // error here. Caller is expected to handle nullptr.
-  return (*found)->ProduceRaster(this, tracker);
+  return backing->ProduceRaster(this, tracker);
 }
 
 std::unique_ptr<VideoImageRepresentation> SharedImageManager::ProduceVideo(
@@ -538,8 +530,8 @@ std::unique_ptr<VideoImageRepresentation> SharedImageManager::ProduceVideo(
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
-  auto found = images_.find(mailbox);
-  if (found == images_.end()) {
+  auto* backing = GetBacking(mailbox);
+  if (!backing) {
     LOG(ERROR)
         << "SharedImageManager::ProduceVideoDecode: Trying to Produce a D3D"
            "representation from a non-existent mailbox.";
@@ -548,7 +540,7 @@ std::unique_ptr<VideoImageRepresentation> SharedImageManager::ProduceVideo(
 
   // This is expected to fail based on the SharedImageBacking type, so don't log
   // error here. Caller is expected to handle nullptr.
-  return (*found)->ProduceVideo(this, tracker, device);
+  return backing->ProduceVideo(this, tracker, device);
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -561,16 +553,16 @@ std::unique_ptr<VulkanImageRepresentation> SharedImageManager::ProduceVulkan(
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
-  auto found = images_.find(mailbox);
-  if (found == images_.end()) {
+  auto* backing = GetBacking(mailbox);
+  if (!backing) {
     LOG(ERROR)
         << "SharedImageManager::ProduceVulkanImage: Trying to produce vulkan"
            "representation from a non-existent mailbox.";
     return nullptr;
   }
 
-  return (*found)->ProduceVulkan(this, tracker, vulkan_device_queue,
-                                 vulkan_impl, needs_detiling);
+  return backing->ProduceVulkan(this, tracker, vulkan_device_queue, vulkan_impl,
+                                needs_detiling);
 }
 #endif
 
@@ -581,21 +573,21 @@ SharedImageManager::ProduceLegacyOverlay(const Mailbox& mailbox,
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
-  auto found = images_.find(mailbox);
-  if (found == images_.end()) {
+  auto* backing = GetBacking(mailbox);
+  if (!backing) {
     LOG(ERROR)
         << "SharedImageManager::ProduceLegacyOverlay: Trying to Produce a "
            "Legacy Overlay representation from a non-existent mailbox.";
     return nullptr;
   }
 
-  EnforceSharedImageUsage(**found, {SHARED_IMAGE_USAGE_SCANOUT});
-  auto representation = (*found)->ProduceLegacyOverlay(this, tracker);
+  EnforceSharedImageUsage(backing, {SHARED_IMAGE_USAGE_SCANOUT});
+  auto representation = backing->ProduceLegacyOverlay(this, tracker);
   if (!representation) {
     LOG(ERROR)
         << "SharedImageManager::ProduceLegacyOverlay: Trying to produce a "
            "Legacy Overlay representation from an incompatible backing: "
-        << (*found)->GetName();
+        << backing->GetName();
     return nullptr;
   }
 
@@ -609,29 +601,23 @@ void SharedImageManager::UpdateExternalFence(
     scoped_refptr<gfx::D3DSharedFence> external_fence) {
   CALLED_ON_VALID_THREAD();
   AutoLock autolock(this);
-  auto found = images_.find(mailbox);
-  if (found == images_.end()) {
+  auto* backing = GetBacking(mailbox);
+  if (!backing) {
     LOG(ERROR)
         << "SharedImageManager::ProduceVideoDecode: Trying to Produce a D3D"
            "representation from a non-existent mailbox.";
     return;
   }
 
-  (*found)->UpdateExternalFence(std::move(external_fence));
+  backing->UpdateExternalFence(std::move(external_fence));
 }
 #endif
 
 std::optional<SharedImageUsageSet> SharedImageManager::GetUsageForMailbox(
     const Mailbox& mailbox) {
   AutoLock autolock(this);
-
-  {
-    auto found = images_.find(mailbox);
-    if (found == images_.end()) {
-      return std::nullopt;
-    }
-    return std::optional<SharedImageUsageSet>((*found)->usage());
-  }
+  auto* backing = GetBacking(mailbox);
+  return backing ? std::make_optional(backing->usage()) : std::nullopt;
 }
 
 void SharedImageManager::OnRepresentationDestroyed(
@@ -640,10 +626,9 @@ void SharedImageManager::OnRepresentationDestroyed(
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
-
   {
-    auto found = images_.find(mailbox);
-    if (found == images_.end()) {
+    auto* backing = GetBacking(mailbox);
+    if (!backing) {
       LOG(ERROR) << "SharedImageManager::OnRepresentationDestroyed: Trying to "
                     "destroy a non existent mailbox.";
       return;
@@ -654,7 +639,7 @@ void SharedImageManager::OnRepresentationDestroyed(
     // representations from being created. This will help avoid races due to a
     // consumer getting lucky with timing due to a representation inadvertently
     // extending a backing's lifetime.
-    (*found)->ReleaseRef(representation);
+    backing->ReleaseRef(representation);
   }
 
   {
@@ -662,20 +647,21 @@ void SharedImageManager::OnRepresentationDestroyed(
     // this block can be removed, and the deletion can occur directly. Currently
     // SharedImageManager::OnRepresentationDestroyed can be nested, so we need
     // to get the iterator again.
-    auto found = images_.find(mailbox);
-    if (found != images_.end() && (!(*found)->HasAnyRefs()))
-      images_.erase(found);
+    auto it = images_.find(mailbox);
+    if (it != images_.end() && !it->second->HasAnyRefs()) {
+      images_.erase(it);
+    }
   }
 }
 
 void SharedImageManager::SetPurgeable(const Mailbox& mailbox, bool purgeable) {
   AutoLock autolock(this);
-  auto found = images_.find(mailbox);
-  if (found == images_.end()) {
+  auto* backing = GetBacking(mailbox);
+  if (!backing) {
     LOG(ERROR) << "SharedImageManager::SetPurgeable: Non-existent mailbox.";
     return;
   }
-  (*found)->SetPurgeable(purgeable);
+  backing->SetPurgeable(purgeable);
 }
 
 bool SharedImageManager::OnMemoryDump(
@@ -691,7 +677,7 @@ bool SharedImageManager::OnMemoryDump(
     size_t total_size = 0;
     size_t total_purgeable_size = 0;
     size_t total_non_exo_size = 0;
-    for (auto& backing : images_) {
+    for (auto& [_, backing] : images_) {
       size_t size = backing->GetEstimatedSizeForMemoryDump();
       total_size += size;
       total_purgeable_size += backing->IsPurgeable() ? size : 0;
@@ -714,7 +700,7 @@ bool SharedImageManager::OnMemoryDump(
     return true;
   }
 
-  for (auto& backing : images_) {
+  for (auto& [mailbox, backing] : images_) {
     auto* memory_tracker = backing->GetMemoryTracker();
 
     // All the backings registered here should have a memory tracker.
@@ -723,11 +709,11 @@ bool SharedImageManager::OnMemoryDump(
     // Unique name in the process.
     std::string dump_name = base::StringPrintf(
         "%s/client_0x%" PRIX32 "/mailbox_%s", base_dump_name,
-        memory_tracker->ClientId(), backing->mailbox().ToDebugString().c_str());
+        memory_tracker->ClientId(), mailbox.ToDebugString().c_str());
 
     // GUID which expresses shared ownership with the client process. This must
     // match the client-side GUID for mailbox.
-    auto client_guid = GetSharedImageGUIDForTracing(backing->mailbox());
+    auto client_guid = GetSharedImageGUIDForTracing(mailbox);
 
     // Backing will produce dump with relevant information along with ownership
     // edge to `client_guid`.
@@ -741,10 +727,8 @@ bool SharedImageManager::OnMemoryDump(
 scoped_refptr<gfx::NativePixmap> SharedImageManager::GetNativePixmap(
     const gpu::Mailbox& mailbox) {
   AutoLock autolock(this);
-  auto found = images_.find(mailbox);
-  if (found == images_.end())
-    return nullptr;
-  return (*found)->GetNativePixmap();
+  auto* backing = GetBacking(mailbox);
+  return backing ? backing->GetNativePixmap() : nullptr;
 }
 
 bool SharedImageManager::SupportsScanoutImages() {

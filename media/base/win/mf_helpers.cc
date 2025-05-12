@@ -25,18 +25,20 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/windows_version.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/ipc/common/dxgi_helpers.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/channel_layout.h"
 #include "media/base/win/mf_helpers.h"
-#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
-#include "media/formats/mp4/ac4.h"
-#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
-#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
-#include "gpu/ipc/common/dxgi_helpers.h"
 #include "media/gpu/command_buffer_helper.h"
 #include "media/media_buildflags.h"
 #include "third_party/libyuv/include/libyuv.h"
+
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+#include "media/formats/mp4/ac4.h"
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 
 namespace media {
 

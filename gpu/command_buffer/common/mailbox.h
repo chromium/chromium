@@ -63,6 +63,13 @@ struct COMPONENT_EXPORT(GPU_MAILBOX) Mailbox {
   bool operator==(const Mailbox& other) const;
   std::strong_ordering operator<=>(const Mailbox& other) const;
 
+  template <typename H>
+  friend H AbslHashValue(H h, const Mailbox& m) {
+    // As the name is cryptographically random bytes, the first few bytes should
+    // be more than sufficient as a hash.
+    return H::combine(std::move(h), m.ToU32());
+  }
+
   Name name;
 };
 
@@ -71,8 +78,8 @@ struct COMPONENT_EXPORT(GPU_MAILBOX) Mailbox {
 template <>
 struct std::hash<gpu::Mailbox> {
   std::size_t operator()(const gpu::Mailbox& m) const noexcept {
-    // As the name is cryptographically random bytes, the first few bytes
-    // should be more than sufficient as a hash.
+    // As the name is cryptographically random bytes, the first few bytes should
+    // be more than sufficient as a hash.
     return m.ToU32();
   }
 };

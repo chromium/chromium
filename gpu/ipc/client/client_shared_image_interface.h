@@ -5,9 +5,6 @@
 #ifndef GPU_IPC_CLIENT_CLIENT_SHARED_IMAGE_INTERFACE_H_
 #define GPU_IPC_CLIENT_CLIENT_SHARED_IMAGE_INTERFACE_H_
 
-#include <set>
-
-#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
 #include "base/synchronization/lock.h"
@@ -16,6 +13,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/common/surface_handle.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace gpu {
 class SharedImageInterfaceProxy;
@@ -145,7 +143,8 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
   const raw_ptr<SharedImageInterfaceProxy> proxy_;
 
   base::Lock lock_;
-  std::multiset<Mailbox> mailboxes_ GUARDED_BY(lock_);
+  // Map of mailbox to ref counts to match required DestroySharedImage calls.
+  absl::flat_hash_map<Mailbox, int> mailboxes_ GUARDED_BY(lock_);
 
   // Used by ClientSharedImage while creating a GpuMemoryBuffer internally for
   // MappableSI. This pool is used on windows only. It's needed to allocate
