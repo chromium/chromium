@@ -44,7 +44,7 @@ const CGFloat kDotSize = 14;
     _dot.layer.cornerRadius = kDotSize / 2;
 
     _titleLabel = [self setUpTitleLabel];
-    _subtitleLabel = [self setUpTitleLabel];
+    _subtitleLabel = [self setUpSubtitleLabel];
 
     UIStackView* titleLabelWithDot =
         [[UIStackView alloc] initWithArrangedSubviews:@[ _dot, _titleLabel ]];
