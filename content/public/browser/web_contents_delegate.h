@@ -654,10 +654,6 @@ class CONTENT_EXPORT WebContentsDelegate {
   // used.
   virtual gfx::Size GetSizeForNewRenderView(WebContents* web_contents);
 
-  // Returns true if the WebContents is never user-visible, thus the renderer
-  // never needs to produce pixels for display.
-  virtual bool IsNeverComposited(WebContents* web_contents);
-
   // Askss |guest_web_contents| to perform the same. If this returns true, the
   // default behavior is suppressed.
   virtual bool GuestSaveFrame(WebContents* guest_web_contents);

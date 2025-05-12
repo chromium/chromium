@@ -2259,6 +2259,10 @@ class CONTENT_EXPORT WebContentsImpl
   // use the observer list then.
   WebContentsObserverList observers_;
 
+  // True if the WebContents is never user-visible, thus the renderer need never
+  // produce pixels for display.
+  bool is_never_composited_ = false;
+
   // True if this tab was opened by another window. This is true even if the tab
   // is opened with "noopener", and won't be unset if the opener is closed.
   bool opened_by_another_window_;

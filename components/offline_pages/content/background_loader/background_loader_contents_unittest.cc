@@ -107,10 +107,6 @@ void BackgroundLoaderContentsTest::MediaAccessCallback(
   waiter_.Signal();
 }
 
-TEST_F(BackgroundLoaderContentsTest, NotVisible) {
-  ASSERT_TRUE(contents()->IsNeverComposited(nullptr));
-}
-
 TEST_F(BackgroundLoaderContentsTest, SuppressDialogs) {
   ASSERT_TRUE(contents()->ShouldSuppressDialogs(nullptr));
 }

@@ -56,10 +56,6 @@ class RenderWidgetHostOwnerDelegate {
   // Returns true if the main frame is active, false if it is swapped out.
   virtual bool IsMainFrameActive() = 0;
 
-  // Returns true if all widgets will never be user-visible, and thus do not
-  // need to generate pixels for display.
-  virtual bool IsNeverComposited() = 0;
-
   // Returns the WebkitPreferences for the page. The preferences are shared
   // between all widgets for the page.
   virtual blink::web_pref::WebPreferences GetWebkitPreferencesForWidget() = 0;

@@ -152,8 +152,11 @@ ExtensionHost::ExtensionHost(const Extension* extension,
     // associated with the ExtensionHost.
     CHECK_EQ(browser_context_, site_instance->GetBrowserContext());
   }
-  host_contents_ = WebContents::Create(
-      WebContents::CreateParams(browser_context_, site_instance));
+  WebContents::CreateParams create_params(browser_context_, site_instance);
+  create_params.is_never_composited =
+      host_type == mojom::ViewType::kExtensionBackgroundPage ||
+      host_type == mojom::ViewType::kOffscreenDocument;
+  host_contents_ = WebContents::Create(create_params);
   host_contents_->SetOwnerLocationForDebug(FROM_HERE);
   content::WebContentsObserver::Observe(host_contents_.get());
   host_contents_->SetDelegate(this);
@@ -630,12 +633,6 @@ bool ExtensionHost::CheckMediaAccessPermission(
     blink::mojom::MediaStreamType type) {
   return delegate_->CheckMediaAccessPermission(
       render_frame_host, security_origin, type, extension());
-}
-
-bool ExtensionHost::IsNeverComposited(content::WebContents* web_contents) {
-  mojom::ViewType view_type = extensions::GetViewType(web_contents);
-  return view_type == mojom::ViewType::kExtensionBackgroundPage ||
-         view_type == mojom::ViewType::kOffscreenDocument;
 }
 
 content::PictureInPictureResult ExtensionHost::EnterPictureInPicture(

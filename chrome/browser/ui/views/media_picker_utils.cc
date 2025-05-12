@@ -14,8 +14,7 @@
 #include "ui/views/window/dialog_delegate.h"
 
 bool MediaPickerCanShowAsWebModal(content::WebContents* web_contents) {
-  return web_contents &&
-         !web_contents->GetDelegate()->IsNeverComposited(web_contents) &&
+  return web_contents && !web_contents->IsNeverComposited() &&
          web_modal::WebContentsModalDialogManager::FromWebContents(
              web_contents);
 }

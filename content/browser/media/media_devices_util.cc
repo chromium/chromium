@@ -148,9 +148,7 @@ void GetMediaDeviceSaltAndOrigin(GlobalRenderFrameHostId render_frame_host_id,
   bool has_focus = frame_host->GetView() && frame_host->GetView()->HasFocus();
   std::optional<ukm::SourceId> source_id = frame_host->GetPageUkmSourceId();
   WebContents* web_contents = WebContents::FromRenderFrameHost(frame_host);
-  bool is_background =
-      web_contents && web_contents->GetDelegate() &&
-      web_contents->GetDelegate()->IsNeverComposited(web_contents);
+  bool is_background = web_contents && web_contents->IsNeverComposited();
   std::string frame_salt = frame_host->GetMediaDeviceIDSaltBase();
 
   GetContentClient()->browser()->GetMediaDeviceIDSalt(

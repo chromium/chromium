@@ -91,7 +91,6 @@ class BackgroundContents : public extensions::DeferredStartRenderHost,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override;
-  bool IsNeverComposited(content::WebContents* web_contents) override;
 
   // content::WebContentsObserver implementation:
   void PrimaryMainFrameRenderProcessGone(

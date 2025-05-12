@@ -21,8 +21,10 @@ BackgroundLoaderContents::BackgroundLoaderContents(
   // CreateParams::initially_hidden == false, and that we never change the
   // visibility after that.  If we did change it, then background throttling
   // could kill the background offliner while it was running.
-  web_contents_ = content::WebContents::Create(
-      content::WebContents::CreateParams(browser_context_));
+  content::WebContents::CreateParams create_params(browser_context_);
+  // Background, so not user-visible.
+  create_params.is_never_composited = true;
+  web_contents_ = content::WebContents::Create(create_params);
   web_contents_->SetOwnerLocationForDebug(FROM_HERE);
   web_contents_->SetAudioMuted(true);
   web_contents_->SetDelegate(this);
@@ -44,12 +46,6 @@ void BackgroundLoaderContents::Cancel() {
 
 void BackgroundLoaderContents::SetDelegate(Delegate* delegate) {
   delegate_ = delegate;
-}
-
-bool BackgroundLoaderContents::IsNeverComposited(
-    content::WebContents* web_contents) {
-  // Background, so not user-visible.
-  return true;
 }
 
 void BackgroundLoaderContents::CloseContents(content::WebContents* source) {

@@ -3912,6 +3912,7 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
   renderer_preferences_.uses_platform_autofill =
       params.initially_use_platform_autofill;
 
+  is_never_composited_ = params.is_never_composited;
   is_in_preview_mode_ = params.preview_mode;
   creator_location_ = params.creator_location;
 #if BUILDFLAG(IS_ANDROID)
@@ -8986,10 +8987,7 @@ void WebContentsImpl::ClearFocusedElement() {
 }
 
 bool WebContentsImpl::IsNeverComposited() {
-  if (!delegate_) {
-    return false;
-  }
-  return delegate_->IsNeverComposited(this);
+  return is_never_composited_;
 }
 
 RenderViewHostDelegateView* WebContentsImpl::GetDelegateView() {
