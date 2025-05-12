@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/time/time.h"
+#include "components/trusted_vault/securebox.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,6 +52,30 @@ static constexpr std::string_view kSigXml =
   <value>n6kI2dGZKz5CGbXnbz79m51QTDt+WszzNOvcqXsGm6g3ObmpjkghTU3wPmrJ0c5zUD1l4QQEmTKRBIACgK7Sp64JdC4IGP5y+z8HhXPslP3Dc5aySOk4b++m7AIbkAuw63SbPD8L2nQ20CMNiaVVBqZJ0uWUV04qN8IOll1L8NbeZLhjFUcx9riYBrzWOr9uis5IANkfPTFgFyPFjqFk9XrbVpPcNCRtz7Pew+L7OW5z7sh5rW8iZmjhhV/e4VDTgYBFq/Js5W4yalRI9uuEXLJqG1/US4L5cMnJoZOxPmz48an0ug/Pi8yV9cIq+xvER/XaeeUG53Fqy9cn2qG6ROwxH109toaLx3TZaLjdVh7wcJCLtOY6WngHksQbIyU1mDYzz7uWItCss2Nb0NbZ+QMn3k1GxDGIwlY/HXdt7OihPQWLRM2H/QRqlI9p8i1L+DaPrhyGrGHzYKN8z9qGZYx1AsQUWQCR0YeXvlxjtSvBEPtWkfEE0RrZPJtFh+bvrD55Id7XapnGKKXYMmYf9KbDJ3GMD1aT6xgMhlAhtltN5vNg08LSH5Ma4TXhmNpKny5JQqlAUTby1wIhgdElQSdU0jYpmle8N0wsuLoX+e3bHFKxWVkrwvXDC0v2wqH5mzm8FLhxXZDA2ApnGT+eOC1gjd8qTuouzm5GuMhjvig=</value>
 </signature>
 )";
+
+// The EC public keys are in uncompressed form. These have been extracted using
+// cyberchef.
+static constexpr uint8_t kEndpoint1PublicKey[] = {
+    0x04, 0xc0, 0x83, 0xde, 0xc4, 0x91, 0xdb, 0xaa, 0xbd, 0xa1, 0xc7,
+    0x35, 0x63, 0xf2, 0xb6, 0x49, 0x0c, 0x88, 0xb1, 0x22, 0x64, 0x26,
+    0xd1, 0x80, 0x2e, 0xf7, 0x77, 0xb7, 0x89, 0x7d, 0x13, 0xc6, 0xa3,
+    0x98, 0xe5, 0x7d, 0x7d, 0x01, 0xe9, 0xed, 0xde, 0x04, 0xc6, 0x64,
+    0x49, 0x22, 0x57, 0x65, 0x14, 0xbf, 0xd8, 0xe6, 0x2e, 0x45, 0x06,
+    0x0d, 0xcd, 0xbf, 0x02, 0xbb, 0x4c, 0xbb, 0xe8, 0x00, 0xf9};
+static constexpr uint8_t kEndpoint2PublicKey[] = {
+    0x04, 0xe1, 0xd2, 0x5a, 0xaf, 0xd1, 0x16, 0x95, 0x35, 0x56, 0x70,
+    0x82, 0x0a, 0x63, 0xdc, 0x4c, 0x37, 0x89, 0x4f, 0x7b, 0x77, 0xfb,
+    0x6e, 0xfe, 0x06, 0x31, 0x4e, 0x76, 0xc0, 0xbc, 0xfe, 0x17, 0x27,
+    0x6c, 0x55, 0x0a, 0xc0, 0x7b, 0x7a, 0x4e, 0xdd, 0x2e, 0x88, 0x75,
+    0x77, 0x2c, 0xff, 0xda, 0x3b, 0x4f, 0xc3, 0x1d, 0x80, 0xbc, 0x29,
+    0xd6, 0xff, 0x28, 0x03, 0x02, 0xf9, 0xa8, 0xbe, 0x68, 0x9d};
+static constexpr uint8_t kEndpoint3PublicKey[] = {
+    0x04, 0xd7, 0x95, 0xa8, 0xfa, 0x44, 0x72, 0xda, 0x15, 0xcc, 0xde,
+    0x3c, 0x58, 0xd7, 0x9f, 0x4e, 0x92, 0x44, 0x99, 0x1a, 0xeb, 0x6e,
+    0x95, 0xe8, 0x59, 0x18, 0x47, 0xc0, 0x7f, 0xc0, 0x39, 0x89, 0x90,
+    0x81, 0x74, 0x7a, 0xc5, 0x7f, 0xc0, 0x13, 0x5f, 0xea, 0x79, 0xe9,
+    0xfc, 0x7c, 0xc8, 0xf8, 0x2e, 0x7c, 0x9b, 0xf0, 0xa3, 0xef, 0x79,
+    0x98, 0xd7, 0xbd, 0x39, 0x45, 0xab, 0x69, 0x9d, 0x04, 0x71};
 
 static constexpr base::Time kValidCertificateDate =
     base::Time::FromSecondsSinceUnixEpoch(1740614400);
@@ -95,8 +120,12 @@ class RecoveryKeyStoreCertificateTest : public testing::Test {};
 TEST_F(RecoveryKeyStoreCertificateTest, Internals_ParseValidCertXml) {
   auto result = internal::ParseRecoveryKeyStoreCertXML(kCertXml);
   ASSERT_TRUE(result);
-  EXPECT_THAT(*result, testing::UnorderedElementsAre(
-                           GetEndpoint1(), GetEndpoint2(), GetEndpoint3()));
+  EXPECT_THAT(result->endpoints,
+              testing::UnorderedElementsAre(GetEndpoint1(), GetEndpoint2(),
+                                            GetEndpoint3()));
+  EXPECT_THAT(
+      result->intermediates,
+      testing::UnorderedElementsAre(GetIntermediate1(), GetIntermediate2()));
 }
 
 TEST_F(RecoveryKeyStoreCertificateTest, Internals_CertXmlWithWrongRootTag) {
@@ -117,7 +146,8 @@ TEST_F(RecoveryKeyStoreCertificateTest, Internals_CertXmlIgnoresEmptyCerts) {
 </certificate>)";
   auto result = internal::ParseRecoveryKeyStoreCertXML(kTestXml);
   ASSERT_TRUE(result);
-  EXPECT_THAT(*result, testing::ElementsAre("endpoint"));
+  EXPECT_THAT(result->endpoints, testing::ElementsAre("endpoint"));
+  EXPECT_THAT(result->intermediates, testing::ElementsAre("intermediate"));
 }
 
 TEST_F(RecoveryKeyStoreCertificateTest,
@@ -141,7 +171,8 @@ TEST_F(RecoveryKeyStoreCertificateTest,
 </certificate>)";
   auto result = internal::ParseRecoveryKeyStoreCertXML(kTestXml);
   ASSERT_TRUE(result);
-  EXPECT_THAT(*result, testing::ElementsAre("endpoint"));
+  EXPECT_THAT(result->endpoints, testing::ElementsAre("endpoint"));
+  EXPECT_THAT(result->intermediates, testing::ElementsAre("intermediate"));
 }
 
 TEST_F(RecoveryKeyStoreCertificateTest, Internals_CertXmlIgnoresNestedCerts) {
@@ -163,7 +194,8 @@ TEST_F(RecoveryKeyStoreCertificateTest, Internals_CertXmlIgnoresNestedCerts) {
 </certificate>)";
   auto result = internal::ParseRecoveryKeyStoreCertXML(kTestXml);
   ASSERT_TRUE(result);
-  EXPECT_THAT(*result, testing::ElementsAre("endpoint"));
+  EXPECT_THAT(result->endpoints, testing::ElementsAre("endpoint"));
+  EXPECT_THAT(result->intermediates, testing::ElementsAre("intermediate"));
 }
 
 TEST_F(RecoveryKeyStoreCertificateTest, Internals_CertXmlNoEndpoints) {
@@ -172,6 +204,18 @@ TEST_F(RecoveryKeyStoreCertificateTest, Internals_CertXmlNoEndpoints) {
   <intermediates>
     <cert>intermediate</cert>
   </intermediates>
+</certificate>)";
+  EXPECT_FALSE(internal::ParseRecoveryKeyStoreCertXML(kTestXml));
+}
+
+TEST_F(RecoveryKeyStoreCertificateTest, Internals_CertXmlNoIntermediates) {
+  static constexpr std::string_view kTestXml =
+      R"(<certificate>
+  <intermediates>
+  </intermediates>
+  <endpoints>
+    <cert>endpoint</cert>
+  </endpoints>
 </certificate>)";
   EXPECT_FALSE(internal::ParseRecoveryKeyStoreCertXML(kTestXml));
 }
@@ -369,9 +413,58 @@ TEST_F(RecoveryKeyStoreCertificateTest, Internals_VerifySignatureNotBase64) {
                                          "not base 64"));
 }
 
+TEST_F(RecoveryKeyStoreCertificateTest, Internals_ExtractEndpointPKs) {
+  internal::ParsedRecoveryKeyStoreCertXML cert_xml =
+      *internal::ParseRecoveryKeyStoreCertXML(kCertXml);
+  std::vector<std::unique_ptr<SecureBoxPublicKey>> pks =
+      internal::ExtractEndpointPublicKeys(std::move(cert_xml),
+                                          kValidCertificateDate);
+  ASSERT_EQ(pks.size(), 3u);
+  EXPECT_THAT(pks.at(0)->ExportToBytes(),
+              testing::ElementsAreArray(kEndpoint1PublicKey));
+  EXPECT_THAT(pks.at(1)->ExportToBytes(),
+              testing::ElementsAreArray(kEndpoint2PublicKey));
+  EXPECT_THAT(pks.at(2)->ExportToBytes(),
+              testing::ElementsAreArray(kEndpoint3PublicKey));
+}
+
+TEST_F(RecoveryKeyStoreCertificateTest,
+       Internals_ExtractEndpointIgnoresBadCerts) {
+  internal::ParsedRecoveryKeyStoreCertXML cert_xml =
+      *internal::ParseRecoveryKeyStoreCertXML(kCertXml);
+  cert_xml.endpoints.emplace_back("aabbcc");
+  std::vector<std::unique_ptr<SecureBoxPublicKey>> pks =
+      internal::ExtractEndpointPublicKeys(std::move(cert_xml),
+                                          kValidCertificateDate);
+  EXPECT_EQ(pks.size(), 3u);
+}
+
+TEST_F(RecoveryKeyStoreCertificateTest,
+       Internals_ExtractEndpointIgnoresBadBase64) {
+  internal::ParsedRecoveryKeyStoreCertXML cert_xml =
+      *internal::ParseRecoveryKeyStoreCertXML(kCertXml);
+  cert_xml.endpoints.emplace_back("not base 64");
+  std::vector<std::unique_ptr<SecureBoxPublicKey>> pks =
+      internal::ExtractEndpointPublicKeys(std::move(cert_xml),
+                                          kValidCertificateDate);
+  EXPECT_EQ(pks.size(), 3u);
+}
+
 TEST_F(RecoveryKeyStoreCertificateTest, ParseSuccess) {
-  EXPECT_TRUE(RecoveryKeyStoreCertificate::Parse(kCertXml, kSigXml,
-                                                 kValidCertificateDate));
+  std::optional<RecoveryKeyStoreCertificate> recovery_key_store_cert =
+      RecoveryKeyStoreCertificate::Parse(kCertXml, kSigXml,
+                                         kValidCertificateDate);
+  ASSERT_TRUE(recovery_key_store_cert.has_value());
+  ASSERT_EQ(recovery_key_store_cert->endpoint_public_keys().size(), 3u);
+  EXPECT_THAT(
+      recovery_key_store_cert->endpoint_public_keys().at(0)->ExportToBytes(),
+      testing::ElementsAreArray(kEndpoint1PublicKey));
+  EXPECT_THAT(
+      recovery_key_store_cert->endpoint_public_keys().at(1)->ExportToBytes(),
+      testing::ElementsAreArray(kEndpoint2PublicKey));
+  EXPECT_THAT(
+      recovery_key_store_cert->endpoint_public_keys().at(2)->ExportToBytes(),
+      testing::ElementsAreArray(kEndpoint3PublicKey));
 }
 
 TEST_F(RecoveryKeyStoreCertificateTest, Parse_BadCertXml) {

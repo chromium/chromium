@@ -12,7 +12,9 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
+#include "components/trusted_vault/securebox.h"
 #include "crypto/signature_verifier.h"
+#include "net/cert/asn1_util.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -206,6 +208,19 @@ std::unique_ptr<bssl::TrustStoreInMemory> ConstructTrustedCertStore() {
 
 namespace internal {
 
+ParsedRecoveryKeyStoreCertXML::ParsedRecoveryKeyStoreCertXML(
+    std::vector<std::string> intermediates,
+    std::vector<std::string> endpoints)
+    : intermediates(std::move(intermediates)),
+      endpoints(std::move(endpoints)) {}
+
+ParsedRecoveryKeyStoreCertXML::ParsedRecoveryKeyStoreCertXML(
+    ParsedRecoveryKeyStoreCertXML&&) = default;
+ParsedRecoveryKeyStoreCertXML& ParsedRecoveryKeyStoreCertXML::operator=(
+    ParsedRecoveryKeyStoreCertXML&&) = default;
+
+ParsedRecoveryKeyStoreCertXML::~ParsedRecoveryKeyStoreCertXML() = default;
+
 ParsedRecoveryKeyStoreSigXML::ParsedRecoveryKeyStoreSigXML(
     std::vector<std::string> intermediates,
     std::string certificate,
@@ -221,22 +236,33 @@ ParsedRecoveryKeyStoreSigXML& ParsedRecoveryKeyStoreSigXML::operator=(
 
 ParsedRecoveryKeyStoreSigXML::~ParsedRecoveryKeyStoreSigXML() = default;
 
-std::optional<std::vector<std::string>> ParseRecoveryKeyStoreCertXML(
+std::optional<ParsedRecoveryKeyStoreCertXML> ParseRecoveryKeyStoreCertXML(
     std::string_view cert_xml) {
   XmlReader xml_reader;
   xml_reader.Load(cert_xml);
   if (!xml_reader.Read() || xml_reader.NodeName() != "certificate") {
     return std::nullopt;
   }
+  std::vector<std::string> intermediates;
+  std::vector<std::string> endpoints;
   while (xml_reader.Read()) {
-    // We expect a single <endpoints> tag on the XML. Thus, find the first
-    // <endpoints> tag nested under the root and stop processing.
-    if (xml_reader.IsElement() && xml_reader.Depth() == 1 &&
-        xml_reader.NodeName() == "endpoints") {
-      return ParseCertList(&xml_reader);
+    // Skip anything that is not an element nested under the root.
+    if (!xml_reader.IsElement() || xml_reader.Depth() != 1) {
+      continue;
+    }
+    // We expect a single <intermediates> and <endpoints> tags. This code only
+    // has the last tags take effect, but that should be okay.
+    if (xml_reader.NodeName() == "intermediates") {
+      intermediates = ParseCertList(&xml_reader);
+    } else if (xml_reader.NodeName() == "endpoints") {
+      endpoints = ParseCertList(&xml_reader);
     }
   }
-  return {};
+  if (intermediates.empty() || endpoints.empty()) {
+    return std::nullopt;
+  }
+  return ParsedRecoveryKeyStoreCertXML(std::move(intermediates),
+                                       std::move(endpoints));
 }
 
 std::optional<ParsedRecoveryKeyStoreSigXML> ParseRecoveryKeyStoreSigXML(
@@ -315,11 +341,6 @@ std::shared_ptr<const bssl::ParsedCertificate> VerifySignatureChain(
   if (!result.HasValidPath()) {
     return nullptr;
   }
-  if (!certificate->has_key_usage() ||
-      !certificate->key_usage().AssertsBit(
-          bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE)) {
-    return nullptr;
-  }
   return certificate;
 }
 
@@ -355,6 +376,45 @@ bool VerifySignature(std::shared_ptr<const bssl::ParsedCertificate> certificate,
   return signature_verifier.VerifyFinal();
 }
 
+std::vector<std::unique_ptr<SecureBoxPublicKey>> ExtractEndpointPublicKeys(
+    ParsedRecoveryKeyStoreCertXML cert_xml,
+    base::Time current_time) {
+  std::vector<std::unique_ptr<SecureBoxPublicKey>> result;
+  for (const auto& endpoint : cert_xml.endpoints) {
+    std::shared_ptr<const bssl::ParsedCertificate> certificate =
+        VerifySignatureChain(endpoint, cert_xml.intermediates, current_time);
+    if (!certificate) {
+      continue;
+    }
+    // Only ECDSA public keys are supported.
+    size_t size_bits;
+    net::X509Certificate::PublicKeyType type;
+    net::X509Certificate::GetPublicKeyInfo(certificate->cert_buffer(),
+                                           &size_bits, &type);
+    if (type != net::X509Certificate::kPublicKeyTypeECDSA) {
+      continue;
+    }
+    // Extract the public key from the SPKI.
+    std::string_view ec_point_oct;
+    if (!net::asn1::ExtractSubjectPublicKeyFromSPKI(
+            certificate->tbs().spki_tlv.AsStringView(), &ec_point_oct)) {
+      continue;
+    }
+    // ExtractSubjectPublicKeyFromSPKI does not remove the initial octet
+    // encoding the number of unused bits in the ASN.1 BIT STRING so we do it
+    // here. The public key is always byte-aligned.
+    ec_point_oct.remove_prefix(1);
+
+    std::unique_ptr<SecureBoxPublicKey> key =
+        SecureBoxPublicKey::CreateByImport(base::as_byte_span(ec_point_oct));
+    if (!key) {
+      continue;
+    }
+    result.push_back(std::move(key));
+  }
+  return result;
+}
+
 }  // namespace internal
 
 // static
@@ -371,23 +431,37 @@ std::optional<RecoveryKeyStoreCertificate> RecoveryKeyStoreCertificate::Parse(
       internal::VerifySignatureChain(std::move(parsed_sig_xml->certificate),
                                      parsed_sig_xml->intermediates,
                                      current_time);
-  if (!signing_certificate) {
+  if (!signing_certificate || !signing_certificate->has_key_usage() ||
+      !signing_certificate->key_usage().AssertsBit(
+          bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE)) {
     return std::nullopt;
   }
   if (!internal::VerifySignature(std::move(signing_certificate), cert_xml,
                                  parsed_sig_xml->signature)) {
     return std::nullopt;
   }
-  std::optional<std::vector<std::string>> endpoints =
+  std::optional<internal::ParsedRecoveryKeyStoreCertXML> parsed_cert_xml =
       internal::ParseRecoveryKeyStoreCertXML(cert_xml);
-  if (!endpoints) {
+  if (!parsed_cert_xml) {
     return std::nullopt;
   }
-  return RecoveryKeyStoreCertificate();
+  std::vector<std::unique_ptr<SecureBoxPublicKey>> endpoint_public_keys =
+      internal::ExtractEndpointPublicKeys(std::move(*parsed_cert_xml),
+                                          current_time);
+  if (endpoint_public_keys.empty()) {
+    return std::nullopt;
+  }
+  return RecoveryKeyStoreCertificate(std::move(endpoint_public_keys));
 }
 
-RecoveryKeyStoreCertificate::RecoveryKeyStoreCertificate() {
-  NOTIMPLEMENTED();
-}
+RecoveryKeyStoreCertificate::RecoveryKeyStoreCertificate(
+    RecoveryKeyStoreCertificate&& other) = default;
+RecoveryKeyStoreCertificate& RecoveryKeyStoreCertificate::operator=(
+    RecoveryKeyStoreCertificate&& other) = default;
+RecoveryKeyStoreCertificate::~RecoveryKeyStoreCertificate() = default;
+
+RecoveryKeyStoreCertificate::RecoveryKeyStoreCertificate(
+    std::vector<std::unique_ptr<SecureBoxPublicKey>> endpoint_public_keys)
+    : endpoint_public_keys_(std::move(endpoint_public_keys)) {}
 
 }  // namespace trusted_vault

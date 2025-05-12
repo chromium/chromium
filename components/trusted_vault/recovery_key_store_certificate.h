@@ -20,7 +20,27 @@ class ParsedCertificate;
 
 namespace trusted_vault {
 
+class SecureBoxPublicKey;
+
 namespace internal {
+
+// Intermediate representation of the data Chrome uses from a cert.xml file.
+struct ParsedRecoveryKeyStoreCertXML {
+  ParsedRecoveryKeyStoreCertXML(std::vector<std::string> intermediates,
+                                std::vector<std::string> endpoints);
+  ParsedRecoveryKeyStoreCertXML(const ParsedRecoveryKeyStoreCertXML&) = delete;
+  ParsedRecoveryKeyStoreCertXML operator=(
+      const ParsedRecoveryKeyStoreCertXML&) = delete;
+  ParsedRecoveryKeyStoreCertXML(ParsedRecoveryKeyStoreCertXML&&);
+  ParsedRecoveryKeyStoreCertXML& operator=(ParsedRecoveryKeyStoreCertXML&&);
+  ~ParsedRecoveryKeyStoreCertXML();
+
+  // The list of intermediate certificates as base64-encoded x509.
+  std::vector<std::string> intermediates;
+
+  // The list of endpoint certificates as base64-encoded x509.
+  std::vector<std::string> endpoints;
+};
 
 // Intermediate representation of the data Chrome uses from a sig.xml file.
 struct ParsedRecoveryKeyStoreSigXML {
@@ -44,9 +64,9 @@ struct ParsedRecoveryKeyStoreSigXML {
   std::string signature;
 };
 
-// Returns the list of endpoints from cert.xml as base64-encoded x509. Returns
-// nullopt if parsing failed.
-std::optional<std::vector<std::string>> ParseRecoveryKeyStoreCertXML(
+// Returns a parsed representation of the cert.xml file. Returns nullopt if
+// parsing failed.
+std::optional<ParsedRecoveryKeyStoreCertXML> ParseRecoveryKeyStoreCertXML(
     std::string_view cert_xml);
 
 // Returns a parsed representation of the sig.xml file. Returns nullopt if
@@ -68,11 +88,21 @@ bool VerifySignature(std::shared_ptr<const bssl::ParsedCertificate> certificate,
                      std::string_view cert_xml,
                      std::string_view signature_b64);
 
+// Returns the public keys corresponding to the endpoints listed in `cert_xml`.
+// If a certificate is not valid, it's skipped.
+std::vector<std::unique_ptr<SecureBoxPublicKey>> ExtractEndpointPublicKeys(
+    ParsedRecoveryKeyStoreCertXML cert_xml,
+    base::Time current_time);
+
 }  // namespace internal
 
 // Represents a certificate chain from the recovery key store.
 class RecoveryKeyStoreCertificate {
  public:
+  ~RecoveryKeyStoreCertificate();
+  RecoveryKeyStoreCertificate(RecoveryKeyStoreCertificate&& other);
+  RecoveryKeyStoreCertificate& operator=(RecoveryKeyStoreCertificate&& other);
+
   // Parses a certificate from cert.xml and sig.xml. Returns nullopt if parsing
   // failed. This must only be called with values obtained from a trusted
   // source, like https://gstatic.com.
@@ -81,8 +111,16 @@ class RecoveryKeyStoreCertificate {
       std::string_view sig_xml,
       base::Time current_time);
 
+  const std::vector<std::unique_ptr<SecureBoxPublicKey>>&
+  endpoint_public_keys() {
+    return endpoint_public_keys_;
+  }
+
  private:
-  RecoveryKeyStoreCertificate();
+  explicit RecoveryKeyStoreCertificate(
+      std::vector<std::unique_ptr<SecureBoxPublicKey>> endpoint_public_keys);
+
+  std::vector<std::unique_ptr<SecureBoxPublicKey>> endpoint_public_keys_;
 };
 
 }  // namespace trusted_vault
