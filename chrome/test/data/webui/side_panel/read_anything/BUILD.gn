@@ -39,7 +39,6 @@ build_webui_tests("build") {
     "node_store_test.ts",
     "phrase_highlighting_test.ts",
     "play_pause_test.ts",
-    "prefs_test.ts",
     "rate_selection_test.ts",
     "read_aloud_flag_test.ts",
     "read_aloud_highlighting_test.ts",

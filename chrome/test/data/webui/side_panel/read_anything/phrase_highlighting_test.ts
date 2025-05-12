@@ -2,18 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import type {AppElement, ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {ReadAloudHighlighter, SpeechController, VoicePackController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, mockMetrics, stubAnimationFrame} from './common.js';
-import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {createApp} from './common.js';
 
 suite('PhraseHighlighting', () => {
   let app: AppElement;
-  let metrics: TestMetricsBrowserProxy;
   let wordBoundaries: WordBoundaries;
 
   // root htmlTag='#document' id=1
@@ -69,7 +65,6 @@ suite('PhraseHighlighting', () => {
     wordBoundaries = new WordBoundaries();
     WordBoundaries.setInstance(wordBoundaries);
     ReadAloudHighlighter.setInstance(new ReadAloudHighlighter());
-    metrics = mockMetrics();
     SpeechController.setInstance(new SpeechController());
     app = await createApp();
 
@@ -79,100 +74,55 @@ suite('PhraseHighlighting', () => {
     chrome.readingMode.setContentForTesting(axTree, [2, 4]);
   });
 
-  function computeStyle(style: string) {
-    return window.getComputedStyle(app.$.container).getPropertyValue(style);
-  }
+  test('with word highlighting on, word is highlighted', () => {
+    chrome.readingMode.onHighlightGranularityChanged(
+        chrome.readingMode.wordHighlighting);
 
-  suite('changing the highlight from the menu', () => {
-    let toolbar: ReadAnythingToolbarElement;
-    let highlightButton: CrIconButtonElement;
-    let options: HTMLButtonElement[];
+    wordBoundaries.updateBoundary(0);
+    app.playSpeech();
+    const currentHighlight =
+        app.$.container.querySelector('.current-read-highlight');
+    assertTrue(currentHighlight !== undefined);
+    assertEquals(currentHighlight!.textContent!, 'This ');
+  });
 
-    setup(async () => {
-      toolbar = app.$.toolbar;
-      highlightButton =
-          toolbar.$.toolbarContainer.querySelector<CrIconButtonElement>(
-              '#highlight')!;
-      stubAnimationFrame();
-      highlightButton.click();
+  test('with phrase highlighting on, phrase is highlighted', () => {
+    chrome.readingMode.onHighlightGranularityChanged(
+        chrome.readingMode.phraseHighlighting);
 
-      await microtasksFinished();
+    wordBoundaries.updateBoundary(0);
+    app.playSpeech();
 
-      const menu = toolbar.$.highlightMenu.$.menu.$.lazyMenu.get();
-      assertTrue(menu.open);
-      options = Array.from(
-          menu.querySelectorAll<HTMLButtonElement>('.dropdown-item'));
-    });
+    const currentHighlight =
+        app.$.container.querySelector('.current-read-highlight');
+    assertTrue(currentHighlight !== undefined);
+    assertEquals(currentHighlight!.textContent!, 'This is a ');
+  });
 
-    test('with word highlighting on, word is highlighted', async () => {
-      options[1]!.click();
-      await microtasksFinished();
-      assertEquals(
-          chrome.readingMode.highlightGranularity,
-          chrome.readingMode.wordHighlighting);
+  test('with sentence highlighting on, sentence is highlighted', () => {
+    chrome.readingMode.onHighlightGranularityChanged(
+        chrome.readingMode.sentenceHighlighting);
 
-      wordBoundaries.updateBoundary(0);
-      app.playSpeech();
-      const currentHighlight =
-          app.$.container.querySelector('.current-read-highlight');
-      assertTrue(currentHighlight !== undefined);
-      assertEquals(currentHighlight!.textContent!, 'This ');
+    wordBoundaries.updateBoundary(0);
+    app.playSpeech();
 
-      assertEquals(2, await metrics.whenCalled('recordHighlightGranularity'));
-      assertEquals(1, metrics.getCallCount('recordHighlightGranularity'));
-    });
+    const currentHighlight =
+        app.$.container.querySelector('.current-read-highlight');
+    assertTrue(currentHighlight !== undefined);
+    assertEquals(currentHighlight!.textContent!, 'This is a link.');
+  });
 
-    test('with phrase highlighting on, phrase is highlighted', async () => {
-      options[2]!.click();
-      await microtasksFinished();
+  test('with highlighting off, sentence is highlighted', () => {
+    chrome.readingMode.onHighlightGranularityChanged(
+        chrome.readingMode.noHighlighting);
 
-      assertEquals(
-          chrome.readingMode.highlightGranularity,
-          chrome.readingMode.phraseHighlighting);
+    wordBoundaries.updateBoundary(0);
+    app.playSpeech();
 
-      wordBoundaries.updateBoundary(0);
-      app.playSpeech();
-      const currentHighlight =
-          app.$.container.querySelector('.current-read-highlight');
-      assertTrue(currentHighlight !== undefined);
-      assertEquals(currentHighlight!.textContent!, 'This is a ');
-      assertEquals(3, await metrics.whenCalled('recordHighlightGranularity'));
-      assertEquals(1, metrics.getCallCount('recordHighlightGranularity'));
-    });
-
-    test('with sentence highlighting on, sentence is highlighted', async () => {
-      options[3]!.click();
-      await microtasksFinished();
-      assertEquals(
-          chrome.readingMode.highlightGranularity,
-          chrome.readingMode.sentenceHighlighting);
-
-      wordBoundaries.updateBoundary(0);
-      app.playSpeech();
-      const currentHighlight =
-          app.$.container.querySelector('.current-read-highlight');
-      assertTrue(currentHighlight !== undefined);
-      assertEquals(currentHighlight!.textContent!, 'This is a link.');
-      assertEquals(4, await metrics.whenCalled('recordHighlightGranularity'));
-      assertEquals(1, metrics.getCallCount('recordHighlightGranularity'));
-    });
-
-    test('with highlighting off, highlight is invisible', async () => {
-      options[4]!.click();
-      await microtasksFinished();
-      assertEquals(
-          chrome.readingMode.highlightGranularity,
-          chrome.readingMode.noHighlighting);
-
-      wordBoundaries.updateBoundary(0);
-      app.playSpeech();
-      const currentHighlight =
-          app.$.container.querySelector('.current-read-highlight');
-      assertTrue(currentHighlight !== undefined);
-      assertEquals('transparent', computeStyle('--current-highlight-bg-color'));
-      assertEquals(1, await metrics.whenCalled('recordHighlightGranularity'));
-      assertEquals(1, metrics.getCallCount('recordHighlightGranularity'));
-    });
+    const currentHighlight =
+        app.$.container.querySelector('.current-read-highlight');
+    assertTrue(currentHighlight !== undefined);
+    assertEquals(currentHighlight!.textContent!, 'This is a link.');
   });
 
   suite('after a word boundary', () => {
@@ -210,40 +160,6 @@ suite('PhraseHighlighting', () => {
           app.$.container.querySelector('.current-read-highlight');
       assertTrue(currentHighlight !== undefined);
       assertEquals(currentHighlight!.textContent!, 'link.');
-    });
-
-    // Tests for checking correct handling of auto granularity.
-    test(
-        'with auto highlighting and rate of 2, sentence highlight used', () => {
-          chrome.readingMode.onHighlightGranularityChanged(
-              chrome.readingMode.sentenceHighlighting);
-          app.playSpeech();
-          const currentHighlight =
-              app.$.container.querySelector('.current-read-highlight');
-          assertTrue(currentHighlight !== undefined);
-          assertEquals('This is a link.', currentHighlight!.textContent);
-        });
-
-    test('with auto highlighting and rate of 1, phrase highlight used', () => {
-      chrome.readingMode.onHighlightGranularityChanged(
-          chrome.readingMode.autoHighlighting);
-      chrome.readingMode.onSpeechRateChange(1);
-      app.playSpeech();
-      const currentHighlight =
-          app.$.container.querySelector('.current-read-highlight');
-      assertTrue(currentHighlight !== undefined);
-      assertEquals('This is a ', currentHighlight!.textContent);
-    });
-
-    test('with auto highlighting and rate of 0.5, word highlight used', () => {
-      chrome.readingMode.onHighlightGranularityChanged(
-          chrome.readingMode.autoHighlighting);
-      chrome.readingMode.onSpeechRateChange(0.5);
-      app.playSpeech();
-      const currentHighlight =
-          app.$.container.querySelector('.current-read-highlight');
-      assertTrue(currentHighlight !== undefined);
-      assertEquals('This ', currentHighlight!.textContent);
     });
 
     // TODO(b/364327601): Add tests for unsupported language handling.

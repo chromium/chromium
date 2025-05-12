@@ -306,7 +306,7 @@ export class AppElement extends AppElementBase implements
     };
 
     chrome.readingMode.restoreSettingsFromPrefs = () => {
-      this.restoreSettingsFromPrefs();
+      this.restoreSettingsFromPrefs_();
     };
 
     chrome.readingMode.languageChanged = () => {
@@ -538,10 +538,11 @@ export class AppElement extends AppElementBase implements
         // reading mode believes it has selected content to distll but
         // nothing valid is selected. This can cause the loading screen
         // to never switch to the empty state.
-        // TODO: crbug.com/411198154- Longer term, once reading mode and read aloud
-        // traversal is more in line, the renderer should be able to call showEmpty
-        // directly, rather than signaling to the WebUI to update content and then WebUI
-        // signaling back to the renderer that there is no text content.
+        // TODO: crbug.com/411198154- Longer term, once reading mode and read
+        // aloud traversal is more in line, the renderer should be able to call
+        // showEmpty directly, rather than signaling to the WebUI to update
+        // content and then WebUI signaling back to the renderer that there is
+        // no text content.
         chrome.readingMode.onNoTextContent(/* previouslyHadContent*/ false);
       }
       return;
@@ -920,7 +921,7 @@ export class AppElement extends AppElementBase implements
     }
   }
 
-  restoreSettingsFromPrefs() {
+  private restoreSettingsFromPrefs_() {
     if (this.isReadAloudEnabled_) {
       this.voicePackController_.restoreFromPrefs();
     }

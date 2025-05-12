@@ -393,4 +393,20 @@ suite('SpeechController', () => {
 
     assertTrue(movedToPrevious);
   });
+
+  test('onHighlightGranularityChange', async () => {
+    const granularity1 = chrome.readingMode.noHighlighting;
+    const granularity2 = chrome.readingMode.wordHighlighting;
+
+    speechController.onHighlightGranularityChange(granularity1);
+    assertEquals(granularity1, chrome.readingMode.highlightGranularity);
+    assertEquals(
+        granularity1, await metrics.whenCalled('recordHighlightGranularity'));
+
+    metrics.reset();
+    speechController.onHighlightGranularityChange(granularity2);
+    assertEquals(granularity2, chrome.readingMode.highlightGranularity);
+    assertEquals(
+        granularity2, await metrics.whenCalled('recordHighlightGranularity'));
+  });
 });

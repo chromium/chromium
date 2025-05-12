@@ -190,8 +190,6 @@ export class SpeechController {
       this.highlightCurrentGranularity(chrome.readingMode.getCurrentText());
     }
 
-    // Log these highlight granularity changes when the phrase menu is shown.
-    // (Toggles are already logged in the toolbar.)
     this.logger_.logHighlightGranularity(newGranularity);
   }
 

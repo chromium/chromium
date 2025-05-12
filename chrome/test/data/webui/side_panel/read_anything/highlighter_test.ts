@@ -17,6 +17,7 @@ suite('Highlighter', () => {
   function assertFullNodeIsHighlighted(id: number, text: string) {
     assertEquals(
         '<span class="current-read-highlight">' + text + '</span>',
+        (nodeStore.getDomNode(id) as Element).innerHTML,
         (nodeStore.getDomNode(id) as Element).innerHTML);
   }
 
@@ -109,6 +110,27 @@ suite('Highlighter', () => {
     assertTrue(highlighter.hasCurrentHighlights());
     assertFullNodeIsHighlighted(id1, text1);
     assertFullNodeIsHighlighted(id2, text2);
+  });
+
+  test('with auto highlighting and rate of 2, sentence highlight used', () => {
+    chrome.readingMode.onHighlightGranularityChanged(
+        chrome.readingMode.autoHighlighting);
+    chrome.readingMode.onSpeechRateChange(2);
+
+    const id = 10;
+    const sentence = document.createElement('p');
+    const text = 'Woke up today, feeling the way I always do. ';
+    sentence.appendChild(document.createTextNode(text));
+    nodeStore.setDomNode(sentence, id);
+    chrome.readingMode.getCurrentTextStartIndex = () => 0;
+    chrome.readingMode.getCurrentTextEndIndex = () => text.length;
+
+    highlighter.highlightCurrentGranularity(
+        [id], /*scrollIntoView=*/ false,
+        /*shouldUpdateSentenceHighlight=*/ true);
+
+    assertTrue(highlighter.hasCurrentHighlights());
+    assertFullNodeIsHighlighted(id, text);
   });
 
   test('word highlight', () => {
@@ -228,6 +250,32 @@ suite('Highlighter', () => {
             'it\'s evergreen.',
         id2);
   });
+
+  test(
+      'with auto highlighting and rate of 1, word/phrase highlight used',
+      () => {
+        chrome.readingMode.onHighlightGranularityChanged(
+            chrome.readingMode.autoHighlighting);
+        chrome.readingMode.onSpeechRateChange(1);
+        wordBoundaries.updateBoundary(0);
+        const id = 10;
+        chrome.readingMode.getHighlightForCurrentSegmentIndex =
+            () => [{nodeId: id, start: 0, length: 20}];
+        const sentence = document.createElement('p');
+        sentence.appendChild(document.createTextNode(
+            'Hungry for something that I can\'t eat. '));
+        nodeStore.setDomNode(sentence, id);
+
+        highlighter.highlightCurrentGranularity(
+            [id], /*scrollIntoView=*/ false,
+            /*shouldUpdateSentenceHighlight=*/ true);
+
+        assertTrue(highlighter.hasCurrentHighlights());
+        assertHtml(
+            '<span class="current-read-highlight">Hungry for something</span>' +
+                ' that I can\'t eat. ',
+            id);
+      });
 
   test('remove current highlight', () => {
     chrome.readingMode.onHighlightGranularityChanged(

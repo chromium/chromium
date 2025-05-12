@@ -43,7 +43,7 @@ export class ReadAloudHighlighter {
         highlight => highlight.classList.contains(currentReadHighlightClass));
   }
 
-  getCurrentHighlights(): HTMLElement[] {
+  private getCurrentHighlights_(): HTMLElement[] {
     return this.previousHighlights_.filter(
         highlight => highlight.classList.contains(currentReadHighlightClass));
   }
@@ -142,7 +142,7 @@ export class ReadAloudHighlighter {
 
   private getCurrentHighlightBounds_(): DOMRect {
     const bounds = new DOMRect();
-    const currentHighlights = this.getCurrentHighlights();
+    const currentHighlights = this.getCurrentHighlights_();
     if (!currentHighlights || !currentHighlights.length) {
       return bounds;
     }
@@ -373,7 +373,7 @@ export class ReadAloudHighlighter {
     // using word boundaries to know when we've reached the bottom of the
     // window and need to scroll so the rest of the current highlight is
     // showing.
-    const firstHighlight = this.getCurrentHighlights().at(0);
+    const firstHighlight = this.getCurrentHighlights_().at(0);
     if (!firstHighlight) {
       return;
     }
