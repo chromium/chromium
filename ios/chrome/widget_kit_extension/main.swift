@@ -7,22 +7,44 @@ import SwiftUI
 import WidgetKit
 
 @main
-struct ChromeWidgets: WidgetBundle {
-  init() {
+struct ChromeWidgetsMain {
+  static func main() {
     CrashHelper.configure()
-  }
 
-  var body: some Widget {
-    if #available(iOS 17.0, *) {
-      return body17
+    if WidgetsForMultiprofile() {
+      if #available(iOS 17.0, *) {
+        return ChromeWidgetsForMIM.main()
+      } else {
+        return ChromeWidgets.main()
+      }
     } else {
-      return body16
+      return ChromeWidgets.main()
     }
   }
 
-  @available(iOS 17, *)
+  // Checks if widgets for multiprofile feature is enabled.
+  static func WidgetsForMultiprofile() -> Bool {
+    guard let appGroup = AppGroupHelper.groupUserDefaults() else { return false }
+
+    guard let extensionsPrefs = appGroup.object(forKey: "Extension.FieldTrial") as? NSDictionary
+    else { return false }
+
+    guard
+      let shortcutsWidgetPrefs = extensionsPrefs.object(forKey: "WidgetsForMultiprofileKey")
+        as? NSDictionary
+    else { return false }
+    guard
+      let shortcutsWidgetEnabled = shortcutsWidgetPrefs.object(forKey: "FieldTrialValue")
+        as? NSNumber
+    else { return false }
+    return shortcutsWidgetEnabled == 1
+  }
+}
+
+@available(iOS 17, *)
+struct ChromeWidgetsForMIM: WidgetBundle {
   @WidgetBundleBuilder
-  var body17: some Widget {
+  var body: some Widget {
     #if IOS_ENABLE_WIDGETS_FOR_MIM
       QuickActionsWidgetConfigurable()
       SearchWidgetConfigurable()
@@ -45,9 +67,11 @@ struct ChromeWidgets: WidgetBundle {
       #endif
     #endif
   }
+}
 
+struct ChromeWidgets: WidgetBundle {
   @WidgetBundleBuilder
-  var body16: some Widget {
+  var body: some Widget {
     QuickActionsWidget()
     SearchWidget()
     ShortcutsWidget()
