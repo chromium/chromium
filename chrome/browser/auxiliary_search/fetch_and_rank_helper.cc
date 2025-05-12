@@ -61,9 +61,18 @@ base::TimeDelta GetDefaultAgeLimit(URLVisitAggregate::URLType url_type) {
 
 // Get the default visit duration limit for the `url_type`.
 std::optional<base::TimeDelta> GetDefaultVisitDurationLimit(
-    URLVisitAggregate::URLType url_type) {
+    URLVisitAggregate::URLType url_type,
+    bool skip_visit_duration_limit = false) {
   switch (url_type) {
     case URLVisitAggregate::URLType::kCCTVisit:
+      // Needs to skip visit_duration check in
+      // HistoryURLVisitDataFetcher#OnGotAnnotatedVisits when fetching an open
+      // CCT whose visit_duration is 0. The visit duration will be set to the
+      // history database once the CCT is closed.
+      if (skip_visit_duration_limit) {
+        return std::nullopt;
+      }
+
       return base::Seconds(
           chrome::android::kAppIntegrationCCTVisitDurationLimitSecParam.Get());
     default:
@@ -77,7 +86,9 @@ int GetMaxDonationCount() {
 }
 
 FetchOptions CreateFetchOptionsForTabDonation(
-    const URLVisitAggregate::URLTypeSet& result_sources) {
+    const URLVisitAggregate::URLTypeSet& result_sources,
+    bool include_local_tab,
+    std::optional<base::Time> begin_time) {
   std::vector<URLVisitAggregatesTransformType> transforms{
       URLVisitAggregatesTransformType::kRecencyFilter,
       URLVisitAggregatesTransformType::kDefaultAppUrlFilter,
@@ -97,9 +108,12 @@ FetchOptions CreateFetchOptionsForTabDonation(
   fetcher_sources.emplace(Fetcher::kHistory,
                           visited_url_ranking::FetchOptions::kOriginSources);
 
-  fetcher_sources.emplace(Fetcher::kTabModel,
-                          visited_url_ranking::FetchOptions::FetchSources(
-                              {visited_url_ranking::URLVisit::Source::kLocal}));
+  if (include_local_tab) {
+    fetcher_sources.emplace(
+        Fetcher::kTabModel,
+        visited_url_ranking::FetchOptions::FetchSources(
+            {visited_url_ranking::URLVisit::Source::kLocal}));
+  }
 
   // Sets the query duration to match the age limit for the local Tabs. It
   // allows getting the sensitivity scores of all qualified local Tabs.
@@ -114,28 +128,43 @@ FetchOptions CreateFetchOptionsForTabDonation(
   for (URLVisitAggregate::URLType type : result_sources) {
     result_map[type] = visited_url_ranking::FetchOptions::ResultOption{
         .age_limit = GetDefaultAgeLimit(type),
-        .visit_duration_limit = GetDefaultVisitDurationLimit(type)};
+        .visit_duration_limit =
+            GetDefaultVisitDurationLimit(type, begin_time != std::nullopt)};
   }
+
+  // Adjusts the begin time.
+  base::Time new_begin_time =
+      std::max(base::Time::Now() - base::Hours(query_duration),
+               begin_time.value_or(base::Time()));
+
   return FetchOptions(std::move(result_map), std::move(fetcher_sources),
-                      base::Time::Now() - base::Hours(query_duration),
-                      std::move(transforms), GetMaxDonationCount());
+                      new_begin_time, std::move(transforms),
+                      GetMaxDonationCount());
 }
 
-FetchOptions CreateFetchOptions() {
-  URLVisitAggregate::URLTypeSet expected_types = {
-      URLVisitAggregate::URLType::kActiveLocalTab,
-      URLVisitAggregate::URLType::kCCTVisit};
-  return CreateFetchOptionsForTabDonation(expected_types);
+FetchOptions CreateFetchOptions(bool include_local_tab,
+                                std::optional<base::Time> begin_time) {
+  URLVisitAggregate::URLTypeSet expected_types;
+  if (include_local_tab) {
+    expected_types = {URLVisitAggregate::URLType::kActiveLocalTab,
+                      URLVisitAggregate::URLType::kCCTVisit};
+  } else {
+    expected_types = {URLVisitAggregate::URLType::kCCTVisit};
+  }
+  return CreateFetchOptionsForTabDonation(expected_types, include_local_tab,
+                                          begin_time);
 }
 
 }  // namespace
 
 FetchAndRankHelper::FetchAndRankHelper(
     VisitedURLRankingService* ranking_service,
-    FetchResultCallback entries_callback)
+    FetchResultCallback entries_callback,
+    bool include_local_tab,
+    std::optional<base::Time> begin_time)
     : ranking_service_(ranking_service),
       entries_callback_(std::move(entries_callback)),
-      fetch_options_(CreateFetchOptions()),
+      fetch_options_(CreateFetchOptions(include_local_tab, begin_time)),
       config_({.key = visited_url_ranking::kTabResumptionRankerKey}) {}
 
 void FetchAndRankHelper::StartFetching() {

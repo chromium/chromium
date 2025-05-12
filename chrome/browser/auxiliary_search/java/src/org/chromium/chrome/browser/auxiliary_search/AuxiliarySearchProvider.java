@@ -89,7 +89,7 @@ public class AuxiliarySearchProvider {
             @AuxiliarySearchHostType int hostType) {
         mContext = context;
         mProfile = profile;
-        if (hostType == AuxiliarySearchHostType.CTA) {
+        if (hostType != AuxiliarySearchHostType.BACKGROUND_TASK) {
             mAuxiliarySearchBridge = new AuxiliarySearchBridge(mProfile);
         }
         mTabModelSelector = tabModelSelector;
@@ -121,6 +121,16 @@ public class AuxiliarySearchProvider {
         // We will get up to 100 tabs as default. This is controlled by feature
         // AuxiliarySearchDonation.
         mAuxiliarySearchBridge.getNonSensitiveHistoryData(callback);
+    }
+
+    public void getCustomTabsAsync(
+            long beginTime, Callback<@Nullable List<AuxiliarySearchDataEntry>> callback) {
+        if (mAuxiliarySearchBridge == null) {
+            callback.onResult(null);
+            return;
+        }
+
+        mAuxiliarySearchBridge.getCustomTabs(beginTime, callback);
     }
 
     @VisibleForTesting

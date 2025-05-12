@@ -38,15 +38,15 @@ public interface AuxiliarySearchController extends PauseResumeWithNativeObserver
 
     @IntDef({
         AuxiliarySearchHostType.CTA,
-        AuxiliarySearchHostType.CTA_BACKGROUND_TASK,
-        AuxiliarySearchHostType.CCT_BACKGROUND_TASK,
+        AuxiliarySearchHostType.BACKGROUND_TASK,
+        AuxiliarySearchHostType.CUSTOM_TAB,
         AuxiliarySearchHostType.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface AuxiliarySearchHostType {
         int CTA = 0;
-        int CTA_BACKGROUND_TASK = 1;
-        int CCT_BACKGROUND_TASK = 2;
+        int BACKGROUND_TASK = 1;
+        int CUSTOM_TAB = 2;
         int NUM_ENTRIES = 3;
     }
 
@@ -86,4 +86,11 @@ public interface AuxiliarySearchController extends PauseResumeWithNativeObserver
      * startup.
      */
     default void onDeferredStartup() {}
+
+    /**
+     * Called by CustomTabActivity to donate CCTs.
+     *
+     * @param beginTime The last visited timestamp of the Tab of the CustomTabActivity.
+     */
+    default void donateCustomTabs(long beginTime) {}
 }

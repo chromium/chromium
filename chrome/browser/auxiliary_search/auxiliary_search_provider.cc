@@ -172,6 +172,23 @@ void AuxiliarySearchProvider::GetNonSensitiveHistoryData(
   helper->StartFetching();
 }
 
+void AuxiliarySearchProvider::GetCustomTabs(
+    JNIEnv* env,
+    jlong j_begin_time,
+    const base::android::JavaParamRef<jobject>& j_callback_obj) const {
+  CHECK(ranking_service_ != nullptr);
+  scoped_refptr<FetchAndRankHelper> helper =
+      base::MakeRefCounted<FetchAndRankHelper>(
+          ranking_service_,
+          base::BindOnce(
+              &OnDataReady, env,
+              base::android::ScopedJavaGlobalRef<jobject>(j_callback_obj)),
+          /*include_local_tab=*/false,
+          base::Time::FromMillisecondsSinceUnixEpoch(j_begin_time));
+
+  helper->StartFetching();
+}
+
 // static
 void AuxiliarySearchProvider::FilterTabsByScheme(
     std::vector<raw_ptr<TabAndroid, VectorExperimental>>& tabs) {

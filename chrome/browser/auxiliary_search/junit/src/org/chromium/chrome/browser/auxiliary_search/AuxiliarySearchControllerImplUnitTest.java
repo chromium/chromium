@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,6 +81,9 @@ public class AuxiliarySearchControllerImplUnitTest {
     @Captor private ArgumentCaptor<Callback<Boolean>> mFaviconDonationCompleteCallbackCaptor;
     @Captor private ArgumentCaptor<FaviconHelper.FaviconImageCallback> mFaviconImageCallbackCaptor1;
     @Captor private ArgumentCaptor<FaviconHelper.FaviconImageCallback> mFaviconImageCallbackCaptor2;
+
+    @Captor
+    private ArgumentCaptor<Callback<List<AuxiliarySearchDataEntry>>> mEntryReadyCallbackCaptor;
 
     private AuxiliarySearchControllerImpl mAuxiliarySearchControllerImpl;
 
@@ -157,7 +161,7 @@ public class AuxiliarySearchControllerImplUnitTest {
         verify(mAuxiliarySearchProvider).getTabsSearchableDataProtoAsync(mCallbackCaptor.capture());
         mFakeTime.advanceMillis(timeDelta);
 
-        mCallbackCaptor.getValue().onResult(new ArrayList<>());
+        mCallbackCaptor.getValue().onResult(Collections.emptyList());
         histogramWatcher.assertExpected();
     }
 
@@ -168,6 +172,26 @@ public class AuxiliarySearchControllerImplUnitTest {
 
         verify(mAuxiliarySearchProvider, never())
                 .getTabsSearchableDataProtoAsync(any(Callback.class));
+    }
+
+    @Test
+    public void testDonateCustomTabs() {
+        int timeDelta = 50;
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Search.AuxiliarySearch.QueryTime.CustomTabs", timeDelta)
+                        .build();
+
+        long beginTime = 4 * TimeUtils.MILLISECONDS_PER_MINUTE;
+        mAuxiliarySearchControllerImpl.donateCustomTabs(beginTime);
+        verify(mAuxiliarySearchProvider)
+                .getCustomTabsAsync(
+                        eq(beginTime - AuxiliarySearchControllerImpl.TIME_RANGE_MS),
+                        mEntryReadyCallbackCaptor.capture());
+
+        mFakeTime.advanceMillis(timeDelta);
+        mEntryReadyCallbackCaptor.getValue().onResult(Collections.emptyList());
+        histogramWatcher.assertExpected();
     }
 
     @Test

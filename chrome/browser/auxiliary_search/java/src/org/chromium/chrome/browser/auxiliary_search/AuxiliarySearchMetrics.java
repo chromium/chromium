@@ -126,6 +126,11 @@ public class AuxiliarySearchMetrics {
     public static final String HISTOGRAM_QUERYTIME_FAVICONS =
             "Search.AuxiliarySearch.QueryTime.Favicons";
 
+    /** Captures the amount of time spent querying history database for CCTs. */
+    @VisibleForTesting
+    public static final String HISTOGRAM_QUERYTIME_CUSTOM_TABS =
+            "Search.AuxiliarySearch.QueryTime.CustomTabs";
+
     /** Captures the amount of donated tabs. */
     @VisibleForTesting
     public static final String HISTOGRAM_DONATEDCOUNT_TABS =
@@ -246,6 +251,11 @@ public class AuxiliarySearchMetrics {
     /** Record the amount of time for querying tabs and CCTs from the history database. */
     public static void recordQueryHistoryDataTime(long queryTimeInMs) {
         RecordHistogram.recordTimesHistogram(HISTOGRAM_QUERYTIME_HISTORY, queryTimeInMs);
+    }
+
+    /** Record the amount of time for querying CCTs from the history database. */
+    public static void recordQueryCustomTabTime(long queryTimeInMs) {
+        RecordHistogram.recordTimesHistogram(HISTOGRAM_QUERYTIME_CUSTOM_TABS, queryTimeInMs);
     }
 
     /**

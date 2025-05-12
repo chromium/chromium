@@ -31,6 +31,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
@@ -39,6 +40,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
@@ -61,11 +64,13 @@ import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinat
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.util.ColorUtils;
 
 /** The activity for custom tabs. It will be launched on top of a client's task. */
 public class CustomTabActivity extends BaseCustomTabActivity {
+    private static final String TAG = "CustomTab";
     private SessionHolder<?> mSession;
 
     private final CustomTabsConnection mConnection = CustomTabsConnection.getInstance();
@@ -89,6 +94,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     private static final boolean sBlockTouchesDuringEnterAnimation =
             ChromeFeatureList.sCctBlockTouchesDuringEnterAnimation.isEnabled();
     private boolean mIsEnterAnimationCompleted;
+    private @Nullable AuxiliarySearchController mAuxiliarySearchController;
 
     private final CustomTabActivityTabProvider.Observer mTabChangeObserver =
             new CustomTabActivityTabProvider.Observer() {
@@ -235,6 +241,37 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     protected void handleFinishAndClose(@FinishReason int reason, boolean warmupOnFinish) {
         if (mOpenTimeRecorder != null) mOpenTimeRecorder.updateCloseCause();
         super.handleFinishAndClose(reason, warmupOnFinish);
+    }
+
+    @Override
+    protected void onDeferredStartup() {
+        super.onDeferredStartup();
+
+        if (isActivityFinishingOrDestroyed()) return;
+
+        if (ChromeFeatureList.sAndroidAppIntegrationMultiDataSource.isEnabled()) {
+            // TODO(https://crbug.com/397457989): Removes this log once the feature is launched.
+            Log.i(TAG, "To create AuxiliarySearchController on deferred startup.");
+            AuxiliarySearchControllerFactory.getInstance()
+                    .setIsTablet(DeviceFormFactor.isWindowOnTablet(getWindowAndroid()));
+            mAuxiliarySearchController =
+                    AuxiliarySearchControllerFactory.getInstance()
+                            .createAuxiliarySearchController(
+                                    CustomTabActivity.this,
+                                    mTabModelProfileSupplier.get(),
+                                    null,
+                                    AuxiliarySearchController.AuxiliarySearchHostType.CUSTOM_TAB);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (mAuxiliarySearchController != null) {
+            mAuxiliarySearchController.donateCustomTabs(
+                    getCustomTabActivityTabProvider().getTab().getTimestampMillis());
+        }
     }
 
     @Override

@@ -91,6 +91,21 @@ public class AuxiliarySearchBridge {
     }
 
     /**
+     * This method will return a list of Custom Tabs URLs.
+     *
+     * @param callback {@link Callback} to pass back the list of {@link AuxiliarySearchDataEntry}s.
+     */
+    public void getCustomTabs(
+            long timestamp, Callback<@Nullable List<AuxiliarySearchDataEntry>> callback) {
+        if (mNativeBridge == 0) {
+            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(null));
+            return;
+        }
+
+        AuxiliarySearchBridgeJni.get().getCustomTabs(mNativeBridge, timestamp, callback);
+    }
+
+    /**
      * Helper to call previously injected callback to pass suggestion results.
      *
      * @param entries The list of fetched entries.
@@ -114,6 +129,11 @@ public class AuxiliarySearchBridge {
 
         void getNonSensitiveHistoryData(
                 long nativeAuxiliarySearchProvider,
+                Callback<@Nullable List<AuxiliarySearchDataEntry>> callback);
+
+        void getCustomTabs(
+                long nativeAuxiliarySearchProvider,
+                long timestamp,
                 Callback<@Nullable List<AuxiliarySearchDataEntry>> callback);
     }
 }

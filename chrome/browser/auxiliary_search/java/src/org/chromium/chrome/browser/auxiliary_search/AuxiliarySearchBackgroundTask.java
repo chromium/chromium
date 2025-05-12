@@ -91,7 +91,7 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
                                 mContext,
                                 profile,
                                 /* tabModelSelector= */ null,
-                                AuxiliarySearchHostType.CTA_BACKGROUND_TASK);
+                                AuxiliarySearchHostType.BACKGROUND_TASK);
 
         long startTimeMs = TimeUtils.uptimeMillis();
         // Record the delay from soonest expected wakeup time.
