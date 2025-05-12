@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "base/trace_event/named_trigger.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -1287,12 +1288,16 @@ void SearchPrefetchService::RecordInterceptionMetrics(
   }
   auto iter = search_terms_cache_.Get(search_terms);
   if (iter != search_terms_cache_.end()) {
+    base::TimeDelta age = base::Time::Now() - iter->second;
     base::UmaHistogramCustomTimes(
-        "Omnibox.SearchPrefetch.DuplicateSearchTermsAge",
-        base::Time::Now() - iter->second, base::Milliseconds(1),
-        base::Hours(10), 100);
+        "Omnibox.SearchPrefetch.DuplicateSearchTermsAge", age,
+        base::Milliseconds(1), base::Hours(10), 100);
+    if (age < base::Milliseconds(30)) {
+      base::trace_event::EmitNamedTrigger("second-search-request-within30");
+    }
   }
   search_terms_cache_.Put(search_terms, base::Time::Now());
+  base::trace_event::EmitNamedTrigger("first-search-request");
 }
 
 void SearchPrefetchService::
