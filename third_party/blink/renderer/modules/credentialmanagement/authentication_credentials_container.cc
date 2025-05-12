@@ -537,6 +537,8 @@ void OnPreventSilentAccessComplete(
 
 void OnGetComplete(std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
                    RequiredOriginType required_origin_type,
+                   Mediation mediation,
+
                    CredentialManagerError error,
                    CredentialInfoPtr credential_info) {
   auto* resolver =
@@ -545,12 +547,20 @@ void OnGetComplete(std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
   AssertSecurityRequirementsBeforeResponse(resolver, required_origin_type);
   if (error != CredentialManagerError::SUCCESS) {
     DCHECK(!credential_info);
+    if (mediation == Mediation::IMMEDIATE) {
+      UseCounter::Count(resolver->GetExecutionContext(),
+                        WebFeature::kCredentialsGetImmediateMediationFailure);
+    }
     resolver->Reject(CredentialManagerErrorToDOMException(error));
     return;
   }
   DCHECK(credential_info);
   UseCounter::Count(resolver->GetExecutionContext(),
                     WebFeature::kCredentialManagerGetReturnedCredential);
+  if (mediation == Mediation::IMMEDIATE) {
+    UseCounter::Count(resolver->GetExecutionContext(),
+                      WebFeature::kCredentialsGetImmediateMediationPasswordSuccess);
+  }
   resolver->Resolve(mojo::ConvertTo<Credential*>(std::move(credential_info)));
 }
 
@@ -766,6 +776,9 @@ void OnGetAssertionComplete(
     if (mediation == Mediation::CONDITIONAL) {
       UseCounter::Count(resolver->GetExecutionContext(),
                         WebFeature::kWebAuthnConditionalUiGetSuccess);
+    } else if (mediation == Mediation::IMMEDIATE) {
+      UseCounter::Count(resolver->GetExecutionContext(),
+                        WebFeature::kCredentialsGetImmediateMediationPublicKeySuccess);
     }
 
     auto* authenticator_response =
@@ -789,6 +802,10 @@ void OnGetAssertionComplete(
         authenticator_response, credential->authenticator_attachment,
         extension_outputs));
     return;
+  }
+  if (mediation == Mediation::IMMEDIATE) {
+    UseCounter::Count(resolver->GetExecutionContext(),
+                      WebFeature::kCredentialsGetImmediateMediationFailure);
   }
   DCHECK(!credential);
   AbortSignal* signal =
@@ -826,7 +843,7 @@ void OnAuthenticatorGetCredentialComplete(
   auto password_response =
       std::move(get_credential_response->get_password_response());
   OnGetComplete(std::move(scoped_resolver), RequiredOriginType::kSecure,
-                CredentialManagerError::SUCCESS, std::move(password_response));
+                mediation, CredentialManagerError::SUCCESS, std::move(password_response));
 }
 
 void OnSmsReceive(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
@@ -1655,7 +1672,7 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
       requirement, options->password(), std::move(providers),
       WTF::BindOnce(&OnGetComplete,
                     std::make_unique<ScopedPromiseResolver>(resolver),
-                    required_origin_type));
+                    required_origin_type, Mediation::MODAL));
 
   return promise;
 }

@@ -6201,6 +6201,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5572" label="V8WebGL2RenderingContextWebGPU_GetExtension_Method"/>
   <int value="5573"
       label="V8WebGL2RenderingContextWebGPU_GetSupportedExtensions_Method"/>
+  <int value="5574" label="CredentialsGetImmediateMediationPasswordSuccess"/>
+  <int value="5575" label="CredentialsGetImmediateMediationPublicKeySuccess"/>
+  <int value="5576" label="CredentialsGetImmediateMediationFailure"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
