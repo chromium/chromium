@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
 #include "base/types/pass_key.h"
+#include "components/tabs/public/supports_handles.h"
 #include "components/tabs/public/tab_collection_storage.h"
 
 namespace tabs {
@@ -27,7 +28,7 @@ class TabInterface;
 // Different types of collections should implement this base class based on how
 // their feature works. For example, a pinned collection can implement tab
 // collection that does not store any collection.
-class TabCollection {
+class TabCollection : public SupportsHandles<TabCollection> {
  public:
   // Iterator provides a way to traverse all tab objects within this
   // TabCollection and its sub-collections in a depth first inorder traversal
@@ -107,7 +108,7 @@ class TabCollection {
   // - SPLIT:     A container for split tabs.
   enum class Type { TABSTRIP, PINNED, UNPINNED, GROUP, SPLIT };
 
-  virtual ~TabCollection();
+  ~TabCollection() override;
   TabCollection(const TabCollection&) = delete;
   TabCollection& operator=(const TabCollection&) = delete;
 
@@ -220,6 +221,8 @@ class TabCollection {
   // Underlying implementation for the storage of children.
   std::unique_ptr<TabCollectionStorage> impl_;
 };
+
+using TabCollectionHandle = TabCollection::Handle;
 
 }  // namespace tabs
 
