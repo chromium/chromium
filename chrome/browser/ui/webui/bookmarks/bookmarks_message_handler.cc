@@ -45,7 +45,10 @@ constexpr base::TimeDelta
 GaiaId GetPrimaryAccountGaiaId(Profile* profile) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  CHECK(identity_manager);
+  // Identity manager is null in incognito mode.
+  if (!identity_manager) {
+    return GaiaId();
+  }
   return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
       .gaia;
 }
@@ -172,9 +175,14 @@ void BookmarksMessageHandler::OnJavascriptAllowed() {
       base::BindRepeating(&BookmarksMessageHandler::UpdateCanEditBookmarks,
                           base::Unretained(this)));
 
-  identity_manager_observation_.Observe(
-      IdentityManagerFactory::GetForProfile(profile));
-  sync_service_observation_.Observe(SyncServiceFactory::GetForProfile(profile));
+  // Identity manager is null in incognito mode.
+  if (auto* identtiy_manager = IdentityManagerFactory::GetForProfile(profile)) {
+    identity_manager_observation_.Observe(identtiy_manager);
+  }
+  // Sync Service is null in incognito mode.
+  if (auto* sync_service = SyncServiceFactory::GetForProfile(profile)) {
+    sync_service_observation_.Observe(sync_service);
+  }
   bookmark_model_observation_.Observe(
       BookmarkModelFactory::GetForBrowserContext(profile));
 }
