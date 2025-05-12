@@ -283,6 +283,7 @@ mod format_as_gn_expr {
             RustTargetArch::X8664 => "current_cpu == \"x64\"",
             RustTargetArch::Powerpc64 => "(current_cpu == \"ppc64le\")",
             RustTargetArch::S390x => "(current_cpu == \"s390x\")",
+            RustTargetArch::Loongarch64 => "(current_cpu == \"loong64\")",
         }
     }
 

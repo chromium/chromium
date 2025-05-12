@@ -28,6 +28,7 @@ i386-apple-ios
 i686-linux-android
 i686-pc-windows-msvc
 i686-unknown-linux-gnu
+loongarch64-unknown-linux-gnu
 riscv64-linux-android
 riscv64gc-unknown-linux-gnu
 thumbv7neon-linux-androideabi

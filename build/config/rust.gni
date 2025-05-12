@@ -232,6 +232,9 @@ if (is_linux || is_chromeos) {
   } else if (current_cpu == "s390x") {
     rust_abi_target = "s390x-unknown-linux-gnu"
     cargo_target_abi = ""
+  } else if (current_cpu == "loong64") {
+    rust_abi_target = "loongarch64-unknown-linux-gnu"
+    cargo_target_abi = ""
   } else {
     # Best guess for other future platforms.
     rust_abi_target = current_cpu + "-unknown-linux-gnu"
@@ -409,6 +412,8 @@ if (current_cpu == "x86") {
   rust_target_arch = "powerpc64"
 } else if (current_cpu == "riscv64") {
   rust_target_arch = "riscv64"
+} else if (current_cpu == "loong64") {
+  rust_target_arch = "loongarch64"
 }
 
 assert(!toolchain_has_rust || rust_target_arch != "")
