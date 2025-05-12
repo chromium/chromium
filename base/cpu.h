@@ -94,6 +94,9 @@ class BASE_EXPORT CPU final {
   bool has_avx512_f() const { return has_avx512_f_; }
   bool has_avx512_bw() const { return has_avx512_bw_; }
   bool has_avx512_vnni() const { return has_avx512_vnni_; }
+  // NOTE: This does not include 256-bit PCLMUL, which is
+  // a separate feature flag.
+  bool has_pclmul() const { return has_pclmul_; }
 #endif
   bool has_aesni() const { return has_aesni_; }
   bool has_non_stop_time_stamp_counter() const {
@@ -149,6 +152,7 @@ class BASE_EXPORT CPU final {
   bool has_avx512_f_ = false;
   bool has_avx512_bw_ = false;
   bool has_avx512_vnni_ = false;
+  bool has_pclmul_ = false;
 #endif
   bool has_aesni_ = false;
 #if defined(ARCH_CPU_ARM_FAMILY)

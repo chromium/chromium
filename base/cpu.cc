@@ -235,6 +235,7 @@ void CPU::Initialize() {
     }
 
     has_pku_ = (cpu_info7[2] & 0x00000010) != 0;
+    has_pclmul_ = (cpu_info[2] & 0x00000002) != 0;
   }
 
   // Get the brand string of the cpu.
