@@ -38,7 +38,7 @@
   dispatch_barrier_async(self.workingQueue, ^{
     if (weakSelf) {
       [weakSelf saveDataWithCompletionBlockBody:completion];
-    } else {
+    } else if (completion) {
       NSError* error =
           [[NSError alloc] initWithDomain:@""
                                      code:0
