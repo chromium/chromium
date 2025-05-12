@@ -2049,11 +2049,8 @@ class BrowserAutofillManagerTestValuables : public BrowserAutofillManagerTest {
 };
 
 TEST_F(BrowserAutofillManagerTestValuables, GetSuggestions_LoyaltyCards) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {syncer::kSyncAutofillLoyaltyCard,
-       features::kAutofillEnableLoyaltyCardsFilling},
-      {});
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableLoyaltyCardsFilling};
 
   SetLoyaltyCards({test::CreateLoyaltyCard()});
 
