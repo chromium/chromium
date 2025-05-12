@@ -828,6 +828,36 @@ TEST_F(FloatingWorkspaceServiceV2Test, NoNetworkForFloatingWorkspaceTemplate) {
   EXPECT_TRUE(HasNotificationFor(kNotificationForNoNetworkConnection));
 }
 
+TEST_F(FloatingWorkspaceServiceV2Test, NetworkConnectedButOffline) {
+  PopulateAppsCache();
+  CleanUpTestNetworkDevices();
+  // Connect to wifi, but set it to the ready state instead of online.
+  AddTestNetworkDevice();
+  network_handler_test_helper()->ResetDevicesAndServices();
+  std::string path = network_handler_test_helper()->ConfigureService(
+      R"({"GUID": "wifi1_guid", "Type": "wifi", "State": "ready",
+            "Strength": 50, "AutoConnect": true, "WiFi.HiddenSSID":
+            false})");
+  task_environment().RunUntilIdle();
+  ASSERT_TRUE(NetworkHandler::Get()->network_state_handler()->DefaultNetwork());
+  CreateFloatingWorkspaceServiceForTesting(profile());
+  auto* floating_workspace_service =
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
+  floating_workspace_service->Init(test_sync_service(),
+                                   fake_desk_sync_service(),
+                                   fake_device_info_sync_service());
+
+  task_environment().RunUntilIdle();
+  EXPECT_TRUE(HasNotificationFor(kNotificationForNoNetworkConnection));
+
+  // Switch wifi to online and check that Floating Workspace service
+  // detects it and hide the notification.
+  network_handler_test_helper()->SetServiceProperty(
+      path, shill::kStateProperty, base::Value(shill::kStateOnline));
+  task_environment().RunUntilIdle();
+  EXPECT_FALSE(HasNotificationFor(kNotificationForNoNetworkConnection));
+}
+
 TEST_F(FloatingWorkspaceServiceV2Test,
        NoNetworkForFloatingWorkspaceTemplateAfterLongDelay) {
   SkipOnFirstSyncCallback();

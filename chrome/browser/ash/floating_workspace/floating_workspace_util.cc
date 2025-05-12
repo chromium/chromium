@@ -82,8 +82,14 @@ bool IsFloatingWorkspaceV2Enabled() {
 
 bool IsInternetConnected() {
   NetworkStateHandler* nsh = NetworkHandler::Get()->network_state_handler();
-  return nsh != nullptr &&
-         nsh->ConnectedNetworkByType(NetworkTypePattern::Default()) != nullptr;
+  if (!nsh) {
+    return false;
+  }
+  const NetworkState* state = nsh->DefaultNetwork();
+  if (!state) {
+    return false;
+  }
+  return state->IsOnline();
 }
 
 bool IsSafeMode() {
