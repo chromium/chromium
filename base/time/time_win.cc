@@ -571,6 +571,8 @@ TimeTicks QPCNow() {
   return TimeTicks() + QPCValueToTimeDelta(QPCNowRaw());
 }
 
+std::atomic<bool> g_opted_out_of_qpc_trial_because_no_command_line = false;
+
 void InitializeNowFunctionPointer() {
   LARGE_INTEGER ticks_per_sec = {};
   // `QueryPerformanceFrequency` always succeeds and sets its out parameter to a
@@ -594,6 +596,11 @@ void InitializeNowFunctionPointer() {
   // Otherwise, Now uses the high-resolution QPC clock. As of 9 September 2024,
   // ~97% of users fall within this category.
   bool eligible_for_high_res_time_ticks = false;
+
+  // To debug an issue where in the field, all clients are in the Control group.
+  // We suspect it might be due to the command line not being ready before this
+  // function is called in some build configurations.
+  bool opted_out_because_no_command_line = false;
 
   // `ticks_per_sec.QuadPart <= 0` shouldn't happen post-WinXP (see CHECKs
   // above) but if it does, QPC is broken and shouldn't be used for any reason.
@@ -633,6 +640,8 @@ void InitializeNowFunctionPointer() {
         // TimeTicks so the dice roll will not be used.
         force_high_res_time_ticks = base::RandDouble() < 0.5;
       }
+    } else {
+      opted_out_because_no_command_line = true;
     }
 
     eligible_for_high_res_time_ticks =
@@ -674,6 +683,11 @@ void InitializeNowFunctionPointer() {
     // via TimeTicksNowIgnoringOverride() for future calls to TimeTicks::Now().
     internal::g_time_ticks_now_function.store(now_function,
                                               std::memory_order_relaxed);
+
+    // Only the thread setting the functions should report whether its command
+    // line was ready.
+    g_opted_out_of_qpc_trial_because_no_command_line.store(
+        opted_out_because_no_command_line, std::memory_order_relaxed);
   }
 }
 
@@ -688,6 +702,7 @@ enum class HighResolutionTrialState {
   kExcludedFromTrial,
   kDontUseHighResolution,
   kUseHighResolution,
+  kExcludedBecauseNoCommandLine,
 };
 
 HighResolutionTrialState GetHighResolutionTrialState() {
@@ -706,7 +721,12 @@ HighResolutionTrialState GetHighResolutionTrialState() {
 
   CPU cpu;
   if (!cpu.has_non_stop_time_stamp_counter()) {
-    if (is_high_res) {
+    if (g_opted_out_of_qpc_trial_because_no_command_line.load(
+            std::memory_order_relaxed)) {
+      // If there was no command line ready when initializing the time
+      // functions, put the client in a separate group.
+      return HighResolutionTrialState::kExcludedBecauseNoCommandLine;
+    } else if (is_high_res) {
       // If the device isn't considered eligible for QPC-based TimeTicks but is
       // using it regardless, it means that it's part of the experimental QPC
       // group.
@@ -878,6 +898,9 @@ bool TimeTicks::GetHighResolutionTimeTicksFieldTrial(std::string* trial_name,
     case HighResolutionTrialState::kUseHighResolution:
       *group_name = "Enabled";
       break;
+    case HighResolutionTrialState::kExcludedBecauseNoCommandLine:
+      *group_name = "ExcludedBecauseNoCommandLine";
+      break;
   }
 
   *trial_name = "HighResolutionTimeTicks";
@@ -895,6 +918,7 @@ void TimeTicks::MaybeAddHighResolutionTimeTicksSwitch(
       // TimeTicks, don't pass any command line flag.
       break;
     case HighResolutionTrialState::kExcludedFromTrial:
+    case HighResolutionTrialState::kExcludedBecauseNoCommandLine:
       // In the cases of "Control" and "Excluded", tell the child process not to
       // use QPC for TimeTicks to match the browser process.
       [[fallthrough]];
