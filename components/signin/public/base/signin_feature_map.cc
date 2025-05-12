@@ -28,6 +28,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kUseHostedDomainForManagementCheckOnSignin,
     &switches::kSyncEnableBookmarksInTransportMode,
     &switches::kHistoryOptInEducationalTip,
+    &switches::kMakeAccountsAvailableInIdentityManager,
 };
 
 // static

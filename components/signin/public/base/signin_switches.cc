@@ -54,6 +54,10 @@ BASE_FEATURE(kUnoForAuto, "UnoForAuto", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUseHostedDomainForManagementCheckOnSignin,
              "UseHostedDomainForManagementCheckOnSignin",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kMakeAccountsAvailableInIdentityManager,
+             "MakeAccountsAvailableInIdentityManager",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

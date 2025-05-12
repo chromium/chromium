@@ -16,6 +16,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "components/signin/public/android/jni_headers/IdentityMutator_jni.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #endif
 
@@ -46,12 +47,20 @@ jint JniIdentityMutator::SetPrimaryAccount(
   return static_cast<jint>(error);
 }
 
+// TODO(crbug.com/373290337): Rename this method after feature launch.
 bool JniIdentityMutator::ClearPrimaryAccount(JNIEnv* env, jint source_metric) {
   PrimaryAccountMutator* primary_account_mutator =
       identity_mutator_->GetPrimaryAccountMutator();
   DCHECK(primary_account_mutator);
-  return primary_account_mutator->ClearPrimaryAccount(
-      static_cast<signin_metrics::ProfileSignout>(source_metric));
+  if (base::FeatureList::IsEnabled(
+          switches::kMakeAccountsAvailableInIdentityManager)) {
+    // If the feature is enabled we will not clear the accounts.
+    return primary_account_mutator->RemovePrimaryAccountButKeepTokens(
+        static_cast<signin_metrics::ProfileSignout>(source_metric));
+  } else {
+    return primary_account_mutator->ClearPrimaryAccount(
+        static_cast<signin_metrics::ProfileSignout>(source_metric));
+  }
 }
 
 void JniIdentityMutator::RevokeSyncConsent(JNIEnv* env, jint source_metric) {

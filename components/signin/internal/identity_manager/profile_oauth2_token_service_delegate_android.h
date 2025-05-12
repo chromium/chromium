@@ -109,7 +109,7 @@ class ProfileOAuth2TokenServiceDelegateAndroid
                          std::vector<CoreAccountId>* refreshed_ids,
                          std::vector<CoreAccountId>* revoked_ids);
   // As |GetAccounts| but with only validated account IDs.
-  std::vector<CoreAccountId> GetValidAccounts();
+  std::vector<CoreAccountId> GetValidAccounts() const;
   // Set accounts that have been advertised by OnRefreshTokenAvailable.
   virtual void SetAccounts(const std::vector<CoreAccountId>& accounts);
 
