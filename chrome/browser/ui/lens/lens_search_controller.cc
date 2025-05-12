@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_overlay_theme_utils.h"
 #include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
+#include "chrome/browser/ui/lens/lens_search_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -82,6 +83,9 @@ void LensSearchController::Initialize(
       CreateLensOverlaySidePanelCoordinator();
 
   lens_searchbox_controller_ = CreateLensSearchboxController();
+
+  lens_contextualization_controller_ =
+      CreateLensSearchContextualizationController();
 
   CreatePageContextEligibilityAPI();
 }
@@ -293,6 +297,12 @@ LensSearchController::page_context_eligibility() {
   return nullptr;
 }
 
+lens::LensSearchContextualizationController*
+LensSearchController::lens_search_contextualization_controller() {
+  CheckInitialized(initialized_);
+  return lens_contextualization_controller_.get();
+}
+
 std::unique_ptr<LensOverlayController>
 LensSearchController::CreateLensOverlayController(
     tabs::TabInterface* tab,
@@ -337,6 +347,11 @@ LensSearchController::CreateLensOverlaySidePanelCoordinator() {
 std::unique_ptr<lens::LensSearchboxController>
 LensSearchController::CreateLensSearchboxController() {
   return std::make_unique<lens::LensSearchboxController>(this);
+}
+
+std::unique_ptr<lens::LensSearchContextualizationController>
+LensSearchController::CreateLensSearchContextualizationController() {
+  return std::make_unique<lens::LensSearchContextualizationController>(this);
 }
 
 void LensSearchController::CreatePageContextEligibilityAPI() {

@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_untrusted_ui.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
+#include "chrome/browser/ui/lens/lens_search_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 #include "chrome/browser/ui/lens/page_content_type_conversions.h"
@@ -1230,7 +1231,7 @@ void LensOverlayController::IssueSearchBoxRequest(
 
   // If contextual searchbox is enabled, make sure the page bytes are current
   // prior to issuing the search box request.
-  GetPageContextualization(
+  GetContextualizationController()->GetPageContextualization(
       base::BindOnce(&LensOverlayController::UpdatePageContextualization,
                      weak_factory_.GetWeakPtr())
           .Then(base::BindOnce(
@@ -1541,7 +1542,7 @@ void LensOverlayController::ContinueCreateInitializationData(
       ConvertSignificantRegionBoxes(all_bounds);
   initialization_data->last_retrieved_most_visible_page_ = pdf_current_page;
 
-  GetPageContextualization(base::BindOnce(
+  GetContextualizationController()->GetPageContextualization(base::BindOnce(
       &LensOverlayController::StorePageContentAndContinueInitialization,
       weak_factory_.GetWeakPtr(), std::move(initialization_data)));
 }
@@ -1559,67 +1560,7 @@ void LensOverlayController::StorePageContentAndContinueInitialization(
   RecordDocumentMetrics(page_count);
 }
 
-void LensOverlayController::GetPageContextualization(
-    PageContentRetrievedCallback callback) {
-  // If the contextual searchbox is disabled, exit early.
-  if (!lens::features::IsLensOverlayContextualSearchboxEnabled()) {
-    std::move(callback).Run(/*page_contents=*/{}, lens::MimeType::kUnknown,
-                            std::nullopt);
-    return;
-  }
-
-  is_page_context_eligible_ = true;
-  results_side_panel_coordinator_->SetShowProtectedErrorPage(false);
-
 #if BUILDFLAG(ENABLE_PDF)
-  // Try and fetch the PDF bytes if enabled.
-  pdf::PDFDocumentHelper* pdf_helper =
-      lens::features::UsePdfsAsContext()
-          ? pdf::PDFDocumentHelper::MaybeGetForWebContents(tab_->GetContents())
-          : nullptr;
-  if (pdf_helper) {
-    // Fetch the PDF bytes then initialize the overlay.
-    pdf_helper->GetPdfBytes(
-        /*size_limit=*/lens::features::GetLensOverlayFileUploadLimitBytes(),
-        base::BindOnce(&LensOverlayController::OnPdfBytesReceived,
-                       weak_factory_.GetWeakPtr(), std::move(callback)));
-    return;
-  }
-#endif  // BUILDFLAG(ENABLE_PDF)
-
-  std::vector<lens::PageContent> page_contents;
-  auto* render_frame_host = tab_->GetContents()->GetPrimaryMainFrame();
-  if (!render_frame_host || (!lens::features::UseInnerHtmlAsContext() &&
-                             !lens::features::UseInnerTextAsContext() &&
-                             !lens::features::UseApcAsContext())) {
-    std::move(callback).Run(page_contents, lens::MimeType::kUnknown,
-                            std::nullopt);
-    return;
-  }
-  // TODO(crbug.com/399610478): The fetches for innerHTML, innerText, and APC
-  // should be parallelized to fetch all data at once. Currently fetches are
-  // sequential to prevent getting stuck in a race condition.
-  MaybeGetInnerHtml(page_contents, render_frame_host, std::move(callback));
-}
-
-#if BUILDFLAG(ENABLE_PDF)
-void LensOverlayController::OnPdfBytesReceived(
-    PageContentRetrievedCallback callback,
-    pdf::mojom::PdfListener::GetPdfBytesStatus status,
-    const std::vector<uint8_t>& bytes,
-    uint32_t page_count) {
-  // TODO(b/370530197): Show user error message if status is not success.
-  if (status != pdf::mojom::PdfListener::GetPdfBytesStatus::kSuccess ||
-      page_count == 0) {
-    std::move(callback).Run(
-        {lens::PageContent(/*bytes=*/{}, lens::MimeType::kPdf)},
-        lens::MimeType::kPdf, page_count);
-    return;
-  }
-  std::move(callback).Run({lens::PageContent(bytes, lens::MimeType::kPdf)},
-                          lens::MimeType::kPdf, page_count);
-}
-
 void LensOverlayController::FetchVisiblePageIndexAndGetPartialPdfText(
     uint32_t page_count) {
   pdf::PDFDocumentHelper* pdf_helper =
@@ -1686,138 +1627,6 @@ void LensOverlayController::GetPartialPdfTextCallback(
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-void LensOverlayController::MaybeGetInnerHtml(
-    std::vector<lens::PageContent> page_contents,
-    content::RenderFrameHost* render_frame_host,
-    PageContentRetrievedCallback callback) {
-  if (!lens::features::UseInnerHtmlAsContext()) {
-    MaybeGetInnerText(page_contents, render_frame_host, std::move(callback));
-    return;
-  }
-  content_extraction::GetInnerHtml(
-      *render_frame_host,
-      base::BindOnce(&LensOverlayController::OnInnerHtmlReceived,
-                     weak_factory_.GetWeakPtr(), page_contents,
-                     render_frame_host, std::move(callback)));
-}
-
-void LensOverlayController::OnInnerHtmlReceived(
-    std::vector<lens::PageContent> page_contents,
-    content::RenderFrameHost* render_frame_host,
-    PageContentRetrievedCallback callback,
-    const std::optional<std::string>& result) {
-  const bool was_successful =
-      result.has_value() &&
-      result->size() <= lens::features::GetLensOverlayFileUploadLimitBytes();
-  // Add the innerHTML to the page contents if successful, or empty bytes if
-  // not.
-  page_contents.emplace_back(
-      /*bytes=*/was_successful
-          ? std::vector<uint8_t>(result->begin(), result->end())
-          : std::vector<uint8_t>{},
-      lens::MimeType::kHtml);
-  MaybeGetInnerText(page_contents, render_frame_host, std::move(callback));
-}
-
-void LensOverlayController::MaybeGetInnerText(
-    std::vector<lens::PageContent> page_contents,
-    content::RenderFrameHost* render_frame_host,
-    PageContentRetrievedCallback callback) {
-  if (!lens::features::UseInnerTextAsContext()) {
-    MaybeGetAnnotatedPageContent(page_contents, render_frame_host,
-                                 std::move(callback));
-    return;
-  }
-  content_extraction::GetInnerText(
-      *render_frame_host, /*node_id=*/std::nullopt,
-      base::BindOnce(&LensOverlayController::OnInnerTextReceived,
-                     weak_factory_.GetWeakPtr(), page_contents,
-                     render_frame_host, std::move(callback)));
-}
-
-void LensOverlayController::OnInnerTextReceived(
-    std::vector<lens::PageContent> page_contents,
-    content::RenderFrameHost* render_frame_host,
-    PageContentRetrievedCallback callback,
-    std::unique_ptr<content_extraction::InnerTextResult> result) {
-  const bool was_successful =
-      result && result->inner_text.size() <=
-                    lens::features::GetLensOverlayFileUploadLimitBytes();
-  // Add the innerText to the page_contents if successful, or empty bytes if
-  // not.
-  page_contents.emplace_back(
-      /*bytes=*/was_successful
-          ? std::vector<uint8_t>(result->inner_text.begin(),
-                                 result->inner_text.end())
-          : std::vector<uint8_t>{},
-      lens::MimeType::kPlainText);
-  MaybeGetAnnotatedPageContent(page_contents, render_frame_host,
-                               std::move(callback));
-}
-
-void LensOverlayController::MaybeGetAnnotatedPageContent(
-    std::vector<lens::PageContent> page_contents,
-    content::RenderFrameHost* render_frame_host,
-    PageContentRetrievedCallback callback) {
-  if (!lens::features::UseApcAsContext()) {
-    // Done fetching page contents.
-    // Keep legacy behavior consistent by setting the primary content type to
-    // plain text if that is the only content type enabled.
-    // TODO(crbug.com/401614601): Set primary content type to kHtml in all
-    // cases.
-    auto primary_content_type = lens::features::UseInnerTextAsContext() &&
-                                        !lens::features::UseInnerHtmlAsContext()
-                                    ? lens::MimeType::kPlainText
-                                    : lens::MimeType::kHtml;
-    std::move(callback).Run(page_contents, primary_content_type, std::nullopt);
-    return;
-  }
-
-  blink::mojom::AIPageContentOptionsPtr ai_page_content_options =
-      optimization_guide::DefaultAIPageContentOptions();
-  ai_page_content_options->on_critical_path = true;
-  ai_page_content_options->max_meta_elements = 20;
-  optimization_guide::GetAIPageContent(
-      tab_->GetContents(), std::move(ai_page_content_options),
-      base::BindOnce(&LensOverlayController::OnAnnotatedPageContentReceived,
-                     weak_factory_.GetWeakPtr(), page_contents,
-                     std::move(callback)));
-}
-
-void LensOverlayController::OnAnnotatedPageContentReceived(
-    std::vector<lens::PageContent> page_contents,
-    PageContentRetrievedCallback callback,
-    std::optional<optimization_guide::AIPageContentResult> result) {
-  // Add the apc proto the page_contents if it exists.
-  if (result) {
-    // Convert the page metadata to a C struct defined in the optimization_guide
-    // component so it can be passed to the shared library.
-    std::vector<optimization_guide::FrameMetadata> frame_metadata_structs =
-        lens::ConvertFrameMetadataFromProto(result.value());
-
-    // If the page is protected, do not send the latest page content to the
-    // server.
-    const auto& tab_url = tab_->GetContents()->GetLastCommittedURL();
-    if (!IsPageContextEligible(
-            tab_url, std::move(frame_metadata_structs),
-            lens_search_controller_->page_context_eligibility())) {
-      is_page_context_eligible_ = false;
-      results_side_panel_coordinator_->SetShowProtectedErrorPage(true);
-      // Clear all previous page contents.
-      page_contents.clear();
-    } else {
-      std::string serialized_apc;
-      result->proto.SerializeToString(&serialized_apc);
-      page_contents.emplace_back(
-          std::vector<uint8_t>(serialized_apc.begin(), serialized_apc.end()),
-          lens::MimeType::kAnnotatedPageContent);
-    }
-  }
-  // Done fetching page contents.
-  std::move(callback).Run(page_contents, lens::MimeType::kAnnotatedPageContent,
-                          std::nullopt);
-}
-
 std::vector<lens::mojom::CenterRotatedBoxPtr>
 LensOverlayController::ConvertSignificantRegionBoxes(
     const std::vector<gfx::Rect>& all_bounds) {
@@ -1869,7 +1678,7 @@ void LensOverlayController::TryUpdatePageContextualization() {
     return;
   }
 
-  GetPageContextualization(
+  GetContextualizationController()->GetPageContextualization(
       base::BindOnce(&LensOverlayController::UpdatePageContextualization,
                      weak_factory_.GetWeakPtr()));
 }
@@ -3692,4 +3501,9 @@ void LensOverlayController::UpdateEntryPointsState() {
 lens::LensSearchboxController*
 LensOverlayController::GetLensSearchboxController() {
   return lens_search_controller_->lens_searchbox_controller();
+}
+
+lens::LensSearchContextualizationController*
+LensOverlayController::GetContextualizationController() {
+  return lens_search_controller_->lens_search_contextualization_controller();
 }

@@ -28,6 +28,7 @@ class LensOverlayGen204Controller;
 class LensOverlaySidePanelCoordinator;
 class LensPermissionBubbleController;
 class LensSearchboxController;
+class LensSearchContextualizationController;
 }  // namespace lens
 
 namespace variations {
@@ -150,6 +151,10 @@ class LensSearchController {
 
   optimization_guide::PageContextEligibility* page_context_eligibility();
 
+  // Returns the LensSearchContextualizationController.
+  lens::LensSearchContextualizationController*
+  lens_search_contextualization_controller();
+
   // Testing function for setting the page context eligibility API for this
   // controller.
   void set_page_context_eligibility_for_testing(
@@ -197,10 +202,15 @@ class LensSearchController {
   virtual std::unique_ptr<lens::LensOverlaySidePanelCoordinator>
   CreateLensOverlaySidePanelCoordinator();
 
-  // Override these methods to be able to track calls made to the side panel
-  // coordinator.
+  // Override these methods to be able to track calls made to the searchbox
+  // controller.
   virtual std::unique_ptr<lens::LensSearchboxController>
   CreateLensSearchboxController();
+
+  // Override these methods to be able to track calls made to the
+  // contextualization controller.
+  virtual std::unique_ptr<lens::LensSearchContextualizationController>
+  CreateLensSearchContextualizationController();
 
   // Called by the Lens overlay when it has finished opening and has moved to
   // the kOverlay state. This is how this class knows it can move into kActive
@@ -338,6 +348,10 @@ class LensSearchController {
   // TODO(crbug.com/413138792): Hook up this controller to handle searchbox
   // interactions, without a dependency on the overlay controller.
   std::unique_ptr<lens::LensSearchboxController> lens_searchbox_controller_;
+
+  // The contextualization controller for the Lens Search feature on this tab.
+  std::unique_ptr<lens::LensSearchContextualizationController>
+      lens_contextualization_controller_;
 
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;

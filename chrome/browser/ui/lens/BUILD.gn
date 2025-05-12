@@ -15,10 +15,10 @@ source_set("lens") {
     "lens_overlay_entry_point_controller.h",
     "lens_overlay_gen204_controller.h",
     "lens_overlay_image_helper.h",
-    "lens_searchbox_controller.h",
     "lens_overlay_side_panel_navigation_throttle.h",
     "lens_overlay_untrusted_ui.h",
     "lens_search_controller.h",
+    "lens_searchbox_controller.h",
     "lens_side_panel_untrusted_ui.h",
   ]
   friend = [
@@ -75,7 +75,10 @@ source_set("lens") {
   ]
 
   if (enable_pdf) {
-    public_deps += [ "//pdf/mojom" ]
+    public_deps += [
+      "//components/pdf/browser",
+      "//pdf/mojom",
+    ]
   }
 }
 
