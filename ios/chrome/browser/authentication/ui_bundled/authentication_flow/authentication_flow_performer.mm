@@ -208,6 +208,8 @@ void TriggerAccountSwitchSnackbarWithIdentity(id<SystemIdentity> identity,
       showSnackbarMessageOverBrowserToolbar:snackbar_title];
 }
 
+}  // namespace
+
 void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
                                id<SystemIdentity> identity,
                                Browser* browser,
@@ -270,8 +272,6 @@ void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
   [handler showSnackbarMessage:message];
 }
-
-}  // namespace
 
 @interface AuthenticationFlowPerformer () <
     ManagedProfileCreationCoordinatorDelegate>
@@ -524,13 +524,6 @@ void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
   _managedConfirmationAlertCoordinator =
       ManagedConfirmationDialogContentForHostedDomain(
           hostedDomain, browser, viewController, acceptBlock, cancelBlock);
-}
-
-- (void)completePostSignInActions:(PostSignInActionSet)postSignInActions
-                     withIdentity:(id<SystemIdentity>)identity
-                          browser:(Browser*)browser
-                      accessPoint:(signin_metrics::AccessPoint)accessPoint {
-  CompletePostSignInActions(postSignInActions, identity, browser, accessPoint);
 }
 
 - (void)showAuthenticationError:(NSError*)error

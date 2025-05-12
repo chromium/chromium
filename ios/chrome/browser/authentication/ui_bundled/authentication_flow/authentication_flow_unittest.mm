@@ -391,10 +391,6 @@ class AuthenticationFlowTest : public PlatformTest,
       postSignInActions.Put(
           PostSignInAction::kShowHistorySyncScreenAfterProfileSwitch);
     }
-    OCMExpect([performer_mock_ completePostSignInActions:postSignInActions
-                                            withIdentity:identity
-                                                 browser:final_browser
-                                             accessPoint:access_point]);
 
     [authentication_flow_ startSignIn];
     // The completion block should not be called synchronously.

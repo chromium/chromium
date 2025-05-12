@@ -372,10 +372,8 @@ enum class AuthenticationFlowInProfileState {
   signin_ui::SigninCompletionCallback signInCompletion = _signInCompletion;
   _signInCompletion = nil;
   signInCompletion(SigninCoordinatorResult::SigninCoordinatorResultSuccess);
-  [_performer completePostSignInActions:_postSignInActions
-                           withIdentity:_identityToSignIn
-                                browser:_browser
-                            accessPoint:_accessPoint];
+  CompletePostSignInActions(_postSignInActions, _identityToSignIn, _browser,
+                            _accessPoint);
   [self continueFlow];
 }
 
