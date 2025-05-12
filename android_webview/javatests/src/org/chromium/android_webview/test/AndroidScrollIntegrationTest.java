@@ -35,6 +35,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
+import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.util.Locale;
@@ -255,7 +256,7 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
     }
 
     private int[] getScrollOnMainSync(final ScrollTestContainerView testContainerView) {
-        final int scroll[] = new int[2];
+        final int[] scroll = new int[2];
         InstrumentationRegistry.getInstrumentation()
                 .runOnMainSync(
                         () -> {
@@ -269,7 +270,7 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
             final ScrollTestContainerView testContainerView,
             final int scrollXPix,
             final int scrollYPix) {
-        int scrolled[] = getScrollOnMainSync(testContainerView);
+        int[] scrolled = getScrollOnMainSync(testContainerView);
         int scrolledXPix = scrolled[0];
         int scrolledYPix = scrolled[1];
 
@@ -348,12 +349,17 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
                                 firstFrameObserver.register(
                                         testContainerView.getWebContents(),
                                         firstFrameObserverName));
+
+        final AwContents awContents = testContainerView.getAwContents();
         mActivityTestRule.loadDataSync(
-                testContainerView.getAwContents(),
+                awContents,
                 contentsClient.getOnPageFinishedHelper(),
                 makeTestPage(onscrollObserverName, firstFrameObserverName, extraContent),
                 "text/html",
                 false);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> WebContentsUtils.simulateEndOfPaintHolding(awContents.getWebContents()));
 
         // We wait for "a couple" of frames for the active tree in CC to stabilize and for pending
         // tree activations to stop clobbering the root scroll layer's scroll offset. This wait
@@ -1003,13 +1009,11 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
 
         // Check page loaded at scroll offset 0.
         {
-            int scroll[] = getScrollOnMainSync(testContainerView);
+            int[] scroll = getScrollOnMainSync(testContainerView);
             Assert.assertEquals(0, scroll[1]);
         }
 
         // Drag scroll.
-        final CallbackHelper onScrollToCallbackHelper =
-                testContainerView.getOnScrollToCallbackHelper();
         final int dragSteps = 10;
         final int dragStepSize = 24;
         final int targetScrollYPix = dragStepSize * dragSteps;
@@ -1018,7 +1022,7 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
         // Poll until scroll on UI is bigger than 0.
         AwActivityTestRule.pollInstrumentationThread(
                 () -> {
-                    int scroll[] = getScrollOnMainSync(testContainerView);
+                    int[] scroll = getScrollOnMainSync(testContainerView);
                     return scroll[1] > 0;
                 });
     }
