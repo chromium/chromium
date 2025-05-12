@@ -36,14 +36,11 @@ constexpr base::FilePath::CharType kSyncDataFolderName[] =
 constexpr base::FilePath::CharType kLevelDBFolderName[] =
     FILE_PATH_LITERAL("LevelDB");
 
-constexpr const char kLegacyWebApkPrefix[] = "web_apks";
-
 // Initializes DataTypeStoreBackend, on the backend sequence.
 std::optional<ModelError> InitOnBackendSequence(
     const base::FilePath& level_db_path,
     scoped_refptr<DataTypeStoreBackend> store_backend,
-    bool migrate_rl_from_local_to_account,
-    bool wipe_legacy_webapks) {
+    bool migrate_rl_from_local_to_account) {
   base::flat_map<std::string, std::optional<std::string>>
       prefixes_to_update_or_delete;
   if (migrate_rl_from_local_to_account) {
@@ -54,14 +51,6 @@ std::optional<ModelError> InitOnBackendSequence(
             READING_LIST, StorageType::kAccount));
     RecordSyncToSigninMigrationReadingListStep(
         ReadingListMigrationStep::kMigrationStarted);
-  }
-  if (wipe_legacy_webapks) {
-    // Wipe all WEB_APK data to fix crbug.com/361771496. This won't cause any
-    // apps to be uninstalled, such data is only a mirror of the source of
-    // truth.
-    // std::nullopt in the map below means a deletion.
-    // TODO(crbug.com/365978267): Remove migration after enough time.
-    prefixes_to_update_or_delete.emplace(kLegacyWebApkPrefix, std::nullopt);
   }
   return store_backend->Init(level_db_path, prefixes_to_update_or_delete);
 }
@@ -137,16 +126,10 @@ DataTypeStoreServiceImpl::DataTypeStoreServiceImpl(
   DCHECK(backend_task_runner_);
   bool migrate_rl_from_local_to_account = pref_service_->GetBoolean(
       prefs::internal::kMigrateReadingListFromLocalToAccount);
-  bool wipe_legacy_webapks =
-#if BUILDFLAG(IS_ANDROID)
-      !pref_service_->GetBoolean(prefs::internal::kWipedWebAPkDataForMigration);
-#else
-      false;
-#endif  // BUILDFLAG(IS_ANDROID)
   backend_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&InitOnBackendSequence, leveldb_path_, store_backend_,
-                     migrate_rl_from_local_to_account, wipe_legacy_webapks),
+                     migrate_rl_from_local_to_account),
       base::BindOnce(&DataTypeStoreServiceImpl::BackendInitializationDone,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -171,12 +154,6 @@ void DataTypeStoreServiceImpl::BackendInitializationDone(
         error ? ReadingListMigrationStep::kMigrationFailed
               : ReadingListMigrationStep::kMigrationFinishedAndPrefCleared);
   }
-#if BUILDFLAG(IS_ANDROID)
-  if (!error) {
-    pref_service_->SetBoolean(prefs::internal::kWipedWebAPkDataForMigration,
-                              true);
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
 
   base::UmaHistogramBoolean("Sync.DataTypeStoreBackendInitializationSuccess",
                             !error.has_value());

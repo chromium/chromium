@@ -80,10 +80,6 @@ class DataTypeStoreServiceImplTest : public testing::Test {
   DataTypeStoreServiceImplTest() {
     pref_service_.registry()->RegisterBooleanPref(
         prefs::internal::kMigrateReadingListFromLocalToAccount, false);
-#if BUILDFLAG(IS_ANDROID)
-    pref_service_.registry()->RegisterBooleanPref(
-        prefs::internal::kWipedWebAPkDataForMigration, false);
-#endif  // BUILDFLAG(IS_ANDROID)
   }
 
  protected:
