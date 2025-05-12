@@ -149,11 +149,9 @@ class CC_EXPORT ProxyMain : public Proxy {
   bool IsImplThread() const;
   base::SingleThreadTaskRunner* ImplThreadTaskRunner();
 
-  void InitializeOnImplThread(
-      CompletionEvent* completion_event,
-      int id,
-      const LayerTreeSettings* settings,
-      RenderingStatsInstrumentation* rendering_stats_instrumentation);
+  void InitializeOnImplThread(CompletionEvent* completion_event,
+                              int id,
+                              const LayerTreeSettings* settings);
   void DestroyProxyImplOnImplThread(CompletionEvent* completion_event);
 
   raw_ptr<LayerTreeHost> layer_tree_host_;

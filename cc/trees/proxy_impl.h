@@ -42,7 +42,6 @@ class LayerTreeSettings;
 class PaintWorkletLayerPainter;
 class ProxyMain;
 class RenderFrameMetadataObserver;
-class RenderingStatsInstrumentation;
 class ScopedCommitCompletionEvent;
 class SwapPromise;
 class TaskRunnerProvider;
@@ -58,7 +57,6 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
             LayerTreeHost* layer_tree_host,
             int id,
             const LayerTreeSettings* settings,
-            RenderingStatsInstrumentation* rendering_stats_instrumentation,
             TaskRunnerProvider* task_runner_provider);
   ProxyImpl(const ProxyImpl&) = delete;
   ~ProxyImpl() override;

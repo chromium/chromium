@@ -21,8 +21,6 @@
 #include "cc/base/completion_event.h"
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/base/features.h"
-#include "cc/benchmarks/benchmark_instrumentation.h"
-#include "cc/debug/rendering_stats_instrumentation.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/paint/paint_worklet_layer_painter.h"
 #include "cc/resources/ui_resource_manager.h"
@@ -64,16 +62,14 @@ ProxyMain::~ProxyMain() {
   DCHECK(!started_);
 }
 
-void ProxyMain::InitializeOnImplThread(
-    CompletionEvent* completion_event,
-    int id,
-    const LayerTreeSettings* settings,
-    RenderingStatsInstrumentation* rendering_stats_instrumentation) {
+void ProxyMain::InitializeOnImplThread(CompletionEvent* completion_event,
+                                       int id,
+                                       const LayerTreeSettings* settings) {
   DCHECK(task_runner_provider_->IsImplThread());
   DCHECK(!proxy_impl_);
-  proxy_impl_ = std::make_unique<ProxyImpl>(
-      weak_factory_.GetWeakPtr(), layer_tree_host_, id, settings,
-      rendering_stats_instrumentation, task_runner_provider_);
+  proxy_impl_ =
+      std::make_unique<ProxyImpl>(weak_factory_.GetWeakPtr(), layer_tree_host_,
+                                  id, settings, task_runner_provider_);
   completion_event->Signal();
 }
 
@@ -753,12 +749,10 @@ void ProxyMain::Start() {
     DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
     CompletionEvent completion;
     ImplThreadTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ProxyMain::InitializeOnImplThread,
-                       base::Unretained(this), &completion,
-                       layer_tree_host_->GetId(),
-                       &layer_tree_host_->GetSettings(),
-                       layer_tree_host_->rendering_stats_instrumentation()));
+        FROM_HERE, base::BindOnce(&ProxyMain::InitializeOnImplThread,
+                                  base::Unretained(this), &completion,
+                                  layer_tree_host_->GetId(),
+                                  &layer_tree_host_->GetSettings()));
     completion.Wait();
   }
 

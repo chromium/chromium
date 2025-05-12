@@ -755,7 +755,6 @@ cc_test("cc_unittests") {
     "base/tiling_data_unittest.cc",
     "base/unique_notifier_unittest.cc",
     "benchmarks/micro_benchmark_controller_unittest.cc",
-    "debug/rendering_stats_unittest.cc",
     "input/browser_controls_offset_manager_unittest.cc",
     "input/hit_test_opaqueness_unittest.cc",
     "input/main_thread_scrolling_reason_unittest.cc",

@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/base/features.h"
-#include "cc/debug/rendering_stats_instrumentation.h"
 #include "cc/metrics/dropped_frame_counter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,9 +19,8 @@ class CompositorTimingHistoryTest;
 
 class TestCompositorTimingHistory : public CompositorTimingHistory {
  public:
-  TestCompositorTimingHistory(CompositorTimingHistoryTest* test,
-                              RenderingStatsInstrumentation* rendering_stats)
-      : CompositorTimingHistory(RENDERER_UMA, rendering_stats), test_(test) {}
+  explicit TestCompositorTimingHistory(CompositorTimingHistoryTest* test)
+      : CompositorTimingHistory(RENDERER_UMA), test_(test) {}
 
   TestCompositorTimingHistory(const TestCompositorTimingHistory&) = delete;
   TestCompositorTimingHistory& operator=(const TestCompositorTimingHistory&) =
@@ -36,9 +34,7 @@ class TestCompositorTimingHistory : public CompositorTimingHistory {
 
 class CompositorTimingHistoryTest : public testing::Test {
  public:
-  CompositorTimingHistoryTest()
-      : rendering_stats_(RenderingStatsInstrumentation::Create()),
-        timing_history_(this, rendering_stats_.get()) {
+  CompositorTimingHistoryTest() : timing_history_(this) {
     AdvanceNowBy(base::Milliseconds(1));
     timing_history_.SetRecordingEnabled(true);
   }
@@ -48,7 +44,6 @@ class CompositorTimingHistoryTest : public testing::Test {
   base::TimeTicks Now() { return now_; }
 
  protected:
-  std::unique_ptr<RenderingStatsInstrumentation> rendering_stats_;
   TestCompositorTimingHistory timing_history_;
   base::TimeTicks now_;
   uint64_t sequence_number = 0;

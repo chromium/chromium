@@ -38,16 +38,8 @@ class CC_DEBUG_EXPORT RenderingStatsInstrumentation {
       record_rendering_stats_ = record_rendering_stats;
   }
 
-  void IncrementFrameCount(int64_t count);
   void AddVisibleContentArea(int64_t area);
   void AddApproximatedVisibleContentArea(int64_t area);
-  void AddDrawDuration(base::TimeDelta draw_duration,
-                       base::TimeDelta draw_duration_estimate);
-  void AddBeginMainFrameToCommitDuration(
-      base::TimeDelta begin_main_frame_to_commit_duration);
-  void AddCommitToActivateDuration(
-      base::TimeDelta commit_to_activate_duration,
-      base::TimeDelta commit_to_activate_duration_estimate);
 
  protected:
   RenderingStatsInstrumentation();
@@ -56,8 +48,6 @@ class CC_DEBUG_EXPORT RenderingStatsInstrumentation {
   RenderingStats impl_thread_rendering_stats_;
 
   bool record_rendering_stats_;
-
-  base::Lock lock_;
 };
 
 }  // namespace cc
