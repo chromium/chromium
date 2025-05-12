@@ -603,7 +603,13 @@ TEST_F(WebNNTensorImplDmlBackendTest, UsageAfterBeginAccessWebNNTest) {
 }
 
 // Verify access between queues: WebNN and an external one.
-TEST_F(WebNNTensorImplDmlBackendTest, AccessOnDifferentQueueTest) {
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM_FAMILY)
+// Test is flaky on Win+arm, see https://crbug.com/416712077.
+#define MAYBE_AccessOnDifferentQueueTest DISABLED_AccessOnDifferentQueueTest
+#else
+#define MAYBE_AccessOnDifferentQueueTest AccessOnDifferentQueueTest
+#endif
+TEST_F(WebNNTensorImplDmlBackendTest, MAYBE_AccessOnDifferentQueueTest) {
   BadMessageTestHelper bad_message_helper;
 
   mojo::AssociatedRemote<mojom::WebNNTensor> webnn_tensor_remote;
