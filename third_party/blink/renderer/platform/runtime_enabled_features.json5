@@ -1104,11 +1104,6 @@
       status: "stable",
     },
     {
-      // Support anchor-size() values in inset and margin properties.
-      name: "CSSAnchorSizeInsetsMargins",
-      status: "stable",
-    },
-    {
       // Whether <image> values are allowed as counter style <symbol>
       name: "CSSAtRuleCounterStyleImageSymbols",
     },

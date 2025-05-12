@@ -1841,13 +1841,10 @@ const CSSValue* Bottom::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  CSSAnchorQueryTypes anchor_types =
-      RuntimeEnabledFeatures::CSSAnchorSizeInsetsMarginsEnabled()
-          ? kCSSAnchorQueryTypesAll
-          : static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor);
   return css_parsing_utils::ConsumeMarginOrOffset(
       stream, context,
-      css_parsing_utils::UnitlessUnlessShorthand(local_context), anchor_types);
+      css_parsing_utils::UnitlessUnlessShorthand(local_context),
+      kCSSAnchorQueryTypesAll);
 }
 
 bool Bottom::IsLayoutDependent(const ComputedStyle* style,
@@ -5232,12 +5229,9 @@ const CSSValue* InsetBlockEnd::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  CSSAnchorQueryTypes anchor_types =
-      RuntimeEnabledFeatures::CSSAnchorSizeInsetsMarginsEnabled()
-          ? kCSSAnchorQueryTypesAll
-          : static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor);
   return css_parsing_utils::ConsumeMarginOrOffset(
-      stream, context, css_parsing_utils::UnitlessQuirk::kForbid, anchor_types);
+      stream, context, css_parsing_utils::UnitlessQuirk::kForbid,
+      kCSSAnchorQueryTypesAll);
 }
 
 bool InsetBlockEnd::IsLayoutDependent(const ComputedStyle* style,
@@ -5249,12 +5243,9 @@ const CSSValue* InsetBlockStart::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  CSSAnchorQueryTypes anchor_types =
-      RuntimeEnabledFeatures::CSSAnchorSizeInsetsMarginsEnabled()
-          ? kCSSAnchorQueryTypesAll
-          : static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor);
   return css_parsing_utils::ConsumeMarginOrOffset(
-      stream, context, css_parsing_utils::UnitlessQuirk::kForbid, anchor_types);
+      stream, context, css_parsing_utils::UnitlessQuirk::kForbid,
+      kCSSAnchorQueryTypesAll);
 }
 
 bool InsetBlockStart::IsLayoutDependent(const ComputedStyle* style,
@@ -5266,12 +5257,9 @@ const CSSValue* InsetInlineEnd::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  CSSAnchorQueryTypes anchor_types =
-      RuntimeEnabledFeatures::CSSAnchorSizeInsetsMarginsEnabled()
-          ? kCSSAnchorQueryTypesAll
-          : static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor);
   return css_parsing_utils::ConsumeMarginOrOffset(
-      stream, context, css_parsing_utils::UnitlessQuirk::kForbid, anchor_types);
+      stream, context, css_parsing_utils::UnitlessQuirk::kForbid,
+      kCSSAnchorQueryTypesAll);
 }
 
 bool InsetInlineEnd::IsLayoutDependent(const ComputedStyle* style,
@@ -5283,12 +5271,9 @@ const CSSValue* InsetInlineStart::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  CSSAnchorQueryTypes anchor_types =
-      RuntimeEnabledFeatures::CSSAnchorSizeInsetsMarginsEnabled()
-          ? kCSSAnchorQueryTypesAll
-          : static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor);
   return css_parsing_utils::ConsumeMarginOrOffset(
-      stream, context, css_parsing_utils::UnitlessQuirk::kForbid, anchor_types);
+      stream, context, css_parsing_utils::UnitlessQuirk::kForbid,
+      kCSSAnchorQueryTypesAll);
 }
 
 bool InsetInlineStart::IsLayoutDependent(const ComputedStyle* style,
@@ -6055,13 +6040,10 @@ const CSSValue* Left::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  CSSAnchorQueryTypes anchor_types =
-      RuntimeEnabledFeatures::CSSAnchorSizeInsetsMarginsEnabled()
-          ? kCSSAnchorQueryTypesAll
-          : static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor);
   return css_parsing_utils::ConsumeMarginOrOffset(
       stream, context,
-      css_parsing_utils::UnitlessUnlessShorthand(local_context), anchor_types);
+      css_parsing_utils::UnitlessUnlessShorthand(local_context),
+      kCSSAnchorQueryTypesAll);
 }
 
 bool Left::IsLayoutDependent(const ComputedStyle* style,
@@ -6305,12 +6287,9 @@ const CSSValue* MarginBlockEnd::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  CSSAnchorQueryTypes anchor_types =
-      RuntimeEnabledFeatures::CSSAnchorSizeInsetsMarginsEnabled()
-          ? static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize)
-          : kCSSAnchorQueryTypesNone;
   return css_parsing_utils::ConsumeMarginOrOffset(
-      stream, context, css_parsing_utils::UnitlessQuirk::kForbid, anchor_types);
+      stream, context, css_parsing_utils::UnitlessQuirk::kForbid,
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize));
 }
 
 bool MarginBlockStart::IsLayoutDependent(const ComputedStyle* style,
@@ -6322,24 +6301,18 @@ const CSSValue* MarginBlockStart::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  CSSAnchorQueryTypes anchor_types =
-      RuntimeEnabledFeatures::CSSAnchorSizeInsetsMarginsEnabled()
-          ? static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize)
-          : kCSSAnchorQueryTypesNone;
   return css_parsing_utils::ConsumeMarginOrOffset(
-      stream, context, css_parsing_utils::UnitlessQuirk::kForbid, anchor_types);
+      stream, context, css_parsing_utils::UnitlessQuirk::kForbid,
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize));
 }
 
 const CSSValue* MarginBottom::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  CSSAnchorQueryTypes anchor_types =
-      RuntimeEnabledFeatures::CSSAnchorSizeInsetsMarginsEnabled()
-          ? static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize)
-          : kCSSAnchorQueryTypesNone;
   return css_parsing_utils::ConsumeMarginOrOffset(
-      stream, context, css_parsing_utils::UnitlessQuirk::kAllow, anchor_types);
+      stream, context, css_parsing_utils::UnitlessQuirk::kAllow,
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize));
 }
 
 bool MarginBottom::IsLayoutDependent(const ComputedStyle* style,
@@ -6370,12 +6343,9 @@ const CSSValue* MarginInlineEnd::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  CSSAnchorQueryTypes anchor_types =
-      RuntimeEnabledFeatures::CSSAnchorSizeInsetsMarginsEnabled()
-          ? static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize)
-          : kCSSAnchorQueryTypesNone;
   return css_parsing_utils::ConsumeMarginOrOffset(
-      stream, context, css_parsing_utils::UnitlessQuirk::kForbid, anchor_types);
+      stream, context, css_parsing_utils::UnitlessQuirk::kForbid,
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize));
 }
 
 bool MarginInlineStart::IsLayoutDependent(const ComputedStyle* style,
@@ -6387,24 +6357,18 @@ const CSSValue* MarginInlineStart::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  CSSAnchorQueryTypes anchor_types =
-      RuntimeEnabledFeatures::CSSAnchorSizeInsetsMarginsEnabled()
-          ? static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize)
-          : kCSSAnchorQueryTypesNone;
   return css_parsing_utils::ConsumeMarginOrOffset(
-      stream, context, css_parsing_utils::UnitlessQuirk::kForbid, anchor_types);
+      stream, context, css_parsing_utils::UnitlessQuirk::kForbid,
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize));
 }
 
 const CSSValue* MarginLeft::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  CSSAnchorQueryTypes anchor_types =
-      RuntimeEnabledFeatures::CSSAnchorSizeInsetsMarginsEnabled()
-          ? static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize)
-          : kCSSAnchorQueryTypesNone;
   return css_parsing_utils::ConsumeMarginOrOffset(
-      stream, context, css_parsing_utils::UnitlessQuirk::kAllow, anchor_types);
+      stream, context, css_parsing_utils::UnitlessQuirk::kAllow,
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize));
 }
 
 bool MarginLeft::IsLayoutDependent(const ComputedStyle* style,
@@ -6431,12 +6395,9 @@ const CSSValue* MarginRight::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  CSSAnchorQueryTypes anchor_types =
-      RuntimeEnabledFeatures::CSSAnchorSizeInsetsMarginsEnabled()
-          ? static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize)
-          : kCSSAnchorQueryTypesNone;
   return css_parsing_utils::ConsumeMarginOrOffset(
-      stream, context, css_parsing_utils::UnitlessQuirk::kAllow, anchor_types);
+      stream, context, css_parsing_utils::UnitlessQuirk::kAllow,
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize));
 }
 
 bool MarginRight::IsLayoutDependent(const ComputedStyle* style,
@@ -6463,12 +6424,9 @@ const CSSValue* MarginTop::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  CSSAnchorQueryTypes anchor_types =
-      RuntimeEnabledFeatures::CSSAnchorSizeInsetsMarginsEnabled()
-          ? static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize)
-          : kCSSAnchorQueryTypesNone;
   return css_parsing_utils::ConsumeMarginOrOffset(
-      stream, context, css_parsing_utils::UnitlessQuirk::kAllow, anchor_types);
+      stream, context, css_parsing_utils::UnitlessQuirk::kAllow,
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize));
 }
 
 bool MarginTop::IsLayoutDependent(const ComputedStyle* style,
@@ -8124,13 +8082,10 @@ const CSSValue* Right::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  CSSAnchorQueryTypes anchor_types =
-      RuntimeEnabledFeatures::CSSAnchorSizeInsetsMarginsEnabled()
-          ? kCSSAnchorQueryTypesAll
-          : static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor);
   return css_parsing_utils::ConsumeMarginOrOffset(
       stream, context,
-      css_parsing_utils::UnitlessUnlessShorthand(local_context), anchor_types);
+      css_parsing_utils::UnitlessUnlessShorthand(local_context),
+      kCSSAnchorQueryTypesAll);
 }
 
 bool Right::IsLayoutDependent(const ComputedStyle* style,
@@ -9826,13 +9781,10 @@ const CSSValue* Top::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  CSSAnchorQueryTypes anchor_types =
-      RuntimeEnabledFeatures::CSSAnchorSizeInsetsMarginsEnabled()
-          ? kCSSAnchorQueryTypesAll
-          : static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor);
   return css_parsing_utils::ConsumeMarginOrOffset(
       stream, context,
-      css_parsing_utils::UnitlessUnlessShorthand(local_context), anchor_types);
+      css_parsing_utils::UnitlessUnlessShorthand(local_context),
+      kCSSAnchorQueryTypesAll);
 }
 
 bool Top::IsLayoutDependent(const ComputedStyle* style,
