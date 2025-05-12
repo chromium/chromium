@@ -4871,6 +4871,10 @@ enum WebFeature {
   kProofreader_Create = 5567,
   kDataUrlDedicatedWorker = 5568,
   kDataUrlSharedWorker = 5569,
+  kV8WebGLRenderingContextWebGPU_GetExtension_Method = 5570,
+  kV8WebGLRenderingContextWebGPU_GetSupportedExtensions_Method = 5571,
+  kV8WebGL2RenderingContextWebGPU_GetExtension_Method = 5572,
+  kV8WebGL2RenderingContextWebGPU_GetSupportedExtensions_Method = 5573,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
