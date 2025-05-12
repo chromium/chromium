@@ -75,8 +75,7 @@ class ExtensionCommandsGlobalRegistry
   // Overridden from ExtensionKeybindingRegistry:
   void AddExtensionKeybindings(const Extension* extension,
                                const std::string& command_name) override;
-  void RemoveExtensionKeybindingImpl(const ui::Accelerator& accelerator,
-                                     const std::string& command_name) override;
+  void UnregisterAccelerator(const ui::Accelerator& accelerator) override;
   void OnShortcutHandlingSuspended(bool suspended) override;
 
   // Called by the GlobalShortcutListener object when a shortcut this class has

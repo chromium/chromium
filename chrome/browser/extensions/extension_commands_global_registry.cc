@@ -125,9 +125,8 @@ void ExtensionCommandsGlobalRegistry::AddExtensionKeybindings(
   }
 }
 
-void ExtensionCommandsGlobalRegistry::RemoveExtensionKeybindingImpl(
-    const ui::Accelerator& accelerator,
-    const std::string& command_name) {
+void ExtensionCommandsGlobalRegistry::UnregisterAccelerator(
+    const ui::Accelerator& accelerator) {
   auto* instance = ui::GlobalAcceleratorListener::GetInstance();
   if (!instance) {
     return;

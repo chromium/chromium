@@ -74,19 +74,20 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
   // Add extension keybindings for the events defined by the `extension`.
   // `command_name` is optional, but if not blank then only the command
   // specified will be added.
-  virtual void AddExtensionKeybindings(
-      const Extension* extension,
-      const std::string& command_name) = 0;
+  virtual void AddExtensionKeybindings(const Extension* extension,
+                                       const std::string& command_name);
   // Remove extension bindings for `extension`. `command_name` is optional,
   // but if not blank then only the command specified will be removed.
   void RemoveExtensionKeybinding(
       const Extension* extension,
       const std::string& command_name);
+
+  // Overridden by platform specific implementations to provide additional
+  // registration (which varies between platforms).
+  virtual void RegisterAccelerator(const ui::Accelerator& accelerator) {}
   // Overridden by platform specific implementations to provide additional
   // unregistration (which varies between platforms).
-  virtual void RemoveExtensionKeybindingImpl(
-      const ui::Accelerator& accelerator,
-      const std::string& command_name) = 0;
+  virtual void UnregisterAccelerator(const ui::Accelerator& accelerator) {}
 
   // Called when shortcut handling is suspended or resumed.
   virtual void OnShortcutHandlingSuspended(bool suspended) {}

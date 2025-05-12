@@ -57,6 +57,38 @@ void ExtensionKeybindingRegistry::SetShortcutHandlingSuspended(bool suspended) {
   OnShortcutHandlingSuspended(suspended);
 }
 
+void ExtensionKeybindingRegistry::AddExtensionKeybindings(
+    const Extension* extension,
+    const std::string& command_name) {
+  // This object only handles named commands, not toolbar action execution.
+  if (ShouldIgnoreCommand(command_name)) {
+    return;
+  }
+
+  CommandService* command_service = CommandService::Get(browser_context());
+  // Add all the active keybindings (except toolbar action executions,
+  // which are handled elsewhere).
+  ui::CommandMap commands;
+  if (!command_service->GetNamedCommands(extension->id(),
+                                         CommandService::ACTIVE,
+                                         CommandService::REGULAR, &commands)) {
+    return;
+  }
+  ui::CommandMap::const_iterator iter = commands.begin();
+  for (; iter != commands.end(); ++iter) {
+    if (!command_name.empty() &&
+        (iter->second.command_name() != command_name)) {
+      continue;
+    }
+    const ui::Accelerator& accelerator = iter->second.accelerator();
+    if (!IsAcceleratorRegistered(accelerator)) {
+      RegisterAccelerator(accelerator);
+    }
+
+    AddEventTarget(accelerator, extension->id(), iter->second.command_name());
+  }
+}
+
 void ExtensionKeybindingRegistry::RemoveExtensionKeybinding(
     const Extension* extension,
     const std::string& command_name) {
@@ -76,7 +108,7 @@ void ExtensionKeybindingRegistry::RemoveExtensionKeybinding(
     auto old = it++;
     if (target_list.empty()) {
       // Let each platform-specific implementation get a chance to clean up.
-      RemoveExtensionKeybindingImpl(old->first, command_name);
+      UnregisterAccelerator(old->first);
 
       if (old->first.IsMediaKey()) {
         any_media_keys_removed = true;
