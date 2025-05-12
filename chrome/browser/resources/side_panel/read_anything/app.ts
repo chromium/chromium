@@ -460,6 +460,15 @@ export class AppElement extends AppElementBase implements
     this.hasContent_ = false;
   }
 
+  isEmptyState(): boolean {
+    // In rare cases it is possible for hasContent_ to be false but the loading
+    // screen to be shown without ever terminating, such as when reading mode
+    // receives bad selection data. When this happens, reading mode needs to
+    // check whether or not the empty state is currently showing, not whether
+    // or not there is content.
+    return this.emptyStateImagePath_ === './images/empty_state.svg';
+  }
+
   showLoading() {
     this.emptyStateImagePath_ = '//resources/images/throbber_small.svg';
     this.emptyStateDarkImagePath_ =
@@ -521,7 +530,19 @@ export class AppElement extends AppElementBase implements
       // send that info back to the controller.
       if (this.hasContent_) {
         this.hasContent_ = false;
-        chrome.readingMode.onNoTextContent();
+        chrome.readingMode.onNoTextContent(/* previouslyHadContent*/ true);
+      } else if (!this.isEmptyState()) {
+        // If no text content is found but reading mode is not showing the
+        // empty state, signal back to the renderer that this is the case.
+        // This is possible when the AXTree returns bad selection data and
+        // reading mode believes it has selected content to distll but
+        // nothing valid is selected. This can cause the loading screen
+        // to never switch to the empty state.
+        // TODO: crbug.com/411198154- Longer term, once reading mode and read aloud
+        // traversal is more in line, the renderer should be able to call showEmpty
+        // directly, rather than signaling to the WebUI to update content and then WebUI
+        // signaling back to the renderer that there is no text content.
+        chrome.readingMode.onNoTextContent(/* previouslyHadContent*/ false);
       }
       return;
     }
@@ -963,7 +984,7 @@ export class AppElement extends AppElementBase implements
     const root = this.nodeStore_.getDomNode(chrome.readingMode.rootId);
     if (this.hasContent_ && !root?.textContent) {
       this.hasContent_ = false;
-      chrome.readingMode.onNoTextContent();
+      chrome.readingMode.onNoTextContent(/*previouslyHadContent*/ true);
     }
   }
 

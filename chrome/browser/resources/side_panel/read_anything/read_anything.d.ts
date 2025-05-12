@@ -204,7 +204,7 @@ declare namespace chrome {
 
     // Called when there is no text content after building the tree but we're
     // not showing the empty page either.
-    function onNoTextContent(): void;
+    function onNoTextContent(previouslyHadContent: boolean): void;
 
     // Returns the actual spacing value to use based on the given lineSpacing
     // category.

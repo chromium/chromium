@@ -1592,8 +1592,15 @@ void ReadAnythingAppController::OnCopy() const {
   page_handler_->OnCopy();
 }
 
-void ReadAnythingAppController::OnNoTextContent() {
-  Distill();
+void ReadAnythingAppController::OnNoTextContent(bool previouslyHadContent) {
+  if (previouslyHadContent) {
+    Distill();
+  } else {
+    // If updateContent was called on a page with no valid content and
+    // reading mode previously didn't have content, ensure the empty state
+    // is now showing. Otherwise, the loading screen may never terminate.
+    DrawEmptyState();
+  }
 }
 
 void ReadAnythingAppController::OnFontSizeChanged(bool increase) {
