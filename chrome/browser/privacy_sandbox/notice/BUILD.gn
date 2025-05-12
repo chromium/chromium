@@ -44,13 +44,29 @@ source_set("interfaces") {
   ]
 }
 
-source_set("notice") {
-  sources = [ "notice_service.cc" ]
+source_set("factory") {
+  public = [ "notice_service_factory.h" ]
   deps = [
-    ":core",
     ":interfaces",
     "//base",
     "//chrome/browser/profiles:profile",
+  ]
+}
+
+source_set("notice") {
+  sources = [
+    "notice_service.cc",
+    "notice_service.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+  ]
+
+  public_deps = [
+    ":core",
+    ":factory",
+    ":interfaces",
   ]
 
   if (!is_android) {

@@ -30,8 +30,6 @@ group("privacy_sandbox") {
   public_deps = [
     ":countries",
     "notice",
-    "notice:core",
-    "notice:interfaces",
   ]
 
   # (Desktop Only)
@@ -226,6 +224,7 @@ source_set("service_impl_unittest") {
     "//chrome/browser/first_party_sets",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/privacy_sandbox/notice:core",
+    "//chrome/browser/privacy_sandbox/notice:factory",
     "//chrome/browser/privacy_sandbox/notice:notice_mojom",
     "//chrome/browser/privacy_sandbox/notice:test_support",
     "//chrome/common:chrome_features",
