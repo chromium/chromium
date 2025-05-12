@@ -163,6 +163,29 @@ bool GlicEnabling::ShouldShowSettingsPage(Profile* profile) {
   return EnablementForProfile(profile).ShouldShowSettingsPage();
 }
 
+void GlicEnabling::OnGlicSettingsPolicyChanged() {
+  glic::prefs::SettingsPolicyState updated_gemini_settings_value =
+      glic::prefs::SettingsPolicyState{
+          profile_->GetPrefs()->GetInteger(::prefs::kGeminiSettings)};
+
+  // If the policy changed from either not set or Disabled to Enabled, trigger a
+  // rpc fetch to update the possible user status change sooner.
+  if ((!cached_gemini_settings_value_.has_value() ||
+       cached_gemini_settings_value_.value() ==
+           glic::prefs::SettingsPolicyState::kDisabled) &&
+      updated_gemini_settings_value ==
+          (glic::prefs::SettingsPolicyState::kEnabled)) {
+    if (glic_user_status_fetcher_) {
+      glic_user_status_fetcher_->UpdateUserStatus();
+    }
+  }
+  // Update the stored value for the next comparison.
+  cached_gemini_settings_value_ = updated_gemini_settings_value;
+
+  // Update the overall enabled status as the policy has changed.
+  UpdateEnabledStatus();
+}
+
 GlicEnabling::GlicEnabling(Profile* profile,
                            ProfileAttributesStorage* profile_attributes_storage)
     : profile_(profile),
@@ -191,6 +214,8 @@ GlicEnabling::GlicEnabling(Profile* profile,
     glic_user_status_fetcher_ = std::make_unique<GlicUserStatusFetcher>(
         profile_, base::BindRepeating(&GlicEnabling::UpdateEnabledStatus,
                                       base::Unretained(this)));
+    cached_gemini_settings_value_ = glic::prefs::SettingsPolicyState{
+        profile_->GetPrefs()->GetInteger(::prefs::kGeminiSettings)};
   }
 }
 GlicEnabling::~GlicEnabling() = default;
@@ -216,10 +241,6 @@ base::CallbackListSubscription GlicEnabling::RegisterOnConsentChanged(
 base::CallbackListSubscription GlicEnabling::RegisterOnShowSettingsPageChanged(
     ShowSettingsPageChangedCallback callback) {
   return show_settings_page_changed_callback_list_.Add(std::move(callback));
-}
-
-void GlicEnabling::OnGlicSettingsPolicyChanged() {
-  UpdateEnabledStatus();
 }
 
 void GlicEnabling::UpdateUserStatus(

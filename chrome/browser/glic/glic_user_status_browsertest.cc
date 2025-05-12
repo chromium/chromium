@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, Enterprise_SignIn_Enabled) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
-                       Enterprise_SignIn_Enabled_GeminiSettings) {
+                       Enterprise_GeminiSettingsChange_SignedOut) {
   policy::ScopedManagementServiceOverrideForTesting platform_management(
       policy::ManagementServiceFactory::GetForProfile(profile()),
       policy::EnterpriseManagementAuthority::CLOUD);
@@ -292,8 +292,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
   }));
   request_received = false;
 
-  // Make the account non-enterprise by setting kGeminiSettings to
-  // disabled.
+  // Setting kGeminiSettings to disabled so that no RPC would be sent.
   profile()->GetPrefs()->SetInteger(
       ::prefs::kGeminiSettings,
       static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled));
@@ -301,6 +300,8 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
   // Sign in again and wait for a while.
   SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
 
+  // Verifying the absence of a request by verifying the absence for a time
+  // period longer than the polling interval.
   base::RunLoop run_loop;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(300));
@@ -326,6 +327,72 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return GetCachedStatusDict().has_value(); }));
   ASSERT_TRUE(request_received);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
+                       Enterprise_GeminiSettingsChange_NoSignedOut) {
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  // Verify request is sent by the non-existence of the Prefs initially and the
+  // existence of it after sign-in simulation.
+  ASSERT_FALSE(GetCachedStatusDict().has_value());
+
+  bool request_received = false;
+  embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+      [=, &request_received](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url != kGlicUserStatusRelativeTestUrl) {
+          return nullptr;
+        }
+        request_received = true;
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+
+        response->set_code(net::HTTP_OK);
+        response->set_content(
+            R"({"isGlicEnabled": true, "isAccessDeniedByAdmin": false})");
+        response->set_content_type("application/json");
+
+        return response;
+      }));
+  net::test_server::EmbeddedTestServerHandle test_server_handle;
+  ASSERT_TRUE(test_server_handle =
+                  embedded_test_server()->StartAndReturnHandle());
+
+  SetGlicUserStatusUrlForTest();
+
+  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
+
+  // Verify request is sent by the existence of the Prefs and request handler is
+  // inovked.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetCachedStatusDict().has_value(); }));
+  ASSERT_TRUE(request_received);
+
+  // Setting kGeminiSettings to disabled so that no RPC would be sent.
+  request_received = false;
+  profile()->GetPrefs()->SetInteger(
+      ::prefs::kGeminiSettings,
+      static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled));
+
+  // Verifying the absence of a request by verifying the absence for a time
+  // period longer than the polling interval.
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(300));
+  run_loop.Run();
+
+  // Verify no request is sent.
+  EXPECT_FALSE(request_received);
+
+  // Make the account enterprise again by setting kGeminiSettings to enabled.
+  profile()->GetPrefs()->SetInteger(
+      ::prefs::kGeminiSettings,
+      static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
+
+  // Verify request handler is inovked.
+  ASSERT_TRUE(base::test::RunUntil([&]() { return request_received; }));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,

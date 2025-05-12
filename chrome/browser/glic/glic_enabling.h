@@ -17,6 +17,9 @@ class Profile;
 class ProfileAttributesStorage;
 
 namespace glic {
+namespace prefs {
+enum class SettingsPolicyState;
+}
 namespace mojom {
 // TODO(crbug.com/406500707): This forward declaration is needed because we use
 // allow_circular_includes_from. Our build rules should be refactored to avoid
@@ -227,6 +230,10 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
+
+  // Stores the previous value of `prefs::kGeminiSettings` to detect
+  // transitions.
+  std::optional<glic::prefs::SettingsPolicyState> cached_gemini_settings_value_;
 };
 
 }  // namespace glic
