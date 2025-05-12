@@ -25,6 +25,7 @@
     --left: no;
     --right: no;
     --x: no;
+    --none: no;
     @container scroll-state(scroll-direction: top) {
       --top: yes;
     }
@@ -43,6 +44,9 @@
     @container scroll-state(scroll-direction: x) {
       --x: yes;
     }
+    @container scroll-state(scroll-direction: none) {
+      --none: yes;
+    }
   }
 </style>
 <div id="scroller">
@@ -52,6 +56,19 @@
 </div>
 <script>
   setup(() => assert_implements_scroll_state_container_queries());
+
+  promise_test(async t => {
+    await waitForAnimationFrames(2);
+    assert_equals(getComputedStyle(target).getPropertyValue("--none"), "yes");
+
+    assert_equals(getComputedStyle(target).getPropertyValue("--bottom"), "no");
+    assert_equals(getComputedStyle(target).getPropertyValue("--top"), "no");
+    assert_equals(getComputedStyle(target).getPropertyValue("--y"), "no");
+
+    assert_equals(getComputedStyle(target).getPropertyValue("--left"), "no");
+    assert_equals(getComputedStyle(target).getPropertyValue("--right"), "no");
+    assert_equals(getComputedStyle(target).getPropertyValue("--x"), "no");
+  }, "Check that scroll-state(scroll-direction) state before scrolling");
 
   promise_test(async t => {
     scroller.scrollTop = 300;
