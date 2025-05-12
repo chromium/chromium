@@ -27,12 +27,12 @@ source_set("in_process_unzipper") {
     "unzip/in_process_unzipper.cc",
     "unzip/in_process_unzipper.h",
   ]
+  public_deps = [ "//third_party/zlib/google:zip" ]
   deps = [
     ":update_client",
     "//base",
     "//components/services/unzip:in_process",
     "//components/services/unzip/public/cpp",
-    "//third_party/zlib/google:zip",
   ]
 }
 

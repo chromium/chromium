@@ -26,9 +26,11 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "build/build_config.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/configurator.h"
@@ -42,9 +44,25 @@
 #include "chrome/updater/protos/omaha_settings.pb.h"
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service.h"
+#include "components/crx_file/crx_verifier.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/update_client/unpacker.h"
+#include "components/update_client/unzip/in_process_unzipper.h"
+#include "third_party/zlib/google/zip.h"
 
 namespace updater::tools {
+
+namespace {
+
+#if BUILDFLAG(IS_POSIX)
+constexpr zip::UnzipSymlinkOption kSymlinkOption =
+    zip::UnzipSymlinkOption::PRESERVE;
+#else
+constexpr zip::UnzipSymlinkOption kSymlinkOption =
+    zip::UnzipSymlinkOption::DONT_PRESERVE;
+#endif
+
+}  // namespace
 
 constexpr char kProductSwitch[] = "product";
 constexpr char kBackgroundSwitch[] = "background";
@@ -55,6 +73,7 @@ constexpr char kListCBCMPoliciesSwitch[] = "list-cbcm-policies";
 constexpr char kCBCMPolicyPathSwitch[] = "policy-path";
 constexpr char kJSONFormatSwitch[] = "json";
 constexpr char kUpdateSwitch[] = "update";
+constexpr char kUnpackSwitch[] = "unpack";
 
 namespace updater_policy {
 
@@ -523,6 +542,7 @@ class UpdaterUtilApp : public App {
   void Update();
   void ListPolicies();
   void ListCBCMPolicies();
+  void UnpackCRX();
 
   void FindApp(const std::string& app_id,
                base::OnceCallback<void(scoped_refptr<AppState>)> callback);
@@ -547,6 +567,7 @@ void UpdaterUtilApp::PrintUsage(const std::string& error_message) {
         --list-update         List update for an app (skip update install).
         --list-policies       List all currently effective enterprise policies.
         --list-cbcm-policies  List downloaded CBCM policies.
+        --unpack=[file]       Verify and unpack a CRX file.
     Action parameters:
         --background          Use background priority.
         --product             ProductID.
@@ -725,13 +746,40 @@ void UpdaterUtilApp::ListCBCMPolicies() {
       base::BindOnce(&UpdaterUtilApp::Shutdown, this, 0));
 }
 
+void UpdaterUtilApp::UnpackCRX() {
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &update_client::Unpacker::Unpack, std::vector<uint8_t>(),
+              base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+                  kUnpackSwitch),
+              base::MakeRefCounted<update_client::InProcessUnzipperFactory>(
+                  kSymlinkOption)
+                  ->Create(),
+              crx_file::VerifierFormat::CRX3,
+              base::BindOnce([](const update_client::Unpacker::Result& result) {
+                if (result.error == update_client::UnpackerError::kNone) {
+                  LOG(INFO) << "Unpacked to " << result.unpack_path
+                            << " with public key " << result.public_key;
+                } else {
+                  LOG(ERROR)
+                      << "Unpacking failed: " << static_cast<int>(result.error)
+                      << ": " << result.extended_error;
+                }
+              })
+                  .Then(base::BindPostTaskToCurrentDefault(
+                      base::BindOnce(&UpdaterUtilApp::Shutdown, this, 0)))));
+}
+
 void UpdaterUtilApp::FirstTaskRun() {
   const std::map<std::string, void (UpdaterUtilApp::*)()> commands = {
       {kListAppsSwitch, &UpdaterUtilApp::ListApps},
       {kListUpdateSwitch, &UpdaterUtilApp::ListUpdate},
       {kUpdateSwitch, &UpdaterUtilApp::Update},
       {kListPoliciesSwitch, &UpdaterUtilApp::ListPolicies},
-      {kListCBCMPoliciesSwitch, &UpdaterUtilApp::ListCBCMPolicies}};
+      {kListCBCMPoliciesSwitch, &UpdaterUtilApp::ListCBCMPolicies},
+      {kUnpackSwitch, &UpdaterUtilApp::UnpackCRX}};
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   for (const auto& [switch_name, func] : commands) {
