@@ -23,7 +23,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
-#include "content/shell/browser/shell_paths.h"
+#include "content/shell/common/shell_paths.h"
 #include "content/shell/common/shell_switches.h"
 #include "content/test/test_content_client.h"
 #include "ui/events/platform/platform_event_source.h"

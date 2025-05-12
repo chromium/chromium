@@ -14,6 +14,7 @@
 #include "components/nacl/common/buildflags.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/common/content_switches.h"
+#include "content/shell/common/shell_paths.h"
 #include "content/shell/common/shell_switches.h"
 #include "extensions/common/extension_paths.h"
 #include "extensions/shell/browser/default_shell_browser_main_delegate.h"
@@ -140,6 +141,7 @@ std::optional<int> ShellMainDelegate::BasicStartupComplete() {
   nacl::RegisterPathProvider();
 #endif
   extensions::RegisterPathProvider();
+  content::RegisterShellPathProvider();
   return std::nullopt;
 }
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_SHELL_BROWSER_SHELL_PATHS_H_
-#define CONTENT_SHELL_BROWSER_SHELL_PATHS_H_
+#ifndef CONTENT_SHELL_COMMON_SHELL_PATHS_H_
+#define CONTENT_SHELL_COMMON_SHELL_PATHS_H_
 
 #include "build/build_config.h"
 
@@ -26,4 +26,4 @@ void RegisterShellPathProvider();
 
 }  // namespace content
 
-#endif  // CONTENT_SHELL_BROWSER_SHELL_PATHS_H_
+#endif  // CONTENT_SHELL_COMMON_SHELL_PATHS_H_
