@@ -154,6 +154,16 @@ void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
   window_controller_->Toggle(bwi, prevent_close, source);
 }
 
+void GlicKeyedService::OpenFreDialogInNewTab(BrowserWindowInterface* bwi) {
+  // Glic may be disabled for certain user profiles (the user is browsing in
+  // incognito or guest mode, policy, etc). In those cases, the entry points to
+  // this method should already have been removed.
+  CHECK(GlicEnabling::IsEnabledForProfile(profile_));
+
+  glic_profile_manager_->SetActiveGlic(this);
+  window_controller_->fre_controller()->OpenFreDialogInNewTab(bwi);
+}
+
 void GlicKeyedService::CloseUI() {
   window_controller_->Shutdown();
   host().Shutdown();

@@ -70,6 +70,8 @@ class GlicKeyedService : public KeyedService {
                 bool prevent_close,
                 mojom::InvocationSource source);
 
+  void OpenFreDialogInNewTab(BrowserWindowInterface* bwi);
+
   // Forcibly close the UI. This is similar to Shutdown in that it causes the
   // window controller to shutdown (and clear cached state), but unlike
   // Shutdown, it doesn't unregister as the "active glic" with the profile

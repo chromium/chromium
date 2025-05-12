@@ -67,10 +67,6 @@ bool IsEnterpriseEnabled(Profile* profile) {
          !GlicUserStatusFetcher::IsDisabled(profile);
 }
 
-bool HasConsentedForProfile(Profile* profile) {
-  return profile->GetPrefs()->GetInteger(prefs::kGlicCompletedFre) ==
-         static_cast<int>(prefs::FreStatus::kCompleted);
-}
 }  // namespace
 
 bool GlicEnabling::IsEnabledByFlags() {
@@ -87,6 +83,11 @@ bool GlicEnabling::IsProfileEligible(const Profile* profile) {
 
 bool GlicEnabling::IsEnabledForProfile(Profile* profile) {
   return IsNonEnterpriseEnabled(profile) && IsEnterpriseEnabled(profile);
+}
+
+bool GlicEnabling::HasConsentedForProfile(Profile* profile) {
+  return profile->GetPrefs()->GetInteger(prefs::kGlicCompletedFre) ==
+         static_cast<int>(prefs::FreStatus::kCompleted);
 }
 
 bool GlicEnabling::IsEnabledAndConsentForProfile(Profile* profile) {

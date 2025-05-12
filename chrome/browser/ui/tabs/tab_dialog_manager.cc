@@ -251,7 +251,10 @@ std::unique_ptr<views::Widget> TabDialogManager::CreateTabScopedDialog(
       delegate, gfx::NativeWindow(), host->GetNativeView()));
 }
 
-void TabDialogManager::ShowDialogAndBlockTabInteraction(views::Widget* widget) {
+void TabDialogManager::ShowDialogAndBlockTabInteraction(
+    views::Widget* widget,
+    bool close_on_navigation) {
+  close_on_navigation_ = close_on_navigation;
   widget_ = widget;
   auto* browser_window_interface = tab_interface_->GetBrowserWindowInterface();
   ConfigureDesiredBoundsDelegate(widget_.get(), browser_window_interface);
@@ -278,9 +281,10 @@ void TabDialogManager::ShowDialogAndBlockTabInteraction(views::Widget* widget) {
 
 std::unique_ptr<views::Widget>
 TabDialogManager::CreateShowDialogAndBlockTabInteraction(
-    views::DialogDelegate* delegate) {
+    views::DialogDelegate* delegate,
+    bool close_on_navigation) {
   auto widget = CreateTabScopedDialog(delegate);
-  ShowDialogAndBlockTabInteraction(widget.get());
+  ShowDialogAndBlockTabInteraction(widget.get(), close_on_navigation);
   return widget;
 }
 
@@ -328,8 +332,9 @@ void TabDialogManager::DidFinishNavigation(
             back_forward_cache::DisabledReasonId::kModalDialog));
   }
 
-  // Close modal dialogs if necessary.
-  if (!net::registry_controlled_domains::SameDomainOrHost(
+  // Close modal dialogs if navigation is to a new domain/host.
+  if (close_on_navigation_ &&
+      !net::registry_controlled_domains::SameDomainOrHost(
           navigation_handle->GetPreviousPrimaryMainFrameURL(),
           navigation_handle->GetURL(),
           net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {

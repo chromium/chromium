@@ -19,6 +19,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/fre/glic_fre_dialog_view.h"
+#include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/channel_info.h"
@@ -79,8 +81,7 @@ void GlicFreController::Shutdown() {
 bool GlicFreController::ShouldShowFreDialog() {
   // If the given profile has not previously completed the FRE, then it should
   // be shown.
-  return profile_->GetPrefs()->GetInteger(prefs::kGlicCompletedFre) !=
-         static_cast<int>(prefs::FreStatus::kCompleted);
+  return !GlicEnabling::HasConsentedForProfile(profile_);
 }
 
 bool GlicFreController::CanShowFreDialog(Browser* browser) {
@@ -94,6 +95,17 @@ bool GlicFreController::CanShowFreDialog(Browser* browser) {
   // currently being shown on the same tab.
   tabs::TabInterface* tab = browser->GetActiveTabInterface();
   return tab && tab->CanShowModalUI();
+}
+
+void GlicFreController::OpenFreDialogInNewTab(BrowserWindowInterface* bwi) {
+  Browser* browser = bwi->GetBrowserForMigrationOnly();
+  if (!ShouldShowFreDialog()) {
+    return;
+  }
+  chrome::AddAndReturnTabAt(browser, GURL(), /*index=*/-1, /*foreground=*/true);
+  if (CanShowFreDialog(browser)) {
+    ShowFreDialog(browser);
+  }
 }
 
 void GlicFreController::ShowFreDialog(Browser* browser) {
@@ -113,7 +125,6 @@ void GlicFreController::ShowFreDialog(Browser* browser) {
     // Sign-in required and handled by AuthController. In this case, do not
     // record the FRE load time metric.
     show_start_time_ = base::TimeTicks();
-    return;
   }
 }
 
@@ -133,18 +144,17 @@ void GlicFreController::ShowFreDialogAfterAuthCheck(
 
   CreateView();
 
-  tabs::TabInterface* tab_interface = browser->GetActiveTabInterface();
+  tab_showing_modal_ = browser->GetActiveTabInterface();
   // Note that this call to `CreateShowDialogAndBlockTabInteraction` is
   // necessarily preceded by a call to `CanShowModalUI`. See
   // `GlicFreController::CanShowFreDialog`.
   // TODO(crbug.com/393400004): This returned widget should be configured to
   // use a synchronous close.
-  fre_widget_ =
-      tab_interface->GetTabFeatures()
-          ->tab_dialog_manager()
-          ->CreateShowDialogAndBlockTabInteraction(fre_view_.release());
+  fre_widget_ = tab_showing_modal_->GetTabFeatures()
+                    ->tab_dialog_manager()
+                    ->CreateShowDialogAndBlockTabInteraction(
+                        fre_view_.release(), /*close_on_navigation=*/false);
   GetWebContents()->Focus();
-  tab_showing_modal_ = tab_interface;
   will_detach_subscription_ = tab_showing_modal_->RegisterWillDetach(
       base::BindRepeating(&GlicFreController::OnTabShowingModalWillDetach,
                           base::Unretained(this)));

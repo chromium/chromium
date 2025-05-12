@@ -91,7 +91,7 @@ class GlicWindowController : public views::WidgetObserver,
 
   // Show, summon, or activate the panel if needed, or close it if it's already
   // active and prevent_close is false.
-  void Toggle(BrowserWindowInterface* browser,
+  void Toggle(BrowserWindowInterface* bwi,
               bool prevent_close,
               mojom::InvocationSource source);
 
