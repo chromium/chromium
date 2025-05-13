@@ -299,25 +299,38 @@ void LockScreenStartReauthDialog::OnWebviewLoadAborted() {
   UpdateState(NetworkError::ERROR_REASON_FRAME_ERROR);
 }
 
+LockScreenReauthHandler* LockScreenStartReauthDialog::GetHandler() {
+  auto* web_ui = webui();
+  if (!web_ui) {
+    return nullptr;
+  }
+  auto* controller = web_ui->GetController();
+  if (!controller) {
+    return nullptr;
+  }
+  return static_cast<LockScreenStartReauthUI*>(controller)->GetMainHandler();
+}
+
 void LockScreenStartReauthDialog::TerminateAutoReload() {
-  LockScreenReauthHandler* reauth_handler =
-      static_cast<LockScreenStartReauthUI*>(webui()->GetController())
-          ->GetMainHandler();
-  reauth_handler->GetAutoReloadManager().Terminate();
+  LockScreenReauthHandler* reauth_handler = GetHandler();
+  if (reauth_handler) {
+    reauth_handler->GetAutoReloadManager().Terminate();
+  }
 }
 
 void LockScreenStartReauthDialog::ReactivateAutoReload() {
-  LockScreenReauthHandler* reauth_handler =
-      static_cast<LockScreenStartReauthUI*>(webui()->GetController())
-          ->GetMainHandler();
-  reauth_handler->ActivateAutoReload();
+  LockScreenReauthHandler* reauth_handler = GetHandler();
+  if (reauth_handler) {
+    reauth_handler->ActivateAutoReload();
+  }
 }
 
 bool LockScreenStartReauthDialog::IsAutoReloadActive() {
-  LockScreenReauthHandler* reauth_handler =
-      static_cast<LockScreenStartReauthUI*>(webui()->GetController())
-          ->GetMainHandler();
-  return reauth_handler->GetAutoReloadManager().IsAutoReloadActive();
+  LockScreenReauthHandler* reauth_handler = GetHandler();
+  if (reauth_handler) {
+    return reauth_handler->GetAutoReloadManager().IsAutoReloadActive();
+  }
+  return false;
 }
 
 void LockScreenStartReauthDialog::UpdateState(
@@ -353,10 +366,8 @@ void LockScreenStartReauthDialog::UpdateState(
   }
   if (should_reload_gaia_) {
     DismissLockScreenNetworkDialog();
-    LockScreenReauthHandler* reauth_handler =
-        static_cast<LockScreenStartReauthUI*>(webui()->GetController())
-            ->GetMainHandler();
-    if (reauth_handler->IsAuthenticatorLoaded({})) {
+    LockScreenReauthHandler* reauth_handler = GetHandler();
+    if (reauth_handler && reauth_handler->IsAuthenticatorLoaded({})) {
       reauth_handler->ReloadGaiaAuthenticator();
       should_reload_gaia_ = false;
     }

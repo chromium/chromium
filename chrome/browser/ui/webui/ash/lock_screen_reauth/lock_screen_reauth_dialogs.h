@@ -23,6 +23,7 @@ namespace ash {
 
 class LockScreenCaptivePortalDialog;
 class LockScreenNetworkDialog;
+class LockScreenReauthHandler;
 
 class LockScreenStartReauthDialog
     : public BaseLockDialog,
@@ -141,6 +142,8 @@ class LockScreenStartReauthDialog
   void OnCaptivePortalDialogReadyForTesting();
 
   bool IsAutoReloadActive();
+
+  LockScreenReauthHandler* GetHandler();
 
   scoped_refptr<NetworkStateInformer> network_state_informer_;
   bool is_network_dialog_visible_ = false;
