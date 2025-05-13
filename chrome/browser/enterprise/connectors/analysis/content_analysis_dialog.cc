@@ -310,7 +310,7 @@ void ContentAnalysisDialog::ShowDialogNow() {
 // Glic port enabled for Mac only at the moment until fixed on Windows.
 // TODO(416748209): Follow up with full port of ContentAnalysisDialog to use
 // non web modals on both Mac and Windows for all sources.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(ENABLE_GLIC) && BUILDFLAG(IS_MAC)
   if (glic::IsGlicWebUI(top_level_contents_.get())) {
     // make sure only one dialog is displayed at a time. If a dialog exists we
     // just update the view.
