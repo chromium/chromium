@@ -127,6 +127,7 @@ TEST_F(InputsSectionTest,
       });
 
   chromeos::test::FakeMagicBoostState magic_boost_state;
+  magic_boost_state.SetAvailability(true);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       chromeos::switches::kMahiRestrictionsOverride);
 

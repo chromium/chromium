@@ -12,7 +12,6 @@ namespace test {
 
 class FakeMagicBoostState : public chromeos::MagicBoostState {
  public:
-  bool IsMagicBoostAvailable() override;
   bool CanShowNoticeBannerForHMR() override;
   int32_t AsyncIncrementHMRConsentWindowDismissCount() override;
   void AsyncWriteConsentStatus(
@@ -22,11 +21,8 @@ class FakeMagicBoostState : public chromeos::MagicBoostState {
   void DisableOrcaFeature() override {}
   void DisableLobsterSettings() override {}
 
-  void SetMagicBoostAvailability(bool available);
+  void SetAvailability(bool available);
   void SetMagicBoostEnabled(bool enabled);
-
- private:
-  bool is_magic_boost_available_ = true;
 };
 
 }  // namespace test

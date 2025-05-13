@@ -97,6 +97,7 @@ TEST(QuickAnswersStateTest, IsEligibleObserverInit) {
 
 TEST_F(QuickAnswersStateWithMagicBoostTest, IsEligibleFeatureType) {
   chromeos::test::FakeMagicBoostState magic_boost_state;
+  magic_boost_state.SetAvailability(true);
   FakeQuickAnswersState quick_answers_state;
   quick_answers_state.SetApplicationLocale("en");
 
@@ -139,7 +140,7 @@ TEST(QuickAnswersStateTest, EnabledButNotEligible) {
 // user/device is eligible.
 TEST_F(QuickAnswersStateWithMagicBoostTest, MagicBoostStateEligibilityChanged) {
   chromeos::test::FakeMagicBoostState magic_boost_state;
-  magic_boost_state.SetMagicBoostAvailability(false);
+  magic_boost_state.SetAvailability(false);
   FakeQuickAnswersState quick_answers_state;
   quick_answers_state.SetApplicationLocale("en");
 
@@ -153,7 +154,7 @@ TEST_F(QuickAnswersStateWithMagicBoostTest, MagicBoostStateEligibilityChanged) {
 
   // Simulate that MagicBoost availability check async operation is compalted
   // and a user has went through MagicBoost consent flow.
-  magic_boost_state.SetMagicBoostAvailability(true);
+  magic_boost_state.SetAvailability(true);
   magic_boost_state.SetMagicBoostEnabled(true);
 
   EXPECT_EQ(QuickAnswersState::FeatureType::kHmr,
@@ -191,6 +192,7 @@ TEST(QuickAnswersStateTest, IsEnabledObserverInit) {
 
 TEST_F(QuickAnswersStateWithMagicBoostTest, IsEnabledUnderMagicBoost) {
   chromeos::test::FakeMagicBoostState magic_boost_state;
+  magic_boost_state.SetAvailability(true);
   FakeQuickAnswersState quick_answers_state;
   quick_answers_state.SetApplicationLocale("en");
   quick_answers_state.SetSettingsEnabled(true);
@@ -271,6 +273,7 @@ TEST(QuickAnswersStateTest, GetConsentStatus) {
 
 TEST_F(QuickAnswersStateWithMagicBoostTest, GetConsentStatusUnderMagicBoost) {
   chromeos::test::FakeMagicBoostState magic_boost_state;
+  magic_boost_state.SetAvailability(true);
   FakeObserver observer;
   FakeQuickAnswersState quick_answers_state;
   quick_answers_state.AddObserver(&observer);
@@ -298,6 +301,7 @@ TEST_F(QuickAnswersStateWithMagicBoostTest, PendingUnderMagicBoost) {
   FakeQuickAnswersState quick_answers_state;
   quick_answers_state.SetApplicationLocale("en");
 
+  magic_boost_state.SetAvailability(true);
   magic_boost_state.AsyncWriteHMREnabled(true);
   magic_boost_state.AsyncWriteConsentStatus(
       chromeos::HMRConsentStatus::kPendingDisclaimer);
@@ -317,6 +321,7 @@ TEST_F(QuickAnswersStateWithMagicBoostTest, PendingNotEnabledUnderMagicBoost) {
   FakeQuickAnswersState quick_answers_state;
   quick_answers_state.SetApplicationLocale("en");
 
+  magic_boost_state.SetAvailability(true);
   magic_boost_state.AsyncWriteConsentStatus(
       chromeos::HMRConsentStatus::kPendingDisclaimer);
 
@@ -397,6 +402,7 @@ TEST(QuickAnswersStateTest, IsIntentEligibleGatedByGlobalEligible) {
 
 TEST_F(QuickAnswersStateWithMagicBoostTest, IsIntentEligibleUnderMagicBoost) {
   chromeos::test::FakeMagicBoostState magic_boost_state;
+  magic_boost_state.SetAvailability(true);
 
   FakeQuickAnswersState quick_answers_state;
   quick_answers_state.SetApplicationLocale("en");

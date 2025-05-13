@@ -91,6 +91,7 @@ TEST_F(SearchSectionTest,
       content::TestWebUIDataSource::Create("test-search-section");
 
   chromeos::test::FakeMagicBoostState magic_boost_state;
+  magic_boost_state.SetAvailability(true);
 
   search_section_->AddLoadTimeData(html_source->GetWebUIDataSource());
 
@@ -101,7 +102,7 @@ TEST_F(SearchSectionTest,
 
 // MagicBoost availability check requires an async operation. There is a short
 // period where `MagicBoostState` returns false for its availability even if a
-// user/device is eligible.
+// user/device is eligible, and magic boost is enabled.
 TEST_F(SearchSectionTest,
        QuickAnswersSearchConceptsRemovedIfItBecomesUnavailable) {
   const std::string quick_answers_result_id = base::StrCat(
@@ -109,7 +110,8 @@ TEST_F(SearchSectionTest,
        ",", base::ToString(IDS_OS_SETTINGS_TAG_QUICK_ANSWERS)});
 
   chromeos::test::FakeMagicBoostState magic_boost_state;
-  magic_boost_state.SetMagicBoostAvailability(false);
+  magic_boost_state.SetAvailability(false);
+  magic_boost_state.SetMagicBoostEnabled(true);
   FakeQuickAnswersState quick_answers_state;
   quick_answers_state.SetApplicationLocale("en");
   ASSERT_EQ(QuickAnswersState::FeatureType::kQuickAnswers,
@@ -127,9 +129,8 @@ TEST_F(SearchSectionTest,
          "to kQuickAnswers";
 
   // Simulate that MagicBoost availability check async operation has been
-  // completed and a user has went through MagicBoost consent flow.
-  magic_boost_state.SetMagicBoostAvailability(true);
-  magic_boost_state.SetMagicBoostEnabled(true);
+  // completed.
+  magic_boost_state.SetAvailability(true);
   ASSERT_EQ(QuickAnswersState::FeatureType::kHmr,
             QuickAnswersState::GetFeatureType());
 
@@ -143,6 +144,7 @@ class SearchSectionTestWithLobsterEnabled : public SearchSectionTest {
  public:
   void SetUp() override {
     SearchSectionTest::SetUp();
+    magic_boost_state_.SetAvailability(true);
     feature_list_.InitWithFeatures(
         /*enable_features=*/{ash::features::kLobster,
                              ash::features::kFeatureManagementLobster},
@@ -257,6 +259,7 @@ TEST_F(SearchSectionTestWithScannerEnabled,
   std::unique_ptr<content::TestWebUIDataSource> html_source =
       content::TestWebUIDataSource::Create("test-search-section");
   chromeos::test::FakeMagicBoostState magic_boost_state;
+  magic_boost_state.SetAvailability(true);
 
   search_section->AddLoadTimeData(html_source->GetWebUIDataSource());
 
@@ -281,6 +284,7 @@ TEST_F(
   std::unique_ptr<content::TestWebUIDataSource> html_source =
       content::TestWebUIDataSource::Create("test-search-section");
   chromeos::test::FakeMagicBoostState magic_boost_state;
+  magic_boost_state.SetAvailability(true);
 
   search_section->AddLoadTimeData(html_source->GetWebUIDataSource());
 
@@ -301,6 +305,7 @@ TEST_F(SearchSectionTestWithScannerEnabled,
   std::unique_ptr<content::TestWebUIDataSource> html_source =
       content::TestWebUIDataSource::Create("test-search-section");
   chromeos::test::FakeMagicBoostState magic_boost_state;
+  magic_boost_state.SetAvailability(true);
 
   search_section->AddLoadTimeData(html_source->GetWebUIDataSource());
 

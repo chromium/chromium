@@ -17,6 +17,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 #include "chrome/browser/ash/mahi/mahi_cache_manager.h"
 #include "chrome/browser/ash/mahi/web_contents/test_support/fake_mahi_web_contents_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
@@ -145,7 +147,8 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         chromeos::switches::kMahiRestrictionsOverride);
 
-    magic_boost_state_ = std::make_unique<MagicBoostStateAsh>();
+    magic_boost_state_ = std::make_unique<MagicBoostStateAsh>(
+        base::BindRepeating([]() { return static_cast<Profile*>(nullptr); }));
     mahi_manager_impl_ = std::make_unique<MahiManagerImpl>();
     mahi_manager_impl_->mahi_provider_ = CreateMahiProvider();
 

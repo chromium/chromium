@@ -15,6 +15,7 @@ specific_include_rules = {
     "+chrome/browser/ash/crosapi",
     "+chrome/browser/ash/magic_boost",
     "+chrome/browser/global_features.h",
+    "+chrome/browser/profiles/profile.h",
     "+chrome/common/chrome_constants.h",
   ],
 }

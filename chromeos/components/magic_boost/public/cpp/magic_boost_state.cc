@@ -62,6 +62,22 @@ bool MagicBoostState::ShouldShowHmrCard() {
   return true;
 }
 
+bool MagicBoostState::IsMagicBoostAvailable() const {
+  return magic_boost_available_.value_or(false);
+}
+
+void MagicBoostState::UpdateMagicBoostAvailable(bool available) {
+  if (magic_boost_available_ == available) {
+    return;
+  }
+
+  magic_boost_available_ = available;
+
+  for (auto& observer : observers_) {
+    observer.OnMagicBoostAvailableUpdated(magic_boost_available_.value());
+  }
+}
+
 void MagicBoostState::UpdateMagicBoostEnabled(bool enabled) {
   magic_boost_enabled_ = enabled;
 

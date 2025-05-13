@@ -5,11 +5,17 @@
 #ifndef CHROME_BROWSER_ASH_MAGIC_BOOST_MAGIC_BOOST_STATE_ASH_H_
 #define CHROME_BROWSER_ASH_MAGIC_BOOST_MAGIC_BOOST_STATE_ASH_H_
 
+#include <memory>
+
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/shell_observer.h"
+#include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
+#include "base/types/expected.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace ash {
 
@@ -25,7 +31,12 @@ class MagicBoostStateAsh : public chromeos::MagicBoostState,
                            public ash::SessionObserver,
                            public ash::ShellObserver {
  public:
+  using InjectActiveProfileForTestingCallback =
+      base::RepeatingCallback<Profile*()>;
+
   MagicBoostStateAsh();
+  explicit MagicBoostStateAsh(InjectActiveProfileForTestingCallback
+                                  inject_active_profile_for_testing_callback);
 
   MagicBoostStateAsh(const MagicBoostStateAsh&) = delete;
   MagicBoostStateAsh& operator=(const MagicBoostStateAsh&) = delete;
@@ -33,7 +44,6 @@ class MagicBoostStateAsh : public chromeos::MagicBoostState,
   ~MagicBoostStateAsh() override;
 
   // MagicBoostState:
-  bool IsMagicBoostAvailable() override;
   bool CanShowNoticeBannerForHMR() override;
   int32_t AsyncIncrementHMRConsentWindowDismissCount() override;
   void AsyncWriteConsentStatus(
@@ -58,6 +68,8 @@ class MagicBoostStateAsh : public chromeos::MagicBoostState,
  private:
   friend class MagicBoostStateAshTest;
 
+  Profile* GetActiveUserProfile();
+
   // ash::SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
@@ -73,8 +85,15 @@ class MagicBoostStateAsh : public chromeos::MagicBoostState,
   void OnHMRConsentStatusUpdated();
   void OnHMRConsentWindowDismissCountUpdated();
 
+  void OnRefreshTokensReady();
+
   // Observes user profile prefs for magic_boost.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
+  // Use `std::unique_ptr` instead of `std::optional` as this variable holds an
+  // extended class of `signin::IdentityManager::Observer` class.
+  std::unique_ptr<signin::IdentityManager::Observer>
+      refresh_tokens_loaded_barrier_;
 
   base::ScopedObservation<ash::SessionController, ash::SessionObserver>
       session_observation_{this};
@@ -83,6 +102,9 @@ class MagicBoostStateAsh : public chromeos::MagicBoostState,
 
   base::ScopedObservation<ash::Shell, ash::ShellObserver> shell_observation_{
       this};
+
+  const InjectActiveProfileForTestingCallback
+      inject_active_profile_for_testing_callback_;
 };
 
 }  // namespace ash

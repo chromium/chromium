@@ -237,6 +237,7 @@ TEST_F(QuickAnswersControllerTest, NoUserConsentView) {
       {});
 
   chromeos::test::FakeMagicBoostState fake_magic_boost_state;
+  fake_magic_boost_state.SetAvailability(true);
   fake_magic_boost_state.AsyncWriteConsentStatus(
       chromeos::HMRConsentStatus::kUnset);
 

@@ -113,7 +113,7 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
   void RemoveObserver(QuickAnswersStateObserver* observer);
 
   // chromeos::MagicBoostState::Observer:
-  void OnMagicBoostEnabledUpdated(bool enabled) override;
+  void OnMagicBoostAvailableUpdated(bool available) override;
   void OnHMREnabledUpdated(bool enabled) override;
   void OnHMRConsentStatusUpdated(
       chromeos::HMRConsentStatus consent_status) override;

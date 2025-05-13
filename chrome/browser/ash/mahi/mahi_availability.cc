@@ -21,7 +21,7 @@
 
 namespace ash::mahi_availability {
 
-bool CanUseMahiService() {
+std::optional<bool> CanUseMahiService() {
   if (!manta::features::IsMantaServiceEnabled()) {
     return false;
   }
@@ -56,9 +56,15 @@ bool CanUseMahiService() {
     // MantaService might not be available in tests.
     if (manta::MantaService* service =
             manta::MantaServiceFactory::GetForProfile(profile);
-        service && service->CanAccessMantaFeaturesWithoutMinorRestrictions() !=
-                       manta::FeatureSupportStatus::kSupported) {
-      return false;
+        service) {
+      switch (service->CanAccessMantaFeaturesWithoutMinorRestrictions()) {
+        case manta::FeatureSupportStatus::kSupported:
+          break;
+        case manta::FeatureSupportStatus::kUnsupported:
+          return false;
+        case manta::FeatureSupportStatus::kUnknown:
+          return std::nullopt;
+      }
     }
   }
 
@@ -71,8 +77,12 @@ bool CanUseMahiService() {
   return IsGenerativeAiAllowedForCountry(country_code);
 }
 
-bool IsMahiAvailable() {
-  return chromeos::features::IsMahiEnabled() && CanUseMahiService();
+std::optional<bool> IsMahiAvailable() {
+  if (!chromeos::features::IsMahiEnabled()) {
+    return false;
+  }
+
+  return CanUseMahiService();
 }
 
 bool IsPompanoAvailable() {

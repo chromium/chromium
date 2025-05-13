@@ -5,18 +5,27 @@
 #ifndef CHROME_BROWSER_ASH_MAHI_MAHI_AVAILABILITY_H_
 #define CHROME_BROWSER_ASH_MAHI_MAHI_AVAILABILITY_H_
 
+#include <optional>
+
 namespace ash::mahi_availability {
 
 // Check whether Mahi is allowed. This function checks following restrictions:
 //   * age: if not demo mode, the account must not hit minor restrictions
 //   * country: the country code must be in the allow list.
 //   * If not in demo mode, guest session is not allowed.
-bool CanUseMahiService();
+//
+// This check reads a bit loaded as an async operation:
+// `CanAccessMantaFeaturesWithoutMinorRestrictions`. `std::nullopt` is returned
+// if the bit is not ready yet.
+std::optional<bool> CanUseMahiService();
 
 // Check if the mahi feature is available to use. It can be unavailable if the
 // mahi feature flag is disabled, or the age and country requirements are not
 // met.
-bool IsMahiAvailable();
+//
+// This check reads a bit loaded as an async operation via `CanUseMahiService`.
+// `std::nullopt` is returned if the bit is not ready yet.
+std::optional<bool> IsMahiAvailable();
 
 // Check if the Pompano feature is available to use.
 // Pompano is an add-on feature of mahi. Currently we make it available only

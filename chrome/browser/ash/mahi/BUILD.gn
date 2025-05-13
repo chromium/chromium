@@ -77,6 +77,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/magic_boost:magic_boost",
     "//chrome/browser/ash/mahi/media_app:unit_tests",
     "//chrome/browser/ash/mahi/web_contents/test_support",
+    "//chrome/browser/profiles:profile",
     "//chromeos/components/magic_boost/public/cpp:cpp",
     "//chromeos/components/mahi/public/cpp",
     "//chromeos/constants",

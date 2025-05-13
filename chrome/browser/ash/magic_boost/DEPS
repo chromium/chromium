@@ -25,6 +25,7 @@ include_rules = [
   "+chrome/browser/ash/mahi",
 
   "+chrome/browser/profiles",
+  "+chrome/browser/signin",
 ]
 
 specific_include_rules = {

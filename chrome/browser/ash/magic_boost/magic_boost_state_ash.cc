@@ -5,24 +5,91 @@
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 
 #include <cstdint>
+#include <memory>
+#include <optional>
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/mahi/mahi_utils.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/scoped_observation.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/input_method/editor_panel_manager.h"
 #include "chrome/browser/ash/mahi/mahi_availability.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash {
+namespace {
 
-MagicBoostStateAsh::MagicBoostStateAsh() {
+base::expected<bool, chromeos::MagicBoostState::Error>
+IsMagicBoostAvailableExpected() {
+  std::optional<bool> availability = mahi_availability::IsMahiAvailable();
+  if (!availability.has_value()) {
+    return base::unexpected(chromeos::MagicBoostState::Error::kUninitialized);
+  }
+  return availability.value();
+}
+
+// Wait for refresh tokens load and run the provided callback. This object
+// immediately runs the callback if refresh tokens are already loaded.
+class RefreshTokensLoadedBarrier : public signin::IdentityManager::Observer {
+ public:
+  RefreshTokensLoadedBarrier(Profile* profile,
+                             signin::IdentityManager* identity_manager,
+                             base::OnceCallback<void()> callback)
+      : callback_(std::move(callback)) {
+    CHECK(profile);
+    CHECK(identity_manager);
+
+    if (identity_manager->AreRefreshTokensLoaded()) {
+      std::move(callback_).Run();
+      return;
+    }
+
+    identity_manager_observation_.Observe(identity_manager);
+  }
+
+  void OnRefreshTokensLoaded() override {
+    std::move(callback_).Run();
+    identity_manager_observation_.Reset();
+  }
+
+ private:
+  base::OnceCallback<void()> callback_;
+  base::ScopedObservation<signin::IdentityManager, RefreshTokensLoadedBarrier>
+      identity_manager_observation_{this};
+};
+
+}  // namespace
+
+MagicBoostStateAsh::MagicBoostStateAsh()
+    : MagicBoostStateAsh(
+          MagicBoostStateAsh::InjectActiveProfileForTestingCallback()) {}
+
+MagicBoostStateAsh::MagicBoostStateAsh(
+    MagicBoostStateAsh::InjectActiveProfileForTestingCallback
+        inject_active_profile_for_testing_callback)
+    : inject_active_profile_for_testing_callback_(
+          inject_active_profile_for_testing_callback) {
+  if (!inject_active_profile_for_testing_callback_.is_null()) {
+    CHECK_IS_TEST();
+  }
+
   shell_observation_.Observe(ash::Shell::Get());
 
   auto* session_controller = ash::Shell::Get()->session_controller();
@@ -42,13 +109,20 @@ MagicBoostStateAsh::~MagicBoostStateAsh() {
   editor_manager_for_test_ = nullptr;
 }
 
+Profile* MagicBoostStateAsh::GetActiveUserProfile() {
+  if (!inject_active_profile_for_testing_callback_.is_null()) {
+    CHECK_IS_TEST();
+    return inject_active_profile_for_testing_callback_.Run();
+  }
+
+  return Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
+          user_manager::UserManager::Get()->GetActiveUser()));
+}
+
 void MagicBoostStateAsh::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   RegisterPrefChanges(pref_service);
-}
-
-bool MagicBoostStateAsh::IsMagicBoostAvailable() {
-  return mahi_availability::IsMahiAvailable();
 }
 
 bool MagicBoostStateAsh::CanShowNoticeBannerForHMR() {
@@ -124,7 +198,7 @@ input_method::EditorPanelManager* MagicBoostStateAsh::GetEditorPanelManager() {
   }
 
   return input_method::EditorMediatorFactory::GetInstance()
-      ->GetForProfile(ProfileManager::GetActiveUserProfile())
+      ->GetForProfile(GetActiveUserProfile())
       ->panel_manager();
 }
 
@@ -170,6 +244,38 @@ void MagicBoostStateAsh::RegisterPrefChanges(PrefService* pref_service) {
   OnHMREnabledUpdated();
   OnHMRConsentStatusUpdated();
   OnHMRConsentWindowDismissCountUpdated();
+
+  Profile* profile = GetActiveUserProfile();
+  if (!profile) {
+    CHECK_IS_TEST();
+    // Test code can bypass availability check by a flag. Run check immediately
+    // for that case if `profile` is nullptr.
+    OnRefreshTokensReady();
+    return;
+  }
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager) {
+    // `identity_manager` is not available under a certain condition, e.g.,
+    // guest session, test code. Run check immediately for those cases.
+    OnRefreshTokensReady();
+    return;
+  }
+
+  // Availability check contains an async operation where value is unavailable
+  // until refresh tokens are loaded. Run availability check after refresh token
+  // is loaded.
+  refresh_tokens_loaded_barrier_.reset(new RefreshTokensLoadedBarrier(
+      profile, identity_manager,
+      base::BindOnce(&MagicBoostStateAsh::OnRefreshTokensReady,
+                     base::Unretained(this))));
+}
+
+void MagicBoostStateAsh::OnRefreshTokensReady() {
+  ASSIGN_OR_RETURN(bool available, IsMagicBoostAvailableExpected(),
+                   [](auto) {});
+  UpdateMagicBoostAvailable(available);
 }
 
 void MagicBoostStateAsh::OnMagicBoostEnabledUpdated() {

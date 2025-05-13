@@ -28,7 +28,7 @@ bool IsMahiNudgeShown() {
 // A class that mocks `MagicBoostState` to use in tests.
 class TestMagicBoostState : public chromeos::MagicBoostState {
  public:
-  TestMagicBoostState() = default;
+  TestMagicBoostState() { UpdateMagicBoostAvailable(true); }
 
   TestMagicBoostState(const TestMagicBoostState&) = delete;
   TestMagicBoostState& operator=(const TestMagicBoostState&) = delete;
@@ -46,7 +46,6 @@ class TestMagicBoostState : public chromeos::MagicBoostState {
   }
 
   bool ShouldIncludeOrcaInOptInSync() override { return false; }
-  bool IsMagicBoostAvailable() override { return true; }
   bool CanShowNoticeBannerForHMR() override { return false; }
   int32_t AsyncIncrementHMRConsentWindowDismissCount() override { return 0; }
   void DisableOrcaFeature() override {}
