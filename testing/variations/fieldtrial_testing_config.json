@@ -13254,6 +13254,24 @@
             ]
         }
     ],
+    "LegacyKeyRepeatSynthesis": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "linux",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "LegacyKeyRepeatSynthesis"
+                    ]
+                }
+            ]
+        }
+    ],
     "LegacyTabStateDeprecation": [
         {
             "platforms": [
