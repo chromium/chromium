@@ -136,8 +136,6 @@ static_library("ui") {
     "webid/identity_dialog_controller.h",
     "webid/identity_ui_utils.cc",
     "webid/identity_ui_utils.h",
-    "webui/accessibility/accessibility_ui.cc",
-    "webui/accessibility/accessibility_ui.h",
     "webui/autofill_and_password_manager_internals/autofill_internals_ui.cc",
     "webui/autofill_and_password_manager_internals/autofill_internals_ui.h",
     "webui/autofill_and_password_manager_internals/internals_ui_handler.cc",
@@ -418,6 +416,7 @@ static_library("ui") {
     "//chrome/browser/ui/tab_contents:impl",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/about",
+    "//chrome/browser/ui/webui/accessibility",
     "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/ui/zoom",
     "//chrome/browser/updates/announcement_notification",
@@ -1956,6 +1955,10 @@ static_library("ui") {
       # TODO(crbug.com/364667551): It includes quite a few files from //c/b/ui's
       # subdirectories such as views and webui which are not modularized yet.
       "//chrome/browser/ui/webui/access_code_cast",
+
+      # TODO(crbug.com/364667551): It includes //c/b/ui/browser.h and
+      # //c/b/ui/browser_window.h.
+      "//chrome/browser/ui/webui/accessibility",
     ]
 
     if (is_mac) {

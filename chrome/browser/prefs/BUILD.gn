@@ -78,6 +78,7 @@ source_set("impl") {
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/search_engines",
     "//chrome/browser/ui/startup:startup_tab",
+    "//chrome/browser/ui/webui/accessibility",
     "//chrome/browser/updates/announcement_notification",
     "//components/blocked_content",
     "//components/bookmarks/common",

@@ -39,6 +39,7 @@ source_set("configs") {
     "//chrome/browser/optimization_guide:optimization_guide",
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/about",
+    "//chrome/browser/ui/webui/accessibility",
     "//components/compose:buildflags",
     "//components/lens:buildflags",
     "//components/security_interstitials/content:security_interstitial_page",
