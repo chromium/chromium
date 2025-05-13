@@ -6629,7 +6629,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Win.Device.CaptureBeginTime.MFTimeOffset"
-    units="ms" expires_after="2025-06-22">
+    units="ms" expires_after="2026-06-22">
   <owner>ilnik@google.com</owner>
   <owner>video-cmi-mpp@google.com</owner>
   <summary>
