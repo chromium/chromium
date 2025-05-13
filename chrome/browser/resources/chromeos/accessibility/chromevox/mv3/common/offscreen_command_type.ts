@@ -12,6 +12,7 @@ export enum OffscreenCommandType {
   EARCON_CANCEL_PROGRESS = 'EarconCancelProgress',
   EARCON_RESET_PAN = 'EarconSesetPan',
   EARCON_SET_POSITION_FOR_RECT = 'EarconSetPositionForRect',
+  IMAGE_DATA_FROM_URL = 'ImageDataFromUrl',
   LIBLOUIS_START_WORKER = 'LibLouisStartWorker',
   LIBLOUIS_RPC = 'LibLouisRPC',
   LIBLOUIS_MESSAGE = 'LibLouisMessage',

@@ -193,8 +193,67 @@ class OffscreenSpeechSynthesis {
   }
 }
 
+class OffscreenBrailleDisplayManager {
+  static instance?: OffscreenBrailleDisplayManager;
+
+  constructor() {
+    chrome.runtime.onMessage.addListener(
+        (message: any|undefined, _sender: MessageSender,
+         sendResponse: SendResponse) =>
+            this.handleMessageFromServiceWorker_(message, sendResponse));
+  }
+
+  private handleMessageFromServiceWorker_(
+      message: any|undefined, sendResponse: SendResponse): boolean {
+    switch (message['command']) {
+      case OffscreenCommandType.IMAGE_DATA_FROM_URL:
+        this.getImageDataFromUrl_(message, sendResponse);
+        // Returns true as the response is asynchronous and the callback
+        // must be kept alive.
+        return true;
+    }
+    return false;
+  }
+
+  static init(): void {
+    if (OffscreenBrailleDisplayManager.instance) {
+      throw 'Error: trying to create two instances of singleton ' +
+          'OffscreenBrailleDisplayManager.';
+    }
+    OffscreenBrailleDisplayManager.instance =
+        new OffscreenBrailleDisplayManager();
+  }
+
+  getImageDataFromUrl_(message: any, sendResponse: SendResponse): void {
+    const {imageDataUrl, imageState: {rows, columns, cellWidth, cellHeight}} =
+        message;
+
+    const imgElement = document.createElement('img');
+    imgElement.src = imageDataUrl;
+    imgElement.onload = () => {
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d')!;
+      canvas.width = columns * cellWidth;
+      canvas.height = rows * cellHeight;
+      context.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
+      const imageData: Uint8ClampedArray =
+          context.getImageData(0, 0, canvas.width, canvas.height).data;
+
+      // Serialize the Uint8ClampedArray in order to send via chrome's message
+      // passing API.
+      let binary = '';
+      for (let i = 0; i < imageData.length; i++) {
+        binary += String.fromCharCode(imageData[i]);
+      }
+      sendResponse({data: window.btoa(binary), length: imageData.length});
+    }
+  }
+}
+
+
 OffscreenBackgroundKeyboardHandler.init();
 OffscreenClipboardHandler.init();
 OffscreenSpeechSynthesis.init();
+OffscreenBrailleDisplayManager.init();
 EarconEngine.init();
 LibLouisWorker.init();

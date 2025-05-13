@@ -446,3 +446,37 @@ AX_TEST_F(
       const expected = [[1, 1], [0, 0], [1, 1]];
       assertArraysEquals(expected, binaryGrid);
     });
+
+
+AX_TEST_F(
+    'ChromeVoxBrailleDisplayManagerTest', 'SerializedImageData',
+    async function() {
+      // The following logic mimics the logic in
+      // OffscreenBrailleDisplayManager's `getImageDataFromUrl_`. First, create
+      // the Uint8ClampedArray which represents the image.
+      let rawData = [];
+      rawData = rawData.concat([255, 0, 0, 255], [255, 0, 0, 255]);
+      rawData = rawData.concat([0, 0, 0, 0], [0, 0, 0, 0]);
+      rawData = rawData.concat([255, 0, 0, 255], [255, 0, 0, 255]);
+
+      const originalImageData = new Uint8ClampedArray(24);
+      assertEquals(24, originalImageData.byteLength);
+
+      // Then, serialized the Uint8ClampedArray into a string in order to be
+      // able to send via chrome.runtime.sendMessage.
+      let binary = '';
+      for (let i = 0; i < originalImageData.length; i++) {
+        binary += String.fromCharCode(originalImageData[i]);
+      }
+      // A serialized string like this will be sent back to the service worker.
+      const imageDataString = btoa(binary);
+
+      // In BrailleDisplayManager, we convert from the string back into a
+      // Uint8ClampedArray.
+      const newImageData =
+          BrailleDisplayManager.deserializedImageData(imageDataString);
+
+      for (let i = 0; i < originalImageData.length; i++) {
+        assertEquals(originalImageData[i], newImageData[i])
+      }
+    });

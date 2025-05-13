@@ -10,6 +10,7 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {BrailleDisplayState, BrailleKeyEvent} from '../../common/braille/braille_key_types.js';
 import {BrailleKeyCommand} from '../../common/braille/braille_key_types.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
+import {OffscreenCommandType} from '../../common/offscreen_command_type.js';
 import {SettingsManager} from '../../common/settings_manager.js';
 import {CaptionsHandler} from '../captions_handler.js';
 
@@ -113,28 +114,45 @@ export class BrailleDisplayManager implements BrailleCaptionsListener {
     // All known displays don't exceed a cell height of 4.
     const maxCellHeight = 4;
 
-    const rows = displayState.textRowCount;
-    const columns = displayState.textColumnCount;
     const imageDataUrl = imageUrl;
+    const imageState: StateWithMaxCellHeight = {
+      rows: displayState.textRowCount,
+      columns: displayState.textColumnCount,
+      cellWidth,
+      cellHeight,
+      maxCellHeight
+    };
 
     return new Promise<ArrayBuffer>((resolve: (buf: ArrayBuffer) => void) => {
-      const imgElement = document.createElement('img');
-      imgElement.src = imageDataUrl;
-      imgElement.onload = () => {
-        const canvas = document.createElement('canvas');
-        // TODO(b/314203187): Not null asserted, check that this is correct.
-        const context = canvas.getContext('2d')!;
-        canvas.width = columns * cellWidth;
-        canvas.height = rows * cellHeight;
-        context.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
-        const imageData =
-            context.getImageData(0, 0, canvas.width, canvas.height);
-        const brailleBuf = BrailleDisplayManager.convertImageDataToBraille(
-            imageData.data,
-            {rows, columns, cellWidth, cellHeight, maxCellHeight});
-        resolve(brailleBuf);
-      };
+      chrome.runtime.sendMessage(
+          undefined, {
+            command: OffscreenCommandType.IMAGE_DATA_FROM_URL,
+            imageDataUrl,
+            imageState
+          },
+          undefined,
+          (image: any) => BrailleDisplayManager.onImageData(
+              image.data, imageState, resolve));
     });
+  }
+
+  static onImageData(
+      imageDataSerialized: string, imageState: StateWithMaxCellHeight,
+      resolve: (array: ArrayBuffer) => void): void {
+    const clampedArray =
+        BrailleDisplayManager.deserializedImageData(imageDataSerialized);
+    const brailleBuf = BrailleDisplayManager.convertImageDataToBraille(
+        clampedArray, imageState);
+    resolve(brailleBuf);
+  }
+
+  static deserializedImageData(imageDataString: string): Uint8ClampedArray {
+    const binary = atob(imageDataString);
+    const imageArray = new Uint8ClampedArray(imageDataString.length);
+    for (let i = 0; i < binary.length; i++) {
+      imageArray[i] = binary.charCodeAt(i);
+    }
+    return imageArray;
   }
 
   /**
