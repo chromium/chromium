@@ -298,8 +298,9 @@ void CompositorFrameSinkSupport::OnSurfaceActivated(Surface* surface) {
   if (pending_surfaces_.empty())
     UpdateNeedsBeginFramesInternal();
 
-  for (const auto& directive :
-       surface->GetActiveFrameMetadata().transition_directives) {
+  const CompositorFrameMetadata& active_frame_metadata =
+      surface->GetActiveFrameMetadata();
+  for (const auto& directive : active_frame_metadata.transition_directives) {
     ProcessCompositorFrameTransitionDirective(directive, surface);
   }
 
@@ -343,12 +344,17 @@ void CompositorFrameSinkSupport::OnSurfaceActivated(Surface* surface) {
   MaybeEvictSurfaces();
 
   // Update |device_scale_factor_| if it changes with latest activated surface.
-  float new_device_scale_factor =
-      surface->GetActiveFrameMetadata().device_scale_factor;
+  float new_device_scale_factor = active_frame_metadata.device_scale_factor;
   if (device_scale_factor_ != new_device_scale_factor) {
     frame_sink_manager_->OnFrameSinkDeviceScaleFactorChanged(
         surface->surface_id().frame_sink_id(), new_device_scale_factor);
     device_scale_factor_ = new_device_scale_factor;
+  }
+
+  if (is_mobile_optimized_ != active_frame_metadata.is_mobile_optimized) {
+    is_mobile_optimized_ = active_frame_metadata.is_mobile_optimized;
+    frame_sink_manager_->OnFrameSinkMobileOptimizedChanged(
+        frame_sink_id_, is_mobile_optimized_);
   }
 }
 

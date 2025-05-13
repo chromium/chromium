@@ -339,6 +339,25 @@ void InputManager::OnFrameSinkDeviceScaleFactorChanged(
   rir_iter->second->SetDeviceScaleFactor(device_scale_factor);
 }
 
+void InputManager::OnFrameSinkMobileOptimizedChanged(
+    const FrameSinkId& frame_sink_id,
+    bool is_mobile_optimized) {
+  auto rir_itr = rir_map_.find(frame_sink_id);
+  if (rir_itr == rir_map_.end()) {
+    return;
+  }
+  rir_itr->second->input_router()->NotifySiteIsMobileOptimized(
+      is_mobile_optimized);
+
+  auto metadata_itr = frame_sink_metadata_map_.find(frame_sink_id);
+  CHECK(metadata_itr != frame_sink_metadata_map_.end());
+  FrameSinkMetadata& frame_sink_metadata = metadata_itr->second;
+  CHECK(frame_sink_metadata.is_mobile_optimized != is_mobile_optimized);
+  frame_sink_metadata.is_mobile_optimized = is_mobile_optimized;
+  frame_sink_metadata.rir_support->NotifySiteIsMobileOptimized(
+      is_mobile_optimized);
+}
+
 input::TouchEmulator* InputManager::GetTouchEmulator(bool create_if_necessary) {
   return nullptr;
 }
@@ -531,22 +550,6 @@ void InputManager::StateOnTouchTransfer(
   android_state_transfer_handler_.StateOnTouchTransfer(
       std::move(state), support_android->GetWeakPtr());
 #endif
-}
-
-void InputManager::NotifySiteIsMobileOptimized(
-    bool is_mobile_optimized,
-    const FrameSinkId& frame_sink_id) {
-  auto itr = rir_map_.find(frame_sink_id);
-  if (itr == rir_map_.end()) {
-    return;
-  }
-  itr->second->input_router()->NotifySiteIsMobileOptimized(is_mobile_optimized);
-
-  auto metadata_itr = frame_sink_metadata_map_.find(frame_sink_id);
-  CHECK(metadata_itr != frame_sink_metadata_map_.end());
-  metadata_itr->second.is_mobile_optimized = is_mobile_optimized;
-  metadata_itr->second.rir_support->NotifySiteIsMobileOptimized(
-      is_mobile_optimized);
 }
 
 void InputManager::ForceEnableZoomStateChanged(

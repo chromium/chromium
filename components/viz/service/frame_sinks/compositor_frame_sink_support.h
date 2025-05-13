@@ -419,6 +419,8 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // Default value is 1.0.
   float device_scale_factor_ = 1.0;
 
+  bool is_mobile_optimized_ = false;
+
   // By default, this is equivalent to |is_root_|, but may be overridden for
   // testing. Generally, for non-roots, there must not be any CopyOutputRequests
   // contained within submitted CompositorFrames. Otherwise, unprivileged

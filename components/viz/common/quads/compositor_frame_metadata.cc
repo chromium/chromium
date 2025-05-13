@@ -44,6 +44,7 @@ CompositorFrameMetadata::CompositorFrameMetadata(
       top_controls_visible_height(other.top_controls_visible_height),
       preferred_frame_interval(other.preferred_frame_interval),
       display_transform_hint(other.display_transform_hint),
+      is_mobile_optimized(other.is_mobile_optimized),
       transition_directives(other.transition_directives),
       has_shared_element_resources(other.has_shared_element_resources),
       screenshot_destination(other.screenshot_destination),
