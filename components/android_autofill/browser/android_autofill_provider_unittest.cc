@@ -170,7 +170,7 @@ class TestAndroidAutofillManager : public AndroidAutofillManager {
     gfx::Rect caret_bounds(gfx::Point(p.x(), p.y()), gfx::Size(0, 10));
     OnAskForValuesToFillImpl(
         form, field.global_id(), caret_bounds,
-        AutofillSuggestionTriggerSource::kTextFieldValueChanged);
+        AutofillSuggestionTriggerSource::kTextFieldValueChanged, std::nullopt);
   }
 
   void SimulateOnFocusOnFormField(const FormData& form,

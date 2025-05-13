@@ -71,13 +71,15 @@ class MockAutofillManager : public AutofillManager {
               OnTextFieldDidScrollImpl,
               (const FormData& form, const FieldGlobalId& field_id),
               (override));
-  MOCK_METHOD(void,
-              OnAskForValuesToFillImpl,
-              (const FormData& form,
-               const FieldGlobalId& field_id,
-               const gfx::Rect& caret_bounds,
-               AutofillSuggestionTriggerSource trigger_source),
-              (override));
+  MOCK_METHOD(
+      void,
+      OnAskForValuesToFillImpl,
+      (const FormData& form,
+       const FieldGlobalId& field_id,
+       const gfx::Rect& caret_bounds,
+       AutofillSuggestionTriggerSource trigger_source,
+       base::optional_ref<const PasswordSuggestionRequest> password_request),
+      (override));
   MOCK_METHOD(void,
               OnFocusOnFormFieldImpl,
               (const FormData& form, const FieldGlobalId& field_id),

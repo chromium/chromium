@@ -1,0 +1,36 @@
+' Copyright 2025 The Chromium Authors
+' Use of this source code is governed by a BSD-style license that can be
+' found in the LICENSE file.
+
+/'
+ ' This sequence diagram is used in the README of this directory.
+ ' Generated diagrams are by default located in
+ ' `out/components/autofill/core/browser/integrators/README_seq_generate/*`.
+ '
+ ' It describes how the `BrowserAutofillManager` requests for each delegate
+ ' whether suggestions are available. Each delegate assembles information from
+ ' the available feature sources and forwards a collection of suggestion to the
+ ' `BrowserAutofillManager`. The latter orders suggestions and sends them out
+ ' for display.
+ '/
+@startuml
+Title: Generating suggestions with AutofillPasswordManagerDelegate
+
+participant BrowserAutofillManager as bam
+participant AutofillClient as afc
+participant AutofillPasswordManagerDelegate as apmd
+participant PasswordAutofillManager_Frame_1 as pam1
+participant PasswordAutofillManager_Frame_2 as pam2
+
+bam -> afc:  getPasswordManagerDelegate()
+afc --> bam:  AutofillPasswordManagerDelegate
+bam -> apmd:  GetSuggestions(TriggeringField)
+apmd -> apmd: for (apm : all_apm) GetSuggestionsForField(TriggeringField)
+apmd -> pam1: GetSuggestionsForField(TriggeringField)
+note right of pam1: No frame-specific suggestions!
+pam1 --> apmd: {fallbacks?}
+apmd -> pam2: GetSuggestionsForField(TriggeringField)
+note right of pam2: Found frame-\nspecific suggestions!
+pam2 --> apmd: {credentials, fallbacks}
+apmd --> bam: {credentials, fallbacks}
+@enduml

@@ -78,6 +78,8 @@
 #include "components/autofill/core/browser/integrators/identity_credential/mock_identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
+#include "components/autofill/core/browser/integrators/password_manager/autofill_password_manager_delegate.h"
+#include "components/autofill/core/browser/integrators/password_manager/mock_autofill_password_manager_delegate.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/mock_autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
@@ -1183,10 +1185,12 @@ class BrowserAutofillManagerTest : public testing::Test {
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source =
-          AutofillSuggestionTriggerSource::kTextFieldValueChanged) {
+          AutofillSuggestionTriggerSource::kTextFieldValueChanged,
+      base::optional_ref<const PasswordSuggestionRequest> password_request =
+          std::nullopt) {
     manager().OnAskForValuesToFill(form, field.global_id(),
                                    GetFakeCaretBounds(field), trigger_source,
-                                   std::nullopt);
+                                   password_request);
   }
 
   void DidShowSuggestions(const FormData& form,
@@ -8855,6 +8859,55 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   // the popup since we've selected an option.
   external_delegate()->DidAcceptSuggestion(
       external_delegate()->suggestions().front(), {});
+}
+
+// Fixture setting the BAM's `AutofillPasswordManagerDelegate` to a mock instead
+// of the default `nullptr`. Enables any features if necessary.
+class BrowserAutofillManagerUsingPasswordDelegateTest
+    : public BrowserAutofillManagerTest {
+ protected:
+  void SetUp() override {
+    BrowserAutofillManagerTest::SetUp();
+    client().set_password_manager_delegate(CreatePasswordDelegate());
+  }
+
+  void TearDown() override {
+    delegate_ = nullptr;
+    BrowserAutofillManagerTest::TearDown();
+  }
+
+  MockAutofillPasswordManagerDelegate& password_delegate() {
+    return *delegate_;
+  }
+
+ private:
+  std::unique_ptr<AutofillPasswordManagerDelegate> CreatePasswordDelegate() {
+    auto password_delegate =
+        std::make_unique<MockAutofillPasswordManagerDelegate>();
+    delegate_ = password_delegate.get();
+    return password_delegate;
+  }
+
+  raw_ptr<MockAutofillPasswordManagerDelegate> delegate_ = nullptr;
+};
+
+// Test that the BAM queries the password delegate as soon as it's present.
+TEST_F(BrowserAutofillManagerUsingPasswordDelegateTest,
+       QueriesDelegateWhenGeneratingSuggestions) {
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(password_delegate(), ShowSuggestions);
+#else   // BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(password_delegate(), ShowKeyboardReplacingSurface);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  OnAskForValuesToFill(form, form.fields()[0],
+                       AutofillSuggestionTriggerSource::kTextFieldValueChanged,
+                       PasswordSuggestionRequest({}, form,
+                                                 /*username_field_index=*/0,
+                                                 /*password_field_index=*/0));
 }
 
 }  // namespace

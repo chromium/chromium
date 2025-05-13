@@ -1,0 +1,79 @@
+@startuml
+!pragma useVerticalIf on
+<style>
+activityDiagram {
+  FontSize 14
+  FontName arial
+}
+</style>
+start
+skinparam ConditionEndStyle hline
+
+:Some text field interaction; <<input>>
+  -> via RenderFrameObserver;
+  #CFC:AutofillAgent;
+if (uses PasswordAutofillAgent?) then
+  -> ShowSuggestions;
+  #CFC:PasswordAutofillAgent;
+  -> ShowPasswordSuggestions;
+  #CFC:ContentPasswordManagerDriver;
+  if (is Android?) then (no)
+  else (yes)
+    -> ShowKeyboardReplacingSurface;
+    #CCF:PasswordManagerClient;
+    if (is Chrome?) then (yes)
+      if (replaces Keyboard?) then (no)
+      else (yes)
+        if (has Passkeys?) then (yes)
+          #CCF:CredManController;
+          :Defer to CredMan; <<output>>
+          stop
+        else (no)
+          -> Show;
+          #CCF:TouchToFillController;
+          :Show BottomSheet; <<output>>
+          stop
+        endif
+      endif
+    endif
+  endif
+  -> OnShowPasswordSuggestions;
+  #CFC:PasswordAutofillManager;
+  split
+  'if (uses Fallback Flow?) then (yes)
+    -> needs fallback;
+    #CFC:PwManualFallbackFlow;
+  split again
+  'elseif (has Passkeys) then (yes)
+    -> has Passkeys;
+    #CFC:WebAuthnCredentialDelegate;
+  'endif
+  split again
+    -> always;
+  end split
+else
+  -> AskForValuesToFill;
+  #CFC:ContentAutofillDriver;
+  -> OnAskForValuesToFillImpl;
+  #CFC:BrowserAutofillManager;
+  -> OnSuggestionsReturned;
+  #CFC:AutofillExternalDelegate;
+endif
+
+-> ShowAutofillSuggestions;
+#CCF: ContentAutofillClient;
+
+if (is Android?) then (yes)
+  #CCF:AndroidAutofillClient;
+  if (uses 3P?) then (yes)
+    :Defer to AutofillService; <<output>>
+  else (no)
+    :Show Keyboard Accessory; <<output>>
+  endif
+else (no)
+  #CCF:ChromeAutofillClient;
+  :Show Popup UI; <<output>>
+endif
+
+stop
+@enduml

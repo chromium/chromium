@@ -96,6 +96,7 @@
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide.h"
+#include "components/autofill/core/browser/integrators/password_manager/autofill_password_manager_delegate.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_in_devtools_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -1097,7 +1098,19 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     const FormData& form,
     const FieldGlobalId& field_id,
     const gfx::Rect& caret_bounds,
-    AutofillSuggestionTriggerSource trigger_source) {
+    AutofillSuggestionTriggerSource trigger_source,
+    base::optional_ref<const PasswordSuggestionRequest> password_request) {
+  if (client().GetPasswordManagerDelegate() && password_request.has_value()) {
+#if !BUILDFLAG(IS_ANDROID)
+    client().GetPasswordManagerDelegate()->ShowSuggestions(
+        password_request->field);
+#else
+    client().GetPasswordManagerDelegate()->ShowKeyboardReplacingSurface(
+        password_request.value());
+#endif  // !BUILDFLAG(IS_ANDROID)
+    return;
+  }
+
   if (base::FeatureList::IsEnabled(features::kAutofillDisableFilling)) {
     return;
   }

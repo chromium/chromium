@@ -398,7 +398,7 @@ void AutofillManager::OnAskForValuesToFill(
   ParseFormAsync(
       form,
       ParsingCallback(&AutofillManager::OnAskForValuesToFillImpl, field_id,
-                      caret_bounds, trigger_source)
+                      caret_bounds, trigger_source, password_request)
           .Then(NotifyObserversCallback(&Observer::OnAfterAskForValuesToFill,
                                         form.global_id(), field_id)));
 }
