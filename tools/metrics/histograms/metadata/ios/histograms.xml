@@ -3845,12 +3845,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PasswordManager.Favicons.Percentage" units="%"
-    expires_after="2024-04-19">
-  <owner>veronguyen@google.com</owner>
+    expires_after="2025-10-19">
+  <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <summary>
     The percentage of passwords that have a favicon that is an image in the
     Password Manager recorded when the view will disappear.
+
+    Note: this metric was expired from 2024-04-19 to 2025-05-13; data may be
+    missing.
   </summary>
 </histogram>
 
