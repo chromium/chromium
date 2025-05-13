@@ -29,7 +29,8 @@ class ExternalFileRemoverImpl : public ExternalFileRemover,
   // referenced by the specified BrowserViewController. Use Remove to initiate
   // the removal.
   ExternalFileRemoverImpl(ProfileIOS* profile,
-                          sessions::TabRestoreService* tab_restore_service);
+                          sessions::TabRestoreService* tab_restore_service,
+                          NSString* inbox_directory_path = nil);
 
   ExternalFileRemoverImpl(const ExternalFileRemoverImpl&) = delete;
   ExternalFileRemoverImpl& operator=(const ExternalFileRemoverImpl&) = delete;
@@ -61,6 +62,7 @@ class ExternalFileRemoverImpl : public ExternalFileRemover,
   // ProfileIOS used to get the referenced files. Must outlive this
   // object.
   raw_ptr<ProfileIOS> profile_ = nullptr;
+  __strong NSString* inbox_directory_path_;
   // Used to ensure that this class' methods are called on the correct sequence.
   SEQUENCE_CHECKER(sequence_checker_);
   // Used to ensure `Remove()` is not run when this object is destroyed.

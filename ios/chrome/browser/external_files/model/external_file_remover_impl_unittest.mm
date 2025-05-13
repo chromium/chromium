@@ -45,8 +45,16 @@ class ExternalFileRemoverImplTest : public PlatformTest {
     BrowserListFactory::GetForProfile(profile_.get())
         ->AddBrowser(browser_.get());
 
+#if TARGET_IPHONE_SIMULATOR
     external_file_remover_ = std::make_unique<ExternalFileRemoverImpl>(
         profile_.get(), tab_restore_service());
+#else
+    // System file permission access is not accessible on device tests, set up
+    // a custom external file directory.
+    external_file_remover_ = std::make_unique<ExternalFileRemoverImpl>(
+        profile_.get(), tab_restore_service(),
+        base::apple::FilePathToNSString(GetInboxDirectoryPath()));
+#endif
   }
 
   ExternalFileRemoverImpl* external_file_remover() {
@@ -83,11 +91,19 @@ class ExternalFileRemoverImplTest : public PlatformTest {
   // Return the Inbox directory in User Documents where external files are
   // stored.
   base::FilePath GetInboxDirectoryPath() {
+    NSString* inbox_directory_path;
+#if TARGET_IPHONE_SIMULATOR
     NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                                          NSUserDomainMask, YES);
-    NSString* documents_directory_path =
+    inbox_directory_path =
         [[paths objectAtIndex:0] stringByAppendingPathComponent:@"Inbox"];
-    return base::apple::NSStringToFilePath(documents_directory_path);
+#else
+    NSString* documents_directory_path =
+        base::apple::FilePathToNSString(base::apple::GetUserLibraryPath());
+    inbox_directory_path =
+        [documents_directory_path stringByAppendingPathComponent:@"Inbox"];
+#endif
+    return base::apple::NSStringToFilePath(inbox_directory_path);
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -99,13 +115,7 @@ class ExternalFileRemoverImplTest : public PlatformTest {
 
 // Tests that an external PDF file that is not in use is removed by the
 // background task.
-// TODO(crbug.com/408168811): Fails on device.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_RemoveDownloadedPDF RemoveDownloadedPDF
-#else
-#define MAYBE_RemoveDownloadedPDF DISABLED_RemoveDownloadedPDF
-#endif
-TEST_F(ExternalFileRemoverImplTest, MAYBE_RemoveDownloadedPDF) {
+TEST_F(ExternalFileRemoverImplTest, RemoveDownloadedPDF) {
   const std::string& filename = "filename.pdf";
   CreateExternalFile(filename);
   VerifyExternalFileExists(filename);
@@ -120,13 +130,7 @@ TEST_F(ExternalFileRemoverImplTest, MAYBE_RemoveDownloadedPDF) {
 
 // Tests that an external PDF that is still referenced in a browser tab is not
 // removed in a background task.
-// TODO(crbug.com/408168811): Fails on device.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_DoNotRemoveReferencedPDF DoNotRemoveReferencedPDF
-#else
-#define MAYBE_DoNotRemoveReferencedPDF DISABLED_DoNotRemoveReferencedPDF
-#endif
-TEST_F(ExternalFileRemoverImplTest, MAYBE_DoNotRemoveReferencedPDF) {
+TEST_F(ExternalFileRemoverImplTest, DoNotRemoveReferencedPDF) {
   const std::string& filename = "filename.pdf";
   CreateExternalFile(filename);
   VerifyExternalFileExists(filename);
@@ -152,13 +156,7 @@ TEST_F(ExternalFileRemoverImplTest, MAYBE_DoNotRemoveReferencedPDF) {
 // Tests that deallocating the tab restore service while external file deletion
 // is in progress does not crash the app.
 // Regression test for crbug.com/406568566.
-// TODO(crbug.com/408168811): Fails on device.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_TabRestoreServiceNotLoaded TabRestoreServiceNotLoaded
-#else
-#define MAYBE_TabRestoreServiceNotLoaded DISABLED_TabRestoreServiceNotLoaded
-#endif
-TEST_F(ExternalFileRemoverImplTest, MAYBE_TabRestoreServiceNotLoaded) {
+TEST_F(ExternalFileRemoverImplTest, TabRestoreServiceNotLoaded) {
   const std::string& filename = "filename.pdf";
   CreateExternalFile(filename);
   VerifyExternalFileExists(filename);

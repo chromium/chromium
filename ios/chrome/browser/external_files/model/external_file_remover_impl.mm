@@ -93,7 +93,7 @@ NSSet* ComputeReferencedExternalFiles(Browser* browser) {
 
 // Returns the path in the application sandbox of an external file from the
 // URL received for that file.
-NSString* GetInboxDirectoryPath() {
+NSString* GetDefaultInboxDirectoryPath() {
   NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                                        NSUserDomainMask, YES);
   if ([paths count] < 1) {
@@ -107,11 +107,12 @@ NSString* GetInboxDirectoryPath() {
 // Removes all the files in the Inbox directory that are not in
 // `files_to_keep` and that are older than `age_in_days` days.
 // `files_to_keep` may be nil if all files should be removed.
-void RemoveFilesWithOptions(NSSet* files_to_keep, NSInteger age_in_days) {
+void RemoveFilesWithOptions(NSSet* files_to_keep,
+                            NSInteger age_in_days,
+                            NSString* inbox_directory) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
   NSFileManager* file_manager = [NSFileManager defaultManager];
-  NSString* inbox_directory = GetInboxDirectoryPath();
   NSArray* external_files =
       [file_manager contentsOfDirectoryAtPath:inbox_directory error:nil];
   for (NSString* filename in external_files) {
@@ -151,9 +152,12 @@ void RemoveFilesWithOptions(NSSet* files_to_keep, NSInteger age_in_days) {
 
 ExternalFileRemoverImpl::ExternalFileRemoverImpl(
     ProfileIOS* profile,
-    sessions::TabRestoreService* tab_restore_service)
+    sessions::TabRestoreService* tab_restore_service,
+    NSString* inbox_directory_path)
     : tab_restore_service_(tab_restore_service),
       profile_(profile),
+      inbox_directory_path_(inbox_directory_path
+                                ?: GetDefaultInboxDirectoryPath()),
       weak_ptr_factory_(this) {
   DCHECK(tab_restore_service_);
   tab_restore_service_->AddObserver(this);
@@ -213,7 +217,8 @@ void ExternalFileRemoverImpl::RemoveFiles(
 
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&RemoveFilesWithOptions, referenced_files, age_in_days),
+      base::BindOnce(&RemoveFilesWithOptions, referenced_files, age_in_days,
+                     inbox_directory_path_),
       base::BindOnce(&RunCallback, std::move(closure_runner)));
 }
 
