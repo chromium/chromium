@@ -108,6 +108,11 @@ class CORE_EXPORT ImageResource final
   void OnePartInMultipartReceived(const ResourceResponse&) final;
   void MultipartDataReceived(base::span<const uint8_t> bytes) final;
 
+  bool RequestedSpeculativeDecode() const {
+    return requested_speculative_decode_;
+  }
+  void OnRequestSpeculativeDecode() { requested_speculative_decode_ = true; }
+
   // If the ImageResource came from a user agent CSS stylesheet then we should
   // flag it so that it can persist beyond navigation.
   void FlagAsUserAgentResource();
@@ -157,6 +162,8 @@ class CORE_EXPORT ImageResource final
   bool is_referenced_from_ua_stylesheet_ = false;
 
   bool is_pending_flushing_ = false;
+
+  bool requested_speculative_decode_ = false;
 
   V8ExternalMemoryAccounter external_memory_accounter_;
 };
