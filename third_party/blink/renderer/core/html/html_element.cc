@@ -1849,7 +1849,9 @@ void HTMLElement::HidePopoverInternal(
   }
 
   MarkPopoverInvokersDirty(*this);
-  SetPopoverInvoker(nullptr);
+  if (!RuntimeEnabledFeatures::ClearPopoverInvokerAfterBeforeToggleEnabled()) {
+    SetPopoverInvoker(nullptr);
+  }
   // Events are only fired in the case that the popover is not being removed
   // from the document.
   if (transition_behavior ==
@@ -1937,6 +1939,10 @@ void HTMLElement::HidePopoverInternal(
       CHECK_EQ(auto_stack.back(), this);
       auto_stack.pop_back();
     }
+  }
+
+  if (RuntimeEnabledFeatures::ClearPopoverInvokerAfterBeforeToggleEnabled()) {
+    SetPopoverInvoker(nullptr);
   }
 
   // Re-apply display:none, and stop matching `:popover-open`.
