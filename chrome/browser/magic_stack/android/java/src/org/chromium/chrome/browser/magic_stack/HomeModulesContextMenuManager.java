@@ -229,7 +229,7 @@ public class HomeModulesContextMenuManager {
      */
     private int getResourceIdForMenuItem(@ContextMenuItemId int id, ModuleProvider moduleProvider) {
         if (id == ContextMenuItemId.SHOW_CUSTOMIZE_SETTINGS) {
-            return R.string.home_modules_context_menu_customize;
+            return R.string.home_modules_context_menu_more_settings;
         }
 
         return moduleProvider.getResourceIdOfContextMenuItem(id);

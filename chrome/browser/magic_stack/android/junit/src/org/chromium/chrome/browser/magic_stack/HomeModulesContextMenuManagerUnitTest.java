@@ -51,7 +51,7 @@ public class HomeModulesContextMenuManagerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static final String EXPECTED_OPTION_1 = "Hide Chrome tips card";
-    private static final String EXPECTED_OPTION_2 = "Customize";
+    private static final String EXPECTED_OPTION_2 = "More settings";
     private static final int MODULE_TYPE = ModuleType.PRICE_CHANGE;
     @Mock private ModuleProvider mModuleProvider;
     @Mock private View mView;
@@ -209,7 +209,8 @@ public class HomeModulesContextMenuManagerUnitTest {
     @Test
     @SmallTest
     public void testShouldShowItem() {
-        // Verifies that the "customize" and "hide" menu items are default shown for all modules.
+        // Verifies that the "more settings" and "hide" menu items are default shown for all
+        // modules.
         assertTrue(
                 mManager.shouldShowItem(
                         ContextMenuItemId.SHOW_CUSTOMIZE_SETTINGS, mModuleProvider));

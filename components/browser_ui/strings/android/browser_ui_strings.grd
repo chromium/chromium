@@ -1128,8 +1128,8 @@
       </message>
 
       <!-- Magic stack strings -->
-      <message name="IDS_HOME_MODULES_CONTEXT_MENU_CUSTOMIZE" desc="The context menu item to show the customize homepage settings.">
-        Customize
+      <message name="IDS_HOME_MODULES_CONTEXT_MENU_MORE_SETTINGS" desc="The context menu item to show more settings to customize the new tab page.">
+        More settings
       </message>
       <message name="IDS_HOME_MODULES_CONFIGURATION" desc="The title for the configuration page which customizes the home modules settings.">
         New tab page cards
