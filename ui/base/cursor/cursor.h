@@ -73,10 +73,8 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) Cursor {
 
   // Note: custom cursor comparison may perform expensive pixel equality checks!
   bool operator==(const Cursor& cursor) const;
-  bool operator!=(const Cursor& cursor) const { return !(*this == cursor); }
 
   bool operator==(mojom::CursorType type) const { return type_ == type; }
-  bool operator!=(mojom::CursorType type) const { return type_ != type; }
 
   // Limit the size of cursors so that they cannot be used to cover UI
   // elements in chrome.
