@@ -25,12 +25,25 @@ enum class SecuritySignalsMode {
 
 namespace enterprise_reporting {
 
+// The trigger leading to report generation. Values are bitmasks in the
+// |pending_triggers_| bitfield.
+enum ReportTrigger : uint32_t {
+  kTriggerNone = 0,              // No trigger.
+  kTriggerTimer = 1U << 0,       // The periodic timer expired.
+  kTriggerUpdate = 1U << 1,      // An update was detected.
+  kTriggerNewVersion = 1U << 2,  // A new version is running.
+  kTriggerManual = 1U << 3,      // Trigger manually.
+  kTriggerSecurity = 1U << 4,    // Triggered by a security trigger.
+};
+
 // Struct that includes various configuration of report generation and upload
 // process. Only used by profile-level reporting for now.
 struct ReportGenerationConfig {
-  ReportGenerationConfig(ReportType report_type,
+  ReportGenerationConfig(ReportTrigger report_trigger,
+                         ReportType report_type,
                          SecuritySignalsMode security_signals_mode,
                          bool use_cookies);
+  explicit ReportGenerationConfig(ReportTrigger report_trigger);
   ReportGenerationConfig();
   ~ReportGenerationConfig();
 
@@ -40,9 +53,10 @@ struct ReportGenerationConfig {
   // logging and debugging purposes.
   std::string ToString() const;
 
-  ReportType report_type{};
-  SecuritySignalsMode security_signals_mode{SecuritySignalsMode::kNoSignals};
-  bool use_cookies = false;
+  ReportTrigger report_trigger;
+  ReportType report_type;
+  SecuritySignalsMode security_signals_mode;
+  bool use_cookies;
 };
 
 }  // namespace enterprise_reporting

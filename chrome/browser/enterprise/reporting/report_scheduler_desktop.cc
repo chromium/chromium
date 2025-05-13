@@ -105,8 +105,7 @@ void ReportSchedulerDesktop::StartWatchingUpdatesIfNeeded(
           chrome::kChromeVersion &&
       last_upload + upload_interval > base::Time::Now() &&
       !trigger_report_callback_.is_null()) {
-    trigger_report_callback_.Run(
-        ReportScheduler::ReportTrigger::kTriggerNewVersion);
+    trigger_report_callback_.Run(ReportTrigger::kTriggerNewVersion);
   }
 }
 
@@ -153,8 +152,7 @@ void ReportSchedulerDesktop::OnSecuritySignalsUploaded() {
 void ReportSchedulerDesktop::OnReportEventTriggered(
     SecurityReportTrigger trigger) {
   if (!trigger_report_callback_.is_null()) {
-    trigger_report_callback_.Run(
-        ReportScheduler::ReportTrigger::kTriggerSecurity);
+    trigger_report_callback_.Run(ReportTrigger::kTriggerSecurity);
   }
 }
 
@@ -169,8 +167,7 @@ void ReportSchedulerDesktop::OnUpdate(const BuildState* build_state) {
   // for it to take effect. Send a basic report (without profile info)
   // immediately.
   if (!trigger_report_callback_.is_null()) {
-    trigger_report_callback_.Run(
-        ReportScheduler::ReportTrigger::kTriggerUpdate);
+    trigger_report_callback_.Run(ReportTrigger::kTriggerUpdate);
   }
 }
 

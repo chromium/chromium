@@ -69,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(CloudProfileReportingServiceTest, LaunchTest) {
   ASSERT_TRUE(report_scheduler);
   EXPECT_TRUE(report_scheduler->IsNextReportScheduledForTesting() ||
               report_scheduler->GetActiveTriggerForTesting() ==
-                  ReportScheduler::kTriggerTimer);
+                  ReportTrigger::kTriggerTimer);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -108,19 +108,19 @@ IN_PROC_BROWSER_TEST_P(CloudProfileReportingServiceTestDesktop,
   auto active_config = report_scheduler->GetActiveGenerationConfigForTesting();
 
   if (signals_reporting_enabled() && profile_reporting_enabled()) {
-    EXPECT_EQ(active_trigger, ReportScheduler::kTriggerTimer);
+    EXPECT_EQ(active_trigger, ReportTrigger::kTriggerTimer);
     EXPECT_EQ(active_config.security_signals_mode,
               SecuritySignalsMode::kSignalsAttached);
   } else if (profile_reporting_enabled()) {
-    EXPECT_EQ(active_trigger, ReportScheduler::kTriggerTimer);
+    EXPECT_EQ(active_trigger, ReportTrigger::kTriggerTimer);
     EXPECT_EQ(active_config.security_signals_mode,
               SecuritySignalsMode::kNoSignals);
   } else if (signals_reporting_enabled()) {
-    EXPECT_EQ(active_trigger, ReportScheduler::kTriggerSecurity);
+    EXPECT_EQ(active_trigger, ReportTrigger::kTriggerSecurity);
     EXPECT_EQ(active_config.security_signals_mode,
               SecuritySignalsMode::kSignalsOnly);
   } else {
-    EXPECT_EQ(active_trigger, ReportScheduler::kTriggerNone);
+    EXPECT_EQ(active_trigger, ReportTrigger::kTriggerNone);
   }
 }
 

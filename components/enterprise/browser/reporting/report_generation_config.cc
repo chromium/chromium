@@ -9,9 +9,29 @@
 
 namespace {
 constexpr char kReportGenerationConfigTemplate[] =
-    R"(Report Type: %s, Security Signals Mode: %s, Using Cookies: %s)";
+    R"(Trigger: %s, Report Type: %s, Security Signals Mode: %s,"
+    " Using Cookies: %s)";
 
-std::string TranslateReportType(enterprise_reporting::ReportType report_type) {
+std::string_view ReportTriggerToString(
+    enterprise_reporting::ReportTrigger report_trigger) {
+  switch (report_trigger) {
+    case enterprise_reporting::ReportTrigger::kTriggerNone:
+      return "No trigger";
+    case enterprise_reporting::ReportTrigger::kTriggerTimer:
+      return "Periodic timer expired";
+    case enterprise_reporting::ReportTrigger::kTriggerUpdate:
+      return "An update was detected";
+    case enterprise_reporting::ReportTrigger::kTriggerNewVersion:
+      return "A new version is running";
+    case enterprise_reporting::ReportTrigger::kTriggerManual:
+      return "Trigger manually";
+    case enterprise_reporting::ReportTrigger::kTriggerSecurity:
+      return "Trigger for security signals";
+  }
+}
+
+std::string_view TranslateReportType(
+    enterprise_reporting::ReportType report_type) {
   switch (report_type) {
     case enterprise_reporting::ReportType::kFull:
       return "Full/Browser Report";
@@ -22,7 +42,7 @@ std::string TranslateReportType(enterprise_reporting::ReportType report_type) {
   }
 }
 
-std::string TranslateSecuritySignalsMode(
+std::string_view TranslateSecuritySignalsMode(
     SecuritySignalsMode security_signals_mode) {
   switch (security_signals_mode) {
     case SecuritySignalsMode::kNoSignals:
@@ -39,10 +59,12 @@ std::string TranslateSecuritySignalsMode(
 namespace enterprise_reporting {
 
 ReportGenerationConfig::ReportGenerationConfig(
+    ReportTrigger report_trigger,
     ReportType report_type,
     SecuritySignalsMode security_signals_mode,
     bool use_cookies)
-    : report_type(report_type),
+    : report_trigger(report_trigger),
+      report_type(report_type),
       security_signals_mode(security_signals_mode),
       use_cookies(use_cookies) {
   // Currently security signals are only being reported in profile level
@@ -52,10 +74,14 @@ ReportGenerationConfig::ReportGenerationConfig(
   }
 }
 
-ReportGenerationConfig::ReportGenerationConfig()
-    : ReportGenerationConfig(ReportType::kFull,
+ReportGenerationConfig::ReportGenerationConfig(ReportTrigger report_trigger)
+    : ReportGenerationConfig(report_trigger,
+                             ReportType::kFull,
                              SecuritySignalsMode::kNoSignals,
                              /*use_cookies=*/false) {}
+
+ReportGenerationConfig::ReportGenerationConfig()
+    : ReportGenerationConfig(ReportTrigger::kTriggerNone) {}
 
 ReportGenerationConfig::~ReportGenerationConfig() = default;
 
@@ -64,6 +90,7 @@ bool ReportGenerationConfig::operator==(const ReportGenerationConfig&) const =
 
 std::string ReportGenerationConfig::ToString() const {
   return base::StringPrintf(kReportGenerationConfigTemplate,
+                            ReportTriggerToString(report_trigger),
                             TranslateReportType(report_type),
                             TranslateSecuritySignalsMode(security_signals_mode),
                             use_cookies ? "Yes" : "No");

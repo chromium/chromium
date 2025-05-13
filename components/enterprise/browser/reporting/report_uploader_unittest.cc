@@ -99,8 +99,8 @@ class ReportUploaderTest : public ::testing::Test {
     }
     has_responded_ = false;
     uploader_->SetRequestAndUpload(
-        ReportGenerationConfig(GetReportType(), SecuritySignalsMode::kNoSignals,
-                               use_cookies_),
+        ReportGenerationConfig(ReportTrigger::kTriggerNone, GetReportType(),
+                               SecuritySignalsMode::kNoSignals, use_cookies_),
         std::move(requests),
         base::BindOnce(&ReportUploaderTest::OnReportUploaded,
                        base::Unretained(this), expected_status));
@@ -173,8 +173,8 @@ TEST_F(ReportUploaderTest, NotRegisteredCrashes) {
   requests.push(std::make_unique<ReportRequest>(GetReportType()));
   base::test::TestFuture<ReportUploader::ReportStatus> future;
   uploader_->SetRequestAndUpload(
-      ReportGenerationConfig(GetReportType(), SecuritySignalsMode::kNoSignals,
-                             use_cookies_),
+      ReportGenerationConfig(ReportTrigger::kTriggerNone, GetReportType(),
+                             SecuritySignalsMode::kNoSignals, use_cookies_),
       std::move(requests), future.GetCallback());
   ASSERT_DEATH(std::ignore = future.Get(), "");
 }

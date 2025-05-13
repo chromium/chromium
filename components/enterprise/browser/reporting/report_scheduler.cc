@@ -31,15 +31,15 @@ namespace {
 
 const int kMaximumRetry = 10;  // Retry 10 times takes about 15 to 19 hours.
 
-bool IsBrowserVersionUploaded(ReportScheduler::ReportTrigger trigger) {
+bool IsBrowserVersionUploaded(ReportTrigger trigger) {
   switch (trigger) {
-    case ReportScheduler::kTriggerTimer:
-    case ReportScheduler::kTriggerManual:
-    case ReportScheduler::kTriggerUpdate:
-    case ReportScheduler::kTriggerNewVersion:
-    case ReportScheduler::kTriggerSecurity:
+    case ReportTrigger::kTriggerTimer:
+    case ReportTrigger::kTriggerManual:
+    case ReportTrigger::kTriggerUpdate:
+    case ReportTrigger::kTriggerNewVersion:
+    case ReportTrigger::kTriggerSecurity:
       return true;
-    case ReportScheduler::kTriggerNone:
+    case ReportTrigger::kTriggerNone:
       return false;
   }
 }
@@ -102,9 +102,8 @@ bool ReportScheduler::IsNextReportScheduledForTesting() const {
   return request_timer_.IsRunning();
 }
 
-ReportScheduler::ReportTrigger ReportScheduler::GetActiveTriggerForTesting()
-    const {
-  return active_trigger_;
+ReportTrigger ReportScheduler::GetActiveTriggerForTesting() const {
+  return active_report_generation_config_.report_trigger;
 }
 
 ReportGenerationConfig ReportScheduler::GetActiveGenerationConfigForTesting()
@@ -262,26 +261,25 @@ void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
     SetupBrowserPolicyClientRegistration();
   }
 
-  if (active_trigger_ != kTriggerNone) {
+  if (active_report_generation_config_.report_trigger != kTriggerNone) {
     // A report is already being generated. Remember this trigger to be handled
     // once the current report completes.
     pending_triggers_ |= trigger;
     return;
   }
 
-  active_trigger_ = trigger;
-  ReportType report_type = TriggerToReportType(active_trigger_);
+  ReportType report_type = TriggerToReportType(trigger);
   SecuritySignalsMode signals_mode = SecuritySignalsMode::kNoSignals;
   if (report_type == ReportType::kProfileReport) {
     signals_mode = delegate_->AreSecurityReportsEnabled()
-                       ? (active_trigger_ == ReportScheduler::kTriggerSecurity
+                       ? (trigger == ReportTrigger::kTriggerSecurity
                               ? SecuritySignalsMode::kSignalsOnly
                               : SecuritySignalsMode::kSignalsAttached)
                        : SecuritySignalsMode::kNoSignals;
   }
 
   active_report_generation_config_ = ReportGenerationConfig(
-      report_type, signals_mode, delegate_->UseCookiesInUploads());
+      trigger, report_type, signals_mode, delegate_->UseCookiesInUploads());
 
   VLOG_POLICY(1, REPORTING)
       << "Starting report generation with the following configuration: "
@@ -303,13 +301,15 @@ void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
 }
 
 void ReportScheduler::OnReportGenerated(ReportRequestQueue requests) {
-  DCHECK_NE(active_trigger_, kTriggerNone);
+  DCHECK_NE(active_report_generation_config_.report_trigger,
+            ReportTrigger::kTriggerNone);
   if (requests.empty()) {
     SYSLOG(ERROR)
         << "No cloud report can be generated. Likely the report is too large.";
     // Do not restart the periodic report timer, as it's likely that subsequent
     // attempts to generate full reports would also fail.
-    active_trigger_ = kTriggerNone;
+    active_report_generation_config_ =
+        ReportGenerationConfig(ReportTrigger::kTriggerNone);
     RunPendingTriggers();
     return;
   }
@@ -336,19 +336,23 @@ void ReportScheduler::OnReportGenerated(ReportRequestQueue requests) {
 }
 
 void ReportScheduler::OnReportUploaded(ReportUploader::ReportStatus status) {
-  DCHECK_NE(active_trigger_, kTriggerNone);
+  DCHECK_NE(active_report_generation_config_.report_trigger,
+            ReportTrigger::kTriggerNone);
   VLOG(1) << "The enterprise report upload result " << status << ".";
   switch (status) {
     case ReportUploader::kSuccess:
       // Schedule the next report for success. Reset uploader to reset failure
       // count.
       report_uploader_.reset();
-      if (IsBrowserVersionUploaded(active_trigger_))
+      if (IsBrowserVersionUploaded(
+              active_report_generation_config_.report_trigger)) {
         delegate_->OnBrowserVersionUploaded();
+      }
 
       // Signals-only report does not contain most content of a status report
       // and should not update this timestamp.
-      if (active_trigger_ != ReportScheduler::kTriggerSecurity) {
+      if (active_report_generation_config_.report_trigger !=
+          ReportTrigger::kTriggerSecurity) {
         delegate_->GetPrefService()->SetTime(kLastUploadSucceededTimestamp,
                                              base::Time::Now());
       }
@@ -365,8 +369,10 @@ void ReportScheduler::OnReportUploaded(ReportUploader::ReportStatus status) {
     case ReportUploader::kTransientError:
       // Stop retrying and schedule the next report to avoid stale report.
       // Failure count is not reset so retry delay remains.
-      if (active_trigger_ == kTriggerTimer ||
-          active_trigger_ == kTriggerManual) {
+      if (active_report_generation_config_.report_trigger ==
+              ReportTrigger::kTriggerTimer ||
+          active_report_generation_config_.report_trigger ==
+              ReportTrigger::kTriggerManual) {
         const base::Time now = base::Time::Now();
         delegate_->GetPrefService()->SetTime(kLastUploadTimestamp, now);
         if (IsReportingEnabled())
@@ -379,17 +385,26 @@ void ReportScheduler::OnReportUploaded(ReportUploader::ReportStatus status) {
       break;
   }
 
-  if ((active_trigger_ == kTriggerManual || active_trigger_ == kTriggerTimer)) {
+  if ((active_report_generation_config_.report_trigger ==
+           ReportTrigger::kTriggerManual ||
+       active_report_generation_config_.report_trigger ==
+           ReportTrigger::kTriggerTimer)) {
     // Timer and Manual report are exactly same. If we just uploaded one, skip
     // the other.
-    if (pending_triggers_ & kTriggerTimer)
-      pending_triggers_ -= kTriggerTimer;
-    if (pending_triggers_ & kTriggerManual)
-      pending_triggers_ -= kTriggerManual;
+    if (pending_triggers_ & ReportTrigger::kTriggerTimer) {
+      pending_triggers_ -= ReportTrigger::kTriggerTimer;
+    }
+    if (pending_triggers_ & ReportTrigger::kTriggerManual) {
+      pending_triggers_ -= ReportTrigger::kTriggerManual;
+    }
   }
 
-  if (active_trigger_ == kTriggerManual || active_trigger_ == kTriggerTimer ||
-      active_trigger_ == kTriggerSecurity) {
+  if (active_report_generation_config_.report_trigger ==
+          ReportTrigger::kTriggerManual ||
+      active_report_generation_config_.report_trigger ==
+          ReportTrigger::kTriggerTimer ||
+      active_report_generation_config_.report_trigger ==
+          ReportTrigger::kTriggerSecurity) {
     if (on_manual_report_uploaded_) {
       std::move(on_manual_report_uploaded_).Run();
     }
@@ -400,18 +415,20 @@ void ReportScheduler::OnReportUploaded(ReportUploader::ReportStatus status) {
 
       // A full report includes security signals already, we don't need another
       // security signals only report until the timer runs out again.
-      if (pending_triggers_ & kTriggerSecurity) {
-        pending_triggers_ -= kTriggerSecurity;
+      if (pending_triggers_ & ReportTrigger::kTriggerSecurity) {
+        pending_triggers_ -= ReportTrigger::kTriggerSecurity;
       }
     }
   }
 
-  active_trigger_ = kTriggerNone;
+  active_report_generation_config_ =
+      ReportGenerationConfig(ReportTrigger::kTriggerNone);
   RunPendingTriggers();
 }
 
 void ReportScheduler::RunPendingTriggers() {
-  DCHECK_EQ(active_trigger_, kTriggerNone);
+  DCHECK_EQ(active_report_generation_config_.report_trigger,
+            ReportTrigger::kTriggerNone);
   if (!pending_triggers_)
     return;
 
@@ -419,28 +436,28 @@ void ReportScheduler::RunPendingTriggers() {
   // new version, so favor them and consider that they serve all purposes.
 
   ReportTrigger trigger;
-  if ((pending_triggers_ & kTriggerTimer) != 0) {
+  if ((pending_triggers_ & ReportTrigger::kTriggerTimer) != 0) {
     // Timer-triggered reports contain data of all other report types.
-    trigger = kTriggerTimer;
+    trigger = ReportTrigger::kTriggerTimer;
     pending_triggers_ = 0;
-  } else if ((pending_triggers_ & kTriggerManual) != 0) {
+  } else if ((pending_triggers_ & ReportTrigger::kTriggerManual) != 0) {
     // Manual-triggered reports also contains all data.
     trigger = kTriggerManual;
     pending_triggers_ = 0;
-  } else if ((pending_triggers_ & kTriggerSecurity) != 0) {
+  } else if ((pending_triggers_ & ReportTrigger::kTriggerSecurity) != 0) {
     trigger = kTriggerSecurity;
-    pending_triggers_ -= kTriggerSecurity;
+    pending_triggers_ -= ReportTrigger::kTriggerSecurity;
   } else {
     // Update and NewVersion triggers lead to the same report content being
     // uploaded.
-    if ((pending_triggers_ & kTriggerUpdate) != 0) {
-      trigger = kTriggerUpdate;
-      pending_triggers_ -= kTriggerUpdate;
+    if ((pending_triggers_ & ReportTrigger::kTriggerUpdate) != 0) {
+      trigger = ReportTrigger::kTriggerUpdate;
+      pending_triggers_ -= ReportTrigger::kTriggerUpdate;
     }
 
-    if ((pending_triggers_ & kTriggerNewVersion) != 0) {
-      trigger = kTriggerNewVersion;
-      pending_triggers_ -= kTriggerNewVersion;
+    if ((pending_triggers_ & ReportTrigger::kTriggerNewVersion) != 0) {
+      trigger = ReportTrigger::kTriggerNewVersion;
+      pending_triggers_ -= ReportTrigger::kTriggerNewVersion;
     }
   }
 
@@ -461,22 +478,22 @@ void ReportScheduler::RecordUploadTrigger() {
     kSecurity = 7,
     kMaxValue = kSecurity
   } sample = Sample::kNone;
-  switch (active_trigger_) {
-    case kTriggerNone:
+  switch (active_report_generation_config_.report_trigger) {
+    case ReportTrigger::kTriggerNone:
       break;
-    case kTriggerTimer:
+    case ReportTrigger::kTriggerTimer:
       sample = Sample::kTimer;
       break;
-    case kTriggerManual:
+    case ReportTrigger::kTriggerManual:
       sample = Sample::kManual;
       break;
-    case kTriggerUpdate:
+    case ReportTrigger::kTriggerUpdate:
       sample = Sample::kUpdate;
       break;
-    case kTriggerNewVersion:
+    case ReportTrigger::kTriggerNewVersion:
       sample = Sample::kNewVersion;
       break;
-    case kTriggerSecurity:
+    case ReportTrigger::kTriggerSecurity:
       sample = Sample::kSecurity;
       break;
   }
@@ -491,19 +508,18 @@ void ReportScheduler::RecordUploadTrigger() {
   }
 }
 
-ReportType ReportScheduler::TriggerToReportType(
-    ReportScheduler::ReportTrigger trigger) {
+ReportType ReportScheduler::TriggerToReportType(ReportTrigger trigger) {
   switch (trigger) {
-    case ReportScheduler::kTriggerNone:
+    case ReportTrigger::kTriggerNone:
       NOTREACHED();
-    case ReportScheduler::kTriggerTimer:
-    case ReportScheduler::kTriggerManual:
+    case ReportTrigger::kTriggerTimer:
+    case ReportTrigger::kTriggerManual:
       return full_report_type_;
-    case ReportScheduler::kTriggerUpdate:
+    case ReportTrigger::kTriggerUpdate:
       return ReportType::kBrowserVersion;
-    case ReportScheduler::kTriggerNewVersion:
+    case ReportTrigger::kTriggerNewVersion:
       return ReportType::kBrowserVersion;
-    case ReportScheduler::kTriggerSecurity:
+    case ReportTrigger::kTriggerSecurity:
       // Security triggers are not supported at the browser-level yet.
       return ReportType::kProfileReport;
   }

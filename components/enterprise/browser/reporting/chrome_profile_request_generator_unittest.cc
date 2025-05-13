@@ -246,7 +246,8 @@ class ChromeProfileRequestGeneratorTest : public ::testing::Test {
 TEST_F(ChromeProfileRequestGeneratorTest, GenerateFullReportNoSecuritySignals) {
   EXPECT_CALL(mock_aggregator_, GetSignals(_, _)).Times(0);
   base::test::TestFuture<ReportRequestQueue> test_future;
-  generator_.Generate(ReportGenerationConfig(ReportType::kProfileReport,
+  generator_.Generate(ReportGenerationConfig(ReportTrigger::kTriggerTimer,
+                                             ReportType::kProfileReport,
                                              SecuritySignalsMode::kNoSignals,
                                              /*use_cookies=*/false),
                       test_future.GetCallback());
@@ -267,7 +268,8 @@ TEST_F(ChromeProfileRequestGeneratorTest,
 
   base::test::TestFuture<ReportRequestQueue> test_future;
   generator_.Generate(
-      ReportGenerationConfig(ReportType::kProfileReport,
+      ReportGenerationConfig(ReportTrigger::kTriggerTimer,
+                             ReportType::kProfileReport,
                              SecuritySignalsMode::kSignalsAttached,
                              /*use_cookies=*/false),
       test_future.GetCallback());
@@ -286,7 +288,8 @@ TEST_F(ChromeProfileRequestGeneratorTest, GenerateSecuritySignalsOnlyReport) {
             std::move(callback).Run(CreateFilledResponse());
           }));
   base::test::TestFuture<ReportRequestQueue> test_future;
-  generator_.Generate(ReportGenerationConfig(ReportType::kProfileReport,
+  generator_.Generate(ReportGenerationConfig(ReportTrigger::kTriggerNone,
+                                             ReportType::kProfileReport,
                                              SecuritySignalsMode::kSignalsOnly,
                                              /*use_cookies=*/false),
                       test_future.GetCallback());
@@ -297,10 +300,7 @@ TEST_F(ChromeProfileRequestGeneratorTest, GenerateSecuritySignalsOnlyReport) {
 TEST_F(ChromeProfileRequestGeneratorTest, IncorrectReportType) {
   EXPECT_CALL(mock_aggregator_, GetSignals(_, _)).Times(0);
   base::test::TestFuture<ReportRequestQueue> test_future;
-  generator_.Generate(
-      ReportGenerationConfig(ReportType::kFull, SecuritySignalsMode::kNoSignals,
-                             /*use_cookies=*/false),
-      test_future.GetCallback());
+  generator_.Generate(ReportGenerationConfig(), test_future.GetCallback());
 
   const ReportRequestQueue& requests = test_future.Get();
 

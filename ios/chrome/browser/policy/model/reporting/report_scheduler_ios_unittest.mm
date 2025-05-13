@@ -206,10 +206,7 @@ TEST_F(ReportSchedulerIOSTest, UploadReportSucceeded) {
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
   EXPECT_CALL(*uploader_,
               SetRequestAndUpload(
-                  ReportGenerationConfig(ReportType::kFull,
-                                         SecuritySignalsMode::kNoSignals,
-                                         /*use_cookies=*/false),
-                  _, _))
+                  ReportGenerationConfig(ReportTrigger::kTriggerTimer), _, _))
       .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
 
   CreateScheduler();
@@ -232,10 +229,7 @@ TEST_F(ReportSchedulerIOSTest, UploadReportTransientError) {
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
   EXPECT_CALL(*uploader_,
               SetRequestAndUpload(
-                  ReportGenerationConfig(ReportType::kFull,
-                                         SecuritySignalsMode::kNoSignals,
-                                         /*use_cookies=*/false),
-                  _, _))
+                  ReportGenerationConfig(ReportTrigger::kTriggerTimer), _, _))
       .WillOnce(RunOnceCallback<2>(ReportUploader::kTransientError));
 
   CreateScheduler();
@@ -258,10 +252,7 @@ TEST_F(ReportSchedulerIOSTest, UploadReportPersistentError) {
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
   EXPECT_CALL(*uploader_,
               SetRequestAndUpload(
-                  ReportGenerationConfig(ReportType::kFull,
-                                         SecuritySignalsMode::kNoSignals,
-                                         /*use_cookies=*/false),
-                  _, _))
+                  ReportGenerationConfig(ReportTrigger::kTriggerTimer), _, _))
       .WillOnce(RunOnceCallback<2>(ReportUploader::kPersistentError));
 
   CreateScheduler();
@@ -318,10 +309,7 @@ TEST_F(ReportSchedulerIOSTest, TimerDelayWithLastUploadTimestamp) {
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
   EXPECT_CALL(*uploader_,
               SetRequestAndUpload(
-                  ReportGenerationConfig(ReportType::kFull,
-                                         SecuritySignalsMode::kNoSignals,
-                                         /*use_cookies=*/false),
-                  _, _))
+                  ReportGenerationConfig(ReportTrigger::kTriggerTimer), _, _))
       .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
 
   CreateScheduler();
@@ -343,10 +331,7 @@ TEST_F(ReportSchedulerIOSTest, TimerDelayWithoutLastUploadTimestamp) {
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
   EXPECT_CALL(*uploader_,
               SetRequestAndUpload(
-                  ReportGenerationConfig(ReportType::kFull,
-                                         SecuritySignalsMode::kNoSignals,
-                                         /*use_cookies=*/false),
-                  _, _))
+                  ReportGenerationConfig(ReportTrigger::kTriggerTimer), _, _))
       .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
 
   CreateScheduler();
@@ -369,10 +354,7 @@ TEST_F(ReportSchedulerIOSTest, TimerDelayUpdate) {
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
   EXPECT_CALL(*uploader_,
               SetRequestAndUpload(
-                  ReportGenerationConfig(ReportType::kFull,
-                                         SecuritySignalsMode::kNoSignals,
-                                         /*use_cookies=*/false),
-                  _, _))
+                  ReportGenerationConfig(ReportTrigger::kTriggerTimer), _, _))
       .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
 
   CreateScheduler();
@@ -440,10 +422,7 @@ TEST_F(ReportSchedulerIOSTest, ReportingIsDisabledWhileNewReportIsPosted) {
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
   EXPECT_CALL(*uploader_,
               SetRequestAndUpload(
-                  ReportGenerationConfig(ReportType::kFull,
-                                         SecuritySignalsMode::kNoSignals,
-                                         /*use_cookies=*/false),
-                  _, _))
+                  ReportGenerationConfig(ReportTrigger::kTriggerTimer), _, _))
       .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
 
   CreateScheduler();

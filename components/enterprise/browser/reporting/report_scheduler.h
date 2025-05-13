@@ -36,17 +36,6 @@ class RealTimeReportController;
 // completes.
 class ReportScheduler {
  public:
-  // The trigger leading to report generation. Values are bitmasks in the
-  // |pending_triggers_| bitfield.
-  enum ReportTrigger : uint32_t {
-    kTriggerNone = 0,              // No trigger.
-    kTriggerTimer = 1U << 0,       // The periodic timer expired.
-    kTriggerUpdate = 1U << 1,      // An update was detected.
-    kTriggerNewVersion = 1U << 2,  // A new version is running.
-    kTriggerManual = 1U << 3,      // Trigger manually.
-    kTriggerSecurity = 1U << 4,    // Triggered by a security trigger.
-  };
-
   using ReportTriggerCallback = base::RepeatingCallback<void(ReportTrigger)>;
 
   class Delegate {
@@ -186,10 +175,11 @@ class ReportScheduler {
   std::unique_ptr<ChromeProfileRequestGenerator> profile_request_generator_;
   std::unique_ptr<RealTimeReportController> real_time_report_controller_;
 
-  // The trigger responsible for initiating active report generation.
-  ReportTrigger active_trigger_ = ReportTrigger::kTriggerNone;
   // The configuration for  active report generation.
-  ReportGenerationConfig active_report_generation_config_;
+  // If the configuration has `kTriggerNone` as its trigger, it means there is
+  // no active report generation/upload in progress.
+  ReportGenerationConfig active_report_generation_config_ =
+      ReportGenerationConfig(ReportTrigger::kTriggerNone);
 
   // The set of triggers that have fired while processing a report (a bitfield
   // of ReportTrigger values). They will be handled following completion of the
