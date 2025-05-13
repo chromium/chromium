@@ -1001,6 +1001,10 @@ chromium-metrics-reviews@google.com.
     <variant name="OnModelReady"
         summary="once model is ready to sync, i.e. typically soon after
                  browser startup. Recorded only if initial sync is done"/>
+    <variant name="OnReauthFromPendingState"
+        summary="right after the user reauthenticates and fixes their signin
+                 pending state. Only recorded in transport mode. Not recorded
+                 for sync-the-feature (aka &quot;Sync paused&quot;)"/>
     <variant name="OnSignoutConfirmation"
         summary="when the user initiates a signout flow (but has not
                  confirmed yet) and is not in pending state."/>

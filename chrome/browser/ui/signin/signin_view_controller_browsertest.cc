@@ -130,6 +130,8 @@ void VerifyUnsyncedDataCountHistograms(
   histogram_tester.ExpectTotalCount(
       "Sync.DataTypeNumUnsyncedEntitiesOnModelReady.EXTENSION", 0);
   histogram_tester.ExpectTotalCount(
+      "Sync.DataTypeNumUnsyncedEntitiesOnReauthFromPendingState.EXTENSION", 0);
+  histogram_tester.ExpectTotalCount(
       "Sync.DataTypeNumUnsyncedEntitiesOnSignoutConfirmationFromPendingState."
       "EXTENSION",
       /*expected_count=*/0);
@@ -138,6 +140,8 @@ void VerifyUnsyncedDataCountHistograms(
   // Records for bookmarks:
   histogram_tester.ExpectTotalCount(
       "Sync.DataTypeNumUnsyncedEntitiesOnModelReady.BOOKMARK", 0);
+  histogram_tester.ExpectTotalCount(
+      "Sync.DataTypeNumUnsyncedEntitiesOnReauthFromPendingState.BOOKMARK", 0);
   if (variant == ChromeSignoutConfirmationPromptVariant::kUnsyncedData) {
     histogram_tester.ExpectUniqueSample(
         "Sync.DataTypeNumUnsyncedEntitiesOnSignoutConfirmation.BOOKMARK",

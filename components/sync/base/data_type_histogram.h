@@ -33,6 +33,10 @@ enum class UnsyncedDataRecordingEvent {
   kOnSignoutConfirmationFromPendingState,
   // And is not in pending state.
   kOnSignoutConfirmation,
+  // Right after the user reauthenticates and fixes their signin pending state.
+  // Only recorded in transport mode. Not recorded for sync-the-feature (aka
+  // "Sync paused").
+  kOnReauthFromPendingState,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/sync/histograms.xml:UnsyncedDataRecordingEventVariants)
 

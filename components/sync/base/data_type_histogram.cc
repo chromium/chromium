@@ -28,6 +28,8 @@ constexpr char
         "OnSignoutConfirmationFromPendingState";
 constexpr char kDataTypeNumUnsyncedEntitiesOnSignoutConfirmation[] =
     "OnSignoutConfirmation";
+constexpr char kDataTypeNumUnsyncedEntitiesOnReauthFromPendingState[] =
+    "OnReauthFromPendingState";
 
 const char kEntitySizeWithMetadataHistogramPrefix[] =
     "Sync.EntitySizeOnCommit.Entity.WithMetadata.";
@@ -68,6 +70,8 @@ const char* SyncGetNumUnsyncedEntitiesHistogramSuffix(
       return kDataTypeNumUnsyncedEntitiesOnSignoutConfirmationFromPendingState;
     case UnsyncedDataRecordingEvent::kOnSignoutConfirmation:
       return kDataTypeNumUnsyncedEntitiesOnSignoutConfirmation;
+    case UnsyncedDataRecordingEvent::kOnReauthFromPendingState:
+      return kDataTypeNumUnsyncedEntitiesOnReauthFromPendingState;
   }
 }
 

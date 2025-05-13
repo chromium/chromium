@@ -328,6 +328,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest, HttpError) {
                   .Get()
                   .contains(syncer::THEMES));
 
+  // Http error is not an auth error.
+  EXPECT_FALSE(
+      GetClient(0)->service()->HasCachedPersistentAuthErrorForMetrics());
+
   // Clear the error and wait for the local changes to be committed.
   GetFakeServer()->ClearHttpError();
   ASSERT_TRUE(CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait());
@@ -340,6 +344,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest, HttpError) {
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest, SignInPendingState) {
+  base::HistogramTester histograms;
+
   // Sign in.
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
@@ -366,6 +372,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest, SignInPendingState) {
                   .Get()
                   .contains(syncer::THEMES));
 
+  EXPECT_TRUE(
+      GetClient(0)->service()->HasCachedPersistentAuthErrorForMetrics());
+
   // Clear the error and wait for the local changes to be committed.
   ASSERT_TRUE(GetClient(0)->ExitSignInPendingStateForPrimaryAccount());
   ASSERT_TRUE(CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait());
@@ -375,6 +384,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest, SignInPendingState) {
                    ->GetTypesWithUnsyncedData({syncer::THEMES})
                    .Get()
                    .contains(syncer::THEMES));
+
+  EXPECT_FALSE(
+      GetClient(0)->service()->HasCachedPersistentAuthErrorForMetrics());
+  histograms.ExpectUniqueSample(
+      "Sync.DataTypeNumUnsyncedEntitiesOnReauthFromPendingState.THEME",
+      /*sample=*/1, /*expected_bucket_count=*/1);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

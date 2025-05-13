@@ -38,6 +38,7 @@
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/stop_source.h"
 #include "components/sync/base/sync_util.h"
@@ -1265,6 +1266,17 @@ void SyncServiceImpl::SyncAuthCredentialsChanged() {
   if (auth_manager_->IsSyncPaused()) {
     sync_prefs_.SetHasCachedPersistentAuthErrorForMetrics(true);
   } else if (!auth_manager_->GetCredentials().access_token.empty()) {
+    if (!IsSyncFeatureEnabled() &&
+        sync_prefs_.HasCachedPersistentAuthErrorForMetrics()) {
+      // An auth error is being fixed while in transport mode. Record the amount
+      // of unsynced data in histograms.
+      GetTypesWithUnsyncedData(
+          TypesRequiringUnsyncedDataCheckOnSignout(),
+          base::BindOnce(
+              &SyncRecordDataTypeNumUnsyncedEntitiesFromDataCounts,
+              UnsyncedDataRecordingEvent::kOnReauthFromPendingState));
+    }
+
     // In order to conclude with certainty that there is no persistent auth
     // error, it is necessary to get an access token successfully.
     sync_prefs_.SetHasCachedPersistentAuthErrorForMetrics(false);
