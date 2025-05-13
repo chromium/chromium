@@ -165,8 +165,8 @@ class SandboxedHandler {
     restore_previous_handler_ =
         build_info->sdk_int() < base::android::SDK_VERSION_JELLY_BEAN_MR2 ||
         build_info->sdk_int() >= base::android::SDK_VERSION_OREO ||
-        strcmp(build_info->build_type(), "eng") == 0 ||
-        strcmp(build_info->build_type(), "userdebug") == 0;
+        build_info->build_type() == "eng" ||
+        build_info->build_type() == "userdebug";
 
     bool signal_stack_initialized =
         CrashpadClient::InitializeSignalStackForThread();

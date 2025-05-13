@@ -66,17 +66,18 @@ bool IsDeviceBlocked(std::string_view field, std::string_view block_list) {
 
 int GetEMUIVersion() {
   const auto* build_info = base::android::BuildInfo::GetInstance();
-  std::string_view manufacturer(build_info->manufacturer());
 
   // TODO(crbug.com/40136096): check Honor devices as well.
-  if (manufacturer != "HUAWEI")
+  if (build_info->manufacturer() != "HUAWEI") {
     return -1;
+  }
 
   // Huawei puts EMUI version in the build version incremental.
   // Example: 11.0.0.130C00
   int version = 0;
-  if (sscanf(build_info->version_incremental(), "%d.", &version) != 1)
+  if (sscanf(build_info->version_incremental().c_str(), "%d.", &version) != 1) {
     return -1;
+  }
 
   return version;
 }

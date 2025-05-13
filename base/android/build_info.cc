@@ -72,7 +72,7 @@ BuildInfo::BuildInfo()
 
 BuildInfo::~BuildInfo() = default;
 
-const char* BuildInfo::gms_version_code() const {
+const std::string& BuildInfo::gms_version_code() const {
   return device_info::gms_version_code();
 }
 
@@ -81,7 +81,7 @@ void BuildInfo::set_gms_version_code_for_test(
   device_info::set_gms_version_code_for_test(gms_version_code);
 }
 
-std::string BuildInfo::host_signing_cert_sha256() {
+const std::string BuildInfo::host_signing_cert_sha256() {
   JNIEnv* env = AttachCurrentThread();
   return Java_BuildInfo_lazyGetHostSigningCertSha256(env);
 }

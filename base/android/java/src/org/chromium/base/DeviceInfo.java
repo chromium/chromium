@@ -196,7 +196,7 @@ public final class DeviceInfo {
     @NativeMethods
     interface Natives {
         void fillFields(
-                String gmsVersionCode,
+                @JniType("std::string") String gmsVersionCode,
                 boolean isTV,
                 boolean isAutomotive,
                 boolean isFoldable,

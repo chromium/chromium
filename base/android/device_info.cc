@@ -11,6 +11,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -20,11 +21,7 @@
 namespace base::android::device_info {
 namespace {
 struct DeviceInfo {
-  // Const char* is used instead of std::strings because these values must be
-  // available even if the process is in a crash state. Sadly
-  // std::string.c_str() doesn't guarantee that memory won't be allocated when
-  // it is called.
-  const char* gms_version_code;
+  std::string gms_version_code;
   bool is_tv;
   bool is_automotive;
   bool is_foldable;
@@ -33,50 +30,44 @@ struct DeviceInfo {
   int32_t vulkan_deqp_level;
 };
 
-std::optional<DeviceInfo> holder;
+static std::optional<DeviceInfo>& get_holder() {
+  static base::NoDestructor<std::optional<DeviceInfo>> holder;
+  return *holder;
+}
 
 DeviceInfo& get_device_info() {
-  [[maybe_unused]] static auto once = [] {
+  std::optional<DeviceInfo>& holder = get_holder();
+  if (!holder.has_value()) {
     Java_DeviceInfo_nativeReadyForFields(AttachCurrentThread());
-    return std::monostate();
-  }();
-  // holder should be initialized as the java is supposed to call the native
-  // method FillFields which will initialize the fields within the holder.
-  DCHECK(holder.has_value());
+  }
   return *holder;
 }
 
 }  // namespace
 
-static void JNI_DeviceInfo_FillFields(
-    JNIEnv* env,
-    const jni_zero::JavaParamRef<jstring>& gmsVersionCode,
-    jboolean isTV,
-    jboolean isAutomotive,
-    jboolean isFoldable,
-    jboolean isDesktop,
-    jint vulkanDeqpLevel) {
+static void JNI_DeviceInfo_FillFields(JNIEnv* env,
+                                      std::string& gmsVersionCode,
+                                      jboolean isTV,
+                                      jboolean isAutomotive,
+                                      jboolean isFoldable,
+                                      jboolean isDesktop,
+                                      jint vulkanDeqpLevel) {
+  std::optional<DeviceInfo>& holder = get_holder();
   DCHECK(!holder.has_value());
-  auto java_string_to_const_char =
-      [](const jni_zero::JavaParamRef<jstring>& str) {
-        return UNSAFE_TODO(strdup(ConvertJavaStringToUTF8(str).c_str()));
-      };
-  holder =
-      DeviceInfo{.gms_version_code = java_string_to_const_char(gmsVersionCode),
-                 .is_tv = static_cast<bool>(isTV),
-                 .is_automotive = static_cast<bool>(isAutomotive),
-                 .is_foldable = static_cast<bool>(isFoldable),
-                 .is_desktop = static_cast<bool>(isDesktop),
-                 .vulkan_deqp_level = vulkanDeqpLevel};
+  holder.emplace(DeviceInfo{.gms_version_code = gmsVersionCode,
+                            .is_tv = static_cast<bool>(isTV),
+                            .is_automotive = static_cast<bool>(isAutomotive),
+                            .is_foldable = static_cast<bool>(isFoldable),
+                            .is_desktop = static_cast<bool>(isDesktop),
+                            .vulkan_deqp_level = vulkanDeqpLevel});
 }
 
-const char* gms_version_code() {
+const std::string& gms_version_code() {
   return get_device_info().gms_version_code;
 }
 
 void set_gms_version_code_for_test(const std::string& gms_version_code) {
-  get_device_info().gms_version_code =
-      UNSAFE_TODO(strdup(gms_version_code.c_str()));
+  get_device_info().gms_version_code = gms_version_code;
   Java_DeviceInfo_setGmsVersionCodeForTest(AttachCurrentThread(),
                                            gms_version_code);
 }

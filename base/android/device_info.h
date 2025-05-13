@@ -8,7 +8,7 @@
 #include <string>
 
 namespace base::android::device_info {
-const char* gms_version_code();
+const std::string& gms_version_code();
 
 void set_gms_version_code_for_test(const std::string& gms_version_code);
 

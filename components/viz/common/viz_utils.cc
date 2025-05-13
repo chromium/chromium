@@ -51,13 +51,14 @@ bool AlwaysUseWideColorGamut() {
 
   // As it takes some work to compute this, cache the result.
   static bool is_always_use_wide_color_gamut_enabled = [] {
-    const char* current_model =
+    const std::string& current_model =
         base::android::BuildInfo::GetInstance()->model();
     const std::array<std::string, 2> enabled_models = {
         std::string{"Pixel 4"}, std::string{"Pixel 4 XL"}};
     for (const std::string& model : enabled_models) {
-      if (model == current_model)
+      if (model == current_model) {
         return true;
+      }
     }
 
     return false;

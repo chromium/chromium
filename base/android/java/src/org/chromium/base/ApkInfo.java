@@ -14,6 +14,7 @@ import android.os.Process;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.version_info.VersionInfo;
@@ -322,14 +323,14 @@ public final class ApkInfo {
     @NativeMethods
     interface Natives {
         void fillFields(
-                String hostPackageName,
-                String hostVersionCode,
-                String hostPackageLabel,
-                String packageVersionCode,
-                String packageVersionName,
-                String packageName,
-                String resourcesVersion,
-                String installerPackageName,
+                @JniType("std::string") String hostPackageName,
+                @JniType("std::string") String hostVersionCode,
+                @JniType("std::string") String hostPackageLabel,
+                @JniType("std::string") String packageVersionCode,
+                @JniType("std::string") String packageVersionName,
+                @JniType("std::string") String packageName,
+                @JniType("std::string") String resourcesVersion,
+                @JniType("std::string") String installerPackageName,
                 boolean isDebugApp,
                 int targetSdkVersion);
     }

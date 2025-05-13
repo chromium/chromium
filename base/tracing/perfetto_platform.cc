@@ -67,16 +67,17 @@ void PerfettoPlatform::ResetTaskRunner(
 // Note that we override the producer name for the mojo backend in ProducerHost,
 // and thus this only affects the producer name for the system backend.
 std::string PerfettoPlatform::GetCurrentProcessName() {
-  const char* host_package_name = nullptr;
 #if BUILDFLAG(IS_ANDROID)
-  host_package_name = android::apk_info::host_package_name();
+  const std::string& host_package_name = android::apk_info::host_package_name();
+#else
+  std::string host_package_name;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // On Android we want to include if this is webview inside of an app or
   // Android Chrome. To aid this we add the host_package_name to differentiate
   // the various apps and sources.
   std::string process_name;
-  if (host_package_name) {
+  if (!host_package_name.empty()) {
     process_name = StrCat(
         {process_name_prefix_, host_package_name, "-",
          NumberToString(trace_event::TraceLog::GetInstance()->process_id())});
