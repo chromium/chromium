@@ -1912,14 +1912,7 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
     printing_fallback_reason_ = FlushReason::kNone;
   }
   cc::PaintRecord recording;
-  // TODO(issues.chromium.org/379034737): Certain draws, such a WritePixels,
-  // draw directly to the buffer and thus will not work as currently designed
-  // with placed elements.
-  if (resource_host_ && resource_host_->HasPlacedElements()) {
-    recording = recorder_->CopyMainRecording();
-  } else {
-    recording = recorder_->ReleaseMainRecording();
-  }
+  recording = recorder_->ReleaseMainRecording();
   RasterRecord(recording);
   // Images are locked for the duration of the rasterization, in case they get
   // used multiple times. We can unlock them once the rasterization is complete.

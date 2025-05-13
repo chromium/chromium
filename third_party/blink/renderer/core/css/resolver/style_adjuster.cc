@@ -701,7 +701,7 @@ static bool IsCanvasPlaceOrDrawElement(const Element* element) {
     // Placed elements are always immediate children of the canvas.
     if (const auto* canvas =
             DynamicTo<HTMLCanvasElement>(element->parentElement())) {
-      return canvas->HasPlacedElements() || canvas->layoutSubtree();
+      return canvas->layoutSubtree();
     }
   }
 
@@ -714,7 +714,7 @@ static bool IsCanvasWithPlaceOrDrawElements(const Element* element) {
   }
 
   if (const auto* canvas = DynamicTo<HTMLCanvasElement>(element)) {
-    return canvas->HasPlacedElements() || canvas->layoutSubtree();
+    return canvas->layoutSubtree();
   }
 
   return false;

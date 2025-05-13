@@ -844,23 +844,9 @@ void HTMLCanvasElement::DoDeferredPaintInvalidation() {
   did_notify_listeners_for_current_frame_ = true;
 
   if (layout_box && !ShouldBeDirectComposited()) {
-    // If the document is in prepaint and has not already gotten a layout
-    // invalidation then this was a style invalidation from a placed element on
-    // the canvas.
-    bool is_style_invalidation_from_placed_element =
-        GetDocument().Lifecycle().GetState() ==
-            DocumentLifecycle::LifecycleState::kInPrePaint &&
-        !layout_box->ShouldCheckLayoutForPaintInvalidation();
-
-    if (is_style_invalidation_from_placed_element) {
-      DCHECK(HasPlacedElements());
-      layout_box->SetShouldDoFullPaintInvalidationWithoutLayoutChange(
-          PaintInvalidationReason::kStyle);
-    } else {
-      // If the canvas is not composited, propagate the paint invalidation to
-      // |layout_box| as the painted result will change.
-      layout_box->SetShouldDoFullPaintInvalidation();
-    }
+    // If the canvas is not composited, propagate the paint invalidation to
+    // |layout_box| as the painted result will change.
+    layout_box->SetShouldDoFullPaintInvalidation();
   }
 
   dirty_rect_ = gfx::Rect();
@@ -1093,8 +1079,6 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
                                       const PhysicalRect& r) {
   context_->PaintRenderingResultsToCanvas(kFrontBuffer);
   CanvasResourceProvider* provider = ResourceProvider();
-
-  PaintPlacedElements();
 
   if (provider != nullptr) {
     // For 2D Canvas, there are two ways of render Canvas for printing:
@@ -2266,24 +2250,4 @@ bool HTMLCanvasElement::IsAccelerated() const {
   return GetRasterMode() == RasterMode::kGPU;
 }
 
-void HTMLCanvasElement::MarkPlacedElementDirty(Element* placedElement) {
-  if (RenderingContext()) {
-    // TODO(issues.chromium.org/379143301): We should only invalidate the sub
-    // rect of whatever placed element was invalidated.canvas->DidDraw();
-    GetDocument().GetPage()->Animator().SetHasCanvasInvalidation();
-    canvas_is_clear_ = false;
-    dirty_rect_.Union(gfx::Rect(width(), height()));
-    RenderingContext()->MarkPlacedElementDirty(placedElement);
-  }
-}
-
-void HTMLCanvasElement::PaintPlacedElements() const {
-  if (HasPlacedElements()) {
-    RenderingContext()->PaintPlacedElements();
-  }
-}
-
-bool HTMLCanvasElement::HasPlacedElements() const {
-  return RenderingContext() && RenderingContext()->HasPlacedElements();
-}
 }  // namespace blink

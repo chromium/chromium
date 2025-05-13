@@ -2402,37 +2402,6 @@ bool PaintLayer::ComputeHasFilterThatMovesPixels() const {
   return false;
 }
 
-void InvalidateParentCanvasForPlacedElement(PaintLayer* layer) {
-  // The placed element itself is guaranteed to be the direct descendant of a
-  // canvas and both will have their own paint layers.
-  PaintLayer* child_layer;
-  while (layer) {
-    if (layer->GetLayoutObject().IsCanvas()) {
-      auto* html_canvas =
-          DynamicTo<HTMLCanvasElement>(layer->GetLayoutObject().GetNode());
-      if (!html_canvas || !html_canvas->HasPlacedElements()) {
-        return;
-      }
-
-      layer->SetNeedsRepaint();
-      Element* placed_element =
-          To<Element>(child_layer->GetLayoutObject().GetNode());
-      To<LayoutHTMLCanvas>(layer->GetLayoutObject())
-          .DidInvalidatePaintForPlacedElement(placed_element);
-      return;
-    }
-    child_layer = layer;
-    layer = layer->Parent();
-  }
-}
-
-static bool IsCanvasDescendant(LayoutObject* layout_object) {
-  return layout_object && layout_object->GetNode() &&
-         layout_object->GetNode()->IsHTMLElement() &&
-         !layout_object->IsCanvas() &&
-         To<HTMLElement>(layout_object->GetNode())->IsInCanvasSubtree();
-}
-
 void PaintLayer::SetNeedsRepaint() {
   if (self_needs_repaint_)
     return;
@@ -2440,12 +2409,6 @@ void PaintLayer::SetNeedsRepaint() {
   // Invalidate as a display item client.
   static_cast<DisplayItemClient*>(this)->Invalidate();
   MarkPaintingContainerChainForNeedsRepaint();
-
-  // If this layer is a descendant of a canvas then it may be part of a placed
-  // element subtree and the canvas itself needs to be invalidated.
-  if (IsCanvasDescendant(layout_object_)) {
-    InvalidateParentCanvasForPlacedElement(this);
-  }
 }
 
 void PaintLayer::SetDescendantNeedsRepaint() {

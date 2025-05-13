@@ -62,7 +62,6 @@ void HTMLCanvasPainter::PaintReplaced(const PaintInfo& paint_info,
       layer->SetBounds(pixel_snapped_rect.size());
       layer->SetIsDrawable(true);
       layer->SetHitTestable(true);
-      canvas->PaintPlacedElements();
       RecordForeignLayer(context, layout_html_canvas_,
                          DisplayItem::kForeignLayerCanvas, layer,
                          pixel_snapped_rect.origin());

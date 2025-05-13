@@ -97,13 +97,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
 
   CanvasRenderingContext2DSettings* getContextAttributes() const;
 
-  // https://github.com/WICG/canvas-place-element
-  void placeElement(Element* element,
-                    double x,
-                    double y,
-                    ExceptionState& exception_state);
-  void OnPlaceElementStateChanged(Element& element);
-
   ImageData* createImageData(ImageData*, ExceptionState&) const;
   ImageData* createImageData(int sw, int sh, ExceptionState&) const;
   ImageData* createImageData(int sw,
@@ -297,11 +290,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   }
 
   bool context_restorable_{true};
-
-  // TODO(issues.chromium.org/issues/349835587): Add an observer to know if the
-  // element is detached and then remove it.
-  HeapHashMap<WeakMember<Element>, scoped_refptr<CanvasDeferredPaintRecord>>
-      placed_elements_;
 
  private:
   void DrawTextInternal(const String& text,

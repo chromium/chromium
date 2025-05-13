@@ -754,7 +754,6 @@
       // https://github.com/WICG/html-in-canvas/blob/main/README.md
       name: "CanvasDrawElement",
       status: "test",
-      implied_by: ["CanvasPlaceElement"],
     },
     {
       name: "CanvasFloatingPoint",
@@ -778,11 +777,6 @@
       name: "CanvasInterventions",
       browser_process_read_write_access: true,
       base_feature: "none",
-    },
-    {
-      // https://github.com/WICG/html-in-canvas/blob/main/README.md
-      name: "CanvasPlaceElement",
-      status: "test",
     },
     {
       // https://chromestatus.com/feature/5066778773028864

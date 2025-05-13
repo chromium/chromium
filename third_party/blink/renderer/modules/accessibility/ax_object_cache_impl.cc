@@ -5809,12 +5809,6 @@ void AXObjectCacheImpl::MaybeSendCanvasHasNonTrivialFallbackUKM(
     return;
   }
 
-  HTMLCanvasElement* canvas = To<HTMLCanvasElement>(ax_canvas->GetNode());
-  if (canvas->HasPlacedElements()) {
-    // If it has placed elements, then the descendents are not a fallback.
-    return;
-  }
-
   has_emitted_canvas_fallback_ukm_ = true;  // Stop checking.
 
   ukm::UkmRecorder* ukm_recorder = GetDocument().UkmRecorder();

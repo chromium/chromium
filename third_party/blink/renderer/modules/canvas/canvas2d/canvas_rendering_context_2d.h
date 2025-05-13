@@ -177,9 +177,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   sk_sp<PaintFilter> StateGetFilter() final;
 
   void FinalizeFrame(FlushReason) override;
-  void PaintPlacedElements() final;
-  void MarkPlacedElementDirty(Element* placedElement) final;
-  bool HasPlacedElements() const final;
 
   void drawElement(Element* element,
                    double x,
