@@ -237,16 +237,6 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   // Starts a create() or get() action with the enclave.
   void StartTransaction();
 
-  // Called when the UI has reached a state where it needs to do an enclave
-  // operation, and an OAuth token for the enclave has been fetched.
-  void MaybeHashPinAndStartEnclaveTransaction(std::optional<std::string> token);
-
-  // Called when the UI has reached a state where it needs to do an enclave
-  // operation, an OAuth token for the enclave has been fetched, and any PIN
-  // hashing has been completed.
-  void StartEnclaveTransaction(std::optional<std::string> token,
-                               std::unique_ptr<device::enclave::ClaimedPIN>);
-
   // Accessors for the profile pref that counts the number of consecutive failed
   // PIN attempts to know when a lockout will happen.
   int GetFailedPINAttemptCount();
