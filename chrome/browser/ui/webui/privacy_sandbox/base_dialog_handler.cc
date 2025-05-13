@@ -9,11 +9,16 @@
 namespace privacy_sandbox {
 
 using dialog::mojom::BaseDialogPageHandler;
+using privacy_sandbox::notice::mojom::PrivacySandboxNotice;
 
 BaseDialogHandler::BaseDialogHandler(
     mojo::PendingReceiver<BaseDialogPageHandler> receiver,
+    DesktopViewManagerInterface* view_manager,
     BaseDialogUIDelegate* delegate)
-    : receiver_(this, std::move(receiver)), delegate_(delegate) {}
+    : receiver_(this, std::move(receiver)), delegate_(delegate) {
+  CHECK(view_manager);
+  desktop_view_manager_observation_.Observe(view_manager);
+}
 
 BaseDialogHandler::~BaseDialogHandler() = default;
 
@@ -38,6 +43,11 @@ void BaseDialogHandler::CloseDialog() {
     return;
   }
   delegate_->CloseNativeView();
+}
+
+void BaseDialogHandler::MaybeNavigateToNextStep(
+    std::optional<PrivacySandboxNotice> next_id) {
+  // TODO(crbug.com/408016824): implement and add tests.
 }
 
 }  // namespace privacy_sandbox

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/privacy_sandbox/base_dialog_ui.h"
 
+#include "chrome/browser/privacy_sandbox/notice/notice_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/privacy_sandbox/dialog_view_context.h"
 #include "chrome/grit/generated_resources.h"
@@ -44,8 +45,13 @@ BaseDialogUI::~BaseDialogUI() = default;
 
 void BaseDialogUI::BindInterface(
     mojo::PendingReceiver<BaseDialogPageHandler> receiver) {
-  page_handler_ =
-      std::make_unique<BaseDialogHandler>(std::move(receiver), delegate_);
+  if (auto* privacy_sandbox_notice_service =
+          PrivacySandboxNoticeServiceFactory::GetForProfile(
+              Profile::FromWebUI(web_ui()))) {
+    page_handler_ = std::make_unique<BaseDialogHandler>(
+        std::move(receiver),
+        privacy_sandbox_notice_service->GetDesktopViewManager(), delegate_);
+  }
 }
 
 }  // namespace privacy_sandbox

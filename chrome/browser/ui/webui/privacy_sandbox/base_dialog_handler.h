@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_PRIVACY_SANDBOX_BASE_DIALOG_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_PRIVACY_SANDBOX_BASE_DIALOG_HANDLER_H_
 
+#include "base/scoped_observation.h"
+#include "chrome/browser/privacy_sandbox/notice/desktop_view_manager.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/base_dialog.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -12,10 +14,13 @@ namespace privacy_sandbox {
 
 class BaseDialogUIDelegate;
 
-class BaseDialogHandler : public dialog::mojom::BaseDialogPageHandler {
+class BaseDialogHandler
+    : public dialog::mojom::BaseDialogPageHandler,
+      public privacy_sandbox::DesktopViewManagerInterface::Observer {
  public:
   BaseDialogHandler(
       mojo::PendingReceiver<dialog::mojom::BaseDialogPageHandler> receiver,
+      DesktopViewManagerInterface* view_manager,
       BaseDialogUIDelegate* delegate);
 
   BaseDialogHandler(const BaseDialogHandler&) = delete;
@@ -23,12 +28,20 @@ class BaseDialogHandler : public dialog::mojom::BaseDialogPageHandler {
 
   ~BaseDialogHandler() override;
 
+  // DesktopViewManagerInterface::Observer:
+  void MaybeNavigateToNextStep(
+      std::optional<privacy_sandbox::notice::mojom::PrivacySandboxNotice>
+          next_id) override;
+
   // privacy_sandbox::dialog::mojom::BaseDialogPageHandler
   void ResizeDialog(uint32_t height) override;
   void ShowDialog() override;
   void CloseDialog() override;
 
  private:
+  base::ScopedObservation<DesktopViewManagerInterface,
+                          DesktopViewManagerInterface::Observer>
+      desktop_view_manager_observation_{this};
   mojo::Receiver<dialog::mojom::BaseDialogPageHandler> receiver_;
   raw_ptr<BaseDialogUIDelegate> delegate_;
   bool has_resized = false;

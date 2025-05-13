@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/privacy_sandbox/base_dialog_handler.h"
 
+#include "chrome/browser/privacy_sandbox/notice/mocks/mock_desktop_view_manager.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/base_dialog_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,7 +28,9 @@ class PrivacySandboxBaseDialogHandlerTest : public testing::Test {
 
  protected:
   MockBaseDialogUIDelegate mock_delegate_;
-  BaseDialogHandler handler_{mojo::NullReceiver(), &mock_delegate_};
+  MockDesktopViewManager view_manager_;
+  BaseDialogHandler handler_{mojo::NullReceiver(), &view_manager_,
+                             &mock_delegate_};
 };
 
 TEST_F(PrivacySandboxBaseDialogHandlerTest, ShowDialog) {
@@ -62,7 +65,8 @@ class PrivacySandboxBaseDialogHandlerNullDelegateTest : public testing::Test {
   PrivacySandboxBaseDialogHandlerNullDelegateTest() = default;
 
  protected:
-  BaseDialogHandler handler_{mojo::NullReceiver(), nullptr};
+  MockDesktopViewManager view_manager_;
+  BaseDialogHandler handler_{mojo::NullReceiver(), &view_manager_, nullptr};
 };
 
 TEST_F(PrivacySandboxBaseDialogHandlerNullDelegateTest, ShowDialog) {

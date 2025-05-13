@@ -33,6 +33,8 @@ if (!is_android) {
     deps = [
       "//base",
       "//chrome/app:generated_resources",
+      "//chrome/browser/privacy_sandbox/notice:desktop_view_manager",
+      "//chrome/browser/privacy_sandbox/notice:factory",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/resources/privacy_sandbox:resources",
       "//chrome/browser/ui/views/privacy_sandbox",
@@ -52,6 +54,8 @@ if (!is_android) {
       ":mojo_bindings",
       ":privacy_sandbox",
       "//base/test:test_support",
+      "//chrome/test:test_support",
+      "//chrome/browser/privacy_sandbox/notice:test_support",
       "//testing/gmock",
       "//testing/gtest",
     ]
