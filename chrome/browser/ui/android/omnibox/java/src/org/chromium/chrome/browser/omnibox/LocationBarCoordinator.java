@@ -541,6 +541,11 @@ public class LocationBarCoordinator
         mUrlCoordinator.setUseSmallText(useSmallText);
     }
 
+    @Override
+    public void setHideStatusIconForSecureOrigins(boolean hideStatusIconForSecureOrigins) {
+        mStatusCoordinator.setHideStatusIconForSecureOrigins(hideStatusIconForSecureOrigins);
+    }
+
     // AutocompleteDelegate implementation.
     @Override
     public void onUrlTextChanged() {

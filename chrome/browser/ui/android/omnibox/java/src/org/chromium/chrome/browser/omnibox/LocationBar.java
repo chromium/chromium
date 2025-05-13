@@ -112,6 +112,13 @@ public interface LocationBar {
     /** Toggle the url bar's text size to be small or normal sized. */
     default void setUrlBarUsesSmallText(boolean useSmallText) {}
 
+    /**
+     * Toggle whether the status icon should be hidden for secure origins. This should only be used
+     * in minimized/reduced presentations of the LocationBar since the status icon has affordances
+     * for page-specific permissions, privacy, etc.
+     */
+    default void setHideStatusIconForSecureOrigins(boolean hideStatusIconForSecureOrigins) {}
+
     /** Destroys the LocationBar. */
     void destroy();
 }

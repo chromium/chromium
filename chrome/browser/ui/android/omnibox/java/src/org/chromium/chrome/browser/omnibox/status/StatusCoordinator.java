@@ -48,6 +48,7 @@ import java.util.List;
  */
 @NullMarked
 public class StatusCoordinator implements View.OnClickListener, LocationBarDataProvider.Observer {
+
     /** Interface for displaying page info popup on omnibox. */
     public interface PageInfoAction {
         /**
@@ -184,11 +185,9 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         mMediator.setStatusClickListener(listener != null ? listener : this);
     }
 
-    /**
-     * @param show Whether the status icon should be VISIBLE, otherwise GONE.
-     */
-    public void setStatusIconShown(boolean show) {
-        mMediator.setStatusIconShown(show);
+    /** Toggle whether the status icon should be hidden for secure origins. */
+    public void setHideStatusIconForSecureOrigins(boolean hideStatusIconForSecureOrigins) {
+        mMediator.setHideStatusIconForSecureOrigins(hideStatusIconForSecureOrigins);
     }
 
     /**
@@ -311,13 +310,6 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
                 : mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconResForTesting();
     }
 
-    /** Returns the icon identifier used for custom resources. */
-    public @Nullable String getSecurityIconIdentifierForTesting() {
-        return mModel.get(StatusProperties.STATUS_ICON_RESOURCE) == null
-                ? null
-                : mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconIdentifierForTesting();
-    }
-
     /**
      * Update visibility of the verbose status based on the button type and focus state of the
      * omnibox.
@@ -412,13 +404,5 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
             animator.setStartDelay(startDelayMs);
             animators.add(animator);
         }
-    }
-
-    /**
-     * Set whether the status view should be shown. If the view is not shown, the status view will
-     * be permanently gone until it is updated through this method during the current lifecycle.
-     */
-    public void setShowStatusView(boolean show) {
-        mMediator.setShowStatusView(show);
     }
 }

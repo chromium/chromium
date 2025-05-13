@@ -124,6 +124,7 @@ public class StatusMediator
     private Drawable mDefaultStatusBackgroundIncognito;
     private Drawable mVerboseStatusBackground;
     private Drawable mVerboseStatusBackgroundIncognito;
+    private boolean mHideStatusIconForSecureOrigins;
 
     /**
      * @param model The {@link PropertyModel} for this mediator.
@@ -245,7 +246,13 @@ public class StatusMediator
             updateVerboseStatusTextVisibility();
             updateLocationBarIcon(IconTransitionType.CROSSFADE);
             updateColorTheme();
+            updateVisibilityForOriginSecurity();
         }
+    }
+
+    void setHideStatusIconForSecureOrigins(boolean hideStatusIconForSecureOrigins) {
+        mHideStatusIconForSecureOrigins = hideStatusIconForSecureOrigins;
+        updateVisibilityForOriginSecurity();
     }
 
     /** Specify minimum width of the separator field. */
@@ -950,5 +957,11 @@ public class StatusMediator
                 DrawableUtils.getIconBackground(context, /* isIncognito= */ false, size, size);
         mDefaultStatusBackgroundIncognito =
                 DrawableUtils.getIconBackground(context, /* isIncognito= */ true, size, size);
+    }
+
+    private void updateVisibilityForOriginSecurity() {
+        setShowStatusView(
+                !mHideStatusIconForSecureOrigins
+                        || mPageSecurityLevel != ConnectionSecurityLevel.SECURE);
     }
 }

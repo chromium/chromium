@@ -835,6 +835,25 @@ public final class StatusMediatorUnitTest {
         Assert.assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
     }
 
+    @Test
+    @SmallTest
+    public void hideViewForSecureOrigins() {
+        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, false, false);
+        Assert.assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
+
+        mMediator.setHideStatusIconForSecureOrigins(true);
+        Assert.assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
+
+        mMediator.updateVerboseStatus(ConnectionSecurityLevel.WARNING, false, false);
+        Assert.assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
+
+        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, false, false);
+        Assert.assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
+
+        mMediator.setHideStatusIconForSecureOrigins(false);
+        Assert.assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
+    }
+
     private String getIconIdentifierForTesting() {
         return mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconIdentifierForTesting();
     }

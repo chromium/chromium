@@ -108,6 +108,7 @@ public class MiniOriginBarController implements Observer {
         mShowMiniOriginBar = showMiniOriginBar;
         mLocationBar.setShowOriginOnly(mShowMiniOriginBar);
         mLocationBar.setUrlBarUsesSmallText(mShowMiniOriginBar);
+        mLocationBar.setHideStatusIconForSecureOrigins(mShowMiniOriginBar);
         mSuppressToolbarSceneLayerSupplier.set(mShowMiniOriginBar);
         mControlContainer.toggleLocationBarOnlyMode(mShowMiniOriginBar);
 
