@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.tab;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
 
 import java.nio.ByteBuffer;
@@ -12,15 +15,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Extracts a {@link TabState} from a {@link Tab}. */
+@NullMarked
 public class TabStateExtractor {
-    private static Map<Integer, TabState> sTabStatesForTesting;
+    private static @Nullable Map<Integer, TabState> sTabStatesForTesting;
 
     /**
      * Returns an opaque "state" object that can be persisted to storage.
      *
      * @param tab The {@link Tab} from which to extract the state.
+     * @return The state object, or null if the tab is not initialized.
      */
-    public static TabState from(Tab tab) {
+    public static @Nullable TabState from(Tab tab) {
         if (sTabStatesForTesting != null && sTabStatesForTesting.containsKey(tab.getId())) {
             return sTabStatesForTesting.get(tab.getId());
         }
@@ -51,8 +56,10 @@ public class TabStateExtractor {
      * Returns an object representing the state of the Tab's WebContents.
      *
      * @param tab The {@link Tab} from which to extract the WebContents state.
+     * @return The web contents state object, or null if the native call returns null (e.g.
+     *     out-of-memory).
      */
-    public static WebContentsState getWebContentsState(Tab tab) {
+    public static @Nullable WebContentsState getWebContentsState(Tab tab) {
         if (tab.getWebContentsState() != null) {
             return tab.getWebContentsState();
         }
@@ -67,10 +74,12 @@ public class TabStateExtractor {
     }
 
     /** Returns an ByteBuffer representing the state of the Tab's WebContents. */
-    private static ByteBuffer getWebContentsStateAsByteBuffer(Tab tab) {
+    private static @Nullable ByteBuffer getWebContentsStateAsByteBuffer(Tab tab) {
         LoadUrlParams pendingLoadParams = tab.getPendingLoadParams();
         if (pendingLoadParams == null) {
-            return WebContentsStateBridge.getContentsStateAsByteBuffer(tab.getWebContents());
+            WebContents webContents = tab.getWebContents();
+            assert webContents != null;
+            return WebContentsStateBridge.getContentsStateAsByteBuffer(webContents);
         } else {
             Referrer referrer = pendingLoadParams.getReferrer();
             return WebContentsStateBridge.createSingleNavigationStateAsByteBuffer(

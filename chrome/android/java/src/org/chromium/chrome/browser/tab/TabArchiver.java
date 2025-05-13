@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab;
 
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -12,6 +13,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import java.util.List;
 
 /** Responsible for moving tabs to/from the archived {@link TabModel}. */
+@NullMarked
 public interface TabArchiver extends Destroyable {
 
     /** Provides an interface to observer the declutter process. */

@@ -14,6 +14,8 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 
@@ -21,6 +23,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /** Class to manage reading/writing preferences related to tab declutter. */
+@NullMarked
 public class TabArchiveSettings {
     public interface Observer {
         // Called when a setting was changed.
@@ -58,8 +61,8 @@ public class TabArchiveSettings {
     private final SharedPreferences.OnSharedPreferenceChangeListener mPrefsListener =
             new SharedPreferences.OnSharedPreferenceChangeListener() {
                 @Override
-                public void onSharedPreferenceChanged(SharedPreferences sharedPrefs, String key) {
-
+                public void onSharedPreferenceChanged(
+                        SharedPreferences sharedPrefs, @Nullable String key) {
                     PostTask.postTask(TaskTraits.UI_DEFAULT, () -> maybeNotifyObservers(key));
                 }
             };
@@ -209,7 +212,7 @@ public class TabArchiveSettings {
 
     // Private methods.
 
-    private void maybeNotifyObservers(String key) {
+    private void maybeNotifyObservers(@Nullable String key) {
         if (!PREF_KEYS_FOR_NOTIFICATIONS.contains(key)) return;
 
         for (Observer obs : mObservers) {
