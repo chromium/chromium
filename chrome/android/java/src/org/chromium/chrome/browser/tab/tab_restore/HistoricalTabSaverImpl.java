@@ -14,6 +14,7 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -30,6 +31,7 @@ import java.util.Collections;
 import java.util.List;
 
 /** Creates historical entries in TabRestoreService. */
+@NullMarked
 @JNINamespace("historical_tab_saver")
 public class HistoricalTabSaverImpl implements HistoricalTabSaver {
     private static final List<String> UNSUPPORTED_SCHEMES =
@@ -261,17 +263,15 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
             List<Tab> validTabs = getValidatedTabs(entry.getTabs());
             if (validTabs.isEmpty()) continue;
 
-            boolean saveAsSingleTab = validTabs.size() == 1 && entry.getTabGroupId() == null;
-            if (saveAsSingleTab) {
+            Token tabGroupId = entry.getTabGroupId();
+            if (tabGroupId == null) {
+                assert validTabs.size() == 1;
                 validatedEntries.add(new HistoricalEntry(validTabs.get(0)));
                 continue;
             }
             validatedEntries.add(
                     new HistoricalEntry(
-                            entry.getTabGroupId(),
-                            entry.getGroupTitle(),
-                            entry.getGroupColor(),
-                            validTabs));
+                            tabGroupId, entry.getGroupTitle(), entry.getGroupColor(), validTabs));
         }
         return validatedEntries;
     }

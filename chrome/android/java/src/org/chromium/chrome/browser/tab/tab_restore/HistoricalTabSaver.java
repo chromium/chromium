@@ -5,12 +5,14 @@
 package org.chromium.chrome.browser.tab.tab_restore;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
 import java.util.List;
 
 /** Interface for creating entries in TabRestoreService. */
+@NullMarked
 public interface HistoricalTabSaver {
     /** Destroys the instance. */
     public void destroy();
