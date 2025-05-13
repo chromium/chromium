@@ -618,7 +618,8 @@ PersistentSampleVector::PersistentSampleVector(
     SCOPED_CRASH_KEY_NUMBER("PSV", "counts_ref",
                             persistent_counts_.reference());
 #endif
-    debug::DumpWithoutCrashing();
+    // TODO: crbug.com/410416458 - Elided from M137 branch as it's too noisy.
+    // debug::DumpWithoutCrashing();
   }
 }
 
