@@ -71,6 +71,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/search",
+    "//chrome/browser/serial",
     "//chrome/browser/sync",
     "//chrome/browser/task_manager",
     "//chrome/browser/ui/hats",

@@ -495,6 +495,7 @@ static_library("test_support") {
     "//chrome/browser/profiles:profiles_extra_parts",
     "//chrome/browser/reading_list",
     "//chrome/browser/search_engines",
+    "//chrome/browser/serial",
     "//chrome/browser/sync",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/color:color_headers",
