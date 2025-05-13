@@ -456,9 +456,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 // Tests that signing in from a signed out state with a managed account
 // shows the enterprise onboarding only the first time and merging browsing data
 // is suggested by policy.
-// TODO(crbug.com/411035267): Fix this flaky test on simulator and device.
-- (void)
-    FLAKY_testSigninWithManagedAccountFromUnsignedStateWithDataMergingSuggested {
+- (void)testSigninWithManagedAccountFromUnsignedStateWithDataMergingSuggested {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
@@ -759,15 +757,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 
 // Tests switching to a managed account but refusing the enterprise onboarding
 // screen.
-// TODO(crbug.com/399015648): Test is flaky on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testRefuseToSwitchToManageAccount \
-  testRefuseToSwitchToManageAccount
-#else
-#define MAYBE_testRefuseToSwitchToManageAccount \
-  FLAKY_testRefuseToSwitchToManageAccount
-#endif
-- (void)MAYBE_testRefuseToSwitchToManageAccount {
+- (void)testRefuseToSwitchToManageAccount {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
@@ -853,15 +843,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       @"Profile should be personal");
 }
 
-// TODO(crbug.com/411035267): Fix this flaky test on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testProfileDeletedOnRemoveManagedAccount \
-  FLAKY_testProfileDeletedOnRemoveManagedAccount
-#else
-#define MAYBE_testProfileDeletedOnRemoveManagedAccount \
-  testProfileDeletedOnRemoveManagedAccount
-#endif
-- (void)MAYBE_testProfileDeletedOnRemoveManagedAccount {
+- (void)testProfileDeletedOnRemoveManagedAccount {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
@@ -1142,8 +1124,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 
 // Tests signing in with a managed account during the FRE. This should convert
 // the existing profile to a managed profile.
-// TODO(crbug.com/394536438): Test is flaky.
-- (void)FLAKY_testSignInWithManagedAccount {
+- (void)testSignInWithManagedAccount {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
