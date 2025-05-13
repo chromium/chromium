@@ -1938,8 +1938,15 @@ dialog:where(:modal) {
   }
 
 
-  select:not(:-internal-list-box):not([multiple]) option::checkmark {
-    content: '\2713';
+  @supports blink-feature(CustomizableSelectInPage) {
+    select option::checkmark {
+      content: '\2713' / '';
+    }
+  }
+  @supports not blink-feature(CustomizableSelectInPage) {
+    select:not(:-internal-list-box):not([multiple]) option::checkmark {
+      content: '\2713';
+    }
   }
   select option:not(:checked)::checkmark {
     visibility: hidden;
@@ -2001,27 +2008,45 @@ dialog:where(:modal) {
    * ::-internal-option-label-container. */
   /* TODO(crbug.com/393500003): Some :-internal-list-box and multiple checks
    * here could be removed if we make -internal-auto-base() work better. */
-  option::-internal-option-label-container {
-    display: contents;
+  @supports blink-feature(CustomizableSelectInPage) {
+    option::-internal-option-label-container {
+      display: -internal-auto-base(contents, none);
+    }
+    option::-internal-option-slot {
+      display: -internal-auto-base(none, contents);
+    }
+    /* Render the label attribute when it is set. This should be kept in sync
+     * with the logic in HTMLOptionElement::DisplayLabel. */
+    option[label]:not([label=""])::-internal-option-label-container {
+      display: contents;
+    }
+    option[label]:not([label=""])::-internal-option-slot {
+      display: none;
+    }
   }
-  option::-internal-option-slot {
-    display: none;
-  }
-  select:not(:-internal-list-box):not([multiple]) option::-internal-option-label-container {
-    display: none;
-  }
-  select:not(:-internal-list-box):not([multiple]) option::-internal-option-slot {
-    display: contents;
-  }
-  /* Render the label attribute when it is set. This should be kept in sync
-   * with the logic in HTMLOptionElement::DisplayLabel. */
-  select:not(:-internal-list-box):not([multiple])
-  option[label]:not([label=""])::-internal-option-label-container {
-    display: contents;
-  }
-  select:not(:-internal-list-box):not([multiple])
-  option[label]:not([label=""])::-internal-option-slot {
-    display: none;
+  @supports not blink-feature(CustomizableSelectInPage) {
+    option::-internal-option-label-container {
+      display: contents;
+    }
+    option::-internal-option-slot {
+      display: none;
+    }
+    select:not(:-internal-list-box):not([multiple]) option::-internal-option-label-container {
+      display: none;
+    }
+    select:not(:-internal-list-box):not([multiple]) option::-internal-option-slot {
+      display: contents;
+    }
+    /* Render the label attribute when it is set. This should be kept in sync
+     * with the logic in HTMLOptionElement::DisplayLabel. */
+    select:not(:-internal-list-box):not([multiple])
+    option[label]:not([label=""])::-internal-option-label-container {
+      display: contents;
+    }
+    select:not(:-internal-list-box):not([multiple])
+    option[label]:not([label=""])::-internal-option-slot {
+      display: none;
+    }
   }
 }
 
@@ -2059,13 +2084,6 @@ dialog:where(:modal) {
     background-color: color-mix(in lab, currentColor 20%, transparent);
   }
 
-  select option::checkmark {
-    content: '\2713' / '';
-  }
-  select option:not(:checked)::checkmark {
-    visibility: hidden;
-  }
-
   select optgroup option {
     padding-inline-start: -internal-auto-base(20px, 0.5em);
     font-weight: normal;
@@ -2082,19 +2100,6 @@ dialog:where(:modal) {
     min-block-size: -internal-auto-base(initial, 1lh);
   }
 
-  select option::-internal-option-label-container {
-    display: none;
-  }
-  select option::-internal-option-slot {
-    display: contents;
-  }
-  select option[label]:not([label=""])::-internal-option-label-container {
-    display: contents;
-  }
-  select option[label]:not([label=""])::-internal-option-slot {
-    display: none;
-  }
-
   /* Don't allow nested <optgroup>s. */
   select optgroup optgroup {
     display: none;
@@ -2108,18 +2113,4 @@ dialog:where(:modal) {
     display: none !important;
   }
 
-  select option::-internal-option-label-container {
-    display: -internal-auto-base(contents, none);
-  }
-  select option::-internal-option-slot {
-    display: -internal-auto-base(none, contents);
-  }
-  /* Render the label attribute when it is set. This should be kept in sync
-   * with the logic in HTMLOptionElement::DisplayLabel. */
-  select option[label]:not([label=""])::-internal-option-label-container {
-    display: contents;
-  }
-  select option[label]:not([label=""])::-internal-option-slot {
-    display: none;
-  }
 }

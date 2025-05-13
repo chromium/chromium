@@ -201,6 +201,9 @@ bool HTMLOptionElement::MatchesEnabledPseudoClass() const {
   return !IsDisabledFormControl();
 }
 
+// The logic in this method to choose rendering the label attribute or the text
+// content should be kept in sync with the ::-internal-option-label-container
+// rules in the UA stylesheet.
 String HTMLOptionElement::DisplayLabel() const {
   if (RuntimeEnabledFeatures::OptionLabelAttributeWhitespaceEnabled()) {
     // If the label attribute is set and is not an empty string, then use its
