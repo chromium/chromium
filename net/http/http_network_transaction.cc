@@ -4,6 +4,8 @@
 
 #include "net/http/http_network_transaction.h"
 
+#include <deque>
+#include <queue>
 #include <set>
 #include <utility>
 #include <vector>
@@ -22,6 +24,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "net/base/address_family.h"
@@ -76,6 +79,7 @@
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
 #include "net/ssl/ssl_private_key.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
@@ -163,6 +167,156 @@ void RecordWebSocketFallbackResult(int result,
       CalculateWebSocketFallbackResult(result, http_1_1_was_required,
                                        connection_info));
 }
+
+// TODO(https://crbug.com/413557424): Remove DuplicateRequestLogger, calling
+// code, feature, and histograms once investigation is complete.
+
+// Tracks all the URLs requested in the last 10 seconds and emit an histogram if
+// any of them are repeated.
+class DuplicateRequestLogger final {
+ public:
+  DuplicateRequestLogger() = default;
+
+  DuplicateRequestLogger(const DuplicateRequestLogger&) = delete;
+  DuplicateRequestLogger& operator=(const DuplicateRequestLogger&) = delete;
+
+  // Adds `url` to the queue of recent requests. If it was already added within
+  // the last 10 seconds, log a histogram.
+  void AddAndMaybeLogRequest(const GURL& url, bool is_main_frame_navigation) {
+    if (!expiry_timer_.IsRunning()) {
+      StartTimer();
+    }
+    auto now = base::TimeTicks::Now();
+    Entry& entry = entry_queue_.emplace(now, url);
+    auto [hash_it, was_inserted] =
+        entry_map_.try_emplace(entry.url.possibly_invalid_spec(), &entry);
+    if (was_inserted) {
+      // No existing match was found.
+      return;
+    }
+
+    // There was a matching URL.
+    auto [_, old_entry_ptr] = *hash_it;
+    auto elapsed = now - old_entry_ptr->added_time;
+    if (elapsed <= kMaximumDetectionInterval) {
+      static constexpr std::string_view kBaseHistogramName =
+          "Net.NetworkTransaction.DuplicateRequestInterval";
+      DVLOG(3) << "Duplicate request for " << url << " after " << elapsed;
+      base::UmaHistogramTimes(kBaseHistogramName, elapsed);
+      if (is_main_frame_navigation) {
+        base::UmaHistogramTimes(
+            base::JoinString({kBaseHistogramName, "MainFrame"}, "."), elapsed);
+      }
+      if (IsGoogleHostWithAlpnH3(url.host_piece())) {
+        base::UmaHistogramTimes(
+            base::JoinString({kBaseHistogramName, "GoogleHost"}, "."), elapsed);
+        if (is_main_frame_navigation) {
+          base::UmaHistogramTimes(
+              base::JoinString({kBaseHistogramName, "GoogleHost", "MainFrame"},
+                               "."),
+              elapsed);
+        }
+      }
+    }
+
+    // Replace the entry. It is not sufficient just to assign it, because we
+    // need to change which string backs the string_view key.
+    entry_map_.erase(hash_it);
+    auto [ignored_it, emplace_succeeded] =
+        entry_map_.emplace(entry.url.possibly_invalid_spec(), &entry);
+    std::ignore = ignored_it;
+    CHECK(emplace_succeeded);
+  }
+
+ private:
+  // The maximum length of time between duplicate requests that will allow
+  // them to be logged.
+  static constexpr base::TimeDelta kMaximumDetectionInterval =
+      base::Seconds(10);
+
+  // The maximum time to wait between adding an entry to the queue and
+  // removing it again. By making this larger than kMaximumDetectionPeriod we
+  // can enable entries to be cleaned up in batches for greater efficiency.
+  static constexpr base::TimeDelta kCleanupInterval =
+      kMaximumDetectionInterval * 2;
+
+  struct Entry {
+    base::TimeTicks added_time;
+    GURL url;
+  };
+
+  // Starts `expiry_timer_`, setting up the callback on the first call.
+  void StartTimer() {
+    if (expiry_timer_.user_task().is_null()) {
+      // We need to set the callback on the first call. This use of
+      // base::Unretained() is safe because the callback will not be called
+      // after `expiry_timer_` is destroyed, and it is owned by this object.
+      expiry_timer_.Start(
+          FROM_HERE, kCleanupInterval,
+          base::BindRepeating(&DuplicateRequestLogger::OnExpiryTimer,
+                              base::Unretained(this)));
+    } else {
+      // Avoid calling Bind() again.
+      expiry_timer_.Reset();
+    }
+  }
+
+  // Cleans up old entries in `entry_queue_` and `entry_map_`.
+  void OnExpiryTimer() {
+    base::TimeTicks expiry_threshold =
+        base::TimeTicks::Now() - kMaximumDetectionInterval;
+    while (!entry_queue_.empty() &&
+           entry_queue_.front().added_time < expiry_threshold) {
+      const Entry& entry = entry_queue_.front();
+      auto it = entry_map_.find(entry.url.possibly_invalid_spec());
+      CHECK(it != entry_map_.end());
+      auto [key, entry_ptr] = *it;
+      CHECK(KeyUsesCorrectBackingStore(key, entry_ptr));
+      if (entry_ptr == &entry) {
+        entry_map_.erase(it);
+      }
+      entry_queue_.pop();
+    }
+    if (!entry_queue_.empty()) {
+      expiry_timer_.Reset();
+    }
+  }
+
+  // Keys in `entry_map_` must always be backed by a string owned by the value.
+  // This method checks that invariant.
+  bool KeyUsesCorrectBackingStore(std::string_view key, Entry* value) {
+    return key.data() == value->url.possibly_invalid_spec().data();
+  }
+
+  // `entry_queue_` is a std::deque and not a base::circular_deque because it
+  // requires pointer stability.
+  std::queue<Entry, std::deque<Entry>> entry_queue_;
+
+  // To avoid keeping duplicate strings in memory, the map from URL to Entry
+  // uses a string_view key. The keys in `entry_map_` point to memory owned by
+  // `entry_queue_`, so Entry objects in `entry_queue_` must always be inserted
+  // before `entry_map_` and removed afterwards. The backing storage for the key
+  // must always belong to the Entry pointed to by the value.
+  absl::flat_hash_map<std::string_view, raw_ptr<Entry>> entry_map_;
+
+  // The timer only runs when `entry_queue_` is non-empty.
+  base::RetainingOneShotTimer expiry_timer_;
+};
+
+// If an identical URL to `url` has been requested in the last 10 seconds,
+// record the time passed since it was last seen to the
+// "Net.NetworkTransaction.DuplicateRequestInterval" histogram.
+void LogIfDuplicateRequest(const GURL& url, bool is_main_frame_navigation) {
+  static base::NoDestructor<DuplicateRequestLogger> logger_;
+  logger_->AddAndMaybeLogRequest(url, is_main_frame_navigation);
+}
+
+// When this feature is enabled, GET requests with identical URLs within 10
+// seconds will result in the Net.NetworkTransaction.DuplicateRequestInterval
+// histogram being recorded.
+BASE_FEATURE(kLogDuplicateRequests,
+             "LogDuplicateRequests",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -997,7 +1151,7 @@ int HttpNetworkTransaction::DoCreateStreamComplete(int result) {
             {"Net.NetworkTransaction.Create",
              (ForWebSocketHandshake() ? "WebSocketStreamTime."
                                       : "HttpStreamTime."),
-             (IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ""),
+             (IsGoogleHostWithAlpnH3(url_.host_piece()) ? "GoogleHost." : ""),
              NegotiatedProtocolToHistogramSuffix(negotiated_protocol_)}),
         create_stream_end_time_ - create_stream_start_time_);
     if (!reset_connection_and_request_for_resend_start_time_.is_null()) {
@@ -1037,9 +1191,10 @@ int HttpNetworkTransaction::DoInitStream() {
     blocked_initialize_stream_start_time_ = initialize_stream_start_time_;
   }
   base::UmaHistogramBoolean(
-      base::StrCat({"Net.NetworkTransaction.InitializeStreamBlocked",
-                    IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
-                    NegotiatedProtocolToHistogramSuffix(negotiated_protocol_)}),
+      base::StrCat(
+          {"Net.NetworkTransaction.InitializeStreamBlocked",
+           IsGoogleHostWithAlpnH3(url_.host_piece()) ? "GoogleHost." : ".",
+           NegotiatedProtocolToHistogramSuffix(negotiated_protocol_)}),
       blocked);
   return rv;
 }
@@ -1055,7 +1210,7 @@ int HttpNetworkTransaction::DoInitStreamComplete(int result) {
     base::UmaHistogramTimes(
         base::StrCat(
             {"Net.NetworkTransaction.InitializeStreamBlockTime",
-             IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
+             IsGoogleHostWithAlpnH3(url_.host_piece()) ? "GoogleHost." : ".",
              NegotiatedProtocolToHistogramSuffix(negotiated_protocol_)}),
         initialize_stream_end_time_ - blocked_initialize_stream_start_time_);
   }
@@ -1165,9 +1320,10 @@ int HttpNetworkTransaction::DoGenerateProxyAuthToken() {
     blocked_generate_proxy_auth_token_start_time_ = base::TimeTicks::Now();
   }
   base::UmaHistogramBoolean(
-      base::StrCat({"Net.NetworkTransaction.GenerateProxyAuthTokenBlocked",
-                    IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
-                    NegotiatedProtocolToHistogramSuffix(negotiated_protocol_)}),
+      base::StrCat(
+          {"Net.NetworkTransaction.GenerateProxyAuthTokenBlocked",
+           IsGoogleHostWithAlpnH3(url_.host_piece()) ? "GoogleHost." : ".",
+           NegotiatedProtocolToHistogramSuffix(negotiated_protocol_)}),
       blocked);
   return rv;
 }
@@ -1180,7 +1336,7 @@ int HttpNetworkTransaction::DoGenerateProxyAuthTokenComplete(int rv) {
     base::UmaHistogramTimes(
         base::StrCat(
             {"Net.NetworkTransaction.GenerateProxyAuthTokenBlockTime",
-             IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
+             IsGoogleHostWithAlpnH3(url_.host_piece()) ? "GoogleHost." : ".",
              NegotiatedProtocolToHistogramSuffix(negotiated_protocol_)}),
         base::TimeTicks::Now() - blocked_generate_proxy_auth_token_start_time_);
   }
@@ -1211,9 +1367,10 @@ int HttpNetworkTransaction::DoGenerateServerAuthToken() {
     blocked_generate_server_auth_token_start_time_ = base::TimeTicks::Now();
   }
   base::UmaHistogramBoolean(
-      base::StrCat({"Net.NetworkTransaction.GenerateServerAuthTokenBlocked",
-                    IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
-                    NegotiatedProtocolToHistogramSuffix(negotiated_protocol_)}),
+      base::StrCat(
+          {"Net.NetworkTransaction.GenerateServerAuthTokenBlocked",
+           IsGoogleHostWithAlpnH3(url_.host_piece()) ? "GoogleHost." : ".",
+           NegotiatedProtocolToHistogramSuffix(negotiated_protocol_)}),
       blocked);
   return rv;
 }
@@ -1226,7 +1383,7 @@ int HttpNetworkTransaction::DoGenerateServerAuthTokenComplete(int rv) {
     base::UmaHistogramTimes(
         base::StrCat(
             {"Net.NetworkTransaction.GenerateServerAuthTokenBlockTime",
-             IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
+             IsGoogleHostWithAlpnH3(url_.host_piece()) ? "GoogleHost." : ".",
              NegotiatedProtocolToHistogramSuffix(negotiated_protocol_)}),
         base::TimeTicks::Now() -
             blocked_generate_server_auth_token_start_time_);
@@ -1368,6 +1525,11 @@ int HttpNetworkTransaction::DoSendRequest() {
               NetLogWithSourceToFlow(net_log_));
   send_start_time_ = base::TimeTicks::Now();
   next_state_ = STATE_SEND_REQUEST_COMPLETE;
+
+  if (base::FeatureList::IsEnabled(kLogDuplicateRequests) &&
+      request_->method == "GET") {
+    LogIfDuplicateRequest(request_->url, request_->is_main_frame_navigation);
+  }
 
   stream_->SetRequestIdempotency(request_->idempotency);
   return stream_->SendRequest(request_headers_, &response_, io_callback_);
@@ -2126,7 +2288,7 @@ void HttpNetworkTransaction::ResetConnectionAndRequestForResend(
   // TODO:(crbug.com/1495705): Remove this CHECK after fixing the bug.
   CHECK(request_);
   base::UmaHistogramEnumeration(
-      IsGoogleHostWithAlpnH3(url_.host())
+      IsGoogleHostWithAlpnH3(url_.host_piece())
           ? "Net.NetworkTransactionH3SupportedGoogleHost.RetryReason"
           : "Net.NetworkTransaction.RetryReason",
       retry_reason);
@@ -2291,9 +2453,10 @@ void HttpNetworkTransaction::RecordStreamRequestResult(int result) {
   if (num_restarts_ == 0) {
     base::TimeDelta elapsed = base::TimeTicks::Now() - start_timeticks_;
     base::UmaHistogramTimes(
-        base::StrCat({"Net.NetworkTransaction.StreamRequestCompleteTime.",
-                      IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : "",
-                      result == OK ? "Success" : "Failure"}),
+        base::StrCat(
+            {"Net.NetworkTransaction.StreamRequestCompleteTime.",
+             IsGoogleHostWithAlpnH3(url_.host_piece()) ? "GoogleHost." : "",
+             result == OK ? "Success" : "Failure"}),
         elapsed);
   }
 
@@ -2301,7 +2464,7 @@ void HttpNetworkTransaction::RecordStreamRequestResult(int result) {
     base::UmaHistogramEnumeration(
         base::StrCat({
             "Net.NetworkTransaction.NegotiatedProtocol.",
-            IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : "",
+            IsGoogleHostWithAlpnH3(url_.host_piece()) ? "GoogleHost." : "",
         }),
         negotiated_protocol_);
 

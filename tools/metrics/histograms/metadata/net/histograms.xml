@@ -3500,6 +3500,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Net.NetworkTransaction.DuplicateRequestInterval{HostType}{MainFrame}"
+    units="ms" expires_after="2025-08-14">
+  <owner>ricea@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    When an HTTP(S) request with a GET method is sent to the network within 10
+    seconds of another GET request with an identical URL, records the time
+    interval between the first request and the second.
+
+    Recorded once per duplicate request, but only when the
+    &quot;LogDuplicateRequests&quot; feature is enabled.
+  </summary>
+  <token key="HostType">
+    <variant name=""/>
+    <variant name=".GoogleHost"/>
+  </token>
+  <token key="MainFrame">
+    <variant name=""/>
+    <variant name=".MainFrame"/>
+  </token>
+</histogram>
+
+<histogram
     name="Net.NetworkTransaction.GenerateProxyAuthTokenBlocked{HostType}.{Protocol}"
     enum="Boolean" expires_after="2025-09-07">
   <owner>bashi@chromium.org</owner>
