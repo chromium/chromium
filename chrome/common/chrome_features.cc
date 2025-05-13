@@ -1260,7 +1260,7 @@ BASE_FEATURE(kSafetyHubUnifiedPasswordsModule,
 // Enables Safety Hub services on start up feature.
 BASE_FEATURE(kSafetyHubServicesOnStartUp,
              "SafetyHubServicesOnStartUp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables the Trust Safety Sentiment Survey for Safety Hub.
 BASE_FEATURE(kSafetyHubTrustSafetySentimentSurvey,
@@ -1301,7 +1301,7 @@ const base::FeatureParam<base::TimeDelta> kPasswordCheckOverdueInterval{
 // schedule for Mondays.
 COMPONENT_EXPORT(CHROME_FEATURES)
 const base::FeatureParam<int> kPasswordCheckMonWeight{
-    &kSafetyHub, "password-check-mon-weight", 8};
+    &kSafetyHub, "password-check-mon-weight", 6};
 
 // Weight to randomly schedule for Tuesdays.
 COMPONENT_EXPORT(CHROME_FEATURES)

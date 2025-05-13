@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
@@ -37,6 +38,8 @@ class UnusedSitePermissionsBridgeTest : public testing::Test {
   UnusedSitePermissionsBridgeTest() : env_(AttachCurrentThread()) {}
 
   void SetUp() override {
+    safety_hub_test_util::CreateRevokedPermissionsService(profile());
+
     hcsm_ = HostContentSettingsMapFactory::GetForProfile(profile());
   }
 

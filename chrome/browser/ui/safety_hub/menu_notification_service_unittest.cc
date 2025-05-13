@@ -67,6 +67,9 @@ class SafetyHubMenuNotificationServiceTest
         {});
     prefs()->SetBoolean(
         safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled, true);
+
+    safety_hub_test_util::CreateRevokedPermissionsService(profile());
+    safety_hub_test_util::CreateNotificationPermissionsReviewService(profile());
   }
 
   void TearDown() override {
@@ -452,6 +455,9 @@ class
         {safe_browsing::kSafetyHubAbusiveNotificationRevocation});
     prefs()->SetBoolean(
         safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled, true);
+
+    safety_hub_test_util::CreateRevokedPermissionsService(profile());
+    safety_hub_test_util::CreateNotificationPermissionsReviewService(profile());
   }
 
  private:
@@ -496,7 +502,11 @@ class SafetyHubMenuNotificationServiceDesktopOnlyTest
 
     password_store_ = CreateAndUseTestPasswordStore(profile());
     PasswordStatusCheckService* password_service =
-        PasswordStatusCheckServiceFactory::GetForProfile(profile());
+        safety_hub_test_util::CreateAndUsePasswordStatusService(profile());
+
+    safety_hub_test_util::CreateRevokedPermissionsService(profile());
+    safety_hub_test_util::CreateNotificationPermissionsReviewService(profile());
+
     RunUntilIdle();
     EXPECT_EQ(password_service->compromised_credential_count(), 0UL);
   }

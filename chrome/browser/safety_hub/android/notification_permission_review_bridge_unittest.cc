@@ -15,6 +15,7 @@
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -38,6 +39,10 @@ const int kNotificationCount2 = 15;
 class NotificationPermissionReviewBridgeTest : public testing::Test {
  public:
   NotificationPermissionReviewBridgeTest() : env_(AttachCurrentThread()) {}
+
+  void SetUp() override {
+    safety_hub_test_util::CreateNotificationPermissionsReviewService(profile());
+  }
 
   void TearDown() override { ClearNotificationsChannels(); }
 

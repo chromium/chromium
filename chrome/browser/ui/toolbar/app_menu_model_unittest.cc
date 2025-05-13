@@ -102,6 +102,13 @@ class AppMenuModelTest : public BrowserWithTestWindowTest,
  public:
   AppMenuModelTest() = default;
 
+  void SetUp() override {
+    BrowserWithTestWindowTest::SetUp();
+    safety_hub_test_util::CreateRevokedPermissionsService(browser()->profile());
+    safety_hub_test_util::CreateNotificationPermissionsReviewService(
+        browser()->profile());
+  }
+
   AppMenuModelTest(const AppMenuModelTest&) = delete;
   AppMenuModelTest& operator=(const AppMenuModelTest&) = delete;
 
@@ -579,7 +586,8 @@ class TestAppMenuModelSafetyHubTest : public AppMenuModelTest {
 
     // Let PasswordStatusCheckService run until it fetches the latest data.
     PasswordStatusCheckService* password_service =
-        PasswordStatusCheckServiceFactory::GetForProfile(profile());
+        safety_hub_test_util::CreateAndUsePasswordStatusService(profile());
+
     safety_hub_test_util::UpdatePasswordCheckServiceAsync(password_service);
     EXPECT_EQ(password_service->compromised_credential_count(), 0UL);
 

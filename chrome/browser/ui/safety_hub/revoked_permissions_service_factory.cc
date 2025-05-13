@@ -60,3 +60,7 @@ bool RevokedPermissionsServiceFactory::ServiceIsCreatedWithBrowserContext()
   return base::FeatureList::IsEnabled(features::kSafetyHubServicesOnStartUp);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
+
+bool RevokedPermissionsServiceFactory::ServiceIsNULLWhileTesting() const {
+  return true;
+}

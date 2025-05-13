@@ -42,6 +42,7 @@ class RevokedPermissionsServiceFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context) const override;
 
   bool ServiceIsCreatedWithBrowserContext() const override;
+  bool ServiceIsNULLWhileTesting() const override;
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_REVOKED_PERMISSIONS_SERVICE_FACTORY_H_

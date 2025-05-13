@@ -89,7 +89,11 @@ class SafetyHubCardDataHelperTest : public testing::Test {
         base::Time::Now().InSecondsFSinceUnixEpoch());
     SetMockCredentialEntry("https://example1.com", false);
     PasswordStatusCheckService* service =
-        PasswordStatusCheckServiceFactory::GetForProfile(profile());
+        safety_hub_test_util::CreateAndUsePasswordStatusService(profile());
+
+    safety_hub_test_util::CreateRevokedPermissionsService(profile());
+    safety_hub_test_util::CreateNotificationPermissionsReviewService(profile());
+
     service->UpdateInsecureCredentialCountAsync();
     RunUntilIdle();
 

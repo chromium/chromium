@@ -58,6 +58,7 @@
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
@@ -373,6 +374,8 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
 
     profile()->SetPermissionControllerDelegate(
         permissions::GetPermissionControllerDelegate(profile()));
+
+    safety_hub_test_util::CreateNotificationPermissionsReviewService(profile());
 
     handler_ = std::make_unique<SiteSettingsHandler>(profile());
     handler()->set_web_ui(web_ui());

@@ -28,6 +28,11 @@
 #include "url/gurl.h"
 
 class NotificationPermissionReviewServiceTest : public testing::Test {
+  void SetUp() override {
+    testing::Test::SetUp();
+    safety_hub_test_util::CreateNotificationPermissionsReviewService(profile());
+  }
+
  protected:
   void CreateMockNotificationPermissionsForReview() {
     // Add a couple of notification permission and check they appear in review

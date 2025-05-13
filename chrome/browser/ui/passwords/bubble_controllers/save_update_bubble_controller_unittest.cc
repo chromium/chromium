@@ -97,7 +97,7 @@ class SaveUpdateBubbleControllerTest : public ::testing::Test {
         base::BindRepeating(
             &password_manager::BuildPasswordStoreInterface<
                 content::BrowserContext,
-                testing::StrictMock<
+                testing::NiceMock<
                     password_manager::MockPasswordStoreInterface>>));
     profile_ = profile_builder.Build();
 

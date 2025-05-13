@@ -193,11 +193,14 @@ class RevokedPermissionsServiceTest
         /*enabled_features=*/enabled_features,
         /*disabled_features=*/{});
   }
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     base::Time time;
     ASSERT_TRUE(base::Time::FromString("2022-09-07 13:00", &time));
     clock_.SetNow(time);
+
+    ResetService();
     if (ShouldSetupAbusiveNotificationSites()) {
       SetUpSafeBrowsingService();
     }
@@ -229,10 +232,7 @@ class RevokedPermissionsServiceTest
             // Needed for background UKM reporting.
             TestingProfile::TestingFactory{
                 HistoryServiceFactory::GetInstance(),
-                base::BindRepeating(&BuildTestHistoryService)},
-            TestingProfile::TestingFactory{
-                RevokedPermissionsServiceFactory::GetInstance(),
-                base::BindRepeating(&BuildRevokedPermissionsService)}};
+                base::BindRepeating(&BuildTestHistoryService)}};
   }
 
   bool ShouldSetupAbusiveNotificationSites() { return get<0>(GetParam()); }
@@ -1947,10 +1947,14 @@ INSTANTIATE_TEST_SUITE_P(
         /*should_setup_unused_sites=*/testing::Bool(),
         /*should_setup_disruptive_sites=*/testing::Bool()));
 
-class RevokedPermissionsServiceStartUpTest
+// TODO(crbug.com/415227458): Remove migration code for revoked permissions
+// using strings.
+// Tests the migration of using strings for the revoked permissions instead of
+// ints when the RevokedPermissionsService first starts up.
+class RevokedPermissionsServiceNameMigrationTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  RevokedPermissionsServiceStartUpTest() {
+  RevokedPermissionsServiceNameMigrationTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {content_settings::features::kSafetyCheckUnusedSitePermissions,
@@ -1974,7 +1978,7 @@ class RevokedPermissionsServiceStartUpTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(RevokedPermissionsServiceStartUpTest,
+TEST_F(RevokedPermissionsServiceNameMigrationTest,
        UpdateIntegerValuesToGroupName_OnlyIntegerKeys) {
   base::Value::List permissions_list_int;
   base::Value::List permissions_list_string;
@@ -2017,7 +2021,7 @@ TEST_F(RevokedPermissionsServiceStartUpTest,
                 ->GetDict());
 }
 
-TEST_F(RevokedPermissionsServiceStartUpTest,
+TEST_F(RevokedPermissionsServiceNameMigrationTest,
        UpdateIntegerValuesToGroupName_MixedKeys) {
   // Setting up two entries one with integers and one with strings to simulate
   // partial migration in case of a crash.
@@ -2068,7 +2072,7 @@ TEST_F(RevokedPermissionsServiceStartUpTest,
                 ->GetList());
 }
 
-TEST_F(RevokedPermissionsServiceStartUpTest,
+TEST_F(RevokedPermissionsServiceNameMigrationTest,
        UpdateIntegerValuesToGroupName_MixedKeysWithUnknownTypes) {
   base::HistogramTester histogram_tester;
   // Setting up two entries one with integers and one with strings to simulate

@@ -322,6 +322,7 @@ source_set("unit_tests") {
     "//chrome/browser/permissions:permissions",
     "//chrome/browser/ui",
     "//chrome/browser/ui/safety_hub",
+    "//chrome/browser/ui/safety_hub:test_support",
     "//chrome/test:test_support",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",

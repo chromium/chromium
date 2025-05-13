@@ -61,3 +61,8 @@ bool NotificationPermissionsReviewServiceFactory::
   return base::FeatureList::IsEnabled(features::kSafetyHubServicesOnStartUp);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
+
+bool NotificationPermissionsReviewServiceFactory::ServiceIsNULLWhileTesting()
+    const {
+  return true;
+}

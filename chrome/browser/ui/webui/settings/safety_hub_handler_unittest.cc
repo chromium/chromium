@@ -105,6 +105,10 @@ class SafetyHubHandlerTest : public testing::Test {
     base::Time time;
     ASSERT_TRUE(base::Time::FromString("2022-09-07 13:00", &time));
     clock_.SetNow(time);
+
+    safety_hub_test_util::CreateRevokedPermissionsService(profile());
+    safety_hub_test_util::CreateNotificationPermissionsReviewService(profile());
+
     hcsm_ = HostContentSettingsMapFactory::GetForProfile(profile());
     hcsm_->SetClockForTesting(&clock_);
 
@@ -117,7 +121,7 @@ class SafetyHubHandlerTest : public testing::Test {
 
     // Run password check to fetch latest result from disk.
     safety_hub_test_util::UpdatePasswordCheckServiceAsync(
-        PasswordStatusCheckServiceFactory::GetForProfile(profile()));
+        safety_hub_test_util::CreateAndUsePasswordStatusService(profile()));
   }
 
   void TearDown() override {
@@ -1368,6 +1372,10 @@ class SafetyHubHandlerEitherAbusiveOrUnusedPermissionRevocationDisabledTest
     base::Time time;
     ASSERT_TRUE(base::Time::FromString("2022-09-07 13:00", &time));
     clock_.SetNow(time);
+
+    safety_hub_test_util::CreateRevokedPermissionsService(profile());
+    safety_hub_test_util::CreateNotificationPermissionsReviewService(profile());
+
     hcsm_ = HostContentSettingsMapFactory::GetForProfile(profile());
     hcsm_->SetClockForTesting(&clock_);
 
