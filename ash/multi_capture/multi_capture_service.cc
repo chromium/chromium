@@ -5,6 +5,7 @@
 #include "ash/multi_capture/multi_capture_service.h"
 
 #include "base/logging.h"
+#include "url/origin.h"
 
 namespace ash {
 
@@ -30,9 +31,10 @@ void MultiCaptureService::NotifyMultiCaptureStarted(const std::string& label,
 void MultiCaptureService::NotifyMultiCaptureStartedFromApp(
     const std::string& label,
     const std::string& app_id,
-    const std::string& app_short_name) {
+    const std::string& app_short_name,
+    const url::Origin& app_origin) {
   observers_.Notify(&Observer::MultiCaptureStartedFromApp, label, app_id,
-                    app_short_name);
+                    app_short_name, app_origin);
 }
 
 void MultiCaptureService::NotifyMultiCaptureStopped(const std::string& label) {

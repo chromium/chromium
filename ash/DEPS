@@ -41,6 +41,7 @@ include_rules = [
   "+components/user_education/views",
   "+components/variations",
   "+components/vector_icons",
+  "+components/webapps/isolated_web_apps",
   "+components/version_info",
   "+components/viz/common",
   "+components/viz/host",

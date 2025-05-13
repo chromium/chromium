@@ -4,22 +4,28 @@
 
 #include "ash/system/unified/screen_capture_tray_item_view.h"
 
+#include <algorithm>
+
 #include "ash/multi_capture/multi_capture_service.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
+#include "base/check_deref.h"
+#include "base/containers/contains.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
+#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/image_view.h"
+#include "url/origin.h"
 
 namespace {
 constexpr base::TimeDelta kMinimumTimedelta = base::Seconds(6);
@@ -77,15 +83,23 @@ void ScreenCaptureTrayItemView::Refresh() {
 
 void ScreenCaptureTrayItemView::MultiCaptureStarted(const std::string& label,
                                                     const url::Origin& origin) {
-  requests_.emplace(label, ScreenCaptureTrayItemMetadata());
-  Refresh();
+  // TODO(crbug.com/417490624): Remove `CHECK_DEREF` once `GetInstance()`
+  // returns a reference.
+  if (!base::Contains(
+          CHECK_DEREF(web_app::IwaKeyDistributionInfoProvider::GetInstance())
+              .GetSkipMultiCaptureNotificationBundleIds(),
+          origin.host())) {
+    requests_.emplace(label, ScreenCaptureTrayItemMetadata());
+    Refresh();
+  }
 }
 
 void ScreenCaptureTrayItemView::MultiCaptureStartedFromApp(
     const std::string& label,
     const std::string& app_id,
-    const std::string& app_short_name) {
-  MultiCaptureStarted(label, /*origin=*/{});
+    const std::string& app_short_name,
+    const url::Origin& app_origin) {
+  MultiCaptureStarted(label, app_origin);
 }
 
 void ScreenCaptureTrayItemView::MultiCaptureStopped(const std::string& label) {

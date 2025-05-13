@@ -9,3 +9,14 @@ key_rotation_data {
     }
   }
 }
+
+special_app_permissions_data {
+  special_app_permissions {
+      key: "aiv4bxauvcu3zvbu6r5yynoh4atkzqqaoeof5mwz54b4zfywcrjuoaacai"
+      value {
+        multi_screen_capture {
+          skip_capture_started_notification: true
+      }
+    }
+  }
+}

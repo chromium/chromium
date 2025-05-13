@@ -3550,6 +3550,7 @@ component("ash") {
     "//components/vector_icons",
     "//components/viz/client",
     "//components/viz/host",
+    "//components/webapps/isolated_web_apps:isolated_web_apps",
     "//dbus",
     "//device/bluetooth",
     "//extensions/common:common_constants",
@@ -4786,6 +4787,10 @@ test("ash_unittests") {
     "//components/user_manager:test_support",
     "//components/viz/host",
     "//components/viz/test:test_support",
+
+    # TODO(crbug.com/417407946): Remove this dependency once the usage indicator
+    # code for screen capture is moved to `c/b/`.
+    "//components/webapps/isolated_web_apps:isolated_web_apps",
     "//device/bluetooth",
     "//device/bluetooth:mocks",
     "//device/udev_linux:test_support",

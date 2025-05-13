@@ -528,7 +528,7 @@
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
@@ -1217,6 +1217,8 @@ void MaybeAddCondition(
 void NotifyMultiCaptureStarted(const std::string& label,
                                content::WebContents* web_contents,
                                const webapps::AppId* app_id) {
+  const url::Origin origin =
+      url::Origin::Create(web_contents->GetLastCommittedURL());
   if (app_id) {
     CHECK_DEREF(ash::Shell::Get())
         .multi_capture_service()
@@ -1224,14 +1226,14 @@ void NotifyMultiCaptureStarted(const std::string& label,
             label, *app_id,
             web_app::WebAppProvider::GetForWebContents(web_contents)
                 ->registrar_unsafe()
-                .GetAppShortName(*app_id));
+                .GetAppShortName(*app_id),
+            origin);
   } else {
     // TODO(b/319317165): Remove this case once the pivot to web apps is
     // complete.
     CHECK_DEREF(ash::Shell::Get())
         .multi_capture_service()
-        ->NotifyMultiCaptureStarted(
-            label, url::Origin::Create(web_contents->GetLastCommittedURL()));
+        ->NotifyMultiCaptureStarted(label, origin);
   }
 }
 

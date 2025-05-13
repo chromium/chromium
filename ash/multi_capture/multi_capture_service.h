@@ -33,10 +33,10 @@ class ASH_EXPORT MultiCaptureService {
     // The `app_id` is the id of the calling app (as given in the app service)
     // and `app_short_name` is the short name of the app (derived from the app
     // manifest or the app title).
-    virtual void MultiCaptureStartedFromApp(
-        const std::string& label,
-        const std::string& app_id,
-        const std::string& app_short_name) = 0;
+    virtual void MultiCaptureStartedFromApp(const std::string& label,
+                                            const std::string& app_id,
+                                            const std::string& app_short_name,
+                                            const url::Origin& app_origin) = 0;
     virtual void MultiCaptureStopped(const std::string& label) = 0;
     virtual void MultiCaptureServiceDestroyed() = 0;
 
@@ -56,7 +56,8 @@ class ASH_EXPORT MultiCaptureService {
                                  const url::Origin& origin);
   void NotifyMultiCaptureStartedFromApp(const std::string& label,
                                         const std::string& app_id,
-                                        const std::string& app_short_name);
+                                        const std::string& app_short_name,
+                                        const url::Origin& app_origin);
   void NotifyMultiCaptureStopped(const std::string& label);
 
  private:

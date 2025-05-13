@@ -231,11 +231,13 @@ TEST_F(
     CaptureNotificationsWithDifferentOriginsStartedAndStoppedAfterSixSeconds) {
   multi_capture_notifications_->MultiCaptureStarted(
       /*label=*/"test_label_1",
-      /*origin=*/url::Origin::CreateFromNormalizedTuple(
+      /*origin=*/
+      url::Origin::CreateFromNormalizedTuple(
           /*scheme=*/"https", /*host=*/"example.com", /*port=*/443));
   multi_capture_notifications_->MultiCaptureStarted(
       /*label=*/"test_label_2",
-      /*origin=*/url::Origin::CreateFromNormalizedTuple(
+      /*origin=*/
+      url::Origin::CreateFromNormalizedTuple(
           /*scheme=*/"https", /*host=*/"anotherexample.com", /*port=*/443));
   CheckCaptureNotification(u"example.com");
   CheckCaptureNotification(u"anotherexample.com");
@@ -278,11 +280,13 @@ TEST_F(
     CaptureFastNotificationsWithDifferentOriginsStartedAndStoppedExpectedClosingDelay) {
   multi_capture_notifications_->MultiCaptureStarted(
       /*label=*/"test_label_1",
-      /*origin=*/url::Origin::CreateFromNormalizedTuple(
+      /*origin=*/
+      url::Origin::CreateFromNormalizedTuple(
           /*scheme=*/"https", /*host=*/"example.com", /*port=*/443));
   multi_capture_notifications_->MultiCaptureStarted(
       /*label=*/"test_label_2",
-      /*origin=*/url::Origin::CreateFromNormalizedTuple(
+      /*origin=*/
+      url::Origin::CreateFromNormalizedTuple(
           /*scheme=*/"https", /*host=*/"anotherexample.com", /*port=*/443));
   CheckCaptureNotification(u"example.com");
   CheckCaptureNotification(u"anotherexample.com");

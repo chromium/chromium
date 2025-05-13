@@ -49,10 +49,20 @@ class IwaKeyDistributionInfoProvider {
     std::optional<PublicKeyData> public_key;
   };
 
+  struct SpecialAppPermissionsInfo {
+    base::Value AsDebugValue() const;
+
+    bool skip_capture_started_notification;
+  };
+
   using KeyRotations = base::flat_map<std::string, KeyRotationInfo>;
   using ManagedAllowlist = base::flat_set<std::string>;
   using QueueOnDemandUpdateCallback = base::RepeatingCallback<bool(
       base::PassKey<IwaKeyDistributionInfoProvider>)>;
+  using SpecialAppPermissions =
+      base::flat_map<std::string, SpecialAppPermissionsInfo>;
+  using KeyDistributionData = std::tuple<KeyRotations, SpecialAppPermissions>;
+
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnComponentUpdateSuccess(const base::Version& version,
@@ -64,6 +74,7 @@ class IwaKeyDistributionInfoProvider {
   struct ComponentData {
     ComponentData(base::Version version,
                   KeyRotations key_rotations,
+                  SpecialAppPermissions special_app_permissions,
                   ManagedAllowlist managed_allowlist,
                   bool is_preloaded);
     ~ComponentData();
@@ -71,6 +82,7 @@ class IwaKeyDistributionInfoProvider {
 
     base::Version version;
     KeyRotations key_rotations;
+    SpecialAppPermissions special_app_permissions;
     ManagedAllowlist managed_allowlist;
 
     bool is_preloaded = false;
@@ -88,6 +100,9 @@ class IwaKeyDistributionInfoProvider {
 
   const KeyRotationInfo* GetKeyRotationInfo(
       const std::string& web_bundle_id) const;
+  const SpecialAppPermissionsInfo* GetSpecialAppPermissionsInfo(
+      const std::string& web_bundle_id) const;
+  std::vector<std::string> GetSkipMultiCaptureNotificationBundleIds() const;
 
   // Only bundles present in the managed allowlist can be installed and updated.
   bool IsManagedInstallPermitted(std::string_view web_bundle_id) const;
@@ -151,7 +166,7 @@ class IwaKeyDistributionInfoProvider {
   void OnKeyDistributionDataLoaded(
       const base::Version& version,
       bool is_preloaded,
-      base::expected<KeyRotations, IwaComponentUpdateError>);
+      base::expected<KeyDistributionData, IwaComponentUpdateError>);
 
   void DispatchComponentUpdateSuccess(const base::Version& version,
                                       bool is_preloaded);

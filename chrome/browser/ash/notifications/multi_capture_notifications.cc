@@ -139,7 +139,8 @@ void MultiCaptureNotifications::MultiCaptureStarted(const std::string& label,
 void MultiCaptureNotifications::MultiCaptureStartedFromApp(
     const std::string& label,
     const std::string& app_id,
-    const std::string& app_short_name) {
+    const std::string& app_short_name,
+    const url::Origin& app_origin) {
   MultiCaptureStartedInternal(
       label, base::StrCat({kMultiCaptureId, ":", label}), app_short_name);
 }

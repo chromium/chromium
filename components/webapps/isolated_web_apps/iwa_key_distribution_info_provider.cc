@@ -44,7 +44,19 @@ IwaKeyDistributionInfoProvider::KeyRotations& GetDevModeKeyRotationData() {
   return *dev_mode_kr_data;
 }
 
-base::expected<IwaKeyDistributionInfoProvider::KeyRotations,
+bool GetSkipCaptureStartedNotification(
+    const IwaSpecialAppPermissions::SpecialAppPermissions& special_permission) {
+  if (!special_permission.has_multi_screen_capture()) {
+    return false;
+  }
+  const auto& multi_screen_capture = special_permission.multi_screen_capture();
+  if (!multi_screen_capture.has_skip_capture_started_notification()) {
+    return false;
+  }
+  return multi_screen_capture.skip_capture_started_notification();
+}
+
+base::expected<IwaKeyDistributionInfoProvider::KeyDistributionData,
                IwaComponentUpdateError>
 LoadKeyDistributionDataImpl(const base::FilePath& file_path) {
   std::string key_distribution_data;
@@ -78,7 +90,20 @@ LoadKeyDistributionDataImpl(const base::FilePath& file_path) {
     }
   }
 
-  return key_rotations;
+  IwaKeyDistributionInfoProvider::SpecialAppPermissions special_app_permissions;
+  if (key_distribution.has_special_app_permissions_data()) {
+    for (const auto& [web_bundle_id, special_app_permission_data] :
+         key_distribution.special_app_permissions_data()
+             .special_app_permissions()) {
+      special_app_permissions.emplace(
+          web_bundle_id,
+          IwaKeyDistributionInfoProvider::SpecialAppPermissionsInfo{
+              GetSkipCaptureStartedNotification(special_app_permission_data)});
+    }
+  }
+
+  return std::make_tuple(std::move(key_rotations),
+                         std::move(special_app_permissions));
 }
 
 std::unique_ptr<IwaKeyDistributionInfoProvider>&
@@ -103,7 +128,6 @@ base::TaskPriority GetLoadTaskPriority() {
   return base::TaskPriority::BEST_EFFORT;
 #endif
 }
-
 }  // namespace
 
 IwaKeyDistributionInfoProvider::KeyRotationInfo::KeyRotationInfo(
@@ -119,6 +143,13 @@ base::Value IwaKeyDistributionInfoProvider::KeyRotationInfo::AsDebugValue()
     const {
   return base::Value(base::Value::Dict().Set(
       "public_key", public_key ? base::Base64Encode(*public_key) : "null"));
+}
+
+base::Value
+IwaKeyDistributionInfoProvider::SpecialAppPermissionsInfo::AsDebugValue()
+    const {
+  return base::Value(base::Value::Dict().Set(
+      "skip_capture_started_notification", skip_capture_started_notification));
 }
 
 IwaKeyDistributionInfoProvider* IwaKeyDistributionInfoProvider::GetInstance() {
@@ -186,13 +217,39 @@ void IwaKeyDistributionInfoProvider::LoadKeyDistributionData(
           base::Unretained(this), component_version, is_preloaded));
 }
 
+const IwaKeyDistributionInfoProvider::SpecialAppPermissionsInfo*
+IwaKeyDistributionInfoProvider::GetSpecialAppPermissionsInfo(
+    const std::string& web_bundle_id) const {
+  if (data_) {
+    return base::FindOrNull(data_->special_app_permissions, web_bundle_id);
+  }
+  return nullptr;
+}
+
+std::vector<std::string>
+IwaKeyDistributionInfoProvider::GetSkipMultiCaptureNotificationBundleIds()
+    const {
+  if (!data_) {
+    return {};
+  }
+
+  std::vector<std::string> skip_multi_capture_notification_bundle_ids;
+  for (const auto& [bundle_id, special_app_permissions] :
+       data_->special_app_permissions) {
+    if (special_app_permissions.skip_capture_started_notification) {
+      skip_multi_capture_notification_bundle_ids.push_back(bundle_id);
+    }
+  }
+  return skip_multi_capture_notification_bundle_ids;
+}
+
 IwaKeyDistributionInfoProvider::IwaKeyDistributionInfoProvider() = default;
 IwaKeyDistributionInfoProvider::~IwaKeyDistributionInfoProvider() = default;
 
 void IwaKeyDistributionInfoProvider::OnKeyDistributionDataLoaded(
     const base::Version& component_version,
     bool is_preloaded,
-    base::expected<KeyRotations, IwaComponentUpdateError> result) {
+    base::expected<KeyDistributionData, IwaComponentUpdateError> result) {
   if (data_ && data_->version > component_version) {
     // This might happen if two tasks with different versions have been posted
     // to the task runner in `LoadKeyDistributionData()`.
@@ -201,13 +258,14 @@ void IwaKeyDistributionInfoProvider::OnKeyDistributionDataLoaded(
     return;
   }
 
-  ASSIGN_OR_RETURN(auto key_rotations, std::move(result),
-                   [&](IwaComponentUpdateError error) {
+  ASSIGN_OR_RETURN((auto [key_rotations, special_app_permissions]),
+                   std::move(result), [&](IwaComponentUpdateError error) {
                      DispatchComponentUpdateError(component_version, error);
                    });
 
-  // TODO(crbug.com/410532804): Add allowlist to the associated proto file.
+  // TODO(crbug.com/410532804): Add allowlist to the proto file.
   data_ = ComponentData(component_version, std::move(key_rotations),
+                        std::move(special_app_permissions),
                         /*managed_allowlist=*/{}, is_preloaded);
   SignalOnDataReady(is_preloaded);
   DispatchComponentUpdateSuccess(component_version, is_preloaded);
@@ -270,6 +328,13 @@ base::Value IwaKeyDistributionInfoProvider::AsDebugValue() const {
     for (const auto& [web_bundle_id, kr_info] : data_->key_rotations) {
       key_rotations->Set(web_bundle_id, kr_info.AsDebugValue());
     }
+
+    auto* app_permissions = debug_data.EnsureDict("special_app_permissions");
+    for (const auto& [web_bundle_id, app_permissions_info] :
+         data_->special_app_permissions) {
+      app_permissions->Set(web_bundle_id, app_permissions_info.AsDebugValue());
+    }
+
     if (data_->is_preloaded) {
       debug_data.Set("is_preloaded", true);
     }
@@ -361,10 +426,12 @@ void IwaKeyDistributionInfoProvider::SignalOnDataReady(bool is_preloaded) {
 IwaKeyDistributionInfoProvider::ComponentData::ComponentData(
     base::Version version,
     KeyRotations key_rotations,
+    SpecialAppPermissions special_app_permissions,
     ManagedAllowlist managed_allowlist,
     bool is_preloaded)
     : version(std::move(version)),
       key_rotations(std::move(key_rotations)),
+      special_app_permissions(std::move(special_app_permissions)),
       managed_allowlist(std::move(managed_allowlist)),
       is_preloaded(is_preloaded) {}
 IwaKeyDistributionInfoProvider::ComponentData::~ComponentData() = default;

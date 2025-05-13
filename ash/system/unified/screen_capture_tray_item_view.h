@@ -69,7 +69,8 @@ class ASH_EXPORT ScreenCaptureTrayItemView
                            const url::Origin& origin) override;
   void MultiCaptureStartedFromApp(const std::string& label,
                                   const std::string& app_id,
-                                  const std::string& app_short_name) override;
+                                  const std::string& app_short_name,
+                                  const url::Origin& app_origin) override;
   void MultiCaptureStopped(const std::string& label) override;
   void MultiCaptureServiceDestroyed() override;
 
@@ -85,6 +86,12 @@ class ASH_EXPORT ScreenCaptureTrayItemView
   FRIEND_TEST_ALL_PREFIXES(
       ScreenCaptureTrayItemViewTest,
       MultiOriginCaptureStartedAndEarlyStoppedExpectedDelayedStoppedCallback);
+  FRIEND_TEST_ALL_PREFIXES(
+      ScreenCaptureTrayItemViewTest,
+      MultiOriginCaptureStartedNotificationSkipAllowlistedMixedOrigins);
+  FRIEND_TEST_ALL_PREFIXES(
+      ScreenCaptureTrayItemViewTest,
+      MultiOriginCaptureStartedNotificationSkipAllowlistedOneOrigin);
 
   std::map<std::string, ScreenCaptureTrayItemMetadata> requests_;
 

@@ -4471,7 +4471,7 @@ static_library("browser") {
       "//components/user_education/webui:webui",
       "//components/vector_icons",
       "//components/web_modal",
-      "//components/webapps/isolated_web_apps",
+      "//components/webapps/isolated_web_apps:isolated_web_apps",
       "//components/webauthn/content/browser",
       "//components/webauthn/core/browser",
       "//components/webauthn/core/browser:passkey_model",

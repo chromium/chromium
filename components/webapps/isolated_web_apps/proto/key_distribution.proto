@@ -10,6 +10,10 @@ package web_app;
 message IwaKeyDistribution {
   // Data about key rotations.
   optional IwaKeyRotations key_rotation_data = 1;
+
+  // Data about special app permissions. These permissions provide certain
+  // trusted and allowlisted apps additional and more powerful permissions.
+  optional IwaSpecialAppPermissions special_app_permissions_data = 2;
 }
 
 message IwaKeyRotations {
@@ -21,4 +25,19 @@ message IwaKeyRotations {
 
   // A list of key rotations mapping web bundle IDs to expected keys.
   map<string, KeyRotationInfo> key_rotations = 1;
+}
+
+message IwaSpecialAppPermissions {
+  message SpecialAppPermissions {
+    message MultiScreenCapturePermissions {
+      // The permission to allow remove "Your screen is captured" notification
+      // for multi-screen capture.
+      optional bool skip_capture_started_notification = 2;
+    }
+    optional MultiScreenCapturePermissions multi_screen_capture = 1;
+  }
+
+  // A list of special app permissions mapping web bundle IDs to additional
+  // capabilities.
+  map<string, SpecialAppPermissions> special_app_permissions = 1;
 }

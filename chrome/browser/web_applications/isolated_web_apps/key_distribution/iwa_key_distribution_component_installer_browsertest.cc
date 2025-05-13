@@ -46,6 +46,13 @@ IwaKeyDistribution CreateValidData() {
                                                  std::move(kr_info));
   *key_distribution.mutable_key_rotation_data() = std::move(key_rotations);
 
+  IwaSpecialAppPermissions special_app_permissions;
+  IwaSpecialAppPermissions::SpecialAppPermissions special_app_permissions_info;
+  special_app_permissions_info.mutable_multi_screen_capture()
+      ->set_skip_capture_started_notification(true);
+  special_app_permissions.mutable_special_app_permissions()->emplace(
+      kWebBundleId, std::move(special_app_permissions_info));
+
   return key_distribution;
 }
 

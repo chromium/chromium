@@ -455,6 +455,7 @@ TEST_F(IsolatedWebAppManagedAllowlistTest, MAYBE_AllowedAppInstalled) {
       .SetComponentDataForTesting(IwaKeyDistributionInfoProvider::ComponentData(
           /*version=*/base::Version("1.0.0"),
           /*key_rotations=*/{},
+          /*special_app_permissions=*/{},
           /*managed_allowlist=*/{web_bundle_id_1().id()},
           /*is_preloaded=*/false));
 
