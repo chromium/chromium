@@ -21,6 +21,8 @@
 
 namespace enterprise_connectors::test {
 
+using ManagementContext = enterprise::test::ManagementContext;
+
 namespace {
 
 base::Value GetAllowedHostValue(const std::string& url) {
@@ -63,10 +65,11 @@ DeviceTrustManagementMixin::DeviceTrustManagementMixin(
     : InProcessBrowserTestMixin(host),
       test_base_(test_base),
       device_trust_state_(std::move(device_trust_state)),
-      management_context_mixin_(ManagementContextMixin::Create(
-          host,
-          test_base,
-          ToManagementContext(device_trust_state_))) {}
+      management_context_mixin_(
+          enterprise::test::ManagementContextMixin::Create(
+              host,
+              test_base,
+              ToManagementContext(device_trust_state_))) {}
 
 DeviceTrustManagementMixin::~DeviceTrustManagementMixin() = default;
 

@@ -6,15 +6,9 @@ import("//components/enterprise/buildflags/buildflags.gni")
 
 source_set("test_support") {
   testonly = true
-  public = [
-    "mock_realtime_reporting_client.h",
-    "test_constants.h",
-  ]
+  public = [ "mock_realtime_reporting_client.h" ]
 
-  sources = [
-    "mock_realtime_reporting_client.cc",
-    "test_constants.cc",
-  ]
+  sources = [ "mock_realtime_reporting_client.cc" ]
 
   public_deps = [
     "//base",
@@ -33,7 +27,6 @@ source_set("test_support") {
       "fake_clipboard_request_handler.h",
       "fake_content_analysis_delegate.h",
       "fake_files_request_handler.h",
-      "management_context_mixin.h",
       "uploader_test_utils.h",
     ]
 
@@ -43,7 +36,6 @@ source_set("test_support") {
       "fake_clipboard_request_handler.cc",
       "fake_content_analysis_delegate.cc",
       "fake_files_request_handler.cc",
-      "management_context_mixin.cc",
       "uploader_test_utils.cc",
     ]
 
@@ -90,28 +82,6 @@ source_set("test_support") {
     public_deps += [
       "//third_party/content_analysis_sdk:lca_agent",
       "//third_party/content_analysis_sdk:liblcasdk",
-    ]
-  }
-
-  if (is_win || is_linux || is_mac) {
-    public += [ "browser/management_context_mixin_browser.h" ]
-    sources += [ "browser/management_context_mixin_browser.cc" ]
-
-    deps += [
-      "//chrome/browser:browser_process",
-      "//chrome/test:test_support",
-      "//components/enterprise",
-      "//components/enterprise:test_support",
-    ]
-  }
-
-  if (is_chromeos) {
-    public += [ "ash/management_context_mixin_ash.h" ]
-    sources += [ "ash/management_context_mixin_ash.cc" ]
-
-    deps += [
-      "//chrome/browser/ash/policy/core",
-      "//chrome/browser/ash/policy/core:test_support",
     ]
   }
 }

@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_BROWSER_MANAGEMENT_CONTEXT_MIXIN_BROWSER_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_BROWSER_MANAGEMENT_CONTEXT_MIXIN_BROWSER_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_TEST_BROWSER_MANAGEMENT_CONTEXT_MIXIN_BROWSER_H_
+#define CHROME_BROWSER_ENTERPRISE_TEST_BROWSER_MANAGEMENT_CONTEXT_MIXIN_BROWSER_H_
 
 #include <memory>
 
 #include "build/branding_buildflags.h"
-#include "chrome/browser/enterprise/connectors/test/management_context_mixin.h"
+#include "chrome/browser/enterprise/test/management_context_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 
 namespace policy {
 class FakeBrowserDMTokenStorage;
 }  // namespace policy
 
-namespace enterprise_connectors::test {
+namespace enterprise::test {
 
 class ManagementContextMixinBrowser : public ManagementContextMixin {
  public:
@@ -53,6 +53,6 @@ class ManagementContextMixinBrowser : public ManagementContextMixin {
   std::unique_ptr<policy::FakeBrowserDMTokenStorage> browser_dm_token_storage_;
 };
 
-}  // namespace enterprise_connectors::test
+}  // namespace enterprise::test
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_BROWSER_MANAGEMENT_CONTEXT_MIXIN_BROWSER_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_TEST_BROWSER_MANAGEMENT_CONTEXT_MIXIN_BROWSER_H_

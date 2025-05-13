@@ -19,7 +19,7 @@ source_set("test_support") {
 
   public_deps = [
     "//chrome/browser/enterprise/connectors/device_trust/common",
-    "//chrome/browser/enterprise/connectors/test:test_support",
+    "//chrome/browser/enterprise/test:test_support",
   ]
 
   deps = [

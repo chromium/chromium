@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_ASH_MANAGEMENT_CONTEXT_MIXIN_ASH_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_ASH_MANAGEMENT_CONTEXT_MIXIN_ASH_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_TEST_ASH_MANAGEMENT_CONTEXT_MIXIN_ASH_H_
+#define CHROME_BROWSER_ENTERPRISE_TEST_ASH_MANAGEMENT_CONTEXT_MIXIN_ASH_H_
 
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
-#include "chrome/browser/enterprise/connectors/test/management_context_mixin.h"
+#include "chrome/browser/enterprise/test/management_context_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 
-namespace enterprise_connectors::test {
+namespace enterprise::test {
 
 class ManagementContextMixinAsh : public ManagementContextMixin {
  public:
@@ -41,6 +41,6 @@ class ManagementContextMixinAsh : public ManagementContextMixin {
   ash::DeviceStateMixin device_state_mixin_;
 };
 
-}  // namespace enterprise_connectors::test
+}  // namespace enterprise::test
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_ASH_MANAGEMENT_CONTEXT_MIXIN_ASH_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_TEST_ASH_MANAGEMENT_CONTEXT_MIXIN_ASH_H_

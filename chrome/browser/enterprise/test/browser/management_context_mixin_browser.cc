@@ -2,24 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/test/browser/management_context_mixin_browser.h"
+#include "chrome/browser/enterprise/test/browser/management_context_mixin_browser.h"
 
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
-#include "chrome/browser/enterprise/connectors/test/test_constants.h"
+#include "chrome/browser/enterprise/test/test_constants.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
-namespace enterprise_connectors::test {
+namespace enterprise::test {
+
+namespace {
+
+void SetProfileDMToken(Profile* profile, const std::string& dm_token) {
+  auto policy_data = std::make_unique<enterprise_management::PolicyData>();
+  policy_data->set_request_token(dm_token);
+  profile->GetCloudPolicyManager()
+      ->core()
+      ->store()
+      ->set_policy_data_for_testing(std::move(policy_data));
+
+  auto client = std::make_unique<policy::MockCloudPolicyClient>();
+  client->SetDMToken(dm_token);
+
+  profile->GetUserCloudPolicyManager()->Connect(
+      g_browser_process->local_state(), std::move(client));
+}
+
+}  // namespace
 
 ManagementContextMixinBrowser::ManagementContextMixinBrowser(
     InProcessBrowserTestMixinHost* host,
@@ -99,4 +118,4 @@ void ManagementContextMixinBrowser::SetCloudMachinePolicies(
   MergeNewChromePolicies(policy_map);
 }
 
-}  // namespace enterprise_connectors::test
+}  // namespace enterprise::test

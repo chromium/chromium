@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/test/management_context_mixin.h"
+#include "chrome/browser/enterprise/test/management_context_mixin.h"
 
 #include <utility>
 
 #include "base/check.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "chrome/browser/enterprise/connectors/test/test_constants.h"
+#include "chrome/browser/enterprise/test/test_constants.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/enterprise/connectors/test/ash/management_context_mixin_ash.h"
+#include "chrome/browser/enterprise/test/ash/management_context_mixin_ash.h"
 #else
-#include "chrome/browser/enterprise/connectors/test/browser/management_context_mixin_browser.h"
+#include "chrome/browser/enterprise/test/browser/management_context_mixin_browser.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-namespace enterprise_connectors::test {
+namespace enterprise::test {
 
 // static
 std::unique_ptr<ManagementContextMixin> ManagementContextMixin::Create(
@@ -108,4 +108,4 @@ void ManagementContextMixin::MergeNewChromePolicies(
   base::RunLoop().RunUntilIdle();
 }
 
-}  // namespace enterprise_connectors::test
+}  // namespace enterprise::test

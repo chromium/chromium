@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_TEST_DEVICE_TRUST_MANAGEMENT_MIXIN_H_
 
 #include "chrome/browser/enterprise/connectors/device_trust/test/test_constants.h"
-#include "chrome/browser/enterprise/connectors/test/management_context_mixin.h"
+#include "chrome/browser/enterprise/test/management_context_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 
@@ -79,7 +79,8 @@ class DeviceTrustManagementMixin : public InProcessBrowserTestMixin {
  private:
   const raw_ptr<InProcessBrowserTest> test_base_;
   DeviceTrustConnectorState device_trust_state_;
-  std::unique_ptr<ManagementContextMixin> management_context_mixin_;
+  std::unique_ptr<enterprise::test::ManagementContextMixin>
+      management_context_mixin_;
 };
 
 }  // namespace enterprise_connectors::test

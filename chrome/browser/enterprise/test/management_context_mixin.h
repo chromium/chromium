@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_MANAGEMENT_CONTEXT_MIXIN_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_MANAGEMENT_CONTEXT_MIXIN_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_TEST_MANAGEMENT_CONTEXT_MIXIN_H_
+#define CHROME_BROWSER_ENTERPRISE_TEST_MANAGEMENT_CONTEXT_MIXIN_H_
 
 #include <memory>
 #include <optional>
@@ -25,7 +25,7 @@ class ScopedDevicePolicyUpdate;
 }  // namespace ash
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-namespace enterprise_connectors::test {
+namespace enterprise::test {
 
 struct ManagementContext {
   bool is_cloud_user_managed = false;
@@ -103,6 +103,6 @@ class ManagementContextMixin : public InProcessBrowserTestMixin {
   ManagementContext management_context_;
 };
 
-}  // namespace enterprise_connectors::test
+}  // namespace enterprise::test
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_TEST_MANAGEMENT_CONTEXT_MIXIN_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_TEST_MANAGEMENT_CONTEXT_MIXIN_H_

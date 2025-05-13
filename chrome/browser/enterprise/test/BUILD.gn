@@ -1,0 +1,58 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/enterprise/buildflags/buildflags.gni")
+
+source_set("test_support") {
+  testonly = true
+  public = [
+    "management_context_mixin.h",
+    "test_constants.h",
+  ]
+
+  sources = [
+    "management_context_mixin.cc",
+    "test_constants.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support_ui",
+    "//components/enterprise/common/proto:connectors_proto",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//testing/gmock",
+  ]
+
+  deps = [
+    "//chrome/browser",
+    "//components/enterprise/connectors/core",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+  ]
+
+  if (!is_chromeos) {
+    public += [ "browser/management_context_mixin_browser.h" ]
+    sources += [ "browser/management_context_mixin_browser.cc" ]
+
+    deps += [
+      "//chrome/browser:browser_process",
+      "//chrome/test:test_support",
+      "//components/enterprise",
+      "//components/enterprise:test_support",
+    ]
+  }
+
+  if (is_chromeos) {
+    public += [ "ash/management_context_mixin_ash.h" ]
+    sources += [ "ash/management_context_mixin_ash.cc" ]
+
+    deps += [
+      "//chrome/browser/ash/login/test:test_support",
+      "//chrome/browser/ash/policy/core",
+      "//chrome/browser/ash/policy/core:test_support",
+    ]
+  }
+}

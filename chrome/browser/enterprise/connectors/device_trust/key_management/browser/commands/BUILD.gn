@@ -111,6 +111,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/enterprise/connectors/device_trust/common",
     "//chrome/browser/enterprise/connectors/device_trust/test:test_support",
+    "//components/policy/core/common:test_support",
     "//testing/gtest",
   ]
 

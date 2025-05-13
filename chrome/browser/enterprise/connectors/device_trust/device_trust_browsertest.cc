@@ -33,7 +33,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/device_trust/test/device_trust_test_environment_win.h"
-#include "chrome/browser/enterprise/connectors/test/test_constants.h"
+#include "chrome/browser/enterprise/test/test_constants.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #endif  // #if BUILDFLAG(IS_WIN)
@@ -137,8 +137,10 @@ class DeviceTrustDesktopBrowserTest : public test::DeviceTrustBrowserTestBase {
     test::DeviceTrustBrowserTestBase::SetUpInProcessBrowserTestFixture();
 #if BUILDFLAG(IS_WIN)
     device_trust_test_environment_win_.emplace();
-    device_trust_test_environment_win_->SetExpectedDMToken(kBrowserDmToken);
-    device_trust_test_environment_win_->SetExpectedClientID(kBrowserClientId);
+    device_trust_test_environment_win_->SetExpectedDMToken(
+        enterprise::test::kBrowserDmToken);
+    device_trust_test_environment_win_->SetExpectedClientID(
+        enterprise::test::kBrowserClientId);
 
     // This will set up a key before DeviceTrustKeyManager initializes.
     // DTKM should just try to load this key instead of creating one itself.

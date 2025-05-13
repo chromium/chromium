@@ -8,8 +8,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
-#include "chrome/browser/enterprise/connectors/test/management_context_mixin.h"
-#include "chrome/browser/enterprise/connectors/test/test_constants.h"
+#include "chrome/browser/enterprise/test/management_context_mixin.h"
+#include "chrome/browser/enterprise/test/test_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -25,7 +25,7 @@ constexpr char kTestUrl[] = "https://example.com";
 constexpr char kTestAccessToken[] = "test_access_token";
 
 struct ManagementContextDeviceRequest {
-  enterprise_connectors::test::ManagementContext context;
+  enterprise::test::ManagementContext context;
   bool profile_request;
 };
 
@@ -71,7 +71,7 @@ class TestCloudBinaryUploadService : public CloudBinaryUploadService {
   TestCloudBinaryUploadService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       Profile* profile,
-      enterprise_connectors::test::ManagementContext management_context,
+      enterprise::test::ManagementContext management_context,
       enterprise_connectors::AnalysisConnector connector,
       bool profile_request)
       : CloudBinaryUploadService(url_loader_factory, profile),
@@ -112,7 +112,7 @@ class TestCloudBinaryUploadService : public CloudBinaryUploadService {
   }
 
  private:
-  enterprise_connectors::test::ManagementContext management_context_;
+  enterprise::test::ManagementContext management_context_;
   bool profile_request_;
 };
 
@@ -138,13 +138,12 @@ class CloudBinaryUploadServiceRequestValidationBrowserTest
       public testing::WithParamInterface<ManagementContextDeviceRequest> {
  public:
   CloudBinaryUploadServiceRequestValidationBrowserTest()
-      : management_mixin_(
-            enterprise_connectors::test::ManagementContextMixin::Create(
-                &mixin_host_,
-                this,
-                management_context())) {}
+      : management_mixin_(enterprise::test::ManagementContextMixin::Create(
+            &mixin_host_,
+            this,
+            management_context())) {}
 
-  enterprise_connectors::test::ManagementContext management_context() const {
+  enterprise::test::ManagementContext management_context() const {
     return GetParam().context;
   }
 
@@ -180,9 +179,9 @@ class CloudBinaryUploadServiceRequestValidationBrowserTest
 
   std::string dm_token() {
     if (profile_request()) {
-      return enterprise_connectors::test::kProfileDmToken;
+      return enterprise::test::kProfileDmToken;
     } else {
-      return enterprise_connectors::test::kDeviceDmToken;
+      return enterprise::test::kDeviceDmToken;
     }
   }
 
@@ -193,8 +192,7 @@ class CloudBinaryUploadServiceRequestValidationBrowserTest
  protected:
   enterprise_connectors::AnalysisConnector connector_ =
       enterprise_connectors::AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED;
-  std::unique_ptr<enterprise_connectors::test::ManagementContextMixin>
-      management_mixin_;
+  std::unique_ptr<enterprise::test::ManagementContextMixin> management_mixin_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

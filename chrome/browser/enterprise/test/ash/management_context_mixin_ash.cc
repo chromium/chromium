@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/test/ash/management_context_mixin_ash.h"
+#include "chrome/browser/enterprise/test/ash/management_context_mixin_ash.h"
 
 #include <array>
 #include <utility>
@@ -10,13 +10,13 @@
 #include "base/check.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
-#include "chrome/browser/enterprise/connectors/test/test_constants.h"
+#include "chrome/browser/enterprise/test/test_constants.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 
-namespace enterprise_connectors::test {
+namespace enterprise::test {
 
 ManagementContextMixinAsh::ManagementContextMixinAsh(
     InProcessBrowserTestMixinHost* host,
@@ -65,4 +65,4 @@ void ManagementContextMixinAsh::ManageCloudMachine() {
       kFakeCustomerId);
 }
 
-}  // namespace enterprise_connectors::test
+}  // namespace enterprise::test
