@@ -832,7 +832,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTabStripLayoutOptimization =
             newCachedFlag(
                     TAB_STRIP_LAYOUT_OPTIMIZATION,
-                    /* defaultValue= */ true,
+                    /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sTabWindowManagerReportIndicesMismatch =
             newCachedFlag(TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH, true);
