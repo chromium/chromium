@@ -35,7 +35,8 @@ const WebContentsInteractionTestUtil::DeepQuery kAskButton{
     "settings-basic-page",
     "settings-privacy-page",
     "settings-notifications-page",
-    "#notification-ask-radio-button"};
+    "settings-category-default-radio-group",
+    "#enabledRadioOption"};
 
 const WebContentsInteractionTestUtil::DeepQuery kQuietButton{
     "settings-ui",
@@ -67,7 +68,8 @@ const WebContentsInteractionTestUtil::DeepQuery kBlockButton{
     "settings-basic-page",
     "settings-privacy-page",
     "settings-notifications-page",
-    "#notification-block"};
+    "settings-category-default-radio-group",
+    "#disabledRadioOption"};
 
 }  // namespace
 

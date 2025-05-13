@@ -214,14 +214,14 @@ public class SiteSettingsTest {
 
     private static final String[] NULL_ARRAY = new String[0];
     private static final String[] BINARY_TOGGLE_AND_INFO_TEXT =
-            new String[] {"info_text", "binary_toggle"};
-    private static final String[] BINARY_TOGGLE = new String[] {"binary_toggle"};
+            new String[] {"info_text", "binary_radio_button"};
+    private static final String[] BINARY_TOGGLE = new String[] {"binary_radio_button"};
     private static final String[] BINARY_TOGGLE_WITH_EXCEPTION_AND_INFO_TEXT =
-            new String[] {"info_text", "binary_toggle", "add_exception"};
+            new String[] {"info_text", "binary_radio_button", "add_exception"};
     private static final String[] BINARY_TOGGLE_WITH_EXCEPTION =
-            new String[] {"binary_toggle", "add_exception"};
+            new String[] {"binary_radio_button", "add_exception"};
     private static final String[] BINARY_TOGGLE_WITH_OS_WARNING_EXTRA =
-            new String[] {"binary_toggle", "os_permissions_warning_extra"};
+            new String[] {"info_text", "binary_radio_button", "os_permissions_warning_extra"};
     private static final String[] CLEAR_BROWSING_DATA_LINK =
             new String[] {"clear_browsing_data_link", "clear_browsing_divider"};
     private static final String[] ANTI_ABUSE_PREF_KEYS = {
@@ -466,6 +466,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.DEVICE_LOCATION,
                         ContentSettingsType.GEOLOCATION,
                         true)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -498,6 +499,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.DEVICE_LOCATION,
                         ContentSettingsType.GEOLOCATION,
                         false)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -620,6 +622,14 @@ public class SiteSettingsTest {
                                 enabled
                                         ? CookieControlsMode.OFF
                                         : CookieControlsMode.BLOCK_THIRD_PARTY);
+                    } else if (ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+                            && type != SiteSettingsCategory.Type.ANTI_ABUSE) {
+                        BinaryStatePermissionPreference radioButton =
+                                preferences.findPreference(
+                                        SingleCategorySettings.BINARY_RADIO_BUTTON_KEY);
+
+                        preferences.onPreferenceChange(radioButton, enabled);
                     } else {
                         ChromeSwitchPreference toggle =
                                 preferences.findPreference(
@@ -1349,6 +1359,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.POPUPS,
                         ContentSettingsType.POPUPS,
                         false)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
 
         // Test that the popup doesn't open.
@@ -1369,6 +1380,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.POPUPS,
                         ContentSettingsType.POPUPS,
                         true)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
 
         // Test that a popup opens.
@@ -1465,7 +1477,10 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     public void testOnlyExpectedPreferencesAds() {
-        testExpectedPreferences(SiteSettingsCategory.Type.ADS, BINARY_TOGGLE, BINARY_TOGGLE);
+        testExpectedPreferences(
+                SiteSettingsCategory.Type.ADS,
+                BINARY_TOGGLE_AND_INFO_TEXT,
+                BINARY_TOGGLE_AND_INFO_TEXT);
     }
 
     @Test
@@ -1483,7 +1498,9 @@ public class SiteSettingsTest {
     @Feature({"Preferences"})
     public void testOnlyExpectedPreferencesAugmentedReality() {
         testExpectedPreferences(
-                SiteSettingsCategory.Type.AUGMENTED_REALITY, BINARY_TOGGLE, BINARY_TOGGLE);
+                SiteSettingsCategory.Type.AUGMENTED_REALITY,
+                BINARY_TOGGLE_AND_INFO_TEXT,
+                BINARY_TOGGLE_AND_INFO_TEXT);
     }
 
     @Test
@@ -1502,8 +1519,8 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesAutomaticDownloads() {
         testExpectedPreferences(
                 SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS,
-                BINARY_TOGGLE_WITH_EXCEPTION,
-                BINARY_TOGGLE);
+                BINARY_TOGGLE_WITH_EXCEPTION_AND_INFO_TEXT,
+                BINARY_TOGGLE_AND_INFO_TEXT);
     }
 
     @Test
@@ -1512,8 +1529,8 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesBackgroundSync() {
         testExpectedPreferences(
                 SiteSettingsCategory.Type.BACKGROUND_SYNC,
-                BINARY_TOGGLE_WITH_EXCEPTION,
-                BINARY_TOGGLE);
+                BINARY_TOGGLE_WITH_EXCEPTION_AND_INFO_TEXT,
+                BINARY_TOGGLE_AND_INFO_TEXT);
     }
 
     @Test
@@ -1535,21 +1552,28 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     public void testOnlyExpectedPreferencesCamera() {
-        testExpectedPreferences(SiteSettingsCategory.Type.CAMERA, BINARY_TOGGLE, BINARY_TOGGLE);
+        testExpectedPreferences(
+                SiteSettingsCategory.Type.CAMERA,
+                BINARY_TOGGLE_AND_INFO_TEXT,
+                BINARY_TOGGLE_AND_INFO_TEXT);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testOnlyExpectedPreferencesClipboard() {
-        testExpectedPreferences(SiteSettingsCategory.Type.CLIPBOARD, BINARY_TOGGLE, BINARY_TOGGLE);
+        testExpectedPreferences(
+                SiteSettingsCategory.Type.CLIPBOARD,
+                BINARY_TOGGLE_AND_INFO_TEXT,
+                BINARY_TOGGLE_AND_INFO_TEXT);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testOnlyExpectedPreferencesFileEditing() {
-        checkPreferencesForCategory(SiteSettingsCategory.Type.FILE_EDITING, BINARY_TOGGLE);
+        checkPreferencesForCategory(
+                SiteSettingsCategory.Type.FILE_EDITING, BINARY_TOGGLE_AND_INFO_TEXT);
     }
 
     @Test
@@ -1889,7 +1913,9 @@ public class SiteSettingsTest {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
 
         testExpectedPreferences(
-                SiteSettingsCategory.Type.DEVICE_LOCATION, BINARY_TOGGLE, BINARY_TOGGLE);
+                SiteSettingsCategory.Type.DEVICE_LOCATION,
+                BINARY_TOGGLE_AND_INFO_TEXT,
+                BINARY_TOGGLE_AND_INFO_TEXT);
 
         // Disable system location setting and check for the right preferences.
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(false);
@@ -1904,8 +1930,8 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesFederatedIdentityApi() {
         testExpectedPreferences(
                 SiteSettingsCategory.Type.FEDERATED_IDENTITY_API,
-                BINARY_TOGGLE_WITH_EXCEPTION,
-                BINARY_TOGGLE_WITH_EXCEPTION);
+                BINARY_TOGGLE_WITH_EXCEPTION_AND_INFO_TEXT,
+                BINARY_TOGGLE_WITH_EXCEPTION_AND_INFO_TEXT);
     }
 
     @Test
@@ -1931,7 +1957,9 @@ public class SiteSettingsTest {
     @Feature({"Preferences"})
     public void testOnlyExpectedPreferencesIdleDetection() {
         testExpectedPreferences(
-                SiteSettingsCategory.Type.IDLE_DETECTION, BINARY_TOGGLE, BINARY_TOGGLE);
+                SiteSettingsCategory.Type.IDLE_DETECTION,
+                BINARY_TOGGLE_AND_INFO_TEXT,
+                BINARY_TOGGLE_AND_INFO_TEXT);
     }
 
     @Test
@@ -1940,15 +1968,18 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesJavascript() {
         testExpectedPreferences(
                 SiteSettingsCategory.Type.JAVASCRIPT,
-                BINARY_TOGGLE_WITH_EXCEPTION,
-                BINARY_TOGGLE_WITH_EXCEPTION);
+                BINARY_TOGGLE_WITH_EXCEPTION_AND_INFO_TEXT,
+                BINARY_TOGGLE_WITH_EXCEPTION_AND_INFO_TEXT);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testOnlyExpectedPreferencesMicrophone() {
-        testExpectedPreferences(SiteSettingsCategory.Type.MICROPHONE, BINARY_TOGGLE, BINARY_TOGGLE);
+        testExpectedPreferences(
+                SiteSettingsCategory.Type.MICROPHONE,
+                BINARY_TOGGLE_AND_INFO_TEXT,
+                BINARY_TOGGLE_AND_INFO_TEXT);
     }
 
     @Test
@@ -1957,7 +1988,10 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesNfc() {
         NfcSystemLevelSetting.setNfcSettingForTesting(true);
 
-        testExpectedPreferences(SiteSettingsCategory.Type.NFC, BINARY_TOGGLE, BINARY_TOGGLE);
+        testExpectedPreferences(
+                SiteSettingsCategory.Type.NFC,
+                BINARY_TOGGLE_AND_INFO_TEXT,
+                BINARY_TOGGLE_AND_INFO_TEXT);
 
         // Disable system nfc setting and check for the right preferences.
         NfcSystemLevelSetting.setNfcSettingForTesting(false);
@@ -1978,12 +2012,17 @@ public class SiteSettingsTest {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             notifications_enabled =
                     new String[] {
-                        "binary_toggle", "notifications_quiet_ui", "notifications_vibrate"
+                        "info_text",
+                        "binary_toggle",
+                        "notifications_quiet_ui",
+                        "notifications_vibrate"
                     };
-            notifications_disabled = new String[] {"binary_toggle", "notifications_vibrate"};
+            notifications_disabled =
+                    new String[] {"info_text", "binary_toggle", "notifications_vibrate"};
         } else {
-            notifications_enabled = new String[] {"binary_toggle", "notifications_quiet_ui"};
-            notifications_disabled = BINARY_TOGGLE;
+            notifications_enabled =
+                    new String[] {"info_text", "binary_radio_button", "notifications_quiet_ui"};
+            notifications_disabled = BINARY_TOGGLE_AND_INFO_TEXT;
         }
 
         testExpectedPreferences(
@@ -1996,14 +2035,17 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     public void testOnlyExpectedPreferencesPopups() {
-        testExpectedPreferences(SiteSettingsCategory.Type.POPUPS, BINARY_TOGGLE, BINARY_TOGGLE);
+        testExpectedPreferences(
+                SiteSettingsCategory.Type.POPUPS,
+                BINARY_TOGGLE_AND_INFO_TEXT,
+                BINARY_TOGGLE_AND_INFO_TEXT);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testOnlyExpectedPreferencesProtectedMedia() {
-        String[] protectedMedia = new String[] {"tri_state_toggle", "protected_content_learn_more"};
+        String[] protectedMedia = new String[] {"info_text", "tri_state_toggle"};
         setGlobalTriStateToggleForCategory(
                 SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSettingValues.ALLOW);
         checkPreferencesForCategory(SiteSettingsCategory.Type.PROTECTED_MEDIA, protectedMedia);
@@ -2019,10 +2061,12 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     public void testOnlyExpectedPreferencesRequestDesktopSite() {
-        String[] rdsEnabled = {"binary_toggle", "desktop_site_window", "add_exception"};
+        String[] rdsEnabled = {
+            "info_text", "binary_radio_button", "desktop_site_window", "add_exception"
+        };
         testExpectedPreferences(
                 SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
-                BINARY_TOGGLE_WITH_EXCEPTION,
+                BINARY_TOGGLE_WITH_EXCEPTION_AND_INFO_TEXT,
                 rdsEnabled);
         Assert.assertTrue(
                 "SharedPreference USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY should be"
@@ -2037,7 +2081,10 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     public void testOnlyExpectedPreferencesSensors() {
-        testExpectedPreferences(SiteSettingsCategory.Type.SENSORS, BINARY_TOGGLE, BINARY_TOGGLE);
+        testExpectedPreferences(
+                SiteSettingsCategory.Type.SENSORS,
+                BINARY_TOGGLE_AND_INFO_TEXT,
+                BINARY_TOGGLE_AND_INFO_TEXT);
     }
 
     @Test
@@ -2046,15 +2093,18 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesSound() {
         testExpectedPreferences(
                 SiteSettingsCategory.Type.SOUND,
-                BINARY_TOGGLE_WITH_EXCEPTION,
-                BINARY_TOGGLE_WITH_EXCEPTION);
+                BINARY_TOGGLE_WITH_EXCEPTION_AND_INFO_TEXT,
+                BINARY_TOGGLE_WITH_EXCEPTION_AND_INFO_TEXT);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testOnlyExpectedPreferencesUsb() {
-        testExpectedPreferences(SiteSettingsCategory.Type.USB, BINARY_TOGGLE, BINARY_TOGGLE);
+        testExpectedPreferences(
+                SiteSettingsCategory.Type.USB,
+                BINARY_TOGGLE_AND_INFO_TEXT,
+                BINARY_TOGGLE_AND_INFO_TEXT);
     }
 
     @Test
@@ -2062,7 +2112,9 @@ public class SiteSettingsTest {
     @Feature({"Preferences"})
     public void testOnlyExpectedPreferencesSerialPort() {
         testExpectedPreferences(
-                SiteSettingsCategory.Type.SERIAL_PORT, BINARY_TOGGLE, BINARY_TOGGLE);
+                SiteSettingsCategory.Type.SERIAL_PORT,
+                BINARY_TOGGLE_AND_INFO_TEXT,
+                BINARY_TOGGLE_AND_INFO_TEXT);
     }
 
     @Test
@@ -2077,7 +2129,9 @@ public class SiteSettingsTest {
     @Feature({"Preferences"})
     public void testOnlyExpectedPreferencesVirtualReality() {
         testExpectedPreferences(
-                SiteSettingsCategory.Type.VIRTUAL_REALITY, BINARY_TOGGLE, BINARY_TOGGLE);
+                SiteSettingsCategory.Type.VIRTUAL_REALITY,
+                BINARY_TOGGLE_AND_INFO_TEXT,
+                BINARY_TOGGLE_AND_INFO_TEXT);
     }
 
     /** Tests system NFC support in Preferences. */
@@ -2115,6 +2169,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.CAMERA,
                         ContentSettingsType.MEDIASTREAM_CAMERA,
                         false)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
 
         // Test that the camera permission doesn't get requested.
@@ -2140,6 +2195,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.CAMERA,
                         ContentSettingsType.MEDIASTREAM_CAMERA,
                         true)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
 
         initializeUpdateWaiter(/* expectGranted= */ true);
@@ -2163,6 +2219,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.MICROPHONE,
                         ContentSettingsType.MEDIASTREAM_MIC,
                         false)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
 
         // Test that the microphone permission doesn't get requested.
@@ -2188,6 +2245,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.MICROPHONE,
                         ContentSettingsType.MEDIASTREAM_MIC,
                         true)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
 
         // Launch a page that uses the microphone and make sure a permission prompt shows up.
@@ -2210,6 +2268,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.BACKGROUND_SYNC,
                         ContentSettingsType.BACKGROUND_SYNC,
                         true)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
     }
 
@@ -2222,6 +2281,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.BACKGROUND_SYNC,
                         ContentSettingsType.BACKGROUND_SYNC,
                         false)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .withExpectedPrefKeys(SingleCategorySettings.ADD_EXCEPTION_KEY)
                 .run();
     }
@@ -2236,6 +2296,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.NOTIFICATIONS,
                         ContentSettingsType.NOTIFICATIONS,
                         true)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .withExpectedPrefKeys(SingleCategorySettings.NOTIFICATIONS_TRI_STATE_PREF_KEY)
                 .run();
     }
@@ -2250,6 +2311,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.NOTIFICATIONS,
                         ContentSettingsType.NOTIFICATIONS,
                         false)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
     }
 
@@ -2264,6 +2326,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.DEVICE_LOCATION,
                         ContentSettingsType.GEOLOCATION,
                         true)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .withExpectedPrefKeys(SingleCategorySettings.LOCATION_TRI_STATE_PREF_KEY)
                 .run();
     }
@@ -2278,6 +2341,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.DEVICE_LOCATION,
                         ContentSettingsType.GEOLOCATION,
                         false)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
     }
 
@@ -2287,6 +2351,7 @@ public class SiteSettingsTest {
     public void testAllowUsb() {
         new TwoStatePermissionTestCase(
                         "USB", SiteSettingsCategory.Type.USB, ContentSettingsType.USB_GUARD, true)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
     }
 
@@ -2296,6 +2361,7 @@ public class SiteSettingsTest {
     public void testBlockUsb() {
         new TwoStatePermissionTestCase(
                         "USB", SiteSettingsCategory.Type.USB, ContentSettingsType.USB_GUARD, false)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
     }
 
@@ -2308,6 +2374,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.SERIAL_PORT,
                         ContentSettingsType.SERIAL_GUARD,
                         true)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
     }
 
@@ -2320,6 +2387,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.SERIAL_PORT,
                         ContentSettingsType.SERIAL_GUARD,
                         false)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
     }
 
@@ -2332,6 +2400,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS,
                         ContentSettingsType.AUTOMATIC_DOWNLOADS,
                         true)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
     }
 
@@ -2344,6 +2413,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS,
                         ContentSettingsType.AUTOMATIC_DOWNLOADS,
                         false)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .withExpectedPrefKeys(SingleCategorySettings.ADD_EXCEPTION_KEY)
                 .run();
     }
@@ -2403,6 +2473,7 @@ public class SiteSettingsTest {
         NfcSystemLevelSetting.setNfcSettingForTesting(true);
         new TwoStatePermissionTestCase(
                         "NFC", SiteSettingsCategory.Type.NFC, ContentSettingsType.NFC, true)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
     }
 
@@ -2413,6 +2484,7 @@ public class SiteSettingsTest {
         NfcSystemLevelSetting.setNfcSettingForTesting(true);
         new TwoStatePermissionTestCase(
                         "NFC", SiteSettingsCategory.Type.NFC, ContentSettingsType.NFC, false)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
     }
 
@@ -2451,6 +2523,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.AUGMENTED_REALITY,
                         ContentSettingsType.AR,
                         true)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
     }
 
@@ -2463,6 +2536,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.AUGMENTED_REALITY,
                         ContentSettingsType.AR,
                         false)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
     }
 
@@ -2475,6 +2549,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.VIRTUAL_REALITY,
                         ContentSettingsType.VR,
                         true)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
     }
 
@@ -2487,6 +2562,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.VIRTUAL_REALITY,
                         ContentSettingsType.VR,
                         false)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
     }
 
@@ -2523,6 +2599,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.IDLE_DETECTION,
                         ContentSettingsType.IDLE_DETECTION,
                         true)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
     }
 
@@ -2535,6 +2612,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.IDLE_DETECTION,
                         ContentSettingsType.IDLE_DETECTION,
                         false)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();
     }
 
@@ -2590,6 +2668,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
                         ContentSettingsType.REQUEST_DESKTOP_SITE,
                         true)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .withExpectedPrefKeys(SingleCategorySettings.DESKTOP_SITE_WINDOW_TOGGLE_KEY)
                 .withExpectedPrefKeys(SingleCategorySettings.ADD_EXCEPTION_KEY)
                 .run();
@@ -2604,6 +2683,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
                         ContentSettingsType.REQUEST_DESKTOP_SITE,
                         false)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .withExpectedPrefKeys(SingleCategorySettings.ADD_EXCEPTION_KEY)
                 .run();
     }
@@ -2617,6 +2697,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.FEDERATED_IDENTITY_API,
                         ContentSettingsType.FEDERATED_IDENTITY_API,
                         true)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .withExpectedPrefKeys(SingleCategorySettings.ADD_EXCEPTION_KEY)
                 .run();
     }
@@ -2630,6 +2711,7 @@ public class SiteSettingsTest {
                         SiteSettingsCategory.Type.FEDERATED_IDENTITY_API,
                         ContentSettingsType.FEDERATED_IDENTITY_API,
                         false)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .withExpectedPrefKeys(SingleCategorySettings.ADD_EXCEPTION_KEY)
                 .run();
     }
@@ -2693,18 +2775,32 @@ public class SiteSettingsTest {
                             settingsActivity,
                             new String[] {
                                 SingleCategorySettings.INFO_TEXT_KEY,
-                                SingleCategorySettings.BINARY_TOGGLE_KEY,
+                                ChromeFeatureList.isEnabled(
+                                                ChromeFeatureList
+                                                        .PERMISSION_SITE_SETTING_RADIO_BUTTON)
+                                        ? SingleCategorySettings.BINARY_RADIO_BUTTON_KEY
+                                        : SingleCategorySettings.BINARY_TOGGLE_KEY,
                                 SingleCategorySettings.TOGGLE_DISABLE_REASON_KEY,
                                 SingleCategorySettings.ALLOWED_GROUP,
                                 SingleCategorySettings.ADD_EXCEPTION_KEY,
                             });
 
-                    ChromeSwitchPreference binaryToggle =
-                            (ChromeSwitchPreference)
-                                    singleCategorySettings.findPreference(
-                                            SingleCategorySettings.BINARY_TOGGLE_KEY);
-                    Assert.assertFalse(binaryToggle.isChecked());
-                    Assert.assertFalse(binaryToggle.isEnabled());
+                    if (ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)) {
+                        BinaryStatePermissionPreference binaryRadioButton =
+                                (BinaryStatePermissionPreference)
+                                        singleCategorySettings.findPreference(
+                                                SingleCategorySettings.BINARY_RADIO_BUTTON_KEY);
+                        Assert.assertFalse(binaryRadioButton.isChecked());
+                        Assert.assertFalse(binaryRadioButton.isEnabled());
+                    } else {
+                        ChromeSwitchPreference binaryToggle =
+                                (ChromeSwitchPreference)
+                                        singleCategorySettings.findPreference(
+                                                SingleCategorySettings.BINARY_TOGGLE_KEY);
+                        Assert.assertFalse(binaryToggle.isChecked());
+                        Assert.assertFalse(binaryToggle.isEnabled());
+                    }
 
                     Preference toggleDisableReason =
                             singleCategorySettings.findPreference(
@@ -2742,16 +2838,29 @@ public class SiteSettingsTest {
                             settingsActivity,
                             new String[] {
                                 SingleCategorySettings.INFO_TEXT_KEY,
-                                SingleCategorySettings.BINARY_TOGGLE_KEY,
+                                ChromeFeatureList.isEnabled(
+                                                ChromeFeatureList
+                                                        .PERMISSION_SITE_SETTING_RADIO_BUTTON)
+                                        ? SingleCategorySettings.BINARY_RADIO_BUTTON_KEY
+                                        : SingleCategorySettings.BINARY_TOGGLE_KEY,
                                 SingleCategorySettings.ADD_EXCEPTION_KEY
                             });
-
-                    ChromeSwitchPreference binaryToggle =
-                            (ChromeSwitchPreference)
-                                    singleCategorySettings.findPreference(
-                                            SingleCategorySettings.BINARY_TOGGLE_KEY);
-                    Assert.assertTrue(binaryToggle.isChecked());
-                    Assert.assertFalse(binaryToggle.isEnabled());
+                    if (ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)) {
+                        BinaryStatePermissionPreference binaryRadioButton =
+                                (BinaryStatePermissionPreference)
+                                        singleCategorySettings.findPreference(
+                                                SingleCategorySettings.BINARY_RADIO_BUTTON_KEY);
+                        Assert.assertTrue(binaryRadioButton.isChecked());
+                        Assert.assertFalse(binaryRadioButton.isEnabled());
+                    } else {
+                        ChromeSwitchPreference binaryToggle =
+                                (ChromeSwitchPreference)
+                                        singleCategorySettings.findPreference(
+                                                SingleCategorySettings.BINARY_TOGGLE_KEY);
+                        Assert.assertTrue(binaryToggle.isChecked());
+                        Assert.assertFalse(binaryToggle.isEnabled());
+                    }
 
                     onData(withKey(SingleCategorySettings.ALLOWED_GROUP))
                             .inAdapterView(
@@ -3110,9 +3219,20 @@ public class SiteSettingsTest {
                     SingleCategorySettings preferences =
                             (SingleCategorySettings) settingsActivity.getMainFragment();
                     // Window setting is only available when the Global Setting is ON.
-                    ChromeSwitchPreference toggle =
-                            preferences.findPreference(SingleCategorySettings.BINARY_TOGGLE_KEY);
-                    preferences.onPreferenceChange(toggle, true);
+
+                    if (ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)) {
+                        BinaryStatePermissionPreference binaryRadioButton =
+                                (BinaryStatePermissionPreference)
+                                        preferences.findPreference(
+                                                SingleCategorySettings.BINARY_RADIO_BUTTON_KEY);
+                        preferences.onPreferenceChange(binaryRadioButton, true);
+                    } else {
+                        ChromeSwitchPreference toggle =
+                                preferences.findPreference(
+                                        SingleCategorySettings.BINARY_TOGGLE_KEY);
+                        preferences.onPreferenceChange(toggle, true);
+                    }
 
                     ChromeBaseCheckBoxPreference windowSettingPref =
                             preferences.findPreference(
@@ -3506,10 +3626,9 @@ public class SiteSettingsTest {
         testTwoStateToggleDisabledByPolicy(SiteSettingsCategory.Type.JAVASCRIPT);
         testTwoStateToggleDisabledByPolicy(SiteSettingsCategory.Type.POPUPS);
         testTwoStateToggleDisabledByPolicy(SiteSettingsCategory.Type.DEVICE_LOCATION);
-        testTwoStateToggleDisabledByPolicy(SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER);
+        // testTwoStateToggleDisabledByPolicy(SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER);
         // TODO(crbug.com/40879457): add a test for sensors once crash in the sensors settings page
-        // is
-        // resolved.
+        // is resolved.
     }
 
     private void testTwoStateToggleDisabledByPolicy(@SiteSettingsCategory.Type int type) {
@@ -3517,12 +3636,23 @@ public class SiteSettingsTest {
                 SiteSettingsTestUtils.startSiteSettingsCategory(type);
         SingleCategorySettings singleCategorySettings =
                 (SingleCategorySettings) settingsActivity.getMainFragment();
-        ChromeSwitchPreference binaryToggle =
-                (ChromeSwitchPreference)
-                        singleCategorySettings.findPreference(
-                                SingleCategorySettings.BINARY_TOGGLE_KEY);
 
-        Assert.assertFalse(binaryToggle.isEnabled());
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+                && type != SiteSettingsCategory.Type.ANTI_ABUSE) {
+            BinaryStatePermissionPreference binaryRadioButton =
+                    (BinaryStatePermissionPreference)
+                            singleCategorySettings.findPreference(
+                                    SingleCategorySettings.BINARY_RADIO_BUTTON_KEY);
+
+            Assert.assertFalse(binaryRadioButton.isEnabled());
+        } else {
+            ChromeSwitchPreference binaryToggle =
+                    (ChromeSwitchPreference)
+                            singleCategorySettings.findPreference(
+                                    SingleCategorySettings.BINARY_TOGGLE_KEY);
+
+            Assert.assertFalse(binaryToggle.isEnabled());
+        }
 
         ApplicationTestUtils.finishActivity(settingsActivity);
     }
@@ -3676,7 +3806,6 @@ public class SiteSettingsTest {
 
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
                     && siteSettingsType != SiteSettingsCategory.Type.ANTI_ABUSE) {
-                mExpectedPreferenceKeys.add(SingleCategorySettings.INFO_TEXT_KEY);
                 mExpectedPreferenceKeys.add(SingleCategorySettings.BINARY_RADIO_BUTTON_KEY);
             } else {
                 mExpectedPreferenceKeys.add(SingleCategorySettings.BINARY_TOGGLE_KEY);
@@ -3705,8 +3834,8 @@ public class SiteSettingsTest {
                             + mSiteSettingsType
                             + ">.";
 
-            if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)) {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+                    && mSiteSettingsType != SiteSettingsCategory.Type.ANTI_ABUSE) {
                 BinaryStatePermissionPreference radioButton =
                         singleCategorySettings.findPreference(
                                 SingleCategorySettings.BINARY_RADIO_BUTTON_KEY);
@@ -3735,8 +3864,8 @@ public class SiteSettingsTest {
 
         /** Verfiy {@link ContentSettingsResources} is set correctly. */
         private void assertToggleTitleAndSummary(SingleCategorySettings singleCategorySettings) {
-            if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)) {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+                    && mSiteSettingsType != SiteSettingsCategory.Type.ANTI_ABUSE) {
                 BinaryStatePermissionPreference radio_button =
                         singleCategorySettings.findPreference(
                                 SingleCategorySettings.BINARY_RADIO_BUTTON_KEY);

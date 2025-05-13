@@ -36,6 +36,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
@@ -44,6 +46,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.site_settings.BinaryStatePermissionPreference;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
@@ -94,6 +97,9 @@ public class FamilyLinkControlsTest {
 
     @Test
     @SmallTest
+    // TODO(crbug.com/415770550): Fix Text for managed settings and enable this
+    // test for raddio buttons.
+    @DisableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
     public void testDeletingOnDeviceDataBlockedForSupervisedUsers() {
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(
@@ -143,10 +149,16 @@ public class FamilyLinkControlsTest {
         PreferenceFragmentCompat preferenceFragment =
                 (PreferenceFragmentCompat) settingsActivity.getMainFragment();
         PreferenceScreen preferenceScreen = preferenceFragment.getPreferenceScreen();
-        ChromeSwitchPreference binary_toggle = preferenceScreen.findPreference("binary_toggle");
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)) {
+            BinaryStatePermissionPreference radioButton =
+                    preferenceScreen.findPreference("binary_radio_button");
+            Assert.assertTrue(radioButton.isEnabled());
+        } else {
+            ChromeSwitchPreference binary_toggle = preferenceScreen.findPreference("binary_toggle");
+            // When deleting cookies are not blocked through Family Link the toggle will be enabled
+            Assert.assertTrue(binary_toggle.isEnabled());
+        }
 
-        // When deleting cookies are not blocked through Family Link the toggle will be enabled
-        Assert.assertTrue(binary_toggle.isEnabled());
         settingsActivity.finish();
     }
 }
