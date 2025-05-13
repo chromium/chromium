@@ -1094,7 +1094,8 @@ bool TabStrip::IsTabStripCloseable() const {
 }
 
 bool TabStrip::IsTabStripEditable() const {
-  return !drag_context_->IsDragSessionActive() &&
+  return !tab_strip_not_editable_for_testing_ &&
+         !drag_context_->IsDragSessionActive() &&
          !drag_context_->IsActiveDropTarget();
 }
 
@@ -2170,6 +2171,10 @@ BrowserRootView::DropTarget* TabStrip::GetDropTarget(
 views::View* TabStrip::GetViewForDrop() {
   // BrowserView should talk directly to `tab_container_` instead of asking us.
   NOTREACHED();
+}
+
+void TabStrip::SetTabStripNotEditableForTesting() {
+  tab_strip_not_editable_for_testing_ = true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

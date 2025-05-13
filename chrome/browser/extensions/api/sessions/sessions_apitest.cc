@@ -27,6 +27,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -339,19 +341,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreNonEditableTabstrip) {
 
   // Set up a browser with a non-editable tabstrip, simulating one in the midst
   // of a tab dragging session.
-  std::unique_ptr<TestBrowserWindow> browser_window =
-      std::make_unique<TestBrowserWindow>();
-  Browser::CreateParams params(browser()->profile(), true);
-  params.type = Browser::TYPE_NORMAL;
-  params.window = browser_window.get();
-  std::unique_ptr<Browser> browser =
-      std::unique_ptr<Browser>(Browser::Create(params));
-  browser_window->SetIsTabStripEditable(false);
+  Browser* non_editable_browser =
+      Browser::Create(Browser::CreateParams(browser()->profile(), true));
+  non_editable_browser->GetBrowserView()
+      .tabstrip()
+      ->SetTabStripNotEditableForTesting();
 
   EXPECT_TRUE(base::MatchPattern(
       utils::RunFunctionAndReturnError(
           CreateFunction<SessionsRestoreFunction>(true).get(), "[\"1\"]",
-          browser->profile()),
+          non_editable_browser->profile()),
       ExtensionTabUtil::kTabStripNotEditableError));
 }
 
