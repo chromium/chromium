@@ -1256,6 +1256,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // does not have any outstanding requests.
   bool enable_periodic_ping_ = false;
 
+  bool crypto_handshake_complete_ = false;
+
   base::WeakPtrFactory<QuicChromiumClientSession> weak_factory_{this};
 };
 

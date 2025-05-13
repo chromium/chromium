@@ -2508,8 +2508,10 @@ TEST_P(QuicChromiumClientSessionTest, SendPeriodicPings) {
       quic::QuicTime::Delta::FromSeconds(10));
   // Set connection keep alive true.
   session_->SetPeriodicConnectionKeepAlive(true);
-  CompleteCryptoHandshake();
+
   EXPECT_TRUE(ping_alarm_.has_value());
+  EXPECT_FALSE(ping_alarm_->IsSet());
+  CompleteCryptoHandshake();
 
   // Check that we do not have any outstanding streams, but have the alarm set.
   EXPECT_EQ(0u, session_->GetNumActiveStreams());
