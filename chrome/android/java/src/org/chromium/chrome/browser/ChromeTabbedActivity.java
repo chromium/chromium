@@ -1034,6 +1034,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         tabGroupCreationUiDelegate,
                         mUndoBarPopupController,
                         mHubProvider.getHubManagerSupplier(),
+                        ArchivedTabModelOrchestrator.getForProfile(mTabModelProfileSupplier.get())
+                                .getTabCountSupplier(),
                         () ->
                                 ((TabbedRootUiCoordinator) mRootUiCoordinator)
                                         .getTabGroupSyncController());

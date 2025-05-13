@@ -157,6 +157,7 @@ public interface TabManagementDelegate {
             @NonNull TabGroupCreationUiDelegate tabGroupCreationUiDelegate,
             UndoBarThrottle undoBarThrottle,
             @NonNull LazyOneshotSupplier<HubManager> hubManagerSupplier,
+            @NonNull ObservableSupplier<Integer> archivedTabCountSupplier,
             @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier);
 
     /**

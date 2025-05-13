@@ -123,6 +123,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull TabGroupCreationUiDelegate tabGroupCreationUiDelegate,
             UndoBarThrottle undoBarThrottle,
             @NonNull LazyOneshotSupplier<HubManager> hubManagerSupplier,
+            @NonNull ObservableSupplier<Integer> archivedTabCountSupplier,
             @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier) {
         // TODO(crbug.com/40946413): Consider making this an activity scoped singleton and possibly
         // hosting it in CTA/HubProvider.
@@ -189,7 +190,9 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                                 userEducationHelper,
                                 edgeToEdgeSupplier,
                                 compositorViewHolderSupplier,
-                                tabGroupCreationUiDelegate);
+                                tabGroupCreationUiDelegate,
+                                bottomSheetController,
+                                archivedTabCountSupplier);
         return Pair.create(pane, pane);
     }
 

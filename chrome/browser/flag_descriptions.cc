@@ -4544,9 +4544,9 @@ const char kAndroidSurfaceColorUpdateDescription[] =
     "If enabled, updates the android surface colors for toolbar/omnibox.";
 
 const char kAndroidTabDeclutterAutoDeleteName[] =
-    "Android Tab Declutter Auto Deletion";
+    "Android Tab Declutter Auto Delete Promo";
 const char kAndroidTabDeclutterAutoDeleteDescription[] =
-    "Enables auto-deletion of inactive tabs.";
+    "Enables the Android Tab Declutter Auto Delete Promo";
 
 const char kAndroidTabDeclutterAutoDeleteKillSwitchName[] =
     "Android Tab Declutter Auto Delete Kill Switch";
