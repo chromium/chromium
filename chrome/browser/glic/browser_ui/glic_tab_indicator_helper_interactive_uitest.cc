@@ -263,31 +263,6 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
                   WaitForState(kTab2AlertState, IsNotAccessing()));
 }
 
-// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
-// kGlicAlwaysDetached is now default true.
-IN_PROC_BROWSER_TEST_F(
-    GlicTabIndicatorHelperUiTest,
-    DISABLED_DeactivatingWindowWithGlicAttachedShouldNotAlert) {
-#if BUILDFLAG(IS_LINUX)
-  if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
-    GTEST_SKIP()
-        << "Programmatic window activation is not supported in the Weston "
-           "reference implementation of Wayland used by test bots.";
-  }
-#endif
-
-  Browser* const browser2 = CreateBrowser(browser()->profile());
-  RunTestSequence(LoadStartingPage(), OpenGlicWindow(GlicWindowMode::kAttached),
-                  ObserveState(kTab1AlertState, browser(), 0),
-                  ObserveState(kTab2AlertState, browser2, 0),
-                  ClickMockGlicElement(kMockGlicContextAccessButton),
-                  WaitForState(kTab1AlertState, IsAccessing()),
-                  InContext(browser2->window()->GetElementContext(),
-                            ActivateSurface(kBrowserViewElementId)),
-                  WaitForState(kTab1AlertState, IsNotAccessing()),
-                  WaitForState(kTab2AlertState, IsNotAccessing()));
-}
-
 // TODO(crbug.com/404281597): Re-enable this test on Linux.
 // TODO(crbug.com/408424752): Re-enable this flakily-failing test on Mac.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
@@ -316,28 +291,6 @@ IN_PROC_BROWSER_TEST_F(
                 ActivateSurface(kBrowserViewElementId)),
       WaitForState(kTab2AlertState, IsNotAccessing()),
       WaitForState(kTab1AlertState, IsAccessing()));
-}
-
-// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
-// kGlicAlwaysDetached is now default true.
-IN_PROC_BROWSER_TEST_F(
-    GlicTabIndicatorHelperUiTest,
-    DISABLED_MinimizingWindowWithGlicAttachedShouldNotAlert) {
-  Browser* const browser2 = CreateBrowser(browser()->profile());
-  RunTestSequence(LoadStartingPage(), OpenGlicWindow(GlicWindowMode::kAttached),
-                  ObserveState(kTab1AlertState, browser(), 0),
-                  ObserveState(kTab2AlertState, browser2, 0),
-                  ClickMockGlicElement(kMockGlicContextAccessButton),
-                  WaitForState(kTab1AlertState, IsAccessing()), Do([this]() {
-                    browser()->window()->Minimize();
-                    ASSERT_TRUE(ui_test_utils::WaitForMinimized(browser()));
-                  }),
-                  WaitForState(kTab2AlertState, IsNotAccessing()),
-                  WaitForState(kTab1AlertState, IsNotAccessing()),
-                  InContext(browser2->window()->GetElementContext(),
-                            ActivateSurface(kBrowserViewElementId)),
-                  WaitForState(kTab2AlertState, IsNotAccessing()),
-                  WaitForState(kTab1AlertState, IsNotAccessing()));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,

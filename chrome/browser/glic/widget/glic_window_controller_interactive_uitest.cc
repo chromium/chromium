@@ -101,18 +101,6 @@ class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
       std::make_unique<GlicController>();
 };
 
-// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
-// kGlicAlwaysDetached is now default true.
-// TODO(394945970): Check top right corner position.
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
-                       DISABLED_ShowAndCloseAttachedWidget) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached),
-                  // Verify glic is open in attached mode.
-                  CheckControllerHasWidget(true),
-                  CheckControllerWidgetMode(GlicWindowMode::kAttached),
-                  CloseGlicWindow(), CheckControllerHasWidget(false));
-}
-
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ShowAndCloseDetachedWidget) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
                   CheckControllerHasWidget(true),
@@ -130,52 +118,6 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, DoNotCrashWhenReopening) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached), CloseGlicWindow(),
                   OpenGlicWindow(GlicWindowMode::kAttached));
 }
-
-// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
-// kGlicAlwaysDetached is now default true.
-IN_PROC_BROWSER_TEST_F(
-    GlicWindowControllerUiTest,
-    DISABLED_OpenAttachedThenOpenAttachedToSameBrowserCloses) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached),
-                  CheckControllerHasWidget(true),
-                  CheckControllerWidgetMode(GlicWindowMode::kAttached),
-                  ToggleGlicWindow(GlicWindowMode::kAttached),
-                  InAnyContext(WaitForHide(kGlicViewElementId)),
-                  CheckControllerHasWidget(false));
-}
-
-// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
-// kGlicAlwaysDetached is now default true.
-IN_PROC_BROWSER_TEST_F(
-    GlicWindowControllerUiTest,
-    DISABLED_OpenAttachedThenOpenAttachedToDifferentBrowser) {
-  Browser* const new_browser = CreateBrowser(browser()->profile());
-
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached),
-                  CheckControllerWidgetMode(GlicWindowMode::kAttached),
-                  InContext(new_browser->window()->GetElementContext(),
-                            PressButton(kGlicButtonElementId)),
-                  CheckControllerHasWidget(true),
-                  CheckControllerWidgetMode(GlicWindowMode::kAttached),
-                  CheckIfAttachedToBrowser(new_browser));
-}
-
-// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
-// kGlicAlwaysDetached is now default true.
-#if !BUILDFLAG(IS_LINUX)
-IN_PROC_BROWSER_TEST_F(
-    GlicWindowControllerUiTest,
-    DISABLED_OpenAttachedThenOpenAttachedToDifferentBrowserWithHotkey) {
-  Browser* const new_browser = CreateBrowser(browser()->profile());
-
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached),
-                  CheckControllerWidgetMode(GlicWindowMode::kAttached),
-                  Do([&]() { new_browser->window()->Activate(); }),
-                  SimulateGlicHotkey(), CheckControllerHasWidget(true),
-                  CheckControllerWidgetMode(GlicWindowMode::kAttached),
-                  CheckIfAttachedToBrowser(new_browser));
-}
-#endif
 
 // Disabled due to flakes Mac; see https://crbug.com/394350688.
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
@@ -208,20 +150,6 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       CheckControllerHasWidget(false));
 }
 
-// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
-// kGlicAlwaysDetached is now default true.
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
-                       DISABLED_HotkeyWhenAttachedToActiveBrowserCloses) {
-  RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kAttached),
-      // Glic should close.
-      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
-                              kActivateSurfaceIncompatibilityNotice),
-      ActivateSurface(kBrowserViewElementId), SimulateGlicHotkey(),
-      InAnyContext(WaitForHide(kGlicViewElementId)),
-      CheckControllerHasWidget(false));
-}
-
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        HotkeyWhenDetachedActiveCloses) {
   RunTestSequence(
@@ -231,20 +159,6 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       InAnyContext(ActivateSurface(test::kGlicHostElementId)),
       SimulateGlicHotkey(), InAnyContext(WaitForHide(kGlicViewElementId)),
       CheckControllerHasWidget(false));
-}
-
-// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
-// kGlicAlwaysDetached is now default true.
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
-                       DISABLED_HotkeyAttachesToActiveBrowser) {
-  RunTestSequence(
-      // Glic should open attached to active browser.
-      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
-                              kActivateSurfaceIncompatibilityNotice),
-      ActivateSurface(kBrowserViewElementId), SimulateGlicHotkey(),
-      InAnyContext(WaitForShow(kGlicViewElementId).SetMustRemainVisible(false)),
-      CheckControllerHasWidget(true),
-      CheckControllerWidgetMode(GlicWindowMode::kAttached));
 }
 
 // TODO(393203136): Once tests can observe window controller state rather than
@@ -277,28 +191,6 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       CheckControllerHasWidget(true),
       CheckControllerWidgetMode(GlicWindowMode::kDetached));
 }
-
-#if !BUILDFLAG(IS_LINUX)
-// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
-// kGlicAlwaysDetached is now default true. Widget activation doesn't work on
-// Linux; see InteractionTestUtilSimulatorViews::ActivateWidget.
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
-                       DISABLED_CanFocusGlicWindowWithFocusDialogHotkey) {
-  RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kDetached),
-      ActivateSurface(kBrowserViewElementId),
-      // Activating the browser actually focuses the omnibox.
-      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true),
-      // Trigger the popup focusing code.
-      Do([&]() {
-        browser()->GetBrowserView().FocusInactivePopupForAccessibility();
-      }),
-      // That should have moved the focus back to the Glic web view.
-      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, false),
-      InAnyContext(CheckViewProperty(GlicView::kWebViewElementIdForTesting,
-                                     &views::View::HasFocus, true)));
-}
-#endif  // !BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
@@ -342,40 +234,6 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       SimulateAcceleratorPress(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE)),
       InAnyContext(WaitForHide(kGlicViewElementId)),
       CheckControllerHasWidget(false));
-}
-
-// TODO(388102775): When Mac app focus issues are resolved, add a test to verify
-// that invoking the hotkey while open detached always closes glic regardless of
-// activation.
-
-// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
-// kGlicAlwaysDetached is now default true.
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, DISABLED_ApiDetach) {
-  base::HistogramTester tester;
-  RunTestSequence(
-      // Open attached.
-      OpenGlicWindow(GlicWindowMode::kAttached), CheckControllerHasWidget(true),
-      CheckControllerWidgetMode(GlicWindowMode::kAttached),
-
-      // Detach. State will temporarily be kDetaching but will again be kOpen
-      // after the animation runs.
-      // TODO(393203136): Observe state() without polling, then we can verify
-      // that we go to kDetaching and then kOpen.
-      ObserveState(test::internal::kGlicWindowControllerState,
-                   std::ref(window_controller())),
-      Do([this] { window_controller().Detach(); }),
-      WaitForState(test::internal::kGlicWindowControllerState,
-                   GlicWindowController::State::kOpen),
-      StopObservingState(test::internal::kGlicWindowControllerState),
-
-      CheckControllerWidgetMode(GlicWindowMode::kDetached));
-
-  tester.ExpectTotalCount("Glic.AttachedToBrowser", 1);
-  tester.ExpectBucketCount("Glic.AttachedToBrowser", AttachChangeReason::kInit,
-                           1);
-  tester.ExpectTotalCount("Glic.DetachedFromBrowser", 1);
-  tester.ExpectBucketCount("Glic.DetachedFromBrowser",
-                           AttachChangeReason::kMenu, 1);
 }
 
 // TODO: Re-nable this test when there is a glic state for post-resize.

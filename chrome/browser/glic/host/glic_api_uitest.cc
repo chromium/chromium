@@ -726,30 +726,6 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testClosePanel) {
   RunTestSequence(WaitForHide(kGlicViewElementId));
 }
 
-// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
-// kGlicAlwaysDetached is now default true.
-IN_PROC_BROWSER_TEST_F(GlicApiTest, DISABLED_testAttachPanel) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
-  ExecuteJsTest();
-  RunTestSequence(CheckControllerWidgetMode(GlicWindowMode::kAttached));
-}
-
-// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
-// kGlicAlwaysDetached is now default true.
-IN_PROC_BROWSER_TEST_F(GlicApiTest, DISABLED_testUnsubscribeFromObservable) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
-  ExecuteJsTest();
-}
-
-// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
-// kGlicAlwaysDetached is now default true.
-IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, DISABLED_testDetachPanel) {
-  ExecuteJsTest();
-  RunTestSequence(CheckControllerWidgetMode(GlicWindowMode::kDetached));
-}
-
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testShowProfilePicker) {
   base::test::TestFuture<void> profile_picker_opened;
   ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
@@ -771,15 +747,6 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testPanelActive) {
       Navigate(&params);
 
   ContinueJsTest();
-}
-
-// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
-// kGlicAlwaysDetached is now default true.
-IN_PROC_BROWSER_TEST_F(GlicApiTest, DISABLED_testCanAttachPanel) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
-  ExecuteJsTest();
-  // TODO(harringtond): Test case where the canAttachPanel returns false.
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testIsBrowserOpen) {
