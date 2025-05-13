@@ -792,21 +792,10 @@ void SyncServiceImpl::SetSyncFeatureRequested() {
 
 #if BUILDFLAG(IS_CHROMEOS)
   user_settings_->ClearSyncFeatureDisabledViaDashboard();
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  // If the Sync engine was already initialized (probably running in transport
-  // mode), just reconfigure.
-  if (engine_ && engine_->IsInitialized()) {
-    ConfigureDataTypeManager(CONFIGURE_REASON_RECONFIGURATION,
-                             /*bypass_setup_in_progress_check=*/false);
-  } else {
-    // Otherwise try to start up. Note that there might still be other disable
-    // reasons remaining, in which case this will effectively do nothing.
-    TryStart();
-  }
 
   DVLOG(2) << "Notify observers on SetSyncFeatureRequested";
   NotifyObservers();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 SyncUserSettings* SyncServiceImpl::GetUserSettings() {
