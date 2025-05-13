@@ -69,7 +69,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SimpleUrlPatternMatcher {
     PatternInit& operator=(PatternInit&&);
 
     bool operator==(const PatternInit& other) const = default;
-    bool operator!=(const PatternInit& other) const = default;
 
     const std::optional<std::string>& protocol() const { return protocol_; }
     const std::optional<std::string>& username() const { return username_; }
