@@ -151,7 +151,7 @@ struct Layer {
   // Optional stable identifier that may be referenced in property trees and
   // animations. Identifies a client-side object which can be represented by
   // multiple layers over time but only by a single layer at once.
-  cc.mojom.ElementId? element_id;
+  cc.mojom.ElementId element_id;
 
   // Current cumulative dirty rect for the layer since last update, in layer
   // space.
@@ -238,7 +238,7 @@ struct TransformNode {
 
   // The stable ElementId of the client-side object to which this transform node
   // applies.
-  cc.mojom.ElementId? element_id;
+  cc.mojom.ElementId element_id;
 
   // Actual transformation parameters for this node. See cc::TransformNode.
   gfx.mojom.Transform local;
@@ -276,7 +276,7 @@ struct TransformNode {
   // The stable ElementId of the client-side object (e.g. document, in Blink)
   // corresponding to this node, if this node corresponds to the root of a
   // visible frame.
-  cc.mojom.ElementId? visible_frame_element_id;
+  cc.mojom.ElementId visible_frame_element_id;
 
   // cc::DamageReasonsSet bit mask tracking the damage reasons for changes to
   // this node.
@@ -332,7 +332,7 @@ struct EffectNode {
 
   // The stable ElementId of the client-side object to which this effect node
   // applies.
-  cc.mojom.ElementId? element_id;
+  cc.mojom.ElementId element_id;
 
   // The opacity of drawn layers associated with this effect node.
   float opacity;
@@ -368,7 +368,7 @@ struct EffectNode {
 
   // The element id corresponding to the mask to apply to the filtered backdrop
   // image.
-  cc.mojom.ElementId? backdrop_mask_element_id;
+  cc.mojom.ElementId backdrop_mask_element_id;
 
   // The mask filter information applied to this effect node. The coordinates of
   // in the mask info is in the space of the transform node associated with this
@@ -438,7 +438,7 @@ struct ScrollNode {
 
   // The stable ElementId of the scrollable client-side object to which this
   // scroll node applies.
-  cc.mojom.ElementId? element_id;
+  cc.mojom.ElementId element_id;
 
   // Flags specifying the behavior of scrolls on this node.
   bool max_scroll_offset_affected_by_page_scale;

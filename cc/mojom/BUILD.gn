@@ -129,7 +129,6 @@ mojom("ui_resource_id") {
         {
           mojom = "cc.mojom.UIResourceId"
           cpp = "::cc::UIResourceId"
-          nullable_is_same_type = true
           copyable_pass_by_value = true
         },
       ]

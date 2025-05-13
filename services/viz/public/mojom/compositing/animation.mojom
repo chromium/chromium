@@ -144,7 +144,7 @@ struct AnimationKeyframeModel {
   // Optional ElementId override to select the target element for this model.
   // By default its enclosing AnimationKeyframeEffect determines the target
   // ElementId.
-  cc.mojom.ElementId? element_id;
+  cc.mojom.ElementId element_id;
 
   // Easing function to use by default between all keyframes.
   TimingFunction timing_function;
@@ -183,7 +183,7 @@ struct Animation {
 
   // Optionally identifies a target element for the animation, mapping it to a
   // layer or property tree node which shares the same ElementId.
-  cc.mojom.ElementId? element_id;
+  cc.mojom.ElementId element_id;
 
   // Keyframe models comprising the animation.
   array<AnimationKeyframeModel> keyframe_models;
