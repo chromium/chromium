@@ -11,7 +11,6 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -68,7 +67,6 @@ class SingleTabView extends LinearLayout {
                         resources.getQuantityString(
                                 R.plurals.home_modules_tab_resumption_title, 1));
             }
-            mTabThumbnail.setScaleType(ScaleType.MATRIX);
             mTabThumbnail.updateThumbnailPlaceholder(
                     /* isIncognito= */ false, /* isSelected= */ false);
         }
