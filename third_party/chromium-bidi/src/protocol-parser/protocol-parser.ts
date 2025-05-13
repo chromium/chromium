@@ -49,7 +49,15 @@ export function parseObject<T extends ZodType>(
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-browser */
 export namespace Browser {
-  export function parseRemoveUserContextParams(
+  export function parseCreateUserContextParameters(
+    params: unknown,
+  ): Protocol.Browser.CreateUserContextParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.Browser.CreateUserContextParametersSchema,
+    );
+  }
+  export function parseRemoveUserContextParameters(
     params: unknown,
   ): Protocol.Browser.RemoveUserContextParameters {
     return parseObject(

@@ -89,7 +89,12 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
 
   // Browser module
   // keep-sorted start block=yes
-  parseRemoveUserContextParams(
+  parseCreateUserContextParameters(
+    params: unknown,
+  ): Browser.CreateUserContextParameters {
+    return params as Browser.CreateUserContextParameters;
+  }
+  parseRemoveUserContextParameters(
     params: unknown,
   ): Browser.RemoveUserContextParameters {
     return params as Browser.RemoveUserContextParameters;

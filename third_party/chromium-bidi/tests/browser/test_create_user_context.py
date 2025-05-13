@@ -15,7 +15,8 @@
 
 import pytest
 from anys import ANY_STR
-from test_helpers import execute_command
+from test_helpers import (ANY_UUID, AnyExtending, execute_command,
+                          read_JSON_message, send_JSON_command)
 
 
 @pytest.mark.asyncio
@@ -91,3 +92,121 @@ async def test_browser_create_user_context_proxy_server(
         })
 
     assert http_proxy_server.stop()[0] == "http://example.com/"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('capabilities', [{}, {
+    'acceptInsecureCerts': True
+}, {
+    'acceptInsecureCerts': False
+}],
+                         indirect=True)
+@pytest.mark.parametrize('accept_insecure_certs', [True, False])
+async def test_browser_create_user_context_accept_insecure_certs_isolated(
+        websocket, context_id, url_bad_ssl, capabilities,
+        accept_insecure_certs):
+    pytest.xfail(reason="acceptInsecureCerts is not implemented")
+    user_context = await execute_command(
+        websocket, {
+            "method": "browser.createUserContext",
+            "params": {
+                "acceptInsecureCerts": accept_insecure_certs
+            }
+        })
+
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.create",
+            "params": {
+                "type": "tab",
+                "userContext": user_context["userContext"]
+            }
+        })
+
+    command_id = await send_JSON_command(
+        websocket, {
+            'method': "browsingContext.navigate",
+            'params': {
+                'url': url_bad_ssl,
+                'wait': 'complete',
+                'context': context_id
+            }
+        })
+
+    resp = await read_JSON_message(websocket)
+    if capabilities.get('acceptInsecureCerts'):
+        assert resp == {
+            'id': command_id,
+            'result': {
+                'navigation': ANY_UUID,
+                'url': url_bad_ssl,
+            },
+            'type': 'success',
+        }
+    else:
+        assert resp == AnyExtending({
+            'error': 'unknown error',
+            'id': command_id,
+            'message': 'net::ERR_CERT_AUTHORITY_INVALID',
+            'type': 'error',
+        })
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('capabilities', [{}, {
+    'acceptInsecureCerts': True
+}, {
+    'acceptInsecureCerts': False
+}],
+                         indirect=True)
+@pytest.mark.parametrize('accept_insecure_certs', [True, False])
+async def test_browser_create_user_context_accept_insecure_certs_respected(
+        websocket, context_id, url_bad_ssl, capabilities,
+        accept_insecure_certs):
+    pytest.xfail(reason="acceptInsecureCerts is not implemented")
+    user_context = await execute_command(
+        websocket, {
+            "method": "browser.createUserContext",
+            "params": {
+                "acceptInsecureCerts": accept_insecure_certs
+            }
+        })
+
+    browsing_context = await execute_command(
+        websocket, {
+            "method": "browsingContext.create",
+            "params": {
+                "type": "tab",
+                "userContext": user_context["userContext"]
+            }
+        })
+
+    context_id = browsing_context["context"]
+
+    command_id = await send_JSON_command(
+        websocket, {
+            'method': "browsingContext.navigate",
+            'params': {
+                'url': url_bad_ssl,
+                'wait': 'complete',
+                'context': context_id
+            }
+        })
+
+    resp = await read_JSON_message(websocket)
+    if accept_insecure_certs:
+        assert resp == {
+            'id': command_id,
+            'result': {
+                'navigation': ANY_UUID,
+                'url': url_bad_ssl,
+            },
+            'type': 'success',
+        }
+    else:
+        assert resp == AnyExtending({
+            'error': 'unknown error',
+            'id': command_id,
+            'message': 'net::ERR_CERT_AUTHORITY_INVALID',
+            'type': 'error',
+        })

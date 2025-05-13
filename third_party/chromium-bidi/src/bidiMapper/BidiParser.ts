@@ -67,7 +67,10 @@ export interface BidiCommandParameterParser {
 
   // Browser module
   // keep-sorted start block=yes
-  parseRemoveUserContextParams(
+  parseCreateUserContextParameters(
+    params: unknown,
+  ): Browser.CreateUserContextParameters;
+  parseRemoveUserContextParameters(
     params: unknown,
   ): Browser.RemoveUserContextParameters;
   // keep-sorted end

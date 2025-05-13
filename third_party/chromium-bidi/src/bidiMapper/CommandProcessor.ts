@@ -216,14 +216,16 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       case 'browser.close':
         return this.#browserProcessor.close();
       case 'browser.createUserContext':
-        return await this.#browserProcessor.createUserContext(command.params);
+        return await this.#browserProcessor.createUserContext(
+          this.#parser.parseCreateUserContextParameters(command.params),
+        );
       case 'browser.getClientWindows':
         return await this.#browserProcessor.getClientWindows();
       case 'browser.getUserContexts':
         return await this.#browserProcessor.getUserContexts();
       case 'browser.removeUserContext':
         return await this.#browserProcessor.removeUserContext(
-          this.#parser.parseRemoveUserContextParams(command.params),
+          this.#parser.parseRemoveUserContextParameters(command.params),
         );
       case 'browser.setClientWindowState':
         throw new UnknownErrorException(

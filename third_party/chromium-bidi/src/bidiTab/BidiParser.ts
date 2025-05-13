@@ -88,10 +88,17 @@ export class BidiParser implements BidiCommandParameterParser {
 
   // Browser module
   // keep-sorted start block=yes
-  parseRemoveUserContextParams(
+  parseCreateUserContextParameters(
+    params: unknown,
+  ): Browser.CreateUserContextParameters {
+    // Validate the params, but return the original one, as there can be `goog:` options.
+    Parser.Browser.parseCreateUserContextParameters(params);
+    return params as Browser.CreateUserContextParameters;
+  }
+  parseRemoveUserContextParameters(
     params: unknown,
   ): Browser.RemoveUserContextParameters {
-    return Parser.Browser.parseRemoveUserContextParams(params);
+    return Parser.Browser.parseRemoveUserContextParameters(params);
   }
   // keep-sorted end
 

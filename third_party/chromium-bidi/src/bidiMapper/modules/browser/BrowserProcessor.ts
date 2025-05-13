@@ -22,6 +22,7 @@ import {
   type Browser,
   InvalidArgumentException,
   NoSuchUserContextException,
+  UnknownErrorException,
 } from '../../../protocol/protocol.js';
 import type {CdpClient} from '../../BidiMapper.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
@@ -54,6 +55,12 @@ export class BrowserProcessor {
   async createUserContext(
     params: Record<string, any>,
   ): Promise<Browser.CreateUserContextResult> {
+    if (params['acceptInsecureCerts'] !== undefined) {
+      throw new UnknownErrorException(
+        `Parameter "acceptInsecureCerts" is not implemented.`,
+      );
+    }
+
     const request: Protocol.Target.CreateBrowserContextRequest = {
       proxyServer: params['goog:proxyServer'] ?? undefined,
     };
