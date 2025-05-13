@@ -36,6 +36,7 @@
 #include "net/base/features.h"
 #include "net/http/no_vary_search_cache.h"
 #include "net/http/no_vary_search_cache_storage_file_operations.h"
+#include "net/http/no_vary_search_cache_storage_mock_file_operations.h"
 #include "net/http/no_vary_search_cache_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -820,29 +821,6 @@ TEST_F(NoVarySearchCacheStorageFakeFilesystemTest, AutoSnapshot) {
   // Check the loop iterated more than once.
   EXPECT_GT(journal_entry_size, 0u);
 }
-
-// Mock implementation of FileOperations for error injection.
-class MockFileOperations : public NoVarySearchCacheStorageFileOperations {
- public:
-  MOCK_METHOD((base::expected<LoadResult, base::File::Error>),
-              Load,
-              (std::string_view filename, size_t max_size),
-              (override));
-  MOCK_METHOD((base::expected<void, base::File::Error>),
-              AtomicSave,
-              (std::string_view filename,
-               base::span<const base::span<const uint8_t>> segments),
-              (override));
-  MOCK_METHOD((base::expected<std::unique_ptr<Writer>, base::File::Error>),
-              CreateWriter,
-              (std::string_view filename),
-              (override));
-};
-
-class MockWriter : public NoVarySearchCacheStorageFileOperations::Writer {
- public:
-  MOCK_METHOD(bool, Write, (base::span<const uint8_t> data), (override));
-};
 
 class NoVarySearchCacheStorageMockFilesystemTest
     : public NoVarySearchCacheStorageTestBase {

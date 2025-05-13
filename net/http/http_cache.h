@@ -46,6 +46,7 @@
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/http/no_vary_search_cache.h"
+#include "net/http/no_vary_search_cache_storage.h"
 
 class GURL;
 
@@ -63,6 +64,7 @@ class HttpNetworkSession;
 class HttpResponseInfo;
 class NetLog;
 class NetworkIsolationKey;
+class NoVarySearchCacheStorageFileOperations;
 struct HttpRequestInfo;
 
 class NET_EXPORT HttpCache : public HttpTransactionFactory {
@@ -177,8 +179,10 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
   // Initialize the cache from its component parts. |network_layer| and
   // |backend_factory| will be destroyed when the HttpCache is.
-  HttpCache(std::unique_ptr<HttpTransactionFactory> network_layer,
-            std::unique_ptr<BackendFactory> backend_factory);
+  HttpCache(
+      std::unique_ptr<HttpTransactionFactory> network_layer,
+      std::unique_ptr<BackendFactory> backend_factory,
+      std::unique_ptr<NoVarySearchCacheStorageFileOperations> file_operations);
 
   HttpCache(const HttpCache&) = delete;
   HttpCache& operator=(const HttpCache&) = delete;
@@ -231,8 +235,8 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
   // Delete entries matching the criteria `filter_type`, `origins`, `domains`,
   // `delete_begin` and `delete_end` from the NoVarySearchCache and refresh the
-  // on-disk cache to reflect the removals if necessary. See
-  // no_vary_search_cache.h for the definition of the parameter.
+  // on-disk cache snapshot to reflect the removals if necessary. See
+  // no_vary_search_cache.h for the definition of the parameters.
   void ClearNoVarySearchCache(UrlFilterType filter_type,
                               const base::flat_set<url::Origin>& origins,
                               const base::flat_set<std::string>& domains,
@@ -721,6 +725,10 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // to avoid attempting creating cache entries uselessly.
   bool DidKeyLeadToNoStoreResponse(const std::string& key);
 
+  // Calls NoVarySearchCacheStorage::Load() if `file_operations_` is set. Since
+  // this gives away `file_operations_`, it will only call it once.
+  void MaybeLoadNoVarySearchCacheFromDisk();
+
   // Events (called via PostTask) ---------------------------------------------
 
   void OnProcessQueuedTransactions(scoped_refptr<ActiveEntry> entry);
@@ -751,6 +759,10 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
   // Processes the backend creation notification.
   void OnBackendCreated(int result, PendingOp* pending_op);
+
+  // Starts using the loaded cache if loading was successful.
+  void OnNoVarySearchCacheLoadComplete(
+      NoVarySearchCacheStorage::LoadResult result);
 
   // Constants ----------------------------------------------------------------
 
@@ -800,7 +812,18 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // Set if the kHttpCacheNoVarySearch feature is enabled. Translates the URL in
   // the request into the URL of a previous response that is equivalent
   // according to the rules of the No-Vary-Search header in the response.
-  std::optional<NoVarySearchCache> no_vary_search_cache_;
+  std::unique_ptr<NoVarySearchCache> no_vary_search_cache_;
+
+  // Implements persistence for `no_vary_search_cache_`. Only used when the
+  // cache is stored on disk. Holds a raw_ptr to `no_vary_search_cache_` so must
+  // be destroyed before it.
+  NoVarySearchCacheStorage no_vary_search_cache_storage_;
+
+  // Implementation of file operations for No-Vary-Search cache persistence.
+  // Only non-null if the backend is on-disk, and only until a backend has been
+  // created. After that ownership is transferred to
+  // `no_vary_search_cache_storage_`.
+  std::unique_ptr<NoVarySearchCacheStorageFileOperations> file_operations_;
 
   THREAD_CHECKER(thread_checker_);
 

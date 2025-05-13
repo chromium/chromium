@@ -54,6 +54,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "net/http/http_util.h"
+#include "net/http/no_vary_search_cache_storage_file_operations.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_server_info.h"
 #include "url/origin.h"
@@ -396,20 +397,26 @@ class HttpCache::WorkItem {
 
 //-----------------------------------------------------------------------------
 
-HttpCache::HttpCache(std::unique_ptr<HttpTransactionFactory> network_layer,
-                     std::unique_ptr<BackendFactory> backend_factory)
+HttpCache::HttpCache(
+    std::unique_ptr<HttpTransactionFactory> network_layer,
+    std::unique_ptr<BackendFactory> backend_factory,
+    std::unique_ptr<NoVarySearchCacheStorageFileOperations> file_operations)
     : net_log_(nullptr),
       backend_factory_(std::move(backend_factory)),
 
       network_layer_(std::move(network_layer)),
       clock_(base::DefaultClock::GetInstance()),
       keys_marked_no_store_(
-          features::kAvoidEntryCreationForNoStoreCacheSize.Get()) {
+          features::kAvoidEntryCreationForNoStoreCacheSize.Get()),
+      file_operations_(std::move(file_operations)) {
   g_init_cache = true;
   if (base::FeatureList::IsEnabled(features::kHttpCacheNoVarySearch)) {
     size_t max_entries = features::kHttpCacheNoVarySearchCacheMaxEntries.Get();
     if (max_entries) {
-      no_vary_search_cache_.emplace(static_cast<size_t>(max_entries));
+      // TODO(https://crbug.com/382394774): Make
+      // kHttpCacheNoVarySearchCacheMaxEntries be a size_t param.
+      no_vary_search_cache_ =
+          std::make_unique<NoVarySearchCache>(static_cast<size_t>(max_entries));
     }
   }
   HttpNetworkSession* session = network_layer_->GetSession();
@@ -552,8 +559,8 @@ void HttpCache::ClearNoVarySearchCache(
       filter_type, origins, domains, delete_begin, delete_end);
 
   if (cleared) {
-    // TODO(https://crbug.com/399562754): Re-write the on-disk store to erase
-    // the removed entries.
+    // This will safely do nothing if we are not using on-disk storage.
+    no_vary_search_cache_storage_.TakeSnapshot();
   }
 }
 
@@ -1436,6 +1443,18 @@ bool HttpCache::DidKeyLeadToNoStoreResponse(const std::string& key) {
          keys_marked_no_store_.end();
 }
 
+void HttpCache::MaybeLoadNoVarySearchCacheFromDisk() {
+  if (file_operations_ && no_vary_search_cache_) {
+    // This use of base::Unretained() is safe because destroying this object
+    // destroys the `no_vary_search_cache_storage_` object after which the
+    // callback will not be called.
+    no_vary_search_cache_storage_.Load(
+        std::move(file_operations_), no_vary_search_cache_->max_size(),
+        base::BindOnce(&HttpCache::OnNoVarySearchCacheLoadComplete,
+                       base::Unretained(this)));
+  }
+}
+
 void HttpCache::OnProcessQueuedTransactions(scoped_refptr<ActiveEntry> entry) {
   entry->set_will_process_queued_transactions(false);
 
@@ -1637,6 +1656,7 @@ void HttpCache::OnBackendCreated(int result, PendingOp* pending_op) {
       disk_cache_ = std::move(pending_op->backend);
       UMA_HISTOGRAM_MEMORY_KB("HttpCache.MaxFileSizeOnInit",
                               disk_cache_->MaxFileSize() / 1024);
+      MaybeLoadNoVarySearchCacheFromDisk();
     }
   }
 
@@ -1662,6 +1682,20 @@ void HttpCache::OnBackendCreated(int result, PendingOp* pending_op) {
   if (!item->DoCallback(result)) {
     item->NotifyTransaction(result, nullptr);
   }
+}
+
+void HttpCache::OnNoVarySearchCacheLoadComplete(
+    NoVarySearchCacheStorage::LoadResult result) {
+  if (!result.has_value()) {
+    // Failure. Nothing to do here.
+    return;
+  }
+  base::UmaHistogramCounts100(
+      "HttpCache.NoVarySearch.EntriesAddedDuringLoading",
+      no_vary_search_cache_->size());
+  auto provisional_no_vary_search_cache = std::move(no_vary_search_cache_);
+  no_vary_search_cache_ = std::move(result.value());
+  no_vary_search_cache_->MergeFrom(*provisional_no_vary_search_cache);
 }
 
 }  // namespace net

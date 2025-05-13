@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/android/android_info.h"
+#include "net/url_request/url_request.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -18,6 +18,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/android/android_info.h"
 #include "base/base64.h"
 #include "base/base64url.h"
 #include "base/compiler_specific.h"
@@ -113,6 +114,7 @@
 #include "net/http/http_status_code.h"
 #include "net/http/http_transaction_test_util.h"
 #include "net/http/http_util.h"
+#include "net/http/no_vary_search_cache_storage_file_operations.h"
 #include "net/http/transport_security_state.h"
 #include "net/http/transport_security_state_source.h"
 #include "net/log/file_net_log_observer.h"
@@ -148,7 +150,6 @@
 #include "net/url_request/referrer_policy.h"
 #include "net/url_request/static_http_user_agent_settings.h"
 #include "net/url_request/storage_access_status_cache.h"
-#include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_filter.h"
@@ -8858,7 +8859,8 @@ TEST_F(URLRequestTestHTTP, NetworkSuspendTest) {
         network_layer->OnSuspend();
         std::unique_ptr<HttpTransactionFactory> factory =
             std::make_unique<HttpCache>(std::move(network_layer),
-                                        HttpCache::DefaultBackend::InMemory(0));
+                                        HttpCache::DefaultBackend::InMemory(0),
+                                        /*file_operations=*/nullptr);
         return factory;
       }));
   auto context = context_builder->Build();

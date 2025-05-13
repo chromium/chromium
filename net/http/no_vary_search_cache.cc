@@ -8,6 +8,7 @@
 #include <compare>
 #include <iostream>
 #include <limits>
+#include <map>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -858,16 +859,17 @@ std::optional<NoVarySearchCache> PickleTraits<NoVarySearchCache>::Deserialize(
 
   using QueryString = NoVarySearchCache::QueryString;
   // Get a list of every QueryString object in the map so that we can sort
-  // them to reconstruct the `lru_` list.
-  std::vector<QueryString*> all_query_strings;
-  all_query_strings.reserve(size);
+  // them to reconstruct the `lru_` list. std::multimap is used here as a
+  // workaround for the excessive binary size cost of std::sort.
+  std::multimap<base::Time, QueryString*> all_query_strings;
   for (auto& [base_url_cache_key, data_map] : cache.map_) {
     for (auto& [nvs_data, query_string_list] : data_map) {
       query_string_list.nvs_data_ref = &nvs_data;
       query_string_list.key_ref = &base_url_cache_key;
       NoVarySearchCache::ForEachQueryString(
           query_string_list.list, [&](QueryString* query_string) {
-            all_query_strings.push_back(query_string);
+            all_query_strings.emplace(query_string->update_time(),
+                                      query_string);
           });
     }
   }
@@ -875,15 +877,9 @@ std::optional<NoVarySearchCache> PickleTraits<NoVarySearchCache>::Deserialize(
     return std::nullopt;
   }
 
-  // Sort by `update_time`, which we use as an approximation of `use_time`
-  // during deserialization on the assumption that it won't make much
-  // difference.
-  std::ranges::sort(all_query_strings, std::less<base::Time>(),
-                    [](QueryString* qs) { return qs->update_time(); });
-
   // Insert each entry at the head of the list, so that the oldest entry ends
   // up at the tail.
-  for (QueryString* qs : all_query_strings) {
+  for (auto [_, qs] : all_query_strings) {
     qs->LruNode::InsertBefore(cache.lru_.head());
   }
 
