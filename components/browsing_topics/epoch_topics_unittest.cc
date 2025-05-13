@@ -313,6 +313,15 @@ TEST_F(EpochTopicsTest, FromEmptyDictionaryValue) {
   EXPECT_FALSE(candidate_topic.IsValid());
 }
 
+TEST_F(EpochTopicsTest, FromDictValueInvalidCalculationTime) {
+  EpochTopics epoch_topics(kCalculationTime);
+
+  base::Value::Dict dict_value = epoch_topics.ToDictValue();
+  dict_value.Set("calculation_time", "nonsense");
+  EpochTopics read_epoch_topics = EpochTopics::FromDictValue(dict_value);
+  EXPECT_EQ(read_epoch_topics.calculation_time(), base::Time());
+}
+
 TEST_F(EpochTopicsTest,
        FromDictionaryValueWithoutConfigVersion_UseConfigVersion1) {
   base::Value::Dict dict;

@@ -81,11 +81,13 @@ EpochTopics::~EpochTopics() = default;
 EpochTopics EpochTopics::FromDictValue(const base::Value::Dict& dict_value) {
   const base::Value* calculation_time_value =
       dict_value.Find(kCalculationTimeNameKey);
-  if (!calculation_time_value)
+  std::optional<base::Time> maybe_calculation_time =
+      base::ValueToTime(calculation_time_value);
+  if (!maybe_calculation_time) {
     return EpochTopics(base::Time());
+  }
 
-  base::Time calculation_time =
-      base::ValueToTime(calculation_time_value).value();
+  base::Time calculation_time = maybe_calculation_time.value();
 
   std::vector<TopicAndDomains> top_topics_and_observing_domains;
   const base::Value::List* top_topics_and_observing_domains_value =
