@@ -47,6 +47,7 @@ import './site_settings_page/site_settings_page.js';
 import './site_settings/category_setting_exceptions.js';
 import './site_settings/chooser_exception_list.js';
 import './site_settings/site_details_permission_device_entry.js';
+import './site_settings/geolocation_page.js';
 import './site_settings/media_picker.js';
 import './site_settings/notifications_page.js';
 import './site_settings/pdf_documents.js';
@@ -253,6 +254,7 @@ export {FileSystemSiteDetailsElement} from './site_settings/file_system_site_det
 export {FileSystemSiteEntryElement} from './site_settings/file_system_site_entry.js';
 export {FileSystemSiteEntryItemElement} from './site_settings/file_system_site_entry_item.js';
 export {FileSystemSiteListElement} from './site_settings/file_system_site_list.js';
+export {GeolocationPageElement} from './site_settings/geolocation_page.js';
 export {NotificationsPageElement} from './site_settings/notifications_page.js';
 export {AppHandlerEntry, AppProtocolEntry, HandlerEntry, ProtocolEntry, ProtocolHandlersElement} from './site_settings/protocol_handlers.js';
 export {SettingsCategoryDefaultRadioGroupElement} from './site_settings/settings_category_default_radio_group.js';

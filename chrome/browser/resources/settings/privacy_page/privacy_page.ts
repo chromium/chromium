@@ -20,6 +20,7 @@ import '../safety_hub/safety_hub_module.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
+import '../site_settings/geolocation_page.js';
 import '../site_settings/notifications_page.js';
 import '../site_settings/settings_category_default_radio_group.js';
 import '../site_settings/smart_card_readers_page.js';
@@ -46,7 +47,7 @@ import {routes} from '../route.js';
 import {RouteObserverMixin, Router} from '../router.js';
 import type {SafetyHubBrowserProxy} from '../safety_hub/safety_hub_browser_proxy.js';
 import {SafetyHubBrowserProxyImpl} from '../safety_hub/safety_hub_browser_proxy.js';
-import {ChooserType, ContentSetting, ContentSettingsTypes, CookieControlsMode, SettingsState} from '../site_settings/constants.js';
+import {ChooserType, ContentSetting, ContentSettingsTypes, CookieControlsMode} from '../site_settings/constants.js';
 import type {SiteSettingsPrefsBrowserProxy} from '../site_settings/site_settings_prefs_browser_proxy.js';
 import {SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
@@ -232,12 +233,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
             loadTimeData.getBoolean('enableAutomaticFullscreenContentSetting'),
       },
 
-      enablePermissionSiteSettingsRadioButton_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('enablePermissionSiteSettingsRadioButton'),
-      },
-
       focusConfig_: {
         type: Object,
         value() {
@@ -275,14 +270,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
           return map;
         },
-      },
-
-      /**
-       * Expose the Permissions SettingsState enum to HTML bindings.
-       */
-      settingsStateEnum_: {
-        type: Object,
-        value: SettingsState,
       },
 
       searchFilter_: {
@@ -357,8 +344,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: () => loadTimeData.getBoolean('enableIncognitoTrackingProtections'),
       },
 
-      isNotificationAllowed_: Boolean,
-      isLocationAllowed_: Boolean,
       allSitesPageTitle_: String,
     };
   }
@@ -385,7 +370,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   declare private isPrivacySandboxRestricted_: boolean;
   declare private isPrivacySandboxRestrictedNoticeEnabled_: boolean;
   declare private enableAutomaticFullscreenContentSetting_: boolean;
-  declare private enablePermissionSiteSettingsRadioButton_: boolean;
   private privateStateTokensEnabled_: boolean;
   declare private autoPictureInPictureEnabled_: boolean;
   declare private capturedSurfaceControlEnabled_: boolean;
@@ -404,8 +388,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       SiteSettingsPrefsBrowserProxyImpl.getInstance();
   private safetyHubBrowserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();
-  declare private isNotificationAllowed_: boolean;
-  declare private isLocationAllowed_: boolean;
   // <if expr="chrome_root_store_cert_management_ui">
   declare private enableCertManagementUIV2_: boolean;
   // </if>
@@ -431,7 +413,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         (status: BlockAutoplayStatus) =>
             this.onBlockAutoplayStatusChanged_(status));
 
-    this.updateLocationAndNotificationState_();
     this.updateAllSitesPageTitle_();
   }
 
@@ -514,72 +495,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     this.interactedWithPage_();
     // TODO(crbug.com/408036586): Add user action for Incognito tracking protections row click.
     Router.getInstance().navigateTo(routes.INCOGNITO_TRACKING_PROTECTIONS);
-  }
-
-  private async updateLocationAndNotificationState_() {
-    const [notificationDefaultValue, locationDefaultValue] = await Promise.all([
-      this.siteSettingsPrefsBrowserProxy_.getDefaultValueForContentType(
-          ContentSettingsTypes.NOTIFICATIONS),
-      this.siteSettingsPrefsBrowserProxy_.getDefaultValueForContentType(
-          ContentSettingsTypes.GEOLOCATION),
-    ]);
-    this.isNotificationAllowed_ =
-        (notificationDefaultValue.setting === ContentSetting.ASK);
-    this.isLocationAllowed_ =
-        (locationDefaultValue.setting === ContentSetting.ASK);
-  }
-
-  private onLocationTopLevelRadioChanged_(event: CustomEvent<{value: string}>) {
-    const radioButtonName = event.detail.value;
-    switch (radioButtonName) {
-      case 'location-block-radio-button':
-        this.setPrefValue('generated.geolocation', SettingsState.BLOCK);
-        this.isLocationAllowed_ = false;
-        break;
-      case 'location-ask-radio-button':
-        this.setPrefValue('generated.geolocation', SettingsState.CPSS);
-        this.isLocationAllowed_ = true;
-        break;
-    }
-  }
-
-  private onNotificationTopLevelRadioChanged_(
-      event: CustomEvent<{value: string}>) {
-    const radioButtonName = event.detail.value;
-    switch (radioButtonName) {
-      case 'notification-block-radio-button':
-        this.setPrefValue('generated.notification', SettingsState.BLOCK);
-        this.isNotificationAllowed_ = false;
-        break;
-      case 'notification-ask-radio-button':
-        this.setPrefValue('generated.notification', SettingsState.CPSS);
-        this.isNotificationAllowed_ = true;
-        break;
-    }
-  }
-
-  private onLocationTopLevelRadioChanged2_(
-      event: CustomEvent<{value: boolean}>) {
-    const selected = event.detail.value;
-    if (selected) {
-      this.setPrefValue('generated.geolocation', SettingsState.CPSS);
-      this.isLocationAllowed_ = true;
-    } else {
-      this.setPrefValue('generated.geolocation', SettingsState.BLOCK);
-      this.isLocationAllowed_ = false;
-    }
-  }
-
-  private onNotificationTopLevelRadioChanged2_(
-      event: CustomEvent<{value: boolean}>) {
-    const selected = event.detail.value;
-    if (selected) {
-      this.setPrefValue('generated.notification', SettingsState.CPSS);
-      this.isNotificationAllowed_ = true;
-    } else {
-      this.setPrefValue('generated.notification', SettingsState.BLOCK);
-      this.isNotificationAllowed_ = false;
-    }
   }
 
   private onPrivacyGuideClick_() {

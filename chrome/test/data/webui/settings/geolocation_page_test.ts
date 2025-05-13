@@ -4,9 +4,10 @@
 
 // clang-format off
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {GeolocationPageElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl, SettingsState} from 'chrome://settings/lazy_load.js';
-import type {SettingsPrefsElement, SettingsPrivacyPageElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, Router, routes} from 'chrome://settings/settings.js';
+import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -31,7 +32,7 @@ function createPref(
 }
 
 suite(`GeolocationPage`, function() {
-  let page: SettingsPrivacyPageElement;
+  let page: GeolocationPageElement;
   let settingsPrefs: SettingsPrefsElement;
   let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
 
@@ -41,7 +42,7 @@ suite(`GeolocationPage`, function() {
   });
 
   function createPage() {
-    page = document.createElement('settings-privacy-page');
+    page = document.createElement('settings-geolocation-page');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     return flushTasks();
@@ -59,30 +60,32 @@ suite(`GeolocationPage`, function() {
     page.remove();
   });
 
+  test('LocationPage', function() {
+    assertTrue(isChildVisible(page, '#locationDefaultRadioGroup'));
+    const categorySettingExceptions =
+        page.shadowRoot!.querySelector('category-setting-exceptions');
+    assertTrue(!!categorySettingExceptions);
+    assertTrue(isVisible(categorySettingExceptions));
+    assertEquals(
+        ContentSettingsTypes.GEOLOCATION, categorySettingExceptions.category);
+  });
+
   test('locationCPSS', async function() {
     siteSettingsBrowserProxy.setPrefs(
         createPref(ContentSettingsTypes.GEOLOCATION, ContentSetting.ALLOW));
-
-    Router.getInstance().navigateTo(routes.SITE_SETTINGS_LOCATION);
-    await flushTasks();
-    const settingsSubpage = page.shadowRoot!.querySelector('settings-subpage');
-    assertTrue(!!settingsSubpage);
-    assertTrue(isVisible(settingsSubpage));
 
     const radioGroup = page.shadowRoot!.querySelector<HTMLElement>(
         'settings-category-default-radio-group');
     assertTrue(!!radioGroup);
     assertTrue(isVisible(radioGroup));
-    assertTrue(
-        isChildVisible(settingsSubpage, '#locationCpssRadioGroup', true));
+    assertTrue(isChildVisible(page, '#locationCpssRadioGroup'));
 
     const blockLocation = radioGroup.shadowRoot!.querySelector<HTMLElement>(
         '#disabledRadioOption');
     assertTrue(!!blockLocation);
     blockLocation.click();
     await flushTasks();
-    assertFalse(
-        isChildVisible(settingsSubpage, '#locationCpssRadioGroup', true));
+    assertFalse(isChildVisible(page, '#locationCpssRadioGroup'));
     assertEquals(
         SettingsState.BLOCK, page.get('prefs.generated.geolocation.value'));
 
@@ -91,8 +94,7 @@ suite(`GeolocationPage`, function() {
     assertTrue(!!allowLocation);
     allowLocation.click();
     await flushTasks();
-    assertTrue(
-        isChildVisible(settingsSubpage, '#locationCpssRadioGroup', true));
+    assertTrue(isChildVisible(page, '#locationCpssRadioGroup'));
     assertEquals(
         SettingsState.CPSS, page.get('prefs.generated.geolocation.value'));
   });
@@ -101,7 +103,7 @@ suite(`GeolocationPage`, function() {
 // TODO(crbug.com/340743074): Remove tests after
 // `PermissionSiteSettingsRadioButton` launched.
 suite(`GeolocationPageWithNestedRadioButton`, function() {
-  let page: SettingsPrivacyPageElement;
+  let page: GeolocationPageElement;
   let settingsPrefs: SettingsPrefsElement;
   let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
 
@@ -114,7 +116,7 @@ suite(`GeolocationPageWithNestedRadioButton`, function() {
   });
 
   function createPage() {
-    page = document.createElement('settings-privacy-page');
+    page = document.createElement('settings-geolocation-page');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     return flushTasks();
@@ -132,15 +134,20 @@ suite(`GeolocationPageWithNestedRadioButton`, function() {
     page.remove();
   });
 
+  test('LocationPage', function() {
+    assertTrue(isChildVisible(page, '#locationRadioGroup'));
+    const categorySettingExceptions =
+        page.shadowRoot!.querySelector('category-setting-exceptions');
+    assertTrue(!!categorySettingExceptions);
+    assertTrue(isVisible(categorySettingExceptions));
+    assertEquals(
+        ContentSettingsTypes.GEOLOCATION, categorySettingExceptions.category);
+  });
+
   test('locationCPSS', async function() {
     siteSettingsBrowserProxy.setPrefs(
         createPref(ContentSettingsTypes.GEOLOCATION, ContentSetting.ALLOW));
 
-    Router.getInstance().navigateTo(routes.SITE_SETTINGS_LOCATION);
-    await flushTasks();
-    const settingsSubpage = page.shadowRoot!.querySelector('settings-subpage');
-    assertTrue(!!settingsSubpage);
-    assertTrue(isVisible(settingsSubpage));
     assertTrue(isChildVisible(page, '#locationRadioGroup'));
     assertTrue(isChildVisible(page, '#locationCpssRadioGroup'));
 

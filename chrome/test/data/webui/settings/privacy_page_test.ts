@@ -214,40 +214,13 @@ suite('PrivacyPage', function() {
     assertTrue(isChildVisible(page, 'settings-notifications-page'));
   });
 
-  test('LocationPage', async function() {
-    loadTimeData.overrideValues({
-      enablePermissionSiteSettingsRadioButton: false,
-    });
+  test('GeolocationPage', async function() {
     await createPage();
 
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_LOCATION);
     await flushTasks();
 
-    assertTrue(isChildVisible(page, '#locationRadioGroup'));
-    const categorySettingExceptions =
-        page.shadowRoot!.querySelector('category-setting-exceptions');
-    assertTrue(!!categorySettingExceptions);
-    assertTrue(isVisible(categorySettingExceptions));
-    assertEquals(
-        ContentSettingsTypes.GEOLOCATION, categorySettingExceptions.category);
-  });
-
-  test('LocationPage2', async function() {
-    loadTimeData.overrideValues({
-      enablePermissionSiteSettingsRadioButton: true,
-    });
-    await createPage();
-
-    Router.getInstance().navigateTo(routes.SITE_SETTINGS_LOCATION);
-    await flushTasks();
-
-    assertTrue(isChildVisible(page, '#locationDefaultRadioGroup'));
-    const categorySettingExceptions =
-        page.shadowRoot!.querySelector('category-setting-exceptions');
-    assertTrue(!!categorySettingExceptions);
-    assertTrue(isVisible(categorySettingExceptions));
-    assertEquals(
-        ContentSettingsTypes.GEOLOCATION, categorySettingExceptions.category);
+    assertTrue(isChildVisible(page, 'settings-geolocation-page'));
   });
 
   test('privacySandboxRestricted', function() {
