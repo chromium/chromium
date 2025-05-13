@@ -14,6 +14,7 @@
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/features/permissions_ai.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -22,6 +23,8 @@
 #include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/prediction_service/prediction_request_features.h"
 #include "components/permissions/request_type.h"
+// pref_names include is needed for the browser tests to work as they cannot
+// include this dependency themselves
 #include "components/unified_consent/pref_names.h"
 #include "content/public/browser/render_widget_host_view.h"
 
@@ -97,13 +100,6 @@ class PredictionBasedPermissionUiSelector
       permissions::RequestType request_type,
       std::optional<optimization_guide::proto::PermissionsAiResponse> response);
 
-  // Callback for the Aiv3ModelHandler, with the first to parameters being
-  // curryed to be used for the server side model call.
-  void OnDeviceAiv3ModelExecutionCallback(
-      permissions::PredictionRequestFeatures features,
-      permissions::RequestType request_type,
-      const std::optional<permissions::PermissionRequestRelevance>& relevance);
-
   permissions::PredictionRequestFeatures BuildPredictionRequestFeatures(
       permissions::PermissionRequest* request);
   void LookupResponseReceived(
@@ -129,25 +125,12 @@ class PredictionBasedPermissionUiSelector
       permissions::RequestType request_type,
       std::unique_ptr<content_extraction::InnerTextResult> result);
 
-  // Part of the AIv3 model execution chain; provided as a curryed callback to
-  // be submitted to the logic that fetches a snapshot that serves as the input
-  // for the AIv3 model. The first two parameters are set by the callee, to be
-  // used by the server side model later.
-  void OnSnapshotTakenForOnDeviceModel(
-      permissions::PredictionRequestFeatures features,
-      permissions::RequestType request_type,
-      const SkBitmap& screenshot);
-
   bool ShouldHoldBack(bool is_on_device, permissions::RequestType request_type);
 
   void InquireServerModel(
       const permissions::PredictionRequestFeatures& features,
       permissions::RequestType request_type,
       bool record_source);
-
-  void InquireCpssV1OnDeviceModelIfAvailable(
-      const permissions::PredictionRequestFeatures& features,
-      permissions::RequestType request_type);
 
   // As the first part of the AIv3 model execution chain, this function triggers
   // AIv3 input collection and model execution, with its output being input of
@@ -159,6 +142,7 @@ class PredictionBasedPermissionUiSelector
       permissions::PredictionRequestFeatures features,
       permissions::RequestType request_type);
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // As the first part of the AIv3 model execution chain, this function triggers
   // AIv3 input collection and model execution, with its output being input of
   // the follow-up CPSSv3 server side model execution. If the AIv3 model is not
@@ -168,6 +152,28 @@ class PredictionBasedPermissionUiSelector
       content::RenderWidgetHostView* host_view,
       permissions::PredictionRequestFeatures features,
       permissions::RequestType request_type);
+
+  // Part of the AIv3 model execution chain; provided as a curryed callback to
+  // be submitted to the logic that fetches a snapshot that serves as the input
+  // for the AIv3 model. The first two parameters are set by the callee, to be
+  // used by the server side model later.
+  void OnSnapshotTakenForOnDeviceModel(
+      permissions::PredictionRequestFeatures features,
+      permissions::RequestType request_type,
+      const SkBitmap& screenshot);
+
+  // Callback for the Aiv3ModelHandler, with the first to parameters being
+  // curryed to be used for the server side model call.
+  void OnDeviceAiv3ModelExecutionCallback(
+      permissions::PredictionRequestFeatures features,
+      permissions::RequestType request_type,
+      const std::optional<permissions::PermissionRequestRelevance>& relevance);
+
+  // Use on device CPSSv1 tflite model.
+  void InquireCpssV1OnDeviceModelIfAvailable(
+      const permissions::PredictionRequestFeatures& features,
+      permissions::RequestType request_type);
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<PredictionServiceRequest> request_;

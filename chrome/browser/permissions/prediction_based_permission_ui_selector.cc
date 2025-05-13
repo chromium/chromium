@@ -15,6 +15,7 @@
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/permissions_aiv1_handler.h"
 #include "chrome/browser/permissions/prediction_model_handler_provider.h"
+#include "chrome/browser/permissions/prediction_model_handler_provider_factory.h"
 #include "chrome/browser/permissions/prediction_service_factory.h"
 #include "chrome/browser/permissions/prediction_service_request.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,7 +30,6 @@
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
-#include "components/permissions/prediction_service/permissions_aiv3_handler.h"
 #include "components/permissions/prediction_service/prediction_common.h"
 #include "components/permissions/prediction_service/prediction_service.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
@@ -42,7 +42,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "chrome/browser/permissions/prediction_model_handler_provider_factory.h"
+#include "components/permissions/prediction_service/permissions_aiv3_handler.h"
 #include "components/permissions/prediction_service/prediction_model_handler.h"
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
@@ -161,14 +161,22 @@ void PredictionBasedPermissionUiSelector::InquireServerModel(
           /*is_on_device=*/false, request_type));
 }
 
+void PredictionBasedPermissionUiSelector::
+    InquireOnDeviceAiv1AndServerModelIfAvailable(
+        content::RenderFrameHost* rfh,
+        PredictionRequestFeatures features,
+        permissions::RequestType request_type) {
+  content_extraction::GetInnerText(
+      *rfh, /*node_id=*/std::nullopt,
+      base::BindOnce(
+          &PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel,
+          weak_ptr_factory_.GetWeakPtr(), std::move(features), request_type));
+}
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void PredictionBasedPermissionUiSelector::InquireCpssV1OnDeviceModelIfAvailable(
     const PredictionRequestFeatures& features,
     permissions::RequestType request_type) {
-#if !BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  VLOG(1) << "[CPSS] Client doesn't support CPSSv1";
-  std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
-  return;
-#else
   PredictionModelHandlerProvider* prediction_model_handler_provider =
       PredictionModelHandlerProviderFactory::GetForBrowserContext(profile_);
   permissions::PredictionModelHandler* prediction_model_handler = nullptr;
@@ -196,19 +204,6 @@ void PredictionBasedPermissionUiSelector::InquireCpssV1OnDeviceModelIfAvailable(
   }
   VLOG(1) << "[CPSS] On device CPSSv1 model unavailable";
   std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-}
-
-void PredictionBasedPermissionUiSelector::
-    InquireOnDeviceAiv1AndServerModelIfAvailable(
-        content::RenderFrameHost* rfh,
-        PredictionRequestFeatures features,
-        permissions::RequestType request_type) {
-  content_extraction::GetInnerText(
-      *rfh, /*node_id=*/std::nullopt,
-      base::BindOnce(
-          &PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel,
-          weak_ptr_factory_.GetWeakPtr(), std::move(features), request_type));
 }
 
 void PredictionBasedPermissionUiSelector::
@@ -235,6 +230,64 @@ void PredictionBasedPermissionUiSelector::
           &PredictionBasedPermissionUiSelector::OnSnapshotTakenForOnDeviceModel,
           weak_ptr_factory_.GetWeakPtr(), std::move(features), request_type));
 }
+
+void PredictionBasedPermissionUiSelector::OnSnapshotTakenForOnDeviceModel(
+    PredictionRequestFeatures features,
+    permissions::RequestType request_type,
+    const SkBitmap& snapshot) {
+  VLOG(1) << "[PermissionsAIv3] On device AI prediction requested";
+  if (snapshot.drawsNothing()) {
+    VLOG(1) << "[PermissionsAIv3] The page's snapshot is empty";
+  } else {
+    if (PredictionModelHandlerProvider* prediction_model_handler_provider =
+            PredictionModelHandlerProviderFactory::GetForBrowserContext(
+                profile_)) {
+      if (PermissionsAiv3Handler* aiv3_handler =
+              prediction_model_handler_provider->GetPermissionsAiv3Handler(
+                  request_type)) {
+        VLOG(1) << "[PermissionsAIv3] Inquire model";
+
+        aiv3_handler->ExecuteModel(
+            base::BindRepeating(&PredictionBasedPermissionUiSelector::
+                                    OnDeviceAiv3ModelExecutionCallback,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                std::move(features), request_type),
+            std::make_unique<SkBitmap>(snapshot));
+        return;
+      }
+    }
+    VLOG(1) << "[PermissionsAIv3] On device AI model session unavailable";
+  }
+  InquireServerModel(features, request_type, /*record_source=*/true);
+}
+
+void PredictionBasedPermissionUiSelector::OnDeviceAiv3ModelExecutionCallback(
+    PredictionRequestFeatures features,
+    permissions::RequestType request_type,
+    const std::optional<PermissionRequestRelevance>& relevance) {
+  VLOG(1) << "[PermissionsAIv3]: AI model execution callback called "
+          << (relevance.has_value() ? "with value" : "without value");
+  if (relevance.has_value()) {
+    VLOG(1) << "[PermissionsAIv3]: PermissionRequest has a relevance of "
+            << static_cast<int>(relevance.value());
+    last_permission_request_relevance_ = relevance.value();
+    features.permission_relevance = relevance.value();
+    // TODO(crbug.com/382447738) refactor this function to also encode the model
+    // version
+    permissions::PermissionUmaUtil::RecordPermissionRequestRelevance(
+        features.permission_relevance);
+  } else {
+    last_permission_request_relevance_ =
+        PermissionRequestRelevance::kUnspecified;
+  }
+
+  // We get Unspecified only if the model was not executed; so we call the
+  // server side model as if we never inquired the on-device model before.
+  InquireServerModel(features, request_type,
+                     /*record_source=*/
+                     !(relevance == PermissionRequestRelevance::kUnspecified));
+}
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 void PredictionBasedPermissionUiSelector::SelectUiToUse(
     content::WebContents* web_contents,
@@ -285,22 +338,32 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
   DCHECK(!request_);
 
   switch (prediction_source) {
-    case PredictionSource::kOnDeviceAiv1AndServerSideModel:
-      InquireOnDeviceAiv1AndServerModelIfAvailable(
-          web_contents->GetPrimaryMainFrame(), std::move(features),
-          request->request_type());
-      return;
-    case PredictionSource::kOnDeviceAiv3AndServerSideModel:
-      InquireOnDeviceAiv3AndServerModelIfAvailable(
-          web_contents->GetRenderWidgetHostView(), std::move(features),
-          request->request_type());
-      return;
     case PredictionSource::kServerSideCpssV3Model:
       return InquireServerModel(features, request->request_type(),
                                 /*record_source=*/true);
+    case PredictionSource::kOnDeviceAiv1AndServerSideModel:
+      return InquireOnDeviceAiv1AndServerModelIfAvailable(
+          web_contents->GetPrimaryMainFrame(), std::move(features),
+          request->request_type());
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+    case PredictionSource::kOnDeviceAiv3AndServerSideModel:
+      return InquireOnDeviceAiv3AndServerModelIfAvailable(
+          web_contents->GetRenderWidgetHostView(), std::move(features),
+          request->request_type());
     case PredictionSource::kOnDeviceCpssV1Model:
       return InquireCpssV1OnDeviceModelIfAvailable(features,
                                                    request->request_type());
+#else
+    case PredictionSource::kOnDeviceAiv3AndServerSideModel:
+      [[fallthrough]];
+    case PredictionSource::kOnDeviceCpssV1Model:
+      VLOG(1) << "[CPSS] Client doesn't support on-device tflite: "
+              << static_cast<int>(prediction_source);
+      std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
+      return;
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+    case PredictionSource::kNoCpssModel:
+      [[fallthrough]];
     default:
       NOTREACHED();
   }
@@ -335,36 +398,6 @@ void PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel(
     VLOG(1) << "[PermissionsAIv1] On device AI model session unavailable";
   } else {
     VLOG(1) << "[PermissionsAIv1] The page's content is too short or empty";
-  }
-  InquireServerModel(features, request_type, /*record_source=*/true);
-}
-
-void PredictionBasedPermissionUiSelector::OnSnapshotTakenForOnDeviceModel(
-    PredictionRequestFeatures features,
-    permissions::RequestType request_type,
-    const SkBitmap& snapshot) {
-  VLOG(1) << "[PermissionsAIv3] On device AI prediction requested";
-  if (snapshot.drawsNothing()) {
-    VLOG(1) << "[PermissionsAIv3] The page's snapshot is empty";
-  } else {
-    if (PredictionModelHandlerProvider* prediction_model_handler_provider =
-            PredictionModelHandlerProviderFactory::GetForBrowserContext(
-                profile_)) {
-      if (PermissionsAiv3Handler* aiv3_handler =
-              prediction_model_handler_provider->GetPermissionsAiv3Handler(
-                  request_type)) {
-        VLOG(1) << "[PermissionsAIv3] Inquire model";
-
-        aiv3_handler->ExecuteModel(
-            base::BindRepeating(&PredictionBasedPermissionUiSelector::
-                                    OnDeviceAiv3ModelExecutionCallback,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                std::move(features), request_type),
-            std::make_unique<SkBitmap>(snapshot));
-        return;
-      }
-    }
-    VLOG(1) << "[PermissionsAIv3] On device AI model session unavailable";
   }
   InquireServerModel(features, request_type, /*record_source=*/true);
 }
@@ -467,33 +500,6 @@ void PredictionBasedPermissionUiSelector::OnDeviceAiv1ModelExecutionCallback(
       features.permission_relevance);
   InquireServerModel(features, request_type,
                      /*record_source=*/!response.has_value());
-}
-
-void PredictionBasedPermissionUiSelector::OnDeviceAiv3ModelExecutionCallback(
-    PredictionRequestFeatures features,
-    permissions::RequestType request_type,
-    const std::optional<PermissionRequestRelevance>& relevance) {
-  VLOG(1) << "[PermissionsAIv3]: AI model execution callback called "
-          << (relevance.has_value() ? "with value" : "without value");
-  if (relevance.has_value()) {
-    VLOG(1) << "[PermissionsAIv3]: PermissionRequest has a relevance of "
-            << static_cast<int>(relevance.value());
-    last_permission_request_relevance_ = relevance.value();
-    features.permission_relevance = relevance.value();
-    // TODO(crbug.com/382447738) refactor this function to also encode the model
-    // version
-    permissions::PermissionUmaUtil::RecordPermissionRequestRelevance(
-        features.permission_relevance);
-  } else {
-    last_permission_request_relevance_ =
-        PermissionRequestRelevance::kUnspecified;
-  }
-
-  // We get Unspecified only if the model was not executed; so we call the
-  // server side model as if we never inquired the on-device model before.
-  InquireServerModel(features, request_type,
-                     /*record_source=*/
-                     !(relevance == PermissionRequestRelevance::kUnspecified));
 }
 
 void PredictionBasedPermissionUiSelector::LookupResponseReceived(
