@@ -2,40 +2,41 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/screen_ai/screen_ai_service_router.h"
-
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/screen_ai/screen_ai_service_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace screen_ai {
 
-constexpr char kIsSuspendedMetric[] =
-    "Accessibility.ScreenAI.Service.IsSuspended";
+constexpr char kIsSuspendedMetric[] = "Accessibility.OCR.Service.IsSuspended";
 constexpr char kCrashCountBeforeResumeMetric[] =
-    "Accessibility.ScreenAI.Service.CrashCountBeforeResume";
+    "Accessibility.OCR.Service.CrashCountBeforeResume";
 
+// TODO(crbug.com/408174918): Rename this file as the functionality is now moved
+// `to screen_ai_service_handler.h/cc`.
 class ScreenAIServiceShutdownHandlerTest : public ::testing::Test {
  public:
-  bool IsSuspended() { return router.GetAndRecordSuspendedState(); }
-  void DisconnectService() { router.OnScreenAIServiceDisconnected(); }
-  void SendShuttingdownMessage() { router.ShuttingDownOnIdle(); }
+  ScreenAIServiceShutdownHandlerTest() : handler(true) {}
+
+  bool IsSuspended() { return handler.GetAndRecordSuspendedState(); }
+  void DisconnectService() { handler.OnScreenAIServiceDisconnected(); }
+  void SendShuttingdownMessage() { handler.ShuttingDownOnIdle(); }
   bool IsServiceAvailable() {
-    std::optional<bool> state =
-        router.GetServiceState(ScreenAIServiceRouter::Service::kOCR);
+    std::optional<bool> state = handler.GetServiceState();
     if (state.has_value()) {
       // A true value means that the service is already running which is not
       // possible in unittest.
       EXPECT_FALSE(state.value());
       return false;
     } else {
-      // En empty result means that the service is not banned, and can be used.
+      // An empty result means that the service is not banned, and can be used.
       return true;
     }
   }
 
  protected:
-  ScreenAIServiceRouter router;
+  ScreenAIServiceHandler handler;
   base::HistogramTester histogram_tester_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

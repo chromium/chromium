@@ -40,6 +40,11 @@ chromium-metrics-reviews@google.com.
   <variant name="VirtualKeyboard"/>
 </variants>
 
+<variants name="ScreenAIServices">
+  <variant name="MainContentExtraction" summary="Main Content Extraction"/>
+  <variant name="OCR" summary="OCR"/>
+</variants>
+
 <variants name="SodaLanguageCode">
   <variant name="de-DE" summary="German language code"/>
   <variant name="en-US" summary="English language code"/>
@@ -2188,6 +2193,34 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.OCR.Service.MemoryBefore.{status}.Available"
+    units="MB" expires_after="2026-03-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Available memory before launching OCR service, when service {status}.
+  </summary>
+  <token key="status" variants="TerminationStatus"/>
+</histogram>
+
+<histogram name="Accessibility.OCR.Service.MemoryBefore.{status}.Pressure"
+    enum="MemoryPressureLevel" expires_after="2026-03-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Memory pressure level before launching OCR service, when service {status}.
+  </summary>
+  <token key="status" variants="TerminationStatus"/>
+</histogram>
+
+<histogram name="Accessibility.OCR.Service.MemoryBefore.{status}.Total"
+    units="MB" expires_after="2026-03-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Total memory when OCR service {status}.</summary>
+  <token key="status" variants="TerminationStatus"/>
+</histogram>
+
 <histogram name="Accessibility.OOBEStartupSoundDelay" units="ms"
     expires_after="never">
 <!-- expires-never: Core metric for monitoring OOBE accessibility status. -->
@@ -3368,83 +3401,6 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.ScreenAI.Service.CrashCountBeforeResume"
-    units="count" expires_after="2026-03-06">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records the number of ScreenAI service crashes before one successful
-    shutdown. It is recorded when the service shuts down due to being idle, and
-    had crashed before and restarted.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.ScreenAI.Service.Initialization"
-    enum="BooleanSuccess" expires_after="2025-10-26">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records if launching the ScreenAI service was successful or not.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.ScreenAI.Service.InitializationTime.{Result}"
-    units="ms" expires_after="2025-10-26">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records how long it took for the ScreenAI service to {Result}.
-  </summary>
-  <token key="Result">
-    <variant name="Failure" summary="fail initialization"/>
-    <variant name="Success" summary="initialize successfully"/>
-  </token>
-</histogram>
-
-<histogram name="Accessibility.ScreenAI.Service.IsSuspended" enum="Boolean"
-    expires_after="2026-03-06">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records if ScreenAI service was suspended due to crash. Recorded when a
-    client asks for service availablity or for connection to the service.
-  </summary>
-</histogram>
-
-<histogram
-    name="Accessibility.ScreenAI.Service.MemoryBefore.{status}.Available"
-    units="MB" expires_after="2026-03-01">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Available memory before launching ScreenAI service, when service {status}.
-    This metric is recorded only if OCR feature is initialized.
-  </summary>
-  <token key="status" variants="TerminationStatus"/>
-</histogram>
-
-<histogram name="Accessibility.ScreenAI.Service.MemoryBefore.{status}.Pressure"
-    enum="MemoryPressureLevel" expires_after="2026-03-01">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Memory pressure level before launching ScreenAI service, when service
-    {status}. This metric is recorded only if OCR feature is initialized.
-  </summary>
-  <token key="status" variants="TerminationStatus"/>
-</histogram>
-
-<histogram name="Accessibility.ScreenAI.Service.MemoryBefore.{status}.Total"
-    units="MB" expires_after="2026-03-01">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Total memory when ScreenAI service {status}. This metric is recorded only if
-    OCR feature is initialized.
-  </summary>
-  <token key="status" variants="TerminationStatus"/>
-</histogram>
-
 <histogram name="Accessibility.ScreenAI.Service.NotReponsive.IsOCR"
     enum="BooleanYesNo" expires_after="2026-03-21">
   <owner>rhalavati@chromium.org</owner>
@@ -3455,18 +3411,15 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.ScreenAI.{feature}.InitializationLatency"
+<histogram name="Accessibility.ScreenAI.{ServiceName}.InitializationLatency"
     units="ms" expires_after="2025-09-07">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Records how long it takes to initialize {feature} in Screen AI service.
+    Records how long it takes to initialize {ServiceName} functionality in
+    Screen AI service.
   </summary>
-  <token key="feature">
-    <variant name="MainContentExtraction"
-        summary="Main Content Extraction functionality"/>
-    <variant name="OCR" summary="OCR functionality"/>
-  </token>
+  <token key="ServiceName" variants="ScreenAIServices"/>
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.{Step}.Initialized"
@@ -3691,6 +3644,54 @@ even if they fit the naming pattern. -->
     <variant name="WinSupernova" summary="Windows, specifically Supernova."/>
     <variant name="WinZDSR" summary="Windows, specifically ZDSR (Zhengdu)"/>
   </token>
+</histogram>
+
+<histogram name="Accessibility.{ServiceName}.Service.CrashCountBeforeResume"
+    units="count" expires_after="2026-03-06">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the number of {ServiceName} service crashes before one successful
+    shutdown. It is recorded when the service shuts down due to being idle, and
+    had crashed before and restarted.
+  </summary>
+  <token key="ServiceName" variants="ScreenAIServices"/>
+</histogram>
+
+<histogram name="Accessibility.{ServiceName}.Service.Initialization"
+    enum="BooleanSuccess" expires_after="2025-10-26">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records if launching the {ServiceName} service was successful or not.
+  </summary>
+  <token key="ServiceName" variants="ScreenAIServices"/>
+</histogram>
+
+<histogram
+    name="Accessibility.{ServiceName}.Service.InitializationTime.{Result}"
+    units="ms" expires_after="2025-10-26">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records how long it took for the {ServiceName} service to {Result}.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="fail initialization"/>
+    <variant name="Success" summary="initialize successfully"/>
+  </token>
+  <token key="ServiceName" variants="ScreenAIServices"/>
+</histogram>
+
+<histogram name="Accessibility.{ServiceName}.Service.IsSuspended"
+    enum="Boolean" expires_after="2026-03-06">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records if {ServiceName} service was suspended due to crash. Recorded when a
+    client asks for service availablity or for connection to the service.
+  </summary>
+  <token key="ServiceName" variants="ScreenAIServices"/>
 </histogram>
 
 <histogram name="DomDistiller.AdaBoostModel.NegativeScore" units="count"

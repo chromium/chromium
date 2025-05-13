@@ -90,7 +90,9 @@ void WaitForStatus(scoped_refptr<screen_ai::OpticalCharacterRecognizer> ocr,
 void WaitForDisconnecting(screen_ai::ScreenAIServiceRouter* router,
                           base::OnceCallback<void()> callback,
                           int remaining_tries) {
-  if (!router->IsProcessRunningForTesting() || !remaining_tries) {
+  if (!router->IsProcessRunningForTesting(
+          screen_ai::ScreenAIServiceRouter::Service::kOCR) ||
+      !remaining_tries) {
     std::move(callback).Run();
     return;
   }
@@ -487,18 +489,21 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
 
   // Init OCR once and verify service availability.
   ASSERT_TRUE(CreateAndInitOCR(mojom::OcrClientType::kTest));
-  ASSERT_TRUE(router->IsProcessRunningForTesting());
+  ASSERT_TRUE(router->IsProcessRunningForTesting(
+      screen_ai::ScreenAIServiceRouter::Service::kOCR));
 
   // Release it and wait for shutdown due to being idle.
   ocr().reset();
   base::test::TestFuture<void> future;
   WaitForDisconnecting(router, future.GetCallback(), /*remaining_tries=*/2);
   ASSERT_TRUE(future.Wait());
-  ASSERT_FALSE(router->IsProcessRunningForTesting());
+  ASSERT_FALSE(router->IsProcessRunningForTesting(
+      screen_ai::ScreenAIServiceRouter::Service::kOCR));
 
   // Init OCR again.
   ASSERT_TRUE(CreateAndInitOCR(mojom::OcrClientType::kTest));
-  ASSERT_TRUE(router->IsProcessRunningForTesting());
+  ASSERT_TRUE(router->IsProcessRunningForTesting(
+      screen_ai::ScreenAIServiceRouter::Service::kOCR));
 
   // Perform OCR.
   SkBitmap bitmap = LoadImageFromTestFile(
