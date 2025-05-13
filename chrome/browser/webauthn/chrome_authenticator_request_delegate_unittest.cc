@@ -912,6 +912,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest, DiscoverPasswords) {
   for (const auto enable_password : {false, true}) {
+    content::WebContentsTester::For(web_contents())
+        ->NavigateAndCommit(GURL(kOrigin));
     ChromeAuthenticatorRequestDelegate delegate(main_rfh());
     auto password_controller =
         std::make_unique<testing::NiceMock<MockPasswordCredentialController>>(
@@ -942,6 +944,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, DiscoverPasswords) {
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest,
        TryToShowUiNoImmediateCredentials) {
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL(kOrigin));
   ChromeAuthenticatorRequestDelegate delegate(main_rfh());
   auto password_controller =
       std::make_unique<testing::NiceMock<MockPasswordCredentialController>>(
@@ -984,6 +988,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest,
        TryToShowUiHasImmediateCredentials) {
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL(kOrigin));
   ChromeAuthenticatorRequestDelegate delegate(main_rfh());
   auto password_controller =
       std::make_unique<testing::NiceMock<MockPasswordCredentialController>>(

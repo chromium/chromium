@@ -131,7 +131,7 @@ BASE_DECLARE_FEATURE(kWebAuthnMicrosoftSoftwareUnexportableKeyProvider);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnSignalApiHidePasskeys);
 
-// Enables rate limiting of immediate requests.
+// Enables rate limiting of immediate requests based on eTLD+1.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnImmediateRequestRateLimit);
 
