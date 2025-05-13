@@ -233,9 +233,6 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   }
 #endif
 
-  settings.enable_shared_image_cache_for_gpu =
-      base::FeatureList::IsEnabled(features::kUIEnableSharedImageCacheForGpu);
-
   animation_host_ = cc::AnimationHost::CreateMainInstance();
 
   cc::LayerTreeHost::InitParams params;

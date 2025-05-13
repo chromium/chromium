@@ -9409,11 +9409,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "ui-enable-shared-image-cache-for-gpu",
-    "owners": [ "petermcneeley@chromium.org", "khushalsagar@chromium.org", "msisov@igalia.com" ],
-    "expiry_milestone": 127
-  },
-  {
     "name": "ui-slow-animations",
     "owners": [ "oshima@chromium.org", "sammiequon@chromium.org", "afakhry@chromium.org" ],
     // This flag is used for in-the-field debugging of animation issues on

@@ -35,11 +35,6 @@ CC_BASE_EXPORT extern const base::FeatureParam<int>
 // Use DMSAA instead of MSAA for rastering tiles.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseDMSAAForTiles);
 
-// Enables shared image cache for gpu used by CC instances instantiated for UI.
-// TODO(https://crbug.com/c/1378251): this shall also be possible to use by
-// renderers.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUIEnableSharedImageCacheForGpu);
-
 // When LayerTreeHostImpl::ReclaimResources() is called in background, trigger a
 // additional delayed flush to reclaim resources.
 //

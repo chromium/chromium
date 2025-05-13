@@ -4064,11 +4064,6 @@ const char kUiaProviderDescription[] =
 const char kUiPartialSwapName[] = "Partial swap";
 const char kUiPartialSwapDescription[] = "Sets partial swap behavior.";
 
-const char kUIEnableSharedImageCacheForGpuName[] = "Shared GPUImageDecodeCache";
-const char kUIEnableSharedImageCacheForGpuDescription[] =
-    "Enables shared GPUImageDecodeCache for UI if gpu rasterization is "
-    "enabled.";
-
 const char kTPCPhaseOutFacilitatedTestingName[] =
     "Third-party Cookie Phase Out Facilitated Testing";
 const char kTPCPhaseOutFacilitatedTestingDescription[] =

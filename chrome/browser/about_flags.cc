@@ -10014,13 +10014,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSyncAutofillWalletCredentialDataDescription, kOsAll,
      FEATURE_VALUE_TYPE(syncer::kSyncAutofillWalletCredentialData)},
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"ui-enable-shared-image-cache-for-gpu",
-     flag_descriptions::kUIEnableSharedImageCacheForGpuName,
-     flag_descriptions::kUIEnableSharedImageCacheForGpuDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(::features::kUIEnableSharedImageCacheForGpu)},
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
     {"cros-labs-window-cycle-shortcut",
      flag_descriptions::kSameAppWindowCycleName,

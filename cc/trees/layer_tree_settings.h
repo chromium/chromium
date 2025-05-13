@@ -226,10 +226,6 @@ class CC_EXPORT LayerTreeSettings {
   // Whether to disable the frame rate limit in the scheduler.
   bool disable_frame_rate_limit = false;
 
-  // Enables shared image cache for gpu.
-  // TODO(crbug.com/40243842): not ready to be used by renderer cc instance yet.
-  bool enable_shared_image_cache_for_gpu = false;
-
   // Maximum size for buffers allocated for rendering when GPU compositing is
   // disabled. This size is equivalent to the max texture size in GPU mode.
   // This is an arbitrary limit here similar to what hardware might have.

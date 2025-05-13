@@ -242,25 +242,18 @@ const char* ClientNameForVerboseLog() {
 // GpuImageDecodeCache.
 class LayerTreeHostImpl::ImageDecodeCacheHolder {
  public:
-  ImageDecodeCacheHolder(bool enable_shared_image_cache_for_gpu,
-                         const RasterCapabilities& raster_caps,
+  ImageDecodeCacheHolder(const RasterCapabilities& raster_caps,
                          scoped_refptr<RasterContextProviderWrapper>
                              worker_context_provider_wrapper,
                          size_t decoded_image_working_set_budget_bytes,
                          RasterDarkModeFilter* dark_mode_filter) {
     if (raster_caps.use_gpu_rasterization) {
       auto color_type = viz::ToClosestSkColorType(raster_caps.tile_format);
-      if (enable_shared_image_cache_for_gpu) {
-        image_decode_cache_ptr_ =
-            &worker_context_provider_wrapper->GetGpuImageDecodeCache(
-                color_type, raster_caps);
-      } else {
-        image_decode_cache_ = std::make_unique<GpuImageDecodeCache>(
-            worker_context_provider_wrapper->GetContext().get(),
-            /*use_transfer_cache=*/true, color_type,
-            decoded_image_working_set_budget_bytes,
-            raster_caps.max_texture_size, dark_mode_filter);
-      }
+      image_decode_cache_ = std::make_unique<GpuImageDecodeCache>(
+          worker_context_provider_wrapper->GetContext().get(),
+          /*use_transfer_cache=*/true, color_type,
+          decoded_image_working_set_budget_bytes, raster_caps.max_texture_size,
+          dark_mode_filter);
     } else {
       image_decode_cache_ = std::make_unique<SoftwareImageDecodeCache>(
           viz::ToClosestSkColorType(raster_caps.tile_format),
@@ -269,8 +262,6 @@ class LayerTreeHostImpl::ImageDecodeCacheHolder {
 
     if (image_decode_cache_) {
       image_decode_cache_ptr_ = image_decode_cache_.get();
-    } else {
-      DCHECK(image_decode_cache_ptr_);
     }
   }
 
@@ -4209,8 +4200,7 @@ void LayerTreeHostImpl::RecreateTileResources() {
 void LayerTreeHostImpl::CreateTileManagerResources() {
   DCHECK(!settings_.trees_in_viz_in_viz_process);
   image_decode_cache_holder_ = std::make_unique<ImageDecodeCacheHolder>(
-      settings_.enable_shared_image_cache_for_gpu, raster_caps(),
-      layer_tree_frame_sink_->worker_context_provider_wrapper(),
+      raster_caps(), layer_tree_frame_sink_->worker_context_provider_wrapper(),
       settings_.decoded_image_working_set_budget_bytes, dark_mode_filter_);
 
   if (raster_caps().use_gpu_rasterization) {
