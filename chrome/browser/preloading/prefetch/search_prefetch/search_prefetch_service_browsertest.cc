@@ -3955,6 +3955,44 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
   EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
 }
 
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
+                       PrefetchIsNotCancelled) {
+  set_service_deferral_type(
+      SearchPreloadTestResponseDeferralType::kDeferHeader);
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  std::string search_terms = kOmniboxSuggestPrefetchQuery;
+
+  AutocompleteMatch autocomplete_match =
+      CreateSearchSuggestionMatch(search_terms, search_terms, true);
+  AutocompleteResult autocomplete_result;
+  autocomplete_result.AppendMatches({autocomplete_match});
+  SearchPrefetchServiceFactory::GetForProfile(browser()->profile())
+      ->OnResultChanged(GetWebContents(), autocomplete_result);
+
+  WaitUntilStatusChangesTo(
+      GetCanonicalSearchURL(autocomplete_match.destination_url),
+      SearchPrefetchStatus::kCanBeServed);
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          GetCanonicalSearchURL(autocomplete_match.destination_url));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kCanBeServed, prefetch_status.value());
+
+  // Change the autocomplete to remove "porgs" entirely.
+  autocomplete_match =
+      CreateSearchSuggestionMatch(search_terms, search_terms, true);
+  autocomplete_result.Reset();
+  autocomplete_result.AppendMatches({autocomplete_match});
+  SearchPrefetchServiceFactory::GetForProfile(browser()->profile())
+      ->OnResultChanged(GetWebContents(), autocomplete_result);
+
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      GetCanonicalSearchURL(autocomplete_match.destination_url));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kCanBeServed, prefetch_status.value());
+}
+
 // Test suite to check the PreloadingAttempt with prefetch_holdback.
 class SearchNavigationPrefetchHoldbackBrowserTest
     : public SearchPrefetchBaseBrowserTest {
@@ -4047,86 +4085,6 @@ IN_PROC_BROWSER_TEST_F(SearchNavigationPrefetchHoldbackBrowserTest,
         << content::test::ActualVsExpectedUkmEntriesToString(
                attempt_ukm_entries, expected_attempt_entries);
   }
-}
-
-// Test suite to check that prefetches are not cancelled.
-class SearchNavigationPrefetchNoCancelBrowserTest
-    : public SearchPrefetchBaseBrowserTest {
- public:
-  SearchNavigationPrefetchNoCancelBrowserTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {kSearchPrefetchServicePrefetching,
-         {{"max_attempts_per_caching_duration", "3"},
-          {"cache_size", "1"},
-          {"device_memory_threshold_MB", "0"}}},
-        {kSearchNavigationPrefetch, {{}}}};
-    std::vector<base::test::FeatureRef> disabled_features = {};
-
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
-  }
-
-  void SetUpOnMainThread() override {
-    SearchPrefetchBaseBrowserTest::SetUpOnMainThread();
-    // Initialize PreloadingAttempt for the test suite.
-    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    attempt_entry_builder_ =
-        std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
-            chrome_preloading_predictor::kOmniboxSearchPredictor);
-  }
-
-  ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
-    return test_ukm_recorder_.get();
-  }
-
-  const content::test::PreloadingAttemptUkmEntryBuilder&
-  attempt_entry_builder() {
-    return *attempt_entry_builder_;
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
-  std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
-      attempt_entry_builder_;
-};
-
-IN_PROC_BROWSER_TEST_F(SearchNavigationPrefetchNoCancelBrowserTest,
-                       PrefetchIsNotCancelled) {
-  set_service_deferral_type(
-      SearchPreloadTestResponseDeferralType::kDeferHeader);
-  auto* search_prefetch_service =
-      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
-  std::string search_terms = kOmniboxSuggestPrefetchQuery;
-
-  AutocompleteMatch autocomplete_match =
-      CreateSearchSuggestionMatch(search_terms, search_terms, true);
-  AutocompleteResult autocomplete_result;
-  autocomplete_result.AppendMatches({autocomplete_match});
-  SearchPrefetchServiceFactory::GetForProfile(browser()->profile())
-      ->OnResultChanged(GetWebContents(), autocomplete_result);
-
-  WaitUntilStatusChangesTo(
-      GetCanonicalSearchURL(autocomplete_match.destination_url),
-      SearchPrefetchStatus::kCanBeServed);
-  auto prefetch_status =
-      search_prefetch_service->GetSearchPrefetchStatusForTesting(
-          GetCanonicalSearchURL(autocomplete_match.destination_url));
-  ASSERT_TRUE(prefetch_status.has_value());
-  EXPECT_EQ(SearchPrefetchStatus::kCanBeServed, prefetch_status.value());
-
-  // Change the autocomplete to remove "porgs" entirely.
-  autocomplete_match =
-      CreateSearchSuggestionMatch(search_terms, search_terms, true);
-  autocomplete_result.Reset();
-  autocomplete_result.AppendMatches({autocomplete_match});
-  SearchPrefetchServiceFactory::GetForProfile(browser()->profile())
-      ->OnResultChanged(GetWebContents(), autocomplete_result);
-
-  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
-      GetCanonicalSearchURL(autocomplete_match.destination_url));
-  ASSERT_TRUE(prefetch_status.has_value());
-  EXPECT_EQ(SearchPrefetchStatus::kCanBeServed, prefetch_status.value());
 }
 
 class SearchNavigationPrefetchDefaultMatchBrowserTest
