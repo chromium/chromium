@@ -1620,12 +1620,13 @@ void TabStripModel::UpdateActiveTabInSplit(split_tabs::SplitTabId split_id,
                   SplitTabChange::SplitTabRemoveReason::kSplitTabUpdated);
 
   if (update_type == SplitUpdateType::kReplace) {
-    int destination_index =
-        update_index < active_index() ? active_index() - 1 : active_index();
-    MoveTabToIndexImpl(update_index, destination_index,
-                       GetActiveTab()->GetGroup(), GetActiveTab()->IsPinned(),
-                       true);
-    CloseWebContentsAt(active_index() + 1, TabCloseTypes::CLOSE_USER_GESTURE);
+    // The previous active tab to close is moved just before if the replacing
+    // tab is to the left and after if to the right.
+    int close_index =
+        update_index < active_index() ? active_index() - 1 : active_index() + 1;
+    MoveTabToIndexImpl(update_index, active_index(), GetActiveTab()->GetGroup(),
+                       GetActiveTab()->IsPinned(), true);
+    CloseWebContentsAt(close_index, TabCloseTypes::CLOSE_USER_GESTURE);
   } else {
     int initial_active_index = active_index();
     std::optional<tab_groups::TabGroupId> destination_group =

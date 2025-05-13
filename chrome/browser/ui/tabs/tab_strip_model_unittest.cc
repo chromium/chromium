@@ -2158,6 +2158,29 @@ TEST_F(TabStripModelTest, ReverseTabsInSplit) {
   EXPECT_TRUE(tabstrip()->empty());
 }
 
+TEST_F(TabStripModelTest, ReverseAndReplaceTabsInSplit) {
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 3, 0, {1}));
+
+  tabstrip()->ActivateTabAt(
+      2, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+
+  split_tabs::SplitTabId split_tab_id =
+      tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabLayout::kVertical);
+  EXPECT_EQ("0 1s 2s", GetTabStripStateString(tabstrip()));
+
+  tabstrip()->ReverseTabsInSplit(split_tab_id);
+  EXPECT_EQ("0 2s 1s", GetTabStripStateString(tabstrip()));
+
+  tabstrip()->UpdateActiveTabInSplit(split_tab_id, 0,
+                                     TabStripModel::SplitUpdateType::kReplace);
+  EXPECT_EQ("0s 1s", GetTabStripStateString(tabstrip()));
+
+  tabstrip()->CloseAllTabs();
+  EXPECT_TRUE(tabstrip()->empty());
+}
+
 // Tests IsContextMenuCommandEnabled and ExecuteContextMenuCommand with
 // CommandToggleGrouped.
 TEST_F(TabStripModelTest, CommandToggleGrouped) {
