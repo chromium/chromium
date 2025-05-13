@@ -7408,6 +7408,8 @@ data/gpu/webgpu-import-video.html
 data/gpu/webgpu-stress-request-device-and-remove-loop.html
 data/gpu/webgpu-unittest-utils.js
 data/gpu/webgpu-unittest-worker.js
+data/gpu/webrtc/codec_loopback.html
+data/gpu/webrtc/webrtc_common.js
 data/gpu/worker-webgl-raf-after-gpu-crash.html
 data/green.html
 data/gtk_key_bindings_test_gtkrc

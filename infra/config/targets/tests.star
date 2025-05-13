@@ -2756,6 +2756,62 @@ targets.tests.gpu_telemetry_test(
     ],
 )
 
+targets.tests.gpu_telemetry_test(
+    name = "webrtc_gl_passthrough_ganesh_tests",
+    telemetry_test_name = "webrtc",
+    mixins = [
+        "has_native_resultdb_integration",
+        "gpu_force_command_decoder_passthrough",
+        "gpu_force_angle_gl",
+        "gpu_force_skia_ganesh",
+        "gpu_integration_test_common_args",
+    ],
+)
+
+targets.tests.gpu_telemetry_test(
+    name = "webrtc_metal_passthrough_ganesh_tests",
+    telemetry_test_name = "webrtc",
+    mixins = [
+        "has_native_resultdb_integration",
+        "gpu_force_command_decoder_passthrough",
+        "gpu_force_angle_metal",
+        "gpu_force_skia_ganesh",
+        "gpu_integration_test_common_args",
+    ],
+)
+
+targets.tests.gpu_telemetry_test(
+    name = "webrtc_metal_passthrough_graphite_tests",
+    telemetry_test_name = "webrtc",
+    mixins = [
+        "has_native_resultdb_integration",
+        "gpu_force_command_decoder_passthrough",
+        "gpu_force_angle_metal",
+        "gpu_force_skia_graphite",
+        "gpu_integration_test_common_args",
+    ],
+)
+
+targets.tests.gpu_telemetry_test(
+    name = "webrtc_graphite_tests",
+    telemetry_test_name = "webrtc",
+    mixins = [
+        "has_native_resultdb_integration",
+        "gpu_force_command_decoder_validating",
+        "gpu_force_skia_graphite",
+        "gpu_integration_test_common_args",
+    ],
+)
+
+targets.tests.gpu_telemetry_test(
+    name = "webrtc_tests",
+    telemetry_test_name = "webrtc",
+    mixins = [
+        "has_native_resultdb_integration",
+        "gpu_integration_test_common_args",
+    ],
+)
+
 targets.tests.isolated_script_test(
     name = "webdriver_wpt_tests",
     mixins = [

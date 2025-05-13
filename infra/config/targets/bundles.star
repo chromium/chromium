@@ -4210,6 +4210,7 @@ targets.bundle(
     targets = [
         "gpu_common_and_optional_telemetry_tests",
         "gpu_passthrough_telemetry_tests",
+        "gpu_webrtc_telemetry_test",
         "gpu_webcodecs_telemetry_test",
         "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
@@ -4233,6 +4234,12 @@ targets.bundle(
         ),
         targets.bundle(
             targets = "gpu_webcodecs_telemetry_test",
+            variants = [
+                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_webrtc_telemetry_test",
             variants = [
                 "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
             ],
@@ -4268,6 +4275,7 @@ targets.bundle(
     targets = [
         "gpu_common_and_optional_telemetry_tests",
         "gpu_passthrough_telemetry_tests",
+        "gpu_webrtc_telemetry_test",
         "gpu_webcodecs_telemetry_test",
         "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
@@ -4326,6 +4334,7 @@ targets.bundle(
     targets = [
         "gpu_common_and_optional_telemetry_tests",
         "gpu_gl_passthrough_ganesh_telemetry_tests",
+        "gpu_webrtc_gl_passthrough_ganesh_telemetry_test",
         "gpu_webcodecs_gl_passthrough_ganesh_telemetry_test",
         "gpu_webgl2_conformance_gl_passthrough_ganesh_telemetry_tests",
         "gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests",
@@ -4359,8 +4368,11 @@ targets.bundle(
     targets = [
         "gpu_gl_passthrough_ganesh_telemetry_tests",
         "gpu_metal_passthrough_ganesh_telemetry_tests",
+        "gpu_webrtc_gl_passthrough_ganesh_telemetry_test",
         "gpu_webcodecs_gl_passthrough_ganesh_telemetry_test",
+        "gpu_webrtc_metal_passthrough_ganesh_telemetry_test",
         "gpu_webcodecs_metal_passthrough_ganesh_telemetry_test",
+        "gpu_webrtc_metal_passthrough_graphite_telemetry_test",
         "gpu_webcodecs_metal_passthrough_graphite_telemetry_test",
         "gpu_webgl2_conformance_gl_passthrough_ganesh_telemetry_tests",
         "gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests",
@@ -4419,6 +4431,7 @@ targets.bundle(
         "gpu_common_and_optional_telemetry_tests",
         "gpu_passthrough_telemetry_tests",
         "gpu_webcodecs_telemetry_test",
+        "gpu_webrtc_telemetry_test",
         "gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests",
         "gpu_webgl_conformance_d3d11_passthrough_telemetry_tests",
         "gpu_webgl_conformance_d3d9_passthrough_telemetry_tests",
@@ -4455,6 +4468,7 @@ targets.bundle(
         "gpu_common_and_optional_telemetry_tests",
         "gpu_passthrough_telemetry_tests",
         "gpu_webcodecs_telemetry_test",
+        "gpu_webrtc_telemetry_test",
         "gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests",
         "gpu_webgl_conformance_d3d11_passthrough_telemetry_tests",
         "gpu_webgl_conformance_d3d9_passthrough_telemetry_tests",
@@ -4519,6 +4533,7 @@ targets.bundle(
     targets = [
         "gpu_common_and_optional_telemetry_tests",
         "gpu_validating_telemetry_tests",
+        "gpu_webrtc_validating_ganesh_telemetry_test",
         "gpu_webcodecs_validating_ganesh_telemetry_test",
         "gpu_webgl_conformance_gles_passthrough_ganesh_telemetry_tests",
         "gpu_webgl_conformance_validating_ganesh_telemetry_tests",
@@ -4552,6 +4567,7 @@ targets.bundle(
         "gpu_common_and_optional_telemetry_tests",
         "gpu_passthrough_ganesh_telemetry_tests",
         "gpu_validating_telemetry_tests",
+        "gpu_webrtc_validating_ganesh_telemetry_test",
         "gpu_webcodecs_validating_ganesh_telemetry_test",
         "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl2_conformance_validating_telemetry_tests",
@@ -4567,7 +4583,9 @@ targets.bundle(
         "gpu_passthrough_ganesh_telemetry_tests",
         "gpu_passthrough_graphite_telemetry_tests",
         "gpu_validating_telemetry_tests",
+        "gpu_webrtc_validating_ganesh_telemetry_test",
         "gpu_webcodecs_validating_ganesh_telemetry_test",
+        "gpu_webrtc_validating_graphite_telemetry_test",
         "gpu_webcodecs_validating_graphite_telemetry_test",
         "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl2_conformance_validating_telemetry_tests",
@@ -4753,6 +4771,29 @@ targets.bundle(
             ),
         ],
     },
+)
+
+targets.bundle(
+    name = "gpu_webrtc_validating_ganesh_telemetry_test",
+    targets = [
+        "webrtc_tests",
+    ],
+    per_test_modifications = {
+        "webrtc_tests": [
+            targets.mixin(
+                args = [
+                    "--extra-browser-args=--use-cmd-decoder=validating --disable-features=SkiaGraphite",
+                ],
+            ),
+        ],
+    },
+)
+
+targets.bundle(
+    name = "gpu_webrtc_validating_graphite_telemetry_test",
+    targets = [
+        "webrtc_graphite_tests",
+    ],
 )
 
 targets.bundle(
@@ -5849,6 +5890,13 @@ targets.bundle(
             ],
         ),
         targets.bundle(
+            targets = "gpu_webrtc_telemetry_test",
+            variants = [
+                "LINUX_INTEL_UHD_630_STABLE",
+                "LINUX_NVIDIA_GTX_1660_STABLE",
+            ],
+        ),
+        targets.bundle(
             targets = "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
             variants = [
                 "LINUX_INTEL_UHD_630_STABLE",
@@ -5939,6 +5987,14 @@ targets.bundle(
             ],
         ),
         targets.bundle(
+            targets = "gpu_webrtc_gl_passthrough_ganesh_telemetry_test",
+            variants = [
+                "MAC_MINI_INTEL_GPU_STABLE",
+                "MAC_RETINA_AMD_GPU_STABLE",
+                "MAC_RETINA_NVIDIA_GPU_STABLE",
+            ],
+        ),
+        targets.bundle(
             targets = "gpu_webcodecs_metal_passthrough_ganesh_telemetry_test",
             variants = [
                 "MAC_MINI_INTEL_GPU_STABLE",
@@ -5946,7 +6002,21 @@ targets.bundle(
             ],
         ),
         targets.bundle(
+            targets = "gpu_webrtc_metal_passthrough_ganesh_telemetry_test",
+            variants = [
+                "MAC_MINI_INTEL_GPU_STABLE",
+                "MAC_RETINA_AMD_GPU_STABLE",
+            ],
+        ),
+        targets.bundle(
             targets = "gpu_webcodecs_metal_passthrough_graphite_telemetry_test",
+            variants = [
+                "MAC_MINI_INTEL_GPU_STABLE",
+                "MAC_RETINA_AMD_GPU_STABLE",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_webrtc_metal_passthrough_graphite_telemetry_test",
             variants = [
                 "MAC_MINI_INTEL_GPU_STABLE",
                 "MAC_RETINA_AMD_GPU_STABLE",
@@ -7155,6 +7225,13 @@ targets.bundle(
         ),
         targets.bundle(
             targets = "gpu_webcodecs_telemetry_test",
+            variants = [
+                "WIN10_INTEL_UHD_630_STABLE",
+                "WIN10_NVIDIA_GTX_1660_STABLE",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_webrtc_telemetry_test",
             variants = [
                 "WIN10_INTEL_UHD_630_STABLE",
                 "WIN10_NVIDIA_GTX_1660_STABLE",

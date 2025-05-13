@@ -860,6 +860,34 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "gpu_webrtc_telemetry_test",
+    tests = {
+        "webrtc_tests": targets.legacy_test_config(),
+    },
+)
+
+targets.legacy_basic_suite(
+    name = "gpu_webrtc_gl_passthrough_ganesh_telemetry_test",
+    tests = {
+        "webrtc_gl_passthrough_ganesh_tests": targets.legacy_test_config(),
+    },
+)
+
+targets.legacy_basic_suite(
+    name = "gpu_webrtc_metal_passthrough_ganesh_telemetry_test",
+    tests = {
+        "webrtc_metal_passthrough_ganesh_tests": targets.legacy_test_config(),
+    },
+)
+
+targets.legacy_basic_suite(
+    name = "gpu_webrtc_metal_passthrough_graphite_telemetry_test",
+    tests = {
+        "webrtc_metal_passthrough_graphite_tests": targets.legacy_test_config(),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests",
     tests = {
         "webgl2_conformance_d3d11_passthrough_tests": targets.legacy_test_config(

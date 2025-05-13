@@ -1720,6 +1720,63 @@
       },
     },
 
+    'gpu_webrtc_gl_passthrough_ganesh_telemetry_test': {
+      'webrtc_gl_passthrough_ganesh_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'gpu_force_command_decoder_passthrough',
+            'gpu_force_angle_gl',
+            'gpu_force_skia_ganesh',
+            'gpu_integration_test_common_args',
+          ],
+        },
+        'telemetry_test_name': 'webrtc',
+      },
+    },
+
+    'gpu_webrtc_metal_passthrough_ganesh_telemetry_test': {
+      'webrtc_metal_passthrough_ganesh_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'gpu_force_command_decoder_passthrough',
+            'gpu_force_angle_metal',
+            'gpu_force_skia_ganesh',
+            'gpu_integration_test_common_args',
+          ],
+        },
+        'telemetry_test_name': 'webrtc',
+      },
+    },
+
+    'gpu_webrtc_metal_passthrough_graphite_telemetry_test': {
+      'webrtc_metal_passthrough_graphite_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'gpu_force_command_decoder_passthrough',
+            'gpu_force_angle_metal',
+            'gpu_force_skia_graphite',
+            'gpu_integration_test_common_args',
+          ],
+        },
+        'telemetry_test_name': 'webrtc',
+      },
+    },
+
+    'gpu_webrtc_telemetry_test': {
+      'webrtc_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'gpu_integration_test_common_args',
+          ],
+        },
+        'telemetry_test_name': 'webrtc',
+      },
+    },
+
     'linux_chromeos_lacros_gtests': {
       'chromeos_unittests': {},
     },
@@ -2225,6 +2282,9 @@
       'gpu_webgl_conformance_metal_passthrough_ganesh_telemetry_tests',
       'gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests',
       'gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests',
+      'gpu_webrtc_gl_passthrough_ganesh_telemetry_test',
+      'gpu_webrtc_metal_passthrough_ganesh_telemetry_test',
+      'gpu_webrtc_metal_passthrough_graphite_telemetry_test',
     ],
 
     'gpu_fyi_win_release_telemetry_tests': [
@@ -2236,6 +2296,7 @@
       'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests',
       'gpu_webgl_conformance_d3d9_passthrough_telemetry_tests',
       'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests',
+      'gpu_webrtc_telemetry_test',
     ],
 
     'gpu_telemetry_tests_v8': [

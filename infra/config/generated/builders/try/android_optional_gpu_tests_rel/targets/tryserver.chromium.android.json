@@ -691,6 +691,41 @@
         },
         "test": "telemetry_gpu_integration_test_android_chrome",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
+      },
+      {
+        "args": [
+          "webrtc",
+          "--show-stdout",
+          "--browser=android-chromium",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating --disable-features=SkiaGraphite",
+          "--enforce-browser-version",
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "webrtc_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "RP1A.201105.002",
+            "device_os_type": "userdebug",
+            "device_type": "flame",
+            "os": "Android",
+            "pool": "chromium.tests.gpu"
+          },
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test_android_chrome",
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
       }
     ]
   }
