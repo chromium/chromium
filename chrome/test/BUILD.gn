@@ -2390,6 +2390,7 @@ if (!is_android) {
       "//components/captive_portal/core:buildflags",
       "//components/captive_portal/core:test_support",
       "//components/cbor",
+      "//components/cdm/common:buildflags",
       "//components/certificate_transparency",
       "//components/certificate_transparency:proto",
       "//components/collaboration/public:empty_messaging_backend_service",

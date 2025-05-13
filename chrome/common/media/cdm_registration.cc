@@ -17,6 +17,7 @@
 #include "base/path_service.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "components/cdm/common/buildflags.h"
 #include "content/public/common/cdm_info.h"
 #include "media/base/cdm_capability.h"
 #include "media/base/media_switches.h"
@@ -43,6 +44,12 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "components/cdm/common/android_cdm_registration.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_PLAYREADY)
+#include "base/file_version_info_win.h"
+#include "components/cdm/common/playready_cdm_common.h"
+#include "media/base/win/mf_feature_checks.h"
+#endif  // BUILDFLAG(ENABLE_PLAYREADY)
 
 namespace {
 
@@ -332,6 +339,40 @@ void AddExternalClearKey(std::vector<content::CdmInfo>* cdms) {
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 #if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_PLAYREADY)
+void AddPlayReady(std::vector<content::CdmInfo>* cdms) {
+  DVLOG(1) << __func__;
+  if (!media::SupportMediaFoundationEncryptedPlayback()) {
+    DVLOG(1) << __func__ << ": Not adding PlayReady CdmInfo";
+    return;
+  }
+
+  std::unique_ptr<FileVersionInfoWin> playready_version_info =
+      FileVersionInfoWin::CreateFileVersionInfoWin(base::FilePath(
+          FILE_PATH_LITERAL("Windows.Media.Protection.PlayReady.dll")));
+  if (!playready_version_info) {
+    DVLOG(1) << __func__ << ": Failed to get PlayReady version info. "
+             << "Not adding PlayReady CdmInfo";
+    return;
+  }
+
+  DVLOG(1) << __func__ << ":"
+           << " CdmType=" << kPlayReadyCdmType.ToString()
+           << " Version=" << playready_version_info->GetFileVersion();
+
+  // Add PlayReady hardware secure CdmInfo - its capability will be
+  // filled by `CdmRegistryImpl::LazyInitializeHardwareSecureCapability()`.
+  // Path is empty since the CDM is not in a separate library.
+  cdms->emplace_back(kPlayReadyKeySystemRecommendationDefault,
+                     content::CdmInfo::Robustness::kHardwareSecure,
+                     /*capability=*/std::nullopt,
+                     /*supports_sub_key_systems=*/true,
+                     kPlayReadyCdmDisplayName, kPlayReadyCdmType,
+                     playready_version_info->GetFileVersion(),
+                     /*path=*/base::FilePath());
+}
+#endif  // BUILDFLAG(ENABLE_PLAYREADY)
+
 void AddMediaFoundationClearKey(std::vector<content::CdmInfo>* cdms) {
   if (!base::FeatureList::IsEnabled(media::kExternalClearKeyForTesting)) {
     return;
@@ -374,6 +415,9 @@ void RegisterCdmInfo(std::vector<content::CdmInfo>* cdms) {
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_PLAYREADY)
+  AddPlayReady(cdms);
+#endif
   AddMediaFoundationClearKey(cdms);
 #endif
 

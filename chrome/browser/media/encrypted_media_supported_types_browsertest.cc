@@ -25,6 +25,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/test_launcher_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/cdm/common/buildflags.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -46,6 +47,10 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #error This file needs to be updated to run on Android.
+#endif
+
+#if BUILDFLAG(ENABLE_PLAYREADY)
+#include "media/base/win/mf_feature_checks.h"
 #endif
 
 namespace {
@@ -155,6 +160,23 @@ const char16_t kUnexpectedResult16[] = u"unexpected result";
 #else
 #define EXPECT_WV_HW_SECURE_PERSISTENT_SESSION EXPECT_UNSUPPORTED
 #endif
+
+#if BUILDFLAG(ENABLE_PLAYREADY)
+#define SKIP_IF_WINDOWS_PLAYREADY_INCOMPATIBLE()            \
+  if (!media::SupportMediaFoundationEncryptedPlayback()) {  \
+    GTEST_SKIP() << "This PlayReady implementation is not"  \
+                 << "available on this version of Windows"; \
+    return;                                                 \
+  }
+
+const char kPlayReadyKeySystemBase[] = "com.microsoft.playready";
+const char kPlayReadyKeySystemRecommendationDefault[] =
+    "com.microsoft.playready.recommendation";
+const char kPlayReadyKeySystemRecommendationHWSecure[] =
+    "com.microsoft.playready.recommendation.3000";
+const char kPlayReadySoftwareSecureRobustness[] = "2000";
+const char kPlayReadyHardwareSecureRobustness[] = "3000";
+#endif  // BUILDFLAG(ENABLE_PLAYREADY)
 
 }  // namespace
 
@@ -595,6 +617,29 @@ class EncryptedMediaSupportedTypesWidevineTest
   }
 };
 
+#if BUILDFLAG(ENABLE_PLAYREADY)
+class EncryptedMediaSupportedTypesPlayReadyTest
+    : public EncryptedMediaSupportedTypesTest {
+ public:
+  EncryptedMediaSupportedTypesPlayReadyTest(
+      const EncryptedMediaSupportedTypesPlayReadyTest&) = delete;
+  EncryptedMediaSupportedTypesPlayReadyTest& operator=(
+      const EncryptedMediaSupportedTypesPlayReadyTest&) = delete;
+
+ protected:
+  EncryptedMediaSupportedTypesPlayReadyTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EncryptedMediaSupportedTypesTest::SetUpCommandLine(command_line);
+    // Use this switch to always allow the protected media identifier for
+    // testing purpose. Note that the test page is hosted on "127.0.0.1". See
+    // net::EmbeddedTestServer for details.
+    command_line->AppendSwitchASCII(
+        switches::kUnsafelyAllowProtectedMediaIdentifierForDomain, "127.0.0.1");
+  }
+};
+#endif  // BUILDFLAG(ENABLE_PLAYREADY)
+
 #if BUILDFLAG(IS_CHROMEOS)
 class EncryptedMediaSupportedTypesDevModeTest
     : public EncryptedMediaSupportedTypesTest {
@@ -735,6 +780,54 @@ class EncryptedMediaSupportedTypesWidevineHwSecureDefaultAndExperimentTest
         "vp8,vp9,av01-no-clearlead,vorbis");
   }
 };
+
+#if BUILDFLAG(ENABLE_PLAYREADY)
+class EncryptedMediaSupportedTypesPlayReadyHwSecureTest
+    : public EncryptedMediaSupportedTypesPlayReadyTest {
+ public:
+  EncryptedMediaSupportedTypesPlayReadyHwSecureTest(
+      const EncryptedMediaSupportedTypesPlayReadyHwSecureTest&) = delete;
+  EncryptedMediaSupportedTypesPlayReadyHwSecureTest& operator=(
+      const EncryptedMediaSupportedTypesPlayReadyHwSecureTest&) = delete;
+
+ protected:
+  EncryptedMediaSupportedTypesPlayReadyHwSecureTest() {
+    EnableFeature(media::kHardwareSecureDecryption);
+#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+    EnableFeature(media::kPlatformEncryptedDolbyVision);
+#endif
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EncryptedMediaSupportedTypesPlayReadyTest::SetUpCommandLine(command_line);
+    // Pretend that we support hardware secure decryption for vp8, vp9 and
+    // dolbyvision, but not for avc1. This will also pretend that there is
+    // support for vorbis audio.
+    command_line->AppendSwitchASCII(
+        switches::kOverrideHardwareSecureCodecsForTesting,
+        "vp8,vp9,av01-no-clearlead,dolbyvision,vorbis");
+  }
+};
+
+class EncryptedMediaSupportedTypesPlayReadyHwSecureForceClearLeadSupportTest
+    : public EncryptedMediaSupportedTypesPlayReadyTest {
+ protected:
+  EncryptedMediaSupportedTypesPlayReadyHwSecureForceClearLeadSupportTest() {
+    enabled_features_.push_back({media::kHardwareSecureDecryption,
+                                 {{"force_support_clear_lead", "true"}}});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EncryptedMediaSupportedTypesPlayReadyTest::SetUpCommandLine(command_line);
+    // Pretend that we support hardware secure decryption for vp8 and vp9 with
+    // clearlead fix supported and av01 without clear lead support. This will
+    // also pretend that there is support for vorbis audio.
+    command_line->AppendSwitchASCII(
+        switches::kOverrideHardwareSecureCodecsForTesting,
+        "vp8,vp9,av01-no-clearlead,vorbis");
+  }
+};
+#endif  // BUILDFLAG(ENABLE_PLAYREADY)
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 // Registers ClearKey CDM with the wrong path (filename).
@@ -1897,6 +1990,248 @@ IN_PROC_BROWSER_TEST_F(
       SessionType::kTemporary, "HW_SECURE_ALL"));
 #endif  // BUILDFLAG(IS_WIN)
 }
+
+#if BUILDFLAG(ENABLE_PLAYREADY)
+//
+// PlayReady test cases.
+//
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesPlayReadyHwSecureTest,
+                       Robustness_HardwareSecure) {
+  SKIP_IF_WINDOWS_PLAYREADY_INCOMPATIBLE();
+
+  // com.microsoft.playready.recommendation.3000 does not require a robustness
+  // level to be specified. If a robustness is specified then only "3000" is
+  // allowed.
+  EXPECT_SUCCESS(IsVideoRobustnessSupported(
+      kPlayReadyKeySystemRecommendationHWSecure, nullptr));
+  EXPECT_SUCCESS(
+      IsVideoRobustnessSupported(kPlayReadyKeySystemRecommendationHWSecure,
+                                 kPlayReadyHardwareSecureRobustness));
+  EXPECT_SUCCESS(IsAudioRobustnessSupported(
+      kPlayReadyKeySystemRecommendationHWSecure, nullptr));
+  EXPECT_SUCCESS(
+      IsAudioRobustnessSupported(kPlayReadyKeySystemRecommendationHWSecure,
+                                 kPlayReadyHardwareSecureRobustness));
+
+  // This is not a valid keysystem + robustness combination.
+  EXPECT_UNSUPPORTED(
+      IsVideoRobustnessSupported(kPlayReadyKeySystemRecommendationHWSecure,
+                                 kPlayReadySoftwareSecureRobustness));
+}
+
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesPlayReadyHwSecureTest,
+                       Robustness_RecommendationDefault) {
+  SKIP_IF_WINDOWS_PLAYREADY_INCOMPATIBLE();
+
+  EXPECT_SUCCESS(
+      IsVideoRobustnessSupported(kPlayReadyKeySystemRecommendationDefault,
+                                 kPlayReadyHardwareSecureRobustness));
+  EXPECT_SUCCESS(
+      IsAudioRobustnessSupported(kPlayReadyKeySystemRecommendationDefault,
+                                 kPlayReadyHardwareSecureRobustness));
+
+  // Software secure PlayReady should not be supported.
+  EXPECT_UNSUPPORTED(IsVideoRobustnessSupported(
+      kPlayReadyKeySystemRecommendationDefault, nullptr));
+  EXPECT_UNSUPPORTED(IsAudioRobustnessSupported(
+      kPlayReadyKeySystemRecommendationDefault, nullptr));
+  EXPECT_UNSUPPORTED(
+      IsVideoRobustnessSupported(kPlayReadyKeySystemRecommendationDefault,
+                                 kPlayReadySoftwareSecureRobustness));
+  EXPECT_UNSUPPORTED(
+      IsAudioRobustnessSupported(kPlayReadyKeySystemRecommendationDefault,
+                                 kPlayReadySoftwareSecureRobustness));
+}
+
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesPlayReadyHwSecureTest,
+                       Robustness_Base) {
+  SKIP_IF_WINDOWS_PLAYREADY_INCOMPATIBLE();
+
+  // Verify that the base key system is not supported.
+  EXPECT_UNSUPPORTED(IsVideoRobustnessSupported(
+      kPlayReadyKeySystemBase, kPlayReadyHardwareSecureRobustness));
+  EXPECT_UNSUPPORTED(IsVideoRobustnessSupported(
+      kPlayReadyKeySystemBase, kPlayReadySoftwareSecureRobustness));
+  EXPECT_UNSUPPORTED(
+      IsVideoRobustnessSupported(kPlayReadyKeySystemBase, nullptr));
+  EXPECT_UNSUPPORTED(IsAudioRobustnessSupported(
+      kPlayReadyKeySystemBase, kPlayReadyHardwareSecureRobustness));
+  EXPECT_UNSUPPORTED(IsAudioRobustnessSupported(
+      kPlayReadyKeySystemBase, kPlayReadySoftwareSecureRobustness));
+  EXPECT_UNSUPPORTED(
+      IsAudioRobustnessSupported(kPlayReadyKeySystemBase, nullptr));
+}
+
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesPlayReadyHwSecureTest,
+                       SessionType_HardwareSecure) {
+  SKIP_IF_WINDOWS_PLAYREADY_INCOMPATIBLE();
+
+  // Temporary session is always supported for hardware secure key systems.
+  EXPECT_SUCCESS(IsSessionTypeSupported(
+      kPlayReadyKeySystemRecommendationHWSecure, SessionType::kTemporary,
+      kPlayReadyHardwareSecureRobustness));
+  EXPECT_SUCCESS(IsSessionTypeSupported(
+      kPlayReadyKeySystemRecommendationHWSecure, SessionType::kTemporary));
+
+  // Persistent license is not supported for hardware secure key systems
+  EXPECT_UNSUPPORTED(IsSessionTypeSupported(
+      kPlayReadyKeySystemRecommendationHWSecure,
+      SessionType::kPersistentLicense, kPlayReadyHardwareSecureRobustness));
+  EXPECT_UNSUPPORTED(
+      IsSessionTypeSupported(kPlayReadyKeySystemRecommendationHWSecure,
+                             SessionType::kPersistentLicense));
+}
+
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesPlayReadyHwSecureTest,
+                       SessionType_RecommendationDefault) {
+  SKIP_IF_WINDOWS_PLAYREADY_INCOMPATIBLE();
+
+  // Temporary session is always supported for hardware secure key systems.
+  EXPECT_SUCCESS(IsSessionTypeSupported(
+      kPlayReadyKeySystemRecommendationDefault, SessionType::kTemporary,
+      kPlayReadyHardwareSecureRobustness));
+
+  // Software secure PlayReady is not supported.
+  EXPECT_UNSUPPORTED(IsSessionTypeSupported(
+      kPlayReadyKeySystemRecommendationDefault, SessionType::kTemporary));
+
+  // Persistent license is not supported for hardware secure key systems
+  EXPECT_UNSUPPORTED(IsSessionTypeSupported(
+      kPlayReadyKeySystemRecommendationDefault, SessionType::kPersistentLicense,
+      kPlayReadyHardwareSecureRobustness));
+  EXPECT_UNSUPPORTED(
+      IsSessionTypeSupported(kPlayReadyKeySystemRecommendationDefault,
+                             SessionType::kPersistentLicense));
+}
+
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesPlayReadyHwSecureTest,
+                       SupportedCodecs_HardwareSecure) {
+  SKIP_IF_WINDOWS_PLAYREADY_INCOMPATIBLE();
+
+  // This test checks that the playready implementation works
+  // as expected with the command line overridden codecs which
+  // are supplied in the EncryptedMediaSupportedTypesPlayReadyHwSecureTest
+  // constructor. AV1 codecs are not supported in this test because
+  // they are marked as not supporting clear lead and the
+  // force_support_clear_lead flag has not been set (defaults to false).
+
+  EXPECT_SUCCESS(
+      IsSupportedByKeySystem(kPlayReadyKeySystemRecommendationHWSecure,
+                             kVideoWebMMimeType, video_webm_codecs()));
+  EXPECT_UNSUPPORTED(
+      IsSupportedByKeySystem(kPlayReadyKeySystemRecommendationHWSecure,
+                             kVideoMP4MimeType, video_mp4_codecs()));
+  EXPECT_UNSUPPORTED(
+      IsSupportedByKeySystem(kPlayReadyKeySystemRecommendationHWSecure,
+                             kAudioMP4MimeType, audio_mp4_codecs()));
+  EXPECT_SUCCESS(
+      IsSupportedByKeySystem(kPlayReadyKeySystemRecommendationHWSecure,
+                             kAudioWebMMimeType, audio_webm_codecs()));
+  EXPECT_UNSUPPORTED(
+      IsSupportedByKeySystem(kPlayReadyKeySystemRecommendationHWSecure,
+                             kAudioMP4MimeType, audio_mp4_flac_codecs()));
+  EXPECT_SUCCESS(
+      IsSupportedByKeySystem(kPlayReadyKeySystemRecommendationHWSecure,
+                             kVideoWebMMimeType, vp9_profile2_codecs()));
+  EXPECT_SUCCESS(
+      IsSupportedByKeySystem(kPlayReadyKeySystemRecommendationHWSecure,
+                             kVideoMP4MimeType, vp9_profile2_codecs()));
+  EXPECT_UNSUPPORTED(
+      IsSupportedByKeySystem(kPlayReadyKeySystemRecommendationHWSecure,
+                             kVideoMP4MimeType, av1_codecs()));
+}
+
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesPlayReadyHwSecureTest,
+                       SupportedCodecs_RecommendationDefault) {
+  SKIP_IF_WINDOWS_PLAYREADY_INCOMPATIBLE();
+
+  // This test checks that the playready implementation works
+  // as expected with the command line overridden codecs which
+  // are supplied in the EncryptedMediaSupportedTypesPlayReadyHwSecureTest
+  // constructor. AV1 codecs are not supported in this test because
+  // they are marked as not supporting clear lead and the
+  // force_support_clear_lead flag has not been set (defaults to false).
+
+  EXPECT_SUCCESS(IsSupportedByKeySystem(
+      kPlayReadyKeySystemRecommendationDefault, kVideoWebMMimeType,
+      video_webm_codecs(), SessionType::kTemporary,
+      kPlayReadyHardwareSecureRobustness));
+  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
+      kPlayReadyKeySystemRecommendationDefault, kVideoMP4MimeType,
+      video_mp4_codecs(), SessionType::kTemporary,
+      kPlayReadyHardwareSecureRobustness));
+  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
+      kPlayReadyKeySystemRecommendationDefault, kAudioMP4MimeType,
+      audio_mp4_codecs(), SessionType::kTemporary,
+      kPlayReadyHardwareSecureRobustness));
+  EXPECT_SUCCESS(IsSupportedByKeySystem(
+      kPlayReadyKeySystemRecommendationDefault, kAudioWebMMimeType,
+      audio_webm_codecs(), SessionType::kTemporary,
+      kPlayReadyHardwareSecureRobustness));
+  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
+      kPlayReadyKeySystemRecommendationDefault, kAudioMP4MimeType,
+      audio_mp4_flac_codecs(), SessionType::kTemporary,
+      kPlayReadyHardwareSecureRobustness));
+  EXPECT_SUCCESS(IsSupportedByKeySystem(
+      kPlayReadyKeySystemRecommendationDefault, kVideoWebMMimeType,
+      vp9_profile2_codecs(), SessionType::kTemporary,
+      kPlayReadyHardwareSecureRobustness));
+  EXPECT_SUCCESS(IsSupportedByKeySystem(
+      kPlayReadyKeySystemRecommendationDefault, kVideoMP4MimeType,
+      vp9_profile2_codecs(), SessionType::kTemporary,
+      kPlayReadyHardwareSecureRobustness));
+  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
+      kPlayReadyKeySystemRecommendationDefault, kVideoMP4MimeType, av1_codecs(),
+      SessionType::kTemporary, kPlayReadyHardwareSecureRobustness));
+}
+
+#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesPlayReadyHwSecureTest,
+                       DolbyVision) {
+  SKIP_IF_WINDOWS_PLAYREADY_INCOMPATIBLE();
+
+  EXPECT_SUCCESS(IsSupportedByKeySystem(
+      kPlayReadyKeySystemRecommendationDefault, kVideoMP4MimeType,
+      dolby_vision_codecs(), SessionType::kTemporary,
+      kPlayReadyHardwareSecureRobustness));
+
+  EXPECT_SUCCESS(
+      IsSupportedByKeySystem(kPlayReadyKeySystemRecommendationHWSecure,
+                             kVideoMP4MimeType, dolby_vision_codecs()));
+}
+#endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+
+IN_PROC_BROWSER_TEST_F(
+    EncryptedMediaSupportedTypesPlayReadyHwSecureForceClearLeadSupportTest,
+    SupportedCodecs) {
+  SKIP_IF_WINDOWS_PLAYREADY_INCOMPATIBLE();
+
+  // This test checks that the playready implementation works as expected
+  // with the command line overridden codecs which are supplied in the
+  // EncryptedMediaSupportedTypesPlayReadyHwSecureForceClearLeadSupportTest
+  // constructor. These checks verify that the force_support_clear_lead
+  // HardwareSecureDecryption feature param works as expected with the
+  // playready implementation. For exammple, av1 is supported here
+  // even though it is marked as not supporting clear lead when setting
+  // up the command line overridden codecs.
+
+  EXPECT_SUCCESS(IsSupportedByKeySystem(
+      kPlayReadyKeySystemRecommendationDefault, kVideoWebMMimeType,
+      video_webm_codecs(), SessionType::kTemporary,
+      kPlayReadyHardwareSecureRobustness));
+
+  EXPECT_SUCCESS(IsSupportedByKeySystem(
+      kPlayReadyKeySystemRecommendationDefault, kVideoMP4MimeType, av1_codecs(),
+      SessionType::kTemporary, kPlayReadyHardwareSecureRobustness));
+
+  EXPECT_SUCCESS(
+      IsSupportedByKeySystem(kPlayReadyKeySystemRecommendationHWSecure,
+                             kVideoWebMMimeType, video_webm_codecs()));
+  EXPECT_SUCCESS(
+      IsSupportedByKeySystem(kPlayReadyKeySystemRecommendationHWSecure,
+                             kVideoMP4MimeType, av1_codecs()));
+}
+#endif  // BUILDFLAG(ENABLE_PLAYREADY)
 
 //
 // Misc failure test cases.

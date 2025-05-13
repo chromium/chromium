@@ -7,6 +7,7 @@ import("//build/config/chrome_build.gni")
 import("//build/util/process_version.gni")
 import("//chrome/browser/downgrade/buildflags.gni")
 import("//chrome/common/features.gni")
+import("//components/cdm/common/playready.gni")
 import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//components/signin/features.gni")
@@ -259,6 +260,7 @@ static_library("common_lib") {
   ]
 
   deps = [
+    "//components/cdm/common:buildflags",
     "//components/crash/core/app",
     "//components/google/core/common",
     "//components/heap_profiling/in_process",
@@ -272,7 +274,7 @@ static_library("common_lib") {
     "//components/pdf/common:util",
   ]
 
-  if (is_android || enable_library_cdms) {
+  if (is_android || enable_library_cdms || enable_playready) {
     public_deps += [ "//components/cdm/common" ]
   }
 
