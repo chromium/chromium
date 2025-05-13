@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.browser.readaloud.player.expanded.ExpandedPlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.mini.MiniPlayerCoordinator;
 import org.chromium.chrome.modules.readaloud.Playback;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.Player;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -118,8 +119,9 @@ public class PlayerCoordinator implements Player {
     }
 
     @Override
-    public void playTabRequested() {
+    public void playTabRequested(PlaybackMode playbackMode) {
         mMediator.setPlayback(null);
+        mMediator.setRequestedPlaybackMode(playbackMode);
         mMediator.setPlaybackState(PlaybackListener.State.BUFFERING);
         if (!mExpandedPlayer.anySheetShowing()) {
             mMiniPlayer.show(/* animate= */ true);

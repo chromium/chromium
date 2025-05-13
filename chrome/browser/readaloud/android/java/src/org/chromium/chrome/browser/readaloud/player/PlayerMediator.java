@@ -203,12 +203,17 @@ class PlayerMediator implements InteractionHandler {
                     PlayerProperties.HIGHLIGHTING_ENABLED,
                     assumeNonNull(mDelegate.getHighlightingEnabledSupplier().get()));
             mModel.set(
-                    PlayerProperties.HIGHLIGHTING_SUPPORTED, mDelegate.isHighlightingSupported());
+                    PlayerProperties.HIGHLIGHTING_SUPPORTED,
+                    mDelegate.isHighlightingSupported(metadata.playbackMode()));
             mModel.set(PlayerProperties.PLAYBACK_MODE, metadata.playbackMode().getValue());
 
             mTotalTimeMillis = 0;
             mLastStartTimeMillis = mClock.currentTimeMillis();
         }
+    }
+
+    void setRequestedPlaybackMode(PlaybackMode playbackMode) {
+        mModel.set(PlayerProperties.REQUESTED_PLAYBACK_MODE, playbackMode.getValue());
     }
 
     void setPlaybackState(@PlaybackListener.State int currentPlaybackState) {

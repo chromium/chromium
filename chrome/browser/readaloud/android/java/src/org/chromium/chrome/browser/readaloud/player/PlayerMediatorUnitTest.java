@@ -184,7 +184,7 @@ public class PlayerMediatorUnitTest {
         mPlaybackData = new TestPlaybackData();
         mClock = new FakeClock();
 
-        doReturn(true).when(mDelegate).isHighlightingSupported();
+        doReturn(true).when(mDelegate).isHighlightingSupported(any());
         doReturn(mHighlightingEnabledSupplier).when(mDelegate).getHighlightingEnabledSupplier();
         doReturn(mVoicesSupplier).when(mDelegate).getCurrentLanguageVoicesSupplier();
         doReturn(mPlaybackModeSelectorEnabledSupplier).when(mDelegate).getPlaybackModeSelectionEnabled();
@@ -250,6 +250,15 @@ public class PlayerMediatorUnitTest {
         verify(mPlayback).addListener(eq(mPlaybackListenerCaptor.getValue()));
         assertEquals(TITLE, mModel.get(PlayerProperties.TITLE));
         assertEquals(PUBLISHER, mModel.get(PlayerProperties.PUBLISHER));
+    }
+
+    @Test
+    public void testSetRequestedPlaybackMode() {
+        mMediator.setRequestedPlaybackMode(PlaybackMode.OVERVIEW);
+
+        assertEquals(
+                PlaybackMode.OVERVIEW.getValue(),
+                (int) mModel.get(PlayerProperties.REQUESTED_PLAYBACK_MODE));
     }
 
     @Test

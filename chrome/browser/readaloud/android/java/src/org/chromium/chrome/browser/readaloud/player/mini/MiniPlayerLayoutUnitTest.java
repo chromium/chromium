@@ -85,6 +85,22 @@ public class MiniPlayerLayoutUnitTest {
     }
 
     @Test
+    public void testBufferingStrings() {
+        mLayout.setRequestedPlaybackMode(PlaybackMode.OVERVIEW);
+        mLayout.onPlaybackStateChanged(PlaybackListener.State.BUFFERING);
+
+        assertEquals(View.VISIBLE, mLayout.findViewById(R.id.buffering_layout).getVisibility());
+        assertEquals(
+                mLayout.getContext().getString(R.string.readaloud_mini_player_loading_ai_playback),
+                ((TextView) mLayout.findViewById(R.id.loading_message)).getText());
+
+        mLayout.setRequestedPlaybackMode(PlaybackMode.CLASSIC);
+        assertEquals(
+                mLayout.getContext().getString(R.string.readaloud_playback_loading),
+                ((TextView) mLayout.findViewById(R.id.loading_message)).getText());
+    }
+
+    @Test
     public void testPlayingState() {
         mLayout.onPlaybackStateChanged(PlaybackListener.State.PLAYING);
 
@@ -152,7 +168,8 @@ public class MiniPlayerLayoutUnitTest {
     public void testSetSubtitle() {
         mLayout.onPlaybackStateChanged(PlaybackListener.State.PLAYING);
         mLayout.setPlaybackMode(PlaybackMode.OVERVIEW);
-        assertEquals("AI audio playback", ((TextView) mLayout.findViewById(R.id.subtitle)).getText());
+        assertEquals(
+                "AI audio playback", ((TextView) mLayout.findViewById(R.id.subtitle)).getText());
     }
 
     @Test

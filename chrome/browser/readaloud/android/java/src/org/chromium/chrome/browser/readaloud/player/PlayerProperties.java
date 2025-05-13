@@ -52,6 +52,8 @@ public class PlayerProperties {
             new WritableIntPropertyKey();
     public static final WritableIntPropertyKey PLAYBACK_MODE = new WritableIntPropertyKey();
     public static final WritableIntPropertyKey FEEDBACK_TYPE = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey REQUESTED_PLAYBACK_MODE =
+            new WritableIntPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = {
         EXPANDED_PLAYER_VISIBILITY,
@@ -75,5 +77,6 @@ public class PlayerProperties {
         PLAYBACK_MODE_SELECTION_ENABLED,
         PLAYBACK_MODE,
         FEEDBACK_TYPE,
+        REQUESTED_PLAYBACK_MODE,
     };
 }

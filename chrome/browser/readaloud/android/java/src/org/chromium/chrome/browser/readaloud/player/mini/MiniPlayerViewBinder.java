@@ -46,6 +46,9 @@ public class MiniPlayerViewBinder {
 
         } else if (key == PlayerProperties.INTERACTION_HANDLER) {
             view.setInteractionHandler(model.get(PlayerProperties.INTERACTION_HANDLER));
+        } else if (key == PlayerProperties.REQUESTED_PLAYBACK_MODE) {
+            view.setRequestedPlaybackMode(
+                    PlaybackMode.fromValue(model.get(PlayerProperties.REQUESTED_PLAYBACK_MODE)));
         }
     }
 

@@ -254,23 +254,22 @@ public class ReadAloudController
       }
 
       long getResponseTime() {
-      return mResponseTimestamp;
-      }
+            return mResponseTimestamp;
+        }
 
-      boolean getTimepointsSupported() {
-      return getTimepointsSupported(PlaybackArgs.PlaybackMode.CLASSIC);
-      }
+        boolean getTimepointsSupported(PlaybackArgs.PlaybackMode mode) {
+            return getReadabilityResultForMode(mode).supportsHighlighting;
+        }
 
-      boolean getTimepointsSupported(PlaybackArgs.PlaybackMode mode) {
-      return getReadabilityResultForMode(mode).supportsHighlighting;
-      }
-
-      private ReadAloudReadabilityHooks.ReadabilityResult getReadabilityResultForMode(
-          PlaybackArgs.PlaybackMode mode) {
-      return mReadabilityInfoPerMode.getOrDefault(
-          mode,
-          new ReadAloudReadabilityHooks.ReadabilityResult(
-              /* readable= */ false, /* supportsHighlighting= */ false));
+        private ReadAloudReadabilityHooks.ReadabilityResult getReadabilityResultForMode(
+                PlaybackArgs.PlaybackMode mode) {
+            if (mode == PlaybackMode.UNSPECIFIED) {
+                mode = PlaybackMode.CLASSIC;
+            }
+            return mReadabilityInfoPerMode.getOrDefault(
+                    mode,
+                    new ReadAloudReadabilityHooks.ReadabilityResult(
+                            /* readable= */ false, /* supportsHighlighting= */ false));
       }
   }
 
@@ -1077,11 +1076,18 @@ public class ReadAloudController
             mPlaybackHooks.initVoices();
         }
 
+        final String sanitizedUrl = stripUserData(tab.getUrl()).getSpec();
+        final int sanitizedUrlHash = urlToHash(sanitizedUrl);
+        ReadabilityInfo readabilityInfo = getReadabilityInfoIfUnexpired(sanitizedUrlHash);
+        final String playbackLanguage = getLanguageForNewPlayback(tab);
+
+        PlaybackMode playbackMode =
+                getPlaybackModeForNewPlayback(readabilityInfo, playbackLanguage);
+
         // Notify player UI that playback is happening soon and show UI in case there's an error
         // coming.
-        assumeNonNull(mPlayerCoordinator).playTabRequested();
+        assumeNonNull(mPlayerCoordinator).playTabRequested(playbackMode);
 
-        final String playbackLanguage = getLanguageForNewPlayback(tab);
         boolean isTranslated = isTranslated(tab);
         var voices = mPlaybackHooks.getVoicesFor(playbackLanguage);
         // TODO: Don't show entrypoints for unsupported languages
@@ -1092,11 +1098,6 @@ public class ReadAloudController
             return promise;
         }
 
-        final String sanitizedUrl = stripUserData(tab.getUrl()).getSpec();
-        final int sanitizedUrlHash = urlToHash(sanitizedUrl);
-        ReadabilityInfo readabilityInfo = getReadabilityInfoIfUnexpired(sanitizedUrlHash);
-        PlaybackMode playbackMode =
-                getPlaybackModeForNewPlayback(readabilityInfo, playbackLanguage);
         PlaybackArgs args =
                 new PlaybackArgs(
                         sanitizedUrl,
@@ -1152,13 +1153,13 @@ public class ReadAloudController
      * Whether or not timepoints are supported for the tab's content. Timepoints are needed for word
      * highlighting.
      */
-    public boolean timepointsSupported(Tab tab) {
+    public boolean timepointsSupported(Tab tab, PlaybackMode playbackMode) {
         if (!GURL.isEmptyOrInvalid(tab.getUrl())) {
             int urlHash = urlToHash(stripUserData(tab.getUrl()).getSpec());
             if (sReadabilityInfoMap.get(urlHash) == null) {
                 return false;
             }
-            return sReadabilityInfoMap.get(urlHash).getTimepointsSupported();
+            return sReadabilityInfoMap.get(urlHash).getTimepointsSupported(playbackMode);
         }
         return false;
     }
@@ -1232,7 +1233,7 @@ public class ReadAloudController
     }
 
     private void maybeSetUpHighlighter(Playback.Metadata metadata) {
-        boolean highlightingSupported = isHighlightingSupported();
+        boolean highlightingSupported = isHighlightingSupported(metadata.playbackMode());
         ReadAloudMetrics.recordHighlightingSupported(highlightingSupported);
         if (highlightingSupported) {
             if (mHighlighter == null) {
@@ -1459,11 +1460,11 @@ public class ReadAloudController
     }
 
     @Override
-    public boolean isHighlightingSupported() {
+    public boolean isHighlightingSupported(PlaybackMode playbackMode) {
         if (mActivePlaybackTabSupplier.get() == null) {
             return false;
         }
-        return timepointsSupported(mActivePlaybackTabSupplier.get())
+        return timepointsSupported(mActivePlaybackTabSupplier.get(), playbackMode)
                 && !isTranslated(mActivePlaybackTabSupplier.get());
     }
 

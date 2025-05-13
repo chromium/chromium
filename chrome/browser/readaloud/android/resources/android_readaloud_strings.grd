@@ -267,6 +267,9 @@
       <message name="IDS_READALOUD_PLAYBACK_LOADING" desc="Message displayed when 'Listen to this page' playback is buffering.">
         Loading…
       </message>
+      <message name="IDS_READALOUD_MINI_PLAYER_LOADING_AI_PLAYBACK" desc="Description message displayed in the mini player when about to play Audio Overviews">
+        Generating AI audio...
+      </message>
        <message name="IDS_READALOUD_VOICE_MENU_TITLE" desc="Voice menu title in options menu.">
         Voice
       </message>

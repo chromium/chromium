@@ -296,6 +296,7 @@ public class ReadAloudControllerUnitTest {
         verify(mLayoutStateProvider).addObserver(mLayoutStateObserver.capture());
         verify(mFullscreenManager).addObserver(mFullscreenObserver.capture());
         when(mMetadata.languageCode()).thenReturn("en");
+        when(mMetadata.playbackMode()).thenReturn(PlaybackMode.CLASSIC);
         when(mPlayback.getMetadata()).thenReturn(mMetadata);
         when(mWebContents.getMainFrame()).thenReturn(mRenderFrameHost);
         when(mRenderFrameHost.getGlobalRenderFrameHostId()).thenReturn(mGlobalRenderFrameHostId);
@@ -654,9 +655,15 @@ public class ReadAloudControllerUnitTest {
                 .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
         assertFalse(mController.isReadable(mTab));
 
-        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), ImmutableMap.of(PlaybackMode.CLASSIC, new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
+        mCallbackCaptor
+                .getValue()
+                .onSuccess(
+                        sTestGURL.getSpec(),
+                        ImmutableMap.of(
+                                PlaybackMode.CLASSIC,
+                                new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
         assertTrue(mController.isReadable(mTab));
-        assertFalse(mController.timepointsSupported(mTab));
+        assertFalse(mController.timepointsSupported(mTab, PlaybackMode.CLASSIC));
 
         // now check that the second time the same url loads we don't resend a request
         mController.maybeCheckReadability(mTab);
@@ -745,7 +752,7 @@ public class ReadAloudControllerUnitTest {
                 .getValue()
                 .onFailure(sTestGURL.getSpec(), new Throwable("Something went wrong"));
         assertFalse(mController.isReadable(mTab));
-        assertFalse(mController.timepointsSupported(mTab));
+        assertFalse(mController.timepointsSupported(mTab, PlaybackMode.CLASSIC));
 
         // now check that the second time the same url loads we will resend a request
         mController.maybeCheckReadability(mTab);
@@ -802,14 +809,20 @@ public class ReadAloudControllerUnitTest {
         assertFalse(mController.isReadable(mTab));
 
         // The page is readable, result should be cached.
-        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), ImmutableMap.of(PlaybackMode.CLASSIC, new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
+        mCallbackCaptor
+                .getValue()
+                .onSuccess(
+                        sTestGURL.getSpec(),
+                        ImmutableMap.of(
+                                PlaybackMode.CLASSIC,
+                                new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
         assertTrue(mController.isReadable(mTab));
-        assertFalse(mController.timepointsSupported(mTab));
+        assertFalse(mController.timepointsSupported(mTab, PlaybackMode.CLASSIC));
 
         // A second newly created controller should know that the page is readable.
         mController2 = createController();
         assertTrue(mController2.isReadable(mTab));
-        assertFalse(mController2.timepointsSupported(mTab));
+        assertFalse(mController2.timepointsSupported(mTab, PlaybackMode.CLASSIC));
 
         // The second controller should not send requests to check the same URL's readability.
         mController2.maybeCheckReadability(mTab);
@@ -1686,9 +1699,15 @@ public class ReadAloudControllerUnitTest {
         verify(mHooksImpl, times(1)).isPageReadable(eq(sanitized), mCallbackCaptor.capture());
         assertFalse(mController.isReadable(mTab));
 
-        mCallbackCaptor.getValue().onSuccess(sanitized, ImmutableMap.of(PlaybackMode.CLASSIC, new ReadAloudReadabilityHooks.ReadabilityResult(true, true)));
+        mCallbackCaptor
+                .getValue()
+                .onSuccess(
+                        sanitized,
+                        ImmutableMap.of(
+                                PlaybackMode.CLASSIC,
+                                new ReadAloudReadabilityHooks.ReadabilityResult(true, true)));
         assertTrue(mController.isReadable(mTab));
-        assertTrue(mController.timepointsSupported(mTab));
+        assertTrue(mController.timepointsSupported(mTab, PlaybackMode.CLASSIC));
     }
 
     @Test
@@ -1703,6 +1722,7 @@ public class ReadAloudControllerUnitTest {
         resolvePromises();
         verify(mPlaybackHooks, times(1))
                 .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+
         onPlaybackSuccess(mPlayback);
 
         mController.setHighlighterMode(2);
@@ -2280,7 +2300,7 @@ public class ReadAloudControllerUnitTest {
     public void testIsHighlightingSupported_noPlayback() {
         mFakeTranslateBridge.setIsPageTranslated(false);
 
-        assertFalse(mController.isHighlightingSupported());
+        assertFalse(mController.isHighlightingSupported(PlaybackMode.UNSPECIFIED));
     }
 
     @Test
@@ -2290,7 +2310,7 @@ public class ReadAloudControllerUnitTest {
         mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
         resolvePromises();
 
-        assertFalse(mController.isHighlightingSupported());
+        assertFalse(mController.isHighlightingSupported(PlaybackMode.UNSPECIFIED));
     }
 
     @Test
@@ -2300,7 +2320,7 @@ public class ReadAloudControllerUnitTest {
         mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
         resolvePromises();
 
-        assertFalse(mController.isHighlightingSupported());
+        assertFalse(mController.isHighlightingSupported(PlaybackMode.UNSPECIFIED));
     }
 
     @Test
@@ -2310,7 +2330,7 @@ public class ReadAloudControllerUnitTest {
         mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
         resolvePromises();
 
-        assertTrue(mController.isHighlightingSupported());
+        assertTrue(mController.isHighlightingSupported(PlaybackMode.UNSPECIFIED));
     }
 
     @Test
@@ -3325,7 +3345,7 @@ public class ReadAloudControllerUnitTest {
         mController.setTimepointsSupportedForTest("", true);
         when(mTab.getUrl()).thenReturn(new GURL(""));
         // a tab with an empty url should not be supported
-        assertFalse(mController.timepointsSupported(mTab));
+        assertFalse(mController.timepointsSupported(mTab, PlaybackMode.CLASSIC));
     }
 
     @Test

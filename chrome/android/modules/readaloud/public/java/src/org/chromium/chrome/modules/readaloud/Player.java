@@ -36,7 +36,7 @@ public interface Player {
         BottomSheetController getBottomSheetController();
 
         /** Returns true if highlighting is supported. */
-        boolean isHighlightingSupported();
+        boolean isHighlightingSupported(PlaybackMode playbackMode);
 
         /** Set highlighter mode. */
         void setHighlighterMode(@Highlighter.Mode int mode);
@@ -149,12 +149,12 @@ public interface Player {
     default void destroy() {}
 
     /** Show the mini player, called when playback is requested. */
-    default void playTabRequested() {}
+    default void playTabRequested(PlaybackMode playbackMode) {}
 
     /**
      * Update players when playback is ready.
      *
-     * @param playback             New Playback object.
+     * @param playback New Playback object.
      * @param currentPlaybackState Playback state.
      */
     default void playbackReady(
