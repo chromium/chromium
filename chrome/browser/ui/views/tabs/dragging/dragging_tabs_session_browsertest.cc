@@ -68,7 +68,13 @@ class DraggingTabsSessionBrowserTest : public InProcessBrowserTest {
   raw_ptr<TabStrip> view_;
 };
 
-IN_PROC_BROWSER_TEST_F(DraggingTabsSessionBrowserTest, BasicTest) {
+// Flaky. http://crbug.com/417465013
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_BasicTest DISABLED_BasicTest
+#else
+#define MAYBE_BasicTest BasicTest
+#endif
+IN_PROC_BROWSER_TEST_F(DraggingTabsSessionBrowserTest, MAYBE_BasicTest) {
   // Open two tabs.
   auto [tab_0, tab_0_view] = AddTab(0, true);
   auto [tab_1, tab_1_view] = AddTab(1, false);
