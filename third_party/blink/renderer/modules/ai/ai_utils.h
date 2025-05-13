@@ -117,6 +117,24 @@ std::optional<Vector<String>> ValidateAndCanonicalizeBCP47Languages(
     v8::Isolate* isolate,
     const Vector<String>& languages);
 
+// Runs `callback` on destruction unless `Reset` is called.
+class RunOnDestruction {
+ public:
+  explicit RunOnDestruction(base::OnceClosure callback);
+  ~RunOnDestruction();
+
+  RunOnDestruction(const RunOnDestruction&) = delete;
+  RunOnDestruction& operator=(const RunOnDestruction&) = delete;
+
+  RunOnDestruction(RunOnDestruction&& other) = default;
+  RunOnDestruction& operator=(RunOnDestruction&& other) = default;
+
+  void Reset();
+
+ private:
+  base::OnceClosure callback_;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_UTILS_H_

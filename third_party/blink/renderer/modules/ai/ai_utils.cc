@@ -296,4 +296,17 @@ std::optional<Vector<String>> ValidateAndCanonicalizeBCP47Languages(
   return canonicalized_languages;
 }
 
+RunOnDestruction::RunOnDestruction(base::OnceClosure callback)
+    : callback_(std::move(callback)) {}
+
+RunOnDestruction::~RunOnDestruction() {
+  if (!callback_.is_null()) {
+    std::move(callback_).Run();
+  }
+}
+
+void RunOnDestruction::Reset() {
+  callback_.Reset();
+}
+
 }  // namespace blink

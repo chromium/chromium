@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/ai/ai_context_observer.h"
+#include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/create_monitor.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
@@ -78,9 +79,14 @@ class AIWritingAssistanceCreateClient
 
   // AIMojoCreateClient:
   void OnResult(mojo::PendingRemote<AIMojoClient> pending_remote) override {
+    // Call `Cleanup` when this function returns.
+    RunOnDestruction run_on_destruction(WTF::BindOnce(
+        &AIWritingAssistanceCreateClient::Cleanup, WrapWeakPersistent(this)));
+
     if (!this->GetResolver()) {
       return;
     }
+
     if (pending_remote && monitor_) {
       // Ensure that a download completion event is sent.
       monitor_->OnDownloadProgressUpdate(kNormalizedDownloadProgressMax,
@@ -96,10 +102,13 @@ class AIWritingAssistanceCreateClient
           DOMExceptionCode::kInvalidStateError,
           kExceptionMessageUnableToCreateSession);
     }
-    this->Cleanup();
   }
 
   void OnError(mojom::blink::AIManagerCreateClientError error) override {
+    // Call `Cleanup` when this function returns.
+    RunOnDestruction run_on_destruction(WTF::BindOnce(
+        &AIWritingAssistanceCreateClient::Cleanup, WrapWeakPersistent(this)));
+
     if (!this->GetResolver()) {
       return;
     }
@@ -127,7 +136,6 @@ class AIWritingAssistanceCreateClient
         break;
       }
     }
-    this->Cleanup();
   }
 
   // AIContextObserver:

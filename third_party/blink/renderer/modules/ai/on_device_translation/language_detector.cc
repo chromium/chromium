@@ -55,30 +55,6 @@ bool RequiresUserActivation(
   }
 }
 
-// Runs `callback` on destruction unless `Reset` is called.
-class RunOnDestruction {
- public:
-  explicit RunOnDestruction(base::OnceClosure callback)
-      : callback_(std::move(callback)) {}
-
-  RunOnDestruction(const RunOnDestruction&) = delete;
-  RunOnDestruction& operator=(const RunOnDestruction&) = delete;
-
-  RunOnDestruction(RunOnDestruction&& other) = default;
-  RunOnDestruction& operator=(RunOnDestruction&& other) = default;
-
-  void Reset() { callback_.Reset(); }
-
-  ~RunOnDestruction() {
-    if (!callback_.is_null()) {
-      std::move(callback_).Run();
-    }
-  }
-
- private:
-  base::OnceClosure callback_;
-};
-
 // Rejects if the OnceClosure is destroyed before it is ran.
 template <typename T>
 base::OnceClosure RejectOnDestruction(ScriptPromiseResolver<T>* resolver) {
