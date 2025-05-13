@@ -159,7 +159,6 @@ export class FreAppController {
       FreWebUiState.kBeginLoading,
       FreWebUiState.kShowLoading,
       FreWebUiState.kFinishLoading,
-      FreWebUiState.kReady,
     ];
     if (allowedStates.includes(this.state)) {
       this.setState(FreWebUiState.kOffline);
