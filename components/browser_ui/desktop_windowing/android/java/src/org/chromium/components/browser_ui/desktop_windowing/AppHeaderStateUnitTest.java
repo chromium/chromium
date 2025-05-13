@@ -98,11 +98,20 @@ public class AppHeaderStateUnitTest {
                 "isInDesktopWindow make the 2 state different.",
                 new AppHeaderState(new Rect(), new Rect(), true),
                 new AppHeaderState(new Rect(), new Rect(), false));
-
         assertNotEquals(
                 "isInDesktopWindow make the 2 state different.",
                 new AppHeaderState(new Rect(0, 0, 10, 10), new Rect(), true),
                 new AppHeaderState(new Rect(0, 0, 10, 10), new Rect(), false));
+
+        assertNotEquals(
+                "controlsTopOffset are different",
+                new AppHeaderState(new Rect(), new Rect(), true),
+                new AppHeaderState(new Rect(), new Rect(), 50, true));
+        assertNotEquals(
+                "controlsTopOffset are different",
+                new AppHeaderState(new Rect(0, 0, 10, 10), new Rect(), true),
+                new AppHeaderState(new Rect(0, 0, 10, 10), new Rect(), 50, true));
+
         assertNotEquals(
                 "widestUnoccludedRects are different.",
                 new AppHeaderState(new Rect(0, 0, 10, 10), new Rect(0, 0, 1, 1), true),

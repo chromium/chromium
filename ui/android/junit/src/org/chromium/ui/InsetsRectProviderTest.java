@@ -411,6 +411,11 @@ public class InsetsRectProviderTest {
                 "Navigation bar insets should be unaffected.",
                 navigationBarInsets,
                 appliedInsets.getInsets(navigationBars()));
+        assertEquals(
+                "Status bar should overlap with caption bar.",
+                10,
+                ((CaptionBarInsetsRectProvider) mInsetsRectProvider)
+                        .getOverlappingStatusBarHeightForTesting());
 
         appliedInsets = mInsetsRectProvider.onApplyWindowInsets(mView, newWindowInsets);
         assertEquals(
@@ -425,6 +430,11 @@ public class InsetsRectProviderTest {
                 "Navigation bar insets should be unaffected.",
                 navigationBarInsets,
                 appliedInsets.getInsets(navigationBars()));
+        assertEquals(
+                "Status bar should overlap with caption bar.",
+                10,
+                ((CaptionBarInsetsRectProvider) mInsetsRectProvider)
+                        .getOverlappingStatusBarHeightForTesting());
 
         assertEquals("Observer should be called once.", 1, observer.getCallCount());
         assertSuppliedValues(captionBarInsets, availableArea, blockingRects);
@@ -475,6 +485,11 @@ public class InsetsRectProviderTest {
                 "Navigation bar insets should be unaffected.",
                 navigationBarInsets,
                 appliedInsets.getInsets(navigationBars()));
+        assertEquals(
+                "Status bar should not overlap with caption bar.",
+                0,
+                ((CaptionBarInsetsRectProvider) mInsetsRectProvider)
+                        .getOverlappingStatusBarHeightForTesting());
 
         appliedInsets = mInsetsRectProvider.onApplyWindowInsets(mView, newWindowInsets);
         assertEquals(
@@ -489,6 +504,11 @@ public class InsetsRectProviderTest {
                 "Navigation bar insets should be unaffected.",
                 navigationBarInsets,
                 appliedInsets.getInsets(navigationBars()));
+        assertEquals(
+                "Status bar should not overlap with caption bar.",
+                0,
+                ((CaptionBarInsetsRectProvider) mInsetsRectProvider)
+                        .getOverlappingStatusBarHeightForTesting());
 
         assertEquals("Observer should be called once.", 1, observer.getCallCount());
         assertSuppliedValues(captionBarInsets, availableArea, blockingRects);

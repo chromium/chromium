@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.Windowing
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
+import org.chromium.ui.CaptionBarInsetsRectProvider;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.InsetsRectProvider;
 import org.chromium.ui.base.TestActivity;
@@ -84,7 +85,7 @@ public class AppHeaderCoordinatorUnitTest {
 
     @Mock private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisDelegate;
     @Mock private InsetObserver mInsetObserver;
-    @Mock private InsetsRectProvider mInsetsRectProvider;
+    @Mock private CaptionBarInsetsRectProvider mInsetsRectProvider;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private DesktopWindowStateManager.AppHeaderObserver mObserver;
     @Captor private ArgumentCaptor<InsetsRectProvider.Observer> mInsetRectObserverCaptor;

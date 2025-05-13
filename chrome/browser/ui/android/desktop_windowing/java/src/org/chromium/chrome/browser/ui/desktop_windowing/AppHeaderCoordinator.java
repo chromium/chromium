@@ -62,13 +62,13 @@ public class AppHeaderCoordinator
 
     private static final String TAG = "AppHeader";
 
-    private static @Nullable InsetsRectProvider sInsetsRectProviderForTesting;
+    private static @Nullable CaptionBarInsetsRectProvider sInsetsRectProviderForTesting;
 
     private @Nullable Activity mActivity;
     private final View mRootView;
     private final BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     private final InsetObserver mInsetObserver;
-    private final InsetsRectProvider mCaptionBarRectProvider;
+    private final CaptionBarInsetsRectProvider mCaptionBarRectProvider;
     private final WindowInsetsController mInsetsController;
     private final ObserverList<AppHeaderObserver> mObservers = new ObserverList<>();
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -85,6 +85,7 @@ public class AppHeaderCoordinator
     private @WindowingMode int mWindowingMode = WindowingMode.UNKNOWN;
     private int mKeyboardInset;
     private int mNavBarInset;
+    private int mControlsTopOffset;
 
     /**
      * Instantiate the coordinator to handle drawing the tab strip into the captionBar area.
@@ -135,8 +136,10 @@ public class AppHeaderCoordinator
                                 insetObserver,
                                 insetObserver.getLastRawWindowInsets(),
                                 InsetConsumerSource.APP_HEADER_COORDINATOR_CAPTION);
+
         InsetsRectProvider.Observer insetsRectUpdateRunnable = this::onInsetsRectsUpdated;
         mCaptionBarRectProvider.addObserver(insetsRectUpdateRunnable);
+        mCaptionBarRectProvider.addSystemBarOverlapObserver(this::onControlsTopOffsetChanged);
 
         // Populate the initial value if the rect provider is ready.
         if (!mCaptionBarRectProvider.getWidestUnoccludedRect().isEmpty()) {
@@ -191,6 +194,11 @@ public class AppHeaderCoordinator
         outState.putBoolean(INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW, mIsInUnfocusedDesktopWindow);
     }
 
+    private void onControlsTopOffsetChanged(int topOffset) {
+        mControlsTopOffset = topOffset;
+        onInsetsRectsUpdated(mCaptionBarRectProvider.getWidestUnoccludedRect());
+    }
+
     private void onInsetsRectsUpdated(Rect widestUnoccludedRect) {
         mHeuristicResult = checkIsInDesktopWindow(mCaptionBarRectProvider, mHeuristicResult);
         var isInDesktopWindow = mHeuristicResult == DesktopWindowHeuristicResult.IN_DESKTOP_WINDOW;
@@ -211,6 +219,7 @@ public class AppHeaderCoordinator
                 new AppHeaderState(
                         mCaptionBarRectProvider.getWindowRect(),
                         widestUnoccludedRect,
+                        mControlsTopOffset,
                         isInDesktopWindow);
         if (appHeaderState.equals(mAppHeaderState)) return;
 
@@ -342,7 +351,8 @@ public class AppHeaderCoordinator
         }
     }
 
-    public static void setInsetsRectProviderForTesting(InsetsRectProvider providerForTesting) {
+    public static void setInsetsRectProviderForTesting(
+            CaptionBarInsetsRectProvider providerForTesting) {
         sInsetsRectProviderForTesting = providerForTesting;
         ResettersForTesting.register(() -> sInsetsRectProviderForTesting = null);
     }

@@ -144,17 +144,13 @@ class WebAppHeaderLayoutMediator
     private void updatePaddings() {
         if (mCurrentHeaderState == null) return;
 
-        // Matching behavior to BrApp: add top padding when caption bar insets are greater than our
-        // min height expectations. Rationale - some vendors provide caption bar insets as
-        // caption bar + status bar insets, to layout properly we need to deduct status bar insets.
-        // This assumption is optimistic - we assume that caption bar matches our min height.
-        final int topPadding =
-                Math.max(0, mCurrentHeaderState.getAppHeaderHeight() - getDefaultMinHeight());
-
         final var paddings =
                 new Rect(
                         mCurrentHeaderState.getLeftPadding(),
-                        topPadding,
+                        // Some vendors provide caption bar insets as caption bar + status bar
+                        // insets, to layout properly we need to add status bar insets to the
+                        // padding.
+                        mCurrentHeaderState.getControlsTopOffset(),
                         mCurrentHeaderState.getRightPadding(),
                         0);
         mModel.set(WebAppHeaderLayoutProperties.PADDINGS, paddings);

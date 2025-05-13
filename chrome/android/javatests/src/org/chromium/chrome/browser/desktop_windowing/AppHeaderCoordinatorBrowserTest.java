@@ -74,8 +74,8 @@ import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
+import org.chromium.ui.CaptionBarInsetsRectProvider;
 import org.chromium.ui.InsetObserver;
-import org.chromium.ui.InsetsRectProvider;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -107,7 +107,7 @@ public class AppHeaderCoordinatorBrowserTest {
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
-    @Mock private InsetsRectProvider mInsetsRectProvider;
+    @Mock private CaptionBarInsetsRectProvider mInsetsRectProvider;
 
     private final Rect mWidestUnoccludedRect = new Rect();
     private final Rect mWindowRect = new Rect();
