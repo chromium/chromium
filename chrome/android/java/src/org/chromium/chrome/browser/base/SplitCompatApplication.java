@@ -201,7 +201,8 @@ public class SplitCompatApplication extends Application {
 
         maybeInitProcessType();
 
-        if (isBrowserProcess && !ChromeFeatureList.sSkipIsolatedSplitPreload.isEnabled()) {
+        if (isBrowserProcess) {
+            ChromeFeatureList.sSkipIsolatedSplitPreload.isEnabled();
             performBrowserProcessPreloading(context);
         }
 
@@ -296,11 +297,8 @@ public class SplitCompatApplication extends Application {
     }
 
     private void maybeInitChromeSplitAndPreloadNativeLibrary() {
-        if (isBrowserProcess()
-                && ChromeFeatureList.sSkipIsolatedSplitPreload.isEnabled()
-                && !BuildConfig.IS_FOR_TEST) {
-            new Thread(() -> LibraryLoader.getInstance().loadNow()).start();
-            performBrowserProcessPreloading(this, true);
+        if (isBrowserProcess()) {
+            ChromeFeatureList.sSkipIsolatedSplitPreload.isEnabled();
         }
     }
 
