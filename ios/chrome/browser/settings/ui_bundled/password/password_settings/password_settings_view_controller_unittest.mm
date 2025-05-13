@@ -90,6 +90,10 @@ class PasswordSettingsViewControllerTest : public PlatformTest {
   void CreateController() {
     controller_ = [[PasswordSettingsViewController alloc] init];
 
+    // TODO(crbug.com/399398237): Refactor password settings consumer.
+    [controller_ setSavingPasswordsEnabled:YES managedByPolicy:NO];
+    [controller_ setSavingPasskeysEnabled:YES];
+
     // Accessing this property will force the table view to be built, making
     // sure it is populated when the tests run.
     [controller_ view];
