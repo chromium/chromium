@@ -30654,7 +30654,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Options_EasyUnlockRequireProximity_Disable">
-  <owner>isherman@chromium.org</owner>
   <owner>tengs@chromium.org</owner>
   <description>
     The user disabled the option to require their phone to be in very close
@@ -30664,7 +30663,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Options_EasyUnlockRequireProximity_Enable">
-  <owner>isherman@chromium.org</owner>
   <owner>tengs@chromium.org</owner>
   <description>
     The user enabled the option to require their phone to be in very close

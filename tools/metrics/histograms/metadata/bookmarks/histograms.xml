@@ -234,9 +234,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bookmarks.Count.OnProfileLoad3" units="bookmarks"
     expires_after="2025-10-26">
-  <owner>supertri@chromium.org</owner>
-  <owner>isherman@chromium.org</owner>
-  <owner>aidanday@google.com</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
     The total number of bookmarks a user has saved, excluding folders. Recorded
