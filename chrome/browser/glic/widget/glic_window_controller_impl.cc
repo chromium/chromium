@@ -1043,6 +1043,9 @@ void GlicWindowControllerImpl::CloseFinish(
   window_activation_callback_list_.Notify(false);
 
   host().PanelWasClosed();
+  if (base::FeatureList::IsEnabled(features::kGlicUnloadOnClose)) {
+    host().Shutdown();
+  }
 
   if (reopen_detached) {
     Show(nullptr, *reopen_detached_source);
