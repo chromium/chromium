@@ -190,8 +190,8 @@ bool BaseRenderingContext2D::IsDrawElementEligible(
 
   if (element->parentElement() != canvas_element) {
     exception_state.ThrowTypeError(
-        "Only immediate children of the <canvas> element can be used with "
-        "drawElement().");
+        "Only immediate children of the <canvas> element can be passed to "
+        "placeElement().");
     return false;
   }
 
@@ -206,12 +206,16 @@ bool BaseRenderingContext2D::IsDrawElementEligible(
   // TODO(crbug.com/413728246): Maybe we can support canvas element.
   if (IsA<HTMLCanvasElement>(element)) {
     exception_state.ThrowTypeError(
-        "<canvas> elements cannot be used with drawElement().");
+        "<canvas> children of a <canvas> cannot be passed to placeElement().");
     return false;
   }
 
-  // TODO(crbug.com/413408522): Verify that `canvas_element` has the
-  // `withlayout` attribute.
+  if (!canvas_element->layoutSubtree()) {
+    exception_state.ThrowTypeError(
+        "<canvas> elements without layoutsubtree do not support "
+        "placeElement().");
+    return false;
+  }
 
   return true;
 }
