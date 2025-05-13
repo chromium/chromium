@@ -206,8 +206,8 @@ export class VoiceSearchOverlayElement extends CrLitElement {
     };
   }
 
-  protected accessor interimResult_: string;
-  protected accessor finalResult_: string;
+  protected accessor interimResult_: string = '';
+  protected accessor finalResult_: string = '';
   private accessor state_: State = State.UNINITIALIZED;
   private accessor error_: Error;
   protected accessor helpUrl_: string =

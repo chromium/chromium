@@ -84,23 +84,23 @@ export class LogoElement extends CrLitElement {
 
   accessor singleColored: boolean = false;
   accessor dark: boolean;
-  accessor backgroundColor: SkColor;
-  private accessor loaded_: boolean;
-  protected accessor doodle_: Doodle|null;
-  protected accessor imageDoodle_: ImageDoodle|null;
-  protected accessor showLogo_: boolean;
-  protected accessor showDoodle_: boolean;
-  private accessor doodleBoxed_: boolean;
-  protected accessor imageUrl_: string;
+  accessor backgroundColor: SkColor|null = null;
+  private accessor loaded_: boolean = false;
+  protected accessor doodle_: Doodle|null = null;
+  protected accessor imageDoodle_: ImageDoodle|null = null;
+  protected accessor showLogo_: boolean = false;
+  protected accessor showDoodle_: boolean = false;
+  private accessor doodleBoxed_: boolean = false;
+  protected accessor imageUrl_: string = '';
   protected accessor showAnimation_: boolean = false;
-  protected accessor animationUrl_: string;
-  protected accessor iframeUrl_: string;
+  protected accessor animationUrl_: string = '';
+  protected accessor iframeUrl_: string = '';
   private accessor duration_: string;
   private accessor height_: string;
   private accessor width_: string;
-  protected accessor expanded_: boolean;
-  protected accessor showShareDialog_: boolean;
-  protected accessor imageDoodleTabIndex_: number;
+  protected accessor expanded_: boolean = false;
+  protected accessor showShareDialog_: boolean = false;
+  protected accessor imageDoodleTabIndex_: number = -1;
 
   private eventTracker_: EventTracker = new EventTracker();
   private pageHandler_: PageHandlerRemote;

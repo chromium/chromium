@@ -146,12 +146,12 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     };
   }
 
-  protected accessor isHidden_: boolean;
-  protected accessor isError_: boolean;
-  protected accessor isNormalOrError_: boolean;
-  protected accessor isDragging_: boolean;
-  protected accessor isLoading_: boolean;
-  protected accessor isOffline_: boolean;
+  protected accessor isHidden_: boolean = false;
+  protected accessor isError_: boolean = false;
+  protected accessor isNormalOrError_: boolean = false;
+  protected accessor isDragging_: boolean = false;
+  protected accessor isLoading_: boolean = false;
+  protected accessor isOffline_: boolean = false;
   private accessor dialogState_ = DialogState.HIDDEN;
   private accessor lensErrorMessage_ = LensErrorMessage.NONE;
   private outsideHandlerAttached_ = false;

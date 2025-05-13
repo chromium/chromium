@@ -50,8 +50,8 @@ export class ModuleElement extends ModuleElementBase {
     };
   }
 
-  accessor tiles: FooDataItem[];
-  override accessor title: string;
+  accessor tiles: FooDataItem[] = [];
+  override accessor title: string = '';
 
   protected getMenuItemGroups_(): MenuItem[][] {
     return [

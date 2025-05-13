@@ -241,25 +241,25 @@ export class AppElement extends AppElementBase {
   }
 
   protected accessor oneGoogleBarIframeOrigin_: string = OGB_IFRAME_ORIGIN;
-  protected accessor oneGoogleBarIframePath_: string;
-  protected accessor oneGoogleBarLoaded_: boolean;
+  protected accessor oneGoogleBarIframePath_: string|undefined;
+  protected accessor oneGoogleBarLoaded_: boolean = false;
   protected accessor theme_: Theme|undefined;
-  protected accessor showCustomize_: boolean;
-  protected accessor showCustomizeChromeText_: boolean;
+  protected accessor showCustomize_: boolean = false;
+  protected accessor showCustomizeChromeText_: boolean = false;
   protected accessor showWallpaperSearch_: boolean = false;
-  private accessor selectedCustomizeDialogPage_: string|null;
+  private accessor selectedCustomizeDialogPage_: string|null = null;
   protected accessor showVoiceSearchOverlay_: boolean = false;
-  protected accessor showBackgroundImage_: boolean;
-  protected accessor backgroundImageAttribution1_: string;
-  protected accessor backgroundImageAttribution2_: string;
-  protected accessor backgroundImageAttributionUrl_: string;
-  protected accessor backgroundColor_: SkColor|null;
-  protected accessor colorSourceIsBaseline: boolean;
+  protected accessor showBackgroundImage_: boolean = false;
+  protected accessor backgroundImageAttribution1_: string = '';
+  protected accessor backgroundImageAttribution2_: string = '';
+  protected accessor backgroundImageAttributionUrl_: string = '';
+  protected accessor backgroundColor_: SkColor|null = null;
+  protected accessor colorSourceIsBaseline: boolean = false;
   protected accessor logoColor_: SkColor|null = null;
-  protected accessor singleColoredLogo_: boolean;
-  accessor realboxCanShowSecondarySide: boolean;
-  accessor realboxHadSecondarySide: boolean;
-  protected accessor realboxShown_: boolean;
+  protected accessor singleColoredLogo_: boolean = false;
+  accessor realboxCanShowSecondarySide: boolean = false;
+  accessor realboxHadSecondarySide: boolean = false;
+  protected accessor realboxShown_: boolean = false;
   protected accessor showLensUploadDialog_: boolean = false;
   protected accessor logoEnabled_: boolean =
       loadTimeData.getBoolean('logoEnabled');
@@ -273,19 +273,19 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('modulesEnabled');
   private accessor middleSlotPromoLoaded_: boolean = false;
   private accessor modulesLoaded_: boolean = false;
-  protected accessor modulesShownToUser: boolean;
+  protected accessor modulesShownToUser: boolean = false;
   protected accessor microsoftModuleEnabled_: boolean =
       loadTimeData.getBoolean('microsoftModuleEnabled');
   protected accessor microsoftAuthIframePath_: string = MSAL_IFRAME_ORIGIN;
   protected accessor promoAndModulesLoaded_: boolean = false;
-  protected accessor lazyRender_: boolean;
+  protected accessor lazyRender_: boolean = false;
   protected accessor scrolledToTop_: boolean =
       document.documentElement.scrollTop <= 0;
   protected accessor wallpaperSearchButtonAnimationEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchButtonAnimationEnabled');
   protected accessor wallpaperSearchButtonEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchButtonEnabled');
-  protected accessor showWallpaperSearchButton_: boolean;
+  protected accessor showWallpaperSearchButton_: boolean = false;
 
   private callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
@@ -295,8 +295,8 @@ export class AppElement extends AppElementBase {
   private setCustomizeChromeSidePanelVisibilityListener_: number|null = null;
   private setWallpaperSearchButtonVisibilityListener_: number|null = null;
   private eventTracker_: EventTracker = new EventTracker();
-  private shouldPrintPerformance_: boolean;
-  private backgroundImageLoadStartEpoch_: number;
+  private shouldPrintPerformance_: boolean = false;
+  private backgroundImageLoadStartEpoch_: number = 0;
   private backgroundImageLoadStart_: number = 0;
   private showWebstoreToastListenerId_: number|null = null;
 

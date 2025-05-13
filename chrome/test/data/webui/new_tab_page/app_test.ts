@@ -297,7 +297,7 @@ suite('NewTabPageAppTest', () => {
       assertStyle($$(app, '#backgroundImageAttribution2')!, 'display', 'none');
       assertFalse(app.$.logo.singleColored);
       assertFalse(app.$.logo.dark);
-      assertEquals(0xffff0000, app.$.logo.backgroundColor.value);
+      assertEquals(0xffff0000, app.$.logo.backgroundColor?.value);
     });
 
     test('setting 3p theme shows attribution', async () => {
