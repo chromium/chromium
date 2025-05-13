@@ -522,7 +522,7 @@
 <translation id="3157387275655328056">添加到阅读清单</translation>
 <translation id="315778507796115851">历史记录</translation>
 <translation id="31652791196570636">关闭</translation>
-<translation id="3167868116600277716">“探索”信息流</translation>
+<translation id="3167868116600277716">探索信息流</translation>
 <translation id="3169472444629675720">探索</translation>
 <translation id="3174662312949010067">您还可在其他设备上使用已存密码。</translation>
 <translation id="3181954750937456830">安全浏览（保护您和您的设备不受危险网站的侵害）</translation>
@@ -539,7 +539,7 @@
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">如果您还共享了 Chrome 使用情况报告，这些报告会包含您访问过的网址</translation>
 <translation id="3245744387817103524">无法保存您的更改。</translation>
-<translation id="3254806613790954367">您上次在所有设备上打开的标签页</translation>
+<translation id="3254806613790954367">您在所有设备上最后使用的标签页。</translation>
 <translation id="325717987950204592">点按“隐私与安全”</translation>
 <translation id="3272527697863656322">取消</translation>
 <translation id="3273510436356991673">打造您的专属主屏幕</translation>
@@ -1627,7 +1627,7 @@
 <translation id="7839994177130598711">现在，您的家庭成员可在使用 Google 密码管理工具登录 <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> 时使用您的用户名和密码。</translation>
 <translation id="7840771868269352570">系统将会移除您所选的各项内容。</translation>
 <translation id="7841180087127694526">搜索复制的文字</translation>
-<translation id="7841418003178675048">选择您在“新标签页”页面上看到的卡片。</translation>
+<translation id="7841418003178675048">选择要在新标签页上显示的卡片。</translation>
 <translation id="7846161022626028328">出错了，请重试。</translation>
 <translation id="7846296061357476882">Google 服务</translation>
 <translation id="784934925303690534">时间范围</translation>

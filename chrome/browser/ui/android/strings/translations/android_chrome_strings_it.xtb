@@ -1728,7 +1728,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8788968922598763114">Riapri l'ultima scheda chiusa</translation>
 <translation id="8790193082819560975">Tocca per cercare le opzioni di acquisto del prodotto in una nuova scheda.</translation>
 <translation id="879027982257117598">Ad esempio, se visiti un sito che vende scarpe da corsa per lunghe distanze, il sito potrebbe decidere che ti interessa partecipare a maratone. Se in un secondo momento visiti un altro sito, quest'ultimo può mostrarti un annuncio relativo a scarpe da corsa suggerito dal primo sito.</translation>
-<translation id="8798449543960971550">Leggi</translation>
+<translation id="8798449543960971550">Letti</translation>
 <translation id="8803526663383843427">Quando attiva</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Elemento salvato nel tuo Account Google, <ph name="ACCOUNT_EMAIL" />.}other{Elementi salvati nel tuo Account Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8804742093141782941">Mantieni gruppo</translation>
