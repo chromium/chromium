@@ -649,8 +649,6 @@ ci.thin_tester(
             ),
         },
     ),
-    #TODO(crbug.com/415096761): Add to rotation when stable
-    gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "release|arm64",
@@ -1182,8 +1180,6 @@ ci.thin_tester(
             ),
         },
     ),
-    # TODO(crbug.com/414800490): Add to rotation when it's stable.
-    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "15",

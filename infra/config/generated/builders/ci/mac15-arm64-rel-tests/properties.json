@@ -86,5 +86,11 @@
     ]
   },
   "builder_group": "chromium.mac",
-  "recipe": "chromium"
+  "gardener_rotations": [
+    "chromium"
+  ],
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium"
+  ]
 }
