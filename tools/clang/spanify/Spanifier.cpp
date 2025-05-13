@@ -172,6 +172,34 @@ AST_MATCHER(clang::ArraySubscriptExpr, isSafeArraySubscript) {
   return true;
 }
 
+struct UnsafeFreeFuncToMacro {
+  // The name of an unsafe free function to be rewritten.
+  const std::string_view function_name;
+  // The helper macro name to be rewritten to.
+  const std::string_view macro_name;
+};
+
+std::optional<UnsafeFreeFuncToMacro> FindUnsafeFreeFuncToBeRewrittenToMacro(
+    const clang::FunctionDecl* function_decl) {
+  // The table of unsafe free functions to be rewritten to helper macro calls.
+  // Note that C++20 is not supported in tools/clang/spanify/ and we cannot use
+  // std::to_array.
+  static constexpr UnsafeFreeFuncToMacro unsafe_free_func_table[] = {
+      // https://source.chromium.org/chromium/chromium/src/+/main:third_party/perl/c/include/harfbuzz/hb-buffer.h;drc=6f3e5028eb65d0b4c5fdd792106ac4c84eee1eb3;l=442
+      {"hb_buffer_get_glyph_positions", "UNSAFE_HB_BUFFER_GET_GLYPH_POSITIONS"},
+  };
+
+  const std::string& function_name = function_decl->getQualifiedNameAsString();
+
+  for (const auto& entry : unsafe_free_func_table) {
+    if (function_name == entry.function_name) {
+      return entry;
+    }
+  }
+
+  return std::nullopt;
+}
+
 struct UnsafeCxxMethodToMacro {
   // The qualified class name of an unsafe method to be rewritten.
   const std::string_view class_name;
@@ -207,9 +235,13 @@ std::optional<UnsafeCxxMethodToMacro> FindUnsafeCxxMethodToBeRewrittenToMacro(
   return std::nullopt;
 }
 
-AST_MATCHER(clang::CXXMethodDecl, unsafeCxxMethodToBeRewrittenToMacro) {
-  const clang::CXXMethodDecl* method_decl = &Node;
-  return bool(FindUnsafeCxxMethodToBeRewrittenToMacro(method_decl));
+AST_MATCHER(clang::FunctionDecl, unsafeFunctionToBeRewrittenToMacro) {
+  const clang::FunctionDecl* function_decl = &Node;
+  if (const clang::CXXMethodDecl* method_decl =
+          clang::dyn_cast<clang::CXXMethodDecl>(function_decl)) {
+    return bool(FindUnsafeCxxMethodToBeRewrittenToMacro(method_decl));
+  }
+  return bool(FindUnsafeFreeFuncToBeRewrittenToMacro(function_decl));
 }
 
 // Convert a number to a string with leading zeros. This is useful to ensure
@@ -1107,7 +1139,7 @@ static void EmitSingleVariableSpan(const std::string& key,
                ", 1u)", source_manager));
 }
 
-// Rewrites unsafe third-party function calls to helper macro calls.
+// Rewrites unsafe third-party member function calls to helper macro calls.
 //
 // Example)
 //     SkBitmap sk_bitmap;
@@ -1121,18 +1153,19 @@ static void EmitSingleVariableSpan(const std::string& key,
 //     int tmp_width = sk_bitmap.width();
 //     base::span<uint32_t> image_row(tmp_row, tmp_width - x);
 //
-// Tests are in: unsafe-cxx-methods-original.cc and
+// Tests are in: unsafe-function-to-macro-original.cc and
 // //base/containers/auto_spanification_helper_unittest.cc
-static std::string getNodeFromUnsafeCxxMethodCall(
+static std::string GetNodeFromUnsafeCxxMethodCall(
     const clang::Expr* size_expr,
     const clang::CXXMemberCallExpr* member_call_expr,
     const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
 
   const auto* method_decl = GetNodeOrCrash<clang::CXXMethodDecl>(
-      result, "unsafe_cxx_method_decl",
-      "`unsafe_cxx_method_call_expr` implies `unsafe_cxx_method_decl`");
-  // The match with using `unsafeCxxMethodToBeRewrittenToMacro` guarantees that
+      result, "unsafe_function_decl",
+      "`unsafe_function_call_expr` in clang::CXXMemberCallExpr implies "
+      "`unsafe_function_decl` in clang::CXXMethodDecl");
+  // The match with using `unsafeFunctionToBeRewrittenToMacro` guarantees that
   // there exists an `UnsafeCxxMethodToMacro` instance, so the following
   // "Find..." always succeeds.
   const UnsafeCxxMethodToMacro entry =
@@ -1186,6 +1219,65 @@ static std::string getNodeFromUnsafeCxxMethodCall(
                                kBaseAutoSpanificationHelperIncludePath));
   EmitSink(key);
   return key;
+}
+
+// Rewrites unsafe third-party free function calls to helper macro calls.
+//
+// Example)
+//     struct hb_glyph_position_t* positions =
+//         hb_buffer_get_glyph_positions(&buffer, &length);
+// will be rewritten to
+//     base::span<hb_glyph_position_t> positions =
+//         UNSAFE_HB_BUFFER_GET_GLYPH_POSITIONS(&buffer, &length);
+// where the macro performs essentially the following.
+//     hb_glyph_position_t* tmp_pos =
+//         hb_buffer_get_glyph_positions(&buffer, &length);
+//     base::span<hb_glyph_position_t> positions(tmp_pos, length);
+//
+// Tests are in: unsafe-function-to-macro-original.cc and
+// //base/containers/auto_spanification_helper_unittest.cc
+static std::string GetNodeFromUnsafeFreeFuncCall(
+    const clang::Expr* size_expr,
+    const clang::CallExpr* call_expr,
+    const MatchFinder::MatchResult& result) {
+  const clang::SourceManager& source_manager = *result.SourceManager;
+
+  const auto* function_decl = GetNodeOrCrash<clang::FunctionDecl>(
+      result, "unsafe_function_decl",
+      "`unsafe_function_call_expr` implies `unsafe_function_decl`");
+  // The match with using `unsafeFunctionToBeRewrittenToMacro` guarantees that
+  // there exists an `UnsafeFreeFuncToMacro` instance, so the following
+  // "Find..." always succeeds.
+  const UnsafeFreeFuncToMacro entry =
+      FindUnsafeFreeFuncToBeRewrittenToMacro(function_decl).value();
+
+  // `key` is compatible with getNodeFromSizeExpr.
+  const std::string& key = NodeKey(size_expr, source_manager);
+
+  // Replace the function name with the macro name.
+  const clang::SourceLocation& func_loc = call_expr->getCallee()->getBeginLoc();
+  EmitReplacement(
+      key, GetReplacementDirective(
+               clang::SourceRange(func_loc, func_loc.getLocWithOffset(
+                                                entry.function_name.length())),
+               std::string(entry.macro_name), source_manager));
+
+  EmitReplacement(
+      key, GetIncludeDirective(size_expr->getSourceRange(), source_manager,
+                               kBaseAutoSpanificationHelperIncludePath));
+  EmitSink(key);
+  return key;
+}
+
+static std::string GetNodeFromUnsafeFunctionCall(
+    const clang::Expr* size_expr,
+    const clang::CallExpr* call_expr,
+    const MatchFinder::MatchResult& result) {
+  if (const clang::CXXMemberCallExpr* member_call_expr =
+          clang::dyn_cast<clang::CXXMemberCallExpr>(call_expr)) {
+    return GetNodeFromUnsafeCxxMethodCall(size_expr, member_call_expr, result);
+  }
+  return GetNodeFromUnsafeFreeFuncCall(size_expr, call_expr, result);
 }
 
 static std::string getNodeFromSizeExpr(const clang::Expr* size_expr,
@@ -2191,16 +2283,11 @@ std::string GetRHS(const MatchFinder::MatchResult& result) {
           result.Nodes.getNodeAs<clang::Expr>("size_node")) {
     // "size_node" assumes that third party functions that return a buffer
     // provide some way to know the size, however special handling is required
-    // to extract that, thus here we add support for classes that have methods
-    // returning a buffer that also have size support.
-    //
-    // TODO(yukishiino): Add support for non-member functions that return
-    // buffers.
-    if (const auto* member_call_expr =
-            result.Nodes.getNodeAs<clang::CXXMemberCallExpr>(
-                "unsafe_cxx_method_call_expr")) {
-      return getNodeFromUnsafeCxxMethodCall(size_expr, member_call_expr,
-                                            result);
+    // to extract that, thus here we add support for functions returning a
+    // buffer that also have size support.
+    if (const auto* unsafe_call_expr = result.Nodes.getNodeAs<clang::CallExpr>(
+            "unsafe_function_call_expr")) {
+      return GetNodeFromUnsafeFunctionCall(size_expr, unsafe_call_expr, result);
     }
     return getNodeFromSizeExpr(size_expr, result);
   }
@@ -2441,18 +2528,17 @@ class Spanifier {
     //                  which is a subset of size_node.
     auto size_node_matcher = expr(anyOf(
         member_data_call,
-        expr(anyOf(
-                 cxxMemberCallExpr(
-                     callee(cxxMethodDecl(unsafeCxxMethodToBeRewrittenToMacro())
-                                .bind("unsafe_cxx_method_decl")))
-                     .bind("unsafe_cxx_method_call_expr"),
-                 callExpr(callee(functionDecl(
-                     hasReturnTypeLoc(pointerTypeLoc()),
-                     anyOf(raw_ptr_plugin::isInThirdPartyLocation(),
-                           isExpansionInSystemHeader(),
-                           raw_ptr_plugin::isInExternCContext())))),
-                 cxxNullPtrLiteralExpr().bind("nullptr_expr"), cxxNewExpr(),
-                 buff_address_from_container, buff_address_from_single_var))
+        expr(anyOf(callExpr(
+                       callee(functionDecl(unsafeFunctionToBeRewrittenToMacro())
+                                  .bind("unsafe_function_decl")))
+                       .bind("unsafe_function_call_expr"),
+                   callExpr(callee(functionDecl(
+                       hasReturnTypeLoc(pointerTypeLoc()),
+                       anyOf(raw_ptr_plugin::isInThirdPartyLocation(),
+                             isExpansionInSystemHeader(),
+                             raw_ptr_plugin::isInExternCContext())))),
+                   cxxNullPtrLiteralExpr().bind("nullptr_expr"), cxxNewExpr(),
+                   buff_address_from_container, buff_address_from_single_var))
             .bind("size_node")));
 
     auto rhs_expr =

@@ -5,10 +5,10 @@
 #include <memory>
 #include <tuple>
 
-#include "base/containers/auto_spanification_helper.h"
-#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/do_not_rewrite/third_party_api.h"
+
+// ---- Test cases of C++ member function calls ----------------------------
 
 SkBitmap* GetSkBitmap();
 
@@ -17,8 +17,7 @@ void test_no_arg() {
   // Expected rewrite:
   // base::span<uint32_t> image_row =
   //     UNSAFE_SKBITMAP_NOARGFORTESTING(sk_bitmap);
-  base::span<uint32_t> image_row =
-      UNSAFE_SKBITMAP_NOARGFORTESTING(sk_bitmap);  // IN-TEST
+  uint32_t* image_row = sk_bitmap.NoArgForTesting();  // IN-TEST
   std::ignore = image_row[0];
 }
 
@@ -27,7 +26,7 @@ void test_with_args() {
   // Expected rewrite:
   // base::span<uint32_t> image_row =
   //     UNSAFE_SKBITMAP_GETADDR32(sk_bitmap, 1, 2);
-  base::span<uint32_t> image_row = UNSAFE_SKBITMAP_GETADDR32(sk_bitmap, 1, 2);
+  uint32_t* image_row = sk_bitmap.getAddr32(1, 2);
   std::ignore = image_row[0];
 }
 
@@ -35,8 +34,7 @@ void test_receiver_is_expression() {
   // Expected rewrite:
   // base::span<uint32_t> image_row =
   //     UNSAFE_SKBITMAP_GETADDR32(GetSkBitmap(), 1, 2);
-  base::span<uint32_t> image_row =
-      UNSAFE_SKBITMAP_GETADDR32(GetSkBitmap(), 1, 2);
+  uint32_t* image_row = GetSkBitmap()->getAddr32(1, 2);
   std::ignore = image_row[0];
 }
 
@@ -45,7 +43,7 @@ void test_receiver_is_pointer() {
   // Expected rewrite:
   // base::span<uint32_t> image_row =
   //     UNSAFE_SKBITMAP_GETADDR32(sk_bitmap, 1, 2);
-  base::span<uint32_t> image_row = UNSAFE_SKBITMAP_GETADDR32(sk_bitmap, 1, 2);
+  uint32_t* image_row = sk_bitmap->getAddr32(1, 2);
   std::ignore = image_row[0];
 }
 
@@ -54,7 +52,7 @@ void test_receiver_is_reference() {
   // Expected rewrite:
   // base::span<uint32_t> image_row =
   //     UNSAFE_SKBITMAP_GETADDR32(sk_bitmap, 1, 2);
-  base::span<uint32_t> image_row = UNSAFE_SKBITMAP_GETADDR32(sk_bitmap, 1, 2);
+  uint32_t* image_row = sk_bitmap.getAddr32(1, 2);
   std::ignore = image_row[0];
 }
 
@@ -63,7 +61,7 @@ void test_receiver_is_std_unique_ptr() {
   // Expected rewrite:
   // base::span<uint32_t> image_row =
   //     UNSAFE_SKBITMAP_GETADDR32(sk_bitmap, 1, 2);
-  base::span<uint32_t> image_row = UNSAFE_SKBITMAP_GETADDR32(sk_bitmap, 1, 2);
+  uint32_t* image_row = sk_bitmap->getAddr32(1, 2);
   std::ignore = image_row[0];
 }
 
@@ -72,6 +70,19 @@ void test_receiver_is_base_raw_ptr() {
   // Expected rewrite:
   // base::span<uint32_t> image_row =
   //     UNSAFE_SKBITMAP_GETADDR32(sk_bitmap, 1, 2);
-  base::span<uint32_t> image_row = UNSAFE_SKBITMAP_GETADDR32(sk_bitmap, 1, 2);
+  uint32_t* image_row = sk_bitmap->getAddr32(1, 2);
   std::ignore = image_row[0];
+}
+
+// ---- Test cases of C/C++ free function calls ----------------------------
+
+void test_hb_buffer_get_glyph_positions() {
+  struct hb_buffer_t buffer;
+  unsigned int length;
+  // Expected rewrite:
+  // base::span<struct hb_glyph_position_t> positions =
+  //     UNSAFE_HB_BUFFER_GET_GLYPH_POSITIONS(&buffer, &length);
+  struct hb_glyph_position_t* positions =
+      hb_buffer_get_glyph_positions(&buffer, &length);
+  std::ignore = positions[0];
 }

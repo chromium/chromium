@@ -22,4 +22,9 @@ class SkBitmap {
   uint32_t* getAddr32(int x, int y) const;
 };
 
+struct hb_glyph_position_t {};
+struct hb_buffer_t {};
+hb_glyph_position_t* hb_buffer_get_glyph_positions(hb_buffer_t* buffer,
+                                                   unsigned int* length);
+
 #endif  // TOOLS_CLANG_SPANIFY_TESTS_THIRD_PARTY_DO_NOT_REWRITE_THIRD_PARTY_API_H_
