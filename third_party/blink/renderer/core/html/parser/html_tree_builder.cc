@@ -37,6 +37,8 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
@@ -740,9 +742,19 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
               tree_.CurrentNode())) {
         if (tree_.OpenElements()->InScope(HTMLTag::kSelect)) {
           bool parent_select = IsA<HTMLSelectElement>(tree_.CurrentNode());
+          bool parent_option_optgroup =
+              IsA<HTMLOptionElement>(tree_.CurrentNode()) ||
+              IsA<HTMLOptGroupElement>(tree_.CurrentNode());
+
           if (parent_select) {
             UseCounter::Count(tree_.CurrentNode()->GetDocument(),
                               WebFeature::kInputParsedParentSelect);
+          } else if (parent_option_optgroup) {
+            UseCounter::Count(tree_.CurrentNode()->GetDocument(),
+                              WebFeature::kInputParsedParentOptionOrOptgroup);
+          }
+
+          if (parent_select || parent_option_optgroup) {
             if (RuntimeEnabledFeatures::InputInSelectEnabled()) {
               ProcessFakeEndTag(HTMLTag::kSelect);
             }
@@ -750,6 +762,7 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
             UseCounter::Count(tree_.CurrentNode()->GetDocument(),
                               WebFeature::kInputParsedAncestorSelect);
           }
+
           if (!RuntimeEnabledFeatures::InputInSelectEnabled()) {
             ProcessFakeEndTag(HTMLTag::kSelect);
           }

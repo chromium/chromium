@@ -6207,6 +6207,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5577" label="ClearSiteData"/>
   <int value="5578" label="ScrollIntoViewContainerNearest"/>
   <int value="5579" label="PopoverShown"/>
+  <int value="5580" label="InputParsedParentOptionOrOptgroup"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

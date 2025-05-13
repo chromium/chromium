@@ -2592,6 +2592,8 @@
       // <select>, but it isn't web compatible enough. This flag allows <input>
       // inside <select> but only if there is another open tag in between the
       // <input> and the <select>, like <select><div><input>.
+      // For now, this flag also makes <input> close <select> like it used to
+      // when the <input> is put directly within an <option> or <optgroup>.
       name: "InputInSelect",
       status: "experimental",
       depends_on: ["SelectParserRelaxation"],
