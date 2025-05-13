@@ -10,8 +10,11 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/widget_kit/model/features.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "testing/platform_test.h"
+
+#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
 
 class SystemAccountUpdaterTest : public PlatformTest {
  public:
@@ -181,3 +184,5 @@ TEST_F(SystemAccountUpdaterTest, TestSuggestedItemsLastModificationDate) {
     EXPECT_FALSE([[items allKeys] containsObject:fake_identity.gaiaID]);
   }
 }
+
+#endif

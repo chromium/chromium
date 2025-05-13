@@ -81,81 +81,83 @@ struct QuickActionsWidget: Widget {
   }
 }
 
-@available(iOS 17, *)
-struct QuickActionsWidgetConfigurable: Widget {
-  // Changing 'kind' or deleting this widget will cause all installed instances of this widget to
-  // stop updating and show the placeholder state.
-  let kind: String = "QuickActionsWidget"
+#if IOS_ENABLE_WIDGETS_FOR_MIM
+  @available(iOS 17, *)
+  struct QuickActionsWidgetConfigurable: Widget {
+    // Changing 'kind' or deleting this widget will cause all installed instances of this widget to
+    // stop updating and show the placeholder state.
+    let kind: String = "QuickActionsWidget"
 
-  var body: some WidgetConfiguration {
-    AppIntentConfiguration(
-      kind: kind,
-      intent: SelectAccountIntent.self,
-      provider: ConfigurableQuickActionsWidgetEntryProvider()
-    ) { entry in
-      QuickActionsWidgetEntryView(entry: entry)
+    var body: some WidgetConfiguration {
+      AppIntentConfiguration(
+        kind: kind,
+        intent: SelectAccountIntent.self,
+        provider: ConfigurableQuickActionsWidgetEntryProvider()
+      ) { entry in
+        QuickActionsWidgetEntryView(entry: entry)
+      }
+      .configurationDisplayName(
+        Text("IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_DISPLAY_NAME")
+      )
+      .description(Text("IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_DESCRIPTION"))
+      .supportedFamilies([.systemMedium])
+      .crDisfavoredLocations()
+      .crContentMarginsDisabled()
+      .crContainerBackgroundRemovable(false)
     }
-    .configurationDisplayName(
-      Text("IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_DISPLAY_NAME")
-    )
-    .description(Text("IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_DESCRIPTION"))
-    .supportedFamilies([.systemMedium])
-    .crDisfavoredLocations()
-    .crContentMarginsDisabled()
-    .crContainerBackgroundRemovable(false)
-  }
-}
-
-// Advises WidgetKit when to update a widget’s display.
-@available(iOS 17, *)
-struct ConfigurableQuickActionsWidgetEntryProvider: AppIntentTimelineProvider {
-
-  func placeholder(in context: Context) -> ConfigureQuickActionsWidgetEntry {
-    ConfigureQuickActionsWidgetEntry(
-      date: Date(), useLens: false, useColorLensAndVoiceIcons: false, isPreview: true,
-      avatar: nil, gaiaID: nil, deleted: false)
   }
 
-  func snapshot(for configuration: SelectAccountIntent, in context: Context) async
-    -> ConfigureQuickActionsWidgetEntry
-  {
-    let avatar: Image? = configuration.avatar()
-    let gaiaID: String? = configuration.gaia()
-    let deleted: Bool = configuration.deleted()
+  // Advises WidgetKit when to update a widget’s display.
+  @available(iOS 17, *)
+  struct ConfigurableQuickActionsWidgetEntryProvider: AppIntentTimelineProvider {
 
-    let entry = ConfigureQuickActionsWidgetEntry(
-      date: Date(),
-      useLens: shouldUseLens(),
-      useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
-      isPreview: context.isPreview,
-      avatar: avatar,
-      gaiaID: gaiaID,
-      deleted: deleted
-    )
-    return entry
+    func placeholder(in context: Context) -> ConfigureQuickActionsWidgetEntry {
+      ConfigureQuickActionsWidgetEntry(
+        date: Date(), useLens: false, useColorLensAndVoiceIcons: false, isPreview: true,
+        avatar: nil, gaiaID: nil, deleted: false)
+    }
+
+    func snapshot(for configuration: SelectAccountIntent, in context: Context) async
+      -> ConfigureQuickActionsWidgetEntry
+    {
+      let avatar: Image? = configuration.avatar()
+      let gaiaID: String? = configuration.gaia()
+      let deleted: Bool = configuration.deleted()
+
+      let entry = ConfigureQuickActionsWidgetEntry(
+        date: Date(),
+        useLens: shouldUseLens(),
+        useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
+        isPreview: context.isPreview,
+        avatar: avatar,
+        gaiaID: gaiaID,
+        deleted: deleted
+      )
+      return entry
+    }
+
+    func timeline(for configuration: SelectAccountIntent, in context: Context) async -> Timeline<
+      ConfigureQuickActionsWidgetEntry
+    > {
+      let avatar: Image? = configuration.avatar()
+      let gaiaID: String? = configuration.gaia()
+      let deleted: Bool = configuration.deleted()
+
+      let entry = ConfigureQuickActionsWidgetEntry(
+        date: Date(),
+        useLens: shouldUseLens(),
+        useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
+        isPreview: context.isPreview,
+        avatar: avatar,
+        gaiaID: gaiaID,
+        deleted: deleted
+      )
+      let entries: [ConfigureQuickActionsWidgetEntry] = [entry]
+      let timeline: Timeline = Timeline(entries: entries, policy: .never)
+      return timeline
+    }
   }
-
-  func timeline(for configuration: SelectAccountIntent, in context: Context) async -> Timeline<
-    ConfigureQuickActionsWidgetEntry
-  > {
-    let avatar: Image? = configuration.avatar()
-    let gaiaID: String? = configuration.gaia()
-    let deleted: Bool = configuration.deleted()
-
-    let entry = ConfigureQuickActionsWidgetEntry(
-      date: Date(),
-      useLens: shouldUseLens(),
-      useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
-      isPreview: context.isPreview,
-      avatar: avatar,
-      gaiaID: gaiaID,
-      deleted: deleted
-    )
-    let entries: [ConfigureQuickActionsWidgetEntry] = [entry]
-    let timeline: Timeline = Timeline(entries: entries, policy: .never)
-    return timeline
-  }
-}
+#endif
 
 func shouldUseLens() -> Bool {
   let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults()
@@ -202,7 +204,7 @@ struct QuickActionsWidgetEntryView: View {
 
   var body: some View {
     // The account to display was deleted (entry.deleted can only be true if
-    // IsWidgetsForMultiprofileEnabled() is true).
+    // IOS_ENABLE_WIDGETS_FOR_MIM is enabled).
     if entry.deleted && !entry.isPreview {
       MediumWidgetDeletedAccountView()
     } else {
@@ -230,9 +232,9 @@ struct QuickActionsWidgetEntryView: View {
                     .font(.subheadline)
                     .foregroundColor(Color("widget_text_color"))
                   Spacer()
-                  if ChromeWidgetsMain.WidgetsForMultiprofile() {
+                  #if IOS_ENABLE_WIDGETS_FOR_MIM
                     Avatar(entry: entry)
-                  }
+                  #endif
                 }
               }
               .frame(minWidth: 0, maxWidth: .infinity)

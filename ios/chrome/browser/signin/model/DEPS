@@ -24,6 +24,14 @@ specific_include_rules = {
     "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
   ],
   "^system_account_updater.mm": [
+    "+ios/chrome/browser/widget_kit/model/features.h",
+    "+ios/chrome/browser/widget_kit/model/model_swift.h",
+  ],
+  "^system_account_updater_unittests.mm": [
+    "+ios/chrome/browser/widget_kit/model/features.h",
+  ],
+  "^authentication_service.mm": [
+    "+ios/chrome/browser/widget_kit/model/features.h",
     "+ios/chrome/browser/widget_kit/model/model_swift.h",
   ],
 }

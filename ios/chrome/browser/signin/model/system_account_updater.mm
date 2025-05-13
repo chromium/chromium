@@ -4,28 +4,31 @@
 
 #import "ios/chrome/browser/signin/model/system_account_updater.h"
 
-#import "base/check_is_test.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
-#import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
-#import "ios/chrome/browser/widget_kit/model/model_swift.h"
+#import "ios/chrome/browser/widget_kit/model/features.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+
+#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
+#import "base/check_is_test.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/widget_kit/model/model_swift.h"  // nogncheck
+#endif
 
 namespace {
 
 // Updates all widget timelines with the updated data.
 void ReloadAllTimelines() {
-  if (IsWidgetsForMultiprofileEnabled()) {
-    [WidgetTimelinesUpdater reloadAllTimelines];
-  }
+#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
+  [WidgetTimelinesUpdater reloadAllTimelines];
+#endif
 }
 
 // Save avatar info to disk.
@@ -157,6 +160,7 @@ void SystemAccountUpdater::UpdateLoadedAccounts() {
 }
 
 void SystemAccountUpdater::HandleMigrationIfNeeded() {
+#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
   PrefService* local_state = GetApplicationContext()->GetLocalState();
 
   if (!local_state) {
@@ -173,4 +177,5 @@ void SystemAccountUpdater::HandleMigrationIfNeeded() {
   }
   local_state->SetBoolean(prefs::kMigrateWidgetsPrefs, true);
   UpdateLoadedAccounts();
+#endif
 }
