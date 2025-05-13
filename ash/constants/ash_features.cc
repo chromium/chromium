@@ -930,7 +930,7 @@ BASE_FEATURE(kFastPairHandshakeLongTermRefactor,
 // Enables prototype support for Fast Pair for keyboards.
 BASE_FEATURE(kFastPairKeyboards,
              "FastPairKeyboards",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Saved Devices nicknames logic for Fast Pair.
 BASE_FEATURE(kFastPairSavedDevicesNicknames,
