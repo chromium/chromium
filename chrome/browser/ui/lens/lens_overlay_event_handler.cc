@@ -27,26 +27,20 @@ bool IsCopyEvent(const input::NativeWebKeyboardEvent& event) {
 }  // namespace
 
 LensOverlayEventHandler::LensOverlayEventHandler(
-    LensOverlayController* lens_overlay_controller)
-    : lens_overlay_controller_(lens_overlay_controller) {}
+    LensSearchController* lens_search_controller)
+    : lens_search_controller_(lens_search_controller) {}
 
 bool LensOverlayEventHandler::HandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event,
     views::FocusManager* focus_manager) {
-  if (!focus_manager || !lens_overlay_controller_->IsOverlayActive()) {
+  if (!focus_manager || !lens_search_controller_->IsActive()) {
     return false;
   }
 
   if (IsEscapeEvent(event)) {
-    // TODO(crbug.com/404941800): This is a roundabout way to close the overlay,
-    // but this class isn't yet owned by the search controller, so it can't
-    // directly call it. This should be cleaned up once this class is owned by
-    // the search controller.
-    lens_overlay_controller_->GetTabInterface()
-        ->GetTabFeatures()
-        ->lens_search_controller()
-        ->CloseLensAsync(lens::LensOverlayDismissalSource::kEscapeKeyPress);
+    lens_search_controller_->CloseLensAsync(
+        lens::LensOverlayDismissalSource::kEscapeKeyPress);
     return true;
   }
   // We only want to copy if the user is not currently making a native text
@@ -55,7 +49,7 @@ bool LensOverlayEventHandler::HandleKeyboardEvent(
   const bool is_making_selection =
       source->GetFocusedFrame() && source->GetFocusedFrame()->HasSelection();
   if (IsCopyEvent(event) && !is_making_selection) {
-    lens_overlay_controller_->TriggerCopy();
+    lens_search_controller_->lens_overlay_controller()->TriggerCopy();
     return true;
   }
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(event,

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_event_handler.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
@@ -88,6 +89,9 @@ void LensSearchController::Initialize(
 
   lens_contextualization_controller_ =
       CreateLensSearchContextualizationController();
+
+  lens_overlay_event_handler_ =
+      std::make_unique<lens::LensOverlayEventHandler>(this);
 
   CreatePageContextEligibilityAPI();
 }
@@ -265,6 +269,14 @@ void LensSearchController::CloseLensSync(
   CloseLensPart2(dismissal_source);
 }
 
+bool LensSearchController::IsActive() {
+  return state_ == State::kActive;
+}
+
+bool LensSearchController::IsClosing() {
+  return state_ == State::kClosing || state_ == State::kClosingSidePanel;
+}
+
 tabs::TabInterface* LensSearchController::GetTabInterface() {
   return tab_;
 }
@@ -302,6 +314,12 @@ lens::LensSearchboxController*
 LensSearchController::lens_searchbox_controller() {
   CheckInitialized(initialized_);
   return lens_searchbox_controller_.get();
+}
+
+lens::LensOverlayEventHandler*
+LensSearchController::lens_overlay_event_handler() {
+  CheckInitialized(initialized_);
+  return lens_overlay_event_handler_.get();
 }
 
 optimization_guide::PageContextEligibility*
@@ -578,8 +596,4 @@ void LensSearchController::WillDetach(tabs::TabInterface* tab,
       CloseLensSync(lens::LensOverlayDismissalSource::kTabDragNewWindow);
       return;
   }
-}
-
-bool LensSearchController::IsClosing() {
-  return state_ == State::kClosing || state_ == State::kClosingSidePanel;
 }

@@ -79,7 +79,6 @@ class WebUI;
 }  // namespace content
 
 namespace lens {
-class LensOverlayEventHandler;
 class LensOverlayQueryController;
 class LensOverlaySidePanelCoordinator;
 class LensPermissionBubbleController;
@@ -257,11 +256,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // memory. When a tab is in the foreground it is guaranteed to have a
   // WebContents.
   const content::WebContents* tab_contents() { return tab_->GetContents(); }
-
-  // Returns the event handler for this instance of the Lens Overlay.
-  lens::LensOverlayEventHandler* lens_overlay_event_handler() {
-    return lens_overlay_event_handler_.get();
-  }
 
   // Returns invocation time since epoch. Used to set up html source for metric
   // logging.
@@ -1332,9 +1326,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // results side panel. Guaranteed to exist if the overlay is not `kOff`.
   raw_ptr<lens::LensOverlaySidePanelCoordinator>
       results_side_panel_coordinator_;
-
-  // Class for handling key events from the renderer that were not handled.
-  std::unique_ptr<lens::LensOverlayEventHandler> lens_overlay_event_handler_;
 
   // Layer delegate that handles blurring the background behind the WebUI.
   std::unique_ptr<lens::LensOverlayBlurLayerDelegate>

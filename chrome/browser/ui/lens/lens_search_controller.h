@@ -24,6 +24,7 @@ class LensOverlayController;
 class GURL;
 
 namespace lens {
+class LensOverlayEventHandler;
 class LensOverlayGen204Controller;
 class LensOverlaySidePanelCoordinator;
 class LensPermissionBubbleController;
@@ -128,6 +129,13 @@ class LensSearchController {
   // nice if the overlay is visible when this is called.
   virtual void CloseLensSync(lens::LensOverlayDismissalSource dismissal_source);
 
+  // Returns true if Lens is currently active on this tab.
+  bool IsActive();
+
+  // Returns true if the overlay is in the process of closing. If true, Lens on
+  // this tab will soon be off.
+  bool IsClosing();
+
   // Returns the tab interface that owns this controller.
   tabs::TabInterface* GetTabInterface();
 
@@ -149,6 +157,9 @@ class LensSearchController {
 
   // Returns the LensSearchboxController.
   lens::LensSearchboxController* lens_searchbox_controller();
+
+  // Returns the event handler for this instance of the Lens Overlay.
+  lens::LensOverlayEventHandler* lens_overlay_event_handler();
 
   optimization_guide::PageContextEligibility* page_context_eligibility();
 
@@ -329,10 +340,6 @@ class LensSearchController {
   void WillDetach(tabs::TabInterface* tab,
                   tabs::TabInterface::DetachReason reason);
 
-  // Returns true if the overlay is in the process of closing. If true, Lens on
-  // this tab will soon be off.
-  bool IsClosing();
-
   // Whether the LensSearchController has been initialized. Meaning, all the
   // dependencies have been initialized and the controller is ready to use.
   bool initialized_ = false;
@@ -373,6 +380,11 @@ class LensSearchController {
   // The contextualization controller for the Lens Search feature on this tab.
   std::unique_ptr<lens::LensSearchContextualizationController>
       lens_contextualization_controller_;
+
+  // Class for handling key events from the renderer that were not handled. This
+  // is used by both the overlay and the WebUI to share common event handling
+  // logic.
+  std::unique_ptr<lens::LensOverlayEventHandler> lens_overlay_event_handler_;
 
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;

@@ -87,7 +87,6 @@ bool LensOverlaySidePanelWebView::HandleKeyboardEvent(
     return false;
   }
   return coordinator_->GetLensSearchController()
-      ->lens_overlay_controller()
       ->lens_overlay_event_handler()
       ->HandleKeyboardEvent(source, event, GetFocusManager());
 }

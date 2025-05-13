@@ -330,9 +330,6 @@ LensOverlayController::LensOverlayController(
       theme_service_(theme_service),
       gen204_controller_(
           std::make_unique<lens::LensOverlayGen204Controller>()) {
-  lens_overlay_event_handler_ =
-      std::make_unique<lens::LensOverlayEventHandler>(this);
-
   InitializeTutorialIPHUrlMatcher();
 
   // Listen to WebContents events
@@ -2254,8 +2251,9 @@ bool LensOverlayController::HandleKeyboardEvent(
   if (!overlay_web_view_ || !overlay_web_view_->GetFocusManager()) {
     return false;
   }
-  return lens_overlay_event_handler_->HandleKeyboardEvent(
-      source, event, overlay_web_view_->GetFocusManager());
+  return lens_search_controller_->lens_overlay_event_handler()
+      ->HandleKeyboardEvent(source, event,
+                            overlay_web_view_->GetFocusManager());
 }
 
 void LensOverlayController::OnFullscreenStateChanged() {
