@@ -42,6 +42,7 @@ LocalHotkeyManager::LocalHotkeyManager(
     std::unique_ptr<Delegate> delegate)
     : window_controller_(window_controller), delegate_(std::move(delegate)) {
   CHECK(delegate_);
+  CHECK(g_browser_process);
   pref_registrar_.Init(g_browser_process->local_state());
   for (Hotkey hotkey : delegate_->GetSupportedHotkeys()) {
     auto pref_name_iter = kHotkeyToPrefMap.find(hotkey);

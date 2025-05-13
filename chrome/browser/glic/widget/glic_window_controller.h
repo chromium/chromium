@@ -70,7 +70,7 @@ class GlicWindowController : public Host::Delegate {
   GlicWindowController(const GlicWindowController&) = delete;
   GlicWindowController& operator=(const GlicWindowController&) = delete;
   GlicWindowController() = default;
-  ~GlicWindowController() = default;
+  virtual ~GlicWindowController() = default;
 
   // Show, summon, or activate the panel if needed, or close it if it's already
   // active and prevent_close is false.
