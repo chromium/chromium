@@ -809,6 +809,18 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Neither Multi-Window nor Edge-to-Edge"/>
 </enum>
 
+<enum name="BrowserControlsLockReason">
+  <summary>The reason why browser controls were locked.</summary>
+  <int value="0" label="CHROME_URL"/>
+  <int value="1" label="TAB_CONTENT_DANGEROUS"/>
+  <int value="2" label="EDITABLE_NODE_FOCUS"/>
+  <int value="3" label="TAB_ERROR"/>
+  <int value="4" label="TAB_HIDDEN"/>
+  <int value="5" label="FULLSCREEN_LOADING"/>
+  <int value="6" label="A11Y_ENABLED"/>
+  <int value="7" label="FULLSCREEN_DISABLED"/>
+</enum>
+
 <enum name="CaptureNativeViewResult">
   <int value="0" label="Not captured: Null WindowAndroid"/>
   <int value="1" label="Not captured: View not laid out"/>
