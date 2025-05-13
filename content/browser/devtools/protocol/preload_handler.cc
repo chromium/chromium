@@ -543,8 +543,13 @@ void PreloadHandler::SendCurrentPreloadStatus() {
       continue;
     }
 
+    std::optional<base::UnguessableToken> maybe_navigation_token =
+        document->GetDevToolsNavigationToken();
+    if (!maybe_navigation_token.has_value()) {
+      continue;
+    }
     const base::UnguessableToken initiator_devtools_navigation_token =
-        document->GetDevToolsNavigationToken().value();
+        maybe_navigation_token.value();
     const std::string initiating_frame_id =
         document->GetDevToolsFrameToken().ToString();
     for (const auto& [key, data] : preload_storage->prefetch_data_map()) {
