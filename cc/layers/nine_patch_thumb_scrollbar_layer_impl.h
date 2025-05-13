@@ -49,8 +49,16 @@ class CC_EXPORT NinePatchThumbScrollbarLayerImpl
   void SetTrackStart(int track_start);
   void SetTrackLength(int track_length);
 
+  int thumb_thickness() const { return thumb_thickness_; }
+  int thumb_length() const { return thumb_length_; }
+  int track_start() const { return track_start_; }
+  int track_length() const { return track_length_; }
+
   void SetImageBounds(const gfx::Size& bounds);
   void SetAperture(const gfx::Rect& aperture);
+
+  const gfx::Size& image_bounds() const { return image_bounds_; }
+  const gfx::Rect& aperture() const { return aperture_; }
 
   void set_thumb_ui_resource_id(UIResourceId uid) {
     thumb_ui_resource_id_ = uid;
@@ -58,6 +66,12 @@ class CC_EXPORT NinePatchThumbScrollbarLayerImpl
 
   void set_track_and_buttons_ui_resource_id(UIResourceId uid) {
     track_and_buttons_ui_resource_id_ = uid;
+  }
+
+  UIResourceId thumb_ui_resource_id() const { return thumb_ui_resource_id_; }
+
+  UIResourceId track_and_buttons_ui_resource_id() const {
+    return track_and_buttons_ui_resource_id_;
   }
 
  protected:

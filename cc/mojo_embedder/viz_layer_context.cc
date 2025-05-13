@@ -24,6 +24,8 @@
 #include "cc/animation/keyframe_model.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/mirror_layer_impl.h"
+#include "cc/layers/nine_patch_thumb_scrollbar_layer_impl.h"
+#include "cc/layers/painted_scrollbar_layer_impl.h"
 #include "cc/layers/picture_layer_impl.h"
 #include "cc/layers/surface_layer_impl.h"
 #include "cc/layers/texture_layer_impl.h"
@@ -562,6 +564,68 @@ void SerializeTextureLayerExtra(TextureLayerImpl& layer,
   }
 }
 
+void SerializeScrollbarLayerBaseExtra(
+    ScrollbarLayerImplBase& layer,
+    viz::mojom::ScrollbarLayerBaseExtraPtr& extra) {
+  extra = viz::mojom::ScrollbarLayerBaseExtra::New();
+  extra->scroll_element_id = layer.scroll_element_id();
+  extra->is_overlay_scrollbar = layer.is_overlay_scrollbar();
+  extra->is_web_test = layer.is_web_test();
+  extra->thumb_thickness_scale_factor = layer.thumb_thickness_scale_factor();
+  extra->current_pos = layer.current_pos();
+  extra->clip_layer_length = layer.clip_layer_length();
+  extra->scroll_layer_length = layer.scroll_layer_length();
+  extra->is_horizontal_orientation =
+      layer.orientation() == ScrollbarOrientation::kHorizontal;
+  extra->is_left_side_vertical_scrollbar =
+      layer.is_left_side_vertical_scrollbar();
+  extra->vertical_adjust = layer.vertical_adjust();
+  extra->has_find_in_page_tickmarks = layer.has_find_in_page_tickmarks();
+}
+
+void SerializeNinePatchThumbScrollbarLayerExtra(
+    NinePatchThumbScrollbarLayerImpl& layer,
+    viz::mojom::NinePatchThumbScrollbarLayerExtraPtr& extra) {
+  SerializeScrollbarLayerBaseExtra(static_cast<ScrollbarLayerImplBase&>(layer),
+                                   extra->scrollbar_base_extra);
+
+  extra->thumb_thickness = layer.thumb_thickness();
+  extra->thumb_length = layer.thumb_length();
+  extra->track_start = layer.track_start();
+  extra->track_length = layer.track_length();
+  extra->image_bounds = layer.image_bounds();
+  extra->aperture = layer.aperture();
+  extra->thumb_ui_resource_id = layer.thumb_ui_resource_id();
+  extra->track_and_buttons_ui_resource_id =
+      layer.track_and_buttons_ui_resource_id();
+}
+
+void SerializePaintedScrollbarLayerExtra(
+    PaintedScrollbarLayerImpl& layer,
+    viz::mojom::PaintedScrollbarLayerExtraPtr& extra) {
+  SerializeScrollbarLayerBaseExtra(static_cast<ScrollbarLayerImplBase&>(layer),
+                                   extra->scrollbar_base_extra);
+  extra->internal_contents_scale = layer.internal_contents_scale();
+  extra->internal_content_bounds = layer.internal_content_bounds();
+  extra->jump_on_track_click = layer.jump_on_track_click();
+  extra->supports_drag_snap_back = layer.supports_drag_snap_back();
+  extra->thumb_thickness = layer.thumb_thickness();
+  extra->thumb_length = layer.thumb_length();
+  extra->back_button_rect = layer.back_button_rect();
+  extra->forward_button_rect = layer.forward_button_rect();
+  extra->track_rect = layer.track_rect();
+  extra->track_and_buttons_ui_resource_id =
+      layer.track_and_buttons_ui_resource_id();
+  extra->thumb_ui_resource_id = layer.thumb_ui_resource_id();
+  extra->uses_nine_patch_track_and_buttons =
+      layer.uses_nine_patch_track_and_buttons();
+  extra->painted_opacity = layer.painted_opacity();
+  extra->thumb_color = layer.thumb_color();
+  extra->track_and_buttons_image_bounds =
+      layer.track_and_buttons_image_bounds();
+  extra->track_and_buttons_aperture = layer.track_and_buttons_aperture();
+}
+
 void SerializeSurfaceLayerExtra(SurfaceLayerImpl& layer,
                                 viz::mojom::SurfaceLayerExtraPtr& extra) {
   extra->surface_range = layer.range();
@@ -622,6 +686,27 @@ void SerializeLayer(LayerImpl& layer,
                                 mirror_layer_extra);
       wire.layer_extra = viz::mojom::LayerExtra::NewMirrorLayerExtra(
           std::move(mirror_layer_extra));
+      break;
+    }
+    case mojom::LayerType::kNinePatchThumbScrollbar: {
+      auto nine_patch_thumb_scrollbar_layer_extra =
+          viz::mojom::NinePatchThumbScrollbarLayerExtra::New();
+      SerializeNinePatchThumbScrollbarLayerExtra(
+          static_cast<NinePatchThumbScrollbarLayerImpl&>(layer),
+          nine_patch_thumb_scrollbar_layer_extra);
+      wire.layer_extra =
+          viz::mojom::LayerExtra::NewNinePatchThumbScrollbarLayerExtra(
+              std::move(nine_patch_thumb_scrollbar_layer_extra));
+      break;
+    }
+    case mojom::LayerType::kPaintedScrollbar: {
+      auto painted_scrollbar_layer_extra =
+          viz::mojom::PaintedScrollbarLayerExtra::New();
+      SerializePaintedScrollbarLayerExtra(
+          static_cast<PaintedScrollbarLayerImpl&>(layer),
+          painted_scrollbar_layer_extra);
+      wire.layer_extra = viz::mojom::LayerExtra::NewPaintedScrollbarLayerExtra(
+          std::move(painted_scrollbar_layer_extra));
       break;
     }
     case mojom::LayerType::kSurface: {
