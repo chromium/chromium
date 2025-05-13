@@ -1,0 +1,3 @@
+tests/data/** binary=true
+tests/data/**/LICENSE.*.txt binary=false
+fuzz/corpus/** binary=true

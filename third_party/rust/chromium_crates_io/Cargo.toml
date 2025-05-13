@@ -101,3 +101,8 @@ features = ["full"]
 [dependencies.bytemuck]
 version = "1"
 features = ["nightly_portable_simd"]  # For std::simd coverage.
+
+[dependencies.zip]
+version = "2.6.1"
+default-features = false
+features = ["deflate-flate2"]

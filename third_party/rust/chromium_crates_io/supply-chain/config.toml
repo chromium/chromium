@@ -53,6 +53,9 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."anyhow:1.0.98"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
+[policy."arbitrary:1.4.1"]
+criteria = []
+
 [policy."autocfg:1.4.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
@@ -104,6 +107,9 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."crc32fast:1.4.2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
+[policy."crossbeam-utils:0.8.21"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
 [policy."cxx:1.0.158"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
@@ -115,6 +121,9 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."cxxbridge-macro:1.0.158"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
+[policy."derive_arbitrary:1.4.1"]
+criteria = []
 
 [policy."derivre:0.3.7"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
@@ -540,6 +549,9 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."zerovec:0.11.1"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
+[policy."zip:2.6.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [[exemptions.aho-corasick]]

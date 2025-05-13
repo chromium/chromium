@@ -1,0 +1,10 @@
+Name: crossbeam-utils
+URL: https://crates.io/crates/crossbeam-utils
+Version: 0.8.21
+Revision: ccd83ac4108a2a1b41e9c6e79c87267167d18dfa
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/crossbeam-utils-v0_8/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Utilities for concurrent programming

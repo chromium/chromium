@@ -1,0 +1,60 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "crossbeam_utils"
+  epoch = "0.8"
+  crate_type = "rlib"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/crossbeam-utils-v0_8/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/crossbeam-utils-v0_8/src/atomic/atomic_cell.rs",
+    "//third_party/rust/chromium_crates_io/vendor/crossbeam-utils-v0_8/src/atomic/consume.rs",
+    "//third_party/rust/chromium_crates_io/vendor/crossbeam-utils-v0_8/src/atomic/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/crossbeam-utils-v0_8/src/atomic/seq_lock.rs",
+    "//third_party/rust/chromium_crates_io/vendor/crossbeam-utils-v0_8/src/atomic/seq_lock_wide.rs",
+    "//third_party/rust/chromium_crates_io/vendor/crossbeam-utils-v0_8/src/backoff.rs",
+    "//third_party/rust/chromium_crates_io/vendor/crossbeam-utils-v0_8/src/cache_padded.rs",
+    "//third_party/rust/chromium_crates_io/vendor/crossbeam-utils-v0_8/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/crossbeam-utils-v0_8/src/sync/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/crossbeam-utils-v0_8/src/sync/once_lock.rs",
+    "//third_party/rust/chromium_crates_io/vendor/crossbeam-utils-v0_8/src/sync/parker.rs",
+    "//third_party/rust/chromium_crates_io/vendor/crossbeam-utils-v0_8/src/sync/sharded_lock.rs",
+    "//third_party/rust/chromium_crates_io/vendor/crossbeam-utils-v0_8/src/sync/wait_group.rs",
+    "//third_party/rust/chromium_crates_io/vendor/crossbeam-utils-v0_8/src/thread.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_version = "0.8.21"
+  cargo_pkg_name = "crossbeam-utils"
+  cargo_pkg_description = "Utilities for concurrent programming"
+  library_configs -= [ "//build/config/coverage:default_coverage" ]
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
+  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  features = [
+    "default",
+    "std",
+  ]
+  build_root = "//third_party/rust/chromium_crates_io/vendor/crossbeam-utils-v0_8/build.rs"
+  build_sources = [ "//third_party/rust/chromium_crates_io/vendor/crossbeam-utils-v0_8/build.rs" ]
+  rustflags = [
+    "--cap-lints=allow",  # Suppress all warnings in crates.io crates
+  ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+}
