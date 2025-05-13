@@ -15,6 +15,7 @@ mojo_ts_files = [
   "mojo/public/mojom/base/big_string.mojom-webui.ts",
   "mojo/public/mojom/base/big_buffer.mojom-webui.ts",
   "mojo/public/mojom/base/empty.mojom-webui.ts",
+  "mojo/public/mojom/base/error.mojom-webui.ts",
   "mojo/public/mojom/base/file.mojom-webui.ts",
   "mojo/public/mojom/base/file_path.mojom-webui.ts",
   "mojo/public/mojom/base/int128.mojom-webui.ts",

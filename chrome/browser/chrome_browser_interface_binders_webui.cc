@@ -357,6 +357,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip.mojom.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
 #endif
@@ -755,6 +756,8 @@ void PopulateChromeWebUIFrameBinders(
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
   RegisterWebUIControllerInterfaceBinder<tab_strip::mojom::PageHandlerFactory,
+                                         TabStripUI>(map);
+  RegisterWebUIControllerInterfaceBinder<tabs_api::mojom::TabStripService,
                                          TabStripUI>(map);
 #endif
 

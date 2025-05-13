@@ -5697,6 +5697,8 @@ static_library("ui") {
       "webui/tab_strip/thumbnail_tracker.cc",
       "webui/tab_strip/thumbnail_tracker.h",
     ]
+
+    deps += [ "//chrome/browser/ui/tabs/tab_strip_api:tab_strip_api" ]
   }
 
   if (enable_compose) {

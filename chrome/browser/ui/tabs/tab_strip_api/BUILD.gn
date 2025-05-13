@@ -14,6 +14,8 @@ mojom("mojom") {
     "//url/mojom:url_mojom_gurl",
   ]
 
+  webui_module_path = "/"
+
   cpp_typemaps = [
     {
       types = [
@@ -53,7 +55,10 @@ mojom("mojom") {
 }
 
 source_set("tab_strip_api") {
-  sources = [ "tab_strip_service_impl.h" ]
+  sources = [
+    "tab_strip_service_impl.h",
+    "tab_strip_service_register.h",
+  ]
 
   public_deps = [
     ":mojom",

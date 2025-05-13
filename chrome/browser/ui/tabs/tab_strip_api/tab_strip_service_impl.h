@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_id.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_register.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -23,7 +24,8 @@ class TabStripModel;
 // tabs_api::mojom::TabStripController is an experimental TabStrip Api between
 // any view and the TabStripModel.
 class TabStripServiceImpl : public tabs_api::mojom::TabStripService,
-                            public TabStripModelObserver {
+                            public TabStripModelObserver,
+                            public TabStripServiceRegister {
  public:
   explicit TabStripServiceImpl(BrowserWindowInterface* browser,
                                TabStripModel* tab_strip_model);
@@ -34,7 +36,9 @@ class TabStripServiceImpl : public tabs_api::mojom::TabStripService,
   TabStripServiceImpl& operator=(const TabStripServiceImpl&) = delete;
   ~TabStripServiceImpl() override;
 
-  void Accept(mojo::PendingReceiver<tabs_api::mojom::TabStripService> client);
+  // TabStripServiceregister overrides
+  void Accept(
+      mojo::PendingReceiver<tabs_api::mojom::TabStripService> client) override;
 
   // tabs_api::mojom::TabStripService overrides
   void GetTabs(GetTabsCallback callback) override;
@@ -43,7 +47,7 @@ class TabStripServiceImpl : public tabs_api::mojom::TabStripService,
                    const std::optional<GURL>& url,
                    CreateTabAtCallback callback) override;
 
-  // TabStripModelObserver
+  // TabStripModelObserver overrides
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,

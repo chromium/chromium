@@ -33,6 +33,7 @@ class TranslateBubbleController;
 class ToastController;
 class ToastService;
 class DownloadToolbarUIController;
+class TabStripServiceRegister;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 class PdfInfoBarController;
@@ -77,10 +78,6 @@ class MostRecentSharedTabUpdateStore;
 namespace send_tab_to_self {
 class SendTabToSelfToolbarBubbleController;
 }  // namespace send_tab_to_self
-
-namespace tabs_api::mojom {
-class TabStripService;
-}
 
 // This class owns the core controllers for features that are scoped to a given
 // browser window on desktop. It can be subclassed by tests to perform
@@ -226,6 +223,11 @@ class BrowserWindowFeatures {
     return cookie_controls_bubble_coordinator_.get();
   }
 
+  // Only fetch the tab_strip_service to register a pending receiver.
+  TabStripServiceRegister* tab_strip_service() {
+    return tab_strip_service_.get();
+  }
+
  protected:
   BrowserWindowFeatures();
 
@@ -310,7 +312,7 @@ class BrowserWindowFeatures {
       cookie_controls_bubble_coordinator_;
 
   // This is an experimental API that interacts with the TabStripModel.
-  std::unique_ptr<tabs_api::mojom::TabStripService> tab_strip_service_;
+  std::unique_ptr<TabStripServiceRegister> tab_strip_service_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_
