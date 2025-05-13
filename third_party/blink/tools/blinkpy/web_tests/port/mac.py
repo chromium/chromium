@@ -130,5 +130,10 @@ class MacPort(base.Port):
                                target=target)
 
     def path_to_smoke_tests_file(self):
+        config_name = self.flag_specific_config_name()
+        if config_name:
+            _, smoke_file = self.flag_specific_configs()[config_name]
+            return self._filesystem.join(self.web_tests_dir(), smoke_file)
+
         return self._filesystem.join(self.web_tests_dir(), 'TestLists',
                                      'MacOld.txt')
