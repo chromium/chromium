@@ -81,8 +81,6 @@ NSMutableDictionary* GetDefaultQuery(std::string_view keychain_access_group,
     CFToNSPtrCast(kSecAttrType) : @(kSecAttrTypeFolsom),
     CFToNSPtrCast(kSecAttrAccessGroup) :
         base::SysUTF8ToNSString(keychain_access_group),
-    CFToNSPtrCast(kSecAttrAccessible) :
-        CFToNSPtrCast(kSecAttrAccessibleWhenUnlocked),
   }];
 }
 
@@ -189,6 +187,8 @@ std::unique_ptr<ICloudRecoveryKey> ICloudRecoveryKey::CreateAndStoreKeySlowly(
   NSMutableDictionary* attributes = GetDefaultQuery(
       keychain_access_group, GetKeychainService(security_domain_id));
   [attributes setValuesForKeysWithDictionary:@{
+    CFToNSPtrCast(kSecAttrAccessible) :
+        CFToNSPtrCast(kSecAttrAccessibleAfterFirstUnlock),
     CFToNSPtrCast(kSecAttrAccount) : EncodePublicKey(key->public_key()),
     CFToNSPtrCast(kSecValueData) : EncodePrivateKey(key->private_key()),
   }];
