@@ -265,7 +265,12 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #endif  // PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
     size_t in_slot_metadata_size = 0;
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    bool use_configurable_pool = false;
+
+    internal::pool_handle pool_handle = internal::pool_handle::kNullPoolHandle;
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+    internal::PoolOffsetLookup offset_lookup;
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+
     bool eventually_zero_freed_memory = false;
     internal::SchedulerLoopQuarantineConfig
         scheduler_loop_quarantine_thread_local_config;
@@ -710,28 +715,12 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     return PA_TS_UNCHECKED_READ(max_size_of_allocated_bytes);
   }
 
-  internal::pool_handle ChoosePool() const {
+  internal::pool_handle ChoosePool() const { return settings.pool_handle; }
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-    if (settings.use_configurable_pool) {
-      PA_DCHECK(IsConfigurablePoolAvailable());
-      return internal::kConfigurablePoolHandle;
-    }
-#endif
-#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
-    if (settings.thread_isolation.enabled) {
-      return internal::kThreadIsolatedPoolHandle;
-    }
-#endif
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    if (brp_enabled()) [[likely]] {
-      return internal::kBRPPoolHandle;
-    } else {
-      return internal::kRegularPoolHandle;
-    }
-#else
-    return internal::kRegularPoolHandle;
-#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  PA_ALWAYS_INLINE const internal::PoolOffsetLookup& GetOffsetLookup() const {
+    return settings.offset_lookup;
   }
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
   PA_ALWAYS_INLINE static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
   GetDirectMapMetadataAndGuardPagesSize() {
@@ -837,10 +826,6 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   bool brp_enabled() const { return settings.brp_enabled_; }
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-
-  PA_ALWAYS_INLINE bool uses_configurable_pool() const {
-    return settings.use_configurable_pool;
-  }
 
   void AdjustForForeground() {
     max_empty_slot_spans_dirty_bytes_shift = 2;

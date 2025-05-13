@@ -439,6 +439,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   // These are at the beginning as they're accessed for each allocation.
   uint32_t cached_memory_ = 0;
   std::atomic<bool> should_purge_;
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+  const internal::PoolOffsetLookup offset_lookup_;
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
   ThreadCacheStats stats_;
   ThreadAllocStats thread_alloc_stats_;
 
@@ -549,12 +552,17 @@ PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
 #endif  // PA_BUILDFLAG(IS_CHROMEOS) && PA_BUILDFLAG(PA_ARCH_CPU_X86_64) &&
         // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
-  // Passes the bucket size to |GetNext()|, so that in case of freelist
-  // corruption, we know the bucket size that lead to the crash, helping to
-  // narrow down the search for culprit. |bucket| was touched just now, so this
-  // does not introduce another cache miss.
+  // Passes the bucket size to |GetNextForThreadCache()|, so that in case of
+  // freelist corruption, we know the bucket size that lead to the crash,
+  // helping to narrow down the search for culprit. |bucket| was touched just
+  // now, so this does not introduce another cache miss.
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+  internal::FreelistEntry* next =
+      entry->GetNextForThreadCache(bucket.slot_size, offset_lookup_);
+#else
   internal::FreelistEntry* next =
       entry->GetNextForThreadCache(bucket.slot_size);
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
   PA_DCHECK(entry != next);
   bucket.count--;
@@ -621,8 +629,13 @@ PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
 #endif  // PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY) &&
         // PA_BUILDFLAG(PA_ARCH_CPU_X86_64) && PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+  auto* entry = internal::FreelistEntry::EmplaceAndInitForThreadCache(
+      slot_start, bucket.freelist_head, offset_lookup_);
+#else
   auto* entry = internal::FreelistEntry::EmplaceAndInitForThreadCache(
       slot_start, bucket.freelist_head);
+#endif
   bucket.freelist_head = entry;
   bucket.count++;
 }

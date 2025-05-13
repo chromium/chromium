@@ -490,6 +490,9 @@ ThreadCache* ThreadCache::Create(PartitionRoot* root) {
 
 ThreadCache::ThreadCache(PartitionRoot* root)
     : should_purge_(false),
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+      offset_lookup_(root->GetOffsetLookup()),
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
       root_(root),
       thread_id_(internal::base::PlatformThread::CurrentId()),
       next_(nullptr),
@@ -688,11 +691,20 @@ void ThreadCache::ClearBucket(Bucket& bucket, size_t limit) {
     auto* head = bucket.freelist_head;
     size_t items = 1;  // Cannot free the freelist head.
     while (items < limit) {
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+      head = head->GetNextForThreadCache(bucket.slot_size, offset_lookup_);
+#else
       head = head->GetNextForThreadCache(bucket.slot_size);
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
       items++;
     }
 
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+    FreeAfter(head->GetNextForThreadCache(bucket.slot_size, offset_lookup_),
+              bucket.slot_size);
+#else
     FreeAfter(head->GetNextForThreadCache(bucket.slot_size), bucket.slot_size);
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
     head->SetNext(nullptr);
   }
   bucket.count = limit;
@@ -711,7 +723,11 @@ void ThreadCache::FreeAfter(internal::FreelistEntry* head, size_t slot_size) {
   internal::ScopedGuard guard(internal::PartitionRootLock(root_));
   while (head) {
     uintptr_t slot_start = internal::SlotStartPtr2Addr(head);
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+    head = head->GetNextForThreadCache(slot_size, offset_lookup_);
+#else
     head = head->GetNextForThreadCache(slot_size);
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
     root_->RawFreeLocked(slot_start);
   }
 }
@@ -835,8 +851,13 @@ bool ThreadCache::IsInFreelist(uintptr_t address,
       position = index;
       return true;
     }
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+    internal::FreelistEntry* next =
+        entry->GetNextForThreadCache(bucket.slot_size, offset_lookup_);
+#else
     internal::FreelistEntry* next =
         entry->GetNextForThreadCache(bucket.slot_size);
+#endif
     entry = next;
     ++index;
   }

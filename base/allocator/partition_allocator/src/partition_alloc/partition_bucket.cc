@@ -847,7 +847,8 @@ PartitionBucket::InitializeSuperPage(PartitionRoot* root,
     }
   }
 
-  if (root->ChoosePool() == kBRPPoolHandle) {
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  if (root->brp_enabled()) {
     // Allocate a system page for InSlotMetadata table (only one of its
     // elements will be used). Shadow metadata does not need to protect
     // this table, because (1) corrupting the table won't help with the
@@ -859,6 +860,7 @@ PartitionBucket::InitializeSuperPage(PartitionRoot* root,
                             PageAccessibilityConfiguration::kReadWrite),
                         PageAccessibilityDisposition::kRequireUpdate);
   }
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
   // If we were after a specific address, but didn't get it, assume that
   // the system chose a lousy address. Here most OS'es have a default

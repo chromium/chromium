@@ -13,6 +13,7 @@
 #include "partition_alloc/partition_address_space.h"
 #include "partition_alloc/partition_alloc-inl.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/tagging.h"
@@ -50,6 +51,11 @@ class EncodedPoolOffset {
   PA_ALWAYS_INLINE explicit EncodedPoolOffset(void* ptr)
       // The encoded pointer stays MTE-tagged.
       : encoded_(Encode(ptr)) {}
+  // Similar to above, but faster with known pool.
+  PA_ALWAYS_INLINE explicit EncodedPoolOffset(
+      void* ptr,
+      const PoolOffsetLookup& offset_lookup)
+      : encoded_(Encode(ptr, offset_lookup)) {}
 
   PA_ALWAYS_INLINE constexpr uintptr_t Inverted() const { return ~encoded_; }
 
@@ -94,6 +100,17 @@ class EncodedPoolOffset {
     return Transform(tagged_offset);
   }
 
+  // Similar to above, but faster with known pool.
+  PA_ALWAYS_INLINE static uintptr_t Encode(
+      void* ptr,
+      const PoolOffsetLookup& offset_lookup) {
+    if (!ptr) {
+      return kEncodeedNullptr;
+    }
+    // Save a MTE tag as well as an offset.
+    return Transform(offset_lookup.GetTaggedOffset(ptr));
+  }
+
   // Given `pool_info`, decodes a `tagged_offset` into a tagged pointer.
   PA_ALWAYS_INLINE FreelistEntry* Decode(size_t slot_size) const {
     PoolInfo pool_info = GetPoolInfo(SlotStartPtr2Addr(this));
@@ -107,6 +124,22 @@ class EncodedPoolOffset {
 
     // We assume `tagged_offset` contains a proper MTE tag.
     return reinterpret_cast<FreelistEntry*>(pool_info.base | tagged_offset);
+  }
+
+  // Given `pool_info`, decodes a `tagged_offset` into a tagged pointer.
+  PA_ALWAYS_INLINE FreelistEntry* Decode(
+      size_t slot_size,
+      const PoolOffsetLookup& offset_lookup) const {
+    uintptr_t tagged_offset = Transform(encoded_);
+
+    // `tagged_offset` must not have bits set in the pool base mask, except MTE
+    // tag.
+    if (!offset_lookup.IsValidTaggedOffset(tagged_offset)) {
+      FreelistCorruptionDetected(slot_size);
+    }
+
+    // We assume `tagged_offset` contains a proper MTE tag.
+    return static_cast<FreelistEntry*>(offset_lookup.GetPointer(tagged_offset));
   }
 
   uintptr_t encoded_;

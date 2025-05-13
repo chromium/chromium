@@ -5,6 +5,8 @@
 #ifndef PARTITION_ALLOC_PARTITION_FREELIST_ENTRY_H_
 #define PARTITION_ALLOC_PARTITION_FREELIST_ENTRY_H_
 
+#include <utility>
+
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_constants.h"
 
@@ -36,8 +38,9 @@ class FreelistEntry {
 #endif
   {
   }
-  explicit FreelistEntry(FreelistEntry* next)
-      : encoded_next_(EncodedPtr(next))
+  template <typename... Args>
+  explicit FreelistEntry(FreelistEntry* next, Args&&... args)
+      : encoded_next_(EncodedPtr(next, std::forward<Args>(args)...))
 #if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
         ,
         shadow_(encoded_next_.Inverted())
@@ -45,8 +48,9 @@ class FreelistEntry {
   {
   }
   // For testing only.
-  FreelistEntry(void* next, bool make_shadow_match)
-      : encoded_next_(EncodedPtr(next))
+  template <typename... Args>
+  FreelistEntry(void* next, Args&&... args, bool make_shadow_match)
+      : encoded_next_(EncodedPtr(next, std::forward<Args>(args)...))
 #if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
         ,
         shadow_(make_shadow_match ? encoded_next_.Inverted() : 12345)
@@ -76,10 +80,13 @@ class FreelistEntry {
   // This freelist is built for the purpose of thread-cache. This means that we
   // can't perform a check that this and the next pointer belong to the same
   // super page, as thread-cache spans may chain slots across super pages.
+  template <typename... Args>
   PA_ALWAYS_INLINE static FreelistEntry* EmplaceAndInitForThreadCache(
       uintptr_t slot_start,
-      FreelistEntry* next) {
-    auto* entry = new (SlotStartAddr2Ptr(slot_start)) FreelistEntry(next);
+      FreelistEntry* next,
+      Args&&... args) {
+    auto* entry = new (SlotStartAddr2Ptr(slot_start))
+        FreelistEntry(next, std::forward<Args>(args)...);
     return entry;
   }
 
@@ -88,10 +95,13 @@ class FreelistEntry {
   //
   // This is for testing purposes only! |make_shadow_match| allows you to choose
   // if the shadow matches the next pointer properly or is trash.
+  template <typename... Args>
   PA_ALWAYS_INLINE static void EmplaceAndInitForTest(uintptr_t slot_start,
                                                      void* next,
+                                                     Args&&... args,
                                                      bool make_shadow_match) {
-    new (SlotStartAddr2Ptr(slot_start)) FreelistEntry(next, make_shadow_match);
+    new (SlotStartAddr2Ptr(slot_start))
+        FreelistEntry(next, std::forward<Args>(args)..., make_shadow_match);
   }
 
   void CorruptNextForTesting(uintptr_t v) {
@@ -101,12 +111,17 @@ class FreelistEntry {
 
   // Puts `slot_size` on the stack before crashing in case of memory
   // corruption. Meant to be used to report the failed allocation size.
-  PA_ALWAYS_INLINE FreelistEntry* GetNextForThreadCache(
-      size_t slot_size) const {
-    return GetNextInternal</*for_thread_cache=*/true>(slot_size);
+  template <typename... Args>
+  PA_ALWAYS_INLINE FreelistEntry* GetNextForThreadCache(size_t slot_size,
+                                                        Args&&... args) const {
+    return GetNextInternal</*for_thread_cache=*/true>(
+        slot_size, std::forward<Args>(args)...);
   }
-  PA_ALWAYS_INLINE FreelistEntry* GetNext(size_t slot_size) const {
-    return GetNextInternal</*for_thread_cache=*/false>(slot_size);
+  template <typename... Args>
+  PA_ALWAYS_INLINE FreelistEntry* GetNext(size_t slot_size,
+                                          Args&&... args) const {
+    return GetNextInternal</*for_thread_cache=*/false>(
+        slot_size, std::forward<Args>(args)...);
   }
 
   PA_NOINLINE void CheckFreeList(size_t slot_size) const {
@@ -122,7 +137,8 @@ class FreelistEntry {
     }
   }
 
-  PA_ALWAYS_INLINE void SetNext(FreelistEntry* entry) {
+  template <typename... Args>
+  PA_ALWAYS_INLINE void SetNext(FreelistEntry* entry, Args&&... args) {
     // SetNext() is either called on the freelist head, when provisioning new
     // slots, or when GetNext() has been called before, no need to pass the
     // size.
@@ -137,7 +153,7 @@ class FreelistEntry {
     }
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
-    encoded_next_ = EncodedPtr(entry);
+    encoded_next_ = EncodedPtr(entry, std::forward<Args>(args)...);
 #if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
     shadow_ = encoded_next_.Inverted();
 #endif
@@ -159,8 +175,9 @@ class FreelistEntry {
   }
 
  private:
-  template <bool for_thread_cache>
-  PA_ALWAYS_INLINE FreelistEntry* GetNextInternal(size_t slot_size) const {
+  template <bool for_thread_cache, typename... Args>
+  PA_ALWAYS_INLINE FreelistEntry* GetNextInternal(size_t slot_size,
+                                                  Args&&... args) const {
     // GetNext() can be called on discarded memory, in which case
     // |encoded_next_| is 0, and none of the checks apply. Don't prefetch
     // nullptr either.
@@ -168,7 +185,7 @@ class FreelistEntry {
       return nullptr;
     }
 
-    auto* ret = encoded_next_.Decode(slot_size);
+    auto* ret = encoded_next_.Decode(slot_size, std::forward<Args>(args)...);
     if (!IsWellFormed<for_thread_cache>(this, ret)) [[unlikely]] {
       // Put the corrupted data on the stack, it may give us more information
       // about what kind of corruption that was.

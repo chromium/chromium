@@ -1134,15 +1134,16 @@ void PartitionRoot::Init(PartitionOptions opts) {
     ReserveBackupRefPtrGuardRegionIfNeeded();
 #endif
 
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    settings.brp_enabled_ = opts.backup_ref_ptr == PartitionOptions::kEnabled;
-#else   // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    PA_CHECK(opts.backup_ref_ptr == PartitionOptions::kDisabled);
-#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    settings.use_configurable_pool =
-        (opts.use_configurable_pool == PartitionOptions::kAllowed) &&
-        IsConfigurablePoolAvailable();
-    PA_DCHECK(!settings.use_configurable_pool || IsConfigurablePoolAvailable());
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+    if (opts.use_configurable_pool == PartitionOptions::kAllowed &&
+        IsConfigurablePoolAvailable()) {
+      // BRP is not supported in the configurable pool because BRP requires
+      // objects to be in a different Pool.
+      PA_CHECK(opts.backup_ref_ptr == PartitionOptions::kDisabled);
+      PA_CHECK(settings.pool_handle == internal::kNullPoolHandle);
+      settings.pool_handle = internal::kConfigurablePoolHandle;
+    }
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
     settings.eventually_zero_freed_memory =
         opts.eventually_zero_freed_memory == PartitionOptions::kEnabled;
     settings.fewer_memory_regions =
@@ -1167,7 +1168,7 @@ void PartitionRoot::Init(PartitionOptions opts) {
     // representations. All custom representations encountered so far rely on an
     // "is in configurable pool?" check, so we use that as a proxy.
     PA_CHECK(!settings.memory_tagging_enabled_ ||
-             !settings.use_configurable_pool);
+             settings.pool_handle != internal::kConfigurablePoolHandle);
 
     settings.use_random_memory_tagging_ =
         opts.memory_tagging.random_memory_tagging == PartitionOptions::kEnabled;
@@ -1176,18 +1177,15 @@ void PartitionRoot::Init(PartitionOptions opts) {
         opts.memory_tagging.reporting_mode;
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 
-    // brp_enabled() is not supported in the configurable pool because
-    // BRP requires objects to be in a different Pool.
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    PA_CHECK(!(settings.use_configurable_pool && brp_enabled()));
-#endif
-
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
-    // BRP and thread isolated mode use different pools, so they can't be
-    // enabled at the same time.
-    PA_CHECK(!opts.thread_isolation.enabled ||
-             opts.backup_ref_ptr == PartitionOptions::kDisabled);
     settings.thread_isolation = opts.thread_isolation;
+    if (opts.thread_isolation.enabled) {
+      // BRP and thread isolated mode use different pools, so they can't be
+      // enabled at the same time.
+      PA_CHECK(opts.backup_ref_ptr == PartitionOptions::kDisabled);
+      PA_CHECK(settings.pool_handle == internal::kNullPoolHandle);
+      settings.pool_handle = internal::kThreadIsolatedPoolHandle;
+    }
 #endif  // PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
 #if PA_CONFIG(EXTRAS_REQUIRED)
@@ -1198,16 +1196,32 @@ void PartitionRoot::Init(PartitionOptions opts) {
     }
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    if (brp_enabled()) {
+    settings.brp_enabled_ = opts.backup_ref_ptr == PartitionOptions::kEnabled;
+    if (opts.backup_ref_ptr == PartitionOptions::kEnabled) {
       settings.in_slot_metadata_size = internal::kInSlotMetadataSizeAdjustment;
       settings.extras_size += internal::kInSlotMetadataSizeAdjustment;
       settings.extras_size += opts.backup_ref_ptr_extra_extras_size;
 #if PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
       EnableMac11MallocSizeHackIfNeeded();
 #endif
+
+      PA_CHECK(settings.pool_handle == internal::kNullPoolHandle);
+      settings.pool_handle = internal::kBRPPoolHandle;
     }
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 #endif  // PA_CONFIG(EXTRAS_REQUIRED)
+
+#if !PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+    PA_CHECK(opts.backup_ref_ptr == PartitionOptions::kDisabled);
+#endif  // !PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+
+    if (settings.pool_handle == internal::kNullPoolHandle) {
+      settings.pool_handle = internal::kRegularPoolHandle;
+    }
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+    settings.offset_lookup =
+        internal::PartitionAddressSpace::GetOffsetLookup(settings.pool_handle);
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
     // We mark the sentinel slot span as free to make sure it is skipped by our
     // logic to find a new active slot span.
@@ -1252,8 +1266,8 @@ void PartitionRoot::Init(PartitionOptions opts) {
 
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
     if (internal::PartitionAddressSpace::IsShadowMetadataEnabled(
-            ChoosePool())) {
-      switch (ChoosePool()) {
+            settings.pool_handle)) {
+      switch (settings.pool_handle) {
         case internal::kRegularPoolHandle:
           settings.shadow_pool_offset_ =
               internal::PartitionAddressSpace::RegularPoolShadowOffset();
