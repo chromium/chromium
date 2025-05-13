@@ -153,14 +153,8 @@ struct ResourceScheduler::RequestPriorityParams {
   RequestPriorityParams(net::RequestPriority priority, int intra_priority)
       : priority(priority), intra_priority(intra_priority) {}
 
-  bool operator==(const RequestPriorityParams& other) const {
-    return (priority == other.priority) &&
-           (intra_priority == other.intra_priority);
-  }
-
-  bool operator!=(const RequestPriorityParams& other) const {
-    return !(*this == other);
-  }
+  friend bool operator==(const RequestPriorityParams&,
+                         const RequestPriorityParams&) = default;
 
   bool GreaterThan(const RequestPriorityParams& other) const {
     if (priority != other.priority)
