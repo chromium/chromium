@@ -124,6 +124,26 @@ void GlicPageContextFetcher::Fetch(
     FocusedTabData focused_tab_data,
     const mojom::GetTabContextOptions& options,
     glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) {
+  CHECK(callback);
+  auto self = std::make_unique<GlicPageContextFetcher>();
+  auto* raw_self = self.get();
+  raw_self->FetchStart(
+      focused_tab_data, options,
+      base::BindOnce(
+          // Bind `fetcher` to the callback to keep it in scope until it
+          // returns.
+          [](std::unique_ptr<glic::GlicPageContextFetcher> fetcher,
+             mojom::WebClientHandler::GetContextFromFocusedTabCallback callback,
+             mojom::GetContextResultPtr result) {
+            std::move(callback).Run(std::move(result));
+          },
+          std::move(self), std::move(callback)));
+}
+
+void GlicPageContextFetcher::FetchStart(
+    FocusedTabData focused_tab_data,
+    const mojom::GetTabContextOptions& options,
+    glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) {
   base::expected<content::WebContents*, std::string_view> focus =
       focused_tab_data.GetFocus();
   if (!focus.has_value()) {
@@ -216,6 +236,9 @@ void GlicPageContextFetcher::Fetch(
           base::BindOnce(&GlicPageContextFetcher::ReceivedContextEligibility,
                          GetWeakPtr())));
 
+  // Note: initialization_done_ guards against processing
+  // `RunCallbackIfComplete()` until we reach this point.
+  initialization_done_ = true;
   RunCallbackIfComplete();
 }
 
@@ -320,6 +343,10 @@ void GlicPageContextFetcher::ReceivedContextEligibility(bool is_eligible) {
 }
 
 void GlicPageContextFetcher::RunCallbackIfComplete() {
+  if (!initialization_done_) {
+    return;
+  }
+
   // Continue only if the primary page changed or work is complete.
   bool work_complete =
       (screenshot_done_ && inner_text_done_ && annotated_page_content_done_ &&

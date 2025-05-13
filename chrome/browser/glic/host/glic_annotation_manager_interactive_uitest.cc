@@ -136,12 +136,11 @@ class GlicAnnotationManagerUiTest : public InteractiveGlicTest {
       ASSERT_TRUE(glic_service);
 
       base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-      auto fetcher = std::make_unique<GlicPageContextFetcher>();
 
       auto options = mojom::GetTabContextOptions::New();
       options->include_annotated_page_content = true;
 
-      fetcher->Fetch(
+      GlicPageContextFetcher::Fetch(
           glic_service->GetFocusedTabData(), *options,
           base::BindLambdaForTesting([&](mojom::GetContextResultPtr result) {
             mojo_base::ProtoWrapper& serialized_apc =

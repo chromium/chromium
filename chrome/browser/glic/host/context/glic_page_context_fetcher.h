@@ -32,10 +32,8 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
   GlicPageContextFetcher();
   ~GlicPageContextFetcher() override;
 
-  // Fetches the page context. May be called at most once.
-  // TODO(harringtond): This API is error-prone, consider making this a static
-  // function so that Fetch() can't be called multiple times.
-  void Fetch(
+  // Fetches the page context.
+  static void Fetch(
       FocusedTabData focused_tab_data,
       const mojom::GetTabContextOptions& options,
       glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback callback);
@@ -44,6 +42,11 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
   void PrimaryPageChanged(content::Page& page) override;
 
  private:
+  void FetchStart(
+      FocusedTabData focused_tab_data,
+      const mojom::GetTabContextOptions& options,
+      glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback callback);
+
   void GetTabScreenshot(content::WebContents& web_contents);
   void ReceivedViewportBitmap(const SkBitmap& bitmap);
   void RecievedJpegScreenshot(
@@ -70,6 +73,7 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
   // Intermediate results:
 
   // Whether work is complete for each task, does not imply success.
+  bool initialization_done_ = false;
   bool screenshot_done_ = false;
   bool inner_text_done_ = false;
   bool pdf_done_ = false;

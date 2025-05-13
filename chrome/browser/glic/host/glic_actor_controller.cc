@@ -155,18 +155,7 @@ void GlicActorController::GetContextFromFocusedTab(
   // with GlicKeyedService::GetContextFromFocusedTab(). It's not clear yet if
   // the same permission checks, etc. should apply here.
 
-  auto fetcher = std::make_unique<glic::GlicPageContextFetcher>();
-  fetcher->Fetch(
-      focused_tab_data, options,
-      base::BindOnce(
-          // Bind `fetcher` to the callback to keep it in scope until it
-          // returns.
-          [](std::unique_ptr<glic::GlicPageContextFetcher> fetcher,
-             mojom::WebClientHandler::GetContextFromFocusedTabCallback callback,
-             mojom::GetContextResultPtr result) {
-            std::move(callback).Run(std::move(result));
-          },
-          std::move(fetcher), std::move(callback)));
+  GlicPageContextFetcher::Fetch(focused_tab_data, options, std::move(callback));
 }
 
 base::WeakPtr<const GlicActorController> GlicActorController::GetWeakPtr()

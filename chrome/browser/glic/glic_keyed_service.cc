@@ -340,22 +340,8 @@ void GlicKeyedService::GetContextFromFocusedTab(
 
   metrics_->DidRequestContextFromFocusedTab();
 
-  auto fetcher = std::make_unique<glic::GlicPageContextFetcher>();
-  fetcher->Fetch(
-      GetFocusedTabData(), options,
-      base::BindOnce(
-          // Bind `fetcher` to the callback to keep it in scope until it
-          // returns.
-          // TODO(harringtond): Consider adding throttling of how often we fetch
-          // context.
-          // TODO(harringtond): Consider deleting the fetcher if the page
-          // handler is unbound before the fetch completes.
-          [](std::unique_ptr<glic::GlicPageContextFetcher> fetcher,
-             mojom::WebClientHandler::GetContextFromFocusedTabCallback callback,
-             mojom::GetContextResultPtr result) {
-            std::move(callback).Run(std::move(result));
-          },
-          std::move(fetcher), std::move(callback)));
+  GlicPageContextFetcher::Fetch(GetFocusedTabData(), options,
+                                std::move(callback));
 }
 
 void GlicKeyedService::ActInFocusedTab(
