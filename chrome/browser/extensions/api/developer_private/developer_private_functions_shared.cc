@@ -686,6 +686,31 @@ DeveloperPrivateDeleteExtensionErrorsFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+DeveloperPrivateUpdateExtensionCommandFunction::
+    ~DeveloperPrivateUpdateExtensionCommandFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateUpdateExtensionCommandFunction::Run() {
+  std::optional<developer::UpdateExtensionCommand::Params> params =
+      developer::UpdateExtensionCommand::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  const developer::ExtensionCommandUpdate& update = params->update;
+
+  CommandService* command_service = CommandService::Get(browser_context());
+
+  if (update.scope != developer::CommandScope::kNone) {
+    command_service->SetScope(update.extension_id, update.command_name,
+                              update.scope == developer::CommandScope::kGlobal);
+  }
+
+  if (update.keybinding) {
+    command_service->UpdateKeybindingPrefs(
+        update.extension_id, update.command_name, *update.keybinding);
+  }
+
+  return RespondNow(NoArguments());
+}
+
 DeveloperPrivateAddHostPermissionFunction::
     DeveloperPrivateAddHostPermissionFunction() = default;
 DeveloperPrivateAddHostPermissionFunction::

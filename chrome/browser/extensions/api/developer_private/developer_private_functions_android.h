@@ -38,9 +38,6 @@ DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateShowPathFunction,
 DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateSetShortcutHandlingSuspendedFunction,
                    "developerPrivate.setShortcutHandlingSuspended",
                    DEVELOPERPRIVATE_SETSHORTCUTHANDLINGSUSPENDED);
-DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateUpdateExtensionCommandFunction,
-                   "developerPrivate.updateExtensionCommand",
-                   DEVELOPERPRIVATE_UPDATEEXTENSIONCOMMAND);
 DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateRemoveMultipleExtensionsFunction,
                    "developerPrivate.removeMultipleExtensions",
                    DEVELOPERPRIVATE_REMOVEMULTIPLEEXTENSIONS);

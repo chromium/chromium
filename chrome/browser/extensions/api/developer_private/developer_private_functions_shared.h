@@ -251,6 +251,17 @@ class DeveloperPrivateDeleteExtensionErrorsFunction
   ResponseAction Run() override;
 };
 
+class DeveloperPrivateUpdateExtensionCommandFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.updateExtensionCommand",
+                             DEVELOPERPRIVATE_UPDATEEXTENSIONCOMMAND)
+
+ protected:
+  ~DeveloperPrivateUpdateExtensionCommandFunction() override;
+  ResponseAction Run() override;
+};
+
 class DeveloperPrivateAddHostPermissionFunction
     : public DeveloperPrivateAPIFunction {
  public:

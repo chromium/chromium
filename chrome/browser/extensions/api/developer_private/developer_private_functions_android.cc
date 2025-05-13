@@ -30,9 +30,6 @@ DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(
     DeveloperPrivateSetShortcutHandlingSuspendedFunction,
     "developerPrivate.setShortcutHandlingSuspended")
 DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(
-    DeveloperPrivateUpdateExtensionCommandFunction,
-    "developerPrivate.updateExtensionCommand")
-DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(
     DeveloperPrivateRemoveMultipleExtensionsFunction,
     "developerPrivate.removeMultipleExtensions")
 DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(
