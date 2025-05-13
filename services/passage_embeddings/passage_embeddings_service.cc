@@ -21,9 +21,11 @@ PassageEmbeddingsService::PassageEmbeddingsService(
 
 PassageEmbeddingsService::~PassageEmbeddingsService() = default;
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void PassageEmbeddingsService::OnEmbedderDisconnect() {
   embedder_.reset();
 }
+#endif
 
 void PassageEmbeddingsService::LoadModels(
     mojom::PassageEmbeddingsLoadModelsParamsPtr model_params,
