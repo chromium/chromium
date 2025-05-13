@@ -29,7 +29,7 @@ class SystemMemoryPressureEvaluator
   using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
 
   // The memory sampling period, currently 5s.
-  static const base::TimeDelta kMemorySamplingPeriod;
+  static constexpr base::TimeDelta kDefaultPeriod = base::Seconds(5);
 
   // Constants governing the polling and hysteresis behaviour of the observer.
   // The time which should pass between 2 successive moderate memory pressure

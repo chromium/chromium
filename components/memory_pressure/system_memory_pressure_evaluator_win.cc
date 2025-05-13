@@ -55,6 +55,16 @@ BASE_FEATURE_PARAM(int,
                    "CommitAvailableModerateThresholdMB",
                    kDefaultCommitAvailableModerateThresholdMb);
 
+// Controls the frequency at which memory pressure is evaluated on Windows.
+BASE_FEATURE(kWindowsMemoryPressurePeriod,
+             "WinMemoryPressurePeriod",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kWinMemoryPressurePeriodParam,
+                   &kWindowsMemoryPressurePeriod,
+                   "period",
+                   SystemMemoryPressureEvaluator::kDefaultPeriod);
+
 static const DWORDLONG kMBBytes = 1024 * 1024;
 
 // Constant for early exit commit threshold. Represents 2GB in MB. Used for the
@@ -115,10 +125,6 @@ void MemoryPressureWatcherDelegate::OnObjectSignaled(HANDLE handle) {
 
 }  // namespace
 
-// Check the amount of RAM left every 5 seconds.
-const base::TimeDelta SystemMemoryPressureEvaluator::kMemorySamplingPeriod =
-    base::Seconds(5);
-
 // The following constants have been lifted from similar values in the ChromeOS
 // memory pressure monitor. The values were determined experimentally to ensure
 // sufficient responsiveness of the memory pressure subsystem, and minimal
@@ -164,7 +170,7 @@ void SystemMemoryPressureEvaluator::StartObserving() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   timer_.Start(
-      FROM_HERE, kMemorySamplingPeriod,
+      FROM_HERE, kWinMemoryPressurePeriodParam.Get(),
       BindRepeating(&SystemMemoryPressureEvaluator::CheckMemoryPressure,
                     weak_ptr_factory_.GetWeakPtr()));
 }
@@ -200,7 +206,7 @@ void SystemMemoryPressureEvaluator::CheckMemoryPressure() {
         // Already in moderate pressure, only notify if sustained over the
         // cooldown period.
         const int kModeratePressureCooldownCycles =
-            kModeratePressureCooldown / kMemorySamplingPeriod;
+            kModeratePressureCooldown / kWinMemoryPressurePeriodParam.Get();
         if (++moderate_pressure_repeat_count_ ==
             kModeratePressureCooldownCycles) {
           moderate_pressure_repeat_count_ = 0;
