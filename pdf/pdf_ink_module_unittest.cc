@@ -3446,7 +3446,12 @@ TEST_P(PdfInkModuleTextHighlightTest, TwoClickCount) {
                                               /*click_count=*/2));
   EXPECT_CALL(client(), ExtendSelectionByPoint(_)).Times(0);
 
-  ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/2);
+  blink::WebMouseEvent mouse_down_event =
+      MouseEventBuilder()
+          .CreateLeftClickAtPosition(kStartPointInsidePage0)
+          .SetClickCount(2)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   EXPECT_EQ(1, client().stroke_finished_count());
   EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
@@ -3465,6 +3470,18 @@ TEST_P(PdfInkModuleTextHighlightTest, TwoClickCount) {
       collected_strokes,
       ElementsAre(Pair(0, Pointwise(InkStrokeEq(expected_brush.ink_brush()),
                                     {expected_batch.value()}))));
+
+  // Mousemove and mouseup events will be handled but will not result in any
+  // additional strokes.
+  EXPECT_TRUE(ink_module().HandleInputEvent(
+      CreateMouseMoveWithLeftButtonEventAtPoint(kStartPointInsidePage0)));
+  blink::WebMouseEvent mouse_up_event =
+      MouseEventBuilder()
+          .CreateLeftMouseUpAtPosition(kStartPointInsidePage0)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
+
+  EXPECT_EQ(1, client().stroke_finished_count());
 }
 
 TEST_P(PdfInkModuleTextHighlightTest, ThreeClickCount) {
@@ -3487,7 +3504,12 @@ TEST_P(PdfInkModuleTextHighlightTest, ThreeClickCount) {
                                               /*click_count=*/3));
   EXPECT_CALL(client(), ExtendSelectionByPoint(_)).Times(0);
 
-  ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/3);
+  blink::WebMouseEvent mouse_down_event =
+      MouseEventBuilder()
+          .CreateLeftClickAtPosition(kStartPointInsidePage0)
+          .SetClickCount(3)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
   // Two strokes: one from the two click rect and another from the three click
   // rect.
@@ -3510,6 +3532,18 @@ TEST_P(PdfInkModuleTextHighlightTest, ThreeClickCount) {
       collected_strokes,
       ElementsAre(Pair(0, Pointwise(InkStrokeEq(expected_brush.ink_brush()),
                                     {expected_batch.value()}))));
+
+  // Mousemove and mouseup events will be handled but will not result in any
+  // additional strokes.
+  EXPECT_TRUE(ink_module().HandleInputEvent(
+      CreateMouseMoveWithLeftButtonEventAtPoint(kStartPointInsidePage0)));
+  blink::WebMouseEvent mouse_up_event =
+      MouseEventBuilder()
+          .CreateLeftMouseUpAtPosition(kStartPointInsidePage0)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
+
+  EXPECT_EQ(2, client().stroke_finished_count());
 }
 
 TEST_P(PdfInkModuleTextHighlightTest, MouseUpOnNonSelection) {

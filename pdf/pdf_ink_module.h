@@ -298,6 +298,14 @@ class PdfInkModule {
     TextHighlightState& operator=(const TextHighlightState&) = delete;
     ~TextHighlightState();
 
+    // Tracks whether the current text highlight has finished highlighting a
+    // multi-click text selection, but has not yet exited text highlight state.
+    // For example, the user may click text three times to select the line, but
+    // may not have performed mouseup nor touchend. The user should still be in
+    // text highlight state but should be unable to highlight any additional
+    // text.
+    bool finished_multi_click = false;
+
     // A mapping of 0-based page indices to a list of strokes on pages that
     // represent the user's highlighter text selections. Unlike drawing strokes
     // which are limited to one page, text selection may cover multiple pages.
@@ -356,7 +364,7 @@ class PdfInkModule {
                           int click_count,
                           base::TimeTicks timestamp);
   bool ContinueTextHighlight(const gfx::PointF& position);
-  bool FinishTextHighlight(const gfx::PointF& position);
+  bool FinishTextHighlight(const gfx::PointF& position, bool is_multi_click);
 
   // Returns a highlighter stroke that matches the position and size of
   // `selection_rect`. `selection_rect` must be in screen coordinates.
