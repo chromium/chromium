@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ListItemTy
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuSwitches;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -248,8 +249,11 @@ public class ContextMenuRenderTest {
     }
 
     private PropertyModel getItemModel(String title) {
-        return new PropertyModel.Builder(ContextMenuItemProperties.ALL_KEYS)
-                .with(ContextMenuItemProperties.TEXT, title)
+        return new PropertyModel.Builder(
+                        ListMenuItemProperties.MENU_ITEM_ID,
+                        ListMenuItemProperties.TITLE,
+                        ListMenuItemProperties.ENABLED)
+                .with(ListMenuItemProperties.TITLE, title)
                 .build();
     }
 
@@ -261,7 +265,7 @@ public class ContextMenuRenderTest {
                                 UrlUtils.getIsolatedTestFilePath(
                                         "chrome/test/data/android/UiCapture/dots.png")));
         return new PropertyModel.Builder(ContextMenuItemWithIconButtonProperties.ALL_KEYS)
-                .with(ContextMenuItemWithIconButtonProperties.TEXT, title)
+                .with(ContextMenuItemWithIconButtonProperties.TITLE, title)
                 .with(ContextMenuItemWithIconButtonProperties.ENABLED, true)
                 .with(ContextMenuItemWithIconButtonProperties.BUTTON_IMAGE, drawable)
                 .build();

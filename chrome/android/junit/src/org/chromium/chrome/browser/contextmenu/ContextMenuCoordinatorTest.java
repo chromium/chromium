@@ -10,9 +10,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.ENABLED;
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.MENU_ID;
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.TEXT;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
 import android.app.Activity;
 import android.graphics.Rect;
@@ -562,11 +562,11 @@ public class ContextMenuCoordinatorTest {
 
     private ListItem createListItem(@Item int item, boolean enabled) {
         final PropertyModel model =
-                new PropertyModel.Builder(ContextMenuItemProperties.ALL_KEYS)
-                        .with(MENU_ID, ChromeContextMenuItem.getMenuId(item))
+                new PropertyModel.Builder(MENU_ITEM_ID, TITLE, ENABLED)
+                        .with(MENU_ITEM_ID, ChromeContextMenuItem.getMenuId(item))
                         .with(ENABLED, enabled)
                         .with(
-                                TEXT,
+                                TITLE,
                                 ChromeContextMenuItem.getTitle(mActivity, mProfile, item, false))
                         .build();
         return new ListItem(ListItemType.CONTEXT_MENU_ITEM, model);
@@ -575,10 +575,10 @@ public class ContextMenuCoordinatorTest {
     private ListItem createShareListItem(@Item int item) {
         final PropertyModel model =
                 new PropertyModel.Builder(ContextMenuItemWithIconButtonProperties.ALL_KEYS)
-                        .with(MENU_ID, ChromeContextMenuItem.getMenuId(item))
+                        .with(MENU_ITEM_ID, ChromeContextMenuItem.getMenuId(item))
                         .with(ENABLED, true)
                         .with(
-                                TEXT,
+                                TITLE,
                                 ChromeContextMenuItem.getTitle(mActivity, mProfile, item, false))
                         .build();
         return new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON, model);

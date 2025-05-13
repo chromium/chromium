@@ -11,9 +11,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.ENABLED;
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.MENU_ID;
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.TEXT;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
 import android.app.Activity;
 import android.net.Uri;
@@ -177,10 +177,10 @@ public class ChromeContextMenuPopulatorTest {
             for (int j = 0; j < contextMenuState.get(i).second.size(); j++) {
                 PropertyModel model = contextMenuState.get(i).second.get(j).model;
                 assertEquals(
-                        "'" + model.get(TEXT) + "' has different enablement setting than expected",
-                        !disabled.contains(model.get(MENU_ID)),
+                        "'" + model.get(TITLE) + "' has different enablement setting than expected",
+                        !disabled.contains(model.get(MENU_ITEM_ID)),
                         model.get(ENABLED));
-                availableInTab[j] = model.get(MENU_ID);
+                availableInTab[j] = model.get(MENU_ITEM_ID);
             }
 
             int[] expectedItemsInGroup = groups[i];
@@ -205,7 +205,7 @@ public class ChromeContextMenuPopulatorTest {
                 StringBuilder generated_info = new StringBuilder();
                 for (int j = 0; j < contextMenuState.get(i).second.size(); j++) {
                     generated_info.append("'");
-                    generated_info.append(contextMenuState.get(i).second.get(j).model.get(TEXT));
+                    generated_info.append(contextMenuState.get(i).second.get(j).model.get(TITLE));
                     generated_info.append("' ");
                 }
                 StringBuilder expected_info = new StringBuilder();

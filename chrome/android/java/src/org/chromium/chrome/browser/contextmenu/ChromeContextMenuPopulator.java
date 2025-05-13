@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.ENABLED;
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.MENU_ID;
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.TEXT;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_CONTENT_DESC;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_IMAGE;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_MENU_ID;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -1107,10 +1107,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     private ListItem createListItem(@Item int item, boolean showInProductHelp, boolean enabled) {
         final PropertyModel model =
-                new PropertyModel.Builder(ContextMenuItemProperties.ALL_KEYS)
-                        .with(MENU_ID, ChromeContextMenuItem.getMenuId(item))
+                new PropertyModel.Builder(MENU_ITEM_ID, TITLE, ENABLED)
+                        .with(MENU_ITEM_ID, ChromeContextMenuItem.getMenuId(item))
                         .with(
-                                TEXT,
+                                TITLE,
                                 ChromeContextMenuItem.getTitle(
                                         mContext, getProfile(), item, showInProductHelp))
                         .with(ENABLED, enabled)
@@ -1123,10 +1123,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         final Pair<Drawable, CharSequence> shareInfo = createRecentShareAppInfo(isLink);
         final PropertyModel model =
                 new PropertyModel.Builder(ContextMenuItemWithIconButtonProperties.ALL_KEYS)
-                        .with(MENU_ID, ChromeContextMenuItem.getMenuId(item))
+                        .with(MENU_ITEM_ID, ChromeContextMenuItem.getMenuId(item))
                         .with(ENABLED, true)
                         .with(
-                                TEXT,
+                                TITLE,
                                 ChromeContextMenuItem.getTitle(mContext, getProfile(), item, false))
                         .with(BUTTON_IMAGE, shareInfo.first)
                         .with(BUTTON_CONTENT_DESC, shareInfo.second)

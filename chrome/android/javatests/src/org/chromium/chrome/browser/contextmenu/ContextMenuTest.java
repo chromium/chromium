@@ -15,6 +15,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ListItemType.CONTEXT_MENU_ITEM;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -1306,7 +1308,7 @@ public class ContextMenuTest {
         List<Integer> actualItems = new ArrayList<>();
         for (int i = 0; i < menu.getCount(); i++) {
             if (menu.getItem(i).type >= CONTEXT_MENU_ITEM) {
-                actualItems.add(menu.getItem(i).model.get(ContextMenuItemProperties.MENU_ID));
+                actualItems.add(menu.getItem(i).model.get(MENU_ITEM_ID));
             }
         }
 
@@ -1320,8 +1322,7 @@ public class ContextMenuTest {
         StringBuilder items = new StringBuilder();
         for (int i = 0; i < menu.getCount(); i++) {
             if (menu.getItem(i).type >= CONTEXT_MENU_ITEM) {
-                items.append("\n")
-                        .append(menu.getItem(i).model.get(ContextMenuItemProperties.TEXT));
+                items.append("\n").append(menu.getItem(i).model.get(TITLE));
             }
         }
         return items.toString();
@@ -1331,8 +1332,8 @@ public class ContextMenuTest {
         StringBuilder itemName = new StringBuilder();
         for (int i = 0; i < menu.getCount(); i++) {
             if (menu.getItem(i).type >= CONTEXT_MENU_ITEM) {
-                if (menu.getItem(i).model.get(ContextMenuItemProperties.MENU_ID) == itemId) {
-                    itemName.append(menu.getItem(i).model.get(ContextMenuItemProperties.TEXT));
+                if (menu.getItem(i).model.get(MENU_ITEM_ID) == itemId) {
+                    itemName.append(menu.getItem(i).model.get(TITLE));
                     return itemName.toString();
                 }
             }

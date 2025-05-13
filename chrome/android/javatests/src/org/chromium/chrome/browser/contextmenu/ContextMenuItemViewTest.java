@@ -75,7 +75,7 @@ public class ContextMenuItemViewTest {
                     mModel =
                             new PropertyModel.Builder(
                                             ContextMenuItemWithIconButtonProperties.ALL_KEYS)
-                                    .with(ContextMenuItemWithIconButtonProperties.TEXT, "")
+                                    .with(ContextMenuItemWithIconButtonProperties.TITLE, "")
                                     .with(ContextMenuItemWithIconButtonProperties.ENABLED, true)
                                     .with(
                                             ContextMenuItemWithIconButtonProperties.BUTTON_IMAGE,
@@ -107,7 +107,7 @@ public class ContextMenuItemViewTest {
     @UiThreadTest
     public void testText() {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mModel.set(ContextMenuItemWithIconButtonProperties.TEXT, TEXT));
+                () -> mModel.set(ContextMenuItemWithIconButtonProperties.TITLE, TEXT));
         assertThat("Incorrect item text.", mText.getText(), equalTo(TEXT));
     }
 

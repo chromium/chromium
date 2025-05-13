@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.ENABLED;
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.TEXT;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
 import android.view.View;
 import android.widget.TextView;
@@ -15,8 +15,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 class ContextMenuItemViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (propertyKey == TEXT) {
-            ((TextView) view).setText(model.get(TEXT));
+        if (propertyKey == TITLE) {
+            ((TextView) view).setText(model.get(TITLE));
         } else if (propertyKey == ENABLED) {
             view.setEnabled(model.get(ENABLED));
         }

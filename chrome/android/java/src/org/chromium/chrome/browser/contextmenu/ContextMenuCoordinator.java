@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.ENABLED;
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.MENU_ID;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_MENU_ID;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 
 import android.app.Activity;
 import android.graphics.Rect;
@@ -319,7 +319,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                         if (getItemViewType(position) == ListItemType.CONTEXT_MENU_ITEM
                                 || getItemViewType(position)
                                         == ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON) {
-                            return ((ListItem) getItem(position)).model.get(MENU_ID);
+                            return ((ListItem) getItem(position)).model.get(MENU_ITEM_ID);
                         }
                         return INVALID_ITEM_ID;
                     }
@@ -586,8 +586,8 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         for (int i = 0; i < getCount(); i++) {
             final ListItem item = getItem(i);
             // If the item is a title/divider, its model does not have MENU_ID as key.
-            if (item.model.getAllSetProperties().contains(MENU_ID)
-                    && item.model.get(MENU_ID) == id) {
+            if (item.model.getAllSetProperties().contains(MENU_ITEM_ID)
+                    && item.model.get(MENU_ITEM_ID) == id) {
                 return item;
             }
         }

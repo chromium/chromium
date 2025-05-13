@@ -29,7 +29,8 @@ public class ListMenuItemProperties {
     // TODO(crbug.com/40738791): Consider passing menu item title through TITLE property instead of
     // TITLE_ID.
     public static final WritableIntPropertyKey TITLE_ID = new WritableIntPropertyKey();
-    public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<CharSequence> TITLE =
+            new WritableObjectPropertyKey<>();
     // A11y content description of menu item
     public static final WritableObjectPropertyKey<@Nullable String> CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
