@@ -573,6 +573,9 @@ BASE_FEATURE(kIPHSharingHubWebnotesStylizeFeature,
 BASE_FEATURE(kIPHRestoreTabsOnFREFeature,
              "IPH_RestoreTabsOnFRE",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHTabSwitcherXR,
+             "IPH_TabSwitcherXR",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)

@@ -40,7 +40,10 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.Highl
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.util.XrUtils;
 import org.chromium.url.GURL;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Root component for the tab switcher button on the toolbar. Intended to own the {@link
@@ -50,6 +53,9 @@ import org.chromium.url.GURL;
  */
 @NullMarked
 public class ToggleTabStackButtonCoordinator {
+    private static final int IPH_TAB_SWITCHER_XR_WAIT_TIME_MS = 5 * 1000;
+    private static final int IPH_TAB_SWITCHER_XR_MIN_TABS = 4;
+    private static final long ONE_DAY_IN_MILLIS = TimeUnit.DAYS.toMillis(1);
     private final CallbackController mCallbackController = new CallbackController();
     private final Context mContext;
     private final ToggleTabStackButton mToggleTabStackButton;
@@ -58,6 +64,11 @@ public class ToggleTabStackButtonCoordinator {
     private final OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
     private final CurrentTabObserver mPageLoadObserver;
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final Callback<Integer> mTabCountSupplierObserver = this::onUpdateTabCount;
+    private final Callback<TabModelDotInfo> mNotificationDotObserver =
+            this::onUpdateNotificationDot;
+    private @Nullable ObservableSupplier<Integer> mTabCountSupplier;
+    private @Nullable ObservableSupplier<TabModelDotInfo> mNotificationDotSupplier;
 
     private @Nullable LayoutStateProvider mLayoutStateProvider;
     private @Nullable LayoutStateObserver mLayoutStateObserver;
@@ -68,6 +79,7 @@ public class ToggleTabStackButtonCoordinator {
     private @Nullable Runnable mArchivedTabsIphDismissedCallback;
     private final Callback<Integer> mArchivedTabCountObserver = this::maybeShowDeclutterIph;
     private boolean mAlreadyRequestedDeclutterIph;
+    private long mLastTimeXrIphWasShown;
 
     /**
      * @param context The Android context used for various view operations.
@@ -132,13 +144,19 @@ public class ToggleTabStackButtonCoordinator {
             ObservableSupplier<TabModelDotInfo> tabModelNotificationDotSupplier,
             Runnable archivedTabsIphShownCallback,
             Runnable archivedTabsIphDismissedCallback) {
+        mTabCountSupplier = tabCountSupplier;
+        if (mTabCountSupplier != null) {
+            mTabCountSupplier.addObserver(mTabCountSupplierObserver);
+        }
+
+        mNotificationDotSupplier = tabModelNotificationDotSupplier;
+        if (mNotificationDotSupplier != null) {
+            mNotificationDotSupplier.addObserver(mNotificationDotObserver);
+        }
+
         mToggleTabStackButton.setOnClickListener(onClickListener);
         mToggleTabStackButton.setOnLongClickListener(onLongClickListener);
-        mToggleTabStackButton.setSuppliers(
-                tabCountSupplier,
-                tabModelNotificationDotSupplier,
-                mIsIncognitoSupplier,
-                mUserEducationHelper);
+        mToggleTabStackButton.setSuppliers(tabCountSupplier, mIsIncognitoSupplier);
 
         mArchivedTabCountSupplier = archivedTabCountSupplier;
         if (mArchivedTabCountSupplier != null) {
@@ -153,6 +171,13 @@ public class ToggleTabStackButtonCoordinator {
         mCallbackController.destroy();
 
         mPageLoadObserver.destroy();
+
+        if (mTabCountSupplier != null) {
+            mTabCountSupplier.removeObserver(mTabCountSupplierObserver);
+        }
+        if (mNotificationDotSupplier != null) {
+            mNotificationDotSupplier.removeObserver(mNotificationDotObserver);
+        }
 
         if (mLayoutStateProvider != null) {
             assumeNonNull(mLayoutStateObserver);
@@ -323,6 +348,29 @@ public class ToggleTabStackButtonCoordinator {
         mIphBeingShown = false;
     }
 
+    private void onUpdateTabCount(int tabCount) {
+        mToggleTabStackButton.onUpdateTabCount(tabCount);
+        maybeShowXrIph(tabCount);
+    }
+
+    private void onUpdateNotificationDot(TabModelDotInfo tabModelDotInfo) {
+        mToggleTabStackButton.onUpdateNotificationDot(tabModelDotInfo);
+        if (tabModelDotInfo.showDot && mUserEducationHelper != null) {
+            String tabGroupTitle = tabModelDotInfo.tabGroupTitle;
+            String contentString =
+                    mContext.getString(R.string.tab_group_update_iph_text, tabGroupTitle);
+            mUserEducationHelper.requestShowIph(
+                    new IphCommandBuilder(
+                                    mContext.getResources(),
+                                    FeatureConstants.TAB_GROUP_SHARE_UPDATE_FEATURE,
+                                    contentString,
+                                    contentString)
+                            .setAnchorView(mToggleTabStackButton)
+                            .setHighlightParams(new HighlightParams(HighlightShape.CIRCLE))
+                            .build());
+        }
+    }
+
     private void maybeShowDeclutterIph(int tabCount) {
         if (mIsIncognitoSupplier.get()) return;
         if (mAlreadyRequestedDeclutterIph) return;
@@ -342,6 +390,32 @@ public class ToggleTabStackButtonCoordinator {
                         .setHighlightParams(params)
                         .setOnShowCallback(mArchivedTabsIphShownCallback)
                         .setOnDismissCallback(mArchivedTabsIphDismissedCallback)
+                        .build());
+    }
+
+    private void maybeShowXrIph(int tabCount) {
+        if (!XrUtils.isXrDevice()) return;
+        if (tabCount < IPH_TAB_SWITCHER_XR_MIN_TABS) return;
+        if (mUserEducationHelper == null) return;
+
+        long currentTime = System.currentTimeMillis();
+
+        // We don't show the IPH again unless Chrome is fully restarted
+        // or one day has elapsed since last time it was dismissed.
+        if (currentTime - mLastTimeXrIphWasShown < ONE_DAY_IN_MILLIS) return;
+
+        mUserEducationHelper.requestShowIph(
+                new IphCommandBuilder(
+                                mContext.getResources(),
+                                FeatureConstants.IPH_TAB_SWITCHER_XR,
+                                R.string.iph_tab_switcher_xr,
+                                R.string.iph_tab_switcher_xr)
+                        .setAnchorView(mToggleTabStackButton)
+                        .setAutoDismissTimeout(IPH_TAB_SWITCHER_XR_WAIT_TIME_MS)
+                        .setOnDismissCallback(
+                                () -> {
+                                    mLastTimeXrIphWasShown = System.currentTimeMillis();
+                                })
                         .build());
     }
 }

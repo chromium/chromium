@@ -5823,6 +5823,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_IPH_SHARED_HIGHLIGHTING_BUILDER" desc="The in-product-help message to notify the user that the share action can preemptively share a link-to-text.">
         New: share a link that scrolls to this text
       </message>
+      <message name="IDS_IPH_TAB_SWITCHER_XR" desc="The in-product-help message to notify the user about the new tab switcher on an XR device.">
+        Your open tabs now have an updated look in XR
+      </message>
 
       <!-- Search Widget strings -->
       <message name="IDS_SEARCH_WIDGET_DEFAULT" desc="Default text for the search widget">

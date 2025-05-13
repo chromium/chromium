@@ -403,4 +403,7 @@ public @interface FeatureConstants {
 
     /** An IPH feature to inform users about the pdf download option in the app menu. */
     String IPH_PDF_PAGE_DOWNLOAD = "IPH_PdfPageDownload";
+
+    /** An IPH feature to inform users about the tab switcher feature on an XR device. */
+    String IPH_TAB_SWITCHER_XR = "IPH_TabSwitcherXR";
 }

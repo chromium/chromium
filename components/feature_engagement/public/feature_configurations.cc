@@ -1865,6 +1865,23 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
     return config;
   }
+  if (kIPHTabSwitcherXR.name == feature->name) {
+    // A config that allows the card info retrieval suggestion IPH to be shown
+    // at most 3 times. IPH will not be shown once user has selected the
+    // suggestion.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.trigger =
+        EventConfig("tab_switcher_xr_iph_trigger", Comparator(LESS_THAN, 3),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config.used = EventConfig("tab_switcher_xr_iph_shown", Comparator(ANY, 0),
+                              feature_engagement::kMaxStoragePeriod,
+                              feature_engagement::kMaxStoragePeriod);
+
+    return config;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

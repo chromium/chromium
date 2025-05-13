@@ -120,6 +120,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHSharingHubWebnotesStylizeFeature,
     &kIPHRestoreTabsOnFREFeature,
     &kIPHRtlGestureNavigationFeature,
+    &kIPHTabSwitcherXR,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)

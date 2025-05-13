@@ -221,6 +221,7 @@ DEFINE_VARIATION_PARAM(kIPHSharedHighlightingReceiverFeature,
 DEFINE_VARIATION_PARAM(kIPHSharingHubWebnotesStylizeFeature,
                        "IPH_SharingHubWebnotesStylize");
 DEFINE_VARIATION_PARAM(kIPHRestoreTabsOnFREFeature, "IPH_RestoreTabsOnFRE");
+DEFINE_VARIATION_PARAM(kIPHTabSwitcherXR, "IPH_TabSwitcherXR");
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
@@ -682,6 +683,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHSharingHubWebnotesStylizeFeature),
         VARIATION_ENTRY(kIPHRestoreTabsOnFREFeature),
         VARIATION_ENTRY(kIPHRtlGestureNavigationFeature),
+        VARIATION_ENTRY(kIPHTabSwitcherXR),
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)

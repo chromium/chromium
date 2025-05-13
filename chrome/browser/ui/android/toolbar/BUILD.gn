@@ -398,7 +398,6 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/toolbar/top/TabSwitcherActionMenuCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/TabletCaptureStateTokenTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/ToggleTabStackButtonCoordinatorTest.java",
-    "java/src/org/chromium/chrome/browser/toolbar/top/ToggleTabStackButtonUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/ToolbarControlContainerTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/ToolbarTabletUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarOverlayMediatorTest.java",

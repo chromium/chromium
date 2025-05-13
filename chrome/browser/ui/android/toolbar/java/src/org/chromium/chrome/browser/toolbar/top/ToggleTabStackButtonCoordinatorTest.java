@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
@@ -12,10 +13,12 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.content.Context;
+import android.app.Activity;
 import android.graphics.Canvas;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -42,6 +45,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.ui.base.TestActivity;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -52,10 +56,10 @@ import java.util.Set;
 public class ToggleTabStackButtonCoordinatorTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private Context mContext;
+    @Rule public final ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private ToggleTabStackButton mToggleTabStackButton;
-    @Mock private android.content.res.Resources mResources;
     @Mock private UserEducationHelper mUserEducationHelper;
     @Mock private OnClickListener mOnClickListener;
     @Mock private OnLongClickListener mOnLongClickListener;
@@ -65,10 +69,13 @@ public class ToggleTabStackButtonCoordinatorTest {
 
     @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
+    private Activity mActivity;
     private final ObservableSupplierImpl<TabModelDotInfo> mNotificationDotSupplier =
             new ObservableSupplierImpl<>(TabModelDotInfo.HIDE);
     private final OneshotSupplierImpl<Boolean> mPromoShownOneshotSupplier =
             new OneshotSupplierImpl<>();
+    private final ObservableSupplierImpl<Integer> mTabCountSupplier =
+            new ObservableSupplierImpl<>(0);
 
     private boolean mIsIncognito;
     private boolean mOverviewOpen;
@@ -80,7 +87,9 @@ public class ToggleTabStackButtonCoordinatorTest {
 
     @Before
     public void setUp() {
-        when(mContext.getResources()).thenReturn(mResources);
+        mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+
         doAnswer(invocation -> mOverviewOpen)
                 .when(mLayoutStateProvider)
                 .isLayoutVisible(LayoutType.TAB_SWITCHER);
@@ -119,7 +128,7 @@ public class ToggleTabStackButtonCoordinatorTest {
             ToggleTabStackButton toggleTabStackButton) {
         ToggleTabStackButtonCoordinator coordinator =
                 new ToggleTabStackButtonCoordinator(
-                        mContext,
+                        mActivity,
                         toggleTabStackButton,
                         mUserEducationHelper,
                         () -> mIsIncognito,
@@ -131,7 +140,7 @@ public class ToggleTabStackButtonCoordinatorTest {
         coordinator.initializeWithNative(
                 mOnClickListener,
                 mOnLongClickListener,
-                /* tabCountSupplier= */ null,
+                mTabCountSupplier,
                 /* archivedTabCountSupplier= */ null,
                 mNotificationDotSupplier,
                 () -> {},
@@ -399,5 +408,14 @@ public class ToggleTabStackButtonCoordinatorTest {
         Canvas canvas = new Canvas();
         mCoordinator.drawTabSwitcherAnimationOverlay(mToggleTabStackButton, canvas, 255);
         verify(mToggleTabStackButton).drawTabSwitcherAnimationOverlay(canvas, 255);
+    }
+
+    @Test
+    public void testTabModelDotInfoIph() {
+        String groupTitle = "Vacation";
+        mNotificationDotSupplier.set(new TabModelDotInfo(true, groupTitle));
+
+        IphCommand iphCommand = verifyIphShown();
+        assertTrue(iphCommand.contentString.contains(groupTitle));
     }
 }
