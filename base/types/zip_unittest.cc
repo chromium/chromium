@@ -39,9 +39,6 @@ class VectorWithCustomIterators {
       ++it_;
       return temp;
     }
-    bool operator!=(const typename std::vector<T>::iterator& other) const {
-      return it_ != other;
-    }
 
     bool operator==(const typename std::vector<T>::iterator& other) const {
       return it_ == other;

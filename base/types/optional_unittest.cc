@@ -83,8 +83,6 @@ class TestObject {
     return std::tie(foo_, bar_) == std::tie(other.foo_, other.bar_);
   }
 
-  bool operator!=(const TestObject& other) const { return !(*this == other); }
-
   int foo() const { return foo_; }
   State state() const { return state_; }
   int move_ctors_count() const { return move_ctors_count_; }

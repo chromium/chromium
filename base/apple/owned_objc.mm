@@ -31,9 +31,6 @@
   bool classname::operator==(const classname& other) const {                  \
     return objc_storage_->obj == other.objc_storage_->obj;                    \
   }                                                                           \
-  bool classname::operator!=(const classname& other) const {                  \
-    return !this->operator==(other);                                          \
-  }                                                                           \
   std::string classname::ToString() const {                                   \
     return objc_storage_->obj                                                 \
                ? id<NSObject>(objc_storage_->obj).debugDescription.UTF8String \

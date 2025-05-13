@@ -200,11 +200,8 @@ class PartialIterator {
     return std::string_view(valid[index_], prefix_length_);
   }
 
-  bool operator==(const PartialIterator& rhs) const {
-    return index_ == rhs.index_ && prefix_length_ == rhs.prefix_length_;
-  }
-
-  bool operator!=(const PartialIterator& rhs) const { return !(rhs == *this); }
+  friend bool operator==(const PartialIterator&,
+                         const PartialIterator&) = default;
 
  private:
   // This constructor is used by the end() method.

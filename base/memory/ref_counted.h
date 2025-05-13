@@ -474,11 +474,6 @@ bool operator==(const RefCountedData<T>& lhs, const RefCountedData<T>& rhs) {
   return lhs.data == rhs.data;
 }
 
-template <typename T>
-bool operator!=(const RefCountedData<T>& lhs, const RefCountedData<T>& rhs) {
-  return !(lhs == rhs);
-}
-
 }  // namespace base
 
 #endif  // BASE_MEMORY_REF_COUNTED_H_

@@ -489,11 +489,7 @@ class Value : public InternalHeapHandleStorage {
   void set_value(int value) { value_ = value; }
 
   bool operator==(const Value& rhs) const { return value_ == rhs.value_; }
-  bool operator!=(const Value& rhs) const { return value_ != rhs.value_; }
-  bool operator<=(const Value& rhs) const { return value_ <= rhs.value_; }
-  bool operator>=(const Value& rhs) const { return value_ >= rhs.value_; }
-  bool operator<(const Value& rhs) const { return value_ < rhs.value_; }
-  bool operator>(const Value& rhs) const { return value_ > rhs.value_; }
+  auto operator<=>(const Value& rhs) const { return value_ <=> rhs.value_; }
 
  private:
   int value_;
