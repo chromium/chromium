@@ -712,7 +712,7 @@ bool IsDepthwiseConv2d(const MLOperator* conv2d) {
 }
 
 template <typename MLConv2dOptionsType>
-std::optional<String> SerializeConv2dOperation(
+void SerializeConv2dOperation(
     const OperandToIdMap& operand_to_id_map,
     const webnn::ContextProperties& context_properties,
     const MLOperator* conv2d,
@@ -816,8 +816,6 @@ std::optional<String> SerializeConv2dOperation(
     graph_info->operations.push_back(
         blink_mojom::Operation::NewTranspose(std::move(output_transpose)));
   }
-
-  return std::nullopt;
 }
 
 OperationPtr CreateCumulativeSumOperation(
@@ -1023,9 +1021,8 @@ OperationPtr CreateGruOperation(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewGru(std::move(gru_mojo));
 }
 
-base::expected<OperationPtr, String> CreateGruCellOperation(
-    const OperandToIdMap& operand_to_id_map,
-    const MLOperator* gru_cell) {
+OperationPtr CreateGruCellOperation(const OperandToIdMap& operand_to_id_map,
+                                    const MLOperator* gru_cell) {
   webnn::OperandId input_operand_id =
       GetOperatorInputId(gru_cell, operand_to_id_map, 0);
   webnn::OperandId weight_operand_id =
@@ -1241,9 +1238,8 @@ OperationPtr CreateLstmOperation(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewLstm(std::move(lstm_mojo));
 }
 
-base::expected<OperationPtr, String> CreateLstmCellOperation(
-    const OperandToIdMap& operand_to_id_map,
-    const MLOperator* lstm_cell) {
+OperationPtr CreateLstmCellOperation(const OperandToIdMap& operand_to_id_map,
+                                     const MLOperator* lstm_cell) {
   webnn::OperandId input_operand_id =
       GetOperatorInputId(lstm_cell, operand_to_id_map, 0);
   webnn::OperandId weight_operand_id =
@@ -1806,7 +1802,7 @@ webnn::OperandId NextOperandId(
 }
 
 // TODO(crbug.com/1504405): Use a lookup table to simplifie the switch logic.
-std::optional<String> SerializeMojoOperation(
+void SerializeMojoOperation(
     const HeapHashMap<Member<const MLOperand>, webnn::OperandId>&
         operand_to_id_map,
     const webnn::ContextProperties& context_properties,
@@ -1830,21 +1826,17 @@ std::optional<String> SerializeMojoOperation(
           CreateConcatOperation(operand_to_id_map, op));
       break;
     case blink_mojom::Operation::Tag::kConv2d: {
-      std::optional<String> error;
       switch (op->SubKind<blink_mojom::Conv2d::Kind>()) {
         case blink_mojom::Conv2d::Kind::kDirect: {
-          error = SerializeConv2dOperation<MLConv2dOptions>(
+          SerializeConv2dOperation<MLConv2dOptions>(
               operand_to_id_map, context_properties, op, graph_info);
           break;
         }
         case blink_mojom::Conv2d::Kind::kTransposed: {
-          error = SerializeConv2dOperation<MLConvTranspose2dOptions>(
+          SerializeConv2dOperation<MLConvTranspose2dOptions>(
               operand_to_id_map, context_properties, op, graph_info);
           break;
         }
-      }
-      if (error) {
-        return error.value();
       }
       break;
     }
@@ -1898,12 +1890,10 @@ std::optional<String> SerializeMojoOperation(
       graph_info->operations.push_back(
           CreateGruOperation(operand_to_id_map, op));
       break;
-    case blink_mojom::Operation::Tag::kGruCell: {
-      ASSIGN_OR_RETURN(auto mojo_op,
-                       CreateGruCellOperation(operand_to_id_map, op));
-      graph_info->operations.push_back(std::move(mojo_op));
+    case blink_mojom::Operation::Tag::kGruCell:
+      graph_info->operations.push_back(
+          CreateGruCellOperation(operand_to_id_map, op));
       break;
-    }
     case blink_mojom::Operation::Tag::kHardSigmoid:
       graph_info->operations.push_back(blink_mojom::Operation::NewHardSigmoid(
           CreateHardSigmoid(operand_to_id_map, op)));
@@ -1933,9 +1923,8 @@ std::optional<String> SerializeMojoOperation(
           CreateLstmOperation(operand_to_id_map, op));
       break;
     case blink_mojom::Operation::Tag::kLstmCell: {
-      ASSIGN_OR_RETURN(auto mojo_op,
-                       CreateLstmCellOperation(operand_to_id_map, op));
-      graph_info->operations.push_back(std::move(mojo_op));
+      graph_info->operations.push_back(
+          CreateLstmCellOperation(operand_to_id_map, op));
       break;
     }
     case blink_mojom::Operation::Tag::kMatmul:
@@ -2031,7 +2020,6 @@ std::optional<String> SerializeMojoOperation(
           CreateWhereOperation(operand_to_id_map, op));
       break;
   }
-  return std::nullopt;
 }
 
 }  // namespace blink

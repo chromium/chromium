@@ -24,7 +24,7 @@ class MLOperator;
 webnn::OperandId NextOperandId(
     const webnn::mojom::blink::GraphInfo& graph_info);
 
-std::optional<String> SerializeMojoOperation(
+void SerializeMojoOperation(
     const HeapHashMap<Member<const MLOperand>, webnn::OperandId>&
         operand_to_id_map,
     const webnn::ContextProperties& context_properties,

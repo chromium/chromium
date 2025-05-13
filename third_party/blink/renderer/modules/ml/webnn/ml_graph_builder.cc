@@ -1423,7 +1423,7 @@ Vector<webnn::OperandId> GetInputs(const blink_mojom::Operation& operation) {
   }
 }
 
-base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
+blink_mojom::GraphInfoPtr BuildWebNNGraphInfo(
     const MLNamedOperands& named_outputs,
     const webnn::ContextProperties& context_properties) {
   // The `GraphInfo` represents an entire information of WebNN graph.
@@ -1499,13 +1499,8 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
       operand_to_id_map.insert(operand, operand_id);
     }
     // Create `mojo::Operation` with the id of the input and output operands.
-    std::optional<String> error =
-        SerializeMojoOperation(operand_to_id_map, context_properties,
-                               current_operator.Get(), graph_info.get());
-    if (error.has_value()) {
-      // Return here if the operator is not implemented.
-      return base::unexpected(*error);
-    }
+    SerializeMojoOperation(operand_to_id_map, context_properties,
+                           current_operator.Get(), graph_info.get());
   }
 
   return graph_info;
@@ -3258,33 +3253,24 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(ScriptState* script_state,
   }
 
   scoped_trace.AddStep("BuildWebNNGraphInfo");
-  auto graph_info =
+  blink_mojom::GraphInfoPtr graph_info =
       BuildWebNNGraphInfo(named_outputs, ml_context_->GetProperties());
-  if (!graph_info.has_value()) {
-    // TODO(crbug.com/345271830): Move the platform-specific checks into the
-    // respective synchronous operator builder methods, such that
-    // `BuildWebNNGraphInfo` always succeeds.
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "Failed to build graph: " + graph_info.error());
-    return EmptyPromise();
-  }
 
   // Set `has_built_` after all inputs have been validated.
   has_built_ = true;
 
   scoped_trace.AddStep("FoldReshapableConstants");
-  FoldReshapableConstants(**graph_info);
+  FoldReshapableConstants(*graph_info);
 
   scoped_trace.AddStep("RecordOperatorsUsed");
-  RecordOperatorsUsed(**graph_info);
+  RecordOperatorsUsed(*graph_info);
 
   pending_resolver_ = MakeGarbageCollected<ScriptPromiseResolver<MLGraph>>(
       script_state, exception_state.GetContext());
 
   scoped_trace.AddStep("post mojo message: CreateGraph");
   remote_->CreateGraph(
-      *std::move(graph_info),
+      std::move(graph_info),
       WTF::BindOnce(&MLGraphBuilder::DidCreateWebNNGraph, WrapPersistent(this),
                     WrapPersistent(pending_resolver_.Get()),
                     *std::move(graph_constraints)));
