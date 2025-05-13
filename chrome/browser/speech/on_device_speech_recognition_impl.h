@@ -19,15 +19,9 @@
 #include "components/soda/soda_installer.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-class PrefService;
-
 namespace content {
 class RenderFrameHost;
 }  // namespace content
-
-namespace language {
-class LanguagePrefs;
-}  // namespace language
 
 namespace speech {
 
@@ -70,10 +64,6 @@ class OnDeviceSpeechRecognitionImpl
   friend class content::DocumentUserData<OnDeviceSpeechRecognitionImpl>;
   explicit OnDeviceSpeechRecognitionImpl(content::RenderFrameHost* frame_host);
 
-  // Returns whether or not a given language pack can be installed without
-  // explicit user consent.
-  bool CanInstallWithoutUserConsent(const std::string& language);
-
   // Returns whether the render frame host can use on-device speech recognition.
   // HTTP(s) origins not scoped to the default storage partition may not use
   // on-device speech recognition.
@@ -106,9 +96,6 @@ class OnDeviceSpeechRecognitionImpl
                  std::list<InstallOnDeviceSpeechRecognitionCallback>>
       language_installation_callbacks_;
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-  raw_ptr<PrefService> pref_service_;
-  std::unique_ptr<language::LanguagePrefs> language_prefs_;
 
   mojo::Receiver<media::mojom::OnDeviceSpeechRecognition> receiver_{this};
 

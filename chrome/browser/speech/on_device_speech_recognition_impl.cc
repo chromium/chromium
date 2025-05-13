@@ -6,6 +6,7 @@
 
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
@@ -14,9 +15,6 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/language/core/browser/language_prefs.h"
-#include "components/language/core/browser/pref_names.h"
-#include "components/language/core/common/locale_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/constants.h"
 #include "components/soda/pref_names.h"
@@ -28,8 +26,6 @@
 #include "media/mojo/mojom/speech_recognizer.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "net/base/network_change_notifier.h"
-#include "ui/base/l10n/l10n_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "components/soda/soda_util.h"
@@ -118,14 +114,6 @@ void OnDeviceSpeechRecognitionImpl::InstallOnDeviceSpeechRecognition(
     return;
   }
 
-  if (!CanInstallWithoutUserConsent(language_config.value().language_name)) {
-    std::move(callback).Run(false);
-
-    // TODO(crbug.com/40286514): Prompt the user for permission to download
-    // language pack.
-    return;
-  }
-
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&OnDeviceSpeechRecognitionImpl::InstallLanguageInternal,
@@ -151,39 +139,13 @@ void OnDeviceSpeechRecognitionImpl::OnSodaInstallError(
 
 OnDeviceSpeechRecognitionImpl::OnDeviceSpeechRecognitionImpl(
     content::RenderFrameHost* frame_host)
-    : content::DocumentUserData<OnDeviceSpeechRecognitionImpl>(frame_host),
-      pref_service_(Profile::FromBrowserContext(
-                        frame_host->GetProcess()->GetBrowserContext())
-                        ->GetPrefs()),
-      language_prefs_(
-          std::make_unique<language::LanguagePrefs>(pref_service_)) {
+    : content::DocumentUserData<OnDeviceSpeechRecognitionImpl>(frame_host) {
 #if !BUILDFLAG(IS_ANDROID)
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
   if (soda_installer) {
     soda_installer->AddObserver(this);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
-}
-
-bool OnDeviceSpeechRecognitionImpl::CanInstallWithoutUserConsent(
-    const std::string& language) {
-  net::NetworkChangeNotifier::ConnectionType connection_type =
-      net::NetworkChangeNotifier::GetConnectionType();
-  if (connection_type != net::NetworkChangeNotifier::CONNECTION_ETHERNET &&
-      connection_type != net::NetworkChangeNotifier::CONNECTION_WIFI) {
-    return false;
-  }
-
-  std::vector<std::string> accept_languages;
-  language_prefs_->GetAcceptLanguagesList(&accept_languages);
-  for (const auto& accept_language : accept_languages) {
-    if (l10n_util::GetLanguage(base::ToLowerASCII(accept_language)) ==
-        l10n_util::GetLanguage(base::ToLowerASCII(language))) {
-      return true;
-    }
-  }
-
-  return false;
 }
 
 bool OnDeviceSpeechRecognitionImpl::
