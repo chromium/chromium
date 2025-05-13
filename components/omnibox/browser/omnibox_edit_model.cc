@@ -2242,7 +2242,9 @@ OmniboxEditModel::MaybeGetPopupAccessibilityLabelForIPHSuggestion() {
       auto next_selection = popup_selection_.GetNextSelection(
           autocomplete_controller()->result(), GetPrefService(),
           controller_->client()->GetTemplateURLService(),
-          OmniboxPopupSelection::kForward, OmniboxPopupSelection::kStateOrLine);
+          OmniboxPopupSelection::kForward, OmniboxPopupSelection::kStateOrLine,
+          OmniboxFieldTrial::IsHideSuggestionGroupHeadersEnabledInContext(
+              GetPageClassification()));
       if (next_selection.line == next_line &&
           next_selection.state ==
               OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION) {
@@ -2417,7 +2419,9 @@ void OmniboxEditModel::StepPopupSelection(
   const OmniboxPopupSelection old_selection = GetPopupSelection();
   OmniboxPopupSelection new_selection = old_selection.GetNextSelection(
       autocomplete_controller()->result(), GetPrefService(),
-      controller_->client()->GetTemplateURLService(), direction, step);
+      controller_->client()->GetTemplateURLService(), direction, step,
+      OmniboxFieldTrial::IsHideSuggestionGroupHeadersEnabledInContext(
+          GetPageClassification()));
   if (kIsDesktop) {
     if (old_selection.IsChangeToKeyword(new_selection)) {
       ClearKeyword();
