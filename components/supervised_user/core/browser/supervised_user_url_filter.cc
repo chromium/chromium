@@ -163,7 +163,6 @@ bool ContainersAreEqual(const OrderedContainer& lhs,
   return lhs.size() == rhs.size() &&
          std::equal(lhs.begin(), lhs.end(), rhs.begin());
 }
-}  // namespace
 
 supervised_user::FilteringBehavior GetBehaviorFromSafeSearchClassification(
     safe_search_api::Classification classification) {
@@ -231,8 +230,6 @@ bool IsPlayStoreTermsOfServiceUrl(const GURL& effective_url) {
           (effective_url.path_piece().find(kPlayTermsPath) !=
            std::string_view::npos));
 }
-
-namespace {
 
 // UMA histogram FamilyUser.ManagedSiteList.Conflict
 // Reports conflict when the user tries to access a url that has a match in
