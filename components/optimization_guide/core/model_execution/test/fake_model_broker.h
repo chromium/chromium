@@ -24,6 +24,17 @@ class FakeModelBroker {
 
   mojo::PendingRemote<mojom::ModelBroker> BindAndPassRemote();
 
+  on_device_model::FakeOnDeviceServiceSettings& settings() {
+    return fake_settings_;
+  }
+
+  void CrashService() { fake_launcher_.CrashService(); }
+
+  void UpdateModelAdaptation(const FakeAdaptationAsset& asset);
+  void UpdateSafetyModel(const optimization_guide::ModelInfo& model_info) {
+    test_controller_->MaybeUpdateSafetyModel(model_info);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple pref_service_;

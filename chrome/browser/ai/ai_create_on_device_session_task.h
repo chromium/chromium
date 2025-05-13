@@ -11,8 +11,6 @@
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "services/on_device_model/public/cpp/capabilities.h"
 
-class AIManager;
-
 // A base class for tasks which create an on-device session.
 class CreateOnDeviceSessionTask
     : public AIContextBoundObject,
@@ -97,46 +95,6 @@ class CreateOnDeviceSessionTask
   const optimization_guide::ModelBasedCapabilityKey feature_;
   State state_ = CreateOnDeviceSessionTask::State::kNotStarted;
   base::WeakPtrFactory<CreateOnDeviceSessionTask> weak_factory_{this};
-};
-
-// Implementation of the `CreateOnDeviceSessionTask` base class for
-// `AILanguageModel`.
-class CreateLanguageModelOnDeviceSessionTask
-    : public CreateOnDeviceSessionTask {
- public:
-  CreateLanguageModelOnDeviceSessionTask(
-      AIManager& ai_manager,
-      AIContextBoundObjectSet& context_bound_object_set,
-      content::BrowserContext* browser_context,
-      optimization_guide::SamplingParams sampling_params,
-      on_device_model::Capabilities capabilities,
-      base::OnceCallback<
-          void(std::unique_ptr<
-               optimization_guide::OptimizationGuideModelExecutor::Session>)>
-          completion_callback);
-  ~CreateLanguageModelOnDeviceSessionTask() override;
-
-  CreateLanguageModelOnDeviceSessionTask(
-      const CreateLanguageModelOnDeviceSessionTask&) = delete;
-  CreateLanguageModelOnDeviceSessionTask& operator=(
-      const CreateLanguageModelOnDeviceSessionTask&) = delete;
-
- protected:
-  // `CreateOnDeviceSessionTask` implementation.
-  void OnFinish(std::unique_ptr<
-                optimization_guide::OptimizationGuideModelExecutor::Session>
-                    session) override;
-
-  void UpdateSessionConfigParams(
-      optimization_guide::SessionConfigParams* config_params) override;
-
- private:
-  const optimization_guide::SamplingParams sampling_params_;
-  const on_device_model::Capabilities capabilities_;
-  base::OnceCallback<void(
-      std::unique_ptr<
-          optimization_guide::OptimizationGuideModelExecutor::Session>)>
-      completion_callback_;
 };
 
 #endif  // CHROME_BROWSER_AI_AI_CREATE_ON_DEVICE_SESSION_TASK_H_

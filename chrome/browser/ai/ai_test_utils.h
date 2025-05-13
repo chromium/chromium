@@ -211,7 +211,6 @@ class AITestUtils {
     testing::NiceMock<optimization_guide::MockSession> session_;
     AITestUtils::MockComponentUpdateService component_update_service_;
 
-   private:
     std::unique_ptr<AIManager> ai_manager_;
   };
 

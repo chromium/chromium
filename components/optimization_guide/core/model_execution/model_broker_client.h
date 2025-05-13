@@ -60,6 +60,18 @@ class ModelClient final : public TextSafetyClient {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  mojom::ModelSolution& solution() { return *remote_; }
+
+  const OnDeviceModelFeatureAdapter& feature_adapter() const {
+    return *feature_adapter_;
+  }
+
+  uint32_t max_tokens() const { return max_tokens_; }
+
+  const proto::FeatureTextSafetyConfiguration& safety_config() const {
+    return safety_config_;
+  }
+
  private:
   // Called when the remote disconnects.
   void OnDisconnect();
@@ -86,7 +98,6 @@ class ModelSubscriber final : public mojom::ModelSubscriber {
       std::unique_ptr<OptimizationGuideModelExecutor::Session>;
   using CreateSessionCallback = base::OnceCallback<void(CreateSessionResult)>;
   using ClientCallback = base::OnceCallback<void(base::WeakPtr<ModelClient>)>;
-  using State = std::optional<mojom::ModelUnavailableReason>;
 
   // Get info about whether the model is / will be available.
   std::optional<mojom::ModelUnavailableReason> unavailable_reason() const {
@@ -99,11 +110,11 @@ class ModelSubscriber final : public mojom::ModelSubscriber {
                      const std::optional<SessionConfigParams>& config_params,
                      CreateSessionCallback callback);
 
- private:
   // Wait for the client to be available and call the callback with a reference.
   // Calls the callback with nullptr if the state become NotSupported.
   void WaitForClient(ClientCallback callback);
 
+ private:
   // mojom::ModelSubscriber
   void Unavailable(mojom::ModelUnavailableReason) override;
   void Available(mojom::ModelSolutionConfigPtr config,

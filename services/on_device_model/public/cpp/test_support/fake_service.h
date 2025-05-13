@@ -73,7 +73,7 @@ class FakeOnDeviceSession final : public mojom::Session {
  public:
   explicit FakeOnDeviceSession(FakeOnDeviceServiceSettings* settings,
                                FakeOnDeviceModel* model,
-                               const Capabilities& capabilities);
+                               mojom::SessionParamsPtr params);
   ~FakeOnDeviceSession() override;
 
   // mojom::Session:
@@ -110,7 +110,7 @@ class FakeOnDeviceSession final : public mojom::Session {
   std::string adaptation_model_weight_;
   std::vector<mojom::AppendOptionsPtr> context_;
   raw_ptr<FakeOnDeviceModel> model_;
-  Capabilities capabilities_;
+  mojom::SessionParamsPtr params_;
   on_device_model::mojom::Priority priority_ =
       on_device_model::mojom::Priority::kForeground;
 

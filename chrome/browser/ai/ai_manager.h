@@ -56,14 +56,6 @@ class AIManager : public base::SupportsUserData::Data,
   ~AIManager() override;
 
   void AddReceiver(mojo::PendingReceiver<blink::mojom::AIManager> receiver);
-  void CreateLanguageModelForCloning(
-      base::PassKey<AILanguageModel> pass_key,
-      blink::mojom::AILanguageModelSamplingParamsPtr sampling_params,
-      on_device_model::Capabilities capabilities,
-      AIContextBoundObjectSet& context_bound_object_set,
-      const AILanguageModel::Context& context,
-      mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
-          client_remote);
 
   size_t GetContextBoundObjectSetSizeForTesting() {
     return context_bound_object_set_.GetSizeForTesting();
@@ -133,21 +125,13 @@ class AIManager : public base::SupportsUserData::Data,
   void OnModelPathValidationComplete(const std::string& model_path,
                                      bool is_valid_path);
 
-  // Creates an `AILanguageModel`, either as a new session, or as a clone of
-  // an existing session with its context copied. When this method is called
-  // during the session cloning, the optional `context` variable should be set
-  // to the existing `AILanguageModel`'s session.
-  // The `CreateLanguageModelOnDeviceSessionTask` will be returned and the
-  // caller is responsible for keeping it alive if the task is waiting for the
-  // model to be available.
-  std::unique_ptr<CreateLanguageModelOnDeviceSessionTask>
-  CreateLanguageModelInternal(
-      blink::mojom::AILanguageModelSamplingParamsPtr sampling_params,
-      on_device_model::Capabilities capabilities,
-      AIContextBoundObjectSet& context_bound_object_set,
-      base::OnceCallback<void(AILanguageModelOrCreationError)> callback,
-      const std::optional<const AILanguageModel::Context>& context =
-          std::nullopt);
+  // Creates an `AILanguageModel`, as a new session. Clones are created
+  // internally within the `AILanguageModel` object.
+  void CreateLanguageModelInternal(
+      mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
+          client,
+      blink::mojom::AILanguageModelCreateOptionsPtr options,
+      base::WeakPtr<optimization_guide::ModelClient> model_client);
 
   // content::RenderWidgetHostObserver:
   void RenderWidgetHostVisibilityChanged(content::RenderWidgetHost* widget_host,
@@ -172,6 +156,8 @@ class AIManager : public base::SupportsUserData::Data,
   base::ScopedObservation<content::RenderWidgetHost,
                           content::RenderWidgetHostObserver>
       widget_observer_{this};
+
+  std::unique_ptr<optimization_guide::ModelBrokerClient> model_broker_client_;
 
   base::WeakPtrFactory<AIManager> weak_factory_{this};
 };

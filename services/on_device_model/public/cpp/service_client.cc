@@ -56,7 +56,7 @@ void ServiceClient::AddPendingUsage() {
 
 void ServiceClient::RemovePendingUsage() {
   pending_uses_--;
-  if (pending_uses_ == 0) {
+  if (pending_uses_ == 0 && remote_) {
     remote_.reset_on_idle_timeout(base::TimeDelta());
   }
 }

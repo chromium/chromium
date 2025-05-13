@@ -165,36 +165,3 @@ void CreateOnDeviceSessionTask::SetState(State state) {
   DCHECK_STATE_TRANSITION(transitions, state_, state);
   state_ = state;
 }
-
-CreateLanguageModelOnDeviceSessionTask::CreateLanguageModelOnDeviceSessionTask(
-    AIManager& ai_manager,
-    AIContextBoundObjectSet& context_bound_object_set,
-    content::BrowserContext* browser_context,
-    optimization_guide::SamplingParams sampling_params,
-    on_device_model::Capabilities capabilities,
-    base::OnceCallback<
-        void(std::unique_ptr<
-             optimization_guide::OptimizationGuideModelExecutor::Session>)>
-        completion_callback)
-    : CreateOnDeviceSessionTask(
-          context_bound_object_set,
-          browser_context,
-          optimization_guide::ModelBasedCapabilityKey::kPromptApi),
-      sampling_params_(std::move(sampling_params)),
-      capabilities_(capabilities),
-      completion_callback_(std::move(completion_callback)) {}
-
-CreateLanguageModelOnDeviceSessionTask::
-    ~CreateLanguageModelOnDeviceSessionTask() = default;
-
-void CreateLanguageModelOnDeviceSessionTask::OnFinish(
-    std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-        session) {
-  std::move(completion_callback_).Run(std::move(session));
-}
-
-void CreateLanguageModelOnDeviceSessionTask::UpdateSessionConfigParams(
-    optimization_guide::SessionConfigParams* config_params) {
-  config_params->sampling_params = sampling_params_;
-  config_params->capabilities = capabilities_;
-}

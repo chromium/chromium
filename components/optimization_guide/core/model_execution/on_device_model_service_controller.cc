@@ -496,6 +496,9 @@ OnDeviceModelServiceController::BaseModelController::GetOrCreateRemote() {
                  receiver,
              on_device_model::ModelAssets assets) {
             if (!self || !self->controller_->service_client_.is_bound()) {
+              if (self) {
+                self->controller_->service_client_.RemovePendingUsage();
+              }
               CloseFilesInBackground(std::move(assets));
               return;
             }

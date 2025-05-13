@@ -65,6 +65,8 @@
 namespace {
 
 constexpr float kDefaultMaxTemperature = 2.0f;
+constexpr uint32_t kMinTopK = 1;
+constexpr float kMinTemperature = 0.0f;
 
 // Checks if the model path configured via command line is valid.
 bool IsModelPathValid(const std::string& model_path_str) {
@@ -316,6 +318,11 @@ AIManager::AIManager(
   if (rfh && rfh->GetRenderWidgetHost()) {
     widget_observer_.Observe(rfh->GetRenderWidgetHost());
   }
+  auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(browser_context_));
+  if (service) {
+    model_broker_client_ = service->CreateModelBrokerClient();
+  }
 }
 
 AIManager::~AIManager() = default;
@@ -379,64 +386,6 @@ void AIManager::CanCreateLanguageModel(
                    capabilities, std::move(callback));
 }
 
-std::unique_ptr<CreateLanguageModelOnDeviceSessionTask>
-AIManager::CreateLanguageModelInternal(
-    blink::mojom::AILanguageModelSamplingParamsPtr sampling_params,
-    on_device_model::Capabilities capabilities,
-    AIContextBoundObjectSet& context_bound_object_set,
-    base::OnceCallback<void(AILanguageModelOrCreationError)> callback,
-    const std::optional<const AILanguageModel::Context>& context) {
-  blink::mojom::AILanguageModelParamsPtr language_model_params =
-      GetLanguageModelParams();
-
-  optimization_guide::SamplingParams resolved_sampling_params;
-  if (sampling_params) {
-    resolved_sampling_params = optimization_guide::SamplingParams{
-        .top_k = std::min(sampling_params->top_k,
-                          language_model_params->max_sampling_params->top_k),
-        .temperature =
-            std::min(sampling_params->temperature,
-                     language_model_params->max_sampling_params->temperature)};
-  } else {
-    resolved_sampling_params = optimization_guide::SamplingParams{
-        .top_k = language_model_params->default_sampling_params->top_k,
-        .temperature =
-            language_model_params->default_sampling_params->temperature};
-  }
-
-  auto task = std::make_unique<CreateLanguageModelOnDeviceSessionTask>(
-      *this, context_bound_object_set, browser_context_,
-      std::move(resolved_sampling_params), capabilities,
-      base::BindOnce(
-          [](base::WeakPtr<content::BrowserContext> browser_context,
-             AIContextBoundObjectSet& context_bound_object_set,
-             const std::optional<const AILanguageModel::Context>& context,
-             AIManager& ai_manager,
-             base::OnceCallback<void(
-                 base::expected<std::unique_ptr<AILanguageModel>,
-                                blink::mojom::AIManagerCreateClientError>)>
-                 callback,
-             std::unique_ptr<
-                 optimization_guide::OptimizationGuideModelExecutor::Session>
-                 session) {
-            if (!session) {
-              std::move(callback).Run(
-                  base::unexpected(blink::mojom::AIManagerCreateClientError::
-                                       kUnableToCalculateTokenSize));
-              return;
-            }
-
-            mojo::PendingRemote<blink::mojom::AILanguageModel> pending_remote;
-            std::move(callback).Run(std::make_unique<AILanguageModel>(
-                std::move(session), browser_context, std::move(pending_remote),
-                context_bound_object_set, ai_manager, context));
-          },
-          browser_context_->GetWeakPtr(), std::ref(context_bound_object_set),
-          context, std::ref(*this), std::move(callback)));
-  task->Start();
-  return task;
-}
-
 void AIManager::CreateLanguageModel(
     mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
         client,
@@ -451,85 +400,83 @@ void AIManager::CreateLanguageModel(
       if (!base::FeatureList::IsEnabled(
               blink::features::kAIPromptAPIMultimodalInput) ||
           !service->GetOnDeviceCapabilities().HasAll(capabilities)) {
-        mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
-            client_remote(std::move(client));
-        client_remote->OnError(
-            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+        mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>(
+            std::move(client))
+            ->OnError(blink::mojom::AIManagerCreateClientError::
+                          kUnableToCreateSession);
         return;
       }
     }
     for (const auto& expected_input : options->expected_inputs.value()) {
       if (expected_input->languages.has_value() &&
           !IsLanguagesSupported(expected_input->languages.value())) {
-        mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
-            client_remote(std::move(client));
-        client_remote->OnError(
-            blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
+        mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>(
+            std::move(client))
+            ->OnError(
+                blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
         return;
       }
     }
   }
 
+  if (!model_broker_client_) {
+    mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>(
+        std::move(client))
+        ->OnError(
+            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+    return;
+  }
+  model_broker_client_
+      ->GetSubscriber(
+          optimization_guide::mojom::ModelBasedCapabilityKey::kPromptApi)
+      .WaitForClient(base::BindOnce(&AIManager::CreateLanguageModelInternal,
+                                    weak_factory_.GetWeakPtr(),
+                                    std::move(client), std::move(options)));
+}
+
+void AIManager::CreateLanguageModelInternal(
+    mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
+        client,
+    blink::mojom::AILanguageModelCreateOptionsPtr options,
+    base::WeakPtr<optimization_guide::ModelClient> model_client) {
+  if (!model_client) {
+    mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
+        client_remote(std::move(client));
+    client_remote->OnError(
+        blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+    return;
+  }
+
+  blink::mojom::AILanguageModelParamsPtr language_model_params =
+      GetLanguageModelParams();
   blink::mojom::AILanguageModelSamplingParamsPtr sampling_params =
       std::move(options->sampling_params);
-
-  auto create_language_model_callback = base::BindOnce(
-      [](mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
-             client,
-         AIContextBoundObjectSet& context_bound_object_set,
-         blink::mojom::AILanguageModelCreateOptionsPtr options,
-         AILanguageModelOrCreationError creation_result) {
-        mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
-            client_remote(std::move(client));
-        if (!creation_result.has_value()) {
-          client_remote->OnError(creation_result.error());
-          return;
-        }
-        std::unique_ptr<AILanguageModel> language_model =
-            std::move(creation_result.value());
-        CHECK(language_model);
-        if (!options->initial_prompts.empty()) {
-          // Set the initial prompts, checking if they fit within token limits.
-          language_model->SetInitialPrompts(
-              std::move(options->initial_prompts),
-              base::BindOnce(
-                  [](mojo::Remote<
-                         blink::mojom::AIManagerCreateLanguageModelClient>
-                         client_remote,
-                     base::expected<
-                         mojo::PendingRemote<blink::mojom::AILanguageModel>,
-                         blink::mojom::AIManagerCreateClientError> remote,
-                     blink::mojom::AILanguageModelInstanceInfoPtr info) {
-                    if (remote.has_value()) {
-                      client_remote->OnResult(std::move(remote.value()),
-                                              std::move(info));
-                    } else {
-                      client_remote->OnError(remote.error());
-                    }
-                  },
-                  std::move(client_remote)));
-        } else {
-          client_remote->OnResult(
-              language_model->TakePendingRemote(),
-              language_model->GetLanguageModelInstanceInfo());
-        }
-
-        context_bound_object_set.AddContextBoundObject(
-            std::move(language_model));
-      },
-      std::move(client), std::ref(context_bound_object_set_),
-      std::move(options));
-
-  // When creating a new language model, the `context` will not be set since it
-  // should start fresh.
-  auto task = CreateLanguageModelInternal(
-      std::move(sampling_params), capabilities, context_bound_object_set_,
-      std::move(create_language_model_callback));
-  if (task->IsPending()) {
-    // Put `task` to AIContextBoundObjectSet to continue observing the model
-    // availability.
-    context_bound_object_set_.AddContextBoundObject(std::move(task));
+  auto params = on_device_model::mojom::SessionParams::New();
+  if (sampling_params) {
+    params->top_k = std::min(std::max(kMinTopK, sampling_params->top_k),
+                             language_model_params->max_sampling_params->top_k);
+    params->temperature =
+        std::min(std::max(kMinTemperature, sampling_params->temperature),
+                 language_model_params->max_sampling_params->temperature);
+  } else {
+    params->top_k = language_model_params->default_sampling_params->top_k;
+    params->temperature =
+        language_model_params->default_sampling_params->temperature;
   }
+
+  if (options->expected_inputs) {
+    params->capabilities = GetExpectedCapabilities(*options->expected_inputs);
+  }
+  mojo::PendingRemote<on_device_model::mojom::Session> session;
+  model_client->solution().CreateSession(
+      session.InitWithNewPipeAndPassReceiver(), params.Clone());
+
+  auto model = std::make_unique<AILanguageModel>(
+      context_bound_object_set_, std::move(params), std::move(model_client),
+      std::move(session));
+  model->Initialize(std::move(options->initial_prompts), std::move(client));
+
+  context_bound_object_set_.AddContextBoundObject(std::move(model));
 }
 
 void AIManager::CanCreateSummarizer(
@@ -801,44 +748,6 @@ void AIManager::FinishCanCreateSession(
 
   std::move(callback).Run(
       blink::mojom::ModelAvailabilityCheckResult::kAvailable);
-}
-
-void AIManager::CreateLanguageModelForCloning(
-    base::PassKey<AILanguageModel> pass_key,
-    blink::mojom::AILanguageModelSamplingParamsPtr sampling_params,
-    on_device_model::Capabilities capabilities,
-    AIContextBoundObjectSet& context_bound_object_set,
-    const AILanguageModel::Context& context,
-    mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
-        client_remote) {
-  auto create_language_model_callback = base::BindOnce(
-      [](AIContextBoundObjectSet& context_bound_object_set,
-         mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
-             client_remote,
-         AILanguageModelOrCreationError creation_result) {
-        if (!creation_result.has_value()) {
-          client_remote->OnError(creation_result.error());
-          return;
-        }
-        std::unique_ptr<AILanguageModel> language_model =
-            std::move(creation_result.value());
-        CHECK(language_model);
-
-        client_remote->OnResult(language_model->TakePendingRemote(),
-                                language_model->GetLanguageModelInstanceInfo());
-        context_bound_object_set.AddContextBoundObject(
-            std::move(language_model));
-      },
-      std::ref(context_bound_object_set), std::move(client_remote));
-  // When cloning an existing language model, the `context` from the source of
-  // clone should be provided.
-  auto task = CreateLanguageModelInternal(
-      std::move(sampling_params), capabilities, context_bound_object_set,
-      std::move(create_language_model_callback), context);
-  // The on-device model must be available before the existing language model
-  // was created, so the `CreateLanguageModelOnDeviceSessionTask` should
-  // complete without waiting for the on-device model availability changes.
-  CHECK(!task->IsPending());
 }
 
 void AIManager::OnModelPathValidationComplete(const std::string& model_path,

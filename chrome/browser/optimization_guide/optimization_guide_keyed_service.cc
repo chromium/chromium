@@ -46,6 +46,7 @@
 #include "components/optimization_guide/core/command_line_top_host_provider.h"
 #include "components/optimization_guide/core/hints_processing_util.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #include "components/optimization_guide/core/model_execution/model_execution_manager.h"
@@ -237,6 +238,16 @@ void OptimizationGuideKeyedService::BindModelBroker(
   }
   GetOnDeviceModelServiceController(on_device_component_manager_->GetWeakPtr())
       ->BindBroker(std::move(receiver));
+}
+
+std::unique_ptr<optimization_guide::ModelBrokerClient>
+OptimizationGuideKeyedService::CreateModelBrokerClient() {
+  mojo::PendingRemote<optimization_guide::mojom::ModelBroker> remote;
+  GetOnDeviceModelServiceController(on_device_component_manager_->GetWeakPtr())
+      ->BindBroker(remote.InitWithNewPipeAndPassReceiver());
+  return std::make_unique<optimization_guide::ModelBrokerClient>(
+      std::move(remote), optimization_guide::CreateSessionArgs(
+                             optimization_guide_logger_->GetWeakPtr(), {}));
 }
 
 #if BUILDFLAG(IS_ANDROID)

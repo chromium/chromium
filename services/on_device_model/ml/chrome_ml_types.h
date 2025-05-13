@@ -14,6 +14,9 @@
 
 namespace ml {
 
+inline constexpr uint32_t kMinTopK = 1;
+inline constexpr float kMinTemperature = 0.0f;
+
 enum class Token {
   // Prefix for system text.
   kSystem,

@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
@@ -122,6 +123,8 @@ class OptimizationGuideKeyedService
   // Allow models to be subscribed via the broker.
   void BindModelBroker(
       mojo::PendingReceiver<optimization_guide::mojom::ModelBroker> receiver);
+  virtual std::unique_ptr<optimization_guide::ModelBrokerClient>
+  CreateModelBrokerClient();
 
   // optimization_guide::OptimizationGuideDecider implementation:
   void RegisterOptimizationTypes(

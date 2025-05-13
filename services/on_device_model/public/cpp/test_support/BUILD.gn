@@ -14,6 +14,7 @@ source_set("test_support") {
   public_deps = [
     "//base",
     "//mojo/public/cpp/bindings",
+    "//services/on_device_model/ml:api",
     "//services/on_device_model/public/cpp",
     "//services/on_device_model/public/mojom",
     "//third_party/re2",

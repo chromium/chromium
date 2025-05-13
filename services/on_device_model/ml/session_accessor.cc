@@ -7,19 +7,20 @@
 #include "base/compiler_specific.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "services/on_device_model/ml/chrome_ml.h"
+#include "services/on_device_model/ml/chrome_ml_types.h"
 
 namespace ml {
 
 namespace {
 
 float GetTemperature(std::optional<float> temperature) {
-  return std::max(0.0f, temperature.value_or(0.0f));
+  return std::max(kMinTemperature, temperature.value_or(kMinTemperature));
 }
 
 uint32_t GetTopK(std::optional<uint32_t> top_k) {
   return std::min(static_cast<uint32_t>(
                       optimization_guide::features::GetOnDeviceModelMaxTopK()),
-                  std::max(1u, top_k.value_or(1)));
+                  std::max(kMinTopK, top_k.value_or(kMinTopK)));
 }
 
 }  // namespace

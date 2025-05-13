@@ -109,6 +109,7 @@ SafetyClient::Remote& SafetyClient::GetTextSafetyModelRemote() {
               base::ThreadPool::PostTask(
                   FROM_HERE, {base::MayBlock()},
                   base::DoNothingWithBoundArgs(std::move(params)));
+              return;
             }
             self->service_client_->Get()->LoadTextSafetyModel(std::move(params),
                                                               std::move(model));

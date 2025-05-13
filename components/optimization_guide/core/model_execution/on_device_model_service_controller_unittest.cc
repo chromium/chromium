@@ -434,7 +434,9 @@ TEST_F(OnDeviceModelServiceControllerTest, CacheWeightExecutionSuccess) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kOptimizationGuideOnDeviceModel,
-      {{"on_device_model_force_cpu_backend", "true"}});
+      {{"on_device_model_force_cpu_backend", "true"},
+       {"on_device_model_topk", "1"},
+       {"on_device_model_temperature", "0"}});
 
   FakeBaseModelAsset base_model_with_cache({
       .cache_weight = 1015,
@@ -2434,6 +2436,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UsesSessionTopKAndTemperature) {
   EXPECT_TRUE(response_.value());
   const std::vector<std::string> partial_responses = {
       "Context: execute:foo max:1024\n",
+      "TopK: 3, Temp: 2\n",
   };
   EXPECT_EQ(*response_.value(), ConcatResponses(partial_responses));
   EXPECT_THAT(response_.partials(), ElementsAreArray(partial_responses));
@@ -3493,6 +3496,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CloneUsesSessionTopKAndTemperature) {
   EXPECT_TRUE(response_.value());
   const std::vector<std::string> partial_responses = {
       "Context: execute:foo max:1024\n",
+      "TopK: 3, Temp: 2\n",
   };
   EXPECT_EQ(*response_.value(), ConcatResponses(partial_responses));
   EXPECT_THAT(response_.partials(), ElementsAreArray(partial_responses));

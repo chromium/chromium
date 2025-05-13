@@ -48,4 +48,12 @@ mojo::PendingRemote<mojom::ModelBroker> FakeModelBroker::BindAndPassRemote() {
   return remote;
 }
 
+void FakeModelBroker::UpdateModelAdaptation(const FakeAdaptationAsset& asset) {
+  // First clear the current adaptation, then add the new asset to force an
+  // update.
+  test_controller_->MaybeUpdateModelAdaptation(asset.feature(), nullptr);
+  test_controller_->MaybeUpdateModelAdaptation(asset.feature(),
+                                               asset.metadata());
+}
+
 }  // namespace optimization_guide

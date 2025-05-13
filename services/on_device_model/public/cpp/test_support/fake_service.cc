@@ -110,8 +110,8 @@ FakeOnDeviceServiceSettings::~FakeOnDeviceServiceSettings() = default;
 
 FakeOnDeviceSession::FakeOnDeviceSession(FakeOnDeviceServiceSettings* settings,
                                          FakeOnDeviceModel* model,
-                                         const Capabilities& capabilities)
-    : settings_(settings), model_(model), capabilities_(capabilities) {}
+                                         mojom::SessionParamsPtr params)
+    : settings_(settings), model_(model), params_(std::move(params)) {}
 
 FakeOnDeviceSession::~FakeOnDeviceSession() = default;
 
@@ -146,7 +146,8 @@ void FakeOnDeviceSession::Generate(
 
 void FakeOnDeviceSession::GetSizeInTokens(mojom::InputPtr input,
                                           GetSizeInTokensCallback callback) {
-  std::move(callback).Run(0);
+  std::move(callback).Run(
+      OnDeviceInputToString(*input, params_->capabilities).size());
 }
 
 void FakeOnDeviceSession::Score(const std::string& text,
@@ -222,10 +223,18 @@ void FakeOnDeviceSession::GenerateImpl(
   int output_token_count = 0;
   if (settings_->model_execute_result.empty()) {
     for (const auto& context : context_) {
-      std::string text = CtxToString(*context, capabilities_);
+      std::string text = CtxToString(*context, params_->capabilities);
       output_token_count += text.size();
       auto chunk = mojom::ResponseChunk::New();
       chunk->text = "Context: " + text + "\n";
+      remote->OnResponse(std::move(chunk));
+    }
+    if (params_->top_k != ml::kMinTopK ||
+        params_->temperature != ml::kMinTemperature) {
+      auto chunk = mojom::ResponseChunk::New();
+      chunk->text += "TopK: " + base::NumberToString(params_->top_k) +
+                     ", Temp: " + base::NumberToString(params_->temperature) +
+                     "\n";
       remote->OnResponse(std::move(chunk));
     }
   } else {
@@ -249,7 +258,7 @@ void FakeOnDeviceSession::AppendImpl(
     return;
   }
   uint32_t input_tokens = static_cast<uint32_t>(
-      OnDeviceInputToString(*options->input, capabilities_).size());
+      OnDeviceInputToString(*options->input, params_->capabilities).size());
   uint32_t max_tokens =
       options->max_tokens > 0 ? options->max_tokens : input_tokens;
   uint32_t tokens_processed = std::min(input_tokens, max_tokens);
@@ -262,7 +271,7 @@ void FakeOnDeviceSession::AppendImpl(
 void FakeOnDeviceSession::CloneImpl(
     mojo::PendingReceiver<on_device_model::mojom::Session> session) {
   auto new_session =
-      std::make_unique<FakeOnDeviceSession>(settings_, model_, capabilities_);
+      std::make_unique<FakeOnDeviceSession>(settings_, model_, params_.Clone());
   for (const auto& c : context_) {
     new_session->context_.push_back(c->Clone());
   }
@@ -282,12 +291,11 @@ FakeOnDeviceModel::~FakeOnDeviceModel() = default;
 void FakeOnDeviceModel::StartSession(
     mojo::PendingReceiver<mojom::Session> session,
     mojom::SessionParamsPtr params) {
-  Capabilities capabilities;
-  if (params) {
-    capabilities = params->capabilities;
+  if (!params) {
+    params = mojom::SessionParams::New();
   }
   AddSession(std::move(session), std::make_unique<FakeOnDeviceSession>(
-                                     settings_, this, capabilities));
+                                     settings_, this, std::move(params)));
 }
 
 void FakeOnDeviceModel::AddSession(

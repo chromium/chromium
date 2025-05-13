@@ -32,6 +32,10 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
 
   void Shutdown() override;
 
+  MOCK_METHOD(std::unique_ptr<optimization_guide::ModelBrokerClient>,
+              CreateModelBrokerClient,
+              (),
+              (override));
   MOCK_METHOD(void,
               RegisterOptimizationTypes,
               (const std::vector<optimization_guide::proto::OptimizationType>&),
