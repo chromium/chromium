@@ -329,15 +329,28 @@ class AvatarToolbarButtonBaseBrowserTest {
     return account_info;
   }
 
-  // Sign in with the full account information that triggers the name greeting,
-  // but force timing it out right away to clear the animation.
-  AccountInfo SigninWithImageAndClearGreeting(
+  // Sign in with the full account information that triggers the name greeting
+  // followed by the history sync opt-in promo (if enabled and not syncing), but
+  // force timing both out right away to clear the animation.
+  AccountInfo SigninWithImageAndClearGreetingAndSyncPromo(
       AvatarToolbarButton* avatar,
       const std::u16string& email,
       const std::u16string& name = u"account_name") {
     AccountInfo account_info = SigninWithImage(email, name);
     avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+    ClearHistorySyncOptinPromoIfEnabled(avatar);
     return account_info;
+  }
+
+  // Clears the history sync optin promo if it is enabled. This is a no-op if
+  // the promo is disabled.
+  void ClearHistorySyncOptinPromoIfEnabled(AvatarToolbarButton* avatar) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    if (base::FeatureList::IsEnabled(
+            switches::kEnableHistorySyncOptinExpansionPill)) {
+      avatar->TriggerTimeoutForTesting(AvatarDelayType::kHistorySyncOptin);
+    }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -653,6 +666,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
             l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, name));
 
   avatar->TriggerTimeoutForTesting(AvatarDelayType::kNameGreeting);
+  ClearHistorySyncOptinPromoIfEnabled(avatar);
   // Once the name is not shown anymore, we expect no text.
   EXPECT_EQ(avatar->GetText(), std::u16string());
 
@@ -736,7 +750,8 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
                        MAYBE_ShowNameDoesNotAppearOnNewBrowserIfNotShowing) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   // Name is shown and force clearing.
-  SigninWithImageAndClearGreeting(avatar, u"test@gmail.com", u"account_name");
+  SigninWithImageAndClearGreetingAndSyncPromo(avatar, u"test@gmail.com",
+                                              u"account_name");
   ASSERT_EQ(avatar->GetText(), std::u16string());
 
   Browser* new_browser = CreateBrowser(browser()->profile());
@@ -2369,7 +2384,7 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
                        MAYBE_SigninPausedFromExternalErrorThenReauth) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  SigninWithImageAndClearGreeting(avatar, u"test@gmail.com");
+  SigninWithImageAndClearGreetingAndSyncPromo(avatar, u"test@gmail.com");
   ASSERT_EQ(avatar->GetText(), std::u16string());
 
   // Browser opened before the error.
@@ -2407,7 +2422,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
                        MAYBE_SigninPausedFromWebSignout) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
 
-  SigninWithImageAndClearGreeting(avatar, u"test@gmail.com");
+  SigninWithImageAndClearGreetingAndSyncPromo(avatar, u"test@gmail.com");
   ASSERT_EQ(avatar->GetText(), std::u16string());
 
   // Browser opened before the error.
@@ -2462,7 +2477,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   ScopedKeepAlive keep_alive(KeepAliveOrigin::SESSION_RESTORE,
                              KeepAliveRestartOption::DISABLED);
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  SigninWithImageAndClearGreeting(avatar, u"test@gmail.com");
+  SigninWithImageAndClearGreetingAndSyncPromo(avatar, u"test@gmail.com");
 
   SimulateSigninError(/*web_sign_out=*/true);
   ASSERT_EQ(avatar->GetText(), std::u16string());
@@ -2488,7 +2503,8 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
 
-  SigninWithImageAndClearGreeting(avatar, u"test@gmail.com", u"TestName");
+  SigninWithImageAndClearGreetingAndSyncPromo(avatar, u"test@gmail.com",
+                                              u"TestName");
   SimulateSigninError(/*web_sign_out=*/true);
   ASSERT_TRUE(avatar->GetText().empty());
   Profile* profile = browser()->profile();
@@ -2518,7 +2534,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
                        MAYBE_SigninPausedThenSignout) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  SigninWithImageAndClearGreeting(avatar, u"test@gmail.com");
+  SigninWithImageAndClearGreetingAndSyncPromo(avatar, u"test@gmail.com");
   ASSERT_EQ(avatar->GetText(), std::u16string());
 
   SimulateSigninError(/*web_sign_out=*/false);
@@ -2544,7 +2560,8 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, AccessibilityLabels) {
   EXPECT_EQ(accessibility.GetCachedDescription(), std::u16string());
 
   const std::u16string account_name(u"Test Name");
-  SigninWithImageAndClearGreeting(avatar, u"test@gmail.com", account_name);
+  SigninWithImageAndClearGreetingAndSyncPromo(avatar, u"test@gmail.com",
+                                              account_name);
 
   const std::u16string expected_profile_name_with_account =
       account_name + u" (" + profile_name + u")";
@@ -2617,7 +2634,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, AccessibilityLabels) {
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
                        PassphraseErrorSignedIn) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  SigninWithImageAndClearGreeting(avatar, u"test@gmail.com");
+  SigninWithImageAndClearGreetingAndSyncPromo(avatar, u"test@gmail.com");
   ASSERT_EQ(avatar->GetText(), std::u16string());
   SimulatePassphraseError();
   EXPECT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(

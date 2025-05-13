@@ -219,6 +219,12 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
         .extra_features_state_ = {{switches::kEnableImprovedGuestProfileMenu,
                                    true}},
     },
+    {
+        .pixel_test_param = {.test_suffix = "HistorySyncOptinExperiment"},
+        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+        .extra_features_state_ =
+            {{switches::kEnableHistorySyncOptinExpansionPill, true}},
+    },
 };
 
 }  // namespace
@@ -233,7 +239,8 @@ class ProfileMenuViewPixelTest
         {features::kEnterpriseProfileBadgingForMenu, true},
         {features::kEnterpriseProfileBadgingPolicies, true},
         // False by default but may be overridden by `extra_features_state_`.
-        {switches::kEnableImprovedGuestProfileMenu, false}};
+        {switches::kEnableImprovedGuestProfileMenu, false},
+        {switches::kEnableHistorySyncOptinExpansionPill, false}};
     for (const auto& [feature, state] : GetParam().extra_features_state_) {
       features_state[feature] = state;
     }

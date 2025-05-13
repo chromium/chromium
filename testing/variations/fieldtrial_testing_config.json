@@ -23922,6 +23922,23 @@
             ]
         }
     ],
+    "UnoDesktopHistorySyncPillExperiment": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableHistorySyncOptinExpansionPill"
+                    ]
+                }
+            ]
+        }
+    ],
     "UnoDesktopM0FollowUpPart2": [
         {
             "platforms": [
