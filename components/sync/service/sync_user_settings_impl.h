@@ -31,6 +31,9 @@ class SyncUserSettingsImpl : public SyncUserSettings {
     virtual bool IsCustomPassphraseAllowed() const = 0;
     virtual SyncPrefs::SyncAccountState GetSyncAccountStateForPrefs() const = 0;
     virtual CoreAccountInfo GetSyncAccountInfoForPrefs() const = 0;
+#if BUILDFLAG(IS_CHROMEOS)
+    virtual void OnSyncFeatureDisabledViaDashboardCleared() = 0;
+#endif  // BUILDFLAG(IS_CHROMEOS)
   };
 
   // `delegate`, `crypto` and `prefs` must not be null and must outlive this
@@ -50,7 +53,6 @@ class SyncUserSettingsImpl : public SyncUserSettings {
 
 #if BUILDFLAG(IS_CHROMEOS)
   void SetSyncFeatureDisabledViaDashboard();
-  void ClearSyncFeatureDisabledViaDashboard();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // SyncUserSettings implementation.
@@ -78,6 +80,7 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   UserSelectableTypeSet GetRegisteredSelectableTypes() const override;
 #if BUILDFLAG(IS_CHROMEOS)
   bool IsSyncFeatureDisabledViaDashboard() const override;
+  void ClearSyncFeatureDisabledViaDashboard() override;
   bool IsSyncAllOsTypesEnabled() const override;
   UserSelectableOsTypeSet GetSelectedOsTypes() const override;
   bool IsOsTypeManagedByPolicy(UserSelectableOsType type) const override;

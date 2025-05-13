@@ -51,6 +51,7 @@ class TestSyncUserSettings : public SyncUserSettings {
 
 #if BUILDFLAG(IS_CHROMEOS)
   bool IsSyncFeatureDisabledViaDashboard() const override;
+  void ClearSyncFeatureDisabledViaDashboard() override;
   bool IsSyncAllOsTypesEnabled() const override;
   UserSelectableOsTypeSet GetSelectedOsTypes() const override;
   bool IsOsTypeManagedByPolicy(UserSelectableOsType type) const override;
@@ -99,7 +100,7 @@ class TestSyncUserSettings : public SyncUserSettings {
   void SetExplicitPassphraseTime(base::Time t);
 
 #if BUILDFLAG(IS_CHROMEOS)
-  void SetSyncFeatureDisabledViaDashboard(bool disabled_via_dashboard);
+  void SetSyncFeatureDisabledViaDashboard();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   const std::string& GetEncryptionPassphrase() const;

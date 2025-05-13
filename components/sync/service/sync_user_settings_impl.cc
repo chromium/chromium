@@ -244,7 +244,11 @@ void SyncUserSettingsImpl::SetSyncFeatureDisabledViaDashboard() {
 }
 
 void SyncUserSettingsImpl::ClearSyncFeatureDisabledViaDashboard() {
+  if (!IsSyncFeatureDisabledViaDashboard()) {
+    return;
+  }
   prefs_->ClearSyncFeatureDisabledViaDashboard();
+  delegate_->OnSyncFeatureDisabledViaDashboardCleared();
 }
 
 bool SyncUserSettingsImpl::IsSyncFeatureDisabledViaDashboard() const {

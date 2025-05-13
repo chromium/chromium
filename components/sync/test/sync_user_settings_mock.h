@@ -58,6 +58,7 @@ class SyncUserSettingsMock : public SyncUserSettings {
 
 #if BUILDFLAG(IS_CHROMEOS)
   MOCK_METHOD(bool, IsSyncFeatureDisabledViaDashboard, (), (const override));
+  MOCK_METHOD(void, ClearSyncFeatureDisabledViaDashboard, (), (override));
   MOCK_METHOD(bool, IsSyncAllOsTypesEnabled, (), (const override));
   MOCK_METHOD(UserSelectableOsTypeSet,
               GetSelectedOsTypes,

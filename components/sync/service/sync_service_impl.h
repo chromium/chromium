@@ -64,6 +64,9 @@ class SyncServiceAndroidBridge;
 
 // Look at the SyncService interface for information on how to use this class.
 // You should not need to know about SyncServiceImpl directly.
+// TODO(crbug.com/40772592): Avoid implementing SyncPrefObserver here and
+// instead rely exclusively on SyncUserSettingsImpl::Delegate to react to user
+// setting changes.
 class SyncServiceImpl : public SyncService,
                         public SyncEngineHost,
                         public SyncPrefObserver,
@@ -204,6 +207,9 @@ class SyncServiceImpl : public SyncService,
   bool IsCustomPassphraseAllowed() const override;
   SyncPrefs::SyncAccountState GetSyncAccountStateForPrefs() const override;
   CoreAccountInfo GetSyncAccountInfoForPrefs() const override;
+#if BUILDFLAG(IS_CHROMEOS)
+  void OnSyncFeatureDisabledViaDashboardCleared() override;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // IdentityManager::Observer implementation.
   void OnAccountsCookieDeletedByUserAction() override;

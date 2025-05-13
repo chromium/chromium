@@ -108,6 +108,11 @@ class SyncUserSettings {
   // the Sync dashboard.
   virtual bool IsSyncFeatureDisabledViaDashboard() const = 0;
 
+  // Causes `IsSyncFeatureDisabledViaDashboard()` above to return false,
+  // usually representing that the user took some action to confirm it is OK
+  // to resume Sync.
+  virtual void ClearSyncFeatureDisabledViaDashboard() = 0;
+
   // As above, but for Chrome OS-specific data types. These are controlled by
   // toggles in the OS Settings UI.
   virtual bool IsSyncAllOsTypesEnabled() const = 0;

@@ -782,9 +782,6 @@ void SyncServiceImpl::SetSyncFeatureRequested() {
 
 #if BUILDFLAG(IS_CHROMEOS)
   user_settings_->ClearSyncFeatureDisabledViaDashboard();
-
-  DVLOG(2) << "Notify observers on SetSyncFeatureRequested";
-  NotifyObservers();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -1418,6 +1415,23 @@ CoreAccountInfo SyncServiceImpl::GetSyncAccountInfoForPrefs() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetAccountInfo();
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void SyncServiceImpl::OnSyncFeatureDisabledViaDashboardCleared() {
+  // If the Sync engine was already initialized (probably running in transport
+  // mode), just reconfigure.
+  if (engine_ && engine_->IsInitialized()) {
+    ConfigureDataTypeManager(CONFIGURE_REASON_RECONFIGURATION,
+                             /*bypass_setup_in_progress_check=*/false);
+  } else {
+    // Otherwise try to start up. Note that there might still be other disable
+    // reasons remaining, in which case this will effectively do nothing.
+    TryStart();
+  }
+
+  NotifyObservers();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool SyncServiceImpl::IsSetupInProgress() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

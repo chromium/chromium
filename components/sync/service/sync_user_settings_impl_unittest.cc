@@ -111,6 +111,12 @@ class SyncUserSettingsImplTest : public testing::Test,
 #endif
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  void OnSyncFeatureDisabledViaDashboardCleared() override {
+    ++on_sync_feature_disabled_via_dashboard_cleared_count_;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   std::unique_ptr<SyncUserSettingsImpl> MakeSyncUserSettings(
       DataTypeSet registered_types) {
     return std::make_unique<SyncUserSettingsImpl>(
@@ -128,6 +134,9 @@ class SyncUserSettingsImplTest : public testing::Test,
   std::unique_ptr<SyncServiceCrypto> sync_service_crypto_;
   SyncPrefs::SyncAccountState sync_account_state_ =
       SyncPrefs::SyncAccountState::kSyncing;
+#if BUILDFLAG(IS_CHROMEOS)
+  int on_sync_feature_disabled_via_dashboard_cleared_count_ = 0;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
@@ -611,6 +620,29 @@ TEST_F(SyncUserSettingsImplTest, ClearEncryptionBootstrapTokenPerAccount) {
   sync_user_settings->KeepAccountSettingsPrefsOnlyForUsers({});
   EXPECT_TRUE(sync_user_settings->GetEncryptionBootstrapToken().empty());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(SyncUserSettingsImplTest, SyncFeatureDisabledViaDashboard) {
+  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
+      MakeSyncUserSettings(GetUserTypes());
+
+  ASSERT_FALSE(sync_user_settings->IsSyncFeatureDisabledViaDashboard());
+  ASSERT_EQ(0, on_sync_feature_disabled_via_dashboard_cleared_count_);
+
+  sync_user_settings->SetSyncFeatureDisabledViaDashboard();
+  EXPECT_TRUE(sync_user_settings->IsSyncFeatureDisabledViaDashboard());
+  EXPECT_EQ(0, on_sync_feature_disabled_via_dashboard_cleared_count_);
+
+  sync_user_settings->ClearSyncFeatureDisabledViaDashboard();
+  EXPECT_FALSE(sync_user_settings->IsSyncFeatureDisabledViaDashboard());
+  EXPECT_EQ(1, on_sync_feature_disabled_via_dashboard_cleared_count_);
+
+  // Calling it for the second time should be harmless (no-op).
+  sync_user_settings->ClearSyncFeatureDisabledViaDashboard();
+  EXPECT_FALSE(sync_user_settings->IsSyncFeatureDisabledViaDashboard());
+  EXPECT_EQ(1, on_sync_feature_disabled_via_dashboard_cleared_count_);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 

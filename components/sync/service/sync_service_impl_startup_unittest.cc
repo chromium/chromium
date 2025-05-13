@@ -456,12 +456,20 @@ TEST_F(SyncServiceImplStartupTest, ResetSyncViaDashboard) {
 #else
       ACTIVE;
 #endif
+
   EXPECT_EQ(expected_transport_state_after_reset,
             sync_service()->GetTransportState());
-  EXPECT_EQ(
-      BUILDFLAG(IS_CHROMEOS),
-      sync_service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
+
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_TRUE(
+      sync_service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
+  EXPECT_TRUE(
+      sync_service()->GetUserSettings()->IsSyncFeatureDisabledViaDashboard());
+#else   // BUILDFLAG(IS_CHROMEOS)
+  EXPECT_FALSE(
+      sync_service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Reset sync again while the sync service is already in transport mode. It
   // should immediately start up again in transport mode.
@@ -470,6 +478,18 @@ TEST_F(SyncServiceImplStartupTest, ResetSyncViaDashboard) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(expected_transport_state_after_reset,
             sync_service()->GetTransportState());
+  EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
+
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_FALSE(sync_service()->GetActiveDataTypes().Has(BOOKMARKS));
+
+  // On ChromeOS, test clearing the dashboard error, which should start
+  // sync-the-feature and start BOOKMARKS.
+  sync_service()->SetSyncFeatureRequested();
+  FastForwardUntilNoTasksRemain();
+  EXPECT_TRUE(sync_service()->IsSyncFeatureActive());
+  EXPECT_TRUE(sync_service()->GetActiveDataTypes().Has(BOOKMARKS));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // ChromeOS does not support sign-in after startup.
