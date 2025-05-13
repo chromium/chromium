@@ -34,6 +34,15 @@ NoticeApi* NoticeApi::SetResultCallback(
   return this;
 }
 
+NoticeApi* NoticeApi::SetFeature(const base::Feature* feature) {
+  feature_ = feature;
+  return this;
+}
+
+bool NoticeApi::IsEnabled() {
+  return feature_ && base::FeatureList::IsEnabled(*feature_);
+}
+
 EligibilityLevel NoticeApi::GetEligibilityLevel() {
   return !eligibility_callback_.is_null() ? eligibility_callback_.Run()
                                           : EligibilityLevel::kNotEligible;

@@ -135,24 +135,32 @@ class NoticeApi {
   EligibilityLevel GetEligibilityLevel();
   void UpdateResult(bool enabled);
 
-  // TODO(crbug.com/392612108): Have enablement of an api set by a feature
-  // flag.
-
   // Sets a notice this Api can be fulfilled by.
   void CanBeFulfilledBy(Notice* notice);
 
   // Returns whether the api was fulfilled.
   bool IsFulfilled();
 
+  // Returns whether the API is enabled and should be considered by the
+  // Orchestrator.
+  bool IsEnabled();
+
   // Callbacks.
   NoticeApi* SetEligibilityCallback(
       base::RepeatingCallback<EligibilityLevel()> callback);
   NoticeApi* SetResultCallback(base::OnceCallback<void(bool)> callback);
 
+  // Feature controlling the API.
+  NoticeApi* SetFeature(const base::Feature* feature);
+
+  // TODO(crbug.com/409386887) Add Supersedes call when multiple versions of the
+  // same API are introduced.
+
  private:
   std::vector<Notice*> linked_notices_;
   base::RepeatingCallback<EligibilityLevel()> eligibility_callback_;
   base::OnceCallback<void(bool)> result_callback_;
+  raw_ptr<const base::Feature> feature_;
 };
 
 }  // namespace privacy_sandbox

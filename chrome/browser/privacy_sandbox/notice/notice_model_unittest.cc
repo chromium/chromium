@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/privacy_sandbox/notice/mocks/mock_notice_storage.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_storage.h"
@@ -363,6 +364,25 @@ TEST_F(PrivacySandboxNoticeApiTest, SetAndCallResultCallback) {
 TEST_F(PrivacySandboxNoticeApiTest, UpdateResultWithoutCallback) {
   api_.UpdateResult(true);
   SUCCEED();
+}
+
+TEST_F(PrivacySandboxNoticeApiTest, IsEnabledFeatureEnabled) {
+  api_.SetFeature(&kTestFeatureA);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kTestFeatureA);
+  EXPECT_TRUE(api_.IsEnabled());
+}
+
+TEST_F(PrivacySandboxNoticeApiTest, IsEnabledFeatureDisabled) {
+  api_.SetFeature(&kTestFeatureA);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kTestFeatureA);
+  EXPECT_FALSE(api_.IsEnabled());
+}
+
+TEST_F(PrivacySandboxNoticeApiTest, IsEnabledFeatureNotSet) {
+  api_.SetFeature(nullptr);
+  EXPECT_FALSE(api_.IsEnabled());
 }
 
 TEST_F(PrivacySandboxNoticeApiTest, CanBeFulfilledByAndGetLinkedNotices) {
