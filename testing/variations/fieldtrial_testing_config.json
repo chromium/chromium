@@ -13784,6 +13784,21 @@
             ]
         }
     ],
+    "MacKeychainApiMigration": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AppleKeychainUseSecItem"
+                    ]
+                }
+            ]
+        }
+    ],
     "MahiEnabled": [
         {
             "platforms": [
