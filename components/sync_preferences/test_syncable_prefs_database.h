@@ -26,11 +26,6 @@ class TestSyncablePrefsDatabase : public SyncablePrefsDatabase {
   std::optional<sync_preferences::SyncablePrefMetadata> GetSyncablePrefMetadata(
       std::string_view pref_name) const override;
 
-  bool IsPreferenceAlwaysSyncing(std::string_view pref_name) const override;
-
-  void SetAlwaysSyncingPrefs(
-      const std::set<std::string_view>& always_syncing_prefs);
-
  private:
   PrefsMap syncable_prefs_map_;
   std::set<std::string_view> always_syncing_prefs_;

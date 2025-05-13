@@ -116,9 +116,4 @@ IOSChromeSyncablePrefsDatabase::GetAllSyncablePrefsForTest() const {
       std::inserter(syncable_prefs, syncable_prefs.end()));
   return syncable_prefs;
 }
-
-bool IOSChromeSyncablePrefsDatabase::IsPreferenceAlwaysSyncing(
-    std::string_view pref_name) const {
-  return common_syncable_prefs_database_.IsPreferenceAlwaysSyncing(pref_name);
-}
 }  // namespace browser_sync

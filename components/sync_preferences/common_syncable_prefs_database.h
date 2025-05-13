@@ -37,8 +37,6 @@ class CommonSyncablePrefsDatabase : public SyncablePrefsDatabase {
 
   std::map<std::string_view, SyncablePrefMetadata> GetAllSyncablePrefsForTest()
       const;
-
-  bool IsPreferenceAlwaysSyncing(std::string_view pref_name) const override;
 };
 
 }  // namespace sync_preferences

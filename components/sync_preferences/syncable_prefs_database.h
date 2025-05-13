@@ -12,15 +12,22 @@
 #include "base/check.h"
 #include "build/build_config.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/user_selectable_type.h"
 
 namespace sync_preferences {
 
+// TODO(crbug.com/412602018): Rename enum and enum values to better reflect
+// their purpose.
 enum class PrefSensitivity {
-  // The pref is not sensitive and does not require any additional opt-ins.
+  // The pref is not sensitive and requires only the preference sync toggle to
+  // be enabled for syncing.
   kNone,
   // The pref contains sensitive information and requires history opt-in to
   // allow syncing.
   kSensitiveRequiresHistory,
+  // The pref is exempt from user control and hence, decoupled from any user
+  // toggle. Note that this is only supported for priority prefs.
+  kExemptFromUserControlWhileSignedIn,
 };
 
 enum class MergeBehavior {
@@ -62,6 +69,10 @@ class SyncablePrefMetadata {
           )
         << "Invalid type " << data_type_
         << " for syncable pref with id=" << syncable_pref_id_;
+    CHECK(pref_sensitivity_ !=
+              PrefSensitivity::kExemptFromUserControlWhileSignedIn ||
+          data_type_ == syncer::PRIORITY_PREFERENCES)
+        << "Always syncing prefs must be priority prefs.";
   }
 
   // Returns the unique ID corresponding to the syncable preference.
@@ -115,7 +126,7 @@ class SyncablePrefsDatabase {
 
   // Returns whether `pref_name` is part of the allowlist of preferences that
   // are always synced, irrespective of the preference sync user toggle.
-  virtual bool IsPreferenceAlwaysSyncing(std::string_view pref_name) const = 0;
+  bool IsPreferenceAlwaysSyncing(std::string_view pref_name) const;
 };
 
 }  // namespace sync_preferences

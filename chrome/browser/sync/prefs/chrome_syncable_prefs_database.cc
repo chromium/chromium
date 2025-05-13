@@ -1678,7 +1678,7 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
 #if BUILDFLAG(ENABLE_GLIC)
     {glic::prefs::kGlicRolloutEligibility,
      {syncable_prefs_ids::kGlicRolloutEligibility, syncer::PRIORITY_PREFERENCES,
-      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::PrefSensitivity::kExemptFromUserControlWhileSignedIn,
       sync_preferences::MergeBehavior::kNone}},
 #endif  // BUILDFLAG(ENABLE_GLIC)
 });
@@ -1708,15 +1708,5 @@ ChromeSyncablePrefsDatabase::GetAllSyncablePrefsForTest() const {
       common_syncable_prefs_database_.GetAllSyncablePrefsForTest(),  // IN-TEST
       std::inserter(syncable_prefs, syncable_prefs.end()));
   return syncable_prefs;
-}
-
-bool ChromeSyncablePrefsDatabase::IsPreferenceAlwaysSyncing(
-    std::string_view pref_name) const {
-#if BUILDFLAG(ENABLE_GLIC)
-  if (pref_name == glic::prefs::kGlicRolloutEligibility) {
-    return true;
-  }
-#endif  // BUILDFLAG(ENABLE_GLIC)
-  return common_syncable_prefs_database_.IsPreferenceAlwaysSyncing(pref_name);
 }
 }  // namespace browser_sync

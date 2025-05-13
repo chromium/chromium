@@ -111,7 +111,8 @@ const TestSyncablePrefsDatabase::PrefsMap kSyncablePrefsDatabase = {
       MergeBehavior::kNone}},
 #endif
     {kAlwaysSyncingPriorityPrefName,
-     {11, syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
+     {11, syncer::PRIORITY_PREFERENCES,
+      PrefSensitivity::kExemptFromUserControlWhileSignedIn,
       MergeBehavior::kNone}},
 };
 
@@ -406,10 +407,7 @@ TEST_F(PrefServiceSyncableTest, ModelAssociationWithDataTypeMismatch) {
 class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
  public:
   TestPrefModelAssociatorClient()
-      : syncable_prefs_database_(kSyncablePrefsDatabase) {
-    syncable_prefs_database_.SetAlwaysSyncingPrefs(
-        {kAlwaysSyncingPriorityPrefName});
-  }
+      : syncable_prefs_database_(kSyncablePrefsDatabase) {}
 
   TestPrefModelAssociatorClient(const TestPrefModelAssociatorClient&) = delete;
   TestPrefModelAssociatorClient& operator=(

@@ -354,7 +354,8 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           MergeBehavior::kNone}},
         {kSyncableAlwaysSyncingPriorityPrefForTesting,
          {syncable_prefs_ids::kSyncableAlwaysSyncingPriorityPrefForTesting,
-          syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
+          syncer::PRIORITY_PREFERENCES,
+          PrefSensitivity::kExemptFromUserControlWhileSignedIn,
           MergeBehavior::kNone}},
     });
 
@@ -374,20 +375,6 @@ std::map<std::string_view, SyncablePrefMetadata>
 CommonSyncablePrefsDatabase::GetAllSyncablePrefsForTest() const {
   return {kCommonSyncablePrefsAllowlist.begin(),
           kCommonSyncablePrefsAllowlist.end()};
-}
-
-bool CommonSyncablePrefsDatabase::IsPreferenceAlwaysSyncing(
-    std::string_view pref_name) const {
-  CHECK(base::FeatureList::IsEnabled(
-      syncer::kSyncSupportAlwaysSyncingPriorityPreferences));
-  // TODO(crbug.com/412602018): Consider renaming and using the
-  // `PrefSensitivity` enum instead, since it currently helps with something
-  // similar in regards to history opt-in and the options would be mutually
-  // exclusive.
-  static constexpr auto kAlwaysSyncingPrefsAllowlist =
-      base::MakeFixedFlatSet<std::string_view>(
-          {kSyncableAlwaysSyncingPriorityPrefForTesting});
-  return kAlwaysSyncingPrefsAllowlist.contains(pref_name);
 }
 
 }  // namespace sync_preferences

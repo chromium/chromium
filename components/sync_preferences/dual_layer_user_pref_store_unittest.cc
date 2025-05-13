@@ -68,15 +68,13 @@ const TestSyncablePrefsDatabase::PrefsMap kSyncablePrefsDatabase = {
     {kCustomMergePref,
      {0, syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kCustom}},
     {kAlwaysSyncingPriorityPrefName,
-     {0, syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
+     {0, syncer::PRIORITY_PREFERENCES,
+      PrefSensitivity::kExemptFromUserControlWhileSignedIn,
       MergeBehavior::kNone}},
 };
 
 constexpr char kUserSelectedTypesPrefName[] =
     "dual_layer_user_pref_store.user_selected_sync_types";
-
-const std::set<std::string_view> kAlwaysSyncingPrefs = {
-    kAlwaysSyncingPriorityPrefName};
 
 base::Value MakeDict(
     const std::vector<std::pair<std::string, std::string>>& values) {
@@ -148,10 +146,7 @@ class MockReadErrorDelegate : public PersistentPrefStore::ReadErrorDelegate {
 class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
  public:
   TestPrefModelAssociatorClient()
-      : syncable_prefs_database_(kSyncablePrefsDatabase) {
-    syncable_prefs_database_.SetAlwaysSyncingPrefs(
-        {kAlwaysSyncingPriorityPrefName});
-  }
+      : syncable_prefs_database_(kSyncablePrefsDatabase) {}
 
   // PrefModelAssociatorClient implementation.
   base::Value MaybeMergePreferenceValues(
