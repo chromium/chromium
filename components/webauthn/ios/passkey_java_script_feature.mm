@@ -71,7 +71,8 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
   CHECK(passkey_tab_helper);
 
   // For those events there are no more expected arguments.
-  if (*event == "getRequested" || *event == "createRequested") {
+  if (*event == "getRequested" || *event == "createRequested" ||
+      *event == "createResolvedGpm" || *event == "createResolvedNonGpm") {
     passkey_tab_helper->LogEventFromString(*event);
     return;
   }

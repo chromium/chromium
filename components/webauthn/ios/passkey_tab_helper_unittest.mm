@@ -90,3 +90,21 @@ TEST_F(PasskeyTabHelperTest, LogsGetResolvedEventNonGpmPasskey) {
       kWebAuthenticationIOSContentAreaEventHistogram, kGetResolvedNonGpmBucket,
       /*count=*/1);
 }
+
+TEST_F(PasskeyTabHelperTest, LogsEventFromCreateResolvedGpmString) {
+  passkey_tab_helper()->LogEventFromString("createResolvedGpm");
+
+  constexpr int kCreateRequestedBucket = 4;
+  histogram_tester_.ExpectUniqueSample(
+      kWebAuthenticationIOSContentAreaEventHistogram, kCreateRequestedBucket,
+      /*count=*/1);
+}
+
+TEST_F(PasskeyTabHelperTest, LogsEventFromCreateResolvedNonGpmString) {
+  passkey_tab_helper()->LogEventFromString("createResolvedNonGpm");
+
+  constexpr int kCreateRequestedBucket = 5;
+  histogram_tester_.ExpectUniqueSample(
+      kWebAuthenticationIOSContentAreaEventHistogram, kCreateRequestedBucket,
+      /*count=*/1);
+}

@@ -308,6 +308,14 @@ chromium-metrics-reviews@google.com.
     WebAuthn credential get request was successfully resolved with different
     authenticator than Google Password Manager.
   </int>
+  <int value="4" label="CreateResolvedGpm">
+    WebAuthn credential create request was successfully resolved with Google
+    Password Manager as an authenticator.
+  </int>
+  <int value="5" label="CreateResolvedNonGpm">
+    WebAuthn credential create request was successfully resolved with different
+    authenticator than Google Password Manager.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//components/webauthn/ios/passkey_tab_helper.mm) -->

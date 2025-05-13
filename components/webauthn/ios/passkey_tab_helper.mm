@@ -23,7 +23,9 @@ enum class WebAuthenticationIOSContentAreaEvent {
   kCreateRequested,
   kGetResolvedGpm,
   kGetResolvedNonGpm,
-  kMaxValue = kGetResolvedNonGpm,
+  kCreateResolvedGpm,
+  kCreateResolvedNonGpm,
+  kMaxValue = kCreateResolvedNonGpm,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml)
 
@@ -42,6 +44,10 @@ void PasskeyTabHelper::LogEventFromString(const std::string& event) {
     LogEvent(WebAuthenticationIOSContentAreaEvent::kGetRequested);
   } else if (event == "createRequested") {
     LogEvent(WebAuthenticationIOSContentAreaEvent::kCreateRequested);
+  } else if (event == "createResolvedGpm") {
+    LogEvent(WebAuthenticationIOSContentAreaEvent::kCreateResolvedGpm);
+  } else if (event == "createResolvedNonGpm") {
+    LogEvent(WebAuthenticationIOSContentAreaEvent::kCreateResolvedNonGpm);
   } else {
     NOTREACHED();
   }
