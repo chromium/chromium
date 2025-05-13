@@ -90,8 +90,17 @@ class ReadAnythingAppModel {
     // is added.
   };
 
+  // Represents a grouping of AXTreeUpdates received in the same accessibility
+  // event.
   using Updates = std::vector<ui::AXTreeUpdate>;
-  using PendingUpdates = std::map<ui::AXTreeID, Updates>;
+
+  // Updates need to be grouped by the order in which they were received,
+  // rather than just a single vector containing all updates from multiple
+  // accessibility events. This is so that Unserialize can be called in
+  // batches on the group of Updates received from each call to
+  // AccessibilityEventReceived. Otherwise, intermediary updates might
+  // cause tree inconsistency issues with the final update.
+  using PendingUpdates = std::map<ui::AXTreeID, std::vector<Updates>>;
 
   static constexpr char kEmptyStateHistogramName[] =
       "Accessibility.ReadAnything.EmptyState";
