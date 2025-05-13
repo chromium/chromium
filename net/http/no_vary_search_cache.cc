@@ -544,11 +544,10 @@ void NoVarySearchCache::MergeFrom(const NoVarySearchCache& newer) {
     std::optional<std::string> query = query_string->query();
     CHECK(!query || query->find('#') == std::string::npos);
 
-    // Set `journal` to nullptr so no notification is fired for this
-    // insertion.
+    // Pass `journal_` so the merged entries are journalled as insertions.
     ReconstructURLAndDoInsert(base_url, std::move(base_url_cache_key), nvs_data,
                               std::move(query), query_string->update_time(),
-                              /*journal=*/nullptr);
+                              journal_);
   }
 }
 

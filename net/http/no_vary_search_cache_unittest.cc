@@ -39,9 +39,12 @@ namespace {
 namespace nvs_test = no_vary_search_cache_test_utils;
 
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::EndsWith;
 using ::testing::Eq;
 using ::testing::Ge;
+using ::testing::InSequence;
+using ::testing::Le;
 using ::testing::Optional;
 
 constexpr size_t kMaxSize = 5;
@@ -1244,12 +1247,41 @@ TEST_P(NoVarySearchCacheTest, ReplayEraseMismatchedQuery) {
 TEST_P(NoVarySearchCacheReplayTest, MergeFrom) {
   const auto test_cases = ReplayTestCases();
 
+  const base::Time before_inserts = base::Time::Now();
+
   for (const auto& [description, to_insert, no_vary_search_value, to_lookup] :
        test_cases) {
     cache().MaybeInsert(to_insert, TestHeaders(no_vary_search_value));
   }
 
+  const base::Time after_inserts = base::Time::Now();
+
   NoVarySearchCache target(kMaxSize);
+  ScopedMockJournal journal(target);
+
+  EXPECT_CALL(journal, OnErase).Times(0);
+
+  {
+    InSequence s;
+    for (const auto& [description, to_insert, no_vary_search_value, to_lookup] :
+         test_cases) {
+      auto expected_nvs_data = HttpNoVarySearchData::ParseFromHeaders(
+          TestHeaders(no_vary_search_value));
+      const GURL& url = to_insert.url;
+      std::optional<std::string_view> query;
+      if (url.has_query()) {
+        query = url.query_piece();
+      }
+      std::string base_url = url.spec();
+      if (size_t pos = base_url.find('?'); pos != std::string::npos) {
+        base_url = base_url.substr(0, pos);
+      }
+      EXPECT_CALL(journal,
+                  OnInsert(EndsWith(base_url), Eq(expected_nvs_data), Eq(query),
+                           AllOf(Ge(before_inserts), Le(after_inserts))));
+    }
+  }
+
   target.MergeFrom(cache());
 
   EXPECT_EQ(cache().size(), target.size());
