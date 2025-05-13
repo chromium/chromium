@@ -374,8 +374,6 @@ source_set("web_applications") {
     "web_app_ui_manager.cc",
     "web_app_ui_manager.h",
     "web_app_uninstall_dialog_user_options.h",
-    "web_app_utils.cc",
-    "web_app_utils.h",
     "web_contents/web_app_data_retriever.cc",
     "web_contents/web_app_data_retriever.h",
     "web_contents/web_app_icon_downloader.cc",
@@ -475,6 +473,8 @@ source_set("web_applications") {
     sources += [
       "policy/web_app_settings_policy_handler.cc",
       "policy/web_app_settings_policy_handler.h",
+      "web_app_utils.cc",
+      "web_app_utils.h",
     ]
   }
 

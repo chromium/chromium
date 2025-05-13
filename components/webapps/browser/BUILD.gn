@@ -14,6 +14,7 @@ source_set("constants") {
     "install_result_code.h",
     "uninstall_result_code.cc",
     "uninstall_result_code.h",
+    "web_app_error_page_constants.h",
   ]
 }
 
