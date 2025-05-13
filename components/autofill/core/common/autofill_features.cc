@@ -261,6 +261,13 @@ BASE_FEATURE(kAutofillEnableLoyaltyCardsFilling,
              "AutofillEnableLoyaltyCardsFilling",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, Autofill will display joined email and loyalty card Autofill
+// suggestions.
+// TODO(crbug.com/416664590): Remove once launched.
+BASE_FEATURE(kAutofillEnableEmailOrLoyaltyCardsFilling,
+             "AutofillEnableEmailOrLoyaltyCardsFilling",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, extracts <input type=date>, which may be filled by Autofill AI.
 // This is a kill switch.
 // TODO(crbug.com/396325496): Clean up after M137 branch (April 28, 2025).
