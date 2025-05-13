@@ -23,6 +23,9 @@ void SetNSWindowVisibleOnAllWorkspaces(NSWindow* window, bool always_visible);
 
 // Sets the min/max size of the window as well as showing/hiding resize,
 // maximize, and fullscreen controls.
+//
+// For the maximum size, a height/width specified as 0 means unbounded.
+//
 // Sizes refer to the content size (inner bounds).
 COMPONENT_EXPORT(GFX)
 void ApplyNSWindowSizeConstraints(NSWindow* window,
