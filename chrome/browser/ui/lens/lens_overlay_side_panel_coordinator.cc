@@ -947,14 +947,14 @@ void LensOverlaySidePanelCoordinator::RegisterEntry() {
   if (!registry->GetEntryForKey(
           SidePanelEntry::Key(SidePanelEntry::Id::kLensOverlayResults))) {
     auto entry = std::make_unique<SidePanelEntry>(
-        SidePanelEntry::Id::kLensOverlayResults,
+        SidePanelEntry::Key(SidePanelEntry::Id::kLensOverlayResults),
         base::BindRepeating(
             &LensOverlaySidePanelCoordinator::CreateLensOverlayResultsView,
             base::Unretained(this)),
         base::BindRepeating(
             &LensOverlaySidePanelCoordinator::GetOpenInNewTabUrl,
             base::Unretained(this)),
-        GetMoreInfoCallback());
+        GetMoreInfoCallback(), SidePanelEntry::kSidePanelDefaultContentWidth);
     entry->SetProperty(kShouldShowTitleInSidePanelHeaderKey, false);
     registry->Register(std::move(entry));
 

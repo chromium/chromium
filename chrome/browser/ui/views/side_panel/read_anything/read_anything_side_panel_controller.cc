@@ -54,9 +54,10 @@ ReadAnythingSidePanelController::ReadAnythingSidePanelController(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything)));
 
   auto side_panel_entry = std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kReadAnything,
+      SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything),
       base::BindRepeating(&ReadAnythingSidePanelController::CreateContainerView,
-                          base::Unretained(this)));
+                          base::Unretained(this)),
+      SidePanelEntry::kSidePanelDefaultContentWidth);
   side_panel_entry->AddObserver(this);
   side_panel_registry_->Register(std::move(side_panel_entry));
 

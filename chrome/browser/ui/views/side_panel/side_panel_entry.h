@@ -41,19 +41,20 @@ class SidePanelEntry final : public ui::PropertyHandler {
   // If adding a callback to provide a URL to the 'Open in New Tab' button, you
   // must also add a relevant entry in actions.xml because a user action is
   // logged on button click.
-  SidePanelEntry(
-      Id id,
-      CreateContentCallback create_content_callback,
-      std::optional<base::RepeatingCallback<GURL()>>
-          open_in_new_tab_url_callback = std::nullopt,
-      std::optional<base::RepeatingCallback<std::unique_ptr<ui::MenuModel>()>>
-          more_info_callback = std::nullopt,
-      int default_content_width = kSidePanelDefaultContentWidth);
-  // Constructor used for extensions. Extensions don't have 'Open in New Tab'
-  // functionality.
   SidePanelEntry(Key key,
                  CreateContentCallback create_content_callback,
-                 int default_content_width = kSidePanelDefaultContentWidth);
+                 base::RepeatingCallback<GURL()> open_in_new_tab_url_callback,
+                 base::RepeatingCallback<std::unique_ptr<ui::MenuModel>()>
+                     more_info_callback,
+                 int default_content_width);
+
+  // This constructor is primarily used for extensions.Extensions don't have
+  // `Open in New Tab` functionality. Other side panels can use this if nothing
+  // custom is needed (we call the other constructor passing
+  // base::NullCallback()).
+  SidePanelEntry(Key key,
+                 CreateContentCallback create_content_callback,
+                 int default_content_width);
   SidePanelEntry(const SidePanelEntry&) = delete;
   SidePanelEntry& operator=(const SidePanelEntry&) = delete;
   ~SidePanelEntry() override;

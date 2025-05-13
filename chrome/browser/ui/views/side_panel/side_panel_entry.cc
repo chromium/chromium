@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
@@ -13,39 +14,33 @@
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kShouldShowTitleInSidePanelHeaderKey, true)
 
 SidePanelEntry::SidePanelEntry(
-    Id id,
+    Key key,
     CreateContentCallback create_content_callback,
-    std::optional<base::RepeatingCallback<GURL()>> open_in_new_tab_url_callback,
-    std::optional<base::RepeatingCallback<std::unique_ptr<ui::MenuModel>()>>
+    base::RepeatingCallback<GURL()> open_in_new_tab_url_callback,
+    base::RepeatingCallback<std::unique_ptr<ui::MenuModel>()>
         more_info_callback,
     int default_content_width)
-    : key_(id),
+    : key_(key),
       create_content_callback_(std::move(create_content_callback)),
+      open_in_new_tab_url_callback_(std::move(open_in_new_tab_url_callback)),
+      more_info_callback_(std::move(more_info_callback)),
       default_content_width_(default_content_width) {
-  CHECK(!default_content_width_ ||
-        default_content_width_ >= kSidePanelDefaultContentWidth)
+  DCHECK(create_content_callback_);
+  CHECK(!default_content_width ||
+        default_content_width >= kSidePanelDefaultContentWidth)
       << "The default width must be greater than or equal to the default side "
          "panel width: "
       << kSidePanelDefaultContentWidth;
-  open_in_new_tab_url_callback_ =
-      open_in_new_tab_url_callback.value_or(base::NullCallbackAs<GURL()>());
-  more_info_callback_ = more_info_callback.value_or(
-      base::NullCallbackAs<std::unique_ptr<ui::MenuModel>()>());
 }
 
 SidePanelEntry::SidePanelEntry(Key key,
                                CreateContentCallback create_content_callback,
                                int default_content_width)
-    : key_(key),
-      create_content_callback_(std::move(create_content_callback)),
-      default_content_width_(default_content_width) {
-  CHECK(!default_content_width_ ||
-        default_content_width_ >= kSidePanelDefaultContentWidth)
-      << "The default width must be greater than or equal to the default side "
-         "panel width: "
-      << kSidePanelDefaultContentWidth;
-  DCHECK(create_content_callback_);
-}
+    : SidePanelEntry(key,
+                     std::move(create_content_callback),
+                     base::NullCallback(),
+                     base::NullCallback(),
+                     default_content_width) {}
 
 SidePanelEntry::~SidePanelEntry() = default;
 

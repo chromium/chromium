@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -76,7 +77,8 @@ std::unique_ptr<SidePanelEntry> CreateEntry(const SidePanelEntry::Key& key) {
   return std::make_unique<SidePanelEntry>(
       key, base::BindRepeating([](SidePanelEntryScope&) {
         return std::make_unique<views::View>();
-      }));
+      }),
+      SidePanelEntry::kSidePanelDefaultContentWidth);
 }
 
 }  // namespace
@@ -97,10 +99,11 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
                          ->GetTabFeatures()
                          ->side_panel_registry();
     registry->Register(std::make_unique<SidePanelEntry>(
-        SidePanelEntry::Id::kShoppingInsights,
+        SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights),
         base::BindRepeating([](SidePanelEntryScope&) {
           return std::make_unique<views::View>();
-        })));
+        }),
+        SidePanelEntry::kSidePanelDefaultContentWidth));
     contextual_registries_.push_back(registry);
 
     // Add some entries to the second tab.
@@ -110,10 +113,11 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
                    ->GetTabFeatures()
                    ->side_panel_registry();
     registry->Register(std::make_unique<SidePanelEntry>(
-        SidePanelEntry::Id::kLens,
+        SidePanelEntry::Key(SidePanelEntry::Id::kLens),
         base::BindRepeating([](SidePanelEntryScope&) {
           return std::make_unique<views::View>();
-        })));
+        }),
+        SidePanelEntry::kSidePanelDefaultContentWidth));
     contextual_registries_.push_back(browser()
                                          ->GetActiveTabInterface()
                                          ->GetTabFeatures()
@@ -122,19 +126,22 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
     // Add a kLensOverlayResults entry to the contextual registry for the second
     // tab.
     registry->Register(std::make_unique<SidePanelEntry>(
-        SidePanelEntry::Id::kLensOverlayResults,
+        SidePanelEntry::Key(SidePanelEntry::Id::kLensOverlayResults),
         base::BindRepeating([](SidePanelEntryScope&) {
           return std::make_unique<views::View>();
         }),
-        std::nullopt, base::BindRepeating([]() {
+        /*open_in_new_tab_url_callback=*/base::NullCallback(),
+        base::BindRepeating([]() {
           return std::unique_ptr<ui::MenuModel>(
               new ui::SimpleMenuModel(nullptr));
-        })));
+        }),
+        SidePanelEntry::kSidePanelDefaultContentWidth));
     registry->Register(std::make_unique<SidePanelEntry>(
-        SidePanelEntry::Id::kShoppingInsights,
+        SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights),
         base::BindRepeating([](SidePanelEntryScope&) {
           return std::make_unique<views::View>();
-        })));
+        }),
+        SidePanelEntry::kSidePanelDefaultContentWidth));
 
     coordinator()->SetNoDelaysForTesting(true);
   }
@@ -144,10 +151,11 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
         browser()->tab_strip_model()->GetWebContentsAt(0);
     auto* const registry = SidePanelRegistry::GetDeprecated(web_contents);
     registry->Register(std::make_unique<SidePanelEntry>(
-        SidePanelEntry::Id::kAboutThisSite,
+        SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite),
         base::BindRepeating([](SidePanelEntryScope&) {
           return std::make_unique<views::View>();
-        })));
+        }),
+        SidePanelEntry::kSidePanelDefaultContentWidth));
     contextual_registries_.push_back(registry);
   }
 
@@ -1522,10 +1530,10 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   auto observer =
       std::make_unique<TestSidePanelObserver>(contextual_registries_[0]);
   auto entry = std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kAboutThisSite,
-      base::BindRepeating([](SidePanelEntryScope&) {
-        return std::make_unique<views::View>();
-      }));
+      SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite),
+      base::BindRepeating(
+          [](SidePanelEntryScope&) { return std::make_unique<views::View>(); }),
+      SidePanelEntry::kSidePanelDefaultContentWidth);
   entry->AddObserver(observer.get());
   contextual_registries_[0]->Register(std::move(entry));
   coordinator()->Show(SidePanelEntry::Id::kAboutThisSite);
@@ -1553,10 +1561,10 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   auto observer =
       std::make_unique<TestSidePanelObserver>(contextual_registries_[0]);
   auto entry = std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kAboutThisSite,
-      base::BindRepeating([](SidePanelEntryScope&) {
-        return std::make_unique<views::View>();
-      }));
+      SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite),
+      base::BindRepeating(
+          [](SidePanelEntryScope&) { return std::make_unique<views::View>(); }),
+      SidePanelEntry::kSidePanelDefaultContentWidth);
   entry->AddObserver(observer.get());
   contextual_registries_[0]->Register(std::move(entry));
   coordinator()->Show(SidePanelEntry::Id::kAboutThisSite);
@@ -1582,12 +1590,14 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
 
   int count = 0;
   global_registry()->Register(std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kLens, base::BindRepeating(
-                                     [](int* count, SidePanelEntryScope&) {
-                                       (*count)++;
-                                       return std::make_unique<views::View>();
-                                     },
-                                     &count)));
+      SidePanelEntry::Key(SidePanelEntry::Id::kLens),
+      base::BindRepeating(
+          [](int* count, SidePanelEntryScope&) {
+            (*count)++;
+            return std::make_unique<views::View>();
+          },
+          &count),
+      SidePanelEntry::kSidePanelDefaultContentWidth));
   coordinator()->Show(SidePanelEntry::Id::kLens);
   ASSERT_EQ(1, count);
   coordinator()->Show(SidePanelEntry::Id::kLens);
@@ -1952,38 +1962,41 @@ class SidePanelCoordinatorLoadingContentTest : public SidePanelCoordinatorTest {
     // Add a kShoppingInsights entry to the global registry with loading content
     // not available.
     std::unique_ptr<SidePanelEntry> entry1 = std::make_unique<SidePanelEntry>(
-        SidePanelEntry::Id::kShoppingInsights,
+        SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights),
         base::BindRepeating([](SidePanelEntryScope&) {
           auto view = std::make_unique<views::View>();
           SidePanelUtil::GetSidePanelContentProxy(view.get())
               ->SetAvailable(false);
           return view;
-        }));
+        }),
+        SidePanelEntry::kSidePanelDefaultContentWidth);
     loading_content_entry1_ = entry1.get();
     EXPECT_TRUE(global_registry()->Register(std::move(entry1)));
 
     // Add a kLens entry to the global registry with loading content not
     // available.
     std::unique_ptr<SidePanelEntry> entry2 = std::make_unique<SidePanelEntry>(
-        SidePanelEntry::Id::kLens,
+        SidePanelEntry::Key(SidePanelEntry::Id::kLens),
         base::BindRepeating([](SidePanelEntryScope&) {
           auto view = std::make_unique<views::View>();
           SidePanelUtil::GetSidePanelContentProxy(view.get())
               ->SetAvailable(false);
           return view;
-        }));
+        }),
+        SidePanelEntry::kSidePanelDefaultContentWidth);
     loading_content_entry2_ = entry2.get();
     EXPECT_TRUE(global_registry()->Register(std::move(entry2)));
 
     // Add a kAboutThisSite entry to the global registry with content available.
     std::unique_ptr<SidePanelEntry> entry3 = std::make_unique<SidePanelEntry>(
-        SidePanelEntry::Id::kAboutThisSite,
+        SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite),
         base::BindRepeating([](SidePanelEntryScope&) {
           auto view = std::make_unique<views::View>();
           SidePanelUtil::GetSidePanelContentProxy(view.get())
               ->SetAvailable(true);
           return view;
-        }));
+        }),
+        SidePanelEntry::kSidePanelDefaultContentWidth);
     loaded_content_entry1_ = entry3.get();
     EXPECT_TRUE(global_registry()->Register(std::move(entry3)));
   }

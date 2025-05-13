@@ -28,10 +28,11 @@ ReadingListSidePanelCoordinator::~ReadingListSidePanelCoordinator() = default;
 void ReadingListSidePanelCoordinator::CreateAndRegisterEntry(
     SidePanelRegistry* global_registry) {
   global_registry->Register(std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kReadingList,
+      SidePanelEntry::Key(SidePanelEntry::Id::kReadingList),
       base::BindRepeating(
           &ReadingListSidePanelCoordinator::CreateReadingListWebView,
-          base::Unretained(this))));
+          base::Unretained(this)),
+      SidePanelEntry::kSidePanelDefaultContentWidth));
 }
 
 std::unique_ptr<views::View>

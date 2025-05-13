@@ -36,10 +36,11 @@ BookmarksSidePanelCoordinator::BookmarksSidePanelCoordinator() = default;
 void BookmarksSidePanelCoordinator::CreateAndRegisterEntry(
     SidePanelRegistry* global_registry) {
   global_registry->Register(std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kBookmarks,
+      SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
       base::BindRepeating(
           &BookmarksSidePanelCoordinator::CreateBookmarksWebView,
-          base::Unretained(this))));
+          base::Unretained(this)),
+      SidePanelEntry::kSidePanelDefaultContentWidth));
 }
 
 std::unique_ptr<views::View>

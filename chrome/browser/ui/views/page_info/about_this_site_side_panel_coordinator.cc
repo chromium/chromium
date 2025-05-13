@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/page_info/about_this_site_side_panel_coordinator.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -81,13 +82,15 @@ void AboutThisSideSidePanelCoordinator::RegisterEntry(
   if (!registry->GetEntryForKey(
           SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite))) {
     auto entry = std::make_unique<SidePanelEntry>(
-        SidePanelEntry::Id::kAboutThisSite,
+        SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite),
         base::BindRepeating(
             &AboutThisSideSidePanelCoordinator::CreateAboutThisSiteWebView,
             base::Unretained(this)),
         base::BindRepeating(
             &AboutThisSideSidePanelCoordinator::GetOpenInNewTabUrl,
-            base::Unretained(this)));
+            base::Unretained(this)),
+        /*more_info_callback=*/base::NullCallback(),
+        SidePanelEntry::kSidePanelDefaultContentWidth);
     registry->Register(std::move(entry));
   }
 }

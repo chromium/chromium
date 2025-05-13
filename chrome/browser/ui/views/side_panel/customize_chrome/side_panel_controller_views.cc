@@ -141,10 +141,11 @@ void SidePanelControllerViews::CreateAndRegisterEntry() {
   }
 
   auto entry = std::make_unique<SidePanelEntry>(
-      kSidePanelEntryId,
+      SidePanelEntry::Key(kSidePanelEntryId),
       base::BindRepeating(
           &SidePanelControllerViews::CreateCustomizeChromeWebView,
-          base::Unretained(this)));
+          base::Unretained(this)),
+      SidePanelEntry::kSidePanelDefaultContentWidth);
   entry->AddObserver(this);
   registry->Register(std::move(entry));
 }

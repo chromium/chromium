@@ -82,14 +82,15 @@ class SidePanelWebUIViewTest : public InProcessBrowserTest {
   // browser.
   void RegisterBrowserSidePanelEntry() {
     auto entry = std::make_unique<SidePanelEntry>(
-        kTestGlobalEntryId,
+        SidePanelEntry::Key(kTestGlobalEntryId),
         base::BindRepeating(
             [](Profile* profile,
                SidePanelEntryScope& scope) -> std::unique_ptr<views::View> {
               return std::make_unique<TestSidePanelWebUIView>(
                   scope, std::make_unique<TestWebUIContentsWrapper>(profile));
             },
-            browser()->profile()));
+            browser()->profile()),
+        SidePanelEntry::kSidePanelDefaultContentWidth);
 
     GetSidePanelCoordinator()->GetWindowRegistry()->Register(std::move(entry));
   }
@@ -98,14 +99,15 @@ class SidePanelWebUIViewTest : public InProcessBrowserTest {
   // tab.
   void RegisterTabSidePanelEntry() {
     auto entry = std::make_unique<SidePanelEntry>(
-        kTestTabEntryId,
+        SidePanelEntry::Key(kTestTabEntryId),
         base::BindRepeating(
             [](Profile* profile,
                SidePanelEntryScope& scope) -> std::unique_ptr<views::View> {
               return std::make_unique<TestSidePanelWebUIView>(
                   scope, std::make_unique<TestWebUIContentsWrapper>(profile));
             },
-            browser()->profile()));
+            browser()->profile()),
+        SidePanelEntry::kSidePanelDefaultContentWidth);
     browser()
         ->tab_strip_model()
         ->GetActiveTab()

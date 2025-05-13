@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -63,13 +64,15 @@ bool HistoryClustersSidePanelCoordinator::IsSupported(Profile* profile) {
 void HistoryClustersSidePanelCoordinator::CreateAndRegisterEntry(
     SidePanelRegistry* global_registry) {
   global_registry->Register(std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kHistoryClusters,
+      SidePanelEntry::Key(SidePanelEntry::Id::kHistoryClusters),
       base::BindRepeating(
           &HistoryClustersSidePanelCoordinator::CreateHistoryClustersWebView,
           base::Unretained(this)),
       base::BindRepeating(
           &HistoryClustersSidePanelCoordinator::GetOpenInNewTabURL,
-          base::Unretained(this))));
+          base::Unretained(this)),
+      /*more_info_callback=*/base::NullCallback(),
+      SidePanelEntry::kSidePanelDefaultContentWidth));
 }
 
 std::unique_ptr<views::View>

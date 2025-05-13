@@ -51,9 +51,10 @@ bool HistorySidePanelCoordinator::IsSupported() {
 void HistorySidePanelCoordinator::CreateAndRegisterEntry(
     SidePanelRegistry* global_registry) {
   global_registry->Register(std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kHistory,
+      SidePanelEntry::Key(SidePanelEntry::Id::kHistory),
       base::BindRepeating(&HistorySidePanelCoordinator::CreateHistoryWebView,
-                          base::Unretained(this))));
+                          base::Unretained(this)),
+      SidePanelEntry::kSidePanelDefaultContentWidth));
 }
 
 std::unique_ptr<views::View> HistorySidePanelCoordinator::CreateHistoryWebView(

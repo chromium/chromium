@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/page_info/merchant_trust_side_panel_coordinator.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/page_info/merchant_trust_service_factory.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/profiles/profile.h"
@@ -77,13 +78,15 @@ void MerchantTrustSidePanelCoordinator::RegisterEntry(
   if (!registry->GetEntryForKey(
           SidePanelEntry::Key(SidePanelEntry::Id::kMerchantTrust))) {
     auto entry = std::make_unique<SidePanelEntry>(
-        SidePanelEntry::Id::kMerchantTrust,
+        SidePanelEntry::Key(SidePanelEntry::Id::kMerchantTrust),
         base::BindRepeating(
             &MerchantTrustSidePanelCoordinator::CreateMerchantTrustWebView,
             base::Unretained(this)),
         base::BindRepeating(
             &MerchantTrustSidePanelCoordinator::GetOpenInNewTabUrl,
-            base::Unretained(this)));
+            base::Unretained(this)),
+        /*more_info_callback=*/base::NullCallback(),
+        SidePanelEntry::kSidePanelDefaultContentWidth);
     registry->Register(std::move(entry));
   }
 }

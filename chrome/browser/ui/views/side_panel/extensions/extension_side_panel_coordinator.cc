@@ -198,7 +198,8 @@ void ExtensionSidePanelCoordinator::CreateAndRegisterEntry() {
   registry_->Register(std::make_unique<SidePanelEntry>(
       GetEntryKey(),
       base::BindRepeating(&ExtensionSidePanelCoordinator::CreateView,
-                          base::Unretained(this))));
+                          base::Unretained(this)),
+      SidePanelEntry::kSidePanelDefaultContentWidth));
 }
 
 std::unique_ptr<views::View> ExtensionSidePanelCoordinator::CreateView(
