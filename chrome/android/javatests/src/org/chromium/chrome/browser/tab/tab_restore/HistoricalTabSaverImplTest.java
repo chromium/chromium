@@ -21,7 +21,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -120,7 +119,6 @@ public class HistoricalTabSaverImplTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/416777174")
     public void testCreateHistoricalTab_Frozen_HistoricalTabCreated() {
         final Tab tab =
                 sActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_1), /* incognito= */ false);
@@ -434,6 +432,8 @@ public class HistoricalTabSaverImplTest {
     @Test
     @MediumTest
     public void testArchivedTabsAreExcluded() {
+        final Tab newTab = sActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ false);
+
         ArchivedTabModelOrchestrator archivedTabModelOrchestrator =
                 runOnUiThreadBlocking(
                         () ->
@@ -456,7 +456,7 @@ public class HistoricalTabSaverImplTest {
                                     mTabModelSelector
                                             .getTabGroupModelFilterProvider()
                                             .getTabGroupModelFilter(false),
-                                    Arrays.asList(mTabModel.getTabAt(0)));
+                                    Arrays.asList(newTab));
                 });
         List<List<HistoricalEntry>> empty = new ArrayList<List<HistoricalEntry>>();
         assertEntriesAre(empty);
