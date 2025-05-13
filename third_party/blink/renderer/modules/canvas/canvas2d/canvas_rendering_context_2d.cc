@@ -708,18 +708,18 @@ void CanvasRenderingContext2D::DrawElementInternal(
     std::optional<double> dheight,
     ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
+
+  HTMLCanvasElement* canvas_element = HostAsHTMLCanvasElement();
+  DCHECK(canvas_element);
+  canvas_element->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kCanvasDrawElement);
+
   if (!IsDrawElementEligible(element, exception_state)) {
     return;
   }
 
-  HTMLCanvasElement* canvas_element = HostAsHTMLCanvasElement();
-  DCHECK(canvas_element);
-
   // TODO(crbug.com/380277045): Taint for cross-origin and PII content.
   // SetOriginTaintedByContent();
-
-  canvas_element->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kCanvasDrawElement);
 
   PaintRecordBuilder builder;
   LayoutBox* layout_box = element->GetLayoutBox();

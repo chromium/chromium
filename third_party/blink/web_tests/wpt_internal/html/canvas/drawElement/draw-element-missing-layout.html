@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<title>Canvas.drawElement: Throw on lack of layout</title>
+<link rel="help" href="https://github.com/WICG/html-in-canvas">
+<link rel="author" href="mailto:schenney@chromium.org">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+#child {
+  width: 100px;
+  height: 100px;
+  background: #01ff02;
+}
+</style>
+
+<canvas id=canvas width="200" height="200">
+  <div id=child></div>
+</canvas>
+
+<script>
+  promise_test(async t => {
+    let ctx = canvas.getContext('2d');
+    ctx.fillStyle = 'rgb(3, 4, 5)';
+    ctx.fillRect(0, 0, 200, 200);
+    try {
+      ctx.drawElement(child, 20, 30);
+      assert_unreached('Should throw TypeError exception');
+    } catch (e) {
+      assert_true(e instanceof TypeError, 'Exception should be a TypeError');
+    }
+  }, 'canvas drawElement throws when the element is not laid out');
+</script>
