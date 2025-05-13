@@ -238,8 +238,8 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
   // Note: windows in the overview belong to different containers. For instance,
   // normal windows belong to a desk container, floated windows to a float
   // container, and always-on-top windows to their respective container.
-  window_tree_synchronizer_ = std::make_unique<WindowTreeSynchronizer>(
-      window_->GetRootWindow(), /*restore_tree=*/true);
+  window_tree_synchronizer_ =
+      std::make_unique<WindowTreeSynchronizer>(/*restore_tree=*/true);
 }
 
 ScopedOverviewTransformWindow::~ScopedOverviewTransformWindow() {
@@ -257,6 +257,7 @@ ScopedOverviewTransformWindow::~ScopedOverviewTransformWindow() {
     transient_windows_info_map_.erase(transient);
   }
 
+  RestoreWindowTree();
   UpdateRoundedCorners(/*show=*/false);
   aura::client::GetTransientWindowClient()->RemoveObserver(this);
 }
@@ -330,7 +331,7 @@ void ScopedOverviewTransformWindow::RestoreWindow(bool reset_transform,
     SetClipping(gfx::Rect(original_clip_rect_.size()));
   }
 
-  window_tree_synchronizer_->Restore();
+  RestoreWindowTree();
 }
 
 void ScopedOverviewTransformWindow::BeginScopedAnimation(
@@ -591,7 +592,7 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
   //   ensuring that all four corners of the WindowMiniView appear rounded.
   //   See b/325635179.
   window_tree_synchronizer()->SynchronizeRoundedCorners(
-      window(), rounded_contents_bounds,
+      window(), window()->GetRootWindow(), rounded_contents_bounds,
       /*ignore_predicate=*/base::BindRepeating([](aura::Window* window) {
         return window->GetProperty(kHideInOverviewKey) ||
                window->GetProperty(kExcludeFromTransientTreeTransformKey);
@@ -639,24 +640,6 @@ void ScopedOverviewTransformWindow::OnWindowPropertyChanged(
     aura::Window* window,
     const void* key,
     intptr_t old) {
-  if (window == window_ && key == chromeos::kWindowStateTypeKey) {
-    const auto old_window_state = static_cast<chromeos::WindowStateType>(old);
-
-    // During the restore process, the synchronizer attempts to restore the
-    // rounded corners of the window's layer tree to the state it was in just
-    // before entering overview.
-    // However, this is not always be desirable. For instance, if an overview
-    // item is dragged into a snapped state, the synchronizer may hold an
-    // outdated original state. While the original state was for a
-    // rounded window, the window is now square in the snapped state.
-    if (chromeos::ShouldWindowHaveRoundedCorners(window) !=
-        chromeos::ShouldWindowStateHaveRoundedCorners(old_window_state)) {
-      window_tree_synchronizer_->ResetCachedLayerInfo();
-    }
-
-    return;
-  }
-
   if (key != kHideInOverviewKey)
     return;
 
@@ -698,8 +681,7 @@ void ScopedOverviewTransformWindow::OnWindowDestroying(aura::Window* window) {
 
 void ScopedOverviewTransformWindow::OnDragStarted() {
   window_tree_synchronizer_during_drag_ =
-      std::make_unique<WindowTreeSynchronizer>(window_->GetRootWindow(),
-                                               /*restore_tree=*/true);
+      std::make_unique<WindowTreeSynchronizer>(/*restore_tree=*/true);
 }
 
 void ScopedOverviewTransformWindow::OnDragEnded() {
@@ -733,6 +715,17 @@ void ScopedOverviewTransformWindow::AddHiddenTransientWindows(
       hidden_transient_children_->AddWindow(window);
     }
   }
+}
+
+void ScopedOverviewTransformWindow::RestoreWindowTree() {
+  // In some instances, a drag is stated but never ended. Therefore restore the
+  // window tree to pre-drag state before restoring it to the original state.
+  // (See b:416789348)
+  if (window_tree_synchronizer_during_drag_) {
+    window_tree_synchronizer_during_drag_->Restore();
+  }
+
+  window_tree_synchronizer_->Restore();
 }
 
 }  // namespace ash

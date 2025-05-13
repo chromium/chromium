@@ -85,13 +85,13 @@ TEST_P(UpdatingLayerTreeSynchronizerTest, OverlappingCorners) {
   child_layer->SetRoundedCornerRadius(child_layer_radii());
   child_layer->SetIsFastRoundedCorner(true);
 
-  auto layer_tree_synchronizer = std::make_unique<LayerTreeSynchronizer>(
-      root.get(), /*restore_tree=*/false);
+  auto layer_tree_synchronizer =
+      std::make_unique<LayerTreeSynchronizer>(/*restore_tree=*/false);
 
   ASSERT_EQ(child_layer->rounded_corner_radii(), child_layer_radii());
 
   layer_tree_synchronizer->SynchronizeRoundedCorners(
-      root.get(),
+      root.get(), /*root_layer=*/root.get(),
       gfx::RRectF(gfx::RectF(root_layer_bounds()), root_layer_radii()));
 
   // Root layer bounds and radii should be unaffected.
@@ -272,9 +272,10 @@ TEST_P(LayerTreeSynchronizerTest, UpdatingLayerTree) {
   layer_3->SetIsFastRoundedCorner(true);
 
   auto layer_tree_synchronizer =
-      std::make_unique<LayerTreeSynchronizer>(root.get(), restore_layer_tree());
+      std::make_unique<LayerTreeSynchronizer>(restore_layer_tree());
   layer_tree_synchronizer->SynchronizeRoundedCorners(
-      root.get(), gfx::RRectF(gfx::RectF(kRootBounds), kRootLayerRadii));
+      root.get(), /*root_layer=*/root.get(),
+      gfx::RRectF(gfx::RectF(kRootBounds), kRootLayerRadii));
 
   EXPECT_EQ(root->rounded_corner_radii(), kRootLayerRadii);
   constexpr gfx::RoundedCornersF kUpdatedLayer1Radii =
@@ -332,14 +333,14 @@ TEST_F(WindowTreeSynchronizerTest, Basics) {
   transient_window_1->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(5));
   transient_window_2->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF());
 
-  auto window_tree_synchronizer =
-      std::make_unique<WindowTreeSynchronizer>(root.get(),
-                                               /*restore_tree=*/true);
+  auto window_tree_synchronizer = std::make_unique<WindowTreeSynchronizer>(
+      /*restore_tree=*/true);
 
   gfx::RRectF reference_bounds(gfx::RectF(0, 0, 1000, 500),
                                gfx::RoundedCornersF(10));
   window_tree_synchronizer->SynchronizeRoundedCorners(
-      transient_parent.get(), reference_bounds, base::NullCallback());
+      transient_parent.get(), /*root_window=*/root.get(), reference_bounds,
+      base::NullCallback());
 
   // All the windows rooted at `transient_parent`(including transient windows)
   // should be synchronized again `reference_bounds`.
@@ -355,7 +356,8 @@ TEST_F(WindowTreeSynchronizerTest, Basics) {
   gfx::RRectF updated_reference_bounds(gfx::RectF(0, 0, 1000, 500),
                                        gfx::RoundedCornersF(15));
   window_tree_synchronizer->SynchronizeRoundedCorners(
-      transient_parent.get(), updated_reference_bounds, base::NullCallback());
+      transient_parent.get(), /*root_window=*/root.get(),
+      updated_reference_bounds, base::NullCallback());
 
   // All the windows rooted at `transient_parent` should now have new rounded
   // corners based on `updated_reference_bounds`.

@@ -84,7 +84,7 @@ WindowCycleItemView::WindowCycleItemView(aura::Window* window)
   layer()->SetFillsBoundsOpaquely(false);
 
   layer_tree_synchronizer_ =
-      std::make_unique<LayerTreeSynchronizer>(layer(), /*restore_tree=*/false);
+      std::make_unique<LayerTreeSynchronizer>(/*restore_tree=*/false);
 }
 
 WindowCycleItemView::~WindowCycleItemView() = default;
@@ -153,7 +153,7 @@ void WindowCycleItemView::Layout(PassKey) {
   // surfaces would be necessary. However, by matching (synchronizing) the
   // radii, the need for render surfaces is eliminated.
   layer_tree_synchronizer_->SynchronizeRoundedCorners(
-      layer(),
+      layer(), /*root_layer=*/layer(),
       gfx::RRectF(gfx::RectF(preview_max_bounds),
                   window_util::GetMiniWindowRoundedCorners(
                       source_window(), /*include_header_rounding=*/false)));
