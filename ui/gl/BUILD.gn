@@ -259,6 +259,7 @@ component("gl") {
       "gl_fence_win.h",
       "hdr_metadata_helper_win.cc",
       "hdr_metadata_helper_win.h",
+      "os_compositor_tree_base.h",
       "swap_chain_presenter.cc",
       "swap_chain_presenter.h",
       "vsync_provider_win.cc",
@@ -532,6 +533,7 @@ test("gl_unittests") {
       "delegated_ink_point_renderer_gpu_unittest.cc",
       "gl_fence_win_unittest.cc",
       "hdr_metadata_helper_win_unittest.cc",
+      "os_compositor_tree_base_unittest.cc",
     ]
   }
 
