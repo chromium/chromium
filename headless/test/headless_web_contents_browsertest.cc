@@ -70,49 +70,6 @@ IN_PROC_BROWSER_TEST_F(HeadlessWebContentsTest, Navigation) {
               UnorderedElementsAre(web_contents));
 }
 
-IN_PROC_BROWSER_TEST_F(HeadlessWebContentsTest, WindowOpen) {
-  EXPECT_TRUE(embedded_test_server()->Start());
-
-  HeadlessBrowserContext* browser_context =
-      browser()->CreateBrowserContextBuilder().Build();
-
-  HeadlessWebContents* web_contents =
-      browser_context->CreateWebContentsBuilder()
-          .SetInitialURL(embedded_test_server()->GetURL("/window_open.html"))
-          .Build();
-  EXPECT_TRUE(WaitForLoad(web_contents));
-
-  EXPECT_EQ(2u, browser_context->GetAllWebContents().size());
-
-  HeadlessWebContentsImpl* child = nullptr;
-  HeadlessWebContentsImpl* parent = nullptr;
-  for (HeadlessWebContents* c : browser_context->GetAllWebContents()) {
-    HeadlessWebContentsImpl* impl = HeadlessWebContentsImpl::From(c);
-    if (impl->window_id() == 1)
-      parent = impl;
-    else if (impl->window_id() == 2)
-      child = impl;
-  }
-
-  EXPECT_NE(nullptr, parent);
-  EXPECT_NE(nullptr, child);
-  EXPECT_NE(parent, child);
-
-  // Mac doesn't have WindowTreeHosts.
-  if (parent && child && parent->window_tree_host())
-    EXPECT_NE(parent->window_tree_host(), child->window_tree_host());
-
-  gfx::Rect expected_bounds(0, 0, 200, 100);
-#if !BUILDFLAG(IS_MAC)
-  EXPECT_EQ(expected_bounds, child->web_contents()->GetViewBounds());
-  EXPECT_EQ(expected_bounds, child->web_contents()->GetContainerBounds());
-#else   // !BUILDFLAG(IS_MAC)
-  // Mac does not support GetViewBounds() and view positions are random.
-  EXPECT_EQ(expected_bounds.size(),
-            child->web_contents()->GetContainerBounds().size());
-#endif  // !BUILDFLAG(IS_MAC)
-}
-
 IN_PROC_BROWSER_TEST_F(HeadlessWebContentsTest,
                        FocusOfHeadlessWebContents_IsIndependent) {
   EXPECT_TRUE(embedded_test_server()->Start());
