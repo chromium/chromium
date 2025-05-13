@@ -62,7 +62,9 @@
       "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA",   // Beta DriveLock Smart Card Middleware
       // http://b/297940831
       "D95D50CDFE6F14769DA2D1E59DF853BFA56BFC3C",   // Net iD for Chrome OS
-      "5C825E850034490380BCB756D43ABB2CF537AA91"    // b/359290130
+      "5C825E850034490380BCB756D43ABB2CF537AA91",   // https://crbug.com/359290130
+      // https://crbug.com/383855830
+      "1FC31C9D42DF1B51EA7648F73DF26400322999A8"    // IDmelon Accesskey
     ]
   }, {
     // Explicitly allowlist extensions that should always be available
