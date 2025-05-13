@@ -19,7 +19,7 @@ promise_test(async t => {
     if (done) {
       break;
     }
-    result = value;
+    result += value;
   }
   assert_greater_than(result.length, 0);
 }, 'Summarizer.summarizeStreaming() returns ReadableStream with a non-empty text.');
