@@ -25,9 +25,11 @@ import androidx.test.espresso.Espresso;
 import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.Facility;
+import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
@@ -39,9 +41,13 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.List;
 
-/** Dialog that appears when a new tab group is created to name the group and pick a color. */
-// TODO(crbug.com/374366760): Change to generic Facility<HostStationT>.
-public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
+/**
+ * Dialog that appears when a new tab group is created to name the group and pick a color.
+ *
+ * @param <HostStationT> the type of station this is scoped to.
+ */
+public class NewTabGroupDialogFacility<HostStationT extends Station<ChromeTabbedActivity>>
+        extends Facility<HostStationT> {
     private final List<Integer> mTabIdsToGroup;
     private final String mTitle;
     private final @Nullable @TabGroupColorId Integer mSelectedColor;
@@ -132,7 +138,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
     }
 
     /** Input a new tab group name. */
-    public NewTabGroupDialogFacility inputName(String newTabGroupName) {
+    public NewTabGroupDialogFacility<HostStationT> inputName(String newTabGroupName) {
         // An empty name causes warning text to show up which could push the color picker container
         // out of view for small screen devices, so dismiss the keyboard.
         if (newTabGroupName.isEmpty()) {
@@ -141,16 +147,16 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
 
         return mHostStation.swapFacilitySync(
                 this,
-                new NewTabGroupDialogFacility(
+                new NewTabGroupDialogFacility<>(
                         mTabIdsToGroup, newTabGroupName, mSelectedColor, mSoftKeyboard),
                 titleInputElement.getPerformTrigger(replaceText(newTabGroupName)));
     }
 
     /** Select a color. */
-    public NewTabGroupDialogFacility pickColor(@TabGroupColorId int newColor) {
+    public NewTabGroupDialogFacility<HostStationT> pickColor(@TabGroupColorId int newColor) {
         return mHostStation.swapFacilitySync(
                 this,
-                new NewTabGroupDialogFacility(mTabIdsToGroup, mTitle, newColor, mSoftKeyboard),
+                new NewTabGroupDialogFacility<>(mTabIdsToGroup, mTitle, newColor, mSoftKeyboard),
                 colorElements[newColor].getClickTrigger());
     }
 
@@ -160,7 +166,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
 
         // The reason we can pass an expected card index is because the tab group has already been
         // created.
-        TabModel currentModel = mHostStation.tabModelSelectorElement.get().getCurrentModel();
+        TabModel currentModel = mHostStation.getActivity().getCurrentTabModel();
         int expectedCardIndex = TabBinningUtil.getBinIndex(currentModel, mTabIdsToGroup);
         return mHostStation.swapFacilitySync(
                 this,
@@ -169,12 +175,12 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
     }
 
     /** Press "Done" to confirm the tab group name and color, but no-op from an invalid title. */
-    public NewTabGroupDialogFacility pressDoneWithInvalidTitle() {
+    public NewTabGroupDialogFacility<HostStationT> pressDoneWithInvalidTitle() {
         ensureSoftKeyboardClosed();
 
         return mHostStation.swapFacilitySync(
                 this,
-                new NewTabGroupDialogFacility(
+                new NewTabGroupDialogFacility<>(
                         mTabIdsToGroup, mTitle, mSelectedColor, mSoftKeyboard),
                 Transition.possiblyAlreadyFulfilledOption(),
                 doneButtonElement.getClickTrigger());
@@ -186,7 +192,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
 
         // The reason we can pass an expected card index is because the tab group has already been
         // created.
-        TabModel currentModel = mHostStation.tabModelSelectorElement.get().getCurrentModel();
+        TabModel currentModel = mHostStation.getActivity().getCurrentTabModel();
         int expectedCardIndex = TabBinningUtil.getBinIndex(currentModel, mTabIdsToGroup);
         return mHostStation.swapFacilitySync(
                 this,

@@ -10,6 +10,7 @@ import android.util.Pair;
 
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ScrollableFacility;
+import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.R;
@@ -25,21 +26,24 @@ import java.util.List;
  *
  * <p>Differs significantly from the app menu normally shown; the options are operations to change
  * the tab selection or to do something with the selected tabs.
+ *
+ * @param <HostStationT> the type of host {@link Station} this is scoped to.
  */
-public class TabListEditorAppMenu extends CtaAppMenuFacility<TabSwitcherStation> {
+public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
+        extends CtaAppMenuFacility<HostStationT> {
 
-    private final TabSwitcherListEditorFacility mListEditor;
+    private final TabSwitcherListEditorFacility<HostStationT> mListEditor;
     private Item<Void> mCloseMenuItem;
-    private Item<NewTabGroupDialogFacility> mGroupWithDialogMenuItem;
-    private Item<Pair<TabSwitcherGroupCardFacility, UndoSnackbarFacility>>
+    private Item<NewTabGroupDialogFacility<HostStationT>> mGroupWithDialogMenuItem;
+    private Item<Pair<TabSwitcherGroupCardFacility, UndoSnackbarFacility<HostStationT>>>
             mGroupWithoutDialogMenuItem;
 
-    public TabListEditorAppMenu(TabSwitcherListEditorFacility listEditor) {
+    public TabListEditorAppMenu(TabSwitcherListEditorFacility<HostStationT> listEditor) {
         mListEditor = listEditor;
     }
 
     @Override
-    protected void declareItems(ScrollableFacility<TabSwitcherStation>.ItemsBuilder items) {
+    protected void declareItems(ScrollableFacility<HostStationT>.ItemsBuilder items) {
         String tabOrTabs = mListEditor.getNumTabsSelected() > 1 ? "tabs" : "tab";
 
         // "Select all" usually, or "Deselect all" if all tabs are selected.
@@ -79,16 +83,16 @@ public class TabListEditorAppMenu extends CtaAppMenuFacility<TabSwitcherStation>
      *
      * @return the "New tab group" dialog as a Facility.
      */
-    public NewTabGroupDialogFacility groupTabs() {
+    public NewTabGroupDialogFacility<HostStationT> groupTabs() {
         return mGroupWithDialogMenuItem.scrollToAndSelect();
     }
 
     /** Factory for the result of {@link #groupTabs()}. */
-    private NewTabGroupDialogFacility doGroupTabs(
-            ItemOnScreenFacility<NewTabGroupDialogFacility> itemOnScreen) {
+    private NewTabGroupDialogFacility<HostStationT> doGroupTabs(
+            ItemOnScreenFacility<NewTabGroupDialogFacility<HostStationT>> itemOnScreen) {
         SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
-        NewTabGroupDialogFacility dialog =
-                new NewTabGroupDialogFacility(mListEditor.getAllTabIdsSelected(), softKeyboard);
+        NewTabGroupDialogFacility<HostStationT> dialog =
+                new NewTabGroupDialogFacility<>(mListEditor.getAllTabIdsSelected(), softKeyboard);
         mHostStation.swapFacilitiesSync(
                 List.of(this, mListEditor, itemOnScreen),
                 List.of(dialog, softKeyboard),
@@ -104,21 +108,27 @@ public class TabListEditorAppMenu extends CtaAppMenuFacility<TabSwitcherStation>
      *
      * @return the new group card and the undo snackbar expected to be shown.
      */
-    public Pair<TabSwitcherGroupCardFacility, UndoSnackbarFacility> groupTabsWithoutDialog() {
+    public Pair<TabSwitcherGroupCardFacility, UndoSnackbarFacility<HostStationT>>
+            groupTabsWithoutDialog() {
         assert mListEditor.isAnyGroupSelected();
         return mGroupWithoutDialogMenuItem.scrollToAndSelect();
     }
 
     /** Factory for the result of {@link #groupTabsWithoutDialog()}. */
-    private Pair<TabSwitcherGroupCardFacility, UndoSnackbarFacility> doGroupTabsWithoutDialog(
-            ItemOnScreenFacility<Pair<TabSwitcherGroupCardFacility, UndoSnackbarFacility>>
-                    itemOnScreen) {
+    private Pair<TabSwitcherGroupCardFacility, UndoSnackbarFacility<HostStationT>>
+            doGroupTabsWithoutDialog(
+                    ItemOnScreenFacility<
+                                    Pair<
+                                            TabSwitcherGroupCardFacility,
+                                            UndoSnackbarFacility<HostStationT>>>
+                            itemOnScreen) {
         List<Integer> tabIdsSelected = mListEditor.getAllTabIdsSelected();
         String title = TabGroupUtil.getNumberOfTabsString(tabIdsSelected.size());
         String snackbarMessage =
                 TabGroupUtil.getUndoGroupTabsSnackbarMessageString(tabIdsSelected.size());
         var card = new TabSwitcherGroupCardFacility(/* cardIndex= */ null, tabIdsSelected, title);
-        var undoSnackbar = new UndoSnackbarFacility(snackbarMessage);
+        UndoSnackbarFacility<HostStationT> undoSnackbar =
+                new UndoSnackbarFacility<>(snackbarMessage);
         mHostStation.swapFacilitiesSync(
                 List.of(this, mListEditor, itemOnScreen),
                 List.of(card, undoSnackbar),

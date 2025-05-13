@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Espresso;
 
 import org.chromium.base.test.transit.Facility;
+import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.base.test.util.ViewActionOnDescendant;
@@ -26,9 +27,14 @@ import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-/** The 3-dot menu "Select Tabs" UI for the {@link TabSwitcherStation} panes. */
+/**
+ * The 3-dot menu "Select Tabs" UI for the {@link TabSwitcherStation} panes.
+ *
+ * @param <HostStationT> the type of host {@link Station} this is scoped to.
+ */
 // TODO(crbug/324919909): Migrate TabListEditorTestingRobot to here.
-public class TabSwitcherListEditorFacility extends Facility<TabSwitcherStation> {
+public class TabSwitcherListEditorFacility<HostStationT extends TabSwitcherStation>
+        extends Facility<HostStationT> {
     private final List<Integer> mTabIdsSelected;
     private final List<List<Integer>> mTabGroupsSelected;
     public final ViewElement<RecyclerView> tabListRecyclerViewElement;
@@ -83,12 +89,12 @@ public class TabSwitcherListEditorFacility extends Facility<TabSwitcherStation> 
     }
 
     /** Add a tab in the grid to the selection. */
-    public TabSwitcherListEditorFacility addTabToSelection(int index, int tabId) {
+    public TabSwitcherListEditorFacility<HostStationT> addTabToSelection(int index, int tabId) {
         List<Integer> newTabIdsSelected = new ArrayList<>(mTabIdsSelected);
         newTabIdsSelected.add(tabId);
         return mHostStation.swapFacilitySync(
                 this,
-                new TabSwitcherListEditorFacility(newTabIdsSelected, mTabGroupsSelected),
+                new TabSwitcherListEditorFacility<>(newTabIdsSelected, mTabGroupsSelected),
                 () ->
                         ViewActionOnDescendant.performOnRecyclerViewNthItem(
                                 tabListRecyclerViewElement.getViewSpec().getViewMatcher(),
@@ -97,12 +103,13 @@ public class TabSwitcherListEditorFacility extends Facility<TabSwitcherStation> 
     }
 
     /** Add a tab group in the grid to the selection. */
-    public TabSwitcherListEditorFacility addTabGroupToSelection(int index, List<Integer> tabIds) {
+    public TabSwitcherListEditorFacility<HostStationT> addTabGroupToSelection(
+            int index, List<Integer> tabIds) {
         List<List<Integer>> newTabGroupsSelected = new ArrayList<>(mTabGroupsSelected);
         newTabGroupsSelected.add(tabIds);
         return mHostStation.swapFacilitySync(
                 this,
-                new TabSwitcherListEditorFacility(mTabIdsSelected, newTabGroupsSelected),
+                new TabSwitcherListEditorFacility<>(mTabIdsSelected, newTabGroupsSelected),
                 () ->
                         ViewActionOnDescendant.performOnRecyclerViewNthItem(
                                 tabListRecyclerViewElement.getViewSpec().getViewMatcher(),
@@ -111,9 +118,9 @@ public class TabSwitcherListEditorFacility extends Facility<TabSwitcherStation> 
     }
 
     /** Open the app menu, which looks different while selecting tabs. */
-    public TabListEditorAppMenu openAppMenuWithEditor() {
+    public TabListEditorAppMenu<HostStationT> openAppMenuWithEditor() {
         return mHostStation.enterFacilitySync(
-                new TabListEditorAppMenu(this), mHostStation.menuButtonElement.getClickTrigger());
+                new TabListEditorAppMenu<>(this), mHostStation.menuButtonElement.getClickTrigger());
     }
 
     /**

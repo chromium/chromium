@@ -109,7 +109,8 @@ public abstract class TabSwitcherStation extends HubBaseStation {
         recheckActiveConditions();
 
         return enterFacilitySync(
-                new TabSwitcherAppMenuFacility(mIsIncognito), menuButtonElement.getClickTrigger());
+                new TabSwitcherAppMenuFacility<>(mIsIncognito),
+                menuButtonElement.getClickTrigger());
     }
 
     /**

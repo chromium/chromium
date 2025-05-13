@@ -102,8 +102,8 @@ public class TabSwitcherListEditorPTTest {
         TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
         editor = editor.addTabToSelection(0, firstTabId);
 
-        NewTabGroupDialogFacility dialog = editor.openAppMenuWithEditor()
-                .groupTabs();
+        NewTabGroupDialogFacility<RegularTabSwitcherStation> dialog =
+                editor.openAppMenuWithEditor().groupTabs();
         dialog = dialog.inputName("test_tab_group_name");
         dialog = dialog.pickColor(TabGroupColorId.RED);
         dialog.pressDone();
@@ -121,7 +121,8 @@ public class TabSwitcherListEditorPTTest {
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
         int secondTabId = secondPage.loadedTabElement.get().getId();
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
-        TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
+        TabSwitcherListEditorFacility<RegularTabSwitcherStation> editor =
+                tabSwitcher.openAppMenu().clickSelectTabs();
         editor = editor.addTabToSelection(0, firstTabId);
         editor = editor.addTabToSelection(1, secondTabId);
 
@@ -145,11 +146,12 @@ public class TabSwitcherListEditorPTTest {
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
         int secondTabId = secondPage.loadedTabElement.get().getId();
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
-        TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
+        TabSwitcherListEditorFacility<RegularTabSwitcherStation> editor =
+                tabSwitcher.openAppMenu().clickSelectTabs();
         editor = editor.addTabToSelection(0, firstTabId);
         editor = editor.addTabToSelection(1, secondTabId);
 
-        NewTabGroupDialogFacility dialog =
+        NewTabGroupDialogFacility<RegularTabSwitcherStation> dialog =
                 editor.openAppMenuWithEditor().groupTabs();
         dialog = dialog.inputName("test_tab_group_name");
         dialog = dialog.pickColor(TabGroupColorId.RED);
@@ -246,10 +248,12 @@ public class TabSwitcherListEditorPTTest {
         RegularTabSwitcherStation tabSwitcher = thirdPage.openRegularTabSwitcher();
 
         // Group first and second tabs
-        TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
+        TabSwitcherListEditorFacility<RegularTabSwitcherStation> editor =
+                tabSwitcher.openAppMenu().clickSelectTabs();
         editor = editor.addTabToSelection(0, firstTabId);
         editor = editor.addTabToSelection(1, secondTabId);
-        NewTabGroupDialogFacility dialog = editor.openAppMenuWithEditor().groupTabs();
+        NewTabGroupDialogFacility<RegularTabSwitcherStation> dialog =
+                editor.openAppMenuWithEditor().groupTabs();
         dialog.pressDone();
         TabBinningUtil.assertBinsEqual(tabModel, group(secondTabId, firstTabId), thirdTabId);
 
@@ -261,7 +265,7 @@ public class TabSwitcherListEditorPTTest {
         TabBinningUtil.assertBinsEqual(tabModel, group(secondTabId, firstTabId, thirdTabId));
 
         // Ungroup and revert to only first and second tabs grouped, and third tab by itself
-        UndoSnackbarFacility undoSnackbar = groupMergedResult.second;
+        UndoSnackbarFacility<RegularTabSwitcherStation> undoSnackbar = groupMergedResult.second;
         undoSnackbar.pressUndo();
         tabSwitcher.expectGroupCard(
                 List.of(firstTabId, secondTabId),
