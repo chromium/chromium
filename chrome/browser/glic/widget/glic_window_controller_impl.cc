@@ -1116,6 +1116,11 @@ void GlicWindowControllerImpl::HandleWindowDragWithOffset(
         views::Widget::MoveLoopEscapeBehavior::kDontHide);
     in_move_loop_ = false;
     scoped_glic_button_indicator_.reset();
+
+    // Only handle positioning if glic wasn't closed during the drag.
+    if (state_ == State::kClosed) {
+      return;
+    }
     // Dragging stops animations. This makes sure we honor the last resize
     // request.
     glic_window_animator_->MaybeAnimateToTargetSize();
