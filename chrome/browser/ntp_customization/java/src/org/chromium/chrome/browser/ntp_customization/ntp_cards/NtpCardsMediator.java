@@ -40,8 +40,10 @@ public class NtpCardsMediator {
         mBottomSheetPropertyModel = bottomSheetPropertyModel;
 
         mContainerPropertyModel.set(LIST_CONTAINER_VIEW_DELEGATE, createListDelegate());
+        // Hides the back button when the NTP Cards bottom sheet is displayed standalone.
         mBottomSheetPropertyModel.set(
-                BACK_PRESS_HANDLER, v -> delegate.backPressOnCurrentBottomSheet());
+                BACK_PRESS_HANDLER,
+                delegate.shouldShowAlone() ? null : v -> delegate.backPressOnCurrentBottomSheet());
     }
 
     /** Returns {@link ListContainerViewDelegate} that defines the content of each list item. */

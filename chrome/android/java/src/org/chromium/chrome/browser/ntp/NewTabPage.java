@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegateHost;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -1382,7 +1383,16 @@ public class NewTabPage
 
     @Override
     public void customizeSettings() {
-        HomeModulesConfigManager.getInstance().onMenuClick(mContext);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION)) {
+            new NtpCustomizationCoordinator(
+                            mContext,
+                            mBottomSheetController,
+                            mTab::getProfile,
+                            NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS)
+                    .showBottomSheet();
+        } else {
+            HomeModulesConfigManager.getInstance().onMenuClick(mContext);
+        }
     }
 
     @Override

@@ -45,6 +45,7 @@ public class NtpCustomizationCoordinator {
 
     private final Context mContext;
     private final Supplier<Profile> mProfileSupplier;
+    private final int mBottomSheetType;
     private NtpCustomizationMediator mMediator;
     private @MonotonicNonNull NtpCardsCoordinator mNtpCardsCoordinator;
     private @Nullable FeedSettingsCoordinator mFeedSettingsCoordinator;
@@ -67,12 +68,24 @@ public class NtpCustomizationCoordinator {
         int NUM_ENTRIES = 2;
     }
 
+    /**
+     * @param context The Context used for displaying the bottom sheet.
+     * @param bottomSheetController A controller for managing the bottom sheet's lifecycle and
+     *     behavior.
+     * @param profileSupplier A supplier for the profile, used to fetch the state of the feeds
+     *     section.
+     * @param bottomSheetType The bottom sheet type to display independently. If set to `MAIN`, the
+     *     main bottom sheet will be shown instead, enabling its full navigation flow, otherwise the
+     *     bottom sheet of the bottomSheetType will show by itself.
+     */
     public NtpCustomizationCoordinator(
             Context context,
             BottomSheetController bottomSheetController,
-            Supplier<Profile> profileSupplier) {
+            Supplier<Profile> profileSupplier,
+            @BottomSheetType int bottomSheetType) {
         mContext = context;
         mProfileSupplier = profileSupplier;
+        mBottomSheetType = bottomSheetType;
         View contentView =
                 LayoutInflater.from(mContext)
                         .inflate(R.layout.ntp_customization_bottom_sheet, /* root= */ null);
@@ -83,21 +96,21 @@ public class NtpCustomizationCoordinator {
         // unexpectedly triggering the click listeners of its child list items.
         mViewFlipperView.setOnClickListener(v -> {});
 
-        NtpCustomizationBottomSheetContent bottomSheetContent =
-                new NtpCustomizationBottomSheetContent(
-                        contentView,
-                        /* backPressRunnable= */ () -> mMediator.backPressOnCurrentBottomSheet(),
-                        this::destroy,
-                        () -> mMediator.getCurrentBottomSheetType());
+        NtpCustomizationBottomSheetContent bottomSheetContent = initBottomSheetContent(contentView);
 
         // The containerPropertyModel is responsible for managing a BottomSheetDelegate which
         // provides list content and event handlers to a list container view in the bottom sheet.
-        View mainBottomSheetView = mViewFlipperView.findViewById(R.id.main_bottom_sheet);
-        PropertyModel containerPropertyModel = new PropertyModel(LIST_CONTAINER_KEYS);
-        PropertyModelChangeProcessor.create(
-                containerPropertyModel,
-                mainBottomSheetView.findViewById(R.id.ntp_customization_options_container),
-                BottomSheetListContainerViewBinder::bind);
+        PropertyModel containerPropertyModel = null;
+        // Skips creating property model for the main bottom sheet if only one bottom sheet
+        // should show.
+        if (mBottomSheetType == MAIN) {
+            View mainBottomSheetView = mViewFlipperView.findViewById(R.id.main_bottom_sheet);
+            containerPropertyModel = new PropertyModel(LIST_CONTAINER_KEYS);
+            PropertyModelChangeProcessor.create(
+                    containerPropertyModel,
+                    mainBottomSheetView.findViewById(R.id.ntp_customization_options_container),
+                    BottomSheetListContainerViewBinder::bind);
+        }
 
         // The viewFlipperPropertyModel is responsible for controlling which bottom sheet layout to
         // display.
@@ -118,16 +131,57 @@ public class NtpCustomizationCoordinator {
 
         mDelegate = createBottomSheetDelegate();
 
-        // The click listener for each list item in the main bottom sheet should be registered
-        // before calling renderListContent().
-        mMediator.registerClickListener(NTP_CARDS, getOptionClickListener(NTP_CARDS));
-        mMediator.registerClickListener(FEED, getOptionClickListener(FEED));
-        mMediator.renderListContent();
+        // Skips creating main bottom sheet content if only one bottom sheet should show.
+        if (mBottomSheetType == MAIN) {
+            // The click listener for each list item in the main bottom sheet should be registered
+            // before calling renderListContent().
+            mMediator.registerClickListener(NTP_CARDS, getOptionClickListener(NTP_CARDS));
+            mMediator.registerClickListener(FEED, getOptionClickListener(FEED));
+            mMediator.renderListContent();
+        }
     }
 
-    /** Opens the NTP customization main bottom sheet. */
+    @VisibleForTesting
+    NtpCustomizationBottomSheetContent initBottomSheetContent(View contentView) {
+        return new NtpCustomizationBottomSheetContent(
+                contentView,
+                mBottomSheetType == MAIN
+                        ? () -> mMediator.backPressOnCurrentBottomSheet()
+                        : () -> mMediator.dismissBottomSheet(),
+                this::destroy,
+                () -> mMediator.getCurrentBottomSheetType());
+    }
+
+    /**
+     * Opens the NTP customization bottom sheet. Depending on the value of `mStandAlonePage`, the
+     * function will either show a specific bottom sheet independently or show the main bottom sheet
+     * and enable a full navigation flow that begins from the main bottom sheet.
+     */
     public void showBottomSheet() {
-        mMediator.showBottomSheet(MAIN);
+        switch (mBottomSheetType) {
+            case MAIN -> mMediator.showBottomSheet(MAIN);
+            case NTP_CARDS -> showNtpCardsBottomSheet();
+            case FEED -> showFeedBottomSheet();
+            default -> {
+                assert false : "Bottom sheet type not supported!";
+            }
+        }
+    }
+
+    private void showNtpCardsBottomSheet() {
+        if (mNtpCardsCoordinator == null) {
+            mNtpCardsCoordinator = new NtpCardsCoordinator(mContext, mDelegate);
+        }
+        mMediator.showBottomSheet(NTP_CARDS);
+    }
+
+    private void showFeedBottomSheet() {
+        if (mFeedSettingsCoordinator == null) {
+            mFeedSettingsCoordinator =
+                    new FeedSettingsCoordinator(
+                            mContext, mDelegate, mProfileSupplier.get().getOriginalProfile());
+        }
+        mMediator.showBottomSheet(FEED);
     }
 
     /**
@@ -137,27 +191,16 @@ public class NtpCustomizationCoordinator {
     @VisibleForTesting
     View.OnClickListener getOptionClickListener(@BottomSheetType int type) {
         switch (type) {
-            case NTP_CARDS:
-                return v -> {
-                    if (mNtpCardsCoordinator == null) {
-                        mNtpCardsCoordinator = new NtpCardsCoordinator(mContext, mDelegate);
-                    }
-                    mMediator.showBottomSheet(NTP_CARDS);
-                };
-            case FEED:
-                return v -> {
-                    if (mFeedSettingsCoordinator == null) {
-                        mFeedSettingsCoordinator =
-                                new FeedSettingsCoordinator(
-                                        mContext,
-                                        mDelegate,
-                                        mProfileSupplier.get().getOriginalProfile());
-                    }
-                    mMediator.showBottomSheet(FEED);
-                };
-            default:
+            case NTP_CARDS -> {
+                return v -> showNtpCardsBottomSheet();
+            }
+            case FEED -> {
+                return v -> showFeedBottomSheet();
+            }
+            default -> {
                 assert false : "Bottom sheet type not supported!";
                 return assumeNonNull(null);
+            }
         }
     }
 
@@ -176,6 +219,11 @@ public class NtpCustomizationCoordinator {
             @Override
             public void backPressOnCurrentBottomSheet() {
                 mMediator.backPressOnCurrentBottomSheet();
+            }
+
+            @Override
+            public boolean shouldShowAlone() {
+                return mBottomSheetType != MAIN;
             }
         };
     }

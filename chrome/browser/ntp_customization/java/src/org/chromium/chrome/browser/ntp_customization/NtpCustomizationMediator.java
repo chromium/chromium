@@ -55,8 +55,8 @@ public class NtpCustomizationMediator {
     private final BottomSheetObserver mBottomSheetObserver;
     private final PropertyModel mViewFlipperPropertyModel;
     private List<Integer> mListContent;
-    private final PropertyModel mContainerPropertyModel;
     private final Supplier<Profile> mProfileSupplier;
+    private final @Nullable PropertyModel mContainerPropertyModel;
     private @Nullable Profile mProfile;
     private @Nullable Integer mCurrentBottomSheet;
     private static @Nullable PrefService sPrefServiceForTest;
@@ -65,7 +65,7 @@ public class NtpCustomizationMediator {
             BottomSheetController bottomSheetController,
             NtpCustomizationBottomSheetContent bottomSheetContent,
             PropertyModel viewFlipperPropertyModel,
-            PropertyModel containerPropertyModel,
+            @Nullable PropertyModel containerPropertyModel,
             Supplier<Profile> profileSupplier) {
         mBottomSheetController = bottomSheetController;
         mBottomSheetContent = bottomSheetContent;
@@ -126,8 +126,7 @@ public class NtpCustomizationMediator {
         if (mCurrentBottomSheet == null) return;
 
         if (mCurrentBottomSheet == MAIN) {
-            mBottomSheetController.hideContent(mBottomSheetContent, true);
-            mCurrentBottomSheet = null;
+            dismissBottomSheet();
         } else {
             showBottomSheet(MAIN);
 
@@ -135,6 +134,12 @@ public class NtpCustomizationMediator {
             // sheet.
             updateFeedSectionSubtitle(getPrefService().getBoolean(Pref.ARTICLES_LIST_VISIBLE));
         }
+    }
+
+    /** Closes the entire bottom sheet view and returns to the New Tab Page. */
+    void dismissBottomSheet() {
+        mBottomSheetController.hideContent(mBottomSheetContent, true);
+        mCurrentBottomSheet = null;
     }
 
     /**
@@ -195,6 +200,7 @@ public class NtpCustomizationMediator {
 
     /** Renders the options list in the main bottom sheet. */
     void renderListContent() {
+        assumeNonNull(mContainerPropertyModel);
         mContainerPropertyModel.set(LIST_CONTAINER_VIEW_DELEGATE, createListDelegate());
     }
 
@@ -241,6 +247,7 @@ public class NtpCustomizationMediator {
      * @param isFeedVisible True when the feed is visible to the user.
      */
     void updateFeedSectionSubtitle(boolean isFeedVisible) {
+        assumeNonNull(mContainerPropertyModel);
         mContainerPropertyModel.set(
                 MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE,
                 isFeedVisible ? R.string.text_on : R.string.text_off);

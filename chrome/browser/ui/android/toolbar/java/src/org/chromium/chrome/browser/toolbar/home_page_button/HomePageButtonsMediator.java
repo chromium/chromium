@@ -93,7 +93,10 @@ public class HomePageButtonsMediator {
                 new HomePageButtonData(
                         /* onClickListener= */ view ->
                                 new NtpCustomizationCoordinator(
-                                                mContext, mBottomSheetController, mProfileSupplier)
+                                                mContext,
+                                                mBottomSheetController,
+                                                mProfileSupplier,
+                                                NtpCustomizationCoordinator.BottomSheetType.MAIN)
                                         .showBottomSheet(),
                         /* onLongClickListener= */ null);
         mModel.set(BUTTON_DATA, new Pair<>(1, mNtpCustomizationButtonData));

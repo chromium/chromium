@@ -7,7 +7,10 @@ package org.chromium.chrome.browser.ntp_customization.ntp_cards;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.AUXILIARY_SEARCH;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO;
@@ -24,7 +27,6 @@ import android.content.Context;
 import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -66,18 +68,12 @@ public class NtpCardsMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testConstructor() {
         verify(mContainerPropertyModel)
                 .set(eq(LIST_CONTAINER_VIEW_DELEGATE), any(ListContainerViewDelegate.class));
-        verify(mBottomSheetPropertyModel)
-                .set(eq(BACK_PRESS_HANDLER), mBackPressHandlerCaptor.capture());
-        mBackPressHandlerCaptor.getValue().onClick(new View(mContext));
-        verify(mDelegate).backPressOnCurrentBottomSheet();
     }
 
     @Test
-    @SmallTest
     public void testListContainerViewDelegate() {
         ListContainerViewDelegate delegate = mNtpCardsMediator.createListDelegate();
         HomeModulesConfigManager homeModulesConfigManager = HomeModulesConfigManager.getInstance();
@@ -106,7 +102,27 @@ public class NtpCardsMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
+    public void testBackPressHandler() {
+        // Verifies that when the feed settings bottom sheet should show alone, the back press
+        // handler should be set to null.
+        when(mDelegate.shouldShowAlone()).thenReturn(true);
+        new NtpCardsMediator(mContainerPropertyModel, mBottomSheetPropertyModel, mDelegate);
+        verify(mBottomSheetPropertyModel).set(BACK_PRESS_HANDLER, null);
+
+        // Verifies that when the feed settings bottom sheet is part of the navigation flow starting
+        // from the main bottom sheet, and the back press handler should be set to
+        // backPressOnCurrentBottomSheet()
+        View backButton = mock(View.class);
+        clearInvocations(mBottomSheetPropertyModel);
+        when(mDelegate.shouldShowAlone()).thenReturn(false);
+        new NtpCardsMediator(mContainerPropertyModel, mBottomSheetPropertyModel, mDelegate);
+        verify(mBottomSheetPropertyModel)
+                .set(eq(BACK_PRESS_HANDLER), mBackPressHandlerCaptor.capture());
+        mBackPressHandlerCaptor.getValue().onClick(backButton);
+        verify(mDelegate).backPressOnCurrentBottomSheet();
+    }
+
+    @Test
     public void testDestroy() {
         mNtpCardsMediator.destroy();
 

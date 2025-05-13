@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -107,11 +108,6 @@ public class FeedSettingsMediatorUnitTest {
         verify(mContainerPropertyModel)
                 .set(eq(LIST_CONTAINER_VIEW_DELEGATE), any(ListContainerViewDelegate.class));
 
-        verify(mBottomSheetPropertyModel)
-                .set(eq(BACK_PRESS_HANDLER), mBackPressHandlerCaptor.capture());
-        mBackPressHandlerCaptor.getValue().onClick(mView);
-        verify(mDelegate).backPressOnCurrentBottomSheet();
-
         verify(mFeedSettingsPropertyModel).set(eq(IS_FEED_LIST_ITEMS_TITLE_VISIBLE), anyBoolean());
         verify(mFeedSettingsPropertyModel)
                 .set(
@@ -120,6 +116,36 @@ public class FeedSettingsMediatorUnitTest {
         verify(mFeedSettingsPropertyModel).set(eq(IS_FEED_SWITCH_CHECKED), anyBoolean());
         verify(mFeedSettingsPropertyModel)
                 .set(eq(LEARN_MORE_BUTTON_CLICK_LISTENER), any(View.OnClickListener.class));
+    }
+
+    @Test
+    public void testBackPressHandler() {
+        // Verifies that when the feed settings bottom sheet should show alone, the back press
+        // handler should be set to null.
+        when(mDelegate.shouldShowAlone()).thenReturn(true);
+        new FeedSettingsMediator(
+                mContainerPropertyModel,
+                mBottomSheetPropertyModel,
+                mFeedSettingsPropertyModel,
+                mDelegate,
+                mProfile);
+        verify(mBottomSheetPropertyModel).set(BACK_PRESS_HANDLER, null);
+
+        // Verifies that when the feed settings bottom sheet is part of the navigation flow starting
+        // from the main bottom sheet, and the back press handler should be set to
+        // backPressOnCurrentBottomSheet()
+        clearInvocations(mBottomSheetPropertyModel);
+        when(mDelegate.shouldShowAlone()).thenReturn(false);
+        new FeedSettingsMediator(
+                mContainerPropertyModel,
+                mBottomSheetPropertyModel,
+                mFeedSettingsPropertyModel,
+                mDelegate,
+                mProfile);
+        verify(mBottomSheetPropertyModel)
+                .set(eq(BACK_PRESS_HANDLER), mBackPressHandlerCaptor.capture());
+        mBackPressHandlerCaptor.getValue().onClick(mView);
+        verify(mDelegate).backPressOnCurrentBottomSheet();
     }
 
     @Test

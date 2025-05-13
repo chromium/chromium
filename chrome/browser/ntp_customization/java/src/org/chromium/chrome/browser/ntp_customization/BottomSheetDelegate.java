@@ -25,4 +25,14 @@ public interface BottomSheetDelegate {
 
     /** Handles back button clicks in the bottom sheet. */
     void backPressOnCurrentBottomSheet();
+
+    /**
+     * Determines whether a bottom sheet should be displayed in a standalone mode, isolated from the
+     * navigation flow staring from the main bottom sheet.
+     *
+     * @return True if the bottom sheet should be shown by itself (i.e., without the main bottom
+     *     sheet); False if it should be part of the full navigation flow starting from the main
+     *     bottom sheet.
+     */
+    boolean shouldShowAlone();
 }

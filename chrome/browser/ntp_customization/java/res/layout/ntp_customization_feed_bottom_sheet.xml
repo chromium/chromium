@@ -23,21 +23,21 @@ found in the LICENSE file.
         android:src="@drawable/btn_back"
         app:tint="@macro/default_icon_color"
         android:contentDescription="@string/back"
-        app:layout_constraintTop_toTopOf="@id/feed_bottom_sheet_title"
-        app:layout_constraintBottom_toBottomOf="@id/feed_bottom_sheet_title"
+        app:layout_constraintTop_toTopOf="@id/bottom_sheet_title"
+        app:layout_constraintBottom_toBottomOf="@id/bottom_sheet_title"
         app:layout_constraintStart_toStartOf="parent" />
 
     <org.chromium.ui.widget.TextViewWithLeading
-        android:id="@+id/feed_bottom_sheet_title"
+        android:id="@+id/bottom_sheet_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="start"
         android:textAppearance="@style/TextAppearance.Headline.Primary"
         android:text="@string/ntp_customization_feed_settings_title"
-        android:layout_marginStart="@dimen/ntp_customization_feed_margin_top"
+        android:layout_marginStart="@dimen/ntp_customization_ntp_cards_title_margin"
         android:layout_marginTop="@dimen/ntp_customization_back_button_margin"
         android:layout_marginEnd="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
-        app:layout_constraintStart_toEndOf="@id/back_button"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="@id/learn_more_button" />
 
@@ -50,9 +50,9 @@ found in the LICENSE file.
         android:src="@drawable/ic_help_and_feedback"
         app:tint="@macro/default_icon_color"
         android:contentDescription="@string/learn_more"
-        app:layout_constraintTop_toTopOf="@id/feed_bottom_sheet_title"
-        app:layout_constraintBottom_toBottomOf="@id/feed_bottom_sheet_title"
-        app:layout_constraintStart_toEndOf="@id/feed_bottom_sheet_title"
+        app:layout_constraintTop_toTopOf="@id/bottom_sheet_title"
+        app:layout_constraintBottom_toBottomOf="@id/bottom_sheet_title"
+        app:layout_constraintStart_toEndOf="@id/bottom_sheet_title"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <LinearLayout
@@ -61,7 +61,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
         android:layout_marginHorizontal="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
-        app:layout_constraintTop_toBottomOf="@id/feed_bottom_sheet_title"
+        app:layout_constraintTop_toBottomOf="@id/bottom_sheet_title"
         app:layout_constraintStart_toStartOf="parent"
         android:background="@drawable/ntp_customization_bottom_sheet_list_item_background_single">
 

@@ -90,8 +90,14 @@ public class FeedSettingsMediator {
 
         mListItemsContent = buildFeedListContent();
         mContainerPropertyModel.set(LIST_CONTAINER_VIEW_DELEGATE, createListDelegate());
+
+        // Hides the back button when the feed settings bottom sheet is displayed standalone.
         mBottomSheetPropertyModel.set(
-                BACK_PRESS_HANDLER, v -> mBottomSheetDelegate.backPressOnCurrentBottomSheet());
+                BACK_PRESS_HANDLER,
+                delegate.shouldShowAlone()
+                        ? null
+                        : v -> mBottomSheetDelegate.backPressOnCurrentBottomSheet());
+
         if (mListItemsContent.isEmpty()) {
             mFeedSettingsPropertyModel.set(IS_FEED_LIST_ITEMS_TITLE_VISIBLE, false);
         }
