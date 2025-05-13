@@ -39,6 +39,19 @@ GlicMediaContext* GlicMediaContext::GetOrCreateFor(
   return media_context;
 }
 
+// static
+GlicMediaContext* GlicMediaContext::GetIfExistsFor(
+    content::WebContents* web_contents) {
+  if (!web_contents || !web_contents->GetPrimaryMainFrame()) {
+    return nullptr;
+  }
+
+  auto& page = web_contents->GetPrimaryMainFrame()->GetPage();
+
+  return static_cast<GlicMediaContext*>(
+      page.GetUserData(kGlicMediaContextName));
+}
+
 void GlicMediaContext::OnResult(const media::SpeechRecognitionResult& result) {
   if (!result.is_final) {
     most_recent_nonfinal_ = result.transcription;

@@ -18,11 +18,20 @@ class GlicMediaContextTest : public ChromeRenderViewHostTestHarness {};
 
 TEST_F(GlicMediaContextTest, GetWithNullReturnsNull) {
   EXPECT_EQ(GlicMediaContext::GetOrCreateFor(nullptr), nullptr);
+  EXPECT_EQ(GlicMediaContext::GetIfExistsFor(nullptr), nullptr);
 }
 
 TEST_F(GlicMediaContextTest, InitialContextIsEmpty) {
   auto* context = GlicMediaContext::GetOrCreateFor(web_contents());
   EXPECT_EQ(context->GetContext(), "");
+}
+
+TEST_F(GlicMediaContextTest, GetVariantsWork) {
+  EXPECT_EQ(GlicMediaContext::GetIfExistsFor(web_contents()), nullptr);
+  auto* context = GlicMediaContext::GetOrCreateFor(web_contents());
+  EXPECT_NE(context, nullptr);
+  EXPECT_EQ(GlicMediaContext::GetIfExistsFor(web_contents()), context);
+  EXPECT_EQ(GlicMediaContext::GetOrCreateFor(web_contents()), context);
 }
 
 TEST_F(GlicMediaContextTest, ContextContainsTranscript) {

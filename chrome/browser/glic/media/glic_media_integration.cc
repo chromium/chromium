@@ -89,9 +89,7 @@ void GlicMediaIntegrationImpl::AppendContext(
   context_root->mutable_content_attributes()->set_attribute_type(
       optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
 
-  // Get the most recently updated context.  Alternatively we could get the
-  // context for `web_contents`.
-  auto* context = static_cast<glic::GlicMediaContext*>(page_cache_.front());
+  auto* context = glic::GlicMediaContext::GetIfExistsFor(web_contents);
   std::string result;
   if (context != nullptr) {
     result = context->GetContext();

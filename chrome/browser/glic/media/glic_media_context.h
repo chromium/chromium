@@ -28,6 +28,11 @@ class GlicMediaContext : public base::SupportsUserData::Data,
   // `web_contents` is null or it has no page.
   static GlicMediaContext* GetOrCreateFor(content::WebContents* web_contents);
 
+  // Get, but do not create, the context for the current page of `web_contents`.
+  // Returns null if there isn't one, or if `web_contents` is null and/or has no
+  // current page.
+  static GlicMediaContext* GetIfExistsFor(content::WebContents* web_contents);
+
   explicit GlicMediaContext(content::Page* page);
   ~GlicMediaContext() override;
 
