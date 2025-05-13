@@ -225,6 +225,21 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
     return render_manager_.current_replication_state().origin;
   }
 
+  // Returns the origin of the last *successfully* committed page in this
+  // frame. This may be different from current_origin() if the current page is
+  // an error page.
+  // IMPORTANT: Use current_origin() instead, as all security-relevant decisions
+  // should be made using the current origin of the frame. The last successful
+  // origin is only relevant for specific abuse mitigations that require
+  // tracking the previous state of a frame before an error page navigation.
+  const url::Origin& last_successful_origin() const {
+    return last_successful_origin_;
+  }
+
+  void set_last_successful_origin(const url::Origin& origin) {
+    last_successful_origin_ = origin;
+  }
+
   // Returns the latest frame policy (sandbox flags and container policy) for
   // this frame. This includes flags inherited from parent frames and the latest
   // flags from the <iframe> element hosting this frame. The returned policies
@@ -948,6 +963,14 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // used to cancel the task.
   // See `CancelRestartingBackForwardCacheNavigation()`.
   base::CancelableTaskTracker restart_back_forward_cached_navigation_tracker_;
+
+  // The last successfully committed origin in this frame. Set in two scenarios:
+  // 1. By RenderFrameHostImpl::DidNavigate() when a navigation in this frame
+  //    succeeds.
+  // 2. By RenderFrameHostImpl::SetOriginDependentStateOfNewFrame() when a new
+  //    frame is first created, which will reflect the origin of the initial
+  //    about::blank document before any navigation has committed.
+  url::Origin last_successful_origin_;
 
   // Manages creation and swapping of RenderFrameHosts for this frame.
   //

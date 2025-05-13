@@ -2149,6 +2149,92 @@ IN_PROC_BROWSER_TEST_F(FrameTreeCredentiallessIframeBrowserTest,
                          "window.credentialless"));
 }
 
+class FrameTreeLastSuccessfulOriginBrowserTest : public FrameTreeBrowserTest {
+ public:
+  FrameTreeLastSuccessfulOriginBrowserTest() = default;
+};
+
+IN_PROC_BROWSER_TEST_F(FrameTreeLastSuccessfulOriginBrowserTest,
+                       SuccessfulNavigation) {
+  GURL main_url(embedded_test_server()->GetURL("a.test", "/hello.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  // After a successful navigation, the "last committed origin" and the
+  // "last successfully committed origin" should be the same.
+  EXPECT_FALSE(root->current_origin().opaque());
+  EXPECT_EQ(root->current_origin().GetTupleOrPrecursorTupleIfOpaque().host(),
+            "a.test");
+  EXPECT_EQ(root->last_successful_origin(), root->current_origin());
+}
+
+IN_PROC_BROWSER_TEST_F(FrameTreeLastSuccessfulOriginBrowserTest,
+                       FailedNavigationAfterSuccessfulNavigation) {
+  // First, perform a successful navigation, so that the root FrameTreeNode has
+  // a non-opaque `last_successful_origin()`.
+  GURL main_url(embedded_test_server()->GetURL("a.test", "/hello.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  EXPECT_EQ(root->last_successful_origin(), root->current_origin());
+  url::Origin initial_successful_origin = root->last_successful_origin();
+
+  // Now, navigate to a malformed URL to force an error page.
+  TestFrameNavigationObserver navigation_observer(root);
+  EXPECT_TRUE(ExecJs(root, R"(location.href = 'https://hello';)"));
+  navigation_observer.Wait();
+
+  EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
+  EXPECT_TRUE(root->current_frame_host()->IsErrorDocument());
+
+  // The new error document should have an opaque origin, but the frame's
+  // `last_successful_origin()` should remain the same as the initial origin
+  // from the first successful navigation.
+  EXPECT_TRUE(root->current_origin().opaque());
+  EXPECT_NE(root->last_successful_origin(), root->current_origin());
+  EXPECT_EQ(root->last_successful_origin(), initial_successful_origin);
+}
+
+IN_PROC_BROWSER_TEST_F(FrameTreeLastSuccessfulOriginBrowserTest,
+                       CorrectStateForNewMainFrame) {
+  // Don't navigate the root frame to anything. It should have an empty URL with
+  // an opaque origin.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  EXPECT_TRUE(root->current_frame_host()->GetLastCommittedURL().is_empty());
+  EXPECT_TRUE(root->current_origin().opaque());
+  EXPECT_EQ(root->last_successful_origin(), root->current_origin());
+}
+
+IN_PROC_BROWSER_TEST_F(FrameTreeLastSuccessfulOriginBrowserTest,
+                       CorrectStateForNewSubframe) {
+  GURL main_url(embedded_test_server()->GetURL("a.test", "/hello.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  EXPECT_TRUE(ExecJs(root,
+                     "let frame = document.createElement('iframe');"
+                     "document.body.appendChild(frame);"));
+  EXPECT_EQ(1U, root->child_count());
+  FrameTreeNode* new_frame = root->child_at(0);
+
+  // Our new subframe hasn't been navigated yet, so its current URL is
+  // about:blank. It has also inherited the origin of its creator, and the
+  // last successful origin should be the same.
+  EXPECT_EQ(new_frame->current_url(), url::kAboutBlankURL);
+  EXPECT_EQ(new_frame->current_origin().host(), "a.test");
+  EXPECT_EQ(new_frame->last_successful_origin(), new_frame->current_origin());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     ,
     FrameTreeBrowserWithDiscardTest,

@@ -4903,8 +4903,11 @@ void RenderFrameHostImpl::DidNavigate(
   // occurred.
   // TODO(creis): Remove this block and always set the URL.
   // See https://crbug.com/588314.
-  if (!navigation_request->DidEncounterError())
+  if (!navigation_request->DidEncounterError()) {
     last_successful_url_ = params.url;
+    navigation_request->frame_tree_node()->set_last_successful_origin(
+        GetLastCommittedOrigin());
+  }
 
   renderer_url_info_.last_document_url = GetLastDocumentURL(
       navigation_request, params, is_error_document_, renderer_url_info_);
@@ -5399,6 +5402,9 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
                     : false;
   SetLastCommittedOrigin(new_frame_origin,
                          is_potentially_trustworthy_unique_origin);
+  if (!creator_frame || !creator_frame->is_error_document_) {
+    frame_tree_node()->set_last_successful_origin(new_frame_origin);
+  }
 
   if (creator_frame) {
     // If we're given a parent/opener frame, copy the
