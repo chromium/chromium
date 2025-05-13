@@ -124,6 +124,9 @@ enum class TabGridOpeningMode {
 
 // TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
 // Shows the signin UI, presenting from `baseViewController`.
+// DISCLAIMER: If possible, prefer calling `[SigninCoordinator
+// signinCoordinatorWithCommand:browser:baseViewController]` instead.
+// Keep ownership of the `SigninCoordinator` and start it explicitly.
 - (void)showSignin:(ShowSigninCommand*)command
     baseViewController:(UIViewController*)baseViewController;
 
