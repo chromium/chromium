@@ -48,6 +48,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.DimenRes;
 import androidx.annotation.Dimension;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
@@ -621,16 +622,30 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         updateCustomActionButtonVisuals(button, drawable, description);
 
-        int buttonWidth = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+        int buttonWidth = getDimensionPx(R.dimen.toolbar_button_width);
         button.setLayoutParams(new ViewGroup.LayoutParams(buttonWidth, LayoutParams.MATCH_PARENT));
-        int paddingStart =
-                getResources().getDimensionPixelSize(R.dimen.custom_tabs_toolbar_button_spacer_16);
-        int paddingEnd =
-                getResources().getDimensionPixelSize(R.dimen.custom_tabs_toolbar_button_spacer_8);
+
+        // Set the padding to give 16dp spacing. |mCustomActionButtons| contains custom/optional
+        // buttons. Optional button, though not visible, is counted in #getChildCount() as ViewStub.
+        @Dimension int paddingStart;
+        @Dimension int paddingEnd;
+        if (mCustomActionButtons.getChildCount() < 2) {
+            // 16:act1:8 - 8:menu:16
+            paddingStart = getDimensionPx(R.dimen.custom_tabs_toolbar_button_spacer_16);
+            paddingEnd = getDimensionPx(R.dimen.custom_tabs_toolbar_button_spacer_8);
+        } else {
+            // 24:act2:0 - 16:act1:8 - 8:menu:16
+            paddingStart = getDimensionPx(R.dimen.custom_tabs_toolbar_button_spacer_24);
+            paddingEnd = 0;
+        }
         button.setPaddingRelative(paddingStart, /* top= */ 0, paddingEnd, /* bottom= */ 0);
 
         // Add the view at the beginning of the child list.
         mCustomActionButtons.addView(button, 0);
+    }
+
+    private @Dimension int getDimensionPx(@DimenRes int resId) {
+        return getResources().getDimensionPixelSize(resId);
     }
 
     @Override
@@ -1558,10 +1573,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             View firstButton = mCustomActionButtons.getChildAt(0);
             if (firstButton != optionalButton) {
                 // Give 24dp/0dp padding to the first button to have even 16dp spacing.
-                int paddingStart =
-                        getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.custom_tabs_toolbar_button_spacer_24);
+                // TODO(crbug.com/416458104): Sort out the padding if the # of buttons reaches 4.
+                int paddingStart = getDimensionPx(R.dimen.custom_tabs_toolbar_button_spacer_24);
                 firstButton.setPaddingRelative(
                         paddingStart, /* top= */ 0, /* end= */ 0, /* bottom= */ 0);
             }
