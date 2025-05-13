@@ -50,6 +50,8 @@ enum class ActionType {
   AIPrototype,
   SetTabReminder,
   ReaderMode,
+  // TODO(crbug.com/416002705): Rename reference to GLIC.
+  AskGLIC,
 };
 // LINT.ThenChange(overflow_menu_metrics.h:actionType)
 

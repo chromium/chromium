@@ -79,6 +79,8 @@ IOSOverflowMenuAction HistogramActionFromActionType(
       return IOSOverflowMenuAction::kSetTabReminder;
     case overflow_menu::ActionType::ReaderMode:
       return IOSOverflowMenuAction::kReaderMode;
+    case overflow_menu::ActionType::AskGLIC:
+      return IOSOverflowMenuAction::kAskGLIC;
   }
 }
 

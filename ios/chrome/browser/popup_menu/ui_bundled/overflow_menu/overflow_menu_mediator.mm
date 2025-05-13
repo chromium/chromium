@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/follow/model/follow_menu_updater.h"
 #import "ios/chrome/browser/follow/model/follow_tab_helper.h"
 #import "ios/chrome/browser/follow/model/follow_util.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
@@ -79,6 +80,7 @@
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/overflow_menu_customization_commands.h"
+#import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
@@ -249,6 +251,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 @property(nonatomic, strong) OverflowMenuAction* AIPrototypeAction;
 
 @property(nonatomic, strong) OverflowMenuAction* setTabReminderAction;
+
+@property(nonatomic, strong) OverflowMenuAction* askGLICAction;
 
 @end
 
@@ -699,6 +703,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     self.AIPrototypeAction = [self openAIPrototypeAction];
   }
 
+  if (IsPageActionMenuEnabled()) {
+    self.askGLICAction = [self openAskGLICAction];
+  }
+
   if (IsReaderModeAvailable()) {
     self.readerModeAction = [self toggleReaderModeAction];
   }
@@ -827,6 +835,22 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                                  handler:^{
                                    [weakSelf startAIPrototype];
                                  }];
+}
+
+- (OverflowMenuAction*)openAskGLICAction {
+  __weak __typeof(self) weakSelf = self;
+  // TODO(crbug.com/414777888): Change the icon.
+  return
+      [self createOverflowMenuActionWithName:@"Ask GLIC"
+                                  actionType:overflow_menu::ActionType::AskGLIC
+                                  symbolName:kMagicStackSymbol
+                                systemSymbol:YES
+                            monochromeSymbol:NO
+                             accessibilityID:kToolsMenuOpenAskGLIC
+                                hideItemText:nil
+                                     handler:^{
+                                       [weakSelf startAskGLIC];
+                                     }];
 }
 
 - (OverflowMenuAction*)newReadLaterAction {
@@ -2013,6 +2037,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     actions.push_back(overflow_menu::ActionType::AIPrototype);
   }
 
+  if (IsPageActionMenuEnabled()) {
+    actions.push_back(overflow_menu::ActionType::AskGLIC);
+  }
+
   if (IsReaderModeAvailable()) {
     actions.push_back(overflow_menu::ActionType::ReaderMode);
   }
@@ -2091,6 +2119,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                  : nil;
     case overflow_menu::ActionType::ReaderMode:
       return self.readerModeAction;
+    case overflow_menu::ActionType::AskGLIC:
+      return self.askGLICAction;
   }
 }
 
@@ -2135,6 +2165,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       return [self newSetTabReminderAction];
     case overflow_menu::ActionType::ReaderMode:
       return [self toggleReaderModeAction];
+    case overflow_menu::ActionType::AskGLIC:
+      return [self openAskGLICAction];
   }
 }
 
@@ -2353,6 +2385,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 - (void)startAIPrototype {
   [self dismissMenu];
   [self.applicationHandler openAIMenu];
+}
+
+// Starts ask GLIC.
+- (void)startAskGLIC {
+  [self dismissMenu];
+  [self.pageActionMenuHandler showPageActionMenu];
 }
 
 // Opens the "Set a reminder" screen for the user's current tab.

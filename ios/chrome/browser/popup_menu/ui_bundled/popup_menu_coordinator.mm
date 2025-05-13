@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/follow/model/follow_action_state.h"
 #import "ios/chrome/browser/follow/model/follow_browser_agent.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/feature_flags.h"
@@ -61,6 +62,7 @@
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/overflow_menu_customization_commands.h"
+#import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
@@ -295,6 +297,12 @@ using base::UserMetricsAction;
       mediator.applicationHandler =
           HandlerForProtocol(dispatcher, ApplicationCommands);
     }
+
+    if (IsPageActionMenuEnabled()) {
+      mediator.pageActionMenuHandler =
+          HandlerForProtocol(dispatcher, PageActionMenuCommands);
+    }
+
     mediator.browserCoordinatorHandler =
         HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
     mediator.findInPageHandler =

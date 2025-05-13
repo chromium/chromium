@@ -48,3 +48,4 @@ NSString* const kToolsMenuShareChromeId = @"kToolsMenuShareChromeId";
 NSString* const kToolsMenuWhatsNewId = @"kToolsMenuWhatsNewId";
 NSString* const kToolsMenuPriceNotifications = @"kToolsMenuPriceNotifications";
 NSString* const kToolsMenuEditActionsId = @"kToolsMenuEditActionsId";
+NSString* const kToolsMenuOpenAskGLIC = @"kToolsMenuOpenAskGLIC";

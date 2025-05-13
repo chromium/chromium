@@ -138,6 +138,9 @@ TEST_F(OverflowMenuConstantsTest, ActionTypeConversion) {
       case overflow_menu::ActionType::ReaderMode:
         finalExpectedActionType = overflow_menu::ActionType::ReaderMode;
         break;
+      case overflow_menu::ActionType::AskGLIC:
+        finalExpectedActionType = overflow_menu::ActionType::AskGLIC;
+        break;
     }
 
     // If there's no finalExpectedActionType, then the loop has looped through

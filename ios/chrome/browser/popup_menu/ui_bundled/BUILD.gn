@@ -47,6 +47,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/follow/model:enums",
     "//ios/chrome/browser/follow/model:tab_helper",
     "//ios/chrome/browser/follow/model:utils",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
     "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
     "//ios/chrome/browser/ntp/shared/metrics",
