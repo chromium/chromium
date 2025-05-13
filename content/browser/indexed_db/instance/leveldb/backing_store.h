@@ -582,8 +582,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
       std::vector<std::unique_ptr<blink::IndexedDBDatabaseMetadata>>* output)
       override;
 
-  Status AnyDatabaseContainsBlobs(bool* blobs_exist);
-
   // A helper function for V4 schema migration.
   // It iterates through all blob files.  It will add to the db entry both the
   // size and modified date for the blob based on the written file.  If any blob

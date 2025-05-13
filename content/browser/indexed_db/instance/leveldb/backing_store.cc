@@ -1231,56 +1231,6 @@ void BackingStore::InvalidateBlobReferences() {
   active_blob_registry()->ForceShutdown();
 }
 
-Status BackingStore::AnyDatabaseContainsBlobs(bool* blobs_exist) {
-  std::vector<std::u16string> names;
-  Status status = GetDatabaseNames(&names);
-  if (!status.ok()) {
-    return status;
-  }
-
-  *blobs_exist = false;
-  for (const std::u16string& name : names) {
-    DatabaseMetadata metadata(name);
-    status = ReadMetadataForDatabaseName(metadata);
-    if (!metadata.id) {
-      return Status::NotFound("Metadata not found for \"%s\".",
-                              base::UTF16ToUTF8(name));
-    }
-    for (const auto& store_id_metadata_pair : metadata.object_stores) {
-      leveldb::ReadOptions options;
-      // Since this is a scan, don't fill up the cache, as it's not likely these
-      // blocks will be reloaded.
-      options.fill_cache = false;
-      options.verify_checksums = true;
-      std::unique_ptr<TransactionalLevelDBIterator> iterator =
-          db_->CreateIterator(options);
-      std::string min_key = BlobEntryKey::EncodeMinKeyForObjectStore(
-          *metadata.id, store_id_metadata_pair.first);
-      std::string max_key = BlobEntryKey::EncodeStopKeyForObjectStore(
-          *metadata.id, store_id_metadata_pair.first);
-      status = iterator->Seek(std::string_view(min_key));
-      if (status.IsNotFound()) {
-        status = Status::OK();
-        continue;
-      }
-      if (!status.ok()) {
-        return status;
-      }
-      if (iterator->IsValid() &&
-          db_->leveldb_state()->comparator()->Compare(
-              leveldb_env::MakeSlice(iterator->Key()), max_key) < 0) {
-        *blobs_exist = true;
-        return Status::OK();
-      }
-    }
-
-    if (!status.ok()) {
-      return status;
-    }
-  }
-  return Status::OK();
-}
-
 Status BackingStore::UpgradeBlobEntriesToV4(
     LevelDBWriteBatch* write_batch,
     std::vector<base::FilePath>* empty_blobs_to_delete) {
