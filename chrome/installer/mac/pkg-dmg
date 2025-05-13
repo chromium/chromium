@@ -198,6 +198,8 @@ I<level> are:
      0 - Only error messages are displayed.
      1 - Print error messages and command invocations.
      2 - Print everything, including command output.
+     3 - Additionally, configure some external commands to be more verbose.
+     4 - Additionally, configure some external commands to be extremely verbose.
 
 The default I<level> is 2.
 
@@ -295,7 +297,8 @@ sub trapSignal($);
 sub usage();
 
 # Variables used as globals
-my(@gCleanup, %gConfig, $gDryRun, $gVerbosity);
+my(@gCleanup, %gConfig, $gDryRun, @gHdiutilVerbosityFlags, @gRmVerbosityFlags,
+ $gVerbosity);
 
 # Use the commands by name if they're expected to be in the user's
 # $PATH (/bin:/sbin:/usr/bin:/usr/sbin).  Otherwise, go by absolute
@@ -380,9 +383,19 @@ if(@ARGV) {
   exit(1);
 }
 
-if($gVerbosity<0 || $gVerbosity>2) {
+if($gVerbosity<0 || $gVerbosity>4) {
   usage();
   exit(1);
+}
+
+if ($gVerbosity == 3) {
+  @gHdiutilVerbosityFlags = ('-verbose');
+  @gRmVerbosityFlags = ('-v');
+}
+if ($gVerbosity == 4) {
+  # -debug automatically activates -verbose.
+  @gHdiutilVerbosityFlags = ('-debug');
+  @gRmVerbosityFlags = ('-v');
 }
 
 if(!defined($sourceFolder) || $sourceFolder eq '' ||
@@ -544,7 +557,8 @@ if(@resourceFiles) {
   # Only unflatten read-only and compressed images.  It's not supported
   # on other image times.
   if($unflattenable &&
-   (command($gConfig{'cmd_hdiutil'}, 'unflatten', $targetImage)) != 0) {
+   (command($gConfig{'cmd_hdiutil'}, 'unflatten', @gHdiutilVerbosityFlags,
+   $targetImage)) != 0) {
     cleanupDie('hdiutil unflatten failed');
   }
   # Don't push flatten onto the cleanup stack.  If we fail now, we'll be
@@ -559,7 +573,8 @@ if(@resourceFiles) {
   # Flatten.  This merges the resource fork into the data fork, so no
   # special encoding is needed to transfer the file.
   if($unflattenable &&
-   (command($gConfig{'cmd_hdiutil'}, 'flatten', $targetImage)) != 0) {
+   (command($gConfig{'cmd_hdiutil'}, 'flatten', @gHdiutilVerbosityFlags,
+   $targetImage)) != 0) {
     cleanupDie('hdiutil flatten failed');
   }
 }
@@ -569,13 +584,13 @@ if(@resourceFiles) {
 # pop-save, pop, push-save.
 splice(@gCleanup, -2, 1);
 # No need to remove licenseResource separately, it's in tempSubdir.
-if(command($gConfig{'cmd_rm'}, '-rf', $tempSubdir) != 0) {
+if(command($gConfig{'cmd_rm'}, @gRmVerbosityFlags, '-rf', $tempSubdir) != 0) {
   cleanupDie('rm -rf tempSubdir failed');
 }
 
 if($idme) {
-  if(command($gConfig{'cmd_hdiutil'}, 'internet-enable', '-yes',
-   $targetImage) != 0) {
+  if(command($gConfig{'cmd_hdiutil'}, 'internet-enable',
+   @gHdiutilVerbosityFlags, '-yes', $targetImage) != 0) {
     cleanupDie('hdiutil internet-enable failed');
   }
 }
@@ -802,7 +817,7 @@ sub diskImageMaker($$$$$$$$) {
     $hybridImage = giveExtension($tempDir.'/hybrid', '.dmg');
 
     if(command($gConfig{'cmd_hdiutil'}, 'makehybrid', '-hfs',
-      '-hfs-volume-name', $name,
+      @gHdiutilVerbosityFlags, '-hfs-volume-name', $name,
       ($gConfig{'openfolder_bless'} ? ('-hfs-openfolder', $source) : ()),
       '-ov', $source, '-o', $hybridImage) != 0) {
       cleanupDie('hdiutil makehybrid failed');
@@ -815,7 +830,7 @@ sub diskImageMaker($$$$$$$$) {
     splice(@gCleanup, -1, 1,
       sub {commandInternalVerbosity(0, 'unlink', $hybridImage);});
 
-    if(command($gConfig{'cmd_rm'}, '-rf', $source) != 0) {
+    if(command($gConfig{'cmd_rm'}, @gRmVerbosityFlags, '-rf', $source) != 0) {
       cleanupDie('rm -rf failed');
     }
 
@@ -824,7 +839,8 @@ sub diskImageMaker($$$$$$$$) {
      ($format eq 'UDZO' ? ('-imagekey', 'zlib-level=9') : ()),
      ($format eq 'UDBZ' ? ('-imagekey', 'bzip2-level=9') : ()),
      ($format eq 'ULMO' ? ('-imagekey', 'udif-chunk-size=8192') : ()),
-     '-ov', $uncompressedImage, '-o', $destination) != 0) {
+     @gHdiutilVerbosityFlags, '-ov', $uncompressedImage, '-o',
+     $destination) != 0) {
       cleanupDie('hdiutil convert failed');
     }
 
@@ -842,11 +858,9 @@ sub diskImageMaker($$$$$$$$) {
     # been removed, and its cleanup entry has been removed as well.
   }
   elsif($format eq 'UDRW' || $format eq 'UDSP') {
-    my(@extraArguments);
-
     # Use -fs HFS+ to suppress the journal.
     if(command($gConfig{'cmd_hdiutil'}, 'create', '-format', $format,
-      @extraArguments, '-fs', 'HFS+', '-volname', $name,
+      @gHdiutilVerbosityFlags, '-fs', 'HFS+', '-volname', $name,
       '-ov', '-srcfolder', $source, $destination) != 0) {
       cleanupDie('hdiutil create failed');
     }
@@ -856,7 +870,7 @@ sub diskImageMaker($$$$$$$$) {
     splice(@gCleanup, -1, 1,
       sub {commandInternalVerbosity(0, 'unlink', $destination);});
 
-    if(command($gConfig{'cmd_rm'}, '-rf', $source) != 0) {
+    if(command($gConfig{'cmd_rm'}, @gRmVerbosityFlags, '-rf', $source) != 0) {
       cleanupDie('rm -rf failed');
     }
 
@@ -879,8 +893,13 @@ sub diskImageMaker($$$$$$$$) {
     }
 
     if($gConfig{'openfolder_bless'}) {
-      # "bless -openfolder" is no longer documented. It appears to still work.
-      # It specifies what folder the Finder should open when a dmg is mounted.
+      # "bless -openfolder" is no longer functional as of macOS 13.0.
+      # Historically, on x86_64, it configured a folder Finder should open
+      # as soon as the file system was mounted; it was never supported on arm64.
+      #
+      # Since we care about controlling the auto-open behavior, we use
+      # "bless -openfolder" anyway, allowing its unsuccessful exit code to
+      # make the entire pkg-dmg script fail.
       if(command($gConfig{'cmd_bless'}, '-openfolder',
        $partitionMountPoint) != 0) {
         cleanupDie('bless failed');
@@ -1009,8 +1028,15 @@ sub hdidMountImage($@) {
 # Returns the return code from rsync. Thus, this is falsey on success.
 sub invokeRsync($$) {
   my($src, $dest) = @_;
-  return command($gConfig{'cmd_rsync'}, '--archive', '--copy-unsafe-links',
-   '--cvs-exclude', '--include=*.so', $src, $dest);
+  my @verbosity;
+  if($gVerbosity == 3) {
+    @verbosity = ('--verbose');
+  }
+  if ($gVerbosity == 4) {
+    @verbosity = ('--verbose', '--verbose');
+  }
+  return command($gConfig{'cmd_rsync'}, @verbosity, '--archive',
+  '--copy-unsafe-links', '--cvs-exclude', '--include=*.so', $src, $dest);
 }
 
 # isFormatReadOnly($format)
