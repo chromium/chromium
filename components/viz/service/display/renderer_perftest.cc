@@ -154,14 +154,10 @@ void DeleteSharedImage(
 TransferableResource CreateTestTexture(
     const gfx::Size& size,
     SkColor4f texel_color,
-    bool premultiplied_alpha,
     ClientResourceProvider* child_resource_provider,
     scoped_refptr<RasterContextProvider> child_context_provider) {
   using SkPMColor4f = SkRGBA4f<kPremul_SkAlphaType>;
-  const SkPMColor4f pixel_color =
-      premultiplied_alpha ? texel_color.premul()
-                          : SkPMColor4f{texel_color.fR, texel_color.fG,
-                                        texel_color.fB, texel_color.fA};
+  const SkPMColor4f pixel_color = texel_color.premul();
 
   size_t num_pixels = static_cast<size_t>(size.width()) * size.height();
   std::vector<SkPMColor4f> pixels(num_pixels, pixel_color);
@@ -190,7 +186,6 @@ TransferableResource CreateTestTexture(
 void CreateTestTextureDrawQuad(ResourceId resource_id,
                                const gfx::Rect& rect,
                                SkColor4f background_color,
-                               bool premultiplied_alpha,
                                const SharedQuadState* shared_state,
                                CompositorRenderPass* render_pass) {
   const bool needs_blending = true;
@@ -202,7 +197,6 @@ void CreateTestTextureDrawQuad(ResourceId resource_id,
   quad->SetNew(shared_state, rect, rect, needs_blending, resource_id,
                uv_top_left, uv_bottom_right, background_color, nearest_neighbor,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
-  quad->premultiplied_alpha = premultiplied_alpha;
 }
 
 void CreateTestTileDrawQuad(ResourceId resource_id,
@@ -343,14 +337,13 @@ class RendererPerfTest : public VizPerfTest {
   ResourceId MapResourceId(base::flat_map<ResourceId, ResourceId>* resource_map,
                            ResourceId recorded_id,
                            const gfx::Size& texture_size,
-                           SkColor4f texel_color,
-                           bool premultiplied_alpha) {
+                           SkColor4f texel_color) {
     DCHECK(resource_map);
     ResourceId actual_id;
     if (resource_map->find(recorded_id) == resource_map->end()) {
-      resource_list_.push_back(CreateTestTexture(
-          texture_size, texel_color, premultiplied_alpha,
-          child_resource_provider_.get(), child_context_provider_));
+      resource_list_.push_back(CreateTestTexture(texture_size, texel_color,
+                                                 child_resource_provider_.get(),
+                                                 child_context_provider_));
       actual_id = resource_list_.back().id;
       (*resource_map)[recorded_id] = actual_id;
     } else {
@@ -373,8 +366,7 @@ class RendererPerfTest : public VizPerfTest {
             ResourceId recorded_id = tile_quad->resource_id;
             ResourceId actual_id = this->MapResourceId(
                 &resource_map, recorded_id, tile_quad->texture_size,
-                SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
-                /*premultiplied_alpha=*/true);
+                SkColor4f{0.0f, 1.0f, 0.0f, 0.5f});
             tile_quad->resource_id = actual_id;
           } break;
           case DrawQuad::Material::kTextureContent: {
@@ -383,8 +375,7 @@ class RendererPerfTest : public VizPerfTest {
             ResourceId recorded_id = texture_quad->resource_id;
             ResourceId actual_id = this->MapResourceId(
                 &resource_map, recorded_id, texture_quad->rect.size(),
-                SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
-                texture_quad->premultiplied_alpha);
+                SkColor4f{0.0f, 1.0f, 0.0f, 0.5f});
             texture_quad->resource_id = actual_id;
           } break;
           default:
@@ -398,8 +389,7 @@ class RendererPerfTest : public VizPerfTest {
     resource_list_.push_back(CreateTestTexture(
         kSurfaceSize,
         /*texel_color=*/SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
-        /*premultiplied_alpha=*/false, child_resource_provider_.get(),
-        child_context_provider_));
+        child_resource_provider_.get(), child_context_provider_));
 
     timer_.Reset();
     do {
@@ -410,8 +400,7 @@ class RendererPerfTest : public VizPerfTest {
 
       CreateTestTextureDrawQuad(resource_list_.back().id, kSurfaceRect,
                                 /*background_color=*/SkColors::kTransparent,
-                                /*premultiplied_alpha=*/false, shared_state,
-                                pass.get());
+                                shared_state, pass.get());
 
       CompositorRenderPassList pass_list;
       pass_list.push_back(std::move(pass));
@@ -431,8 +420,7 @@ class RendererPerfTest : public VizPerfTest {
         resource_list_.push_back(CreateTestTexture(
             kTextureSize,
             /*texel_color=*/SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
-            /*premultiplied_alpha=*/false, child_resource_provider_.get(),
-            child_context_provider_));
+            child_resource_provider_.get(), child_context_provider_));
         resource_ids[i][j] = resource_list_.back().id;
       }
     }
@@ -449,8 +437,8 @@ class RendererPerfTest : public VizPerfTest {
               resource_ids[i][j],
               gfx::Rect(i * kTextureSize.width(), j * kTextureSize.height(),
                         kTextureSize.width(), kTextureSize.height()),
-              /*background_color=*/SkColors::kTransparent,
-              /*premultiplied_alpha=*/false, shared_state, pass.get());
+              /*background_color=*/SkColors::kTransparent, shared_state,
+              pass.get());
         }
       }
 
@@ -470,8 +458,7 @@ class RendererPerfTest : public VizPerfTest {
     resource_list_.push_back(CreateTestTexture(
         kTextureSize,
         /*texel_color=*/SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
-        /*premultiplied_alpha=*/false, child_resource_provider_.get(),
-        child_context_provider_));
+        child_resource_provider_.get(), child_context_provider_));
     resource_id = resource_list_.back().id;
 
     timer_.Reset();
@@ -486,8 +473,8 @@ class RendererPerfTest : public VizPerfTest {
               resource_id,
               gfx::Rect(i * kTextureSize.width(), j * kTextureSize.height(),
                         kTextureSize.width(), kTextureSize.height()),
-              /*background_color=*/SkColors::kTransparent,
-              /*premultiplied_alpha=*/false, shared_state, pass.get());
+              /*background_color=*/SkColors::kTransparent, shared_state,
+              pass.get());
         }
       }
 
@@ -515,16 +502,14 @@ class RendererPerfTest : public VizPerfTest {
       resource_list_.push_back(CreateTestTexture(
           kTextureSize,
           /*texel_color=*/SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
-          /*premultiplied_alpha=*/false, child_resource_provider_.get(),
-          child_context_provider_));
+          child_resource_provider_.get(), child_context_provider_));
     } else {
       // Each TileDrawQuad gets its own resource
       for (int i = 0; i < tile_count; ++i) {
         resource_list_.push_back(CreateTestTexture(
             kTextureSize,
             /*texel_color=*/SkColor4f{0.0f, 1.0f, 0.0f, 0.5f},
-            /*premultiplied_alpha=*/false, child_resource_provider_.get(),
-            child_context_provider_));
+            child_resource_provider_.get(), child_context_provider_));
       }
     }
 
