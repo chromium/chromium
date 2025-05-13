@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/webid/fedcm_mappers.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/webid_utils.h"

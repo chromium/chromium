@@ -8,11 +8,16 @@
 #include <string>
 #include <vector>
 
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/webid/idp_network_request_manager.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
 namespace content {
+
+enum class FedCmRequestIdTokenStatus;
+enum class FedCmLifecycleStateFailureReason;
 
 // This header file defines functions which convert between FedCM types. It also
 // defines some constants used in some of these conversions.
@@ -59,6 +64,19 @@ blink::mojom::RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
 // endpoint error code.
 MetricsEndpointErrorCode FederatedAuthRequestResultToMetricsEndpointErrorCode(
     blink::mojom::FederatedAuthRequestResult result);
+
+// Converts an error ParseStatus from the accounts response to a pair. The first
+// member of the pair is a FederatedAuthRequestResult, which is a browser type
+// for the result. The second member of the pair is a FedCmRequestIdTokenStatus,
+// which is a type used in metrics recording. Should not be invoked with
+// ParseStatus::kSuccess.
+std::pair<blink::mojom::FederatedAuthRequestResult, FedCmRequestIdTokenStatus>
+AccountParseStatusToRequestResultAndTokenStatus(
+    IdpNetworkRequestManager::ParseStatus status);
+
+FedCmLifecycleStateFailureReason
+LifecycleStateImplLifecycleStateImplToFedCmLifecycleStateFailureReason(
+    RenderFrameHostImpl::LifecycleStateImpl lifecycle_state);
 
 }  // namespace content
 

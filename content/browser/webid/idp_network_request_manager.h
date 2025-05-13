@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "content/browser/webid/fedcm_mappers.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/identity_request_account.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
@@ -40,6 +39,7 @@ using IdentityProviderDataPtr = scoped_refptr<IdentityProviderData>;
 using IdentityRequestAccountPtr = scoped_refptr<IdentityRequestAccount>;
 class FederatedIdentityPermissionContextDelegate;
 class RenderFrameHostImpl;
+enum class MetricsEndpointErrorCode;
 
 // Manages network requests and maintains relevant state for interaction with
 // the Identity Provider across a FedCM transaction. Owned by

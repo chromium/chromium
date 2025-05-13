@@ -431,31 +431,9 @@ void FederatedAuthRequestImpl::RequestToken(
     // the lifecycle state for further investigation.
     RenderFrameHostImpl* host_impl =
         static_cast<RenderFrameHostImpl*>(&render_frame_host());
-    FedCmLifecycleStateFailureReason reason =
-        FedCmLifecycleStateFailureReason::kOther;
-    switch (host_impl->lifecycle_state()) {
-      case RenderFrameHostImpl::LifecycleStateImpl::kSpeculative:
-        reason = FedCmLifecycleStateFailureReason::kSpeculative;
-        break;
-      case RenderFrameHostImpl::LifecycleStateImpl::kPendingCommit:
-        reason = FedCmLifecycleStateFailureReason::kPendingCommit;
-        break;
-      case RenderFrameHostImpl::LifecycleStateImpl::kPrerendering:
-        reason = FedCmLifecycleStateFailureReason::kPrerendering;
-        break;
-      case RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache:
-        reason = FedCmLifecycleStateFailureReason::kInBackForwardCache;
-        break;
-      case RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers:
-        reason = FedCmLifecycleStateFailureReason::kRunningUnloadHandlers;
-        break;
-      case RenderFrameHostImpl::LifecycleStateImpl::kReadyToBeDeleted:
-        reason = FedCmLifecycleStateFailureReason::kReadyToBeDeleted;
-        break;
-      default:
-        break;
-    }
-    RecordLifecycleStateFailureReason(reason);
+    RecordLifecycleStateFailureReason(
+        LifecycleStateImplLifecycleStateImplToFedCmLifecycleStateFailureReason(
+            host_impl->lifecycle_state()));
     std::move(callback).Run(RequestTokenStatus::kError, std::nullopt, "",
                             /*error=*/nullptr,
                             /*is_auto_selected=*/false);
@@ -1822,171 +1800,130 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       idp_info->has_failing_idp_signin_status, permission_delegate_);
 
   constexpr char kAccountsUrl[] = "accounts endpoint";
-  switch (status.parse_status) {
-    case IdpNetworkRequestManager::ParseStatus::kHttpNotFoundError: {
-      MaybeAddResponseCodeToConsole(kAccountsUrl, status.response_code);
-      HandleAccountsFetchFailure(
-          std::move(idp_info), old_idp_signin_status,
-          FederatedAuthRequestResult::kAccountsHttpNotFound,
-          TokenStatus::kAccountsHttpNotFound);
-      return;
+  if (status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess) {
+    std::pair<FederatedAuthRequestResult, TokenStatus> resultAndTokenStatus =
+        AccountParseStatusToRequestResultAndTokenStatus(status.parse_status);
+    MaybeAddResponseCodeToConsole(kAccountsUrl, status.response_code);
+    HandleAccountsFetchFailure(std::move(idp_info), old_idp_signin_status,
+                               resultAndTokenStatus.first,
+                               resultAndTokenStatus.second);
+    return;
+  }
+  RecordRawAccountsSize(accounts.size());
+  if (!FilterAccountsWithLabel(idp_info->metadata.requested_label, accounts)) {
+    // No accounts remain, so treat as account fetch failure.
+    render_frame_host().AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "Accounts were received, but none matched the label.");
+    // If there are no accounts after filtering based on the label,
+    // treat this exactly the same as if we had received an empty accounts
+    // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.
+    HandleAccountsFetchFailure(std::move(idp_info), old_idp_signin_status,
+                               FederatedAuthRequestResult::kAccountsListEmpty,
+                               TokenStatus::kAccountsListEmpty);
+    return;
+  }
+  if (!FilterAccountsWithLoginHint(idp_info->provider->login_hint, accounts)) {
+    // No accounts remain, so treat as account fetch failure.
+    render_frame_host().AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "Accounts were received, but none matched the loginHint.");
+    // If there are no accounts after filtering based on the login hint,
+    // treat this exactly the same as if we had received an empty accounts
+    // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.
+    HandleAccountsFetchFailure(std::move(idp_info), old_idp_signin_status,
+                               FederatedAuthRequestResult::kAccountsListEmpty,
+                               TokenStatus::kAccountsListEmpty);
+    return;
+  }
+  if (!FilterAccountsWithDomainHint(idp_info->provider->domain_hint,
+                                    accounts)) {
+    // No accounts remain, so treat as account fetch failure.
+    render_frame_host().AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "Accounts were received, but none matched the domainHint.");
+    // If there are no accounts after filtering based on the domain hint,
+    // treat this exactly the same as if we had received an empty accounts
+    // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.
+    HandleAccountsFetchFailure(std::move(idp_info), old_idp_signin_status,
+                               FederatedAuthRequestResult::kAccountsListEmpty,
+                               TokenStatus::kAccountsListEmpty);
+    return;
+  }
+  auto filter = [](const IdentityRequestAccountPtr& account) {
+    return account->is_filtered_out;
+  };
+  if (!IsFedCmShowFilteredAccountsEnabled() ||
+      !idps_user_tried_to_signin_to_.contains(idp_config_url) ||
+      login_url_ != idp_info->metadata.idp_login_url) {
+    std::erase_if(accounts, filter);
+  } else {
+    // If the user is logging in to new accounts, only show filtered
+    // accounts if there are no new unfiltered accounts. This includes in
+    // particular the case where all accounts are filtered out.
+    size_t new_unfiltered =
+        std::count_if(accounts.begin(), accounts.end(),
+                      [&](const IdentityRequestAccountPtr& account) {
+                        return !account->is_filtered_out &&
+                               !account_ids_before_login_.contains(account->id);
+                      });
+    if (new_unfiltered > 0u) {
+      std::erase_if(accounts, filter);
     }
-    case IdpNetworkRequestManager::ParseStatus::kNoResponseError: {
-      MaybeAddResponseCodeToConsole(kAccountsUrl, status.response_code);
-      HandleAccountsFetchFailure(
-          std::move(idp_info), old_idp_signin_status,
-          FederatedAuthRequestResult::kAccountsNoResponse,
-          TokenStatus::kAccountsNoResponse);
-      return;
-    }
-    case IdpNetworkRequestManager::ParseStatus::kInvalidResponseError: {
-      MaybeAddResponseCodeToConsole(kAccountsUrl, status.response_code);
-      HandleAccountsFetchFailure(
-          std::move(idp_info), old_idp_signin_status,
-          FederatedAuthRequestResult::kAccountsInvalidResponse,
-          TokenStatus::kAccountsInvalidResponse);
-      return;
-    }
-    case IdpNetworkRequestManager::ParseStatus::kEmptyListError: {
-      MaybeAddResponseCodeToConsole(kAccountsUrl, status.response_code);
-      HandleAccountsFetchFailure(std::move(idp_info), old_idp_signin_status,
-                                 FederatedAuthRequestResult::kAccountsListEmpty,
-                                 TokenStatus::kAccountsListEmpty);
-      return;
-    }
-    case IdpNetworkRequestManager::ParseStatus::kInvalidContentTypeError: {
-      MaybeAddResponseCodeToConsole(kAccountsUrl, status.response_code);
-      HandleAccountsFetchFailure(
-          std::move(idp_info), old_idp_signin_status,
-          FederatedAuthRequestResult::kAccountsInvalidContentType,
-          TokenStatus::kAccountsInvalidContentType);
-      return;
-    }
-    case IdpNetworkRequestManager::ParseStatus::kSuccess: {
-      RecordRawAccountsSize(accounts.size());
-      if (!FilterAccountsWithLabel(idp_info->metadata.requested_label,
-                                   accounts)) {
-        // No accounts remain, so treat as account fetch failure.
-        render_frame_host().AddMessageToConsole(
-            blink::mojom::ConsoleMessageLevel::kError,
-            "Accounts were received, but none matched the label.");
-        // If there are no accounts after filtering based on the label,
-        // treat this exactly the same as if we had received an empty accounts
-        // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.
-        HandleAccountsFetchFailure(
-            std::move(idp_info), old_idp_signin_status,
-            FederatedAuthRequestResult::kAccountsListEmpty,
-            TokenStatus::kAccountsListEmpty);
-        return;
-      }
-      if (!FilterAccountsWithLoginHint(idp_info->provider->login_hint,
-                                       accounts)) {
-        // No accounts remain, so treat as account fetch failure.
-        render_frame_host().AddMessageToConsole(
-            blink::mojom::ConsoleMessageLevel::kError,
-            "Accounts were received, but none matched the loginHint.");
-        // If there are no accounts after filtering based on the login hint,
-        // treat this exactly the same as if we had received an empty accounts
-        // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.
-        HandleAccountsFetchFailure(
-            std::move(idp_info), old_idp_signin_status,
-            FederatedAuthRequestResult::kAccountsListEmpty,
-            TokenStatus::kAccountsListEmpty);
-        return;
-      }
-      if (!FilterAccountsWithDomainHint(idp_info->provider->domain_hint,
-                                        accounts)) {
-        // No accounts remain, so treat as account fetch failure.
-        render_frame_host().AddMessageToConsole(
-            blink::mojom::ConsoleMessageLevel::kError,
-            "Accounts were received, but none matched the domainHint.");
-        // If there are no accounts after filtering based on the domain hint,
-        // treat this exactly the same as if we had received an empty accounts
-        // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.
-        HandleAccountsFetchFailure(
-            std::move(idp_info), old_idp_signin_status,
-            FederatedAuthRequestResult::kAccountsListEmpty,
-            TokenStatus::kAccountsListEmpty);
-        return;
-      }
-      auto filter = [](const IdentityRequestAccountPtr& account) {
-        return account->is_filtered_out;
-      };
-      if (!IsFedCmShowFilteredAccountsEnabled() ||
-          !idps_user_tried_to_signin_to_.contains(idp_config_url) ||
-          login_url_ != idp_info->metadata.idp_login_url) {
-        std::erase_if(accounts, filter);
-      } else {
-        // If the user is logging in to new accounts, only show filtered
-        // accounts if there are no new unfiltered accounts. This includes in
-        // particular the case where all accounts are filtered out.
-        size_t new_unfiltered = std::count_if(
-            accounts.begin(), accounts.end(),
-            [&](const IdentityRequestAccountPtr& account) {
-              return !account->is_filtered_out &&
-                     !account_ids_before_login_.contains(account->id);
-            });
-        if (new_unfiltered > 0u) {
-          std::erase_if(accounts, filter);
-        }
-      }
-      if (accounts.size() == 0u) {
-        // No accounts remain, so treat as account fetch failure.
-        render_frame_host().AddMessageToConsole(
-            blink::mojom::ConsoleMessageLevel::kError,
-            "Accounts were received, but none matched the login hint, domain "
-            "hint, and/or account labels provided.");
-        // If there are no accounts after filtering,treat this exactly the same
-        // as if we had received an empty accounts list, i.e.
-        // IdpNetworkRequestManager::ParseStatus::kEmptyListError.
-        HandleAccountsFetchFailure(
-            std::move(idp_info), old_idp_signin_status,
-            FederatedAuthRequestResult::kAccountsListEmpty,
-            TokenStatus::kAccountsListEmpty);
-        return;
-      }
-      RecordReadyToShowAccountsSize(accounts.size());
-      ComputeLoginStates(idp_info->provider->config->config_url, accounts);
+  }
+  if (accounts.size() == 0u) {
+    // No accounts remain, so treat as account fetch failure.
+    render_frame_host().AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "Accounts were received, but none matched the login hint, domain "
+        "hint, and/or account labels provided.");
+    // If there are no accounts after filtering,treat this exactly the same
+    // as if we had received an empty accounts list, i.e.
+    // IdpNetworkRequestManager::ParseStatus::kEmptyListError.
+    HandleAccountsFetchFailure(std::move(idp_info), old_idp_signin_status,
+                               FederatedAuthRequestResult::kAccountsListEmpty,
+                               TokenStatus::kAccountsListEmpty);
+    return;
+  }
+  RecordReadyToShowAccountsSize(accounts.size());
+  ComputeLoginStates(idp_info->provider->config->config_url, accounts);
 
-      bool need_client_metadata = false;
+  bool need_client_metadata = false;
 
-      if (!idp_info->provider->config->from_idp_registration_api &&
-          !GetDisclosureFields(*idp_info->provider).empty()) {
-        for (const auto& account : accounts) {
-          // ComputeLoginStates() should have populated
-          // IdentityRequestAccount::login_state.
-          DCHECK(account->login_state);
-          if (*account->login_state == LoginState::kSignUp) {
-            need_client_metadata = true;
-            break;
-          }
-        }
-      }
-
-      if (need_client_metadata &&
-          webid::IsEndpointSameOrigin(idp_info->provider->config->config_url,
-                                      idp_info->endpoints.client_metadata)) {
-        // Copy OnClientMetadataResponseReceived() parameters because `idp_info`
-        // is moved.
-        GURL client_metadata_endpoint = idp_info->endpoints.client_metadata;
-        std::string client_id = idp_info->provider->config->client_id;
-        int icon_ideal_size =
-            request_dialog_controller_->GetBrandIconIdealSize(rp_mode_);
-        int icon_minimum_size =
-            request_dialog_controller_->GetBrandIconMinimumSize(rp_mode_);
-        network_manager_->FetchClientMetadata(
-            client_metadata_endpoint, client_id, icon_ideal_size,
-            icon_minimum_size,
-            base::BindOnce(
-                &FederatedAuthRequestImpl::OnClientMetadataResponseReceived,
-                weak_ptr_factory_.GetWeakPtr(), std::move(idp_info),
-                std::move(accounts)));
-      } else {
-        FetchAccountPicturesAndBrandIcons(
-            std::move(idp_info), std::move(accounts),
-            IdpNetworkRequestManager::ClientMetadata());
+  if (!idp_info->provider->config->from_idp_registration_api &&
+      !GetDisclosureFields(*idp_info->provider).empty()) {
+    for (const auto& account : accounts) {
+      // ComputeLoginStates() should have populated
+      // IdentityRequestAccount::login_state.
+      DCHECK(account->login_state);
+      if (*account->login_state == LoginState::kSignUp) {
+        need_client_metadata = true;
+        break;
       }
     }
+  }
+
+  if (need_client_metadata &&
+      webid::IsEndpointSameOrigin(idp_info->provider->config->config_url,
+                                  idp_info->endpoints.client_metadata)) {
+    // Copy OnClientMetadataResponseReceived() parameters because `idp_info`
+    // is moved.
+    GURL client_metadata_endpoint = idp_info->endpoints.client_metadata;
+    std::string client_id = idp_info->provider->config->client_id;
+    int icon_ideal_size =
+        request_dialog_controller_->GetBrandIconIdealSize(rp_mode_);
+    int icon_minimum_size =
+        request_dialog_controller_->GetBrandIconMinimumSize(rp_mode_);
+    network_manager_->FetchClientMetadata(
+        client_metadata_endpoint, client_id, icon_ideal_size, icon_minimum_size,
+        base::BindOnce(
+            &FederatedAuthRequestImpl::OnClientMetadataResponseReceived,
+            weak_ptr_factory_.GetWeakPtr(), std::move(idp_info),
+            std::move(accounts)));
+  } else {
+    FetchAccountPicturesAndBrandIcons(
+        std::move(idp_info), std::move(accounts),
+        IdpNetworkRequestManager::ClientMetadata());
   }
 }
 

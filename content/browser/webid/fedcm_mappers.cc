@@ -7,12 +7,16 @@
 #include <string>
 #include <vector>
 
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/webid/fedcm_metrics.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
 using blink::mojom::FederatedAuthRequestResult;
 using blink::mojom::RequestTokenStatus;
+using ParseStatus = content::IdpNetworkRequestManager::ParseStatus;
+using LifecycleStateImpl = content::RenderFrameHostImpl::LifecycleStateImpl;
 
 namespace content {
 
@@ -169,6 +173,63 @@ MetricsEndpointErrorCode FederatedAuthRequestResultToMetricsEndpointErrorCode(
     case FederatedAuthRequestResult::kTypeNotMatching:
     case FederatedAuthRequestResult::kSuppressedBySegmentationPlatform: {
       return MetricsEndpointErrorCode::kOther;
+    }
+  }
+}
+
+std::pair<FederatedAuthRequestResult, FedCmRequestIdTokenStatus>
+AccountParseStatusToRequestResultAndTokenStatus(ParseStatus parse_status) {
+  switch (parse_status) {
+    case ParseStatus::kHttpNotFoundError: {
+      return {FederatedAuthRequestResult::kAccountsHttpNotFound,
+              FedCmRequestIdTokenStatus::kAccountsHttpNotFound};
+    }
+    case ParseStatus::kNoResponseError: {
+      return {FederatedAuthRequestResult::kAccountsNoResponse,
+              FedCmRequestIdTokenStatus::kAccountsNoResponse};
+    }
+    case ParseStatus::kInvalidResponseError: {
+      return {FederatedAuthRequestResult::kAccountsInvalidResponse,
+              FedCmRequestIdTokenStatus::kAccountsInvalidResponse};
+    }
+    case ParseStatus::kEmptyListError: {
+      return {FederatedAuthRequestResult::kAccountsListEmpty,
+              FedCmRequestIdTokenStatus::kAccountsListEmpty};
+    }
+    case ParseStatus::kInvalidContentTypeError: {
+      return {FederatedAuthRequestResult::kAccountsInvalidContentType,
+              FedCmRequestIdTokenStatus::kAccountsInvalidContentType};
+    }
+    case ParseStatus::kSuccess: {
+      NOTREACHED() << "Should not be invoked on success";
+    }
+  }
+}
+
+FedCmLifecycleStateFailureReason
+LifecycleStateImplLifecycleStateImplToFedCmLifecycleStateFailureReason(
+    LifecycleStateImpl lifecycle_state) {
+  switch (lifecycle_state) {
+    case LifecycleStateImpl::kSpeculative: {
+      return FedCmLifecycleStateFailureReason::kSpeculative;
+    }
+    case LifecycleStateImpl::kPendingCommit: {
+      return FedCmLifecycleStateFailureReason::kPendingCommit;
+    }
+    case LifecycleStateImpl::kPrerendering: {
+      return FedCmLifecycleStateFailureReason::kPrerendering;
+    }
+    case LifecycleStateImpl::kInBackForwardCache: {
+      return FedCmLifecycleStateFailureReason::kInBackForwardCache;
+    }
+    case LifecycleStateImpl::kRunningUnloadHandlers: {
+      return FedCmLifecycleStateFailureReason::kRunningUnloadHandlers;
+    }
+    case LifecycleStateImpl::kReadyToBeDeleted: {
+      return FedCmLifecycleStateFailureReason::kReadyToBeDeleted;
+    }
+    default: {
+      return FedCmLifecycleStateFailureReason::kOther;
     }
   }
 }
