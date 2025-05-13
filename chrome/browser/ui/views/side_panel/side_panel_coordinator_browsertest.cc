@@ -1397,6 +1397,99 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, SidePanelWidthPreference) {
   EXPECT_EQ(expected_bookmark_width, side_panel->width());
 }
 
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
+                       SidePanelUsesEntryDefaultWidth) {
+  Init();
+  coordinator()->DisableAnimationsForTesting();
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  SidePanel* side_panel = browser_view->unified_side_panel();
+  ASSERT_TRUE(side_panel);
+
+  SidePanelEntry* bookmarks_entry =
+      coordinator()->GetWindowRegistry()->GetEntryForKey(
+          SidePanelEntry::Key(SidePanelEntryId::kBookmarks));
+  ASSERT_TRUE(bookmarks_entry);
+
+  // Set a custom default width for the bookmarks side panel.
+  const int kTestDefaultContentWidth = 450;
+  bookmarks_entry->SetDefaultContentWidthForTesting(kTestDefaultContentWidth);
+
+  // Clear any existing preference for bookmarks.
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  ScopedDictPrefUpdate update(prefs, prefs::kSidePanelIdToWidth);
+  update->Remove(SidePanelEntryIdToString(SidePanelEntryId::kBookmarks));
+
+  coordinator()->Show(SidePanelEntryId::kBookmarks);
+  views::test::RunScheduledLayout(browser_view);
+
+  // Verify the custom width is used instead of the default width.
+  EXPECT_TRUE(side_panel->GetVisible());
+  EXPECT_EQ(side_panel->width(),
+            kTestDefaultContentWidth + side_panel->GetInsets().width());
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
+                       SidePanelPrefOverridesEntryDefaultWidth) {
+  Init();
+  coordinator()->DisableAnimationsForTesting();
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  SidePanel* side_panel = browser_view->unified_side_panel();
+  ASSERT_TRUE(side_panel);
+
+  SidePanelEntry* bookmarks_entry =
+      coordinator()->GetWindowRegistry()->GetEntryForKey(
+          SidePanelEntry::Key(SidePanelEntryId::kBookmarks));
+  ASSERT_TRUE(bookmarks_entry);
+
+  const int kTestDefaultContentWidth = 450;
+  const int kUserPreferredWidth = 550;
+  bookmarks_entry->SetDefaultContentWidthForTesting(kTestDefaultContentWidth);
+
+  // Set a user preference for bookmarks.
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  ScopedDictPrefUpdate update(prefs, prefs::kSidePanelIdToWidth);
+  update->Set(SidePanelEntryIdToString(SidePanelEntryId::kBookmarks),
+              base::Value(kUserPreferredWidth));
+
+  coordinator()->Show(SidePanelEntryId::kBookmarks);
+  views::test::RunScheduledLayout(browser_view);
+
+  // Verify the side panel uses the users preferred width even if the custom
+  // width is set.
+  EXPECT_TRUE(side_panel->GetVisible());
+  EXPECT_EQ(side_panel->width(), kUserPreferredWidth);
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
+                       SidePanelUsesMinimumWidthIfNoPrefOrDefault) {
+  Init();
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  SidePanel* side_panel = browser_view->unified_side_panel();
+  ASSERT_TRUE(side_panel);
+  coordinator()->DisableAnimationsForTesting();
+
+  // Ensure the bookmarks side panel does not have a custom default width.
+  SidePanelEntry* bookmarks_entry =
+      coordinator()->GetWindowRegistry()->GetEntryForKey(
+          SidePanelEntry::Key(SidePanelEntryId::kBookmarks));
+  ASSERT_TRUE(bookmarks_entry);
+  bookmarks_entry->SetDefaultContentWidthForTesting(
+      SidePanelEntry::kSidePanelDefaultContentWidth);
+
+  // Clear any existing preference for bookmarks.
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  ScopedDictPrefUpdate update(prefs, prefs::kSidePanelIdToWidth);
+  update->Remove(SidePanelEntryIdToString(SidePanelEntryId::kBookmarks));
+
+  coordinator()->Show(SidePanelEntryId::kBookmarks);
+  views::test::RunScheduledLayout(browser_view);
+
+  // Verify the bookmarks side panel defaults to the minimum size.
+  EXPECT_TRUE(side_panel->GetVisible());
+  EXPECT_EQ(side_panel->width(), side_panel->GetMinimumSize().width());
+}
+
 class TestSidePanelObserver : public SidePanelEntryObserver {
  public:
   explicit TestSidePanelObserver(SidePanelRegistry* registry)

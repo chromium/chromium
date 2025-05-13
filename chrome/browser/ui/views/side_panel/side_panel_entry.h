@@ -30,6 +30,8 @@ enum class SidePanelEntryHideReason;
 // a SidePanelRegistry (either a per-tab or a per-window registry).
 class SidePanelEntry final : public ui::PropertyHandler {
  public:
+  // The default and minimum acceptable side panel content width.
+  static constexpr int kSidePanelDefaultContentWidth = 360;
   using CreateContentCallback =
       base::RepeatingCallback<std::unique_ptr<views::View>(
           SidePanelEntryScope&)>;
@@ -45,10 +47,13 @@ class SidePanelEntry final : public ui::PropertyHandler {
       std::optional<base::RepeatingCallback<GURL()>>
           open_in_new_tab_url_callback = std::nullopt,
       std::optional<base::RepeatingCallback<std::unique_ptr<ui::MenuModel>()>>
-          more_info_callback = std::nullopt);
+          more_info_callback = std::nullopt,
+      int default_content_width = kSidePanelDefaultContentWidth);
   // Constructor used for extensions. Extensions don't have 'Open in New Tab'
   // functionality.
-  SidePanelEntry(Key key, CreateContentCallback create_content_callback);
+  SidePanelEntry(Key key,
+                 CreateContentCallback create_content_callback,
+                 int default_content_width = kSidePanelDefaultContentWidth);
   SidePanelEntry(const SidePanelEntry&) = delete;
   SidePanelEntry& operator=(const SidePanelEntry&) = delete;
   ~SidePanelEntry() override;
@@ -98,6 +103,14 @@ class SidePanelEntry final : public ui::PropertyHandler {
     return weak_factory_.GetWeakPtr();
   }
 
+  // Gets the default content width for this entry, if one is specified.
+  int GetDefaultContentWidth() const;
+
+  // Allows tests to override the default width for an existing entry.
+  void SetDefaultContentWidthForTesting(int width) {
+    default_content_width_ = width;
+  }
+
  private:
   const Key key_;
   std::unique_ptr<views::View> content_view_;
@@ -119,6 +132,12 @@ class SidePanelEntry final : public ui::PropertyHandler {
   base::TimeTicks entry_shown_timestamp_;
 
   base::ObserverList<SidePanelEntryObserver> observers_;
+
+  // When specified sets the default starting width for this entry. However, if
+  // the user manually changes the size of the side panel that preference is
+  // used instead (prefs::kSidePanelIdToWidth). If nothing is specified, then
+  // the default minimum content width of the side panel is used.
+  int default_content_width_ = kSidePanelDefaultContentWidth;
 
   base::WeakPtrFactory<SidePanelEntry> weak_factory_{this};
 };

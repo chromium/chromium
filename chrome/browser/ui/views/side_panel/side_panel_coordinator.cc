@@ -425,6 +425,17 @@ std::optional<SidePanelEntry::Id> SidePanelCoordinator::GetCurrentEntryId()
              : std::nullopt;
 }
 
+int SidePanelCoordinator::GetCurrentEntryDefaultContentWidth() const {
+  if (!current_key_) {
+    return SidePanelEntry::kSidePanelDefaultContentWidth;
+  }
+
+  const SidePanelEntry* const entry = GetEntryForUniqueKey(*current_key_);
+  CHECK(entry);
+
+  return entry->GetDefaultContentWidth();
+}
+
 bool SidePanelCoordinator::IsSidePanelShowing() const {
   return current_key_.has_value();
 }

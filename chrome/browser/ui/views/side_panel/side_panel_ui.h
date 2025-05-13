@@ -46,6 +46,10 @@ class SidePanelUI {
   // Get the current entry id if the side panel is open.
   virtual std::optional<SidePanelEntryId> GetCurrentEntryId() const = 0;
 
+  // Returns the current entries default width. Returns nullopt if this value is
+  // not set or if the side panel is closed.
+  virtual int GetCurrentEntryDefaultContentWidth() const = 0;
+
   // Return whether any entry is being shown in the side panel.
   // Note: this returns false if `entry` is current loading but not actually
   // shown.

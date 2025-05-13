@@ -18,9 +18,9 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_resize_area.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -359,13 +359,13 @@ bool SidePanel::ShouldRestrictMaxWidth() const {
   // TODO(crbug.com/394339052): Only restricting width for only non-read
   // anything content is a temporary solution and UX will investigate a better
   // long term solution.
-  SidePanelUI* coordinator =
+  SidePanelUI* side_panel_ui =
       browser_view_->browser()->GetFeatures().side_panel_ui();
-  if (!coordinator) {
+  if (!side_panel_ui) {
     return true;
   }
   std::optional<SidePanelEntry::Id> side_panel_entry_id =
-      coordinator->GetCurrentEntryId();
+      side_panel_ui->GetCurrentEntryId();
   return !side_panel_entry_id.has_value() ||
          side_panel_entry_id.value() != SidePanelEntryId::kReadAnything;
 }
@@ -382,23 +382,34 @@ void SidePanel::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
 }
 
 void SidePanel::UpdateWidthOnEntryChanged() {
-  PrefService* pref_service = browser_view_->browser()->profile()->GetPrefs();
-  ScopedDictPrefUpdate update(pref_service, prefs::kSidePanelIdToWidth);
-  const base::Value::Dict& dict = update.Get();
-  SidePanelUI* coordinator =
+  SidePanelUI* side_panel_ui =
       browser_view_->browser()->GetFeatures().side_panel_ui();
-  if (coordinator) {
-    std::optional<SidePanelEntry::Id> entry_id =
-        coordinator->GetCurrentEntryId();
-    if (entry_id.has_value()) {
-      std::string panel_id = SidePanelEntryIdToString(entry_id.value());
-      std::optional<int> width = dict.FindInt(panel_id);
-      if (width.has_value()) {
-        SetPanelWidth(width.value());
-      } else {
-        SetPanelWidth(GetMinimumSize().width());
-      }
-    }
+  if (!side_panel_ui) {
+    return;
+  }
+
+  std::optional<SidePanelEntry::Id> current_entry =
+      side_panel_ui->GetCurrentEntryId();
+  if (!current_entry) {
+    return;
+  }
+
+  PrefService* pref_service = browser_view_->browser()->profile()->GetPrefs();
+  const base::Value::Dict& dict =
+      pref_service->GetDict(prefs::kSidePanelIdToWidth);
+  std::string panel_id = SidePanelEntryIdToString(current_entry.value());
+
+  // Figure out for this side panel if we should:
+  // 1. Use the user's manually resized width
+  // 2. Use the side panels default width
+  // NOTE: If not specified, the side panel will default to
+  // SidePanelEntry::kSidePanelDefaultContentWidth which evaluates to the same
+  // value as GetMinimumSize().
+  if (std::optional<int> width_from_pref = dict.FindInt(panel_id)) {
+    SetPanelWidth(width_from_pref.value());
+  } else {
+    SetPanelWidth(side_panel_ui->GetCurrentEntryDefaultContentWidth() +
+                  GetBorderInsets().width());
   }
 }
 
@@ -415,10 +426,10 @@ bool SidePanel::IsRightAligned() {
 }
 
 gfx::Size SidePanel::GetMinimumSize() const {
-  const int min_side_panel_contents_width = 360;
   const int min_height = 0;
-  return gfx::Size(min_side_panel_contents_width + GetBorderInsets().width(),
-                   min_height);
+  return gfx::Size(
+      SidePanelEntry::kSidePanelDefaultContentWidth + GetBorderInsets().width(),
+      min_height);
 }
 
 bool SidePanel::IsClosing() {
@@ -435,7 +446,7 @@ void SidePanel::AddHeaderView(std::unique_ptr<views::View> view) {
   AddChildView(std::move(view));
   static_cast<BorderView*>(border_view_)->HeaderViewChanged(header_view_);
   // Update the border so that the insets include space for the header to be
-  // placed on top of the border.
+  // placed on top of the border area.
   int top_inset = header_view_->height() - GetBorderThickness();
   SetBorder(views::CreateEmptyBorder(GetBorderInsets() +
                                      gfx::Insets::TLBR(top_inset, 0, 0, 0)));
@@ -561,16 +572,14 @@ void SidePanel::OnResize(int resize_amount, bool done_resizing) {
 
   if (width() != proposed_width) {
     if (base::FeatureList::IsEnabled(features::kSidePanelResizing)) {
-      auto* coordinator =
-          browser_view_->browser()->GetFeatures().side_panel_ui();
-      if (coordinator) {
-        std::optional<SidePanelEntry::Id> entry_id =
-            coordinator->GetCurrentEntryId();
-        if (entry_id.has_value()) {
-          std::string panel_id = SidePanelEntryIdToString(entry_id.value());
-
-          // Update the pref with the new width
-          UpdateSidePanelWidthPref(panel_id, proposed_width);
+      if (SidePanelUI* side_panel_ui =
+              browser_view_->browser()->GetFeatures().side_panel_ui()) {
+        if (std::optional<SidePanelEntry::Id> entry =
+                side_panel_ui->GetCurrentEntryId()) {
+          std::string current_panel_id =
+              SidePanelEntryIdToString(entry.value());
+          // Update the pref with the new width.
+          UpdateSidePanelWidthPref(current_panel_id, proposed_width);
         }
       }
     }
@@ -582,13 +591,16 @@ void SidePanel::OnResize(int resize_amount, bool done_resizing) {
 
 void SidePanel::RecordMetricsIfResized() {
   if (did_resize_) {
-    std::optional<SidePanelEntry::Id> id = browser_view_->browser()
-                                               ->GetFeatures()
-                                               .side_panel_ui()
-                                               ->GetCurrentEntryId();
+    SidePanelUI* side_panel_ui =
+        browser_view_->browser()->GetFeatures().side_panel_ui();
+    if (!side_panel_ui) {
+      return;
+    }
+    std::optional<SidePanelEntry::Id> id = side_panel_ui->GetCurrentEntryId();
     if (!id.has_value()) {
       return;
     }
+
     int side_panel_contents_width = width() - GetBorderInsets().width();
     int browser_window_width = browser_view_->width();
     SidePanelUtil::RecordSidePanelResizeMetrics(

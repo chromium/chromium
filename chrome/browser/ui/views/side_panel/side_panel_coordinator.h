@@ -87,6 +87,7 @@ class SidePanelCoordinator final : public TabStripModelObserver,
   void OpenInNewTab() override;
   void UpdatePinState() override;
   std::optional<SidePanelEntry::Id> GetCurrentEntryId() const override;
+  int GetCurrentEntryDefaultContentWidth() const override;
   bool IsSidePanelShowing() const override;
   bool IsSidePanelEntryShowing(
       const SidePanelEntry::Key& entry_key) const override;

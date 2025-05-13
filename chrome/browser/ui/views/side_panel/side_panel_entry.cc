@@ -17,8 +17,16 @@ SidePanelEntry::SidePanelEntry(
     CreateContentCallback create_content_callback,
     std::optional<base::RepeatingCallback<GURL()>> open_in_new_tab_url_callback,
     std::optional<base::RepeatingCallback<std::unique_ptr<ui::MenuModel>()>>
-        more_info_callback)
-    : key_(id), create_content_callback_(std::move(create_content_callback)) {
+        more_info_callback,
+    int default_content_width)
+    : key_(id),
+      create_content_callback_(std::move(create_content_callback)),
+      default_content_width_(default_content_width) {
+  CHECK(!default_content_width_ ||
+        default_content_width_ >= kSidePanelDefaultContentWidth)
+      << "The default width must be greater than or equal to the default side "
+         "panel width: "
+      << kSidePanelDefaultContentWidth;
   open_in_new_tab_url_callback_ =
       open_in_new_tab_url_callback.value_or(base::NullCallbackAs<GURL()>());
   more_info_callback_ = more_info_callback.value_or(
@@ -26,8 +34,16 @@ SidePanelEntry::SidePanelEntry(
 }
 
 SidePanelEntry::SidePanelEntry(Key key,
-                               CreateContentCallback create_content_callback)
-    : key_(key), create_content_callback_(std::move(create_content_callback)) {
+                               CreateContentCallback create_content_callback,
+                               int default_content_width)
+    : key_(key),
+      create_content_callback_(std::move(create_content_callback)),
+      default_content_width_(default_content_width) {
+  CHECK(!default_content_width_ ||
+        default_content_width_ >= kSidePanelDefaultContentWidth)
+      << "The default width must be greater than or equal to the default side "
+         "panel width: "
+      << kSidePanelDefaultContentWidth;
   DCHECK(create_content_callback_);
 }
 
@@ -104,4 +120,8 @@ bool SidePanelEntry::SupportsMoreInfoButton() {
 
 void SidePanelEntry::ResetLoadTimestamp() {
   entry_show_triggered_timestamp_ = base::TimeTicks();
+}
+
+int SidePanelEntry::GetDefaultContentWidth() const {
+  return default_content_width_;
 }
