@@ -48,7 +48,10 @@ generate_grd("build_grdp") {
   ]
 
   if (!is_ios) {
-    input_files += [ "chrome_logo_dark.svg" ]
+    input_files += [
+      "chrome_logo_dark.svg",
+      "icon_edit.svg",
+    ]
   }
 
   if (!is_android && !is_ios) {
@@ -67,7 +70,6 @@ generate_grd("build_grdp") {
       "icon_clear.svg",
       "icon_clock.svg",
       "icon_delete_gray.svg",
-      "icon_edit.svg",
       "icon_filetype_generic.svg",
       "icon_folder_open.svg",
       "icon_history.svg",
