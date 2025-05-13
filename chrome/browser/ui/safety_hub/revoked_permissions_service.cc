@@ -342,6 +342,13 @@ int RevokedPermissionsService::RevokedPermissionsResult::
 
 void RevokedPermissionsService::TabHelper::PrimaryPageChanged(
     content::Page& page) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  DisruptiveNotificationPermissionsManager::CheckForFalsePositive(
+      profile, page.GetMainDocument().GetLastCommittedURL(),
+      DisruptiveNotificationPermissionsManager::FalsePositiveReason::kPageVisit,
+      page.GetMainDocument().GetPageUkmSourceId());
+
   if (unused_site_permission_service_) {
     unused_site_permission_service_->OnPageVisited(
         page.GetMainDocument().GetLastCommittedOrigin());
@@ -458,10 +465,10 @@ void RevokedPermissionsService::OnContentSettingChanged(
         should_clean_revoked_permission_data = false;
         break;
       default:
-        // If the permission is changed by users, then clean up the revoked
-        // permissions data. However if the permission is changed because of
-        // Safety Hub revocation, then the revoked permission data should not be
-        // revoked.
+        // If the permission is changed by users, then clean up the
+        // revoked permissions data. However if the permission is changed
+        // because of Safety Hub revocation, then the revoked permission
+        // data should not be revoked.
         const bool is_abusive_revocation_running =
             IsAbusiveNotificationAutoRevocationEnabled()
                 ? abusive_notification_manager_->IsRevocationRunning()

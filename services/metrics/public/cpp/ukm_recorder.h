@@ -22,6 +22,8 @@
 class ChromePermissionsClient;
 class PermissionUmaUtil;
 class PlatformNotificationServiceImpl;
+class PersistentNotificationHandler;
+class NonPersistentNotificationHandler;
 
 namespace apps {
 class WebsiteMetrics;
@@ -152,16 +154,28 @@ class METRICS_EXPORT UkmRecorder {
 
   // Gets a new SourceId of NOTIFICATION_ID type. This should only be
   // used for recording Permission UKM events related to persistent and
-  // nonpersistent notifications. `origin` is the domain that uses the Push API.
+  // nonpersistent notifications. `url` is the domain that uses the Push API.
   static SourceId GetSourceIdForNotificationPermission(
       base::PassKey<ChromePermissionsClient>,
-      const GURL& origin);
+      const GURL& url);
 
   // Gets a new SourceId of NOTIFICATION_ID type. This should only be used
   // for recording persistent and nonpersistent notification UKM events.
   static SourceId GetSourceIdForNotificationEvent(
       base::PassKey<PlatformNotificationServiceImpl>,
-      const GURL& origin);
+      const GURL& url);
+
+  // Gets a new SourceId of NOTIFICATION_ID type. This should only be used
+  // for recording persistent notification UKM events.
+  static SourceId GetSourceIdForNotificationEvent(
+      base::PassKey<PersistentNotificationHandler>,
+      const GURL& url);
+
+  // Gets a new SourceId of NOTIFICATION_ID type. This should only be used
+  // for recording nonpersistent notification UKM events.
+  static SourceId GetSourceIdForNotificationEvent(
+      base::PassKey<NonPersistentNotificationHandler>,
+      const GURL& url);
 
   // This method should be called when the system is about to shutdown, but
   // `UkmRecorder` is still available to record metrics.

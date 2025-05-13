@@ -21211,12 +21211,17 @@ be describing additional metrics about the same event.
   <owner>olesiamarukhnno@google.com</owner>
   <owner>antoniosartori@chromium.org</owner>
   <summary>
-    Recorded when an increase in site engagement score was detected for a site
-    that was previously put in a potential revocation list for disruptive
-    notification permissions. The metrics will be recorded on the first site
-    engagement increase after a revocation would have been proposed (cf. metric
-    SafetyHub.DisruptiveNotificationRevocations.Proposed).
+    Recorded when an interactation was detected for a site that was previously
+    put in a potential revocation list for disruptive notification permissions
+    or for a site for which notification permission was revoked. The metrics
+    will be recorded on either page visit or a notification click.
   </summary>
+  <metric name="DailyAverageVolume">
+    <summary>
+      Average daily volume of notifications sent by the site, measured over the
+      last 7 days.
+    </summary>
+  </metric>
   <metric name="DaysSinceRevocation">
     <summary>
       The number of days between the website was put in the potential revocation
@@ -21233,6 +21238,12 @@ be describing additional metrics about the same event.
       Site engagement score when the site marked for revocation.
     </summary>
   </metric>
+  <metric name="Reason" enum="DisruptiveNotificationFalsePositiveReason">
+    <summary>
+      The reason why the revocation was deamed a false positive: either a web
+      site visit or a notification click.
+    </summary>
+  </metric>
 </event>
 
 <event name="SafetyHub.DisruptiveNotificationRevocations.Proposed">
@@ -21244,7 +21255,9 @@ be describing additional metrics about the same event.
     from the website is displayed. Notifications are considered disruptives when
     sent by websites with both very low site engagement index and high volume of
     notifications. After a revocation is proposed, this metric will not be
-    reported anymore for the website for 30 days.
+    reported anymore for the website for 30 days. After metrics were collected,
+    during the full launch the permission will be revoked on the next Safety
+    Check run.
   </summary>
   <metric name="DailyAverageVolume">
     <summary>
