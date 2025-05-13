@@ -2672,6 +2672,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::
                             kIOSEnablePasswordManagerTrustedVaultWidget)},
+    {"colorful-tab-group", flag_descriptions::kColorfulTabGroupName,
+     flag_descriptions::kColorfulTabGroupDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kColorfulTabGroup)},
 
 };
 
