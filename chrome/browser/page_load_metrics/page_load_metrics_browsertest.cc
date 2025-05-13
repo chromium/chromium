@@ -23,12 +23,15 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/trace_event_analyzer.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "cc/base/switches.h"
 #include "chrome/browser/page_load_metrics/observers/core/ukm_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/document_write_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/service_worker_page_load_metrics_observer.h"
@@ -3816,15 +3819,13 @@ class PageLoadMetricsBrowserTestCrashedPage
     : public PageLoadMetricsBrowserTestTerminatedPage,
       public ::testing::WithParamInterface<const char*> {};
 
-// TODO(crbug.com/376032466): flaky on Linux/Windows.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define MAYBE_UkmIsRecordedForCrashedTabPage \
-  DISABLED_UkmIsRecordedForCrashedTabPage
-#else
-#define MAYBE_UkmIsRecordedForCrashedTabPage UkmIsRecordedForCrashedTabPage
-#endif
 IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestCrashedPage,
-                       MAYBE_UkmIsRecordedForCrashedTabPage) {
+                       UkmIsRecordedForCrashedTabPage) {
+  // This flag must be enabled to log metrics for blink::kChromeUIGpuCrashURL.
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kEnableGpuBenchmarking);
+
   // Open a new foreground tab and navigate.
   content::WebContents* contents = OpenTabAndNavigate();
 
@@ -3841,13 +3842,17 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestCrashedPage,
 
   // Kill the page.
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(GetParam())));
-
+  NavigateParams params(
+      browser(), GURL(GetParam()),
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+  ui_test_utils::NavigateToURL(&params);
   // Page being crashed is only verifiable in these crashes.
   if (GetParam() == blink::kChromeUIKillURL ||
-      GetParam() == blink::kChromeUICrashURL)
+      GetParam() == blink::kChromeUICrashURL) {
     EXPECT_TRUE(
         browser()->tab_strip_model()->GetActiveWebContents()->IsCrashed());
+  }
 
   // Verify page load metric is recorded.
   EXPECT_NEAR(
@@ -3861,7 +3866,6 @@ INSTANTIATE_TEST_SUITE_P(
     PageLoadMetricsBrowserTestCrashedPage,
     testing::ValuesIn({blink::kChromeUIKillURL, blink::kChromeUICrashURL,
                        blink::kChromeUIGpuCrashURL,
-                       blink::kChromeUIBrowserCrashURL,
                        blink::kChromeUINetworkErrorURL,
                        blink::kChromeUIProcessInternalsURL}));
 
