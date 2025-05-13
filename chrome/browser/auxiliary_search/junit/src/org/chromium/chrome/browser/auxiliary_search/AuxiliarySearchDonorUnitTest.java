@@ -28,7 +28,6 @@ import androidx.appsearch.app.SetSchemaResponse.MigrationFailure;
 import androidx.appsearch.builtintypes.GlobalSearchApplicationInfo;
 import androidx.appsearch.builtintypes.WebPage;
 import androidx.appsearch.exceptions.AppSearchException;
-import androidx.test.filters.SmallTest;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -47,13 +46,9 @@ import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchDonor.SearchQueryChecker;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
-import org.chromium.chrome.browser.auxiliary_search.schema.CustomTabWebPage;
-import org.chromium.chrome.browser.auxiliary_search.schema.TopSiteWebPage;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
@@ -101,7 +96,6 @@ public class AuxiliarySearchDonorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateSessionAndInit() {
         // #createSessionAndInit() has been called in AuxiliarySearchDonor's constructor.
         // Verifies that calling createSessionAndInit() again will early exit.
@@ -110,7 +104,6 @@ public class AuxiliarySearchDonorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateSessionAndInit_DefaultDisabled() {
         when(mHooks.isSettingDefaultEnabledByOs()).thenReturn(false);
         assertFalse(AuxiliarySearchControllerFactory.getInstance().isSettingDefaultEnabledByOs());
@@ -120,7 +113,6 @@ public class AuxiliarySearchDonorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDefaultTtlIsNotZero() {
         assertNotEquals(0L, mAuxiliarySearchDonor.getTabDocumentTtlMs());
         assertEquals(
@@ -133,7 +125,6 @@ public class AuxiliarySearchDonorUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures("AndroidAppIntegration:content_ttl_hours/0")
     public void testConfiguredTtlCannotBeZero() {
         assertNotEquals(0L, mAuxiliarySearchDonor.getTabDocumentTtlMs());
@@ -143,7 +134,6 @@ public class AuxiliarySearchDonorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCalculateDocumentTtlMs() {
         long creationTime = 10;
         long currentTime = 100;
@@ -168,7 +158,6 @@ public class AuxiliarySearchDonorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBuildDocument_Tab() {
         int id = 10;
         int type = AuxiliarySearchEntryType.TAB;
@@ -202,7 +191,6 @@ public class AuxiliarySearchDonorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBuildDocument_AuxiliarySearchEntry() {
         int id = 10;
         int type = AuxiliarySearchEntryType.TAB;
@@ -239,7 +227,6 @@ public class AuxiliarySearchDonorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBuildDocument_AuxiliarySearchDataEntry() {
         int id = 10;
         GURL url = JUnitTestGURLs.URL_1;
@@ -364,7 +351,6 @@ public class AuxiliarySearchDonorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnSetSchemaResponseAvailable() {
         List<MigrationFailure> migrationFailures = new ArrayList<MigrationFailure>();
         migrationFailures.add(mMigrationFailure);
@@ -396,21 +382,6 @@ public class AuxiliarySearchDonorUnitTest {
     }
 
     @Test
-    @SmallTest
-    public void testSharedPreferenceKeyIsUpdated() {
-        assertFalse(
-                AuxiliarySearchControllerFactory.getInstance().isMultiDataTypeEnabledOnDevice());
-        testSharedPreferenceKeyIsUpdatedImpl(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET);
-
-        when(mHooks.isMultiDataTypeEnabledOnDevice()).thenReturn(true);
-        assertTrue(AuxiliarySearchControllerFactory.getInstance().isMultiDataTypeEnabledOnDevice());
-        createAndInitAuxiliarySearchDonor();
-        testSharedPreferenceKeyIsUpdatedImpl(
-                ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_V2_SET);
-    }
-
-    @Test
-    @SmallTest
     public void testGetDocumentId() {
         int id = 10;
         String tabDocumentId = "Tab-10";
@@ -428,41 +399,34 @@ public class AuxiliarySearchDonorUnitTest {
                 AuxiliarySearchDonor.getDocumentId(AuxiliarySearchEntryType.TOP_SITE, id));
     }
 
-    private void testSharedPreferenceKeyIsUpdatedImpl(String key) {
+    @Test
+    public void testSharedPreferenceKeyIsUpdated() {
         SetSchemaResponse setSchemaResponse = new SetSchemaResponse.Builder().build();
         assertTrue(setSchemaResponse.getMigrationFailures().isEmpty());
 
         SharedPreferencesManager chromeSharedPreferences = ChromeSharedPreferences.getInstance();
         assertFalse(mAuxiliarySearchDonor.getIsSchemaSetForTesting());
-        assertFalse(chromeSharedPreferences.readBoolean(key, false));
+        assertFalse(
+                chromeSharedPreferences.readBoolean(
+                        ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, false));
 
         // Verifies that ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET is set to true after
         // the schema is set successful.
         mAuxiliarySearchDonor.onSetSchemaResponseAvailable(setSchemaResponse);
         assertTrue(mAuxiliarySearchDonor.getIsSchemaSetForTesting());
-        assertTrue(chromeSharedPreferences.readBoolean(key, false));
+        assertTrue(
+                chromeSharedPreferences.readBoolean(
+                        ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, false));
 
-        chromeSharedPreferences.removeKey(key);
+        chromeSharedPreferences.removeKey(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET);
     }
 
     @Test
-    @SmallTest
     public void testDoNotSetSchemaAgain() {
-        assertFalse(
-                AuxiliarySearchControllerFactory.getInstance().isMultiDataTypeEnabledOnDevice());
-        testDoNotSetSchemaAgainImpl(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET);
-
-        // Enables multiple data source.
-        when(mHooks.isMultiDataTypeEnabledOnDevice()).thenReturn(true);
-        assertTrue(AuxiliarySearchControllerFactory.getInstance().isMultiDataTypeEnabledOnDevice());
-        createAndInitAuxiliarySearchDonor();
-        testDoNotSetSchemaAgainImpl(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_V2_SET);
-    }
-
-    private void testDoNotSetSchemaAgainImpl(String key) {
         mAuxiliarySearchDonor.resetSchemaSetForTesting();
         SharedPreferencesManager chromeSharedPreferences = ChromeSharedPreferences.getInstance();
-        chromeSharedPreferences.writeBoolean(key, true);
+        chromeSharedPreferences.writeBoolean(
+                ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, true);
         AuxiliarySearchUtils.setSchemaVersion(AuxiliarySearchUtils.CURRENT_SCHEMA_VERSION);
         assertFalse(mAuxiliarySearchDonor.getIsSchemaSetForTesting());
 
@@ -471,11 +435,10 @@ public class AuxiliarySearchDonorUnitTest {
         assertFalse(mAuxiliarySearchDonor.onConsumerSchemaSearchedImpl(/* success= */ true));
         assertTrue(mAuxiliarySearchDonor.getIsSchemaSetForTesting());
 
-        chromeSharedPreferences.removeKey(key);
+        chromeSharedPreferences.removeKey(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET);
     }
 
     @Test
-    @SmallTest
     public void testOnConfigChanged() {
         Callback<Boolean> callback = Mockito.mock(Callback.class);
         assertTrue(mAuxiliarySearchDonor.getSharedTabsWithOsStateForTesting());
@@ -491,7 +454,6 @@ public class AuxiliarySearchDonorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCanDonate() {
         mAuxiliarySearchDonor.setSharedTabsWithOsStateForTesting(
                 /* sharedTabsWithOsState= */ false);
@@ -506,7 +468,6 @@ public class AuxiliarySearchDonorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnConsumerSchemaSearchedImpl() {
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, true);
@@ -560,7 +521,6 @@ public class AuxiliarySearchDonorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIterateSearchResults() {
         SearchResults searchresults = Mockito.mock(SearchResults.class);
         SearchQueryChecker searchQueryChecker = Mockito.mock(SearchQueryChecker.class);
@@ -602,7 +562,6 @@ public class AuxiliarySearchDonorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIsShareTabsWithOsEnabledKeyExist() {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.removeKey(ChromePreferenceKeys.SHARING_TABS_WITH_OS);
@@ -617,55 +576,7 @@ public class AuxiliarySearchDonorUnitTest {
     }
 
     @Test
-    @SmallTest
-    public void testGetSchemaSetPreferenceKey() {
-        assertEquals(
-                ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET,
-                mAuxiliarySearchDonor.getSchemaSetPreferenceKey());
-
-        // Enables multiple data source.
-        when(mHooks.isMultiDataTypeEnabledOnDevice()).thenReturn(true);
-        assertTrue(AuxiliarySearchControllerFactory.getInstance().isMultiDataTypeEnabledOnDevice());
-        createAndInitAuxiliarySearchDonor();
-        assertEquals(
-                ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_V2_SET,
-                mAuxiliarySearchDonor.getSchemaSetPreferenceKey());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({"AndroidAppIntegrationMultiDataSource:use_schema_v1/true"})
-    public void testGetSchemaSetPreferenceKey_MultiDataSourceEnabled_UseSchemaV1() {
-        assertEquals(
-                ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET,
-                mAuxiliarySearchDonor.getSchemaSetPreferenceKey());
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE})
     public void testGetSupportedDocumentClasses() {
-        List<Class<?>> list = mAuxiliarySearchDonor.getSupportedDocumentClasses();
-        assertEquals(1, list.size());
-        assertTrue(list.contains(WebPage.class));
-
-        // Enables multiple data source.
-        when(mHooks.isMultiDataTypeEnabledOnDevice()).thenReturn(true);
-        assertTrue(AuxiliarySearchControllerFactory.getInstance().isMultiDataTypeEnabledOnDevice());
-        createAndInitAuxiliarySearchDonor();
-        list = mAuxiliarySearchDonor.getSupportedDocumentClasses();
-        assertEquals(3, list.size());
-        assertTrue(list.contains(WebPage.class));
-        assertTrue(list.contains(CustomTabWebPage.class));
-        assertTrue(list.contains(TopSiteWebPage.class));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE + ":use_schema_v1/true"
-    })
-    public void testGetSupportedDocumentClasses_UseSchemaV1() {
         // Enables multiple data source.
         when(mHooks.isMultiDataTypeEnabledOnDevice()).thenReturn(true);
         assertTrue(AuxiliarySearchControllerFactory.getInstance().isMultiDataTypeEnabledOnDevice());
@@ -673,24 +584,6 @@ public class AuxiliarySearchDonorUnitTest {
         List<Class<?>> list = mAuxiliarySearchDonor.getSupportedDocumentClasses();
         assertEquals(1, list.size());
         assertTrue(list.contains(WebPage.class));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({"AndroidAppIntegrationMultiDataSource:use_schema_v1/true"})
-    public void testUseSchemaV1() {
-        mAuxiliarySearchDonor.resetSchemaSetForTesting();
-        SharedPreferencesManager chromeSharedPreferences = ChromeSharedPreferences.getInstance();
-        String key = ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET;
-        chromeSharedPreferences.writeBoolean(key, true);
-        AuxiliarySearchUtils.setSchemaVersion(AuxiliarySearchUtils.CURRENT_SCHEMA_VERSION);
-        assertFalse(mAuxiliarySearchDonor.getIsSchemaSetForTesting());
-
-        // Verifies that |mIsSchemaSet| checks the key for schema V1.
-        mAuxiliarySearchDonor.onConsumerSchemaSearchedImpl(/* success= */ true);
-        assertTrue(mAuxiliarySearchDonor.getIsSchemaSetForTesting());
-
-        chromeSharedPreferences.removeKey(key);
     }
 
     private SearchResult createSearchResult(int applicationType, @NonNull String schemaType) {

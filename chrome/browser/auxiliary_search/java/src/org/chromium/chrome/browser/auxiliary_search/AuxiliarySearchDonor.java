@@ -49,8 +49,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
-import org.chromium.chrome.browser.auxiliary_search.schema.CustomTabWebPage;
-import org.chromium.chrome.browser.auxiliary_search.schema.TopSiteWebPage;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
@@ -113,7 +111,6 @@ public class AuxiliarySearchDonor {
     private @Nullable Callback<Boolean> mPendingCallback;
     private boolean mSharedTabsWithOsState;
     private @Nullable Boolean mIsDeviceCompatible;
-    private final boolean mSupportMultiDataSource;
     private boolean mIsCreatedSessionAndInitForTesting;
 
     /** Static class that implements the initialization-on-demand holder idiom. */
@@ -131,8 +128,6 @@ public class AuxiliarySearchDonor {
         mNamespace = mContext.getPackageName();
         mSkipSchemaCheck = AuxiliarySearchUtils.SKIP_SCHEMA_CHECK.getValue();
 
-        mSupportMultiDataSource =
-                AuxiliarySearchControllerFactory.getInstance().isMultiDataTypeEnabledOnDevice();
         mSharedTabsWithOsState = AuxiliarySearchUtils.isShareTabsWithOsEnabled();
         boolean shouldInit = mSharedTabsWithOsState || !isShareTabsWithOsEnabledKeyExist();
         if (shouldInit) {
@@ -215,7 +210,7 @@ public class AuxiliarySearchDonor {
 
         mIsSchemaSet =
                 ChromeSharedPreferences.getInstance()
-                        .readBoolean(getSchemaSetPreferenceKey(), false);
+                        .readBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, false);
 
         if (!mIsDeviceCompatible) {
             if (mIsSchemaSet) {
@@ -285,10 +280,6 @@ public class AuxiliarySearchDonor {
     List<Class<?>> getSupportedDocumentClasses() {
         List<Class<?>> documents = new ArrayList<>();
         documents.add(WebPage.class);
-        if (!AuxiliarySearchUtils.USE_SCHEMA_V1.getValue() && mSupportMultiDataSource) {
-            documents.add(CustomTabWebPage.class);
-            documents.add(TopSiteWebPage.class);
-        }
         return documents;
     }
 
@@ -313,22 +304,11 @@ public class AuxiliarySearchDonor {
         if (response == null || !response.getMigrationFailures().isEmpty()) return;
 
         mIsSchemaSet = true;
-        ChromeSharedPreferences.getInstance().writeBoolean(getSchemaSetPreferenceKey(), true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, true);
         AuxiliarySearchUtils.setSchemaVersion(AuxiliarySearchUtils.CURRENT_SCHEMA_VERSION);
 
         handlePendingDonations();
-    }
-
-    @VisibleForTesting
-    String getSchemaSetPreferenceKey() {
-        // TODO(https://crbug.com/397457989): Removes here once the new schema is ready to use.
-        if (AuxiliarySearchUtils.USE_SCHEMA_V1.getValue()) {
-            return ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET;
-        }
-
-        return mSupportMultiDataSource
-                ? ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_V2_SET
-                : ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET;
     }
 
     private void handlePendingDonations() {

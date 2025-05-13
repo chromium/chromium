@@ -47,10 +47,6 @@ public class AuxiliarySearchUtils {
             ChromeFeatureList.sAndroidAppIntegrationWithFaviconSkipSchemaCheck;
 
     @VisibleForTesting
-    static final BooleanCachedFeatureParam USE_SCHEMA_V1 =
-            ChromeFeatureList.sAndroidAppIntegrationMultiDataSourceUseSchemaV1;
-
-    @VisibleForTesting
     static final BooleanCachedFeatureParam MULTI_DATA_SOURCE_SKIP_DEVICE_CHECK =
             ChromeFeatureList.sAndroidAppIntegrationMultiDataSourceSkipDeviceCheck;
 
