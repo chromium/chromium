@@ -138,10 +138,6 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
       return a.it_ == b.it_;
     }
 
-    friend bool operator!=(const Iterator& a, const Iterator& b) {
-      return a.it_ != b.it_;
-    }
-
    private:
     friend TriggerSpecs;
 
