@@ -10,6 +10,8 @@ import android.graphics.Rect;
 import android.view.View;
 import android.widget.ImageButton;
 
+import androidx.core.graphics.Insets;
+
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -84,7 +86,8 @@ public class ReloadButtonCoordinator {
                         ntpLoadingSupplier,
                         enabledSupplier,
                         (text) -> Toast.showAnchoredToast(mView.getContext(), mView, text),
-                        mView.getResources());
+                        mView.getResources(),
+                        mView.getContext());
         PropertyModelChangeProcessor.create(model, mView, ReloadButtonViewBinder::bind);
     }
 
@@ -104,6 +107,10 @@ public class ReloadButtonCoordinator {
      */
     public void setOnKeyListener(View.OnKeyListener listener) {
         mMediator.setOnKeyListener(listener);
+    }
+
+    public void setBackgroundInsets(Insets insets) {
+        mMediator.setBackgroundInsets(insets);
     }
 
     /**

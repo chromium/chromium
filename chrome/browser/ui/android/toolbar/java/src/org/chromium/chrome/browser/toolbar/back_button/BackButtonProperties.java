@@ -5,13 +5,13 @@
 package org.chromium.chrome.browser.toolbar.back_button;
 
 import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.ui.util.ClickWithMetaStateCallback;
 
@@ -26,8 +26,8 @@ class BackButtonProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<ColorStateList> TINT_COLOR_LIST =
             new WritableObjectPropertyKey<>();
-    public static final WritableIntPropertyKey BACKGROUND_HIGHLIGHT_RESOURCE =
-            new WritableIntPropertyKey();
+    public static final WritableObjectPropertyKey<Drawable> BACKGROUND_HIGHLIGHT =
+            new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Runnable> LONG_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
     public static final WritableBooleanPropertyKey IS_ENABLED = new WritableBooleanPropertyKey();
@@ -41,7 +41,7 @@ class BackButtonProperties {
             new PropertyKey[] {
                 CLICK_LISTENER,
                 TINT_COLOR_LIST,
-                BACKGROUND_HIGHLIGHT_RESOURCE,
+                BACKGROUND_HIGHLIGHT,
                 LONG_CLICK_LISTENER,
                 IS_ENABLED,
                 IS_FOCUSABLE,

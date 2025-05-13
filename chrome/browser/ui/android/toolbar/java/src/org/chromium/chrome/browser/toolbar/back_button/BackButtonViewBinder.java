@@ -37,9 +37,8 @@ class BackButtonViewBinder {
         } else if (key == BackButtonProperties.TINT_COLOR_LIST) {
             ImageViewCompat.setImageTintList(
                     button, model.get(BackButtonProperties.TINT_COLOR_LIST));
-        } else if (key == BackButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE) {
-            button.setBackgroundResource(
-                    model.get(BackButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE));
+        } else if (key == BackButtonProperties.BACKGROUND_HIGHLIGHT) {
+            button.setBackground(model.get(BackButtonProperties.BACKGROUND_HIGHLIGHT));
         } else if (key == BackButtonProperties.LONG_CLICK_LISTENER) {
             final var listener = model.get(BackButtonProperties.LONG_CLICK_LISTENER);
             button.setOnLongClickListener(

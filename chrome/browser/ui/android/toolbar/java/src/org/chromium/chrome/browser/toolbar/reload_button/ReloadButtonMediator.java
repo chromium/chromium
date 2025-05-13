@@ -5,13 +5,17 @@
 package org.chromium.chrome.browser.toolbar.reload_button;
 
 import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.drawable.InsetDrawable;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.DrawableRes;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.graphics.Insets;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -34,6 +38,7 @@ import org.chromium.ui.modelutil.PropertyModelAnimatorFactory;
 class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
 
     private final PropertyModel mModel;
+    private final Context mContext;
     private final Resources mResources;
     private final Callback<String> mShowToastCallback;
     private final ThemeColorProvider mThemeColorProvider;
@@ -45,6 +50,9 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
     private boolean mIsShiftDownForReload;
     private boolean mIsReloading;
     private @Nullable Tab mCurrentTab;
+    private Insets mInsets;
+
+    private @DrawableRes int mBackgroundResForTesting;
 
     /**
      * Create an instance of {@link ReloadButtonMediator}.
@@ -66,13 +74,17 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
             ObservableSupplier<Boolean> ntpLoadingSupplier,
             ObservableSupplier<Boolean> enabledSupplier,
             Callback<String> showToast,
-            Resources resources) {
+            Resources resources,
+            Context context) {
         mModel = model;
         mResources = resources;
         mShowToastCallback = showToast;
         mThemeColorProvider = themeColorProvider;
         mNtpLoadingSupplier = ntpLoadingSupplier;
         mEnabledSupplier = enabledSupplier;
+        mContext = context;
+
+        mInsets = Insets.NONE;
 
         Callback<MotionEvent> onTouchListener =
                 (event) ->
@@ -84,7 +96,7 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
                 () -> delegate.stopOrReloadCurrentTab(mIsShiftDownForReload));
         mModel.set(ReloadButtonProperties.LONG_CLICK_LISTENER, this::showActionToastOnReloadButton);
 
-        updateBackgroundHighlight(mThemeColorProvider.getBrandedColorScheme());
+        updateBackground(mThemeColorProvider.getBrandedColorScheme());
         mThemeColorProvider.addTintObserver(this);
 
         mNtpLoadingObserver =
@@ -144,15 +156,27 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
             @Nullable ColorStateList activityFocusTint,
             @BrandedColorScheme int brandedColorScheme) {
         mModel.set(ReloadButtonProperties.TINT_LIST, activityFocusTint);
-        updateBackgroundHighlight(brandedColorScheme);
+        updateBackground(brandedColorScheme);
     }
 
-    private void updateBackgroundHighlight(@BrandedColorScheme int brandedColorScheme) {
+    private void updateBackground(@BrandedColorScheme int brandedColorScheme) {
         final @DrawableRes int backgroundRes =
                 brandedColorScheme == BrandedColorScheme.INCOGNITO
                         ? R.drawable.default_icon_background_baseline
                         : R.drawable.default_icon_background;
-        mModel.set(ReloadButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE, backgroundRes);
+        InsetDrawable drawable =
+                new InsetDrawable(
+                        ResourcesCompat.getDrawable(mResources, backgroundRes, mContext.getTheme()),
+                        mInsets.left,
+                        mInsets.top,
+                        mInsets.right,
+                        mInsets.bottom);
+        mBackgroundResForTesting = backgroundRes;
+        mModel.set(ReloadButtonProperties.BACKGROUND_HIGHLIGHT, drawable);
+    }
+
+    public @DrawableRes int getBackgroundResForTesting() {
+        return mBackgroundResForTesting;
     }
 
     /**
@@ -209,6 +233,11 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
      */
     public void setOnKeyListener(View.OnKeyListener listener) {
         mModel.set(ReloadButtonProperties.KEY_LISTENER, listener);
+    }
+
+    public void setBackgroundInsets(Insets insets) {
+        mInsets = insets;
+        updateBackground(mThemeColorProvider.getBrandedColorScheme());
     }
 
     public void destroy() {

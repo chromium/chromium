@@ -11,6 +11,7 @@ import android.widget.ImageButton;
 
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.graphics.Insets;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -121,6 +122,8 @@ public class WebAppHeaderLayoutCoordinator
         final var model = new PropertyModel.Builder(WebAppHeaderLayoutProperties.ALL_KEYS).build();
         final int headerMinHeight =
                 mView.getResources().getDimensionPixelSize(R.dimen.web_app_header_min_height);
+        final int headerButtonHeight =
+                mView.getResources().getDimensionPixelSize(R.dimen.header_button_height);
 
         mMinUIControlsMinWidthPx =
                 DisplayUtil.dpToPx(
@@ -134,7 +137,8 @@ public class WebAppHeaderLayoutCoordinator
                         mTabSupplier,
                         this::collectNonDraggableAreas,
                         mThemeColorProvider,
-                        headerMinHeight);
+                        headerMinHeight,
+                        headerButtonHeight);
         PropertyModelChangeProcessor.create(model, mView, WebAppHeaderLayoutViewBinder::bind);
 
         mMediator.getUnoccludedWidthSupplier().addObserver(mOnUnoccludedWidthCallback);
@@ -168,6 +172,8 @@ public class WebAppHeaderLayoutCoordinator
                         mTabSupplier,
                         mControlsEnabledSupplier,
                         mHistoryDelegate);
+
+        mMediator.setOnButtonBottomInsetChanged(this::onButtonBottomInsetChanged);
     }
 
     private void onUnoccludedWidthChanged(int newUnoccludedWidthPx) {
@@ -200,6 +206,16 @@ public class WebAppHeaderLayoutCoordinator
         }
 
         return areas;
+    }
+
+    private void onButtonBottomInsetChanged(int bottomInset) {
+        if (mReloadButtonCoordinator != null) {
+            mReloadButtonCoordinator.setBackgroundInsets(Insets.of(0, 0, 0, bottomInset));
+        }
+
+        if (mBackButtonCoordinator != null) {
+            mBackButtonCoordinator.setBackgroundInsets(Insets.of(0, 0, 0, bottomInset));
+        }
     }
 
     // TODO(vkorotkevich): Move to the Mediator

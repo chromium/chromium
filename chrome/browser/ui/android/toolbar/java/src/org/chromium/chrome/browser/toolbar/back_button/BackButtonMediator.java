@@ -5,11 +5,16 @@
 package org.chromium.chrome.browser.toolbar.back_button;
 
 import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.graphics.drawable.InsetDrawable;
 import android.view.View;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.graphics.Insets;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -33,11 +38,16 @@ import org.chromium.ui.util.ClickWithMetaStateCallback;
 class BackButtonMediator implements ThemeColorProvider.TintObserver {
 
     private final PropertyModel mModel;
+    private final Context mContext;
+    private final Resources mResources;
     private final ThemeColorProvider mThemeColorProvider;
     private final TabSupplierObserver mTabObserver;
     private @Nullable Tab mCurrentTab;
     private final ObservableSupplier<Boolean> mEnabledSupplier;
     private final Callback<Boolean> mEnabledObserver;
+    private Insets mInsets;
+
+    private @DrawableRes int mDrawableResForTesting;
 
     /**
      * Create an instance of {@link BackButtonMediator}.
@@ -56,9 +66,15 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
             ThemeColorProvider themeColorProvider,
             ObservableSupplier<@Nullable Tab> tabSupplier,
             ObservableSupplier<Boolean> enabledSupplier,
-            Callback<Tab> showNavigationPopup) {
+            Callback<Tab> showNavigationPopup,
+            Resources resources,
+            Context context) {
         mModel = model;
         mThemeColorProvider = themeColorProvider;
+        mResources = resources;
+        mContext = context;
+
+        mInsets = Insets.NONE;
 
         mModel.set(
                 BackButtonProperties.CLICK_LISTENER,
@@ -73,7 +89,7 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
                     showNavigationPopup.onResult(mCurrentTab);
                 });
 
-        updateBackgroundHighlight(mThemeColorProvider.getBrandedColorScheme());
+        updateBackground(mThemeColorProvider.getBrandedColorScheme());
         mThemeColorProvider.addTintObserver(this);
 
         mEnabledSupplier = enabledSupplier;
@@ -135,15 +151,27 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
             @Nullable ColorStateList activityFocusTint,
             @BrandedColorScheme int brandedColorScheme) {
         mModel.set(BackButtonProperties.TINT_COLOR_LIST, activityFocusTint);
-        updateBackgroundHighlight(brandedColorScheme);
+        updateBackground(brandedColorScheme);
     }
 
-    private void updateBackgroundHighlight(@BrandedColorScheme int brandedThemeColor) {
+    private void updateBackground(@BrandedColorScheme int brandedThemeColor) {
         final @DrawableRes int backgroundRes =
                 brandedThemeColor == BrandedColorScheme.INCOGNITO
                         ? R.drawable.default_icon_background_baseline
                         : R.drawable.default_icon_background;
-        mModel.set(BackButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE, backgroundRes);
+        mDrawableResForTesting = backgroundRes;
+        var drawable =
+                new InsetDrawable(
+                        ResourcesCompat.getDrawable(mResources, backgroundRes, mContext.getTheme()),
+                        mInsets.left,
+                        mInsets.top,
+                        mInsets.right,
+                        mInsets.bottom);
+        mModel.set(BackButtonProperties.BACKGROUND_HIGHLIGHT, drawable);
+    }
+
+    public @DrawableRes int getBackgroundResForTesting() {
+        return mDrawableResForTesting;
     }
 
     /**
@@ -192,6 +220,11 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
      */
     public void setOnKeyListener(View.OnKeyListener listener) {
         mModel.set(BackButtonProperties.KEY_LISTENER, listener);
+    }
+
+    public void setBackgroundInsets(Insets insets) {
+        mInsets = insets;
+        updateBackground(mThemeColorProvider.getBrandedColorScheme());
     }
 
     /**

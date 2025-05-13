@@ -9,6 +9,8 @@ import android.content.res.ColorStateList;
 import android.graphics.Rect;
 import android.view.View;
 
+import androidx.core.graphics.Insets;
+
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
@@ -72,7 +74,9 @@ public class BackButtonCoordinator {
                         themeColorProvider,
                         tabSupplier,
                         enabledSupplier,
-                        this::showNavigationPopup);
+                        this::showNavigationPopup,
+                        mView.getResources(),
+                        mView.getContext());
         PropertyModelChangeProcessor.create(model, view, BackButtonViewBinder::bind);
     }
 
@@ -134,6 +138,10 @@ public class BackButtonCoordinator {
      */
     public void setOnKeyListener(View.OnKeyListener listener) {
         mMediator.setOnKeyListener(listener);
+    }
+
+    public void setBackgroundInsets(Insets insets) {
+        mMediator.setBackgroundInsets(insets);
     }
 
     /**

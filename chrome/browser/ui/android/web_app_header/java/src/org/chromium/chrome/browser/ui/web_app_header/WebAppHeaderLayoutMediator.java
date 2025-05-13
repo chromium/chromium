@@ -46,9 +46,12 @@ class WebAppHeaderLayoutMediator
     private final ObservableSupplierImpl<Integer> mWidthSupplier;
     private final ThemeColorProvider mThemeColorProvider;
     private final int mWebAppMinHeaderHeight;
+    private final int mHeaderButtonHeight;
     private @Nullable AppHeaderState mCurrentHeaderState;
     private final ObservableSupplierImpl<Integer> mAppHeaderUnoccludedWidthSupplier;
     private final Callback<Boolean> mScrimVisibilityObserver;
+    private @Nullable Callback<Integer> mOnButtonBottomInsetChanged;
+    private int mButtonBottomInset;
 
     private int mDisabledControlsToken = TokenHolder.INVALID_TOKEN;
 
@@ -72,13 +75,15 @@ class WebAppHeaderLayoutMediator
             ObservableSupplier<@Nullable Tab> tabSupplier,
             Supplier<List<Rect>> nonDraggableAreasSupplier,
             ThemeColorProvider themeColorProvider,
-            int webAppHeaderMinHeightFromResources) {
+            int webAppHeaderMinHeightFromResources,
+            int headerButtonHeight) {
         mThemeColorProvider = themeColorProvider;
         mWebAppMinHeaderHeight = webAppHeaderMinHeightFromResources;
         mHeaderDelegate = headerDelegate;
         mDesktopWindowStateManager = desktopWindowStateManager;
         mTabSupplier = tabSupplier;
         mNonDraggableAreasSupplier = nonDraggableAreasSupplier;
+        mHeaderButtonHeight = headerButtonHeight;
 
         mScrimVisibilityObserver =
                 (isScrimVisible) -> {
@@ -144,16 +149,40 @@ class WebAppHeaderLayoutMediator
     private void updatePaddings() {
         if (mCurrentHeaderState == null) return;
 
+        // Some vendors provide caption bar insets as caption bar + status bar
+        // insets, to layout properly we need to add status bar insets to the
+        // padding.
+        int controlsTopOffset = mCurrentHeaderState.getControlsTopOffset();
+        int adjustedAppHeaderHeight = mCurrentHeaderState.getAppHeaderHeight() - controlsTopOffset;
+
+        if (adjustedAppHeaderHeight < mHeaderButtonHeight) {
+            mButtonBottomInset = mHeaderButtonHeight - adjustedAppHeaderHeight;
+        } else {
+            mButtonBottomInset = 0;
+        }
+
+        if (mOnButtonBottomInsetChanged != null) {
+            mOnButtonBottomInsetChanged.onResult(mButtonBottomInset);
+        }
+
         final var paddings =
                 new Rect(
                         mCurrentHeaderState.getLeftPadding(),
-                        // Some vendors provide caption bar insets as caption bar + status bar
-                        // insets, to layout properly we need to add status bar insets to the
-                        // padding.
-                        mCurrentHeaderState.getControlsTopOffset(),
+                        controlsTopOffset,
                         mCurrentHeaderState.getRightPadding(),
                         0);
         mModel.set(WebAppHeaderLayoutProperties.PADDINGS, paddings);
+    }
+
+    /**
+     * Sets a callback that will be notified about changes to the bottom inset required to align
+     * control button icons with system UI icons.
+     *
+     * @param onButtonBottomInsetChanged a {@link Callback} that accepts new bottom inset.
+     */
+    public void setOnButtonBottomInsetChanged(Callback<Integer> onButtonBottomInsetChanged) {
+        mOnButtonBottomInsetChanged = onButtonBottomInsetChanged;
+        onButtonBottomInsetChanged.onResult(mButtonBottomInset);
     }
 
     private void updateNonDraggableAreas() {
@@ -199,5 +228,9 @@ class WebAppHeaderLayoutMediator
     @VisibleForTesting
     Callback<Boolean> getScrimVisibilityObserver() {
         return mScrimVisibilityObserver;
+    }
+
+    int getButtonBottomInsetForTesting() {
+        return mButtonBottomInset;
     }
 }

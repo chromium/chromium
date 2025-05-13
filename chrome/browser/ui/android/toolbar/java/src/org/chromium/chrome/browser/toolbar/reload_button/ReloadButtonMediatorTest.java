@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.os.Looper;
@@ -59,6 +60,7 @@ public class ReloadButtonMediatorTest {
     @Mock public ThemeColorProvider mThemeColorProvider;
 
     @Mock public Resources mResources;
+    @Mock public Context mContext;
     @Mock public Profile mProfile;
     private MockTab mTab;
     private MockTab mNtpTab;
@@ -98,7 +100,8 @@ public class ReloadButtonMediatorTest {
                         mNtpLoadingSupplier,
                         mEnabledSupplier,
                         mShowToastCallback,
-                        mResources);
+                        mResources,
+                        mContext);
 
         // supplier will try to notify observers initially, need to wait for updates.
         shadowOf(Looper.getMainLooper()).idle();
@@ -208,7 +211,7 @@ public class ReloadButtonMediatorTest {
 
         assertEquals(
                 "Background ripple effect should be default",
-                mModel.get(ReloadButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE),
+                mMediator.getBackgroundResForTesting(),
                 R.drawable.default_icon_background);
     }
 
@@ -219,7 +222,7 @@ public class ReloadButtonMediatorTest {
 
         assertEquals(
                 "Background ripple effect should be default",
-                mModel.get(ReloadButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE),
+                mMediator.getBackgroundResForTesting(),
                 R.drawable.default_icon_background);
     }
 
@@ -230,7 +233,7 @@ public class ReloadButtonMediatorTest {
 
         assertEquals(
                 "Background ripple effect should be default",
-                mModel.get(ReloadButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE),
+                mMediator.getBackgroundResForTesting(),
                 R.drawable.default_icon_background);
     }
 
@@ -241,7 +244,7 @@ public class ReloadButtonMediatorTest {
 
         assertEquals(
                 "Background ripple effect should be incognito",
-                mModel.get(ReloadButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE),
+                mMediator.getBackgroundResForTesting(),
                 R.drawable.default_icon_background_baseline);
     }
 
