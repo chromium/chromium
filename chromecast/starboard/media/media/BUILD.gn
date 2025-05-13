@@ -112,6 +112,7 @@ test("media_pipeline_backend_starboard_test") {
     "//base/test:test_support",
     "//chromecast/public",
     "//chromecast/public/media",
+    "//chromecast/starboard/media/cdm:starboard_drm_wrapper",
     "//testing/gmock",
     "//testing/gtest",
   ]

@@ -221,20 +221,12 @@ void MediaPipelineBackendStarboard::OnGeometryChanged(
 void MediaPipelineBackendStarboard::CreatePlayer() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
-  bool has_drm = false;
   StarboardPlayerCreationParam params = {};
   if (audio_decoder_) {
     const std::optional<StarboardAudioSampleInfo>& audio_info =
         audio_decoder_->GetAudioSampleInfo();
     CHECK(audio_info);
     params.audio_sample_info = *audio_info;
-
-    std::optional<EncryptionScheme> encryption_scheme =
-        audio_decoder_->GetEncryptionScheme();
-    if (encryption_scheme.has_value() &&
-        *encryption_scheme != EncryptionScheme::kUnencrypted) {
-      has_drm = true;
-    }
   }
   if (video_decoder_) {
     const std::optional<StarboardVideoSampleInfo>& video_info =
@@ -247,21 +239,9 @@ void MediaPipelineBackendStarboard::CreatePlayer() {
       // prioritize minimizing latency (render the frames as soon as possible).
       params.video_sample_info.max_video_capabilities = "streaming=1";
     }
-
-    std::optional<EncryptionScheme> encryption_scheme =
-        video_decoder_->GetEncryptionScheme();
-    if (encryption_scheme.has_value() &&
-        *encryption_scheme != EncryptionScheme::kUnencrypted) {
-      has_drm = true;
-    }
   }
 
-  if (has_drm) {
-    params.drm_system = StarboardDrmWrapper::GetInstance().GetDrmSystem();
-  } else {
-    params.drm_system = nullptr;
-  }
-
+  params.drm_system = StarboardDrmWrapper::GetInstance().GetDrmSystem();
   params.output_mode = kStarboardPlayerOutputModePunchOut;
   player_ =
       starboard_->CreatePlayer(&params,
