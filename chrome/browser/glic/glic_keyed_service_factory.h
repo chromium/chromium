@@ -7,12 +7,12 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
 
 namespace glic {
 
-class GlicKeyedServiceFactory : public ProfileKeyedServiceFactory {
+class GlicKeyedServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
   static GlicKeyedServiceFactory* GetInstance();
 
@@ -24,8 +24,12 @@ class GlicKeyedServiceFactory : public ProfileKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory implementation:
   bool ServiceIsCreatedWithBrowserContext() const override;
+
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
+
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const final;
 
  private:
   friend base::NoDestructor<GlicKeyedServiceFactory>;

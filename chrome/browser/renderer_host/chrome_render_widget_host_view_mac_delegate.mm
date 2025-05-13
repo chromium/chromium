@@ -37,7 +37,6 @@
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
-#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #endif
 
 @interface ChromeRenderWidgetHostViewMacDelegate () <HistorySwiperDelegate>
@@ -448,14 +447,10 @@
   // inactive, aligning with the expected behavior of native chrome dialogs.
   // TODO(crbug.com/399119513): Consider making this a single WebContents
   // scoped setting, allowing this behavior to be configured by feature code.
-  if (Profile* profile =
-          Profile::FromBrowserContext(webContents->GetBrowserContext());
-      glic::GlicEnabling::IsProfileEligible(profile)) {
-    glic::GlicKeyedService* glic_service =
-        glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-    if (glic_service && glic_service->IsActiveWebContents(webContents)) {
-      return kAcceptMouseEventsInActiveApp;
-    }
+  glic::GlicKeyedService* glic_service = glic::GlicKeyedService::Get(
+      Profile::FromBrowserContext(webContents->GetBrowserContext()));
+  if (glic_service && glic_service->IsActiveWebContents(webContents)) {
+    return kAcceptMouseEventsInActiveApp;
   }
 #endif
 

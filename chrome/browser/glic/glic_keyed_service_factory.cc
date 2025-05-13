@@ -29,8 +29,9 @@ GlicKeyedServiceFactory* GlicKeyedServiceFactory::GetInstance() {
 }
 
 GlicKeyedServiceFactory::GlicKeyedServiceFactory()
-    : ProfileKeyedServiceFactory("GlicKeyedService",
-                                 ProfileSelections::BuildForRegularProfile()) {
+    : BrowserContextKeyedServiceFactory(
+          "GlicKeyedService",
+          BrowserContextDependencyManager::GetInstance()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ThemeServiceFactory::GetInstance());
   DependsOn(contextual_cueing::ContextualCueingServiceFactory::GetInstance());
@@ -40,6 +41,13 @@ GlicKeyedServiceFactory::~GlicKeyedServiceFactory() = default;
 
 bool GlicKeyedServiceFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
+}
+
+content::BrowserContext* GlicKeyedServiceFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  return GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(context))
+             ? context
+             : nullptr;
 }
 
 std::unique_ptr<KeyedService>

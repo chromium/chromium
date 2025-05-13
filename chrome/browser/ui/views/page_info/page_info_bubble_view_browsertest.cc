@@ -1768,7 +1768,14 @@ class PageInfoBubbleViewBrowserTestTrackingProtectionSubpage
              privacy_sandbox::kActUserBypassUx,
              privacy_sandbox::kFingerprintingProtectionUx,
              privacy_sandbox::kIpProtectionUx},
-        disabled_features = {};
+        disabled_features = {
+#if BUILDFLAG(ENABLE_GLIC)
+            // GlicBorderView doesn't like it when the profile type is changed
+            // (kIncognito vs kRegular), which is something that can't normally
+            // happen.
+            features::kGlic
+#endif
+        };
     if (GetParam()) {
       enabled_features.push_back(
           content_settings::features::kTrackingProtection3pcd);

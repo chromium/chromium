@@ -71,7 +71,7 @@
 #include "chrome/browser/glic/browser_ui/glic_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_iph_controller.h"
 #include "chrome/browser/glic/glic_enabling.h"
-#include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/glic_keyed_service.h"
 #endif
 
 namespace {
@@ -271,13 +271,13 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   // some unit tests without browser view.
   if (browser_view->GetIsNormalType()) {
 #if BUILDFLAG(ENABLE_GLIC)
-    if (glic::GlicEnabling::IsProfileEligible(
-            browser_view->browser()->profile())) {
+    glic::GlicKeyedService* glic_service =
+        glic::GlicKeyedService::Get(browser_view->GetProfile());
+    if (glic_service) {
       glic_button_controller_ = std::make_unique<glic::GlicButtonController>(
           browser_view->GetProfile(),
           browser_view->tab_strip_region_view()->GetTabStripActionContainer(),
-          glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-              browser_view->GetProfile()));
+          glic_service);
     }
 #endif
 
