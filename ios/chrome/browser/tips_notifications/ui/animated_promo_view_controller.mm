@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/docking_promo/ui/animated_promo_view_controller.h"
+#import "ios/chrome/browser/tips_notifications/ui/animated_promo_view_controller.h"
 
 #import "base/check.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"

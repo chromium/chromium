@@ -5,4 +5,5 @@ include_rules = [
   "+ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h",
   "+ios/chrome/browser/promos_manager/ui_bundled",
   "+ios/chrome/browser/start_surface/ui_bundled/start_surface_util.h",
+  "+ios/chrome/browser/tips_notifications/ui/animated_promo_view_controller.h",
 ]

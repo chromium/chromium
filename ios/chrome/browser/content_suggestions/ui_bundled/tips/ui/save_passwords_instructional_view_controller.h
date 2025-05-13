@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_TIPS_UI_SAVE_PASSWORDS_INSTRUCTIONAL_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_TIPS_UI_SAVE_PASSWORDS_INSTRUCTIONAL_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/docking_promo/ui/animated_promo_view_controller.h"
+#import "ios/chrome/browser/tips_notifications/ui/animated_promo_view_controller.h"
 
 // The view controller for the full-screen, animated Save Passwords
 // instructional tip.

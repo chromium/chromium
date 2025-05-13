@@ -4,8 +4,6 @@
 
 source_set("ui") {
   sources = [
-    "animated_promo_view_controller.h",
-    "animated_promo_view_controller.mm",
     "docking_promo_display_handler.h",
     "docking_promo_display_handler.mm",
     "docking_promo_metrics.h",
@@ -21,6 +19,7 @@ source_set("ui") {
     "//ios/chrome/browser/promos_manager/ui_bundled:promos",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/tips_notifications/ui:shared",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/instruction_view",

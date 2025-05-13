@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_DOCKING_PROMO_UI_ANIMATED_PROMO_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_DOCKING_PROMO_UI_ANIMATED_PROMO_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_TIPS_NOTIFICATIONS_UI_ANIMATED_PROMO_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_TIPS_NOTIFICATIONS_UI_ANIMATED_PROMO_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
-
-// TODO(crbug.com/373869553): Explore a better codebase location for
-// `AnimatedPromoViewController`.
 
 // Container view controller for a full-screen, animated promo.
 @interface AnimatedPromoViewController : UIViewController
@@ -52,4 +49,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_DOCKING_PROMO_UI_ANIMATED_PROMO_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_TIPS_NOTIFICATIONS_UI_ANIMATED_PROMO_VIEW_CONTROLLER_H_
