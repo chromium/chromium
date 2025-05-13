@@ -49,6 +49,8 @@ enum class AuthenticationOperation {
   kSheetSigninAndHistorySync,
   // Operation to trigger the history sync.
   // The user must already be signed in but with the history sync turned off.
+  // It is a CHECK failure if history_sync::GetSkipReason does not return
+  // `history_sync::HistorySyncSkipReason::kNone`.
   kHistorySync,
 };
 

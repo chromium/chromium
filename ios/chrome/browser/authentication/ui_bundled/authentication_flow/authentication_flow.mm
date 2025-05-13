@@ -893,6 +893,8 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   // for showing the sync screen.
   if (AreSeparateProfilesForManagedAccountsEnabled() &&
       !_shouldConvertPersonalProfileToManaged) {
+    // Note that the history sync screen may not be displayed for any reason
+    // considered in `GetSkipReason`.
     _postSignInActions.Put(
         PostSignInAction::kShowHistorySyncScreenAfterProfileSwitch);
   }

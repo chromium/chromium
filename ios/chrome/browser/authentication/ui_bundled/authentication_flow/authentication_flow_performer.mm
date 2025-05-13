@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_capabilities_fetcher.h"
+#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service.h"
@@ -163,9 +164,19 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
   return response;
 }
 
-void ShowHistorySyncScreenAfterProfileSwitch(
+void MaybeShowHistorySyncScreenAfterProfileSwitch(
     Browser* browser,
     signin_metrics::AccessPoint access_point) {
+  ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(profile);
+  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
+  if (history_sync::GetSkipReason(syncService, authenticationService,
+                                  profile->GetPrefs(), /*isOptional=*/NO) !=
+      history_sync::HistorySyncSkipReason::kNone) {
+    return;
+  }
+
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kHistorySync
                identity:nil
@@ -261,7 +272,7 @@ void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
 
   if (post_signin_actions.Has(
           PostSignInAction::kShowHistorySyncScreenAfterProfileSwitch)) {
-    ShowHistorySyncScreenAfterProfileSwitch(browser, access_point);
+    MaybeShowHistorySyncScreenAfterProfileSwitch(browser, access_point);
   }
 
   if (post_signin_actions.Has(
