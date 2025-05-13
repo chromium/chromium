@@ -356,6 +356,7 @@ source_set("browser_tests") {
     "//chrome/browser/extensions:extensions",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/policy:test_support",
+    "//chrome/browser/prefs:prefs",
     "//chrome/browser/ui",
     "//chrome/common:constants",
     "//chrome/test:test_support",

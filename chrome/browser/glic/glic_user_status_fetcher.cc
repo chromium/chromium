@@ -13,9 +13,11 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_user_status_code.h"
 #include "chrome/browser/glic/glic_user_status_request.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -97,6 +99,7 @@ GlicUserStatusFetcher::GlicUserStatusFetcher(Profile* profile,
                                     features::kGlicUserStatusRequestDelay.Get(),
                                 base::Time::Now() + base::Hours(24));
   }
+
   // If when Chrome starts and user has already signed-in, we also send a
   // request to check user status.
   if (next_update_time <= base::Time::Now()) {
@@ -163,6 +166,22 @@ bool GlicUserStatusFetcher::IsDisabled(Profile* profile) {
   return false;
 }
 
+bool GlicUserStatusFetcher::IsEnterpriseAccount() {
+  if (profile_->GetPrefs()->GetInteger(::prefs::kGeminiSettings) ==
+      static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled)) {
+    return false;
+  }
+
+  // Only update user status for enterprise accounts.
+  policy::ManagementService* management_service =
+      policy::ManagementServiceFactory::GetForProfile(profile_);
+  // It's possible in theory though very rare that IsAccountManaged returns
+  // false because policy fetching is not complete. In this case we check if an
+  // RPC was sent for this account previously.
+  return (management_service && management_service->IsAccountManaged()) ||
+         GlicUserStatusFetcher::GetCachedUserStatus(profile_).has_value();
+}
+
 void GlicUserStatusFetcher::InvalidateCachedStatus() {
   profile_->GetPrefs()->ClearPref(glic::prefs::kGlicUserStatus);
 }
@@ -184,10 +203,15 @@ void GlicUserStatusFetcher::UpdateUserStatus() {
   if (!identity_manager) {
     return;
   }
+
   // only send user status request when primary account exists and refresh
   // token is available.
   if (identity_manager->HasPrimaryAccountWithRefreshToken(
           signin::ConsentLevel::kSignin)) {
+    // Only send the RPC for enterprise account.
+    if (!IsEnterpriseAccount()) {
+      return;
+    }
     FetchNow();
   } else {
     is_user_status_waiting_for_refresh_token_ = true;
