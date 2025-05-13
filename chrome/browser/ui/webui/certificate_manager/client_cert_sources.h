@@ -61,7 +61,6 @@ class ClientCertManagementAccessControls {
  private:
 #if BUILDFLAG(IS_CHROMEOS)
   const bool is_guest_;
-  const bool is_kiosk_;
   const ClientCertificateManagementPermission client_cert_policy_;
 #endif
 };

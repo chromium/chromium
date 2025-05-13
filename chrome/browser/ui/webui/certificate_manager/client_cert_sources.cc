@@ -1130,7 +1130,6 @@ ClientCertManagementAccessControls::ClientCertManagementAccessControls(
     : is_guest_(
           user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
           user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession()),
-      is_kiosk_(user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp()),
       client_cert_policy_(static_cast<ClientCertificateManagementPermission>(
           profile->GetPrefs()->GetInteger(
               prefs::kClientCertificateManagementAllowed))) {
@@ -1139,7 +1138,9 @@ ClientCertManagementAccessControls::ClientCertManagementAccessControls(
 
 bool ClientCertManagementAccessControls::IsManagementAllowed(
     KeyStorage key_storage) const {
-  return !(key_storage == kHardwareBacked && is_guest_) && !is_kiosk_ &&
+  // Kiosks should allow client cert management, as per customer issue.
+  // See b/409500766.
+  return !(key_storage == kHardwareBacked && is_guest_) &&
          client_cert_policy_ != ClientCertificateManagementPermission::kNone;
 }
 
