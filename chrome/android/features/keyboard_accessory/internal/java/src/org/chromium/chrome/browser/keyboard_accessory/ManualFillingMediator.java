@@ -701,7 +701,11 @@ class ManualFillingMediator
             }
         }
         if (requiresVisibleSheet(extensionState)) {
-            newControlsHeight += mAccessorySheet.getHeight();
+            newControlsHeight +=
+                    mAccessorySheet.getHeight()
+                            - mActivity
+                                    .getResources()
+                                    .getDimensionPixelSize(R.dimen.toolbar_shadow_height);
             newControlsOffset += mAccessorySheet.getHeight();
         }
         mKeyboardAccessory.setBottomOffset(newControlsOffset);
