@@ -37,6 +37,7 @@ _LOCALES_SUBDIR = 'assets/locales/'
 # that Chrome won't crash on startup if its bundle is installed on a device
 # with an unsupported system locale (e.g. fur-rIT).
 _FALLBACK_LOCALE = 'en-US'
+_FALLBACK_LOCALE_WITH_GENDER = 'en-US_OTHER'
 
 # List of split dimensions recognized by this tool.
 _ALL_SPLIT_DIMENSIONS = [ 'ABI', 'SCREEN_DENSITY', 'LANGUAGE' ]
@@ -278,8 +279,12 @@ def _RewriteLanguageAssetPath(src_path):
   if not src_path.startswith(_LOCALES_SUBDIR) or not src_path.endswith('.pak'):
     return [src_path]
 
+  # Note that |locale| may include a gender as well as a language.
   locale = src_path[len(_LOCALES_SUBDIR):-4]
   android_locale = resource_utils.ToAndroidLocaleName(locale)
+
+  # Trim _GENDER suffix so it doesn't end up in a directory name.
+  android_locale = android_locale.split('_')[0]
 
   # The locale format is <lang>-<region> or <lang> or BCP-47 (e.g b+sr+Latn).
   # Extract the language.
@@ -292,7 +297,7 @@ def _RewriteLanguageAssetPath(src_path):
   else:
     android_language = android_locale
 
-  if locale == _FALLBACK_LOCALE:
+  if locale in (_FALLBACK_LOCALE, _FALLBACK_LOCALE_WITH_GENDER):
     # Fallback locale .pak files must be placed in a different directory
     # to ensure they are always stored in the base module.
     result_path = 'assets/fallback-locales/%s.pak' % locale
