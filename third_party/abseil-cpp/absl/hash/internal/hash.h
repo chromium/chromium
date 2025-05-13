@@ -1252,20 +1252,11 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
                                                size_t len);
 
   // Reads 9 to 16 bytes from p.
-  // The least significant 8 bytes are in .first, and the rest of the bytes are
-  // in .second along with duplicated bytes from .first if len<16.
+  // The first 8 bytes are in .first, and the rest of the bytes are in .second
+  // along with duplicated bytes from .first if len<16.
   static std::pair<uint64_t, uint64_t> Read9To16(const unsigned char* p,
                                                  size_t len) {
-    uint64_t low_mem = Read8(p);
-    uint64_t high_mem = Read8(p + len - 8);
-#ifdef ABSL_IS_LITTLE_ENDIAN
-    uint64_t most_significant = high_mem;
-    uint64_t least_significant = low_mem;
-#else
-    uint64_t most_significant = low_mem;
-    uint64_t least_significant = high_mem;
-#endif
-    return {least_significant, most_significant};
+    return {Read8(p), Read8(p + len - 8)};
   }
 
   // Reads 8 bytes from p.
