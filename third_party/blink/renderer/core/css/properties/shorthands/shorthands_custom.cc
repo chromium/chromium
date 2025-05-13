@@ -1193,8 +1193,8 @@ bool ColumnRule::ParseShorthand(
     const CSSParserContext& context,
     const CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
-      columnRuleShorthand(), important, context, stream, properties);
+  return css_parsing_utils::ConsumeGapDecorationsRuleShorthand(
+      important, context, stream, properties);
 }
 
 const CSSValue* ColumnRule::CSSValueFromComputedStyleInternal(
@@ -1202,7 +1202,7 @@ const CSSValue* ColumnRule::CSSValueFromComputedStyleInternal(
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValuesForShorthandProperty(
+  return ComputedStyleUtils::ValueForGapDecorationRuleShorthand(
       columnRuleShorthand(), style, layout_object, allow_visited_style,
       value_phase);
 }

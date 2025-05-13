@@ -6779,6 +6779,246 @@ CSSValue* ConsumeItemTolerance(CSSParserTokenStream& stream,
                                 CSSPrimitiveValue::ValueRange::kNonNegative);
 }
 
+// A <gap-rule> is defined as: [ <line-width> || <line-style> || <color> ]
+// This function processes a single <gap-rule> and ensures that exactly one
+// value is assigned for each of the three properties: `width_value`,
+// `style_value`, and `color_value`. If any property is not explicitly
+// specified, a default value is applied.
+bool ConsumeGapDecorationsLonghandsGreedily(CSSParserTokenStream& stream,
+                                            const CSSParserContext& context,
+                                            CSSValue*& width_value,
+                                            CSSValue*& style_value,
+                                            CSSValue*& color_value) {
+  enum class ParseResult { kSuccess, kFailure, kDuplicate };
+  auto attemptToConsumeValue = [&](CSSGapDecorationPropertyType type,
+                                   CSSValue*& value) {
+    if (CSSValue* v =
+            ConsumeGapDecorationPropertyValue(stream, context, type)) {
+      // Multiple values for the same property `type` are not allowed.
+      if (value) {
+        return ParseResult::kDuplicate;
+      }
+      value = v;
+      return ParseResult::kSuccess;
+    }
+    return ParseResult::kFailure;
+  };
+
+  typedef std::pair<CSSGapDecorationPropertyType, CSSValue*&> PropertyPair;
+  PropertyPair property_pairs[] = {
+      {CSSGapDecorationPropertyType::kWidth, width_value},
+      {CSSGapDecorationPropertyType::kStyle, style_value},
+      {CSSGapDecorationPropertyType::kColor, color_value},
+  };
+
+  while (!stream.AtEnd() && stream.Peek().GetType() != kCommaToken) {
+    bool consumed_any = false;
+    for (const auto& property_pair : property_pairs) {
+      CSSGapDecorationPropertyType type = property_pair.first;
+      CSSValue*& value = property_pair.second;
+
+      // Attempt to consume the value for the current property type.
+      ParseResult result = attemptToConsumeValue(type, value);
+      if (result == ParseResult::kDuplicate) {
+        return false;
+      }
+      consumed_any |= result == ParseResult::kSuccess;
+    }
+
+    if (!consumed_any) {
+      return false;
+    }
+  }
+
+  // Fill in any missing properties with the property's default.
+  if (!width_value) {
+    width_value = CSSIdentifierValue::Create(CSSValueID::kMedium);
+  }
+  if (!style_value) {
+    style_value = CSSIdentifierValue::Create(CSSValueID::kNone);
+  }
+  if (!color_value) {
+    color_value = CSSIdentifierValue::Create(CSSValueID::kCurrentcolor);
+  }
+
+  return true;
+}
+
+// Handles consuming the <gap-rule> repeat values which is defined as:
+// repeat(<integer> | auto, <gap-rule>+). Returns true if the
+// <gap-rule> repeat function was successfully consumed.
+// `has_seen_auto_repeater` is a input and output param that is only set to true
+// if the value is false and we encounter an auto-repeater.
+bool ConsumeGapDecorationsShorthandRepeatFunction(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSValue*& repeater_width,
+    CSSValue*& repeater_style,
+    CSSValue*& repeater_color,
+    bool& has_seen_auto_repeater) {
+  DCHECK_EQ(stream.Peek().GetType(), kFunctionToken);
+
+  CSSParserTokenStream::RestoringBlockGuard guard(stream);
+  stream.ConsumeWhitespace();
+
+  CSSPrimitiveValue* repetition_value = nullptr;
+
+  if (IdentMatches<CSSValueID::kAuto>(stream.Peek().Id())) {
+    CHECK_EQ(stream.ConsumeIncludingWhitespace().Id(), CSSValueID::kAuto);
+
+    // Only one auto-repeater is allowed.
+    if (has_seen_auto_repeater) {
+      return false;
+    }
+    has_seen_auto_repeater = true;
+  } else {
+    // If it isn't an auto repeater, that means it is an integer repeater.
+    repetition_value = ConsumeIntegerOrNumberCalc(
+        stream, context, CSSPrimitiveValue::ValueRange::kPositiveInteger);
+    if (!repetition_value) {
+      return false;
+    }
+  }
+
+  // After "auto" or <integer>, we expect a comma.
+  if (!ConsumeCommaIncludingWhitespace(stream)) {
+    return false;
+  }
+
+  // Lists to hold repeated values for each property.
+  CSSValueList* width_repeated_values = CSSValueList::CreateSpaceSeparated();
+  CSSValueList* style_repeated_values = CSSValueList::CreateSpaceSeparated();
+  CSSValueList* color_repeated_values = CSSValueList::CreateSpaceSeparated();
+
+  // Consume one or more <gap-rule> values, each separated by a comma.
+  while (!stream.AtEnd()) {
+    CSSValue* width_value = nullptr;
+    CSSValue* style_value = nullptr;
+    CSSValue* color_value = nullptr;
+
+    if (!ConsumeGapDecorationsLonghandsGreedily(stream, context, width_value,
+                                                style_value, color_value)) {
+      return false;
+    }
+
+    // Ensure all three values have been hydrated.
+    CHECK(width_value);
+    CHECK(style_value);
+    CHECK(color_value);
+
+    width_repeated_values->Append(*width_value);
+    style_repeated_values->Append(*style_value);
+    color_repeated_values->Append(*color_value);
+
+    // If there's a comma, continue to the next <gap-rule>.
+    if (ConsumeCommaIncludingWhitespace(stream)) {
+      continue;
+    } else {
+      break;
+    }
+  }
+
+  if (!width_repeated_values->length() || !style_repeated_values->length() ||
+      !color_repeated_values->length()) {
+    return false;
+  }
+
+  guard.Release();
+  stream.ConsumeWhitespace();
+
+  repeater_width = MakeGarbageCollected<cssvalue::CSSRepeatValue>(
+      repetition_value, *width_repeated_values);
+  repeater_style = MakeGarbageCollected<cssvalue::CSSRepeatValue>(
+      repetition_value, *style_repeated_values);
+  repeater_color = MakeGarbageCollected<cssvalue::CSSRepeatValue>(
+      repetition_value, *color_repeated_values);
+
+  return true;
+}
+
+// Top level parsing function for the gap-decorations shorthand, which handles
+// the parsing of simple <gap-rule> or repeat <gap-rule> values.
+bool ConsumeGapDecorationsRuleShorthand(
+    bool important,
+    const CSSParserContext& context,
+    CSSParserTokenStream& stream,
+    HeapVector<CSSPropertyValue, 64>& properties) {
+  // TODO(samomekarajr): Add support for `row-rule` shorthand when implemented.
+  const StylePropertyShorthand& gapDecorationsRuleShorthand =
+      columnRuleShorthand();
+  DCHECK_EQ(gapDecorationsRuleShorthand.length(), 3u);
+
+  // If the CSSGapDecorations feature is not enabled, consume greedily since
+  // only single values are supported by 'column-rule' today.
+  if (!RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
+    return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
+        gapDecorationsRuleShorthand, important, context, stream, properties);
+  }
+
+  CSSValueList* rule_widths = CSSValueList::CreateSpaceSeparated();
+  CSSValueList* rule_styles = CSSValueList::CreateSpaceSeparated();
+  CSSValueList* rule_colors = CSSValueList::CreateSpaceSeparated();
+
+  bool has_seen_auto_repeat = false;
+
+  while (!stream.AtEnd()) {
+    // Values for the current segment, which can either be a <gap-rule> or a
+    // <gap-rule> repeater.
+    CSSValue* width_value = nullptr;
+    CSSValue* style_value = nullptr;
+    CSSValue* color_value = nullptr;
+
+    if (stream.Peek().GetType() == kFunctionToken &&
+        stream.Peek().FunctionId() == CSSValueID::kRepeat) {
+      if (!ConsumeGapDecorationsShorthandRepeatFunction(
+              stream, context, width_value, style_value, color_value,
+              has_seen_auto_repeat)) {
+        return false;
+      }
+    } else {
+      if (!ConsumeGapDecorationsLonghandsGreedily(stream, context, width_value,
+                                                  style_value, color_value)) {
+        return false;
+      }
+    }
+
+    CHECK(width_value);
+    CHECK(style_value);
+    CHECK(color_value);
+
+    rule_widths->Append(*width_value);
+    rule_styles->Append(*style_value);
+    rule_colors->Append(*color_value);
+
+    // Continue to the next segment if we have a comma.
+    if (ConsumeCommaIncludingWhitespace(stream)) {
+      continue;
+    } else {
+      break;
+    }
+  }
+
+  if (!rule_widths->length() || !rule_styles->length() ||
+      !rule_colors->length()) {
+    return false;
+  }
+
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kColumnRuleWidth, CSSPropertyID::kColumnRule, *rule_widths,
+      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+      properties);
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kColumnRuleStyle, CSSPropertyID::kColumnRule, *rule_styles,
+      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+      properties);
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kColumnRuleColor, CSSPropertyID::kColumnRule, *rule_colors,
+      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+      properties);
+
+  return true;
+}
+
 CSSValue* ConsumeHyphenateLimitChars(CSSParserTokenStream& stream,
                                      const CSSParserContext& context) {
   CSSValueList* const list = CSSValueList::CreateSpaceSeparated();
