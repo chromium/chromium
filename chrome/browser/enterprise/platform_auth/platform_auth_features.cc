@@ -10,6 +10,6 @@ namespace enterprise_auth {
 
 BASE_FEATURE(kEnableExtensibleEnterpriseSSO,
              "EnableExtensibleEnterpriseSSO",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace enterprise_auth

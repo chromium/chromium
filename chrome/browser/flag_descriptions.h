@@ -3451,9 +3451,6 @@ extern const char kUseXpsForPrintingFromPdfDescription[];
 
 #if BUILDFLAG(IS_MAC)
 
-extern const char kEnableExtensibleEnterpriseSSOName[];
-extern const char kEnableExtensibleEnterpriseSSODescription[];
-
 extern const char kImmersiveFullscreenName[];
 extern const char kImmersiveFullscreenDescription[];
 

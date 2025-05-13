@@ -6179,10 +6179,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTouchTextEditingRedesignDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kTouchTextEditingRedesign)},
 #if BUILDFLAG(IS_MAC)
-    {"enable-extensible-enterprise-sso",
-     flag_descriptions::kEnableExtensibleEnterpriseSSOName,
-     flag_descriptions::kEnableExtensibleEnterpriseSSODescription, kOsMac,
-     FEATURE_VALUE_TYPE(enterprise_auth::kEnableExtensibleEnterpriseSSO)},
     {"enable-retry-capture-device-enumeration-on-crash",
      flag_descriptions::kRetryGetVideoCaptureDeviceInfosName,
      flag_descriptions::kRetryGetVideoCaptureDeviceInfosDescription, kOsMac,

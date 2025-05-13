@@ -5870,10 +5870,6 @@ const char kUseXpsForPrintingFromPdfDescription[] =
 
 #if BUILDFLAG(IS_MAC)
 
-const char kEnableExtensibleEnterpriseSSOName[] = "Extensible Enterprise SSO";
-const char kEnableExtensibleEnterpriseSSODescription[] =
-    "Enables support for extensible enterprise SSO in Chrome";
-
 const char kImmersiveFullscreenName[] = "Immersive Fullscreen Toolbar";
 const char kImmersiveFullscreenDescription[] =
     "Automatically hide and show the toolbar in fullscreen.";

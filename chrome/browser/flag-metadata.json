@@ -3314,11 +3314,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-extensible-enterprise-sso",
-    "owners": [ "ydago@chromium.org", "cbe-magic@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "enable-extension-ai-data-collection",
     "owners": [ "ryansturm@chromium.org" ],
     "expiry_milestone": 150
