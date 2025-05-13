@@ -53,7 +53,12 @@ void MenuModelBridge::AddExtensionItems(ui::MenuModel* menu_model) {
         break;
       }
       case MenuModel::TYPE_CHECK:
-        // TODO(jhimawan): Call Java MenuModelBridge to add check item.
+        Java_MenuModelBridge_addCheck(
+            env, java_obj_, menu_model->GetLabelAt(i),
+            menu_model->IsItemCheckedAt(i), menu_model->IsEnabledAt(i),
+            ToJniCallback(env, base::BindOnce(&MenuModelBridge::ActivatedAt,
+                                              weak_ptr_factory_.GetWeakPtr(),
+                                              menu_model->AsWeakPtr(), i)));
         break;
       case MenuModel::TYPE_RADIO:
         // TODO(jhimawan): Call Java MenuModelBridge to add radio item.

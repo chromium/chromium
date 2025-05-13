@@ -4,13 +4,6 @@
 
 package org.chromium.ui.listmenu;
 
-import static org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType.MENU_ITEM;
-import static org.chromium.ui.listmenu.BasicListMenu.buildMenuDivider;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_BITMAP;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
-
 import android.graphics.Bitmap;
 
 import org.jni_zero.CalledByNative;
@@ -19,6 +12,7 @@ import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ListItemType;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -65,17 +59,41 @@ public class MenuModelBridge {
             final Runnable callback) {
         PropertyModel.Builder modelBuilder =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
-                        .with(TITLE, label)
-                        .with(START_ICON_BITMAP, bitmap)
-                        .with(ENABLED, isEnabled)
-                        .with(CLICK_LISTENER, (view) -> callback.run());
-        mItems.add(new ListItem(MENU_ITEM, modelBuilder.build()));
+                        .with(ListMenuItemProperties.TITLE, label)
+                        .with(ListMenuItemProperties.START_ICON_BITMAP, bitmap)
+                        .with(ListMenuItemProperties.ENABLED, isEnabled)
+                        .with(ListMenuItemProperties.CLICK_LISTENER, (view) -> callback.run());
+        mItems.add(new ListItem(ListItemType.CONTEXT_MENU_ITEM, modelBuilder.build()));
+    }
+
+    /**
+     * Adds a context menu item with a checkbox.
+     *
+     * @param label The label to display.
+     * @param isChecked Whether the checkbox is checked.
+     * @param isEnabled Whether the checkbox and label are enabled.
+     * @param callback The callback to run when the checkbox is clicked.
+     */
+    @CalledByNative
+    private void addCheck(
+            @JniType("std::u16string") final String label,
+            final boolean isChecked,
+            final boolean isEnabled,
+            final Runnable callback) {
+        PropertyModel.Builder modelBuilder =
+                new PropertyModel.Builder(ContextMenuCheckItemProperties.ALL_KEYS)
+                        .with(ContextMenuCheckItemProperties.TITLE, label)
+                        .with(ContextMenuCheckItemProperties.CHECKED, isChecked)
+                        .with(ContextMenuCheckItemProperties.ENABLED, isEnabled)
+                        .with(ContextMenuCheckItemProperties.ON_CLICK, callback);
+        mItems.add(
+                new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_CHECKBOX, modelBuilder.build()));
     }
 
     /** Adds a divider to the context menu. */
     @CalledByNative
     private void addDivider() {
         // TODO(crbug.com/416222384): Update context menus to use incognito theming.
-        mItems.add(buildMenuDivider(/* isIncognito= */ false));
+        mItems.add(new ListItem(ContextMenuItemType.DIVIDER, new PropertyModel()));
     }
 }

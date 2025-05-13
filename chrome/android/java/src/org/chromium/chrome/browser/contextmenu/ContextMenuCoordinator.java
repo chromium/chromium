@@ -61,13 +61,15 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         ListItemType.DIVIDER,
         ListItemType.HEADER,
         ListItemType.CONTEXT_MENU_ITEM,
-        ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON
+        ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
+        ListItemType.CONTEXT_MENU_ITEM_WITH_CHECKBOX,
     })
     public @interface ListItemType {
         int DIVIDER = 0;
         int HEADER = 1;
         int CONTEXT_MENU_ITEM = 2;
         int CONTEXT_MENU_ITEM_WITH_ICON_BUTTON = 3;
+        int CONTEXT_MENU_ITEM_WITH_CHECKBOX = 4;
     }
 
     private static final int INVALID_ITEM_ID = -1;
