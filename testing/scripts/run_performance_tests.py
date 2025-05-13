@@ -742,6 +742,8 @@ class CrossbenchTest(object):
     self._parse_arguments()
     self.isolated_out_dir = isolated_out_dir
     self.network = self._get_network_arg(options.passthrough_args)
+    self.is_chrome = (not self.cb_options.official_browser
+                      or self.cb_options.official_browser.startswith('chrome'))
     if self.options.luci_chromium:
       # In luci.chromium the Chrome and driver are in the user path.
       self.browser = '--browser=%s' % get_abs_user_path('chrome')
@@ -866,12 +868,11 @@ class CrossbenchTest(object):
     return []
 
   def _get_default_args(self):
-    default_args = [
-        '--no-symlinks',
-        # Required until crbug/41491492 and crbug/346323630 are fixed.
-        '--enable-features=DisablePrivacySandboxPrompts',
-    ]
-    if not self.is_android:
+    default_args = ['--no-symlinks']
+    if self.is_chrome:
+      # Required until crbug.com/41491492 and crbug.com/346323630 are fixed.
+      default_args.append('--enable-features=DisablePrivacySandboxPrompts')
+    if self.is_chrome and not self.is_android:
       # See http://shortn/_xGSaVM9P5g
       default_args.append('--enable-field-trial-config')
     if self.options.luci_chromium:
