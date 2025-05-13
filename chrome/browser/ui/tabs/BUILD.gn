@@ -251,6 +251,7 @@ if (!is_android) {
 
   source_set("tabs") {
     sources = [
+      "contents_observing_tab_feature.h",
       "features.h",
       "hover_tab_selector.h",
       "pinned_tab_codec.h",
@@ -300,6 +301,7 @@ if (!is_android) {
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
     sources = [
+      "contents_observing_tab_feature.cc",
       "features.cc",
       "hover_tab_selector.cc",
       "pinned_tab_codec.cc",
