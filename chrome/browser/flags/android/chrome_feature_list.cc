@@ -529,7 +529,7 @@ BASE_FEATURE(kAndroidKeyboardA11y,
 
 BASE_FEATURE(kAndroidMetaClickHistoryNavigation,
              "AndroidMetaClickHistoryNavigation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidNativePagesInNewTab,
              "AndroidNativePagesInNewTab",
