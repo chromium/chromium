@@ -38,6 +38,7 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 
 @property(nonatomic, weak) id<OmniboxPopupPresenterDelegate> delegate;
 @property(nonatomic, weak) UIViewController<ContentProviding>* viewController;
+/// Readwrite internal redefinition.
 @property(nonatomic, strong) UIView* popupContainerView;
 /// Separator for the bottom edge of the popup on iPad.
 @property(nonatomic, strong) UIView* bottomSeparator;

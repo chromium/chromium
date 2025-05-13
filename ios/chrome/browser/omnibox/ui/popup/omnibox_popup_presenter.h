@@ -50,6 +50,9 @@
 /// Whether the popup is open
 @property(nonatomic, assign, getter=isOpen) BOOL open;
 
+/// The container view for the popup.
+@property(nonatomic, readonly) UIView* popupContainerView;
+
 /// Uses the popup's intrinsic content size to add or remove the popup view
 /// if necessary. The animation changes depending on:
 /// `isFocusingOmnibox`: Omnibox is being focused.

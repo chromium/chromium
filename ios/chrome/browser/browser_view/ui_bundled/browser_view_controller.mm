@@ -233,6 +233,10 @@ enum HeaderBehaviour {
 
   // Used to add or cancel a page placeholder for next navigation.
   raw_ptr<PagePlaceholderBrowserAgent> _pagePlaceholderBrowserAgent;
+
+  // Whether the Lens Overlay is currently active and visible for the browser
+  // view.
+  BOOL _lensOverlayVisible;
 }
 
 // Activates/deactivates the object. This will enable/disable the ability for
@@ -1590,6 +1594,41 @@ enum HeaderBehaviour {
   self.visibilityState = BrowserViewVisibilityState::kVisible;
 }
 
+// Animates hiding and showing the typing shield.
+- (void)animateTypingShieldHidden:(BOOL)hidden {
+  if (self.typingShield.hidden == hidden) {
+    return;
+  }
+
+  CGFloat finalAlpha = hidden ? 0.0 : 1.0;
+
+  if (!hidden) {
+    [self.typingShield setAlpha:0.0];
+    [self.typingShield setHidden:NO];
+  }
+
+  [UIView animateWithDuration:0.3
+      animations:^{
+        [self.typingShield setAlpha:finalAlpha];
+      }
+      completion:^(BOOL finished) {
+        if (!hidden) {
+          // Already revealed before the animation started.
+          return;
+        }
+
+        // This can happen if one quickly resigns the omnibox and then taps
+        // on the omnibox again during this animation. If the animation is
+        // interrupted and the toolbar controller is first responder, it's safe
+        // to assume `self.typingShield` shouldn't be hidden here.
+        if (!finished && [self.toolbarCoordinator isOmniboxFirstResponder]) {
+          return;
+        }
+
+        [self.typingShield setHidden:YES];
+      }];
+}
+
 #pragma mark - Private Methods: UI Configuration, update and Layout
 
 // Starts or stops broadcasting the toolbar UI and main content UI depending on
@@ -1900,6 +1939,17 @@ enum HeaderBehaviour {
   self.visibilityState = BrowserViewVisibilityState::kCoveredByOmniboxPopup;
   self.toolbarCoordinator.secondaryToolbarViewController.view
       .accessibilityElementsHidden = YES;
+
+  if (_lensOverlayVisible) {
+    // The typing shield has to be inserted right below the presented popup
+    // omnibox to avoid being ostructed by the Lens Overlay.
+    self.typingShield.frame = UIEdgeInsetsInsetRect(
+        self.contentArea.bounds,
+        UIEdgeInsetsMake([self expandedTopToolbarHeight], 0, 0, 0));
+    [self.view insertSubview:self.typingShield
+                belowSubview:presenter.popupContainerView];
+    [self animateTypingShieldHidden:NO];
+  }
 }
 
 - (void)popupDidCloseForPresenter:(OmniboxPopupPresenter*)presenter {
@@ -2141,13 +2191,11 @@ enum HeaderBehaviour {
       ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     // Tapping on web content area should dismiss the keyboard. Tapping on NTP
     // gesture should propagate to NTP view.
-    [self.view insertSubview:self.typingShield aboveSubview:self.contentArea];
-    [self.typingShield setAlpha:0.0];
-    [self.typingShield setHidden:NO];
-    [UIView animateWithDuration:0.3
-                     animations:^{
-                       [self.typingShield setAlpha:1.0];
-                     }];
+
+    if (self.typingShield.hidden) {
+      [self.view insertSubview:self.typingShield aboveSubview:self.contentArea];
+      [self animateTypingShieldHidden:NO];
+    }
   }
 
   [self.toolbarCoordinator transitionToLocationBarFocusedState:YES
@@ -2159,20 +2207,7 @@ enum HeaderBehaviour {
 
   [self.ntpCoordinator locationBarWillResignFirstResponder];
 
-  [UIView animateWithDuration:0.3
-      animations:^{
-        [self.typingShield setAlpha:0.0];
-      }
-      completion:^(BOOL finished) {
-        // This can happen if one quickly resigns the omnibox and then taps
-        // on the omnibox again during this animation. If the animation is
-        // interrupted and the toolbar controller is first responder, it's safe
-        // to assume `self.typingShield` shouldn't be hidden here.
-        if (!finished && [self.toolbarCoordinator isOmniboxFirstResponder]) {
-          return;
-        }
-        [self.typingShield setHidden:YES];
-      }];
+  [self animateTypingShieldHidden:YES];
 
   ProceduralBlock completion = ^{
     // Show the NTP's fake toolbar after the defocus animation completes.
@@ -2735,10 +2770,12 @@ enum HeaderBehaviour {
 
 - (void)lensOverlayWillAppear {
   [_sideSwipeCoordinator setEnabled:NO];
+  _lensOverlayVisible = YES;
 }
 
 - (void)lensOverlayWillDisappear {
   [_sideSwipeCoordinator setEnabled:YES];
+  _lensOverlayVisible = NO;
 }
 
 - (NSDirectionalEdgeInsets)presentationInsetsForLensOverlay {
