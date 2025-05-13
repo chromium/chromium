@@ -1,4 +1,4 @@
-# Chromium Security Review Checklist for `//third_party/rust`
+# Chromium Review Checklist for `//third_party/rust`
 
 `//third_party/rust/OWNERS` review crates in this directory
 (e.g. when importing a new crate,
@@ -20,7 +20,7 @@ because ultimately we trust the reviewer’s judgement here.
 
 * **ATL+Director approval**: Is it an import of a new crate?
   If so, then check if 1) ATL approval has been obtained
-  and 2) a Director has been CC-ed on a post to
+  and 2) a Chrome Director has been CC-ed on a post to
   [the rust-fyi@ group](https://groups.google.com/a/chromium.org/g/rust-fyi)
   (step 3 from
   [go/chrome-rust](https://goto2.corp.google.com/chrome-rust)
@@ -103,7 +103,3 @@ because ultimately we trust the reviewer’s judgement here.
   [Google-internal]
 * [Initial draft of this checklist](https://docs.google.com/document/d/1WIwaifxnNK2slmIDoADJX8yeVtoW23yIIxe5F2s0lEg/edit?usp=sharing&resourcekey=0-NMY_YlQzZiN-trOQuVYFOw)
   [Google internal]
-
-
-
-

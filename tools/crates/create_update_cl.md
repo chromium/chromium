@@ -49,12 +49,12 @@ failures](#recovering-from-script-failures) below for what to do when that
 happens.
 
 Before the auto-generated CLs can be landed, you will need to get an LGTM from
-`//third_party/rust/OWNERS`.  See `//third_party/rust/OWNERS-security-review.md`
-for a review checklist.
+`//third_party/rust/OWNERS`.  A review checklist can be found at
+`//third_party/rust/OWNERS-review-checklist.md`.
 
 ## New transitive dependencies
 
-Notes from `//third_party/rust/OWNERS-security-review.md` apply:
+Notes from `//third_party/rust/OWNERS-review-checklist.md` apply:
 
 * The dependency will need to go through security review.
 * An FYI email should be sent to
