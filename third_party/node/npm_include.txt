@@ -55,6 +55,8 @@
 /chai/chai.js
 /chai/LICENSE
 /chai/package.json
+/messageformat/**/**.js
+/messageformat/**/**.d.ts
 /mocha/LICENSE
 /mocha/mocha.js
 /mocha/package.json

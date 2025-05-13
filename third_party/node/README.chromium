@@ -592,3 +592,22 @@ This package provides the runtime library used by proto bindings that are genera
 
 Local Modifications:
 (none)
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: messageformat
+Short Name: messageformat
+URL: https://www.npmjs.com/package/messageformat
+Version: 4.0.0-11
+License: Apache-2.0
+License File: Apache-LICENSE-2.0.txt
+License Android Compatible: Yes
+Security Critical: no
+Shipped: yes
+
+Description:
+Provides a formatter and other tools for Unicode MessageFormat 2.0 (MF2), the
+new standard for localization developed by the MessageFormat Working Group.
+
+Local Modifications:
+(none)

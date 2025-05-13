@@ -32,6 +32,7 @@
     "eslint-plugin-jsdoc": "50.2.2",
     "html-minifier": "4.0.0",
     "lit": "3.3.0",
+    "messageformat": "4.0.0-11",
     "svgo": "3.0.2",
     "terser": "5.37.0",
     "ts-proto": "2.7.0",
