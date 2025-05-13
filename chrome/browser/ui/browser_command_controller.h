@@ -204,6 +204,9 @@ class BrowserCommandController : public CommandUpdater,
   // Updates commands that depend on the state of the tab strip model.
   void UpdateCommandsForTabStripStateChanged();
 
+  // Updates commands that depend on the enabled state of glic.
+  void UpdateCommandsForEnableGlicChanged();
+
   // Returns the relevant action for the current browser for a given
   // `action_id`.
   actions::ActionItem* FindAction(actions::ActionId action_id);
@@ -229,6 +232,7 @@ class BrowserCommandController : public CommandUpdater,
 
   PrefChangeRegistrar profile_pref_registrar_;
   PrefChangeRegistrar local_pref_registrar_;
+  std::unique_ptr<base::CallbackListSubscription> glic_enabling_subscription_;
 
   // In locked fullscreen mode disallow enabling/disabling commands.
   bool is_locked_fullscreen_ = false;
