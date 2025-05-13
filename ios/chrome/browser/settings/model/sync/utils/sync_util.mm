@@ -340,8 +340,8 @@ bool DisplaySyncErrors(ProfileIOS* profile,
   infobars::InfoBarManager* infoBarManager =
       InfoBarManagerImpl::FromWebState(web_state);
   DCHECK(infoBarManager);
-  bool infobar_displayed =
-      SyncErrorInfoBarDelegate::Create(infoBarManager, profile, presenter);
+  bool infobar_displayed = SyncErrorInfoBarDelegate::Create(
+      infoBarManager, profile, presenter, trigger);
   if (infobar_displayed) {
     // Logs when an infobar is shown to user. See crbug.com/265352.
     base::UmaHistogramEnumeration(kSyncErrorInfobarDisplayedHistogramName,

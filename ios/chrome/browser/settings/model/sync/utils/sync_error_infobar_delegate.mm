@@ -47,12 +47,25 @@ bool SyncErrorNotificationsPaused(ProfileIOS* profile) {
   return now < last_dismissal + kSyncErrorInfobarTimeout;
 }
 
+syncer::TrustedVaultUserActionTriggerForUMA
+TrustedVaultTriggerFromInfoBarTrigger(SyncErrorInfoBarTrigger trigger) {
+  switch (trigger) {
+    case SyncErrorInfoBarTrigger::kNewTabOpened:
+      return syncer::TrustedVaultUserActionTriggerForUMA::kNewTabPageInfobar;
+    case SyncErrorInfoBarTrigger::kPasswordFormParsed:
+      return syncer::TrustedVaultUserActionTriggerForUMA::
+          kPasswordManagerErrorMessage;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 // static
 bool SyncErrorInfoBarDelegate::Create(infobars::InfoBarManager* infobar_manager,
                                       ProfileIOS* profile,
-                                      id<SyncPresenter> presenter) {
+                                      id<SyncPresenter> presenter,
+                                      SyncErrorInfoBarTrigger trigger) {
   if (base::FeatureList::IsEnabled(
           syncer::kSyncTrustedVaultInfobarImprovements) &&
       SyncErrorNotificationsPaused(profile)) {
@@ -61,15 +74,17 @@ bool SyncErrorInfoBarDelegate::Create(infobars::InfoBarManager* infobar_manager,
 
   CHECK(infobar_manager);
   std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
-      new SyncErrorInfoBarDelegate(profile, presenter));
+      new SyncErrorInfoBarDelegate(profile, presenter, trigger));
   std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
       InfobarType::kInfobarTypeSyncError, std::move(delegate));
   return !!infobar_manager->AddInfoBar(std::move(infobar));
 }
 
-SyncErrorInfoBarDelegate::SyncErrorInfoBarDelegate(ProfileIOS* profile,
-                                                   id<SyncPresenter> presenter)
-    : profile_(profile), presenter_(presenter) {
+SyncErrorInfoBarDelegate::SyncErrorInfoBarDelegate(
+    ProfileIOS* profile,
+    id<SyncPresenter> presenter,
+    SyncErrorInfoBarTrigger trigger)
+    : profile_(profile), presenter_(presenter), trigger_(trigger) {
   DCHECK(!profile->IsOffTheRecord());
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_);
@@ -134,18 +149,16 @@ bool SyncErrorInfoBarDelegate::Accept() {
         kNeedsTrustedVaultKeyForPasswords:
     case syncer::SyncService::UserActionableError::
         kNeedsTrustedVaultKeyForEverything:
-      [presenter_
-          showTrustedVaultReauthForFetchKeysWithTrigger:
-              syncer::TrustedVaultUserActionTriggerForUMA::kNewTabPageInfobar];
+      [presenter_ showTrustedVaultReauthForFetchKeysWithTrigger:
+                      TrustedVaultTriggerFromInfoBarTrigger(trigger_)];
       break;
 
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForPasswords:
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForEverything:
-      [presenter_
-          showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
-              syncer::TrustedVaultUserActionTriggerForUMA::kNewTabPageInfobar];
+      [presenter_ showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
+                      TrustedVaultTriggerFromInfoBarTrigger(trigger_)];
       break;
   }
 
@@ -182,7 +195,7 @@ void SyncErrorInfoBarDelegate::OnStateChanged(syncer::SyncService* sync) {
     infobars::InfoBarManager* infobar_manager = infobar->owner();
     if (infobar_manager) {
       std::unique_ptr<ConfirmInfoBarDelegate> new_infobar_delegate(
-          new SyncErrorInfoBarDelegate(profile_, presenter_));
+          new SyncErrorInfoBarDelegate(profile_, presenter_, trigger_));
       infobar_manager->ReplaceInfoBar(
           infobar, CreateConfirmInfoBar(std::move(new_infobar_delegate)));
     }
