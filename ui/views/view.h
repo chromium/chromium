@@ -1339,6 +1339,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // IsDrawn()
   bool CanHandleAccelerators() const override;
 
+  base::span<const ui::Accelerator> GetAccelerators() const;
+
   // Focus ---------------------------------------------------------------------
 
   // Returns whether this view currently has the focus.

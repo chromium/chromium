@@ -1835,6 +1835,10 @@ bool View::CanHandleAccelerators() const {
   return true;
 }
 
+base::span<const ui::Accelerator> View::GetAccelerators() const {
+  return accelerators_ ? *accelerators_ : base::span<const ui::Accelerator>();
+}
+
 // Focus -----------------------------------------------------------------------
 
 bool View::HasFocus() const {
