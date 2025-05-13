@@ -77,10 +77,13 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
+#include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
@@ -955,38 +958,6 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents();
     return TestRenderViewContextMenu::Create(web_contents,
                                              web_contents->GetURL());
-  }
-
-  void VerifyEntrypoints(bool expected_visible) {
-    // Verify context menu entrypoint matches expected visibility.
-    EXPECT_EQ(expected_visible, GetContextMenu()->IsItemPresent(
-                                    IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
-
-    // Verify omnibox (location bar) icon matches expected visibility.
-    auto* location_bar =
-        BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
-    location_bar->omnibox_view()->RequestFocus();
-    location_bar->page_action_icon_controller()->UpdateAll();
-
-    auto* omnibox_entrypoint =
-        location_bar->page_action_icon_controller()->GetIconView(
-            PageActionIconType::kLensOverlay);
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return omnibox_entrypoint->GetVisible() == expected_visible;
-    }));
-
-    // Verify three dot menu entrypoint matches expected visibility.
-    EXPECT_EQ(expected_visible,
-              browser()->command_controller()->IsCommandEnabled(
-                  IDC_CONTENT_CONTEXT_LENS_OVERLAY));
-
-    // Verify toolbar entrypoint is always enabled and visible.
-    actions::ActionItem* toolbar_entry_point =
-        actions::ActionManager::Get().FindAction(
-            kActionSidePanelShowLensOverlayResults,
-            browser()->browser_actions()->root_action_item());
-    EXPECT_TRUE(toolbar_entry_point->GetVisible());
-    EXPECT_TRUE(toolbar_entry_point->GetEnabled());
   }
 
  protected:
@@ -4745,7 +4716,86 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, EnterprisePolicy) {
                   ->IsEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+class LensOverlayControllerEntrypointsBrowserTest
+    : public LensOverlayControllerBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  LensOverlayControllerEntrypointsBrowserTest() = default;
+  ~LensOverlayControllerEntrypointsBrowserTest() override = default;
+
+  void SetupFeatureList() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {lens::features::kLensOverlay, {}},
+        {lens::features::kLensOverlayContextualSearchbox,
+         {
+
+         }},
+        {lens::features::kLensOverlaySurvey, {}},
+        {lens::features::kLensOverlaySidePanelOpenInNewTab, {}}};
+    if (IsPageActionsMigrationEnabled()) {
+      enabled_features.push_back(
+          {::features::kPageActionsMigration,
+           {
+               {::features::kPageActionsMigrationLensOverlay.name, "true"},
+           }});
+    }
+    feature_list_.InitWithFeaturesAndParameters(
+        enabled_features,
+        /*disabled_features=*/{
+            lens::features::kLensOverlaySimplifiedSelection});
+  }
+
+  void VerifyEntrypoints(bool expected_visible) {
+    // Verify context menu entrypoint matches expected visibility.
+    EXPECT_EQ(expected_visible, GetContextMenu()->IsItemPresent(
+                                    IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
+
+    // Verify omnibox (location bar) icon matches expected visibility.
+    auto* location_bar =
+        BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
+    location_bar->omnibox_view()->RequestFocus();
+    views::View* omnibox_entrypoint;
+    if (IsPageActionMigrated(PageActionIconType::kLensOverlay)) {
+      omnibox_entrypoint =
+          location_bar->page_action_container()->GetPageActionView(
+              kActionSidePanelShowLensOverlayResults);
+    } else {
+      location_bar->page_action_icon_controller()->UpdateAll();
+      omnibox_entrypoint =
+          location_bar->page_action_icon_controller()->GetIconView(
+              PageActionIconType::kLensOverlay);
+    }
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return omnibox_entrypoint->GetVisible() == expected_visible;
+    }));
+
+    // Verify three dot menu entrypoint matches expected visibility.
+    EXPECT_EQ(expected_visible,
+              browser()->command_controller()->IsCommandEnabled(
+                  IDC_CONTENT_CONTEXT_LENS_OVERLAY));
+
+    // Verify toolbar entrypoint is always enabled and visible.
+    actions::ActionItem* toolbar_entry_point =
+        actions::ActionManager::Get().FindAction(
+            kActionSidePanelShowLensOverlayResults,
+            browser()->browser_actions()->root_action_item());
+    EXPECT_TRUE(toolbar_entry_point->GetVisible());
+    EXPECT_TRUE(toolbar_entry_point->GetEnabled());
+  }
+
+ private:
+  bool IsPageActionsMigrationEnabled() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         LensOverlayControllerEntrypointsBrowserTest,
+                         ::testing::Values(false, true),
+                         [](const ::testing::TestParamInfo<bool>& info) {
+                           return info.param ? "PageActionsMigrationEnabled"
+                                             : "PageActionsMigrationDisabled";
+                         });
+
+IN_PROC_BROWSER_TEST_P(LensOverlayControllerEntrypointsBrowserTest,
                        OverlayHidesEntrypoints) {
   WaitForPaint();
 

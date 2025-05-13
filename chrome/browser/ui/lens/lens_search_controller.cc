@@ -274,6 +274,12 @@ LensOverlayController* LensSearchController::lens_overlay_controller() {
   return lens_overlay_controller_.get();
 }
 
+const LensOverlayController* LensSearchController::lens_overlay_controller()
+    const {
+  CheckInitialized(initialized_);
+  return lens_overlay_controller_.get();
+}
+
 lens::LensOverlaySidePanelCoordinator*
 LensSearchController::lens_overlay_side_panel_coordinator() {
   CheckInitialized(initialized_);

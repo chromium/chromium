@@ -236,6 +236,7 @@ class TabAndroid : public tabs::TabInterface,
       TabInterfaceCallback callback) override;
   bool IsInNormalWindow() const override;
   tabs::TabFeatures* GetTabFeatures() override;
+  const tabs::TabFeatures* GetTabFeatures() const override;
   bool IsPinned() const override;
   bool IsSplit() const override;
   std::optional<tab_groups::TabGroupId> GetGroup() const override;

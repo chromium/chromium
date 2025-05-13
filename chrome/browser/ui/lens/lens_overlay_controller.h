@@ -294,10 +294,10 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   void TriggerCopy();
 
   // Returns true if the overlay is open and covering the current active tab.
-  bool IsOverlayShowing();
+  bool IsOverlayShowing() const;
 
   // Returns true if the overlay is showing or is in live page mode.
-  bool IsOverlayActive();
+  bool IsOverlayActive() const;
 
   // Returns true if the overlay is in the process of initializing.
   bool IsOverlayInitializing();

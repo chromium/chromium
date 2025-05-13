@@ -678,6 +678,10 @@ tabs::TabFeatures* TabAndroid::GetTabFeatures() {
   return tab_features_.get();
 }
 
+const tabs::TabFeatures* TabAndroid::GetTabFeatures() const {
+  return tab_features_.get();
+}
+
 bool TabAndroid::IsPinned() const {
   NOTIMPLEMENTED();
   return false;

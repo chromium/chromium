@@ -212,6 +212,7 @@ class TabFeatures {
   }
 
   LensOverlayController* lens_overlay_controller();
+  const LensOverlayController* lens_overlay_controller() const;
 
   PwaInstallPageActionController* pwa_install_page_action_controller() {
     return pwa_install_page_action_controller_.get();

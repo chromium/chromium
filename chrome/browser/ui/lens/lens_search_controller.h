@@ -139,6 +139,7 @@ class LensSearchController {
 
   // Returns the LensOverlayController.
   LensOverlayController* lens_overlay_controller();
+  const LensOverlayController* lens_overlay_controller() const;
 
   // Returns the LensOverlayQueryController.
   lens::LensOverlayQueryController* lens_overlay_query_controller();

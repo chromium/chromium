@@ -120,6 +120,13 @@ LensOverlayController* TabFeatures::lens_overlay_controller() {
              : nullptr;
 }
 
+const LensOverlayController* TabFeatures::lens_overlay_controller() const {
+  // LensSearchController won't exist on non-normal windows.
+  return lens_search_controller_
+             ? lens_search_controller_->lens_overlay_controller()
+             : nullptr;
+}
+
 void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   CHECK(!initialized_);
   initialized_ = true;

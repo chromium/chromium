@@ -140,6 +140,7 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   BrowserWindowInterface* GetBrowserWindowInterface() override;
   const BrowserWindowInterface* GetBrowserWindowInterface() const override;
   tabs::TabFeatures* GetTabFeatures() override;
+  const tabs::TabFeatures* GetTabFeatures() const override;
   bool IsPinned() const override;
   bool IsSplit() const override;
   std::optional<tab_groups::TabGroupId> GetGroup() const override;

@@ -56,7 +56,7 @@ class LensOverlayEntryPointController : public FullscreenObserver,
   // this current moment in time. Sometimes, entrypoints are hidden ephermally,
   // such as when the Lens Overlay is currently active, so entrypoints do
   // nothing.
-  bool AreVisible();
+  bool AreVisible() const;
 
   // Updates the enable/disable and visibility state of entry points. If
   // hide_toolbar_entrypoint is true, instead of just disabling the toolbar
@@ -91,7 +91,7 @@ class LensOverlayEntryPointController : public FullscreenObserver,
   actions::ActionItem* GetToolbarEntrypoint();
 
   // Return true if the Lens Overlay is active on the current tab.
-  bool IsOverlayActive();
+  bool IsOverlayActive() const;
 
   // Observer to check for focus changes.
   base::ScopedObservation<views::FocusManager, views::FocusChangeListener>

@@ -156,7 +156,7 @@ bool LensOverlayEntryPointController::IsEnabled() const {
   return phys_mem_mb > lens::features::GetLensOverlayMinRamMb();
 }
 
-bool LensOverlayEntryPointController::AreVisible() {
+bool LensOverlayEntryPointController::AreVisible() const {
   return IsEnabled() && !IsOverlayActive();
 }
 
@@ -177,6 +177,7 @@ void LensOverlayEntryPointController::UpdateEntryPointsState(
       toolbar_entry_point->SetVisible(enabled);
     }
   }
+  UpdatePageActionState();
 }
 
 // static
@@ -311,18 +312,19 @@ void LensOverlayEntryPointController::UpdatePageActionState() {
                                              });
 }
 
-bool LensOverlayEntryPointController::IsOverlayActive() {
-  auto* active_tab = browser_window_interface_->GetActiveTabInterface();
+bool LensOverlayEntryPointController::IsOverlayActive() const {
+  const auto* active_tab = browser_window_interface_->GetActiveTabInterface();
   if (!active_tab) {
     return false;
   }
-  auto* controller = active_tab->GetTabFeatures()->lens_overlay_controller();
+  const auto* controller =
+      active_tab->GetTabFeatures()->lens_overlay_controller();
   return controller && controller->IsOverlayActive();
 }
 
 bool LensOverlayEntryPointController::ShouldShowPageAction(
     tabs::TabInterface* active_tab) const {
-  if (!IsEnabled()) {
+  if (!AreVisible()) {
     return false;
   }
 

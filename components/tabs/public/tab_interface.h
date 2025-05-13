@@ -205,6 +205,7 @@ class TabInterface : public SupportsHandles<TabInterface> {
   //   (3) It is not possible to perform dependency injection for legacy code
   //   that is conceptually a TabFeature and needs access to other TabFeatures.
   virtual tabs::TabFeatures* GetTabFeatures() = 0;
+  virtual const tabs::TabFeatures* GetTabFeatures() const = 0;
 
   // Return true if the tab is pinned in its tabstrip, or false otherwise.
   virtual bool IsPinned() const = 0;

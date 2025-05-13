@@ -273,6 +273,10 @@ tabs::TabFeatures* TabModel::GetTabFeatures() {
   return tab_features_.get();
 }
 
+const tabs::TabFeatures* TabModel::GetTabFeatures() const {
+  return tab_features_.get();
+}
+
 bool TabModel::IsPinned() const {
   return pinned_;
 }

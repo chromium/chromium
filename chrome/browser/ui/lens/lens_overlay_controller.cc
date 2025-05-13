@@ -507,13 +507,13 @@ void LensOverlayController::TriggerCopy() {
   page_->OnCopyCommand();
 }
 
-bool LensOverlayController::IsOverlayShowing() {
+bool LensOverlayController::IsOverlayShowing() const {
   return state_ == State::kStartingWebUI || state_ == State::kOverlay ||
          state_ == State::kOverlayAndResults ||
          state_ == State::kClosingSidePanel;
 }
 
-bool LensOverlayController::IsOverlayActive() {
+bool LensOverlayController::IsOverlayActive() const {
   return IsOverlayShowing() || state_ == State::kLivePageAndResults;
 }
 
