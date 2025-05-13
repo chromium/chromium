@@ -92,7 +92,10 @@ group("api_implementations") {
     }
 
     if (enable_guest_view) {
-      public_deps += [ "//extensions/browser/api/guest_view" ]
+      public_deps += [
+        "//extensions/browser/api/guest_view",
+        "//extensions/browser/api/guest_view/app_view",
+      ]
     }
   }
 }
