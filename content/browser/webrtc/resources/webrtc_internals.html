@@ -99,6 +99,44 @@
         </p>
       </div>
     </details>
+    <details class="peer-connection-dump-root">
+      <summary>Create DataChannel message recordings</summary>
+      <div id="datachannel-recording">
+        <p id="datachannel-recording-click-target">
+          <label id="datachannel-recording-label">
+            <input type="checkbox" id="datachannel-recording-checkbox"/>
+            Enable DataChannel message recordings
+          </label>
+        </p>
+        <p class="dumps-info">
+          <b>
+            NOTE: DataChannel messages will also be recorded in incognito mode!
+          </b>
+        </p>
+        <p class="dumps-info">
+          A DataChannel message recording records all text and binary message
+          sent over a PeerConnection. Text messages are recorded in plain text,
+          and binary messages are recorded using base64 encoding. One file is
+          created per PeerConnection. Checking this box will enable recording
+          for ongoing and future PeerConnections. When the box is unchecked all
+          ongoing recordings will be stopped and this recording functionality
+          will be disabled for future PeerConnections. DataChannel message
+          recording use the following file format:
+        </p>
+        <p>
+          &lt;base filename&gt;_&lt;date&gt;_&lt;timestamp&gt;_&lt;render
+          process ID&gt;_&lt;recording ID&gt;
+        </p>
+        <p class="dumps-info">
+          If a file with the same name already exists, it will be overwritten.
+          No more than 5 logfiles  will be created, and each of them is limited
+          to 100MB of storage.  On Android these limits are 3 files of at most
+          10MB each.  When the limit is reached, the checkbox must be unchecked
+          and rechecked to resume logging.
+        </p>
+      </div>
+    </details>
+
     <p id="content-root"></p>
     <template id="statsrow-template">
       <td></td>

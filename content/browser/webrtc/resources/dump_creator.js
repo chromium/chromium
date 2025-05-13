@@ -33,6 +33,9 @@ export class DumpCreator {
         'click', this.onAudioDebugRecordingsChanged_.bind(this));
     document.getElementById('packet-recording-click-target').addEventListener(
         'click', this.onEventLogRecordingsChanged_.bind(this));
+    document.getElementById('datachannel-recording-click-target')
+        .addEventListener(
+            'click', this.onDataChannelRecordingsChanged_.bind(this));
   }
 
   // Mark the diagnostic audio recording checkbox checked.
@@ -64,6 +67,14 @@ export class DumpCreator {
       label.textContent =
           ' WebRTC event logging\'s state was set by a command line flag.';
     }
+  }
+
+  setDataChannelRecordingsCheckbox() {
+    document.getElementById('datachannel-recording-checkbox').checked = true;
+  }
+
+  clearDataChannelRecordingsCheckbox() {
+    document.getElementById('datachannel-recording-checkbox').checked = false;
   }
 
   /**
@@ -122,5 +133,16 @@ export class DumpCreator {
   onEventLogRecordingsChanged_() {
     const checkbox = document.getElementById('packet-recording-checkbox');
     chrome.send((checkbox.checked ? "en" : "dis") + 'ableEventLogRecordings');
+  }
+
+  /**
+   * Handles the event of toggling the event log recordings state.
+   *
+   * @private
+   */
+  onDataChannelRecordingsChanged_() {
+    const checkbox = document.getElementById('datachannel-recording-checkbox');
+    chrome.send(
+        (checkbox.checked ? 'en' : 'dis') + 'ableDataChannelRecordings');
   }
 }

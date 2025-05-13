@@ -112,22 +112,21 @@ WebRTCInternals::WebRTCInternals(int aggregate_updates_ms,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!g_webrtc_internals);
 
-  audio_debug_recordings_file_path_ =
+  const base::FilePath default_path =
       GetContentClient()->browser()->GetDefaultDownloadDirectory();
-  event_log_recordings_file_path_ = audio_debug_recordings_file_path_;
+  audio_debug_recordings_file_path_ = default_path;
+  event_log_recordings_file_path_ = default_path;
+  data_channel_recordings_file_path_ = default_path;
 
-  if (audio_debug_recordings_file_path_.empty()) {
-    // In this case the default path (|audio_debug_recordings_file_path_|) will
-    // be empty and the platform default path will be used in the file dialog
-    // (with no default file name). See SelectFileDialog::SelectFile. On Android
-    // where there's no dialog we'll fail to open the file.
-    VLOG(1) << "Could not get the download directory.";
-  } else {
+  if (!default_path.empty()) {
     audio_debug_recordings_file_path_ =
         audio_debug_recordings_file_path_.Append(
             FILE_PATH_LITERAL("audio_debug"));
     event_log_recordings_file_path_ =
         event_log_recordings_file_path_.Append(kEventLogFilename);
+    data_channel_recordings_file_path_ =
+        data_channel_recordings_file_path_.Append(
+            FILE_PATH_LITERAL("data_channel"));
   }
 
   // Allow command-line based setting of (local) WebRTC event logging.
@@ -606,9 +605,49 @@ void WebRTCInternals::DisableLocalEventLogRecordings() {
   }
 }
 
+void WebRTCInternals::EnableDataChannelRecordings(
+    content::WebContents* web_contents) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+#if BUILDFLAG(IS_ANDROID)
+  WebRtcEventLogger* const logger = WebRtcEventLogger::Get();
+  if (logger) {
+    logger->EnableDataChannelLogging(data_channel_recordings_file_path_);
+  }
+#else
+  if (select_file_dialog_) {
+    return;
+  }
+  selection_type_ = SelectionType::kDataChannelRecordings;
+  select_file_dialog_ = ui::SelectFileDialog::Create(
+      this,
+      GetContentClient()->browser()->CreateSelectFilePolicy(web_contents));
+  select_file_dialog_->SelectFile(
+      ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
+      data_channel_recordings_file_path_, nullptr, 0,
+      base::FilePath::StringType(), web_contents->GetTopLevelNativeWindow());
+#endif
+}
+
+void WebRTCInternals::DisableDataChannelRecordings() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  data_channel_recording_active_ = false;
+  // Tear down the dialog since the user has unchecked the event log checkbox.
+  select_file_dialog_ = nullptr;
+  WebRtcEventLogger* const logger = WebRtcEventLogger::Get();
+  if (logger) {
+    logger->DisableDataChannelLogging();
+  }
+}
+
 bool WebRTCInternals::IsEventLogRecordingsEnabled() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return event_log_recordings_;
+}
+
+bool WebRTCInternals::IsDataChannelRecordingsEnabled() const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return data_channel_recording_active_;
 }
 
 bool WebRTCInternals::CanToggleEventLogRecordings() const {
@@ -665,6 +704,15 @@ void WebRTCInternals::FileSelected(const ui::SelectedFileInfo& file,
       EnableAudioDebugRecordingsOnAllRenderProcessHosts();
       break;
     }
+    case SelectionType::kDataChannelRecordings: {
+      data_channel_recordings_file_path_ = file.path();
+      data_channel_recording_active_ = true;
+      WebRtcEventLogger* const logger = WebRtcEventLogger::Get();
+      if (logger) {
+        logger->EnableDataChannelLogging(file.path());
+      }
+      break;
+    }
     default: {
       NOTREACHED();
     }
@@ -680,6 +728,10 @@ void WebRTCInternals::FileSelectionCanceled() {
       break;
     case SelectionType::kAudioDebugRecordings:
       SendUpdate("audio-debug-recordings-file-selection-cancelled",
+                 base::Value());
+      break;
+    case SelectionType::kDataChannelRecordings:
+      SendUpdate("data-channel-recordings-file-selection-cancelled",
                  base::Value());
       break;
     default:

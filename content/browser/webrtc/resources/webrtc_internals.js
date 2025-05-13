@@ -130,6 +130,9 @@ function initialize() {
   addWebUiListener(
       'audio-debug-recordings-file-selection-cancelled',
       audioDebugRecordingsFileSelectionCancelled);
+  addWebUiListener(
+      'data-channel-recordings-file-selection-cancelled',
+      dataChannelRecordingsFileSelectionCancelled);
 
   // Request initial startup parameters.
   sendWithPromise('finishedDOMLoad').then(params => {
@@ -138,6 +141,9 @@ function initialize() {
     }
     if (params.eventLogRecordingsEnabled) {
       dumpCreator.setEventLogRecordingsCheckbox();
+    }
+    if (params.dataChannelRecordingsEnabled) {
+      dumpCreator.setDataChannelRecordingsCheckbox();
     }
     dumpCreator.setEventLogRecordingsCheckboxMutability(
         params.eventLogRecordingsToggleable);
@@ -476,4 +482,9 @@ function audioDebugRecordingsFileSelectionCancelled() {
  */
 function eventLogRecordingsFileSelectionCancelled() {
   dumpCreator.clearEventLogRecordingsCheckbox();
+}
+
+
+function dataChannelRecordingsFileSelectionCancelled() {
+  dumpCreator.clearDataChannelRecordingsCheckbox();
 }

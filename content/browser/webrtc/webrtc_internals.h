@@ -134,8 +134,13 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
   void EnableLocalEventLogRecordings(content::WebContents* web_contents);
   void DisableLocalEventLogRecordings();
 
+  void EnableDataChannelRecordings(content::WebContents* web_contents);
+  void DisableDataChannelRecordings();
+
   bool IsEventLogRecordingsEnabled() const;
   bool CanToggleEventLogRecordings() const;
+
+  bool IsDataChannelRecordingsEnabled() const;
 
   int num_connected_connections() const { return num_connected_connections_; }
 
@@ -178,6 +183,8 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
   // Enables diagnostic audio recordings on all render process hosts using
   // |audio_debug_recordings_file_path_|.
   void EnableAudioDebugRecordingsOnAllRenderProcessHosts();
+
+  void EnableDataChannelRecordingsOnAllRenderProcessHosts();
 
   // Updates the number of open PeerConnections. Called when a PeerConnection
   // is stopped or removed.
@@ -250,7 +257,8 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   enum class SelectionType {
     kRtcEventLogs,
-    kAudioDebugRecordings
+    kAudioDebugRecordings,
+    kDataChannelRecordings,
   } selection_type_;
 
   // Diagnostic audio recording state.
@@ -266,6 +274,13 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
   // |command_line_derived_logging_path_| is empty.
   bool event_log_recordings_;
   base::FilePath event_log_recordings_file_path_;
+
+  bool data_channel_recording_active_ = false;
+  // If `data_channel_recording_active_` is `true`, the following path indicates
+  // where logs are stored. If `data_channel_recording_active_` is `false`, then
+  // should it ever be turned on, a path picker will be shown to the user, and
+  // the following path indicates the initial path suggested by that picker.
+  base::FilePath data_channel_recordings_file_path_;
 
   // While |num_connected_connections_| is greater than zero, request a wake
   // lock service. This prevents the application from being suspended while
