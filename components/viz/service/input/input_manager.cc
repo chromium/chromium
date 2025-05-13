@@ -586,7 +586,11 @@ GpuServiceImpl* InputManager::GetGpuService() {
 
 input::RenderInputRouter* InputManager::GetRenderInputRouterFromFrameSinkId(
     const FrameSinkId& id) {
-  return rir_map_[id].get();
+  auto itr = rir_map_.find(id);
+  if (itr == rir_map_.end()) {
+    return nullptr;
+  }
+  return itr->second.get();
 }
 
 bool InputManager::ReturnInputBackToBrowser() {
@@ -624,6 +628,7 @@ void InputManager::SetBeginFrameSource(const FrameSinkId& frame_sink_id,
   if (itr == rir_map_.end()) {
     return;
   }
+  CHECK(itr->second.get());
   itr->second->SetBeginFrameSourceForFlingScheduler(begin_frame_source);
 }
 
