@@ -116,12 +116,6 @@ void UpdateMouseLockRegion(aura::Window* window, bool locked) {
   ::ClipCursor(&window_rect);
 }
 
-bool ShouldApplySystemBackdrop() {
-  return base::win::GetVersion() >= base::win::Version::WIN11_22H2 &&
-         !base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kUseWUCForWindowBackdrop);
-}
-
 }  // namespace
 
 DEFINE_UI_CLASS_PROPERTY_KEY(aura::Window*, kContentWindowForRootWindow, NULL)
@@ -213,39 +207,23 @@ void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
   message_handler_->Init(parent_hwnd, pixel_bounds);
 
   // If the Redirection Surface is removed, there needs to be a replacement
-  // "background" of the Chromium window. `DWM_SYSTEMBACKDROP_TYPE` tells DWM
-  // to blur the contents behind the chromium window to yield a translucent
-  // "frosted glass" effect. This will show whenever the GPU crashes or is not
-  // ready by the time the window updates size or shape. Translucent windows
-  // do not need a backdrop as it would show up in unexpected ways - i.e. a
-  // gutter.
+  // "background" of the Chromium window. Create a Windows.Ui.Composition
+  // backdrop and apply it to the window. If the frame is system drawn, it means
+  // that the window controls are rendered by Windows. In that case, they would
+  // be covered by the WUC backdrop, so only create the backdrop when frame mode
+  // is not `FrameMode::SYSTEM_DRAWN`.
   if (((message_handler_->window_ex_style() & WS_EX_NOREDIRECTIONBITMAP) ==
        WS_EX_NOREDIRECTIONBITMAP) &&
-      !message_handler_->is_translucent()) {
+      !message_handler_->is_translucent() &&
+      GetFrameMode() != FrameMode::SYSTEM_DRAWN) {
     // Ensure that the hwnd has been created.
     CHECK(GetHWND());
 
-    // Apply backdrop to the window. If on Win10 or older versions of Win11, use
-    // WUC for the backdrop. If on Win11 22H2 or newer, use DWM since it has the
-    // functionality included.
-    if (ShouldApplySystemBackdrop()) {
-      DWM_SYSTEMBACKDROP_TYPE backdrop = DWMSBT_TRANSIENTWINDOW;
-      HRESULT hr = DwmSetWindowAttribute(GetHWND(), DWMWA_SYSTEMBACKDROP_TYPE,
-                                         &backdrop, sizeof(backdrop));
-      CHECK_EQ(hr, S_OK);
+    // Apply backdrop to the window.
+    wuc_backdrop_ = std::make_unique<gfx::WUCBackdrop>(GetHWND());
 
-      // Ensure that the backdrop honors the OS dark mode setting.
-      BOOL use_dark_mode =
-          GetWidget()->GetColorMode() == ui::ColorProviderKey::ColorMode::kDark;
-      hr = DwmSetWindowAttribute(GetHWND(), DWMWA_USE_IMMERSIVE_DARK_MODE,
-                                 &use_dark_mode, sizeof(use_dark_mode));
-      CHECK_EQ(hr, S_OK);
-    } else {
-      wuc_backdrop_ = std::make_unique<gfx::WUCBackdrop>(GetHWND());
-
-      wuc_backdrop_->UpdateBackdropColor(
-          GetWidget()->GetColorProvider()->GetColor(ui::kColorFrameActive));
-    }
+    wuc_backdrop_->UpdateBackdropColor(
+        GetWidget()->GetColorProvider()->GetColor(ui::kColorFrameActive));
   }
 
   CreateCompositor(params.force_software_compositing);
@@ -284,17 +262,6 @@ void DesktopWindowTreeHostWin::OnWidgetInitDone() {}
 
 void DesktopWindowTreeHostWin::OnWidgetThemeChanged(
     ui::ColorProviderKey::ColorMode color_mode) {
-  if (ShouldApplySystemBackdrop()) {
-    // Ensure that DWM knows to apply the correct color scheme to the window
-    // backdrop whenever it changes.
-    BOOL use_dark_mode =
-        color_mode == ui::ColorProviderKey::ColorMode::kDark;
-    HRESULT hr = DwmSetWindowAttribute(GetHWND(), DWMWA_USE_IMMERSIVE_DARK_MODE,
-                                       &use_dark_mode, sizeof(use_dark_mode));
-    CHECK_EQ(hr, S_OK);
-    return;
-  }
-
   if (GetWidget() && wuc_backdrop_) {
     wuc_backdrop_->UpdateBackdropColor(
         GetWidget()->GetColorProvider()->GetColor(ui::kColorFrameActive));
