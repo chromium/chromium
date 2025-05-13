@@ -1646,11 +1646,13 @@ source_set("chrome_extensions_browser_client") {
     "//chrome/browser/extensions",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/prefetch",
+    "//chrome/browser/safe_browsing",
     "//chrome/browser/ui",
     "//components/content_settings/core/browser",
     "//components/embedder_support:user_agent",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/proxy_config",
+    "//components/safe_browsing/core/common:features",
     "//components/sessions",
     "//components/update_client",
     "//extensions/browser/updater",
@@ -1682,9 +1684,7 @@ source_set("chrome_extensions_browser_client") {
       "//chrome/browser:browser_process",
       "//chrome/browser/extensions",
       "//chrome/browser/extensions/api/runtime",
-      "//chrome/browser/safe_browsing",
       "//chrome/browser/web_applications",
-      "//components/safe_browsing/core/common:features",
       "//extensions/browser/api/content_settings",
     ]
 

@@ -104,6 +104,17 @@
 #include "extensions/browser/updater/null_extension_cache.h"
 #endif
 
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+#include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/declarative_net_request_action_signal.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/declarative_net_request_signal.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/remote_host_contacted_signal.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/tabs_execute_script_signal.h"
+#include "components/safe_browsing/core/common/features.h"
+#endif
+
 namespace extensions {
 
 namespace {
@@ -615,10 +626,84 @@ bool ChromeExtensionsBrowserClient::IsValidTabId(
                                       web_contents);
 }
 
-// static
-void ChromeExtensionsBrowserClient::set_did_chrome_update_for_testing(
-    bool did_update) {
-  g_did_chrome_update_for_testing = did_update;
+bool ChromeExtensionsBrowserClient::IsExtensionTelemetryServiceEnabled(
+    content::BrowserContext* context) const {
+  // TODO(crbug.com/417279245): Add extensions safe browsing to desktop Android.
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  auto* telemetry_service =
+      safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(context));
+  return telemetry_service && telemetry_service->enabled();
+#else
+  return false;
+#endif
+}
+
+void ChromeExtensionsBrowserClient::NotifyExtensionApiTabExecuteScript(
+    content::BrowserContext* context,
+    const ExtensionId& extension_id,
+    const std::string& code) const {
+  // TODO(crbug.com/417279245): Add extensions safe browsing to desktop Android.
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  auto* telemetry_service =
+      safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(context));
+  if (!telemetry_service || !telemetry_service->enabled()) {
+    return;
+  }
+
+  auto signal = std::make_unique<safe_browsing::TabsExecuteScriptSignal>(
+      extension_id, code);
+  telemetry_service->AddSignal(std::move(signal));
+#endif
+}
+
+void ChromeExtensionsBrowserClient::NotifyExtensionApiDeclarativeNetRequest(
+    content::BrowserContext* context,
+    const ExtensionId& extension_id,
+    const std::vector<api::declarative_net_request::Rule>& rules) const {
+  // TODO(crbug.com/417279245): Add extensions safe browsing to desktop Android.
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  auto* telemetry_service =
+      safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(context));
+  if (!telemetry_service || !telemetry_service->enabled()) {
+    return;
+  }
+
+  // The telemetry service will consume and release the signal object inside the
+  // `AddSignal()` call.
+  auto signal = std::make_unique<safe_browsing::DeclarativeNetRequestSignal>(
+      extension_id, rules);
+  telemetry_service->AddSignal(std::move(signal));
+#endif
+}
+
+void ChromeExtensionsBrowserClient::
+    NotifyExtensionDeclarativeNetRequestRedirectAction(
+        content::BrowserContext* context,
+        const ExtensionId& extension_id,
+        const GURL& request_url,
+        const GURL& redirect_url) const {
+  // TODO(crbug.com/417279245): Add extensions safe browsing to desktop Android.
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  auto* telemetry_service =
+      safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(context));
+  if (!telemetry_service || !telemetry_service->enabled() ||
+      !base::FeatureList::IsEnabled(
+          safe_browsing::
+              kExtensionTelemetryDeclarativeNetRequestActionSignal)) {
+    return;
+  }
+
+  // The telemetry service will consume and release the signal object inside the
+  // `AddSignal()` call.
+  auto signal = safe_browsing::DeclarativeNetRequestActionSignal::
+      CreateDeclarativeNetRequestRedirectActionSignal(extension_id, request_url,
+                                                      redirect_url);
+  telemetry_service->AddSignal(std::move(signal));
+#endif
 }
 
 bool ChromeExtensionsBrowserClient::IsUsbDeviceAllowedByPolicy(
@@ -753,6 +838,14 @@ void ChromeExtensionsBrowserClient::AddAPIActionOrEventToActivityLog(
   AddActionToExtensionActivityLog(browser_context, action);
 }
 
+void ChromeExtensionsBrowserClient::CreatePasswordReuseDetectionManager(
+    content::WebContents* web_contents) const {
+  // TODO(crbug.com/417279245): Add extensions safe browsing to desktop Android.
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  ChromePasswordReuseDetectionManagerClient::CreateForWebContents(web_contents);
+#endif
+}
+
 media_device_salt::MediaDeviceSaltService*
 ChromeExtensionsBrowserClient::GetMediaDeviceSaltService(
     content::BrowserContext* context) {
@@ -770,6 +863,12 @@ bool ChromeExtensionsBrowserClient::HasControlledFrameCapability(
              ->GetContentSetting(url, url,
                                  content_settings::mojom::ContentSettingsType::
                                      CONTROLLED_FRAME) == CONTENT_SETTING_ALLOW;
+}
+
+// static
+void ChromeExtensionsBrowserClient::set_did_chrome_update_for_testing(
+    bool did_update) {
+  g_did_chrome_update_for_testing = did_update;
 }
 
 }  // namespace extensions

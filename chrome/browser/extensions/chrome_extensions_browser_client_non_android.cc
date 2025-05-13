@@ -20,27 +20,15 @@
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/extensions/user_script_listener.h"
-#include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_loader_factory.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/url_constants.h"
-#include "components/safe_browsing/buildflags.h"
 #include "extensions/browser/api/content_settings/content_settings_service.h"
 #include "extensions/browser/extensions_browser_interface_binders.h"
 #include "extensions/common/mojom/view_type.mojom-shared.h"
-
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "chrome/browser/safe_browsing/extension_telemetry/declarative_net_request_action_signal.h"
-#include "chrome/browser/safe_browsing/extension_telemetry/declarative_net_request_signal.h"
-#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
-#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
-#include "chrome/browser/safe_browsing/extension_telemetry/remote_host_contacted_signal.h"
-#include "chrome/browser/safe_browsing/extension_telemetry/tabs_execute_script_signal.h"
-#include "components/safe_browsing/core/common/features.h"
-#endif
 
 namespace extensions {
 
@@ -167,82 +155,6 @@ ScriptExecutor* ChromeExtensionsBrowserClient::GetScriptExecutorForTab(
   return tab_helper ? tab_helper->script_executor() : nullptr;
 }
 
-void ChromeExtensionsBrowserClient::NotifyExtensionApiTabExecuteScript(
-    content::BrowserContext* context,
-    const ExtensionId& extension_id,
-    const std::string& code) const {
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  auto* telemetry_service =
-      safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(context));
-  if (!telemetry_service || !telemetry_service->enabled()) {
-    return;
-  }
-
-  auto signal = std::make_unique<safe_browsing::TabsExecuteScriptSignal>(
-      extension_id, code);
-  telemetry_service->AddSignal(std::move(signal));
-#endif
-}
-
-bool ChromeExtensionsBrowserClient::IsExtensionTelemetryServiceEnabled(
-    content::BrowserContext* context) const {
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  auto* telemetry_service =
-      safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(context));
-  return telemetry_service && telemetry_service->enabled();
-#else
-  return false;
-#endif
-}
-
-void ChromeExtensionsBrowserClient::NotifyExtensionApiDeclarativeNetRequest(
-    content::BrowserContext* context,
-    const ExtensionId& extension_id,
-    const std::vector<api::declarative_net_request::Rule>& rules) const {
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  auto* telemetry_service =
-      safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(context));
-  if (!telemetry_service || !telemetry_service->enabled()) {
-    return;
-  }
-
-  // The telemetry service will consume and release the signal object inside the
-  // `AddSignal()` call.
-  auto signal = std::make_unique<safe_browsing::DeclarativeNetRequestSignal>(
-      extension_id, rules);
-  telemetry_service->AddSignal(std::move(signal));
-#endif
-}
-
-void ChromeExtensionsBrowserClient::
-    NotifyExtensionDeclarativeNetRequestRedirectAction(
-        content::BrowserContext* context,
-        const ExtensionId& extension_id,
-        const GURL& request_url,
-        const GURL& redirect_url) const {
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  auto* telemetry_service =
-      safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(context));
-  if (!telemetry_service || !telemetry_service->enabled() ||
-      !base::FeatureList::IsEnabled(
-          safe_browsing::
-              kExtensionTelemetryDeclarativeNetRequestActionSignal)) {
-    return;
-  }
-
-  // The telemetry service will consume and release the signal object inside the
-  // `AddSignal()` call.
-  auto signal = safe_browsing::DeclarativeNetRequestActionSignal::
-      CreateDeclarativeNetRequestRedirectActionSignal(extension_id, request_url,
-                                                      redirect_url);
-  telemetry_service->AddSignal(std::move(signal));
-#endif
-}
-
 void ChromeExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
     content::BrowserContext* browser_context,
     content::SiteInstance* owner_site_instance,
@@ -267,13 +179,6 @@ void ChromeExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
   ExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
       browser_context, owner_site_instance, partition_name, in_memory,
       std::move(callback));
-}
-
-void ChromeExtensionsBrowserClient::CreatePasswordReuseDetectionManager(
-    content::WebContents* web_contents) const {
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  ChromePasswordReuseDetectionManagerClient::CreateForWebContents(web_contents);
-#endif
 }
 
 }  // namespace extensions
