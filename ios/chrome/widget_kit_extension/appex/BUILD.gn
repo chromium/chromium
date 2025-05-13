@@ -27,10 +27,8 @@ ios_appex_bundle("appex") {
   info_plist_target = ":tweak_info_plist"
   bundle_identifier = "$ios_chromium_bundle_id.WidgetKitExtension"
   deps = [ "//ios/chrome/widget_kit_extension:widget_kit_extension_swift" ]
-  if (ios_enable_widgets_for_mim) {
-    intents_target =
-        "//ios/chrome/widget_kit_extension:widget_kit_extension_swift"
-  }
+  intents_target =
+      "//ios/chrome/widget_kit_extension:widget_kit_extension_swift"
   if (ios_app_extension_privacy_manifest != "") {
     deps += [ ":privacy_manifest" ]
   }
