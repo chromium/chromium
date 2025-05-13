@@ -1076,7 +1076,8 @@ void GlicWindowControllerImpl::CloseAndReopenDetached(
 
 void GlicWindowControllerImpl::SaveWidgetPosition() {
   if (GetGlicWidget() && GetGlicWidget()->IsVisible()) {
-    previous_position_ = GetGlicWidget()->GetWindowBoundsInScreen().origin();
+    previous_position_ =
+        GetGlicWidget()->GetClientAreaBoundsInScreen().origin();
     profile_->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionX,
                                      previous_position_->x());
     profile_->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionY,
