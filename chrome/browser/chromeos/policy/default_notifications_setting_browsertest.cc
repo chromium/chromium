@@ -82,9 +82,9 @@ IN_PROC_BROWSER_TEST_P(DefaultNotificationsSettingBrowserTest, Policy) {
 
   // The UI has 3 radio buttons which are inside several layers of shadow DOM.
   // The buttons are:
-  // (0) Collapse all requests in the address bar
-  // (1) Collapse unwanted requests (recommended)
-  // (2) Expand all requests
+  // (0) Sites can ask to send notifications
+  // (1) Use quieter messaging
+  // (2) Don't allow sites to send notifications
   // Query the checked and disabled state of the radio buttons.
   std::string kGetRadios =
       "let radios = "
@@ -115,9 +115,9 @@ IN_PROC_BROWSER_TEST_P(DefaultNotificationsSettingBrowserTest, Policy) {
   switch (GetParam()) {
     case 0:
       // Policy not set.
-      EXPECT_FALSE(radios_checked_list[0].GetBool());
-      EXPECT_TRUE(radios_checked_list[1].GetBool());
-      EXPECT_FALSE(radios_checked_list[2].GetBool());
+      EXPECT_TRUE(radios_checked_list[0].GetBool());
+      EXPECT_FALSE(radios_checked_list[1].GetBool());
+      EXPECT_TRUE(radios_checked_list[2].GetBool());
       EXPECT_TRUE(radios_enabled_list[0].GetBool());
       EXPECT_TRUE(radios_enabled_list[1].GetBool());
       EXPECT_TRUE(radios_enabled_list[2].GetBool());
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_P(DefaultNotificationsSettingBrowserTest, Policy) {
       // Allow sites to show desktop notifications.
       EXPECT_FALSE(radios_checked_list[0].GetBool());
       EXPECT_FALSE(radios_checked_list[1].GetBool());
-      EXPECT_TRUE(radios_checked_list[2].GetBool());
+      EXPECT_FALSE(radios_checked_list[2].GetBool());
       EXPECT_TRUE(radios_enabled_list[0].GetBool());
       EXPECT_TRUE(radios_enabled_list[1].GetBool());
       EXPECT_TRUE(radios_enabled_list[2].GetBool());
@@ -142,9 +142,9 @@ IN_PROC_BROWSER_TEST_P(DefaultNotificationsSettingBrowserTest, Policy) {
       break;
     case 3:
       // Ask every time a site wants to show desktop notifications.
-      EXPECT_FALSE(radios_checked_list[0].GetBool());
+      EXPECT_TRUE(radios_checked_list[0].GetBool());
       EXPECT_FALSE(radios_checked_list[1].GetBool());
-      EXPECT_TRUE(radios_checked_list[2].GetBool());
+      EXPECT_FALSE(radios_checked_list[2].GetBool());
       EXPECT_TRUE(radios_enabled_list[0].GetBool());
       EXPECT_TRUE(radios_enabled_list[1].GetBool());
       EXPECT_TRUE(radios_enabled_list[2].GetBool());
