@@ -36,6 +36,8 @@ constexpr int kAverageBrowserWidth = 800;
 constexpr int kAverageBrowserHeight = 700;
 constexpr base::TimeDelta kMaxWaitTime = base::Seconds(30);
 
+// TODO(crbug.com/371041180): Refactor tests to remove these scripts and notify
+// from the notice components instead.
 std::string ScrollToBottomScript() {
   return R"```(
     (async () => {
@@ -76,6 +78,35 @@ std::string ScrollToBottomScript() {
       });
     })();
   )```";
+}
+
+std::string WaitForPrivacyPolicyPageLoadScript() {
+  return R"(
+    (async () => {
+      return new Promise(async (resolve) => {
+        requestAnimationFrame(async () => {
+          dialogElement = document.querySelector("body > "+$1);
+          if($2 !== "") dialogElement = dialogElement.shadowRoot.querySelector($2);
+          waitForPrivacyPolicyResolve = (el) => new Promise(privacyPolicyResolve => {
+            let timeout = setTimeout(() => {
+              el.removeEventListener('privacy-policy-loaded', privacyPolicyLoadCallback);
+              privacyPolicyResolve();
+            }, 2000);
+            const privacyPolicyLoadCallback = () => {
+              clearTimeout(timeout);
+              el.removeEventListener('privacy-policy-loaded', privacyPolicyLoadCallback);
+              privacyPolicyResolve();
+            };
+            el.addEventListener('privacy-policy-loaded', privacyPolicyLoadCallback);
+          });
+          const privacyPolicyEl = dialogElement.shadowRoot.querySelector('privacy-sandbox-privacy-policy-dialog');
+          privacyPolicyEl.shadowRoot.querySelector('#privacyPolicy').src = "about:blank";
+          await waitForPrivacyPolicyResolve(privacyPolicyEl);
+          setTimeout(resolve,0);
+        });
+      });
+    })();
+  )";
 }
 
 std::string ClickLearnMoreButton3TimesScript() {
@@ -123,10 +154,6 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
-
-    ASSERT_TRUE(embedded_test_server()->Start());
     mock_service_ = static_cast<MockPrivacySandboxService*>(
         PrivacySandboxServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             browser()->profile(),
@@ -318,7 +345,8 @@ class PrivacySandboxDialogViewPrivacyPolicyBrowserTest
                   privacy_sandbox_dialog_view->GetWebContentsForTesting()),
               nullptr);
 
-    // Click expand button.
+    // Privacy policy is initially not visible, click expand button and trigger
+    // visibility.
     EXPECT_TRUE(
         content::ExecJs(privacy_sandbox_dialog_view->GetWebContentsForTesting(),
                         "document.querySelector('body > "
@@ -326,6 +354,11 @@ class PrivacySandboxDialogViewPrivacyPolicyBrowserTest
                         "querySelector('#consent').shadowRoot.querySelector('"
                         "privacy-sandbox-dialog-learn-more').shadowRoot."
                         "querySelector('div > cr-expand-button').click()"));
+
+    EXPECT_TRUE(content::ExecJs(
+        privacy_sandbox_dialog_view->GetWebContentsForTesting(),
+        content::JsReplace(WaitForPrivacyPolicyPageLoadScript(),
+                           "privacy-sandbox-combined-dialog-app", "#consent")));
 
     // Click Privacy Policy link.
     EXPECT_TRUE(
@@ -337,17 +370,6 @@ class PrivacySandboxDialogViewPrivacyPolicyBrowserTest
                             GetPrivacyPolicyLinkElementId() +
                             "')"
                             ".click()"));
-
-    // Intentionally navigate to some blocked content to avoid flakiness.
-    auto script = content::JsReplace(
-        "document.querySelector('body > "
-        "privacy-sandbox-combined-dialog-app')"
-        ".shadowRoot.querySelector('#consent')"
-        ".shadowRoot.querySelector('privacy-sandbox-privacy-policy-dialog')"
-        ".shadowRoot.querySelector('#privacyPolicy').src = $1;",
-        embedded_test_server()->GetURL("/blue.html"));
-    EXPECT_TRUE(content::ExecJs(
-        privacy_sandbox_dialog_view->GetWebContentsForTesting(), script));
   }
 
  private:
@@ -356,7 +378,7 @@ class PrivacySandboxDialogViewPrivacyPolicyBrowserTest
 
 // TODO(https://crbug.com/415305952): High failure rate.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewPrivacyPolicyBrowserTest,
-                       DISABLED_InvokeUi_PrivacyPolicy) {
+                       InvokeUi_PrivacyPolicy) {
   ShowAndVerifyUi();
 }
 
@@ -382,7 +404,7 @@ class PrivacySandboxDialogViewAdsApiUxEnhancementPrivacyPolicyBrowserTest
 // TODO(https://crbug.com/415305952): High failure rate.
 IN_PROC_BROWSER_TEST_F(
     PrivacySandboxDialogViewAdsApiUxEnhancementPrivacyPolicyBrowserTest,
-    DISABLED_InvokeUi_PrivacyPolicy) {
+    InvokeUi_PrivacyPolicy) {
   ShowAndVerifyUi();
 }
 
