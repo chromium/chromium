@@ -107,11 +107,14 @@ MATCHER_P2(HasSharedAttribution, created_by, updated_by, "") {
 }
 
 MATCHER_P3(HasGroupEntityData, title, color, collaboration_id, "") {
-  const sync_pb::SharedTabGroup& arg_tab_group =
-      arg.specifics.shared_tab_group_data().tab_group();
+  const sync_pb::SharedTabGroupDataSpecifics& arg_specifics =
+      arg.specifics.shared_tab_group_data();
+  const sync_pb::SharedTabGroup& arg_tab_group = arg_specifics.tab_group();
   const std::optional<syncer::CollaborationMetadata>& collab_metadata =
       arg.collaboration_metadata;
-  return arg_tab_group.title() == title && arg_tab_group.color() == color &&
+  return arg_specifics.version() ==
+             kCurrentSharedTabGroupDataSpecificsProtoVersion &&
+         arg_tab_group.title() == title && arg_tab_group.color() == color &&
          collab_metadata.has_value() &&
          CollaborationId(collab_metadata->collaboration_id()) ==
              CollaborationId(collaboration_id);
@@ -129,12 +132,32 @@ MATCHER_P(HasGroupEntityDataWithOriginatingGroup, originating_group_guid, "") {
 }
 
 MATCHER_P3(HasTabEntityData, title, url, collaboration_id, "") {
-  const sync_pb::SharedTab& arg_tab =
-      arg.specifics.shared_tab_group_data().tab();
+  const sync_pb::SharedTabGroupDataSpecifics& arg_specifics =
+      arg.specifics.shared_tab_group_data();
+  const sync_pb::SharedTab& arg_tab = arg_specifics.tab();
   const std::optional<syncer::CollaborationMetadata>& collab_metadata =
       arg.collaboration_metadata;
-  return arg_tab.title() == title && arg_tab.url() == url &&
+  return arg_specifics.version() ==
+             kCurrentSharedTabGroupDataSpecificsProtoVersion &&
+         arg_tab.title() == title && arg_tab.url() == url &&
          collab_metadata.has_value() &&
+         CollaborationId(collab_metadata->collaboration_id()) ==
+             CollaborationId(collaboration_id);
+}
+
+MATCHER_P4(HasTabEntityDataWithVersion,
+           title,
+           url,
+           collaboration_id,
+           version,
+           "") {
+  const sync_pb::SharedTabGroupDataSpecifics& arg_specifics =
+      arg.specifics.shared_tab_group_data();
+  const sync_pb::SharedTab& arg_tab = arg_specifics.tab();
+  const std::optional<syncer::CollaborationMetadata>& collab_metadata =
+      arg.collaboration_metadata;
+  return arg_specifics.version() == version && arg_tab.title() == title &&
+         arg_tab.url() == url && collab_metadata.has_value() &&
          CollaborationId(collab_metadata->collaboration_id()) ==
              CollaborationId(collaboration_id);
 }
@@ -2251,6 +2274,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnTabsMissingGroups) {
   sync_pb::SharedTabGroupDataSpecifics tab_specifics =
       MakeTabSpecifics("tab title", GURL("http://google.com/1"),
                        kMissingGroupGuid, GenerateRandomUniquePosition());
+
   syncer::EntityChangeList change_list;
   change_list.push_back(
       CreateAddEntityChange(tab_specifics, kCollaborationId, kCreationTime));
@@ -2261,8 +2285,8 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnTabsMissingGroups) {
       ExtractEntityDataFromBatch(bridge()->GetAllDataForDebugging());
 
   EXPECT_THAT(entity_data_list,
-              UnorderedElementsAre(HasTabEntityData(
-                  "tab title", "http://google.com/1", kCollaborationId)));
+              UnorderedElementsAre(HasTabEntityDataWithVersion(
+                  "tab title", "http://google.com/1", kCollaborationId, 0)));
 
   // Simulate browser restart and verify that the tab missing group is loaded.
   StoreMetadataAndReset();
@@ -2274,8 +2298,8 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnTabsMissingGroups) {
   entity_data_list =
       ExtractEntityDataFromBatch(bridge()->GetAllDataForDebugging());
   EXPECT_THAT(entity_data_list,
-              UnorderedElementsAre(HasTabEntityData(
-                  "tab title", "http://google.com/1", kCollaborationId)));
+              UnorderedElementsAre(HasTabEntityDataWithVersion(
+                  "tab title", "http://google.com/1", kCollaborationId, 0)));
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, UntrackEntitiesForCollaboration) {
@@ -2343,6 +2367,8 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
   sync_pb::SharedTabGroupDataSpecifics tab_specifics =
       MakeTabSpecifics("tab title", GURL("http://google.com/1"),
                        kMissingGroupGuid, GenerateRandomUniquePosition());
+  tab_specifics.set_version(999);
+
   ApplySingleEntityChange(
       CreateAddEntityChange(tab_specifics, kCollaborationId));
 
@@ -2351,8 +2377,8 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
 
   // Verify that the model is still empty but the tab missing group is stored.
   ASSERT_THAT(entity_data_list,
-              UnorderedElementsAre(HasTabEntityData(
-                  "tab title", "http://google.com/1", kCollaborationId)));
+              UnorderedElementsAre(HasTabEntityDataWithVersion(
+                  "tab title", "http://google.com/1", kCollaborationId, 999)));
   ASSERT_THAT(model()->saved_tab_groups(), IsEmpty());
 
   // Add the missing group entry remotely.

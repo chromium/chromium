@@ -135,6 +135,8 @@ sync_pb::SharedTabGroupDataSpecifics SharedTabGroupToSpecifics(
             .value()
             .AsLowercaseString());
   }
+
+  pb_specifics.set_version(kCurrentSharedTabGroupDataSpecificsProtoVersion);
   return pb_specifics;
 }
 
@@ -233,6 +235,8 @@ sync_pb::SharedTabGroupDataSpecifics SharedTabGroupTabToSpecifics(
   pb_tab->set_shared_tab_group_guid(tab.saved_group_guid().AsLowercaseString());
   pb_tab->set_title(base::UTF16ToUTF8(tab.title()));
   *pb_tab->mutable_unique_position() = std::move(unique_position);
+
+  specifics.set_version(kCurrentSharedTabGroupDataSpecificsProtoVersion);
   return specifics;
 }
 
@@ -912,6 +916,7 @@ SharedTabGroupDataSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
       entity_specifics.shared_tab_group_data();
   trimmed_specifics.clear_guid();
   trimmed_specifics.clear_update_time_windows_epoch_micros();
+  trimmed_specifics.clear_version();
 
   if (trimmed_specifics.has_tab()) {
     sync_pb::SharedTab* tab = trimmed_specifics.mutable_tab();
