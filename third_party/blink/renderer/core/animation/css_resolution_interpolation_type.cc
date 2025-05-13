@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/animation/css_resolution_interpolation_type.h"
 
+#include "third_party/blink/renderer/core/animation/tree_counting_checker.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 
@@ -29,8 +30,16 @@ InterpolationValue CSSResolutionInterpolationType::MaybeConvertResolution(
 InterpolationValue CSSResolutionInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState& state,
-    ConversionCheckers&) const {
-  return MaybeConvertResolution(value, state.CssToLengthConversionData());
+    ConversionCheckers& conversion_checkers) const {
+  const CSSToLengthConversionData& conversion_data =
+      state.CssToLengthConversionData();
+  if (const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
+    if (primitive_value->IsElementDependent()) {
+      conversion_checkers.push_back(
+          TreeCountingChecker::Create(conversion_data));
+    }
+  }
+  return MaybeConvertResolution(value, conversion_data);
 }
 
 const CSSValue* CSSResolutionInterpolationType::CreateCSSValue(

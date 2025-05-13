@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/animation/css_time_interpolation_type.h"
 
 #include "base/notreached.h"
+#include "third_party/blink/renderer/core/animation/tree_counting_checker.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
@@ -32,8 +33,16 @@ InterpolationValue CSSTimeInterpolationType::MaybeConvertTime(
 InterpolationValue CSSTimeInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState& state,
-    ConversionCheckers&) const {
-  return MaybeConvertTime(value, state.CssToLengthConversionData());
+    ConversionCheckers& conversion_checkers) const {
+  const CSSToLengthConversionData& conversion_data =
+      state.CssToLengthConversionData();
+  if (const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
+    if (primitive_value->IsElementDependent()) {
+      conversion_checkers.push_back(
+          TreeCountingChecker::Create(conversion_data));
+    }
+  }
+  return MaybeConvertTime(value, conversion_data);
 }
 
 const CSSValue* CSSTimeInterpolationType::CreateCSSValue(
