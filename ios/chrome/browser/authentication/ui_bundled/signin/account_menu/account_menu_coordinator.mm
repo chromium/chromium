@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_mediator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_view_controller.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
@@ -99,9 +98,8 @@
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   // Callback to hide the activity overlay.
   base::ScopedClosureRunner _activityOverlayCallback;
-  // The child signin coordinator if it’s open. It may be presented by the
-  // Manage Account’s coordinator view controller.
-  SigninCoordinator* _signinCoordinator;
+  // The child signin coordinator if it’s open.
+  SigninCoordinator* _addAccountSigninCoordinator;
   // Clicked view, used to anchor the menu to it when using
   // UIModalPresentationPopover mode
   UIView* _anchorView;
@@ -307,8 +305,25 @@
 
 - (void)didTapAddAccountWithCompletion:
     (SigninCoordinatorCompletionCallback)completion {
-  [self openAddAccountWithBaseViewController:_navigationController
-                                  completion:completion];
+  auto style = SigninContextStyle::kDefault;
+  auto accessPoint = signin_metrics::AccessPoint::kAccountMenu;
+  _addAccountSigninCoordinator = [SigninCoordinator
+      addAccountCoordinatorWithBaseViewController:_navigationController
+                                          browser:self.browser
+                                     contextStyle:style
+                                      accessPoint:accessPoint
+                             continuationProvider:
+                                 DoNothingContinuationProvider()];
+  __weak __typeof(self) weakSelf = self;
+  _addAccountSigninCoordinator.signinCompletion =
+      ^(SigninCoordinatorResult signinResult,
+        id<SystemIdentity> signinCompletionIdentity) {
+        [weakSelf
+            signinCoordinatorCompletionWithSigninResult:signinResult
+                                     completionIdentity:signinCompletionIdentity
+                                             completion:completion];
+      };
+  [_addAccountSigninCoordinator start];
 }
 
 - (void)mediatorWantsToBeDismissed:(AccountMenuMediator*)mediator
@@ -410,11 +425,12 @@
       signin_metrics::AccessPoint::kAccountMenu;
   signin_metrics::PromoAction promoAction =
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
-  _signinCoordinator = [SigninCoordinator
+  SigninContextStyle style = SigninContextStyle::kDefault;
+  _addAccountSigninCoordinator = [SigninCoordinator
       primaryAccountReauthCoordinatorWithBaseViewController:
           _navigationController
                                                     browser:self.browser
-                                               contextStyle:self.contextStyle
+                                               contextStyle:style
                                                 accessPoint:accessPoint
                                                 promoAction:promoAction
                                        continuationProvider:
@@ -431,17 +447,6 @@
   [self stopManageAccountsCoordinator];
 }
 
-- (void)manageAccountsCoordinator:
-            (ManageAccountsCoordinator*)manageAccountsCoordinator
-    didRequestAddAccountWithBaseViewController:(UIViewController*)viewController
-                                    completion:
-                                        (SigninCoordinatorCompletionCallback)
-                                            completion {
-  CHECK_EQ(manageAccountsCoordinator, _manageAccountsCoordinator);
-  [self openAddAccountWithBaseViewController:viewController
-                                  completion:completion];
-}
-
 #pragma mark - Private
 
 - (void)stopTrustedVaultReauthenticationCoordinator {
@@ -451,15 +456,15 @@
 }
 
 - (void)stopSigninCoordinatorAnimated:(BOOL)animated {
-  [_signinCoordinator stopAnimated:animated];
-  _signinCoordinator = nil;
+  [_addAccountSigninCoordinator stopAnimated:animated];
+  _addAccountSigninCoordinator = nil;
 }
 
 - (void)startSigninCoordinatorWithCompletion:
     (SigninCoordinatorCompletionCallback)completion {
-  CHECK(_signinCoordinator);
+  CHECK(_addAccountSigninCoordinator);
   __weak __typeof(self) weakSelf = self;
-  _signinCoordinator.signinCompletion =
+  _addAccountSigninCoordinator.signinCompletion =
       ^(SigninCoordinatorResult signinResult,
         id<SystemIdentity> signinCompletionIdentity) {
         [weakSelf
@@ -467,7 +472,7 @@
                                      completionIdentity:signinCompletionIdentity
                                              completion:completion];
       };
-  [_signinCoordinator start];
+  [_addAccountSigninCoordinator start];
 }
 
 // Opens the add account coordinator on top of `baseViewController`.
@@ -475,7 +480,7 @@
                                   completion:
                                       (SigninCoordinatorCompletionCallback)
                                           completion {
-  _signinCoordinator = [SigninCoordinator
+  _addAccountSigninCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:baseViewController
                                           browser:self.browser
                                      contextStyle:self.contextStyle
@@ -483,6 +488,11 @@
                              continuationProvider:
                                  DoNothingContinuationProvider()];
   [self startSigninCoordinatorWithCompletion:completion];
+}
+
+- (void)stopAddAccountCoordinator {
+  [_addAccountSigninCoordinator stop];
+  _addAccountSigninCoordinator = nil;
 }
 
 // Clean up the add account coordinator.
@@ -494,7 +504,7 @@
                                      completion:
                                          (SigninCoordinatorCompletionCallback)
                                              completion {
-  [self stopSigninCoordinatorAnimated:NO];
+  [self stopAddAccountCoordinator];
   if (completion) {
     completion(signinResult, completionIdentity);
   }
@@ -533,7 +543,7 @@
     std::move(_accountDetailsControllerDismissCallback).Run(/*animated=*/false);
   }
   [self stopSignoutActionSheetCoordinator];
-  [self stopSigninCoordinatorAnimated:NO];
+  [self stopAddAccountCoordinator];
   // Add Account coordinator should be stopped before the Manage Accounts
   // Coordinator, as the former may be presented by the latter.
   [self stopManageAccountsCoordinator];

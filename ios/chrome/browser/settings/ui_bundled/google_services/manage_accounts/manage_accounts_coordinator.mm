@@ -10,6 +10,8 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
@@ -71,6 +73,9 @@ using signin_metrics::PromoAction;
 
   // Modal alert for sign out.
   SignoutActionSheetCoordinator* _signoutCoordinator;
+
+  // The Add Account coordinator
+  SigninCoordinator* _addAccountSigninCoordinator;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -160,6 +165,7 @@ using signin_metrics::PromoAction;
 
 - (void)stop {
   [super stop];
+  [self stopAddAccountCoordinator];
   ManageAccountsTableViewController* accountsTableViewController =
       base::apple::ObjCCast<ManageAccountsTableViewController>(_viewController);
   if (accountsTableViewController) {
@@ -250,33 +256,18 @@ using signin_metrics::PromoAction;
 - (void)showAddAccountToDevice {
   [_viewController preventUserInteraction];
   __weak __typeof(self) weakSelf = self;
-  if (self.delegate &&
-      [self.delegate
-          respondsToSelector:@selector
-          (manageAccountsCoordinator:
-              didRequestAddAccountWithBaseViewController:completion:)]) {
-    [self.delegate manageAccountsCoordinator:self
-        didRequestAddAccountWithBaseViewController:_viewController
-                                        completion:^(
-                                            SigninCoordinatorResult result,
-                                            id<SystemIdentity>) {
-                                          [weakSelf
-                                              addAccountToDeviceCompleted];
-                                        }];
-  } else {
-    ShowSigninCommand* command = [[ShowSigninCommand alloc]
-        initWithOperation:AuthenticationOperation::kAddAccount
-                 identity:nil
-              accessPoint:AccessPoint::kSettings
-              promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
-               completion:^(SigninCoordinatorResult result,
-                            id<SystemIdentity> completionIdentity) {
-                 [weakSelf addAccountToDeviceCompleted];
-               }];
-    [HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                        ApplicationCommands) showSignin:command
-                                     baseViewController:_viewController];
-  }
+  _addAccountSigninCoordinator = [SigninCoordinator
+      addAccountCoordinatorWithBaseViewController:_viewController
+                                          browser:self.browser
+                                     contextStyle:SigninContextStyle::kDefault
+                                      accessPoint:AccessPoint::kSettings
+                             continuationProvider:
+                                 DoNothingContinuationProvider()];
+  _addAccountSigninCoordinator.signinCompletion =
+      ^(SigninCoordinatorResult result, id<SystemIdentity> completionIdentity) {
+        [weakSelf addAccountToDeviceCompleted];
+      };
+  [_addAccountSigninCoordinator start];
 }
 
 - (void)signOutWithItemView:(UIView*)itemView {
@@ -300,6 +291,11 @@ using signin_metrics::PromoAction;
 }
 
 #pragma mark - Private
+
+- (void)stopAddAccountCoordinator {
+  [_addAccountSigninCoordinator stop];
+  _addAccountSigninCoordinator = nil;
+}
 
 // Requests the delegate to stop the coordinator, if set. Otherwise stop itself.
 - (void)requestStop {
@@ -390,6 +386,7 @@ using signin_metrics::PromoAction;
 }
 
 - (void)addAccountToDeviceCompleted {
+  [self stopAddAccountCoordinator];
   [_viewController allowUserInteraction];
   if (_closeSettingsOnAddAccount) {
     [self closeSettings];
