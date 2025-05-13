@@ -9,10 +9,13 @@ import android.hardware.SensorManager;
 import android.util.Log;
 import android.view.ViewConfiguration;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * This class is vastly copied from {@link android.widget.OverScroller} but decouples the time from
  * the app time so it can be specified manually.
  */
+@NullMarked
 public class StackScroller {
     private int mMode;
 

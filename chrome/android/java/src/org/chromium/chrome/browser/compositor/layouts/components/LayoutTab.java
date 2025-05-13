@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -17,6 +18,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * {@link LayoutTab} is used to keep track of a thumbnail's bitmap and position and to draw itself
  * onto the GL canvas at the desired Y Offset.
  */
+@NullMarked
 public class LayoutTab extends PropertyModel {
     // TODO(crbug.com/40126260): Make the following properties be part of the PropertyModel.
     // Begin section --------------

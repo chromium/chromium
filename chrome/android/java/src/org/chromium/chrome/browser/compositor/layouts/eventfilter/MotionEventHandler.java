@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.compositor.layouts.eventfilter;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Interface that describes motion event callbacks. */
+@NullMarked
 public interface MotionEventHandler {
     /**
      * Called on down touch event.
