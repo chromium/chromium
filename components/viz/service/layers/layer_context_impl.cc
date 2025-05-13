@@ -1343,6 +1343,36 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
 
   host_impl_->SetViewportDamage(update->viewport_damage_rect);
 
+  for (auto& ui_resource_request : update->ui_resource_requests) {
+    if (ui_resource_request->type ==
+        mojom::TransferableUIResourceRequest::Type::kCreate) {
+      if (!ui_resource_request->transferable_resource ||
+          ui_resource_request->transferable_resource->is_empty()) {
+        return base::unexpected(
+            "Invalid transferable resource in UI resource creation");
+      }
+      ReleaseCallback release_callback = base::BindOnce(
+          [](cc::LayerTreeHostImpl* host_impl, ResourceId id,
+             const gpu::SyncToken& sync_token, bool is_lost) {
+            host_impl->ReturnResource({id, sync_token,
+                                       /*release_fence=*/gfx::GpuFenceHandle(),
+                                       /*count=*/1, is_lost});
+          },
+          host_impl_.get(), ui_resource_request->transferable_resource->id);
+
+      auto resource_id = host_impl_->resource_provider()->ImportResource(
+          ui_resource_request->transferable_resource.value(),
+          /*impl_release_callback=*/std::move(release_callback),
+          /*main_thread_release_callback=*/base::NullCallback(),
+          /*evicted_callback=*/base::NullCallback());
+
+      host_impl_->CreateUIResourceFromImportedResource(
+          ui_resource_request->uid, resource_id, ui_resource_request->opaque);
+    } else {
+      host_impl_->DeleteUIResource(ui_resource_request->uid);
+    }
+  }
+
   property_trees.UpdateChangeTracking();
   property_trees.transform_tree_mutable().set_needs_update(
       transform_size_changed || transform_properties_changed ||

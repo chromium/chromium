@@ -4342,6 +4342,25 @@ std::unique_ptr<MutatorEvents> LayerTreeHostImpl::TakeMutatorEvents() {
   return events;
 }
 
+UIResourceChangeMap LayerTreeHostImpl::TakeUIResourceChanges(
+    bool require_full_sync) {
+  if (require_full_sync) {
+    ui_resource_changes_.clear();
+
+    if (settings_.TreesInVizInClientProcess()) {
+      // Mark all ui resources as created in this change set.
+      for (auto& pair : ui_resource_map_) {
+        UIResourceId uid = pair.first;
+        auto [change_it, success] =
+            ui_resource_changes_.try_emplace(uid, UIResourceChange());
+        change_it->second.resource_created = true;
+      }
+    }
+  }
+
+  return std::move(ui_resource_changes_);
+}
+
 void LayerTreeHostImpl::ClearHistory() {
   client_->ClearHistory();
 }
@@ -5346,6 +5365,9 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
                                          const UIResourceBitmap& bitmap) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "LayerTreeHostImpl::CreateUIResource");
+  // We expect only CreateUIResourceFromImportedResource to be used for
+  // trees_in_viz_in_viz_process mode.
+  DCHECK(!settings_.trees_in_viz_in_viz_process);
   DCHECK_GT(uid, 0);
 
   // Allow for multiple creation requests with the same UIResourceId.  The
@@ -5546,6 +5568,51 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
   ui_resource_map_[uid] = std::move(data);
 
   MarkUIResourceNotEvicted(uid);
+
+  if (settings_.TreesInVizInClientProcess()) {
+    auto [change_it, success] =
+        ui_resource_changes_.try_emplace(uid, UIResourceChange());
+    // Mark that a resource was created in this change set.
+    change_it->second.resource_created = true;
+  }
+}
+
+void LayerTreeHostImpl::CreateUIResourceFromImportedResource(
+    UIResourceId uid,
+    viz::ResourceId resource_id,
+    bool is_opaque) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+               "LayerTreeHostImpl::CreateUIResourceFromResource");
+  // We expect only CreateUIResource to be used for
+  // non-trees_in_viz_in_viz_process mode.
+  DCHECK(settings_.trees_in_viz_in_viz_process);
+  DCHECK_GT(uid, 0);
+
+  // Allow for multiple creation requests with the same UIResourceId.  The
+  // previous resource is simply deleted.
+  viz::ResourceId id = ResourceIdForUIResource(uid);
+  if (id) {
+    DeleteUIResource(uid);
+  }
+
+  if (!has_valid_layer_tree_frame_sink_) {
+    evicted_ui_resources_.insert(uid);
+    return;
+  }
+
+  UIResourceData data;
+  data.opaque = is_opaque;
+  data.resource_id_for_export = resource_id;
+  ui_resource_map_[uid] = std::move(data);
+
+  MarkUIResourceNotEvicted(uid);
+
+  if (settings_.TreesInVizInClientProcess()) {
+    auto [change_it, success] =
+        ui_resource_changes_.try_emplace(uid, UIResourceChange());
+    // Mark that a resource was created in this change set.
+    change_it->second.resource_created = true;
+  }
 }
 
 void LayerTreeHostImpl::DeleteUIResource(UIResourceId uid) {
@@ -5562,6 +5629,19 @@ void LayerTreeHostImpl::DeleteUIResource(UIResourceId uid) {
     ui_resource_map_.erase(it);
 
     resource_provider_->RemoveImportedResource(id);
+
+    if (settings_.TreesInVizInClientProcess()) {
+      auto [change_it, success] =
+          ui_resource_changes_.try_emplace(uid, UIResourceChange());
+      // If a resource was marked as created in this change set, unmark it.
+      // Otherwise, the resource must have been created in a prior change set,
+      // so we mark it as requiring deletion.
+      if (change_it->second.resource_created) {
+        change_it->second.resource_created = false;
+      } else {
+        change_it->second.resource_deleted = true;
+      }
+    }
   }
   MarkUIResourceNotEvicted(uid);
 }

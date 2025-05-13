@@ -124,6 +124,13 @@ class TaskGraphRunner;
 class UIResourceBitmap;
 class Viewport;
 
+struct UIResourceChange {
+  bool resource_created : 1 = false;
+  bool resource_deleted : 1 = false;
+};
+
+using UIResourceChangeMap = std::unordered_map<UIResourceId, UIResourceChange>;
+
 // LayerTreeHostImpl owns the LayerImpl trees as well as associated rendering
 // state.
 class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
@@ -731,6 +738,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   virtual void CreateUIResource(UIResourceId uid,
                                 const UIResourceBitmap& bitmap);
+  virtual void CreateUIResourceFromImportedResource(UIResourceId uid,
+                                                    viz::ResourceId resource_id,
+                                                    bool is_opaque);
+
   // Deletes a UI resource.  May safely be called more than once.
   virtual void DeleteUIResource(UIResourceId uid);
   // Evict all UI resources. This differs from ClearUIResources in that this
@@ -812,6 +823,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   std::vector<std::pair<int, bool>> TakeCompletedImageDecodeRequests();
   // Returns mutator events to be handled by BeginMainFrame.
   std::unique_ptr<MutatorEvents> TakeMutatorEvents();
+  UIResourceChangeMap TakeUIResourceChanges(bool require_full_sync);
 
   void ClearHistory();
   size_t CommitDurationSampleCountForTesting() const;
@@ -1074,6 +1086,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // request queue. The resource IDs held in here do not have any backing
   // associated with them anymore, as that is freed at the time of eviction.
   std::set<UIResourceId> evicted_ui_resources_;
+
+  // When using a layer context for display, this tracks changes to UIResources
+  // that should be synchronized to the layer context.
+  UIResourceChangeMap ui_resource_changes_;
 
   // These are valid when has_valid_layer_tree_frame_sink_ is true.
   //

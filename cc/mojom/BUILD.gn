@@ -119,6 +119,25 @@ mojom("layer_type") {
   sources = [ "layer_type.mojom" ]
 }
 
+mojom("ui_resource_id") {
+  generate_java = true
+  sources = [ "ui_resource_id.mojom" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "cc.mojom.UIResourceId"
+          cpp = "::cc::UIResourceId"
+          nullable_is_same_type = true
+          copyable_pass_by_value = true
+        },
+      ]
+      traits_headers = [ "ui_resource_id_mojom_traits.h" ]
+    },
+  ]
+}
+
 mojom("hit_test_opaqueness") {
   generate_java = true
   sources = [ "hit_test_opaqueness.mojom" ]

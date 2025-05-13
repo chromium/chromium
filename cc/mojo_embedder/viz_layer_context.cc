@@ -396,6 +396,38 @@ viz::mojom::TransformTreeUpdatePtr ComputeTransformTreePropertiesUpdate(
   return wire;
 }
 
+void SerializeUIResourceRequest(
+    cc::LayerTreeHostImpl& host_impl,
+    viz::RasterContextProvider& context_provider,
+    viz::mojom::LayerTreeUpdate& update,
+    cc::UIResourceId uid,
+    viz::mojom::TransferableUIResourceRequest::Type type) {
+  if (type == viz::mojom::TransferableUIResourceRequest::Type::kCreate) {
+    std::vector<viz::ResourceId> ids;
+    std::vector<viz::TransferableResource> resources;
+
+    viz::ResourceId resource_id = host_impl.ResourceIdForUIResource(uid);
+    bool opaque = host_impl.IsUIResourceOpaque(uid);
+    ids.push_back(resource_id);
+    host_impl.resource_provider()->PrepareSendToParent(ids, &resources,
+                                                       &context_provider);
+    CHECK_EQ(resources.size(), ids.size());
+
+    auto& request = update.ui_resource_requests.emplace_back(
+        viz::mojom::TransferableUIResourceRequest::New());
+    request->type = type;
+    request->uid = uid;
+    request->transferable_resource = resources[0];
+    request->opaque = opaque;
+  } else {
+    CHECK_EQ(type, viz::mojom::TransferableUIResourceRequest::Type::kDelete);
+    auto& request = update.ui_resource_requests.emplace_back(
+        viz::mojom::TransferableUIResourceRequest::New());
+    request->type = type;
+    request->uid = uid;
+  }
+}
+
 viz::mojom::TileResourcePtr SerializeTileResource(
     const Tile& tile,
     viz::ClientResourceProvider& resource_provider,
@@ -941,6 +973,23 @@ void VizLayerContext::UpdateDisplayTreeFrom(
   update->outer_scroll = property_ids.outer_scroll;
 
   update->viewport_damage_rect = viewport_damage_rect;
+
+  // Sync changes to UI resources
+  {
+    auto resource_changes = host_impl_->TakeUIResourceChanges(needs_full_sync_);
+    for (const auto& [uid, change] : resource_changes) {
+      if (change.resource_deleted) {
+        SerializeUIResourceRequest(
+            *host_impl_, context_provider, *update, uid,
+            viz::mojom::TransferableUIResourceRequest::Type::kDelete);
+      }
+      if (change.resource_created) {
+        SerializeUIResourceRequest(
+            *host_impl_, context_provider, *update, uid,
+            viz::mojom::TransferableUIResourceRequest::Type::kCreate);
+      }
+    }
+  }
 
   // This flag will be set if and only if a new layer list was pushed to the
   // active tree during activation, implying that at least one layer addition or

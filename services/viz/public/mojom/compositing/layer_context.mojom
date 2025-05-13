@@ -4,16 +4,41 @@
 
 module viz.mojom;
 
+import "cc/mojom/ui_resource_id.mojom";
 import "services/viz/public/mojom/compositing/animation.mojom";
 import "services/viz/public/mojom/compositing/begin_frame_args.mojom";
 import "services/viz/public/mojom/compositing/layer.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
-import "services/viz/public/mojom/compositing/tiling.mojom";
+import "services/viz/public/mojom/compositing/resource_id.mojom";
 import "services/viz/public/mojom/compositing/surface_range.mojom";
+import "services/viz/public/mojom/compositing/tiling.mojom";
+import "services/viz/public/mojom/compositing/transferable_resource.mojom";
 import "services/viz/public/mojom/compositing/view_transition_request.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/display_color_spaces.mojom";
+
+// Describes a request to create or delete a UIResource in the service-side
+// display tree.
+struct TransferableUIResourceRequest {
+  // The type of request.
+  enum Type {
+    kCreate,
+    kDelete
+  };
+  Type type;
+
+  // The UIResourceId used to reference the UIResource for creation or
+  // deletion. cc::Layers reference resources by this Id.
+  cc.mojom.UIResourceId uid;
+
+  // The UI resource to be created should use the following
+  // TransferableResource contents.
+  TransferableResource? transferable_resource;
+
+  // The resource's pixel content should be treated as opaque for rendering.
+  bool opaque;
+};
 
 // Metadata and contents of a service-side display tree to be updated each time
 // the corresponding client layer tree activates.
@@ -78,6 +103,9 @@ struct LayerTreeUpdate {
 
   // The tree's viewport damage rect.
   gfx.mojom.Rect viewport_damage_rect;
+
+  // UIResource change requests accumulated since the last LayerTreeUpdate.
+  array<TransferableUIResourceRequest> ui_resource_requests;
 
   // Properties of layers added or modified since the last update. Note that the
   // ordering of this array is arbitrary and not relevant to the tree's layer

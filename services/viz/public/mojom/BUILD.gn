@@ -70,6 +70,7 @@ mojom("mojom") {
     "//cc/mojom:hit_test_opaqueness",
     "//cc/mojom:layer_type",
     "//cc/mojom:paint_flags",
+    "//cc/mojom:ui_resource_id",
     "//gpu/ipc/common:interfaces",
     "//media/mojo/mojom",
     "//mojo/public/mojom/base",
