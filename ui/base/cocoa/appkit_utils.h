@@ -20,7 +20,7 @@ COMPONENT_EXPORT(UI_BASE) bool ForceClickInvokesQuickLook();
 // Returns true if both CGFloat values are equal.
 COMPONENT_EXPORT(UI_BASE) bool IsCGFloatEqual(CGFloat a, CGFloat b);
 
-// Returns true if the current application owns the menu bar.
+// Returns true if the current application is the active application.
 COMPONENT_EXPORT(UI_BASE) bool IsActiveApplication();
 
 // The NSServicesMenuRequestor protocol does not pass modern NSPasteboardType
