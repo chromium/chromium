@@ -322,7 +322,7 @@ Additional guidelines:
 
 * Prefer `event.preventDefault()` to `return false` from event handlers.
 
-* Prefer `this.addEventListener('foo-changed', this.onFooChanged_.bind(this));`
+* Prefer `this.addEventListener('foo-changed', this.onFooChanged.bind(this));`
   instead of always using an arrow function wrapper, when it makes the code less
   verbose without compromising type safety (for example in TypeScript files).
 
@@ -517,7 +517,7 @@ interface MyAppElement {
   property computation methods, and in element instance methods called from
   HTML.
 
-  The signature of the `computeBar_()` function in the TS file does not matter,
+  The signature of the `computeBar()` function in the TS file does not matter,
   so omit parameters there, as they would be unused. What matters is for the
   call site to declare the right properties as dependencies, so that the
   binding correctly triggers whenever it changes.
@@ -526,11 +526,11 @@ interface MyAppElement {
   static get properties() {
     return {
       foo: {type: Number, value: 42},
-      bar: {type: Boolean, computed: 'computeBar_(foo)'},
+      bar: {type: Boolean, computed: 'computeBar(foo)'},
     };
   }
 
-  private computeBar_(): boolean {
+  private computeBar(): boolean {
     return this.derive(this.foo);
   }
   ```
