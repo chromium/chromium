@@ -18,7 +18,6 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/download/public/common/download_stats.h"
@@ -404,12 +403,6 @@ void PrintConsoleMessage(const InsecureDownloadData& data) {
             (data.is_redirect_chain_secure_ ? "loaded over"
                                             : "redirected through")));
     return;
-  }
-
-  // TODO(crbug.com/399076164): debug only. Used to investigate why insecure
-  // downloads can be initiated from the NTP.
-  if (rfh->GetLastCommittedOrigin().host() == chrome::kChromeUINewTabPageHost) {
-    base::debug::DumpWithoutCrashing();
   }
 
   rfh->AddMessageToConsole(
