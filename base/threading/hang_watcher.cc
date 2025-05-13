@@ -273,7 +273,7 @@ constexpr const char* kThreadName = "HangWatcher";
 // Monitor(). Increasing or decreasing this does not modify the type of hangs
 // that can be detected. It instead increases the probability that a call to
 // Monitor() will happen at the right time to catch a hang. This has to be
-// balanced with power/cpu use concerns as busy looping would catch amost all
+// balanced with power/cpu use concerns as busy looping would catch almost all
 // hangs but present unacceptable overhead. NOTE: If this period is ever changed
 // then all metrics that depend on it like
 // HangWatcher.IsThreadHung need to be updated.
@@ -304,7 +304,7 @@ WatchHangsInScope::WatchHangsInScope(TimeDelta timeout) {
 
   // TODO(crbug.com/40111620): Check whether we are over deadline already for
   // the previous WatchHangsInScope here by issuing only one TimeTicks::Now()
-  // and resuing the value.
+  // and reusing the value.
 
   previous_deadline_ = old_deadline;
   TimeTicks deadline = TimeTicks::Now() + timeout;
@@ -463,7 +463,7 @@ void HangWatcher::InitializeOnMainThread(ProcessType process_type,
   }
 }
 
-void HangWatcher::UnitializeOnMainThreadForTesting() {
+void HangWatcher::UninitializeOnMainThreadForTesting() {
   g_use_hang_watcher.store(false, std::memory_order_relaxed);
   g_threadpool_log_level.store(LoggingLevel::kNone, std::memory_order_relaxed);
   g_io_thread_log_level.store(LoggingLevel::kNone, std::memory_order_relaxed);
@@ -795,7 +795,7 @@ void HangWatcher::WatchStateSnapShot::Init(
   hung_counts_per_thread_type.fill(kInvalidHangCount);
 
   // Will be true if any of the hung threads has a logging level high enough,
-  // as defined through finch params, to warant dumping a crash.
+  // as defined through finch params, to warrant dumping a crash.
   bool any_hung_thread_has_dumping_enabled = false;
 
   // Copy hung thread information.

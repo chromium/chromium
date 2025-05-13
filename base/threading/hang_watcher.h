@@ -128,7 +128,7 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   // Notes on lifetime:
   //   1) The first invocation of the constructor will set the global instance
   //      accessible through GetInstance().
-  //   2) In production HangWatcher is always purposefuly leaked.
+  //   2) In production HangWatcher is always purposefully leaked.
   //   3) If not leaked HangWatcher is always constructed and destructed from
   //      the same thread.
   //   4) There can never be more than one instance of HangWatcher at a time.
@@ -155,7 +155,7 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   // Returns the values that were set through InitializeOnMainThread() to their
   // default value. Used for testing since in prod initialization should happen
   // only once.
-  static void UnitializeOnMainThreadForTesting();
+  static void UninitializeOnMainThreadForTesting();
 
   // Thread safe functions to verify if hang watching is activated. If called
   // before InitializeOnMainThread returns the default value which is false.
@@ -513,10 +513,10 @@ class BASE_EXPORT HangWatchDeadline {
   // |switch_bits_callback_for_testing_| is installed.
   uint64_t SwitchBitsForTesting();
 
-  // Atomically sets persitent flag |flag|. Cannot fail.
+  // Atomically sets persistent flag |flag|. Cannot fail.
   void SetPersistentFlag(Flag flag);
 
-  // Atomically clears persitent flag |flag|. Cannot fail.
+  // Atomically clears persistent flag |flag|. Cannot fail.
   void ClearPersistentFlag(Flag flag);
 
   // Converts bits to TimeTicks with some sanity checks. Use to return the
@@ -660,7 +660,7 @@ class BASE_EXPORT HangWatchState {
   const AutoReset<HangWatchState*> resetter_;
 
   // If the deadline fails to be updated before TimeTicks::Now() ever
-  // reaches the value contained in it this constistutes a hang.
+  // reaches the value contained in it this constitutes a hang.
   HangWatchDeadline deadline_;
 
   // A unique ID of the thread under watch. Used for logging in crash reports

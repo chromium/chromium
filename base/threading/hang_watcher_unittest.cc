@@ -137,7 +137,9 @@ class HangWatcherTest : public testing::Test {
     hang_watcher_.Start();
   }
 
-  void TearDown() override { HangWatcher::UnitializeOnMainThreadForTesting(); }
+  void TearDown() override {
+    HangWatcher::UninitializeOnMainThreadForTesting();
+  }
 
   HangWatcherTest(const HangWatcherTest& other) = delete;
   HangWatcherTest& operator=(const HangWatcherTest& other) = delete;
@@ -199,7 +201,7 @@ class HangWatcherBlockingThreadTest : public HangWatcherTest {
 
   void MonitorHangs() {
     // HangWatcher::Monitor() should not be set which would mean a call to
-    // HangWatcher::Monitor() happened and was unacounted for.
+    // HangWatcher::Monitor() happened and was unaccounted for.
     // ASSERT_FALSE(monitor_event_.IsSignaled());
 
     // Trigger a monitoring on HangWatcher thread and verify results.
@@ -245,7 +247,7 @@ TEST_F(HangWatcherTest, MultipleInvalidateExpectationsDoNotCancelOut) {
   // de-activate hang watching,
   base::HangWatcher::InvalidateActiveExpectations();
 
-  // Redundently de-activate hang watching.
+  // Redundantly de-activate hang watching.
   base::HangWatcher::InvalidateActiveExpectations();
 
   // Trigger a monitoring on HangWatcher thread and verify results.
@@ -368,7 +370,7 @@ TEST_F(HangWatcherTest, NewScopeAfterDisabling) {
     task_environment_.FastForwardBy(kHangTime);
   }
 
-  // New scope for which expecations are never invalidated.
+  // New scope for which expectations are never invalidated.
   WatchHangsInScope also_expires_instantly(base::TimeDelta{});
   task_environment_.FastForwardBy(kHangTime);
 
@@ -604,7 +606,9 @@ class HangWatcherSnapshotTest : public testing::Test {
     hang_watcher_.SetMonitoringPeriodForTesting(kVeryLongDelta);
   }
 
-  void TearDown() override { HangWatcher::UnitializeOnMainThreadForTesting(); }
+  void TearDown() override {
+    HangWatcher::UninitializeOnMainThreadForTesting();
+  }
 
   HangWatcherSnapshotTest() = default;
   HangWatcherSnapshotTest(const HangWatcherSnapshotTest& other) = delete;
@@ -681,7 +685,7 @@ class HangWatcherSnapshotTest : public testing::Test {
 
 // Verify that the hang capture fails when marking a thread for blocking fails.
 // This simulates a WatchHangsInScope completing between the time the hang
-// was dected and the time it is recorded which would create a non-actionable
+// was detected and the time it is recorded which would create a non-actionable
 // report.
 TEST_F(HangWatcherSnapshotTest, NonActionableReport) {
   hang_watcher_.SetOnHangClosureForTesting(
@@ -865,7 +869,9 @@ class HangWatcherPeriodicMonitoringTest : public testing::Test {
   HangWatcherPeriodicMonitoringTest& operator=(
       const HangWatcherPeriodicMonitoringTest& other) = delete;
 
-  void TearDown() override { hang_watcher_.UnitializeOnMainThreadForTesting(); }
+  void TearDown() override {
+    hang_watcher_.UninitializeOnMainThreadForTesting();
+  }
 
  protected:
   // Setup the callback invoked after waiting in HangWatcher to advance the
@@ -928,7 +934,7 @@ TEST_F(HangWatcherPeriodicMonitoringTest,
   // this is rare.
 }
 
-// During normal execution periodic monitorings should take place.
+// During normal execution periodic monitoring should take place.
 TEST_F(HangWatcherPeriodicMonitoringTest, PeriodicCallsTakePlace) {
   // HangWatcher::Monitor() will run once right away on thread registration.
   // We want to make sure it runs at a couple more times from being scheduled.
@@ -1039,7 +1045,9 @@ class WatchHangsInScopeBlockingTest : public testing::Test {
         HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
   }
 
-  void TearDown() override { HangWatcher::UnitializeOnMainThreadForTesting(); }
+  void TearDown() override {
+    HangWatcher::UninitializeOnMainThreadForTesting();
+  }
 
   WatchHangsInScopeBlockingTest(const WatchHangsInScopeBlockingTest& other) =
       delete;
@@ -1234,7 +1242,7 @@ TEST_F(HangWatchDeadlineTest, SetAndClearPersistentFlag) {
   // All flags back to original state.
   ASSERT_EQ(new_flags, old_flags);
 
-  // Deadline still unnafected.
+  // Deadline still unaffected.
   ASSERT_EQ(new_deadline, old_deadline);
 }
 
@@ -1313,7 +1321,7 @@ TEST_F(HangWatchDeadlineTest, ClearIgnoreHangsDeadlineChanged) {
 // Verify that setting a persistent (kIgnoreCurrentWatchHangsInScope) when
 // the deadline or flags changed succeeds and has non side-effects.
 TEST_F(HangWatchDeadlineTest,
-       SetIgnoreCurrentHangWatchScopeEnableDeadlineChangedd) {
+       SetIgnoreCurrentHangWatchScopeEnableDeadlineChanged) {
   AssertNoFlagsSet();
 
   auto [flags, deadline] = deadline_.GetFlagsAndDeadline();
