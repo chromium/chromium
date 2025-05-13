@@ -63,13 +63,15 @@ const CGFloat kSelectionViewAnimationDuration = 0.2f;
 
 - (void)presentContainerAnimated:(BOOL)animated
                       sceneState:(SceneState*)sceneState
-                      completion:(void (^)())completion {
+                      completion:(void (^)(void))completion {
   if (!_baseViewController || !_containerViewController) {
     if (completion) {
       completion();
     }
     return;
   }
+
+  _callWhenContainerAppear = completion;
 
   _containerViewController.delegate = self;
   AppState* appState = sceneState.profileState.appState;
@@ -101,30 +103,16 @@ const CGFloat kSelectionViewAnimationDuration = 0.2f;
   _containerViewController.selectionViewController.view.alpha = 1;
 
   if (!animated) {
-    if (completion) {
-      // The base view controller might not be in the view hierarchy yet.
-      // Call the completion only after the container has been added to the
-      // hierarchy.
-      if (self.isLensOverlayVisible) {
-        completion();
-      } else {
-        _callWhenContainerAppear = completion;
-      }
-    }
     return;
   }
 
   _containerViewController.view.alpha = 0;
   __weak UIViewController* weakContainer = _containerViewController;
   [UIView animateWithDuration:kSelectionViewAnimationDuration
-      animations:^{
-        weakContainer.view.alpha = 1.0;
-      }
-      completion:^(BOOL finished) {
-        if (completion) {
-          completion();
-        }
-      }];
+                   animations:^{
+                     weakContainer.view.alpha = 1.0;
+                   }
+                   completion:nil];
 }
 
 - (void)dismissContainerAnimated:(BOOL)animated
@@ -165,12 +153,15 @@ const CGFloat kSelectionViewAnimationDuration = 0.2f;
 
 #pragma mark - LensOverlayContainerDelegate
 
-- (void)lensOverlayContainerDidAppear:
-    (LensOverlayContainerViewController*)lensOverlayContainerViewController {
+- (void)lensOverlayContainerDidAppear:(LensOverlayContainerViewController*)
+                                          lensOverlayContainerViewController
+                             animated:(BOOL)animated {
   if (_callWhenContainerAppear) {
     _callWhenContainerAppear();
     _callWhenContainerAppear = nil;
   }
+  [self.delegate lensOverlayContainerPresenterDidCompletePresentation:self
+                                                             animated:animated];
 }
 
 - (void)lensOverlayContainerDidChangeSizeClass:

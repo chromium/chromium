@@ -428,7 +428,6 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
          containerViewController:_containerViewController];
   _containerPresenter.delegate = self;
 
-  __weak __typeof(self) weakSelf = self;
   [_containerPresenter
       presentContainerAnimated:animated
                     sceneState:self.browser->GetSceneState()
@@ -436,61 +435,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
                       if (completion) {
                         completion(YES);
                       }
-                      [weakSelf
-                          onContainerViewControllerPresentedAnimated:animated];
                     }];
-}
-
-- (void)onContainerViewControllerPresentedAnimated:(BOOL)animated {
-  // In some situations this coordinator shouldn't do
-  // anything because it's already being torn down. Just do minimal clean up and
-  // return.
-  if (_isStopped || _isExiting) {
-    if (_associatedTabHelper) {
-      _associatedTabHelper->ReleaseSnapshotAuxiliaryWindows();
-    }
-    return;
-  }
-
-  if (self.shouldShowConsentFlow) {
-    if (self.isResultsBottomSheetCreated) {
-      [self stopResultPage];
-    }
-    [self presentConsentFlow];
-  } else {
-    // Start the selection UI only when the container is presented. This avoids
-    // results being reported before the container is fully shown.
-    [_selectionViewController start];
-
-    if (self.isResultsBottomSheetCreated) {
-      [self buildResultsBottomSheetPresentation];
-      [self showResultsPageAnimated:animated];
-    } else if (_selectionViewController.translateFilterActive) {
-      [self startResultPage];
-      [_resultsPagePresenter
-          showInfoMessage:LensOverlayBottomSheetInfoMessageType::
-                              kImageTranslatedIndication];
-    } else if (lens::IsLVFEntrypoint(_entrypoint)) {
-      // As autoselection is enabled for LVF, pre-emptively start the results
-      // page for potential results.
-      [self startResultPage];
-    } else {
-      [self scheduleTooltipHintDisplayIfNecessary];
-    }
-  }
-
-  // The auxiliary window should be retained until the container is confirmed
-  // presented to avoid visual flickering when swapping back the main window.
-  if (_associatedTabHelper) {
-    _associatedTabHelper->ReleaseSnapshotAuxiliaryWindows();
-  }
-
-  // If the results bottom sheet hasn't been created yet, dismiss the
-  // restoration window. Otherwise, keep the restoration window until the
-  // results bottom sheet is presented.
-  if (!self.isResultsBottomSheetCreated) {
-    [self dismissRestorationWindow];
-  }
 }
 
 - (void)presentConsentFlow {
@@ -721,6 +666,60 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     (LensOverlayContainerPresenter*)containerPresenter {
   [self setInfobarBannerOverlaysEnabled:YES];
   [self.presentationEnvironment lensOverlayWillDisappear];
+}
+
+- (void)lensOverlayContainerPresenterDidCompletePresentation:
+            (LensOverlayContainerPresenter*)containerPresenter
+                                                    animated:(BOOL)animated {
+  // In some situations this coordinator shouldn't do
+  // anything because it's already being torn down. Just do minimal clean up and
+  // return.
+  if (_isStopped || _isExiting) {
+    if (_associatedTabHelper) {
+      _associatedTabHelper->ReleaseSnapshotAuxiliaryWindows();
+    }
+    return;
+  }
+
+  if (self.shouldShowConsentFlow) {
+    if (self.isResultsBottomSheetCreated) {
+      [self stopResultPage];
+    }
+    [self presentConsentFlow];
+  } else {
+    // Start the selection UI only when the container is presented. This avoids
+    // results being reported before the container is fully shown.
+    [_selectionViewController start];
+
+    if (self.isResultsBottomSheetCreated) {
+      [self buildResultsBottomSheetPresentation];
+      [self showResultsPageAnimated:animated];
+    } else if (_selectionViewController.translateFilterActive) {
+      [self startResultPage];
+      [_resultsPagePresenter
+          showInfoMessage:LensOverlayBottomSheetInfoMessageType::
+                              kImageTranslatedIndication];
+    } else if (lens::IsLVFEntrypoint(_entrypoint)) {
+      // As autoselection is enabled for LVF, pre-emptively start the results
+      // page for potential results.
+      [self startResultPage];
+    } else {
+      [self scheduleTooltipHintDisplayIfNecessary];
+    }
+  }
+
+  // The auxiliary window should be retained until the container is confirmed
+  // presented to avoid visual flickering when swapping back the main window.
+  if (_associatedTabHelper) {
+    _associatedTabHelper->ReleaseSnapshotAuxiliaryWindows();
+  }
+
+  // If the results bottom sheet hasn't been created yet, dismiss the
+  // restoration window. Otherwise, keep the restoration window until the
+  // results bottom sheet is presented.
+  if (!self.isResultsBottomSheetCreated) {
+    [self dismissRestorationWindow];
+  }
 }
 
 - (void)lensOverlayContainerPresenterDidReadjustPresentation:

@@ -48,6 +48,11 @@
 - (void)lensOverlayContainerPresenterWillBeginPresentation:
     (LensOverlayContainerPresenter*)containerPresenter;
 
+// Notifies the delegate that the container presentation has completed.
+- (void)lensOverlayContainerPresenterDidCompletePresentation:
+            (LensOverlayContainerPresenter*)containerPresenter
+                                                    animated:(BOOL)animated;
+
 // Notifies the delegate that the container presentation is about to be
 // dismissed.
 - (void)lensOverlayContainerPresenterWillDismissPresentation:

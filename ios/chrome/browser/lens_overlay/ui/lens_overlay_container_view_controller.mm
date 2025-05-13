@@ -196,7 +196,7 @@ const CGFloat kSelectionUICornerRadius = 14.0;
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
-  [self.delegate lensOverlayContainerDidAppear:self];
+  [self.delegate lensOverlayContainerDidAppear:self animated:animated];
 }
 
 #if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
