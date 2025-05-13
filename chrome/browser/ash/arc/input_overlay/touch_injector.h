@@ -316,6 +316,9 @@ class TouchInjector : public ui::EventRewriter {
   // Use default position if it is null.
   std::optional<gfx::Vector2dF> menu_entry_location_;
 
+  // Used to track whether the game has been played with Game Controls.
+  bool played_with_game_controls_ = false;
+
   base::WeakPtrFactory<TouchInjector> weak_ptr_factory_{this};
 };
 

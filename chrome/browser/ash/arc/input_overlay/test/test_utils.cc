@@ -157,4 +157,14 @@ void VerifyButtonOptionsMenuFunctionTriggeredUkmEvent(
       expect_histograms_value);
 }
 
+void VerifyPlayWithGameControlsHistogram(
+    const base::HistogramTester& histograms,
+    const std::vector<int>& histograms_values) {
+  DCHECK_EQ(2u, histograms_values.size());
+  const std::string histogram_name =
+      BuildGameControlsHistogramName(kPlayGameWithGameControlsHistogram);
+  histograms.ExpectBucketCount(histogram_name, false, histograms_values[0]);
+  histograms.ExpectBucketCount(histogram_name, true, histograms_values[1]);
+}
+
 }  // namespace arc::input_overlay

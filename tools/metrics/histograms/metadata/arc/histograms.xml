@@ -1235,6 +1235,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.GameControls.PlayGameWithGameControls" enum="Boolean"
+    expires_after="2026-05-12">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Records wheather users play the game with the Game Controls feature. It
+    records one time only before shutting down the game. If it is played with
+    Game Controls, record it immediately.
+  </summary>
+</histogram>
+
 <histogram
     name="Arc.GameControls.{FeatureOrHint}ToggleWithMappingSource.{OnOrOff}"
     enum="GameControlsMappingSource" expires_after="2025-10-12">

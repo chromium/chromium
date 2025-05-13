@@ -241,4 +241,10 @@ void RecordToggleWithMappingSource(const std::string& package_name,
                                                  is_on, source);
 }
 
+void RecordPlayGameWithGameControls(bool played_with_game_controls) {
+  base::UmaHistogramBoolean(
+      BuildGameControlsHistogramName(kPlayGameWithGameControlsHistogram),
+      played_with_game_controls);
+}
+
 }  // namespace arc::input_overlay

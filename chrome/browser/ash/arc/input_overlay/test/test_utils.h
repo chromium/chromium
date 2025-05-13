@@ -113,6 +113,10 @@ void VerifyHistogramValues(const base::HistogramTester& histograms,
   }
 }
 
+void VerifyPlayWithGameControlsHistogram(
+    const base::HistogramTester& histograms,
+    const std::vector<int>& histograms_values);
+
 }  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_TEST_TEST_UTILS_H_

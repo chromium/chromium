@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "chrome/browser/ash/arc/input_overlay/test/event_capturer.h"
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
@@ -1201,6 +1202,56 @@ TEST_F(TouchInjectorTest, TestProtoConversion) {
     EXPECT_EQ(*action_a->current_input(), *action_b->current_input());
     EXPECT_EQ(action_a->current_positions(), action_b->current_positions());
   }
+}
+
+TEST_F(TouchInjectorTest, TestPlayWithGameControlsHistogramHistogramsYes) {
+  auto json_value =
+      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  injector_->ParseActions(json_value->GetDict());
+  EXPECT_EQ(2, (int)injector_->actions().size());
+  injector_->RegisterEventRewriter();
+
+  base::HistogramTester histograms;
+  VerifyPlayWithGameControlsHistogram(histograms, std::vector<int>{0, 0});
+
+  // Press and release a random key.
+  event_generator_->PressAndReleaseKey(ui::VKEY_X, ui::EF_NONE,
+                                       /*source_device_id=*/1);
+  VerifyPlayWithGameControlsHistogram(histograms, std::vector<int>{0, 0});
+
+  // Press and release key A, it plays with Game Controls.
+  event_generator_->PressAndReleaseKey(ui::VKEY_A, ui::EF_NONE,
+                                       /*source_device_id=*/1);
+  EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
+  VerifyPlayWithGameControlsHistogram(
+      histograms, std::vector<int>{0, /*played_with_game_controls==true*/ 1});
+
+  // Close the game.
+  injector_.reset();
+  VerifyPlayWithGameControlsHistogram(
+      histograms, std::vector<int>{0, /*played_with_game_controls==true*/ 1});
+}
+
+TEST_F(TouchInjectorTest, TestPlayWithGameControlsHistogramHistogramsNo) {
+  auto json_value =
+      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  injector_->ParseActions(json_value->GetDict());
+  EXPECT_EQ(2, (int)injector_->actions().size());
+  injector_->RegisterEventRewriter();
+
+  base::HistogramTester histograms;
+  VerifyPlayWithGameControlsHistogram(
+      histograms, std::vector<int>{0, /*played_with_game_controls=*/0});
+
+  // Press and release a random key.
+  event_generator_->PressAndReleaseKey(ui::VKEY_X, ui::EF_NONE,
+                                       /*source_device_id=*/1);
+  VerifyPlayWithGameControlsHistogram(histograms, std::vector<int>{0, 0});
+
+  // Close the game.
+  injector_.reset();
+  VerifyPlayWithGameControlsHistogram(
+      histograms, std::vector<int>{/*played_with_game_controls==false*/ 1, 0});
 }
 
 }  // namespace arc::input_overlay
