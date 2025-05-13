@@ -4879,11 +4879,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "fedcm-selective-disclosure",
-    "owners": ["goto@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "fedcm-show-filtered-accounts",
     "owners": ["npm@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 137

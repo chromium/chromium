@@ -1197,9 +1197,6 @@ extern const char kFedCmMultiIdpDescription[];
 extern const char kFedCmQuietUiName[];
 extern const char kFedCmQuietUiDescription[];
 
-extern const char kFedCmSelectiveDisclosureName[];
-extern const char kFedCmSelectiveDisclosureDescription[];
-
 extern const char kFedCmShowFilteredAccountsName[];
 extern const char kFedCmShowFilteredAccountsDescription[];
 

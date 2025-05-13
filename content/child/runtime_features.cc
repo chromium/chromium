@@ -221,8 +221,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableFedCmMultipleIdentityProviders,
            raw_ref(features::kFedCmMultipleIdentityProviders),
            kSetOnlyIfOverridden},
-          {wf::EnableFedCmSelectiveDisclosure,
-           raw_ref(features::kFedCmSelectiveDisclosure), kDefault},
           {wf::EnableFencedFrames,
            raw_ref(features::kPrivacySandboxAdsAPIsOverride),
            kSetOnlyIfOverridden},

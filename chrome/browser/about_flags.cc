@@ -9111,11 +9111,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmMultiIdpDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmMultipleIdentityProviders)},
 
-    {"fedcm-selective-disclosure",
-     flag_descriptions::kFedCmSelectiveDisclosureName,
-     flag_descriptions::kFedCmSelectiveDisclosureDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmSelectiveDisclosure)},
-
     {"fedcm-show-filtered-accounts",
      flag_descriptions::kFedCmShowFilteredAccountsName,
      flag_descriptions::kFedCmShowFilteredAccountsDescription, kOsAll,

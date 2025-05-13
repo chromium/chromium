@@ -12386,7 +12386,6 @@ from previous Chrome versions.
   <int value="-630256330" label="EnableDrDc:enabled"/>
   <int value="-629084845" label="UseToastManager:disabled"/>
   <int value="-629041881" label="MuteNotificationsDuringScreenShare:disabled"/>
-  <int value="-628675321" label="FedCmSelectiveDisclosure:disabled"/>
   <int value="-628535358"
       label="AutofillPreventOverridingPrefilledValues:enabled"/>
   <int value="-626329144" label="SyncSupportTrustedVaultPassphrase:enabled"/>
@@ -13221,7 +13220,6 @@ from previous Chrome versions.
   <int value="-304886342" label="QuickAnswersTranslation:disabled"/>
   <int value="-304841801" label="AccessibilityFlashScreenFeature:enabled"/>
   <int value="-304777110" label="PreconnectToSearch:disabled"/>
-  <int value="-304594674" label="FedCmSelectiveDisclosure:enabled"/>
   <int value="-304502255" label="DiscardRingImprovements:enabled"/>
   <int value="-304329578" label="OmniboxContextualSearchActionsAtTop:enabled"/>
   <int value="-303992327" label="SwipeToMoveCursor:disabled"/>
