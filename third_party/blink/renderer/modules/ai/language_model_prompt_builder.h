@@ -15,14 +15,18 @@ namespace blink {
 class ScriptState;
 class AbortSignal;
 class V8LanguageModelPromptInput;
-class ExceptionState;
 
-std::optional<WTF::Vector<mojom::blink::AILanguageModelPromptPtr>> BuildPrompts(
-    const V8LanguageModelPromptInput* input,
+// Helper function to convert V8 prompt input into mojo objects for transport
+// across IPC. Works asynchronously to allow for asynchronous fetching/decoding
+// of image, audio and blobs.
+void ConvertPromptInputsToMojo(
     ScriptState* script_state,
-    ExceptionState& exception_state,
-    ExecutionContext* execution_context,
-    WTF::HashSet<mojom::blink::AILanguageModelPromptType>& allowed_types);
+    AbortSignal* abort_signal,
+    const V8LanguageModelPromptInput* input,
+    WTF::HashSet<mojom::blink::AILanguageModelPromptType> allowed_types,
+    base::OnceCallback<void(
+        WTF::Vector<mojom::blink::AILanguageModelPromptPtr>)> resolved_callback,
+    base::OnceCallback<void(const ScriptValue& error)> rejected_callback);
 
 }  // namespace blink
 

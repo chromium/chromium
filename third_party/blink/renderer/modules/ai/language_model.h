@@ -102,14 +102,24 @@ class LanguageModel final : public EventTarget, public ExecutionContextClient {
       mojom::blink::ModelExecutionContextInfoPtr context_info);
   void OnQuotaOverflow();
 
-  struct ValidateAndProcessPromptInputResult {
-    on_device_model::mojom::blink::ResponseConstraintPtr processed_constraint;
-    WTF::Vector<mojom::blink::AILanguageModelPromptPtr> processed_prompts;
-  };
+  // Helper to make AILanguageModelProxy::Prompt compatible with
+  // ConvertPromptInputsToMojo callback.
+  void ExecutePrompt(
+      on_device_model::mojom::blink::ResponseConstraintPtr constraint,
+      mojo::PendingRemote<mojom::blink::ModelStreamingResponder>
+          pending_responder,
+      WTF::Vector<mojom::blink::AILanguageModelPromptPtr> prompts);
 
-  // Validates and processed prompt input and returns the processed results.
+  // Helper to make AILanguageModelProxy::MeasureInputUsage compatible with
+  // ConvertPromptInputsToMojo callback.
+  void ExecuteMeasureInputUsage(
+      ScriptPromiseResolver<IDLDouble>* resolver,
+      AbortSignal* signal,
+      WTF::Vector<mojom::blink::AILanguageModelPromptPtr> prompts);
+
+  // Validates and processed prompt input and returns the processed constraints.
   // Returns std::nullopt on failure.
-  std::optional<ValidateAndProcessPromptInputResult>
+  std::optional<on_device_model::mojom::blink::ResponseConstraintPtr>
   ValidateAndProcessPromptInput(ScriptState* script_state,
                                 const V8LanguageModelPromptInput* input,
                                 const LanguageModelPromptOptions* options,
