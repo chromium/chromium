@@ -154,9 +154,8 @@ union InputPiece {
   // Text to be provided as input.
   string text;
   // Bitmap provided as input. This is not ImageSkia because there is no desire
-  // to support multiple scale factors. The bitmap is supplied by the
-  // browser process.
-  skia.mojom.BitmapMappedFromTrustedProcess bitmap;
+  // to support multiple scale factors.
+  skia.mojom.BitmapWithArbitraryBpp bitmap;
 
   // Used to handle version skew.
   [Default]
