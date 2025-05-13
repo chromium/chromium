@@ -134,7 +134,7 @@ public class ArchivedTabsTest {
         runOnUiThreadBlocking(
                 () -> {
                     CloseAllTabsHelper.closeAllTabsHidingTabGroups(
-                            cta.getTabModelSelectorSupplier().get(), mRegularTabCreator);
+                            cta.getTabModelSelectorSupplier().get());
                 });
         CriteriaHelper.pollUiThread(() -> 0 == mArchivedTabModel.getCount());
 
