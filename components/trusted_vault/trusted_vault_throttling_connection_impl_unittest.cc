@@ -8,15 +8,18 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/simple_test_clock.h"
+#include "components/trusted_vault/local_recovery_factor.h"
 #include "components/trusted_vault/standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/test/fake_file_access.h"
 #include "components/trusted_vault/test/mock_trusted_vault_throttling_connection.h"
+#include "components/trusted_vault/trusted_vault_connection.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace trusted_vault {
 
 namespace {
 
+using testing::_;
 using testing::InvokeWithoutArgs;
 using testing::NiceMock;
 using testing::NotNull;
@@ -196,13 +199,29 @@ TEST_F(TrustedVaultThrottlingConnectionImplTest,
 
 TEST_F(TrustedVaultThrottlingConnectionImplTest,
        ShouldCallDownloadAuthenticationFactorsRegistrationState) {
-  EXPECT_CALL(*delegate(), DownloadAuthenticationFactorsRegistrationState)
+  EXPECT_CALL(*delegate(),
+              DownloadAuthenticationFactorsRegistrationState(_, _, _))
       .WillOnce(InvokeWithoutArgs([]() {
         return std::make_unique<TrustedVaultConnection::Request>();
       }));
   std::unique_ptr<TrustedVaultConnection::Request> request =
       throttling_connection()->DownloadAuthenticationFactorsRegistrationState(
           account_info(), base::DoNothing(), base::DoNothing());
+  EXPECT_THAT(request, NotNull());
+}
+
+TEST_F(TrustedVaultThrottlingConnectionImplTest,
+       ShouldCallDownloadAuthenticationFactorsRegistrationStateWithFilter) {
+  EXPECT_CALL(*delegate(),
+              DownloadAuthenticationFactorsRegistrationState(_, _, _, _))
+      .WillOnce(InvokeWithoutArgs([]() {
+        return std::make_unique<TrustedVaultConnection::Request>();
+      }));
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      throttling_connection()->DownloadAuthenticationFactorsRegistrationState(
+          account_info(),
+          {trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_PHYSICAL_DEVICE},
+          base::DoNothing(), base::DoNothing());
   EXPECT_THAT(request, NotNull());
 }
 

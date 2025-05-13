@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <variant>
 #include <vector>
 
@@ -15,6 +16,10 @@
 #include "base/types/strong_alias.h"
 
 struct CoreAccountInfo;
+
+namespace trusted_vault_pb {
+enum SecurityDomainMember_MemberType : int;
+}  // namespace trusted_vault_pb
 
 namespace trusted_vault {
 
@@ -327,6 +332,23 @@ class TrustedVaultConnection {
   [[nodiscard]] virtual std::unique_ptr<Request>
   DownloadAuthenticationFactorsRegistrationState(
       const CoreAccountInfo& account_info,
+      DownloadAuthenticationFactorsRegistrationStateCallback callback,
+      base::RepeatingClosure keep_alive_callback) = 0;
+
+  // Enumerates the members of the security domain and determines the
+  // recoverability of the security domain. (See the values of
+  // `DownloadAuthenticationFactorsRegistrationStateResult`.)
+  // If |AuthenticationFactorType| is non-empty, then only information from the
+  // authentication factor types in that set is fetched and taken into account
+  // when constructing the result. |keep_alive_callback| will be called whenever
+  // there's a partial response from the server, i.e. we got a response but we
+  // still need more data.
+  // TODO(crbug.com/406191378): Rename to ...RecoveryFactor.
+  [[nodiscard]] virtual std::unique_ptr<Request>
+  DownloadAuthenticationFactorsRegistrationState(
+      const CoreAccountInfo& account_info,
+      std::set<trusted_vault_pb::SecurityDomainMember_MemberType>
+          recovery_factor_filter,
       DownloadAuthenticationFactorsRegistrationStateCallback callback,
       base::RepeatingClosure keep_alive_callback) = 0;
 };

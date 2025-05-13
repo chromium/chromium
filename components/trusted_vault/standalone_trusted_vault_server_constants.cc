@@ -16,9 +16,26 @@ std::vector<uint8_t> GetConstantTrustedVaultKey() {
   return std::vector<uint8_t>(16, 0);
 }
 
-GURL GetGetSecurityDomainMembersURL(const GURL& server_url) {
+GURL GetGetSecurityDomainMembersURL(
+    const GURL& server_url,
+    const std::set<SecurityDomainId>& security_domain_filter,
+    const std::set<trusted_vault_pb::SecurityDomainMember_MemberType>&
+        member_filter) {
   // View three is `SECURITY_DOMAIN_MEMBER_METADATA`.
-  return GURL(server_url.spec() + kSecurityDomainMemberNamePrefix + "?view=3");
+  GURL request_url =
+      GURL(server_url.spec() + kSecurityDomainMemberNamePrefix + "?view=3");
+
+  for (const auto& security_domain : security_domain_filter) {
+    request_url =
+        net::AppendQueryParameter(request_url, "include_security_domains",
+                                  GetSecurityDomainPath(security_domain));
+  }
+  for (const auto& member_type : member_filter) {
+    request_url = net::AppendQueryParameter(request_url, "include_member_types",
+                                            base::NumberToString(member_type));
+  }
+
+  return request_url;
 }
 
 GURL GetGetSecurityDomainMemberURL(const GURL& server_url,
@@ -46,8 +63,12 @@ GURL GetJoinSecurityDomainURL(const GURL& server_url,
 
 GURL GetGetSecurityDomainMembersURLForTesting(
     const std::optional<std::string>& next_page_token,
-    const GURL& server_url) {
-  GURL url = GetGetSecurityDomainMembersURL(server_url);
+    const GURL& server_url,
+    const std::set<SecurityDomainId>& security_domain_filter,
+    const std::set<trusted_vault_pb::SecurityDomainMember_MemberType>&
+        member_filter) {
+  GURL url = GetGetSecurityDomainMembersURL(server_url, security_domain_filter,
+                                            member_filter);
   if (next_page_token) {
     url = net::AppendQueryParameter(url, "page_token", *next_page_token);
   }

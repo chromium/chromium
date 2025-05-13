@@ -54,6 +54,14 @@ class MockTrustedVaultThrottlingConnection
                DownloadAuthenticationFactorsRegistrationStateCallback callback,
                base::RepeatingClosure keep_alive_callback),
               (override));
+  MOCK_METHOD(std::unique_ptr<Request>,
+              DownloadAuthenticationFactorsRegistrationState,
+              (const CoreAccountInfo& account_info,
+               std::set<trusted_vault_pb::SecurityDomainMember_MemberType>
+                   recovery_factor_filter,
+               DownloadAuthenticationFactorsRegistrationStateCallback callback,
+               base::RepeatingClosure keep_alive_callback),
+              (override));
   MOCK_METHOD(bool,
               AreRequestsThrottled,
               (const CoreAccountInfo& account_info),

@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "components/trusted_vault/icloud_recovery_key_mac.h"
+#include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_crypto.h"
@@ -111,6 +112,7 @@ void ICloudKeychainRecoveryFactor::OnICloudKeysRetrievedForRecovery(
   ongoing_download_registration_state_request_for_recovery_ =
       connection->DownloadAuthenticationFactorsRegistrationState(
           *primary_account_,
+          {trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_ICLOUD_KEYCHAIN},
           base::BindOnce(&ICloudKeychainRecoveryFactor::
                              OnRecoveryFactorStateDownloadedForRecovery,
                          // `this` outlives `ongoing_request_for_recovery_`.
@@ -288,6 +290,7 @@ void ICloudKeychainRecoveryFactor::OnICloudKeysRetrievedForRegistration(
   ongoing_download_registration_state_request_for_registration_ =
       connection->DownloadAuthenticationFactorsRegistrationState(
           *primary_account_,
+          {trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_ICLOUD_KEYCHAIN},
           base::BindOnce(&ICloudKeychainRecoveryFactor::
                              OnRecoveryFactorStateDownloadedForRegistration,
                          // `this` outlives `ongoing_request_for_registration_`.

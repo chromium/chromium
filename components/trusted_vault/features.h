@@ -21,6 +21,8 @@ BASE_DECLARE_FEATURE(kSetClientEncryptionKeysJsApi);
 BASE_DECLARE_FEATURE(kEnableICloudKeychainRecoveryFactor);
 #endif
 
+BASE_DECLARE_FEATURE(kEnableRegistrationStateSecurityDomainFiltering);
+
 }  // namespace trusted_vault
 
 #endif  // COMPONENTS_TRUSTED_VAULT_FEATURES_H_

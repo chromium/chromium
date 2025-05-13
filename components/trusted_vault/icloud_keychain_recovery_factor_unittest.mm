@@ -205,8 +205,6 @@ class ICloudKeychainRecoveryFactorTest : public testing::Test {
       DownloadAuthenticationFactorsRegistrationStateResult&&
           download_registration_state_result,
       LocalRecoveryFactor::AttemptRecoveryCallback recovery_callback) {
-    EXPECT_CALL(*connection(), DownloadAuthenticationFactorsRegistrationState);
-
     base::RunLoop run_loop;
     TrustedVaultConnection::
         DownloadAuthenticationFactorsRegistrationStateCallback
@@ -215,10 +213,12 @@ class ICloudKeychainRecoveryFactorTest : public testing::Test {
       // A dedicated, nested run loop is required for fetching keys from the
       // iCloud Keychain.
       base::RunLoop fetch_icloud_key_run_loop;
-      ON_CALL(*connection(), DownloadAuthenticationFactorsRegistrationState(
-                                 account_info(), _, _))
-          .WillByDefault(
+      EXPECT_CALL(*connection(), DownloadAuthenticationFactorsRegistrationState(
+                                     account_info(), _, _, _))
+          .WillOnce(
               [&](const CoreAccountInfo& account_info,
+                  std::set<trusted_vault_pb::SecurityDomainMember_MemberType>
+                      recovery_factor_filter,
                   TrustedVaultConnection::
                       DownloadAuthenticationFactorsRegistrationStateCallback
                           callback,
@@ -257,19 +257,22 @@ class ICloudKeychainRecoveryFactorTest : public testing::Test {
     // Keychain.
     base::RunLoop fetch_icloud_key_run_loop;
     EXPECT_CALL(*connection(), DownloadAuthenticationFactorsRegistrationState(
-                                   account_info(), _, _))
-        .WillOnce([&](const CoreAccountInfo& account_info,
-                      TrustedVaultConnection::
-                          DownloadAuthenticationFactorsRegistrationStateCallback
-                              callback,
-                      base::RepeatingClosure keep_alive_callback) {
-          download_state_callback = std::move(callback);
-          // Note: Quitting the iCloud Keychain run loop here is ok-ish,
-          // because DownloadAuthenticationFactorsRegistrationState is
-          // expected to be called after fetching iCloud Keychain keys.
-          fetch_icloud_key_run_loop.Quit();
-          return std::make_unique<TrustedVaultConnection::Request>();
-        });
+                                   account_info(), _, _, _))
+        .WillOnce(
+            [&](const CoreAccountInfo& account_info,
+                std::set<trusted_vault_pb::SecurityDomainMember_MemberType>
+                    recovery_factor_filter,
+                TrustedVaultConnection::
+                    DownloadAuthenticationFactorsRegistrationStateCallback
+                        callback,
+                base::RepeatingClosure keep_alive_callback) {
+              download_state_callback = std::move(callback);
+              // Note: Quitting the iCloud Keychain run loop here is ok-ish,
+              // because DownloadAuthenticationFactorsRegistrationState is
+              // expected to be called after fetching iCloud Keychain keys.
+              fetch_icloud_key_run_loop.Quit();
+              return std::make_unique<TrustedVaultConnection::Request>();
+            });
     TrustedVaultDeviceRegistrationStateForUMA status =
         recovery_factor()->MaybeRegister(connection(),
                                          std::move(registration_callback));
@@ -446,7 +449,8 @@ class ICloudKeychainRecoveryFactorTest : public testing::Test {
 TEST_F(ICloudKeychainRecoveryFactorTest,
        ShouldNotAttemptKeyRecoveryWithNonConstantKeys) {
   StoreKeys(account_info(), kVaultKeys, kLastKeyVersion);
-  EXPECT_CALL(*connection(), DownloadAuthenticationFactorsRegistrationState)
+  EXPECT_CALL(*connection(),
+              DownloadAuthenticationFactorsRegistrationState(_, _, _, _))
       .Times(0);
 
   base::MockCallback<LocalRecoveryFactor::AttemptRecoveryCallback>
@@ -472,7 +476,8 @@ TEST_F(ICloudKeychainRecoveryFactorTest,
 
 TEST_F(ICloudKeychainRecoveryFactorTest,
        ShouldNotAttemptKeyRecoveryWithNoICloudKeys) {
-  EXPECT_CALL(*connection(), DownloadAuthenticationFactorsRegistrationState)
+  EXPECT_CALL(*connection(),
+              DownloadAuthenticationFactorsRegistrationState(_, _, _, _))
       .Times(0);
 
   base::MockCallback<LocalRecoveryFactor::AttemptRecoveryCallback>
@@ -499,7 +504,8 @@ TEST_F(ICloudKeychainRecoveryFactorTest,
 TEST_F(ICloudKeychainRecoveryFactorTest,
        ShouldNotAttemptKeyRecoveryWhenThrottled) {
   EXPECT_CALL(*connection(), AreRequestsThrottled).WillOnce(Return(true));
-  EXPECT_CALL(*connection(), DownloadAuthenticationFactorsRegistrationState)
+  EXPECT_CALL(*connection(),
+              DownloadAuthenticationFactorsRegistrationState(_, _, _, _))
       .Times(0);
 
   CreateICloudKey(SecurityDomainId::kChromeSync);

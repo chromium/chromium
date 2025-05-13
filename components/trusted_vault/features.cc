@@ -21,4 +21,8 @@ BASE_FEATURE(kEnableICloudKeychainRecoveryFactor,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kEnableRegistrationStateSecurityDomainFiltering,
+             "EnableRegistrationStateSecurityDomainFiltering",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace trusted_vault

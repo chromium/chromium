@@ -78,6 +78,13 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
       DownloadAuthenticationFactorsRegistrationStateCallback callback,
       base::RepeatingClosure keep_alive_callback) override;
 
+  std::unique_ptr<Request> DownloadAuthenticationFactorsRegistrationState(
+      const CoreAccountInfo& account_info,
+      std::set<trusted_vault_pb::SecurityDomainMember_MemberType>
+          recovery_factor_filter,
+      DownloadAuthenticationFactorsRegistrationStateCallback callback,
+      base::RepeatingClosure keep_alive_callback) override;
+
  private:
   std::unique_ptr<Request> SendJoinSecurityDomainsRequest(
       const CoreAccountInfo& account_info,
@@ -101,6 +108,8 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   GURL trusted_vault_service_url_;
+
+  const bool enable_registration_state_security_domain_filtering_;
 };
 
 }  // namespace trusted_vault

@@ -124,4 +124,17 @@ TrustedVaultThrottlingConnectionImpl::
       account_info, std::move(callback), keep_alive_callback);
 }
 
+std::unique_ptr<TrustedVaultConnection::Request>
+TrustedVaultThrottlingConnectionImpl::
+    DownloadAuthenticationFactorsRegistrationState(
+        const CoreAccountInfo& account_info,
+        std::set<trusted_vault_pb::SecurityDomainMember_MemberType>
+            recovery_factor_filter,
+        DownloadAuthenticationFactorsRegistrationStateCallback callback,
+        base::RepeatingClosure keep_alive_callback) {
+  return delegate_->DownloadAuthenticationFactorsRegistrationState(
+      account_info, recovery_factor_filter, std::move(callback),
+      keep_alive_callback);
+}
+
 }  // namespace trusted_vault
