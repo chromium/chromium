@@ -53,6 +53,7 @@ export interface PageElementTypes {
   permissionSelect: HTMLSelectElement;
   enabledSelect: HTMLSelectElement;
   closebn: HTMLButtonElement;
+  shutdownbn: HTMLButtonElement;
   attachpanelbn: HTMLButtonElement;
   detachpanelbn: HTMLButtonElement;
   refreshbn: HTMLButtonElement;

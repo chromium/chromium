@@ -316,6 +316,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     return this.sender.requestWithResponse('glicBrowserClosePanel', undefined);
   }
 
+  closePanelAndShutdown(): void {
+    this.sender.requestNoResponse(
+        'glicBrowserClosePanelAndShutdown', undefined);
+  }
+
   attachPanel?(): void {
     this.sender.requestNoResponse('glicBrowserAttachPanel', undefined);
   }

@@ -304,6 +304,10 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     return this.handler.closePanel();
   }
 
+  glicBrowserClosePanelAndShutdown(): void {
+    this.handler.closePanelAndShutdown();
+  }
+
   glicBrowserAttachPanel(): void {
     this.handler.attachPanel();
   }

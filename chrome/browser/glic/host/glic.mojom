@@ -362,6 +362,9 @@ interface WebClientHandler {
   // Closes the Glic panel.
   ClosePanel();
 
+  // Shuts down the Glic panel.
+  ClosePanelAndShutdown();
+
   // Requests that the web client's panel be attached to a browser
   // window.
   AttachPanel();

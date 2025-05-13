@@ -236,6 +236,14 @@ export declare interface GlicBrowserHost {
   closePanel?(): Promise<void>;
 
   /**
+   * Similar to closePanel but also requests that the web client be torn down.
+   * Normally, Chrome manages creation and destruction of the web client. This
+   * function is a fallback solution to permit the web client to limit its
+   * lifetime, if needed.
+   */
+  closePanelAndShutdown?(): void;
+
+  /**
    * @deprecated The panel will only maintain the detached state.
    *
    * Requests that the web client's panel be attached to a browser window.
