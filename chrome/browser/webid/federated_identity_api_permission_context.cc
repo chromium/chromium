@@ -14,6 +14,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
 #include "net/cookies/site_for_cookies.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 using PermissionStatus =
@@ -116,7 +117,8 @@ bool FederatedIdentityApiPermissionContext::HasThirdPartyCookiesAccess(
       /*first_party_url=*/
       net::SiteForCookies::FromOrigin(relying_party_embedder),
       /*top_frame_origin=*/relying_party_embedder,
-      host.GetCookieSettingOverrides());
+      host.GetCookieSettingOverrides(),
+      host.GetStorageKey().ToCookiePartitionKey());
 }
 
 bool FederatedIdentityApiPermissionContext::

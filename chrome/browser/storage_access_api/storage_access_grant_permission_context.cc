@@ -387,7 +387,8 @@ void StorageAccessGrantPermissionContext::DecidePermission(
 
   if (cookie_settings->IsFullCookieAccessAllowed(
           request_data->requesting_origin, net::SiteForCookies(),
-          embedding_origin, overrides)) {
+          embedding_origin, overrides,
+          rfh->GetStorageKey().ToCookiePartitionKey())) {
     RecordOutcomeSample(RequestOutcome::kAllowedByCookieSettings,
                         requesting_site);
     std::move(callback).Run(CONTENT_SETTING_ALLOW);
