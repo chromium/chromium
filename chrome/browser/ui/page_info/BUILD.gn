@@ -39,7 +39,10 @@ source_set("impl") {
     "chrome_page_info_delegate.cc",
     "chrome_page_info_ui_delegate.cc",
   ]
-  deps = [ "//chrome/browser/privacy_sandbox:headers" ]
+  deps = [
+    "//chrome/browser/privacy_sandbox:headers",
+    "//chrome/browser/serial",
+  ]
 
   if (is_android) {
     sources += [ "chrome_page_info_client.cc" ]

@@ -4638,6 +4638,12 @@ if (!is_android) {
         "//chrome/browser/extensions/api/braille_display_private:controller",
         "//chrome/browser/hid",
         "//chrome/browser/prefetch",
+
+        # TODO(417228688): Remove when the following tests get modularized:
+        # - chrome_serial_browsertest.cc
+        # - controlled_frame_disabled_permission_browsertest.cc
+        # - web_view_browsertest.cc
+        "//chrome/browser/serial",
         "//chrome/browser/ui/global_error:test_support",
         "//chrome/browser/ui/hid",
         "//chrome/browser/ui/javascript_dialogs",
@@ -6325,7 +6331,6 @@ test("unit_tests") {
     "../browser/ui/passwords/display_account_info_unittest.cc",
     "../browser/ui/passwords/manage_passwords_state_unittest.cc",
     "../browser/ui/passwords/settings/password_manager_porter_unittest.cc",
-    "../browser/ui/serial/serial_chooser_controller_unittest.cc",
     "../browser/ui/sync/tab_contents_synced_tab_delegate_unittest.cc",
     "../browser/ui/webui/chrome_urls/chrome_urls_handler_unittest.cc",
     "../browser/ui/webui/fileicon_source_unittest.cc",
@@ -6651,6 +6656,9 @@ test("unit_tests") {
     "//chrome/browser/search_engine_choice",
     "//chrome/browser/search_engines",
     "//chrome/browser/segmentation_platform:test_utils",
+
+    # TODO(417228688): Remove this dependency when serial_chooser_context_unittest.cc gets modularized.
+    "//chrome/browser/serial",
     "//chrome/browser/share",
     "//chrome/browser/status_icons:status_icons",
     "//chrome/browser/storage_access_api",
@@ -6677,7 +6685,7 @@ test("unit_tests") {
     "//chrome/browser/ui/plus_addresses:unit_tests",
     "//chrome/browser/ui/safety_hub:test_support",
     "//chrome/browser/ui/search_engines:unit_tests",
-    "//chrome/browser/ui/serial:test_support",
+    "//chrome/browser/ui/serial:unit_tests",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/internal_debug_pages_disabled",
     "//chrome/browser/updates/announcement_notification:unit_tests",
@@ -7576,6 +7584,8 @@ test("unit_tests") {
       "//chrome/browser/ui/autofill/payments:test_support",
       "//chrome/browser/ui/fast_checkout",
       "//chrome/browser/ui/fast_checkout:unit_tests",
+      "//chrome/browser/ui/serial",
+      "//chrome/browser/ui/serial:test_support",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/common/wallet:mojo_bindings",
       "//chrome/services/media_gallery_util:unit_tests",

@@ -1419,7 +1419,6 @@ static_library("browser") {
     "serial/serial_blocklist.cc",
     "serial/serial_blocklist.h",
     "serial/serial_chooser_context.cc",
-    "serial/serial_chooser_context.h",
     "serial/serial_chooser_context_factory.cc",
     "serial/serial_chooser_context_factory.h",
     "serial/serial_chooser_histograms.h",
@@ -1831,6 +1830,9 @@ static_library("browser") {
     # be removed.
     "//chrome/browser/ui/cookie_controls:impl",
 
+    # TODO(417228688): Remove this dependency when chrome/browser/serial get modularized.
+    "//chrome/browser/ui/serial:impl",
+
     # TODO(crbug.com/40110173): Eliminate usages of browser.h from Media Router.
     "//chrome/browser/media/router",
 
@@ -1998,6 +2000,7 @@ static_library("browser") {
     "//chrome/browser/search_engine_choice:impl",
     "//chrome/browser/search_engines",
     "//chrome/browser/send_tab_to_self",
+    "//chrome/browser/serial",
     "//chrome/browser/share",
     "//chrome/browser/sharing:buildflags",
     "//chrome/browser/signin",
@@ -2048,6 +2051,11 @@ static_library("browser") {
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/safety_hub:impl",
     "//chrome/browser/ui/search_engines",
+
+    # TODO(417228688): Remove this dependency when both chrome/browser/serial and
+    # chrome/browser/profiles/profile_manager.h get modularized.
+    "//chrome/browser/ui/serial",
+    "//chrome/browser/ui/serial:impl",
     "//chrome/browser/ui/startup:startup_tab",
     "//chrome/browser/ui/tab_contents",
     "//chrome/browser/ui/tab_contents:impl",

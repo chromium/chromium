@@ -1,0 +1,17 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("serial") {
+  sources = [ "serial_chooser_context.h" ]
+
+  public_deps = [
+    "//base",
+    "//components/permissions",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//services/device/public/mojom",
+    "//third_party/blink/public/common",
+    "//url",
+  ]
+}
