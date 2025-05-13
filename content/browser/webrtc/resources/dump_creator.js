@@ -98,10 +98,10 @@ export class DumpCreator {
       return;
     }
     url = URL.createObjectURL(textBlob);
-    const anchor = document.getElementById('dump-anchor');
+    const anchor = document.createElement('a');
     anchor.download = 'webrtc_internals_dump.txt'
     anchor.href = url;
-    // The default action of the anchor will download the url.
+    anchor.click();
   }
 
   /**
