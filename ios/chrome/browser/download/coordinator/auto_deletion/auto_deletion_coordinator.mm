@@ -67,12 +67,7 @@ typedef void (^UIAlertActionHandler)(UIAlertAction* action);
     BOOL hasIPHBeenShown =
         localState->GetBoolean(prefs::kDownloadAutoDeletionIPHShown);
     if (!hasIPHBeenShown && [self shouldIPHBeShown]) {
-      _IPHCoordinator = [[AutoDeletionIPHCoordinator alloc]
-          initWithBaseViewController:self.baseViewController
-                             browser:self.browser
-                        downloadTask:_downloadTask];
-      [_IPHCoordinator start];
-      localState->SetBoolean(prefs::kDownloadAutoDeletionIPHShown, true);
+      [self presentIPH];
       return;
     }
 
@@ -112,6 +107,7 @@ typedef void (^UIAlertActionHandler)(UIAlertAction* action);
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock primaryItemAction = ^{
     [weakSelf scheduleFileForDeletion];
+    [weakSelf dismiss];
   };
   [coordinator
       addItemWithTitle:l10n_util::GetNSString(
@@ -128,6 +124,22 @@ typedef void (^UIAlertActionHandler)(UIAlertAction* action);
                  style:UIAlertActionStyleCancel];
 
   return coordinator;
+}
+
+// Creates the coordinator that manages the Auto-deletion IPH and displays the
+// IPH on the screen. This function also initializes the UIGestureRecognizer and
+// attaches it to the window to handle dimssing the IPH properly when the user
+// swipes-down on it.
+- (void)presentIPH {
+  _IPHCoordinator = [[AutoDeletionIPHCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                    downloadTask:_downloadTask];
+  [_IPHCoordinator start];
+
+  // Store that the IPH has been displayed.
+  PrefService* localState = GetApplicationContext()->GetLocalState();
+  localState->SetBoolean(prefs::kDownloadAutoDeletionIPHShown, true);
 }
 
 // Schedules the downloaded file for automatic deletion when the user hits the

@@ -70,7 +70,9 @@ UIView* CreateIconContainer() {
 
 }  // namespace
 
-@interface AutoDeletionIPHViewController () <ConfirmationAlertActionHandler> {
+@interface AutoDeletionIPHViewController () <
+    ConfirmationAlertActionHandler,
+    UIAdaptivePresentationControllerDelegate> {
   // A pointer to the browser object.
   raw_ptr<Browser> _browser;
 }
@@ -103,6 +105,7 @@ UIView* CreateIconContainer() {
       ]);
   self.customDismissBarButtonImage = xmarkSymbol;
   self.actionHandler = self;
+  self.presentationController.delegate = self;
   [super viewDidLoad];
   [self layoutAlertScreen];
 }
@@ -130,6 +133,15 @@ UIView* CreateIconContainer() {
 - (void)confirmationAlertSecondaryAction {
   base::RecordAction(
       base::UserMetricsAction("IOS.AutoDeletion.IPH.RejectButtonTapped"));
+  id<AutoDeletionCommands> handler = HandlerForProtocol(
+      _browser->GetCommandDispatcher(), AutoDeletionCommands);
+  [handler dismissAutoDeletionActionSheet];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
   id<AutoDeletionCommands> handler = HandlerForProtocol(
       _browser->GetCommandDispatcher(), AutoDeletionCommands);
   [handler dismissAutoDeletionActionSheet];
