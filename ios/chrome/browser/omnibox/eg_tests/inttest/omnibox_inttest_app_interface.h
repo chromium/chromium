@@ -10,6 +10,9 @@
 /// Contains the app-side implementation of omnibox integration test helpers.
 @interface OmniboxInttestAppInterface : NSObject
 
+/// Enables suggestion stubbing using fake suggestions.
++ (void)enableFakeSuggestions;
+
 /// Returns the last URL loaded by the omnibox.
 + (NSURL*)lastURLLoaded;
 

@@ -18,6 +18,9 @@ class GURL;
 /// `OmniboxInttestCoordinator`.
 @interface OmniboxInttestEarlGreyImpl : BaseEGTestHelperImpl
 
+/// Focuses the omnibox.
+- (void)focusOmnibox;
+
 /// Focuses the omnibox and type `text`.
 - (void)focusOmniboxAndType:(NSString*)text;
 

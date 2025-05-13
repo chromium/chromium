@@ -23,6 +23,8 @@ class OmniboxInttestAutocompleteController : public AutocompleteController {
 
   void Start(const AutocompleteInput& input) override;
 
+  bool& fake_suggestion_enabled() { return fake_suggestion_enabled_; }
+
   FakeSuggestionsBuilder* fake_suggestions_builder() const {
     return suggestions_builder_.get();
   }
@@ -30,6 +32,8 @@ class OmniboxInttestAutocompleteController : public AutocompleteController {
  private:
   scoped_refptr<FakeAutocompleteProvider> provider_;
   std::unique_ptr<FakeSuggestionsBuilder> suggestions_builder_;
+  /// Whether suggestions are stubbed with fake suggestions.
+  bool fake_suggestion_enabled_ = false;
 };
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_EG_TESTS_INTTEST_OMNIBOX_INTTEST_AUTOCOMPLETE_CONTROLLER_H_

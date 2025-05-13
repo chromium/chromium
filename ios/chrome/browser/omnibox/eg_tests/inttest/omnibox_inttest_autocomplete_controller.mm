@@ -27,6 +27,10 @@ OmniboxInttestAutocompleteController::~OmniboxInttestAutocompleteController() {
 void OmniboxInttestAutocompleteController::Start(
     const AutocompleteInput& input) {
   {
+    if (!fake_suggestion_enabled_) {
+      AutocompleteController::Start(input);
+      return;
+    }
     AutocompleteResult& results = internal_result_;
     results.ClearMatches();
     results.AppendMatches(

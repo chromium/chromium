@@ -19,6 +19,12 @@ class GURL;
 /// The omnibox coordinator.
 @property(nonatomic, strong) OmniboxCoordinator* omniboxCoordinator;
 
+/// Whether fake suggestions are enabled. Fake suggestions stubs autocomplete
+/// controller suggestions and returns suggestions build using the
+/// `fakeSuggestionsBuilder`. Disabled by default.
+@property(nonatomic, assign, getter=isFakeSuggestionEnabled)
+    BOOL fakeSuggestionEnabled;
+
 /// Returns the fake suggestions builder, used to add fake suggestions in the
 /// omnibox.
 - (FakeSuggestionsBuilder*)fakeSuggestionsBuilder;

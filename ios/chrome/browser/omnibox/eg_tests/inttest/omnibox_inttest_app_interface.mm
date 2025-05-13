@@ -14,6 +14,10 @@
 
 @implementation OmniboxInttestAppInterface
 
++ (void)enableFakeSuggestions {
+  [OmniboxInttestAppInterface inttestCoordinator].fakeSuggestionEnabled = YES;
+}
+
 + (void)addURLShortcutMatch:(NSString*)shortcutText
        destinationURLString:(NSString*)URLString {
   FakeSuggestionsBuilder* builder =

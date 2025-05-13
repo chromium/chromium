@@ -32,15 +32,18 @@ const GURL kShortcutURL = GURL("https://www.shortcut.com");
 
 }  // namespace
 
-// Tests the omnibox integration with OmniboxInttestCoordinator.
-@interface OmniboxInttestTestCase : ChromeTestCase
+// Tests the omnibox integration with OmniboxInttestCoordinator using fake
+// suggestions.
+@interface OmniboxFakeSuggestionsInttestTestCase : ChromeTestCase
 @end
 
-@implementation OmniboxInttestTestCase
+@implementation OmniboxFakeSuggestionsInttestTestCase
 
 - (void)setUp {
   [super setUp];
   [ChromeCoordinatorAppInterface startOmniboxCoordinator];
+  // Stub autocomplete suggestions with fake suggestions.
+  [OmniboxInttestAppInterface enableFakeSuggestions];
 }
 
 - (void)tearDownHelper {

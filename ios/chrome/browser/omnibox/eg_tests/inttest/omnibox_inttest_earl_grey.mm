@@ -19,6 +19,11 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 @implementation OmniboxInttestEarlGreyImpl
 
+- (void)focusOmnibox {
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_tap()];
+}
+
 - (void)focusOmniboxAndType:(NSString*)text {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_tap()];

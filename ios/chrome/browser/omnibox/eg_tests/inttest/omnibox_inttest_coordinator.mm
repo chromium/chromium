@@ -28,6 +28,7 @@
   OmniboxInttestViewController* _viewController;
   raw_ptr<FakeOmniboxClient> _fakeOmniboxClient;
   raw_ptr<FakeSuggestionsBuilder> _fakeSuggestionsBuilder;
+  raw_ptr<OmniboxInttestAutocompleteController> _autocompleteController;
 }
 
 - (void)start {
@@ -58,6 +59,7 @@
 
   auto fakeAutocompleteController =
       std::make_unique<OmniboxInttestAutocompleteController>();
+  _autocompleteController = fakeAutocompleteController.get();
   _fakeSuggestionsBuilder =
       fakeAutocompleteController->fake_suggestions_builder();
   if (OmniboxControllerIOS* omniboxController =
@@ -84,11 +86,13 @@
   [omniboxCoordinator updateOmniboxState];
 
   self.omniboxCoordinator = omniboxCoordinator;
+  [self simulateNTP];
 }
 
 - (void)stop {
   _fakeOmniboxClient = nullptr;
   _fakeSuggestionsBuilder = nullptr;
+  _autocompleteController = nullptr;
   [self.omniboxCoordinator stop];
   self.omniboxCoordinator = nil;
 
@@ -115,6 +119,14 @@
 
 - (void)resetLastURLLoaded {
   _fakeOmniboxClient->set_on_autocomplete_accept_destination_url(GURL());
+}
+
+- (void)setFakeSuggestionEnabled:(BOOL)fakeSuggestionEnabled {
+  _autocompleteController->fake_suggestion_enabled() = fakeSuggestionEnabled;
+}
+
+- (BOOL)isFakeSuggestionEnabled {
+  return _autocompleteController->fake_suggestion_enabled();
 }
 
 #pragma mark - OmniboxInttestViewControllerDelegate
