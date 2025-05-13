@@ -90,6 +90,11 @@ Notice* Notice::SetTargetApis(const std::vector<NoticeApi*>& apis) {
   return this;
 }
 
+Notice* Notice::SetViewGroup(std::pair<NoticeViewGroup, int> view_group) {
+  view_group_ = view_group;
+  return this;
+}
+
 NoticeId Notice::GetNoticeId() const {
   return notice_id_;
 }

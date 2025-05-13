@@ -51,13 +51,15 @@ void NoticeCatalogImpl::RegisterNoticeGroup(
     std::unique_ptr<Notice> (*notice_creator)(NoticeId),
     std::vector<std::pair<NoticeId, const base::Feature*>>&& notice_ids,
     std::vector<NoticeApi*>&& target_apis,
-    std::vector<NoticeApi*>&& pre_req_apis) {
+    std::vector<NoticeApi*>&& pre_req_apis,
+    std::pair<NoticeViewGroup, int> view_group) {
   const std::vector<NoticeApi*>& pre_req_apis1 = pre_req_apis;
   for (auto [notice_id, feature] : notice_ids) {
     RegisterAndRetrieveNewNotice(notice_creator, notice_id)
         ->SetFeature(feature)
         ->SetTargetApis(target_apis)
-        ->SetPreReqApis(pre_req_apis1);
+        ->SetPreReqApis(pre_req_apis1)
+        ->SetViewGroup(view_group);
   }
 }
 
@@ -79,6 +81,7 @@ void NoticeCatalogImpl::Populate() {
   NoticeApi* measurement = RegisterAndRetrieveNewApi();
 
   // Define Notices.
+  // Topics EEA Consent.
   RegisterNoticeGroup(&Make<Consent>,
                       {{{kTopicsConsentNotice, kDesktopNewTab},
                         &kTopicsConsentDesktopModalFeature},
@@ -86,8 +89,21 @@ void NoticeCatalogImpl::Populate() {
                         &kTopicsConsentModalClankBrAppFeature},
                        {{kTopicsConsentNotice, kClankCustomTab},
                         &kTopicsConsentModalClankCCTFeature}},
-                      {topics});
+                      {topics}, {}, {NoticeViewGroup::kAdsNoticeEeaGroup, 1});
 
+  // Protected Audience Measurement EEA Notice
+  RegisterNoticeGroup(
+      &Make<Notice>,
+      {{{kProtectedAudienceMeasurementNotice, kDesktopNewTab},
+        &kProtectedAudienceMeasurementNoticeModalFeature},
+       {{kProtectedAudienceMeasurementNotice, kClankBrApp},
+        &kProtectedAudienceMeasurementNoticeModalClankBrAppFeature},
+       {{kProtectedAudienceMeasurementNotice, kClankCustomTab},
+        &kProtectedAudienceMeasurementNoticeModalClankCCTFeature}},
+      {protected_audience, measurement}, {},
+      {NoticeViewGroup::kAdsNoticeEeaGroup, 2});
+
+  // ROW Ads APIs Notice
   RegisterNoticeGroup(&Make<Notice>,
                       {{{kThreeAdsApisNotice, kDesktopNewTab},
                         &kThreeAdsAPIsNoticeModalFeature},
@@ -97,16 +113,7 @@ void NoticeCatalogImpl::Populate() {
                         &kThreeAdsAPIsNoticeModalClankCCTFeature}},
                       {topics, protected_audience, measurement});
 
-  RegisterNoticeGroup(
-      &Make<Notice>,
-      {{{kProtectedAudienceMeasurementNotice, kDesktopNewTab},
-        &kProtectedAudienceMeasurementNoticeModalFeature},
-       {{kProtectedAudienceMeasurementNotice, kClankBrApp},
-        &kProtectedAudienceMeasurementNoticeModalClankBrAppFeature},
-       {{kProtectedAudienceMeasurementNotice, kClankCustomTab},
-        &kProtectedAudienceMeasurementNoticeModalClankCCTFeature}},
-      {protected_audience, measurement});
-
+  // Restricted Measurement Notice.
   RegisterNoticeGroup(
       &Make<Notice>,
       {{{kMeasurementNotice, kDesktopNewTab}, &kMeasurementNoticeModalFeature},

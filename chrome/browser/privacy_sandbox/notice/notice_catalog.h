@@ -45,7 +45,9 @@ class NoticeCatalogImpl : public NoticeCatalog {
       std::unique_ptr<Notice> (*notice_creator)(NoticeId),
       std::vector<std::pair<NoticeId, const base::Feature*>>&& notice_ids,
       std::vector<NoticeApi*>&& target_apis,
-      std::vector<NoticeApi*>&& pre_req_apis = {});
+      std::vector<NoticeApi*>&& pre_req_apis = {},
+      std::pair<NoticeViewGroup, int> view_group = {NoticeViewGroup::kNotSet,
+                                                    0});
 
   // Populates the catalog with all the notices and their requirements.
   void Populate();

@@ -84,6 +84,30 @@ TEST_F(PrivacySandboxNoticeCatalogTest, AllNoticesTargetAtLeastOneApi) {
   }
 }
 
+// Groups are unique per Surface Type when set.
+TEST_F(PrivacySandboxNoticeCatalogTest, UniqueViewGroupPerSurfaceType) {
+  EXPECT_THAT(catalog_.GetNotices(), Not(IsEmpty()));
+
+  std::map<SurfaceType, std::set<std::pair<NoticeViewGroup, int>>>
+      view_groups_per_surface;
+
+  for (const Notice* notice : catalog_.GetNotices()) {
+    ASSERT_NE(notice, nullptr);
+    auto [group, order] = notice->view_group();
+    if (group == NoticeViewGroup::kNotSet) {
+      continue;
+    }
+
+    auto& view_groups_for_surface =
+        view_groups_per_surface[notice->GetNoticeId().second];
+
+    EXPECT_TRUE(view_groups_for_surface.insert({group, order}).second)
+        << "Duplicate view group (" << static_cast<int>(group) << ", " << order
+        << ") for surface type "
+        << static_cast<int>(notice->GetNoticeId().second);
+  }
+}
+
 // All APIs must be covered by at least one Notice.
 TEST_F(PrivacySandboxNoticeCatalogTest, AllApisAreTargetedByAtLeastOneNotice) {
   EXPECT_THAT(catalog_.GetNoticeApis(), Not(IsEmpty()));

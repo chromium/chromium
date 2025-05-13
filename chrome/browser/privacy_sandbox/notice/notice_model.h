@@ -32,6 +32,12 @@ enum class EligibilityLevel {
   kEligibleConsent,
 };
 
+// Notice view groups. Defining the notices that can be grouped together.
+enum class NoticeViewGroup {
+  kNotSet,
+  kAdsNoticeEeaGroup,
+};
+
 using NoticeId = std::pair<notice::mojom::PrivacySandboxNotice, SurfaceType>;
 class Notice {
   // TODO(crbug.com/392612108): Include view group information.
@@ -52,9 +58,13 @@ class Notice {
   Notice* SetTargetApis(const std::vector<NoticeApi*>& apis);
   Notice* SetPreReqApis(const std::vector<NoticeApi*>& apis);
   Notice* SetFeature(const base::Feature* feature);
+  Notice* SetViewGroup(std::pair<NoticeViewGroup, int> view_group);
 
   // Returns the cached was_fulfilled status.
   bool was_fulfilled() const { return was_fulfilled_; }
+
+  // Returns the view_group, consisting of the group and the order in the group.
+  std::pair<NoticeViewGroup, int> view_group() const { return view_group_; }
 
   // Update the cached was_fulfilled status for the notice.
   void RefreshFulfillmentStatus(NoticeStorage& storage);
@@ -94,6 +104,7 @@ class Notice {
   std::vector<raw_ptr<NoticeApi>> target_apis_;
   std::vector<raw_ptr<NoticeApi>> pre_req_apis_;
   raw_ptr<const base::Feature> feature_;
+  std::pair<NoticeViewGroup, int> view_group_;
 };
 
 class Consent : public Notice {
