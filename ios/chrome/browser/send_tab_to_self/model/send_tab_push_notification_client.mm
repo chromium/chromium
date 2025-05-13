@@ -47,7 +47,9 @@ SendTabPushNotificationClient::SendTabPushNotificationClient(
 
 SendTabPushNotificationClient::SendTabPushNotificationClient()
     : PushNotificationClient(PushNotificationClientId::kSendTab,
-                             PushNotificationClientScope::kPerProfile) {}
+                             PushNotificationClientScope::kPerProfile) {
+  CHECK(!IsMultiProfilePushNotificationHandlingEnabled());
+}
 
 SendTabPushNotificationClient::~SendTabPushNotificationClient() = default;
 

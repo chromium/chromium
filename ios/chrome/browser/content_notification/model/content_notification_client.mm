@@ -24,7 +24,9 @@ ContentNotificationClient::ContentNotificationClient(ProfileIOS* profile)
 
 ContentNotificationClient::ContentNotificationClient()
     : PushNotificationClient(PushNotificationClientId::kContent,
-                             PushNotificationClientScope::kPerProfile) {}
+                             PushNotificationClientScope::kPerProfile) {
+  CHECK(!IsMultiProfilePushNotificationHandlingEnabled());
+}
 
 ContentNotificationClient::~ContentNotificationClient() = default;
 

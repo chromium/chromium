@@ -71,7 +71,9 @@ CommercePushNotificationClient::CommercePushNotificationClient(
 
 CommercePushNotificationClient::CommercePushNotificationClient()
     : PushNotificationClient(PushNotificationClientId::kCommerce,
-                             PushNotificationClientScope::kPerProfile) {}
+                             PushNotificationClientScope::kPerProfile) {
+  CHECK(!IsMultiProfilePushNotificationHandlingEnabled());
+}
 
 CommercePushNotificationClient::~CommercePushNotificationClient() = default;
 
