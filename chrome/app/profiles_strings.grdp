@@ -1131,7 +1131,7 @@
     <message translateable="false" name="IDS_HISTORY_SYNC_OPT_IN_ACCEPT_BUTTON" desc="">
       Yes, I 'm in
     </message>
-    <message translateable="false" name="IDS_HISTORY_SYNC_OPT_IN_CANCEL_BUTTON" desc="">
+    <message translateable="false" name="IDS_HISTORY_SYNC_OPT_IN_REJECT_BUTTON" desc="">
       No thanks
     </message>
     <!-- History Sync Opt-in Expansion Pill Desktop -->

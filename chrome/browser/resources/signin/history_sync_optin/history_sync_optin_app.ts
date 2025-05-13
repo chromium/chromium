@@ -9,6 +9,8 @@ import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
+import {HistorySyncOptInBrowserProxyImpl} from './browser_proxy.js';
+import type {HistorySyncOptInBrowserProxy} from './browser_proxy.js';
 import {getCss} from './history_sync_optin_app.css.js';
 import {getHtml} from './history_sync_optin_app.html.js';
 
@@ -35,10 +37,16 @@ export class HistorySyncOptinAppElement extends HistorySyncOptinAppElementBase {
 
   protected accessor accountImageSrc_: string =
       loadTimeData.getString('accountPictureUrl');
+  private historySyncOptInBrowserProxy_: HistorySyncOptInBrowserProxy =
+      HistorySyncOptInBrowserProxyImpl.getInstance();
 
-  // TODO(crbug.com/326912202): Wire the keys.
-  protected onCancel_() {}
-  protected onAccept_() {}
+  protected onReject_() {
+    this.historySyncOptInBrowserProxy_.handler.reject();
+  }
+
+  protected onAccept_() {
+    this.historySyncOptInBrowserProxy_.handler.accept();
+  }
 }
 
 declare global {

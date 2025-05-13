@@ -16,6 +16,7 @@
 class HistorySyncOptinHandler;
 class HistorySyncOptinUI;
 class Browser;
+class Profile;
 
 class HistorySyncOptinUIConfig
     : public content::DefaultWebUIConfig<HistorySyncOptinUI> {
@@ -71,8 +72,9 @@ class HistorySyncOptinUI
   std::unique_ptr<HistorySyncOptinHandler> page_handler_;
   mojo::Receiver<history_sync_optin::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
-  base::WeakPtrFactory<HistorySyncOptinUI> weak_ptr_factory_{this};
+  raw_ptr<Profile> profile_;
 
+  base::WeakPtrFactory<HistorySyncOptinUI> weak_ptr_factory_{this};
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 

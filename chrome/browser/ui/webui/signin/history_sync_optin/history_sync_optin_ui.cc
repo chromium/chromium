@@ -25,10 +25,11 @@ bool HistorySyncOptinUIConfig::IsWebUIEnabled(
 }
 
 HistorySyncOptinUI::HistorySyncOptinUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui, true) {
+    : ui::MojoWebUIController(web_ui, true),
+      profile_(Profile::FromWebUI(web_ui)) {
   // Set up the chrome://history-sync-optin source.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      Profile::FromWebUI(web_ui), chrome::kChromeUIHistorySyncOptinHost);
+      profile_, chrome::kChromeUIHistorySyncOptinHost);
 
   // Add required resources.
   webui::SetupWebUIDataSource(
@@ -40,8 +41,8 @@ HistorySyncOptinUI::HistorySyncOptinUI(content::WebUI* web_ui)
       {"historySyncOptInSubtitle", IDS_HISTORY_SYNC_OPT_IN_SUBTITLE},
       {"historySyncOptInAcceptButtonLabel",
        IDS_HISTORY_SYNC_OPT_IN_ACCEPT_BUTTON},
-      {"historySyncOptInCancelButtonLabel",
-       IDS_HISTORY_SYNC_OPT_IN_CANCEL_BUTTON},
+      {"historySyncOptInRejectButtonLabel",
+       IDS_HISTORY_SYNC_OPT_IN_REJECT_BUTTON},
       {"historySyncOptInDescription", IDS_HISTORY_SYNC_OPT_IN_DESCRIPTION},
   };
 
@@ -83,8 +84,6 @@ void HistorySyncOptinUI::OnMojoHandlersReady(
     mojo::PendingRemote<history_sync_optin::mojom::Page> page,
     mojo::PendingReceiver<history_sync_optin::mojom::PageHandler> receiver) {
   CHECK(!page_handler_);
-  // TODO(crbug.com/404807488): Pass the browser pointer to the handler.
-  // This is needed for closing the modal dialog.
-  page_handler_ = std::make_unique<HistorySyncOptinHandler>(std::move(receiver),
-                                                            std::move(page));
+  page_handler_ = std::make_unique<HistorySyncOptinHandler>(
+      std::move(receiver), std::move(page), browser, profile_);
 }

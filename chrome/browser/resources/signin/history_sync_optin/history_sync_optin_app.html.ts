@@ -16,9 +16,9 @@ export function getHtml(this: HistorySyncOptinAppElement) {
       <div id="subtitle">$i18n{historySyncOptInSubtitle}</div>
     </div>
     <div id="buttonRow">
-      <cr-button id="cancelButton" class="tonal-button"
-          @click="${this.onCancel_}">
-        $i18n{historySyncOptInCancelButtonLabel}
+      <cr-button id="rejectButton" class="tonal-button"
+          @click="${this.onReject_}">
+        $i18n{historySyncOptInRejectButtonLabel}
       </cr-button>
       <cr-button id="acceptButton" class="action-button"
           @click="${this.onAccept_}">

@@ -15,7 +15,13 @@ interface PageHandlerFactory {
 };
 
 // Called from TS side of chrome://history-sync-optin (Renderer -> Browser)
-interface PageHandler {};
+interface PageHandler {
+
+  // The user accepts the history sync optin screen by clicking the `Yes I'am in` button.
+  Accept();
+  // The user rejects the history sync optin by clicking the `No thanks` button.
+  Reject();
+};
 
 // Called from C++ side of chrome://history-sync-optin (Browser -> Renderer)
 interface Page {};
