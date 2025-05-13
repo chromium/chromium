@@ -441,8 +441,9 @@ class HttpStreamPool::AttemptManager
   void NotifyJobOfPreconnectCompleteLater(Job* job, int rv);
   void NotifyJobOfPreconnectComplete(Job* job, int rv);
 
-  // Creates a text based stream and notifies the highest priority job.
-  void CreateTextBasedStreamAndNotify(
+  // Creates a text based stream. Notifies the highest priority job if there are
+  // waiting jobs. Otherwise, `stream_socket` becomes an idle stream.
+  void CreateTextBasedStreamAndMaybeNotify(
       std::unique_ptr<StreamSocket> stream_socket,
       StreamSocketHandle::SocketReuseType reuse_type,
       LoadTimingInfo::ConnectTiming connect_timing);

@@ -281,8 +281,8 @@ void HttpStreamPool::AttemptManager::StartJob(Job* job) {
     // already took the ownership of the idle stream socket. If we don't create
     // an HttpBasicStream here, another call of this method might exceed the
     // per-group limit.
-    CreateTextBasedStreamAndNotify(std::move(stream_socket), reuse_type,
-                                   LoadTimingInfo::ConnectTiming());
+    CreateTextBasedStreamAndMaybeNotify(std::move(stream_socket), reuse_type,
+                                        LoadTimingInfo::ConnectTiming());
     return;
   }
 
@@ -478,8 +478,8 @@ void HttpStreamPool::AttemptManager::ProcessPendingJob() {
     if (stream_socket) {
       const StreamSocketHandle::SocketReuseType reuse_type =
           GetReuseTypeFromIdleStreamSocket(*stream_socket);
-      CreateTextBasedStreamAndNotify(std::move(stream_socket), reuse_type,
-                                     LoadTimingInfo::ConnectTiming());
+      CreateTextBasedStreamAndMaybeNotify(std::move(stream_socket), reuse_type,
+                                          LoadTimingInfo::ConnectTiming());
       return;
     }
   }
@@ -1571,7 +1571,7 @@ void HttpStreamPool::AttemptManager::NotifyJobOfPreconnectComplete(Job* job,
   job->OnPreconnectComplete(rv);
 }
 
-void HttpStreamPool::AttemptManager::CreateTextBasedStreamAndNotify(
+void HttpStreamPool::AttemptManager::CreateTextBasedStreamAndMaybeNotify(
     std::unique_ptr<StreamSocket> stream_socket,
     StreamSocketHandle::SocketReuseType reuse_type,
     LoadTimingInfo::ConnectTiming connect_timing) {
@@ -1585,6 +1585,15 @@ void HttpStreamPool::AttemptManager::CreateTextBasedStreamAndNotify(
       << "active=" << group_->ActiveStreamSocketCount()
       << ", limit=" << pool()->max_stream_sockets_per_group();
 
+  if (jobs_.empty()) {
+    // The ownership of the underlying `stream_socket` of `http_stream` will be
+    // moved to the group as an idle stream.
+    // TODO(crbug.com/396998469): Better to move `stream_socket` directly to
+    // the group as an idle stream without creating an HttpStream. Currently we
+    // depends on the fact that the group processes pending preconnects when
+    // the handle of the HttpStream is returned to the group.
+    return;
+  }
   NotifyStreamReady(std::move(http_stream), negotiated_protocol);
   // `this` may be deleted.
 }
@@ -1658,11 +1667,7 @@ void HttpStreamPool::AttemptManager::NotifyStreamReady(
     std::unique_ptr<HttpStream> stream,
     NextProto negotiated_protocol) {
   Job* job = ExtractFirstJobToNotify();
-  if (!job) {
-    // The ownership of the stream will be moved to the group as `stream` is
-    // going to be destructed.
-    return;
-  }
+  CHECK(job);
   TRACE_EVENT_INSTANT("net.stream", "AttemptManager::NotifyStreamReady", track_,
                       NetLogWithSourceToFlow(job->request_net_log()),
                       "negotiated_protocol", negotiated_protocol);
@@ -1835,8 +1840,8 @@ void HttpStreamPool::AttemptManager::OnTcpBasedAttemptComplete(
                                          group_->ActiveStreamSocketCount() + 1);
 
   CHECK_NE(stream_socket->GetNegotiatedProtocol(), NextProto::kProtoHTTP2);
-  CreateTextBasedStreamAndNotify(std::move(stream_socket), reuse_type,
-                                 std::move(connect_timing));
+  CreateTextBasedStreamAndMaybeNotify(std::move(stream_socket), reuse_type,
+                                      std::move(connect_timing));
 }
 
 void HttpStreamPool::AttemptManager::OnTcpBasedAttemptSlow(
