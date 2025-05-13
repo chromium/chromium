@@ -13,7 +13,10 @@ static_library("access_code_cast_integration_base") {
     "access_code_cast_integration_browsertest.h",
   ]
 
-  public_deps = [ "//chrome/browser/ui:ui_features" ]
+  public_deps = [
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/webui/access_code_cast",
+  ]
 
   deps = [
     "//base/test:test_support",

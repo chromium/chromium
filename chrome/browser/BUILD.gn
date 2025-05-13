@@ -4371,6 +4371,7 @@ static_library("browser") {
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/privacy_sandbox",
       "//chrome/browser/ui/send_tab_to_self",
+      "//chrome/browser/ui/webui/access_code_cast",
 
       # TODO(413315837): Remove this dependency when chrome/browser/privacy_sandbox
       # gets modularized.
@@ -4579,6 +4580,10 @@ static_library("browser") {
       "//chrome/browser/ui/tabs/tab_strip_api:impl",
       "//chrome/browser/ui/bookmarks:impl",
       "//chrome/browser/ui/promos:impl",
+
+      # TODO(crbug.com/364667551): It includes
+      # //c/b/signin/identity_manager_factory.h.
+      "//chrome/browser/ui/webui/access_code_cast",
     ]
 
     #!is_android

@@ -1366,12 +1366,6 @@ static_library("ui") {
       "views/file_system_access/file_system_access_scroll_panel.h",
       "views/search_engine_choice/search_engine_choice_dialog_view.cc",
       "views/search_engine_choice/search_engine_choice_dialog_view.h",
-      "webui/access_code_cast/access_code_cast_dialog.cc",
-      "webui/access_code_cast/access_code_cast_dialog.h",
-      "webui/access_code_cast/access_code_cast_handler.cc",
-      "webui/access_code_cast/access_code_cast_handler.h",
-      "webui/access_code_cast/access_code_cast_ui.cc",
-      "webui/access_code_cast/access_code_cast_ui.h",
       "webui/app_service_internals/app_service_internals_page_handler_impl.cc",
       "webui/app_service_internals/app_service_internals_page_handler_impl.h",
       "webui/app_service_internals/app_service_internals_ui.cc",
@@ -1689,6 +1683,7 @@ static_library("ui") {
       "//chrome/browser/first_party_sets",
       "//chrome/browser/lifetime:termination_notification",
       "//chrome/browser/privacy_sandbox",
+      "//chrome/browser/ui/webui/access_code_cast",
 
       # TODO(crbug.com/370804668i): Remove the dependency when chrome/browser/serial
       # gets modularized.
@@ -1957,6 +1952,10 @@ static_library("ui") {
       "//chrome/browser/ui/tabs:tab_strip_impl",
       "//chrome/browser/ui/bookmarks:impl",
       "//chrome/browser/ui/feature_first_run:impl",
+
+      # TODO(crbug.com/364667551): It includes quite a few files from //c/b/ui's
+      # subdirectories such as views and webui which are not modularized yet.
+      "//chrome/browser/ui/webui/access_code_cast",
     ]
 
     if (is_mac) {

@@ -33,6 +33,7 @@ static_library("system") {
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/webui/access_code_cast",
     "//chrome/browser/ui/webui/ash/bluetooth",
     "//chrome/browser/ui/webui/ash/internet",
     "//chrome/browser/ui/webui/ash/multidevice_setup",
