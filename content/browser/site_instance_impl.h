@@ -429,6 +429,9 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // associated with its default SiteInstance.
   bool IsSiteInDefaultSiteInstance(const GURL& site_url) const;
 
+  // Returns the default SiteInstanceGroup of the BrowsingInstance `this` is in.
+  SiteInstanceGroup* DefaultSiteInstanceGroupForBrowsingInstance() const;
+
   // Returns true if the SiteInfo for |url_info| matches the SiteInfo for this
   // instance (i.e. GetSiteInfo()). Otherwise returns false.
   bool DoesSiteInfoForURLMatch(const UrlInfo& url_info);
@@ -586,7 +589,9 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
       const SiteInfo& site_info);
 
   // This getter is only used to construct SiteInstanceGroups.
-  BrowsingInstance* browsing_instance() { return browsing_instance_.get(); }
+  BrowsingInstance* browsing_instance() const {
+    return browsing_instance_.get();
+  }
 
   // A unique ID for this SiteInstance.
   SiteInstanceId id_;

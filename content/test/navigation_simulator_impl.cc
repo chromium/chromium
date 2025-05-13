@@ -708,10 +708,12 @@ void NavigationSimulatorImpl::Commit() {
       render_frame_host_->frame_tree_node()->current_frame_host()->GetWeakPtr();
 
   // RenderDocument: Do not dispatch UnloadACK if the navigation was committed
-  // in the same SiteInstance. This has already been dispatched during the
+  // in the same SiteInstanceGroup. This has already been dispatched during the
   // navigation in the renderer process.
-  if (previous_rfh->GetSiteInstance() == render_frame_host_->GetSiteInstance())
+  if (previous_rfh->GetSiteInstance()->group() ==
+      render_frame_host_->GetSiteInstance()->group()) {
     drop_unload_ack_ = true;
+  }
 
   // If the frame is not alive we do not displatch Unload ACK. CommitPending()
   // may be called immediately and delete the old RenderFrameHost, so we need to
@@ -876,10 +878,12 @@ void NavigationSimulatorImpl::CommitErrorPage() {
       render_frame_host_->frame_tree_node()->current_frame_host();
 
   // RenderDocument: Do not dispatch UnloadACK if the navigation was committed
-  // in the same SiteInstance. This has already been dispatched during the
+  // in the same SiteInstanceGroup. This has already been dispatched during the
   // navigation in the renderer process.
-  if (previous_rfh->GetSiteInstance() == render_frame_host_->GetSiteInstance())
+  if (previous_rfh->GetSiteInstance()->group() ==
+      render_frame_host_->GetSiteInstance()->group()) {
     drop_unload_ack_ = true;
+  }
 
   // If the frame is not alive we do not displatch Unload ACK. CommitPending()
   // may be called immediately and delete the old RenderFrameHost, so we need to

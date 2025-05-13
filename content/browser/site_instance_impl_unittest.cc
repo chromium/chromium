@@ -32,6 +32,7 @@
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/browser/webui/url_data_manager_backend.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_or_resource_context.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
@@ -603,6 +604,10 @@ TEST_F(SiteInstanceTest,
 
 // Verifies some basic properties of default SiteInstances.
 TEST_F(SiteInstanceTest, DefaultSiteInstanceProperties) {
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    return;
+  }
+
   TestBrowserContext browser_context;
 
   base::test::ScopedCommandLine scoped_command_line;
@@ -630,6 +635,10 @@ TEST_F(SiteInstanceTest, DefaultSiteInstanceProperties) {
 // Ensure that default SiteInstances are deleted when all references to them
 // are gone.
 TEST_F(SiteInstanceTest, DefaultSiteInstanceDestruction) {
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    return;
+  }
+
   TestBrowserContext browser_context;
   base::test::ScopedCommandLine scoped_command_line;
 
@@ -1934,7 +1943,7 @@ TEST_F(SiteInstanceTest, CreateForUrlInfo) {
       SiteInstanceImpl::CreateForTesting(context(), GURL(url::kAboutBlankURL));
   auto instance5 = SiteInstanceImpl::CreateForTesting(context(), kCustomUrl);
 
-  if (AreAllSitesIsolatedForTesting()) {
+  if (AreStrictSiteInstancesEnabled()) {
     EXPECT_FALSE(instance1->IsDefaultSiteInstance());
     EXPECT_EQ(kNonIsolatedUrl, instance1->GetSiteURL());
   } else {
@@ -1968,7 +1977,7 @@ TEST_F(SiteInstanceTest, CreateForUrlInfo) {
 
   // Test the standard effective URL case.
   EXPECT_TRUE(instance5->HasSite());
-  if (AreAllSitesIsolatedForTesting()) {
+  if (AreStrictSiteInstancesEnabled()) {
     EXPECT_FALSE(instance5->IsDefaultSiteInstance());
     EXPECT_EQ("custom-standard://custom/", instance5->GetSiteURL());
     EXPECT_EQ("http://foo.com/", instance5->GetSiteInfo().process_lock_url());
@@ -2294,9 +2303,9 @@ TEST_F(SiteInstanceTest, GroupTokensRelatedSiteInstances) {
   const auto derived_instance = base_instance->GetRelatedSiteInstanceImpl(
       UrlInfo(UrlInfoInit(GURL("https://other-example.com"))));
 
-  // Without full Site Isolation, we'll group different sites in the default
-  // SiteInstance.
-  if (!AreAllSitesIsolatedForTesting()) {
+  // Without full Site Isolation or default SiteInstanceGroups, we'll group
+  // different sites in the default SiteInstance.
+  if (!AreStrictSiteInstancesEnabled()) {
     EXPECT_EQ(derived_instance.get(), base_instance.get());
     return;
   }

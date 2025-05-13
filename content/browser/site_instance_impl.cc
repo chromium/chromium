@@ -405,6 +405,11 @@ bool SiteInstanceImpl::IsSiteInDefaultSiteInstance(const GURL& site_url) const {
   return default_site_instance_state_->ContainsSite(site_url);
 }
 
+SiteInstanceGroup*
+SiteInstanceImpl::DefaultSiteInstanceGroupForBrowsingInstance() const {
+  return browsing_instance()->default_site_instance_group();
+}
+
 // static
 BrowsingInstanceId SiteInstanceImpl::NextBrowsingInstanceId() {
   return BrowsingInstance::NextBrowsingInstanceId();
@@ -679,7 +684,7 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
 void SiteInstanceImpl::ConvertToDefaultOrSetSite(const UrlInfo& url_info) {
   DCHECK(!has_site_);
 
-  if (!browsing_instance_->HasDefaultSiteInstance()) {
+  if (!browsing_instance_->has_default_site_instance()) {
     // We want to set a SiteInfo in this SiteInstance, from information in a
     // UrlInfo. The WebExposedIsolationInfo must be compatible for this function
     // to not violate WebExposedIsolationInfo isolation invariant within a
@@ -700,7 +705,7 @@ void SiteInstanceImpl::ConvertToDefaultOrSetSite(const UrlInfo& url_info) {
       SetSiteInfoToDefault(site_info.storage_partition_config());
       AddSiteInfoToDefault(site_info);
 
-      DCHECK(browsing_instance_->HasDefaultSiteInstance());
+      DCHECK(browsing_instance_->has_default_site_instance());
       return;
     }
   }

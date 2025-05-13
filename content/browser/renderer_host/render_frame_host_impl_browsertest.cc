@@ -1870,14 +1870,14 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
   EXPECT_EQ(main_frame, child->GetBeforeUnloadInitiator());
   EXPECT_EQ(main_frame, main_frame->GetBeforeUnloadInitiator());
 
-  // When in a strict SiteInstances mode, LoadURL() should trigger two
-  // beforeunload IPCs for subframe and the main frame: the subframe has a
-  // beforeunload handler, and while the main frame does not, we always send the
-  // IPC to navigating frames, regardless of whether or not they have a handler.
+  // With full site isolation, LoadURL() should trigger two beforeunload IPCs
+  // for subframe and the main frame: the subframe has a beforeunload handler,
+  // and while the main frame does not, we always send the IPC to navigating
+  // frames, regardless of whether or not they have a handler.
   //
-  // Without strict SiteInstances, only one beforeunload IPC should be sent to
+  // Without full site isolation, only one beforeunload IPC should be sent to
   // the main frame, which will handle both (same-process) frames.
-  EXPECT_EQ(AreStrictSiteInstancesEnabled() ? 2u : 1u,
+  EXPECT_EQ(AreAllSitesIsolatedForTesting() ? 2u : 1u,
             main_frame->beforeunload_pending_replies_.size());
 
   // Wait for the beforeunload dialog to be shown from the subframe.
@@ -1890,12 +1890,12 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
   EXPECT_TRUE(main_frame->is_waiting_for_beforeunload_completion());
   EXPECT_FALSE(child->is_waiting_for_beforeunload_completion());
 
-  // In a strict SiteInstances mode, the beforeunload completion callback should
-  // happen on the child RFH.  Without strict SiteInstances, it will come from
-  // the main frame RFH, which processes beforeunload for both main frame and
-  // child frame, since they are in the same process and SiteInstance.
+  // With full site isolation, the beforeunload completion callback should
+  // happen on the child RFH. Without full site isolation, it will come from the
+  // main frame RFH, which processes beforeunload for both main frame and child
+  // frame, since they are in the same process and SiteInstance.
   RenderFrameHostImpl* frame_that_sent_beforeunload_ipc =
-      AreStrictSiteInstancesEnabled() ? child : main_frame;
+      AreAllSitesIsolatedForTesting() ? child : main_frame;
   EXPECT_TRUE(main_frame->beforeunload_pending_replies_.count(
       frame_that_sent_beforeunload_ipc));
 

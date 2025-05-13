@@ -17,6 +17,7 @@
 #include "content/browser/isolation_context.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -220,8 +221,25 @@ class CONTENT_EXPORT BrowsingInstance final
   void IncrementActiveContentsCount();
   void DecrementActiveContentsCount();
 
-  bool HasDefaultSiteInstance() const {
+  SiteInstanceImpl* default_site_instance() {
+    DCHECK(!ShouldUseDefaultSiteInstanceGroup());
+    return default_site_instance_;
+  }
+  SiteInstanceGroup* default_site_instance_group() {
+    DCHECK(ShouldUseDefaultSiteInstanceGroup());
+    return default_site_instance_group_.get();
+  }
+  bool has_default_site_instance() const {
+    DCHECK(!ShouldUseDefaultSiteInstanceGroup());
     return default_site_instance_ != nullptr;
+  }
+  bool has_default_site_instance_group() const {
+    DCHECK(ShouldUseDefaultSiteInstanceGroup());
+    return default_site_instance_group_ != nullptr;
+  }
+  void set_default_site_instance_group(base::WeakPtr<SiteInstanceGroup> group) {
+    DCHECK(ShouldUseDefaultSiteInstanceGroup());
+    default_site_instance_group_ = group;
   }
 
   // Helper function used by other methods in this class to ensure consistent
@@ -246,8 +264,6 @@ class CONTENT_EXPORT BrowsingInstance final
   const WebExposedIsolationInfo& web_exposed_isolation_info() const {
     return web_exposed_isolation_info_;
   }
-
-  SiteInstanceImpl* default_site_instance() { return default_site_instance_; }
 
   size_t active_contents_count() { return active_contents_count_; }
 
@@ -285,6 +301,15 @@ class CONTENT_EXPORT BrowsingInstance final
   // heuristic that normally prevents the use of default SiteInstances for
   // cross-origin isolated pages.
   raw_ptr<SiteInstanceImpl> default_site_instance_;
+
+  // SiteInstanceGroup to be used for sites that do not require a dedicated
+  // process. Each site will have its own SiteInstance, but they will share a
+  // process by all being in this group.
+  // This is a WeakPtr since SiteInstanceGroup is kept alive by SiteInstances in
+  // the group that refcount it. Since this pointer exists to track a particular
+  // SiteInstanceGroup for a BrowsingInstance, `this` should not modify the
+  // lifetime of the SiteInstanceGroup.
+  base::WeakPtr<SiteInstanceGroup> default_site_instance_group_;
 
   // The cross-origin isolation status of the BrowsingInstance. This indicates
   // whether this BrowsingInstance is hosting only cross-origin isolated pages

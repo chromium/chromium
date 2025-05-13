@@ -41,6 +41,7 @@ BrowsingInstance::BrowsingInstance(
               browser_context)),
       active_contents_count_(0u),
       default_site_instance_(nullptr),
+      default_site_instance_group_(nullptr),
       web_exposed_isolation_info_(web_exposed_isolation_info),
       is_fixed_storage_partition_(is_fixed_storage_partition) {
   DCHECK(browser_context);
@@ -231,6 +232,7 @@ BrowsingInstance::~BrowsingInstance() {
   DCHECK(site_instance_map_.empty());
   DCHECK_EQ(0u, active_contents_count_);
   DCHECK(!default_site_instance_);
+  DCHECK(!default_site_instance_group_);
 
   // Remove any origin isolation opt-ins related to this instance.
   ChildProcessSecurityPolicyImpl* policy =

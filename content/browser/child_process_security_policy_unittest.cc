@@ -3294,13 +3294,19 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_UnlockedProcess) {
                        StoragePartitionConfig::CreateDefault(&context),
                        WebExposedIsolationInfo::CreateNonIsolated()));
 
-    EXPECT_TRUE(foo_instance->IsDefaultSiteInstance());
     EXPECT_TRUE(foo_instance->HasSite());
-    EXPECT_EQ(foo_instance->GetSiteInfo(),
-              SiteInfo::CreateForDefaultSiteInstance(
-                  foo_instance->GetIsolationContext(),
-                  StoragePartitionConfig::CreateDefault(&context),
-                  WebExposedIsolationInfo::CreateNonIsolated()));
+    if (ShouldUseDefaultSiteInstanceGroup()) {
+      EXPECT_EQ(foo_instance->group(),
+                foo_instance->DefaultSiteInstanceGroupForBrowsingInstance());
+      EXPECT_EQ(foo_instance->GetSiteURL(), foo_url);
+    } else {
+      EXPECT_TRUE(foo_instance->IsDefaultSiteInstance());
+      EXPECT_EQ(foo_instance->GetSiteInfo(),
+                SiteInfo::CreateForDefaultSiteInstance(
+                    foo_instance->GetIsolationContext(),
+                    StoragePartitionConfig::CreateDefault(&context),
+                    WebExposedIsolationInfo::CreateNonIsolated()));
+    }
     EXPECT_FALSE(foo_instance->RequiresDedicatedProcess());
   }
   // At this point foo_instance has gone away, and all BrowsingInstanceIDs

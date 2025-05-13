@@ -81,16 +81,16 @@ IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTest,
   EXPECT_TRUE(NavigateToURLFromRenderer(main_frame()->child_at(0), data_url));
 
   SiteInstanceGroup* root_group = main_frame_host()->GetSiteInstance()->group();
-  SiteInstanceImpl* child0_instance = main_frame()
-                                          ->child_at(0)
-                                          ->render_manager()
-                                          ->current_frame_host()
-                                          ->GetSiteInstance();
-  SiteInstanceImpl* child1_instance = main_frame()
-                                          ->child_at(1)
-                                          ->render_manager()
-                                          ->current_frame_host()
-                                          ->GetSiteInstance();
+  scoped_refptr<SiteInstanceImpl> child0_instance = main_frame()
+                                                        ->child_at(0)
+                                                        ->render_manager()
+                                                        ->current_frame_host()
+                                                        ->GetSiteInstance();
+  scoped_refptr<SiteInstanceImpl> child1_instance = main_frame()
+                                                        ->child_at(1)
+                                                        ->render_manager()
+                                                        ->current_frame_host()
+                                                        ->GetSiteInstance();
 
   // In both parameterization modes, the root is cross-site from the subframes
   // and should not share a process or SiteInstanceGroup.
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTest,
     ASSERT_TRUE(WaitForLoadStop(web_contents()));
   }
   FrameTreeNode* child0 = main_frame()->child_at(0);
-  SiteInstanceImpl* child0_instance =
+  scoped_refptr<SiteInstanceImpl> child0_instance =
       child0->current_frame_host()->GetSiteInstance();
   EXPECT_TRUE(child0_instance->GetSiteInfo().is_sandboxed());
 
@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTest,
     ASSERT_TRUE(WaitForLoadStop(web_contents()));
   }
   FrameTreeNode* child1 = main_frame()->child_at(1);
-  SiteInstanceImpl* child1_instance =
+  scoped_refptr<SiteInstanceImpl> child1_instance =
       child1->current_frame_host()->GetSiteInstance();
   EXPECT_FALSE(child1_instance->GetSiteInfo().is_sandboxed());
   EXPECT_NE(child0_instance, child1_instance);
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTest,
     ASSERT_TRUE(WaitForLoadStop(web_contents()));
   }
   FrameTreeNode* data = child1->child_at(0);
-  SiteInstanceImpl* data_instance =
+  scoped_refptr<SiteInstanceImpl> data_instance =
       data->current_frame_host()->GetSiteInstance();
 
   // The last committed URL is the data: URL, but because sandboxed data frames
@@ -288,9 +288,10 @@ IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTest,
     ASSERT_TRUE(WaitForLoadStop(web_contents()));
   }
 
-  SiteInstanceImpl* main_instance = main_frame_host()->GetSiteInstance();
+  scoped_refptr<SiteInstanceImpl> main_instance =
+      main_frame_host()->GetSiteInstance();
   FrameTreeNode* data = main_frame()->child_at(0);
-  SiteInstanceImpl* data_instance =
+  scoped_refptr<SiteInstanceImpl> data_instance =
       data->current_frame_host()->GetSiteInstance();
   EXPECT_NE(main_instance, data_instance);
 
@@ -345,10 +346,10 @@ IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTest, ParentNavigatesSubframes) {
   }
 
   FrameTreeNode* child0 = main_frame()->child_at(0);
-  SiteInstanceImpl* child0_instance =
+  scoped_refptr<SiteInstanceImpl> child0_instance =
       child0->current_frame_host()->GetSiteInstance();
   FrameTreeNode* child1 = main_frame()->child_at(1);
-  SiteInstanceImpl* child1_instance =
+  scoped_refptr<SiteInstanceImpl> child1_instance =
       child1->current_frame_host()->GetSiteInstance();
 
   if (ShouldCreateSiteInstanceForDataUrls()) {
@@ -398,10 +399,11 @@ IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTestWithoutSiteIsolation,
     ASSERT_TRUE(WaitForLoadStop(web_contents()));
     EXPECT_EQ(data_url, observer.last_navigation_url());
   }
-  SiteInstanceImpl* a_instance = main_frame_host()->GetSiteInstance();
+  scoped_refptr<SiteInstanceImpl> a_instance =
+      main_frame_host()->GetSiteInstance();
 
   FrameTreeNode* data_frame = main_frame()->child_at(0);
-  SiteInstanceImpl* data_instance =
+  scoped_refptr<SiteInstanceImpl> data_instance =
       data_frame->current_frame_host()->GetSiteInstance();
 
   if (ShouldCreateSiteInstanceForDataUrls()) {
@@ -428,7 +430,7 @@ IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTestWithoutSiteIsolation,
   }
 
   FrameTreeNode* b_frame = data_frame->child_at(0);
-  SiteInstanceImpl* b_instance =
+  scoped_refptr<SiteInstanceImpl> b_instance =
       b_frame->current_frame_host()->GetSiteInstance();
   EXPECT_NE(data_instance, b_instance);
   EXPECT_NE(data_instance->group(), b_instance->group());
@@ -460,11 +462,17 @@ IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTestWithoutSiteIsolation,
     EXPECT_EQ(data_url, observer.last_navigation_url());
   }
 
-  SiteInstanceImpl* a_instance = main_frame_host()->GetSiteInstance();
-  EXPECT_TRUE(a_instance->IsDefaultSiteInstance());
+  scoped_refptr<SiteInstanceImpl> a_instance =
+      main_frame_host()->GetSiteInstance();
+  if (ShouldUseDefaultSiteInstanceGroup()) {
+    EXPECT_EQ(a_instance->group(),
+              a_instance->DefaultSiteInstanceGroupForBrowsingInstance());
+  } else {
+    EXPECT_TRUE(a_instance->IsDefaultSiteInstance());
+  }
 
   FrameTreeNode* data_frame = main_frame()->child_at(0);
-  SiteInstanceImpl* data_instance =
+  scoped_refptr<SiteInstanceImpl> data_instance =
       data_frame->current_frame_host()->GetSiteInstance();
 
   if (ShouldCreateSiteInstanceForDataUrls()) {
