@@ -117,14 +117,18 @@ void TabStripActionContainer::TabStripNudgeAnimationSession::Start() {
 }
 
 void TabStripActionContainer::TabStripNudgeAnimationSession::
-    ResetAnimationForTesting(double value) {
+    ResetExpansionAnimationForTesting(double value) {
+  expansion_animation_.Reset(value);
+}
+
+void TabStripActionContainer::TabStripNudgeAnimationSession::
+    ResetOpacityAnimationForTesting(double value) {
   if (is_opacity_animated_) {
     if (opacity_animation_delay_timer_.IsRunning()) {
       opacity_animation_delay_timer_.FireNow();
     }
   }
 
-  expansion_animation_.Reset(value);
   if (is_opacity_animated_) {
     opacity_animation_.Reset(value);
   }
@@ -205,7 +209,10 @@ void TabStripActionContainer::TabStripNudgeAnimationSession::MarkAnimationDone(
     opacity_animation_done_ = true;
   }
 
-  if (expansion_animation_done_ && opacity_animation_done_) {
+  const bool opacity_animation_not_running =
+      opacity_animation_done_ || !is_opacity_animated_;
+
+  if (expansion_animation_done_ && opacity_animation_not_running) {
     if (on_animation_ended_) {
       std::move(on_animation_ended_).Run();
     }

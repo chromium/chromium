@@ -192,7 +192,12 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
     if (tab_strip_action_container()->animation_session_for_testing()) {
       tab_strip_action_container()
           ->animation_session_for_testing()
-          ->ResetAnimationForTesting(value);
+          ->ResetOpacityAnimationForTesting(value);
+      if (tab_strip_action_container()->animation_session_for_testing()) {
+        tab_strip_action_container()
+            ->animation_session_for_testing()
+            ->ResetExpansionAnimationForTesting(value);
+      }
     }
   }
 
