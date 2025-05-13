@@ -157,14 +157,20 @@ public final class PointerLockEventHelper {
             return event;
         }
 
-        // TODO(https://crbug.com/415730915): Cache the input device resolution
-        InputDevice inputDevice = InputDevice.getDevice(event.getDeviceId());
         // Resolution is how many pixels per millimeters on the trackpad
         float xAxisResolution = 1;
         float yAxisResolution = 1;
-        if (inputDevice != null) {
-            xAxisResolution = inputDevice.getMotionRange(MotionEvent.AXIS_X).getResolution();
-            yAxisResolution = inputDevice.getMotionRange(MotionEvent.AXIS_Y).getResolution();
+
+        InputDevice.MotionRange xAxisMotionRange =
+                DeviceInput.getTouchpadXAxisMotionRange(event.getDeviceId());
+        InputDevice.MotionRange yAxisMotionRange =
+                DeviceInput.getTouchpadYAxisMotionRange(event.getDeviceId());
+
+        if (xAxisMotionRange != null) {
+            xAxisResolution = xAxisMotionRange.getResolution();
+        }
+        if (yAxisMotionRange != null) {
+            yAxisResolution = yAxisMotionRange.getResolution();
         }
 
         // TODO(https://crbug.com/415730929): inverse scrolling is not respected, doesn't seem that

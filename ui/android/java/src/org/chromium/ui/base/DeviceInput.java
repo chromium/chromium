@@ -6,12 +6,14 @@ package org.chromium.ui.base;
 
 import static android.view.InputDevice.KEYBOARD_TYPE_ALPHABETIC;
 import static android.view.InputDevice.SOURCE_MOUSE;
+import static android.view.InputDevice.SOURCE_TOUCHPAD;
 
 import android.content.Context;
 import android.hardware.input.InputManager;
 import android.hardware.input.InputManager.InputDeviceListener;
 import android.util.SparseArray;
 import android.view.InputDevice;
+import android.view.MotionEvent;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -128,6 +130,34 @@ public class DeviceInput implements InputDeviceListener {
         return false;
     }
 
+    /**
+     * @return the Touchpad MotionRange of AXIS_X for the provided {@param deviceId}, or null if the
+     *     device is not found or the device doesn't support touchpad source
+     */
+    public static InputDevice.@Nullable MotionRange getTouchpadXAxisMotionRange(int deviceId) {
+        ThreadUtils.assertOnUiThread();
+        DeviceSnapshot snapshot = getInstance().mDeviceSnapshotsById.get(deviceId);
+        if (snapshot != null) {
+            return snapshot.touchpadXAxisMotionRange;
+        }
+
+        return null;
+    }
+
+    /**
+     * @return the Touchpad MotionRange of AXIS_Y for the provided {@param deviceId}, or null if the
+     *     device is not found or the device doesn't support touchpad source
+     */
+    public static InputDevice.@Nullable MotionRange getTouchpadYAxisMotionRange(int deviceId) {
+        ThreadUtils.assertOnUiThread();
+        DeviceSnapshot snapshot = getInstance().mDeviceSnapshotsById.get(deviceId);
+        if (snapshot != null) {
+            return snapshot.touchpadYAxisMotionRange;
+        }
+
+        return null;
+    }
+
     @Override
     public void onInputDeviceAdded(int deviceId) {
         ThreadUtils.assertOnUiThread();
@@ -167,11 +197,22 @@ public class DeviceInput implements InputDeviceListener {
          */
         public final boolean supportsPrecisionPointer;
 
+        /** The MotionRange of AXIS_X for the Touchpad source */
+        public final InputDevice.MotionRange touchpadXAxisMotionRange;
+
+        /** The MotionRange of AXIS_Y for the Touchpad source */
+        public final InputDevice.MotionRange touchpadYAxisMotionRange;
+
         /** See {@link #from(InputDevice)}. */
         private DeviceSnapshot(
-                boolean supportsAlphabeticKeyboard, boolean supportsPrecisionPointer) {
+                boolean supportsAlphabeticKeyboard,
+                boolean supportsPrecisionPointer,
+                InputDevice.MotionRange touchpadXAxisMotionRange,
+                InputDevice.MotionRange touchpadYAxisMotionRange) {
             this.supportsAlphabeticKeyboard = supportsAlphabeticKeyboard;
             this.supportsPrecisionPointer = supportsPrecisionPointer;
+            this.touchpadXAxisMotionRange = touchpadXAxisMotionRange;
+            this.touchpadYAxisMotionRange = touchpadYAxisMotionRange;
         }
 
         /**
@@ -184,7 +225,9 @@ public class DeviceInput implements InputDeviceListener {
                             && device.getKeyboardType() == KEYBOARD_TYPE_ALPHABETIC,
                     // SOURCE_MOUSE applies to pointer devices, including mouse and touchpad
                     /* supportsPrecisionPointer= */ isPhysical
-                            && device.supportsSource(SOURCE_MOUSE));
+                            && device.supportsSource(SOURCE_MOUSE),
+                    device.getMotionRange(MotionEvent.AXIS_X, SOURCE_TOUCHPAD),
+                    device.getMotionRange(MotionEvent.AXIS_Y, SOURCE_TOUCHPAD));
         }
     }
 }
