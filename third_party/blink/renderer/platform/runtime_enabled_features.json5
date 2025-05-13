@@ -4644,9 +4644,9 @@
       status: "stable",
     },
     {
-      // crbug.com/341564372
+      // crbug.com/414858401
       name: "TextareaLineEndingsAsBr",
-      status: "experimental",
+      status: "stable",
       depends_on: ["EditingFastRichReplace"],
     },
     {
