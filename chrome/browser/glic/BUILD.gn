@@ -301,6 +301,7 @@ source_set("browser_tests") {
     "glic_user_status_browsertest.cc",
     "host/context/glic_page_context_eligibility_observer_browsertest.cc",
     "host/guest_util_browsertest.cc",
+    "widget/application_hotkey_delegate_browsertest.cc",
   ]
   deps = [
     ":glic",

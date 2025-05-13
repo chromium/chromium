@@ -119,10 +119,10 @@ bool ApplicationHotkeyDelegate::AcceleratorPressed(
 
 std::unique_ptr<LocalHotkeyManager> MakeApplicationHotkeyManager(
     base::WeakPtr<GlicWindowController> window_controller) {
-  auto application_hotkey_delegate = std::make_unique<LocalHotkeyManager>(
+  auto hotkey_manager = std::make_unique<LocalHotkeyManager>(
       window_controller,
       std::make_unique<ApplicationHotkeyDelegate>(window_controller));
-  application_hotkey_delegate->InitializeAccelerators();
-  return application_hotkey_delegate;
+  hotkey_manager->InitializeAccelerators();
+  return hotkey_manager;
 }
 }  // namespace glic
