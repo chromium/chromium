@@ -68,7 +68,6 @@ OmniboxControllerIOS::~OmniboxControllerIOS() = default;
 void OmniboxControllerIOS::StartAutocomplete(
     const AutocompleteInput& input) const {
   TRACE_EVENT0("omnibox", "OmniboxControllerIOS::StartAutocomplete");
-  ClearPopupKeywordMode();
 
   // We don't explicitly clear OmniboxPopupModel::manually_selected_match, as
   // Start ends up invoking OmniboxPopupModel::OnResultChanged which clears it.
@@ -114,10 +113,10 @@ void OmniboxControllerIOS::OnResultChanged(AutocompleteController* controller,
       edit_model_->OnCurrentMatchChanged();
     } else {
       edit_model_->OnPopupResultChanged();
-      edit_model_->OnPopupDataChanged(
-          std::u16string(),
-          /*is_temporary_text=*/false, std::u16string(), std::u16string(),
-          std::u16string(), false, std::u16string(), AutocompleteMatch());
+      edit_model_->OnPopupDataChanged(std::u16string(),
+                                      /*is_temporary_text=*/false,
+                                      std::u16string(), std::u16string(),
+                                      AutocompleteMatch());
     }
   } else {
     edit_model_->OnPopupResultChanged();
@@ -151,35 +150,10 @@ void OmniboxControllerIOS::OnResultChanged(AutocompleteController* controller,
                            /*on_bitmap_fetched=*/base::DoNothing());
 }
 
-void OmniboxControllerIOS::ClearPopupKeywordMode() const {
-  TRACE_EVENT0("omnibox", "OmniboxControllerIOS::ClearPopupKeywordMode");
-  if (edit_model_->PopupIsOpen()) {
-    OmniboxPopupSelection selection = edit_model_->GetPopupSelection();
-    if (selection.state == OmniboxPopupSelection::KEYWORD_MODE) {
-      selection.state = OmniboxPopupSelection::NORMAL;
-      edit_model_->SetPopupSelection(selection);
-    }
-  }
-}
-
 std::u16string OmniboxControllerIOS::GetHeaderForSuggestionGroup(
     omnibox::GroupId suggestion_group_id) const {
   return autocomplete_controller_->result().GetHeaderForSuggestionGroup(
       suggestion_group_id);
-}
-
-bool OmniboxControllerIOS::IsSuggestionHidden(
-    const AutocompleteMatch& match) const {
-  if (OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
-      match.from_keyword) {
-    const TemplateURL* turl =
-        match.GetTemplateURL(client_->GetTemplateURLService(), false);
-    if (turl &&
-        turl->starter_pack_id() == TemplateURLStarterPackData::kGemini) {
-      return true;
-    }
-  }
-  return false;
 }
 
 bool OmniboxControllerIOS::IsSuggestionGroupHidden(

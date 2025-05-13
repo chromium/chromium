@@ -57,14 +57,13 @@ class OmniboxViewIOS : public OmniboxViewBase {
       const std::u16string& user_text,
       const std::u16string& inline_autocompletion) override;
   void OnBeforePossibleChange() override;
-  bool OnAfterPossibleChange(bool allow_keyword_ui_change) override;
+  bool OnAfterPossibleChange() override;
   bool IsImeComposing() const override;
   bool IsIndicatingQueryRefinement() const override;
   void SetAdditionalText(const std::u16string& text) override;
 
   // OmniboxView stubs.
   void Update() override {}
-  void EnterKeywordModeForDefaultSearchProvider() override {}
   bool IsSelectAll() const override;
   void GetSelectionBounds(std::u16string::size_type* start,
                           std::u16string::size_type* end) const override;

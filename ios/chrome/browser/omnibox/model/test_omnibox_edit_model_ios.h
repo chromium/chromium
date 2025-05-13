@@ -31,9 +31,6 @@ class TestOmniboxEditModelIOS : public OmniboxEditModelIOS {
   void OnPopupDataChanged(const std::u16string& temporary_text,
                           bool is_temporary_text,
                           const std::u16string& inline_autocompletion,
-                          const std::u16string& keyword,
-                          const std::u16string& keyword_placeholder,
-                          bool is_keyword_hint,
                           const std::u16string& additional_text,
                           const AutocompleteMatch& match) override;
 

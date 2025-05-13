@@ -16,8 +16,6 @@ OmniboxViewBase::State TestOmniboxViewBase::CreateState(std::string text,
                                                         size_t sel_end) {
   OmniboxViewBase::State state;
   state.text = base::UTF8ToUTF16(text);
-  state.keyword = std::u16string();
-  state.is_keyword_selected = false;
   state.sel_start = sel_start;
   state.sel_end = sel_end;
   return state;
@@ -89,7 +87,7 @@ void TestOmniboxViewBase::OnRevertTemporaryText(
   selection_ = saved_temporary_selection_;
 }
 
-bool TestOmniboxViewBase::OnAfterPossibleChange(bool allow_keyword_ui_change) {
+bool TestOmniboxViewBase::OnAfterPossibleChange() {
   return false;
 }
 

@@ -38,7 +38,6 @@ class TestOmniboxViewBase : public OmniboxViewBase {
                                 bool notify_text_changed) override;
   void SetCaretPos(size_t caret_pos) override {}
   void SetAdditionalText(const std::u16string& text) override {}
-  void EnterKeywordModeForDefaultSearchProvider() override {}
   bool IsSelectAll() const override;
   void GetSelectionBounds(size_t* start, size_t* end) const override;
   void SelectAll(bool reversed) override;
@@ -56,7 +55,7 @@ class TestOmniboxViewBase : public OmniboxViewBase {
   void OnRevertTemporaryText(const std::u16string& display_text,
                              const AutocompleteMatch& match) override;
   void OnBeforePossibleChange() override {}
-  bool OnAfterPossibleChange(bool allow_keyword_ui_change) override;
+  bool OnAfterPossibleChange() override;
   gfx::NativeView GetNativeView() const override;
   gfx::NativeView GetRelativeWindowForPopup() const override;
   bool IsImeComposing() const override;

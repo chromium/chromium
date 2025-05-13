@@ -78,8 +78,6 @@
 #import "url/third_party/mozilla/url_parse.h"
 #import "url/url_util.h"
 
-constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
-
 using bookmarks::BookmarkModel;
 using metrics::OmniboxEventProto;
 using omnibox::mojom::NavigationPredictor;
@@ -106,57 +104,6 @@ enum class OmniboxEscapeAction {
 
 const char kOmniboxFocusResultedInNavigation[] =
     "Omnibox.FocusResultedInNavigation";
-
-// Histogram name which counts the number of times the user enters
-// keyword hint mode and via what method.  The possible values are listed
-// in the metrics OmniboxEnteredKeywordMode2 enum which is defined in metrics
-// enum XML file.
-const char kEnteredKeywordModeHistogram[] = "Omnibox.EnteredKeywordMode2";
-
-// Histogram name which counts the number of times the user completes a search
-// in keyword mode, enumerated by how they enter keyword mode.
-const char kAcceptedKeywordSuggestionHistogram[] =
-    "Omnibox.AcceptedKeywordSuggestion";
-
-// Histogram name which counts the number of times the user enters the keyword
-// mode, enumerated by the type of search engine.
-const char kKeywordModeUsageByEngineTypeEnteredHistogramName[] =
-    "Omnibox.KeywordModeUsageByEngineType.Entered";
-
-// Histogram name which counts the number of times the user completes a search
-// in keyword mode, enumerated by the type of search engine.
-const char kKeywordModeUsageByEngineTypeAcceptedHistogramName[] =
-    "Omnibox.KeywordModeUsageByEngineType.Accepted";
-
-void EmitEnteredKeywordModeHistogram(
-    OmniboxEventProto::KeywordModeEntryMethod entry_method,
-    const TemplateURL* turl) {
-  UMA_HISTOGRAM_ENUMERATION(
-      kEnteredKeywordModeHistogram, static_cast<int>(entry_method),
-      static_cast<int>(OmniboxEventProto::KeywordModeEntryMethod_MAX + 1));
-
-  if (turl != nullptr) {
-    base::UmaHistogramEnumeration(
-        kKeywordModeUsageByEngineTypeEnteredHistogramName,
-        turl->GetBuiltinEngineType(),
-        BuiltinEngineType::KEYWORD_MODE_ENGINE_TYPE_MAX);
-  }
-}
-
-void EmitAcceptedKeywordSuggestionHistogram(
-    OmniboxEventProto::KeywordModeEntryMethod entry_method,
-    const TemplateURL* turl) {
-  UMA_HISTOGRAM_ENUMERATION(
-      kAcceptedKeywordSuggestionHistogram, static_cast<int>(entry_method),
-      static_cast<int>(OmniboxEventProto::KeywordModeEntryMethod_MAX + 1));
-
-  if (turl != nullptr) {
-    base::UmaHistogramEnumeration(
-        kKeywordModeUsageByEngineTypeAcceptedHistogramName,
-        turl->GetBuiltinEngineType(),
-        BuiltinEngineType::KEYWORD_MODE_ENGINE_TYPE_MAX);
-  }
-}
 
 // `executed_selection` indicates which OmniboxAction within `result`
 // was executed, and leaving this parameter as the default indicates
@@ -319,11 +266,8 @@ OmniboxEditModelIOS::OmniboxEditModelIOS(OmniboxControllerIOS* controller,
       has_temporary_text_(false),
       paste_state_(NONE),
       control_key_state_(UP),
-      is_keyword_hint_(false),
-      keyword_mode_entry_method_(OmniboxEventProto::INVALID),
       in_revert_(false),
-      close_lens_(false),
-      allow_exact_keyword_match_(false) {}
+      close_lens_(false) {}
 
 OmniboxEditModelIOS::~OmniboxEditModelIOS() = default;
 
@@ -387,14 +331,6 @@ std::u16string OmniboxEditModelIOS::GetPermanentDisplayText() const {
 
 void OmniboxEditModelIOS::SetUserText(const std::u16string& text) {
   SetInputInProgress(true);
-  MaybeCloseLens();
-  keyword_.clear();
-  keyword_placeholder_.clear();
-  is_keyword_hint_ = false;
-  keyword_mode_entry_method_ = OmniboxEventProto::INVALID;
-  if (view_) {
-    view_->OnKeywordPlaceholderTextChange();
-  }
   InternalSetUserText(text);
   GetInfoForCurrentText(&current_match_, nullptr);
   paste_state_ = NONE;
@@ -499,7 +435,7 @@ void OmniboxEditModelIOS::AdjustTextForCopy(int sel_min,
   // screw up our calculation of the desired_tld.
   AutocompleteMatch match_from_text;
   controller_->client()->GetAutocompleteClassifier()->Classify(
-      *text, is_keyword_selected(), true, GetPageClassification(),
+      *text, /*is_keyword_selected=*/false, true, GetPageClassification(),
       &match_from_text, nullptr);
   if (AutocompleteMatch::IsSearchType(match_from_text.type)) {
     return;
@@ -568,14 +504,10 @@ void OmniboxEditModelIOS::UpdateInput(bool has_selected_text,
     return;
   }
 
-  if (!is_keyword_selected() && changed_to_user_input_in_progress &&
-      user_text_.empty()) {
+  if (changed_to_user_input_in_progress && user_text_.empty()) {
     // In the case the user enters user-input-in-progress mode by clearing
     // everything (i.e. via Backspace), ask for ZeroSuggestions instead of the
     // normal prefix (as-you-type) autocomplete.
-    //
-    // We also check that no keyword is selected, as otherwise that breaks
-    // entering keyword mode via Ctrl+K.
     //
     // The difference between a ZeroSuggest request and a normal
     // prefix autocomplete request is getting fuzzier, and should be fully
@@ -603,14 +535,6 @@ void OmniboxEditModelIOS::Revert() {
   input_.Clear();
   paste_state_ = NONE;
   InternalSetUserText(std::u16string());
-  MaybeCloseLens();
-  keyword_.clear();
-  keyword_placeholder_.clear();
-  is_keyword_hint_ = false;
-  keyword_mode_entry_method_ = OmniboxEventProto::INVALID;
-  if (view_) {
-    view_->OnKeywordPlaceholderTextChange();
-  }
   has_temporary_text_ = false;
   size_t start, end;
   if (view_) {
@@ -630,7 +554,7 @@ void OmniboxEditModelIOS::Revert() {
 
 void OmniboxEditModelIOS::StartAutocomplete(bool has_selected_text,
                                             bool prevent_inline_autocomplete) {
-  const std::u16string input_text = MaybePrependKeyword(user_text_);
+  const std::u16string input_text = user_text_;
 
   size_t start, cursor_position;
   // This method currently only works when there's a view, but ideally the
@@ -638,24 +562,6 @@ void OmniboxEditModelIOS::StartAutocomplete(bool has_selected_text,
   CHECK(view_);
   view_->GetSelectionBounds(&start, &cursor_position);
 
-  // For keyword searches, the text that AutocompleteInput expects is
-  // of the form "<keyword> <query>", where our query is `user_text_`.
-  // So we need to adjust the cursor position forward by the length of
-  // any keyword added by MaybePrependKeyword() above.
-  if (is_keyword_selected()) {
-    // If there is user text, the cursor is past the keyword and doesn't
-    // account for its size.  Add the keyword's size to the position passed
-    // to autocomplete.
-    if (!user_text_.empty()) {
-      cursor_position += input_text.length() - user_text_.length();
-    } else {
-      // Otherwise, cursor may point into keyword or otherwise not account
-      // for the keyword's size (depending on how this code is reached).
-      // Pass a cursor at end of input to autocomplete.  This is safe in all
-      // conditions.
-      cursor_position = input_text.length();
-    }
-  }
   input_ = AutocompleteInput(
       input_text, cursor_position, GetPageClassification(),
       controller_->client()->GetSchemeClassifier(),
@@ -668,10 +574,6 @@ void OmniboxEditModelIOS::StartAutocomplete(bool has_selected_text,
       prevent_inline_autocomplete || just_deleted_text_ ||
       (has_selected_text && inline_autocompletion_.empty()) ||
       paste_state_ != NONE);
-  input_.set_prefer_keyword(is_keyword_selected());
-  input_.set_allow_exact_keyword_match(is_keyword_selected() ||
-                                       allow_exact_keyword_match_);
-  input_.set_keyword_mode_entry_method(keyword_mode_entry_method_);
   if (std::optional<lens::proto::LensOverlaySuggestInputs> suggest_inputs =
           controller_->client()->GetLensOverlaySuggestInputs()) {
     input_.set_lens_overlay_suggest_inputs(*suggest_inputs);
@@ -722,58 +624,6 @@ void OmniboxEditModelIOS::PasteAndGo(
             match_selection_timestamp);
 }
 
-void OmniboxEditModelIOS::EnterKeywordMode(
-    OmniboxEventProto::KeywordModeEntryMethod entry_method,
-    const TemplateURL* template_url,
-    const std::u16string& placeholder_text) {
-  DCHECK(template_url);
-  controller_->StopAutocomplete(/*clear_result=*/false);
-
-  if (keyword_ != template_url->keyword()) {
-    // Note, this is not the only place that keyword mode can be entered, but
-    // it would be better to make it so than to add extra notification calls
-    // elsewhere. At present, the method is only meaningfully used for exit.
-    controller_->client()->OnKeywordModeChanged(true, template_url->keyword());
-  }
-  SetKeyword(template_url->keyword());
-  SetKeywordPlaceholder(placeholder_text);
-  is_keyword_hint_ = false;
-  keyword_mode_entry_method_ = entry_method;
-  if (view_) {
-    view_->OnKeywordPlaceholderTextChange();
-  }
-
-  std::u16string display_text =
-      user_input_in_progress_ ? GetText() : std::u16string();
-  size_t caret_pos = display_text.length();
-  if (entry_method == OmniboxEventProto::QUESTION_MARK) {
-    display_text.erase(0, 1);
-    caret_pos = 0;
-  }
-
-  InternalSetUserText(display_text);
-  if (view_) {
-    view_->SetWindowTextAndCaretPos(display_text, caret_pos, true, false);
-    if (entry_method == OmniboxEventProto::KEYBOARD_SHORTCUT) {
-      view_->SelectAll(false);
-    }
-  }
-
-  EmitEnteredKeywordModeHistogram(entry_method, template_url);
-}
-
-void OmniboxEditModelIOS::EnterKeywordModeForDefaultSearchProvider(
-    OmniboxEventProto::KeywordModeEntryMethod entry_method) {
-  if (!controller_->client()->IsDefaultSearchProviderEnabled()) {
-    return;
-  }
-  EnterKeywordMode(entry_method,
-                   controller_->client()
-                       ->GetTemplateURLService()
-                       ->GetDefaultSearchProvider(),
-                   u"");
-}
-
 void OmniboxEditModelIOS::OpenSelection(OmniboxPopupSelection selection,
                                         base::TimeTicks timestamp,
                                         WindowOpenDisposition disposition) {
@@ -781,12 +631,6 @@ void OmniboxEditModelIOS::OpenSelection(OmniboxPopupSelection selection,
   // This will usually reach `OpenMatch` indirectly.
   if (selection.line >= autocomplete_controller()->result().size()) {
     AcceptInput(disposition, timestamp);
-    return;
-  }
-
-  // The keyword mode button doesn't commit the omnibox, it's a
-  // transient UI element leading to other normal omnibox selections.
-  if (selection.state == OmniboxPopupSelection::KEYWORD_MODE) {
     return;
   }
 
@@ -826,183 +670,12 @@ void OmniboxEditModelIOS::OpenSelection(base::TimeTicks timestamp,
   OpenSelection(popup_selection_, timestamp, disposition);
 }
 
-bool OmniboxEditModelIOS::AcceptKeyword(
-    OmniboxEventProto::KeywordModeEntryMethod entry_method) {
-  TRACE_EVENT0("omnibox", "OmniboxEditModelIOS::AcceptKeyword");
-
-  DCHECK(!keyword_.empty()) << keyword_;
-
-  controller_->StopAutocomplete(/*clear_result=*/false);
-
-  is_keyword_hint_ = false;
-  keyword_mode_entry_method_ = entry_method;
-  if (original_user_text_with_keyword_.empty()) {
-    original_user_text_with_keyword_ = user_text_;
-  }
-  user_text_ = MaybeStripKeyword(user_text_);
-
-  if (PopupIsOpen()) {
-    OmniboxPopupSelection selection = GetPopupSelection();
-    selection.state = OmniboxPopupSelection::KEYWORD_MODE;
-    SetPopupSelection(selection);
-  } else {
-    StartAutocomplete(false, true);
-  }
-
-  // When user text is empty (the user hasn't typed anything beyond the
-  // keyword), the new text to show is whatever the newly-selected match in the
-  // dropdown is.  When user text is not empty, however, we should make sure to
-  // use the actual `user_text_` as the basis for the new text.  This ensures
-  // that if the user types "<keyword><space>" and the default match would have
-  // inline autocompleted a further string (e.g. because there's a past
-  // multi-word search beginning with this keyword), the inline autocompletion
-  // doesn't get filled in as the keyword search query text.
-  //
-  // We also treat tabbing into keyword mode like tabbing through the popup in
-  // that we set `has_temporary_text_`, whereas pressing space is treated like
-  // a new keystroke that changes the current match instead of overlaying it
-  // with a temporary one.  This is important because rerunning autocomplete
-  // after the user pressed space, which will have happened just before reaching
-  // here, may have generated a new match, which the user won't actually see and
-  // which we don't want to switch back to when exiting keyword mode; see
-  // comments in ClearKeyword().
-
-  if (view_) {
-    view_->OnTemporaryTextMaybeChanged(user_text_, {}, !has_temporary_text_,
-                                       true);
-    if (!user_text_.empty()) {
-      view_->UpdatePopup();
-    }
-  }
-
-  base::RecordAction(base::UserMetricsAction("AcceptedKeywordHint"));
-  const TemplateURL* turl =
-      controller_->client()->GetTemplateURLService()->GetTemplateURLForKeyword(
-          keyword_);
-  EmitEnteredKeywordModeHistogram(entry_method, turl);
-  return true;
-}
-
 void OmniboxEditModelIOS::AcceptTemporaryTextAsUserText() {
   InternalSetUserText(GetText());
   has_temporary_text_ = false;
 
   if (user_input_in_progress_ || !in_revert_) {
     controller_->client()->OnInputStateChanged();
-  }
-}
-
-void OmniboxEditModelIOS::ClearKeyword() {
-  if (!is_keyword_selected() || !view_) {
-    return;
-  }
-
-  TRACE_EVENT0("omnibox", "OmniboxEditModelIOS::ClearKeyword");
-  controller_->StopAutocomplete(/*clear_result=*/false);
-
-  // While we're always in keyword mode upon reaching here, sometimes we've just
-  // toggled in via space or tab, and sometimes we're on a non-toggled line
-  // (usually because the user has typed a search string).  Keep track of the
-  // difference, as we'll need it below. `popup_view_` may be nullptr in tests.
-  bool was_toggled_into_keyword_mode =
-      popup_view_ &&
-      GetPopupSelection().state == OmniboxPopupSelection::KEYWORD_MODE;
-
-  bool entry_by_tab = keyword_mode_entry_method_ == OmniboxEventProto::TAB;
-
-  controller_->ClearPopupKeywordMode();
-  MaybeCloseLens();
-
-  // There are several possible states we could have been in before the user hit
-  // backspace or shift-tab to enter this function:
-  // (1) was_toggled_into_keyword_mode == false, entry_by_tab == false
-  //     The user typed a further key after being in keyword mode already, e.g.
-  //     "google.com f".
-  // (2) was_toggled_into_keyword_mode == false, entry_by_tab == true
-  //     The user tabbed away from a dropdown entry in keyword mode, then tabbed
-  //     back to it, e.g. "google.com f<tab><shift-tab>".
-  // (3) was_toggled_into_keyword_mode == true, entry_by_tab == false
-  //     The user had just typed space to enter keyword mode, e.g.
-  //     "google.com ".
-  // (4) was_toggled_into_keyword_mode == true, entry_by_tab == true
-  //     The user had just typed tab to enter keyword mode, e.g.
-  //     "google.com<tab>".
-  //
-  // For states 1-3, we can safely handle the exit from keyword mode by using
-  // OnBefore/AfterPossibleChange() to do a complete state update of all
-  // objects.  However, with state 4, if we do this, and if the user had tabbed
-  // into keyword mode on a line in the middle of the dropdown instead of the
-  // first line, then the state update will rerun autocompletion and reset the
-  // whole dropdown, and end up with the first line selected instead, instead of
-  // just "undoing" the keyword mode entry on the non-first line.  So in this
-  // case we simply reset `is_keyword_hint_` to true and update the window text.
-  //
-  // You might wonder why we don't simply do this in all cases.  In states 1-2,
-  // getting out of keyword mode likely shouldn't put us in keyword hint mode;
-  // if the user typed "google.com f" and then put the cursor before 'f' and hit
-  // backspace, the resulting text would be "google.comf", which is unlikely to
-  // be a keyword.  Unconditionally putting things back in keyword hint mode is
-  // going to lead to internally inconsistent state, and possible future
-  // crashes.  State 3 is more subtle; here we need to do the full state update
-  // because before entering keyword mode to begin with, we will have re-run
-  // autocomplete in ways that can produce surprising results if we just switch
-  // back out of keyword mode.  For example, if a user has a keyword named "x",
-  // an inline-autocompletable history site "xyz.com", and a lower-ranked
-  // inline-autocompletable search "x y", then typing "x" will inline-
-  // autocomplete to "xyz.com", hitting space will toggle into keyword mode, but
-  // then hitting backspace could wind up with the default match as the "x y"
-  // search, which feels bizarre.
-  if (was_toggled_into_keyword_mode && entry_by_tab) {
-    // State 4 above.
-    is_keyword_hint_ = true;
-    keyword_mode_entry_method_ = OmniboxEventProto::INVALID;
-    const std::u16string window_text = keyword_ + view_->GetText();
-    view_->SetWindowTextAndCaretPos(window_text, keyword_.length(), false,
-                                    true);
-    // Exiting keyword mode in this case will not restore
-    // the omnibox additional text. E.g., if before entering keyword mode, the
-    // location bar displays 'google.com ` (Google)', after entering (via tab)
-    // and leaving keyword mode, it will display 'google.com' leaving keyword
-    // mode, it will only display 'Google.com'.
-  } else {
-    // States 1-3 above.
-    view_->OnBeforePossibleChange();
-    // Add a space after the keyword to allow the user to continue typing
-    // without re-enabling keyword mode.  The common case is state 3, where
-    // the user entered keyword mode unintentionally, so backspacing
-    // immediately out of keyword mode should keep the space.  In states 1 and
-    // 2, having the space is "safer" behavior.  For instance, if the user types
-    // "google.com f" or "google.com<tab>f" in the omnibox, moves the cursor to
-    // the left, and presses backspace to leave keyword mode (state 1), it's
-    // better to have the space because it may be what the user wanted.  The
-    // user can easily delete it.  On the other hand, if there is no space and
-    // the user wants it, it's more work to add because typing the space will
-    // enter keyword mode, which then the user would have to leave again.
-
-    // If we entered keyword mode in a special way like using a keyboard
-    // shortcut or typing a question mark in a blank omnibox, don't restore the
-    // keyword.  Instead, restore the question mark iff the user originally
-    // typed one.
-    std::u16string prefix;
-    if (keyword_mode_entry_method_ == OmniboxEventProto::QUESTION_MARK) {
-      prefix = u"?";
-    } else if (keyword_mode_entry_method_ !=
-               OmniboxEventProto::KEYBOARD_SHORTCUT) {
-      prefix = keyword_ + u" ";
-    }
-
-    keyword_.clear();
-    keyword_placeholder_.clear();
-    is_keyword_hint_ = false;
-    keyword_mode_entry_method_ = OmniboxEventProto::INVALID;
-    if (view_) {
-      view_->OnKeywordPlaceholderTextChange();
-    }
-
-    view_->SetWindowTextAndCaretPos(prefix + view_->GetText(), prefix.length(),
-                                    false, false);
-
-    view_->OnAfterPossibleChange(false);
   }
 }
 
@@ -1206,63 +879,6 @@ void OmniboxEditModelIOS::OnTabPressed(bool shift) {
                      OmniboxPopupSelection::kStateOrLine);
 }
 
-bool OmniboxEditModelIOS::OnSpacePressed() {
-  if (!kIsDesktop) {
-    return false;
-  }
-  if (!GetPrefService()->GetBoolean(omnibox::kKeywordSpaceTriggeringEnabled)) {
-    return false;
-  }
-  if (!is_keyword_hint_ && keyword_.empty() &&
-      input_.cursor_position() == input_.text().length()) {
-    // Keywords can now be accessed anywhere in the match list. If one is
-    // found on an instant keyword match, select and accept it.
-    const AutocompleteResult& result = autocomplete_controller()->result();
-    for (size_t i = 0; i < result.size(); i++) {
-      const AutocompleteMatch& match = result.match_at(i);
-      if (input_.text() == match.keyword &&
-          match.HasInstantKeyword(
-              controller_->client()->GetTemplateURLService())) {
-        SetPopupSelection(OmniboxPopupSelection(i));
-        AcceptKeyword(metrics::OmniboxEventProto::SPACE_AT_END);
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
-bool OmniboxEditModelIOS::MaybeAccelerateKeywordSelection(
-    std::u16string_view input_text,
-    char16_t ch) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // Only check for acceleration when the current input text is "@" exactly.
-  if (AutocompleteInput::GetFeaturedKeywordMode(input_text) !=
-          AutocompleteInput::FeaturedKeywordMode::kExact ||
-      !history_embeddings::GetFeatureParameters().at_keyword_acceleration) {
-    return false;
-  }
-  TemplateURLService* turl_service =
-      controller_->client()->GetTemplateURLService();
-  const AutocompleteResult& result = autocomplete_controller()->result();
-  for (size_t i = 0; i < result.size(); i++) {
-    const AutocompleteMatch& match = result.match_at(i);
-    //  TODO(crbug.com/332783748): If this gets used in practice, a more general
-    //  matching mechanism would be needed to handle keywords with a
-    //  prefix in common. This is simple for the prototype where all
-    //  first characters are unique.
-    if (match.HasInstantKeyword(turl_service) && match.keyword.size() > 1 &&
-        match.keyword[1] == ch) {
-      SetPopupSelection(OmniboxPopupSelection(i), true, true);
-      // TODO(crbug.com/332783748): Use a different entry method.
-      AcceptKeyword(metrics::OmniboxEventProto::TAB);
-      return true;
-    }
-  }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  return false;
-}
-
 void OmniboxEditModelIOS::OnNavigationLikely(
     size_t line,
     NavigationPredictor navigation_predictor) {
@@ -1298,43 +914,9 @@ void OmniboxEditModelIOS::OnPopupDataChanged(
     const std::u16string& temporary_text,
     bool is_temporary_text,
     const std::u16string& inline_autocompletion,
-    const std::u16string& keyword,
-    const std::u16string& keyword_placeholder,
-    bool is_keyword_hint,
     const std::u16string& additional_text,
     const AutocompleteMatch& new_match) {
   current_match_ = new_match;
-  if (!original_user_text_with_keyword_.empty() && !is_temporary_text &&
-      (keyword.empty() || is_keyword_hint)) {
-    user_text_ = original_user_text_with_keyword_;
-    original_user_text_with_keyword_.clear();
-  }
-
-  // Update keyword/hint-related local state.
-  bool keyword_state_changed =
-      (keyword_ != keyword) ||
-      ((is_keyword_hint_ != is_keyword_hint) && !keyword.empty());
-  if (keyword_state_changed) {
-    bool keyword_was_selected = is_keyword_selected();
-    SetKeyword(keyword);
-    SetKeywordPlaceholder(keyword_placeholder);
-    is_keyword_hint_ = is_keyword_hint;
-    if (!keyword_was_selected && is_keyword_selected()) {
-      // Since we entered keyword mode, record the reason. Note that we
-      // don't do this simply because the keyword changes, since the user
-      // never left keyword mode.
-      keyword_mode_entry_method_ = OmniboxEventProto::SELECT_SUGGESTION;
-    } else if (!is_keyword_selected()) {
-      // We've left keyword mode, so align the entry method field with that.
-      keyword_mode_entry_method_ = OmniboxEventProto::INVALID;
-    }
-    if (view_) {
-      view_->OnKeywordPlaceholderTextChange();
-    }
-
-    // `is_keyword_hint_` should always be false if `keyword_` is empty.
-    DCHECK(!keyword_.empty() || !is_keyword_hint_);
-  }
 
   // Handle changes to temporary text.
   if (is_temporary_text) {
@@ -1357,10 +939,8 @@ void OmniboxEditModelIOS::OnPopupDataChanged(
     // right answer here :(
 
     if (view_) {
-      view_->OnTemporaryTextMaybeChanged(
-          MaybeStripKeyword(temporary_text), current_match_,
-          save_original_selection && original_user_text_with_keyword_.empty(),
-          true);
+      view_->OnTemporaryTextMaybeChanged(temporary_text, current_match_,
+                                         save_original_selection, true);
     }
     return;
   }
@@ -1372,42 +952,19 @@ void OmniboxEditModelIOS::OnPopupDataChanged(
 
   const std::u16string& user_text =
       user_input_in_progress_ ? user_text_ : input_.text();
-  if (keyword_state_changed && is_keyword_selected() &&
-      inline_autocompletion_.empty()) {
-    // If we reach here, the user most likely entered keyword mode by inserting
-    // a space between a keyword name and a search string (as pressing space or
-    // tab after the keyword name alone would have been be handled in
-    // MaybeAcceptKeywordBySpace() by calling AcceptKeyword(), which won't reach
-    // here).  In this case, we don't want to call
-    // OnInlineAutocompleteTextMaybeChanged() as normal, because that will
-    // correctly change the text (to the search string alone) but move the caret
-    // to the end of the string; instead we want the caret at the start of the
-    // search string since that's where it was in the original input.  So we set
-    // the text and caret position directly.
-    //
-    // It may also be possible to reach here if we're reverting from having
-    // temporary text back to a default match that's a keyword search, but in
-    // that case the RevertTemporaryTextAndPopup() call below will reset the
-    // caret or selection correctly so the caret positioning we do here won't
-    // matter.
-    if (view_) {
-      view_->SetWindowTextAndCaretPos(user_text, 0, false, true);
-    }
-  } else {
+
     if (view_) {
       view_->OnInlineAutocompleteTextMaybeChanged(user_text,
                                                   inline_autocompletion_);
       view_->SetAdditionalText(additional_text);
     }
-  }
   // We need to invoke OnChanged in case the destination url changed (as could
   // happen when control is toggled).
   OnChanged();
 }
 
 bool OmniboxEditModelIOS::OnAfterPossibleChange(
-    const OmniboxViewBase::StateChanges& state_changes,
-    bool allow_keyword_ui_change) {
+    const OmniboxViewBase::StateChanges& state_changes) {
   // Update the paste state as appropriate: if we're just finishing a paste
   // that replaced all the text, preserve that information; otherwise, if we've
   // made some other edit, clear paste tracking.
@@ -1439,76 +996,18 @@ bool OmniboxEditModelIOS::OnAfterPossibleChange(
   // inline autocompletion, which results in a user text change.
   if (!state_changes.text_differs &&
       (!state_changes.selection_differs || inline_autocompletion_.empty())) {
-    if (state_changes.keyword_differs && view_) {
-      // We won't need the below logic for creating a keyword by a space at the
-      // end or in the middle, or by typing a '?', but we do need to update the
-      // popup view because the keyword can change without the text changing,
-      // for example when the keyword is "youtube.com" and the user presses
-      // ctrl-k to change it to "google.com", or if the user text is empty and
-      // the user presses backspace.
-      view_->UpdatePopup();
-    }
-    return state_changes.keyword_differs;
+    return false;
   }
 
   InternalSetUserText(*state_changes.new_text);
   has_temporary_text_ = false;
   just_deleted_text_ = state_changes.just_deleted_text;
 
-  const bool no_selection =
-      state_changes.new_sel_start == state_changes.new_sel_end;
-
-  // Update the popup for the change, in the process changing to keyword mode
-  // if the user hit space in mid-string after a keyword.
-  // `allow_exact_keyword_match_` will be used by StartAutocomplete() method,
-  // which will be called by `view_->UpdatePopup()`; so after that returns we
-  // can safely reset this flag.
-  // If entering keyword mode by space is disabled, do not set
-  // `allow_exact_keyword_match_`.
-  allow_exact_keyword_match_ =
-      AllowKeywordSpaceTriggering() && state_changes.text_differs &&
-      allow_keyword_ui_change && !state_changes.just_deleted_text &&
-      no_selection &&
-      CreatedKeywordSearchByInsertingSpaceInMiddle(
-          *state_changes.old_text, user_text_, state_changes.new_sel_start);
   if (view_) {
     view_->UpdatePopup();
   }
-  if (allow_exact_keyword_match_) {
-    keyword_mode_entry_method_ = OmniboxEventProto::SPACE_IN_MIDDLE;
-    const TemplateURL* turl = controller_->client()
-                                  ->GetTemplateURLService()
-                                  ->GetTemplateURLForKeyword(keyword_);
-    EmitEnteredKeywordModeHistogram(OmniboxEventProto::SPACE_IN_MIDDLE, turl);
-    allow_exact_keyword_match_ = false;
-  }
 
-  if (!state_changes.text_differs || !allow_keyword_ui_change ||
-      (state_changes.just_deleted_text && no_selection) ||
-      is_keyword_selected() || (paste_state_ != NONE)) {
-    return true;
-  }
-
-  // If the user input a "?" at the beginning of the text, put them into
-  // keyword mode for their default search provider.
-  if ((state_changes.new_sel_start == 1) && (user_text_[0] == '?')) {
-    EnterKeywordModeForDefaultSearchProvider(OmniboxEventProto::QUESTION_MARK);
-    return false;
-  }
-
-  // Change to keyword mode if the user is now pressing space after a keyword
-  // name.  Note that if this is the case, then even if there was no keyword
-  // hint when we entered this function (e.g. if the user has used space to
-  // replace some selected text that was adjoined to this keyword), there will
-  // be one now because of the call to UpdatePopup() above; so it's safe for
-  // MaybeAcceptKeywordBySpace() to look at `keyword_` and `is_keyword_hint_`
-  // to determine what keyword, if any, is applicable.
-  //
-  // If MaybeAcceptKeywordBySpace() accepts the keyword and returns true, that
-  // will have updated our state already, so in that case we don't also return
-  // true from this function.
-  return (state_changes.new_sel_start != user_text_.length()) ||
-         !MaybeAcceptKeywordBySpace(user_text_);
+  return true;
 }
 
 // Merge OnPopupDataChanged with this method once the popup
@@ -1520,32 +1019,14 @@ void OmniboxEditModelIOS::OnCurrentMatchChanged() {
   const AutocompleteMatch& match =
       *autocomplete_controller()->result().default_match();
 
-  // We store `keyword` and `is_keyword_hint` in temporary variables since
-  // OnPopupDataChanged use their previous state to detect changes.
-  std::u16string keyword;
-  std::u16string keyword_placeholder;
-  bool is_keyword_hint;
-  TemplateURLService* service = controller_->client()->GetTemplateURLService();
-  match.GetKeywordUIState(service,
-                          controller_->client()->IsHistoryEmbeddingsEnabled(),
-                          &keyword, &keyword_placeholder, &is_keyword_hint);
   OnPopupResultChanged();
-
-  if (!is_keyword_selected() && !is_keyword_hint && !keyword.empty()) {
-    // We just entered keyword mode, so remove the keyword from the input.
-    // We don't call MaybeStripKeyword, as we haven't yet updated our internal
-    // state (keyword_ and is_keyword_hint_), and MaybeStripKeyword checks this.
-    user_text_ =
-        AutocompleteInput::SplitReplacementStringFromInput(user_text_, false);
-    original_user_text_with_keyword_.clear();
-  }
 
   // OnPopupDataChanged() resets OmniboxControllerIOS's `current_match_` early
   // on.  Therefore, copy match.inline_autocompletion to a temp to preserve
   // its value across the entire call.
   OnPopupDataChanged(std::u16string(),
                      /*is_temporary_text=*/false, match.inline_autocompletion,
-                     keyword, keyword_placeholder, is_keyword_hint,
+
                      match.additional_text, match);
 }
 
@@ -1562,24 +1043,11 @@ void OmniboxEditModelIOS::SetAccessibilityLabel(
 
 void OmniboxEditModelIOS::InternalSetUserText(const std::u16string& text) {
   user_text_ = text;
-  original_user_text_with_keyword_.clear();
   just_deleted_text_ = false;
   inline_autocompletion_.clear();
   if (view_) {
     view_->OnInlineAutocompleteTextCleared();
   }
-}
-
-std::u16string OmniboxEditModelIOS::MaybeStripKeyword(
-    const std::u16string& text) const {
-  return is_keyword_selected()
-             ? AutocompleteInput::SplitReplacementStringFromInput(text, false)
-             : text;
-}
-
-std::u16string OmniboxEditModelIOS::MaybePrependKeyword(
-    const std::u16string& text) const {
-  return is_keyword_selected() ? (keyword_ + u' ' + text) : text;
 }
 
 void OmniboxEditModelIOS::GetInfoForCurrentText(AutocompleteMatch* match,
@@ -1601,9 +1069,7 @@ void OmniboxEditModelIOS::GetInfoForCurrentText(AutocompleteMatch* match,
       const OmniboxPopupSelection selection = GetPopupSelection();
       const AutocompleteMatch& selected_match =
           autocomplete_controller()->result().match_at(selection.line);
-      *match = (selection.state == OmniboxPopupSelection::KEYWORD_MODE)
-                   ? *selected_match.associated_keyword
-                   : selected_match;
+      *match = selected_match;
       found_match_for_text = true;
     }
     if (found_match_for_text && alternate_nav_url &&
@@ -1622,8 +1088,8 @@ void OmniboxEditModelIOS::GetInfoForCurrentText(AutocompleteMatch* match,
         user_input_in_progress() ? user_text_ : url_for_editing_;
 
     controller_->client()->GetAutocompleteClassifier()->Classify(
-        MaybePrependKeyword(text_for_match_generation), is_keyword_selected(),
-        true, GetPageClassification(), match, alternate_nav_url);
+        text_for_match_generation, false, true, GetPageClassification(), match,
+        alternate_nav_url);
   }
 }
 
@@ -1729,38 +1195,21 @@ void OmniboxEditModelIOS::SetPopupSelection(OmniboxPopupSelection new_selection,
     popup_view_->ProvideButtonFocusHint(GetPopupSelection().line);
   }
 
-  std::u16string keyword;
-  std::u16string keyword_placeholder;
-  bool is_keyword_hint;
-  TemplateURLService* service = controller_->client()->GetTemplateURLService();
-  match.GetKeywordUIState(service,
-                          controller_->client()->IsHistoryEmbeddingsEnabled(),
-                          &keyword, &keyword_placeholder, &is_keyword_hint);
-
   if (popup_selection_.state == OmniboxPopupSelection::FOCUSED_BUTTON_HEADER) {
     // If the new selection is a Header, the temporary text is an empty string.
     OnPopupDataChanged(std::u16string(),
-                       /*is_temporary_text=*/true, std::u16string(), keyword,
-                       keyword_placeholder, is_keyword_hint, std::u16string(),
-                       AutocompleteMatch());
-  } else if (old_selection.line != popup_selection_.line ||
-             (old_selection.state != OmniboxPopupSelection::KEYWORD_MODE &&
-              new_selection.state != OmniboxPopupSelection::KEYWORD_MODE)) {
-    // Don't update the edit model if entering or leaving keyword mode; doing so
-    // breaks keyword mode. Updating when there is no line change is necessary
-    // because omnibox text changes when:
-    // a) Moving down from a header row.
-    // b) Focusing other states; e.g. the switch-to-tab chip.
+                       /*is_temporary_text=*/true, std::u16string(),
+                       std::u16string(), AutocompleteMatch());
+  } else if (old_selection.line != popup_selection_.line) {
     if (reset_to_default) {
-      OnPopupDataChanged(
-          std::u16string(),
-          /*is_temporary_text=*/false, match.inline_autocompletion, keyword,
-          keyword_placeholder, is_keyword_hint, match.additional_text, match);
+      OnPopupDataChanged(std::u16string(),
+                         /*is_temporary_text=*/false,
+                         match.inline_autocompletion, match.additional_text,
+                         match);
     } else {
       OnPopupDataChanged(match.fill_into_edit,
-                         /*is_temporary_text=*/true, std::u16string(), keyword,
-                         keyword_placeholder, is_keyword_hint, std::u16string(),
-                         match);
+                         /*is_temporary_text=*/true, std::u16string(),
+                         std::u16string(), match);
     }
   }
   // Without this, focus indicators may appear stale (see crbug.com/1369229).
@@ -1918,30 +1367,6 @@ OmniboxEditModelIOS::GetPopupAccessibilityLabelForCurrentSelection(
       }
 
       break;
-    }
-    case OmniboxPopupSelection::KEYWORD_MODE: {
-      // In keyword mode, the match we're interested in is actually the
-      // associated_keyword of the match we're on. Populate the a11y string
-      // with information from the keyword match, rather than the current match.
-      CHECK(match.associated_keyword) << match.keyword;
-      const TemplateURL* turl = match.associated_keyword->GetTemplateURL(
-          controller_->client()->GetTemplateURLService(), false);
-      std::u16string replacement_string =
-          turl ? turl->short_name() : match.contents;
-      // For featured search engines, we also want to add the shortcut name.
-      if (AutocompleteMatch::IsFeaturedSearchType(match.type)) {
-        int message_id = (turl && turl->starter_pack_id() ==
-                                      TemplateURLStarterPackData::kGemini)
-                             ? IDS_ACC_ASK_KEYWORD_MODE_WITH_SHORTCUT
-                             : IDS_ACC_KEYWORD_MODE_WITH_SHORTCUT;
-        return l10n_util::GetStringFUTF16(message_id, match.keyword,
-                                          replacement_string);
-      }
-      int message_id = (turl && turl->starter_pack_id() ==
-                                    TemplateURLStarterPackData::kGemini)
-                           ? IDS_ACC_ASK_KEYWORD_MODE
-                           : IDS_ACC_KEYWORD_MODE;
-      return l10n_util::GetStringFUTF16(message_id, replacement_string);
     }
     case OmniboxPopupSelection::FOCUSED_BUTTON_ACTION:
       // When pedal button is focused, the autocomplete suggestion isn't
@@ -2110,90 +1535,26 @@ void OmniboxEditModelIOS::StepPopupSelection(
   }
 
   // The popup is open, so the user should be able to interact with it normally.
-
-  // This block steps the popup selection, with special consideration for
-  // existing keyword logic in the edit model, where `ClearKeyword()` must be
-  // called before changing the selected line. `AcceptKeyword()` should be
-  // called after changing the selected line so we don't accept keyword on the
-  // wrong suggestion when stepping backwards.
   const OmniboxPopupSelection old_selection = GetPopupSelection();
   OmniboxPopupSelection new_selection = old_selection.GetNextSelection(
       autocomplete_controller()->result(), GetPrefService(),
       controller_->client()->GetTemplateURLService(), direction, step);
-  if (kIsDesktop) {
-    if (old_selection.IsChangeToKeyword(new_selection)) {
-      ClearKeyword();
-      SetPopupSelection(new_selection);
-    } else if (new_selection.state ==
-               OmniboxPopupSelection::LineState::KEYWORD_MODE) {
-      // Prepare for keyword mode before accepting it.
-      SetPopupSelection(OmniboxPopupSelection(
-          new_selection.line, OmniboxPopupSelection::LineState::NORMAL));
-      // Note: Popup behavior currently depends on the entry method being tab.
-      // This is not ideal for nuanced metrics, but it is how it has worked
-      // for a long time. Consider refactoring to fix this if needed.
-      AcceptKeyword(metrics::OmniboxEventProto::TAB);
-    } else {
-      // If, as a result of the key press, we would select the first result,
-      // then we should revert the temporary text same as what pressing escape
-      // would have done.
-      //
-      // Reverting, however, does not make sense for on-focus suggestions
-      // (`user_input_in_progress_` is false) unless the first result is a
-      // verbatim match of the omnibox input (on-focus query refinements on
-      // SERP).
-      if (autocomplete_controller()->result().default_match() &&
-          has_temporary_text_ && new_selection == OmniboxPopupSelection(0) &&
-          (user_input_in_progress_ || autocomplete_controller()
-                                          ->result()
-                                          .default_match()
-                                          ->IsVerbatimType())) {
-        RevertTemporaryTextAndPopup();
-      } else {
-        SetPopupSelection(new_selection);
-      }
-    }
-  } else {
-    if (old_selection.IsChangeToKeyword(new_selection) ||
-        new_selection.IsChangeToKeyword(old_selection)) {
-      if (old_selection.IsChangeToKeyword(new_selection)) {
-        ClearKeyword();
-      }
-      SetPopupSelection(new_selection);
-      if (new_selection.IsChangeToKeyword(old_selection)) {
-        AcceptKeyword(metrics::OmniboxEventProto::TAB);
-      }
-    } else if (autocomplete_controller()->result().default_match() &&
-               has_temporary_text_ &&
-               new_selection == OmniboxPopupSelection{0} &&
-               (user_input_in_progress_ || autocomplete_controller()
-                                               ->result()
-                                               .default_match()
-                                               ->IsVerbatimType())) {
-      // If, as a result of the key press, we would select the first result,
-      // then we should revert the temporary text same as what pressing escape
-      // would have done.
-      //
-      // Reverting, however, does not make sense for on-focus suggestions
-      // (`user_input_in_progress_` is false) unless the first result is a
-      // verbatim match of the omnibox input (on-focus query refinements on
-      // SERP).
-      RevertTemporaryTextAndPopup();
-    } else {
-      SetPopupSelection(new_selection);
-    }
-  }
 
-  // `AcceptKeyword()` above updates the popup for the case where we step into
-  // keyword mode with extra user text, e.g. user input is "youtube.com query"
-  // then press tab to enter keyword mode. This is to ensure that the user text
-  // is populated accordingly and the new default suggestion is immediately
-  // clickable. In this case, the current selection (the clickable keyword
-  // suggestion) will not match the expected "next" suggestion (the keyword
-  // button focused).
-  if (new_selection.state != OmniboxPopupSelection::KEYWORD_MODE ||
-      user_text_.empty()) {
-    DCHECK(popup_selection_ == new_selection);
+  if (autocomplete_controller()->result().default_match() &&
+      has_temporary_text_ && new_selection == OmniboxPopupSelection{0} &&
+      (user_input_in_progress_ ||
+       autocomplete_controller()->result().default_match()->IsVerbatimType())) {
+    // If, as a result of the key press, we would select the first result,
+    // then we should revert the temporary text same as what pressing escape
+    // would have done.
+    //
+    // Reverting, however, does not make sense for on-focus suggestions
+    // (`user_input_in_progress_` is false) unless the first result is a
+    // verbatim match of the omnibox input (on-focus query refinements on
+    // SERP).
+    RevertTemporaryTextAndPopup();
+  } else {
+    SetPopupSelection(new_selection);
   }
 
   // Inform the client that a new row is now selected.
@@ -2213,7 +1574,7 @@ void OmniboxEditModelIOS::AcceptInput(
   // that, then we use this. These matches are marked as generated by the
   // HistoryURLProvider so we only generate them if this provider is present.
   bool accept_via_control_enter =
-      control_key_state_ == DOWN && !is_keyword_selected() &&
+      control_key_state_ == DOWN &&
       autocomplete_controller()->history_url_provider();
   base::UmaHistogramBoolean("Omnibox.Search.CtrlEnter.Used",
                             accept_via_control_enter);
@@ -2244,9 +1605,6 @@ void OmniboxEditModelIOS::AcceptInput(
         controller_->client()->ShouldDefaultTypedNavigationsToHttps(), 0,
         false);
     input.set_prevent_inline_autocomplete(input_.prevent_inline_autocomplete());
-    input.set_prefer_keyword(input_.prefer_keyword());
-    input.set_keyword_mode_entry_method(input_.keyword_mode_entry_method());
-    input.set_allow_exact_keyword_match(input_.allow_exact_keyword_match());
     input.set_omit_asynchronous_matches(input_.omit_asynchronous_matches());
     input.set_focus_type(input_.focus_type());
     input_ = input;
@@ -2314,19 +1672,12 @@ void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,
     return;
   }
 
-  // Switch the window disposition to SWITCH_TO_TAB for open tab matches that
-  // originated while in keyword mode.  This is to support the keyword mode
-  // starter pack's tab search (@tabs) feature, which should open all
-  // suggestions in the existing open tab.
-  bool is_open_tab_match =
-      match.from_keyword &&
-      match.provider->type() == AutocompleteProvider::TYPE_OPEN_TAB;
   // Also switch the window disposition for tab switch actions. The action
   // itself will already open with SWITCH_TO_TAB disposition, but the change
   // is needed earlier for metrics.
   bool is_tab_switch_action =
       action && action->ActionId() == OmniboxActionId::TAB_SWITCH;
-  if (is_open_tab_match || is_tab_switch_action) {
+  if (is_tab_switch_action) {
     disposition = WindowOpenDisposition::SWITCH_TO_TAB;
   }
 
@@ -2419,8 +1770,8 @@ void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,
                           ->autocomplete_provider_client()
                           ->IsOffTheRecord();
   OmniboxLog log(
-      user_text, just_deleted_text_, input_.type(), is_keyword_selected(),
-      keyword_mode_entry_method_, popup_open,
+      user_text, just_deleted_text_, input_.type(),
+      /*is_keyword_selected=*/false, OmniboxEventProto::INVALID, popup_open,
       dropdown_ignored ? OmniboxPopupSelection(0) : selection, disposition,
       !pasted_text.empty(),
       SessionID::InvalidValue(),  // don't know tab ID; set later if appropriate
@@ -2478,45 +1829,13 @@ void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,
   TemplateURLService* service = controller_->client()->GetTemplateURLService();
   TemplateURL* template_url = match.GetTemplateURL(service, false);
   if (template_url) {
-    // `match` is a Search navigation or a URL navigation in keyword mode; log
-    // search engine usage metrics.
+    // `match` is a Search navigation; log search engine usage metrics.
     AutocompleteMatch::LogSearchEngineUsed(match, service);
 
-    if (ui::PageTransitionTypeIncludingQualifiersIs(
-            match.transition, ui::PAGE_TRANSITION_KEYWORD) ||
-        match.provider->type() ==
-            AutocompleteProvider::TYPE_UNSCOPED_EXTENSION) {
-      // User is in keyword mode or accepted an unscoped extension suggestion,
-      // increment usage count for the keyword.
-      base::RecordAction(base::UserMetricsAction("AcceptedKeyword"));
-      EmitAcceptedKeywordSuggestionHistogram(keyword_mode_entry_method_,
-                                             template_url);
-      controller_->client()->GetTemplateURLService()->IncrementUsageCount(
-          template_url);
-
-      // Notify the extension of the selected input, but ignore if the selection
-      // corresponds to an action created by an extension in unscoped mode.
-      if (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION &&
-          !action) {
-        controller_->client()->ProcessExtensionMatch(input_text, template_url,
-                                                     match, disposition);
-        if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB && view_) {
-          base::AutoReset<bool> tmp(&in_revert_, true);
-          view_->RevertAll();
-        }
-        // Avoid calling `OmniboxClient::OnAutocompleteAccept()`. The extension
-        // was notfied of the accepted input and will handle the navigation.
-        return;
-      }
-    } else {
       DCHECK(ui::PageTransitionTypeIncludingQualifiersIs(
                  match.transition, ui::PAGE_TRANSITION_GENERATED) ||
              ui::PageTransitionTypeIncludingQualifiersIs(
                  match.transition, ui::PAGE_TRANSITION_RELOAD));
-      // NOTE: We purposefully don't increment the usage count of the default
-      // search engine here like we do for explicit keywords above; see comments
-      // in template_url.h.
-    }
   } else {
     // `match` is a URL navigation, not a search.
     // For logging the below histogram, only record uses that depend on the
@@ -2546,40 +1865,6 @@ void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,
                        controller_->client()->AsWeakPtr()),
         match_selection_timestamp, disposition);
     action->Execute(context);
-
-    // Actions aren't generally able to change omnibox state, but it may be
-    // worth considering an extension to OmniboxAction::ExecutionContext
-    // if more action types want to enter keyword modes, close the popup, etc.
-    // Note: The CONTEXTUAL_SEARCH_OPEN_LENS action does not enter the omnibox
-    // into '@page' keyword mode and the omnibox is committed and closed as
-    // normal in that case, with the lens UI managing its own state, so there's
-    // no need for the omnibox to close lens.
-    if (action->ActionId() ==
-            OmniboxActionId::CONTEXTUAL_SEARCH_ASK_ABOUT_PAGE ||
-        action->ActionId() ==
-            OmniboxActionId::CONTEXTUAL_SEARCH_SELECT_REGION) {
-      if (const TemplateURL* page_turl =
-              controller_->client()
-                  ->GetTemplateURLService()
-                  ->FindStarterPackTemplateURL(
-                      TemplateURLStarterPackData::kPage)) {
-        EnterKeywordMode(
-            OmniboxEventProto::SELECT_SUGGESTION, page_turl,
-            l10n_util::GetStringUTF16(IDS_OMNIBOX_PAGE_SCOPE_PLACEHOLDER_TEXT));
-        if (action->ActionId() ==
-                OmniboxActionId::CONTEXTUAL_SEARCH_SELECT_REGION &&
-            view_) {
-          view_->CloseOmniboxPopup();
-        }
-        close_lens_ = true;
-        return;
-      }
-    } else if (action->ActionId() ==
-               OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT) {
-      // Lens fulfills matches in the side panel, and should not be closed
-      // by the omnibox after opening this match.
-      close_lens_ = false;
-    }
   }
 
   if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB && view_) {
@@ -2650,72 +1935,6 @@ void OmniboxEditModelIOS::UpdateFeedbackOnMatch(size_t match_index,
   }
 }
 
-bool OmniboxEditModelIOS::AllowKeywordSpaceTriggering() const {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  return GetPrefService()->GetBoolean(omnibox::kKeywordSpaceTriggeringEnabled);
-#else
-  return true;
-#endif
-}
-
-bool OmniboxEditModelIOS::MaybeAcceptKeywordBySpace(
-    const std::u16string& new_text) {
-  if (!AllowKeywordSpaceTriggering()) {
-    return false;
-  }
-
-  size_t keyword_length = new_text.length() - 1;
-  return is_keyword_hint_ && (keyword_.length() == keyword_length) &&
-         IsSpaceCharForAcceptingKeyword(new_text[keyword_length]) &&
-         !new_text.compare(0, keyword_length, keyword_, 0, keyword_length) &&
-         AcceptKeyword(OmniboxEventProto::SPACE_AT_END);
-}
-
-bool OmniboxEditModelIOS::CreatedKeywordSearchByInsertingSpaceInMiddle(
-    const std::u16string& old_text,
-    const std::u16string& new_text,
-    size_t caret_position) const {
-  DCHECK_GE(new_text.length(), caret_position);
-
-  // Check simple conditions first.
-  if ((paste_state_ != NONE) || (caret_position < 2) ||
-      (old_text.length() < caret_position) ||
-      (new_text.length() == caret_position)) {
-    return false;
-  }
-  size_t space_position = caret_position - 1;
-  if (!IsSpaceCharForAcceptingKeyword(new_text[space_position]) ||
-      base::IsUnicodeWhitespace(new_text[space_position - 1]) ||
-      new_text.compare(0, space_position, old_text, 0, space_position) ||
-      !new_text.compare(space_position, new_text.length() - space_position,
-                        old_text, space_position,
-                        old_text.length() - space_position)) {
-    return false;
-  }
-
-  // Then check if the text before the inserted space matches a keyword.
-  std::u16string keyword;
-  base::TrimWhitespace(new_text.substr(0, space_position), base::TRIM_LEADING,
-                       &keyword);
-  return !keyword.empty() &&
-         !autocomplete_controller()
-              ->keyword_provider()
-              ->GetKeywordForText(
-                  keyword, controller_->client()->GetTemplateURLService())
-              .empty();
-}
-
-//  static
-bool OmniboxEditModelIOS::IsSpaceCharForAcceptingKeyword(wchar_t c) {
-  switch (c) {
-    case 0x0020:  // Space
-    case 0x3000:  // Ideographic Space
-      return true;
-    default:
-      return false;
-  }
-}
-
 void OmniboxEditModelIOS::ClassifyString(const std::u16string& text,
                                          AutocompleteMatch* match,
                                          GURL* alternate_nav_url) const {
@@ -2771,23 +1990,4 @@ std::u16string OmniboxEditModelIOS::GetText() const {
   } else {
     NOTREACHED();
   }
-}
-
-void OmniboxEditModelIOS::SetKeyword(const std::u16string& keyword) {
-  keyword_ = keyword;
-}
-
-void OmniboxEditModelIOS::SetKeywordPlaceholder(
-    const std::u16string& keyword_placeholder) {
-  keyword_placeholder_ = keyword_placeholder;
-}
-
-void OmniboxEditModelIOS::MaybeCloseLens() {
-  if (!close_lens_) {
-    return;
-  }
-  close_lens_ = false;
-  // TODO(crbug.com/413405157): This is a targeted bug-fix, but more complete
-  //  handling of keyword mode transitions is needed.
-  controller_->client()->OnKeywordModeChanged(false, keyword_);
 }

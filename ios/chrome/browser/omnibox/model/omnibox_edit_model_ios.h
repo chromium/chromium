@@ -175,42 +175,8 @@ class OmniboxEditModelIOS {
     return focus_state_ == OMNIBOX_FOCUS_VISIBLE;
   }
 
-  // Accessors for keyword-related state (see comments on `keyword_`,
-  // `keyword_placeholder_` and `is_keyword_hint_`).
-  const std::u16string& keyword() const { return keyword_; }
-  const std::u16string& keyword_placeholder() const {
-    return keyword_placeholder_;
-  }
-  bool is_keyword_hint() const { return is_keyword_hint_; }
-  bool is_keyword_selected() const {
-    return !is_keyword_hint_ && !keyword_.empty();
-  }
-
-  // Accepts the current keyword hint as a keyword. It always returns true for
-  // caller convenience. `entry_method` indicates how the user entered
-  // keyword mode.
-  bool AcceptKeyword(
-      metrics::OmniboxEventProto::KeywordModeEntryMethod entry_method);
-
-  // Sets the current keyword to that of the given `template_url` and updates
-  // the view so the user sees the keyword chip in the omnibox.  Adjusts
-  // user_text_ and the selection based on the display text and the keyword
-  // entry method. Note, the default match may be updated in this process
-  // so the match must support this keyword mode or it will be exited.
-  void EnterKeywordMode(
-      metrics::OmniboxEventProto::KeywordModeEntryMethod entry_method,
-      const TemplateURL* template_url,
-      const std::u16string& placeholder_text);
-
-  // Enters keyword mode for user's default search provider, if enabled.
-  void EnterKeywordModeForDefaultSearchProvider(
-      metrics::OmniboxEventProto::KeywordModeEntryMethod entry_method);
-
   // Accepts the current temporary text as the user text.
   void AcceptTemporaryTextAsUserText();
-
-  // Clears the current keyword.
-  void ClearKeyword();
 
   // Clears additional text.
   void ClearAdditionalText();
@@ -268,22 +234,9 @@ class OmniboxEditModelIOS {
   // the selections instead of down.
   void OnTabPressed(bool shift);
 
-  // Called when the user presses the space key without modifiers.
-  // Returns true if the space is handled in a special way, for example
-  // entering keyword mode on a match somewhere down the list.
-  bool OnSpacePressed();
-
-  // Checks for special input conditions to accelerate keyword mode entry
-  // for starter pack '@' keywords. Returns true if keyword mode was
-  // entered; returns false if feature is disabled or special input
-  // conditions were not detected, in which case this is a no-op.
-  bool MaybeAccelerateKeywordSelection(std::u16string_view input_text,
-                                       char16_t ch);
-
   // Called when any relevant data changes.  This rolls together several
   // separate pieces of data into one call so we can update all the UI
-  // efficiently. Specifically, it's invoked for temporary text, autocompletion,
-  // and keyword changes.
+  // efficiently. Specifically, it's invoked for temporary text, autocompletion.
   //   `temporary_text` is the new temporary text from the user selecting a
   //     different match. This will be empty when selecting a suggestion
   //     without a `fill_into_edit` (e.g. FOCUSED_BUTTON_HEADER) and when
@@ -294,9 +247,6 @@ class OmniboxEditModelIOS {
   //   `destination_for_temporary_text_change` is NULL (if temporary text should
   //     not change) or the pre-change destination URL (if temporary text should
   //     change) so we can save it off to restore later.
-  //   `keyword` is the keyword to show a hint for if `is_keyword_hint` is true,
-  //     or the currently selected keyword if `is_keyword_hint` is false (see
-  //     comments on keyword_ and is_keyword_hint_).
   //   `additional_text` is additional omnibox text to be displayed adjacent to
   //     the omnibox view.
   //   `new_match` is the selected match when the user is changing selection,
@@ -306,9 +256,6 @@ class OmniboxEditModelIOS {
   virtual void OnPopupDataChanged(const std::u16string& temporary_text,
                                   bool is_temporary_text,
                                   const std::u16string& inline_autocompletion,
-                                  const std::u16string& keyword,
-                                  const std::u16string& keyword_placeholder,
-                                  bool is_keyword_hint,
                                   const std::u16string& additional_text,
                                   const AutocompleteMatch& new_match);
 
@@ -317,12 +264,8 @@ class OmniboxEditModelIOS {
   // necessary, and returns true if any significant changes occurred.  Note that
   // `text_change.text_differs` may be set even if `text_change.old_text` ==
   // `text_change.new_text`, e.g. if we've just committed an IME composition.
-  //
-  // If `allow_keyword_ui_change` is false then the change should not affect
-  // keyword ui state, even if the text matches a keyword exactly. This value
-  // may be false when the user is composing a text with an IME.
-  bool OnAfterPossibleChange(const OmniboxViewBase::StateChanges& state_changes,
-                             bool allow_keyword_ui_change);
+  bool OnAfterPossibleChange(
+      const OmniboxViewBase::StateChanges& state_changes);
 
   // Called when the current match has changed in the OmniboxControllerIOS.
   void OnCurrentMatchChanged();
@@ -464,8 +407,7 @@ class OmniboxEditModelIOS {
   // Returns true if started; false otherwise.
   bool MaybeStartQueryForPopup();
 
-  // Changes the popup selection to the next available selection. Stepping the
-  // popup selection gives special consideration for keyword mode state.
+  // Changes the popup selection to the next available selection.
   void StepPopupSelection(OmniboxPopupSelection::Direction direction,
                           OmniboxPopupSelection::Step step);
 
@@ -509,42 +451,11 @@ class OmniboxEditModelIOS {
   // SetUserText because it does not change the user-input-in-progress state.
   void InternalSetUserText(const std::u16string& text);
 
-  // Conversion between user text and display text. User text is the text the
-  // user has input. Display text is the text being shown in the edit. The
-  // two are different if a keyword is selected.
-  std::u16string MaybeStripKeyword(const std::u16string& text) const;
-  std::u16string MaybePrependKeyword(const std::u16string& text) const;
-
   // Copies a match corresponding to the current text into `match`, and
   // populates `alternate_nav_url` as well if it's not nullptr. If the popup
   // is closed, the match is generated from the autocomplete classifier.
   void GetInfoForCurrentText(AutocompleteMatch* match,
                              GURL* alternate_nav_url) const;
-
-  // Checks whether keyword mode space-triggering has been disabled either by
-  // a pref or relevant feature flags. If the setting isn't available on the
-  // search engines page, the pref should be ignored.  Returns true if space
-  // triggering is enabled, false otherwise.
-  bool AllowKeywordSpaceTriggering() const;
-
-  // Accepts current keyword if the user just typed a space at the end of
-  // `new_text`.  This handles both of the following cases:
-  //   (assume "foo" is a keyword, ` is the input caret, [] is selected text)
-  //   foo` -> foo `      (a space was appended to a keyword)
-  //   foo[bar] -> foo `  (a space replaced other text after a keyword)
-  // Returns true if the current keyword is accepted.
-  bool MaybeAcceptKeywordBySpace(const std::u16string& new_text);
-
-  // Checks whether the user inserted a space into `old_text` and by doing so
-  // created a `new_text` that looks like "<keyword> <search phrase>".
-  bool CreatedKeywordSearchByInsertingSpaceInMiddle(
-      const std::u16string& old_text,
-      const std::u16string& new_text,
-      size_t caret_position) const;
-
-  // Checks if a given character is a valid space character for accepting
-  // keyword.
-  static bool IsSpaceCharForAcceptingKeyword(wchar_t c);
 
   // Sets the state of user_input_in_progress_. Returns whether said state
   // changed, so that the caller can evoke NotifyObserversInputInProgress().
@@ -562,10 +473,6 @@ class OmniboxEditModelIOS {
   // Returns view text if there is a view. Until the model is made the
   // primary data source, this should not be called when there's no view.
   std::u16string GetText() const;
-
-  // Always use these to set keyword members instead of mutating them directly.
-  void SetKeyword(const std::u16string& keyword);
-  void SetKeywordPlaceholder(const std::u16string& keyword_placeholder);
 
   // Closes lens if still needed.
   void MaybeCloseLens();
@@ -661,17 +568,7 @@ class OmniboxEditModelIOS {
   // When the user hits <esc>, the edit box reverts to "goog".  Hit <esc> again
   // and the popup is closed and "goog" is replaced by the permanent display
   // URL, which is the URL of the current page.
-  //
-  // original_user_text_with_keyword_ tracks the user_text_ before keywords are
-  // removed. When accepting a keyword (from either a default match or another
-  // lower in the dropdown), the user_text_ is destructively trimmed of its 1st
-  // word. In order to restore the user_text_ properly when the omnibox reverts,
-  // e.g. by pressing <escape> or pressing <up> until the first result is
-  // selected, we track original_user_text_with_keyword_.
-  // original_user_text_with_keyword_ is null if a keyword has not been
-  // accepted.
   bool has_temporary_text_;
-  std::u16string original_user_text_with_keyword_;
 
   // When the user's last action was to paste, we disallow inline autocomplete
   // (on the theory that the user is trying to paste in a new URL or part of
@@ -683,43 +580,15 @@ class OmniboxEditModelIOS {
   // whether to trigger "ctrl-enter" behavior.
   ControlKeyState control_key_state_;
 
-  // The keyword associated with the current match.  The user may have an actual
-  // selected keyword, or just some input text that looks like a keyword (so we
-  // can show a hint to press <tab>).  This is the keyword in either case;
-  // is_keyword_hint_ (below) distinguishes the two cases.
-  std::u16string keyword_;
-
-  // The placeholder text displayed for the keyword the user has selected.
-  // Usually empty. Only used when the user input is empty.
-  std::u16string keyword_placeholder_;
-
-  // True if the keyword associated with this match is merely a hint, i.e. the
-  // user hasn't actually selected a keyword yet.  When this is true, we can use
-  // keyword_ to show a "Press <tab> to search" sort of hint.
-  bool is_keyword_hint_;
-
-  // Indicates how the user entered keyword mode if the user is actually in
-  // keyword mode.  Otherwise, the value of this variable is INVALID.  This
-  // is used to restore the user's search terms upon a call to ClearKeyword().
-  metrics::OmniboxEventProto::KeywordModeEntryMethod keyword_mode_entry_method_;
-
   // This is needed to properly update the SearchModel state when the user
   // presses escape.
   bool in_revert_;
 
-  // The omnibox sometimes opens the lens controller, e.g. when entering '@page'
-  // keyword mode. When exiting the scope or committing the omnibox, it should
+  // When exiting the scope or committing the omnibox, it should
   // be closed again, unless lens is invoked by taking a contextual search
   // match. In that case, the omnibox relinquishes the obligation to close so
   // as to not interfere with lens match fulfillment and continued use.
   bool close_lens_;
-
-  // Indicates if the upcoming autocomplete search is allowed to be treated as
-  // an exact keyword match.  If this is true then keyword mode will be
-  // triggered automatically if the input is "<keyword> <search string>".  We
-  // allow this when CreatedKeywordSearchByInsertingSpaceInMiddle() is true.
-  // This has no effect if we're already in keyword mode.
-  bool allow_exact_keyword_match_;
 
   // The input that was sent to the AutocompleteController. Since no
   // autocomplete query is started after a tab switch, it is possible for this

@@ -39,7 +39,6 @@ class OmniboxViewBase {
     size_t new_sel_end;
     bool selection_differs;
     bool text_differs;
-    bool keyword_differs;
     bool just_deleted_text;
   };
 
@@ -84,10 +83,6 @@ class OmniboxViewBase {
 
   // Sets the omnibox adjacent additional text label in the location bar view.
   virtual void SetAdditionalText(const std::u16string& text) = 0;
-
-  // Transitions the user into keyword mode with their default search provider,
-  // preserving and selecting the user's text if they already typed in a query.
-  virtual void EnterKeywordModeForDefaultSearchProvider() = 0;
 
   // Returns true if all text is selected. Returns false if there is no text.
   virtual bool IsSelectAll() const = 0;
@@ -162,13 +157,8 @@ class OmniboxViewBase {
   virtual void OnBeforePossibleChange() = 0;
 
   // OnAfterPossibleChange() returns true if there was a change that caused it
-  // to call UpdatePopup().  If `allow_keyword_ui_change` is false, we
-  // prevent alterations to the keyword UI state (enabled vs. disabled).
-  virtual bool OnAfterPossibleChange(bool allow_keyword_ui_change) = 0;
-
-  // Called when the placeholder text displayed when the user is in keyword mode
-  // has changed.
-  virtual void OnKeywordPlaceholderTextChange() {}
+  // to call UpdatePopup().
+  virtual bool OnAfterPossibleChange() = 0;
 
   // Returns the gfx::NativeView of the edit view.
   virtual gfx::NativeView GetNativeView() const = 0;
@@ -225,8 +215,6 @@ class OmniboxViewBase {
   // OnAfterPossibleChange().
   struct State {
     std::u16string text;
-    std::u16string keyword;
-    bool is_keyword_selected;
     size_t sel_start;
     size_t sel_end;
   };

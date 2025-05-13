@@ -206,8 +206,6 @@ bool OmniboxViewBase::IsIndicatingQueryRefinement() const {
 
 void OmniboxViewBase::GetState(State* state) {
   state->text = GetText();
-  state->keyword = model()->keyword();
-  state->is_keyword_selected = model()->is_keyword_selected();
   GetSelectionBounds(&state->sel_start, &state->sel_end);
 }
 
@@ -229,10 +227,6 @@ OmniboxViewBase::StateChanges OmniboxViewBase::GetStateChanges(
   state_changes.selection_differs =
       (!old_sel_empty || !new_sel_empty) && !sel_same_ignoring_direction;
   state_changes.text_differs = before.text != after.text;
-  state_changes.keyword_differs =
-      (after.is_keyword_selected != before.is_keyword_selected) ||
-      (after.is_keyword_selected && before.is_keyword_selected &&
-       after.keyword != before.keyword);
 
   // When the user has deleted text, we don't allow inline autocomplete.  Make
   // sure to not flag cases like selecting part of the text and then pasting
