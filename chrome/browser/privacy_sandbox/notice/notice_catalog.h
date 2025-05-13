@@ -16,7 +16,7 @@ class NoticeCatalog {
  public:
   virtual ~NoticeCatalog() = default;
   // Accessors.
-  virtual const std::vector<std::unique_ptr<NoticeApi>>& GetNoticeApis() = 0;
+  virtual base::span<NoticeApi*> GetNoticeApis() = 0;
   virtual base::span<Notice*> GetNotices() = 0;
   virtual Notice* GetNotice(NoticeId notice_id) = 0;
 };
@@ -26,7 +26,7 @@ class NoticeCatalogImpl : public NoticeCatalog {
   NoticeCatalogImpl();
   ~NoticeCatalogImpl() override;
 
-  const std::vector<std::unique_ptr<NoticeApi>>& GetNoticeApis() override;
+  base::span<NoticeApi*> GetNoticeApis() override;
   base::span<Notice*> GetNotices() override;
   Notice* GetNotice(NoticeId notice_id) override;
 
@@ -55,6 +55,7 @@ class NoticeCatalogImpl : public NoticeCatalog {
   std::vector<std::unique_ptr<NoticeApi>> apis_;
   absl::flat_hash_map<NoticeId, std::unique_ptr<Notice>> notices_;
   std::vector<Notice*> notice_ptrs_;
+  std::vector<NoticeApi*> apis_ptrs_;
 };
 
 }  // namespace privacy_sandbox

@@ -30,12 +30,13 @@ NoticeCatalogImpl::NoticeCatalogImpl() {
 NoticeCatalogImpl::~NoticeCatalogImpl() = default;
 
 NoticeApi* NoticeCatalogImpl::RegisterAndRetrieveNewApi() {
-  return apis_.emplace_back(std::make_unique<NoticeApi>()).get();
+  NoticeApi* api = apis_.emplace_back(std::make_unique<NoticeApi>()).get();
+  apis_ptrs_.push_back(api);
+  return api;
 }
 
-const std::vector<std::unique_ptr<NoticeApi>>&
-NoticeCatalogImpl::GetNoticeApis() {
-  return apis_;
+base::span<NoticeApi*> NoticeCatalogImpl::GetNoticeApis() {
+  return apis_ptrs_;
 }
 
 Notice* NoticeCatalogImpl::RegisterAndRetrieveNewNotice(

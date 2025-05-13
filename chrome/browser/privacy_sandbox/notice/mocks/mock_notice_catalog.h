@@ -16,10 +16,7 @@ class MockNoticeCatalog : public NoticeCatalog {
   MockNoticeCatalog();
   ~MockNoticeCatalog() override;
 
-  MOCK_METHOD(const std::vector<std::unique_ptr<NoticeApi>>&,
-              GetNoticeApis,
-              (),
-              (override));
+  MOCK_METHOD(base::span<NoticeApi*>, GetNoticeApis, (), (override));
   MOCK_METHOD(base::span<Notice*>, GetNotices, (), (override));
   MOCK_METHOD(Notice*, GetNotice, (NoticeId), (override));
 };

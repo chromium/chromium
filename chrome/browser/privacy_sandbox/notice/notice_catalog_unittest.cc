@@ -113,7 +113,7 @@ TEST_F(PrivacySandboxNoticeCatalogTest, AllApisAreTargetedByAtLeastOneNotice) {
   EXPECT_THAT(catalog_.GetNoticeApis(), Not(IsEmpty()));
 
   for (const auto& api : catalog_.GetNoticeApis()) {
-    ASSERT_NE(api.get(), nullptr);
+    ASSERT_NE(api, nullptr);
     EXPECT_THAT(api->GetLinkedNotices(), Not(IsEmpty()));
   }
 }
@@ -124,8 +124,8 @@ TEST_F(PrivacySandboxNoticeCatalogTest, UniqueApiInstances) {
 
   std::set<NoticeApi*> api_pointers;
   for (const auto& api_ptr : catalog_.GetNoticeApis()) {
-    ASSERT_NE(api_ptr.get(), nullptr);
-    EXPECT_TRUE(api_pointers.insert(api_ptr.get()).second);
+    ASSERT_NE(api_ptr, nullptr);
+    EXPECT_TRUE(api_pointers.insert(api_ptr).second);
   }
   EXPECT_EQ(api_pointers.size(), catalog_.GetNoticeApis().size());
 }
@@ -138,8 +138,8 @@ TEST_F(PrivacySandboxNoticeCatalogTest, TargetApisAreValid) {
 
   std::set<const NoticeApi*> valid_api_pointers;
   for (const auto& api : catalog_.GetNoticeApis()) {
-    ASSERT_NE(api.get(), nullptr);
-    valid_api_pointers.insert(api.get());
+    ASSERT_NE(api, nullptr);
+    valid_api_pointers.insert(api);
   }
 
   EXPECT_THAT(valid_api_pointers, Not(IsEmpty()));
@@ -161,8 +161,8 @@ TEST_F(PrivacySandboxNoticeCatalogTest, PrerequisiteApisAreValid) {
   // Create a set of valid API pointers for quick lookup.
   std::set<const NoticeApi*> valid_api_pointers;
   for (const auto& api : catalog_.GetNoticeApis()) {
-    ASSERT_NE(api.get(), nullptr);
-    valid_api_pointers.insert(api.get());
+    ASSERT_NE(api, nullptr);
+    valid_api_pointers.insert(api);
   }
 
   EXPECT_THAT(valid_api_pointers, Not(IsEmpty()));
