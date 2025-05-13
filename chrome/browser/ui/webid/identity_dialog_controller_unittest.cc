@@ -42,7 +42,7 @@ const std::vector<content::IdentityRequestDialogDisclosureField>
 
 }  // namespace
 
-constexpr char kTopFrameEtldPlusOne[] = "top-frame-example.com";
+constexpr char16_t kTopFrameEtldPlusOne[] = u"top-frame-example.com";
 constexpr char kIdpEtldPlusOne[] = "idp-example.com";
 constexpr float kPerPageLoadClickthroughRate = 0.1;
 constexpr float kPerClientClickthroughRate = 0.2;
@@ -72,7 +72,7 @@ class MockAccountSelectionView : public AccountSelectionView {
 
   MOCK_METHOD(bool,
               ShowFailureDialog,
-              (const std::string& rp_for_display,
+              (const content::RelyingPartyData& rp_data,
                const std::string& idp_for_display,
                blink::mojom::RpContext rp_context,
                blink::mojom::RpMode rp_mode,
@@ -81,7 +81,7 @@ class MockAccountSelectionView : public AccountSelectionView {
 
   MOCK_METHOD(bool,
               ShowErrorDialog,
-              (const std::string& rp_for_display,
+              (const content::RelyingPartyData& rp_data,
                const std::string& idp_for_display,
                blink::mojom::RpContext rp_context,
                blink::mojom::RpMode rp_mode,
@@ -91,7 +91,7 @@ class MockAccountSelectionView : public AccountSelectionView {
 
   MOCK_METHOD(bool,
               ShowLoadingDialog,
-              (const std::string& rp_for_display,
+              (const content::RelyingPartyData& rp_data,
                const std::string& idp_for_display,
                blink::mojom::RpContext rp_context,
                blink::mojom::RpMode rp_mode),
@@ -187,7 +187,7 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
     IdentityProviderDataPtr idp_data = CreateIdentityProviderData(accounts_);
     controller.ShowAccountsDialog(
         content::RelyingPartyData(kTopFrameEtldPlusOne,
-                                  /*iframe_for_display=*/""),
+                                  /*iframe_for_display=*/u""),
         {idp_data}, accounts_,
         content::IdentityRequestAccount::SignInMode::kExplicit, rp_mode,
         /*new_accounts=*/std::vector<IdentityRequestAccountPtr>(),

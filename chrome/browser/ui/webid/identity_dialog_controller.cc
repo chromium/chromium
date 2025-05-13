@@ -122,7 +122,7 @@ bool IdentityDialogController::ShowAccountsDialog(
 }
 
 bool IdentityDialogController::ShowFailureDialog(
-    const std::string& rp_for_display,
+    const content::RelyingPartyData& rp_data,
     const std::string& idp_for_display,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
@@ -139,12 +139,12 @@ bool IdentityDialogController::ShowFailureDialog(
   //   TODO: If the failure dialog is already being shown, notify user that
   //   sign-in attempt failed.
 
-  return account_view_->ShowFailureDialog(rp_for_display, idp_for_display,
-                                          rp_context, rp_mode, idp_metadata);
+  return account_view_->ShowFailureDialog(rp_data, idp_for_display, rp_context,
+                                          rp_mode, idp_metadata);
 }
 
 bool IdentityDialogController::ShowErrorDialog(
-    const std::string& rp_for_display,
+    const content::RelyingPartyData& rp_data,
     const std::string& idp_for_display,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
@@ -157,13 +157,12 @@ bool IdentityDialogController::ShowErrorDialog(
   if (!TrySetAccountView()) {
     return false;
   }
-  return account_view_->ShowErrorDialog(rp_for_display, idp_for_display,
-                                        rp_context, rp_mode, idp_metadata,
-                                        error);
+  return account_view_->ShowErrorDialog(rp_data, idp_for_display, rp_context,
+                                        rp_mode, idp_metadata, error);
 }
 
 bool IdentityDialogController::ShowLoadingDialog(
-    const std::string& rp_for_display,
+    const content::RelyingPartyData& rp_data,
     const std::string& idp_for_display,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
@@ -172,8 +171,8 @@ bool IdentityDialogController::ShowLoadingDialog(
   if (!TrySetAccountView()) {
     return false;
   }
-  return account_view_->ShowLoadingDialog(rp_for_display, idp_for_display,
-                                          rp_context, rp_mode);
+  return account_view_->ShowLoadingDialog(rp_data, idp_for_display, rp_context,
+                                          rp_mode);
 }
 
 void IdentityDialogController::OnLoginToIdP(const GURL& idp_config_url,

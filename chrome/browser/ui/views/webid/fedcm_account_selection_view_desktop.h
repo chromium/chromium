@@ -90,18 +90,18 @@ class FedCmAccountSelectionView : public AccountSelectionView,
       blink::mojom::RpMode rp_mode,
       const std::vector<IdentityRequestAccountPtr>& new_accounts) override;
   bool ShowFailureDialog(
-      const std::string& rp_for_display,
+      const content::RelyingPartyData& rp_data,
       const std::string& idp_etld_plus_one,
       blink::mojom::RpContext rp_context,
       blink::mojom::RpMode rp_mode,
       const content::IdentityProviderMetadata& idp_metadata) override;
-  bool ShowErrorDialog(const std::string& rp_for_display,
+  bool ShowErrorDialog(const content::RelyingPartyData& rp_data,
                        const std::string& idp_etld_plus_one,
                        blink::mojom::RpContext rp_context,
                        blink::mojom::RpMode rp_mode,
                        const content::IdentityProviderMetadata& idp_metadata,
                        const std::optional<TokenError>& error) override;
-  bool ShowLoadingDialog(const std::string& rp_for_display,
+  bool ShowLoadingDialog(const content::RelyingPartyData& rp_data,
                          const std::string& idp_etld_plus_one,
                          blink::mojom::RpContext rp_context,
                          blink::mojom::RpMode rp_mode) override;
@@ -221,7 +221,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Virtual for testing.
   virtual AccountSelectionViewBase* CreateDialogView(
       bool has_modal_support,
-      const std::u16string& rp_for_display,
+      const content::RelyingPartyData& rp_data,
       const std::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
       blink::mojom::RpMode rp_mode,
@@ -445,7 +445,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // Creates account_selection_view_ (different subclasses for
   // bubble/modal) and dialog_widget_.
-  void CreateViewAndWidget(const std::u16string& rp_for_display,
+  void CreateViewAndWidget(const content::RelyingPartyData& rp_data,
                            const std::optional<std::u16string>& idp_title,
                            blink::mojom::RpContext rp_context,
                            blink::mojom::RpMode rp_mode,

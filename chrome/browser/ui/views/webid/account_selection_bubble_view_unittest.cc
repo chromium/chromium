@@ -59,7 +59,7 @@ namespace {
 
 constexpr char kAccountId1[] = "account_id1";
 constexpr char kAccountSuffix[] = "suffix";
-constexpr char kTopFrameEtldPlusOne[] = "rp-example.com";
+constexpr char16_t kTopFrameEtldPlusOne[] = u"rp-example.com";
 
 class FakeTabInterface : public tabs::MockTabInterface {
  public:
@@ -182,7 +182,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
     }
     account_selection_view_->Show(
         content::RelyingPartyData(kTopFrameEtldPlusOne,
-                                  /*iframe_for_display=*/""),
+                                  /*iframe_for_display=*/u""),
         idp_list, accounts_, Account::SignInMode::kExplicit,
         blink::mojom::RpMode::kPassive, new_accounts);
     dialog_ = static_cast<AccountSelectionBubbleView*>(

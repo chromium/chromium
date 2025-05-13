@@ -73,7 +73,7 @@ bool FakeIdentityRequestDialogController::ShowAccountsDialog(
 }
 
 bool FakeIdentityRequestDialogController::ShowFailureDialog(
-    const std::string& rp_for_display,
+    const RelyingPartyData& rp_data,
     const std::string& idp_for_display,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
@@ -85,7 +85,7 @@ bool FakeIdentityRequestDialogController::ShowFailureDialog(
 }
 
 bool FakeIdentityRequestDialogController::ShowErrorDialog(
-    const std::string& rp_for_display,
+    const RelyingPartyData& rp_data,
     const std::string& idp_for_display,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
@@ -103,7 +103,7 @@ bool FakeIdentityRequestDialogController::ShowErrorDialog(
 }
 
 bool FakeIdentityRequestDialogController::ShowLoadingDialog(
-    const std::string& rp_for_display,
+    const RelyingPartyData& rp_data,
     const std::string& idp_for_display,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,

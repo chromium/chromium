@@ -102,7 +102,7 @@ class AccountSelectionView {
   // Returns true if it was possible to show UI. If this method could not show
   // UI and called Dismiss, returns false.
   virtual bool ShowFailureDialog(
-      const std::string& rp_for_display,
+      const content::RelyingPartyData& rp_data,
       const std::string& idp_for_display,
       blink::mojom::RpContext rp_context,
       blink::mojom::RpMode rp_mode,
@@ -112,7 +112,7 @@ class AccountSelectionView {
   // Returns true if it was possible to show UI. If this method could not show
   // UI and called Dismiss, returns false.
   virtual bool ShowErrorDialog(
-      const std::string& rp_for_display,
+      const content::RelyingPartyData& rp_data,
       const std::string& idp_for_display,
       blink::mojom::RpContext rp_context,
       blink::mojom::RpMode rp_mode,
@@ -122,7 +122,7 @@ class AccountSelectionView {
   // Shows a loading dialog to the user. Used in the button mode, to acknowledge
   // the user interaction. Returns true if it was possible to show UI. If this
   // method could not show UI and called Dismiss, returns false.
-  virtual bool ShowLoadingDialog(const std::string& rp_for_display,
+  virtual bool ShowLoadingDialog(const content::RelyingPartyData& rp_data,
                                  const std::string& idp_for_display,
                                  blink::mojom::RpContext rp_context,
                                  blink::mojom::RpMode rp_mode) = 0;

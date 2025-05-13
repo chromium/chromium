@@ -56,7 +56,8 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
         /*labels=*/std::vector<std::string>())};
     accounts_[0]->identity_provider = idps_[0];
     account_selection_view()->Show(
-        content::RelyingPartyData("rp-example.com", /*iframe_for_display=*/""),
+        content::RelyingPartyData(u"rp-example.com",
+                                  /*iframe_for_display=*/u""),
         idps_, accounts_, mode, blink::mojom::RpMode::kPassive,
         /*new_accounts=*/std::vector<IdentityRequestAccountPtr>());
   }
@@ -328,7 +329,8 @@ class FedCmMixin {
         /*labels=*/std::vector<std::string>())};
     accounts_[0]->identity_provider = idps_[0];
     account_selection_view_->Show(
-        content::RelyingPartyData("rp-example.com", /*iframe_for_display=*/""),
+        content::RelyingPartyData(u"rp-example.com",
+                                  /*iframe_for_display=*/u""),
         idps_, accounts_, mode, blink::mojom::RpMode::kPassive,
         /*new_accounts=*/std::vector<IdentityRequestAccountPtr>());
   }
@@ -353,8 +355,10 @@ class FedCmBrowserTest : public InProcessBrowserTest, public FedCmMixin {
     account_selection_view_ = std::make_unique<FedCmAccountSelectionView>(
         delegate_.get(), browser()->GetActiveTabInterface());
     account_selection_view_->ShowLoadingDialog(
-        "rp-example.com", "idp_etld_plus_one.com",
-        blink::mojom::RpContext::kSignIn, blink::mojom::RpMode::kActive);
+        content::RelyingPartyData(u"rp-example.com",
+                                  /*iframe_for_display=*/u""),
+        "idp_etld_plus_one.com", blink::mojom::RpContext::kSignIn,
+        blink::mojom::RpMode::kActive);
   }
 };
 

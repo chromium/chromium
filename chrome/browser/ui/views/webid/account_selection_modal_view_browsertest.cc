@@ -86,8 +86,10 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
         delegate_.get(), browser()->GetActiveTabInterface(),
         test_shared_url_loader_factory_);
     account_selection_view_->ShowLoadingDialog(
-        base::UTF16ToASCII(kRpETLDPlusOne), base::UTF16ToASCII(kIdpETLDPlusOne),
-        blink::mojom::RpContext::kSignIn, blink::mojom::RpMode::kActive);
+        content::RelyingPartyData(kRpETLDPlusOne,
+                                  /*iframe_for_display=*/u""),
+        base::UTF16ToASCII(kIdpETLDPlusOne), blink::mojom::RpContext::kSignIn,
+        blink::mojom::RpMode::kActive);
     dialog_ = static_cast<AccountSelectionModalView*>(
         account_selection_view_->account_selection_view());
 

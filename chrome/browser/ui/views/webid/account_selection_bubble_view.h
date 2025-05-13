@@ -33,7 +33,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
 
  public:
   AccountSelectionBubbleView(
-      const std::u16string& rp_for_display,
+      const content::RelyingPartyData& rp_data,
       const std::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
       views::View* anchor_view,

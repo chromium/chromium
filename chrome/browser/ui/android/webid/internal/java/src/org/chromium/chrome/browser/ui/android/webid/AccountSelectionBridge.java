@@ -111,7 +111,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      */
     @CalledByNative
     private boolean showAccounts(
-            @JniType("std::string") String rpForDisplay,
+            @JniType("std::u16string") String rpForDisplay,
             Account[] accounts,
             IdentityProviderData[] idpDataList,
             boolean isAutoReauthn,
@@ -139,7 +139,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      */
     @CalledByNative
     private boolean showFailureDialog(
-            @JniType("std::string") String rpForDisplay,
+            @JniType("std::u16string") String rpForDisplay,
             @JniType("std::string") String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
             @RpContext.EnumType int rpContext) {
@@ -163,7 +163,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      */
     @CalledByNative
     private boolean showErrorDialog(
-            @JniType("std::string") String rpForDisplay,
+            @JniType("std::u16string") String rpForDisplay,
             @JniType("std::string") String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
             @RpContext.EnumType int rpContext,
@@ -185,7 +185,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      */
     @CalledByNative
     private boolean showLoadingDialog(
-            @JniType("std::string") String rpForDisplay,
+            @JniType("std::u16string") String rpForDisplay,
             @JniType("std::string") String idpForDisplay,
             @RpContext.EnumType int rpContext) {
         return mAccountSelectionComponent.showLoadingDialog(rpForDisplay, idpForDisplay, rpContext);

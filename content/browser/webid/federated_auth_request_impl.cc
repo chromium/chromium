@@ -776,7 +776,7 @@ void FederatedAuthRequestImpl::RequestToken(
     auto get_info_it = token_request_get_infos_.find(idp_config_url);
     CHECK(get_info_it != token_request_get_infos_.end());
     if (!request_dialog_controller_->ShowLoadingDialog(
-            GetTopFrameOriginForDisplay(GetEmbeddingOrigin()),
+            CreateRpData(),
             FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
             get_info_it->second.rp_context, rp_mode_,
             base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
@@ -1611,8 +1611,7 @@ void FederatedAuthRequestImpl::NotifyAutofillSuggestionAccepted(
   // necessary in the dialog controller. We should probably be able to create
   // the internal state on demand in case it isn't available.
   if (!request_dialog_controller_->ShowLoadingDialog(
-          GetTopFrameOriginForDisplay(GetEmbeddingOrigin()),
-          FormatOriginForDisplay(url::Origin::Create(idp)),
+          CreateRpData(), FormatOriginForDisplay(url::Origin::Create(idp)),
           get_info_it->second.rp_context, blink::mojom::RpMode::kActive,
           base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
                          weak_ptr_factory_.GetWeakPtr()))) {
@@ -1779,9 +1778,8 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
                    !idp_info->metadata.requested_label.empty();
 
   if (!request_dialog_controller_->ShowFailureDialog(
-          GetTopFrameOriginForDisplay(GetEmbeddingOrigin()),
-          FormatOriginForDisplay(idp_origin), idp_info->rp_context, rp_mode_,
-          idp_info->metadata,
+          CreateRpData(), FormatOriginForDisplay(idp_origin),
+          idp_info->rp_context, rp_mode_, idp_info->metadata,
           base::BindOnce(&FederatedAuthRequestImpl::OnDismissFailureDialog,
                          weak_ptr_factory_.GetWeakPtr()),
           base::BindRepeating(&FederatedAuthRequestImpl::LoginToIdP,
@@ -2448,7 +2446,7 @@ void FederatedAuthRequestImpl::ShowErrorDialog(
 
   // TODO(crbug.com/40282657): Refactor IdentityCredentialTokenError
   if (!request_dialog_controller_->ShowErrorDialog(
-          GetTopFrameOriginForDisplay(GetEmbeddingOrigin()),
+          CreateRpData(),
           FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
           idp_infos_[idp_config_url]->rp_context, rp_mode_,
           idp_infos_[idp_config_url]->metadata, token_error,
@@ -3633,12 +3631,13 @@ RelyingPartyData FederatedAuthRequestImpl::CreateRpData() const {
       break;
     }
   }
-  std::string iframe_origin;
+  std::u16string iframe_origin;
   if (show_iframe_origin) {
-    iframe_origin = FormatOriginForDisplay(origin());
+    iframe_origin = base::UTF8ToUTF16(FormatOriginForDisplay(origin()));
   }
-  return RelyingPartyData(GetTopFrameOriginForDisplay(GetEmbeddingOrigin()),
-                          iframe_origin);
+  return RelyingPartyData(
+      base::UTF8ToUTF16(GetTopFrameOriginForDisplay(GetEmbeddingOrigin())),
+      iframe_origin);
 }
 
 }  // namespace content

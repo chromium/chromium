@@ -130,15 +130,15 @@ class CONTENT_EXPORT IdentityProviderData
 // endpoints themselves.
 struct CONTENT_EXPORT RelyingPartyData {
  public:
-  RelyingPartyData(const std::string& rp_for_display,
-                   const std::string& iframe_for_display);
+  RelyingPartyData(const std::u16string& rp_for_display,
+                   const std::u16string& iframe_for_display);
   RelyingPartyData(const RelyingPartyData& other);
   ~RelyingPartyData();
 
-  std::string rp_for_display;
+  std::u16string rp_for_display;
   // The formatted iframe origin. Empty if the iframe is same-site with
   // `rp_for_display`.
-  std::string iframe_for_display;
+  std::u16string iframe_for_display;
   gfx::Image rp_icon;
 };
 
@@ -235,7 +235,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // Returns true if the method successfully showed UI. When false, the caller
   // should assume that the API invocation was terminated and the cleanup
   // methods invoked.
-  virtual bool ShowFailureDialog(const std::string& rp_for_display,
+  virtual bool ShowFailureDialog(const RelyingPartyData& rp_data,
                                  const std::string& idp_for_display,
                                  blink::mojom::RpContext rp_context,
                                  blink::mojom::RpMode rp_mode,
@@ -247,7 +247,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // the method successfully showed UI. When false, the caller should assume
   // that the API invocation was terminated and the cleanup methods invoked.
   virtual bool ShowErrorDialog(
-      const std::string& rp_for_display,
+      const RelyingPartyData& rp_data,
       const std::string& idp_for_display,
       blink::mojom::RpContext rp_context,
       blink::mojom::RpMode rp_mode,
@@ -260,7 +260,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // for their accounts to be fetched. Returns true if the method successfully
   // showed UI. When false, the caller should assume that the API invocation was
   // terminated and the cleanup methods invoked.
-  virtual bool ShowLoadingDialog(const std::string& rp_for_display,
+  virtual bool ShowLoadingDialog(const RelyingPartyData& rp_data,
                                  const std::string& idp_for_display,
                                  blink::mojom::RpContext rp_context,
                                  blink::mojom::RpMode rp_mode,

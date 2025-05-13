@@ -37,9 +37,11 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
                                  public views::WidgetDelegate {
  public:
   explicit TestAccountSelectionView(FedCmAccountSelectionView* owner)
-      : AccountSelectionViewBase(owner,
-                                 /*url_loader_factory=*/nullptr,
-                                 /*rp_for_display=*/std::u16string()) {
+      : AccountSelectionViewBase(
+            owner,
+            /*url_loader_factory=*/nullptr,
+            content::RelyingPartyData(/*rp_for_display=*/u"",
+                                      /*iframe_for_display=*/u"")) {
     // This matches behavior of the production code, which implicitly passes
     // ownership of the view to the widget via DialogDelegate superclass.
     SetOwnedByWidget(OwnedByWidgetPassKey());
@@ -119,7 +121,7 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
 
 namespace {
 
-constexpr char kTopFrameEtldPlusOne[] = "top-frame-example.com";
+constexpr char16_t kTopFrameEtldPlusOne[] = u"top-frame-example.com";
 constexpr char kIdpEtldPlusOne[] = "idp-example.com";
 constexpr char kConfigUrl[] = "https://idp-example.com/fedcm.json";
 constexpr char kLoginUrl[] = "https://idp-example.com/login";
@@ -209,7 +211,7 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
  protected:
   AccountSelectionViewBase* CreateDialogView(
       bool has_modal_support,
-      const std::u16string& rp_for_display,
+      const content::RelyingPartyData& rp_data,
       const std::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
       blink::mojom::RpMode rp_mode,
@@ -274,6 +276,11 @@ class StubAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
   std::optional<DismissReason> dismiss_reason_;
   base::OnceClosure on_dismiss_;
 };
+
+content::RelyingPartyData GetRpData() {
+  return content::RelyingPartyData(kTopFrameEtldPlusOne,
+                                   /*iframe_for_display=*/u"");
+}
 
 }  // namespace
 
@@ -357,7 +364,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
             const std::vector<IdentityRequestAccountPtr>& new_accounts =
                 std::vector<IdentityRequestAccountPtr>()) {
     controller.Show(content::RelyingPartyData(kTopFrameEtldPlusOne,
-                                              /*iframe_for_display=*/""),
+                                              /*iframe_for_display=*/u""),
                     {idp_data_}, accounts, sign_in_mode, rp_mode, new_accounts);
   }
 
@@ -366,9 +373,8 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
       blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kPassive) {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
         delegate_.get(), tab_interface_.get(), this);
-    controller->ShowFailureDialog(kTopFrameEtldPlusOne, kIdpEtldPlusOne,
-                                  rp_context, rp_mode,
-                                  content::IdentityProviderMetadata());
+    controller->ShowFailureDialog(GetRpData(), kIdpEtldPlusOne, rp_context,
+                                  rp_mode, content::IdentityProviderMetadata());
     EXPECT_EQ(TestAccountSelectionView::SheetType::kFailure,
               controller->GetTestView()->sheet_type_);
     return controller;
@@ -379,9 +385,9 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
       blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kPassive) {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
         delegate_.get(), tab_interface_.get(), this);
-    controller->ShowErrorDialog(
-        kTopFrameEtldPlusOne, kIdpEtldPlusOne, rp_context, rp_mode,
-        content::IdentityProviderMetadata(), /*error=*/std::nullopt);
+    controller->ShowErrorDialog(GetRpData(), kIdpEtldPlusOne, rp_context,
+                                rp_mode, content::IdentityProviderMetadata(),
+                                /*error=*/std::nullopt);
     EXPECT_EQ(TestAccountSelectionView::SheetType::kError,
               controller->GetTestView()->sheet_type_);
     return controller;
@@ -392,8 +398,8 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
       blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kActive) {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
         delegate_.get(), tab_interface_.get(), this);
-    controller->ShowLoadingDialog(kTopFrameEtldPlusOne, kIdpEtldPlusOne,
-                                  rp_context, rp_mode);
+    controller->ShowLoadingDialog(GetRpData(), kIdpEtldPlusOne, rp_context,
+                                  rp_mode);
     EXPECT_EQ(TestAccountSelectionView::SheetType::kLoading,
               controller->GetTestView()->sheet_type_);
     return controller;
@@ -417,7 +423,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
         delegate_.get(), tab_interface_.get(), this);
     controller->Show(content::RelyingPartyData(kTopFrameEtldPlusOne,
-                                               /*iframe_for_display=*/""),
+                                               /*iframe_for_display=*/u""),
                      idp_list, accounts, sign_in_mode, rp_mode,
                      /*new_accounts=*/std::vector<IdentityRequestAccountPtr>());
     return controller;
@@ -1126,7 +1132,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   // Emulate another mismatch so we need to show the mismatch dialog again.
   controller->ShowFailureDialog(
-      kTopFrameEtldPlusOne, kIdpEtldPlusOne, blink::mojom::RpContext::kSignIn,
+      GetRpData(), kIdpEtldPlusOne, blink::mojom::RpContext::kSignIn,
       blink::mojom::RpMode::kPassive, content::IdentityProviderMetadata());
 
   // Mismatch dialog is visible again.
@@ -2160,7 +2166,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
       accounts_, SignInMode::kExplicit, blink::mojom::RpMode::kActive);
 
   controller->ShowErrorDialog(
-      kTopFrameEtldPlusOne, kIdpEtldPlusOne, blink::mojom::RpContext::kSignIn,
+      GetRpData(), kIdpEtldPlusOne, blink::mojom::RpContext::kSignIn,
       blink::mojom::RpMode::kActive, content::IdentityProviderMetadata(),
       /*error=*/std::nullopt);
 

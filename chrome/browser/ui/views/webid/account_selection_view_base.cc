@@ -320,8 +320,8 @@ void AccountHoverButton::SetCallbackForTesting(PressedCallback callback) {
 AccountSelectionViewBase::AccountSelectionViewBase(
     FedCmAccountSelectionView* owner,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::u16string rp_for_display)
-    : owner_(owner), rp_for_display_(rp_for_display) {}
+    const content::RelyingPartyData& rp_data)
+    : owner_(owner), rp_data_(rp_data) {}
 
 AccountSelectionViewBase::~AccountSelectionViewBase() = default;
 
@@ -528,7 +528,6 @@ AccountSelectionViewBase::CreateDisclosureLabel(
 std::pair<std::u16string, std::u16string>
 AccountSelectionViewBase::GetErrorDialogText(
     const std::optional<TokenError>& error,
-    const std::u16string& rp_for_display,
     const std::u16string& idp_for_display) {
   std::string code = error ? error->code : "";
   GURL url = error ? error->url : GURL();
@@ -538,14 +537,14 @@ AccountSelectionViewBase::GetErrorDialogText(
 
   if (code == kInvalidRequest) {
     summary = l10n_util::GetStringFUTF16(
-        IDS_SIGNIN_INVALID_REQUEST_ERROR_DIALOG_SUMMARY, rp_for_display,
-        idp_for_display);
+        IDS_SIGNIN_INVALID_REQUEST_ERROR_DIALOG_SUMMARY,
+        rp_data_.rp_for_display, idp_for_display);
     description = l10n_util::GetStringUTF16(
         IDS_SIGNIN_INVALID_REQUEST_ERROR_DIALOG_DESCRIPTION);
   } else if (code == kUnauthorizedClient) {
     summary = l10n_util::GetStringFUTF16(
-        IDS_SIGNIN_UNAUTHORIZED_CLIENT_ERROR_DIALOG_SUMMARY, rp_for_display,
-        idp_for_display);
+        IDS_SIGNIN_UNAUTHORIZED_CLIENT_ERROR_DIALOG_SUMMARY,
+        rp_data_.rp_for_display, idp_for_display);
     description = l10n_util::GetStringUTF16(
         IDS_SIGNIN_UNAUTHORIZED_CLIENT_ERROR_DIALOG_DESCRIPTION);
   } else if (code == kAccessDenied) {
@@ -562,7 +561,7 @@ AccountSelectionViewBase::GetErrorDialogText(
   } else if (code == kServerError) {
     summary = l10n_util::GetStringUTF16(IDS_SIGNIN_SERVER_ERROR_DIALOG_SUMMARY);
     description = l10n_util::GetStringFUTF16(
-        IDS_SIGNIN_SERVER_ERROR_DIALOG_DESCRIPTION, rp_for_display);
+        IDS_SIGNIN_SERVER_ERROR_DIALOG_DESCRIPTION, rp_data_.rp_for_display);
     // Extra description is not needed for kServerError.
     return {summary, description};
   } else {
@@ -580,7 +579,7 @@ AccountSelectionViewBase::GetErrorDialogText(
                    code == kTemporarilyUnavailable
                        ? IDS_SIGNIN_ERROR_DIALOG_TRY_OTHER_WAYS_RETRY_PROMPT
                        : IDS_SIGNIN_ERROR_DIALOG_TRY_OTHER_WAYS_PROMPT,
-                   rp_for_display);
+                   rp_data_.rp_for_display);
     return {summary, description};
   }
 

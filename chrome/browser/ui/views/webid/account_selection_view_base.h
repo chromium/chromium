@@ -161,7 +161,7 @@ class AccountSelectionViewBase {
   AccountSelectionViewBase(
       FedCmAccountSelectionView* owner,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::u16string rp_for_display);
+      const content::RelyingPartyData& rp_data);
   virtual ~AccountSelectionViewBase();
 
   // Updates the FedCM dialog to show the "account picker" sheet.
@@ -231,7 +231,6 @@ class AccountSelectionViewBase {
   // Gets the summary and description string of the error.
   std::pair<std::u16string, std::u16string> GetErrorDialogText(
       const std::optional<TokenError>& error,
-      const std::u16string& rp_for_display,
       const std::u16string& idp_for_display);
 
   // Observes events on AccountSelectionBubbleView.
@@ -248,8 +247,8 @@ class AccountSelectionViewBase {
   // but that's after FedCmAccountSelectionView is destroyed.
   raw_ptr<FedCmAccountSelectionView, DanglingUntriaged> owner_{nullptr};
 
-  // The description of the RP to be used in the dialog.
-  std::u16string rp_for_display_;
+  // Relying party data to customize the dialog.
+  content::RelyingPartyData rp_data_;
 
   // Used to ensure that callbacks are not run if the AccountSelectionViewBase
   // is destroyed.

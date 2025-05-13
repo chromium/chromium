@@ -161,7 +161,7 @@ int AddLoginButtonSeparator(views::View* scroller_content,
 }  // namespace
 
 AccountSelectionBubbleView::AccountSelectionBubbleView(
-    const std::u16string& rp_for_display,
+    const content::RelyingPartyData& rp_data,
     const std::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
     views::View* anchor_view,
@@ -175,9 +175,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
           views::BubbleBorder::Arrow::TOP_RIGHT,
           views::BubbleBorder::DIALOG_SHADOW,
           /*autosize=*/true),
-      AccountSelectionViewBase(owner,
-                               std::move(url_loader_factory),
-                               rp_for_display),
+      AccountSelectionViewBase(owner, std::move(url_loader_factory), rp_data),
       rp_context_(rp_context) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_fixed_width(kBubbleWidth);
@@ -192,7 +190,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
   SetShowCloseButton(false);
   set_close_on_deactivate(false);
 
-  title_ = GetTitle(rp_for_display_, idp_title, rp_context);
+  title_ = GetTitle(rp_data_.rp_for_display, idp_title, rp_context);
   SetAccessibleTitle(title_);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -210,7 +208,7 @@ void AccountSelectionBubbleView::ShowMultiAccountPicker(
     bool show_back_button) {
   bool is_multi_idp = idp_list.size() > 1u;
   std::u16string title = GetTitle(
-      rp_for_display_,
+      rp_data_.rp_for_display,
       is_multi_idp ? std::nullopt
                    : std::make_optional<std::u16string>(
                          base::UTF8ToUTF16(idp_list[0]->idp_for_display)),
@@ -258,7 +256,7 @@ void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
     const IdentityRequestAccountPtr& account,
     bool show_back_button) {
   std::u16string title =
-      GetTitle(rp_for_display_,
+      GetTitle(rp_data_.rp_for_display,
                base::UTF8ToUTF16(account->identity_provider->idp_for_display),
                rp_context_);
   UpdateHeader(account->identity_provider->idp_metadata.brand_decoded_icon,
@@ -276,7 +274,7 @@ void AccountSelectionBubbleView::ShowFailureDialog(
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata) {
   UpdateHeader(idp_metadata.brand_decoded_icon,
-               GetTitle(rp_for_display_, idp_for_display, rp_context_),
+               GetTitle(rp_data_.rp_for_display, idp_for_display, rp_context_),
                /*show_back_button=*/false,
                /*should_circle_crop_header_icon=*/true);
 
@@ -321,7 +319,7 @@ void AccountSelectionBubbleView::ShowErrorDialog(
     const content::IdentityProviderMetadata& idp_metadata,
     const std::optional<TokenError>& error) {
   std::u16string title =
-      GetTitle(rp_for_display_, idp_for_display, rp_context_);
+      GetTitle(rp_data_.rp_for_display, idp_for_display, rp_context_);
   UpdateHeader(idp_metadata.brand_decoded_icon, title,
                /*show_back_button=*/false,
                /*should_circle_crop_header_icon=*/true);
@@ -336,7 +334,7 @@ void AccountSelectionBubbleView::ShowErrorDialog(
   std::u16string summary_text;
   std::u16string description_text;
   std::tie(summary_text, description_text) =
-      GetErrorDialogText(error, rp_for_display_, idp_for_display);
+      GetErrorDialogText(error, idp_for_display);
 
   // Add error summary.
   views::Label* const summary =

@@ -45,8 +45,8 @@ IdentityProviderData::IdentityProviderData(
 
 IdentityProviderData::~IdentityProviderData() = default;
 
-RelyingPartyData::RelyingPartyData(const std::string& rp_for_display,
-                                   const std::string& iframe_for_display)
+RelyingPartyData::RelyingPartyData(const std::u16string& rp_for_display,
+                                   const std::u16string& iframe_for_display)
     : rp_for_display(rp_for_display), iframe_for_display(iframe_for_display) {}
 RelyingPartyData::RelyingPartyData(const RelyingPartyData& other) = default;
 RelyingPartyData::~RelyingPartyData() = default;
@@ -85,7 +85,7 @@ bool IdentityRequestDialogController::ShowAccountsDialog(
 }
 
 bool IdentityRequestDialogController::ShowFailureDialog(
-    const std::string& rp_for_display,
+    const RelyingPartyData& rp_data,
     const std::string& idp_for_display,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
@@ -100,7 +100,7 @@ bool IdentityRequestDialogController::ShowFailureDialog(
 }
 
 bool IdentityRequestDialogController::ShowErrorDialog(
-    const std::string& rp_for_display,
+    const RelyingPartyData& rp_data,
     const std::string& idp_for_display,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
@@ -116,7 +116,7 @@ bool IdentityRequestDialogController::ShowErrorDialog(
 }
 
 bool IdentityRequestDialogController::ShowLoadingDialog(
-    const std::string& rp_for_display,
+    const RelyingPartyData& rp_data,
     const std::string& idp_for_display,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,

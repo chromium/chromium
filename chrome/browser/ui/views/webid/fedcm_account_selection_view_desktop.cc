@@ -197,8 +197,8 @@ bool FedCmAccountSelectionView::Show(
 
   bool create_view = !account_selection_view_;
   if (create_view) {
-    CreateViewAndWidget(base::UTF8ToUTF16(rp_data.rp_for_display), idp_title,
-                        rp_context, rp_mode, has_modal_support);
+    CreateViewAndWidget(rp_data, idp_title, rp_context, rp_mode,
+                        has_modal_support);
   }
 
   if (sign_in_mode == Account::SignInMode::kAuto) {
@@ -340,7 +340,7 @@ bool FedCmAccountSelectionView::Show(
 }
 
 bool FedCmAccountSelectionView::ShowFailureDialog(
-    const std::string& rp_for_display,
+    const content::RelyingPartyData& rp_data,
     const std::string& idp_etld_plus_one,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
@@ -369,9 +369,8 @@ bool FedCmAccountSelectionView::ShowFailureDialog(
 
   bool create_view = !account_selection_view_;
   if (create_view) {
-    CreateViewAndWidget(base::UTF8ToUTF16(rp_for_display),
-                        base::UTF8ToUTF16(idp_etld_plus_one), rp_context,
-                        rp_mode, has_modal_support);
+    CreateViewAndWidget(rp_data, base::UTF8ToUTF16(idp_etld_plus_one),
+                        rp_context, rp_mode, has_modal_support);
   }
 
   account_selection_view_->ShowFailureDialog(
@@ -381,7 +380,7 @@ bool FedCmAccountSelectionView::ShowFailureDialog(
 }
 
 bool FedCmAccountSelectionView::ShowErrorDialog(
-    const std::string& rp_for_display,
+    const content::RelyingPartyData& rp_data,
     const std::string& idp_etld_plus_one,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
@@ -408,9 +407,8 @@ bool FedCmAccountSelectionView::ShowErrorDialog(
 
   bool create_view = !account_selection_view_;
   if (create_view) {
-    CreateViewAndWidget(base::UTF8ToUTF16(rp_for_display),
-                        base::UTF8ToUTF16(idp_etld_plus_one), rp_context,
-                        rp_mode, has_modal_support);
+    CreateViewAndWidget(rp_data, base::UTF8ToUTF16(idp_etld_plus_one),
+                        rp_context, rp_mode, has_modal_support);
   }
 
   account_selection_view_->ShowErrorDialog(base::UTF8ToUTF16(idp_etld_plus_one),
@@ -420,7 +418,7 @@ bool FedCmAccountSelectionView::ShowErrorDialog(
 }
 
 bool FedCmAccountSelectionView::ShowLoadingDialog(
-    const std::string& rp_for_display,
+    const content::RelyingPartyData& rp_data,
     const std::string& idp_etld_plus_one,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode) {
@@ -436,9 +434,8 @@ bool FedCmAccountSelectionView::ShowLoadingDialog(
 
   bool create_view = !account_selection_view_;
   if (create_view) {
-    CreateViewAndWidget(base::UTF8ToUTF16(rp_for_display),
-                        base::UTF8ToUTF16(idp_etld_plus_one), rp_context,
-                        rp_mode,
+    CreateViewAndWidget(rp_data, base::UTF8ToUTF16(idp_etld_plus_one),
+                        rp_context, rp_mode,
                         /*has_modal_support=*/true);
   }
 
@@ -485,7 +482,7 @@ void FedCmAccountSelectionView::SetInputEventActivationProtectorForTesting(
 }
 
 void FedCmAccountSelectionView::CreateViewAndWidget(
-    const std::u16string& rp_for_display,
+    const content::RelyingPartyData& rp_data,
     const std::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
@@ -493,7 +490,7 @@ void FedCmAccountSelectionView::CreateViewAndWidget(
   CHECK(!dialog_widget_);
   CHECK(tab_);
   account_selection_view_ =
-      CreateDialogView(has_modal_support, rp_for_display, idp_title, rp_context,
+      CreateDialogView(has_modal_support, rp_data, idp_title, rp_context,
                        rp_mode, &dialog_type_);
   dialog_widget_ = CreateDialogWidget();
   dialog_widget_->MakeCloseSynchronous(base::BindOnce(
@@ -950,7 +947,7 @@ views::View* FedCmAccountSelectionView::GetAnchorView() {
 
 AccountSelectionViewBase* FedCmAccountSelectionView::CreateDialogView(
     bool has_modal_support,
-    const std::u16string& rp_for_display,
+    const content::RelyingPartyData& rp_data,
     const std::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
@@ -960,11 +957,11 @@ AccountSelectionViewBase* FedCmAccountSelectionView::CreateDialogView(
 
   if (rp_mode == blink::mojom::RpMode::kActive && has_modal_support) {
     *out_dialog_type = DialogType::MODAL;
-    return new AccountSelectionModalView(rp_for_display, idp_title, rp_context,
+    return new AccountSelectionModalView(rp_data, idp_title, rp_context,
                                          GetURLLoaderFactory(), this);
   } else {
     *out_dialog_type = DialogType::BUBBLE;
-    return new AccountSelectionBubbleView(rp_for_display, idp_title, rp_context,
+    return new AccountSelectionBubbleView(rp_data, idp_title, rp_context,
                                           GetAnchorView(),
                                           GetURLLoaderFactory(), this);
   }

@@ -36,7 +36,7 @@ class AccountSelectionModalView : public views::DialogDelegateView,
 
  public:
   AccountSelectionModalView(
-      const std::u16string& rp_for_display,
+      const content::RelyingPartyData& rp_data,
       const std::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,

@@ -48,7 +48,7 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
       DismissCallback dismmiss_callback,
       AccountsDisplayedCallback accounts_displayed_callback) override;
 
-  bool ShowFailureDialog(const std::string& rp_for_display,
+  bool ShowFailureDialog(const RelyingPartyData& rp_data,
                          const std::string& idp_for_display,
                          blink::mojom::RpContext rp_context,
                          blink::mojom::RpMode rp_mode,
@@ -56,7 +56,7 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
                          DismissCallback dismiss_callback,
                          LoginToIdPCallback login_callback) override;
 
-  bool ShowErrorDialog(const std::string& rp_for_display,
+  bool ShowErrorDialog(const RelyingPartyData& rp_data,
                        const std::string& idp_for_display,
                        blink::mojom::RpContext rp_context,
                        blink::mojom::RpMode rp_mode,
@@ -65,7 +65,7 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
                        DismissCallback dismiss_callback,
                        MoreDetailsCallback more_details_callback) override;
 
-  bool ShowLoadingDialog(const std::string& rp_for_display,
+  bool ShowLoadingDialog(const RelyingPartyData& rp_data,
                          const std::string& idp_for_display,
                          blink::mojom::RpContext rp_context,
                          blink::mojom::RpMode rp_mode,

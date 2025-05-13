@@ -139,14 +139,12 @@ std::unique_ptr<views::View> CreateButtonContainer() {
 }  // namespace
 
 AccountSelectionModalView::AccountSelectionModalView(
-    const std::u16string& rp_for_display,
+    const content::RelyingPartyData& rp_data,
     const std::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     FedCmAccountSelectionView* owner)
-    : AccountSelectionViewBase(owner,
-                               std::move(url_loader_factory),
-                               rp_for_display) {
+    : AccountSelectionViewBase(owner, std::move(url_loader_factory), rp_data) {
   SetModalType(ui::mojom::ModalType::kChild);
   SetOwnedByWidget(OwnedByWidgetPassKey());
   SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -158,7 +156,7 @@ AccountSelectionModalView::AccountSelectionModalView(
       kBetweenChildSpacing));
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
-  title_ = GetTitle(rp_for_display_, idp_title, rp_context);
+  title_ = GetTitle(rp_data_.rp_for_display, idp_title, rp_context);
   SetTitle(title_);
 
   header_view_ = AddChildView(CreateHeader());
@@ -546,7 +544,7 @@ void AccountSelectionModalView::ShowErrorDialog(
   std::u16string summary_text;
   std::u16string description_text;
   std::tie(summary_text, description_text) =
-      GetErrorDialogText(error, rp_for_display_, idp_for_display);
+      GetErrorDialogText(error, idp_for_display);
 
   title_ = summary_text;
   title_label_->SetText(title_);
