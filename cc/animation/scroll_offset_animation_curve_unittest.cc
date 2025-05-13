@@ -4,8 +4,13 @@
 
 #include "cc/animation/scroll_offset_animation_curve.h"
 
+#include <utility>
+#include <vector>
+
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "cc/animation/scroll_offset_animation_curve_factory.h"
+#include "cc/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 
@@ -223,16 +228,18 @@ TEST(ScrollOffsetAnimationCurveTest, CurveWithLargeDelay) {
   // Re-targeting when animation duration is 0.
   curve->UpdateTarget(base::Seconds(-0.01), gfx::PointF(0.f, 300.f));
   double duration =
-      ScrollOffsetAnimationCurve::EaseInOutSegmentDuration(
-          gfx::Vector2dF(0.f, 200.f), duration_hint, base::Seconds(0.01))
+      curve
+          ->EaseInOutSegmentDuration(gfx::Vector2dF(0.f, 200.f), duration_hint,
+                                     base::Seconds(0.01))
           .InSecondsF();
   EXPECT_EQ(duration, curve->Duration().InSecondsF());
 
   // Re-targeting before last_retarget_, the  difference should be accounted for
   // in duration.
   curve->UpdateTarget(base::Seconds(-0.01), gfx::PointF(0.f, 500.f));
-  duration = ScrollOffsetAnimationCurve::EaseInOutSegmentDuration(
-                 gfx::Vector2dF(0.f, 500.f), duration_hint, base::Seconds(0.01))
+  duration = curve
+                 ->EaseInOutSegmentDuration(gfx::Vector2dF(0.f, 500.f),
+                                            duration_hint, base::Seconds(0.01))
                  .InSecondsF();
   EXPECT_EQ(duration, curve->Duration().InSecondsF());
 
@@ -258,8 +265,9 @@ TEST(ScrollOffsetAnimationCurveTest, UpdateTargetZeroLastSegmentDuration) {
   gfx::Vector2dF new_delta =
       gfx::PointF(0.f, 200.f) - curve->GetValue(base::Seconds(0.05));
   double expected_duration =
-      ScrollOffsetAnimationCurve::EaseInOutSegmentDuration(
-          new_delta, duration_hint, base::TimeDelta())
+      curve
+          ->EaseInOutSegmentDuration(new_delta, duration_hint,
+                                     base::TimeDelta())
           .InSecondsF() +
       0.05;
   curve->UpdateTarget(base::Seconds(0.05), gfx::PointF(0.f, 200.f));
@@ -273,10 +281,80 @@ TEST(ScrollOffsetAnimationCurveTest, UpdateTargetZeroLastSegmentDuration) {
 
   // Re-target 3, this should set total_animation_duration based on new_delta.
   new_delta = gfx::PointF(0.f, 500.f) - curve->GetValue(base::Seconds(0.05));
-  expected_duration = ScrollOffsetAnimationCurve::EaseInOutSegmentDuration(
-                          new_delta, duration_hint, base::Seconds(0.15))
+  expected_duration = curve
+                          ->EaseInOutSegmentDuration(new_delta, duration_hint,
+                                                     base::Seconds(0.15))
                           .InSecondsF();
   curve->UpdateTarget(base::Seconds(-0.1), gfx::PointF(0.f, 500.f));
   EXPECT_NEAR(expected_duration, curve->Duration().InSecondsF(), 0.0002f);
 }
+
+class ScrollOffsetAnimationCurveTestWithProgrammaticOverride
+    : public ::testing::Test {
+ public:
+  ScrollOffsetAnimationCurveTestWithProgrammaticOverride() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {
+            features::kProgrammaticScrollAnimationOverride,
+            {
+                {"cubic_bezier_x1", "0.4"},          //
+                {"cubic_bezier_y1", "0"},            //
+                {"cubic_bezier_x2", "0"},            //
+                {"cubic_bezier_y2", "1.0"},          //
+                {"max_animation_duration", "1.5s"},  //
+            }  //
+        }  //
+    };
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        std::move(enabled_features),
+        /*disabled_features=*/{});
+  }
+  ~ScrollOffsetAnimationCurveTestWithProgrammaticOverride() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ScrollOffsetAnimationCurveTestWithProgrammaticOverride, GetValue) {
+  gfx::PointF initial_value(2.f, 40.f);
+  gfx::PointF target_value(10.f, 20.f);
+  std::unique_ptr<ScrollOffsetAnimationCurve> curve(
+      ScrollOffsetAnimationCurveFactory::CreateAnimation(
+          target_value, ScrollOffsetAnimationCurve::ScrollType::kProgrammatic));
+
+  curve->SetInitialValue(initial_value);
+
+  base::TimeDelta duration = curve->Duration();
+  EXPECT_GT(curve->Duration().InSecondsF(), 0);
+  EXPECT_LT(curve->Duration().InSecondsF(), 0.1);
+
+  EXPECT_EQ(duration, curve->Duration());
+
+  EXPECT_POINTF_EQ(initial_value, curve->GetValue(base::Seconds(-1.0)));
+  EXPECT_POINTF_EQ(initial_value, curve->GetValue(base::TimeDelta()));
+  EXPECT_POINTF_NEAR(gfx::PointF(8.892, 22.770),
+                     curve->GetValue(duration * 0.5f), 0.001f);
+  EXPECT_POINTF_EQ(target_value, curve->GetValue(duration));
+  EXPECT_POINTF_EQ(target_value,
+                   curve->GetValue(duration + base::Seconds(1.0)));
+
+  // Verify that GetValue takes the timing function into account.
+  gfx::PointF value = curve->GetValue(duration * 0.25f);
+  EXPECT_NEAR(5.258f, value.x(), 0.001f);
+  EXPECT_NEAR(31.854f, value.y(), 0.001f);
+}
+
+TEST_F(ScrollOffsetAnimationCurveTestWithProgrammaticOverride,
+       MaxAnimationDuration) {
+  gfx::PointF initial_value(2.f, 40.f);
+  gfx::PointF target_value(200000.f, 400000.f);
+  std::unique_ptr<ScrollOffsetAnimationCurve> curve(
+      ScrollOffsetAnimationCurveFactory::CreateAnimation(
+          target_value, ScrollOffsetAnimationCurve::ScrollType::kProgrammatic));
+
+  curve->SetInitialValue(initial_value);
+  EXPECT_EQ(curve->Duration().InSecondsF(), 1.5);
+}
+
 }  // namespace cc

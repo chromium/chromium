@@ -1600,10 +1600,10 @@ TEST_F(AnnotationAgentImplTest, GlicShouldNotAnimateLongScroll) {
       }
       #foo {
         position: absolute;
-        top: 7500px;
+        top: 17000px;
       }
       body {
-        height: 10000px;
+        height: 20000px;
         margin: 0;
       }
     </style>
@@ -1730,10 +1730,10 @@ TEST_F(AnnotationAgentImplTest, GlicScrollIgnoresBrowserZoom) {
       }
       #foo {
         position: absolute;
-        top: 5000px;
+        top: 10000px;
       }
       body {
-        height: 10000px;
+        height: 20000px;
         margin: 0;
       }
     </style>
@@ -2159,7 +2159,7 @@ TEST_F(AnnotationAgentImplTest,
   EXPECT_GT(GetAlphaForGlicMarkerAt(0u), 0.f);
 }
 
-// Glic instant scrolls for more than 7000px of distance.
+// Glic instant scrolls for more than 15000dip of distance.
 TEST_F(AnnotationAgentImplTest, GlicHighlight_InstantStartForInstantScroll) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -2168,10 +2168,10 @@ TEST_F(AnnotationAgentImplTest, GlicHighlight_InstantStartForInstantScroll) {
     <style>
     #foo {
       position: absolute;
-      top: 7500px;
+      top: 17000px;
     }
     body {
-      height: 10000px;
+      height: 20000px;
       margin: 0;
     }
     </style>

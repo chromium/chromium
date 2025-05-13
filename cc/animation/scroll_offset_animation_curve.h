@@ -53,22 +53,13 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
     kInverseDelta
   };
 
+  enum class ScrollType { kProgrammatic, kKeyboard, kMouseWheel, kAutoScroll };
+
   static const ScrollOffsetAnimationCurve* ToScrollOffsetAnimationCurve(
       const AnimationCurve* c);
 
   static ScrollOffsetAnimationCurve* ToScrollOffsetAnimationCurve(
       AnimationCurve* c);
-
-  // There is inherent delay in input processing; it may take many milliseconds
-  // from the time of user input to when when we're actually able to handle it
-  // here. This delay is represented by the |delayed_by| value. The way we have
-  // decided to factor this in is by reducing the duration of the resulting
-  // animation by this delayed amount. This also applies to
-  // LinearSegmentDuration.
-  static base::TimeDelta EaseInOutSegmentDuration(
-      const gfx::Vector2dF& delta,
-      DurationBehavior duration_behavior,
-      base::TimeDelta delayed_by);
 
   static base::TimeDelta LinearSegmentDuration(const gfx::Vector2dF& delta,
                                                base::TimeDelta delayed_by,
@@ -115,6 +106,9 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
   void set_target(Target* target) { target_ = target; }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ScrollOffsetAnimationCurveTest, CurveWithLargeDelay);
+  FRIEND_TEST_ALL_PREFIXES(ScrollOffsetAnimationCurveTest,
+                           UpdateTargetZeroLastSegmentDuration);
   friend class ScrollOffsetAnimationCurveFactory;
   enum class AnimationType { kLinear, kEaseInOut };
 
@@ -123,17 +117,29 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
   ScrollOffsetAnimationCurve(
       const gfx::PointF& target_value,
       AnimationType animation_type,
+      ScrollType scroll_type,
       std::optional<DurationBehavior> duration_behavior = std::nullopt);
   ScrollOffsetAnimationCurve(
       const gfx::PointF& target_value,
       std::unique_ptr<gfx::TimingFunction> timing_function,
       AnimationType animation_type,
+      ScrollType scroll_type,
       std::optional<DurationBehavior> duration_behavior);
 
   base::TimeDelta SegmentDuration(
       const gfx::Vector2dF& delta,
       base::TimeDelta delayed_by,
       std::optional<double> velocity = std::nullopt);
+
+  // There is inherent delay in input processing; it may take many milliseconds
+  // from the time of user input to when when we're actually able to handle it
+  // here. This delay is represented by the |delayed_by| value. The way we have
+  // decided to factor this in is by reducing the duration of the resulting
+  // animation by this delayed amount. This also applies to
+  // LinearSegmentDuration.
+  base::TimeDelta EaseInOutSegmentDuration(const gfx::Vector2dF& delta,
+                                           DurationBehavior duration_behavior,
+                                           base::TimeDelta delayed_by);
 
   base::TimeDelta EaseInOutBoundedSegmentDuration(
       const gfx::Vector2dF& new_delta,
@@ -143,6 +149,9 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
   // Returns the velocity at time t in units of pixels per second.
   double CalculateVelocity(base::TimeDelta t);
 
+  std::unique_ptr<gfx::TimingFunction> GetEasingFunction(
+      std::optional<double> slope);
+
   gfx::PointF initial_value_;
   gfx::PointF target_value_;
   base::TimeDelta total_animation_duration_;
@@ -151,7 +160,8 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
   base::TimeDelta last_retarget_;
 
   std::unique_ptr<gfx::TimingFunction> timing_function_;
-  AnimationType animation_type_;
+  const AnimationType animation_type_;
+  const ScrollType scroll_type_;
 
   // Only valid when |animation_type_| is EASE_IN_OUT.
   std::optional<DurationBehavior> duration_behavior_;

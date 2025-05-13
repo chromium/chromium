@@ -12,11 +12,9 @@
 namespace cc {
 class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurveFactory {
  public:
-  enum class ScrollType { kProgrammatic, kKeyboard, kMouseWheel, kAutoScroll };
-
   static std::unique_ptr<ScrollOffsetAnimationCurve> CreateAnimation(
       const gfx::PointF& target_value,
-      ScrollType scroll_type);
+      ScrollOffsetAnimationCurve::ScrollType scroll_type);
 
   static std::unique_ptr<ScrollOffsetAnimationCurve>
   CreateEaseInOutAnimationForTesting(
@@ -30,6 +28,7 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurveFactory {
  private:
   static std::unique_ptr<ScrollOffsetAnimationCurve> CreateEaseInOutAnimation(
       const gfx::PointF& target_value,
+      ScrollOffsetAnimationCurve::ScrollType scroll_type,
       ScrollOffsetAnimationCurve::DurationBehavior duration_hint);
 
   static std::unique_ptr<ScrollOffsetAnimationCurve> CreateLinearAnimation(

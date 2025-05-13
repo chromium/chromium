@@ -67,7 +67,7 @@ void ProgrammaticScrollAnimator::AnimateToOffset(
   target_offset_ = offset;
   animation_curve_ = cc::ScrollOffsetAnimationCurveFactory::CreateAnimation(
       CompositorOffsetFromBlinkOffset(target_offset_),
-      cc::ScrollOffsetAnimationCurveFactory::ScrollType::kProgrammatic);
+      cc::ScrollOffsetAnimationCurve::ScrollType::kProgrammatic);
 
   scrollable_area_->RegisterForAnimation();
   if (!scrollable_area_->ScheduleAnimation()) {

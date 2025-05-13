@@ -10,15 +10,15 @@
 namespace cc {
 namespace {
 ScrollOffsetAnimationCurve::DurationBehavior GetDurationBehaviorFromScrollType(
-    ScrollOffsetAnimationCurveFactory::ScrollType scroll_type) {
+    ScrollOffsetAnimationCurve::ScrollType scroll_type) {
   switch (scroll_type) {
-    case ScrollOffsetAnimationCurveFactory::ScrollType::kProgrammatic:
+    case ScrollOffsetAnimationCurve::ScrollType::kProgrammatic:
       return ScrollOffsetAnimationCurve::DurationBehavior::kDeltaBased;
-    case ScrollOffsetAnimationCurveFactory::ScrollType::kKeyboard:
+    case ScrollOffsetAnimationCurve::ScrollType::kKeyboard:
       return ScrollOffsetAnimationCurve::DurationBehavior::kConstant;
-    case ScrollOffsetAnimationCurveFactory::ScrollType::kMouseWheel:
+    case ScrollOffsetAnimationCurve::ScrollType::kMouseWheel:
       return ScrollOffsetAnimationCurve::DurationBehavior::kInverseDelta;
-    case ScrollOffsetAnimationCurveFactory::ScrollType::kAutoScroll:
+    case ScrollOffsetAnimationCurve::ScrollType::kAutoScroll:
       NOTREACHED();
   }
 }
@@ -28,13 +28,14 @@ ScrollOffsetAnimationCurve::DurationBehavior GetDurationBehaviorFromScrollType(
 std::unique_ptr<ScrollOffsetAnimationCurve>
 ScrollOffsetAnimationCurveFactory::CreateAnimation(
     const gfx::PointF& target_value,
-    ScrollType scroll_type) {
-  if (scroll_type == ScrollType::kAutoScroll) {
+    ScrollOffsetAnimationCurve::ScrollType scroll_type) {
+  if (scroll_type == ScrollOffsetAnimationCurve::ScrollType::kAutoScroll) {
     return CreateLinearAnimation(target_value);
   }
 
   return CreateEaseInOutAnimation(
-      target_value, GetDurationBehaviorFromScrollType(scroll_type));
+      target_value, scroll_type,
+      GetDurationBehaviorFromScrollType(scroll_type));
 }
 
 // static
@@ -42,7 +43,9 @@ std::unique_ptr<ScrollOffsetAnimationCurve>
 ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
     const gfx::PointF& target_value,
     ScrollOffsetAnimationCurve::DurationBehavior duration_behavior) {
-  return CreateEaseInOutAnimation(target_value, duration_behavior);
+  return CreateEaseInOutAnimation(
+      target_value, ScrollOffsetAnimationCurve::ScrollType::kProgrammatic,
+      duration_behavior);
 }
 
 // static
@@ -56,10 +59,11 @@ ScrollOffsetAnimationCurveFactory::CreateLinearAnimationForTesting(
 std::unique_ptr<ScrollOffsetAnimationCurve>
 ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimation(
     const gfx::PointF& target_value,
+    ScrollOffsetAnimationCurve::ScrollType scroll_type,
     ScrollOffsetAnimationCurve::DurationBehavior duration_behavior) {
   return base::WrapUnique(new ScrollOffsetAnimationCurve(
       target_value, ScrollOffsetAnimationCurve::AnimationType::kEaseInOut,
-      duration_behavior));
+      scroll_type, duration_behavior));
 }
 
 // static
@@ -67,7 +71,8 @@ std::unique_ptr<ScrollOffsetAnimationCurve>
 ScrollOffsetAnimationCurveFactory::CreateLinearAnimation(
     const gfx::PointF& target_value) {
   return base::WrapUnique(new ScrollOffsetAnimationCurve(
-      target_value, ScrollOffsetAnimationCurve::AnimationType::kLinear));
+      target_value, ScrollOffsetAnimationCurve::AnimationType::kLinear,
+      ScrollOffsetAnimationCurve::ScrollType::kAutoScroll));
 }
 
 }  // namespace cc
