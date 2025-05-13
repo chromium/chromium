@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, DISABLED_DevToolsUpdatesBrowserWindow) {
   EXPECT_EQ(full_bounds, contents_web_view()->bounds());
 }
 
-// Verifies that the side panel's rounded corner is being correctly laid out.
+// Verifies that the side panel's rounded corner is being correctly layed out.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, SidePanelRoundedCornerLayout) {
   SidePanelCoordinator* coordinator =
       (browser())->GetFeatures().side_panel_coordinator();
@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, SidePanelRoundedCornerLayout) {
   coordinator->Show(SidePanelEntry::Id::kBookmarks);
   EXPECT_EQ(side_panel()->bounds().x(),
             side_panel_rounded_corner()->bounds().right());
-  EXPECT_EQ(side_panel()->bounds().y() - views::Separator::kThickness,
+  EXPECT_EQ(side_panel()->bounds().y(),
             side_panel_rounded_corner()->bounds().y());
 }
 

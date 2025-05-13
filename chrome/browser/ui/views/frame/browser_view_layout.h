@@ -133,17 +133,15 @@ class BrowserViewLayout : public views::LayoutManager {
   int LayoutBookmarkBar(int top);
   int LayoutInfoBar(int top);
 
-  // Helper struct and function for LayoutContentsContainerView that calculates
-  // bounds for |contents_container_| and |unified_side_panel_|.
-  struct ContentsContainerLayoutResult;
-  ContentsContainerLayoutResult CalculateContentsContainerLayout(
-      int top,
-      int bottom) const;
-
   // Layout the |contents_container_| view between the coordinates |top| and
   // |bottom|. See browser_view.h for details of the relationship between
-  // |contents_container_| and other views. Also lays out |unified_side_panel_|.
+  // |contents_container_| and other views.
   void LayoutContentsContainerView(int top, int bottom);
+
+  // Layout the `side_panel`. This updates the passed in
+  // `contents_container_bounds` to accommodate the side panel.
+  void LayoutSidePanelView(views::View* side_panel,
+                           gfx::Rect& contents_container_bounds);
 
   // Updates |top_container_|'s bounds. The new bounds depend on the size of
   // the bookmark bar and the toolbar.
