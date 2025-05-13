@@ -73,9 +73,6 @@
 # TODO(crbug.com/40840678): Timed out waiting for tab title
 -TaskManagerBrowserTest.IdleWakeups
 
-# TODO(crbug.com/40840681): Cancel button should be focused, but nothing is focused
--FolderUploadConfirmationViewTest.InitiallyFocusesCancel
-
 # TODO(crbug.com/40840682): Dialog not focused as expected
 -ExternalProtocolDialogBrowserTest.TestFocus
 
