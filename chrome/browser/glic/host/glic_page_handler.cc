@@ -848,8 +848,8 @@ content::RenderFrameHost* GlicPageHandler::GetGuestMainFrame() {
   }
   webui_frame->ForEachRenderFrameHostWithAction(
       [&web_view_guest](content::RenderFrameHost* rfh) {
-        if (auto* web_view =
-                extensions::WebViewGuest::FromRenderFrameHost(rfh)) {
+        auto* web_view = extensions::WebViewGuest::FromRenderFrameHost(rfh);
+        if (web_view && web_view->attached()) {
           web_view_guest = web_view;
           return content::RenderFrameHost::FrameIterationAction::kStop;
         }
