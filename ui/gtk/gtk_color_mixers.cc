@@ -51,6 +51,15 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
       accent_color.value_or(GetBgColor("treeview.view "
                                        "treeview.view.cell:selected:focus"));
 
+  static constexpr char kTextFocused[] =
+      "textview.view:focus:focus-within text:focus:focus-within";
+  static constexpr char kSelectionFocused[] =
+      "textview.view:focus:focus-within text:focus:focus-within "
+      "selection:focus:focus-within";
+  const SkColor kSelectedTextBackground = GetBgColor(kSelectionFocused);
+  const SkColor kSelectedTextForeground =
+      GetFgColor(GtkCheckVersion(4) ? kTextFocused : kSelectionFocused);
+
   // Core colors
   mixer[ui::kColorAccent] = {accent_bg};
   mixer[ui::kColorAlertHighSeverity] = {SelectBasedOnDarkInput(
@@ -72,8 +81,8 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorPrimaryBackground] = {primary_bg};
   mixer[ui::kColorPrimaryForeground] = {label_fg};
   mixer[ui::kColorSecondaryForeground] = {label_fg_disabled};
-  mixer[ui::kColorTextSelectionBackground] = {GetBgColor("label selection")};
-  mixer[ui::kColorTextSelectionForeground] = {GetFgColor("label selection")};
+  mixer[ui::kColorTextSelectionBackground] = {kSelectedTextBackground};
+  mixer[ui::kColorTextSelectionForeground] = {kSelectedTextForeground};
 
   // UI element colors
   mixer[ui::kColorAvatarHeaderArt] =
@@ -183,15 +192,8 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorTextfieldForegroundDisabled] = {
       GetFgColor("textview.view:disabled text")};
   mixer[ui::kColorTextfieldForegroundPlaceholder] = {GtkCheckVersion(4)};
-  static constexpr char kTextFocused[] =
-      "textview.view:focus:focus-within text:focus:focus-within";
-  static constexpr char kSelectionFocused[] =
-      "textview.view:focus:focus-within text:focus:focus-within "
-      "selection:focus:focus-within";
-  mixer[ui::kColorTextfieldSelectionBackground] = {
-      GetBgColor(kSelectionFocused)};
-  mixer[ui::kColorTextfieldSelectionForeground] = {
-      GetFgColor(GtkCheckVersion(4) ? kTextFocused : kSelectionFocused)};
+  mixer[ui::kColorTextfieldSelectionBackground] = {kSelectedTextBackground};
+  mixer[ui::kColorTextfieldSelectionForeground] = {kSelectedTextForeground};
   mixer[ui::kColorThrobber] = {GetFgColor("spinner")};
   mixer[ui::kColorThrobberPreconnect] = {GetFgColor("spinner:disabled")};
   mixer[ui::kColorToggleButtonTrackOff] = {
