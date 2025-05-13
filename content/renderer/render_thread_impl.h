@@ -108,10 +108,6 @@ class RenderThreadObserver;
 class RendererBlinkPlatformImpl;
 class VariationsRenderThreadObserver;
 
-#if BUILDFLAG(IS_ANDROID)
-class StreamTextureFactory;
-#endif
-
 #if BUILDFLAG(IS_WIN)
 class DCOMPTextureFactory;
 class OverlayStateServiceProvider;
@@ -255,11 +251,6 @@ class CONTENT_EXPORT RenderThreadImpl
   blink::URLLoaderThrottleProvider* url_loader_throttle_provider() const {
     return url_loader_throttle_provider_.get();
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  scoped_refptr<StreamTextureFactory> GetStreamTexureFactory();
-  bool EnableStreamTextureCopy();
-#endif
 
 #if BUILDFLAG(IS_WIN)
   scoped_refptr<DCOMPTextureFactory> GetDCOMPTextureFactory();
@@ -534,10 +525,6 @@ class CONTENT_EXPORT RenderThreadImpl
 
   // Thread to run the VideoFrameCompositor on.
   std::unique_ptr<base::Thread> video_frame_compositor_thread_;
-
-#if BUILDFLAG(IS_ANDROID)
-  scoped_refptr<StreamTextureFactory> stream_texture_factory_;
-#endif
 
 #if BUILDFLAG(IS_WIN)
   scoped_refptr<DCOMPTextureFactory> dcomp_texture_factory_;

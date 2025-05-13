@@ -137,11 +137,7 @@ component("service") {
     }
   }
   if (is_android) {
-    sources += [
-      "image_transport_surface_android.cc",
-      "stream_texture_android.cc",
-      "stream_texture_android.h",
-    ]
+    sources += [ "image_transport_surface_android.cc" ]
     libs += [ "android" ]
   }
   if (is_linux || is_chromeos) {

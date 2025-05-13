@@ -25,7 +25,6 @@ class ChromeOsCdmFactory;
 
 namespace content {
 class AndroidOverlaySyncHelper;
-class StreamTextureFactory;
 #if BUILDFLAG(IS_WIN)
 class DCOMPTextureFactory;
 #endif
@@ -136,7 +135,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
   friend class gpu::GpuChannelHost;
   friend class gpu::CommandBufferProxyImpl;
   friend class gpu::SharedImageInterfaceProxy;
-  friend class content::StreamTextureFactory;
 #if BUILDFLAG(IS_WIN)
   friend class content::DCOMPTextureFactory;
 #endif

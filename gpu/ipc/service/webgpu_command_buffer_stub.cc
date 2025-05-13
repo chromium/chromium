@@ -37,10 +37,6 @@
 #include "base/win/win_util.h"
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-#include "gpu/ipc/service/stream_texture_android.h"
-#endif
-
 namespace gpu {
 
 WebGPUCommandBufferStub::WebGPUCommandBufferStub(

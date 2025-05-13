@@ -173,7 +173,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include <cpu-features.h>
-#include "content/renderer/media/android/stream_texture_factory.h"
 #include "media/base/android/media_codec_util.h"
 #endif
 
@@ -1237,25 +1236,6 @@ RenderThreadImpl::SharedMainThreadContextProvider() {
 
   return shared_main_thread_contexts_;
 }
-
-#if BUILDFLAG(IS_ANDROID)
-scoped_refptr<StreamTextureFactory> RenderThreadImpl::GetStreamTexureFactory() {
-  DCHECK(IsMainThread());
-  if (!stream_texture_factory_ || stream_texture_factory_->IsLost()) {
-    scoped_refptr<gpu::GpuChannelHost> channel = EstablishGpuChannelSync();
-    if (!channel) {
-      stream_texture_factory_ = nullptr;
-      return nullptr;
-    }
-    stream_texture_factory_ = StreamTextureFactory::Create(std::move(channel));
-  }
-  return stream_texture_factory_;
-}
-
-bool RenderThreadImpl::EnableStreamTextureCopy() {
-  return GetContentClient()->UsingSynchronousCompositing();
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
 scoped_refptr<DCOMPTextureFactory> RenderThreadImpl::GetDCOMPTextureFactory() {

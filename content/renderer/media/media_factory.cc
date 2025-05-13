@@ -76,7 +76,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/renderer/media/android/flinging_renderer_client_factory.h"
-#include "content/renderer/media/android/stream_texture_wrapper_impl.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/media.h"
 #include "url/gurl.h"

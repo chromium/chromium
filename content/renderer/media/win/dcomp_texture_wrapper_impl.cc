@@ -212,7 +212,6 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
       base::TimeDelta());
 
   frame->set_color_space(color_space);
-  // Sets `dcomp_surface` to use StreamTexture. See `VideoResourceUpdater`.
   frame->metadata().dcomp_surface = true;
 
   std::move(create_video_frame_cb).Run(frame, mailbox_);

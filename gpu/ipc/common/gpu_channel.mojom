@@ -194,11 +194,6 @@ interface GpuChannel {
       viz.mojom.SharedImageFormat format, gfx.mojom.Size size,
       gfx.mojom.BufferUsage buffer_usage);
 
-  // Creates a StreamTexture associated with the given `stream_id`.
-  [Sync, EnableIf=is_android] CreateStreamTexture(
-      int32 stream_id,
-      pending_associated_receiver<StreamTexture> receiver) => (bool success);
-
   // Creates a DCOMPTexture and attaches to the provided `route_id`.
   // Note: this `route_id` must not conflict with the routing ids for command
   // buffers or shared image stub. Otherwise, unexpected behaviour can happen
@@ -339,54 +334,11 @@ interface CommandBufferClient {
   OnSignalAck(uint32 signal_id, CommandBufferState state);
 };
 
-// Interface to control a single StreamTexture instance. Implemented in the GPU
-// process and called by renderer clients.
-//
-// NOTE: Due to limitations of Channel-associated interfaces, message replies on
-// this interface must not be used to pass other associated interface remotes or
-// receivers.
-[EnableIf=is_android]
-interface StreamTexture {
-  // Tells the StreamTexture to send its SurfaceTexture to the browser process,
-  // via the ScopedSurfaceRequestConduit. `token` is used to uniquely identify
-  // the surface request to the browser, and therefore must be a token already
-  // minted by the browser and somehow procured by the caller.
-  ForwardForSurfaceRequest(mojo_base.mojom.UnguessableToken token);
-
-  // Tells the service-side instance to start sending frame available
-  // notifications.
-  StartListening(pending_associated_remote<StreamTextureClient> client);
-
-  // Updates the visible size from MediaPlayer. The size includes rotation of
-  // video.
-  UpdateRotatedVisibleSize(gfx.mojom.Size rotated_visible_size);
-};
-
-// Interface used by GPU to notify the client of a StreamTexture instance about
-// new frame availability. Implemented by renderer clients and called by
-// StreamTexture instances in the GPU process.
-//
-// NOTE: Due to limitations of Channel-associated interfaces, messages on this
-// interface must not be used to pass other associated interface remotes or
-// receivers.
-[EnableIf=is_android]
-interface StreamTextureClient {
-  // Informs the client that a new frame is available.
-  OnFrameAvailable();
-
-  // Informs the client that a new frame with VulkanYcbcrInfo is available.
-  OnFrameWithInfoAvailable(Mailbox mailbox, gfx.mojom.Size coded_size,
-                           gfx.mojom.Rect visible_rect,
-                           VulkanYCbCrInfo? info);
-};
-
 // Interface to control a single DCOMPTexture instance. Implemented in the GPU
 // process and called by renderer clients.
 [EnableIf=is_win]
 interface DCOMPTexture {
-  // Starts sending DCOMP surface notifications via the `client`. Follows the
-  // pattern in `StreamTexture::StartListening()` to delay notifications until
-  // the client side is ready.
+  // Starts sending DCOMP surface notifications via the `client`.
   //
   // TODO(crbug.com/40642952): Investigate if we can remove this by having the
   // `client` as a parameter to `CreateDCOMPTexture()`.
@@ -451,11 +403,6 @@ union DeferredRequestParams {
 
   // This request pertains to shared image management.
   DeferredSharedImageRequest shared_image_request;
-
-  // Sent to indicate the client wants to destroy the StreamTexture identified
-  // by this ID.
-  [EnableIf=is_android]
-  int32 destroy_stream_texture;
 
   // Sent to indicate the client wants to destroy the DCOMPTexture identified
   // by this ID.

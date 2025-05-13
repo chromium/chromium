@@ -52,7 +52,6 @@ if (is_android) {
       "media_drm_storage_bridge.h",
       "media_server_crash_listener.cc",
       "media_server_crash_listener.h",
-      "stream_texture_wrapper.h",
     ]
     configs += [ "//media:subcomponent_config" ]
     public_deps = [ ":media_jni_headers" ]

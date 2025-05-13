@@ -3470,8 +3470,6 @@ test("content_unittests") {
       "../browser/renderer_host/render_widget_host_view_android_unittest.cc",
       "../browser/sms/sms_provider_gms_unittest.cc",
       "../renderer/java/gin_java_bridge_value_converter_unittest.cc",
-      "../renderer/media/android/stream_texture_proxy_unittest.cc",
-      "../renderer/media/android/stream_texture_wrapper_impl_unittest.cc",
     ]
 
     deps += [
