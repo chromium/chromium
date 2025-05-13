@@ -52,13 +52,13 @@ public class SimpleSelectionControllerUnitTest {
         c.setItemCount(5);
         verifyPositionSet(c, 0);
 
-        assertTrue(c.advanceForward()); // Should now reach index 4 without saturating
+        assertTrue(c.selectNextItem()); // Should now reach index 4 without saturating
         verifyPositionChanged(c, 0, 1);
-        assertTrue(c.advanceForward()); // 2
+        assertTrue(c.selectNextItem()); // 2
         verifyPositionChanged(c, 1, 2);
-        assertTrue(c.advanceForward()); // 3
+        assertTrue(c.selectNextItem()); // 3
         verifyPositionChanged(c, 2, 3);
-        assertTrue(c.advanceForward()); // 4
+        assertTrue(c.selectNextItem()); // 4
         verifyPositionChanged(c, 3, 4);
 
         // Shrink list of items

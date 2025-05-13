@@ -181,11 +181,12 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
         if (keyCode == KeyEvent.KEYCODE_TAB) {
             if (!event.isShiftPressed()) {
                 // Pass the TAB key to Action Buttons, then to Action Chips.
-                return mActionButtonsHighlighter.advanceForward()
+                return mActionButtonsHighlighter.selectNextItem()
                         || super_onKeyDown(keyCode, event);
             } else {
                 // Pass the TAB key to Action Chips, then to Action Buttons.
-                return super_onKeyDown(keyCode, event) || mActionButtonsHighlighter.advanceBack();
+                return super_onKeyDown(keyCode, event)
+                        || mActionButtonsHighlighter.selectPreviousItem();
             }
         }
 

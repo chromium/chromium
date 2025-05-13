@@ -138,7 +138,7 @@ public class BaseCarouselSuggestionViewUnitTest {
     public void setSelected_resetsCarouselSelectionWhenSelected() {
         mView.setSelected(true);
         verify(mController).reset();
-        verify(mController).advanceForward();
+        verify(mController).selectNextItem();
         verifyNoMoreInteractions(mController);
     }
 

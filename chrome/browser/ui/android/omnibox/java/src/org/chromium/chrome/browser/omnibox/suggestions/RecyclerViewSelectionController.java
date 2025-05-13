@@ -57,24 +57,6 @@ public class RecyclerViewSelectionController extends SelectionController
         setItemState(mLastSelectedItemIndex, true);
     }
 
-    /**
-     * Move selection to the next element on the list.
-     *
-     * @return true, if change resulted in an item being highlighted
-     */
-    public boolean selectNextItem() {
-        return advanceForward();
-    }
-
-    /**
-     * Move selection to the previous element on the list.
-     *
-     * @return true, if change resulted in an item being highlighted
-     */
-    public boolean selectPreviousItem() {
-        return advanceBack();
-    }
-
     /** Retrieve currently selected element. */
     public @Nullable View getSelectedView() {
         OptionalInt selection = getPosition();

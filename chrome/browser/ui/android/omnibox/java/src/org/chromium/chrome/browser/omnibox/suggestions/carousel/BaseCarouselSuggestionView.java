@@ -81,7 +81,7 @@ public class BaseCarouselSuggestionView extends RecyclerView {
     @Override
     public void setSelected(boolean isSelected) {
         resetSelection();
-        if (isSelected) mSelectionController.advanceForward();
+        if (isSelected) mSelectionController.selectNextItem();
     }
 
     @Override

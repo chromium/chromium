@@ -83,7 +83,7 @@ public abstract class SelectionController {
      *
      * @return whether selection was applied to the new element.
      */
-    public boolean advanceForward() {
+    public boolean selectNextItem() {
         // If parked at upper sentinel, bail.
         if (mPosition == Integer.MAX_VALUE) return false;
 
@@ -110,7 +110,7 @@ public abstract class SelectionController {
      *
      * @return whether selection was applied to the new element.
      */
-    public boolean advanceBack() {
+    public boolean selectPreviousItem() {
         // If parked at lower sentinel, bail.
         if (mPosition == Integer.MIN_VALUE) return false;
 
