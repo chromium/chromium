@@ -38,7 +38,7 @@ public class PasswordSettingsUpdaterDispatcherBridgeTest {
 
     private static final String sTestAccountEmail = "test@email.com";
     private static final Optional<Account> sTestAccount =
-            Optional.of(AccountUtils.createAccountFromName(sTestAccountEmail));
+            Optional.of(AccountUtils.createAccountFromEmail(sTestAccountEmail));
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

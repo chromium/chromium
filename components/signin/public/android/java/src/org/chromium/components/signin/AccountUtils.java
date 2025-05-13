@@ -34,11 +34,15 @@ public class AccountUtils {
     private AccountUtils() {}
 
     /**
-     * Creates an Account object for the given {@param name}. Only used in places where we need to
+     * Creates an Account object for the given {@param email}. Only used in places where we need to
      * talk to Android which is very rare.
      */
-    public static Account createAccountFromName(String name) {
-        return new Account(name, GOOGLE_ACCOUNT_TYPE);
+    public static Account createAccountFromEmail(String email) {
+        return new Account(email, GOOGLE_ACCOUNT_TYPE);
+    }
+
+    public static Account createAccountFromName(String email) {
+        return createAccountFromEmail(email);
     }
 
     /** Converts a list of {@link AccountInfo}s to a list of account emails. */

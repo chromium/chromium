@@ -68,7 +68,7 @@ public class PasswordManagerTestHelper {
                     ((FakePasswordStoreAndroidBackend)
                                     PasswordStoreAndroidBackendFactory.getInstance()
                                             .createBackend())
-                            .setSyncingAccount(AccountUtils.createAccountFromName(email));
+                            .setSyncingAccount(AccountUtils.createAccountFromEmail(email));
                 });
     }
 }

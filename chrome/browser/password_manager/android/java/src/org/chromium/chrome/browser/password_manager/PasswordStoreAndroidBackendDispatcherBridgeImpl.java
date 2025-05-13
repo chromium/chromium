@@ -127,6 +127,6 @@ class PasswordStoreAndroidBackendDispatcherBridgeImpl {
 
     private Optional<Account> getAccount(String syncingAccount) {
         if (syncingAccount == null) return Optional.empty();
-        return Optional.of(AccountUtils.createAccountFromName(syncingAccount));
+        return Optional.of(AccountUtils.createAccountFromEmail(syncingAccount));
     }
 }

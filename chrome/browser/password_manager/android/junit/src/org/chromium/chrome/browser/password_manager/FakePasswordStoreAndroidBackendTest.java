@@ -86,7 +86,7 @@ public class FakePasswordStoreAndroidBackendTest {
                     .build();
     private static final String sTestAccountEmail = "test@email.com";
     private static final Optional<Account> sTestAccount =
-            Optional.of(AccountUtils.createAccountFromName(sTestAccountEmail));
+            Optional.of(AccountUtils.createAccountFromEmail(sTestAccountEmail));
 
     @Before
     public void setUp() {

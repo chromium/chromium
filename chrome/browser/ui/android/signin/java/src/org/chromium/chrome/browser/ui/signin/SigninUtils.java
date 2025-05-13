@@ -40,7 +40,7 @@ public final class SigninUtils {
         }
         Intent intent = new Intent(ACCOUNT_SETTINGS_ACTION);
         intent.putExtra(
-                ACCOUNT_SETTINGS_ACCOUNT_KEY, AccountUtils.createAccountFromName(accountEmail));
+                ACCOUNT_SETTINGS_ACCOUNT_KEY, AccountUtils.createAccountFromEmail(accountEmail));
         return IntentUtils.safeStartActivity(activity, intent);
     }
 

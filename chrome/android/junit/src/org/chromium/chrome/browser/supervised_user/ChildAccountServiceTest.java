@@ -42,7 +42,7 @@ import java.lang.ref.WeakReference;
 @LooperMode(LooperMode.Mode.LEGACY)
 public class ChildAccountServiceTest {
     private static final Account CHILD_ACCOUNT1 =
-            AccountUtils.createAccountFromName("child.account1@gmail.com");
+            AccountUtils.createAccountFromEmail("child.account1@gmail.com");
     private static final long FAKE_NATIVE_CALLBACK = 1000L;
 
     private final FakeAccountManagerFacade mFakeFacade = spy(new FakeAccountManagerFacade());

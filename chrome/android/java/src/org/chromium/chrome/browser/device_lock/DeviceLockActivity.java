@@ -72,13 +72,13 @@ public class DeviceLockActivity extends SynchronousInitializationActivity
 
         Bundle fragmentArgs = getIntent().getBundleExtra(ARGUMENT_FRAGMENT_ARGS);
         @Nullable
-        String selectedAccountName = fragmentArgs.getString(ARGUMENT_SELECTED_ACCOUNT, null);
+        String selectedAccountEmail = fragmentArgs.getString(ARGUMENT_SELECTED_ACCOUNT, null);
         boolean requireDeviceLockReauthentication =
                 fragmentArgs.getBoolean(ARGUMENT_REQUIRE_DEVICE_LOCK_REAUTHENTICATION, true);
         @Nullable
         Account selectedAccount =
-                selectedAccountName != null
-                        ? AccountUtils.createAccountFromName(selectedAccountName)
+                selectedAccountEmail != null
+                        ? AccountUtils.createAccountFromEmail(selectedAccountEmail)
                         : null;
 
         assert profile != null;

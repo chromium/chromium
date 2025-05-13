@@ -91,7 +91,7 @@ public class CoreAccountInfo {
     public static @Nullable Account getAndroidAccountFrom(@Nullable CoreAccountInfo accountInfo) {
         return accountInfo == null
                 ? null
-                : AccountUtils.createAccountFromName(accountInfo.getEmail());
+                : AccountUtils.createAccountFromEmail(accountInfo.getEmail());
     }
 
     /**
