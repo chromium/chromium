@@ -15,6 +15,7 @@ import android.content.Context;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -49,6 +50,7 @@ public class MiniOriginBarControllerTest {
     @Mock private View mLocationBarView;
     @Mock private BrowserControlsSizer mBrowserControlsSizer;
     @Captor ArgumentCaptor<TouchEventObserver> mTouchEventObserverCaptor;
+    @Captor private ArgumentCaptor<FrameLayout.LayoutParams> mLayoutParamsCaptor;
 
     private Context mContext;
     private final CoordinatorLayout.LayoutParams mControlContainerLayoutParams =
@@ -94,10 +96,12 @@ public class MiniOriginBarControllerTest {
         mMiniOriginBarController.onControlsPositionChanged(ControlsPosition.BOTTOM);
         verify(mLocationBar).setShowOriginOnly(true);
         verify(mLocationBar).setUrlBarUsesSmallText(true);
+        verify(mLocationBarView).setLayoutParams(mLayoutParamsCaptor.capture());
+        assertEquals(Gravity.CENTER, mLayoutParamsCaptor.getValue().gravity);
+        assertEquals(ViewGroup.LayoutParams.WRAP_CONTENT, mLayoutParamsCaptor.getValue().width);
         assertEquals(
                 mContext.getResources().getDimensionPixelSize(R.dimen.mini_origin_bar_height),
-                mControlContainerLayoutParams.height);
-        assertEquals(Gravity.CENTER, mLocationBarLayoutParams.gravity);
+                mLayoutParamsCaptor.getValue().height);
 
         mKeyboardVisibilityDelegate.setVisibilityForTests(false);
         verify(mLocationBar).setShowOriginOnly(false);

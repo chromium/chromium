@@ -38,9 +38,10 @@ public class MiniOriginBarController implements Observer {
     private final ObservableSupplierImpl<Boolean> mSuppressToolbarSceneLayerSupplier;
     private final BrowserControlsSizer mBrowserControlsSizer;
     private boolean mShowMiniOriginBar;
-    private final int mDefaultLocationBarGravity;
+    private FrameLayout.LayoutParams mDefaultLocationBarLayoutParams;
     private boolean mOriginBarClickedInSession;
     private final TouchEventObserver mTouchEventObserver;
+    private final int mDefaultLocationBarRightPadding;
 
     /**
      * @param locationBar LocationBar instance used to change the presentation of e.g. the UrlBar
@@ -67,9 +68,9 @@ public class MiniOriginBarController implements Observer {
         mControlContainer = controlContainer;
         mSuppressToolbarSceneLayerSupplier = suppressToolbarSceneLayerSupplier;
         mBrowserControlsSizer = browserControlsSizer;
-        mDefaultLocationBarGravity =
-                ((FrameLayout.LayoutParams) mLocationBar.getContainerView().getLayoutParams())
-                        .gravity;
+        mDefaultLocationBarRightPadding = mLocationBar.getContainerView().getPaddingRight();
+        mDefaultLocationBarLayoutParams =
+                (FrameLayout.LayoutParams) mLocationBar.getContainerView().getLayoutParams();
         mBrowserControlsSizer.addObserver(this);
 
         mIsFormFieldFocusedObserver = (focused) -> updateMiniOriginBarState();
@@ -104,6 +105,10 @@ public class MiniOriginBarController implements Observer {
                         && isFormFieldFocused
                         && isKeyboardVisible;
         if (showMiniOriginBar == mShowMiniOriginBar) return;
+        if (showMiniOriginBar) {
+            mDefaultLocationBarLayoutParams =
+                    (FrameLayout.LayoutParams) mLocationBar.getContainerView().getLayoutParams();
+        }
 
         mShowMiniOriginBar = showMiniOriginBar;
         mLocationBar.setShowOriginOnly(mShowMiniOriginBar);
@@ -119,11 +124,20 @@ public class MiniOriginBarController implements Observer {
                         : LayoutParams.WRAP_CONTENT;
         mControlContainer.mutateLayoutParams().height = newControlContainerHeight;
 
+        var minifiedLayoutParams =
+                new FrameLayout.LayoutParams(
+                        LayoutParams.WRAP_CONTENT, newControlContainerHeight, Gravity.CENTER);
+
+        var locationBarView = mLocationBar.getContainerView();
         var locationBarLayoutParams =
-                ((FrameLayout.LayoutParams) mLocationBar.getContainerView().getLayoutParams());
-        locationBarLayoutParams.gravity =
-                showMiniOriginBar ? Gravity.CENTER : mDefaultLocationBarGravity;
-        mLocationBar.getContainerView().setLayoutParams(locationBarLayoutParams);
+                mShowMiniOriginBar ? minifiedLayoutParams : mDefaultLocationBarLayoutParams;
+        locationBarView.setLayoutParams(locationBarLayoutParams);
+        int locationBarRightPadding = mShowMiniOriginBar ? 0 : mDefaultLocationBarRightPadding;
+        locationBarView.setPadding(
+                locationBarView.getPaddingLeft(),
+                locationBarView.getPaddingTop(),
+                locationBarRightPadding,
+                locationBarView.getPaddingBottom());
     }
 
     public void destroy() {
