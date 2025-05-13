@@ -13,7 +13,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusListener;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GaiaId;
 
 import java.util.Arrays;
@@ -36,9 +35,7 @@ public class AccountUtils {
 
     /**
      * Creates an Account object for the given {@param name}. Only used in places where we need to
-     * talk to Android which is very rare. Non-signin code should not use this method and should use
-     * {@link CoreAccountInfo} instead. TODO(crbug.com/40065164): Rename this method to
-     * createAccountFromEmail.
+     * talk to Android which is very rare.
      */
     public static Account createAccountFromName(String name) {
         return new Account(name, GOOGLE_ACCOUNT_TYPE);
@@ -52,22 +49,6 @@ public class AccountUtils {
             emails[i] = accounts.get(i).getEmail();
         }
         return Arrays.asList(emails);
-    }
-
-    /**
-     * Finds the first {@link CoreAccountInfo} of the given {@param coreAccountInfos} whose
-     * canonical name equal the given {@param accountEmail}'s canonical name; null if there is no
-     * match.
-     */
-    public static @Nullable CoreAccountInfo findCoreAccountInfoByEmail(
-            final List<CoreAccountInfo> coreAccountInfos, String accountEmail) {
-        String canonicalEmail = AccountUtils.canonicalizeEmail(accountEmail);
-        for (CoreAccountInfo coreAccountInfo : coreAccountInfos) {
-            if (AccountUtils.canonicalizeEmail(coreAccountInfo.getEmail()).equals(canonicalEmail)) {
-                return coreAccountInfo;
-            }
-        }
-        return null;
     }
 
     /**
@@ -86,20 +67,6 @@ public class AccountUtils {
     }
 
     /**
-     * Finds the first {@link CoreAccountInfo} of the given {@param coreAccountInfos} whose Gaia ID
-     * equals the given {@param accountGaiaId}; null if there is no match.
-     */
-    public static @Nullable CoreAccountInfo findCoreAccountInfoByGaiaId(
-            final List<CoreAccountInfo> coreAccountInfos, GaiaId accountGaiaId) {
-        for (CoreAccountInfo coreAccountInfo : coreAccountInfos) {
-            if (coreAccountInfo.getGaiaId().equals(accountGaiaId)) {
-                return coreAccountInfo;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Finds the first {@link AccountInfo} among `accounts` whose Gaia ID is equal to
      * `accountGaiaId`; null if there is no match.
      */
@@ -111,26 +78,6 @@ public class AccountUtils {
             }
         }
         return null;
-    }
-
-    /**
-     * Gets the cached list of {@link CoreAccountInfo} from the given {@link Promise}. If the cache
-     * is not yet populated, return an empty list.
-     */
-    public static List<CoreAccountInfo> getCoreAccountInfosIfFulfilledOrEmpty(
-            Promise<List<CoreAccountInfo>> promise) {
-        return promise.isFulfilled() ? promise.getResult() : Collections.emptyList();
-    }
-
-    /**
-     * Gets the cached default {@link CoreAccountInfo} from the given {@link Promise}.
-     * If the cache is not yet populated or no accounts exist, return null.
-     */
-    public static @Nullable CoreAccountInfo getDefaultCoreAccountInfoIfFulfilled(
-            Promise<List<CoreAccountInfo>> promise) {
-        final List<CoreAccountInfo> coreAccountInfos =
-                getCoreAccountInfosIfFulfilledOrEmpty(promise);
-        return coreAccountInfos.isEmpty() ? null : coreAccountInfos.get(0);
     }
 
     /**

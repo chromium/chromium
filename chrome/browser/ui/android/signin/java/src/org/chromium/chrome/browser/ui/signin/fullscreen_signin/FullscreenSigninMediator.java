@@ -177,7 +177,8 @@ public class FullscreenSigninMediator
     }
 
     private Account getSelectedAccount() {
-        return AccountUtils.createAccountFromName(assertNonNull(mSelectedAccount).getEmail());
+        assertNonNull(mSelectedAccount);
+        return CoreAccountInfo.getAndroidAccountFrom(mSelectedAccount);
     }
 
     private void onNativeLoaded() {

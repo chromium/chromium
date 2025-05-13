@@ -11,7 +11,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -22,8 +21,6 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
-
-import java.util.List;
 
 /**
  * Java instance for the native ProfileOAuth2TokenServiceDelegate.
@@ -60,12 +57,11 @@ final class ProfileOAuth2TokenServiceDelegate {
             String accountEmail, String scope, final long nativeCallback) {
         assert accountEmail != null : "Account email cannot be null!";
         mAccountManagerFacade
-                .getCoreAccountInfos()
+                .getAccounts()
                 .then(
-                        coreAccountInfos -> {
+                        accounts -> {
                             final @Nullable CoreAccountInfo coreAccountInfo =
-                                    AccountUtils.findCoreAccountInfoByEmail(
-                                            coreAccountInfos, accountEmail);
+                                    AccountUtils.findAccountByEmail(accounts, accountEmail);
                             getAccessToken(coreAccountInfo, scope, nativeCallback);
                         });
     }
@@ -132,10 +128,9 @@ final class ProfileOAuth2TokenServiceDelegate {
     @VisibleForTesting
     @CalledByNative
     boolean hasOAuth2RefreshToken(String accountEmail) {
-        Promise<List<CoreAccountInfo>> promise = mAccountManagerFacade.getCoreAccountInfos();
+        var promise = mAccountManagerFacade.getAccounts();
         return promise.isFulfilled()
-                && AccountUtils.findCoreAccountInfoByEmail(promise.getResult(), accountEmail)
-                        != null;
+                && AccountUtils.findAccountByEmail(promise.getResult(), accountEmail) != null;
     }
 
     @NativeMethods

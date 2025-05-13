@@ -350,8 +350,7 @@ public class SyncPromoController {
                 AccountManagerFacadeProvider.getInstance();
         if (visibleAccount == null) {
             visibleAccount =
-                    AccountUtils.getDefaultCoreAccountInfoIfFulfilled(
-                            accountManagerFacade.getCoreAccountInfos());
+                    AccountUtils.getDefaultAccountIfFulfilled(accountManagerFacade.getAccounts());
         }
         return visibleAccount;
     }

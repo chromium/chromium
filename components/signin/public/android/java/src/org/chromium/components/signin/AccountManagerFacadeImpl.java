@@ -170,8 +170,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                     @Override
                     public AccessTokenData run() throws AuthException {
                         return mDelegate.getAccessToken(
-                                AccountUtils.createAccountFromName(coreAccountInfo.getEmail()),
-                                scope);
+                                CoreAccountInfo.getAndroidAccountFrom(coreAccountInfo), scope);
                     }
 
                     @Override
@@ -258,7 +257,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         new AsyncTask<Boolean>() {
             @Override
             public Boolean doInBackground() {
-                Account account = AccountUtils.createAccountFromName(coreAccountInfo.getEmail());
+                Account account = CoreAccountInfo.getAndroidAccountFrom(coreAccountInfo);
                 return mDelegate.hasFeature(account, FEATURE_IS_USM_ACCOUNT_KEY);
             }
 
@@ -277,7 +276,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         new AsyncTask<Boolean>() {
             @Override
             public Boolean doInBackground() {
-                Account account = AccountUtils.createAccountFromName(coreAccountInfo.getEmail());
+                Account account = CoreAccountInfo.getAndroidAccountFrom(coreAccountInfo);
                 @CapabilityResponse
                 int capability =
                         mDelegate.hasCapability(

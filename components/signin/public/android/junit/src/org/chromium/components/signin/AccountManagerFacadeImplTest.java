@@ -167,16 +167,12 @@ public class AccountManagerFacadeImplTest {
     @Test
     public void testCanonicalAccount() throws Exception {
         addTestAccount("test@gmail.com");
-        List<CoreAccountInfo> coreAccountInfos = mFacade.getCoreAccountInfos().getResult();
+        var coreAccountInfos = mFacade.getAccounts().getResult();
 
-        Assert.assertNotNull(
-                AccountUtils.findCoreAccountInfoByEmail(coreAccountInfos, "test@gmail.com"));
-        Assert.assertNotNull(
-                AccountUtils.findCoreAccountInfoByEmail(coreAccountInfos, "Test@gmail.com"));
-        Assert.assertNotNull(
-                AccountUtils.findCoreAccountInfoByEmail(coreAccountInfos, "te.st@gmail.com"));
-        Assert.assertNull(
-                AccountUtils.findCoreAccountInfoByEmail(coreAccountInfos, "te@googlemail.com"));
+        Assert.assertNotNull(AccountUtils.findAccountByEmail(coreAccountInfos, "test@gmail.com"));
+        Assert.assertNotNull(AccountUtils.findAccountByEmail(coreAccountInfos, "Test@gmail.com"));
+        Assert.assertNotNull(AccountUtils.findAccountByEmail(coreAccountInfos, "te.st@gmail.com"));
+        Assert.assertNull(AccountUtils.findAccountByEmail(coreAccountInfos, "te@googlemail.com"));
     }
 
     @Test
@@ -298,16 +294,12 @@ public class AccountManagerFacadeImplTest {
     @Test
     public void testNonCanonicalAccount() throws Exception {
         addTestAccount("test.me@gmail.com");
-        List<CoreAccountInfo> coreAccountInfos = mFacade.getCoreAccountInfos().getResult();
+        var accounts = mFacade.getAccounts().getResult();
 
-        Assert.assertNotNull(
-                AccountUtils.findCoreAccountInfoByEmail(coreAccountInfos, "test.me@gmail.com"));
-        Assert.assertNotNull(
-                AccountUtils.findCoreAccountInfoByEmail(coreAccountInfos, "testme@gmail.com"));
-        Assert.assertNotNull(
-                AccountUtils.findCoreAccountInfoByEmail(coreAccountInfos, "Testme@gmail.com"));
-        Assert.assertNotNull(
-                AccountUtils.findCoreAccountInfoByEmail(coreAccountInfos, "te.st.me@gmail.com"));
+        Assert.assertNotNull(AccountUtils.findAccountByEmail(accounts, "test.me@gmail.com"));
+        Assert.assertNotNull(AccountUtils.findAccountByEmail(accounts, "testme@gmail.com"));
+        Assert.assertNotNull(AccountUtils.findAccountByEmail(accounts, "Testme@gmail.com"));
+        Assert.assertNotNull(AccountUtils.findAccountByEmail(accounts, "te.st.me@gmail.com"));
     }
 
     @Test

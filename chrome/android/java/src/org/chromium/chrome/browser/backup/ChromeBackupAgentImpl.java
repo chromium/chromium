@@ -643,7 +643,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         return PostTask.runSynchronously(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    return AccountUtils.findAccountByEmail(getAccountInfos(), accountEmail);
+                    return AccountUtils.findAccountByEmail(getAccounts(), accountEmail);
                 });
     }
 
@@ -655,11 +655,11 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         return PostTask.runSynchronously(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    return AccountUtils.findAccountByGaiaId(getAccountInfos(), accountGaiaId);
+                    return AccountUtils.findAccountByGaiaId(getAccounts(), accountGaiaId);
                 });
     }
 
-    private static List<AccountInfo> getAccountInfos() {
+    private static List<AccountInfo> getAccounts() {
         return AccountManagerFacadeProvider.getInstance().getAccounts().getResult();
     }
 
@@ -743,7 +743,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                             };
 
                     AccountUtils.checkChildAccountStatus(
-                            accountManagerFacade, getAccountInfos(), listener);
+                            accountManagerFacade, getAccounts(), listener);
                 });
     }
 

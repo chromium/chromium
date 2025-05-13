@@ -50,6 +50,7 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.GAIAServiceType;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -175,10 +176,10 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                 IdentityServicesProvider.get()
                         .getIdentityManager(getProfile())
                         .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-        List<CoreAccountInfo> coreAccountInfos =
-                AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
-                        AccountManagerFacadeProvider.getInstance().getCoreAccountInfos());
-        if (mSignedInCoreAccountInfo == null || coreAccountInfos.isEmpty()) {
+        List<AccountInfo> accounts =
+                AccountUtils.getAccountsIfFulfilledOrEmpty(
+                        AccountManagerFacadeProvider.getInstance().getAccounts());
+        if (mSignedInCoreAccountInfo == null || accounts.isEmpty()) {
             // The AccountManagementFragment can only be shown when the user is signed in. If the
             // user is signed out, exit the fragment.
             SettingsNavigationFactory.createSettingsNavigation().finishCurrentSettings(this);

@@ -43,6 +43,7 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
@@ -179,11 +180,10 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     /** Implements {@link AccountsChangeObserver}. */
     @Override
     public void onCoreAccountInfosChanged() {
-        Promise<List<CoreAccountInfo>> coreAccountInfosPromise =
-                mAccountManagerFacade.getCoreAccountInfos();
-        assert coreAccountInfosPromise.isFulfilled();
-        List<CoreAccountInfo> coreAccountInfos = coreAccountInfosPromise.getResult();
-        if (!mAccountManagerFacade.didAccountFetchSucceed() && coreAccountInfos.isEmpty()) {
+        var accountsPromise = mAccountManagerFacade.getAccounts();
+        assert accountsPromise.isFulfilled();
+        List<AccountInfo> accounts = accountsPromise.getResult();
+        if (!mAccountManagerFacade.didAccountFetchSucceed() && accounts.isEmpty()) {
             // If the account fetch did not succeed, the AccountManagerFacade falls back to an empty
             // list. Do nothing when this is the case.
             return;
@@ -196,9 +196,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
             seedThenReloadAllAccountsFromSystem(null);
             return;
         }
-        if (AccountUtils.findCoreAccountInfoByGaiaId(
-                        coreAccountInfos, primaryAccountInfo.getGaiaId())
-                != null) {
+        if (AccountUtils.findAccountByGaiaId(accounts, primaryAccountInfo.getGaiaId()) != null) {
             // The primary account is still on the device, reseed accounts.
             seedThenReloadAllAccountsFromSystem(CoreAccountInfo.getIdFrom(primaryAccountInfo));
             return;

@@ -114,8 +114,8 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
             return coreAccountInfo.getEmail();
         }
         final @Nullable CoreAccountInfo defaultCoreAccountInfo =
-                AccountUtils.getDefaultCoreAccountInfoIfFulfilled(
-                        AccountManagerFacadeProvider.getInstance().getCoreAccountInfos());
+                AccountUtils.getDefaultAccountIfFulfilled(
+                        AccountManagerFacadeProvider.getInstance().getAccounts());
         return defaultCoreAccountInfo != null ? defaultCoreAccountInfo.getEmail() : null;
     }
 

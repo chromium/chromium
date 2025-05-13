@@ -237,8 +237,7 @@ final class SigninPromoMediator
                 mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         if (visibleAccount == null) {
             visibleAccount =
-                    AccountUtils.getDefaultCoreAccountInfoIfFulfilled(
-                            mAccountManagerFacade.getCoreAccountInfos());
+                    AccountUtils.getDefaultAccountIfFulfilled(mAccountManagerFacade.getAccounts());
         }
         return visibleAccount;
     }
