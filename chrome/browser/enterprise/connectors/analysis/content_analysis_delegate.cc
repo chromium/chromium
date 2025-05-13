@@ -399,7 +399,7 @@ void ContentAnalysisDelegate::CreateForWebContents(
         show_fail_closed_ui ? FinalContentAnalysisResult::FAIL_CLOSED
                             : FinalContentAnalysisResult::SUCCESS;
 
-#if BUILDFLAG(ENABLE_GLIC)
+#if BUILDFLAG(IS_WIN)
     content::WebContents* top_web_contents =
         guest_view::GuestViewBase::GetTopLevelWebContents(
             web_contents->GetResponsibleWebContents());
