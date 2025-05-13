@@ -2323,6 +2323,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4998950033665438990">Jedno lice</translation>
 <translation id="5001526427543320409">Kolačići trećih strana</translation>
 <translation id="5002932099480077015">Ako je to omogućeno, Chrome će pohraniti kopiju vaše kartice na ovom uređaju radi bržeg ispunjavanja obrazaca.</translation>
+<translation id="5007344584818503324">Aktivnost dijeljenih grupa kartica</translation>
 <translation id="5007392906805964215">Pregled</translation>
 <translation id="5010599530303458903">Platite mjesečno ili u četiri obroka bez kamata (ovisno o ispunjavanju kriterija)</translation>
 <translation id="5011561501798487822">Otkriveni jezik</translation>
@@ -2750,6 +2751,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5732392974455271431">Tvoji je roditelji mogu deblokirati</translation>
 <translation id="573555826359077410">Gumb Izradi obrazac, aktivirajte ga za brzu izradu novog obrasca u Google obrascima</translation>
 <translation id="5738385766833540397">Upravljajte načinom na koji primate upozorenja o sniženju cijena za proizvode koje pratite</translation>
+<translation id="5739619009927381786">U sljedećem koraku otključajte zaslon, obično pomoću otiska prsta. Možete izvršiti <ph name="BEGIN_LINK" />potvrdu i na drugi način<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Da biste dijelili, pridruživali se i surađivali u grupama kartica, sinkronizirajte povijest i kartice</translation>
 <translation id="5740911612628596808">Omotnica C9</translation>
 <translation id="5742806904559466333">Barovi, klubovi i noćni život</translation>
@@ -3359,6 +3361,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6789062271869667677">Kontinuirano (dugo)</translation>
 <translation id="678982761784843853">ID-jevi zaštićenog sadržaja</translation>
 <translation id="6790428901817661496">Reproduciraj</translation>
+<translation id="6792631792628412749">Pristupni ključ • <ph name="PROVIDER_NAME" /></translation>
 <translation id="6793213097893210590">Karton</translation>
 <translation id="679355240208270552">Zanemareno jer zadano pretraživanje nije omogućeno pravilom.</translation>
 <translation id="6794951432696553238">Odsad brže potvrdite svoje kartice upotrebom značajke Windows Hello</translation>
@@ -3862,6 +3865,7 @@ Dodatne pojedinosti:
 <translation id="7639968568612851608">Tamnosiva</translation>
 <translation id="7646681339175747202">Zaporka koju ste upravo upotrijebili otkrivena je u neovlaštenom pristupu podacima. Google upravitelj zaporki preporučuje da odmah promijenite zaporku.</translation>
 <translation id="7647206758853451655">Kvaliteta ispisa</translation>
+<translation id="7648527891719919697">Web-lokacija će ostati blokirana jer ste u <ph name="BEGIN_ANDROID_SETTINGS_LINK" />postavkama Androida<ph name="END_ANDROID_SETTINGS_LINK" /> uključili Naprednu zaštitu. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više o tom upozorenju<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">spremati datoteke na uređaj</translation>
 <translation id="7653957176542370971">List rukovatelja plaćanjima je zatvoren.</translation>
 <translation id="7654909834015434372">Kad uredite napomene, dokument će se vratiti u izvorno usmjerenje</translation>

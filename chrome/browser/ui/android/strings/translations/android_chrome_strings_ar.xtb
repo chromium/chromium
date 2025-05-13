@@ -183,6 +183,7 @@
 <translation id="1807709131360304325">فتح نافذة جديدة</translation>
 <translation id="1810845389119482123">إعداد المزامنة الأولية لم يكتمل</translation>
 <translation id="1812027881030482584">ليس بإمكان "<ph name="SITE_ETLD_PLUS_ONE" />" مواصلة استخدام "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
+<translation id="1820408774134375111">البطاقة السفلية لتسجيل الدخول</translation>
 <translation id="1825772852827001597">‏لن يتم تشفير طُرق الدفع والعناوين من Google Pay. ولن تتم مزامنة سجلّ التصفُّح من Chrome.
 ولا يمكن لأحد الوصول إلى بياناتك المشفّرة بدون استخدام عبارة المرور الخاصة بك. ولا تحصل Google على عبارة المرور هذه أو تخزّنها. في حال نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />حذف بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">البحث في الصفحة</translation>
@@ -191,6 +192,7 @@
 <translation id="1871098866036088250">‏فتح في متصفّح Chrome</translation>
 <translation id="1877026089748256423">‏إصدار Chrome قديم</translation>
 <translation id="1877073879466606884">الملف الشخصي الذي سجّلت الدخول إليه مُدار. يمكن للمشرف إجراء تغييرات على إعدادات ملفك الشخصي عن بُعد وتحليل المعلومات عن المتصفّح من خلال إعداد التقارير وتنفيذ المهام الضرورية الأخرى.</translation>
+<translation id="1879904908408734349">تم إغلاق البطاقة السفلية لتسجيل الدخول</translation>
 <translation id="1883903952484604915">ملفاتي</translation>
 <translation id="189358972401248634">لغات أخرى</translation>
 <translation id="1899175549411605574">البطاقة السفلية للمعلومات المفصّلة عن الأسعار</translation>
@@ -457,7 +459,6 @@
 <translation id="3072980200212375806">‏سيتم فتح تطبيق "<ph name="APP_NAME" />" في Chrome. تعني المتابعة موافقتك على <ph name="BEGIN_LINK1" />بنود خدمة Google<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة الإضافية لكل من متصفّح Google Chrome ونظام التشغيل Chrome<ph name="END_LINK2" />، علمًا بأنّ <ph name="BEGIN_LINK3" />سياسة الخصوصية<ph name="END_LINK3" /> تسري أيضًا.</translation>
 <translation id="3080525922482950719">يمكنك حفظ صفحات لقراءتها لاحقًا أو بلا إنترنت</translation>
 <translation id="3087734570205094154">أسفل</translation>
-<translation id="3088687687599869821">التنقل في الصفحة</translation>
 <translation id="3091010850649238832">عرض محتوى الحافظة</translation>
 <translation id="3098745985164956033">‏يتم إرسال بعض الصور إلى Google لتحسين أوصاف الصور.</translation>
 <translation id="3114507951000454849">الاطّلاع على أخبار اليوم <ph name="NEWS_ICON" /></translation>
@@ -542,6 +543,7 @@
 <translation id="3516053221628030540">‏الانتقال إلى Google Play</translation>
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{تمّت إزالة أذونات إرسال الإشعارات من موقع إلكتروني واحد لم تتم زيارته مؤخرًا}zero{تمت إزالة أذونات إرسال الإشعارات من # موقع إلكتروني لم تتم زيارته مؤخرًا}two{تمت إزالة أذونات إرسال الإشعارات من موقعَين إلكترونيَّين لم تتم زيارتهما مؤخرًا}few{تمت إزالة أذونات إرسال الإشعارات من # مواقع إلكترونية لم تتم زيارتها مؤخرًا}many{تمت إزالة أذونات إرسال الإشعارات من # موقعًا إلكترونيًا لم تتم زيارته مؤخرًا}other{تمت إزالة أذونات إرسال الإشعارات من # موقع إلكتروني لم تتم زيارته مؤخرًا}}</translation>
 <translation id="3518985090088779359">القبول والمتابعة</translation>
+<translation id="3519014757432845220">‏يمكنك المساعدة في تحسين مستوى الحماية من المحتوى غير المرغوب فيه من خلال مشاركة محتوى الإشعار وعنوان URL للموقع الإلكتروني مع Google. وقد يراجع فريق المراجعين المحتوى.</translation>
 <translation id="351952459507671940">إضافة إلى مجموعة جديدة</translation>
 <translation id="3521388823983121502">تتعذّر المتابعة باستخدام "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
 <translation id="3522247891732774234">التحديث متاح. مزيد من الخيارات</translation>
@@ -680,6 +682,7 @@
 <translation id="4170011742729630528">الخدمة غير متاحة، أعد المحاولة لاحقًا.</translation>
 <translation id="4177222230309051052">الحصول على جميع الإشارات المرجعية</translation>
 <translation id="4177501066905053472">مواضيع الإعلانات</translation>
+<translation id="4180726336228139707">على هذا الجهاز فقط</translation>
 <translation id="4181841719683918333">اللغات</translation>
 <translation id="4188221736490993796">الترتيب من ي إلى أ</translation>
 <translation id="4195643157523330669">الفتح في علامة تبويب جديدة</translation>
@@ -856,6 +859,7 @@
 <translation id="4943703118917034429">الواقع الافتراضي</translation>
 <translation id="4943872375798546930">لا نتائج</translation>
 <translation id="4957722034734105353">مزيد من المعلومات...</translation>
+<translation id="4959115606310463263">تم فتح البطاقة السفلية لتسجيل الدخول في نصف الشاشة</translation>
 <translation id="4961107849584082341">ترجمة هذه الصفحة إلى أي لغة</translation>
 <translation id="4964614743143953889">‏يحذرك Chrome بشأن المواقع الإلكترونية وعمليات التنزيل غير الآمنة</translation>
 <translation id="496607651705915226">‏لحفظ كلمات المرور الجديدة واستخدامها في حسابك على Google، يجب تحديث "خدمات Google Play".</translation>
@@ -1148,6 +1152,7 @@
 <translation id="6277522088822131679">حدثت مشكلة أثناء طباعة الصفحة. يُرجى إعادة المحاولة.</translation>
 <translation id="6278428485366576908">المظهر</translation>
 <translation id="6284472661216707937">بطاقة "كلمات المرور على جميع أجهزتك" مغلقة</translation>
+<translation id="6291294824436685757">حذف بيانات التصفّح واختيار البيانات المراد حذفها</translation>
 <translation id="6295158916970320988">جميع المواقع الإلكترونية</translation>
 <translation id="6296366034485697675">التصدير والحذف</translation>
 <translation id="629730747756840877">الحساب</translation>
@@ -1615,6 +1620,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> من الملفات المتبقية</translation>
 <translation id="8190358571722158785">يتبقى يوم واحد</translation>
+<translation id="8192765420340770300">تم فتح البطاقة السفلية لتسجيل الدخول بطول الشاشة</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />أجهزتك<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="820568752112382238">المواقع الإلكترونية الأكثر زيارة
 </translation>
@@ -1640,7 +1646,6 @@
 <translation id="8260126382462817229">محاولة تسجيل الدخول مرة أخرى</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="82619448491672958">الانتقال إلى علامات التبويب الأخرى</translation>
-<translation id="8265018477030547118">على هذا الجهاز فقط</translation>
 <translation id="8266753737658117282">المتابعة باستخدام <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8266862848225348053">موقع التنزيل</translation>
 <translation id="8271267069224406035">الإبلاغ عن محتوى غير مرغوب فيه</translation>
@@ -1813,6 +1818,7 @@
 <translation id="9050666287014529139">عبارة المرور</translation>
 <translation id="9055497320631373736">تمت إضافة الموقع الإلكتروني مرة أخرى إلى المواقع الإلكترونية المحتمَلة.</translation>
 <translation id="9057030985451135243">التعرّف على مجموعات علامات التبويب المشتركة</translation>
+<translation id="9063400323119781058">تم إلغاء الاشتراك</translation>
 <translation id="9063523880881406963">إيقاف طلب الموقع الإلكتروني لسطح المكتب</translation>
 <translation id="9065203028668620118">تعديل</translation>
 <translation id="9065383040763568503">‏البيانات المُخزَّنة التي لا يعتبرها متصفِّح Chrome مهمة (على سبيل المثال، المواقع الإلكترونية التي لا تتضمَّن إعدادات محفوظة أو تلك التي لا تزورها كثيرًا)</translation>

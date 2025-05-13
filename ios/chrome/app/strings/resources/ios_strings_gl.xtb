@@ -1179,6 +1179,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="594324569139756587">Bloquear cookies de terceiros</translation>
 <translation id="5944869793365969636">Escanear o código QR</translation>
 <translation id="5948291296578561264">Permíteche gardar fotos na túa fototeca.</translation>
+<translation id="5948605885471592910">Consulta e xestiona todo o que teñas aberto</translation>
 <translation id="5952641243319721872">Seguro que queres descartar a selección?</translation>
 <translation id="5956112131836209882">Pestana do grupo de pestanas. <ph name="TAB_INDEX_IN_GROUP" /> de <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Buscar resultados con <ph name="SEARCH_PROVIDER" /></translation>
@@ -1675,6 +1676,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7933880123415105005">Busca en <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Engadiuse a páxina á túa lista de lectura da conta {email}}other{Engadíronse {count} páxinas á túa lista de lectura da conta {email}}}</translation>
+<translation id="7952353944614086413">As túas pestanas e grupos abertos</translation>
 <translation id="7952670906562503188">Vas eliminar {passkey_count} contrasinais e a lista de sitios e aplicacións dos que elixises non gardar nunca a información de inicio de sesión. Non se eliminarán as contas que creases para sitios e aplicacións.</translation>
 <translation id="7958575506592576831">Información de seguranza da páxina</translation>
 <translation id="7961015016161918242">Nunca</translation>
@@ -1967,6 +1969,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9012585441087414258">Protéxete contra os sitios, as descargas e as extensións que se consideren perigosos. Se algunha páxina leva a cabo unha acción sospeitosa, os URL e algúns fragmentos do contido da páxina enviaranse a Navegación segura de Google.</translation>
 <translation id="9013605037177245304">Activar notificacións</translation>
+<translation id="9013632079355478927">Ocultar modo de lector</translation>
 <translation id="9029650858822697271">Pechouse a túa sesión</translation>
 <translation id="9032405509996909363">Confirmar a eliminación dos datos de navegación</translation>
 <translation id="9039373489628511875">Largura de banda</translation>

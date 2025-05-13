@@ -945,7 +945,6 @@ Ngưỡng tối thiểu là 1 phút.
 <translation id="1639468541408865385">Bật bộ nhớ đệm xác thực HTTP có phạm vi toàn cầu</translation>
 <translation id="1639673466479276550">Bật trình bảo vệ màn hình trên màn hình đăng nhập.</translation>
 <translation id="1640824698339859203">Bật dịch vụ SSO di động và chuyển trạng thái xác thực dịch vụ web của người dùng sang thiết bị mới</translation>
-<translation id="1641117061932613266">Bật dịch vụ <ph name="PRODUCT_NAME" /> phiên bản 2</translation>
 <translation id="1643642938972654829">Cho phép truy cập vào trang thử nghiệm chính sách</translation>
 <translation id="1644373745741524038">Vì lý do bảo mật, cần có một cử chỉ trước đó của người dùng ("kích hoạt tạm thời") để gọi API web <ph name="REQUEST_FULLSCREEN_API_NAME" />, nếu không thì sẽ không gọi được. Chế độ cài đặt cá nhân của người dùng có thể cho phép một số nguồn gốc nhất định gọi API này mà không cần cử chỉ trước đó của người dùng, theo mô tả trong <ph name="AUTOMATIC_FULLSCREEN_HELP_URL" />.
 
@@ -1114,11 +1113,6 @@ gặp sự cố do thay đổi này. Phiên bản cuối cùng hỗ trợ chính
 <translation id="1781720543185538098">Chỉ định xem các khảo sát trong sản phẩm <ph name="PRODUCT_NAME" /> có hiển thị với người dùng hay không.</translation>
 <translation id="1787790976045065845">Chính sách này chỉ có hiệu lực khi bạn đặt chính sách <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> thành <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> hoặc <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> và khi người dùng tháo thẻ thông minh mà họ dùng để xác thực. Khi đó, chính sách này sẽ chỉ rõ số giây hiển thị một thông báo cho người dùng biết về hành động sắp diễn ra. Thông báo này đang chặn màn hình. Hành động sẽ chỉ diễn ra sau khi thông báo này hết hạn. Người dùng có thể ngăn hành động diễn ra bằng cách lắp lại thẻ thông minh trước khi thông báo hết hạn. Nếu bạn đặt chính sách này thành 0, sẽ không có thông báo nào hiển thị và hành động sẽ diễn ra ngay lập tức.</translation>
 <translation id="1793346220873697538">Tắt tính năng in mã PIN theo mặc định</translation>
-<translation id="1793886201577409556">Chính sách này kiểm soát chế độ hiển thị của thông tin về nguồn gốc giao diện tiện ích trong chân trang của Trang thẻ mới (NTP) khi một tiện ích kiểm soát NTP. Theo mặc định, chân trang của NTP sẽ hiển thị thông tin về tiện ích kiểm soát NTP.
-
-Nếu bạn không đặt chính sách này hoặc đặt thành true (đúng), thì trình duyệt có NTP do tiện ích kiểm soát sẽ hiển thị tên tiện ích và đường liên kết đến tiện ích đó.
-
-Nếu bạn đặt chính sách này thành false (sai), thì thông tin về nguồn gốc giao diện sẽ bị ẩn.</translation>
 <translation id="1794457906032475749">Nếu bạn Bật chính sách này thì theo mặc định, tuỳ chọn lưu giữ mọi dữ liệu duyệt web hiện có khi tạo hồ sơ doanh nghiệp sẽ được chọn.
 
 Nếu bạn Tắt hoặc không thiết lập chính sách này thì theo mặc định, tuỳ chọn lưu giữ mọi dữ liệu duyệt web hiện có khi tạo hồ sơ doanh nghiệp sẽ không được chọn.
@@ -6258,9 +6252,6 @@ Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên b
 <translation id="5448022937220253000">Chọn điều sẽ xảy ra với dữ liệu người dùng sau khi tắt <ph name="LACROS_NAME" /></translation>
 <translation id="5449690328792750354">Sẽ cung cấp API Event.path.</translation>
 <translation id="5452024130413254050">Kiểm soát việc máy ảo sử dụng cấu hình này có quyền truy cập vào vTPM hay không, giá trị mặc định là false và <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" /> nếu không được đặt.</translation>
-<translation id="5454128917282602937">Khi người dùng chuyển đổi giữa các thiết bị <ph name="PRODUCT_OS_NAME" />, dịch vụ <ph name="PRODUCT_NAME" /> phiên bản 2 sẽ khởi chạy các cửa sổ trình duyệt và ứng dụng từ thiết bị trước đó sang thiết bị mới.
-Nếu bạn đặt chính sách này thành Bật, hệ thống sẽ tự động mở các cửa sổ trình duyệt và ứng dụng trên thiết bị <ph name="PRODUCT_OS_NAME" /> được sử dụng gần đây nhất của người dùng hiện tại sau khi họ đăng nhập.
-Nếu bạn đặt chính sách này thành Tắt hoặc không đặt chính sách này, chế độ cài đặt khôi phục hoàn toàn sẽ xác định những phần sẽ mở ra khi người dùng đăng nhập.</translation>
 <translation id="5455609857202311243">Bỏ qua việc phê duyệt chính sách KDC trong quá trình xác thực HTTP</translation>
 <translation id="5455888515928026628">Trong khi đăng nhập qua màn hình khóa, <ph name="PRODUCT_OS_NAME" /> có thể xác thực với một máy chủ (trực tuyến) hoặc dùng mật khẩu lưu trong bộ nhớ đệm (ngoại tuyến).
 
@@ -7294,6 +7285,14 @@ Nếu bạn đặt chính sách này thành false (sai) hoặc không đặt, tr
 Trình bảo vệ màn hình của thiết bị hiển thị những hình ảnh mà chính sách <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_IMAGES_POLICY_NAME" /> đề cập. Nếu bạn không đặt <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_IMAGES_POLICY_NAME" /> hoặc đặt thành một danh sách trống hoặc danh sách không có hình ảnh hợp lệ, trình bảo vệ màn hình sẽ không hiển thị trên màn hình đăng nhập.
 
 Bạn có thể điều chỉnh thời gian chờ ở trạng thái rảnh trước khi khởi động trình bảo vệ màn hình và khoảng thời gian hiển thị một hình ảnh lần lượt theo chính sách <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> và <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" />. Nếu bạn không đặt chính sách nào đó trong số này, giá trị mặc định của chính sách sẽ được sử dụng.</translation>
+<translation id="6172232105455631777">Đây là chính sách kiểm soát việc có bật tính năng Bảo vệ địa chỉ IP của <ph name="PRIVACY_SANDBOX_NAME" /> hay không.
+
+Nếu bạn đặt chính sách này thành Tắt, tính năng Bảo vệ địa chỉ IP sẽ tắt và người dùng sẽ không thể bật tính năng này thông qua chế độ cài đặt giao diện người dùng.
+Nếu bạn đặt chính sách này thành Bật, tính năng Bảo vệ địa chỉ IP sẽ bật và người dùng sẽ không thể tắt tính năng này thông qua chế độ cài đặt giao diện người dùng.
+Nếu bạn không đặt chính sách này, tính năng Bảo vệ địa chỉ IP sẽ bật theo mặc định và người dùng có thể bật hoặc tắt tính năng này thông qua chế độ cài đặt giao diện người dùng trên thiết bị của họ.
+Lưu ý: Hành vi của tính năng Bảo vệ địa chỉ IP dành cho người dùng doanh nghiệp có thể thay đổi theo thời gian khi bạn đặt chính sách này thành Bật hoặc khi bạn không đặt chính sách này và tính năng này được bật theo mặc định hoặc thông qua chế độ cài đặt giao diện người dùng.
+
+Tính năng Bảo vệ địa chỉ IP sẽ ra mắt sớm nhất là ở phiên bản M139.</translation>
 <translation id="6172896675583897796">Nếu bạn đặt chính sách này thành Bật, thì Trợ lý Google có thể truy cập vào ngữ cảnh màn hình và gửi dữ liệu đó tới máy chủ. Nếu bạn đặt chính sách này thành Tắt, thì Trợ lý Google sẽ không truy cập được ngữ cảnh màn hình.
 
       Nếu bạn không đặt chính sách này, thì người dùng có thể quyết định bật hoặc tắt tính năng này.</translation>
@@ -10013,6 +10012,7 @@ Việc sử dụng <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> hoặc <ph n
 <translation id="8056237304861875584">Chính sách Cho phép tiếp tục nhiệm vụ trong Trung tâm điều khiển điện thoại sẽ được bật.</translation>
 <translation id="8056273037819805106">Thông tin đăng nhập <ph name="PRODUCT_OS_NAME" /> sẽ được dùng để xác thực mạng với một proxy được quản lý.</translation>
 <translation id="8056800559672904373">Tài khoản được quản lý phải là tài khoản chính và không có tài khoản phụ, đồng thời người dùng có thể nhập dữ liệu duyệt web hiện có vào thời điểm tạo hồ sơ</translation>
+<translation id="8058944547428747367">Cho phép người dùng bật hoặc tắt chế độ cài đặt Bảo vệ địa chỉ IP của <ph name="PRIVACY_SANDBOX_NAME" /> trên thiết bị của họ. Tính năng này sẽ bật theo mặc định.</translation>
 <translation id="8059164285174960932">URL nơi ứng dụng truy cập từ xa sẽ lấy mã thông báo xác thực</translation>
 <translation id="8059352177830050556">Bật tính năng báo cáo thông tin về đèn nền của thiết bị</translation>
 <translation id="8062485064082966327">Dùng một dịch vụ ẩn danh của Google để cung cấp nội dung mô tả tự động cho những hình ảnh chưa gắn nhãn</translation>
@@ -10472,7 +10472,6 @@ Nếu bạn không đặt chính sách này, thì ban đầu, tính năng điề
 <translation id="8339420913453596618">Đã tắt hai yếu tố</translation>
 <translation id="8341175887542205077">Tắt dịch vụ sao lưu và khôi phục của máy ảo Linux</translation>
 <translation id="8344454543174932833">Nhập dấu trang từ trình duyệt mặc định trong lần chạy đầu tiên</translation>
-<translation id="8345184118796116912">Kiểm soát chế độ hiển thị của thông tin về nguồn gốc giao diện tiện ích trên Trang thẻ mới cho trình duyệt được quản lý</translation>
 <translation id="8347993687936322631">Lưu ý rằng chúng tôi không dùng chính sách này nữa và sẽ xóa khỏi <ph name="PRODUCT_OS_NAME" /> phiên bản 85. Thay vào đó, vui lòng sử dụng <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Chính sách này cung cấp giá trị dự phòng cho các chính sách <ph name="IDLE_ACTION_AC_POLICY_NAME" /> và <ph name="IDLE_ACTION_BATTERY_POLICY_NAME" /> cụ thể hơn. Nếu bạn đặt chính sách này, giá trị của chính sách sẽ được sử dụng trong trường hợp bạn không đặt chính sách cụ thể hơn tương ứng.
@@ -10524,6 +10523,17 @@ Chứng chỉ cần được mã hoá base64.</translation>
 <translation id="8381774264911275515">Tắt chính sách chuyển Cookie SAML SSO sang phiên người dùng trong khi đăng nhập</translation>
 <translation id="8382184662529825177">Cho phép sử dụng chứng thực từ xa để bảo vệ nội dung cho thiết bị</translation>
 <translation id="838870586332499308">Bật chuyển vùng dữ liệu</translation>
+<translation id="8389925503559691525">Chính sách này kiểm soát việc có phân vùng URL blob trong quá trình tìm nạp và điều hướng hay không.
+Nếu bạn đặt chính sách này thành Bật hoặc không đặt, URL blob sẽ được phân vùng.
+Nếu bạn đặt chính sách này thành Tắt, URL blob sẽ không được phân vùng.
+
+Nếu tính năng phân vùng bộ nhớ bị tắt đối với một nguồn gốc cấp cao nhất cụ thể thông qua <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> hoặc <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />, thì URL blob cũng sẽ không được phân vùng.
+
+Nếu bạn phải sử dụng chính sách này, vui lòng báo cáo lỗi tại <ph name="BUG_URL" /> và giải thích trường hợp sử dụng của bạn. Chính sách này dự kiến sẽ được cung cấp thông qua phiên bản 143 của <ph name="PRODUCT_NAME" />, sau đó phương thức triển khai cũ sẽ bị loại bỏ.
+
+LƯU Ý: Chỉ các quy trình kết xuất hình ảnh mới bắt đầu mới thể hiện các thay đổi đối với chính sách này trong khi trình duyệt đang chạy.
+
+Vui lòng truy cập vào https://developers.google.com/privacy-sandbox/cookies/storage-partitioning để biết thông tin chi tiết về tính năng phân vùng bộ nhớ của bên thứ ba.</translation>
 <translation id="8392478748777481636">Chính sách này không còn được dùng nữa và không được hỗ trợ, vui lòng dùng chính sách "<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />".</translation>
 <translation id="8393850527597048037">Chỉ trên nền tảng</translation>
 <translation id="8395350646076131800">Thời gian chờ ở trạng thái rảnh trên màn hình khoá trên trình bảo vệ màn hình của người dùng.</translation>

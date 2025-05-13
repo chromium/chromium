@@ -162,6 +162,7 @@
 <translation id="6264365405983206840">Izaberi &amp;sve</translation>
 <translation id="6346952829206698721">Nalepi iz memorije</translation>
 <translation id="6364916375976753737">Pomeri nalevo</translation>
+<translation id="63712816010840859">Ako aktuelni ekran nije dodirni, pritisnite Esc.</translation>
 <translation id="6394627529324717982">Zarez</translation>
 <translation id="6397363302884558537">Prestanite da govorite</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{Pre 1 sek}one{Pre # sek}few{Pre # sek}other{Pre # sek}}</translation>
@@ -173,6 +174,7 @@
 <translation id="6612467943526193239">Da biste izašli iz kalibracije, pritisnite Esc.</translation>
 <translation id="6620110761915583480">Čuvanje datoteke</translation>
 <translation id="6699343763173986273">Sledeća pesma medija</translation>
+<translation id="6738856801552481343">Ako ovaj ekran nije dodirni, pritisnite Esc.</translation>
 <translation id="6807086321996342431">Kolona <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">Zaustavljanje medija</translation>
 <translation id="6845383723252244143">Izbor direktorijuma</translation>

@@ -1179,6 +1179,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="594324569139756587">Harmadik féltől származó cookie-k letiltása</translation>
 <translation id="5944869793365969636">QR-kód beolvasása</translation>
 <translation id="5948291296578561264">Segítségével fotókat menthet a fotótárba.</translation>
+<translation id="5948605885471592910">Minden megnyitott elem megtekintése és kezelése</translation>
 <translation id="5952641243319721872">Biztosan szeretné elvetni a kijelölést?</translation>
 <translation id="5956112131836209882">Lapcsoportba tartozó lap. <ph name="NUMBER_OF_TABS_IN_GROUP" />/<ph name="TAB_INDEX_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Keresőmotor: <ph name="SEARCH_PROVIDER" /></translation>
@@ -1675,6 +1676,7 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="7933880123415105005"><ph name="SEARCH_PROVIDER" /> keresése</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Oldal hozzáadva az Ön fiókjában ({email}) található olvasólistához}other{{count} oldal hozzáadva az Ön fiókjában ({email}) található olvasólistához}}</translation>
+<translation id="7952353944614086413">Megnyitott lapok és csoportok</translation>
 <translation id="7952670906562503188">{passkey_count} azonosítókulcsot, valamint azon webhelyek és alkalmazások listáját készül törölni, amelyeknél úgy döntött, hogy soha nem menti a bejelentkezési adatokat. A webhelyekhez és alkalmazásokhoz létrehozott fiókok nem törlődnek.</translation>
 <translation id="7958575506592576831">Oldal biztonsági információi</translation>
 <translation id="7961015016161918242">Soha</translation>
@@ -1967,6 +1969,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="9008201768610948239">Mellőzés</translation>
 <translation id="9012585441087414258">Védelmet nyújt az ismert veszélyes webhelyekkel, letöltésekkel és bővítményekkel szemben. Ha valamelyik oldalon gyanús műveletet észlel, akkor a böngésző elküldi az URL-eket és az oldal tartalmának egyes részeit a Google Biztonságos Böngészésnek.</translation>
 <translation id="9013605037177245304">Értesítések bekapcsolása</translation>
+<translation id="9013632079355478927">Olvasási mód elrejtése</translation>
 <translation id="9029650858822697271">A rendszer kijelentkeztette Önt</translation>
 <translation id="9032405509996909363">Böngészési adatok törlésének megerősítése</translation>
 <translation id="9039373489628511875">Sávszélesség</translation>

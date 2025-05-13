@@ -420,6 +420,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" /> 앱을 제거할 수 없음</translation>
 <translation id="1277020343994096713">현재 PIN과 다른 PIN을 새로 만들어 주세요.</translation>
 <translation id="1277597051786235230">새 탭에서 <ph name="SEARCH_ENGINE" />에 “<ph name="SEARCH_TERMS" />” 검색(&amp;S)</translation>
+<translation id="127849925363482083">탭 고정을 닫으려면 <ph name="SHORTCUT_TEXT" /> 키를 다시 누르세요.</translation>
 <translation id="1278859221870828664">Google Play 앱 및 서비스 검토</translation>
 <translation id="127946606521051357">근처 기기가 공유 시도 중</translation>
 <translation id="1280332775949918163">창 맞추기</translation>
@@ -4133,6 +4134,7 @@
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> 더보기</translation>
 <translation id="383891835335927981">확대 또는 축소된 사이트가 없음</translation>
 <translation id="3839516600093027468"><ph name="HOST" />에서 클립보드를 볼 수 없도록 항상 차단</translation>
+<translation id="3840096463915153852">대화 기록</translation>
 <translation id="3841282988425489367">Chromebook용 Steam(베타)을 설정할 수 없음</translation>
 <translation id="3841319830220785495">기본 자연 음성</translation>
 <translation id="3841356782900714251">스마트 카드 리더기</translation>
@@ -7005,6 +7007,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="59174027418879706">사용 가능</translation>
 <translation id="5919305207330938913">수집된 모든 데이터는 Google <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" />에 따라 사용됩니다.</translation>
+<translation id="5919486630433391408">관리자가 펌웨어 업데이트를 사용 중지했습니다.</translation>
 <translation id="5920543303088087579">관리자가 이 네트워크에 연결할 수 없도록 설정했습니다.</translation>
 <translation id="5922963926582976524">인스턴트 핫스팟 네트워크 연결 해제</translation>
 <translation id="5924047253200400718">도움말 보기<ph name="SCANNING_STATUS" /></translation>
@@ -7551,6 +7554,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="630292539633944562">개인정보 추천</translation>
 <translation id="6304017513498618504">'요약'과 같은 명령어를 사용할 수도 있습니다.</translation>
 <translation id="6305607932814307878">전체 정책:</translation>
+<translation id="6305627295927385295">다음 항목을 삭제합니다.</translation>
 <translation id="6305702903308659374">ChromeVox 음성이 나올 때도 보통 볼륨으로 재생합니다.</translation>
 <translation id="6307268917612054609">카메라 권한이 있는 앱 및 웹사이트와 시스템 서비스에서 카메라를 사용할 수 있습니다</translation>
 <translation id="6307990684951724544">시스템 사용 중</translation>
@@ -9314,6 +9318,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7583948862126372804">득표 수</translation>
 <translation id="7585106857920830898">조직 보안 정책을 준수하는지 확인 중</translation>
 <translation id="7586498138629385861">Chrome 앱이 열려 있을 때 Chrome이 계속 실행됩니다.</translation>
+<translation id="7587806318633605613">추천 기록</translation>
 <translation id="7589461650300748890">주의하세요.</translation>
 <translation id="7590883480672980941">입력 설정</translation>
 <translation id="7592060599656252486">일부</translation>
@@ -9980,6 +9985,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8028138772801251745">AI 자동 완성</translation>
 <translation id="8028803902702117856"><ph name="SIZE" /> 다운로드 중, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">크기</translation>
+<translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{읽기 목록}=1{읽기 목록({SELECTED_ITEMS})}other{읽기 목록({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - 권한 요청됨, ⌘ 키와 Option 키와 위쪽 화살표 키를 눌러 응답</translation>
 <translation id="8030169304546394654">연결 끊김</translation>
 <translation id="8030852056903932865">승인</translation>
@@ -10851,6 +10857,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> 또는 <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">야간 조명 색상 온도</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" />의 권한 요청: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> 등</translation>
+<translation id="8648889679430451455">맞춤설정 데이터 지우기</translation>
 <translation id="8649026945479135076">방문하는 사이트에서는 일반적으로 사용 경험을 개인화하기 위해 내가 관심을 보인 항목을 기억합니다. 또한 사이트에서는 내 관심분야에 관한 정보를 Chrome에 저장할 수 있습니다.</translation>
 <translation id="8650543407998814195">더 이상 기존 프로필에 액세스할 수 없지만 삭제할 수는 있습니다.</translation>
 <translation id="8651585100578802546">캐시를 무시하고 페이지 새로고침</translation>

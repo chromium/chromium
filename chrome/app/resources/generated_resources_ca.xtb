@@ -3609,6 +3609,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3514681096978190000">Aquest fitxer d'arxiu inclou altres fitxers que poden amagar programari maliciós</translation>
 <translation id="3515983984924808886">Torna a tocar la clau de seguretat per confirmar el restabliment. Se suprimirà tota la informació desada a la clau de seguretat, inclòs el PIN.</translation>
 <translation id="3518866566087677312">Afegeix a les adreces d'interès els llocs a què vulguis tornar més endavant</translation>
+<translation id="3519014757432845220">Ajuda a millorar la protecció contra el contingut brossa compartint amb Google el contingut de les notificacions i l'URL del lloc web. És possible que un equip de persones revisi el contingut.</translation>
 <translation id="3519382402703204668">Tria una pestanya</translation>
 <translation id="3519564332031442870">Servei d'impressió al processador dorsal</translation>
 <translation id="3519938335881974273">Anomena i desa la pàgina...</translation>
@@ -3889,7 +3890,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3707034683772193706">Els llocs web que visites poden desar una quantitat petita de dades amb Chrome, principalment per validar que no ets un bot</translation>
 <translation id="3707163604290651814">Has iniciat la sessió com a <ph name="NAME" /></translation>
 <translation id="3707348585109246684">Obre l'enllaç en una pestanya nova de <ph name="APP" /></translation>
-<translation id="3708295717182051206">Subtítols</translation>
+<translation id="3708295717182051206">Subtítols descriptius</translation>
 <translation id="3708684582558000260">No permetis que els llocs web tancats acabin d'enviar o de rebre dades</translation>
 <translation id="3709244229496787112">S'ha tancat el navegador abans que la baixada es completés.</translation>
 <translation id="3710501561113687889">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà la teva informació (<ph name="FIELDS_STRING" />) amb aquest lloc web.</translation>
@@ -6613,6 +6614,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="563371367637259496">Mòbil</translation>
 <translation id="5635312199252507107">Permet en llocs web concrets</translation>
 <translation id="5636012309446422">Vols suprimir <ph name="DEVICE" /> de <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="56360247219959198"><ph name="DICTIONARY" /> se suprimirà permanentment. Aquesta acció no es pot desfer.</translation>
 <translation id="5636140764387862062">Més accions per al PIN</translation>
 <translation id="5636996382092289526">Per utilitzar <ph name="NETWORK_ID" />, és possible que abans calgui que <ph name="LINK_START" />visiteu la pàgina d'inici de sessió de la xarxa<ph name="LINK_END" />, que s'obrirà automàticament d'aquí a pocs segons. Si no s'obre, no podreu utilitzar la xarxa.</translation>
 <translation id="5637476008227280525">Activa les dades mòbils</translation>
@@ -7727,6 +7729,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6459799433792303855">La finestra activa s'ha mogut a una altra pantalla.</translation>
 <translation id="6460601847208524483">Cerca el següent</translation>
 <translation id="6461170143930046705">S'estan cercant xarxes...</translation>
+<translation id="6463488491707167747">Suprimeix aquest diccionari</translation>
 <translation id="6463596731306859179">Veus finestres emergents no desitjades o cap altre comportament inesperat? De vegades, les aplicacions i les extensions que instal·les poden canviar la configuració de ChromeOS sense que te n'assabentis.</translation>
 <translation id="6463668944631062248">Accepta la sol·licitud d'emissió a <ph name="DEVICE_NAME" /></translation>
 <translation id="6463795194797719782">E&amp;dita</translation>

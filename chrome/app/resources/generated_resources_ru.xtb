@@ -423,6 +423,7 @@
 <translation id="1276994519141842946">Не удалось удалить <ph name="APP_NAME" />.</translation>
 <translation id="1277020343994096713">Создайте PIN-код, который отличается от текущего.</translation>
 <translation id="1277597051786235230">&amp;Искать "<ph name="SEARCH_TERMS" />" в <ph name="SEARCH_ENGINE" /> на новой вкладке</translation>
+<translation id="127849925363482083">Чтобы закрыть закрепленную вкладку, нажмите <ph name="SHORTCUT_TEXT" /> ещё раз.</translation>
 <translation id="1278859221870828664">Ознакомьтесь с условиями предоставления приложений и сервисов Google Play</translation>
 <translation id="127946606521051357">Устройство поблизости делится контентом</translation>
 <translation id="1280332775949918163">Закрепление окна</translation>
@@ -4120,6 +4121,7 @@
 <translation id="3838486795898716504">Другие страницы с заголовком <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">Нет сайтов с измененным масштабом</translation>
 <translation id="3839516600093027468">Никогда не открывать сайту <ph name="HOST" /> доступ к буферу обмена</translation>
+<translation id="3840096463915153852">История чата</translation>
 <translation id="3841282988425489367">Не удалось установить Steam для Chromebook (бета)</translation>
 <translation id="3841319830220785495">Естественный голос по умолчанию</translation>
 <translation id="3841356782900714251">Устройства чтения смарт-карт</translation>
@@ -6992,6 +6994,7 @@
 <translation id="5916664084637901428">ВКЛ</translation>
 <translation id="59174027418879706">Включено</translation>
 <translation id="5919305207330938913">Все собранные данные будут использоваться в соответствии с <ph name="BEGIN_LINK" />Политикой конфиденциальности Google<ph name="END_LINK" />.</translation>
+<translation id="5919486630433391408">Функция обновления встроенного ПО отключена администратором</translation>
 <translation id="5920543303088087579">Администратор запретил подключаться к этой сети</translation>
 <translation id="5922963926582976524">Отключиться от мгновенной точки доступа</translation>
 <translation id="5924047253200400718">Справка<ph name="SCANNING_STATUS" /></translation>
@@ -7538,6 +7541,7 @@
 <translation id="630292539633944562">Подсказки с личной информацией</translation>
 <translation id="6304017513498618504">Вы также можете попросить, например, создать краткий пересказ.</translation>
 <translation id="6305607932814307878">Общая политика:</translation>
+<translation id="6305627295927385295">Будет удалено следующее:</translation>
 <translation id="6305702903308659374">Не менять его громкость даже во время чтения ChromeVox</translation>
 <translation id="6307268917612054609">Камеру могут использовать приложения и сайты с разрешением на доступ к ней, а также системные сервисы</translation>
 <translation id="6307990684951724544">Система перегружена</translation>
@@ -9307,6 +9311,7 @@
 <translation id="7583948862126372804">Количество</translation>
 <translation id="7585106857920830898">Проверка на соответствие правилам безопасности вашей организации…</translation>
 <translation id="7586498138629385861">Браузер будет продолжать работать, пока вы не закроете приложения Chrome.</translation>
+<translation id="7587806318633605613">История подсказок</translation>
 <translation id="7589461650300748890">Осторожно!</translation>
 <translation id="7590883480672980941">Настройки ввода</translation>
 <translation id="7592060599656252486">Озвучивать некоторые</translation>
@@ -9972,6 +9977,7 @@
 <translation id="8028138772801251745">Автозаполнение с помощью ИИ</translation>
 <translation id="8028803902702117856">Скачивание файла <ph name="FILE_NAME" /> (<ph name="SIZE" />)</translation>
 <translation id="8028993641010258682">Размер</translation>
+<translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Список для чтения}=1{Список для чтения ({SELECTED_ITEMS})}one{Список для чтения ({SELECTED_ITEMS})}few{Список для чтения ({SELECTED_ITEMS})}many{Список для чтения ({SELECTED_ITEMS})}other{Список для чтения ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – требуется разрешение. Нажмите ⌘ + Option + Стрелка вверх, чтобы ответить.</translation>
 <translation id="8030169304546394654">Отключено</translation>
 <translation id="8030852056903932865">Разрешить</translation>
@@ -10843,6 +10849,7 @@
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> или <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Цветовая температура ночной подсветки</translation>
 <translation id="8648544143274677280">Сайт <ph name="SITE_NAME" /> запрашивает следующие разрешения: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> и другие</translation>
+<translation id="8648889679430451455">Удалить данные для персонализации</translation>
 <translation id="8649026945479135076">Обычно сайты, которые вы посещаете, запоминают ваши интересы, чтобы показывать персонализированную рекламу. В том числе они могут хранить об этом информацию в Chrome.</translation>
 <translation id="8650543407998814195">У вас больше нет доступа к старому профилю, но вы можете его удалить.</translation>
 <translation id="8651585100578802546">Принудительно обновить страницу</translation>

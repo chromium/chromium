@@ -3264,6 +3264,7 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{ファイル}other{# 件のファイル}}</translation>
 <translation id="326999365752735949">差分のダウンロード中</translation>
 <translation id="3270965368676314374">パソコンからの写真、音楽、その他のメディアの読み取り、変更、削除</translation>
+<translation id="3275464924531706548"><ph name="HEADER" /> を折りたたむ</translation>
 <translation id="3275778809241512831">ご使用の内部セキュリティ キーは現在、安全ではありません。このキーを使用しているすべてのサービスからキーを削除してください。この問題を解決するには、セキュリティ キーをリセットしてください。</translation>
 <translation id="3275778913554317645">ウィンドウとして開く</translation>
 <translation id="3277214528693754078">テキスト カーソルを使って移動する（カーソル ブラウジング）</translation>
@@ -3595,6 +3596,7 @@
 <translation id="3510471875518562537">iPhone でこの住所を使用する</translation>
 <translation id="3511200754045804813">再スキャン</translation>
 <translation id="3511307672085573050">リンクのアドレスをコピー(&amp;E)</translation>
+<translation id="3511358375261756531"><ph name="HEADER" /> を開く</translation>
 <translation id="351152300840026870">固定幅フォント</translation>
 <translation id="3511528412952710609">短い</translation>
 <translation id="3513019849832307207">参加して開く</translation>
@@ -3604,6 +3606,7 @@
 <translation id="3514681096978190000">このアーカイブ ファイルには、マルウェアが潜んでいる可能性がある別のファイルが含まれています</translation>
 <translation id="3515983984924808886">リセットを確定するには、セキュリティ キーをもう一度タップしてください。セキュリティ キーに保存されているすべての情報（PIN を含む）が削除されます。</translation>
 <translation id="3518866566087677312">後で確認するページをブックマークに登録</translation>
+<translation id="3519014757432845220">通知の内容とサイトの URL を Google と共有して、スパム対策の改善にご協力ください。人間のレビュアーがコンテンツを確認する場合があります。</translation>
 <translation id="3519382402703204668">タブを選択</translation>
 <translation id="3519564332031442870">バックエンドの印刷サービス</translation>
 <translation id="3519938335881974273">ページを別名で保存...</translation>
@@ -6141,6 +6144,7 @@
 <translation id="5296536303670088158">Chrome の最高強度のセキュリティで有害なウェブサイトから保護します</translation>
 <translation id="5297005732522718715">テザリング設定を更新</translation>
 <translation id="5297082477358294722">パスワードが保存されました。保存パスワードの表示と管理は <ph name="SAVED_PASSWORDS_STORE" /> で行えます。</translation>
+<translation id="5297548311167268289"><ph name="RP_ID" /> にログイン</translation>
 <translation id="5297946558563358707">誰かに画面を見られたときには、画面の右下にプライバシー アイ アイコンが表示されます</translation>
 <translation id="5297984209202974345">最近の AI テーマ <ph name="INDEX" />/<ph name="SUBJECT" />、スタイル: <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">テーマの作成者:</translation>
@@ -6604,6 +6608,7 @@
 <translation id="563371367637259496">モバイル</translation>
 <translation id="5635312199252507107">特定のサイトで許可する</translation>
 <translation id="5636012309446422"><ph name="PRIMARY_EMAIL" /> から <ph name="DEVICE" /> を削除しますか？</translation>
+<translation id="56360247219959198">「<ph name="DICTIONARY" />」を完全に削除します。この操作は元に戻せません。</translation>
 <translation id="5636140764387862062">PIN に関するその他の操作</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> を使用するには、最初に<ph name="LINK_START" />ネットワークのログイン ページにアクセス<ph name="LINK_END" />する必要がある場合があります。その場合は、数秒でログイン ページが自動的に開きます。ログイン ページが自動的に開かない場合、そのネットワークは使用できません。</translation>
 <translation id="5637476008227280525">モバイルデータの有効化</translation>
@@ -7721,6 +7726,7 @@
 <translation id="6459799433792303855">アクティブなウィンドウが別のディスプレイに移動しました。</translation>
 <translation id="6460601847208524483">次を検索</translation>
 <translation id="6461170143930046705">ネットワークの検索中...</translation>
+<translation id="6463488491707167747">この辞書を削除</translation>
 <translation id="6463596731306859179">望ましくないポップアップなど、予期しない動作が発生する場合、インストールしたアプリや拡張機能によって、気付かないうちに ChromeOS の設定が変更されることがあります。</translation>
 <translation id="6463668944631062248"><ph name="DEVICE_NAME" /> でキャスト リクエストを承認してください</translation>
 <translation id="6463795194797719782">編集(&amp;E)</translation>

@@ -3273,6 +3273,7 @@ Quer pará-lo?</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Ficheiro}other{# ficheiros}}</translation>
 <translation id="326999365752735949">A transferir dif.</translation>
 <translation id="3270965368676314374">Ler, alterar e eliminar fotos, música e outros elementos multimédia do computador</translation>
+<translation id="3275464924531706548">Reduzir <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">A sua chave de segurança interna é atualmente insegura. Remova-a de todos os serviços nos quais a utilizou. Para resolver o problema, reponha a chave de segurança.</translation>
 <translation id="3275778913554317645">Abrir como janela</translation>
 <translation id="3277214528693754078">Navegar com o cursor de texto (Navegação por cursor)</translation>
@@ -3604,6 +3605,7 @@ Quer pará-lo?</translation>
 <translation id="3510471875518562537">Use esta morada no seu iPhone</translation>
 <translation id="3511200754045804813">Procurar novamente</translation>
 <translation id="3511307672085573050">Copiar &amp;Endereço do Link</translation>
+<translation id="3511358375261756531">Expandir <ph name="HEADER" /></translation>
 <translation id="351152300840026870">Tipo de letra com largura fixa</translation>
 <translation id="3511528412952710609">Curto</translation>
 <translation id="3513019849832307207">Aderir e abrir</translation>
@@ -6157,6 +6159,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5296536303670088158">Tem a segurança mais avançada do Chrome contra Websites prejudiciais</translation>
 <translation id="5297005732522718715">Atualizar configuração da ligação (à Internet) via telemóvel</translation>
 <translation id="5297082477358294722">Palavra-passe guardada. Veja e faça a gestão das palavras-passe guardadas em <ph name="SAVED_PASSWORDS_STORE" />.</translation>
+<translation id="5297548311167268289">Inicie sessão em <ph name="RP_ID" /></translation>
 <translation id="5297946558563358707">Quando alguém olhar para o ecrã, mostrar o ícone de olho de privacidade na parte inferior direita do ecrã</translation>
 <translation id="5297984209202974345">Tema de IA recente <ph name="INDEX" /> de <ph name="SUBJECT" />, no estilo <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Tema criado por</translation>

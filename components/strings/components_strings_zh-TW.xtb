@@ -769,6 +769,7 @@
 <translation id="2305294852062272447">要儲存駕照嗎？</translation>
 <translation id="2306124309679506798">要享有沉浸式體驗嗎？</translation>
 <translation id="2307711332257985952">你的住家和公司地址已可在 Chrome 中使用</translation>
+<translation id="2310789833878085574">儲存並自動填入</translation>
 <translation id="2312234273148520048">調味品和醬料</translation>
 <translation id="2316087952091171402">低於 <ph name="UPPER_ESTIMATE" />。下次造訪某些網站時，載入速度可能會變慢。</translation>
 <translation id="2316159751672436664">在 Chrome OS 設定中依個人需求調整無障礙工具</translation>
@@ -778,6 +779,7 @@
 <translation id="2320564945062300737">臉部護理產品</translation>
 <translation id="2321291402658100099">管理資訊</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 個視窗}other{# 個視窗}}</translation>
+<translation id="232390861414237658">只要將這張卡片儲存到 Google Pay，在 Chrome 中購物時就能自動填入卡片資訊</translation>
 <translation id="2328651992442742497">允許 (預設)</translation>
 <translation id="2328955282645810595">營建與電動工具</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />，到期日：<ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -938,6 +940,7 @@
 <translation id="2595719060046994702">這個裝置和帳戶未受到任何公司或其他機構管理。</translation>
 <translation id="2596415276201385844">你必須正確設定時鐘，才能建立安全連線。這是因為網站驗證身分時所使用的憑證僅於特定一段時間內有效。由於你裝置的時鐘不正確，因此 Chrome 無法驗證這些憑證。</translation>
 <translation id="2597378329261239068">此文件受到密碼保護，請輸入密碼。</translation>
+<translation id="2600083925285092409">只要將這張卡片儲存到 Google Pay，在 Chromium 中購物時就能自動填入卡片資訊</translation>
 <translation id="2605979593348332811">姓名拼音</translation>
 <translation id="2606760465469169465">自動驗證</translation>
 <translation id="2608019759319359258">已封鎖的主題不會用於個人化廣告</translation>
@@ -3586,6 +3589,7 @@
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195432682252510959">請於結帳時使用這個折扣碼。有效期限：<ph name="DATE" />。</translation>
 <translation id="7195852673246414183">開啟這項設定後，請返回這個分頁開始輸入內容</translation>
+<translation id="7196370964328811506">只要將這張卡片儲存到這部裝置，在 Chrome 中購物時就能自動填入卡片資訊</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可開啟新的無痕分頁以進行私密瀏覽</translation>
 <translation id="7203375778433816396">將 Chrome 設為系統的預設瀏覽器</translation>
@@ -4756,6 +4760,7 @@
 <translation id="940524522703752213"><ph name="MINUTES" /> 分鐘後開始上傳檔案至 <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="944578681290094302">在結帳時顯示可享有哪些卡片獎勵和福利。<ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />瞭解卡片福利<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome 會禁止網站使用第三方 Cookie 追蹤瀏覽網站的使用者。</translation>
+<translation id="945673208656386843">只要將這張卡片儲存到這部裝置，在 Chromium 中購物時就能自動填入卡片資訊</translation>
 <translation id="94613679163347541">要比較「<ph name="CATEGORY" />」嗎？</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Google 協作平台中快速建立新網站</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome 將於今天再次限制 Cookie}=1{Chrome 將於明天再次限制 Cookie}other{Chrome 將於 # 天後再次限制 Cookie}}</translation>

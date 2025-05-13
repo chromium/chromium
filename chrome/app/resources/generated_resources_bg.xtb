@@ -420,6 +420,7 @@
 <translation id="1276994519141842946">Деинсталирането на <ph name="APP_NAME" /> не бе успешно</translation>
 <translation id="1277020343994096713">Създайте нов ПИН код, различен от текущия</translation>
 <translation id="1277597051786235230">&amp;Търсене на „<ph name="SEARCH_TERMS" />“ чрез <ph name="SEARCH_ENGINE" /> в нов раздел</translation>
+<translation id="127849925363482083">Натиснете <ph name="SHORTCUT_TEXT" /> отново, за да затворите фиксирания раздел</translation>
 <translation id="1278859221870828664">Прегледайте приложенията и услугите в Google Play</translation>
 <translation id="127946606521051357">Устройство в близост споделя</translation>
 <translation id="1280332775949918163">Прилепване на прозорец</translation>
@@ -4127,6 +4128,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3838486795898716504">Още от „<ph name="PAGE_TITLE" />“</translation>
 <translation id="383891835335927981">Няма сайтове с увеличен или намален мащаб</translation>
 <translation id="3839516600093027468">Забраняване винаги на <ph name="HOST" /> да преглежда буферната памет</translation>
+<translation id="3840096463915153852">История на разговорите</translation>
 <translation id="3841282988425489367">Бета-версията на Steam за Chromebook не бе настроена</translation>
 <translation id="3841319830220785495">Естествен глас по подразбиране</translation>
 <translation id="3841356782900714251">Четци на смарткарти</translation>
@@ -7002,6 +7004,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5916664084637901428">Включено</translation>
 <translation id="59174027418879706">Активирано</translation>
 <translation id="5919305207330938913">Всички събрани данни ще се използват в съответствие с <ph name="BEGIN_LINK" />Декларацията за поверителност<ph name="END_LINK" /> на Google.</translation>
+<translation id="5919486630433391408">Актуализациите на фърмуера са деактивирани от администратора ви.</translation>
 <translation id="5920543303088087579">Свързването с тази мрежа е деактивирано от администратора ви</translation>
 <translation id="5922963926582976524">Прекратяване на връзката с мрежата за мигновената точка за достъп</translation>
 <translation id="5924047253200400718">Получете помощ<ph name="SCANNING_STATUS" /></translation>
@@ -7548,6 +7551,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="630292539633944562">Предложения за лична информация</translation>
 <translation id="6304017513498618504">Можете също да кажете неща като „обобщи“</translation>
 <translation id="6305607932814307878">Глобално правило:</translation>
+<translation id="6305627295927385295">Изтриване на следните елементи:</translation>
 <translation id="6305702903308659374">Възпроизвеждане с нормална сила на звука дори ако ChromeVox говори</translation>
 <translation id="6307268917612054609">Камерата може да се използва от приложенията и уебсайтовете, които имат разрешение за достъп до нея, и от системните услуги</translation>
 <translation id="6307990684951724544">Системата е заета</translation>
@@ -9312,6 +9316,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7583948862126372804">Брой</translation>
 <translation id="7585106857920830898">Проверява се за съответствие с правилата за сигурност на организацията ви...</translation>
 <translation id="7586498138629385861">Браузърът ще продължи да работи, докато приложенията в Chrome са отворени.</translation>
+<translation id="7587806318633605613">История на предложенията</translation>
 <translation id="7589461650300748890">Не бързайте! Внимавайте.</translation>
 <translation id="7590883480672980941">Настройки за въвеждане</translation>
 <translation id="7592060599656252486">Някои</translation>
@@ -9977,6 +9982,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8028138772801251745">Автоматично попълване с AI</translation>
 <translation id="8028803902702117856">Изтеглят се <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Размер</translation>
+<translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Списък за четене}=1{Списък за четене ({SELECTED_ITEMS})}other{Списък за четене ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> иска разрешение. Натиснете ⌘ + Option + стрелката за нагоре, за да отговорите</translation>
 <translation id="8030169304546394654">Няма връзка</translation>
 <translation id="8030852056903932865">Одобряване</translation>
@@ -10848,6 +10854,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> или <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Цветна температура за функцията „Нощно осветление“</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> иска да <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> и др.</translation>
+<translation id="8648889679430451455">Изчистване на данните за персонализирането</translation>
 <translation id="8649026945479135076">Посещаваните от вас сайтове обикновено запомнят нещата, които ви интересуват, за да персонализират практическата ви работа. Те също така могат да съхраняват в Chrome информация за интересите ви.</translation>
 <translation id="8650543407998814195">Можете да премахнете стария си потребителски профил, въпреки че вече нямате достъп до него.</translation>
 <translation id="8651585100578802546">Принудително презареждане на тази страница</translation>

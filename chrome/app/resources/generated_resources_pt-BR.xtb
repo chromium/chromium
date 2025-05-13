@@ -421,6 +421,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1276994519141842946">Não foi possível desinstalar o app <ph name="APP_NAME" /></translation>
 <translation id="1277020343994096713">Crie um PIN diferente do atual</translation>
 <translation id="1277597051786235230">&amp;Pesquisar “<ph name="SEARCH_TERMS" />” no <ph name="SEARCH_ENGINE" /> em uma nova guia</translation>
+<translation id="127849925363482083">Pressione <ph name="SHORTCUT_TEXT" /> novamente para fechar a guia fixada</translation>
 <translation id="1278859221870828664">Revise os apps e serviços do Google Play</translation>
 <translation id="127946606521051357">Um dispositivo por perto está compartilhando</translation>
 <translation id="1280332775949918163">Ajustar janela</translation>
@@ -4132,6 +4133,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3838486795898716504">Mais <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">Nenhum site teve o zoom aumentado ou diminuído</translation>
 <translation id="3839516600093027468">Sempre impedir que <ph name="HOST" /> veja a área de transferência</translation>
+<translation id="3840096463915153852">Histórico de conversas</translation>
 <translation id="3841282988425489367">Não é possível configurar o Steam para Chromebook (Beta)</translation>
 <translation id="3841319830220785495">Voz natural padrão</translation>
 <translation id="3841356782900714251">Leitores de cartão inteligente</translation>
@@ -7006,6 +7008,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5916664084637901428">Ativado</translation>
 <translation id="59174027418879706">Ativado</translation>
 <translation id="5919305207330938913">Todos os dados coletados são usados de acordo com a <ph name="BEGIN_LINK" />Política de Privacidade<ph name="END_LINK" /> do Google.</translation>
+<translation id="5919486630433391408">As atualizações de firmware foram desativadas pelo seu administrador.</translation>
 <translation id="5920543303088087579">A conexão a esta rede foi desativada pelo seu administrador</translation>
 <translation id="5922963926582976524">Desconectar a rede do ponto de acesso instantâneo</translation>
 <translation id="5924047253200400718">Receber ajuda<ph name="SCANNING_STATUS" /></translation>
@@ -7552,6 +7555,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="630292539633944562">Sugestões de informações pessoais</translation>
 <translation id="6304017513498618504">Você também pode pedir para resumir</translation>
 <translation id="6305607932814307878">Política global:</translation>
+<translation id="6305627295927385295">Exclua os seguintes itens:</translation>
 <translation id="6305702903308659374">Reproduzir no volume normal mesmo se o ChromeVox estiver falando</translation>
 <translation id="6307268917612054609">Apps e sites com permissões de uso da câmera e de serviços do sistema podem usar a câmera</translation>
 <translation id="6307990684951724544">Sistema ocupado</translation>
@@ -9318,6 +9322,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7583948862126372804">Contagem</translation>
 <translation id="7585106857920830898">Verificando com as políticas de segurança da sua organização…</translation>
 <translation id="7586498138629385861">O Google Chrome continuará funcionando enquanto os aplicativos do Chrome estiverem abertos.</translation>
+<translation id="7587806318633605613">Histórico de sugestões</translation>
 <translation id="7589461650300748890">Ei, tenha cuidado.</translation>
 <translation id="7590883480672980941">Configurações de entrada</translation>
 <translation id="7592060599656252486">Algumas</translation>
@@ -9983,6 +9988,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8028138772801251745">Preenchimento automático com IA</translation>
 <translation id="8028803902702117856">Fazendo o download de <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Tamanho</translation>
+<translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Lista de leitura}=1{Lista de leitura ({SELECTED_ITEMS})}one{Lista de leitura ({SELECTED_ITEMS})}other{Lista de leitura ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" />: permissão solicitada. Pressione ⌘ + Option + seta para cima para responder</translation>
 <translation id="8030169304546394654">Desconectado</translation>
 <translation id="8030852056903932865">Aprovar</translation>
@@ -10854,6 +10860,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> ou <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Temperatura da cor do "Modo noturno"</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> quer <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> e mais</translation>
+<translation id="8648889679430451455">Remover dados de personalização</translation>
 <translation id="8649026945479135076">É comum os sites que você visita lembrarem dos seus interesses para personalizar sua experiência. Sites também podem armazenar informações sobre seus interesses com o Chrome.</translation>
 <translation id="8650543407998814195">Embora você não possa mais acessar seu perfil antigo, ainda é possível removê-lo.</translation>
 <translation id="8651585100578802546">Forçar carregamento desta página</translation>

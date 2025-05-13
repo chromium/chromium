@@ -420,6 +420,7 @@
 <translation id="1276994519141842946">無法解除安裝「<ph name="APP_NAME" />」</translation>
 <translation id="1277020343994096713">新設定的 PIN 碼不能與目前的 PIN 碼相同</translation>
 <translation id="1277597051786235230">開啟新分頁並使用「<ph name="SEARCH_ENGINE" />」搜尋「<ph name="SEARCH_TERMS" />」(&amp;S)</translation>
+<translation id="127849925363482083">再次按下 <ph name="SHORTCUT_TEXT" /> 即可關閉固定分頁</translation>
 <translation id="1278859221870828664">檢查 Google Play 應用程式和服務</translation>
 <translation id="127946606521051357">附近的裝置正在分享資料</translation>
 <translation id="1280332775949918163">將視窗移到一側</translation>
@@ -4115,6 +4116,7 @@
 <translation id="3838486795898716504">更多<ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">未針對任何網站設定縮放等級</translation>
 <translation id="3839516600093027468">一律禁止 <ph name="HOST" /> 讀取剪貼簿</translation>
+<translation id="3840096463915153852">對話記錄</translation>
 <translation id="3841282988425489367">無法設定 Steam for Chromebook (Beta 版)</translation>
 <translation id="3841319830220785495">預設的自然語音</translation>
 <translation id="3841356782900714251">智慧讀卡機</translation>
@@ -6983,6 +6985,7 @@
 <translation id="5916664084637901428">開啟</translation>
 <translation id="59174027418879706">已啟用</translation>
 <translation id="5919305207330938913">我們會依《<ph name="BEGIN_LINK" />Google 隱私權政策<ph name="END_LINK" />》使用所有收集到的資料。</translation>
+<translation id="5919486630433391408">系統管理員已停用韌體更新。</translation>
 <translation id="5920543303088087579">你的管理員禁止使用者連線到這個網路</translation>
 <translation id="5922963926582976524">中斷與即時無線基地台網路的連線</translation>
 <translation id="5924047253200400718">查看說明。<ph name="SCANNING_STATUS" /></translation>
@@ -7527,6 +7530,7 @@
 <translation id="630292539633944562">個人資訊建議</translation>
 <translation id="6304017513498618504">你也可以提出「生成摘要」等要求</translation>
 <translation id="6305607932814307878">全域政策：</translation>
+<translation id="6305627295927385295">刪除以下項目：</translation>
 <translation id="6305702903308659374">ChromeVox 朗讀時仍維持音訊的標準音量</translation>
 <translation id="6307268917612054609">系統服務和具有攝影機權限的應用程式與網站可使用攝影機</translation>
 <translation id="6307990684951724544">系統忙碌中</translation>
@@ -9290,6 +9294,7 @@
 <translation id="7583948862126372804">計數</translation>
 <translation id="7585106857920830898">正在檢查下載內容是否符合貴機構的安全性政策...</translation>
 <translation id="7586498138629385861">在 Chrome 應用程式開啟的狀態下保持 Chrome 繼續執行。</translation>
+<translation id="7587806318633605613">建議字詞記錄</translation>
 <translation id="7589461650300748890">哎唷，請注意！</translation>
 <translation id="7590883480672980941">輸入法設定</translation>
 <translation id="7592060599656252486">部分</translation>
@@ -9955,6 +9960,7 @@
 <translation id="8028138772801251745">使用 AI 自動填入</translation>
 <translation id="8028803902702117856">正在下載 <ph name="FILE_NAME" />，檔案大小為 <ph name="SIZE" /></translation>
 <translation id="8028993641010258682">大小</translation>
+<translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{閱讀清單}=1{閱讀清單 ({SELECTED_ITEMS})}other{閱讀清單 ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - 已要求權限，按下 ⌘ + Option + 向上鍵即可回覆</translation>
 <translation id="8030169304546394654">已中斷連線</translation>
 <translation id="8030852056903932865">核准</translation>
@@ -10826,6 +10832,7 @@
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" />或<ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">夜燈模式色溫</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> 要求<ph name="FIRST_PERMISSION" />以及<ph name="SECOND_PERMISSION" />等權限</translation>
+<translation id="8648889679430451455">清除個人化資料</translation>
 <translation id="8649026945479135076">你造訪的網站通常都會記住你感興趣的項目，目的是打造個人化體驗。此外，網站也可以將你的興趣喜好相關資訊儲存在 Chrome 中。</translation>
 <translation id="8650543407998814195">雖然你無法再使用舊的設定檔，但仍可將其移除。</translation>
 <translation id="8651585100578802546">強制重新載入此網頁</translation>

@@ -3362,6 +3362,7 @@
 <translation id="6789062271869667677">უწყვეტი (გრძელი)</translation>
 <translation id="678982761784843853">დაცული კონტენტის ID-ები</translation>
 <translation id="6790428901817661496">დაკვრა</translation>
+<translation id="6792631792628412749">წვდომის გასაღები • <ph name="PROVIDER_NAME" /></translation>
 <translation id="6793213097893210590">მუყაო</translation>
 <translation id="679355240208270552">იგნორირებულია, რადგან ნაგულისხმევი ძიებას წესები არ ითვალისწინებს.</translation>
 <translation id="6794951432696553238">დაადასტურეთ ბარათები უფრო სწრაფად ამიერიდან Windows Hello-ს გამოყენების მეშვეობით</translation>
@@ -3864,6 +3865,7 @@
 <translation id="7639968568612851608">მუქი ნაცრისფერი</translation>
 <translation id="7646681339175747202">თქვენ მიერ ახლახან გამოყენებული პაროლი გამოაშკარავდა მონაცემთა გაჟონვისას. Google პაროლების მმართველი გირჩევთ, ახლავე შეცვალოთ თქვენი პაროლი.</translation>
 <translation id="7647206758853451655">ბეჭდვის ხარისხი</translation>
+<translation id="7648527891719919697">ეს საიტი დაბლოკილი დარჩება, რადგან თქვენ დამატებითი დაცვა ჩართეთ <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android პარამეტრებიდან<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />შეიტყვეთ მეტი ამ გაფრთხილების შესახებ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">ამ მოწყობილობაში ფაილების შენახვა</translation>
 <translation id="7653957176542370971">გადახდების დამმუშავებლის გვერდი დახურულია</translation>
 <translation id="7654909834015434372">ანოტაციების რედაქტირებისას ეს დოკუმენტი შეტრიალდება თავდაპირველი ვერსიის მიხედვით</translation>

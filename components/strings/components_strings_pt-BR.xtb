@@ -770,6 +770,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2305294852062272447">Salvar carteira de habilitação?</translation>
 <translation id="2306124309679506798">Permitir uma experiência imersiva?</translation>
 <translation id="2307711332257985952">Seus endereços de casa e do trabalho estão disponíveis no Chrome</translation>
+<translation id="2310789833878085574">Salvar e preencher automaticamente</translation>
 <translation id="2312234273148520048">Condimentos e molhos</translation>
 <translation id="2316087952091171402">Menos de <ph name="UPPER_ESTIMATE" />. Alguns sites podem carregar mais lentamente na sua próxima visita.</translation>
 <translation id="2316159751672436664">Personalizar as ferramentas de acessibilidade nas configurações do ChromeOS</translation>
@@ -779,6 +780,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2320564945062300737">Produtos para o rosto</translation>
 <translation id="2321291402658100099">Gerenciar informações</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 janela}one{# janela}other{# janelas}}</translation>
+<translation id="232390861414237658">Os dados deste cartão serão preenchidos automaticamente para compras feitas no Chrome quando ele for salvo para uso com o Google Pay</translation>
 <translation id="2328651992442742497">Com permissão (padrão)</translation>
 <translation id="2328955282645810595">Ferramentas de construção e elétricas</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expira em <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -939,6 +941,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2595719060046994702">Este dispositivo e conta não são gerenciados por uma empresa ou outra organização.</translation>
 <translation id="2596415276201385844">Para estabelecer uma conexão segura, o relógio precisa ser ajustado corretamente. Isso ocorre porque os certificados que os websites usam para se identificar são válidos apenas por períodos específicos. Como o relógio do seu dispositivo está incorreto, o Chrome não pode verificar esses certificados.</translation>
 <translation id="2597378329261239068">Este documento está protegido por senha.  Digite a senha.</translation>
+<translation id="2600083925285092409">Os dados deste cartão serão preenchidos automaticamente para compras feitas no Chromium quando ele for salvo para uso com o Google Pay</translation>
 <translation id="2605979593348332811">Nome fonético</translation>
 <translation id="2606760465469169465">Verificação automática</translation>
 <translation id="2608019759319359258">Quando um tema é bloqueado, ele não é usado para personalizar anúncios.</translation>
@@ -3588,6 +3591,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195432682252510959">Use este código ao finalizar a compra. Válido até <ph name="DATE" />.</translation>
 <translation id="7195852673246414183">Depois de ativar essa configuração, volte a esta guia para começar a escrever</translation>
+<translation id="7196370964328811506">Os dados deste cartão serão preenchidos automaticamente para compras feitas no Chrome quando ele for salvo neste dispositivo</translation>
 <translation id="7199278868241956094">Ofício</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />: pressione "Tab" e depois "Enter" para abrir uma nova guia anônima e navegar com privacidade</translation>
 <translation id="7203375778433816396">Definir o Chrome como o navegador padrão do sistema</translation>
@@ -4761,6 +4765,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="940524522703752213">O upload do arquivo para o <ph name="CLOUD_PROVIDER" /> vai começar em <ph name="MINUTES" /> minutos</translation>
 <translation id="944578681290094302">Mostrar recompensas e benefícios disponíveis para seus cartões na finalização da compra. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Saiba mais sobre os benefícios do cartão<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">O Chrome impede que os sites usem cookies de terceiros para rastrear você durante a navegação.</translation>
+<translation id="945673208656386843">Os dados deste cartão serão preenchidos automaticamente para compras feitas no Chromium quando ele for salvo neste dispositivo</translation>
 <translation id="94613679163347541">Comparar <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo site no Google Sites</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{O Chrome vai limitar os cookies de novo hoje}=1{O Chrome vai limitar os cookies de novo amanhã}one{# dia até que o Chrome limite os cookies de novo}other{# dias até que o Chrome limite os cookies de novo}}</translation>

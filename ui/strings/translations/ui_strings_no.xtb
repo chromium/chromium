@@ -162,6 +162,7 @@
 <translation id="6264365405983206840">Velg &amp;alle</translation>
 <translation id="6346952829206698721">Lim inn fra utklippstavlen</translation>
 <translation id="6364916375976753737">Rull mot venstre</translation>
+<translation id="63712816010840859">Hvis den gjeldende skjermen ikke er en berøringsskjerm, trykker du på Esc.</translation>
 <translation id="6394627529324717982">Komma</translation>
 <translation id="6397363302884558537">Stopp å snakke</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{For 1 sekund siden}other{For # sekunder siden}}</translation>
@@ -173,6 +174,7 @@
 <translation id="6612467943526193239">For å lukke kalibreringen, trykk på Esc.</translation>
 <translation id="6620110761915583480">Lagre fil</translation>
 <translation id="6699343763173986273">Media – neste spor</translation>
+<translation id="6738856801552481343">Hvis dette ikke er en berøringsskjerm, trykker du på Esc.</translation>
 <translation id="6807086321996342431">Kolonnen <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">Media – stopp</translation>
 <translation id="6845383723252244143">Velg mappe</translation>

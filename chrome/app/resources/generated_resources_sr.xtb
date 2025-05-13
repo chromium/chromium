@@ -3270,6 +3270,7 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{Фајл}one{# фајл}few{# фајла}other{# фајлова}}</translation>
 <translation id="326999365752735949">Преузимање diff датотеке</translation>
 <translation id="3270965368676314374">Читање слика, музике и других медија са рачунара, мењање и брисање тих медија</translation>
+<translation id="3275464924531706548">Скупите <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Интерни безбедносни кључ тренутно није безбедан. Уклоните га из свих услуга у којима сте га користили. Ресетујте безбедносни кључ да бисте решили проблем.</translation>
 <translation id="3275778913554317645">Отвори као прозор</translation>
 <translation id="3277214528693754078">Крећите се помоћу курсора за текст (навигација курсором)</translation>
@@ -3601,6 +3602,7 @@
 <translation id="3510471875518562537">Користите ову адресу на iPhone-у</translation>
 <translation id="3511200754045804813">Поново скенирај</translation>
 <translation id="3511307672085573050">Копирај адр&amp;есу линка</translation>
+<translation id="3511358375261756531">Проширите <ph name="HEADER" /></translation>
 <translation id="351152300840026870">Фонт фиксне ширине</translation>
 <translation id="3511528412952710609">Кратко</translation>
 <translation id="3513019849832307207">Придружи ме и отвори</translation>
@@ -6154,6 +6156,7 @@
 <translation id="5296536303670088158">Имате најјачу Chrome заштиту од штетних веб-сајтова</translation>
 <translation id="5297005732522718715">Освежи конфигурацију привезивања</translation>
 <translation id="5297082477358294722">Лозинка је сачувана. Прегледајте сачуване лозинке и управљајте њима са <ph name="SAVED_PASSWORDS_STORE" />.</translation>
+<translation id="5297548311167268289">Пријавите се на <ph name="RP_ID" /></translation>
 <translation id="5297946558563358707">Када вам неко други погледа екран, приказује се икона за приватност са оком у доњем десном углу екрана</translation>
 <translation id="5297984209202974345"><ph name="INDEX" />. недавна AI тема од <ph name="SUBJECT" /> у стилу <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Тему је направио/ла</translation>

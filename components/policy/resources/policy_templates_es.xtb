@@ -934,7 +934,6 @@ Las APIs del sistema operativo definen qué es una "entrada del usuario" (por ej
 <translation id="1639468541408865385">Habilitar la caché de autenticación de HTTP con alcance global</translation>
 <translation id="1639673466479276550">Habilitar el salvapantallas en la pantalla de inicio de sesión.</translation>
 <translation id="1640824698339859203">Habilitar el SSO flotante y mover las autenticaciones de los servicios web del usuario a un dispositivo nuevo</translation>
-<translation id="1641117061932613266">Habilitar la versión 2 del servicio <ph name="PRODUCT_NAME" /></translation>
 <translation id="1643642938972654829">Permitir el acceso a la página de prueba de políticas</translation>
 <translation id="1644373745741524038">Por motivos de seguridad, para llamar a la API web <ph name="REQUEST_FULLSCREEN_API_NAME" /> se requiere un gesto previo del usuario ("activación temporal"). De lo contrario, se producirá un error. La configuración personal del usuario podría permitir que algunos orígenes llamen a esta API sin un gesto previo del usuario, tal como se describe en <ph name="AUTOMATIC_FULLSCREEN_HELP_URL" />.
 
@@ -1089,11 +1088,6 @@ Esta política es una solución temporal en caso de que las empresas experimente
 <translation id="1781720543185538098">Especifica si se muestran encuestas en el producto de <ph name="PRODUCT_NAME" /> a los usuarios.</translation>
 <translation id="1787790976045065845">Esta política solo tiene validez si se le asigna el valor <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> o <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> a la política <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> y si un usuario que se autentica mediante una tarjeta inteligente quita dicha tarjeta. Esta política especifica durante cuántos segundos se muestra una notificación que informa al usuario de la acción que tendrá lugar a continuación. La notificación bloquea la pantalla. La acción solo se realizará una vez que caduque la notificación. El usuario puede impedir que se produzca la acción volviendo a insertar la tarjeta inteligente antes de que caduque la notificación. Si se le asigna el valor cero a esta política, no se mostrará ninguna notificación y la acción ocurrirá inmediatamente.</translation>
 <translation id="1793346220873697538">Inhabilitar la impresión con PIN de forma predeterminada</translation>
-<translation id="1793886201577409556">Esta política controla la visibilidad de la atribución del tema de la extensión en el pie de página de la página Nueva pestaña (NTP) cuando la NTP está controlada por una extensión. De forma predeterminada, el pie de página de la NTP muestra información sobre la extensión que controla la NTP.
-
-Si no se define esta política o se le asigna el valor true, los navegadores con una NTP controlada por una extensión mostrarán el nombre de la extensión y un enlace a ella.
-
-Si se le asigna el valor false a esta política, se ocultará la atribución del tema.</translation>
 <translation id="1794457906032475749">Si se habilita esta política, la opción de conservar los datos de navegación previos al crear un perfil de empresa estará marcada de forma predeterminada.
 
 Si esta política se inhabilita o no se establece, la opción de conservar los datos de navegación previos al crear un perfil de empresa no estará marcada de forma predeterminada.
@@ -2962,6 +2956,12 @@ Si se inhabilita esta política o no se define, el menú de accesibilidad flotan
 <translation id="3159375329008977062">El usuario tiene permiso para exportar e importar contenedores Crostini a través de la UI</translation>
 <translation id="3163167792874598128">Si esta política se habilita o no se define, la promoción de valoraciones del App Store se podrá mostrar al usuario (como máximo, una vez al año).
 Si esta política se inhabilita, la promoción de valoraciones del App Store no se mostrará al usuario.</translation>
+<translation id="3163880369487075383">Esta política controla si se puede borrar window.name para las navegaciones de nivel superior entre sitios, lo que da lugar a la creación de un nuevo grupo de contexto de navegación cuando se habilita la variante ClearCrossSiteCrossBrowsingContextGroupWindowName.
+
+La variante ClearCrossSiteCrossBrowsingContextGroupWindowName controla si se borrará window.name en las navegaciones de nivel superior entre sitios. Algunos ejemplos de este tipo de navegación incluyen cuando un usuario accede a un sitio nuevo a través del omnibox o hace clic en un enlace a un sitio nuevo cuando el enlace usa "target='_blank'
+rel='noopener'". En estos casos, borrar window.name evita que se filtre información entre sitios mediante la propiedad window.name, lo que mejora la privacidad del usuario. La política ClearWindowNameForNewBrowsingContextGroup se ha implementado para restaurar el comportamiento anterior. Cuando se habilita la variante ClearCrossSiteCrossBrowsingContextGroupWindowName, se borra window.name en las navegaciones que cumplan los requisitos si se habilita esta política o no se le asigna ningún valor. Si se inhabilita, no se borra window.name.
+
+Si tienes que usar la política para inhabilitar la eliminación de window.name en las navegaciones que cumplan los requisitos, avisa de un error en <ph name="BUG_URL" /> y explica tu caso práctico. Se prevé que esta política esté disponible en la versión 142 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3164531087779621747">Imprimir en modo PostScript</translation>
 <translation id="3165808775394012744">Estas políticas se incluyen aquí para que sea fácil eliminarlas.</translation>
 <translation id="3166210414652928099">Permitir al usuario utilizar aplicaciones Android de fuentes que no son de confianza</translation>
@@ -4170,6 +4170,7 @@ La política se aplica tanto a la URL a la que va el usuario como a los iframes.
 <translation id="4051723201852944592">Habilitar la oclusión de ventana</translation>
 <translation id="4052529125939620019">Cargar la extensión del componente CryptoToken al iniciar el navegador</translation>
 <translation id="4053157306171963473">Inhabilitar los informes sobre el tiempo de actividad del dispositivo</translation>
+<translation id="4056842786707010434">Elegir si quieres permitir que se borre window.name para las navegaciones de nivel superior entre sitios que den como resultado un nuevo grupo de contexto de navegación.</translation>
 <translation id="4056910949759281379">Inhabilitar protocolo SPDY</translation>
 <translation id="4057442294431066708">Esta política controla la opción de combinación de teclas seleccionada para reasignar eventos
 a F11/F12 en la subpágina de reasignación de teclas. Estos ajustes solo se aplican a los teclados de ChromeOS
@@ -6167,9 +6168,6 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 <translation id="5448022937220253000">Elige qué ocurrirá con los datos de usuario después de que se inhabilite <ph name="LACROS_NAME" /></translation>
 <translation id="5449690328792750354">La API Event.path estará disponible.</translation>
 <translation id="5452024130413254050">Controla si las VMs que usan esta configuración tienen acceso a un vTPM. El valor predeterminado es false y, si no se establece, es <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" />.</translation>
-<translation id="5454128917282602937">Cuando un usuario cambie de un dispositivo <ph name="PRODUCT_OS_NAME" /> a otro, la versión 2 del servicio <ph name="PRODUCT_NAME" /> abrirá las ventanas de navegador y de aplicaciones del dispositivo anterior en el nuevo.
-Si se habilita esta política, se abrirán las ventanas de navegador y de aplicaciones del último dispositivo <ph name="PRODUCT_OS_NAME" /> utilizado por el usuario actual automáticamente al iniciar sesión.
-Si se inhabilita la política o no se establece, la configuración de restauración completa determinará qué debe abrirse al iniciar sesión.</translation>
 <translation id="5455609857202311243">Ignorar la aprobación de políticas de KDC durante la autenticación de HTTP</translation>
 <translation id="5455888515928026628">Durante el inicio de sesión en la pantalla de bloqueo, <ph name="PRODUCT_OS_NAME" /> puede realizar la autenticación a través de un servidor (con conexión) o una contraseña almacenada en caché (sin conexión).
 
@@ -9409,6 +9407,7 @@ Esta política se puede anular para orígenes de aplicaciones web aisladas espec
 <translation id="768925347918758827">Estados Unidos.</translation>
 <translation id="7696412993033202071">URLs externas de lanzamiento de aplicación de autenticación</translation>
 <translation id="7696534428021833264">Habilitar la tarjeta de archivo de SharePoint y OneDrive en la página Nueva pestaña</translation>
+<translation id="7699644797467448158">Borrar window.name cuando la navegación sea de nivel superior, entre sitios e intercambie BrowsingContextGroup.</translation>
 <translation id="7701341006446125684">Establecer el tamaño de caché de aplicaciones y extensiones (en bytes)</translation>
 <translation id="7703041979684393741">No permitir que se recojan registros de eventos WebRTC de los servicios de Google</translation>
 <translation id="770339941914297201">Comportamiento nuevo: las aplicaciones de kiosco de Chrome solo se actualizarán con la URL de actualización de la política</translation>
@@ -10323,7 +10322,6 @@ Si no se le asigna ningún valor, el control con gestos faciales se inhabilitar�
 <translation id="8339420913453596618">Segundo factor inhabilitado</translation>
 <translation id="8341175887542205077">Inhabilitar las funciones de copia de seguridad y restauración de las máquinas virtuales de Linux</translation>
 <translation id="8344454543174932833">Importa los marcadores desde el navegador predeterminado en la primera ejecución.</translation>
-<translation id="8345184118796116912">Controlar la visibilidad de la atribución del tema de la extensión en la página Nueva pestaña de los navegadores gestionados</translation>
 <translation id="8347993687936322631">Ten en cuenta que esta política está obsoleta y se eliminará de la versión 85 de <ph name="PRODUCT_OS_NAME" />. Utiliza <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> en su lugar.
 
           Esta política proporciona un valor alternativo a las políticas <ph name="IDLE_ACTION_AC_POLICY_NAME" /> y <ph name="IDLE_ACTION_BATTERY_POLICY_NAME" />, que son más específicas. Si se establece esta política, su valor se utiliza si no se establece la política más específica correspondiente.
@@ -11133,6 +11131,7 @@ Esta política solo controla <ph name="ARC_VM" /> en <ph name="PRODUCT_OS_FLEX_N
       sobre el estado de la pantalla y los gráficos. Si se le asigna el valor "true", se proporcionará información
       sobre el estado de la pantalla y los gráficos.</translation>
 <translation id="891435090623616439">codificado como cadena JSON, consulta <ph name="COMPLEX_POLICIES_URL" /> para obtener más información</translation>
+<translation id="8916106787085606382">No borrar window.name cuando la navegación sea de nivel superior, entre sitios e intercambie BrowsingContextGroup.</translation>
 <translation id="8917070657147922192">Permite que los usuarios gestionen los certificados AC instalados.</translation>
 <translation id="8919100556245407184">Número de días tras la publicación del vencimiento de las actualizaciones automáticas después de los cuales se cerrará la sesión del usuario si la versión de <ph name="PRODUCT_OS_NAME" /> es anterior a la <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> especificada</translation>
 <translation id="8919369436496201075">Permite que el dispositivo reciba actualizaciones de LTS</translation>

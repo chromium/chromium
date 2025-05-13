@@ -162,6 +162,7 @@
 <translation id="6264365405983206840">Odaberi &amp;sve</translation>
 <translation id="6346952829206698721">Zalijepi iz međuspremnika</translation>
 <translation id="6364916375976753737">Pomakni se lijevo</translation>
+<translation id="63712816010840859">Ako trenutačni zaslon nije dodirni, pritisnite Esc.</translation>
 <translation id="6394627529324717982">Zarez</translation>
 <translation id="6397363302884558537">Prestani govoriti</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{Prije 1 s}one{Prije # s}few{Prije # s}other{Prije # s}}</translation>
@@ -173,6 +174,7 @@
 <translation id="6612467943526193239">Za izlaz iz kalibracije pritisnite Esc.</translation>
 <translation id="6620110761915583480">Spremi datoteku</translation>
 <translation id="6699343763173986273">Sljedeći zapis Medija</translation>
+<translation id="6738856801552481343">Ako ovaj zaslon nije dodirni, pritisnite Esc.</translation>
 <translation id="6807086321996342431">Stupac <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">Zaustavi Medije</translation>
 <translation id="6845383723252244143">Odabir mape</translation>

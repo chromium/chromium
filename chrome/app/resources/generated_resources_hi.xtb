@@ -421,6 +421,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" /> अनइंस्टॉल नहीं हो सका</translation>
 <translation id="1277020343994096713">ऐसा नया पिन बनाएं जो आपके मौजूदा पिन से अलग हो</translation>
 <translation id="1277597051786235230">नए टैब में जाकर <ph name="SEARCH_ENGINE" /> पर “<ph name="SEARCH_TERMS" />” खोजें</translation>
+<translation id="127849925363482083">पिन किए गए टैब को बंद करने के लिए, <ph name="SHORTCUT_TEXT" /> को फिर से दबाएं</translation>
 <translation id="1278859221870828664">Google Play पर मिलने वाले ऐप्लिकेशन और सेवाओं की समीक्षा करें</translation>
 <translation id="127946606521051357">आस-पास मौजूद कोई डिवाइस, डेटा शेयर कर रहा है</translation>
 <translation id="1280332775949918163">विंडो मूव करें</translation>
@@ -4132,6 +4133,7 @@
 <translation id="3838486795898716504">ज़्यादा <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">कोई भी साइट ज़ूम इन या ज़ूम आउट नहीं की गई है</translation>
 <translation id="3839516600093027468"><ph name="HOST" /> को क्लिपबोर्ड देखने से हमेशा ब्लॉक करें</translation>
+<translation id="3840096463915153852">बातचीत का इतिहास</translation>
 <translation id="3841282988425489367">Steam for Chromebook (बीटा वर्शन) को सेट अप नहीं किया जा सकता</translation>
 <translation id="3841319830220785495">डिफ़ॉल्ट के तौर पर सेट की गई अच्छी क्वालिटी वाली आवाज़</translation>
 <translation id="3841356782900714251">स्मार्ट कार्ड रीडर</translation>
@@ -7002,6 +7004,7 @@
 <translation id="5916664084637901428">चालू है</translation>
 <translation id="59174027418879706">चालू किया गया</translation>
 <translation id="5919305207330938913">इकट्ठा किए गए पूरे डेटा का इस्तेमाल, Google की <ph name="BEGIN_LINK" />निजता नीति<ph name="END_LINK" /> के मुताबिक किया जाएगा.</translation>
+<translation id="5919486630433391408">आपके एडमिन ने फ़र्मवेयर के अपडेट वाली सुविधा बंद कर दी है.</translation>
 <translation id="5920543303088087579">इस नेटवर्क से कनेक्ट करने की सुविधा आपके व्यवस्थापक ने अक्षम कर दी है</translation>
 <translation id="5922963926582976524">इंस्टैंट हॉटस्पॉट नेटवर्क को डिसकनेक्ट करें</translation>
 <translation id="5924047253200400718">सहायता पाएं<ph name="SCANNING_STATUS" /></translation>
@@ -7548,6 +7551,7 @@
 <translation id="630292539633944562">निजी जानकारी के सुझाव</translation>
 <translation id="6304017513498618504">इस तरह के निर्देश भी दिए जा सकते हैं, जैसे कि “खास जानकारी दो”</translation>
 <translation id="6305607932814307878">वैश्विक नीति:</translation>
+<translation id="6305627295927385295">ये आइटम मिटाएं:</translation>
 <translation id="6305702903308659374">ChromeVox के बोल रहे होने पर भी, सामान्य वॉल्यूम में ही चलाएं</translation>
 <translation id="6307268917612054609">सिस्टम सर्विस के साथ-साथ जिन ऐप्लिकेशन और वेबसाइटों के पास कैमरा इस्तेमाल करने की अनुमति है वे आपके कैमरे को ऐक्सेस कर सकती हैं</translation>
 <translation id="6307990684951724544">सिस्‍टम व्‍यस्‍त है</translation>
@@ -9313,6 +9317,7 @@
 <translation id="7583948862126372804">संख्या</translation>
 <translation id="7585106857920830898">आपके संगठन की सुरक्षा नीतियों के मुताबिक जांच की जा रही है...</translation>
 <translation id="7586498138629385861">Chrome Apps के खुले होने पर Chrome चलता रहेगा.</translation>
+<translation id="7587806318633605613">सुझाव का इतिहास</translation>
 <translation id="7589461650300748890">अरे, सुनिए. सतर्क रहें.</translation>
 <translation id="7590883480672980941">इनपुट सेटिंग</translation>
 <translation id="7592060599656252486">कुछ</translation>
@@ -9977,6 +9982,7 @@
 <translation id="8028138772801251745">एआई (AI) की मदद से, ऑटोमैटिक भरने की सुविधा</translation>
 <translation id="8028803902702117856">डाउनलोड हो रही है <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">आकार</translation>
+<translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{रीडिंग लिस्ट}=1{रीडिंग लिस्ट ({SELECTED_ITEMS})}one{रीडिंग लिस्ट ({SELECTED_ITEMS})}other{रीडिंग लिस्ट ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - अनुमति मांगी गई है, जवाब देने के लिए ⌘ + Option + अप ऐरो बटन दबाएं</translation>
 <translation id="8030169304546394654">डिसकनेक्ट किया गया</translation>
 <translation id="8030852056903932865">अनुमति दें</translation>
@@ -10848,6 +10854,7 @@
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> या <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">नाइट लाइट कलर टेंपरेचर</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> इनके लिए अनुमति चाहता है: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" />, वगैरह</translation>
+<translation id="8648889679430451455">निजी डेटा मिटाएं</translation>
 <translation id="8649026945479135076">आम तौर पर, आपने जिन साइटों को देखा है वे साइटें आपके पसंद के विषयों को सेव कर लेती हैं. ऐसा, आपकी पसंद के मुताबिक विज्ञापन दिखाने के लिए किया जाता है. साइटें, Chrome पर भी आपकी पसंद के विषयों की जानकारी सेव कर सकती हैं.</translation>
 <translation id="8650543407998814195">हालांकि अब आप अपनी पुरानी प्रोफ़ाइल एक्सेस नहीं कर सकते हैं, लेकिन फिर भी आप उसे हटा सकते हैं.</translation>
 <translation id="8651585100578802546">इस पेज को ज़बरदस्ती फिर से लोड करें</translation>

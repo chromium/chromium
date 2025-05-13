@@ -1179,6 +1179,7 @@
 <translation id="594324569139756587">तृतीय पक्ष ब्लॉक करा</translation>
 <translation id="5944869793365969636">QR कोड स्कॅन करा</translation>
 <translation id="5948291296578561264">हे तुम्हाला तुमच्या फोटो लायब्ररीवर फोटो सेव्ह करू देते.</translation>
+<translation id="5948605885471592910">तुम्ही उघडलेल्या सर्व गोष्टी पहा आणि व्यवस्थापित करा</translation>
 <translation id="5952641243319721872">तुमची निवड तुम्हाला नक्की काढून टाकायची आहे का?</translation>
 <translation id="5956112131836209882">टॅब गटाचा टॅब. <ph name="NUMBER_OF_TABS_IN_GROUP" /> पैकी <ph name="TAB_INDEX_IN_GROUP" />.</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> वापरून शोधा</translation>
@@ -1676,6 +1677,7 @@
 <translation id="7933880123415105005"><ph name="SEARCH_PROVIDER" /> शोधा</translation>
 <translation id="7938254975914653459">फेसटाइम</translation>
 <translation id="7941578031639087549">{count,plural, =1{पेज तुमच्या {email} या खात्यामधील तुमच्या वाचन सूचीमध्ये जोडले आहे}other{{count} पेज तुमच्या {email} या खात्यामधील तुमच्या वाचन सूचीमध्ये जोडली आहेत}}</translation>
+<translation id="7952353944614086413">तुमचे उघडे असलेले टॅब आणि गट</translation>
 <translation id="7952670906562503188">तुमची {passkey_count} पासकी आणि तुम्ही साइन-इन माहिती कधीही सेव्ह न करण्याचे निवडलेल्या साइट व ॲप्सची सूची हटवणार आहात. एखाद्या साइट आणि ॲप्ससाठी तुम्ही तयार केलेले कोणतेही खाते हटवले जाणार नाही.</translation>
 <translation id="7958575506592576831">पेजची सुरक्षेसंबंधित माहिती</translation>
 <translation id="7961015016161918242">कधीही नाही</translation>
@@ -1968,6 +1970,7 @@
 <translation id="9008201768610948239">दुर्लक्ष करा</translation>
 <translation id="9012585441087414258">धोकादायक म्हणून ओळखल्या जाणार्‍या साइट, डाउनलोड आणि एक्स्टेंशन यापासून संरक्षण. एखाद्या पेजमध्ये काहीतरी संशयास्पद आढळल्यास, URLs आणि पेजच्या आशयाचे भाग हे Google सुरक्षित ब्राउझिंग ला पाठवले जातात.</translation>
 <translation id="9013605037177245304">नोटिफिकेशन सुरू करा</translation>
+<translation id="9013632079355478927">वाचक मोड लपवा</translation>
 <translation id="9029650858822697271">तुम्हाला साइन आउट केले गेले होते</translation>
 <translation id="9032405509996909363">ब्राउझिंग डेटा हटवणे कन्फर्म करा</translation>
 <translation id="9039373489628511875">बँडविड्थ</translation>

@@ -965,7 +965,6 @@ La soglia minima è di 1 minuto.
 <translation id="1639468541408865385">Attiva cache di autenticazione HTTP con ambito globale</translation>
 <translation id="1639673466479276550">Attiva il salvaschermo nella schermata di accesso.</translation>
 <translation id="1640824698339859203">Attiva il servizio SSO mobile e trasferisci le autenticazioni del web service dell'utente sul nuovo dispositivo</translation>
-<translation id="1641117061932613266">Attiva il servizio <ph name="PRODUCT_NAME" /> V2</translation>
 <translation id="1643642938972654829">Consenti l'accesso alla pagina di test delle policy</translation>
 <translation id="1644373745741524038">Per motivi di sicurezza,
 l'API web <ph name="REQUEST_FULLSCREEN_API_NAME" />
@@ -1149,11 +1148,6 @@ policy era la versione 121. È stata rimossa nella versione 122.</translation>
 <translation id="1781720543185538098">Specifica se i sondaggi <ph name="PRODUCT_NAME" /> all'interno del prodotto vengono mostrati agli utenti.</translation>
 <translation id="1787790976045065845">Questa policy viene applicata soltanto se la policy <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> è impostata su <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> o <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> e un utente che effettua l'autenticazione tramite smart card rimuove quest'ultima. Consente inoltre di specificare per quanti secondi viene visualizzata una notifica che informa l'utente dell'azione imminente. Questa notifica blocca lo schermo. L'azione viene compiuta soltanto allo scadere della notifica. L'utente può impedire l'azione inserendo di nuovo la smart card prima della scadenza della notifica. Se questa policy viene impostata su 0, non viene visualizzata alcuna notifica e l'azione viene compiuta immediatamente.</translation>
 <translation id="1793346220873697538">Disattiva la stampa PIN per impostazione predefinita</translation>
-<translation id="1793886201577409556">Questa policy consente di stabilire la visibilità dell'attribuzione del tema dell'estensione nel piè di pagina della pagina Nuova scheda quando quest'ultima è controllata da un'estensione. Per impostazione predefinita, il piè di pagina nella pagina Nuova scheda mostra informazioni sull'estensione che controlla la pagina Nuova scheda.
-
-Se questa policy viene lasciata vuota o impostata su true, i browser con una pagina Nuova scheda controllata da un'estensione mostreranno il nome dell'estensione e un link a quest'ultima.
-
-Se questa policy viene impostata su false, l'attribuzione del tema verrà nascosta.</translation>
 <translation id="1794457906032475749">Se questa policy viene attivata, l'opzione per mantenere i dati di navigazione esistenti durante la creazione di un profilo aziendale sarà selezionata per impostazione predefinita.
 
 Se questa policy viene disattivata o se non viene configurata, l'opzione per mantenere i dati di navigazione esistenti durante la creazione di un profilo aziendale non sarà selezionata per impostazione predefinita.
@@ -3028,6 +3022,27 @@ Se la policy è impostata su Disattivata o non è impostata, il menu Accessibili
 <translation id="3159375329008977062">L'utente è abilitato a importare/esportare contenitori Crostini tramite l'interfaccia</translation>
 <translation id="3163167792874598128">Se la policy non viene configurata o se viene impostata su Enabled, la promozione di valutazione dell'App Store potrebbe essere mostrata all'utente al massimo una volta all'anno.
 Se viene impostata su Disabled, la promozione di valutazione dell'App Store non verrà mostrata all'utente.</translation>
+<translation id="3163880369487075383">Questa policy consente di stabilire se è possibile cancellare window.name per le navigazioni
+cross-site di primo livello che determinano la creazione di un nuovo gruppo di contesto di navigazione
+quando la variante ClearCrossSiteCrossBrowsingContextGroupWindowName è abilitata.
+
+La variante ClearCrossSiteCrossBrowsingContextGroupWindowName controlla se
+il valore di window.name verrà cancellato per le navigazioni cross-site di primo livello. Alcuni esempi di
+queste navigazioni sono: un utente che si sposta su un nuovo sito tramite la omnibox o
+fa clic su un link a un nuovo sito che utilizza "target='_blank'
+rel='noopener'". In questi casi, la cancellazione di window.name impedisce che le informazioni
+vengano potenzialmente divulgate tra siti tramite la proprietà window.name, migliorando la privacy
+degli utenti. La policy ClearWindowNameForNewBrowsingContextGroup è attiva per
+ripristinare il comportamento precedente. Quando la
+variante ClearCrossSiteCrossBrowsingContextGroupWindowName viene attivata,
+se questa policy viene attivata o se non viene configurata, la proprietà window.name verrà eliminata per le navigazioni idonee. Se viene disattivata, window.name non verrà cancellato.
+
+Se devi usare la policy per disabilitare la cancellazione di window.name nelle
+navigazioni idonee, segnala un bug su
+<ph name="BUG_URL" />
+spiegando il tuo caso d'uso. La policy sarà valida
+fino alla versione 142 di
+<ph name="PRODUCT_NAME" />.</translation>
 <translation id="3164531087779621747">Modalità di stampa PostScript</translation>
 <translation id="3165808775394012744">Queste norme sono incluse qui in modo che sia più facile rimuoverle.</translation>
 <translation id="3166210414652928099">Consenti all'utente di usare app Android di fonti non attendibili</translation>
@@ -4230,6 +4245,7 @@ La policy viene applicata sia all'URL a cui l'utente accede sia agli iframe. La 
 <translation id="4051723201852944592">Attiva Copertura finestra</translation>
 <translation id="4052529125939620019">Carica l'estensione del componente CryptoToken all'avvio</translation>
 <translation id="4053157306171963473">Disattiva i report sul tempo di attività del dispositivo</translation>
+<translation id="4056842786707010434">Scegli se consentire la cancellazione di window.name per le navigazioni cross-site di primo livello che generano un nuovo gruppo di contesti di navigazione.</translation>
 <translation id="4056910949759281379">Disabilita protocollo SPDY</translation>
 <translation id="4057442294431066708">Questa policy consente di stabilire l'opzione della scorciatoia selezionata per la rimappatura degli eventi a
 F11/F12 nella pagina secondaria per rimappare i tasti. Queste impostazioni si applicano solo alle
@@ -6231,9 +6247,6 @@ le scorciatoie basate sul tasto Ricerca saranno quelle predefinite.</translation
 <translation id="5448022937220253000">Scegli cosa fare con i dati utente dopo la disattivazione di <ph name="LACROS_NAME" /></translation>
 <translation id="5449690328792750354">L'API Event.path sarà disponibile.</translation>
 <translation id="5452024130413254050">Consente di stabilire se le VM che utilizzano questa configurazione hanno accesso a un vTPM; il valore predefinito è false e, se la policy non viene configurata, viene usato il valore <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" />.</translation>
-<translation id="5454128917282602937">Quando un utente passa da un dispositivo <ph name="PRODUCT_OS_NAME" /> a un altro dello stesso tipo, il servizio <ph name="PRODUCT_NAME" /> V2 avvia le finestre del browser e delle app del dispositivo precedente su quello nuovo.
-Se la policy viene impostata su Enabled, le finestre del browser e delle app verranno avviate automaticamente al momento dell'accesso dall'ultimo dispositivo <ph name="PRODUCT_OS_NAME" /> utilizzato dall'utente corrente.
-Se la policy viene impostata su Disabled o se non viene configurata, gli elementi da avviare al momento dell'accesso verranno determinati in base alle impostazioni di ripristino totale.</translation>
 <translation id="5455609857202311243">Ignora l'approvazione della policy KDC durante l'autenticazione HTTP</translation>
 <translation id="5455888515928026628">Durante l'accesso tramite la schermata di blocco, <ph name="PRODUCT_OS_NAME" /> può eseguire l'autenticazione con un server (online) o utilizzando una password memorizzata nella cache (offline).
 
@@ -9499,6 +9512,7 @@ Se viene impostata su 2, le origini delle app web isolate non potranno connetter
 <translation id="768925347918758827">Stati Uniti.</translation>
 <translation id="7696412993033202071">URL lancio app di autenticazione esterne</translation>
 <translation id="7696534428021833264">Attiva la scheda File di SharePoint e OneDrive nella pagina Nuova scheda</translation>
+<translation id="7699644797467448158">Cancella window.name quando la navigazione è di primo livello, cross-site e scambia BrowsingContextGroup.</translation>
 <translation id="7701341006446125684">Imposta le dimensioni della cache di app ed estensioni (in byte)</translation>
 <translation id="7703041979684393741">Non consentire la raccolta di log eventi WebRTC dai servizi Google</translation>
 <translation id="770339941914297201">Nuovo comportamento: le app di Chrome Kiosk verranno aggiornate solo utilizzando l'URL di aggiornamento dalla policy</translation>
@@ -10423,7 +10437,6 @@ Se la policy non viene configurata, inizialmente i controlli con il volto sono d
 <translation id="8339420913453596618">Autenticazione a due fattori disattivata</translation>
 <translation id="8341175887542205077">Disattiva backup e ripristino della macchina virtuale Linux</translation>
 <translation id="8344454543174932833">Importa Preferiti dal browser predefinito alla prima esecuzione</translation>
-<translation id="8345184118796116912">Controlla la visibilità dell'attribuzione del tema dell'estensione nella pagina Nuova scheda per i browser gestiti</translation>
 <translation id="8347993687936322631">Tieni presente che questa policy è obsoleta e verrà rimossa nella versione 85 di <ph name="PRODUCT_OS_NAME" />. Usa la policy <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Questa policy consente di fornire un valore di riserva per le policy più specifiche <ph name="IDLE_ACTION_AC_POLICY_NAME" /> e <ph name="IDLE_ACTION_BATTERY_POLICY_NAME" />. Se questa policy viene impostata, il suo valore viene utilizzato se non viene impostata la rispettiva policy più specifica.
@@ -11237,6 +11250,7 @@ Questa policy consente di controllare <ph name="ARC_VM" /> soltanto su <ph name=
 
       Se la policy viene impostata su false o non viene impostata, gli stati relativi a display e grafica non vengono segnalati. Se viene impostata su true, gli stati relativi a display e grafica vengono segnalati.</translation>
 <translation id="891435090623616439">codificato sotto forma di stringa JSON; per informazioni dettagliate, visita la pagina <ph name="COMPLEX_POLICIES_URL" /></translation>
+<translation id="8916106787085606382">Non cancellare window.name quando la navigazione è di primo livello, cross-site e sostituisce BrowsingContextGroup.</translation>
 <translation id="8917070657147922192">Consenti agli utenti di gestire i certificati CA installati.</translation>
 <translation id="8919100556245407184">Il periodo di tempo, in giorni, dopo il post di scadenza dell'aggiornamento automatico trascorso il quale l'utente viene disconnesso dall'account se la versione di <ph name="PRODUCT_OS_NAME" /> è precedente a quella specificata nella policy <ph name="CHROMEOS_VERSION_PROPERTY_NAME" />.</translation>
 <translation id="8919369436496201075">Consenti al dispositivo di ricevere aggiornamenti LTS</translation>

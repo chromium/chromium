@@ -770,6 +770,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2305294852062272447">¿Guardar carné de conducir?</translation>
 <translation id="2306124309679506798">¿Permitir una experiencia inmersiva?</translation>
 <translation id="2307711332257985952">Tus direcciones de casa y el trabajo ya están disponibles en Chrome</translation>
+<translation id="2310789833878085574">Guardar y autocompletar</translation>
 <translation id="2312234273148520048">Condimentos y aderezos</translation>
 <translation id="2316087952091171402">Menos de <ph name="UPPER_ESTIMATE" />. Algunos sitios pueden tardar más en cargarse la próxima vez que los visites.</translation>
 <translation id="2316159751672436664">Personaliza las herramientas de accesibilidad desde la configuración de ChromeOS</translation>
@@ -779,6 +780,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2320564945062300737">Productos de cuidado facial</translation>
 <translation id="2321291402658100099">Gestionar información</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 ventana}other{# ventanas}}</translation>
+<translation id="232390861414237658">Autocompletar esta tarjeta en las compras que hagas en Chrome cuando se guarde para usarla con Google Pay</translation>
 <translation id="2328651992442742497">Permitido (predeterminado)</translation>
 <translation id="2328955282645810595">Herramientas de construcción y eléctricas</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />; fecha de caducidad: <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -939,6 +941,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2595719060046994702">Este dispositivo y esta cuenta no están administrados por ninguna empresa ni organización.</translation>
 <translation id="2596415276201385844">Para establecer una conexión segura, tu reloj debe estar correctamente configurado. Esto se debe a que los certificados utilizados por los sitios web para identificarse son solo válidos para períodos específicos de tiempo. Dado que el reloj de tu dispositivo no es correcto, Chrome no puede verificar estos certificados.</translation>
 <translation id="2597378329261239068">Este documento está protegido por contraseña. Introduce una contraseña.</translation>
+<translation id="2600083925285092409">Autocompletar esta tarjeta en las compras que hagas en Chromium cuando se guarde para usarla con Google Pay</translation>
 <translation id="2605979593348332811">Nombre fonético</translation>
 <translation id="2606760465469169465">Verificación automática</translation>
 <translation id="2608019759319359258">Cuando se bloquea un tema, no se usa para personalizar anuncios</translation>
@@ -3357,6 +3360,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6789062271869667677">Impresión continua (larga)</translation>
 <translation id="678982761784843853">IDs de contenido protegido</translation>
 <translation id="6790428901817661496">Reproducir</translation>
+<translation id="6792631792628412749">Llave de acceso • <ph name="PROVIDER_NAME" /></translation>
 <translation id="6793213097893210590">Cartón</translation>
 <translation id="679355240208270552">Se ha ignorado el valor porque se ha establecido una política que inhabilita la búsqueda predeterminada.</translation>
 <translation id="6794951432696553238">A partir de ahora, puedes confirmar tus tarjetas más rápido con Windows Hello</translation>
@@ -3588,6 +3592,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195432682252510959">Usa este código al tramitar la compra. Válido hasta el <ph name="DATE" />.</translation>
 <translation id="7195852673246414183">Cuando hayas activado esta opción, vuelve a esta pestaña para empezar a escribir</translation>
+<translation id="7196370964328811506">Autocompletar esta tarjeta en las compras que hagas en Chrome cuando se guarde en este dispositivo</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y, a continuación, Intro para abrir una pestaña de Incógnito nueva y navegar de forma privada</translation>
 <translation id="7203375778433816396">Establecer Chrome como navegador predeterminado del sistema</translation>
@@ -4759,6 +4764,7 @@ Más información:
 <translation id="940524522703752213">La subida de archivos a <ph name="CLOUD_PROVIDER" /> empezará dentro de <ph name="MINUTES" /> minutos</translation>
 <translation id="944578681290094302">Muestra las recompensas y ventajas disponibles para tus tarjetas al tramitar una compra. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Más información sobre las ventajas de las tarjetas<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome impide que los sitios usen cookies de terceros para hacer un seguimiento de tu actividad mientras navegas.</translation>
+<translation id="945673208656386843">Autocompletar esta tarjeta en las compras que hagas en Chromium cuando se guarde en este dispositivo</translation>
 <translation id="94613679163347541">¿Comparar <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para crear un nuevo sitio con Google Sites rápidamente</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome volverá a limitar las cookies hoy}=1{Chrome volverá a limitar las cookies mañana}other{Chrome volverá a limitar las cookies dentro de # días}}</translation>

@@ -1179,6 +1179,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="594324569139756587">Bloquer les témoins tiers</translation>
 <translation id="5944869793365969636">Numériser le code QR</translation>
 <translation id="5948291296578561264">Cela vous permet d'enregistrer vos photos dans votre bibliothèque de photos.</translation>
+<translation id="5948605885471592910">Consulter et gérer tout ce que vous avez ouvert</translation>
 <translation id="5952641243319721872">Voulez-vous vraiment supprimer votre sélection?</translation>
 <translation id="5956112131836209882">Onglet de groupe d'onglets. <ph name="TAB_INDEX_IN_GROUP" /> sur <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Rechercher avec <ph name="SEARCH_PROVIDER" /></translation>
@@ -1675,6 +1676,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7933880123415105005">Rechercher sur <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Page ajoutée à votre Liste de lecture dans votre compte, {email}}one{{count} page ajoutée à votre Liste de lecture dans votre compte, {email}}other{{count} pages ajoutées à votre Liste de lecture dans votre compte, {email}}}</translation>
+<translation id="7952353944614086413">Vos onglets et groupes ouverts</translation>
 <translation id="7952670906562503188">Vous êtes sur le point de supprimer {passkey_count} clés d'accès et la liste des sites et des applis pour lesquels vous avez choisi de ne jamais enregistrer les renseignements de connexion. Tout compte que vous avez créé pour des sites ou des applis ne sera pas supprimé.</translation>
 <translation id="7958575506592576831">Information sur la sécurité de la page</translation>
 <translation id="7961015016161918242">Jamais</translation>
@@ -1967,6 +1969,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="9008201768610948239">OK</translation>
 <translation id="9012585441087414258">Protège contre les sites, les téléchargements et les extensions qui sont réputés être dangereux. Si une page fait quelque chose de suspect, les URL et les éléments de contenu de la page sont envoyés à la navigation sécurisée Google.</translation>
 <translation id="9013605037177245304">Activer les notifications</translation>
+<translation id="9013632079355478927">Masquer le mode Lecteur</translation>
 <translation id="9029650858822697271">Vous avez été déconnecté</translation>
 <translation id="9032405509996909363">Confirmer la suppression des données de navigation</translation>
 <translation id="9039373489628511875">Bande passante</translation>

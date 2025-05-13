@@ -1179,6 +1179,7 @@
 <translation id="594324569139756587">封鎖第三方 Cookie</translation>
 <translation id="5944869793365969636">掃描 QR 圖碼</translation>
 <translation id="5948291296578561264">可讓你將相片儲存至相片庫。</translation>
+<translation id="5948605885471592910">查看及管理所有開啟的項目</translation>
 <translation id="5952641243319721872">確定要捨棄所選項目嗎？</translation>
 <translation id="5956112131836209882">分頁群組分頁。第 <ph name="TAB_INDEX_IN_GROUP" /> 個，共 <ph name="NUMBER_OF_TABS_IN_GROUP" /> 個。</translation>
 <translation id="595769230373966252">使用「<ph name="SEARCH_PROVIDER" />」搜尋</translation>
@@ -1675,6 +1676,7 @@
 <translation id="7933880123415105005">使用「<ph name="SEARCH_PROVIDER" />」搜尋</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{已將網頁新增至帳戶 {email} 的閱讀清單}other{已將 {count} 個網頁新增至帳戶 {email} 的閱讀清單}}</translation>
+<translation id="7952353944614086413">你開啟的分頁和群組</translation>
 <translation id="7952670906562503188">你即將刪除 {passkey_count} 組密碼金鑰，以及你選擇一律不儲存登入資訊的網站和應用程式清單。你為網站和應用程式建立的帳戶不會遭到刪除。</translation>
 <translation id="7958575506592576831">網頁安全性資訊</translation>
 <translation id="7961015016161918242">一律不要</translation>
@@ -1967,6 +1969,7 @@
 <translation id="9008201768610948239">略過</translation>
 <translation id="9012585441087414258">防範已知的不安全網站、下載內容和擴充功能。如果某個網頁含有可疑內容，系統會將網址和部分網頁內容傳送給「Google 安全瀏覽」功能。</translation>
 <translation id="9013605037177245304">開啟通知</translation>
+<translation id="9013632079355478927">隱藏閱讀器模式</translation>
 <translation id="9029650858822697271">系統已將你登出</translation>
 <translation id="9032405509996909363">確認刪除瀏覽資料</translation>
 <translation id="9039373489628511875">頻寬</translation>

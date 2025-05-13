@@ -3624,6 +3624,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3514681096978190000">Tệp lưu trữ này bao gồm các tệp khác có thể ẩn chứa phần mềm độc hại</translation>
 <translation id="3515983984924808886">Chạm lại vào khóa bảo mật để xác nhận đặt lại. Thao tác này sẽ xóa toàn bộ thông tin lưu trữ trên khóa bảo mật, bao gồm cả mã PIN của khóa.</translation>
 <translation id="3518866566087677312">Đánh dấu các trang bạn muốn quay lại xem sau</translation>
+<translation id="3519014757432845220">Giúp cải thiện tính năng chống nội dung rác bằng cách chia sẻ với Google nội dung thông báo và URL của trang web. Nội dung có thể sẽ được nhân viên xem xét.</translation>
 <translation id="3519382402703204668">Chọn một thẻ</translation>
 <translation id="3519564332031442870">Dịch vụ phụ trợ in</translation>
 <translation id="3519938335881974273">Lưu trang dưới dạng...</translation>
@@ -6631,6 +6632,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="563371367637259496">Di động</translation>
 <translation id="5635312199252507107">Cho phép trên một số trang web cụ thể</translation>
 <translation id="5636012309446422">Xoá <ph name="DEVICE" /> khỏi <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="56360247219959198"><ph name="DICTIONARY" /> sẽ bị xoá vĩnh viễn. Bạn không thể huỷ hành động này sau khi thực hiện.</translation>
 <translation id="5636140764387862062">Các thao tác khác về mã PIN</translation>
 <translation id="5636996382092289526">Để sử dụng <ph name="NETWORK_ID" />, trước hết bạn cần <ph name="LINK_START" />truy cập vào trang đăng nhập của mạng<ph name="LINK_END" />. Trang này thường tự động mở sau vài giây. Nếu trang này không mở thì không thể sử dụng mạng này.</translation>
 <translation id="5637476008227280525">Bật dữ liệu di động</translation>
@@ -7746,6 +7748,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6459799433792303855">Cửa sổ đang hoạt động được di chuyển sang màn hình khác.</translation>
 <translation id="6460601847208524483">Tìm Tiếp theo</translation>
 <translation id="6461170143930046705">Đang tìm mạng...</translation>
+<translation id="6463488491707167747">Xoá từ điển này</translation>
 <translation id="6463596731306859179">Bạn thấy cửa sổ bật lên không mong muốn hoặc hành vi ngoài dự kiến khác? Đôi khi, các ứng dụng và tiện ích mà bạn cài đặt có thể âm thầm thay đổi chế độ cài đặt của ChromeOS.</translation>
 <translation id="6463668944631062248">Chấp nhận yêu cầu truyền trên <ph name="DEVICE_NAME" /> của bạn</translation>
 <translation id="6463795194797719782">&amp;Chỉnh sửa</translation>

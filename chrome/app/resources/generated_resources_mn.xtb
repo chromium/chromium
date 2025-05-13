@@ -420,6 +420,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" />-г суулгаж чадсангүй</translation>
 <translation id="1277020343994096713">Таны одоогийн ПИН-с өөр шинэ ПИН үүсгэнэ үү</translation>
 <translation id="1277597051786235230">&amp;Шинэ табд “<ph name="SEARCH_TERMS" />”-г <ph name="SEARCH_ENGINE" />-с хайх</translation>
+<translation id="127849925363482083">Бэхэлсэн табыг хаахын тулд <ph name="SHORTCUT_TEXT" /> дээр дахин дарна уу</translation>
 <translation id="1278859221870828664">Google Play-н аппууд болон үйлчилгээнүүдийг үнэлнэ үү</translation>
 <translation id="127946606521051357">Ойролцоо байгаа төхөөрөмж хуваалцаж байна</translation>
 <translation id="1280332775949918163">Цонхыг зөөх</translation>
@@ -4127,6 +4128,7 @@
 <translation id="3838486795898716504">Илүү их <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">Томруулж, жижигрүүлсэн сайт алга</translation>
 <translation id="3839516600093027468"><ph name="HOST" />-г түр санах ой харахыг тогтмол хориглох</translation>
+<translation id="3840096463915153852">Харилцан ярианы түүх</translation>
 <translation id="3841282988425489367">Chromebook-н Steam-г (Бета) тохируулах боломжгүй</translation>
 <translation id="3841319830220785495">Өгөгдмөл төрөлхийн дуу хоолой</translation>
 <translation id="3841356782900714251">Ухаалаг карт уншигчид</translation>
@@ -6999,6 +7001,7 @@
 <translation id="5916664084637901428">Асаах</translation>
 <translation id="59174027418879706">Идэвхжсэн</translation>
 <translation id="5919305207330938913">Цуглуулсан бүх өгөгдлийг Google-н <ph name="BEGIN_LINK" />Нууцлалын бодлогын<ph name="END_LINK" /> дагуу ашиглана.</translation>
+<translation id="5919486630433391408">Танай администратор жижиг программын шинэчлэлтийг идэвхгүй болгосон.</translation>
 <translation id="5920543303088087579">Энэ сүлжээний холболтыг таны админ цуцалсан байна</translation>
 <translation id="5922963926582976524">Шуурхай сүлжээний цэгийг салгах</translation>
 <translation id="5924047253200400718">Тусламж авах<ph name="SCANNING_STATUS" /></translation>
@@ -7545,6 +7548,7 @@
 <translation id="630292539633944562">Хувийн мэдээллийн зөвлөмж</translation>
 <translation id="6304017513498618504">Та мөн “хураангуйлах” зэрэг зүйлсийг хүсэх боломжтой</translation>
 <translation id="6305607932814307878">Олон улсын удирдамж:</translation>
+<translation id="6305627295927385295">Дараах зүйлсийг устгах:</translation>
 <translation id="6305702903308659374">ChromeVox-г ярьж байх үед энгийн төвшинд тоглуулна уу</translation>
 <translation id="6307268917612054609">Камерын зөвшөөрлөөс гадна системийн үйлчилгээнүүдтэй апп болон вебсайтууд таны камерыг ашиглах боломжтой</translation>
 <translation id="6307990684951724544">Систем завгүй байна</translation>
@@ -9308,6 +9312,7 @@
 <translation id="7583948862126372804">Тоо</translation>
 <translation id="7585106857920830898">Танай байгууллагын аюулгүй байдлын бодлогод нийцэх эсэхийг шалгаж байна...</translation>
 <translation id="7586498138629385861">Chrome-г хэрэглээний программыг нээсэн байгаа тохиолдолд Chrome нь ачаалласан хэвээр байна.</translation>
+<translation id="7587806318633605613">Зөвлөмжийн түүх</translation>
 <translation id="7589461650300748890">Харж байгаа биз. Болгоомжтой байгаарай.</translation>
 <translation id="7590883480672980941">Оролтын тохиргоо</translation>
 <translation id="7592060599656252486">Зарим</translation>
@@ -9970,6 +9975,7 @@
 <translation id="8028138772801251745">ХОУ-аар автоматаар бөглөх</translation>
 <translation id="8028803902702117856"><ph name="SIZE" />, <ph name="FILE_NAME" />-г татаж байна</translation>
 <translation id="8028993641010258682">Хэмжээ</translation>
+<translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Унших жагсаалт}=1{Унших жагсаалт ({SELECTED_ITEMS})}other{Унших жагсаалт ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - Зөвшөөрлийн хүсэлт тавьсан. Хариу өгөхийн тулд ⌘ + Сонголт + Дээш сумыг дарна уу</translation>
 <translation id="8030169304546394654">Салгасан</translation>
 <translation id="8030852056903932865">Зөвшөөрөх</translation>
@@ -10841,6 +10847,7 @@
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> эсвэл <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Шөнийн гэрлийн өнгөний хэм</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> дараах зөвшөөрлүүдийг хүсэж байна: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> болон бусад</translation>
+<translation id="8648889679430451455">Хувийн болгох тохируулгын өгөгдлийг арилгах</translation>
 <translation id="8649026945479135076">Таны зочилсон сайтууд таны сонирхдог зүйлсийг таны туршлагыг хувийн болгохын тулд санах нь түгээмэл юм. Сайтууд мөн Chrome-р таны сонирхлын талаарх мэдээллийг хадгалах боломжтой.</translation>
 <translation id="8650543407998814195">Та цаашид хуучин профайлдаа хандах боломжгүй хэдий ч тус профайлаа устгах боломжтой хэвээр байна.</translation>
 <translation id="8651585100578802546">Энэ хуудсыг дахин ачаал</translation>

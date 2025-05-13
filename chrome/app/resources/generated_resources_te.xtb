@@ -420,6 +420,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" />ను అన్ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="1277020343994096713">మీ ప్రస్తుత PINకు భిన్నంగా ఉన్న ఒక కొత్త PINను క్రియేట్ చేయండి</translation>
 <translation id="1277597051786235230">కొత్త ట్యాబ్‌కు వెళ్లి <ph name="SEARCH_ENGINE" />‌లో “<ph name="SEARCH_TERMS" />” అని సెర్చ్ చేయండి</translation>
+<translation id="127849925363482083">పిన్ చేసిన ట్యాబ్‌ను మూసివేయడానికి <ph name="SHORTCUT_TEXT" />‌ను మళ్లీ నొక్కండి</translation>
 <translation id="1278859221870828664">Google Play యాప్‌లు, సర్వీస్‌లను రివ్యూ చేయండి</translation>
 <translation id="127946606521051357">సమీపంలోని పరికరం షేర్ చేస్తోంది</translation>
 <translation id="1280332775949918163">స్నాప్ విండో</translation>
@@ -4129,6 +4130,7 @@
 <translation id="3838486795898716504">మరిన్ని <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">సైట్‌లు ఏవీ దగ్గరకు లేదా దూరానికి జూమ్ చేయబడలేదు</translation>
 <translation id="3839516600093027468">క్లిప్‌బోర్డ్‌ను చూడనీయకుండా ఎల్లప్పుడూ <ph name="HOST" />ని బ్లాక్ చేయండి</translation>
+<translation id="3840096463915153852">సంభాషణ హిస్టరీ</translation>
 <translation id="3841282988425489367">'Steam for Chromebook' (బీటా)ను సెటప్ చేయడం సాధ్యపడదు</translation>
 <translation id="3841319830220785495">ఆటోమేటిక్ సహజ వాయిస్</translation>
 <translation id="3841356782900714251">స్మార్ట్ కార్డ్ రీడర్‌లు</translation>
@@ -7001,6 +7003,7 @@
 <translation id="5916664084637901428">ఆన్‌లో ఉంది</translation>
 <translation id="59174027418879706">ప్రారంభించబడింది</translation>
 <translation id="5919305207330938913">సేకరించబడిన మొత్తం డేటా <ph name="BEGIN_LINK" />Google గోప్యతా పాలసీ<ph name="END_LINK" />కి అనుగుణంగా ఉపయోగించబడుతుంది.</translation>
+<translation id="5919486630433391408">ఫర్మ్‌వేర్ అప్‌డేట్‌లను మీ అడ్మినిస్ట్రేటర్ డిజేబుల్ చేశారు.</translation>
 <translation id="5920543303088087579">ఈ నెట్‌వర్క్‌కు కనెక్ట్ చేయడాన్ని మీ నిర్వాహకులు నిలిపివేశారు</translation>
 <translation id="5922963926582976524">ఇన్‌స్టంట్ హాట్‌స్పాట్ నెట్‌వర్క్ డిస్‌కనెక్ట్ చేయండి</translation>
 <translation id="5924047253200400718">సహాయం పొందండి<ph name="SCANNING_STATUS" /></translation>
@@ -7547,6 +7550,7 @@
 <translation id="630292539633944562">వ్యక్తిగత సమాచార సూచనలు</translation>
 <translation id="6304017513498618504">మీరు "సారాంశాన్ని అందించు" వంటి విషయాలను కూడా అడగవచ్చు</translation>
 <translation id="6305607932814307878">గ్లోబల్ విధానం:</translation>
+<translation id="6305627295927385295">ఇక్కడ పేర్కొన్న ఐటెమ్‌లను తొలగించండి:</translation>
 <translation id="6305702903308659374">ChromeVox మాట్లాడుతున్నప్పటికీ, సాధారణ వాల్యూమ్‌తో ప్లే చేయి</translation>
 <translation id="6307268917612054609">కెమెరా అనుమతి, అలాగే సిస్టమ్ సర్వీస్‌లు గల యాప్‌లు, వెబ్‌సైట్‌లు మీ కెమెరాను ఉపయోగించగలవు</translation>
 <translation id="6307990684951724544">సిస్టమ్ బిజీగా ఉంది</translation>
@@ -9311,6 +9315,7 @@
 <translation id="7583948862126372804">గణన</translation>
 <translation id="7585106857920830898">మీ సంస్థకు చెందిన సెక్యూరిటీ పాలసీలతో చెక్ చేస్తోంది...</translation>
 <translation id="7586498138629385861">Chrome యాప్‌లు తెరవబడి ఉన్నప్పుడు Chrome నిరంతరాయంగా అమలులో ఉంటుంది.</translation>
+<translation id="7587806318633605613">సూచన హిస్టరీ</translation>
 <translation id="7589461650300748890">అయ్యో, అక్కడ. జాగ్రత్తగా ఉండండి.</translation>
 <translation id="7590883480672980941">ఇన్‌పుట్ సెట్టింగ్‌లు</translation>
 <translation id="7592060599656252486">కొన్ని</translation>
@@ -9972,6 +9977,7 @@
 <translation id="8028138772801251745">AI సహాయంతో ఆటోఫిల్ చేయండి</translation>
 <translation id="8028803902702117856"><ph name="SIZE" />, <ph name="FILE_NAME" /> డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="8028993641010258682">సైజ్‌</translation>
+<translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{చదవాల్సిన లిస్ట్}=1{చదవాల్సిన లిస్ట్ ({SELECTED_ITEMS})}other{చదవాల్సిన లిస్ట్ ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - అనుమతి కోసం రిక్వెస్ట్ చేశారు, ప్రతిస్పందించడానికి ⌘ + ఆప్షన్ + పై వైపు బాణం గుర్తును నొక్కండి</translation>
 <translation id="8030169304546394654">డిస్‌కనెక్ట్ చేయబడింది</translation>
 <translation id="8030852056903932865">ఆమోదించు</translation>
@@ -10843,6 +10849,7 @@
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> లేదా <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">రాత్రి కాంతి రంగు ఉష్ణోగ్రత</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> వీటిని చేయాలనుకుంటోంది: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" />, మరిన్ని</translation>
+<translation id="8648889679430451455">వ్యక్తిగతీకరణ డేటాను క్లియర్ చేయండి</translation>
 <translation id="8649026945479135076">మీకు వ్యక్తిగతీకరించిన అనుభవాన్ని అందించడం కోసం, సైట్‌లు మీకు ఆసక్తి ఉన్న విషయాలను గుర్తుంచుకోవడం సర్వసాధారణం. మీ ఆసక్తులకు సంబంధించిన సమాచారాన్ని కూడా సైట్‌లు Chromeతో స్టోర్ చేయగలవు.</translation>
 <translation id="8650543407998814195">మీరు మీ పాత ప్రొఫైల్‌ను ఇప్పుడు యాక్సెస్ చేయలేకపోయినప్పటికీ, మీరు దాన్ని ఇప్పటికీ తీసివేయగలరు.</translation>
 <translation id="8651585100578802546">ఈ పేజీని బలవంతంగా మళ్లీ లోడ్ చేయి</translation>

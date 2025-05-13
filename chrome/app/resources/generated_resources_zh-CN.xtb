@@ -420,6 +420,7 @@
 <translation id="1276994519141842946">无法卸载 <ph name="APP_NAME" /></translation>
 <translation id="1277020343994096713">请创建一个与您的当前 PIN 码不同的新 PIN 码</translation>
 <translation id="1277597051786235230">在新标签页中从 <ph name="SEARCH_ENGINE" /> 上搜索“<ph name="SEARCH_TERMS" />”(&amp;S)</translation>
+<translation id="127849925363482083">再次按 <ph name="SHORTCUT_TEXT" /> 即可关闭固定标签页</translation>
 <translation id="1278859221870828664">查看 Google Play 应用和服务</translation>
 <translation id="127946606521051357">附近的设备正在分享内容</translation>
 <translation id="1280332775949918163">移动窗口</translation>
@@ -3261,6 +3262,7 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{文件}other{# 个文件}}</translation>
 <translation id="326999365752735949">正在下载diff</translation>
 <translation id="3270965368676314374">读取、更改和删除您计算机上的照片、音乐和其他媒体</translation>
+<translation id="3275464924531706548">收起“<ph name="HEADER" />”</translation>
 <translation id="3275778809241512831">您的内部安全密钥目前不安全。请从所有使用了此密钥的服务中将其移除。要想解决该问题，请重置此安全密钥。</translation>
 <translation id="3275778913554317645">在窗口中打开</translation>
 <translation id="3277214528693754078">使用文本光标（光标浏览模式）进行导航</translation>
@@ -3592,6 +3594,7 @@
 <translation id="3510471875518562537">在 iPhone 上使用此地址</translation>
 <translation id="3511200754045804813">重新扫描</translation>
 <translation id="3511307672085573050">复制链接地址(&amp;E)</translation>
+<translation id="3511358375261756531">展开“<ph name="HEADER" />”</translation>
 <translation id="351152300840026870">宽度固定的字体</translation>
 <translation id="3511528412952710609">短</translation>
 <translation id="3513019849832307207">加入并打开</translation>
@@ -4108,6 +4111,7 @@
 <translation id="3838486795898716504">更多“<ph name="PAGE_TITLE" />”</translation>
 <translation id="383891835335927981">未对任何网站设置缩放级别</translation>
 <translation id="3839516600093027468">始终禁止 <ph name="HOST" /> 查看剪贴板</translation>
+<translation id="3840096463915153852">对话记录</translation>
 <translation id="3841282988425489367">无法设置 Steam for Chromebook（Beta 版）</translation>
 <translation id="3841319830220785495">默认自然语音</translation>
 <translation id="3841356782900714251">智能卡读卡器</translation>
@@ -6141,6 +6145,7 @@
 <translation id="5296536303670088158">Chrome 正在为您提供极强大的安全保护，帮助您防范有害网站</translation>
 <translation id="5297005732522718715">刷新网络共享配置</translation>
 <translation id="5297082477358294722">密码已保存。您可以查看和管理 <ph name="SAVED_PASSWORDS_STORE" />中保存的密码。</translation>
+<translation id="5297548311167268289">登录 <ph name="RP_ID" /></translation>
 <translation id="5297946558563358707">当有其他人注视您的屏幕时，屏幕右下角会显示“隐私保护”眼睛图标</translation>
 <translation id="5297984209202974345">近期创建的<ph name="SUBJECT" /> AI 主题 <ph name="INDEX" />，样式是<ph name="STYLE" /></translation>
 <translation id="5298219193514155779">主题背景创建者：</translation>
@@ -6976,6 +6981,7 @@
 <translation id="5916664084637901428">已启用</translation>
 <translation id="59174027418879706">已启用</translation>
 <translation id="5919305207330938913">收集的所有数据都会遵照 Google<ph name="BEGIN_LINK" />《隐私权政策》<ph name="END_LINK" />加以使用。</translation>
+<translation id="5919486630433391408">管理员已停用固件更新。</translation>
 <translation id="5920543303088087579">您的管理员已禁止连接到此网络</translation>
 <translation id="5922963926582976524">断开智能热点网络连接</translation>
 <translation id="5924047253200400718">获取帮助<ph name="SCANNING_STATUS" /></translation>
@@ -7521,6 +7527,7 @@
 <translation id="630292539633944562">个人信息建议</translation>
 <translation id="6304017513498618504">您还可以提出“生成摘要”之类的要求</translation>
 <translation id="6305607932814307878">全局政策：</translation>
+<translation id="6305627295927385295">删除以下内容：</translation>
 <translation id="6305702903308659374">即使在 ChromeVox 朗读时也以正常音量播放音频</translation>
 <translation id="6307268917612054609">系统服务以及具有摄像头使用权限的应用和网站可以使用您的摄像头</translation>
 <translation id="6307990684951724544">系统繁忙</translation>
@@ -9285,6 +9292,7 @@
 <translation id="7583948862126372804">计数</translation>
 <translation id="7585106857920830898">正在检查是否符合贵组织的安全政策…</translation>
 <translation id="7586498138629385861">Chrome应用处于打开状态时，Chrome将持续运行。</translation>
+<translation id="7587806318633605613">建议历史记录</translation>
 <translation id="7589461650300748890">注意！</translation>
 <translation id="7590883480672980941">输入设置</translation>
 <translation id="7592060599656252486">部分</translation>
@@ -9950,6 +9958,7 @@
 <translation id="8028138772801251745">利用 AI 自动填充</translation>
 <translation id="8028803902702117856">正在下载“<ph name="FILE_NAME" />”，大小为 <ph name="SIZE" /></translation>
 <translation id="8028993641010258682">大小</translation>
+<translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{阅读清单}=1{阅读清单 ({SELECTED_ITEMS})}other{阅读清单 ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - 收到了权限请求，按 ⌘ + Option + 向上键即可回复</translation>
 <translation id="8030169304546394654">连接已断开</translation>
 <translation id="8030852056903932865">批准</translation>
@@ -10821,6 +10830,7 @@
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" />或<ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">夜间光效色温</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> 想获得以下权限：<ph name="FIRST_PERMISSION" />、<ph name="SECOND_PERMISSION" />，等等</translation>
+<translation id="8648889679430451455">清除个性化数据</translation>
 <translation id="8649026945479135076">您访问的网站经常会记住您感兴趣的内容，以便为您提供个性化体验。网站还可以将您的兴趣信息存储在 Chrome 中。</translation>
 <translation id="8650543407998814195">既然您已无法再访问自己的旧个人资料，不妨将其移除。</translation>
 <translation id="8651585100578802546">强制重新加载此页</translation>

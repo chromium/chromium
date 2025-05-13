@@ -455,7 +455,6 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" /> Chromeமில் திறக்கப்படும். தொடர்வதன் மூலம் <ph name="BEGIN_LINK1" />Google சேவை விதிமுறைகள்<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Google Chrome &amp; ChromeOS தொடர்பான கூடுதல் சேவை விதிமுறைகள்<ph name="END_LINK2" /> ஆகியவற்றை ஏற்கிறீர்கள். <ph name="BEGIN_LINK3" />தனியுரிமைக் கொள்கையையும்<ph name="END_LINK3" /> ஏற்கிறீர்கள்.</translation>
 <translation id="3080525922482950719">பின்னரோ ஆஃப்லைனிலோ படிப்பதற்கு பக்கங்களைச் சேமிக்கலாம்</translation>
 <translation id="3087734570205094154">கீழே</translation>
-<translation id="3088687687599869821">பக்கங்களுக்கிடையே செல்லுதல்</translation>
 <translation id="3091010850649238832">கிளிப்போர்டில் உள்ளவற்றைக் காட்டும்</translation>
 <translation id="3098745985164956033">உங்களுக்கான விளக்கங்களை மேம்படுத்த, படங்கள் Googleளுக்கு அனுப்பப்படும்</translation>
 <translation id="3114507951000454849">இன்றைய செய்திகளைப் படியுங்கள் <ph name="NEWS_ICON" /></translation>
@@ -678,6 +677,7 @@
 <translation id="4170011742729630528">சேவை கிடைக்கவில்லை; பிறகு முயற்சிக்கவும்.</translation>
 <translation id="4177222230309051052">உங்கள் புக்மார்க்குகள் அனைத்தையும் பெறுங்கள்</translation>
 <translation id="4177501066905053472">விளம்பரத் தலைப்புகள்</translation>
+<translation id="4180726336228139707">இந்தச் சாதனத்தில் மட்டும்</translation>
 <translation id="4181841719683918333">மொழிகள்</translation>
 <translation id="4188221736490993796">ஃ - அ வரை வரிசைப்படுத்து</translation>
 <translation id="4195643157523330669">புதிய தாவலில் திற</translation>
@@ -1636,7 +1636,6 @@
 <translation id="8260126382462817229">மீண்டும் உள்நுழையவும்</translation>
 <translation id="8261506727792406068">நீக்கு</translation>
 <translation id="82619448491672958">மற்ற பக்கங்களைக் காட்டு</translation>
-<translation id="8265018477030547118">இந்தச் சாதனத்தில் மட்டும்</translation>
 <translation id="8266753737658117282"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> மூலம் தொடருங்கள்</translation>
 <translation id="8266862848225348053">பதிவிறக்க இருப்பிடம்</translation>
 <translation id="8271267069224406035">ஸ்பேமைப் புகாரளி</translation>

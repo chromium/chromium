@@ -770,6 +770,7 @@
 <translation id="2305294852062272447">Айдоочунун күбөлүгү сакталсынбы?</translation>
 <translation id="2306124309679506798">Сүңгүтүүчү пайдаланууга уруксат бересизби?</translation>
 <translation id="2307711332257985952">Үйүңүздүн жана жумушуңуздун дареги эми Chrome'до жеткиликтүү</translation>
+<translation id="2310789833878085574">Сактоо жана автотолтуруу</translation>
 <translation id="2312234273148520048">Татымалдар</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> азыраак. Кийинки жолу киргениңизде, айрым сайттар жайыраак жүктөлүшү мүмкүн.</translation>
 <translation id="2316159751672436664">ChromeOS параметрлеринде атайын мүмкүнчүлүктөр куралдарын жекелештирүү</translation>
@@ -779,6 +780,7 @@
 <translation id="2320564945062300737">Бетке кам көрүү өнүмдөрү</translation>
 <translation id="2321291402658100099">Маалыматты тескөө</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 терезе}other{# терезе}}</translation>
+<translation id="232390861414237658">Бул карта Google Pay менен колдонуу үчүн сакталганда, Chrome'до сатып алына турган нерселер үчүн автотолтуруңуз</translation>
 <translation id="2328651992442742497">Уруксат берилген (демейки)</translation>
 <translation id="2328955282645810595">Курулуш жана электр куралдары</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, мөөнөтү <ph name="EXPIRATION_DATE_ABBR" /> бүтөт</translation>
@@ -939,6 +941,7 @@
 <translation id="2595719060046994702">Бул түзмөк менен аккаунт компания же башка уюм тарабынан башкарылган жок.</translation>
 <translation id="2596415276201385844">Коопсуз туташууну орнотуу үчүн, саатыңыз туура коюлушу керек. Себеби вебсайттардын аныктыгын текшере турган тастыктамалар белгилүү бир убакыт аралыгында гана жарактуу болот. Түзмөгүңүздүн сааты туура эмес болгондуктан, Chrome бул тастыктамаларды текшере албайт.</translation>
 <translation id="2597378329261239068">Бул документ сырсөз менен корголгон. Сырсөздү киргизиңиз.</translation>
+<translation id="2600083925285092409">Бул карта Google Pay менен колдонуу үчүн сакталганда, Chromium'да сатып алына турган нерселер үчүн автотолтуруңуз</translation>
 <translation id="2605979593348332811">Аты-жөнү (угулушу боюнча)</translation>
 <translation id="2606760465469169465">Автоматтык түрдө ырастоо</translation>
 <translation id="2608019759319359258">Тема бөгөттөлсө, ал жарнамаларды жекелештирүү үчүн колдонулбайт</translation>
@@ -3586,6 +3589,7 @@
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195432682252510959">Сатып алган нерселериңиздин акысын төлөп жатканда бул кодду колдонуңуз. <ph name="DATE" /> чейин жарактуу.</translation>
 <translation id="7195852673246414183">Бул параметрди күйгүзгөндөн кийин жазып баштоо үчүн, бул өтмөккө кайтыңыз</translation>
+<translation id="7196370964328811506">Бул карта бул түзмөктө сакталганда, Chrome'до сатып алына турган нерселер үчүн автотолтуруңуз</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Купуя карап чыкканга жашыруун өтмөктү ачуу үчүн Tab, андан соң Enter баскычын басыңыз</translation>
 <translation id="7203375778433816396">Chrome'ду системанын демейки серепчиси катары коюу</translation>
@@ -4757,6 +4761,7 @@
 <translation id="940524522703752213">Файлыңыз <ph name="MINUTES" /> мүнөттөн кийин <ph name="CLOUD_PROVIDER" /> камсыздоочусуна жүктөлүп башталат</translation>
 <translation id="944578681290094302">Төлөө учурунда карталарыңыз үчүн кандай сыйлыктар жана артыкчылыктар бар экенин көрсөтүңүз. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Картанын артыкчылыктары тууралуу кеңири маалымат<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome сайттардын Интернеттеги аракеттериңизге көз салуу мүмкүнчүлүгүн берген үчүнчү тараптын cookie файлдарын колдонуу мүмкүнчүлүгүн бөгөттөйт.</translation>
+<translation id="945673208656386843">Бул карта бул түзмөктө сакталганда, Chromium'да сатып алына турган нерселер үчүн автотолтуруңуз</translation>
 <translation id="94613679163347541"><ph name="CATEGORY" /> салыштырылсынбы?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Сайттарда жаңы сайтты тез түзүү үчүн Tab, андан кийин Enter баскычын басыңыз.</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome бүгүн cookie файлдарын кайра чектейт}=1{Chrome эртең cookie файлдарын кайра чектейт}other{Chrome # күндөн кийин cookie файлдарын кайра чектейт}}</translation>

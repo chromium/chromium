@@ -3625,6 +3625,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3514681096978190000">Den här arkivfilen innehåller andra filer som kan dölja skadlig kod</translation>
 <translation id="3515983984924808886">Tryck på säkerhetsnyckeln igen för att bekräfta återställningen. All information som lagras på säkerhetsnyckeln, inklusive dess pinkod, raderas.</translation>
 <translation id="3518866566087677312">Bokmärk saker som du vill komma tillbaka till senare</translation>
+<translation id="3519014757432845220">Hjälp oss att förbättra skyddet mot spam genom att dela meddelandeinnehåll och webbplatsens webbadress med Google. Innehållet kan granskas av människor.</translation>
 <translation id="3519382402703204668">Välj en flik</translation>
 <translation id="3519564332031442870">Servertjänst för utskrift</translation>
 <translation id="3519938335881974273">Spara sida som …</translation>
@@ -6633,6 +6634,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="563371367637259496">Mobilt</translation>
 <translation id="5635312199252507107">Tillåt på vissa webbplatser</translation>
 <translation id="5636012309446422">Vill du ta bort <ph name="DEVICE" /> från <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="56360247219959198"><ph name="DICTIONARY" /> raderas permanent. Åtgärden kan inte ångras.</translation>
 <translation id="5636140764387862062">Fler åtgärder för pinkod</translation>
 <translation id="5636996382092289526">Om du vill använda <ph name="NETWORK_ID" /> kanske du först måste <ph name="LINK_START" />besöka nätverkets inloggningssida<ph name="LINK_END" />, som öppnas automatiskt om några sekunder. Om den inte öppnas går det inte att använda nätverket.</translation>
 <translation id="5637476008227280525">Aktivera mobildata</translation>
@@ -7750,6 +7752,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6459799433792303855">Det aktiva fönstret har flyttats till en annan skärm.</translation>
 <translation id="6460601847208524483">Sök nästa</translation>
 <translation id="6461170143930046705">Söker efter nätverk …</translation>
+<translation id="6463488491707167747">Radera den här ordboken</translation>
 <translation id="6463596731306859179">Får du oönskade popup-fönster eller annat oväntat beteende? Ibland kan appar och tillägg som du installerar ändra ChromeOS-inställningarna utan att du vet om det.</translation>
 <translation id="6463668944631062248">Godkänn begäran om att casta på din <ph name="DEVICE_NAME" /></translation>
 <translation id="6463795194797719782">&amp;Redigera</translation>

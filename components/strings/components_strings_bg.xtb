@@ -770,6 +770,7 @@
 <translation id="2305294852062272447">Да се запази ли шофьорската книжка?</translation>
 <translation id="2306124309679506798">Да се разреши ли виртуалната практическа работа?</translation>
 <translation id="2307711332257985952">Домашният и служебният ви адрес вече са налице в Chrome</translation>
+<translation id="2310789833878085574">Запазване и автоматично попълване</translation>
 <translation id="2312234273148520048">Подправки и сосове</translation>
 <translation id="2316087952091171402">По-малко от <ph name="UPPER_ESTIMATE" />. При следващото ви посещение някои сайтове може да се зареждат по-бавно.</translation>
 <translation id="2316159751672436664">Персонализиране на инструментите за достъпност в настройките на Chrome OS</translation>
@@ -779,6 +780,7 @@
 <translation id="2320564945062300737">Продукти за грижа за лицето</translation>
 <translation id="2321291402658100099">Управление на информацията</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 прозорец}other{# прозореца}}</translation>
+<translation id="232390861414237658">Автоматично попълване на тази карта за покупки в Chrome, когато данните ѝ са запазени в Google Pay</translation>
 <translation id="2328651992442742497">Разрешено (по подразбиране)</translation>
 <translation id="2328955282645810595">Ръчни и електрически строителни инструменти</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, изтича на <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -939,6 +941,7 @@
 <translation id="2595719060046994702">Устройството и профилът не се управляват от фирма или друга организация.</translation>
 <translation id="2596415276201385844">За установяване на сигурна връзка е необходимо часовникът ви да е верен. Това е така, защото сертификатите, с които уебсайтовете се идентифицират, са валидни само за конкретни периоди от време. Тъй като часовникът на устройството ви не е верен, Chrome не може да потвърди тези сертификати.</translation>
 <translation id="2597378329261239068">Този документ е защитен с парола.  Моля, въведете я.</translation>
+<translation id="2600083925285092409">Автоматично попълване на тази карта за покупки в Chromium, когато данните ѝ са запазени в Google Pay</translation>
 <translation id="2605979593348332811">Име (фонетично)</translation>
 <translation id="2606760465469169465">Автоматично потвърждаване</translation>
 <translation id="2608019759319359258">Когато дадена тема бъде блокирана, тя няма да се използва за персонализиране на рекламите</translation>
@@ -3357,6 +3360,7 @@
 <translation id="6789062271869667677">Непрекъснат носител (хоризонтален)</translation>
 <translation id="678982761784843853">Идентификатори на защитено съдържание</translation>
 <translation id="6790428901817661496">Пускане</translation>
+<translation id="6792631792628412749">Ключ за достъп • <ph name="PROVIDER_NAME" /></translation>
 <translation id="6793213097893210590">Картон</translation>
 <translation id="679355240208270552">Бе пренебрегнато, защото основното търсене не е активирано чрез правило.</translation>
 <translation id="6794951432696553238">Потвърждавайте картите си по-бързо, като от сега нататък използвате Windows Hello</translation>
@@ -3588,6 +3592,7 @@
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195432682252510959">Използвайте този код при плащане. Дата на валидност: <ph name="DATE" />.</translation>
 <translation id="7195852673246414183">След като включите съответната настройка, върнете се в този раздел, за да започнете да пишете</translation>
+<translation id="7196370964328811506">Автоматично попълване на тази карта за покупки в Chrome, когато данните ѝ са запазени на това устройство</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да отворите нов раздел в режим „инкогнито“ и да сърфирате частно</translation>
 <translation id="7203375778433816396">Задаване на Chrome като браузър по подразбиране за системата</translation>
@@ -4759,6 +4764,7 @@
 <translation id="940524522703752213">Качването на файловете ви в(ъв) <ph name="CLOUD_PROVIDER" /> ще започне след <ph name="MINUTES" /> минути</translation>
 <translation id="944578681290094302">Показване кои награди и предимства са налице за картите ви при плащане. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Научете повече за предимствата за картите<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome блокира използването на „бисквитки“ на трети страни от сайтовете с цел проследяването ви, докато сърфирате.</translation>
+<translation id="945673208656386843">Автоматично попълване на тази карта за покупки в Chromium, когато данните ѝ са запазени на това устройство</translation>
 <translation id="94613679163347541">Да се извърши ли сравнение за <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да създадете бързо сайт в Google Сайтове</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome ще ограничи „бисквитките“ отново днес}=1{Chrome ще ограничи „бисквитките“ отново утре}other{# дни, докато Chrome ограничи „бисквитките“ отново}}</translation>

@@ -420,6 +420,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" /> ஆப்ஸை நிறுவல் நீக்க முடியவில்லை</translation>
 <translation id="1277020343994096713">உங்களின் தற்போதைய பின்னிலிருந்து (PIN) மாறுபட்ட புதிய பின்னை (PIN) உருவாக்கவும்</translation>
 <translation id="1277597051786235230"><ph name="SEARCH_ENGINE" /> இல் புதிய பக்கத்தில் “<ph name="SEARCH_TERMS" />” என்பதைத் &amp;தேடு</translation>
+<translation id="127849925363482083">இடம் மாறாத பக்கத்தை மூட மீண்டும் <ph name="SHORTCUT_TEXT" /> அழுத்தவும்</translation>
 <translation id="1278859221870828664">Google Play ஆப்ஸ் &amp; சேவைகள் குறித்து அறிந்துகொள்ளுங்கள்</translation>
 <translation id="127946606521051357">அருகிலுள்ள சாதனம் பகிர்கிறது</translation>
 <translation id="1280332775949918163">சாளரத்தை நகர்த்து</translation>
@@ -4131,6 +4132,7 @@
 <translation id="3838486795898716504">மேலும் <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">எந்தத் தளங்களும் பெரிதாக்கப்படவோ சிறிதாக்கப்படவோ இல்லை</translation>
 <translation id="3839516600093027468"><ph name="HOST" />, கிளிப்போர்டைப் பார்ப்பதை எப்போதும் தடைசெய்</translation>
+<translation id="3840096463915153852">உரையாடல் பதிவுகள்</translation>
 <translation id="3841282988425489367">Steam for Chromebook (பீட்டா) ஆப்ஸை அமைக்க முடியவில்லை</translation>
 <translation id="3841319830220785495">இயல்பான குரல்</translation>
 <translation id="3841356782900714251">ஸ்மார்ட் கார்டு ரீடர்கள்</translation>
@@ -7005,6 +7007,7 @@
 <translation id="5916664084637901428">இயக்கு</translation>
 <translation id="59174027418879706">இயக்கப்பட்டது</translation>
 <translation id="5919305207330938913">சேகரிக்கப்படும் எல்லாத் தரவும் Googleளின் <ph name="BEGIN_LINK" />தனியுரிமைக் கொள்கைக்கு<ph name="END_LINK" /> உட்பட்டுப் பயன்படுத்தப்படும்.</translation>
+<translation id="5919486630433391408">உங்கள் நிர்வாகி நிலைபொருள் புதுப்பிப்புகளை முடக்கியுள்ளார்.</translation>
 <translation id="5920543303088087579">உங்கள் நிர்வாகி இந்த நெட்வொர்க்குடன் இணைப்பதை முடக்கியுள்ளார்</translation>
 <translation id="5922963926582976524">உடனடி ஹாட்ஸ்பாட் நெட்வொர்க் இணைப்பைத் துண்டித்தல்</translation>
 <translation id="5924047253200400718">உதவி பெறுக<ph name="SCANNING_STATUS" /></translation>
@@ -7551,6 +7554,7 @@
 <translation id="630292539633944562">தனிப்பட்ட தகவல் பரிந்துரைகள்</translation>
 <translation id="6304017513498618504">“சுருக்கு” என்பது போன்ற விஷயங்களைச் செய்யச் சொல்லலாம்</translation>
 <translation id="6305607932814307878">ஒட்டுமொத்தக் கொள்கை:</translation>
+<translation id="6305627295927385295">இவற்றை நீக்கு:</translation>
 <translation id="6305702903308659374">ChromeVox பேசும் போது, இயல்பான ஒலியளவில் இயக்கு</translation>
 <translation id="6307268917612054609">கேமரா அனுமதியைக் கொண்டுள்ள ஆப்ஸும் இணையதளங்களும், சிஸ்டம் சேவைகளும் உங்கள் கேமராவைப் பயன்படுத்தலாம்</translation>
 <translation id="6307990684951724544">கணினி பணிமிகுதியில் உள்ளது</translation>
@@ -9315,6 +9319,7 @@
 <translation id="7583948862126372804">எண்ணிக்கை</translation>
 <translation id="7585106857920830898">உங்கள் நிறுவனத்தின் பாதுகாப்புக் கொள்கைகளுக்கு ஏற்ப உள்ளதா எனச் சரிபார்க்கிறது...</translation>
 <translation id="7586498138629385861">Chrome ஆப்ஸ் திறக்கப்பட்டிருக்கும்போதும், Chrome தொடர்ந்து இயங்கும்.</translation>
+<translation id="7587806318633605613">பரிந்துரைப் பதிவுகள்</translation>
 <translation id="7589461650300748890">கவனமாக இருக்கவும்.</translation>
 <translation id="7590883480672980941">உள்ளீட்டு அமைப்புகள்</translation>
 <translation id="7592060599656252486">சில நிறுத்தற்குறிகள்</translation>
@@ -9980,6 +9985,7 @@
 <translation id="8028138772801251745">AI மூலம் தானாக நிரப்புதல்</translation>
 <translation id="8028803902702117856"><ph name="SIZE" />, <ph name="FILE_NAME" />ஐப் பதிவிறக்குகிறது</translation>
 <translation id="8028993641010258682">அளவு</translation>
+<translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{வாசிப்புப் பட்டியல்}=1{வாசிப்புப் பட்டியல் ({SELECTED_ITEMS})}other{வாசிப்புப் பட்டியல் ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - அனுமதி கோரப்பட்டுள்ளது, பதிலளிக்க ⌘ + Option + மேல்நோக்கிய அம்புக்குறி விசைகளை அழுத்தவும்</translation>
 <translation id="8030169304546394654">துண்டிக்கப்பட்டது</translation>
 <translation id="8030852056903932865">அனுமதி</translation>
@@ -10851,6 +10857,7 @@
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> அல்லது <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">நைட் லைட் வண்ண வெப்பநிலை</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> இந்த அனுமதிகளைக் கோருகிறது: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> &amp; மேலும் பல</translation>
+<translation id="8648889679430451455">பிரத்தியேகமாக்கல் தரவை அழி</translation>
 <translation id="8649026945479135076">உங்கள் அனுபவத்தைப் பிரத்தியேகமாக்க, நீங்கள் ஆர்வங்காட்டும் விஷயங்களை நீங்கள் பார்வையிடும் தளங்கள் நினைவில் வைத்துக்கொள்வது பொதுவான ஒன்றாகும். உங்கள் ஆர்வங்கள் குறித்த தகவல்களை Chrome மூலமும் தளங்கள் சேமிக்கலாம்.</translation>
 <translation id="8650543407998814195">உங்கள் பழைய கணக்கை இனி அணுக முடியாது என்றாலும் அதை அகற்ற முடியும்.</translation>
 <translation id="8651585100578802546">இந்தப் பக்கத்தை ஃபோர்ஸ் ரெஃப்ரெஷ் செய்</translation>

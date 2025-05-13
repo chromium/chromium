@@ -1179,6 +1179,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="594324569139756587">Block third party</translation>
 <translation id="5944869793365969636">Scan QR code</translation>
 <translation id="5948291296578561264">This lets you save photos to your photo library.</translation>
+<translation id="5948605885471592910">See and manage everything that you have open</translation>
 <translation id="5952641243319721872">Are you sure you want to discard your selection?</translation>
 <translation id="5956112131836209882">Tab group tab. <ph name="TAB_INDEX_IN_GROUP" /> of <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Search with <ph name="SEARCH_PROVIDER" /></translation>
@@ -1675,6 +1676,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7933880123415105005">Search <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Page added to your reading list in your account, {email}}other{{count} pages added to your reading list in your account, {email}}}</translation>
+<translation id="7952353944614086413">Your open tabs and groups</translation>
 <translation id="7952670906562503188">You are about to delete {passkey_count} passkeys and the list of sites and apps for which you chose to never save sign-in info. Any account that you created for sites and apps won't be deleted.</translation>
 <translation id="7958575506592576831">Page security info</translation>
 <translation id="7961015016161918242">Never</translation>
@@ -1967,6 +1969,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="9008201768610948239">Ignore</translation>
 <translation id="9012585441087414258">Protects against sites, downloads and extensions that are known to be dangerous. If a page does something suspicious, URLs and bits of page content are sent to Google Safe Browsing.</translation>
 <translation id="9013605037177245304">Turn on notifications</translation>
+<translation id="9013632079355478927">Hide Reader Mode</translation>
 <translation id="9029650858822697271">You were signed out</translation>
 <translation id="9032405509996909363">Confirm delete browsing data</translation>
 <translation id="9039373489628511875">Bandwidth</translation>

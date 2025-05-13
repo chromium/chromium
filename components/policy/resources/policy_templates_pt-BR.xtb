@@ -970,7 +970,6 @@ A "entrada do usuário" é definida pelas APIs do sistema operacional e inclui a
 <translation id="1639468541408865385">Ativar cache de autenticação HTTP com escopo global</translation>
 <translation id="1639673466479276550">Ativar o protetor na tela de bloqueio.</translation>
 <translation id="1640824698339859203">Ativar o SSO flutuante e mover as autenticações do serviço da Web do usuário para um novo dispositivo</translation>
-<translation id="1641117061932613266">Ativar o serviço <ph name="PRODUCT_NAME" /> V2</translation>
 <translation id="1643642938972654829">Permitir acesso à página de teste da política</translation>
 <translation id="1644373745741524038">Por motivos de segurança, a
 API <ph name="REQUEST_FULLSCREEN_API_NAME" /> da Web
@@ -1157,11 +1156,6 @@ política foi a 121. O suporte foi removido na versão 122.</translation>
 <translation id="1781720543185538098">Especifica se as pesquisas do <ph name="PRODUCT_NAME" /> no produto são mostradas aos usuários.</translation>
 <translation id="1787790976045065845">Esta política só terá efeito quando a <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> estiver definida como <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> ou <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> e um usuário que faz a autenticação por um cartão inteligente remover o cartão. Esta política especificará por quantos segundos uma notificação que informa o usuário sobre a ação futura será exibida. Essa notificação bloqueia a tela, e a ação só acontecerá depois que a notificação expirar. O usuário pode evitar o acontecimento da ação reinserindo o cartão inteligente antes que a notificação expire. Se esta política for definida como zero, nenhuma notificação será exibida e a ação acontecerá imediatamente.</translation>
 <translation id="1793346220873697538">Desativar impressão com PIN como padrão</translation>
-<translation id="1793886201577409556">Esta política controla a visibilidade da atribuição de tema da extensão no rodapé da NTP quando uma extensão controla a NTP. Por padrão, o rodapé da NTP exibe informações sobre a extensão que controla a NTP.
-
-Se esta política for deixada sem definição ou for definida como "true", os navegadores com uma NTP controlada por uma extensão vão mostrar o nome da extensão e um link para ela.
-
-Se esta política for definida como "false", a atribuição de tema será ocultada.</translation>
 <translation id="1794457906032475749">Se esta política for ativada, a opção de manter os dados de navegação existentes ao criar um perfil de trabalho vai ser marcada por padrão.
 
 Se a política for desativada ou deixada sem definição, a opção de manter os dados de navegação existentes ao criar um perfil de trabalho não vai ser marcada por padrão.
@@ -3095,6 +3089,28 @@ Se a política for definida como desativada ou não for definida, o menu de aces
 <translation id="3159375329008977062">O usuário tem permissão para exportar/importar contêineres do Crostini por meio da interface</translation>
 <translation id="3163167792874598128">Quando a política é ativada ou deixada sem definição, a promoção de avaliação na App Store pode ser mostrada para o usuário, no máximo uma vez por ano.
 Se a política for desativada, a promoção de avaliação na App Store não vai ser mostrada ao usuário.</translation>
+<translation id="3163880369487075383">Esta política controla se window.name pode ser removida para navegações de nível superior entre sites
+que resultam na criação de um novo grupo de contexto de navegação
+quando a variação ClearCrossSiteCrossBrowsingContextGroupWindowName está
+ativada.
+
+A variação ClearCrossSiteCrossBrowsingContextGroupWindowName controla se
+window.name será removida para navegações de nível superior entre sites. Exemplos
+de navegações assim: um usuário acessando um novo site pela omnibox ou
+clicando em um link para um novo site quando o link usa "target='_blank'
+rel='noopener'". Nesses casos, remover window.name evita que as informações sejam divulgadas entre sites por essa propriedade, melhorando a privacidade
+do usuário. A política ClearWindowNameForNewBrowsingContextGroup foi implementada para
+restaurar o comportamento anterior. Quando a variação
+ClearCrossSiteCrossBrowsingContextGroupWindowName estiver ativada,
+window.name será removida para navegações qualificadas se essa política tiver sido
+ativada ou for deixada sem definição. Se ela tiver sido desativada, window.name não será removida.
+
+Se você precisar usar a política para desativar a remoção de window.name em navegações
+qualificadas, registre um bug em
+<ph name="BUG_URL" />
+explicando seu caso de uso. A política está programada para
+ser oferecida até a versão 142
+do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3164531087779621747">Modo PostScript de impressão</translation>
 <translation id="3165808775394012744">Essas políticas estão incluídas aqui para facilitar a remoção delas.</translation>
 <translation id="3166210414652928099">Permite o uso de apps Android de fontes não confiáveis</translation>
@@ -4317,6 +4333,7 @@ A política se aplica ao URL que o usuário acessa e aos iframes. A política <p
 <translation id="4051723201852944592">Ativar oclusão de janelas</translation>
 <translation id="4052529125939620019">Carregar a extensão do componente do CryptoToken na inicialização</translation>
 <translation id="4053157306171963473">Desativar relatórios sobre o horário das atividades do dispositivo</translation>
+<translation id="4056842786707010434">Escolha se você quer permitir a remoção de window.name para navegações de nível superior entre sites que resultem em um novo grupo de contexto de navegação.</translation>
 <translation id="4056910949759281379">Desativar o protocolo SPDY</translation>
 <translation id="4057442294431066708">Esta política controla a opção de atalho selecionada para remapear eventos para
 F11/F12 na subpágina de remapeamento de teclas. Essas configurações se aplicam apenas a
@@ -6379,9 +6396,6 @@ os atalhos baseados em pesquisa vão funcionar como padrão.</translation>
 <translation id="5448022937220253000">Escolher o que acontece com os dados do usuário depois que o <ph name="LACROS_NAME" /> é desativado</translation>
 <translation id="5449690328792750354">A API Event.path vai estar disponível.</translation>
 <translation id="5452024130413254050">Controla se as VMs que usam essa configuração têm acesso a um vTPM. O padrão é falso e <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" /> quando não é definido.</translation>
-<translation id="5454128917282602937">Quando um usuário alterna entre os dispositivos <ph name="PRODUCT_OS_NAME" />, o serviço <ph name="PRODUCT_NAME" /> V2 abre as janelas do navegador e de apps do dispositivo anterior.
-Se a política for ativada, as janelas do navegador e de apps do último dispositivo <ph name="PRODUCT_OS_NAME" /> usado pelo usuário atual serão abertas automaticamente após o login.
-Se a política for desativada ou deixada sem definição, as configurações de restauração completa vão determinar o que será aberto após o login.</translation>
 <translation id="5455609857202311243">Ignorar a aprovação da política de KDC durante a autenticação do HTTP</translation>
 <translation id="5455888515928026628">Durante o login pela tela de bloqueio, o <ph name="PRODUCT_OS_NAME" /> pode fazer a autenticação por um servidor (on-line) ou usando uma senha armazenada em cache (off-line).
 
@@ -9739,6 +9753,7 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 <translation id="768925347918758827">Estados Unidos.</translation>
 <translation id="7696412993033202071">URLs de inicialização de apps para autenticação externa</translation>
 <translation id="7696534428021833264">Ativar o card de arquivos do SharePoint e do OneDrive na página "Nova guia"</translation>
+<translation id="7699644797467448158">A propriedade window.name será removida quando a navegação for de nível superior, entre sites e trocar BrowsingContextGroup.</translation>
 <translation id="7701341006446125684">Definir o tamanho do cache de aplicativos e extensões (em bytes)</translation>
 <translation id="7703041979684393741">Não permitir a coleta de logs de eventos WebRTC em Serviços do Google</translation>
 <translation id="770339941914297201">Novo comportamento: apps do Chrome para quiosque só serão atualizados usando o URL definido na política</translation>
@@ -10682,7 +10697,6 @@ Quando esta política não é definida, o controle facial fica desativado, mas p
 <translation id="8339420913453596618">Segundo fator desativado</translation>
 <translation id="8341175887542205077">Desativar backup e restauração para máquinas virtuais Linux</translation>
 <translation id="8344454543174932833">Importar favoritos do navegador padrão na primeira execução</translation>
-<translation id="8345184118796116912">Controlar a visibilidade da atribuição de tema da extensão na página "Nova guia" para navegadores gerenciados</translation>
 <translation id="8347993687936322631">Esta política está obsoleta e será removida na versão 85 do <ph name="PRODUCT_OS_NAME" />. Por isso, passe a usar <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Esta política fornece um valor substituto para as políticas <ph name="IDLE_ACTION_AC_POLICY_NAME" /> e <ph name="IDLE_ACTION_BATTERY_POLICY_NAME" /> mais específicas. Se esta política for definida, os valores dela serão usados quando a respectiva política mais específica não for definida.
@@ -11522,6 +11536,7 @@ Esta política só controla a <ph name="ARC_VM" /> no <ph name="PRODUCT_OS_FLEX_
 
       Se a política for definida como falsa ou não for definida, os status de tela e gráficos não serão informados. Se ela for definida como verdadeira, os status de tela e gráficos serão informados.</translation>
 <translation id="891435090623616439">codificado como um string JSON, para ver mais detalhes consulte <ph name="COMPLEX_POLICIES_URL" /></translation>
+<translation id="8916106787085606382">A propriedade window.name não será removida quando a navegação for de nível superior, entre sites e trocar BrowsingContextGroup.</translation>
 <translation id="8917070657147922192">Permite que o usuário gerencie os certificados de CA instalados.</translation>
 <translation id="8919100556245407184">O tempo, em dias, após a postagem de expiração da atualização automática até o usuário ser desconectado se a versão do <ph name="PRODUCT_OS_NAME" /> for menor que a <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> especificada.</translation>
 <translation id="8919369436496201075">Permitir que o dispositivo receba atualizações de LTS</translation>

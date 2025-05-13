@@ -183,6 +183,7 @@
 <translation id="1807709131360304325">Άνοιγμα νέου παραθύρου</translation>
 <translation id="1810845389119482123">Η αρχική ρύθμιση συγχρονισμού δεν ολοκληρώθηκε</translation>
 <translation id="1812027881030482584">Το <ph name="SITE_ETLD_PLUS_ONE" /> δεν μπορεί να συνεχίσει να χρησιμοποιεί το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="1820408774134375111">Φύλλο κάτω μέρους για σύνδεση</translation>
 <translation id="1825772852827001597">Οι τρόποι πληρωμής και οι διευθύνσεις πληρωμών από το Google Pay δεν θα κρυπτογραφούνται. Το ιστορικό περιήγησης από το Chrome δεν θα συγχρονίζεται.
 Μόνο κάποιος που γνωρίζει τη φράση πρόσβασης μπορεί να διαβάσει τα κρυπτογραφημένα δεδομένα σας. H φράση πρόσβασης δεν αποστέλλεται στην Google, ούτε αποθηκεύεται από αυτή. Εάν ξεχάσετε τη φράση πρόσβασης ή θέλετε να αλλάξετε αυτή τη ρύθμιση, <ph name="BEGIN_LINK" />διαγράψτε τα δεδομένα του Chrome στον λογαριασμό σας<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Εύρεση στη σελίδα</translation>
@@ -191,6 +192,7 @@
 <translation id="1871098866036088250">Άνοιγμα στο πρόγραμμα περιήγησης Chrome</translation>
 <translation id="1877026089748256423">Το Chrome δεν είναι ενημερωμένο</translation>
 <translation id="1877073879466606884">Το προφίλ στο οποίο είστε συνδεδεμένοι είναι διαχειριζόμενο προφίλ. Ο διαχειριστής μπορεί να κάνει αλλαγές στις ρυθμίσεις του προφίλ σας από απόσταση, να αναλύει πληροφορίες σχετικά με το πρόγραμμα περιήγησης μέσω αναφορών και να εκτελεί άλλες απαραίτητες εργασίες.</translation>
+<translation id="1879904908408734349">Το φύλλο κάτω μέρους για σύνδεση είναι κλειστό</translation>
 <translation id="1883903952484604915">Τα αρχεία μου</translation>
 <translation id="189358972401248634">Άλλες γλώσσες</translation>
 <translation id="1899175549411605574">Φύλλο κάτω μέρους των insight τιμών</translation>
@@ -455,7 +457,6 @@
 <translation id="3072980200212375806">Η εφαρμογή <ph name="APP_NAME" /> θα ανοίξει στο Chrome. Εάν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" /> και τους <ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_LINK2" />. Επίσης, ισχύει η <ph name="BEGIN_LINK3" />Πολιτική απορρήτου<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Μπορείτε να αποθηκεύετε σελίδες για ανάγνωση αργότερα ή εκτός σύνδεσης.</translation>
 <translation id="3087734570205094154">Κάτω</translation>
-<translation id="3088687687599869821">ΠΛΟΗΓΗΣΗ ΣΤΙΣ ΣΕΛΙΔΕΣ</translation>
 <translation id="3091010850649238832">Εμφάνιση περιεχομένων πρόχειρου</translation>
 <translation id="3098745985164956033">Ορισμένες εικόνες αποστέλλονται στην Google για τη βελτίωση των περιγραφών για εσάς.</translation>
 <translation id="3114507951000454849">Διαβάστε τις σημερινές ειδήσεις <ph name="NEWS_ICON" /></translation>
@@ -540,6 +541,7 @@
 <translation id="3516053221628030540">Μετάβαση στο Google Play</translation>
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Καταργήθηκαν οι άδειες ειδοποιήσεων από έναν ιστότοπο που δεν έχετε επισκεφτεί πρόσφατα}other{Καταργήθηκαν οι άδειες ειδοποιήσεων από # ιστοτόπους που δεν έχετε επισκεφτεί πρόσφατα}}</translation>
 <translation id="3518985090088779359">Αποδοχή και συνέχεια</translation>
+<translation id="3519014757432845220">Συμβάλετε στη βελτίωση της προστασίας από ανεπιθύμητο περιεχόμενο κοινοποιώντας στην Google το περιεχόμενο των ειδοποιήσεων και το URL του ιστοτόπου. Το περιεχόμενο μπορεί να ελεγχθεί από ανθρώπους.</translation>
 <translation id="351952459507671940">Προσθήκη σε νέα ομάδα</translation>
 <translation id="3521388823983121502">Δεν μπορείτε να συνεχίσετε με το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Διατίθεται μια ενημέρωση. Περισσότερες επιλογές</translation>
@@ -678,6 +680,7 @@
 <translation id="4170011742729630528">Η υπηρεσία δεν είναι διαθέσιμη. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="4177222230309051052">Λάβετε όλους τους σελιδοδείκτες σας</translation>
 <translation id="4177501066905053472">Θέματα διαφημίσεων</translation>
+<translation id="4180726336228139707">Μόνο σε αυτή τη συσκευή</translation>
 <translation id="4181841719683918333">Γλώσσες</translation>
 <translation id="4188221736490993796">Ταξινόμηση από Ω έως A</translation>
 <translation id="4195643157523330669">Άνοιγμα σε νέα καρτέλα</translation>
@@ -854,6 +857,7 @@
 <translation id="4943703118917034429">Εικονική πραγματικότητα</translation>
 <translation id="4943872375798546930">Δεν υπάρχουν αποτελέσματα</translation>
 <translation id="4957722034734105353">Μάθετε περισσότερα…</translation>
+<translation id="4959115606310463263">Το φύλλο κάτω μέρους για σύνδεση είναι ανοιχτό στο μισό ύψος</translation>
 <translation id="4961107849584082341">Μεταφράστε αυτήν τη σελίδα σε οποιαδήποτε γλώσσα</translation>
 <translation id="4964614743143953889">Το Chrome σας προειδοποιεί σχετικά με μη ασφαλείς ιστοτόπους και λήψεις</translation>
 <translation id="496607651705915226">Για να αποθηκεύσετε και να χρησιμοποιήσετε νέους κωδικούς πρόσβασης στον Λογαριασμό σας Google, ενημερώστε τις υπηρεσίες Google Play</translation>
@@ -1146,6 +1150,7 @@
 <translation id="6277522088822131679">Παρουσιάστηκε ένα πρόβλημα κατά την εκτύπωση της σελίδας. Δοκιμάστε ξανά.</translation>
 <translation id="6278428485366576908">Θέμα</translation>
 <translation id="6284472661216707937">Το φύλλο "Κωδικοί πρόσβασης σε όλες τις συσκευές σας" έκλεισε</translation>
+<translation id="6291294824436685757">Διαγραφή δεδομένων περιήγησης. Επιλέξτε δεδομένα για διαγραφή</translation>
 <translation id="6295158916970320988">Όλοι οι ιστότοποι</translation>
 <translation id="6296366034485697675">Εξαγωγή και διαγραφή</translation>
 <translation id="629730747756840877">Λογαριασμός</translation>
@@ -1612,6 +1617,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> αρχεία απομένουν</translation>
 <translation id="8190358571722158785">Απομένει 1 ημέρα</translation>
+<translation id="8192765420340770300">Το φύλλο κάτω μέρους για σύνδεση είναι ανοιχτό σε πλήρες ύψος</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Οι συσκευές σας<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="820568752112382238">Ιστότοποι με τις περισσότερες επισκέψεις</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Συμμετοχή στην ομάδα καρτελών με τον χρήστη <ph name="OWNER_FIRST_NAME" /> και <ph name="NUMBER_OF_OTHER_MEMBERS" /> ακόμη}other{Συμμετοχή στην ομάδα καρτελών με τον χρήστη <ph name="OWNER_FIRST_NAME" /> και <ph name="NUMBER_OF_OTHER_MEMBERS" /> ακόμη}}</translation>
@@ -1636,7 +1642,6 @@
 <translation id="8260126382462817229">Δοκιμάστε να συνδεθείτε ξανά</translation>
 <translation id="8261506727792406068">Διαγραφή</translation>
 <translation id="82619448491672958">Δείτε άλλες καρτέλες</translation>
-<translation id="8265018477030547118">Μόνο σε αυτήν τη συσκευή</translation>
 <translation id="8266753737658117282">Συνέχεια με <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8266862848225348053">Τοποθεσία λήψης</translation>
 <translation id="8271267069224406035">Αναφορά ως ανεπιθύμητου</translation>
@@ -1809,6 +1814,7 @@
 <translation id="9050666287014529139">Φράση πρόσβασής σας</translation>
 <translation id="9055497320631373736">Ο ιστότοπος προστέθηκε ξανά στους πιθανούς ιστοτόπους</translation>
 <translation id="9057030985451135243">Μάθετε περισσότερα σχετικά με τις κοινόχρηστες ομάδες καρτελών</translation>
+<translation id="9063400323119781058">Απεγγραφήκατε</translation>
 <translation id="9063523880881406963">Απενεργοποίηση αιτήματος ιστότοπου για υπολογιστές</translation>
 <translation id="9065203028668620118">Επεξεργασία</translation>
 <translation id="9065383040763568503">Αποθηκευμένα δεδομένα τα οποία το Chrome θεωρεί ότι δεν είναι σημαντικά (π.χ. ιστότοποι χωρίς αποθηκευμένες ρυθμίσεις ή που δεν επισκέπτεστε συχνά)</translation>
