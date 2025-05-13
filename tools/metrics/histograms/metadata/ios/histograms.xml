@@ -2323,7 +2323,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.IsEnabled.Password.BottomSheet" enum="Boolean"
     expires_after="2025-10-12">
   <owner>sugoi@chromium.org</owner>
-  <owner>veronguyen@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <summary>
     At the moment of trying to enable the bottom sheet at page load time, track
@@ -3825,7 +3824,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.PasswordBottomSheet.ExitReason"
     enum="PasswordSuggestionBottomSheetExitReason" expires_after="2025-09-14">
   <owner>sugoi@chromium.org</owner>
-  <owner>veronguyen@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <summary>
     Tracks the bottom sheet dismissal, use of a password suggestion and long
@@ -3899,7 +3897,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.PaymentsBottomSheet.ExitReason"
     enum="PaymentsSuggestionBottomSheetExitReason" expires_after="2025-10-26">
   <owner>sugoi@chromium.org</owner>
-  <owner>veronguyen@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <summary>
     Tracks the bottom sheet dismissal or use of a payments suggestion.
@@ -4527,7 +4524,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.Reauth.Password.BottomSheet" enum="ReauthenticationEvent"
     expires_after="2025-07-13">
   <owner>sugoi@chromium.org</owner>
-  <owner>veronguyen@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <summary>
     Tracks the results and attempts of reauthentication when using suggestions
@@ -4558,13 +4554,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ResetDismissCount.Password.BottomSheet" units="dismisses"
-    expires_after="2024-05-08">
+    expires_after="2025-10-08">
   <owner>sugoi@chromium.org</owner>
-  <owner>veronguyen@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <summary>
     Tracks the number of times in a row the Password Bottom Sheet had been
     dismissed at the moment the dismiss count was reset to 0 (between 1 and 3).
+
+    Note: this metric was expired from 2024-05 to 2025-05; data may be missing.
   </summary>
 </histogram>
 
