@@ -115,7 +115,9 @@ std::optional<base::TimeTicks> RTCEncodedVideoFrameDelegate::ReceiveTime()
 std::optional<base::TimeTicks> RTCEncodedVideoFrameDelegate::CaptureTime()
     const {
   base::AutoLock lock(lock_);
-  if (!webrtc_frame_) {
+  if (!webrtc_frame_ ||
+      webrtc_frame_->GetDirection() !=
+          webrtc::TransformableFrameInterface::Direction::kReceiver) {
     return std::nullopt;
   }
   return ConvertToOptionalTimeTicks(webrtc_frame_->CaptureTime(),

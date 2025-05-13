@@ -850,6 +850,10 @@ TEST_F(RTCEncodedVideoFrameTest, FrameWithCaptureTime) {
                                        WebRTCFrameNtpEpoch().since_origin();
     std::unique_ptr<MockTransformableVideoFrame> frame =
         std::make_unique<NiceMock<MockTransformableVideoFrame>>();
+    // Currently, only receiver frames expose captureTime.
+    ON_CALL(*frame, GetDirection)
+        .WillByDefault(
+            Return(webrtc::TransformableFrameInterface::Direction::kReceiver));
     ON_CALL(*frame, CaptureTime)
         .WillByDefault(Return(
             webrtc::Timestamp::Micros(ntp_capture_time.InMicroseconds())));
