@@ -484,8 +484,17 @@ bool CloudOpenTask::Execute(
     LOG(ERROR) << "Cannot get EventRouter";
   }
 
-  scoped_refptr<CloudOpenTask> upload_task = WrapRefCounted(new CloudOpenTask(
-      profile, file_urls, task, cloud_provider, std::move(cloud_open_metrics)));
+  std::optional<SourceType> source_type =
+      GetSourceType(profile, file_urls.front());
+  if (!source_type.has_value()) {
+    LOG(ERROR) << "Cannot get source type";
+    cloud_open_metrics->LogTaskResult(OfficeTaskResult::kCannotGetSourceType);
+    return false;
+  }
+
+  scoped_refptr<CloudOpenTask> upload_task = WrapRefCounted(
+      new CloudOpenTask(profile, file_urls, task, source_type.value(),
+                        cloud_provider, std::move(cloud_open_metrics)));
   // Keep `upload_task` alive until `TaskFinished` executes.
   bool status = upload_task->ExecuteInternal();
   return status;
@@ -495,11 +504,13 @@ CloudOpenTask::CloudOpenTask(
     Profile* profile,
     std::vector<storage::FileSystemURL> file_urls,
     const fm_tasks::TaskDescriptor& task,
+    const SourceType source_type,
     const CloudProvider cloud_provider,
     std::unique_ptr<CloudOpenMetrics> cloud_open_metrics)
     : profile_(profile),
       file_urls_(file_urls),
       task_(task),
+      source_type_(source_type),
       cloud_provider_(cloud_provider),
       cloud_open_metrics_(std::move(cloud_open_metrics)) {
   BrowserList::AddObserver(this);
@@ -621,10 +632,9 @@ bool CloudOpenTask::OpenOrMoveFiles() {
   }
 
   // The files need to be moved.
-  auto operation =
-      GetUploadType(profile_, file_urls_.front()) == UploadType::kCopy
-          ? OfficeFilesTransferRequired::kCopy
-          : OfficeFilesTransferRequired::kMove;
+  auto operation = SourceTypeToUploadType(source_type_) == UploadType::kCopy
+                       ? OfficeFilesTransferRequired::kCopy
+                       : OfficeFilesTransferRequired::kMove;
   // Set as WARNING as INFO is not allowed.
   LOG(WARNING) << (operation == OfficeFilesTransferRequired::kCopy ? "Copy"
                                                                    : "Mov")
@@ -736,10 +746,8 @@ void CloudOpenTask::OpenODFSUrls(const OfficeTaskResult task_result_uma) {
 // file to a cloud location and opening it.
 bool CloudOpenTask::ShouldShowConfirmationDialog() {
   bool force_show_confirmation_dialog = false;
-  SourceType source_type = GetSourceType(profile_, file_urls_[0]);
-
   if (cloud_provider_ == CloudProvider::kGoogleDrive) {
-    switch (source_type) {
+    switch (source_type_) {
       case SourceType::READ_ONLY:
         force_show_confirmation_dialog =
             !fm_tasks::GetOfficeMoveConfirmationShownForLocalToDrive(
@@ -758,7 +766,7 @@ bool CloudOpenTask::ShouldShowConfirmationDialog() {
     return force_show_confirmation_dialog ||
            !fm_tasks::GetAlwaysMoveOfficeFilesToDrive(profile_);
   } else if (cloud_provider_ == CloudProvider::kOneDrive) {
-    switch (source_type) {
+    switch (source_type_) {
       case SourceType::READ_ONLY:
         force_show_confirmation_dialog =
             !fm_tasks::GetOfficeMoveConfirmationShownForLocalToOneDrive(
@@ -950,6 +958,7 @@ void CloudOpenTask::StartNextGoogleDriveUpload() {
   DCHECK_LT(file_urls_idx_, file_urls_.size());
   drive_upload_handler_ = std::make_unique<DriveUploadHandler>(
       profile_, file_urls_[file_urls_idx_],
+      SourceTypeToUploadType(source_type_),
       base::BindOnce(&CloudOpenTask::FinishedDriveUpload, this),
       cloud_open_metrics_->GetSafeRef());
   drive_upload_handler_->Run();
@@ -959,6 +968,7 @@ void CloudOpenTask::StartNextOneDriveUpload() {
   DCHECK_LT(file_urls_idx_, file_urls_.size());
   one_drive_upload_handler_ = std::make_unique<OneDriveUploadHandler>(
       profile_, file_urls_[file_urls_idx_],
+      SourceTypeToUploadType(source_type_),
       base::BindOnce(&CloudOpenTask::FinishedOneDriveUpload, this,
                      profile_->GetWeakPtr()),
       cloud_open_metrics_->GetSafeRef());
@@ -1139,7 +1149,7 @@ mojom::DialogArgsPtr CloudOpenTask::CreateDialogArgs(
       auto move_confirmation_one_drive_dialog_args =
           mojom::MoveConfirmationOneDriveDialogArgs::New();
       move_confirmation_one_drive_dialog_args->operation_type =
-          UploadTypeToOperationType(GetUploadType(profile_, file_urls_[0]));
+          UploadTypeToOperationType(SourceTypeToUploadType(source_type_));
       args->dialog_specific_args =
           mojom::DialogSpecificArgs::NewMoveConfirmationOneDriveDialogArgs(
               std::move(move_confirmation_one_drive_dialog_args));
@@ -1149,7 +1159,7 @@ mojom::DialogArgsPtr CloudOpenTask::CreateDialogArgs(
       auto move_confirmation_google_drive_dialog_args =
           mojom::MoveConfirmationGoogleDriveDialogArgs::New();
       move_confirmation_google_drive_dialog_args->operation_type =
-          UploadTypeToOperationType(GetUploadType(profile_, file_urls_[0]));
+          UploadTypeToOperationType(SourceTypeToUploadType(source_type_));
       args->dialog_specific_args =
           mojom::DialogSpecificArgs::NewMoveConfirmationGoogleDriveDialogArgs(
               std::move(move_confirmation_google_drive_dialog_args));
@@ -1372,8 +1382,7 @@ void CloudOpenTask::OnMoveConfirmationComplete(
   // (and for StartUpload?).
   if (user_response == kUserActionUploadToGoogleDrive) {
     fm_tasks::SetOfficeMoveConfirmationShownForDrive(profile_, true);
-    SourceType source_type = GetSourceType(profile_, file_urls_[0]);
-    switch (source_type) {
+    switch (source_type_) {
       case SourceType::LOCAL:
         fm_tasks::SetOfficeMoveConfirmationShownForLocalToDrive(profile_, true);
         break;
@@ -1387,8 +1396,7 @@ void CloudOpenTask::OnMoveConfirmationComplete(
     StartUpload();
   } else if (user_response == kUserActionUploadToOneDrive) {
     fm_tasks::SetOfficeMoveConfirmationShownForOneDrive(profile_, true);
-    SourceType source_type = GetSourceType(profile_, file_urls_[0]);
-    switch (source_type) {
+    switch (source_type_) {
       case SourceType::LOCAL:
         fm_tasks::SetOfficeMoveConfirmationShownForLocalToOneDrive(profile_,
                                                                    true);

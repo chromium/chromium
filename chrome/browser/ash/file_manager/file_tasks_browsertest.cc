@@ -81,6 +81,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -1295,6 +1296,7 @@ class DriveTest : public TestAccountBrowserTest {
   }
 
  protected:
+  base::FilePath drive_mount_point_;
   const std::string alternate_url_ =
       "https://docs.google.com/document/d/smalldocxid?rtpof=true&usp=drive_fs";
   const TaskDescriptor web_drive_office_task_ = CreateWebDriveOfficeTask();
@@ -1304,7 +1306,6 @@ class DriveTest : public TestAccountBrowserTest {
 
  private:
   base::ScopedTempDir temp_dir_;
-  base::FilePath drive_mount_point_;
   const std::string test_file_name_ = "text.docx";
   base::FilePath relative_test_file_path;
   base::test::ScopedFeatureList feature_list_;
@@ -1567,6 +1568,37 @@ IN_PROC_BROWSER_TEST_F(DriveTest, FileNotInDriveOpensSetUpDialog) {
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOpenInitialCloudProviderMetric,
       ash::cloud_upload::CloudProvider::kGoogleDrive, 1);
+}
+
+// Test that CloudOpenTask::Execute() will fail to open the file when source
+// volume cannot be found.
+IN_PROC_BROWSER_TEST_F(DriveTest, SourceVolumeNotFound) {
+  // Set up DriveFs.
+  SetUpTest(/*disable_set_up=*/false, /*launch_files_app=*/true);
+
+  // Create a test file outside of Drive.
+  FileSystemURL file_outside_drive = CreateOfficeFileSourceURL(profile());
+  std::vector<storage::FileSystemURL> file_urls{file_outside_drive};
+
+  // Remove source volume from the VolumeManager.
+  VolumeManager* volume_manager = VolumeManager::Get(profile());
+  base::WeakPtr<file_manager::Volume> source_volume =
+      volume_manager->FindVolumeFromPath(file_outside_drive.path());
+  volume_manager->RemoveVolumeForTesting(source_volume->volume_id());
+
+  // Ensure that the file cannot be opened.
+  ASSERT_FALSE(ash::cloud_upload::CloudOpenTask::Execute(
+      profile(), file_urls, CreateWebDriveOfficeTask(),
+      ash::cloud_upload::CloudProvider::kGoogleDrive,
+      std::move(cloud_open_metrics_)));
+
+  // The TaskResult should be kCannotGetSourceType and no TransferRequired
+  // metric should be logged.
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kGoogleDriveTaskResultMetricName,
+      ash::cloud_upload::OfficeTaskResult::kCannotGetSourceType, 1);
+  histogram_.ExpectTotalCount(ash::cloud_upload::kDriveTransferRequiredMetric,
+                              0);
 }
 
 // Fake app service web app publisher to test when an app is launched.
@@ -2042,6 +2074,7 @@ IN_PROC_BROWSER_TEST_F(
   // will fail as there is not an equivalent ODFS file path.
   auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
       profile(), {android_onedrive_url}, open_in_office_task_,
+      ash::cloud_upload::SourceType::CLOUD,
       ash::cloud_upload::CloudProvider::kOneDrive,
       std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
           ash::cloud_upload::CloudProvider::kOneDrive, 1)));
@@ -2478,6 +2511,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileNotFromODFS) {
   // Triggers Move Confirmation dialog.
   auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
       profile(), file_urls, CreateOpenInOfficeTask(),
+      ash::cloud_upload::SourceType::LOCAL,
       ash::cloud_upload::CloudProvider::kOneDrive,
       std::move(cloud_open_metrics_)));
   task->OpenOrMoveFiles();
@@ -2513,6 +2547,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
   // Open file directly from ODFS.
   auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
       profile(), file_urls_, open_in_office_task_,
+      ash::cloud_upload::SourceType::CLOUD,
       ash::cloud_upload::CloudProvider::kOneDrive,
       std::move(cloud_open_metrics_)));
   task->OpenOrMoveFiles();
@@ -2560,6 +2595,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FailToOpenFileFromODFSOtherAccessError) {
   // Open file directly from ODFS.
   auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
       profile(), file_urls_, open_in_office_task_,
+      ash::cloud_upload::SourceType::CLOUD,
       ash::cloud_upload::CloudProvider::kOneDrive,
       std::move(cloud_open_metrics_)));
   task->OpenOrMoveFiles();
@@ -2608,6 +2644,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileFromAndroidOneDriveViaODFS) {
   // Open the file indirectly from Android OneDrive (via ODFS).
   auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
       profile(), {android_onedrive_url}, open_in_office_task_,
+      ash::cloud_upload::SourceType::CLOUD,
       ash::cloud_upload::CloudProvider::kOneDrive,
       std::move(cloud_open_metrics_)));
   task->OpenOrMoveFiles();
@@ -2652,6 +2689,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
   // Open file directly from ODFS.
   auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
       profile(), file_urls_, open_in_office_task_,
+      ash::cloud_upload::SourceType::CLOUD,
       ash::cloud_upload::CloudProvider::kOneDrive,
       std::move(cloud_open_metrics_)));
   task->OpenOrMoveFiles();
@@ -2741,6 +2779,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
   // Open the file indirectly from Android OneDrive (via ODFS).
   auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
       profile(), {android_onedrive_url}, open_in_office_task_,
+      ash::cloud_upload::SourceType::CLOUD,
       ash::cloud_upload::CloudProvider::kOneDrive,
       std::move(cloud_open_metrics_)));
   task->OpenOrMoveFiles();
@@ -2795,6 +2834,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
   // will fail as the email accounts don't match.
   auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
       profile(), {android_onedrive_url}, open_in_office_task_,
+      ash::cloud_upload::SourceType::CLOUD,
       ash::cloud_upload::CloudProvider::kOneDrive,
       std::move(cloud_open_metrics_)));
   task->OpenOrMoveFiles();
@@ -2838,6 +2878,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
   // will fail as there is not an equivalent ODFS file path.
   auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
       profile(), {android_onedrive_url}, open_in_office_task_,
+      ash::cloud_upload::SourceType::CLOUD,
       ash::cloud_upload::CloudProvider::kOneDrive,
       std::move(cloud_open_metrics_)));
   task->OpenOrMoveFiles();

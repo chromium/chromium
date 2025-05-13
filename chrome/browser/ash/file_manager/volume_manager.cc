@@ -1665,7 +1665,6 @@ void VolumeManager::DoUnmountEvent(std::string_view volume_id,
     LOG(WARNING) << "Cannot find volume '" << volume_id << "' to unmount it";
     return;
   }
-
   DoUnmountEvent(std::move(it), error);
 }
 

@@ -40,6 +40,7 @@ class OneDriveUploadHandler
 
   OneDriveUploadHandler(Profile* profile,
                         const storage::FileSystemURL& source_url,
+                        UploadType upload_type,
                         UploadCallback callback,
                         base::SafeRef<CloudOpenMetrics> cloud_open_metrics);
   ~OneDriveUploadHandler() override;

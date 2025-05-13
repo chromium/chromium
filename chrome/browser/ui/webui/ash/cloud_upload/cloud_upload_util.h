@@ -189,7 +189,8 @@ enum class OfficeTaskResult {
   kCancelledAtFallbackAfterOpen = 19,
   kCannotGetFallbackChoiceAfterOpen = 20,
   kFileAlreadyBeingOpened = 21,
-  kMaxValue = kFileAlreadyBeingOpened,
+  kCannotGetSourceType = 22,
+  kMaxValue = kCannotGetSourceType,
 };
 
 // The result of the "Upload to cloud" workflow for Office files.
@@ -350,13 +351,13 @@ OfficeFilesSourceVolume VolumeTypeToSourceVolume(
 
 // Returns the type of the source location from which the file is getting
 // uploaded (see SourceType values).
-SourceType GetSourceType(Profile* profile,
-                         const storage::FileSystemURL& source_path);
+std::optional<SourceType> GetSourceType(
+    Profile* profile,
+    const storage::FileSystemURL& source_path);
 
 // Returns the upload type (move or copy) for the upload flow based on the
-// source path of the file to upload.
-UploadType GetUploadType(Profile* profile,
-                         const storage::FileSystemURL& source_path);
+// source type.
+UploadType SourceTypeToUploadType(SourceType source_type);
 
 // Request ODFS be mounted. If there is an existing mount, ODFS will unmount
 // that one after authentication of the new mount.

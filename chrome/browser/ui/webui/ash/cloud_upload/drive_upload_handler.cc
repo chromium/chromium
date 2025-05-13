@@ -63,6 +63,7 @@ std::string GetTargetAppName(base::FilePath file_path) {
 DriveUploadHandler::DriveUploadHandler(
     Profile* profile,
     const FileSystemURL& source_url,
+    UploadType upload_type,
     UploadCallback callback,
     base::SafeRef<CloudOpenMetrics> cloud_open_metrics)
     : profile_(profile),
@@ -70,7 +71,7 @@ DriveUploadHandler::DriveUploadHandler(
           file_manager::util::GetFileManagerFileSystemContext(profile)),
       drive_integration_service_(
           drive::DriveIntegrationServiceFactory::FindForProfile(profile)),
-      upload_type_(GetUploadType(profile, source_url)),
+      upload_type_(upload_type),
       notification_manager_(
           base::MakeRefCounted<CloudUploadNotificationManager>(
               profile,

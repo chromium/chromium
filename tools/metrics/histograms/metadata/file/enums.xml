@@ -891,6 +891,7 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="Cancelled at fallback after open attempt"/>
   <int value="20" label="Cannot get fallback choice after open attempt"/>
   <int value="21" label="File already being opened"/>
+  <int value="22" label="Cannot get source type"/>
 </enum>
 
 <enum name="RestoreFailedNoParentType">

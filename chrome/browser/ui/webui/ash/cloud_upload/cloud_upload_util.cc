@@ -122,20 +122,18 @@ OfficeFilesSourceVolume VolumeTypeToSourceVolume(
   }
 }
 
-SourceType GetSourceType(Profile* profile,
-                         const storage::FileSystemURL& source_url) {
+std::optional<SourceType> GetSourceType(
+    Profile* profile,
+    const storage::FileSystemURL& source_url) {
   file_manager::VolumeManager* volume_manager =
       file_manager::VolumeManager::Get(profile);
   base::WeakPtr<file_manager::Volume> source_volume =
       volume_manager->FindVolumeFromPath(source_url.path());
-  DCHECK(source_volume)
-      << "Unable to find source volume (source path filesystem_id: "
-      << source_url.filesystem_id() << ")";
   // Local by default.
   if (!source_volume) {
     LOG(ERROR) << "Unable to find source volume (source path filesystem_id: "
                << source_url.filesystem_id() << ")";
-    return SourceType::LOCAL;
+    return std::nullopt;
   }
   // First, look at whether the filesystem is read-only.
   if (source_volume->is_read_only()) {
@@ -163,16 +161,14 @@ SourceType GetSourceType(Profile* profile,
                    : SourceType::LOCAL;
       }
     }
-    // Local if unable to find the provided file system.
-    return SourceType::LOCAL;
+    LOG(ERROR) << "Unable to find the provided file system";
+    return std::nullopt;
   }
   // Local by default.
   return SourceType::LOCAL;
 }
 
-UploadType GetUploadType(Profile* profile,
-                         const storage::FileSystemURL& source_url) {
-  SourceType source_type = GetSourceType(profile, source_url);
+UploadType SourceTypeToUploadType(SourceType source_type) {
   return source_type == SourceType::LOCAL ? UploadType::kMove
                                           : UploadType::kCopy;
 }

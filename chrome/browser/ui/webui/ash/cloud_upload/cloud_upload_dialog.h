@@ -170,6 +170,7 @@ class CloudOpenTask : public BrowserListObserver,
   CloudOpenTask(Profile* profile,
                 std::vector<storage::FileSystemURL> file_urls,
                 const ::file_manager::file_tasks::TaskDescriptor& task,
+                const SourceType source_type,
                 const CloudProvider cloud_provider,
                 std::unique_ptr<CloudOpenMetrics> cloud_open_metrics);
 
@@ -249,6 +250,7 @@ class CloudOpenTask : public BrowserListObserver,
   // File being currently uploaded.
   size_t file_urls_idx_ = 0;
   const ::file_manager::file_tasks::TaskDescriptor task_;
+  SourceType source_type_;
   CloudProvider cloud_provider_;
   std::unique_ptr<CloudOpenMetrics> cloud_open_metrics_;
   std::unique_ptr<DriveUploadHandler> drive_upload_handler_;
