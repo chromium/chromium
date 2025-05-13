@@ -137,12 +137,12 @@ public abstract class FirstRunFlowSequencer {
      */
     void start() {
         AccountManagerFacadeProvider.getInstance()
-                .getCoreAccountInfos()
+                .getAccounts()
                 .then(
-                        coreAccountInfos -> {
+                        accounts -> {
                             RecordHistogram.recordCount1MHistogram(
                                     "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE",
-                                    Math.min(coreAccountInfos.size(), 2));
+                                    Math.min(accounts.size(), 2));
 
                             assert !mAccountsAvailable;
                             mAccountsAvailable = true;

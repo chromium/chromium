@@ -36,7 +36,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -312,15 +312,15 @@ public class BottomSheetSigninAndHistorySyncCoordinator
         }
 
         AccountManagerFacadeProvider.getInstance()
-                .getCoreAccountInfos()
+                .getAccounts()
                 .then(
-                        coreAccountInfos -> {
-                            finishLoadingAndSelectSigninFlow(coreAccountInfos);
+                        accounts -> {
+                            finishLoadingAndSelectSigninFlow(accounts);
                             mFlowInitialized = true;
                         });
     }
 
-    private void finishLoadingAndSelectSigninFlow(List<CoreAccountInfo> coreAccountInfos) {
+    private void finishLoadingAndSelectSigninFlow(List<AccountInfo> accounts) {
         // The history opt-in screen should be shown after the coreAccountInfos
         // become available to avoid showing additional loading UI after history
         // opt-in screen is shown.
@@ -332,7 +332,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
             return;
         }
 
-        if (!coreAccountInfos.isEmpty()) {
+        if (!accounts.isEmpty()) {
             showSigninBottomSheet();
             SigninMetricsUtils.logSigninStarted(mSigninAccessPoint);
             return;

@@ -351,8 +351,7 @@ public class ProfileDataCache implements AccountInfoService.Observer {
     }
 
     private void populateCache(AccountInfoService accountInfoService) {
-        Promise<List<CoreAccountInfo>> accountsPromise =
-                AccountManagerFacadeProvider.getInstance().getCoreAccountInfos();
+        var accountsPromise = AccountManagerFacadeProvider.getInstance().getAccounts();
         if (accountsPromise.isFulfilled()) {
             populateCacheForAllAccounts(accountInfoService, accountsPromise.getResult());
         } else {
@@ -364,9 +363,9 @@ public class ProfileDataCache implements AccountInfoService.Observer {
     }
 
     private void populateCacheForAllAccounts(
-            AccountInfoService accountInfoService, List<CoreAccountInfo> accounts) {
-        for (CoreAccountInfo coreAccountInfo : accounts) {
-            populateCacheForAccount(accountInfoService, coreAccountInfo.getEmail());
+            AccountInfoService accountInfoService, List<AccountInfo> accounts) {
+        for (CoreAccountInfo account : accounts) {
+            populateCacheForAccount(accountInfoService, account.getEmail());
         }
     }
 

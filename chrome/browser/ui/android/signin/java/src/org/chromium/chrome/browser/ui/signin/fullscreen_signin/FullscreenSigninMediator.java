@@ -210,7 +210,7 @@ public class FullscreenSigninMediator
 
         // We need the account fetching to be complete before we can hide the initial loading
         // spinner.
-        if (!mAccountManagerFacade.getCoreAccountInfos().isFulfilled()) return;
+        if (!mAccountManagerFacade.getAccounts().isFulfilled()) return;
 
         if (mDelegate.getChildAccountStatusSupplier().get() != null
                 && mDelegate.getPolicyLoadListener().get() != null

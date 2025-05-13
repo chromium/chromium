@@ -111,7 +111,7 @@ public abstract class SignInPromo {
 
     private void updateVisibility() {
         final boolean isAccountsCachePopulated =
-                AccountManagerFacadeProvider.getInstance().getCoreAccountInfos().isFulfilled();
+                AccountManagerFacadeProvider.getInstance().getAccounts().isFulfilled();
         boolean canShowPersonalizedSigninPromo =
                 mSigninManager.isSigninAllowed()
                         && mSyncPromoController.canShowSyncPromo()

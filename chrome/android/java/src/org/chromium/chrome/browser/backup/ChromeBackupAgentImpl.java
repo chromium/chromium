@@ -465,7 +465,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                 TaskTraits.UI_DEFAULT,
                 () -> {
                     AccountManagerFacadeProvider.getInstance()
-                            .getCoreAccountInfos()
+                            .getAccounts()
                             .then(
                                     (ignored) -> {
                                         accountsLatch.countDown();

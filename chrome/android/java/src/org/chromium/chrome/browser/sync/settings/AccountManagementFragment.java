@@ -194,9 +194,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         addPreferencesFromResource(R.xml.account_management_preferences);
         configureSignOutSwitch();
         configureChildAccountPreferences();
-        AccountManagerFacadeProvider.getInstance()
-                .getCoreAccountInfos()
-                .then(this::updateAccountsList);
+        AccountManagerFacadeProvider.getInstance().getAccounts().then(this::updateAccountsList);
     }
 
     /**
@@ -280,12 +278,12 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         }
     }
 
-    private void updateAccountsList(List<CoreAccountInfo> coreAccountInfos) {
+    private void updateAccountsList(List<AccountInfo> accounts) {
         // This method is called asynchronously on accounts fetched from AccountManagerFacade.
         // Make sure the fragment is alive before updating preferences.
         if (!isResumed()) return;
 
-        setAccountBadges(coreAccountInfos);
+        setAccountBadges(accounts);
 
         PreferenceCategory accountsCategory = findPreference(PREF_ACCOUNTS_CATEGORY);
         if (accountsCategory == null) {
@@ -301,9 +299,9 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         accountsCategory.addPreference(createManageYourGoogleAccountPreference());
         accountsCategory.addPreference(createDividerPreference(R.layout.horizontal_divider));
 
-        for (CoreAccountInfo coreAccountInfo : coreAccountInfos) {
-            if (!mSignedInCoreAccountInfo.equals(coreAccountInfo)) {
-                accountsCategory.addPreference(createAccountPreference(coreAccountInfo));
+        for (CoreAccountInfo account : accounts) {
+            if (!mSignedInCoreAccountInfo.equals(account)) {
+                accountsCategory.addPreference(createAccountPreference(account));
             }
         }
         accountsCategory.addPreference(createAddAccountPreference());
@@ -406,11 +404,11 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         return getPreferenceManager().getContext();
     }
 
-    private void setAccountBadges(List<CoreAccountInfo> coreAccountInfos) {
-        for (CoreAccountInfo coreAccountInfo : coreAccountInfos) {
+    private void setAccountBadges(List<AccountInfo> accounts) {
+        for (CoreAccountInfo account : accounts) {
             AccountManagerFacadeProvider.getInstance()
                     .checkIsSubjectToParentalControls(
-                            coreAccountInfo,
+                            account,
                             (isChild, childAccount) -> {
                                 Context context = getContext();
                                 if (isChild && context != null) {
@@ -428,9 +426,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
     // ProfileDataCache.Observer implementation:
     @Override
     public void onProfileDataUpdated(String accountEmail) {
-        AccountManagerFacadeProvider.getInstance()
-                .getCoreAccountInfos()
-                .then(this::updateAccountsList);
+        AccountManagerFacadeProvider.getInstance().getAccounts().then(this::updateAccountsList);
     }
 
     // SignInStateObserver implementation:

@@ -459,7 +459,6 @@ public class SigninManagerIntegrationTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
-                    Assert.assertFalse(mAccountManagerFacade.getCoreAccountInfos().isFulfilled());
                     Assert.assertFalse(mAccountManagerFacade.getAccounts().isFulfilled());
                     Assert.assertEquals(
                             List.of(TestAccounts.ACCOUNT1),
