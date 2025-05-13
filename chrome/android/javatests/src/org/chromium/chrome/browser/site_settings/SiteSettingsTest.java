@@ -3445,6 +3445,28 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @Policies.Add({@Policies.Item(key = "BlockThirdPartyCookies", string = "true")})
+    @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
+    public void renderThirdPartyCookiesPageManagedBlocked() throws Exception {
+        renderCategoryPage(
+                SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
+                "site_settings_third_party_cookies_page_managed_blocked");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @Policies.Add({@Policies.Item(key = "BlockThirdPartyCookies", string = "false")})
+    @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
+    public void renderThirdPartyCookiesPageManagedAllowed() throws Exception {
+        renderCategoryPage(
+                SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
+                "site_settings_third_party_cookies_page_managed_allowed");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
     public void testRenderCookiesPageWithFps() throws Exception {
         createCookieExceptions();
         renderCategoryPage(
