@@ -356,7 +356,6 @@ OmniboxEditModel::OmniboxEditModel(OmniboxController* controller,
       is_keyword_hint_(false),
       keyword_mode_entry_method_(OmniboxEventProto::INVALID),
       in_revert_(false),
-      close_lens_(false),
       allow_exact_keyword_match_(false) {}
 
 OmniboxEditModel::~OmniboxEditModel() = default;
@@ -508,7 +507,6 @@ std::u16string OmniboxEditModel::GetPermanentDisplayText() const {
 
 void OmniboxEditModel::SetUserText(const std::u16string& text) {
   SetInputInProgress(true);
-  MaybeCloseLens();
   keyword_.clear();
   keyword_placeholder_.clear();
   is_keyword_hint_ = false;
@@ -758,7 +756,6 @@ void OmniboxEditModel::Revert() {
   input_.Clear();
   paste_state_ = NONE;
   InternalSetUserText(std::u16string());
-  MaybeCloseLens();
   keyword_.clear();
   keyword_placeholder_.clear();
   is_keyword_hint_ = false;
@@ -1064,7 +1061,6 @@ void OmniboxEditModel::ClearKeyword() {
   bool entry_by_tab = keyword_mode_entry_method_ == OmniboxEventProto::TAB;
 
   controller_->ClearPopupKeywordMode();
-  MaybeCloseLens();
 
   // There are several possible states we could have been in before the user hit
   // backspace or shift-tab to enter this function:
@@ -2847,40 +2843,6 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
                        controller_->client()->AsWeakPtr()),
         match_selection_timestamp, disposition);
     action->Execute(context);
-
-    // Actions aren't generally able to change omnibox state, but it may be
-    // worth considering an extension to OmniboxAction::ExecutionContext
-    // if more action types want to enter keyword modes, close the popup, etc.
-    // Note: The CONTEXTUAL_SEARCH_OPEN_LENS action does not enter the omnibox
-    // into '@page' keyword mode and the omnibox is committed and closed as
-    // normal in that case, with the lens UI managing its own state, so there's
-    // no need for the omnibox to close lens.
-    if (action->ActionId() ==
-            OmniboxActionId::CONTEXTUAL_SEARCH_ASK_ABOUT_PAGE ||
-        action->ActionId() ==
-            OmniboxActionId::CONTEXTUAL_SEARCH_SELECT_REGION) {
-      if (const TemplateURL* page_turl =
-              controller_->client()
-                  ->GetTemplateURLService()
-                  ->FindStarterPackTemplateURL(
-                      TemplateURLStarterPackData::kPage)) {
-        EnterKeywordMode(
-            OmniboxEventProto::SELECT_SUGGESTION, page_turl,
-            l10n_util::GetStringUTF16(IDS_OMNIBOX_PAGE_SCOPE_PLACEHOLDER_TEXT));
-        if (action->ActionId() ==
-                OmniboxActionId::CONTEXTUAL_SEARCH_SELECT_REGION &&
-            view_) {
-          view_->CloseOmniboxPopup();
-        }
-        close_lens_ = true;
-        return;
-      }
-    } else if (action->ActionId() ==
-               OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT) {
-      // Lens fulfills matches in the side panel, and should not be closed
-      // by the omnibox after opening this match.
-      close_lens_ = false;
-    }
   }
 
   if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB && view_) {
@@ -3094,12 +3056,3 @@ void OmniboxEditModel::SetKeywordPlaceholder(
   keyword_placeholder_ = keyword_placeholder;
 }
 
-void OmniboxEditModel::MaybeCloseLens() {
-  if (!close_lens_) {
-    return;
-  }
-  close_lens_ = false;
-  // TODO(crbug.com/413405157): This is a targeted bug-fix, but more complete
-  //  handling of keyword mode transitions is needed.
-  controller_->client()->OnKeywordModeChanged(false, keyword_);
-}

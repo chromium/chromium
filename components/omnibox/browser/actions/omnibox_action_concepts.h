@@ -26,8 +26,8 @@ enum class OmniboxActionId {
   CONTEXTUAL_SEARCH_FULFILLMENT,
 
   // Actions that enter @page scope for direct query or with lens selection.
-  CONTEXTUAL_SEARCH_ASK_ABOUT_PAGE,
-  CONTEXTUAL_SEARCH_SELECT_REGION,
+  CONTEXTUAL_SEARCH_ASK_ABOUT_PAGE,  // Obsolete
+  CONTEXTUAL_SEARCH_SELECT_REGION,   // Obsolete
 
   // An action to open lens with contextual search side panel ready.
   CONTEXTUAL_SEARCH_OPEN_LENS,

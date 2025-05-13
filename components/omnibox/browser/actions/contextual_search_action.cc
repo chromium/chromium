@@ -41,64 +41,6 @@ ContextualSearchFulfillmentAction::~ContextualSearchFulfillmentAction() =
 
 ////////////////////////////////////////////////////////////////////////////////
 
-ContextualSearchAskAboutPageAction::ContextualSearchAskAboutPageAction()
-    : OmniboxAction(
-          OmniboxAction::LabelStrings(u"Ask about this page", u"", u"", u""),
-          GURL()) {}
-
-OmniboxActionId ContextualSearchAskAboutPageAction::ActionId() const {
-  return OmniboxActionId::CONTEXTUAL_SEARCH_ASK_ABOUT_PAGE;
-}
-
-void ContextualSearchAskAboutPageAction::Execute(
-    ExecutionContext& context) const {
-  context.client_->OpenLensOverlay(/*show=*/false);
-}
-
-#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
-const gfx::VectorIcon& ContextualSearchSelectRegionAction::GetVectorIcon()
-    const {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return vector_icons::kGoogleLensMonochromeLogoIcon;
-#else
-  return vector_icons::kSearchChromeRefreshIcon;
-#endif
-}
-#endif  // defined(SUPPORT_PEDALS_VECTOR_ICONS)
-
-ContextualSearchAskAboutPageAction::~ContextualSearchAskAboutPageAction() =
-    default;
-
-////////////////////////////////////////////////////////////////////////////////
-
-ContextualSearchSelectRegionAction::ContextualSearchSelectRegionAction()
-    : OmniboxAction(OmniboxAction::LabelStrings(u"Search with Google Lens",
-                                                u"",
-                                                u"",
-                                                u""),
-                    GURL()) {}
-
-OmniboxActionId ContextualSearchSelectRegionAction::ActionId() const {
-  return OmniboxActionId::CONTEXTUAL_SEARCH_SELECT_REGION;
-}
-
-void ContextualSearchSelectRegionAction::Execute(
-    ExecutionContext& context) const {
-  context.client_->OpenLensOverlay(/*show=*/true);
-}
-
-#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
-const gfx::VectorIcon& ContextualSearchAskAboutPageAction::GetVectorIcon()
-    const {
-  return omnibox::kPageSparkIcon;
-}
-#endif  // defined(SUPPORT_PEDALS_VECTOR_ICONS)
-
-ContextualSearchSelectRegionAction::~ContextualSearchSelectRegionAction() =
-    default;
-
-////////////////////////////////////////////////////////////////////////////////
-
 ContextualSearchOpenLensAction::ContextualSearchOpenLensAction()
     : OmniboxAction(
           OmniboxAction::LabelStrings(u"Ask Google Lens about this page",

@@ -240,12 +240,6 @@ class DesktopWebSearchZpsSection : public Section {
                                       size_t contextual_search_limit);
 };
 
-// A section to follow contextual search matches with the advert actions.
-class DesktopWebZpsActionsSection : public ZpsSection {
- public:
-  explicit DesktopWebZpsActionsSection(omnibox::GroupConfigMap& group_configs);
-};
-
 // Section expressing the Desktop ZPS limits and grouping for the Lens
 // contextual searchbox.
 // - up to 8 suggestions total.

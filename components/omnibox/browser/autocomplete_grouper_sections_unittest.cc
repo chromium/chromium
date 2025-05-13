@@ -2019,10 +2019,8 @@ TEST(AutocompleteGrouperSectionsTest, DesktopWebZpsNoContextualSuggestions) {
     sections.push_back(
         std::make_unique<DesktopWebURLZpsSection>(group_configs, 3u));
     sections.push_back(std::make_unique<DesktopWebSearchZpsSection>(
-        group_configs, /*limit=*/4u, /*contextual_action_limit=*/0u,
+        group_configs, /*limit=*/4u, /*contextual_action_limit=*/1u,
         /*contextual_search_limit=*/0u));
-    sections.push_back(
-        std::make_unique<DesktopWebZpsActionsSection>(group_configs));
     auto out_matches = Section::GroupMatches(std::move(sections), matches);
     VerifyMatches(out_matches, expected_relevances);
   };
@@ -2038,9 +2036,9 @@ TEST(AutocompleteGrouperSectionsTest, DesktopWebZpsNoContextualSuggestions) {
             CreateMatch(94, omnibox::GROUP_CONTEXTUAL_SEARCH_ACTION),
             CreateMatch(93, omnibox::GROUP_CONTEXTUAL_SEARCH),
         },
-        // URLs, then searches, then actions, stable sorted.
+        // URLs, then searches, then one action, stable sorted.
         // No contextual search matches due to above configuration.
-        {99, 98, 97, 96, 94});
+        {99, 98, 97, 96});
   }
 }
 #endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))

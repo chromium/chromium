@@ -2953,21 +2953,10 @@ const char kContextualSearchBoxUsesContextualSearchProviderDescription[] =
     "Enables the contextual search box to use the ContextualSearchProvider "
     "instead of the ZeroSuggestProvider as the source for suggestions.";
 
-const char kOmniboxContextualSearchActionsAtTopName[] =
-    "Omnibox contextual search actions at top";
-const char kOmniboxContextualSearchActionsAtTopDescription[] =
-    "Enables overriding the placement of contextual search actions in the "
-    "omnibox popup.";
-
 const char kOmniboxContextualSearchOnFocusSuggestionsName[] =
     "Omnibox contextual search on focus suggestions";
 const char kOmniboxContextualSearchOnFocusSuggestionsDescription[] =
     "Enables omnibox contextual search suggestions in zero prefix suggest.";
-
-const char kOmniboxContextualSearchSingleLensActionName[] =
-    "Omnibox contextual search single lens action";
-const char kOmniboxContextualSearchSingleLensActionDescription[] =
-    "Enables single action UX for contextual search in the omnibox popup";
 
 const char kOmniboxContextualSuggestionsName[] =
     "Omnibox contextual suggestions";

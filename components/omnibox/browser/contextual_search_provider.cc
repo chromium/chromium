@@ -305,29 +305,18 @@ void ContextualSearchProvider::AddPageSearchActionMatches(
   // These matches are effectively pedals that don't require any query matching.
   AutocompleteMatch match(this, omnibox::kContextualActionZeroSuggestRelevance,
                           false, AutocompleteMatchType::PEDAL);
-  match.contents_class = {{0, ACMatchClassification::NONE}};
   match.transition = ui::PAGE_TRANSITION_GENERATED;
   match.suggest_type = omnibox::SuggestType::TYPE_NATIVE_CHROME;
   match.suggestion_group_id = omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH_ACTION;
 
-  auto add_action = [&](auto action) {
-    match.relevance--;
-    match.takeover_action = std::move(action);
-    match.contents = match.takeover_action->GetLabelStrings().hint;
-    matches_.push_back(match);
-  };
-  if (omnibox_feature_configs::ContextualSearch::Get().single_lens_action) {
-    add_action(base::MakeRefCounted<ContextualSearchOpenLensAction>());
-    // This one is special in that it also gets secondary text to show URL host.
-    AutocompleteMatch& action_match = matches_.back();
-    action_match.description = action_match.contents;
-    action_match.description_class = action_match.contents_class;
-    action_match.contents = base::UTF8ToUTF16(input.current_url().host());
-    action_match.contents_class = {{0, ACMatchClassification::URL}};
-  } else {
-    add_action(base::MakeRefCounted<ContextualSearchAskAboutPageAction>());
-    add_action(base::MakeRefCounted<ContextualSearchSelectRegionAction>());
-  }
+  // Lens invocation action with secondary text that shows URL host.
+  match.takeover_action =
+      base::MakeRefCounted<ContextualSearchOpenLensAction>();
+  match.contents = base::UTF8ToUTF16(input.current_url().host());
+  match.contents_class = {{0, ACMatchClassification::URL}};
+  match.description = match.takeover_action->GetLabelStrings().hint;
+  match.description_class = {{0, ACMatchClassification::NONE}};
+  matches_.push_back(match);
 }
 
 void ContextualSearchProvider::AddDefaultVerbatimMatch(

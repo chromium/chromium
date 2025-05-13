@@ -6641,13 +6641,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(omnibox_feature_configs::ContextualSearch::
                             kContextualSearchBoxUsesContextualSearchProvider)},
 
-    {"omnibox-contextual-search-actions-at-top",
-     flag_descriptions::kOmniboxContextualSearchActionsAtTopName,
-     flag_descriptions::kOmniboxContextualSearchActionsAtTopDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox_feature_configs::ContextualSearch::
-                            kOmniboxContextualSearchActionsAtTop)},
-
     {"omnibox-contextual-search-on-focus-suggestions",
      flag_descriptions::kOmniboxContextualSearchOnFocusSuggestionsName,
      flag_descriptions::kOmniboxContextualSearchOnFocusSuggestionsDescription,
@@ -6657,13 +6650,6 @@ const FeatureEntry kFeatureEntries[] = {
              kOmniboxContextualSearchOnFocusSuggestions,
          kOmniboxContextualSearchOnFocusSuggestionsVariations,
          "OmniboxContextualSearchOnFocusSuggestions")},
-
-    {"omnibox-contextual-search-single-lens-action",
-     flag_descriptions::kOmniboxContextualSearchSingleLensActionName,
-     flag_descriptions::kOmniboxContextualSearchSingleLensActionDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox_feature_configs::ContextualSearch::
-                            kOmniboxContextualSearchSingleLensAction)},
 
     {"omnibox-contextual-suggestions",
      flag_descriptions::kOmniboxContextualSuggestionsName,

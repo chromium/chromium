@@ -561,17 +561,6 @@ DesktopWebSearchZpsSection::DesktopWebSearchZpsSection(
               },
               group_configs) {}
 
-DesktopWebZpsActionsSection::DesktopWebZpsActionsSection(
-    omnibox::GroupConfigMap& group_configs)
-    : ZpsSection(2,
-                 {
-                     Group(2,
-                           {
-                               {omnibox::GROUP_CONTEXTUAL_SEARCH_ACTION, 2},
-                           }),
-                 },
-                 group_configs) {}
-
 DesktopLensContextualZpsSection::DesktopLensContextualZpsSection(
     omnibox::GroupConfigMap& group_configs)
     : ZpsSection(5,

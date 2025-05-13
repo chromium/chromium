@@ -544,15 +544,6 @@ void AutocompleteResult::SortAndCull(
             suggestion_groups_map_,
             max_search_suggestions + contextual_action_limit,
             contextual_action_limit, contextual_zps_limit));
-        if (omnibox_feature_configs::ContextualSearch::Get()
-                .IsContextualSearchEnabled() &&
-            omnibox_feature_configs::ContextualSearch::Get().actions_at_top) {
-          // Since this one is above the search section, it will be given the
-          // contextual search actions so they appear at top.
-          sections.insert(sections.begin(),
-                          std::make_unique<DesktopWebZpsActionsSection>(
-                              suggestion_groups_map_));
-        }
 #if BUILDFLAG(ENABLE_EXTENSIONS)
         if (base::FeatureList::IsEnabled(
                 extensions_features::kExperimentalOmniboxLabs)) {

@@ -82,20 +82,8 @@ BASE_FEATURE(ContextualSearch::kOmniboxContextualSearchOnFocusSuggestions,
              "OmniboxContextualSearchOnFocusSuggestions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(ContextualSearch::kOmniboxContextualSearchActionsAtTop,
-             "OmniboxContextualSearchActionsAtTop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(ContextualSearch::kOmniboxContextualSearchSingleLensAction,
-             "OmniboxContextualSearchSingleLensAction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(ContextualSearch::kContextualSearchBoxUsesContextualSearchProvider,
              "ContextualSearchBoxUsesContextualSearchProvider",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(ContextualSearch::kContextualSearchUseVerticalBar,
-             "ContextualSearchUseVerticalBar",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 ContextualSearch::ContextualSearch() {
@@ -122,14 +110,8 @@ ContextualSearch::ContextualSearch() {
                                     "Limit", 3)
                 .Get()
           : 0;
-  actions_at_top =
-      base::FeatureList::IsEnabled(kOmniboxContextualSearchActionsAtTop);
-  single_lens_action =
-      base::FeatureList::IsEnabled(kOmniboxContextualSearchSingleLensAction);
   csb_uses_csp = base::FeatureList::IsEnabled(
       kContextualSearchBoxUsesContextualSearchProvider);
-  use_vertical_bar =
-      base::FeatureList::IsEnabled(kContextualSearchUseVerticalBar);
 }
 
 ContextualSearch::ContextualSearch(const ContextualSearch&) = default;

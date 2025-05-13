@@ -139,10 +139,7 @@ struct ContextualSearch : Config<ContextualSearch> {
   DECLARE_FEATURE(kContextualSearchProviderAsyncSuggestInputs);
   DECLARE_FEATURE(kSendContextualUrlSuggestParam);
   DECLARE_FEATURE(kOmniboxContextualSearchOnFocusSuggestions);
-  DECLARE_FEATURE(kOmniboxContextualSearchActionsAtTop);
-  DECLARE_FEATURE(kOmniboxContextualSearchSingleLensAction);
   DECLARE_FEATURE(kContextualSearchBoxUsesContextualSearchProvider);
-  DECLARE_FEATURE(kContextualSearchUseVerticalBar);
 
   // Whether to use contextual search features, for example the lens action.
   bool IsContextualSearchEnabled() const;
@@ -164,19 +161,9 @@ struct ContextualSearch : Config<ContextualSearch> {
   // Maximum number of contextual search suggestions for zero prefix suggest.
   size_t contextual_zps_limit;
 
-  // Whether to show actions at top of zero suggest list: default false, bottom.
-  bool actions_at_top;
-
-  // Whether to use the unified single action to open lens UI.
-  bool single_lens_action;
-
   // Whether to use ContextualSearchProvider instead of ZeroSuggestProvider for
   // sourcing contextual search box matches.
   bool csb_uses_csp;
-
-  // Whether to use vertical bar instead of regular icon on contextual search
-  // matches.
-  bool use_vertical_bar;
 };
 
 // If enabled, allows MIA zero-prefix suggestions in NTP omnibox and realbox.
