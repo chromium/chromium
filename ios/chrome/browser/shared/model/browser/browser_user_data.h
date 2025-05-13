@@ -6,9 +6,7 @@
 #define IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_USER_DATA_H_
 
 #include "base/check.h"
-#include "base/check_deref.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ref.h"
 #include "base/supports_user_data.h"
 #include "ios/chrome/browser/shared/model/browser/browser.h"
 
@@ -61,10 +59,8 @@ class BrowserUserData : public base::SupportsUserData::Data {
   }
 
  protected:
-  explicit BrowserUserData(Browser* browser) : browser_(CHECK_DEREF(browser)) {}
-
-  // The owning Browser.
-  const raw_ref<Browser> browser_;
+  BrowserUserData() {}
+  explicit BrowserUserData(Browser* browser) {}
 
  private:
   // Default factory for T that invoke T's constructor. Can be overloaded
