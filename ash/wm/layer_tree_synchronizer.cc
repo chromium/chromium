@@ -393,29 +393,24 @@ gfx::Transform AccumulateTargetTransform(const ui::Layer* layer,
 ///////////////////////////////////////////////////////////////////////////////
 // LayerTreeSynchronizerBase:
 
-LayerTreeSynchronizerBase::LayerTreeSynchronizerBase(ui::Layer* root_layer,
-                                                     bool restore_tree)
-    : root_layer_(root_layer), restore_tree_(restore_tree) {
-  CHECK(root_layer);
-}
+LayerTreeSynchronizerBase::LayerTreeSynchronizerBase(bool restore_tree)
+    : restore_tree_(restore_tree) {}
 
 LayerTreeSynchronizerBase::~LayerTreeSynchronizerBase() = default;
 
-void LayerTreeSynchronizerBase::ResetCachedLayerInfo() {
-  original_layers_info_.clear();
-}
-
 bool LayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCorners(
     ui::Layer* layer,
+    const ui::Layer* root_layer,
     const gfx::RRectF& reference_bounds) {
-  CHECK(root_layer_->Contains(layer));
-  if (reference_bounds.IsEmpty() ||
-      reference_bounds.GetType() == gfx::RRectF::Type::kRect) {
+  CHECK(root_layer);
+  CHECK(root_layer->Contains(layer));
+  if (reference_bounds.IsEmpty()) {
     return false;
   }
 
+  // All the calculation done in the target space of `root_layer`.
   gfx::Transform transform;
-  layer->GetTargetTransformRelativeTo(root_layer_, &transform);
+  layer->GetTargetTransformRelativeTo(root_layer, &transform);
 
   return SynchronizeLayerTreeRoundedCornersImpl(layer, reference_bounds,
                                                 transform);
@@ -499,6 +494,10 @@ bool LayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCornersImpl(
   return subtree_altered || layer_altered;
 }
 
+void LayerTreeSynchronizerBase::ResetCachedLayerInfo() {
+  original_layers_info_.clear();
+}
+
 void LayerTreeSynchronizerBase::RestoreLayerTree(ui::Layer* layer) {
   if (original_layers_info_.empty()) {
     return;
@@ -522,39 +521,53 @@ void LayerTreeSynchronizerBase::RestoreLayerTreeImpl(ui::Layer* layer) {
 ///////////////////////////////////////////////////////////////////////////////
 // LayerTreeSynchronizer:
 
-LayerTreeSynchronizer::LayerTreeSynchronizer(ui::Layer* root_layer,
-                                             bool restore_tree)
-    : LayerTreeSynchronizerBase(root_layer, restore_tree) {}
+LayerTreeSynchronizer::LayerTreeSynchronizer(bool restore_tree)
+    : LayerTreeSynchronizerBase(restore_tree) {}
 
 LayerTreeSynchronizer::~LayerTreeSynchronizer() = default;
 
 void LayerTreeSynchronizer::SynchronizeRoundedCorners(
     ui::Layer* layer,
+    const ui::Layer* root_layer,
     const gfx::RRectF& reference_bounds) {
-  SynchronizeLayerTreeRoundedCorners(layer, reference_bounds);
+  const bool altered =
+      SynchronizeLayerTreeRoundedCorners(layer, root_layer, reference_bounds);
+  if (altered && !altered_layer_observation_.IsObservingSource(layer)) {
+    altered_layer_observation_.Observe(layer);
+  }
 }
 
 void LayerTreeSynchronizer::Restore() {
-  RestoreLayerTree(root_layer());
+  if (auto* window = altered_layer_observation_.GetSource()) {
+    RestoreLayerTree(window);
+  }
+
   ResetCachedLayerInfo();
+  altered_layer_observation_.Reset();
+}
+
+void LayerTreeSynchronizer::LayerDestroyed(ui::Layer* layer) {
+  altered_layer_observation_.Reset();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // WindowTreeSynchronizer:
 
-WindowTreeSynchronizer::WindowTreeSynchronizer(aura::Window* root_window,
-                                               bool restore_tree)
-    : LayerTreeSynchronizerBase(root_window->layer(), restore_tree) {}
+WindowTreeSynchronizer::WindowTreeSynchronizer(bool restore_tree)
+    : LayerTreeSynchronizerBase(restore_tree) {}
 
 WindowTreeSynchronizer::~WindowTreeSynchronizer() = default;
 
 void WindowTreeSynchronizer::SynchronizeRoundedCorners(
     aura::Window* window,
+    const aura::Window* root_window,
     const gfx::RRectF& reference_bounds,
     TransientTreeIgnorePredicate ignore_predicate) {
+  CHECK(root_window->Contains(window));
+
   for (auto* window_iter : GetTransientTreeIterator(window, ignore_predicate)) {
     const bool altered = SynchronizeLayerTreeRoundedCorners(
-        window_iter->layer(), reference_bounds);
+        window_iter->layer(), root_window->layer(), reference_bounds);
     if (altered &&
         !altered_window_observations_.IsObservingSource(window_iter)) {
       altered_window_observations_.AddObservation(window_iter);

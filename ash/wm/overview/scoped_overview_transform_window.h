@@ -173,6 +173,8 @@ class ASH_EXPORT ScopedOverviewTransformWindow
       const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
           transient_windows);
 
+  void RestoreWindowTree();
+
   // A weak pointer to the overview item that owns |this|. Guaranteed to be not
   // null for the lifetime of |this|.
   raw_ptr<OverviewItem> overview_item_;

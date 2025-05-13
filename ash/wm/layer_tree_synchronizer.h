@@ -10,7 +10,9 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/window_observer.h"
+#include "ui/compositor/layer_observer.h"
 
 namespace aura {
 class Window;
@@ -30,7 +32,7 @@ namespace ash {
 
 class LayerTreeSynchronizerBase {
  public:
-  LayerTreeSynchronizerBase(ui::Layer* root_layer, bool restore_tree);
+  explicit LayerTreeSynchronizerBase(bool restore_tree);
 
   LayerTreeSynchronizerBase(const LayerTreeSynchronizerBase&) = delete;
   LayerTreeSynchronizerBase& operator=(const LayerTreeSynchronizerBase&) =
@@ -41,25 +43,24 @@ class LayerTreeSynchronizerBase {
   // Restores the tree to its original state if `restore_tree_` is true.
   virtual void Restore() = 0;
 
-  // Resets the cache tracking the original information about the layers
-  // that are updated during `SynchronizeLayerTreeRoundedCorners()`.
-  void ResetCachedLayerInfo();
-
  protected:
-  ui::Layer* root_layer() { return root_layer_; }
-
   // Traverses through layer subtree rooted at `layer`, adjusting(synchronizing)
   // the radius of corners of the `layer` to match the radius with
   // `reference_bounds` if any corner is drawn outside the curvature of the
   // `reference_bounds`.
   // Returns true if any of the layers of the layer tree were altered.
-  // Note: `reference_bounds` are in target space of `root_layer_`;
+  // Note: `reference_bounds` are in target space of `root_layer`;
   bool SynchronizeLayerTreeRoundedCorners(ui::Layer* layer,
+                                          const ui::Layer* root_layer,
                                           const gfx::RRectF& reference_bounds);
 
   // Traverses through the layer subtree rooted at `layer`. Restores the radii
   // of layer if it was updated by in `SynchronizeLayerTreeRoundedCorners()`.
   void RestoreLayerTree(ui::Layer* layer);
+
+  // Resets the cache tracking the original information about the layers
+  // that are updated during `SynchronizeLayerTreeRoundedCorners()`.
+  void ResetCachedLayerInfo();
 
  private:
   // `transform` is the relative target transform of layer to the `root_layer`.
@@ -69,10 +70,6 @@ class LayerTreeSynchronizerBase {
       const gfx::Transform& transform);
 
   void RestoreLayerTreeImpl(ui::Layer* layer);
-
-  // Any subtree that may be altered is rooted at `root_layer_`. All the
-  // calculation done in the target space of `root_layer_`.
-  raw_ptr<ui::Layer> root_layer_;
 
   // If true, the layer tree is restored to its old state.
   const bool restore_tree_;
@@ -85,9 +82,10 @@ class LayerTreeSynchronizerBase {
 };
 
 // Synchronizes the layer tree to specified rounded corner bounds.
-class ASH_EXPORT LayerTreeSynchronizer : public LayerTreeSynchronizerBase {
+class ASH_EXPORT LayerTreeSynchronizer : public LayerTreeSynchronizerBase,
+                                         public ui::LayerObserver {
  public:
-  LayerTreeSynchronizer(ui::Layer* root_layer, bool restore_tree);
+  explicit LayerTreeSynchronizer(bool restore_tree);
 
   LayerTreeSynchronizer(const LayerTreeSynchronizer&) = delete;
   LayerTreeSynchronizer& operator=(const LayerTreeSynchronizer&) = delete;
@@ -102,10 +100,18 @@ class ASH_EXPORT LayerTreeSynchronizer : public LayerTreeSynchronizerBase {
   // within the layer's bounds and the bounds are in the `root_layer`'s target
   // space.
   void SynchronizeRoundedCorners(ui::Layer* layer,
+                                 const ui::Layer* root_layer,
                                  const gfx::RRectF& reference_bounds);
 
   // LayerTreeSynchronizerBase:
   void Restore() override;
+
+  // ui::LayerObserver:
+  void LayerDestroyed(ui::Layer* layer) override;
+
+ private:
+  base::ScopedObservation<ui::Layer, ui::LayerObserver>
+      altered_layer_observation_{this};
 };
 
 // Synchronizes the layer trees of a window and its transient hierarchy to given
@@ -113,7 +119,7 @@ class ASH_EXPORT LayerTreeSynchronizer : public LayerTreeSynchronizerBase {
 class ASH_EXPORT WindowTreeSynchronizer : public LayerTreeSynchronizerBase,
                                           public aura::WindowObserver {
  public:
-  WindowTreeSynchronizer(aura::Window* root_window, bool restore_tree);
+  explicit WindowTreeSynchronizer(bool restore_tree);
 
   WindowTreeSynchronizer(const WindowTreeSynchronizer&) = delete;
   WindowTreeSynchronizer& operator=(const WindowTreeSynchronizer&) = delete;
@@ -126,6 +132,7 @@ class ASH_EXPORT WindowTreeSynchronizer : public LayerTreeSynchronizerBase,
   // For each window's layer tree, the synchronization is performed as described
   // in `ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCorners()`.
   void SynchronizeRoundedCorners(aura::Window* window,
+                                 const aura::Window* root_window,
                                  const gfx::RRectF& reference_bounds,
                                  TransientTreeIgnorePredicate ignore_predicate);
 
