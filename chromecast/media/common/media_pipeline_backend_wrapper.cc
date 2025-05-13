@@ -125,6 +125,12 @@ class ActiveMediaPipelineBackendWrapper : public DecoderCreatorCmaBackend {
            media::MediaPipelineDeviceParams::kAudioStreamSoundEffects;
   }
 
+  // Acquire the media resource at construction. The resource will be released
+  // when this class is destructed. This should be destructed AFTER the
+  // MediaPipelineBackend is destructed, or it can lead to race conditions at
+  // shutdown.
+  MediaResourceTracker::ScopedUsage media_resource_usage_;
+
   AudioDecoderWrapper* audio_decoder_ptr_;
   bool video_decoder_created_;
   const std::unique_ptr<MediaPipelineBackend> backend_;
@@ -132,10 +138,6 @@ class ActiveMediaPipelineBackendWrapper : public DecoderCreatorCmaBackend {
   const base::WeakPtr<MediaPipelineBackendManager> backend_manager_;
   const MediaPipelineDeviceParams::AudioStreamType audio_stream_type_;
   const AudioContentType content_type_;
-
-  // Acquire the media resource at construction. The resource will be released
-  // when this class is destructed.
-  MediaResourceTracker::ScopedUsage media_resource_usage_;
 
   bool playing_;
 };
@@ -145,14 +147,14 @@ ActiveMediaPipelineBackendWrapper::ActiveMediaPipelineBackendWrapper(
     MediaPipelineBackendWrapper* wrapping_backend,
     base::WeakPtr<MediaPipelineBackendManager> backend_manager,
     MediaResourceTracker* media_resource_tracker)
-    : audio_decoder_ptr_(nullptr),
+    : media_resource_usage_(media_resource_tracker),
+      audio_decoder_ptr_(nullptr),
       video_decoder_created_(false),
       backend_(CreateMediaPipelineBackend(params)),
       wrapping_backend_(wrapping_backend),
       backend_manager_(backend_manager),
       audio_stream_type_(params.audio_type),
       content_type_(params.content_type),
-      media_resource_usage_(media_resource_tracker),
       playing_(false) {
   DCHECK(backend_);
   DCHECK(backend_manager_);
