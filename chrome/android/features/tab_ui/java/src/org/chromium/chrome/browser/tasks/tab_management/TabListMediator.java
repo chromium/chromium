@@ -2412,23 +2412,6 @@ class TabListMediator implements TabListNotificationHandler {
         mModelList.removeAt(index);
     }
 
-    /**
-     * Removes a {@link org.chromium.ui.modelutil.MVCListAdapter.ListItem} that has the given {@code
-     * uiType} and the {@link PropertyModel} has the given {@link TabListEditorItemSelectionId}.
-     *
-     * @param uiType The uiType to match.
-     * @param itemId The itemId to match.
-     */
-    void removeListItemFromModelList(@UiType int uiType, TabListEditorItemSelectionId itemId) {
-        int index = TabModel.INVALID_TAB_INDEX;
-        if (uiType == UiType.TAB_GROUP && itemId.isTabGroupSyncId()) {
-            index = mModelList.indexFromSyncId(itemId.getTabGroupSyncId());
-        }
-
-        if (index == TabModel.INVALID_TAB_INDEX) return;
-        mModelList.removeAt(index);
-    }
-
     private boolean validateItemAt(
             int index, @UiType int uiType, @MessageService.MessageType int itemIdentifier) {
         if (uiType == UiType.MESSAGE
