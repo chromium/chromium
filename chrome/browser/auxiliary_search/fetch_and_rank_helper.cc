@@ -229,10 +229,11 @@ void FetchAndRankHelper::OnRanked(URLVisitsMetadata url_visits_metadata,
                   kInvalidTabId));
             },
             [&](const URLVisitAggregate::HistoryData& history_data) {
-              bool is_custom_tab =
-                  history_data.last_visited.context_annotations.on_visit
-                      .browser_type ==
-                  history::VisitContextAnnotations::BrowserType::kCustomTab;
+              bool is_custom_tab = history_data.last_visited.context_annotations
+                                           .on_visit.browser_type ==
+                                       history::VisitContextAnnotations::
+                                           BrowserType::kCustomTab ||
+                                   history_data.last_app_id != std::nullopt;
               if (!is_custom_tab) {
                 return;
               }
