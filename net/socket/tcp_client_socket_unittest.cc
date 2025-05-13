@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/base/port_util.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
 #pragma allow_unsafe_libc_calls
@@ -323,6 +324,29 @@ TEST_P(TCPClientSocketTest, DnsAliasesPersistForReuse) {
   EXPECT_FALSE(socket.WasEverUsed());
   EXPECT_THAT(socket.GetDnsAliases(),
               testing::ElementsAre("alias1", "alias2", "host"));
+}
+
+TEST_P(TCPClientSocketTest, BlockRestrictedAddress) {
+  base::test::ScopedFeatureList feature_list;
+  IPAddress lo_address = IPAddress::IPv4Localhost();
+  TCPServerSocket server(nullptr, NetLogSource());
+  ASSERT_THAT(
+      server.Listen(IPEndPoint(lo_address, 0), 1, /*ipv6_only=*/std::nullopt),
+      IsOk());
+  IPEndPoint server_address;
+  ASSERT_THAT(server.GetLocalAddress(&server_address), IsOk());
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kRestrictAbusePortsOnLocalhost,
+      {{"localhost_restrict_ports",
+        base::NumberToString(server_address.port())}});
+  ReloadLocalhostRestrictedPortsForTesting();
+  TCPClientSocket socket(AddressList(server_address), nullptr, nullptr, nullptr,
+                         NetLogSource());
+
+  TestCompletionCallback connect_callback;
+  int connect_result = socket.Connect(connect_callback.callback());
+  EXPECT_THAT(connect_callback.GetResult(connect_result),
+              IsError(ERR_UNSAFE_PORT));
 }
 
 class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {

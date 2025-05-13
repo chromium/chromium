@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_change_notifier.h"
+#include "net/base/port_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace net {
@@ -65,6 +66,9 @@ UDPClientSocket::~UDPClientSocket() {
 
 int UDPClientSocket::Connect(const IPEndPoint& address) {
   CHECK(!connect_called_);
+  if (!IsPortAllowedForIpEndpoint(address)) {
+    return ERR_UNSAFE_PORT;
+  }
   if (connect_using_network_ != handles::kInvalidNetworkHandle)
     return ConnectUsingNetwork(connect_using_network_, address);
 
