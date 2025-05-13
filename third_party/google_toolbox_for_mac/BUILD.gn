@@ -70,11 +70,6 @@ component("google_toolbox_for_mac") {
       "src/iPhone/GTMUILocalizer.m",
     ]
 
-    # TODO(https://crbug.com/40448962): Suppresses warnings that are treated as
-    # errors when minimum iOS version support is increased to iOS 9 and up. This
-    # should be removed once all deprecation violations have been fixed.
-    cflags = [ "-Wno-deprecated-declarations" ]
-
     libs = [
       "sqlite3",
       "z",
