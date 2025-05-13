@@ -10266,6 +10266,7 @@ from previous Chrome versions.
       label="CompressionDictionaryTransportOverHttp1:disabled"/>
   <int value="-1436251034" label="VoiceSearchOnLocalNtp:disabled"/>
   <int value="-1435804236" label="ThrottleIntersectionObserverUMA:enabled"/>
+  <int value="-1435599609" label="TopControlsRefactor:enabled"/>
   <int value="-1434795339" label="SunfishFeature:disabled"/>
   <int value="-1433719718" label="enable-webrtc-stun-origin"/>
   <int value="-1433452630" label="AllowRemoteContextForNotifications:enabled"/>
@@ -16810,6 +16811,7 @@ from previous Chrome versions.
   <int value="1071520357" label="WebAuthenticationTouchId:enabled"/>
   <int value="1072010558" label="NTPModernLayout:disabled"/>
   <int value="1072517479" label="ImprovedCookieControls:enabled"/>
+  <int value="1073143086" label="TopControlsRefactor:disabled"/>
   <int value="1073699828" label="ScrollUpdateOptimizations:enabled"/>
   <int value="1074359194" label="UseSuggestionsEvenIfFew:enabled"/>
   <int value="1074427701" label="NewPrintPreviewLayout:enabled"/>

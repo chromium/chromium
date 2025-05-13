@@ -12405,6 +12405,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kUiaProvider)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"top-controls-refactor", flag_descriptions::kTopControlsRefactorName,
+     flag_descriptions::kTopControlsRefactorDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTopControlsRefactor)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

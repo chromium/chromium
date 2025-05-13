@@ -2306,6 +2306,11 @@ extern const char kPinnedTabToastOnCloseName[];
 extern const char kPinnedTabToastOnCloseDescription[];
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kTopControlsRefactorName[];
+extern const char kTopControlsRefactorDescription[];
+#endif
+
 extern const char kTopChromeTouchUiName[];
 extern const char kTopChromeTouchUiDescription[];
 

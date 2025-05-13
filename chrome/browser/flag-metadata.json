@@ -9313,6 +9313,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "top-controls-refactor",
+    "owners": [ "mschillaci@google.com", "clank-app-team@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "top-toolbar-theme-color",
     "owners": [
       "bling-flags@google.com",

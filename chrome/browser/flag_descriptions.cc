@@ -3992,6 +3992,13 @@ const char kPinnedTabToastOnCloseDescription[] =
     "closed via the keyboard shortcut.";
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+const char kTopControlsRefactorName[] = "Top Controls Refactor";
+const char kTopControlsRefactorDescription[] =
+    "Enables the alternative code path in Android for the top controls layout "
+    "control.";
+#endif
+
 const char kTopChromeTouchUiName[] = "Touch UI Layout";
 const char kTopChromeTouchUiDescription[] =
     "Enables touch UI layout in the browser's top chrome.";

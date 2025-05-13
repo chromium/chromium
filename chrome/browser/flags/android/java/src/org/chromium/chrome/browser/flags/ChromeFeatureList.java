@@ -591,6 +591,7 @@ public abstract class ChromeFeatureList {
     public static final String TILE_CONTEXT_MENU_REFACTOR = "TileContextMenuRefactor";
     public static final String TINKER_TANK_BOTTOM_SHEET = "TinkerTankBottomSheet";
     public static final String TOOLBAR_SCROLL_ABLATION = "AndroidToolbarScrollAblation";
+    public static final String TOP_CONTROLS_REFACTOR = "TopControlsRefactor";
     public static final String TRACE_BINDER_IPC = "TraceBinderIpc";
     public static final String TRACKING_PROTECTION_3PCD = "TrackingProtection3pcd";
     public static final String TRACKING_PROTECTION_CONTENT_SETTING_UB_CONTROL =
@@ -857,6 +858,11 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTestDefaultDisabled =
             newCachedFlag(TEST_DEFAULT_DISABLED, false);
     public static final CachedFlag sTestDefaultEnabled = newCachedFlag(TEST_DEFAULT_ENABLED, true);
+    public static final CachedFlag sTopControlsRefactor =
+            newCachedFlag(
+                    TOP_CONTROLS_REFACTOR,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sTraceBinderIpc = newCachedFlag(TRACE_BINDER_IPC, false);
     public static final CachedFlag sUseChimeAndroidSdk =
             newCachedFlag(USE_CHIME_ANDROID_SDK, false);
@@ -969,6 +975,7 @@ public abstract class ChromeFeatureList {
                     sTabStripIncognitoMigration,
                     sTabStripLayoutOptimization,
                     sTabWindowManagerReportIndicesMismatch,
+                    sTopControlsRefactor,
                     sTraceBinderIpc,
                     sUseChimeAndroidSdk,
                     sUseLibunwindstackNativeUnwinderAndroid,
