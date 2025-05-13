@@ -217,7 +217,6 @@ RenderPassBuilder& RenderPassBuilder::AddTextureQuad(
                gfx::PointF(0.0f, 0.0f), gfx::PointF(1.0f, 1.0f),
                params.background_color, params.nearest_neighbor,
                params.secure_output_only, params.protected_video_type);
-  quad->premultiplied_alpha = params.premultiplied_alpha;
   return *this;
 }
 
