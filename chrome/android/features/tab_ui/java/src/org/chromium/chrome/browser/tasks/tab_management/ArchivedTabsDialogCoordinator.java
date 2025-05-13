@@ -80,9 +80,11 @@ import org.chromium.components.browser_ui.widget.FadingShadow;
 import org.chromium.components.browser_ui.widget.FadingShadowView;
 import org.chromium.components.browser_ui.widget.StrictButtonPressController.ButtonClickResult;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
+import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -281,6 +283,24 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 }
             };
 
+    private final TabGroupSyncService.Observer mTabGroupSyncObserver =
+            new TabGroupSyncService.Observer() {
+                @Override
+                public void onTabGroupUpdated(SavedTabGroup group, @TriggerSource int source) {
+                    refreshArchivedTabList();
+                }
+
+                @Override
+                public void onTabGroupRemoved(LocalTabGroupId localId, @TriggerSource int source) {
+                    refreshArchivedTabList();
+                }
+
+                @Override
+                public void onTabGroupRemoved(String syncId, @TriggerSource int source) {
+                    refreshArchivedTabList();
+                }
+            };
+
     /**
      * Observes the TabListEditor lifecycle to remove the view and hide the dialog. This is useful
      * for when (1) the TabListEditor is expecting the embedding view to be removed from the
@@ -462,6 +482,10 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         mPaneManagerSupplier = paneManagerSupplier;
         mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
         mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
+
+        if (mTabGroupSyncService != null) {
+            mTabGroupSyncService.addObserver(mTabGroupSyncObserver);
+        }
     }
 
     /** Hides the dialog. */
@@ -485,6 +509,10 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
 
         if (mOnTabSelectingListener != null) {
             mOnTabSelectingListener = null;
+        }
+
+        if (mTabGroupSyncService != null) {
+            mTabGroupSyncService.removeObserver(mTabGroupSyncObserver);
         }
 
         mTabArchiveSettings.removeObserver(mTabArchiveSettingsObserver);
@@ -799,6 +827,17 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         mIphMessagePropertyModel.set(
                 MessageCardViewProperties.DESCRIPTION_TEXT,
                 getIphDescription(mActivity, mTabArchiveSettings));
+    }
+
+    private void refreshArchivedTabList() {
+        mTabListEditorCoordinator.resetWithListOfTabs(
+                TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel),
+                getTabGroupSyncIds(),
+                /* quickMode= */ false);
+        if (mTabArchiveSettings.shouldShowDialogIph()) {
+            mTabListEditorCoordinator.addSpecialListItem(
+                    0, UiType.MESSAGE, mIphMessagePropertyModel);
+        }
     }
 
     @VisibleForTesting
