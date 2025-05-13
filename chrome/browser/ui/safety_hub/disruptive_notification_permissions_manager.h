@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -39,11 +40,6 @@ class DisruptiveNotificationPermissionsManager
   // Shadow run: the site is proposed for revocation (kProposedRevoke) and
   // returns kAlreadyInProposedRevokeList for all the next runs.
   //
-  // False positives: when the increase in site engagement score is detected for
-  // proposed revocation, it's reported as kFalsePositive. In the next runs
-  // (until a notification is shown and metrics are reported), the site is
-  // reported as kAlreadyFalsePositive.
-  //
   // Actual revocation: the site first is marked for revocation (returns
   // kProposedRevoke) and then the permission is actually revoked (return
   // kRevoke). After the permission is revoked, the content setting is removed
@@ -59,11 +55,11 @@ class DisruptiveNotificationPermissionsManager
     kNotSiteScopedContentSetting = 2,
     kManagedContentSetting = 3,
     kAlreadyInProposedRevokeList = 4,
-    kFalsePositive = 5,
+    // kFalsePositive = 5,  // deprecated, now reported as kNotDisruptive
     kNotDisruptive = 6,
     kProposedRevoke = 7,
     kNoRevokeDefaultBlock = 8,
-    kAlreadyFalsePositive = 9,
+    // kAlreadyFalsePositive = 9,  // deprecated, now reported as kNotDisruptive
     kRevoke = 10,
     kIgnore = 11,
     kMaxValue = kIgnore,
@@ -87,6 +83,15 @@ class DisruptiveNotificationPermissionsManager
     kMaxValue = kNonPersistentNotificationClick,
   };
   // LINT.ThenChange(//tools/metrics/histograms/enums.xml:DisruptiveNotificationFalsePositiveReason)
+
+  enum class RevocationState {
+    kNone = 0,
+    kProposed = 1,
+    kRevoked = 2,
+    kIgnore = 3,
+    kUnknown = 4,
+    kMaxValue = kUnknown,
+  };
 
   class SafetyHubNotificationWrapper {
    public:
@@ -143,10 +148,10 @@ class DisruptiveNotificationPermissionsManager
 
   // If the URL is in the revoke or proposed revoke list, report a false
   // positive and record metrics.
-  static void CheckForFalsePositive(Profile* profile,
-                                    const GURL& origin,
-                                    FalsePositiveReason reason,
-                                    ukm::SourceId source_id);
+  static void MaybeReportFalsePositive(Profile* profile,
+                                       const GURL& origin,
+                                       FalsePositiveReason reason,
+                                       ukm::SourceId source_id);
 
   // If the URL is in the false positive list, report user regrant after a
   // revocation. Since the user regrant only happens on a page visit, the site
@@ -161,6 +166,11 @@ class DisruptiveNotificationPermissionsManager
                          const GURL& url,
                          ukm::SourceId source_id);
 
+  // Returns true if `url` has been revoked notification permissions because of
+  // sending disruptive notifications.
+  static bool IsUrlRevokedDisruptiveNotification(HostContentSettingsMap* hcsm,
+                                                 const GURL& url);
+
   // content_settings::Observer implementation.
   void OnContentSettingChanged(
       const ContentSettingsPattern& primary_pattern,
@@ -173,41 +183,69 @@ class DisruptiveNotificationPermissionsManager
       std::unique_ptr<SafetyHubNotificationWrapper> wrapper);
 
  private:
+  friend class DisruptiveNotificationPermissionsManagerTest;
+  friend class RevokedPermissionsServiceBrowserTest;
+  friend class RevokedPermissionsServiceTest;
+  FRIEND_TEST_ALL_PREFIXES(
+      PlatformNotificationServiceTest,
+      ProposedDisruptiveNotificationRevocationMetricsPersistent);
+  FRIEND_TEST_ALL_PREFIXES(
+      PlatformNotificationServiceTest,
+      ProposedDisruptiveNotificationRevocationMetricsNonPersistent);
+
+  // A revocation entry as stored in content settings
+  // (ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS).
+  struct RevocationEntry {
+    RevocationState revocation_state;
+    double site_engagement;
+    int daily_notification_count;
+    base::Time timestamp;
+
+    bool has_reported_proposal = false;
+    bool has_reported_false_positive = false;
+
+    base::Time created_at = base::Time::Now();
+
+    // If lifetime is 0, it doesn't expire.
+    base::TimeDelta lifetime;
+  };
+
+  // Helper class to manage content settings for
+  // ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS.
+  class ContentSettingHelper {
+   public:
+    explicit ContentSettingHelper(HostContentSettingsMap& hcsm);
+
+    // Get/store/delete the `REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS`
+    // setting.
+    std::optional<RevocationEntry> GetRevocationEntry(const GURL& url);
+    void PersistRevocationEntry(const GURL& url, const RevocationEntry& entry);
+    void DeleteRevocationEntry(const GURL& url);
+
+   private:
+    base::raw_ref<HostContentSettingsMap> hcsm_;
+  };
+
   // Process existing content setting value: record false positive, revoke
   // notifications or report the site as already in the proposed revocation
   // list. Returns `true` if notifications were actually revoked, `false`
   // otherwise.
   bool HandleExistingValueAndMaybeRevoke(
       const GURL& url,
-      base::Value stored_value,
-      const content_settings::SettingInfo& info);
-
-  // Updates the content setting to false positive and reports metrics.
-  void RecordFalsePositive(const GURL& url,
-                           base::Value::Dict dict,
-                           const content_settings::SettingInfo& info,
-                           double new_score);
+      const RevocationEntry& revocation_entry);
 
   // If the notifications should be revoked based on whether the metrics were
   // already reported or the cooldown period has run out.
-  bool CanRevokeNotifications(const GURL& url, const base::Value::Dict& dict);
+  bool CanRevokeNotifications(const GURL& url,
+                              const RevocationEntry& revocation_entry);
 
   // Revokes notification permission, updates the content setting value to
   // revoke and reports metrics.
-  void RevokeNotifications(const GURL& url, base::Value::Dict dict);
+  void RevokeNotifications(const GURL& url, RevocationEntry revocation_entry);
 
   // Whether the notification is disruptive based on the site engagement score
   // for the URL and the daily average notification count.
   bool IsNotificationDisruptive(const GURL& url, int daily_notification_count);
-
-  // Stores the URL in REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS content
-  // setting with |constraints|. The content setting value is a dictionary.
-  // "revoked_status" key value depends on whether the revocation will actually
-  // be performed or only proposed as part of shadow run.
-  void StoreRevokedDisruptiveNotificationPermission(
-      const GURL& url,
-      const content_settings::ContentSettingConstraints& constraints,
-      int daily_notification_count);
 
   // Displays the safety hub notification informing the users about revoked
   // notification permissions.

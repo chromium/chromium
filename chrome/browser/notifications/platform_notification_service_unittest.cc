@@ -31,7 +31,7 @@
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/safe_browsing/notification_content_detection/mock_notification_content_detection_service.h"
 #include "chrome/browser/safe_browsing/notification_content_detection/notification_content_detection_service_factory.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
+#include "chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -416,18 +416,16 @@ TEST_F(PlatformNotificationServiceTest,
 
   HostContentSettingsMap* hcsm =
       HostContentSettingsMapFactory::GetForProfile(profile_.get());
-  base::Value::Dict dict;
-  dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kProposedStr);
-  dict.Set(safety_hub::kSiteEngagementStr, 0.0);
-  dict.Set(safety_hub::kDailyNotificationCountStr, kDailyNotificationCount);
-  auto constraint =
-      content_settings::ContentSettingConstraints(base::Time::Now());
-  constraint.set_lifetime(base::Days(30));
-  hcsm->SetWebsiteSettingCustomScope(
-      ContentSettingsPattern::FromURLNoWildcard(url),
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
-      base::Value(std::move(dict)), constraint);
+  DisruptiveNotificationPermissionsManager::ContentSettingHelper(*hcsm)
+      .PersistRevocationEntry(
+          url,
+          DisruptiveNotificationPermissionsManager::RevocationEntry{
+              .revocation_state = DisruptiveNotificationPermissionsManager::
+                  RevocationState::kProposed,
+              .site_engagement = 0.0,
+              .daily_notification_count = kDailyNotificationCount,
+              .lifetime = base::Days(30),
+          });
 
   PlatformNotificationData data;
   data.title = u"My notification's title";
@@ -453,18 +451,16 @@ TEST_F(PlatformNotificationServiceTest,
 
   HostContentSettingsMap* hcsm =
       HostContentSettingsMapFactory::GetForProfile(profile_.get());
-  base::Value::Dict dict;
-  dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kProposedStr);
-  dict.Set(safety_hub::kSiteEngagementStr, 0.0);
-  dict.Set(safety_hub::kDailyNotificationCountStr, kDailyNotificationCount);
-  auto constraint =
-      content_settings::ContentSettingConstraints(base::Time::Now());
-  constraint.set_lifetime(base::Days(30));
-  hcsm->SetWebsiteSettingCustomScope(
-      ContentSettingsPattern::FromURLNoWildcard(url),
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
-      base::Value(std::move(dict)), constraint);
+  DisruptiveNotificationPermissionsManager::ContentSettingHelper(*hcsm)
+      .PersistRevocationEntry(
+          url,
+          DisruptiveNotificationPermissionsManager::RevocationEntry{
+              .revocation_state = DisruptiveNotificationPermissionsManager::
+                  RevocationState::kProposed,
+              .site_engagement = 0.0,
+              .daily_notification_count = kDailyNotificationCount,
+              .lifetime = base::Days(30),
+          });
 
   PlatformNotificationData data;
   data.title = u"My notification's title";

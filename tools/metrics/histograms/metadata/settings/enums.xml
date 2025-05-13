@@ -131,11 +131,14 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Content setting not site scoped"/>
   <int value="3" label="Managed content setting"/>
   <int value="4" label="Site already in the proposed revoke list"/>
-  <int value="5" label="False positive"/>
+  <int value="5"
+      label="(Obsolete) False positive (now reported as not disruptive)"/>
   <int value="6" label="Site not disruptive"/>
   <int value="7" label="Proposed revoke"/>
   <int value="8" label="Notification not revoked because of default block"/>
-  <int value="9" label="Previously marked as false positive"/>
+  <int value="9"
+      label="(Obsolete) Previously marked as false positive (now reported as
+             not disruptive)"/>
   <int value="10" label="Revoke"/>
   <int value="11" label="Ignore"/>
 </enum>

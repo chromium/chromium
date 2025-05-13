@@ -9,13 +9,15 @@
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/time/time.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
 #include "chrome/common/chrome_features.h"
+#include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_type_set.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/notifications_engagement_service.h"
@@ -29,40 +31,18 @@
 
 namespace {
 
+constexpr char kRevokedStatusDictKeyStr[] = "revoked_status";
+constexpr char kIgnoreStr[] = "ignore";
+constexpr char kRevokeStr[] = "revoke";
+constexpr char kProposedStr[] = "proposed";
+constexpr char kSiteEngagementStr[] = "site_engagement";
+constexpr char kDailyNotificationCountStr[] = "daily_notification_count";
+constexpr char kHasReportedProposalStr[] = "has_reported_proposal";
+constexpr char kHasReportedFalsePositiveStr[] = "has_reported_false_positive";
+constexpr char kTimestampStr[] = "timestamp";
+
 constexpr char kRevocationResultHistogram[] =
     "Settings.SafetyHub.DisruptiveNotificationRevocations.RevocationResult";
-
-content_settings::ContentSettingConstraints GetDefaultConstraint(
-    base::Clock* clock) {
-  content_settings::ContentSettingConstraints constraint(clock->Now());
-  constraint.set_lifetime(safety_hub_util::GetCleanUpThreshold());
-  return constraint;
-}
-
-content_settings::ContentSettingConstraints GetConstraintFromInfo(
-    const content_settings::SettingInfo& info) {
-  auto constraint = content_settings::ContentSettingConstraints(
-      info.metadata.expiration() - info.metadata.lifetime());
-  constraint.set_lifetime(info.metadata.lifetime());
-  return constraint;
-}
-
-base::Value UpdateContentSettingValue(
-    HostContentSettingsMap* hcsm,
-    const GURL& url,
-    base::Value::Dict dict,
-    const content_settings::ContentSettingConstraints& constraint) {
-  CHECK(url.is_valid());
-  hcsm->SetWebsiteSettingCustomScope(
-      ContentSettingsPattern::FromURLNoWildcard(url),
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
-      base::Value(std::move(dict)), constraint);
-
-  return hcsm->GetWebsiteSetting(
-      url, url,
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
-}
 
 void UpdateNotificationPermission(HostContentSettingsMap* hcsm,
                                   const GURL& url,
@@ -73,7 +53,104 @@ void UpdateNotificationPermission(HostContentSettingsMap* hcsm,
       setting_value);
 }
 
+DisruptiveNotificationPermissionsManager::RevocationState GetRevocationState(
+    const base::Value::Dict& dict) {
+  const std::string* revocation_state =
+      dict.FindString(kRevokedStatusDictKeyStr);
+  if (!revocation_state) {
+    return DisruptiveNotificationPermissionsManager::RevocationState::kNone;
+  } else if (*revocation_state == kProposedStr) {
+    return DisruptiveNotificationPermissionsManager::RevocationState::kProposed;
+  } else if (*revocation_state == kRevokeStr) {
+    return DisruptiveNotificationPermissionsManager::RevocationState::kRevoked;
+  } else if (*revocation_state == kIgnoreStr) {
+    return DisruptiveNotificationPermissionsManager::RevocationState::kIgnore;
+  } else {
+    return DisruptiveNotificationPermissionsManager::RevocationState::kUnknown;
+  }
+}
+
 }  // namespace
+
+DisruptiveNotificationPermissionsManager::ContentSettingHelper::
+    ContentSettingHelper(HostContentSettingsMap& hcsm)
+    : hcsm_(hcsm) {}
+
+std::optional<DisruptiveNotificationPermissionsManager::RevocationEntry>
+DisruptiveNotificationPermissionsManager::ContentSettingHelper::
+    GetRevocationEntry(const GURL& url) {
+  content_settings::SettingInfo info;
+  base::Value stored_value = hcsm_->GetWebsiteSetting(
+      url, url,
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS, &info);
+  if (stored_value.is_none() || !stored_value.is_dict()) {
+    return std::nullopt;
+  }
+  base::Value::Dict dict = std::move(stored_value).TakeDict();
+
+  return RevocationEntry{
+      .revocation_state = GetRevocationState(dict),
+      .site_engagement = dict.FindDouble(kSiteEngagementStr).value_or(0),
+      .daily_notification_count =
+          dict.FindInt(kDailyNotificationCountStr).value_or(0),
+      .timestamp =
+          base::ValueToTime(dict.Find(kTimestampStr)).value_or(base::Time()),
+      .has_reported_proposal =
+          dict.FindBool(kHasReportedProposalStr).value_or(false),
+      .has_reported_false_positive =
+          dict.FindBool(kHasReportedFalsePositiveStr).value_or(false),
+      .created_at = info.metadata.expiration() - info.metadata.lifetime(),
+      .lifetime = info.metadata.lifetime(),
+  };
+}
+
+void DisruptiveNotificationPermissionsManager::ContentSettingHelper::
+    PersistRevocationEntry(const GURL& url, const RevocationEntry& entry) {
+  CHECK(url.is_valid());
+
+  std::string_view revocation_state_string;
+  switch (entry.revocation_state) {
+    case DisruptiveNotificationPermissionsManager::RevocationState::kNone:
+    case DisruptiveNotificationPermissionsManager::RevocationState::kUnknown:
+      // Invalid entry, we won't persist it.
+      return;
+    case DisruptiveNotificationPermissionsManager::RevocationState::kProposed:
+      revocation_state_string = kProposedStr;
+      break;
+    case DisruptiveNotificationPermissionsManager::RevocationState::kRevoked:
+      revocation_state_string = kRevokeStr;
+      break;
+    case DisruptiveNotificationPermissionsManager::RevocationState::kIgnore:
+      revocation_state_string = kIgnoreStr;
+      break;
+  }
+  base::Value::Dict dict;
+  dict.Set(kRevokedStatusDictKeyStr, revocation_state_string);
+  dict.Set(kSiteEngagementStr, entry.site_engagement);
+  dict.Set(kDailyNotificationCountStr, entry.daily_notification_count);
+  dict.Set(kTimestampStr, base::TimeToValue(entry.timestamp));
+  if (entry.has_reported_proposal) {
+    dict.Set(kHasReportedProposalStr, entry.has_reported_proposal);
+  }
+  if (entry.has_reported_false_positive) {
+    dict.Set(kHasReportedFalsePositiveStr, entry.has_reported_false_positive);
+  }
+  content_settings::ContentSettingConstraints constraints(entry.created_at);
+  constraints.set_lifetime(entry.lifetime);
+  hcsm_->SetWebsiteSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(url),
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
+      base::Value(std::move(dict)), constraints);
+}
+
+void DisruptiveNotificationPermissionsManager::ContentSettingHelper::
+    DeleteRevocationEntry(const GURL& url) {
+  hcsm_->SetWebsiteSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(url),
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS, {});
+}
 
 DisruptiveNotificationPermissionsManager::SafetyHubNotificationWrapper::
     ~SafetyHubNotificationWrapper() = default;
@@ -153,17 +230,6 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
     GURL url = GURL(item.primary_pattern.ToString());
     CHECK(url.is_valid());
 
-    // Check if content setting already exists.
-    content_settings::SettingInfo info;
-    base::Value stored_value = hcsm_->GetWebsiteSetting(
-        url, url,
-        ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
-        &info);
-    if (!stored_value.is_none()) {
-      revoked_anything |=
-          HandleExistingValueAndMaybeRevoke(url, std::move(stored_value), info);
-      continue;
-    }
     auto it = notification_count_map.find(
         std::make_pair(item.primary_pattern, item.secondary_pattern));
     int notification_count =
@@ -174,14 +240,34 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
       continue;
     }
 
+    // At this point we know that the url is allowed to send notifications and
+    // is classified as sending disruptive notifications. Now check if we
+    // already have a revocation entry for this url and process it.
+    //
+    // Note that proposed revocations from previous runs will not actually be
+    // revoked if they are not anymore classified are disruptive.
+    std::optional<RevocationEntry> revocation_entry =
+        ContentSettingHelper(*hcsm_).GetRevocationEntry(url);
+    if (revocation_entry) {
+      revoked_anything |=
+          HandleExistingValueAndMaybeRevoke(url, *revocation_entry);
+      continue;
+    }
+
     // Only can revoke notification permissions if ASK is the default setting.
     if (default_notification_setting != CONTENT_SETTING_ASK) {
       base::UmaHistogramEnumeration(kRevocationResultHistogram,
                                     RevocationResult::kNoRevokeDefaultBlock);
       continue;
     }
-    StoreRevokedDisruptiveNotificationPermission(
-        url, GetDefaultConstraint(clock_), notification_count);
+
+    ContentSettingHelper(*hcsm_).PersistRevocationEntry(
+        url, RevocationEntry{
+                 .revocation_state = RevocationState::kProposed,
+                 .site_engagement = site_engagement_service_->GetScore(url),
+                 .daily_notification_count = notification_count,
+                 .timestamp = clock_->Now(),
+             });
     base::UmaHistogramCounts100(
         "Settings.SafetyHub.DisruptiveNotificationRevocations.Proposed."
         "NotificationCount",
@@ -201,77 +287,45 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
 }
 
 bool DisruptiveNotificationPermissionsManager::
-    HandleExistingValueAndMaybeRevoke(
-        const GURL& url,
-        base::Value stored_value,
-        const content_settings::SettingInfo& info) {
-  CHECK(stored_value.is_dict());
-  base::Value::Dict dict = std::move(stored_value).TakeDict();
-  auto recorded_score = dict.FindDouble(safety_hub::kSiteEngagementStr);
-  if (!recorded_score.has_value()) {
-    return false;
+    HandleExistingValueAndMaybeRevoke(const GURL& url,
+                                      const RevocationEntry& revocation_entry) {
+  switch (revocation_entry.revocation_state) {
+    case RevocationState::kNone:
+    case RevocationState::kUnknown:
+    case RevocationState::kRevoked:
+      // kNone and kUnknown mean that this is an invalid entry, while kRevoked
+      // should never happen, because the content setting is granted. In any of
+      // these three cases we are in an inconsistent state, so let's clean this
+      // up.
+      ContentSettingHelper(*hcsm_).DeleteRevocationEntry(url);
+      return false;
+    case RevocationState::kIgnore:
+      base::UmaHistogramEnumeration(kRevocationResultHistogram,
+                                    RevocationResult::kIgnore);
+      return false;
+    case RevocationState::kProposed:
+      if (!features::kSafetyHubDisruptiveNotificationRevocationShadowRun
+               .Get() &&
+          CanRevokeNotifications(url, revocation_entry)) {
+        RevokeNotifications(url, revocation_entry);
+        return true;
+      } else {
+        base::UmaHistogramEnumeration(
+            kRevocationResultHistogram,
+            RevocationResult::kAlreadyInProposedRevokeList);
+        return false;
+      }
   }
-  const std::string* revoked_status =
-      dict.FindString(safety_hub::kRevokedStatusDictKeyStr);
-  if (!revoked_status) {
-    return false;
-  }
-  if (*revoked_status == safety_hub::kFalsePositiveStr) {
-    base::UmaHistogramEnumeration(kRevocationResultHistogram,
-                                  RevocationResult::kAlreadyFalsePositive);
-    return false;
-  }
-
-  if (*revoked_status == safety_hub::kIgnoreStr) {
-    base::UmaHistogramEnumeration(kRevocationResultHistogram,
-                                  RevocationResult::kIgnore);
-    return false;
-  }
-
-  if (*revoked_status != safety_hub::kProposedStr) {
-    return false;
-  }
-
-  if (!features::kSafetyHubDisruptiveNotificationRevocationShadowRun.Get() &&
-      CanRevokeNotifications(url, dict)) {
-    RevokeNotifications(url, std::move(dict));
-    return true;
-  }
-
-  base::UmaHistogramEnumeration(kRevocationResultHistogram,
-                                RevocationResult::kAlreadyInProposedRevokeList);
-  return false;
-}
-
-void DisruptiveNotificationPermissionsManager::RecordFalsePositive(
-    const GURL& url,
-    base::Value::Dict dict,
-    const content_settings::SettingInfo& info,
-    double new_score) {
-  dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kFalsePositiveStr);
-  UpdateContentSettingValue(hcsm_.get(), url, std::move(dict),
-                            GetConstraintFromInfo(info));
-  base::UmaHistogramCounts100(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations."
-      "FalsePositive.SiteEngagement",
-      new_score);
-  base::UmaHistogramEnumeration(kRevocationResultHistogram,
-                                RevocationResult::kFalsePositive);
 }
 
 bool DisruptiveNotificationPermissionsManager::CanRevokeNotifications(
     const GURL& url,
-    const base::Value::Dict& dict) {
-  const base::Value* stored_timestamp = dict.Find(safety_hub::kTimestampStr);
-  const base::TimeDelta delta_since_proposed_revocation =
-      clock_->Now() -
-      base::ValueToTime(stored_timestamp).value_or(clock_->Now());
+    const RevocationEntry& revocation_entry) {
+  CHECK_EQ(revocation_entry.revocation_state, RevocationState::kProposed);
   const int days_since_proposed_revocation =
-      delta_since_proposed_revocation.InDays();
+      (clock_->Now() - revocation_entry.timestamp).InDays();
 
-  const bool has_reported_metrics =
-      dict.FindBool(safety_hub::kHasReportedMetricsStr).value_or(false);
-  return has_reported_metrics ||
+  return revocation_entry.has_reported_proposal ||
          days_since_proposed_revocation >=
              features::
                  kSafetyHubDisruptiveNotificationRevocationWaitingForMetricsDays
@@ -280,17 +334,13 @@ bool DisruptiveNotificationPermissionsManager::CanRevokeNotifications(
 
 void DisruptiveNotificationPermissionsManager::RevokeNotifications(
     const GURL& url,
-    base::Value::Dict dict) {
-  const base::Value* stored_timestamp = dict.Find(safety_hub::kTimestampStr);
+    RevocationEntry revocation_entry) {
   const base::TimeDelta delta_since_proposed_revocation =
-      clock_->Now() -
-      base::ValueToTime(stored_timestamp).value_or(clock_->Now());
-  const bool has_reported_metrics =
-      dict.FindBool(safety_hub::kHasReportedMetricsStr).value_or(false);
-
-  dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kRevokeStr);
-  UpdateContentSettingValue(hcsm_.get(), url, std::move(dict),
-                            GetDefaultConstraint(clock_));
+      clock_->Now() - revocation_entry.timestamp;
+  revocation_entry.revocation_state = RevocationState::kRevoked;
+  revocation_entry.created_at = clock_->Now();
+  revocation_entry.lifetime = safety_hub_util::GetCleanUpThreshold();
+  ContentSettingHelper(*hcsm_).PersistRevocationEntry(url, revocation_entry);
   UpdateNotificationPermission(hcsm_.get(), url,
                                ContentSetting::CONTENT_SETTING_DEFAULT);
   base::UmaHistogramEnumeration(kRevocationResultHistogram,
@@ -302,7 +352,7 @@ void DisruptiveNotificationPermissionsManager::RevokeNotifications(
   base::UmaHistogramBoolean(
       "Settings.SafetyHub.DisruptiveNotificationRevocations."
       "HasReportedMetricsBeforeRevocation",
-      has_reported_metrics);
+      revocation_entry.has_reported_proposal);
 }
 
 void DisruptiveNotificationPermissionsManager::DisplayNotification() {
@@ -341,22 +391,10 @@ DisruptiveNotificationPermissionsManager::GetRevokedNotifications() {
   // values.
   for (const auto& revoked_permission : revoked_permissions) {
     const GURL& url = revoked_permission.primary_pattern.ToRepresentativeUrl();
-    content_settings::SettingInfo info;
-    base::Value stored_value = hcsm_->GetWebsiteSetting(
-        url, url,
-        ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
-        &info);
-    if (stored_value.is_none()) {
-      continue;
-    }
-    CHECK(stored_value.is_dict());
-    base::Value::Dict dict = std::move(stored_value).TakeDict();
-    const std::string* revoked_status =
-        dict.FindString(safety_hub::kRevokedStatusDictKeyStr);
-    if (!revoked_status) {
-      continue;
-    }
-    if (*revoked_status == safety_hub::kRevokeStr) {
+    std::optional<RevocationEntry> revocation_entry =
+        ContentSettingHelper(*hcsm_).GetRevocationEntry(url);
+    if (revocation_entry &&
+        revocation_entry->revocation_state == RevocationState::kRevoked) {
       result.emplace_back(revoked_permission);
     }
   }
@@ -372,7 +410,10 @@ void DisruptiveNotificationPermissionsManager::RegrantPermissionForUrl(
   // If the user decides to regrant permissions for `url`, check if it has
   // revoked disruptive notification permissions. If so, allow notification
   // permissions and ignore the `url` from future auto-revocation.
-  if (!safety_hub_util::IsUrlRevokedDisruptiveNotification(hcsm_.get(), url)) {
+  std::optional<RevocationEntry> revocation_entry =
+      ContentSettingHelper(*hcsm_).GetRevocationEntry(url);
+  if (!revocation_entry ||
+      revocation_entry->revocation_state != RevocationState::kRevoked) {
     return;
   }
 
@@ -380,15 +421,11 @@ void DisruptiveNotificationPermissionsManager::RegrantPermissionForUrl(
 
   UpdateNotificationPermission(hcsm_.get(), url,
                                ContentSetting::CONTENT_SETTING_ALLOW);
-  base::Value stored_value(hcsm_->GetWebsiteSetting(
-      url, url,
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS));
-  base::Value::Dict dict = std::move(stored_value).TakeDict();
-  dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kIgnoreStr);
   // Update the stored status value to "ignore" while clearing the constraints
   // so the value won't expire.
-  UpdateContentSettingValue(hcsm_.get(), url, std::move(dict),
-                            /*constraints*/ {});
+  revocation_entry->revocation_state = RevocationState::kIgnore;
+  revocation_entry->lifetime = base::TimeDelta();
+  ContentSettingHelper(*hcsm_).PersistRevocationEntry(url, *revocation_entry);
 }
 
 void DisruptiveNotificationPermissionsManager::UndoRegrantPermissionForUrl(
@@ -402,10 +439,11 @@ void DisruptiveNotificationPermissionsManager::UndoRegrantPermissionForUrl(
   if (!permission_types.contains(ContentSettingsType::NOTIFICATIONS)) {
     return;
   }
-  base::Value stored_value(hcsm_->GetWebsiteSetting(
-      url, url,
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS));
-  if (stored_value.is_none()) {
+
+  std::optional<RevocationEntry> revocation_entry =
+      ContentSettingHelper(*hcsm_).GetRevocationEntry(url);
+  if (!revocation_entry ||
+      revocation_entry->revocation_state != RevocationState::kIgnore) {
     return;
   }
 
@@ -413,9 +451,11 @@ void DisruptiveNotificationPermissionsManager::UndoRegrantPermissionForUrl(
 
   UpdateNotificationPermission(hcsm_.get(), url,
                                ContentSetting::CONTENT_SETTING_DEFAULT);
-  base::Value::Dict dict = std::move(stored_value).TakeDict();
-  dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kRevokeStr);
-  UpdateContentSettingValue(hcsm_.get(), url, std::move(dict), constraints);
+  revocation_entry->revocation_state = RevocationState::kRevoked;
+  revocation_entry->created_at =
+      constraints.expiration() - constraints.lifetime();
+  revocation_entry->lifetime = constraints.lifetime();
+  ContentSettingHelper(*hcsm_).PersistRevocationEntry(url, *revocation_entry);
 }
 
 void DisruptiveNotificationPermissionsManager::ClearRevokedPermissionsList() {
@@ -423,23 +463,14 @@ void DisruptiveNotificationPermissionsManager::ClearRevokedPermissionsList() {
       ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
   for (const auto& revoked_permission : revoked_permissions) {
     const GURL& url = revoked_permission.primary_pattern.ToRepresentativeUrl();
-    base::Value stored_value(hcsm_->GetWebsiteSetting(
-        url, url,
-        ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS));
-    if (stored_value.is_none()) {
-      continue;
+    std::optional<RevocationEntry> revocation_entry =
+        ContentSettingHelper(*hcsm_).GetRevocationEntry(url);
+    if (revocation_entry &&
+        revocation_entry->revocation_state == RevocationState::kRevoked) {
+      DeleteRevokedPermissionContentSetting(
+          revoked_permission.primary_pattern,
+          revoked_permission.secondary_pattern);
     }
-    CHECK(stored_value.is_dict());
-    const std::string& setting_val =
-        stored_value.GetDict()
-            .Find(safety_hub::kRevokedStatusDictKeyStr)
-            ->GetString();
-    if (setting_val != safety_hub::kRevokeStr) {
-      continue;
-    }
-
-    DeleteRevokedPermissionContentSetting(revoked_permission.primary_pattern,
-                                          revoked_permission.secondary_pattern);
   }
 }
 
@@ -466,30 +497,8 @@ bool DisruptiveNotificationPermissionsManager::IsNotificationDisruptive(
   return low_site_engagement_score && high_daily_notification_count;
 }
 
-void DisruptiveNotificationPermissionsManager::
-    StoreRevokedDisruptiveNotificationPermission(
-        const GURL& url,
-        const content_settings::ContentSettingConstraints& constraints,
-        int daily_notification_count) {
-  // The url should be valid as it is checked that the pattern represents a
-  // single origin.
-  CHECK(url.is_valid());
-
-  base::Value::Dict dict;
-  dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kProposedStr);
-  dict.Set(safety_hub::kSiteEngagementStr,
-           site_engagement_service_->GetScore(url));
-  dict.Set(safety_hub::kDailyNotificationCountStr, daily_notification_count);
-  dict.Set(safety_hub::kTimestampStr, base::TimeToValue(clock_->Now()));
-  hcsm_->SetWebsiteSettingCustomScope(
-      ContentSettingsPattern::FromURLNoWildcard(url),
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
-      base::Value(std::move(dict)), constraints);
-}
-
 // static
-void DisruptiveNotificationPermissionsManager::CheckForFalsePositive(
+void DisruptiveNotificationPermissionsManager::MaybeReportFalsePositive(
     Profile* profile,
     const GURL& url,
     FalsePositiveReason reason,
@@ -502,28 +511,17 @@ void DisruptiveNotificationPermissionsManager::CheckForFalsePositive(
     return;
   }
 
-  content_settings::SettingInfo info;
-  base::Value stored_value = hcsm->GetWebsiteSetting(
-      url, url,
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS, &info);
-  if (stored_value.is_none()) {
-    return;
-  }
-  base::Value::Dict dict = std::move(stored_value).TakeDict();
-  const std::string* revoked_status =
-      dict.FindString(safety_hub::kRevokedStatusDictKeyStr);
-  if (!revoked_status) {
-    return;
-  }
-  if (*revoked_status != safety_hub::kRevokeStr &&
-      *revoked_status != safety_hub::kProposedStr) {
+  std::optional<RevocationEntry> revocation_entry =
+      ContentSettingHelper(*hcsm).GetRevocationEntry(url);
+  if (!revocation_entry ||
+      (revocation_entry->revocation_state != RevocationState::kProposed &&
+       revocation_entry->revocation_state != RevocationState::kRevoked) ||
+      revocation_entry->has_reported_false_positive) {
     return;
   }
 
-  const base::Value* stored_timestamp = dict.Find(safety_hub::kTimestampStr);
   base::TimeDelta delta_since_proposed_revocation =
-      base::Time::Now() -
-      base::ValueToTime(stored_timestamp).value_or(base::Time::Now());
+      base::Time::Now() - revocation_entry->timestamp;
   const int days_since_proposed_revocation =
       delta_since_proposed_revocation.InDays();
 
@@ -539,8 +537,7 @@ void DisruptiveNotificationPermissionsManager::CheckForFalsePositive(
     return;
   }
 
-  const double old_site_engagement_score =
-      dict.FindDouble(safety_hub::kSiteEngagementStr).value_or(0.0);
+  const double old_site_engagement_score = revocation_entry->site_engagement;
   const double new_site_engagement_score =
       site_engagement::SiteEngagementService::Get(profile)->GetScore(url);
   if (new_site_engagement_score - old_site_engagement_score <
@@ -556,23 +553,14 @@ void DisruptiveNotificationPermissionsManager::CheckForFalsePositive(
       .SetReason(static_cast<int>(reason))
       .SetNewSiteEngagement(new_site_engagement_score)
       .SetOldSiteEngagement(old_site_engagement_score)
-      .SetDailyAverageVolume(
-          dict.FindInt(safety_hub::kDailyNotificationCountStr).value_or(0))
+      .SetDailyAverageVolume(revocation_entry->daily_notification_count)
       .Record(ukm::UkmRecorder::Get());
+  revocation_entry->has_reported_false_positive = true;
+  ContentSettingHelper(*hcsm).PersistRevocationEntry(url, *revocation_entry);
 
   base::UmaHistogramEnumeration(
       "Settings.SafetyHub.DisruptiveNotificationRevocations.FalsePositive",
       reason);  // kPageVisit or kNotificationClick
-
-  // Update the content setting value and update the expiration to 7 days to
-  // catch possible user regrant.
-  dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kFalsePositiveStr);
-  content_settings::ContentSettingConstraints constraint(base::Time::Now());
-  constraint.set_lifetime(base::Days(
-      features::
-          kSafetyHubDisruptiveNotificationRevocationUserRegrantWaitingPeriod
-              .Get()));
-  UpdateContentSettingValue(hcsm, url, std::move(dict), constraint);
 }
 
 // static
@@ -587,40 +575,22 @@ void DisruptiveNotificationPermissionsManager::MaybeReportUserRegrant(
   if (!hcsm || !url.is_valid()) {
     return;
   }
-  content_settings::SettingInfo info;
-  base::Value stored_value = hcsm->GetWebsiteSetting(
-      url, url,
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS, &info);
-  if (stored_value.is_none()) {
-    return;
-  }
-  CHECK(stored_value.is_dict());
-  base::Value::Dict dict = std::move(stored_value).TakeDict();
-
-  const std::string* revoked_status =
-      dict.FindString(safety_hub::kRevokedStatusDictKeyStr);
-  if (!revoked_status) {
+  std::optional<RevocationEntry> revocation_entry =
+      ContentSettingHelper(*hcsm).GetRevocationEntry(url);
+  if (!revocation_entry ||
+      revocation_entry->revocation_state != RevocationState::kRevoked) {
     return;
   }
 
-  // It should be already false positive since the website is being visited.
-  if (*revoked_status != safety_hub::kFalsePositiveStr) {
-    return;
-  }
-
-  const base::Value* stored_timestamp = dict.Find(safety_hub::kTimestampStr);
   base::TimeDelta delta_since_proposed_revocation =
-      base::Time::Now() -
-      base::ValueToTime(stored_timestamp).value_or(base::Time::Now());
+      base::Time::Now() - revocation_entry->timestamp;
   ukm::builders::SafetyHub_DisruptiveNotificationRevocations_UserRegrant(
       source_id)
       .SetDaysSinceRevocation(delta_since_proposed_revocation.InDays())
       .SetNewSiteEngagement(
           site_engagement::SiteEngagementService::Get(profile)->GetScore(url))
-      .SetOldSiteEngagement(
-          dict.FindDouble(safety_hub::kSiteEngagementStr).value_or(0))
-      .SetDailyAverageVolume(
-          dict.FindInt(safety_hub::kDailyNotificationCountStr).value_or(0))
+      .SetOldSiteEngagement(revocation_entry->site_engagement)
+      .SetDailyAverageVolume(revocation_entry->daily_notification_count)
       .Record(ukm::UkmRecorder::Get());
 }
 
@@ -636,31 +606,32 @@ void DisruptiveNotificationPermissionsManager::LogMetrics(
   if (!hcsm || !url.is_valid()) {
     return;
   }
-  content_settings::SettingInfo info;
-  base::Value stored_value = hcsm->GetWebsiteSetting(
-      url, url,
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS, &info);
-  if (stored_value.is_none()) {
+
+  std::optional<RevocationEntry> revocation_entry =
+      ContentSettingHelper(*hcsm).GetRevocationEntry(url);
+  if (!revocation_entry ||
+      revocation_entry->revocation_state != RevocationState::kProposed ||
+      revocation_entry->has_reported_proposal) {
     return;
   }
-  CHECK(stored_value.is_dict());
-  base::Value::Dict dict = std::move(stored_value).TakeDict();
-  const bool has_reported_metrics =
-      dict.FindBool(safety_hub::kHasReportedMetricsStr).value_or(false);
-  if (!has_reported_metrics) {
-    ukm::builders::SafetyHub_DisruptiveNotificationRevocations_Proposed(
-        source_id)
-        .SetDailyAverageVolume(
-            dict.FindInt(safety_hub::kDailyNotificationCountStr).value_or(0))
-        .SetSiteEngagement(
-            dict.FindDouble(safety_hub::kSiteEngagementStr).value_or(0))
-        .Record(ukm::UkmRecorder::Get());
-    // Update the stored content setting value.
-    dict.Set(safety_hub::kHasReportedMetricsStr, true);
-    stored_value = UpdateContentSettingValue(hcsm, url, std::move(dict),
-                                             GetConstraintFromInfo(info));
-    dict = std::move(stored_value).TakeDict();
-  }
+  ukm::builders::SafetyHub_DisruptiveNotificationRevocations_Proposed(source_id)
+      .SetDailyAverageVolume(revocation_entry->daily_notification_count)
+      .SetSiteEngagement(revocation_entry->site_engagement)
+      .Record(ukm::UkmRecorder::Get());
+
+  // Update the stored content setting value.
+  revocation_entry->has_reported_proposal = true;
+  ContentSettingHelper(*hcsm).PersistRevocationEntry(url, *revocation_entry);
+}
+
+// static
+bool DisruptiveNotificationPermissionsManager::
+    IsUrlRevokedDisruptiveNotification(HostContentSettingsMap* hcsm,
+                                       const GURL& url) {
+  std::optional<RevocationEntry> revocation_entry =
+      ContentSettingHelper(*hcsm).GetRevocationEntry(url);
+  return revocation_entry &&
+         revocation_entry->revocation_state == RevocationState::kRevoked;
 }
 
 void DisruptiveNotificationPermissionsManager::SetClockForTesting(

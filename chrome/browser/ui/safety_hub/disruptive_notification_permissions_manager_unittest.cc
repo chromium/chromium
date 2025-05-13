@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h"
 
-#include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -29,10 +28,17 @@ namespace {
 
 using RevocationResult =
     DisruptiveNotificationPermissionsManager::RevocationResult;
-using testing::ElementsAre;
-using testing::IsEmpty;
 using FalsePositiveReason =
     DisruptiveNotificationPermissionsManager::FalsePositiveReason;
+
+using testing::_;
+using testing::ElementsAre;
+using testing::Eq;
+using testing::Field;
+using testing::IsEmpty;
+using testing::Not;
+using testing::Optional;
+using testing::Pair;
 
 constexpr char kRevocationResultHistogram[] =
     "Settings.SafetyHub.DisruptiveNotificationRevocations.RevocationResult";
@@ -67,6 +73,13 @@ class SafetyHubNotificationWrapperForTesting
 
 class DisruptiveNotificationPermissionsManagerTest : public ::testing::Test {
  public:
+  using RevocationEntry =
+      DisruptiveNotificationPermissionsManager::RevocationEntry;
+  using ContentSettingHelper =
+      DisruptiveNotificationPermissionsManager::ContentSettingHelper;
+  using RevocationState =
+      DisruptiveNotificationPermissionsManager::RevocationState;
+
   void SetUp() override {
     manager_ = std::make_unique<DisruptiveNotificationPermissionsManager>(
         hcsm(), site_engagement_service());
@@ -121,21 +134,15 @@ class DisruptiveNotificationPermissionsManagerTest : public ::testing::Test {
   void SetupFalsePositiveRevocation(GURL url, int days_since_revocation) {
     const int kDailyNotificationCount = 4;
 
-    base::Value::Dict dict;
-    dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kProposedStr);
-    dict.Set(safety_hub::kSiteEngagementStr, 0.0);
-    dict.Set(safety_hub::kDailyNotificationCountStr, kDailyNotificationCount);
-    dict.Set(safety_hub::kTimestampStr,
-             base::TimeToValue(base::Time::Now() -
-                               base::Days(days_since_revocation)));
-    auto constraint =
-        content_settings::ContentSettingConstraints(base::Time::Now());
-    constraint.set_lifetime(base::Days(30));
-    hcsm()->SetWebsiteSettingCustomScope(
-        ContentSettingsPattern::FromURLNoWildcard(url),
-        ContentSettingsPattern::Wildcard(),
-        ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
-        base::Value(std::move(dict)), constraint);
+    ContentSettingHelper(*hcsm()).PersistRevocationEntry(
+        url,
+        RevocationEntry{
+            .revocation_state = RevocationState::kProposed,
+            .site_engagement = 0.0,
+            .daily_notification_count = kDailyNotificationCount,
+            .timestamp = base::Time::Now() - base::Days(days_since_revocation),
+            .lifetime = base::Days(30),
+        });
   }
 
   DisruptiveNotificationPermissionsManager* manager() { return manager_.get(); }
@@ -199,18 +206,14 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
       CONTENT_SETTING_ALLOW,
       hcsm()->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
 
-  content_settings::SettingInfo info;
-  base::Value stored_value = hcsm()->GetWebsiteSetting(
-      url, url,
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS, &info);
-  EXPECT_FALSE(stored_value.is_none());
-  ASSERT_TRUE(stored_value.is_dict());
-  base::Value::Dict dict = std::move(stored_value).TakeDict();
-  EXPECT_FALSE(
-      dict.FindBool(safety_hub::kHasReportedMetricsStr).value_or(false));
-  EXPECT_EQ(0.0, dict.FindDouble(safety_hub::kSiteEngagementStr).value_or(0));
-  EXPECT_EQ(3,
-            dict.FindInt(safety_hub::kDailyNotificationCountStr).value_or(0));
+  std::optional<RevocationEntry> revocation_entry =
+      ContentSettingHelper(*hcsm()).GetRevocationEntry(url);
+  EXPECT_THAT(revocation_entry,
+              Optional(Field(&RevocationEntry::has_reported_proposal, false)));
+  EXPECT_THAT(revocation_entry,
+              Optional(Field(&RevocationEntry::site_engagement, 0)));
+  EXPECT_THAT(revocation_entry,
+              Optional(Field(&RevocationEntry::daily_notification_count, 3)));
 
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kProposedRevoke, 1);
@@ -266,14 +269,18 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
       CONTENT_SETTING_ALLOW,
       hcsm()->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
 
-  base::Value stored_value = hcsm()->GetWebsiteSetting(
-      url, url,
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
-  EXPECT_FALSE(stored_value.is_none());
-  ASSERT_TRUE(stored_value.is_dict());
-  base::Value::Dict dict = std::move(stored_value).TakeDict();
-  EXPECT_FALSE(
-      dict.FindBool(safety_hub::kHasReportedMetricsStr).value_or(false));
+  std::optional<RevocationEntry> revocation_entry =
+      ContentSettingHelper(*hcsm()).GetRevocationEntry(url);
+  EXPECT_THAT(revocation_entry,
+              Optional(Field(&RevocationEntry::revocation_state,
+                             RevocationState::kProposed)));
+  EXPECT_THAT(revocation_entry,
+              Optional(Field(&RevocationEntry::has_reported_proposal, false)));
+  EXPECT_THAT(revocation_entry,
+              Optional(Field(&RevocationEntry::site_engagement, 0.0)));
+  EXPECT_THAT(revocation_entry,
+              Optional(Field(&RevocationEntry::daily_notification_count, 3)));
+
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kProposedRevoke, 1);
 
@@ -311,14 +318,10 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
       CONTENT_SETTING_ALLOW,
       hcsm()->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
 
-  base::Value stored_value = hcsm()->GetWebsiteSetting(
-      url, url,
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
-  EXPECT_FALSE(stored_value.is_none());
-  ASSERT_TRUE(stored_value.is_dict());
-  base::Value::Dict dict = std::move(stored_value).TakeDict();
-  EXPECT_FALSE(
-      dict.FindBool(safety_hub::kHasReportedMetricsStr).value_or(false));
+  std::optional<RevocationEntry> revocation_entry =
+      ContentSettingHelper(*hcsm()).GetRevocationEntry(url);
+  EXPECT_THAT(revocation_entry,
+              Optional(Field(&RevocationEntry::has_reported_proposal, false)));
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kProposedRevoke, 1);
 
@@ -343,6 +346,46 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
       "Settings.SafetyHub.DisruptiveNotificationRevocations."
       "HasReportedMetricsBeforeRevocation",
       false, 1);
+}
+
+TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
+       DoNotRevokeProposedPermissionWhichIsNotAnymoreDisruptive) {
+  base::HistogramTester t;
+  GURL url("https://www.example.com");
+  SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
+  SetDailyAverageNotificationCount(url, 3);
+  site_engagement_service()->ResetBaseScoreForURL(url, 0);
+
+  manager()->RevokeDisruptiveNotifications();
+  EXPECT_EQ(
+      CONTENT_SETTING_ALLOW,
+      hcsm()->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
+
+  EXPECT_THAT(ContentSettingHelper(*hcsm()).GetRevocationEntry(url),
+              Optional(Field(&RevocationEntry::revocation_state,
+                             RevocationState::kProposed)));
+
+  t.ExpectBucketCount(kRevocationResultHistogram,
+                      RevocationResult::kProposedRevoke, 1);
+  t.ExpectBucketCount(kRevokedWebsitesCountHistogram, 1, 1);
+  t.ExpectBucketCount(kNotificationCountHistogram, 3, 1);
+  EXPECT_THAT(GetDisplayNotificationFunctionCalledWith(), IsEmpty());
+
+  site_engagement_service()->ResetBaseScoreForURL(url, 10);
+
+  // On the next run, site stays proposed because it is not disruptive anymore.
+  manager()->RevokeDisruptiveNotifications();
+  EXPECT_EQ(
+      CONTENT_SETTING_ALLOW,
+      hcsm()->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
+  EXPECT_THAT(ContentSettingHelper(*hcsm()).GetRevocationEntry(url),
+              Optional(Field(&RevocationEntry::revocation_state,
+                             RevocationState::kProposed)));
+  t.ExpectBucketCount(kRevocationResultHistogram,
+                      RevocationResult::kProposedRevoke, 1);
+  t.ExpectBucketCount(kRevocationResultHistogram, RevocationResult::kRevoke, 0);
+  t.ExpectBucketCount(kRevocationResultHistogram,
+                      RevocationResult::kNotDisruptive, 1);
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
@@ -386,10 +429,8 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
 
   manager()->RevokeDisruptiveNotifications();
 
-  base::Value stored_value = hcsm()->GetWebsiteSetting(
-      url, url,
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
-  EXPECT_TRUE(stored_value.is_none());
+  EXPECT_THAT(ContentSettingHelper(*hcsm()).GetRevocationEntry(url),
+              Eq(std::nullopt));
 
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kNotDisruptive, 1);
@@ -405,10 +446,8 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
 
   manager()->RevokeDisruptiveNotifications();
 
-  base::Value stored_value = hcsm()->GetWebsiteSetting(
-      url, url,
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
-  EXPECT_TRUE(stored_value.is_none());
+  EXPECT_THAT(ContentSettingHelper(*hcsm()).GetRevocationEntry(url),
+              Eq(std::nullopt));
 
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kNotDisruptive, 1);
@@ -424,10 +463,8 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
 
   manager()->RevokeDisruptiveNotifications();
 
-  base::Value stored_value = hcsm()->GetWebsiteSetting(
-      url, url,
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
-  EXPECT_TRUE(stored_value.is_none());
+  EXPECT_THAT(ContentSettingHelper(*hcsm()).GetRevocationEntry(url),
+              Eq(std::nullopt));
 
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kNotDisruptive, 1);
@@ -520,18 +557,14 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   GURL url("https://chrome.test/");
   const int kDailyNotificationCount = 4;
 
-  base::Value::Dict dict;
-  dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kProposedStr);
-  dict.Set(safety_hub::kSiteEngagementStr, 0.0);
-  dict.Set(safety_hub::kDailyNotificationCountStr, kDailyNotificationCount);
-  auto constraint =
-      content_settings::ContentSettingConstraints(base::Time::Now());
-  constraint.set_lifetime(base::Days(30));
-  hcsm()->SetWebsiteSettingCustomScope(
-      ContentSettingsPattern::FromURLNoWildcard(url),
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
-      base::Value(std::move(dict)), constraint);
+  ContentSettingHelper(*hcsm()).PersistRevocationEntry(
+      url, RevocationEntry{
+               .revocation_state = RevocationState::kProposed,
+               .site_engagement = 0.0,
+               .daily_notification_count = kDailyNotificationCount,
+               .created_at = base::Time::Now(),
+               .lifetime = base::Days(30),
+           });
 
   ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
   ukm_recorder.UpdateSourceURL(source_id, url);
@@ -548,17 +581,11 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
                                  kDailyNotificationCount);
   ukm_recorder.ExpectEntryMetric(entries[0], "SiteEngagement", 0.0);
 
-  // After the metric is reported, has_reported_metrics flag is set.
-  content_settings::SettingInfo info;
-  base::Value stored_value = hcsm()->GetWebsiteSetting(
-      url, url,
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS, &info);
-  ASSERT_FALSE(stored_value.is_none());
-  ASSERT_TRUE(stored_value.is_dict());
-  EXPECT_TRUE(stored_value.GetDict()
-                  .FindBool(safety_hub::kHasReportedMetricsStr)
-                  .value_or(false));
-  EXPECT_EQ(info.metadata.expiration(), constraint.expiration());
+  // After the metric is reported, has_reported_proposal flag is set.
+  std::optional<RevocationEntry> revocation_entry =
+      ContentSettingHelper(*hcsm()).GetRevocationEntry(url);
+  EXPECT_THAT(revocation_entry,
+              Optional(Field(&RevocationEntry::has_reported_proposal, true)));
 
   // UKM is reported once per site.
   DisruptiveNotificationPermissionsManager::LogMetrics(profile(), url,
@@ -583,20 +610,13 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
       hcsm()->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
 
   // Set up a revoked content setting.
-  base::Value::Dict dict;
-  dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kRevokeStr);
-  dict.Set(safety_hub::kSiteEngagementStr, 0.0);
-  dict.Set(safety_hub::kDailyNotificationCountStr, 3);
-  dict.Set(safety_hub::kTimestampStr, base::TimeToValue(base::Time::Now()));
-
-  content_settings::ContentSettingConstraints constraint(base::Time::Now());
-  constraint.set_lifetime(safety_hub_util::GetCleanUpThreshold());
-
-  hcsm()->SetWebsiteSettingCustomScope(
-      ContentSettingsPattern::FromURLNoWildcard(url),
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
-      base::Value(std::move(dict)), constraint);
+  ContentSettingHelper(*hcsm()).PersistRevocationEntry(
+      url, RevocationEntry{
+               .revocation_state = RevocationState::kRevoked,
+               .site_engagement = 0.0,
+               .daily_notification_count = 3,
+               .lifetime = safety_hub_util::GetCleanUpThreshold(),
+           });
 
   manager()->RegrantPermissionForUrl(url);
   // Notifications are again allowed.
@@ -610,18 +630,14 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   // The content setting was updated to "ignore" to prevent autorevoking in the
   // future.
   EXPECT_EQ(GetRevokedPermissionsCount(), 1);
-  content_settings::SettingInfo info;
-  base::Value stored_value = hcsm()->GetWebsiteSetting(
-      url, url,
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS, &info);
-  EXPECT_FALSE(stored_value.is_none());
-  ASSERT_TRUE(stored_value.is_dict());
-  EXPECT_EQ(safety_hub::kIgnoreStr,
-            stored_value.GetDict()
-                .Find(safety_hub::kRevokedStatusDictKeyStr)
-                ->GetString());
-  // The constraint was also reset to not expire.
-  EXPECT_TRUE(info.metadata.lifetime().is_zero());
+  std::optional<RevocationEntry> revocation_entry =
+      ContentSettingHelper(*hcsm()).GetRevocationEntry(url);
+
+  EXPECT_THAT(revocation_entry,
+              Optional(Field(&RevocationEntry::revocation_state,
+                             RevocationState::kIgnore)));
+  EXPECT_THAT(revocation_entry, Optional(Field(&RevocationEntry::lifetime,
+                                               Eq(base::TimeDelta()))));
 
   manager()->RevokeDisruptiveNotifications();
   // The site is reported as ignored for revocation and not revoked.
@@ -653,23 +669,19 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   site_engagement_service()->ResetBaseScoreForURL(url, 0);
 
   // Set up an ignored value.
-  base::Value::Dict dict;
-  dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kIgnoreStr);
-  dict.Set(safety_hub::kSiteEngagementStr, 0.0);
-  dict.Set(safety_hub::kDailyNotificationCountStr, 3);
-  dict.Set(safety_hub::kTimestampStr, base::TimeToValue(base::Time::Now()));
-
-  hcsm()->SetWebsiteSettingCustomScope(
-      ContentSettingsPattern::FromURLNoWildcard(url),
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
-      base::Value(std::move(dict)));
+  ContentSettingHelper(*hcsm()).PersistRevocationEntry(
+      url, RevocationEntry{
+               .revocation_state = RevocationState::kIgnore,
+               .site_engagement = 0.0,
+               .daily_notification_count = 3,
+               .timestamp = base::Time::Now(),
+           });
 
   // Undo the regrant (return to revoked state).
-  content_settings::ContentSettingConstraints constraint(base::Time::Now());
-  constraint.set_lifetime(safety_hub_util::GetCleanUpThreshold());
+  content_settings::ContentSettingConstraints constraints(base::Time::Now());
+  constraints.set_lifetime(safety_hub_util::GetCleanUpThreshold());
   manager()->UndoRegrantPermissionForUrl(
-      url, {ContentSettingsType::NOTIFICATIONS}, constraint.Clone());
+      url, {ContentSettingsType::NOTIFICATIONS}, std::move(constraints));
 
   // Notifications are again ask.
   EXPECT_EQ(
@@ -678,24 +690,21 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
 
   // The content setting was updated to "revoke".
   EXPECT_EQ(GetRevokedPermissionsCount(), 1);
-  content_settings::SettingInfo info;
-  base::Value stored_value = hcsm()->GetWebsiteSetting(
-      url, url,
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS, &info);
-  EXPECT_FALSE(stored_value.is_none());
-  ASSERT_TRUE(stored_value.is_dict());
-  dict = std::move(stored_value).TakeDict();
-  EXPECT_EQ(safety_hub::kRevokeStr,
-            dict.Find(safety_hub::kRevokedStatusDictKeyStr)->GetString());
-  EXPECT_EQ(0.0, dict.FindDouble(safety_hub::kSiteEngagementStr).value_or(0));
-  EXPECT_EQ(3,
-            dict.FindInt(safety_hub::kDailyNotificationCountStr).value_or(0));
-  const base::Value* stored_timestamp = dict.Find(safety_hub::kTimestampStr);
-  EXPECT_EQ(base::Time::Now(),
-            base::ValueToTime(stored_timestamp).value_or(base::Time()));
+  std::optional<RevocationEntry> revocation_entry =
+      ContentSettingHelper(*hcsm()).GetRevocationEntry(url);
 
-  // The constraint was set.
-  EXPECT_EQ(info.metadata.lifetime(), safety_hub_util::GetCleanUpThreshold());
+  EXPECT_THAT(revocation_entry,
+              Optional(Field(&RevocationEntry::revocation_state,
+                             RevocationState::kRevoked)));
+  EXPECT_THAT(revocation_entry,
+              Optional(Field(&RevocationEntry::site_engagement, 0.0)));
+  EXPECT_THAT(revocation_entry,
+              Optional(Field(&RevocationEntry::daily_notification_count, 3)));
+  EXPECT_THAT(revocation_entry,
+              Optional(Field(&RevocationEntry::timestamp, base::Time::Now())));
+  EXPECT_THAT(revocation_entry,
+              Optional(Field(&RevocationEntry::lifetime,
+                             safety_hub_util::GetCleanUpThreshold())));
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
@@ -709,10 +718,10 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   site_engagement_service()->ResetBaseScoreForURL(url, 0);
 
   // Attempt to undo the regrant (return to revoked state).
-  content_settings::ContentSettingConstraints constraint(base::Time::Now());
-  constraint.set_lifetime(safety_hub_util::GetCleanUpThreshold());
+  content_settings::ContentSettingConstraints constraints(base::Time::Now());
+  constraints.set_lifetime(safety_hub_util::GetCleanUpThreshold());
   manager()->UndoRegrantPermissionForUrl(
-      url, {ContentSettingsType::NOTIFICATIONS}, constraint.Clone());
+      url, {ContentSettingsType::NOTIFICATIONS}, std::move(constraints));
 
   // Notifications are still allow because there were no "ignore" value stored
   // therefore no revocation to undo.
@@ -732,23 +741,19 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   site_engagement_service()->ResetBaseScoreForURL(url, 0);
 
   // Set up an ignored value.
-  base::Value::Dict dict;
-  dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kIgnoreStr);
-  dict.Set(safety_hub::kSiteEngagementStr, 0.0);
-  dict.Set(safety_hub::kDailyNotificationCountStr, 3);
-  dict.Set(safety_hub::kTimestampStr, base::TimeToValue(base::Time::Now()));
-
-  hcsm()->SetWebsiteSettingCustomScope(
-      ContentSettingsPattern::FromURLNoWildcard(url),
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
-      base::Value(std::move(dict)));
+  ContentSettingHelper(*hcsm()).PersistRevocationEntry(
+      url, RevocationEntry{
+               .revocation_state = RevocationState::kIgnore,
+               .site_engagement = 0.0,
+               .daily_notification_count = 3,
+               .timestamp = base::Time::Now(),
+           });
 
   // Attempt to undo the regrant (return to revoked state).
-  content_settings::ContentSettingConstraints constraint(base::Time::Now());
-  constraint.set_lifetime(safety_hub_util::GetCleanUpThreshold());
+  content_settings::ContentSettingConstraints constraints(base::Time::Now());
+  constraints.set_lifetime(safety_hub_util::GetCleanUpThreshold());
   manager()->UndoRegrantPermissionForUrl(
-      url, {ContentSettingsType::GEOLOCATION}, constraint.Clone());
+      url, {ContentSettingsType::GEOLOCATION}, std::move(constraints));
 
   // Notifications are still allow because there were no "ignore" value stored
   // therefore no revocation to undo.
@@ -763,87 +768,57 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
 
   // Set up a revoked permission.
   GURL revoked_url("https://www.example1.com");
-  base::Value::Dict revoked_dict;
-  revoked_dict.Set(safety_hub::kRevokedStatusDictKeyStr,
-                   safety_hub::kRevokeStr);
-  revoked_dict.Set(safety_hub::kSiteEngagementStr, 0.0);
-  revoked_dict.Set(safety_hub::kDailyNotificationCountStr, 3);
-  revoked_dict.Set(safety_hub::kTimestampStr,
-                   base::TimeToValue(base::Time::Now()));
-
-  hcsm()->SetWebsiteSettingCustomScope(
-      ContentSettingsPattern::FromURLNoWildcard(revoked_url),
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
-      base::Value(std::move(revoked_dict)));
+  ContentSettingHelper(*hcsm()).PersistRevocationEntry(
+      revoked_url, RevocationEntry{
+                       .revocation_state = RevocationState::kRevoked,
+                       .site_engagement = 0.0,
+                       .daily_notification_count = 3,
+                       .timestamp = base::Time::Now(),
+                   });
 
   // Set up a proposed permission.
   GURL proposed_url("https://www.example2.com");
-  base::Value::Dict proposed_dict;
-  proposed_dict.Set(safety_hub::kRevokedStatusDictKeyStr,
-                    safety_hub::kProposedStr);
-  proposed_dict.Set(safety_hub::kSiteEngagementStr, 0.0);
-  proposed_dict.Set(safety_hub::kDailyNotificationCountStr, 3);
-  proposed_dict.Set(safety_hub::kTimestampStr,
-                    base::TimeToValue(base::Time::Now()));
-
-  hcsm()->SetWebsiteSettingCustomScope(
-      ContentSettingsPattern::FromURLNoWildcard(proposed_url),
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
-      base::Value(std::move(proposed_dict)));
+  ContentSettingHelper(*hcsm()).PersistRevocationEntry(
+      proposed_url, RevocationEntry{
+                        .revocation_state = RevocationState::kProposed,
+                        .site_engagement = 0.0,
+                        .daily_notification_count = 3,
+                        .timestamp = base::Time::Now(),
+                    });
 
   // Set up an ignored permission.
   GURL ignored_url("https://www.example3.com");
-  base::Value::Dict ignored_dict;
-  ignored_dict.Set(safety_hub::kRevokedStatusDictKeyStr,
-                   safety_hub::kIgnoreStr);
-  ignored_dict.Set(safety_hub::kSiteEngagementStr, 0.0);
-  ignored_dict.Set(safety_hub::kDailyNotificationCountStr, 3);
-  ignored_dict.Set(safety_hub::kTimestampStr,
-                   base::TimeToValue(base::Time::Now()));
-
-  hcsm()->SetWebsiteSettingCustomScope(
-      ContentSettingsPattern::FromURLNoWildcard(ignored_url),
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
-      base::Value(std::move(ignored_dict)));
+  ContentSettingHelper(*hcsm()).PersistRevocationEntry(
+      ignored_url, RevocationEntry{
+                       .revocation_state = RevocationState::kIgnore,
+                       .site_engagement = 0.0,
+                       .daily_notification_count = 3,
+                       .timestamp = base::Time::Now(),
+                   });
 
   EXPECT_EQ(GetRevokedPermissionsCount(), 3);
   manager()->ClearRevokedPermissionsList();
   EXPECT_EQ(GetRevokedPermissionsCount(), 2);
 
   // Only revoked value is cleared, others are not affected.
-  base::Value revoked_stored_value = hcsm()->GetWebsiteSetting(
-      revoked_url, revoked_url,
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
-  EXPECT_TRUE(revoked_stored_value.is_none());
-
-  base::Value proposed_stored_value = hcsm()->GetWebsiteSetting(
-      proposed_url, proposed_url,
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
-  EXPECT_FALSE(proposed_stored_value.is_none());
-
-  base::Value ignored_stored_value = hcsm()->GetWebsiteSetting(
-      ignored_url, ignored_url,
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
-  EXPECT_FALSE(ignored_stored_value.is_none());
+  EXPECT_THAT(ContentSettingHelper(*hcsm()).GetRevocationEntry(revoked_url),
+              Eq(std::nullopt));
+  EXPECT_THAT(ContentSettingHelper(*hcsm()).GetRevocationEntry(proposed_url),
+              Not(Eq(std::nullopt)));
+  EXPECT_THAT(ContentSettingHelper(*hcsm()).GetRevocationEntry(ignored_url),
+              Not(Eq(std::nullopt)));
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
        UpdateNotificationContentSettingsChanged) {
   GURL url("https://chrome.test/");
-  base::Value::Dict dict;
-  dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kRevokeStr);
-  dict.Set(safety_hub::kSiteEngagementStr, 0.0);
-  dict.Set(safety_hub::kDailyNotificationCountStr, 4);
-  dict.Set(safety_hub::kTimestampStr,
-           base::TimeToValue(base::Time::Now() - base::Days(3)));
-  hcsm()->SetWebsiteSettingCustomScope(
-      ContentSettingsPattern::FromURLNoWildcard(url),
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
-      base::Value(std::move(dict)));
+  ContentSettingHelper(*hcsm()).PersistRevocationEntry(
+      url, RevocationEntry{
+               .revocation_state = RevocationState::kRevoked,
+               .site_engagement = 0.0,
+               .daily_notification_count = 4,
+               .timestamp = base::Time::Now() - base::Days(3),
+           });
   EXPECT_THAT(GetUpdateNotificationFunctionCalledWith(), ElementsAre(1));
 }
 
@@ -872,17 +847,15 @@ TEST_F(DisruptiveNotificationPermissionsManagerShadowRunTest,
   EXPECT_EQ(
       CONTENT_SETTING_ALLOW,
       hcsm()->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
-  base::Value stored_value = hcsm()->GetWebsiteSetting(
-      url, url,
-      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
-  EXPECT_FALSE(stored_value.is_none());
-  ASSERT_TRUE(stored_value.is_dict());
-  base::Value::Dict dict = std::move(stored_value).TakeDict();
-  EXPECT_FALSE(
-      dict.FindBool(safety_hub::kHasReportedMetricsStr).value_or(false));
-  EXPECT_EQ(0.0, dict.FindDouble(safety_hub::kSiteEngagementStr).value_or(0));
-  EXPECT_EQ(3,
-            dict.FindInt(safety_hub::kDailyNotificationCountStr).value_or(0));
+  std::optional<RevocationEntry> revocation_entry =
+      ContentSettingHelper(*hcsm()).GetRevocationEntry(url);
+
+  EXPECT_THAT(revocation_entry,
+              Optional(Field(&RevocationEntry::has_reported_proposal, false)));
+  EXPECT_THAT(revocation_entry,
+              Optional(Field(&RevocationEntry::site_engagement, 0)));
+  EXPECT_THAT(revocation_entry,
+              Optional(Field(&RevocationEntry::daily_notification_count, 3)));
 
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kProposedRevoke, 1);
@@ -915,7 +888,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest, FalsePositive) {
   ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
   ukm_recorder.UpdateSourceURL(source_id, url);
 
-  DisruptiveNotificationPermissionsManager::CheckForFalsePositive(
+  DisruptiveNotificationPermissionsManager::MaybeReportFalsePositive(
       profile(), url, FalsePositiveReason::kPageVisit, source_id);
 
   // Check that the correct metric is reported.
@@ -942,7 +915,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
   ukm_recorder.UpdateSourceURL(source_id, url);
 
-  DisruptiveNotificationPermissionsManager::CheckForFalsePositive(
+  DisruptiveNotificationPermissionsManager::MaybeReportFalsePositive(
       profile(), url, FalsePositiveReason::kPageVisit, source_id);
 
   // Check that the no metrics are reported.
@@ -962,7 +935,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
   ukm_recorder.UpdateSourceURL(source_id, url);
 
-  DisruptiveNotificationPermissionsManager::CheckForFalsePositive(
+  DisruptiveNotificationPermissionsManager::MaybeReportFalsePositive(
       profile(), url, FalsePositiveReason::kPageVisit, source_id);
 
   // Check that the no metrics are reported.
@@ -982,7 +955,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
   ukm_recorder.UpdateSourceURL(source_id, url);
 
-  DisruptiveNotificationPermissionsManager::CheckForFalsePositive(
+  DisruptiveNotificationPermissionsManager::MaybeReportFalsePositive(
       profile(), url, FalsePositiveReason::kPageVisit, source_id);
 
   // Check that the no metrics are reported.

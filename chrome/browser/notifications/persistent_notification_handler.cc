@@ -225,7 +225,7 @@ void PersistentNotificationHandler::OnClick(
   // notifications with high notification volume and low site engagement score.
   ukm::SourceId source_id = ukm::UkmRecorder::GetSourceIdForNotificationEvent(
       base::PassKey<PersistentNotificationHandler>(), origin);
-  DisruptiveNotificationPermissionsManager::CheckForFalsePositive(
+  DisruptiveNotificationPermissionsManager::MaybeReportFalsePositive(
       profile, origin,
       DisruptiveNotificationPermissionsManager::FalsePositiveReason::
           kPersistentNotificationClick,

@@ -64,9 +64,11 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-using ::testing::UnorderedElementsAre;
-
 namespace {
+
+using ::testing::Field;
+using ::testing::Optional;
+using ::testing::UnorderedElementsAre;
 
 const char url1[] = "https://example1.com:443";
 const char url2[] = "https://example2.com:443";
@@ -89,6 +91,10 @@ const ContentSettingsType revoked_unused_site_type =
     ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS;
 // An arbitrary large number that doesn't match any ContentSettingsType;
 const int32_t unknown_type = 300000;
+
+constexpr std::string_view kRevokedStatus = "revoked_status";
+constexpr std::string_view kProposed = "proposed";
+constexpr std::string_view kRevoke = "revoke";
 
 std::set<ContentSettingsType> abusive_permission_types({notifications_type});
 std::set<ContentSettingsType> unused_permission_types({geolocation_type,
@@ -399,8 +405,7 @@ class RevokedPermissionsServiceTest
     hcsm()->SetWebsiteSettingDefaultScope(
         GURL(url), GURL(url),
         ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
-        base::Value(base::Value::Dict().Set(
-            safety_hub::kRevokedStatusDictKeyStr, safety_hub::kRevokeStr)),
+        base::Value(base::Value::Dict().Set(kRevokedStatus, kRevoke)),
         constraint);
   }
 
@@ -415,8 +420,7 @@ class RevokedPermissionsServiceTest
     hcsm()->SetWebsiteSettingDefaultScope(
         GURL(url), GURL(url),
         ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
-        base::Value(base::Value::Dict().Set(
-            safety_hub::kRevokedStatusDictKeyStr, safety_hub::kProposedStr)),
+        base::Value(base::Value::Dict().Set(kRevokedStatus, kProposed)),
         constraint);
   }
 
@@ -473,17 +477,8 @@ class RevokedPermissionsServiceTest
   }
 
   void ExpectRevokedDisruptiveNotificationSettingValues(std::string url) {
-    base::Value stored_value = hcsm()->GetWebsiteSetting(
-        GURL(url), GURL(url),
-        ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
-    EXPECT_FALSE(stored_value.is_none());
-    ASSERT_TRUE(stored_value.is_dict());
-    EXPECT_EQ(safety_hub::kRevokeStr,
-              stored_value.GetDict()
-                  .Find(safety_hub::kRevokedStatusDictKeyStr)
-                  ->GetString());
-    EXPECT_TRUE(
-        safety_hub_util::IsUrlRevokedDisruptiveNotification(hcsm(), GURL(url)));
+    EXPECT_TRUE(DisruptiveNotificationPermissionsManager::
+                    IsUrlRevokedDisruptiveNotification(hcsm(), GURL(url)));
     EXPECT_EQ(
         hcsm()->GetContentSetting(GURL(url), GURL(url), notifications_type),
         CONTENT_SETTING_ASK);
@@ -491,15 +486,13 @@ class RevokedPermissionsServiceTest
 
   void ExpectProposedRevokedDisruptiveNotificationSettingValues(
       std::string url) {
-    base::Value stored_value = hcsm()->GetWebsiteSetting(
-        GURL(url), GURL(url),
-        ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
-    EXPECT_FALSE(stored_value.is_none());
-    ASSERT_TRUE(stored_value.is_dict());
-    EXPECT_EQ(safety_hub::kProposedStr,
-              stored_value.GetDict()
-                  .Find(safety_hub::kRevokedStatusDictKeyStr)
-                  ->GetString());
+    EXPECT_THAT(
+        DisruptiveNotificationPermissionsManager::ContentSettingHelper(*hcsm())
+            .GetRevocationEntry(GURL(url)),
+        Optional(Field(&DisruptiveNotificationPermissionsManager::
+                           RevocationEntry::revocation_state,
+                       DisruptiveNotificationPermissionsManager::
+                           RevocationState::kProposed)));
   }
 
   void ExpectCleanedUpDisruptiveNotificationSettingValues(
@@ -514,8 +507,8 @@ class RevokedPermissionsServiceTest
               stored_value.GetDict()
                   .Find(safety_hub::kRevokedStatusDictKeyStr)
                   ->GetString());
-    EXPECT_FALSE(
-        safety_hub_util::IsUrlRevokedDisruptiveNotification(hcsm(), GURL(url)));
+    EXPECT_FALSE(DisruptiveNotificationPermissionsManager::
+                     IsUrlRevokedDisruptiveNotification(hcsm(), GURL(url)));
     EXPECT_EQ(
         hcsm()->GetContentSetting(GURL(url), GURL(url), notifications_type),
         is_regranted ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_ASK);
