@@ -1117,6 +1117,9 @@ void LensOverlayController::SetAdditionalSearchQueryParams(
 }
 
 void LensOverlayController::ClearTextSelection() {
+  if(!IsOverlayShowing()) {
+    return;
+  }
   if (initialization_data_->selected_text_.has_value()) {
     initialization_data_->selected_text_.reset();
     page_->ClearTextSelection();
@@ -1124,6 +1127,9 @@ void LensOverlayController::ClearTextSelection() {
 }
 
 void LensOverlayController::ClearRegionSelection() {
+  if(!IsOverlayShowing()) {
+    return;
+  }
   GetLensSearchboxController()->SetSearchboxThumbnail("");
   lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
   initialization_data_->selected_region_.reset();

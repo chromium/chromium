@@ -511,7 +511,13 @@ void LensOverlaySidePanelCoordinator::SetLatestPageUrlWithResponse(
 void LensOverlaySidePanelCoordinator::BindSidePanel(
     mojo::PendingReceiver<lens::mojom::LensSidePanelPageHandler> receiver,
     mojo::PendingRemote<lens::mojom::LensSidePanelPage> page) {
-  CHECK(state_ == State::kOpeningSidePanel);
+  // Ideally, this should be a CHECK, but if the user just navigates to the
+  // WebUI link directly, then this will be called without
+  // RegisterEntryAndShow() being called. If that is the case, ignore this call.
+  // More info at crbug.com/417119042.
+  if (state_ != State::kOpeningSidePanel) {
+    return;
+  }
 
   side_panel_receiver_.Bind(std::move(receiver));
   side_panel_page_.Bind(std::move(page));

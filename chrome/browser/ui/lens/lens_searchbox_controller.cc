@@ -134,14 +134,10 @@ LensSearchboxController::GetLensSuggestInputs() const {
 }
 
 void LensSearchboxController::OnTextModified() {
-  // TOOD(crbug.com/404941800): Verify this doesn't break if the overlay is
-  // off.
   lens_search_controller_->lens_overlay_controller()->ClearTextSelection();
 }
 
 void LensSearchboxController::OnThumbnailRemoved() {
-  // TOOD(crbug.com/404941800): Verify this doesn't break if the overlay is
-  // off.
   lens_search_controller_->lens_overlay_controller()->ClearRegionSelection();
 }
 
