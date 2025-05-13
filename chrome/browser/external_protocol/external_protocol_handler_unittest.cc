@@ -190,7 +190,6 @@ class ExternalProtocolHandlerTest : public testing::Test {
   void TearDown() override {
     // Ensure that g_accept_requests gets set back to true after test execution.
     ExternalProtocolHandler::PermitLaunchUrl();
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
   }
 
   enum class Action { PROMPT, LAUNCH, BLOCK, NONE };

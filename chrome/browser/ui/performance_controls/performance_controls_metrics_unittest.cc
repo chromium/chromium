@@ -15,6 +15,7 @@
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_button_controller.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/performance_manager/public/features.h"
@@ -34,20 +35,17 @@ class PerformanceControlsMetricsTest
       : RenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
-  void SetUp() override {
-    content::RenderViewHostTestHarness::SetUp();
-    PerformanceInterventionMetricsReporter::RegisterLocalStatePrefs(
-        prefs()->registry());
-  }
-
   std::unique_ptr<content::BrowserContext> CreateBrowserContext() override {
     return std::make_unique<TestingProfile>();
   }
 
-  TestingPrefServiceSimple* prefs() { return &prefs_; }
+  TestingPrefServiceSimple* prefs() {
+    return scoped_testing_local_state_.Get();
+  }
 
  private:
-  TestingPrefServiceSimple prefs_;
+  ScopedTestingLocalState scoped_testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
 };
 
 TEST_F(PerformanceControlsMetricsTest, DailyMetricsResets) {
@@ -143,14 +141,6 @@ class PerformanceControlsNotificationTest
             kPerformanceInterventionNotificationImprovements);
 
     PerformanceControlsMetricsTest::SetUp();
-    performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(
-        prefs()->registry());
-    TestingBrowserProcess::GetGlobal()->SetLocalState(prefs());
-  }
-
-  void TearDown() override {
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
-    PerformanceControlsMetricsTest::TearDown();
   }
 
  private:

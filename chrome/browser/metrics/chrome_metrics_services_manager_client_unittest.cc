@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -32,28 +33,18 @@ class ChromeMetricsServicesManagerClientTest : public testing::Test {
 
   ~ChromeMetricsServicesManagerClientTest() override = default;
 
-  void SetUp() override {
-    // Set up Local State prefs.
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
-    ChromeMetricsServiceClient::RegisterPrefs(local_state()->registry());
-  }
-
-  void TearDown() override {
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
-  }
-
-  TestingPrefServiceSimple* local_state() { return &local_state_; }
+  PrefService* local_state() { return scoped_testing_local_state_.Get(); }
 
  private:
-  TestingPrefServiceSimple local_state_;
+  ScopedTestingLocalState scoped_testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
 };
 
 using IsClientInSampleTest = ChromeMetricsServicesManagerClientTest;
 
 TEST_F(ChromeMetricsServicesManagerClientTest, ForceTrialsDisablesReporting) {
   // First, test with UMA reporting setting defaulting to off.
-  local_state()->registry()->RegisterBooleanPref(
-      metrics::prefs::kMetricsReportingEnabled, false);
+  local_state()->SetBoolean(metrics::prefs::kMetricsReportingEnabled, false);
   // Force the pref to be used, even in unofficial builds.
   ChromeMetricsServiceAccessor::SetForceIsMetricsReportingEnabledPrefLookup(
       true);
@@ -85,8 +76,7 @@ TEST_F(ChromeMetricsServicesManagerClientTest, ForceTrialsDisablesReporting) {
 
 TEST_F(ChromeMetricsServicesManagerClientTest, PopulateStartupVisibility) {
   // Register the kMetricsReportingEnabled pref.
-  local_state()->registry()->RegisterBooleanPref(
-      metrics::prefs::kMetricsReportingEnabled, false);
+  local_state()->SetBoolean(metrics::prefs::kMetricsReportingEnabled, false);
 
   ChromeMetricsServicesManagerClient client(local_state());
   metrics::MetricsStateManager* metrics_state_manager =

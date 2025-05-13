@@ -27,16 +27,8 @@ namespace promos_utils {
 class IOSPromoOnDesktopTest : public ::testing::Test {
  public:
   void SetUp() override {
-    local_state_.registry()->RegisterBooleanPref(prefs::kPromotionsEnabled,
-                                                 true);
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
-
     sync_service_.GetUserSettings()->SetSelectedTypes(/*sync_everything=*/true,
                                                       {});
-  }
-
-  void TearDown() override {
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
   }
 
   // Getter for the test syncable prefs service.
@@ -60,7 +52,8 @@ class IOSPromoOnDesktopTest : public ::testing::Test {
   syncer::TestSyncService* sync_service() { return &sync_service_; }
 
  protected:
-  TestingPrefServiceSimple local_state_;
+  ScopedTestingLocalState scoped_testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
 
  private:
   content::BrowserTaskEnvironment task_environment_{
@@ -253,7 +246,8 @@ TEST_F(IOSPromoOnDesktopTest,
 // disabled.
 TEST_F(IOSPromoOnDesktopTest,
        ShouldShowIOSDesktopPromoTestFalsePromotionsDisabled) {
-  local_state_.SetBoolean(prefs::kPromotionsEnabled, false);
+  scoped_testing_local_state_.Get()->SetBoolean(prefs::kPromotionsEnabled,
+                                                false);
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
                                          IOSPromoType::kPassword));
 }
@@ -968,7 +962,8 @@ TEST_F(IOSPromoOnDesktopTest, ShouldShowIOSDesktopNtpPromo) {
 // disabled.
 TEST_F(IOSPromoOnDesktopTest,
        ShouldShowIOSDesktopNtpPromoFalsePromotionsDisabled) {
-  local_state_.SetBoolean(prefs::kPromotionsEnabled, false);
+  scoped_testing_local_state_.Get()->SetBoolean(prefs::kPromotionsEnabled,
+                                                false);
   EXPECT_FALSE(ShouldShowIOSDesktopNtpPromo(profile(), sync_service()));
 }
 

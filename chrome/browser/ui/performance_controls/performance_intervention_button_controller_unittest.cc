@@ -42,9 +42,6 @@ class PerformanceInterventionButtonControllerUnitTest : public testing::Test {
           {}},
          {feature_engagement::kIPHPerformanceInterventionDialogFeature,
           params}});
-    performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(
-        local_state_.registry());
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
 
     tracker_ = feature_engagement::CreateTestTracker();
     base::RunLoop run_loop;
@@ -58,10 +55,6 @@ class PerformanceInterventionButtonControllerUnitTest : public testing::Test {
 
     controller_ = std::make_unique<PerformanceInterventionButtonController>(
         nullptr, nullptr);
-  }
-
-  void TearDown() override {
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
   }
 
   base::test::SingleThreadTaskEnvironment& task_environment() {
@@ -120,7 +113,8 @@ class PerformanceInterventionButtonControllerUnitTest : public testing::Test {
   feature_engagement::test::ScopedIphFeatureList feature_list_;
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  TestingPrefServiceSimple local_state_;
+  ScopedTestingLocalState scoped_testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
   std::unique_ptr<PerformanceInterventionButtonController> controller_;
   std::unique_ptr<feature_engagement::Tracker> tracker_;
 };

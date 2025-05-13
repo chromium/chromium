@@ -64,7 +64,6 @@ class ChromeSigninClientSignoutTest : public BrowserWithTestWindowTest {
 
   void TearDown() override {
     BrowserWithTestWindowTest::TearDown();
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
   }
 
   void CreateClient(Profile* profile) {

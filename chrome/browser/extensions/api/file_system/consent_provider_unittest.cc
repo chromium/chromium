@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/extensions/api/file_system/consent_provider_impl.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -111,9 +112,6 @@ class FileSystemApiConsentProviderTest : public testing::Test {
   FileSystemApiConsentProviderTest() = default;
 
   void SetUp() override {
-    testing_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    TestingBrowserProcess::GetGlobal()->SetLocalState(
-        testing_pref_service_.get());
     user_manager_ = new ash::FakeChromeUserManager;
     scoped_user_manager_enabler_ =
         std::make_unique<user_manager::ScopedUserManager>(
@@ -123,12 +121,11 @@ class FileSystemApiConsentProviderTest : public testing::Test {
   void TearDown() override {
     scoped_user_manager_enabler_.reset();
     user_manager_ = nullptr;
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
-    testing_pref_service_.reset();
   }
 
  protected:
-  std::unique_ptr<TestingPrefServiceSimple> testing_pref_service_;
+  ScopedTestingLocalState scoped_testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
   raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged>
       user_manager_;  // Owned by the scope enabler.
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_enabler_;
