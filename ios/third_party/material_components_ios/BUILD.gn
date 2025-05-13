@@ -1574,8 +1574,6 @@ ios_framework_bundle("material_components_ios") {
   ]
 
   configs -= [
-    # TODO(crbug.com/415770863): Remove `assign_property_warning` once the warning is fixed.
-    "//build/config/compiler:assign_property_warning",
     "//build/config/compiler:chromium_code",
     "//build/config/gcc:symbol_visibility_hidden",
   ]

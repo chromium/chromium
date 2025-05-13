@@ -3226,17 +3226,14 @@ if (is_apple) {
   # C++ and exceptions in Objective-C code are intended to be fatal, so
   # -fno-objc-arc-exceptions is specified to disable these unwanted exception
   # handlers.
+  # -Wobjc-property-assign-on-object-type enables to show warnings when the
+  # assign is used for a property on an Objective-C object under ARC.
   config("enable_arc") {
     common_flags = [
       "-fobjc-arc",
       "-fno-objc-arc-exceptions",
+      "-Wobjc-property-assign-on-object-type",
     ]
-    cflags_objc = common_flags
-    cflags_objcc = common_flags
-  }
-
-  config("assign_property_warning") {
-    common_flags = [ "-Wobjc-property-assign-on-object-type" ]
     cflags_objc = common_flags
     cflags_objcc = common_flags
   }
