@@ -9326,11 +9326,6 @@ crbug.com/402796552 [ Win11-arm64 ] webaudio/Oscillator/osc-sweep-snr-square.htm
 crbug.com/391006701 [ Debug Mac ] images/yuv-decode-eligible/color-profile-image-profile-match.html [ Skip Timeout ]
 crbug.com/391006701 [ Debug Mac ] images/yuv-decode-eligible/webp-image-decoding.html [ Skip Timeout ]
 
-#Gardener 2025-03-17
-crbug.com/404060200 [ Mac12 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html [ Failure ]
-crbug.com/404060200 [ Mac12 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-2-test [ Failure Pass ]
-crbug.com/404060200 [ Mac12 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-4-test [ Failure Pass ]
-
 # Gardener 2025-03-19
 crbug.com/402521712 [ Linux ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedFrame-timestamps.html [ Failure ]
 crbug.com/404571518 [ Win11 ] external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html?mimeType=video/mp4;codecs=av01,mp4a.40.2 [ Failure ]
@@ -9356,7 +9351,6 @@ crbug.com/403071968 external/wpt/css/css-images/gradient/gradient-infinity-003.h
 crbug.com/407865639 external/wpt/css/css-grid/grid-extrinsically-sized-mutations.html [ Failure Pass ]
 
 # Gardener 2025-04-08
-crbug.com/409149439 [ Win11-arm64 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-5-test [ Failure Pass ]
 crbug.com/409032332 http/tests/inspector-protocol/no-crash-with-stack-id-and-stale-while-revalidate.js [ Crash Pass Timeout ]
 
 crbug.com/411529366 [ Mac ] external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Crash Failure Pass ]
