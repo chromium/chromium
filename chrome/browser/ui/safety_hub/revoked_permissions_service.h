@@ -103,17 +103,17 @@ class RevokedPermissionsService final : public SafetyHubService,
     // Adds a revoked permission, defined by origin, a set of permission types
     // and the expiration until the user is made aware of the revoked
     // permission.
-    void AddRevokedPermission(const PermissionsData&);
+    void AddRevokedPermission(PermissionsData);
 
     void SetRecentlyUnusedPermissions(UnusedPermissionMap map) {
-      recently_unused_permissions_ = map;
+      recently_unused_permissions_ = std::move(map);
     }
 
-    UnusedPermissionMap GetRecentlyUnusedPermissions() {
+    const UnusedPermissionMap& GetRecentlyUnusedPermissions() {
       return recently_unused_permissions_;
     }
 
-    std::list<PermissionsData> GetRevokedPermissions();
+    const std::list<PermissionsData>& GetRevokedPermissions();
 
     std::set<ContentSettingsPattern> GetRevokedOrigins() const;
 
@@ -243,8 +243,7 @@ class RevokedPermissionsService final : public SafetyHubService,
   void SetClockForTesting(base::Clock* clock);
   std::vector<ContentSettingEntry> GetTrackedUnusedPermissionsForTesting();
 
-  using UnusedPermissionMap =
-      std::map<std::string, std::list<ContentSettingEntry>>;
+  using UnusedPermissionMap = RevokedPermissionsResult::UnusedPermissionMap;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(RevokedPermissionsServiceTest,

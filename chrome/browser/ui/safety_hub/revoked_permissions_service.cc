@@ -256,14 +256,13 @@ RevokedPermissionsService::RevokedPermissionsResult::Clone() const {
 }
 
 void RevokedPermissionsService::RevokedPermissionsResult::AddRevokedPermission(
-    const PermissionsData& permissions_data) {
+    PermissionsData permissions_data) {
   revoked_permissions_.push_back(std::move(permissions_data));
 }
 
-std::list<PermissionsData>
+const std::list<PermissionsData>&
 RevokedPermissionsService::RevokedPermissionsResult::GetRevokedPermissions() {
-  std::list<PermissionsData> result(revoked_permissions_);
-  return result;
+  return revoked_permissions_;
 }
 
 std::set<ContentSettingsPattern>
