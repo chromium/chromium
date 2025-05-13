@@ -23,7 +23,8 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.externalauth.ExternalAuthUtils;
@@ -42,13 +43,13 @@ public class SigninCheckerTest {
     @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
 
     private void signinWhenChildAccountIsTheOnlyAccount() {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
 
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
 
@@ -71,7 +72,7 @@ public class SigninCheckerTest {
     }
 
     private void noSigninWhenChildAccountIsTheOnlyAccountButSigninIsNotAllowed() {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         UserActionTester actionTester = new UserActionTester();
         when(mExternalAuthUtilsMock.isGooglePlayServicesMissing(any())).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
@@ -101,7 +102,7 @@ public class SigninCheckerTest {
         mSigninTestRule.addAccount("the.default.account@gmail.com");
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
 
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         UserActionTester actionTester = new UserActionTester();
 
         Assert.assertEquals(
@@ -120,7 +121,7 @@ public class SigninCheckerTest {
     }
 
     private void signinWhenChildAccountIsFirstAccount() {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
         mSigninTestRule.addAccount("the.second.account@gmail.com");
 

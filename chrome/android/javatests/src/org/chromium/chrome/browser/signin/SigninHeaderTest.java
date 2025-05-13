@@ -30,7 +30,9 @@ import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
@@ -47,8 +49,8 @@ public class SigninHeaderTest {
     @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule
-    public ChromeTabbedActivityTestRule mChromeActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mChromeActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
@@ -56,6 +58,7 @@ public class SigninHeaderTest {
     @Rule public EmbeddedTestServerRule mEmbeddedTestServerRule = new EmbeddedTestServerRule();
 
     private String mGAIAUrl;
+    private WebPageStation mInitialPage;
 
     private void launchTrustedWebActivity(Intent intent) throws TimeoutException {
         String url = intent.getData().toString();
@@ -72,7 +75,7 @@ public class SigninHeaderTest {
         // Specify a Gaia url path.
         CommandLine.getInstance()
                 .appendSwitchWithValue("gaia-url", mEmbeddedTestServerRule.getServer().getURL("/"));
-        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        mInitialPage = mChromeActivityTestRule.startOnBlankPage();
         mSigninTestRule.addTestAccountThenSignin();
 
         mGAIAUrl = mEmbeddedTestServerRule.getServer().getURL("/echoheader?X-Chrome-Connected");
