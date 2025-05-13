@@ -36,9 +36,6 @@ struct GuestId {
 
 bool operator<(const GuestId& lhs, const GuestId& rhs) noexcept;
 bool operator==(const GuestId& lhs, const GuestId& rhs) noexcept;
-inline bool operator!=(const GuestId& lhs, const GuestId& rhs) noexcept {
-  return !(lhs == rhs);
-}
 
 std::ostream& operator<<(std::ostream& ostream, const GuestId& container_id);
 
