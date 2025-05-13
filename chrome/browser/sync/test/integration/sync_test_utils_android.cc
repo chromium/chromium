@@ -23,6 +23,8 @@
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_bridge.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
@@ -33,39 +35,36 @@
 
 namespace sync_test_utils_android {
 
-void SetUpAccountAndSignInForTesting() {
+namespace {
+
+AccountInfo GetFakeAccountInfo(const std::string& username) {
+  AccountInfo account_info;
+  account_info.email = username;
+  account_info.gaia = signin::GetTestGaiaIdForEmail(username);
+  account_info.account_id = CoreAccountId::FromGaiaId(account_info.gaia);
+  return signin::WithGeneratedUserInfo(account_info, /*given_name=*/"Fake");
+}
+
+}  // namespace
+
+void SetUpFakeAccountAndSignInForTesting(const std::string& username) {
   base::RunLoop run_loop;
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock()}, base::BindLambdaForTesting([&]() {
         Java_SyncTestSigninUtils_setUpAccountAndSignInForTesting(
-            base::android::AttachCurrentThread());
+            base::android::AttachCurrentThread(), GetFakeAccountInfo(username));
         run_loop.Quit();
       }));
   run_loop.Run();
 }
 
-GaiaId GetGaiaIdForDefaultTestAccount() {
-  base::RunLoop run_loop;
-  GaiaId result;
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock()}, base::BindLambdaForTesting([&]() {
-        auto j_gaia_id =
-            Java_SyncTestSigninUtils_getGaiaIdForDefaultTestAccount(
-                base::android::AttachCurrentThread());
-        result = ConvertFromJavaGaiaId(base::android::AttachCurrentThread(),
-                                       j_gaia_id);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-  return result;
-}
-
-void SetUpAccountAndSignInAndEnableSyncForTesting() {
+void SetUpFakeAccountAndSignInAndEnableSyncForTesting(
+    const std::string& username) {
   base::RunLoop run_loop;
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock()}, base::BindLambdaForTesting([&]() {
         Java_SyncTestSigninUtils_setUpAccountAndSignInAndEnableSyncForTesting(
-            base::android::AttachCurrentThread());
+            base::android::AttachCurrentThread(), GetFakeAccountInfo(username));
         run_loop.Quit();
       }));
   run_loop.Run();

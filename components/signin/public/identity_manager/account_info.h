@@ -188,6 +188,19 @@ inline ScopedJavaLocalRef<jobject> ToJniType(
     const CoreAccountInfo& core_account_info) {
   return ConvertToJavaCoreAccountInfo(env, core_account_info);
 }
+
+template <>
+inline AccountInfo FromJniType<AccountInfo>(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_account_info) {
+  return ConvertFromJavaAccountInfo(env, j_account_info);
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType(JNIEnv* env,
+                                             const AccountInfo& account_info) {
+  return ConvertToJavaAccountInfo(env, account_info);
+}
 }  // namespace jni_zero
 #endif
 

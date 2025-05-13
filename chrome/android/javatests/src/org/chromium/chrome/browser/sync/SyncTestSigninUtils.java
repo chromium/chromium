@@ -13,8 +13,7 @@ import org.chromium.chrome.test.util.browser.signin.LiveSigninTestUtil;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.base.GaiaId;
-import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
+import org.chromium.components.signin.base.AccountInfo;
 
 /** Utility class for sign-in functionalities in native Sync browser tests. */
 @JNINamespace("sync_test_utils_android")
@@ -23,20 +22,16 @@ final class SyncTestSigninUtils {
 
     /** Sets up the test account and signs in, but does not enable Sync. */
     @CalledByNative
-    private static void setUpAccountAndSignInForTesting() {
-        sSigninTestRule.addTestAccountThenSignin();
-    }
-
-    /** Returns GaiaId for the default test account. */
-    @CalledByNative
-    private static GaiaId getGaiaIdForDefaultTestAccount() {
-        return FakeAccountManagerFacade.toGaiaId(SigninTestRule.TEST_ACCOUNT_EMAIL);
+    private static void setUpAccountAndSignInForTesting(
+            @JniType("AccountInfo") AccountInfo accountInfo) {
+        sSigninTestRule.addAccountThenSignin(accountInfo);
     }
 
     /** Sets up the test account, signs in, and enables Sync-the-feature. */
     @CalledByNative
-    private static void setUpAccountAndSignInAndEnableSyncForTesting() {
-        sSigninTestRule.addTestAccountThenSigninAndEnableSync();
+    private static void setUpAccountAndSignInAndEnableSyncForTesting(
+            @JniType("AccountInfo") AccountInfo accountInfo) {
+        sSigninTestRule.addAccountThenSigninAndEnableSync(accountInfo);
     }
 
     /** Signs out from the current test account. */

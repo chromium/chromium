@@ -137,6 +137,7 @@ public final class SigninTestUtil {
      *
      * @param syncService Enable the sync with it if it is not null.
      */
+    // TODO(crbug.com/40066949): Remove once Sync-the-feature is fully removed.
     @WorkerThread
     static void signinAndEnableSync(CoreAccountInfo coreAccountInfo, SyncService syncService) {
         assert syncService != null : "SyncService must not be null";

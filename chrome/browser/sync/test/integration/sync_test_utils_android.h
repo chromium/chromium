@@ -19,14 +19,12 @@
 namespace sync_test_utils_android {
 
 // Sets up the test account and signs in synchronously.
-void SetUpAccountAndSignInForTesting();
-
-// Returns GaiaId for the default test account on Android.
-GaiaId GetGaiaIdForDefaultTestAccount();
+void SetUpFakeAccountAndSignInForTesting(const std::string& username);
 
 // Sets up the test account, signs in, and enables Sync-the-feature
 // synchronously.
-void SetUpAccountAndSignInAndEnableSyncForTesting();
+void SetUpFakeAccountAndSignInAndEnableSyncForTesting(
+    const std::string& username);
 
 // Signs out and clears the primary account.
 void SignOutForTesting();

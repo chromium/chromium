@@ -88,6 +88,16 @@ public class SigninTestRule extends AccountManagerTestRule {
         mIsSignedIn = true;
     }
 
+    /** Adds and signs in with the provided account and enables sync. */
+    // TODO(crbug.com/40066949): Remove once Sync-the-feature is fully removed.
+    public void addAccountThenSigninAndEnableSync(AccountInfo accountInfo) {
+        assert !mIsSignedIn : "An account is already signed in!";
+        addAccount(accountInfo);
+        SigninTestUtil.signinAndEnableSync(
+                accountInfo, SyncTestUtil.getSyncServiceForLastUsedProfile());
+        mIsSignedIn = true;
+    }
+
     /** Adds and signs in with the provided account and opts into history sync. */
     public void addAccountThenSigninAndEnableHistorySync(AccountInfo accountInfo) {
         assert !mIsSignedIn : "An account is already signed in!";
@@ -96,17 +106,12 @@ public class SigninTestRule extends AccountManagerTestRule {
         mIsSignedIn = true;
     }
 
-    /** Adds and signs in an account with the default name and enables sync. */
-    public CoreAccountInfo addTestAccountThenSigninAndEnableSync() {
-        return addTestAccountThenSigninAndEnableSync(
-                SyncTestUtil.getSyncServiceForLastUsedProfile());
-    }
-
     /**
      * Adds and signs in an account with the default name and enables sync.
      *
      * @param syncService SyncService object to set up sync.
      */
+    // TODO(crbug.com/40066949): Remove once Sync-the-feature is fully removed.
     public CoreAccountInfo addTestAccountThenSigninAndEnableSync(SyncService syncService) {
         assert !mIsSignedIn : "An account is already signed in!";
         assert syncService != null : "SyncService must not be null";
