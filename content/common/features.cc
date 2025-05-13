@@ -121,6 +121,13 @@ BASE_FEATURE(kCanvas2DImageChromium,
 #endif
 );
 
+// When enabled, CDP method Page.captureScreenshot will increment
+// the LocalSurfaceId instead of waiting for ForceRedraw to complete.
+// This should avoid a possible stall due to frames not being presented.
+BASE_FEATURE(kCDPScreenshotNewSurface,
+             "CDPScreenshotNewSurface",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, code cache does not use a browsing_data filter for deletions.
 BASE_FEATURE(kCodeCacheDeletionWithoutFilter,
              "CodeCacheDeletionWithoutFilter",

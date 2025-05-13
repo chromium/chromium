@@ -415,7 +415,7 @@ bool RenderWidgetHostViewBase::ShouldInitiateStylusWriting() {
   return false;
 }
 
-bool RenderWidgetHostViewBase::RequestRepaintForTesting() {
+bool RenderWidgetHostViewBase::RequestRepaintOnNewSurface() {
   return false;
 }
 

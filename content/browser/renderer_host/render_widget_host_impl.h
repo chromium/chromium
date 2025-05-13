@@ -547,10 +547,11 @@ class CONTENT_EXPORT RenderWidgetHostImpl
     return visual_properties_ack_pending_;
   }
 
-  // Requests the generation of a new CompositorFrame from the renderer.
+  // Requests the generation of a new CompositorFrame from the renderer
+  // by forcing a new surface id.
   // It will return false if the renderer is not ready (e.g. there's an
   // in flight change).
-  bool RequestRepaintForTesting();
+  bool RequestRepaintOnNewSurface();
 
   // Called after every cross-document navigation. Note that for prerender
   // navigations, this is called before the renderer is shown.

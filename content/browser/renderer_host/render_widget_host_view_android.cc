@@ -1895,7 +1895,7 @@ void RenderWidgetHostViewAndroid::ResetFallbackToFirstNavigationSurface() {
     delegated_frame_host_->ResetFallbackToFirstNavigationSurface();
 }
 
-bool RenderWidgetHostViewAndroid::RequestRepaintForTesting() {
+bool RenderWidgetHostViewAndroid::RequestRepaintOnNewSurface() {
   return SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
                                      std::nullopt);
 }

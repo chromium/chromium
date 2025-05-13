@@ -515,7 +515,7 @@ void RenderWidgetHostViewIOS::ResetFallbackToFirstNavigationSurface() {
       ->ResetFallbackToFirstNavigationSurface();
 }
 
-bool RenderWidgetHostViewIOS::RequestRepaintForTesting() {
+bool RenderWidgetHostViewIOS::RequestRepaintOnNewSurface() {
   return browser_compositor_->ForceNewSurfaceId();
 }
 

@@ -2810,7 +2810,7 @@ bool RequestFrame(WebContents* web_contents) {
   return RenderWidgetHostImpl::From(web_contents->GetPrimaryMainFrame()
                                         ->GetRenderViewHost()
                                         ->GetWidget())
-      ->RequestRepaintForTesting();
+      ->RequestRepaintOnNewSurface();
 }
 
 RenderFrameSubmissionObserver::RenderFrameSubmissionObserver(

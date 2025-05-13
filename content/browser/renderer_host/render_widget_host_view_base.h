@@ -288,7 +288,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
 
   // Requests a new CompositorFrame from the renderer. This is done by
   // allocating a new viz::LocalSurfaceId which forces a commit and draw.
-  virtual bool RequestRepaintForTesting();
+  virtual bool RequestRepaintOnNewSurface();
 
   // Subclass identifier for RenderWidgetHostViewChildFrames. This is useful
   // to be able to know if this RWHV is embedded within another RWHV. If

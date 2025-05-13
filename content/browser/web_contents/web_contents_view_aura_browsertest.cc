@@ -311,7 +311,7 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
   }
 
   void WaitAFrame() {
-    while (!GetRenderWidgetHost()->RequestRepaintForTesting()) {
+    while (!GetRenderWidgetHost()->RequestRepaintOnNewSurface()) {
       GiveItSomeTime();
     }
     frame_observer_->WaitForAnyFrameSubmission();

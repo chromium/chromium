@@ -1490,12 +1490,12 @@ void RenderWidgetHostImpl::ViewDestroyed() {
   SetView(nullptr);
 }
 
-bool RenderWidgetHostImpl::RequestRepaintForTesting() {
+bool RenderWidgetHostImpl::RequestRepaintOnNewSurface() {
   if (!view_) {
     return false;
   }
 
-  return view_->RequestRepaintForTesting();
+  return view_->RequestRepaintOnNewSurface();
 }
 
 void RenderWidgetHostImpl::RenderProcessBlockedStateChanged(bool blocked) {
@@ -2151,7 +2151,20 @@ void RenderWidgetHostImpl::GetSnapshotFromBrowser(
   if (from_surface) {
     pending_surface_browser_snapshots_.insert(
         std::make_pair(snapshot_id, std::move(callback)));
-    RequestForceRedraw(snapshot_id);
+    if (base::FeatureList::IsEnabled(features::kCDPScreenshotNewSurface)) {
+      // 1. Force content redraw in the renderer.
+      blink_widget_->ForceRedraw(base::DoNothing());
+      // 2. Force a repaint to ensure that surface is updated.
+      RequestRepaintOnNewSurface();
+      // 3. Create a copy request from the newest surface. This
+      // should wait until the requested repaint has arrived.
+      GetView()->CopyFromSurface(
+          gfx::Rect(), gfx::Size(),
+          base::BindOnce(&RenderWidgetHostImpl::OnSnapshotFromSurfaceReceived,
+                         weak_factory_.GetWeakPtr(), snapshot_id, 0));
+    } else {
+      RequestForceRedraw(snapshot_id);
+    }
     return;
   }
 

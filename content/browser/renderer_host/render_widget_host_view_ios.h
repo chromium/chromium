@@ -118,7 +118,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void DidEnterBackForwardCache() override;
   void ActivatedOrEvictedFromBackForwardCache() override;
   void DidNavigate() override;
-  bool RequestRepaintForTesting() override;
+  bool RequestRepaintOnNewSurface() override;
   void Destroy() override;
   bool IsSurfaceAvailableForCopy() override;
   void CopyFromSurface(
