@@ -116629,6 +116629,19 @@
        {}
       ]
      ],
+     "display-contents-inline-002.html": [
+      "f40a34129f348aca37fca83f70598053cf22785b",
+      [
+       null,
+       [
+        [
+         "/css/css-display/display-contents-pass-no-red-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "display-contents-inline-flex-001.html": [
       "43b502731aefbaa348671e32171f0e1eb4bca04b",
       [
@@ -373273,10 +373286,6 @@
       ]
      },
      "urls": {
-      "fragment-only-expected.txt": [
-       "e79da1e4b879f3f871eb3f2fb2627fbd4f98297b",
-       []
-      ],
       "support": {
        "1x1-green.png": [
         "b98ca0ba0a03c580ac339e4a3653539cfa8edc71",
@@ -403712,6 +403721,14 @@
         "2b43c54e2f2e885b8d41e9d39b90be2fe8e1f8c6",
         []
        ],
+       "iframe_javascript_url_initial_insertion-expected.txt": [
+        "e0c0cfaed5153d59e4364a40dd6a6890450e6bf4",
+        []
+       ],
+       "iframe_javascript_url_loading_lazy-expected.txt": [
+        "a2e0b16646946288218e3f2b87444b4f1b636fe8",
+        []
+       ],
        "iframe_sandbox_popups_helper-1.html": [
         "6b120f15d0d7e6cd2fe6a2753ff4592b05056034",
         []
@@ -417755,6 +417772,14 @@
     ],
     "pointerevent_boundary_events_before_pointerrawupdate.https-expected.txt": [
      "53c06b6443b553a17dc85314f1669d3dcae695d5",
+     []
+    ],
+    "pointerevent_click_during_parent_capture_pointerType=touch_preventDefault=-expected.txt": [
+     "e320ae7b61c57fe7f87a4cd673b94a716ebd5680",
+     []
+    ],
+    "pointerevent_click_during_parent_capture_pointerType=touch_preventDefault=pointerdown-expected.txt": [
+     "d57f4cfaa318b53aef1f483730051723f3644c80",
      []
     ],
     "pointerevent_click_on_chorded_mouse_button.tentative-expected.txt": [
@@ -433235,7 +433260,7 @@
       },
       "browsing_context": {
        "__init__.py": [
-        "8987e12a967162cfad502cf81429e4e4d74c3023",
+        "618d2c1a23c6bf7bfb57de8bdefae6b5c54d195d",
         []
        ],
        "activate": {
@@ -489268,7 +489293,7 @@
      ]
     ],
     "cookieStore_set_arguments.https.any.js": [
-     "2062ebb03952f2ccdbde14ab6e24613d207e68c5",
+     "e6fe48c9d3bcc1f27568c5ddec21fc3fc407ec6f",
      [
       "cookie-store/cookieStore_set_arguments.https.any.html",
       {
@@ -498079,7 +498104,7 @@
        ]
       ],
       "color-computed-relative-color.html": [
-       "9bb87459623ac3c50b2154432269adef114fe811",
+       "a5c489e40a6cffd28709757b1645db319a2a70b9",
        [
         null,
         {}
@@ -529215,6 +529240,13 @@
         {}
        ]
       ],
+      "sibling-index-keyframe-percent-dynamic.html": [
+       "58d1e7990d3aa73d94aa857386c948e46d763f03",
+       [
+        null,
+        {}
+       ]
+      ],
       "sibling-index-keyframe-value-dynamic.html": [
        "286e0d3d3e2eecdd091df74c8c47f738cb700dd1",
        [
@@ -536367,6 +536399,13 @@
        ]
       ]
      },
+     "quirks-mode-import.html": [
+      "515f8d86e4697e3a49cc1836695c55ad23308e8f",
+      [
+       null,
+       {}
+      ]
+     ],
      "scope-selector.html": [
       "06b6bc13785dff351b2e518e22aa0889cc77d875",
       [
@@ -598894,6 +598933,30 @@
       }
      ]
     ],
+    "getCurrentPosition-error.https.html": [
+     "0ea929d161eeab86c1baf47682a7bdd7bdbdc268",
+     [
+      null,
+      {
+       "testdriver": true,
+       "testdriver_features": [
+        "bidi"
+       ]
+      }
+     ]
+    ],
+    "getCurrentPosition-success.https.html": [
+     "d601b536329e44d2e40aab69a9e98f40074e81c8",
+     [
+      null,
+      {
+       "testdriver": true,
+       "testdriver_features": [
+        "bidi"
+       ]
+      }
+     ]
+    ],
     "getCurrentPosition_TypeError.https.html": [
      "9da8ac1d29247d981171946747b17f4d60fe0f4b",
      [
@@ -644430,6 +644493,13 @@
          {}
         ]
        ],
+       "embed-javascript-url.html": [
+        "253ba2132738fa020f3ef33d6c8a276090e5332d",
+        [
+         null,
+         {}
+        ]
+       ],
        "embed-network-error.sub.html": [
         "bae995c101fd2d9d886c918f25fa711c1289559d",
         [
@@ -644833,8 +644903,50 @@
          {}
         ]
        ],
+       "iframe_javascript_url_in_src.htm": [
+        "73202af1d7ce64f2d2daed80cb52b5ebb744fa6d",
+        [
+         null,
+         {}
+        ]
+       ],
+       "iframe_javascript_url_initial_insertion.html": [
+        "6989172a2171f910b75b7cc972dbb194fd2e7d55",
+        [
+         null,
+         {}
+        ]
+       ],
+       "iframe_javascript_url_loading_lazy.htm": [
+        "e88592b2a11d827541a6fe436b6d2f67757d50d8",
+        [
+         null,
+         {}
+        ]
+       ],
+       "iframe_javascript_url_not_about_blank.html": [
+        "9d236426c969b2ddd28c46ce4e207fc0142a5735",
+        [
+         null,
+         {}
+        ]
+       ],
+       "iframe_javascript_url_remove_srcdoc.html": [
+        "fee300c5c48bd99f2686d99cef452e238b63b7c6",
+        [
+         null,
+         {}
+        ]
+       ],
        "iframe_navigate_ancestor-1.sub.html": [
         "5e3b7682cc8dd45a22bb74b5f7b11a6a4a728d72",
+        [
+         null,
+         {}
+        ]
+       ],
+       "iframe_navigate_javascript_url.htm": [
+        "88867790e7d2e58a4e75f21368fa6cd6c90dee7a",
         [
          null,
          {}
@@ -646577,6 +646689,13 @@
        ],
        "object-in-object-fallback-2.html": [
         "a026e59e485a6e25a52bf12f51b9ac6c4a5bf514",
+        [
+         null,
+         {}
+        ]
+       ],
+       "object-javascript-url.html": [
+        "79c3ff9c407e96bc02b443c26dc5dceb2b453c75",
         [
          null,
          {}
@@ -649194,6 +649313,13 @@
           {}
          ]
         ],
+        "selectedcontent-mutations.tentative.html": [
+         "45f2ff7813992313292b4aa682a9bcd43e4fb277",
+         [
+          null,
+          {}
+         ]
+        ],
         "selectedcontent-restore.tentative.html": [
          "da5fe450abbae0d19826021f114cc6388f97bc57",
          [
@@ -649204,7 +649330,7 @@
          ]
         ],
         "selectedcontent.tentative.html": [
-         "d32990515370eeddac07a41eb12c8c418adbdb15",
+         "ce298adc23e32b0b74c8f9e237b1fa5789a9660b",
          [
           null,
           {
@@ -684243,6 +684369,39 @@
       }
      ]
     ],
+    "pointerevent_click_during_parent_capture.html": [
+     "f25e61aade3abb3d95185e4981b4740f15bfab52",
+     [
+      "pointerevents/pointerevent_click_during_parent_capture.html?pointerType=mouse&preventDefault=",
+      {
+       "testdriver": true
+      }
+     ],
+     [
+      "pointerevents/pointerevent_click_during_parent_capture.html?pointerType=mouse&preventDefault=pointerdown",
+      {
+       "testdriver": true
+      }
+     ],
+     [
+      "pointerevents/pointerevent_click_during_parent_capture.html?pointerType=touch&preventDefault=",
+      {
+       "testdriver": true
+      }
+     ],
+     [
+      "pointerevents/pointerevent_click_during_parent_capture.html?pointerType=touch&preventDefault=pointerdown",
+      {
+       "testdriver": true
+      }
+     ],
+     [
+      "pointerevents/pointerevent_click_during_parent_capture.html?pointerType=touch&preventDefault=touchstart",
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "pointerevent_click_is_a_pointerevent.html": [
      "9087a42436e0c82f519a2427999f4b5a7edf502f",
      [
@@ -700312,7 +700471,7 @@
      ]
     ],
     "sanitizer-basic-filtering.tentative.html": [
-     "38c764ae181418014488cf86126398158e653157",
+     "97d13c415daab9daf91840e259f10094329f2217",
      [
       null,
       {}
@@ -715043,7 +715202,7 @@
      ]
     ],
     "SpeechRecognition-installOnDevice.https.html": [
-     "2f5b359c571d6d9cc97815ae6ba46e4249ec569e",
+     "7422f5d67570be610ed7b76cfb4fb93e0a765068",
      [
       null,
       {
@@ -834531,14 +834690,14 @@
        },
        "context_created": {
         "context_created.py": [
-         "2982f78d99188ba77f4bf243cb7dd363644ed6a2",
+         "3c26dbed7dca0ae8b837982ade47def01a343560",
          [
           null,
           {}
          ]
         ],
         "original_opener.py": [
-         "18c9483e7ce83389472f7a3bef0617a3ef180083",
+         "9ac59a3a325bcb8dea88e1c66a6a7b483f559861",
          [
           null,
           {}
@@ -834547,7 +834706,7 @@
        },
        "context_destroyed": {
         "context_destroyed.py": [
-         "2fd0cd6bb479ee97b50a2137e7993dbbc8a94ec5",
+         "0576221de4c3f63f9017c88c480a02fa012f61f3",
          [
           null,
           {}
@@ -834577,21 +834736,21 @@
          ]
         ],
         "reference_context.py": [
-         "8511495594b40d00ab4a3a90a0788ab0848020af",
+         "a39df42acc170dcaa2d571c27c6d4d7d532ef5fd",
          [
           null,
           {}
          ]
         ],
         "type.py": [
-         "17703d60123e28571919cd87d5c90143f4bad7bf",
+         "f6dcdcfa06485cec355fc4dd4691421477c22846",
          [
           null,
           {}
          ]
         ],
         "user_context.py": [
-         "490188c265d461d285772bb6c9c79215b6b5ff6d",
+         "92282c6be6a1aa91a9fdd9e9803c868fd124fe5c",
          [
           null,
           {}

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Test in the topmost document: "click" event should be fired on expected target
+  assert_array_equals: lengths differ, expected array ["<div id=\\"parent\\">", "<body>", "<html>", Document node with 2 children, object "[object Window]"] length 5, got ["<div id=\\"target\\">", "<div id=\\"parent\\">", "<body>", "<html>", Document node with 2 children, object "[object Window]"] length 6
+[FAIL] Test in the iframe: all expected events should be fired
+  assert_array_equals: lengths differ, expected array ["pointerdown", "touchstart", "pointerup", "touchend", "click"] length 5, got ["pointerdown", "touchstart", "pointerup", "touchend", "mousedown", "mouseup", "click"] length 7
+[FAIL] Test in the iframe: "click" event should be fired on expected target
+  assert_array_equals: lengths differ, expected array ["<div id=\\"parent\\">", "<body>", "<html>", Document node with 1 child, object "[object Window]"] length 5, got ["<div id=\\"target\\">", "<div id=\\"parent\\">", "<body>", "<html>", Document node with 1 child, object "[object Window]"] length 6
+Harness: the test ran to completion.
+

@@ -351,3 +351,42 @@ promise_test(async testCase => {
   const cookie = await cookieStore.get('cookie-name');
   assert_equals(cookie, null);
 }, 'cookieStore.set with a __Host- prefix should not have a domain');
+
+promise_test(async testCase => {
+  await promise_rejects_js(testCase, TypeError, cookieStore.set(
+      { name: '',
+        value: ' ' }));
+
+  await promise_rejects_js(testCase, TypeError, cookieStore.set(
+      { name: ' ',
+        value: '' }));
+
+  await promise_rejects_js(testCase, TypeError, cookieStore.set(
+      { name: '  ',
+        value: '  ' }));
+}, 'cookieStore.set with whitespace only name and value');
+
+promise_test(async testCase => {
+  testCase.add_cleanup(async () => {
+    await cookieStore.delete('a b');
+  });
+  await cookieStore.set('a b', 'x y');
+  const cookie = await cookieStore.get('a b');
+  assert_equals(cookie.value, "x y");
+
+  await promise_rejects_js(testCase, TypeError, cookieStore.set(
+      { name: 'a  ',
+        value: 'x' }));
+
+  await promise_rejects_js(testCase, TypeError, cookieStore.set(
+      { name: '  a',
+        value: 'x' }));
+
+  await promise_rejects_js(testCase, TypeError, cookieStore.set(
+      { name: 'a',
+        value: 'x ' }));
+
+  await promise_rejects_js(testCase, TypeError, cookieStore.set(
+      { name: 'a',
+        value: 'x ' }));
+}, 'cookieStore.set with whitespace at begining or end');
