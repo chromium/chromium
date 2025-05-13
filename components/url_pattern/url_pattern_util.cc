@@ -247,9 +247,7 @@ base::expected<std::string, absl::Status> HashEncodeCallback(
   url::RawCanonOutputT<char> canon_output;
   url::Component component;
 
-  url::CanonicalizeRef(input.data(),
-                       url::Component(0, base::checked_cast<int>(input.size())),
-                       &canon_output, &component);
+  url::CanonicalizeRef(input, &canon_output, &component);
 
   return StdStringFromCanonOutput(canon_output, component);
 }

@@ -4,6 +4,8 @@
 
 // Functions for canonicalizing "filesystem:file:" URLs.
 
+#include <optional>
+
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
 #include "url/url_file.h"
@@ -74,7 +76,8 @@ bool DoCanonicalizeFileSystemURL(const CHAR* spec,
   // Ignore failures for query/ref since the URL can probably still be loaded.
   CanonicalizeQuery(source.query, parsed.query, charset_converter,
                     output, &new_parsed->query);
-  CanonicalizeRef(source.ref, parsed.ref, output, &new_parsed->ref);
+  CanonicalizeRef(parsed.ref.maybe_as_string_view_on(source.ref), output,
+                  &new_parsed->ref);
   if (success)
     new_parsed->set_inner_parsed(new_inner_parsed);
 

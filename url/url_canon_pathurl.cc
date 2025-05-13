@@ -81,7 +81,8 @@ bool DoCanonicalizePathURL(const URLComponentSource<CHAR>& source,
   CanonicalizeQuery(source.query, parsed.query, nullptr, output,
                     &new_parsed->query);
 
-  CanonicalizeRef(source.ref, parsed.ref, output, &new_parsed->ref);
+  CanonicalizeRef(parsed.ref.maybe_as_string_view_on(source.ref), output,
+                  &new_parsed->ref);
 
   return success;
 }

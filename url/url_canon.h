@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <optional>
 #include <string_view>
 
 #include "base/check_op.h"
@@ -726,13 +727,11 @@ void CanonicalizeQuery(const char16_t* spec,
 // This function will not fail. If the input is invalid UTF-8/UTF-16, we'll use
 // the "Unicode replacement character" for the confusing bits and copy the rest.
 COMPONENT_EXPORT(URL)
-void CanonicalizeRef(const char* spec,
-                     const Component& path,
+void CanonicalizeRef(std::optional<std::string_view> spec,
                      CanonOutput* output,
                      Component* out_path);
 COMPONENT_EXPORT(URL)
-void CanonicalizeRef(const char16_t* spec,
-                     const Component& path,
+void CanonicalizeRef(std::optional<std::u16string_view> spec,
                      CanonOutput* output,
                      Component* out_path);
 

@@ -445,7 +445,8 @@ bool DoResolveRelativePath(const char* base_url,
     // Finish with the query and reference part (these can't fail).
     CanonicalizeQuery(relative_url, query, query_converter,
                       output, &out_parsed->query);
-    CanonicalizeRef(relative_url, ref, output, &out_parsed->ref);
+    CanonicalizeRef(ref.maybe_as_string_view_on(relative_url), output,
+                    &out_parsed->ref);
 
     // Fix the path beginning to add back the "C:" we may have written above.
     out_parsed->path = MakeRange(true_path_begin, out_parsed->path.end());
@@ -460,7 +461,8 @@ bool DoResolveRelativePath(const char* base_url,
     // failures for refs)
     CanonicalizeQuery(relative_url, query, query_converter,
                       output, &out_parsed->query);
-    CanonicalizeRef(relative_url, ref, output, &out_parsed->ref);
+    CanonicalizeRef(ref.maybe_as_string_view_on(relative_url), output,
+                    &out_parsed->ref);
     return success;
   }
 
@@ -473,7 +475,8 @@ bool DoResolveRelativePath(const char* base_url,
 
   if (ref.is_valid()) {
     // Just the reference specified: replace it (ignoring failures).
-    CanonicalizeRef(relative_url, ref, output, &out_parsed->ref);
+    CanonicalizeRef(ref.as_string_view_on(relative_url), output,
+                    &out_parsed->ref);
     return success;
   }
 

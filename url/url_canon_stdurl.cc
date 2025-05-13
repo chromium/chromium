@@ -108,7 +108,8 @@ bool DoCanonicalizeStandardURL(const URLComponentSource<CHAR>& source,
                     output, &new_parsed->query);
 
   // Ref: ignore failure for this, since the page can probably still be loaded.
-  CanonicalizeRef(source.ref, parsed.ref, output, &new_parsed->ref);
+  CanonicalizeRef(parsed.ref.maybe_as_string_view_on(source.ref), output,
+                  &new_parsed->ref);
 
   // Carry over the flag for potentially dangling markup:
   if (parsed.potentially_dangling_markup)

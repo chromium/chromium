@@ -6,6 +6,7 @@
 #define URL_THIRD_PARTY_MOZILLA_URL_PARSE_H_
 
 #include <iosfwd>
+#include <optional>
 #include <string_view>
 
 #include "base/check.h"
@@ -55,6 +56,17 @@ struct Component {
   template <typename CharT>
   std::basic_string_view<CharT> as_string_view_on(const CharT* source) const {
     DCHECK(is_valid());
+    return std::basic_string_view(&source[begin], len);
+  }
+
+  // Returns a std::optional<string_view> using `source` as a backend.
+  // Returns std::nullopt if the component is invalid.
+  template <typename CharT>
+  std::optional<std::basic_string_view<CharT>> maybe_as_string_view_on(
+      const CharT* source) const {
+    if (!is_valid()) {
+      return std::nullopt;
+    }
     return std::basic_string_view(&source[begin], len);
   }
 

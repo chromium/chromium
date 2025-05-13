@@ -1710,7 +1710,8 @@ TEST_F(URLCanonTest, Ref) {
 
       std::string out_str;
       StdStringCanonOutput output(&out_str);
-      CanonicalizeRef(ref_case.input8, in_comp, &output, &out_comp);
+      CanonicalizeRef(in_comp.maybe_as_string_view_on(ref_case.input8), &output,
+                      &out_comp);
       output.Complete();
 
       EXPECT_EQ(ref_case.expected_component.begin, out_comp.begin);
@@ -1728,7 +1729,8 @@ TEST_F(URLCanonTest, Ref) {
 
       std::string out_str;
       StdStringCanonOutput output(&out_str);
-      CanonicalizeRef(input16.c_str(), in_comp, &output, &out_comp);
+      CanonicalizeRef(in_comp.maybe_as_string_view_on(input16.c_str()), &output,
+                      &out_comp);
       output.Complete();
 
       EXPECT_EQ(ref_case.expected_component.begin, out_comp.begin);
@@ -1744,7 +1746,8 @@ TEST_F(URLCanonTest, Ref) {
 
   std::string out_str;
   StdStringCanonOutput output(&out_str);
-  CanonicalizeRef(null_input, null_input_component, &output, &out_comp);
+  CanonicalizeRef(null_input_component.as_string_view_on(null_input), &output,
+                  &out_comp);
   output.Complete();
 
   EXPECT_EQ(1, out_comp.begin);

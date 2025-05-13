@@ -8,11 +8,13 @@
 #endif
 
 #include <array>
+#include <string_view>
 
 // Canonicalizers for random bits that aren't big enough for their own files.
 
 #include <string.h>
 
+#include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
 
@@ -304,15 +306,15 @@ const std::array<bool, 0x80> kShouldEscapeCharInFragment = {
 // clang-format on
 
 template <typename CHAR, typename UCHAR>
-void DoCanonicalizeRef(const CHAR* spec,
-                       const Component& ref,
+void DoCanonicalizeRef(std::optional<std::basic_string_view<CHAR>> input,
                        CanonOutput* output,
                        Component* out_ref) {
-  if (!ref.is_valid()) {
+  if (!input.has_value()) {
     // Common case of no ref.
     *out_ref = Component();
     return;
   }
+  auto input_value = input.value();
 
   // Append the ref separator. Note that we need to do this even when the ref
   // is empty but present.
@@ -320,19 +322,18 @@ void DoCanonicalizeRef(const CHAR* spec,
   out_ref->begin = output->length();
 
   // Now iterate through all the characters, converting to UTF-8 and validating.
-  size_t end = static_cast<size_t>(ref.end());
-  for (size_t i = static_cast<size_t>(ref.begin); i < end; i++) {
-    UCHAR current_char = static_cast<UCHAR>(spec[i]);
+  for (size_t i = 0; i < input_value.length(); ++i) {
+    UCHAR current_char = static_cast<UCHAR>(input.value()[i]);
     if (current_char < 0x80) {
       if (kShouldEscapeCharInFragment[current_char])
-        AppendEscapedChar(static_cast<unsigned char>(spec[i]), output);
+        AppendEscapedChar(static_cast<unsigned char>(input_value[i]), output);
       else
-        output->push_back(static_cast<char>(spec[i]));
+        output->push_back(static_cast<char>(input_value[i]));
     } else {
-      AppendUTF8EscapedChar(spec, &i, end, output);
+      AppendUTF8EscapedChar(input_value.data(), &i, input_value.length(),
+                            output);
     }
   }
-
   out_ref->len = output->length() - out_ref->begin;
 }
 
@@ -418,18 +419,16 @@ bool CanonicalizePort(const char16_t* spec,
                                     out_port);
 }
 
-void CanonicalizeRef(const char* spec,
-                     const Component& ref,
+void CanonicalizeRef(std::optional<std::string_view> input,
                      CanonOutput* output,
                      Component* out_ref) {
-  DoCanonicalizeRef<char, unsigned char>(spec, ref, output, out_ref);
+  DoCanonicalizeRef<char, unsigned char>(input, output, out_ref);
 }
 
-void CanonicalizeRef(const char16_t* spec,
-                     const Component& ref,
+void CanonicalizeRef(std::optional<std::u16string_view> input,
                      CanonOutput* output,
                      Component* out_ref) {
-  DoCanonicalizeRef<char16_t, char16_t>(spec, ref, output, out_ref);
+  DoCanonicalizeRef<char16_t, char16_t>(input, output, out_ref);
 }
 
 }  // namespace url
