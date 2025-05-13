@@ -4397,7 +4397,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.AddLoginCount"
-    units="passwords" expires_after="2025-06-22">
+    units="passwords" expires_after="2025-08-22">
   <owner>vsemeniuk@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <owner>atsvirchkova@google.com</owner>
@@ -4437,7 +4437,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.MergeWhereAndroidHasMostRecent"
-    units="passwords" expires_after="2025-06-22">
+    units="passwords" expires_after="2025-08-22">
   <owner>atsvirchkova@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -4458,7 +4458,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.MigratedLoginsTotalCount"
-    units="passwords" expires_after="2025-06-22">
+    units="passwords" expires_after="2025-08-22">
   <owner>vsemeniuk@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <owner>atsvirchkova@google.com</owner>
@@ -4495,7 +4495,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.UpdateLoginCount"
-    units="passwords" expires_after="2025-06-22">
+    units="passwords" expires_after="2025-08-22">
   <owner>vsemeniuk@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <owner>atsvirchkova@google.com</owner>
