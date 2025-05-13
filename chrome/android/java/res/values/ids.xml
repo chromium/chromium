@@ -53,9 +53,6 @@ found in the LICENSE file.
     <item type="id" name="contextmenu_save_page" />
     <item type="id" name="contextmenu_share_page" />
     <item type="id" name="contextmenu_print_page" />
-    <item type="id" name="contextmenu_back" />
-    <item type="id" name="contextmenu_forward" />
-    <item type="id" name="contextmenu_reload" />
     <item type="id" name="contextmenu_inspect_element" />
 
     <!-- Custom Tab Group -->

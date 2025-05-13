@@ -1633,7 +1633,6 @@ public class ChromeContextMenuPopulatorTest {
                         /* additionalNavigationParams= */ null);
 
         int[][] expected = {
-            {R.id.contextmenu_back, R.id.contextmenu_forward, R.id.contextmenu_reload},
             {R.id.contextmenu_save_page, R.id.contextmenu_share_page, R.id.contextmenu_print_page},
             {R.id.contextmenu_inspect_element},
         };
@@ -1650,60 +1649,6 @@ public class ChromeContextMenuPopulatorTest {
         initializePopulatorOnDesktop(
                 ChromeContextMenuPopulator.ContextMenuMode.NETWORK_BOUND_TAB, params);
         checkMenuOptions(expected);
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testPageNavigation() {
-        FirstRunStatus.setFirstRunFlowComplete(true);
-        ContextMenuParams params =
-                new ContextMenuParams(
-                        0,
-                        ContextMenuDataMediaType.NONE,
-                        new GURL(PAGE_URL),
-                        GURL.emptyGURL(),
-                        "",
-                        GURL.emptyGURL(),
-                        GURL.emptyGURL(),
-                        "",
-                        null,
-                        false,
-                        0,
-                        0,
-                        MenuSourceType.TOUCH,
-                        false,
-                        false,
-                        0,
-                        /* additionalNavigationParams= */ null);
-
-        int[][] expected = {
-            {R.id.contextmenu_back, R.id.contextmenu_forward, R.id.contextmenu_reload},
-            {R.id.contextmenu_save_page, R.id.contextmenu_share_page, R.id.contextmenu_print_page},
-            {R.id.contextmenu_inspect_element},
-        };
-
-        // All items are present and enabled.
-        initializePopulatorOnDesktop(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
-        checkMenuOptions(expected);
-
-        // Only back is disabled.
-        when(mItemDelegate.canCurrentTabGoBack()).thenReturn(false);
-        List<Integer> expected_disabled = Arrays.asList(R.id.contextmenu_back);
-        initializePopulatorOnDesktop(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
-        checkMenuOptions(expected_disabled, expected);
-
-        // Both back and forward are disabled.
-        when(mItemDelegate.canCurrentTabGoForward()).thenReturn(false);
-        expected_disabled = Arrays.asList(R.id.contextmenu_back, R.id.contextmenu_forward);
-        initializePopulatorOnDesktop(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
-        checkMenuOptions(expected_disabled, expected);
-
-        // Only forward is disabled.
-        when(mItemDelegate.canCurrentTabGoBack()).thenReturn(true);
-        expected_disabled = Arrays.asList(R.id.contextmenu_forward);
-        initializePopulatorOnDesktop(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
-        checkMenuOptions(expected_disabled, expected);
     }
 
     @Test
@@ -1772,27 +1717,24 @@ public class ChromeContextMenuPopulatorTest {
                         /* additionalNavigationParams= */ null);
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(true);
 
-        int[] expected1 = {
-            R.id.contextmenu_back, R.id.contextmenu_forward, R.id.contextmenu_reload
-        };
-        int[] expected2 = {
+        int[] expectedPage = {
             R.id.contextmenu_save_page, R.id.contextmenu_share_page, R.id.contextmenu_print_page
         };
-        int[] expected3 = {R.id.contextmenu_inspect_element};
+        int[] expectedDevtools = {R.id.contextmenu_inspect_element};
         List<Integer> expected_disabled = Arrays.asList(R.id.contextmenu_save_page);
 
         initializePopulatorOnDesktop(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
-        checkMenuOptions(expected_disabled, expected1, expected2, expected3);
+        checkMenuOptions(expected_disabled, expectedPage, expectedDevtools);
 
         initializePopulatorOnDesktop(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params);
-        checkMenuOptions(expected_disabled, expected1, expected2, expected3);
+        checkMenuOptions(expected_disabled, expectedPage, expectedDevtools);
 
         initializePopulatorOnDesktop(ChromeContextMenuPopulator.ContextMenuMode.WEB_APP, params);
-        checkMenuOptions(expected_disabled, expected1, expected2, expected3);
+        checkMenuOptions(expected_disabled, expectedPage, expectedDevtools);
 
         initializePopulatorOnDesktop(
                 ChromeContextMenuPopulator.ContextMenuMode.NETWORK_BOUND_TAB, params);
-        checkMenuOptions(expected_disabled, expected1, expected2, expected3);
+        checkMenuOptions(expected_disabled, expectedPage, expectedDevtools);
     }
 
     @Test
@@ -1821,7 +1763,6 @@ public class ChromeContextMenuPopulatorTest {
                         /* additionalNavigationParams= */ null);
 
         int[][] expected = {
-            {R.id.contextmenu_back, R.id.contextmenu_forward, R.id.contextmenu_reload},
             {R.id.contextmenu_save_page, R.id.contextmenu_share_page},
             {R.id.contextmenu_inspect_element},
         };
