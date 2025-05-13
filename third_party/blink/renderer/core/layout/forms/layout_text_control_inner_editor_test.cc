@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
 
@@ -116,6 +117,21 @@ TEST_F(LayoutTextControlInnerEditorTest, RemoveChildWithoutTrailingLf) {
   child = inner_editor->FirstChild();
   EXPECT_TRUE(child->IsAnonymousBlockFlow());
   EXPECT_FALSE(child->NextSibling());
+}
+
+// crbug.com/416795534
+TEST_F(LayoutTextControlInnerEditorTest, AddChildBeforeTestRenderingHolder) {
+  if (!RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled()) {
+    return;
+  }
+  SetBodyInnerHTML("<textarea id=ta>A\n</textarea>");
+  GetElementById("ta")->Focus();
+  GetDocument().execCommand(
+      "inserthtml", false,
+      "<style> :first-letter { max-width: initial; }</style>",
+      ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+  // Pass if no crashes.
 }
 
 }  // namespace blink

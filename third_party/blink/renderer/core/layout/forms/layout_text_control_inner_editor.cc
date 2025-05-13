@@ -62,6 +62,24 @@ void LayoutTextControlInnerEditor::AddChild(LayoutObject* new_child,
 
   DCHECK(FirstChild());
   auto* before_parent = To<LayoutBlockFlow>(before_child->Parent());
+
+  if (!before_parent->IsAnonymous()) {
+    // `before_child` is the "holder" for TestRendering.
+    DCHECK_EQ(before_parent, this);
+    if (auto* previous = before_child->PreviousSibling()) {
+      DCHECK(previous->IsAnonymousBlockFlow());
+      auto* previous_last = previous->SlowLastChild();
+      if (!previous_last || !previous_last->IsBR()) {
+        previous->AddChild(new_child);
+        return;
+      }
+    }
+    auto* anonymous = LayoutBlockFlow::CreateAnonymous(&GetDocument(), Style());
+    LayoutBlockFlow::AddChild(anonymous, before_child);
+    anonymous->AddChild(new_child);
+    return;
+  }
+
   if (!new_child->IsBR()) {
     before_parent->AddChild(new_child, before_child);
     return;
