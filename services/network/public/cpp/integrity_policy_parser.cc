@@ -80,7 +80,8 @@ IntegrityPolicy ParseIntegrityPolicyFromHeaders(
           net::structured_headers::ParseDictionary(integrity_policy_header);
   if (!integrity_policy_dictionary) {
     parsed_policy.parsing_errors.emplace_back(base::StringPrintf(
-        "The %s value is not a dictionary.", header_name.c_str()));
+        "The %s value \"%s\" is not a dictionary.", header_name.c_str(),
+        integrity_policy_header.c_str()));
     return parsed_policy;
   }
 

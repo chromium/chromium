@@ -54,12 +54,14 @@ TEST(IntegrityPolicyParserTest, Parse) {
        kEmptyDestination,
        kEmptySource,
        kEmptyVectorString,
-       {"The Integrity-Policy value is not a dictionary."}},
+       {"The Integrity-Policy value \"not a dictionary\" is not a "
+        "dictionary."}},
       {"not a dictionary",
        kEmptyDestination,
        kEmptySource,
        kEmptyVectorString,
-       {"The Integrity-Policy-Report-Only value is not a dictionary."},
+       {"The Integrity-Policy-Report-Only value \"not a dictionary\" is not a "
+        "dictionary."},
        IntegrityPolicyHeaderType::kReportOnly},
       {"wrongkey=(something)",
        kEmptyDestination,
@@ -119,7 +121,8 @@ TEST(IntegrityPolicyParserTest, Parse) {
        kEmptyDestination,
        kEmptySource,
        kEmptyVectorString,
-       {"The Integrity-Policy value is not a dictionary."}},
+       {"The Integrity-Policy value \"blocked-destinations=(script), "
+        "endpoints=(invalid1, invalid2)\" is not a dictionary."}},
       {"sources=(other), blocked-destinations=(script)",
        kScriptDestination,
        kEmptySource,
@@ -129,7 +132,8 @@ TEST(IntegrityPolicyParserTest, Parse) {
        kEmptyDestination,
        kEmptySource,
        kEmptyVectorString,
-       {"The Integrity-Policy value is not a dictionary."}},
+       {"The Integrity-Policy value \"sources=(inline), "
+        "blocked-destinations=[], endpoints=[]\" is not a dictionary."}},
 
   };
 
