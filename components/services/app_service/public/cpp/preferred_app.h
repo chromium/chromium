@@ -20,8 +20,9 @@ struct COMPONENT_EXPORT(APP_TYPES) PreferredApp {
   PreferredApp& operator=(const PreferredApp&) = delete;
   ~PreferredApp();
 
+  // Not defaulted to enforce comparing the content of `intent_filter` (instead
+  // of just the pointer address).
   bool operator==(const PreferredApp& other) const;
-  bool operator!=(const PreferredApp& other) const;
 
   std::unique_ptr<PreferredApp> Clone() const;
 

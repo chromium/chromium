@@ -83,30 +83,6 @@ PackageId::PackageId() : PackageId(PackageType::kUnknown, kUnknownName) {}
 PackageId::PackageId(const PackageId&) = default;
 PackageId& PackageId::operator=(const PackageId&) = default;
 
-bool PackageId::operator<(const PackageId& rhs) const {
-  if (this->package_type_ < rhs.package_type_) {
-    return true;
-  } else if (this->package_type_ > rhs.package_type_) {
-    return false;
-  }
-  // If we're here, it's because package_type_ == rhs.package_type_.
-  if (this->identifier_ < rhs.identifier_) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-bool PackageId::operator==(const PackageId& rhs) const {
-  return this->package_type_ == rhs.package_type_ &&
-         this->identifier_ == rhs.identifier_;
-}
-
-bool PackageId::operator!=(const PackageId& rhs) const {
-  return this->package_type_ != rhs.package_type_ ||
-         this->identifier_ != rhs.identifier_;
-}
-
 // static
 std::optional<PackageId> PackageId::FromString(
     std::string_view package_id_string) {

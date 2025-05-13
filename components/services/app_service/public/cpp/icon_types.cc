@@ -20,15 +20,6 @@ IconKey::IconKey(bool raw_icon_updated, uint32_t icon_effects)
 
 IconKey::~IconKey() = default;
 
-bool IconKey::operator==(const IconKey& other) const {
-  return update_version == other.update_version &&
-         resource_id == other.resource_id && icon_effects == other.icon_effects;
-}
-
-bool IconKey::operator!=(const IconKey& other) const {
-  return !(*this == other);
-}
-
 IconKeyPtr IconKey::Clone() const {
   auto icon_key = std::make_unique<IconKey>(resource_id, icon_effects);
   icon_key->update_version = update_version;

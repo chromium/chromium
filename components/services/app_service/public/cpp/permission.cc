@@ -44,15 +44,6 @@ Permission::Permission(PermissionType permission_type,
 
 Permission::~Permission() = default;
 
-bool Permission::operator==(const Permission& other) const {
-  return permission_type == other.permission_type && value == other.value &&
-         is_managed == other.is_managed && details == other.details;
-}
-
-bool Permission::operator!=(const Permission& other) const {
-  return !(*this == other);
-}
-
 PermissionPtr Permission::Clone() const {
   return std::make_unique<Permission>(permission_type, value, is_managed,
                                       details);

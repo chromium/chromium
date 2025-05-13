@@ -16,10 +16,6 @@ bool PreferredApp::operator==(const PreferredApp& other) const {
   return *intent_filter == *other.intent_filter && app_id == other.app_id;
 }
 
-bool PreferredApp::operator!=(const PreferredApp& other) const {
-  return !(*this == other);
-}
-
 std::unique_ptr<PreferredApp> PreferredApp::Clone() const {
   return std::make_unique<PreferredApp>(intent_filter->Clone(), app_id);
 }

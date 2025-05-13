@@ -33,8 +33,7 @@ struct COMPONENT_EXPORT(APP_TYPES) IconKey {
 
   ~IconKey();
 
-  bool operator==(const IconKey& other) const;
-  bool operator!=(const IconKey& other) const;
+  friend bool operator==(const IconKey&, const IconKey&) = default;
 
   std::unique_ptr<IconKey> Clone() const;
 

@@ -52,8 +52,7 @@ struct COMPONENT_EXPORT(APP_TYPES) Permission {
   Permission& operator=(const Permission&) = delete;
   ~Permission();
 
-  bool operator==(const Permission& other) const;
-  bool operator!=(const Permission& other) const;
+  friend bool operator==(const Permission&, const Permission&) = default;
 
   std::unique_ptr<Permission> Clone() const;
 

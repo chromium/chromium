@@ -17,17 +17,6 @@ IntentFile::IntentFile(const GURL& url) : url(url) {}
 
 IntentFile::~IntentFile() = default;
 
-bool IntentFile::operator==(const IntentFile& other) const {
-  return url == other.url && mime_type == other.mime_type &&
-         file_name == other.file_name && file_size == other.file_size &&
-         is_directory == other.is_directory &&
-         dlp_source_url == other.dlp_source_url;
-}
-
-bool IntentFile::operator!=(const IntentFile& other) const {
-  return !(*this == other);
-}
-
 std::unique_ptr<IntentFile> IntentFile::Clone() const {
   auto intent_file = std::make_unique<IntentFile>(url);
   if (mime_type.has_value()) {
@@ -99,10 +88,6 @@ bool Intent::operator==(const Intent& other) const {
          start_type == other.start_type && categories == other.categories &&
          data == other.data && ui_bypassed == other.ui_bypassed &&
          extras == other.extras;
-}
-
-bool Intent::operator!=(const Intent& other) const {
-  return !(*this == other);
 }
 
 std::unique_ptr<Intent> Intent::Clone() const {
