@@ -261,6 +261,9 @@ void VideoEncodeAccelerator::SetCommandBufferHelperCB(
         get_command_buffer_helper_cb,
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) {}
 
+void VideoEncodeAccelerator::SetSharedImageInterfaceForTesting(
+    scoped_refptr<gpu::SharedImageInterface> sii) {}
+
 void VideoEncodeAccelerator::RequestEncodingParametersChange(
     const VideoBitrateAllocation& bitrate_allocation,
     uint32_t framerate,

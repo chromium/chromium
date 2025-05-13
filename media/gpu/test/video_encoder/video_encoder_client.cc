@@ -187,7 +187,8 @@ VideoEncoderClient::VideoEncoderClient(
       encoder_client_state_(VideoEncoderClientState::kUninitialized),
       current_stats_(encoder_client_config_.framerate,
                      config.num_temporal_layers,
-                     config.num_spatial_layers) {
+                     config.num_spatial_layers),
+      test_sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()) {
   DETACH_FROM_SEQUENCE(encoder_client_sequence_checker_);
 
   weak_this_ = weak_this_factory_.GetWeakPtr();
@@ -539,6 +540,9 @@ void VideoEncoderClient::CreateEncoderTask(const RawVideo* video,
       gpu_info.active_gpu());
   encoder_ = encoder_or_error.has_value() ? std::move(encoder_or_error).value()
                                           : nullptr;
+  if (encoder_) {
+    encoder_->SetSharedImageInterfaceForTesting(test_sii_);
+  }
 
   *success = (encoder_ != nullptr);
 

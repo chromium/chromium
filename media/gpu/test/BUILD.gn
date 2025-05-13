@@ -75,6 +75,7 @@ if (enable_av1_decoder &&
       ":video_encoder_test_environment",
       "//media:test_support",
       "//media/gpu:buildflags",
+      "//testing/gmock",
       "//testing/gtest",
     ]
 
@@ -267,7 +268,9 @@ static_library("video_encoder") {
   public_deps = [ "//third_party/libgav1:libgav1_parser" ]
   deps = [
     ":test_helpers",
+    "//gpu:test_support",
     "//media/gpu",
+    "//testing/gmock",
     "//testing/gtest:gtest",
   ]
 }

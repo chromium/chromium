@@ -15,6 +15,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "media/base/bitrate.h"
 #include "media/base/encoder_status.h"
 #include "media/base/media_export.h"
@@ -508,6 +509,9 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
       base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
           get_command_buffer_helper_cb,
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner);
+
+  virtual void SetSharedImageInterfaceForTesting(
+      scoped_refptr<gpu::SharedImageInterface> sii);
 
  protected:
   // Do not delete directly; use Destroy() or own it with a unique_ptr, which

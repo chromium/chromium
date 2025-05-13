@@ -77,6 +77,8 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
       base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
           get_command_buffer_helper_cb,
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) override;
+  void SetSharedImageInterfaceForTesting(
+      scoped_refptr<gpu::SharedImageInterface> sii) override;
 
  private:
   // Auto-destroy reference for BitstreamBuffer, for tracking buffers passed to

@@ -736,6 +736,12 @@ void V4L2VideoEncodeAccelerator::SetCommandBufferHelperCB(
           weak_this_));
 }
 
+void V4L2VideoEncodeAccelerator::SetSharedImageInterfaceForTesting(
+    scoped_refptr<gpu::SharedImageInterface> sii) {
+  CHECK(!sii_) << "SharedImageInterface is already set.";
+  sii_ = std::move(sii);
+}
+
 VideoEncodeAccelerator::SupportedProfiles
 V4L2VideoEncodeAccelerator::GetSupportedProfiles() {
   auto device = base::MakeRefCounted<V4L2Device>();
