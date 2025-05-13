@@ -98,12 +98,6 @@ viz::SharedImageFormat GetSharedImageFormat(gfx::BufferFormat buffer_format) {
       return viz::SinglePlaneFormat::kBGRA_8888;
     case gfx::BufferFormat::R_8:
       return viz::SinglePlaneFormat::kR_8;
-    case gfx::BufferFormat::R_16:
-      return viz::SinglePlaneFormat::kR_16;
-    case gfx::BufferFormat::RG_1616:
-      return viz::SinglePlaneFormat::kRG_1616;
-    case gfx::BufferFormat::RGBA_4444:
-      return viz::SinglePlaneFormat::kRGBA_4444;
     case gfx::BufferFormat::RGBA_8888:
       return viz::SinglePlaneFormat::kRGBA_8888;
     case gfx::BufferFormat::RGBA_F16:
@@ -126,12 +120,14 @@ viz::SharedImageFormat GetSharedImageFormat(gfx::BufferFormat buffer_format) {
     case gfx::BufferFormat::YUV_420_BIPLANAR:
       format = viz::MultiPlaneFormat::kNV12;
       break;
-    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
-      format = viz::MultiPlaneFormat::kNV12A;
-      break;
     case gfx::BufferFormat::P010:
       format = viz::MultiPlaneFormat::kP010;
       break;
+    case gfx::BufferFormat::R_16:
+    case gfx::BufferFormat::RG_1616:
+    case gfx::BufferFormat::RGBA_4444:
+    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
+      NOTREACHED();
   }
 #if BUILDFLAG(IS_CHROMEOS)
   // If format is true multiplanar format, we prefer external sampler on
