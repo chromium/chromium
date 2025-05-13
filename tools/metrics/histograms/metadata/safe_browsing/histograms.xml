@@ -124,7 +124,8 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="SafeBrowsing.AdvancedProtection.Enabled"
-    enum="AdvancedProtectionEnabledStatus" expires_after="2024-02-04">
+    enum="AdvancedProtectionEnabledStatus" expires_after="2025-12-04">
+  <owner>pkotwicz@google.com</owner>
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -132,6 +133,9 @@ chromium-metrics-reviews@google.com.
     on startup when the enabled status changes. Can be logged multiple times for
     a user. In practice, this counts the number of Chrome startups with Advanced
     Protection enabled/disabled, rather than the actual user count.
+
+    Warning: This histogram was expired between Feb 2024 and May 2025. Data may
+    be missing.
   </summary>
 </histogram>
 
