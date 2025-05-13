@@ -52,6 +52,9 @@ class ImeListView : public TrayDetailedView {
   // Removes (and destroys) all child views.
   virtual void ResetImeListView();
 
+  // Closes the view.
+  void CloseImeListView();
+
   // Scrolls contents such that |item_view| is visible.
   void ScrollItemToVisible(views::View* item_view);
 
