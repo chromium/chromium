@@ -8,6 +8,7 @@ import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_D
 import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_POSITION_END;
 import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE;
 import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION_DEFAULT;
+import static androidx.browser.customtabs.CustomTabsIntent.OPEN_IN_BROWSER_STATE_OFF;
 
 import android.app.PendingIntent;
 import android.content.ComponentName;
@@ -19,6 +20,8 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
+import androidx.browser.customtabs.CustomTabsIntent.OpenInBrowserState;
+import androidx.browser.customtabs.ExperimentalOpenInBrowser;
 import androidx.browser.trusted.FileHandlingData;
 import androidx.browser.trusted.LaunchHandlerClientMode;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode;
@@ -753,5 +756,15 @@ public abstract class BrowserServicesIntentDataProvider {
      */
     public @DisplayMode.EnumType int getResolvedDisplayMode() {
         return DisplayMode.BROWSER;
+    }
+
+    /**
+     * Returns the desired developer options for Open in Browser button in the custom tab's toolbar.
+     *
+     * @return {@link OpenInBrowserState} the desired settings for the Open in Browser button.
+     */
+    @ExperimentalOpenInBrowser
+    public @OpenInBrowserState int getOpenInBrowserButtonState() {
+        return OPEN_IN_BROWSER_STATE_OFF;
     }
 }

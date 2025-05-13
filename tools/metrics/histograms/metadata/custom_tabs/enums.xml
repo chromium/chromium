@@ -133,6 +133,9 @@ chromium-metrics-reviews@google.com.
       label="Auth Tab https redirect host EXTRA_HTTPS_REDIRECT_HOST"/>
   <int value="62"
       label="Auth Tab https redirect path EXTRA_HTTPS_REDIRECT_PATH"/>
+  <int value="63"
+      label="Open in Browser button in the toolbar state
+             EXTRA_OPEN_IN_BROWSER_STATE"/>
 </enum>
 
 <enum name="CustomTabsMinimizedEvents">

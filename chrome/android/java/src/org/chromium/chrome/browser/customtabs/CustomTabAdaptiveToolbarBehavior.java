@@ -4,14 +4,19 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static androidx.browser.customtabs.CustomTabsIntent.OPEN_IN_BROWSER_STATE_DEFAULT;
+
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.SHARE;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
+import androidx.browser.customtabs.ExperimentalOpenInBrowser;
+
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -27,29 +32,32 @@ import java.util.Set;
 
 /** Implements CustomTab-specific behavior of adaptive toolbar button. */
 public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
-    private final Context mContext;
-    private final ActivityTabProvider mActivityTabProvider;
-    private final Drawable mOpenInBrowserButton;
-    private final Runnable mOpenInBrowserRunnable;
-    private final Runnable mRegisterVoiceSearchRunnable;
-    private final List<CustomButtonParams> mToolbarCustomButtons;
+    private Context mContext;
+    private ActivityTabProvider mActivityTabProvider;
+    private BrowserServicesIntentDataProvider mIntentDataProvider;
+    private Drawable mOpenInBrowserButton;
+    private Runnable mOpenInBrowserRunnable;
+    private Runnable mRegisterVoiceSearchRunnable;
+    private List<CustomButtonParams> mToolbarCustomButtons;
     private final Set<Integer> mValidButtons;
 
+    @ExperimentalOpenInBrowser
     public CustomTabAdaptiveToolbarBehavior(
             Context context,
             ActivityTabProvider activityTabProvider,
-            List<CustomButtonParams> toolbarCustomButtons,
+            BrowserServicesIntentDataProvider intentDataProvider,
             Drawable openInBrowserButton,
             Runnable openInBrowserRunnable,
             Runnable registerVoiceSearchRunnable) {
         mContext = context;
         mActivityTabProvider = activityTabProvider;
-        mToolbarCustomButtons = toolbarCustomButtons;
+        mIntentDataProvider = intentDataProvider;
+        mToolbarCustomButtons = mIntentDataProvider.getCustomButtonsOnToolbar();
         mOpenInBrowserButton = openInBrowserButton;
         mOpenInBrowserRunnable = openInBrowserRunnable;
         mRegisterVoiceSearchRunnable = registerVoiceSearchRunnable;
         mValidButtons = new HashSet(COMMON_BUTTONS);
-        if (ChromeFeatureList.sCctAdaptiveButtonEnableOpenInBrowser.getValue()) {
+        if (isOpenInBrowserButtonEnabled()) {
             mValidButtons.add(AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER);
         }
         if (ChromeFeatureList.sCctAdaptiveButtonEnableVoice.getValue()) {
@@ -67,6 +75,7 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
         return false;
     }
 
+    @ExperimentalOpenInBrowser
     @Override
     public void registerPerSurfaceButtons(
             AdaptiveToolbarButtonController controller, Supplier<Tracker> trackerSupplier) {
@@ -74,7 +83,7 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
             mRegisterVoiceSearchRunnable.run();
         }
 
-        if (ChromeFeatureList.sCctAdaptiveButtonEnableOpenInBrowser.getValue()) {
+        if (isOpenInBrowserButtonEnabled()) {
             var openInBrowserButton =
                     new OpenInBrowserButtonController(
                             mContext,
@@ -133,5 +142,12 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
         // CCT MTB doesn't provide a default action. The button will be hidden if there is
         // no action to display.
         return AdaptiveToolbarButtonVariant.UNKNOWN;
+    }
+
+    @ExperimentalOpenInBrowser
+    private boolean isOpenInBrowserButtonEnabled() {
+        return ChromeFeatureList.sCctAdaptiveButtonEnableOpenInBrowser.getValue()
+                && mIntentDataProvider.getOpenInBrowserButtonState()
+                        == OPEN_IN_BROWSER_STATE_DEFAULT;
     }
 }

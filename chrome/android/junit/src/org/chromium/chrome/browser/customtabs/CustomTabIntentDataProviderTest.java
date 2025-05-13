@@ -1928,4 +1928,62 @@ public class CustomTabIntentDataProviderTest {
 
         IntentUtils.setForceIsTrustedIntentForTesting(false);
     }
+
+    @Test
+    public void testGetOpenInBrowserButtonState_defaultState() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_OPEN_IN_BROWSER_STATE,
+                CustomTabsIntent.OPEN_IN_BROWSER_STATE_DEFAULT);
+
+        BrowserServicesIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals(
+                "Should resolve to the default state",
+                CustomTabsIntent.OPEN_IN_BROWSER_STATE_DEFAULT,
+                dataProvider.getOpenInBrowserButtonState());
+    }
+
+    @Test
+    public void testGetOpenInBrowserButtonState_notSet() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+
+        BrowserServicesIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        assertEquals(
+                "Should resolve to the default state",
+                CustomTabsIntent.OPEN_IN_BROWSER_STATE_DEFAULT,
+                dataProvider.getOpenInBrowserButtonState());
+    }
+
+    @Test
+    public void testGetOpenInBrowserButtonState_offState() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_OPEN_IN_BROWSER_STATE,
+                CustomTabsIntent.OPEN_IN_BROWSER_STATE_OFF);
+
+        BrowserServicesIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals(
+                "Should resolve to the off state",
+                CustomTabsIntent.OPEN_IN_BROWSER_STATE_OFF,
+                dataProvider.getOpenInBrowserButtonState());
+    }
+
+    @Test
+    public void testGetOpenInBrowserButtonState_onState() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_OPEN_IN_BROWSER_STATE,
+                CustomTabsIntent.OPEN_IN_BROWSER_STATE_ON);
+
+        BrowserServicesIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals(
+                "Should resolve to the on state",
+                CustomTabsIntent.OPEN_IN_BROWSER_STATE_ON,
+                dataProvider.getOpenInBrowserButtonState());
+    }
 }

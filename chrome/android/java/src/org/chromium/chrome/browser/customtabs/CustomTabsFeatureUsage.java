@@ -83,6 +83,7 @@ public class CustomTabsFeatureUsage {
         CustomTabsFeature.EXTRA_REDIRECT_SCHEME,
         CustomTabsFeature.EXTRA_HTTPS_REDIRECT_HOST,
         CustomTabsFeature.EXTRA_HTTPS_REDIRECT_PATH,
+        CustomTabsFeature.EXTRA_OPEN_IN_BROWSER_STATE,
         CustomTabsFeature.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -151,9 +152,10 @@ public class CustomTabsFeatureUsage {
         int EXTRA_REDIRECT_SCHEME = 60;
         int EXTRA_HTTPS_REDIRECT_HOST = 61;
         int EXTRA_HTTPS_REDIRECT_PATH = 62;
+        int EXTRA_OPEN_IN_BROWSER_STATE = 63;
 
         /** Total count of entries. */
-        int COUNT = 63;
+        int COUNT = 64;
     }
 
     /** Tracks whether we have written each enum or not. */

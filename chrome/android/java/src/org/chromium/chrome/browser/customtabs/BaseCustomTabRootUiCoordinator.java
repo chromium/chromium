@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.browser.customtabs.ExperimentalOpenInBrowser;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
@@ -481,13 +482,14 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         }
     }
 
+    @ExperimentalOpenInBrowser
     @Override
     protected AdaptiveToolbarBehavior createAdaptiveToolbarBehavior(
             Supplier<Tracker> trackerSupplier) {
         return new CustomTabAdaptiveToolbarBehavior(
                 mActivity,
                 mActivityTabProvider,
-                mIntentDataProvider.get().getCustomButtonsOnToolbar(),
+                mIntentDataProvider.get(),
                 AppCompatResources.getDrawable(mActivity, R.drawable.ic_open_in_new_white_24dp),
                 mOpenInBrowserRunnable,
                 () -> addVoiceSearchAdaptiveButton(trackerSupplier));
