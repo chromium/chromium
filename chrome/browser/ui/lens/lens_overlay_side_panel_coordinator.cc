@@ -176,7 +176,7 @@ void LensOverlaySidePanelCoordinator::SetSidePanelNewTabUrl(const GURL& url) {
 void LensOverlaySidePanelCoordinator::OnEntryWillHide(
     SidePanelEntry* entry,
     SidePanelEntryHideReason reason) {
-  GetLensOverlayController()->OnSidePanelWillHide(reason);
+  GetLensSearchController()->OnSidePanelWillHide(reason);
 }
 
 void LensOverlaySidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {
@@ -186,7 +186,7 @@ void LensOverlaySidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {
   //   (2) The user clicked the 'x' button while the overlay is showing.
   //   (3) The side panel naturally went away after a tab switch.
   // Forward to LensOverlayController to have it disambiguate.
-  GetLensOverlayController()->OnSidePanelHidden();
+  GetLensSearchController()->OnSidePanelHidden();
 }
 
 void LensOverlaySidePanelCoordinator::WebViewClosing() {

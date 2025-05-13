@@ -170,6 +170,7 @@ class LensSearchController {
 
  protected:
   friend class LensOverlayController;
+  friend class lens::LensOverlaySidePanelCoordinator;
 
   // Override these methods to stub out individual feature controllers for
   // testing.
@@ -222,7 +223,14 @@ class LensSearchController {
 
   // Shared logic for cleanup that is called after all features have finished
   // cleaning up.
-  void CloseLensPart2();
+  void CloseLensPart2(lens::LensOverlayDismissalSource dismissal_source);
+
+  // Called before the lens results panel begins hiding. This is called before
+  // any side panel closing animations begin.
+  void OnSidePanelWillHide(SidePanelEntryHideReason reason);
+
+  // Called when the lens side panel has been hidden.
+  void OnSidePanelHidden();
 
   // Override these methods to be able to track calls made to the page context
   // eligibility API.
@@ -244,6 +252,9 @@ class LensSearchController {
     // from kSuspended as the overlay and web view are not freed and could be
     // immediately reshown.
     kBackground,
+
+    // The side panel is in the process of closing. Soon will move to kClosing.
+    kClosingSidePanel,
 
     // The controller is in the process of closing all dependencies and cleaning
     // up. Will soon be kOff.
@@ -318,12 +329,21 @@ class LensSearchController {
   void WillDetach(tabs::TabInterface* tab,
                   tabs::TabInterface::DetachReason reason);
 
+  // Returns true if the overlay is in the process of closing. If true, Lens on
+  // this tab will soon be off.
+  bool IsClosing();
+
   // Whether the LensSearchController has been initialized. Meaning, all the
   // dependencies have been initialized and the controller is ready to use.
   bool initialized_ = false;
 
   // Tracks the internal state machine.
   State state_ = State::kOff;
+
+  // If the side panel needed to be closed before dismissing Lens, this
+  // stores the original dismissal_source so it is properly recorded when the
+  // side panel is done closing and the callback is invoked.
+  std::optional<lens::LensOverlayDismissalSource> last_dismissal_source_;
 
   // The query controller for the Lens Search feature on this tab. Lives for the
   // duration of a Lens feature being active on this tab.

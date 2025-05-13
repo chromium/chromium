@@ -363,8 +363,8 @@ LensOverlayController* LensOverlayController::FromTabWebContents(
       tabs::TabInterface::GetFromContents(tab_web_contents));
 }
 
-void LensOverlayController::CloseUIAsync(
-    lens::LensOverlayDismissalSource dismissal_source) {
+void LensOverlayController::TriggerOverlayCloseAnimation(
+    base::OnceClosure callback) {
   if (state_ == State::kOff || IsOverlayClosing()) {
     return;
   }
@@ -375,39 +375,106 @@ void LensOverlayController::CloseUIAsync(
     page_->NotifyOverlayClosing();
   }
 
-  if (state_ == State::kOverlayAndResults ||
-      state_ == State::kLivePageAndResults) {
-    if (side_panel_coordinator_->GetCurrentEntryId() ==
-        SidePanelEntry::Id::kLensOverlayResults) {
-      // If a close was triggered while our side panel is showing, instead of
-      // just immediately closing the overlay, we close side panel to show a
-      // smooth closing animation. Once the side panel deregisters, it will
-      // re-call our close method in OnSidePanelDidClose() which will finish the
-      // closing process.
-      state_ = State::kClosingSidePanel;
-      last_dismissal_source_ = dismissal_source;
-      side_panel_coordinator_->Close();
-      return;
-    }
-  }
-
-  state_ = State::kClosing;
   // Set a short 200ms timeout to give the fade out time to transition.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&LensOverlayController::CloseUIPart2,
-                     weak_factory_.GetWeakPtr(), dismissal_source),
-      kFadeoutAnimationTimeout);
+      FROM_HERE, std::move(callback), kFadeoutAnimationTimeout);
 }
 
-void LensOverlayController::CloseUISync(
+void LensOverlayController::CloseUI(
     lens::LensOverlayDismissalSource dismissal_source) {
   if (state_ == State::kOff) {
     return;
   }
 
   state_ = State::kClosing;
-  CloseUIPart2(dismissal_source);
+
+  // Closes preselection toast if it exists.
+  ClosePreselectionBubble();
+
+  // Notify the query controller to loose references to this classes data before
+  // it gets cleaned up to prevent dangling ptrs.
+  lens_overlay_query_controller_->ResetPageContentData();
+  lens_overlay_query_controller_ = nullptr;
+
+  // A permission prompt may be suspended if the overlay was showing when the
+  // permission was queued. Restore the suspended prompt if possible.
+  // TODO(crbug.com/331940245): Refactor to be decoupled from
+  // PermissionPromptFactory
+  content::WebContents* contents = tab_->GetContents();
+  CHECK(contents);
+  auto* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(contents);
+  if (permission_request_manager &&
+      permission_request_manager->CanRestorePrompt()) {
+    permission_request_manager->RestorePrompt();
+  }
+
+  results_side_panel_coordinator_ = nullptr;
+  side_panel_in_use_.reset();
+  pre_initialization_suggest_inputs_.reset();
+  pre_initialization_objects_.reset();
+  pre_initialization_text_.reset();
+
+  side_panel_shown_subscription_ = base::CallbackListSubscription();
+  side_panel_coordinator_ = nullptr;
+
+  // Re-enable mouse and keyboard events to the tab contents web view.
+  auto* contents_web_view = tab_->GetBrowserWindowInterface()->GetWebView();
+  CHECK(contents_web_view);
+  contents_web_view->SetEnabled(true);
+
+  if (overlay_web_view_) {
+    // Remove render frame observer.
+    overlay_web_view_->GetWebContents()
+        ->GetPrimaryMainFrame()
+        ->GetProcess()
+        ->RemoveObserver(this);
+  }
+
+  initialization_data_.reset();
+
+  tab_contents_view_observer_.Reset();
+  omnibox_tab_helper_observer_.Reset();
+  find_tab_observer_.Reset();
+  receiver_.reset();
+  page_.reset();
+  languages_controller_.reset();
+  scoped_tab_modal_ui_.reset();
+  pending_region_.reset();
+  fullscreen_observation_.Reset();
+  immersive_mode_observer_.Reset();
+  lens_overlay_blur_layer_delegate_.reset();
+  last_navigation_time_.reset();
+#if BUILDFLAG(IS_MAC)
+  pref_change_registrar_.Reset();
+#endif  // BUILDFLAG(IS_MAC)
+
+  // Notify the searchbox controller to reset its handlers before the overlay
+  // is cleaned up. This is needed to prevent a dangling ptr.
+  GetLensSearchboxController()->ResetOverlaySearchboxHandler();
+
+  // Cleanup all of the lens overlay related views. The overlay view is owned by
+  // the browser view and is reused for each Lens overlay session. Clean it up
+  // so it is ready for the next invocation.
+  if (overlay_view_) {
+    overlay_view_->RemoveChildViewT(
+        std::exchange(preselection_widget_anchor_, nullptr));
+    overlay_view_->RemoveChildViewT(std::exchange(overlay_web_view_, nullptr));
+    MaybeHideSharedOverlayView();
+    overlay_view_ = nullptr;
+  }
+
+  lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
+  should_show_overlay_ = true;
+  is_page_context_eligible_ = true;
+  should_send_screenshot_on_init_ = false;
+
+  state_ = State::kOff;
+
+  // Update the entrypoints now that the controller is closed.
+  UpdateEntryPointsState();
+
+  RecordEndOfSessionMetrics(dismissal_source);
 }
 
 // static
@@ -509,8 +576,7 @@ void LensOverlayController::TriggerCopy() {
 
 bool LensOverlayController::IsOverlayShowing() const {
   return state_ == State::kStartingWebUI || state_ == State::kOverlay ||
-         state_ == State::kOverlayAndResults ||
-         state_ == State::kClosingSidePanel;
+         state_ == State::kOverlayAndResults;
 }
 
 bool LensOverlayController::IsOverlayActive() const {
@@ -523,47 +589,12 @@ bool LensOverlayController::IsOverlayInitializing() {
 }
 
 bool LensOverlayController::IsOverlayClosing() {
-  return state_ == State::kClosing || state_ == State::kClosingSidePanel;
+  return state_ == State::kClosing;
 }
 
 bool LensOverlayController::IsScreenshotPossible(
     content::RenderWidgetHostView* view) {
   return view && view->IsSurfaceAvailableForCopy();
-}
-
-// TOOD(crbug.com/404941800): Move this method to the search controller.
-void LensOverlayController::OnSidePanelWillHide(
-    SidePanelEntryHideReason reason) {
-  // If the tab is not in the foreground, this is not relevant.
-  if (!tab_->IsActivated()) {
-    return;
-  }
-
-  if (!IsOverlayClosing()) {
-    if (reason == SidePanelEntryHideReason::kReplaced) {
-      // If the Lens side panel is being replaced, don't close the side panel.
-      // Instead, set the state and dismissal source and wait for
-      // OnSidePanelHidden to be called.
-      state_ = State::kClosingSidePanel;
-      last_dismissal_source_ =
-          lens::LensOverlayDismissalSource::kSidePanelEntryReplaced;
-    } else {
-      // Trigger the close animation and notify the overlay that the side
-      // panel is closing so that it can fade out the UI.
-      lens_search_controller_->CloseLensAsync(
-          lens::LensOverlayDismissalSource::kSidePanelCloseButton);
-    }
-  }
-}
-
-// TOOD(crbug.com/404941800): Move this method to the search controller.
-void LensOverlayController::OnSidePanelHidden() {
-  if (state_ != State::kClosingSidePanel) {
-    return;
-  }
-  CHECK(last_dismissal_source_.has_value());
-  CloseUIPart2(*last_dismissal_source_);
-  last_dismissal_source_.reset();
 }
 
 tabs::TabInterface* LensOverlayController::GetTabInterface() {
@@ -1976,113 +2007,6 @@ void LensOverlayController::MaybeOpenSidePanel() {
     return;
   }
   side_panel_in_use_ = results_side_panel_coordinator_->RegisterEntryAndShow();
-}
-
-void LensOverlayController::CloseUIPart2(
-    lens::LensOverlayDismissalSource dismissal_source) {
-  if (state_ == State::kOff) {
-    return;
-  }
-
-  // Ensure that this path is not being used to close the overlay if the overlay
-  // is currently showing. If the overlay is currently showing, CloseUIAsync
-  // should be used instead.
-  CHECK(state_ != State::kOverlay);
-  CHECK(state_ != State::kOverlayAndResults);
-
-  // TODO(b/331940245): Refactor to be decoupled from permission_prompt_factory
-  state_ = State::kClosing;
-
-  // Closes preselection toast if it exists.
-  ClosePreselectionBubble();
-
-  // Notify the query controller to loose references to this classes data before
-  // it gets cleaned up to prevent dangling ptrs.
-  lens_overlay_query_controller_->ResetPageContentData();
-  lens_overlay_query_controller_ = nullptr;
-
-  // A permission prompt may be suspended if the overlay was showing when the
-  // permission was queued. Restore the suspended prompt if possible.
-  // TODO(b/331940245): Refactor to be decoupled from PermissionPromptFactory
-  content::WebContents* contents = tab_->GetContents();
-  CHECK(contents);
-  auto* permission_request_manager =
-      permissions::PermissionRequestManager::FromWebContents(contents);
-  if (permission_request_manager &&
-      permission_request_manager->CanRestorePrompt()) {
-    permission_request_manager->RestorePrompt();
-  }
-
-  results_side_panel_coordinator_ = nullptr;
-  side_panel_in_use_.reset();
-  pre_initialization_suggest_inputs_.reset();
-  pre_initialization_objects_.reset();
-  pre_initialization_text_.reset();
-
-  side_panel_shown_subscription_ = base::CallbackListSubscription();
-  side_panel_coordinator_ = nullptr;
-
-  // Re-enable mouse and keyboard events to the tab contents web view.
-  auto* contents_web_view = tab_->GetBrowserWindowInterface()->GetWebView();
-  CHECK(contents_web_view);
-  contents_web_view->SetEnabled(true);
-
-  if (overlay_web_view_) {
-    // Remove render frame observer.
-    overlay_web_view_->GetWebContents()
-        ->GetPrimaryMainFrame()
-        ->GetProcess()
-        ->RemoveObserver(this);
-  }
-
-  initialization_data_.reset();
-
-  tab_contents_view_observer_.Reset();
-  omnibox_tab_helper_observer_.Reset();
-  find_tab_observer_.Reset();
-  receiver_.reset();
-  page_.reset();
-  languages_controller_.reset();
-  scoped_tab_modal_ui_.reset();
-  pending_region_.reset();
-  fullscreen_observation_.Reset();
-  immersive_mode_observer_.Reset();
-  lens_overlay_blur_layer_delegate_.reset();
-  last_navigation_time_.reset();
-#if BUILDFLAG(IS_MAC)
-  pref_change_registrar_.Reset();
-#endif  // BUILDFLAG(IS_MAC)
-
-  // Notify the searchbox controller to reset its handlers before the overlay
-  // is cleaned up. This is needed to prevent a dangling ptr.
-  GetLensSearchboxController()->ResetOverlaySearchboxHandler();
-
-  // Cleanup all of the lens overlay related views. The overlay view is owned by
-  // the browser view and is reused for each Lens overlay session. Clean it up
-  // so it is ready for the next invocation.
-  if (overlay_view_) {
-    overlay_view_->RemoveChildViewT(
-        std::exchange(preselection_widget_anchor_, nullptr));
-    overlay_view_->RemoveChildViewT(std::exchange(overlay_web_view_, nullptr));
-    MaybeHideSharedOverlayView();
-    overlay_view_ = nullptr;
-  }
-
-  lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
-  should_show_overlay_ = true;
-  is_page_context_eligible_ = true;
-  should_send_screenshot_on_init_ = false;
-
-  state_ = State::kOff;
-
-  // TODO(crbug.com/404941800): Make a more generalized solution once multiple
-  // async features are cleaning up at the same time.
-  lens_search_controller_->CloseLensPart2();
-
-  // Update the entrypoints now that the controller is closed.
-  UpdateEntryPointsState();
-
-  RecordEndOfSessionMetrics(dismissal_source);
 }
 
 void LensOverlayController::InitializeOverlay(

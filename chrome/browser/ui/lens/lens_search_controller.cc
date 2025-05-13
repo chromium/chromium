@@ -9,6 +9,8 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
@@ -222,17 +224,35 @@ void LensSearchController::CloseLensAsync(
   if (state() == State::kOff) {
     return;
   }
+
+  // Close the side panel if it is showing. This provides a smooth closing
+  // animation.
+  auto* side_panel_coordinator =
+      tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
+  CHECK(side_panel_coordinator);
+  if (state_ == State::kActive && side_panel_coordinator->GetCurrentEntryId() ==
+                                      SidePanelEntry::Id::kLensOverlayResults) {
+    // If a close was triggered while the Lens side panel is showing, instead of
+    // just immediately closing all UI, the side panel should close to show a
+    // smooth closing animation. Once the side panel deregisters, it will
+    // recall the close method in OnSidePanelHidden() which will finish the
+    // closing process.
+    state_ = State::kClosingSidePanel;
+    last_dismissal_source_ = dismissal_source;
+    side_panel_coordinator->Close();
+    return;
+  }
   state_ = State::kClosing;
 
-  // The overlay controller must be closed before the query controller so it
-  // doesn't hold a dangling pointer. However, since the query controller
-  // points to references owned by the overlay controller, those references
-  // need to be invalidated before cleaning the overlay controller.
-  // lens_overlay_query_controller_->ResetPageContentData();
+  // If the overlay is showing, and the side panel is not, the overlay needs to
+  // fade out. Play the fade out animation and then clean up the rest of the UI
+  // afterwards.
   if (lens_overlay_controller_->state() != LensOverlayController::State::kOff) {
-    lens_overlay_controller_->CloseUIAsync(dismissal_source);
+    lens_overlay_controller_->TriggerOverlayCloseAnimation(
+        base::BindOnce(&LensSearchController::CloseLensPart2,
+                       weak_ptr_factory_.GetWeakPtr(), dismissal_source));
   } else {
-    CloseLensPart2();
+    CloseLensPart2(dismissal_source);
   }
 }
 
@@ -242,16 +262,7 @@ void LensSearchController::CloseLensSync(
     return;
   }
   state_ = State::kClosing;
-  // The overlay controller must be closed before the query controller so it
-  // doesn't hold a dangling pointer. However, since the query controller
-  // points to references owned by the overlay controller, those references
-  // need to be invalidated before cleaning the overlay controller.
-  // lens_overlay_query_controller_->ResetPageContentData();
-  if (lens_overlay_controller_->state() != LensOverlayController::State::kOff) {
-    lens_overlay_controller_->CloseUISync(dismissal_source);
-  } else {
-    CloseLensPart2();
-  }
+  CloseLensPart2(dismissal_source);
 }
 
 tabs::TabInterface* LensSearchController::GetTabInterface() {
@@ -436,13 +447,51 @@ void LensSearchController::NotifyOverlayOpened() {
   state_ = State::kActive;
 }
 
-void LensSearchController::CloseLensPart2() {
-  // Cleanup the query controller.
-  lens_overlay_query_controller_.reset();
-  lens_permission_bubble_controller_.reset();
+void LensSearchController::CloseLensPart2(
+    lens::LensOverlayDismissalSource dismissal_source) {
   // Let the controllers know to cleanup.
+  // TODO(crbug.com/404941800): Move logging to a shared location to not be
+  // dependent on the overlay controller.
+  lens_overlay_controller_->CloseUI(dismissal_source);
   lens_searchbox_controller_->CloseUI();
+  lens_permission_bubble_controller_.reset();
+
+  // Cleanup the query controller after the overlay controller to prevent
+  // dangling ptrs.
+  lens_overlay_query_controller_.reset();
   state_ = State::kOff;
+}
+
+void LensSearchController::OnSidePanelWillHide(
+    SidePanelEntryHideReason reason) {
+  // If the tab is not in the foreground, this is not relevant.
+  if (!tab_->IsActivated()) {
+    return;
+  }
+
+  if (!IsClosing()) {
+    if (reason == SidePanelEntryHideReason::kReplaced) {
+      // If the Lens side panel is being replaced, don't close the side panel.
+      // Instead, set the state and dismissal source and wait for
+      // OnSidePanelHidden to be called.
+      state_ = State::kClosingSidePanel;
+      last_dismissal_source_ =
+          lens::LensOverlayDismissalSource::kSidePanelEntryReplaced;
+    } else {
+      // Trigger the close animation and notify the overlay that the side
+      // panel is closing so that it can fade out the UI.
+      CloseLensAsync(lens::LensOverlayDismissalSource::kSidePanelCloseButton);
+    }
+  }
+}
+
+void LensSearchController::OnSidePanelHidden() {
+  if (state_ != State::kClosingSidePanel) {
+    return;
+  }
+  CHECK(last_dismissal_source_.has_value());
+  CloseLensPart2(*last_dismissal_source_);
+  last_dismissal_source_.reset();
 }
 
 void LensSearchController::HandleStartQueryResponse(
@@ -529,4 +578,8 @@ void LensSearchController::WillDetach(tabs::TabInterface* tab,
       CloseLensSync(lens::LensOverlayDismissalSource::kTabDragNewWindow);
       return;
   }
+}
+
+bool LensSearchController::IsClosing() {
+  return state_ == State::kClosing || state_ == State::kClosingSidePanel;
 }

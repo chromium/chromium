@@ -225,9 +225,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
     // TODO(b/335516480): Implement suspended state.
     kSuspended,
 
-    // In the process of closing the side panel before closing the overlay.
-    kClosingSidePanel,
-
     // Will be kOff soon.
     kClosing,
   };
@@ -517,16 +514,16 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
       lens::mojom::CenterRotatedBoxPtr region,
       const SkBitmap& region_bitmap);
 
-  // Starts the closing process of the overlay. This is an asynchronous process
-  // with the following sequence:
-  //   (1) Close the side panel
-  //   (2) Close the overlay.
-  // Step (1) is asynchronous.
-  void CloseUIAsync(lens::LensOverlayDismissalSource dismissal_source);
+  // Plays the overlay close animation and then invokes the callback.
+  void TriggerOverlayCloseAnimation(base::OnceClosure callback);
 
-  // Instantly closes the overlay. This may not look nice if the overlay is
-  // visible when this is called.
-  void CloseUISync(lens::LensOverlayDismissalSource dismissal_source);
+  // Closes the overlay UI and sets state to kOff. This method is the final
+  // cleanup of closing the overlay UI. This resets all state internal to the
+  // LensOverlayController.
+  // Anyone called trying to close the UI should go through CloseUIAsync or
+  // CloseUISync. Those methods also reset state external to
+  // LensOverlayController.
+  void CloseUI(lens::LensOverlayDismissalSource dismissal_source);
 
   // Returns the vsrid to use for the new tab URL.
   std::string GetVsridForNewTab();
@@ -847,14 +844,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Must be called before issuing results to the side panel.
   void MaybeOpenSidePanel();
 
-  // Closes the overlay UI and sets state to kOff. This method is the final
-  // cleanup of closing the overlay UI. This resets all state internal to the
-  // LensOverlayController.
-  // Anyone called trying to close the UI should go through CloseUIAsync or
-  // CloseUISync. Those methods also reset state external to
-  // LensOverlayController.
-  void CloseUIPart2(lens::LensOverlayDismissalSource dismissal_source);
-
   // Initializes all parts of our UI and starts the query flow.
   // Runs once the overlay WebUI and initialization data are both ready.
   // Once initialization_data is ready, it should be passed to this method to be
@@ -1121,11 +1110,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // pending_region_ and pending_region_bitmap_ are correlated and their
   // lifecycles are should stay in sync.
   SkBitmap pending_region_bitmap_;
-
-  // If the side panel needed to be closed before dismissing the overlay, this
-  // stores the original dismissal_source so it is properly recorded when the
-  // side panel is done closing and the callback is invoked.
-  std::optional<lens::LensOverlayDismissalSource> last_dismissal_source_;
 
   // The selection type of the current Lens request. If the
   // user is not currently viewing results for a Lens query, this will be
