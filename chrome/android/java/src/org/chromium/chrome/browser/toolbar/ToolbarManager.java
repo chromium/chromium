@@ -2593,7 +2593,28 @@ public class ToolbarManager
     }
 
     /**
+     * Hides menu button persistently until all tokens are released.
+     *
+     * @param oldToken previously acquired token.
+     * @return a new token that keeps menu button hidden.
+     */
+    public int hideMenuButtonPersistently(int oldToken) {
+        return mMenuButtonCoordinator.hideWithOldTokenRelease(oldToken);
+    }
+
+    /**
+     * Releases menu button hide token that might cause menu button to become visible if no more
+     * tokens are held.
+     *
+     * @param token previously acquired token.
+     */
+    public void releaseHideMenuButtonToken(int token) {
+        mMenuButtonCoordinator.releaseHideToken(token);
+    }
+
+    /**
      * Sets whether a title should be shown within the Toolbar.
+     *
      * @param showTitle Whether a title should be shown.
      */
     public void setShowTitle(boolean showTitle) {
@@ -2709,9 +2730,7 @@ public class ToolbarManager
         mToolbar.updateForwardButtonVisibility(currentTab != null && currentTab.canGoForward());
         updateReloadState(tabCrashed);
         updateBookmarkButtonStatus();
-        if (mToolbar.getMenuButtonWrapper() != null) {
-            mToolbar.getMenuButtonWrapper().setVisibility(View.VISIBLE);
-        }
+        mMenuButtonCoordinator.setVisibility(true);
     }
 
     private void updateBookmarkButtonStatus() {

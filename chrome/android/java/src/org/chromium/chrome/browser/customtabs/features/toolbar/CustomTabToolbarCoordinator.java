@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
@@ -74,8 +75,10 @@ public class CustomTabToolbarCoordinator {
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
 
     @Nullable private ToolbarManager mToolbarManager;
+    @Nullable private DesktopWindowStateManager.AppHeaderObserver mAppHeaderObserver;
 
     private int mControlsHidingToken = TokenHolder.INVALID_TOKEN;
+    private int mMenuButtonHideToken = TokenHolder.INVALID_TOKEN;
     private boolean mInitializedToolbarWithNative;
     private PendingIntent.OnFinished mButtonClickOnFinishedForTesting;
 
@@ -115,14 +118,15 @@ public class CustomTabToolbarCoordinator {
         // Guaranteed by the check above.
         assert mDesktopWindowStateManager != null;
 
-        DesktopWindowStateManager.AppHeaderObserver appHeaderObserver =
+        mAppHeaderObserver =
                 new DesktopWindowStateManager.AppHeaderObserver() {
                     @Override
                     public void onDesktopWindowingModeChanged(boolean isInDesktopWindow) {
                         updateTitleBarVisibility();
+                        updateMenuButtonVisibility();
                     }
                 };
-        mDesktopWindowStateManager.addObserver(appHeaderObserver);
+        mDesktopWindowStateManager.addObserver(mAppHeaderObserver);
     }
 
     private void updateTitleBarVisibility() {
@@ -143,6 +147,16 @@ public class CustomTabToolbarCoordinator {
                 break;
             default:
                 assert false;
+        }
+    }
+
+    private void updateMenuButtonVisibility() {
+        if (mToolbarManager == null) return;
+
+        if (AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager)) {
+            mMenuButtonHideToken = mToolbarManager.hideMenuButtonPersistently(mMenuButtonHideToken);
+        } else {
+            mToolbarManager.releaseHideMenuButtonToken(mMenuButtonHideToken);
         }
     }
 
@@ -167,6 +181,11 @@ public class CustomTabToolbarCoordinator {
             manager.setToolbarShadowVisibility(View.GONE);
         }
         showCustomButtonsOnToolbar();
+
+        if (WebAppHeaderUtils.isMinimalUiEnabled(mIntentDataProvider)
+                && mDesktopWindowStateManager != null) {
+            updateMenuButtonVisibility();
+        }
     }
 
     /**
@@ -323,5 +342,10 @@ public class CustomTabToolbarCoordinator {
             PendingIntent.OnFinished onFinished) {
         mButtonClickOnFinishedForTesting = onFinished;
         ResettersForTesting.register(() -> mButtonClickOnFinishedForTesting = null);
+    }
+
+    @VisibleForTesting
+    DesktopWindowStateManager.AppHeaderObserver getAppHeaderObserver() {
+        return mAppHeaderObserver;
     }
 }

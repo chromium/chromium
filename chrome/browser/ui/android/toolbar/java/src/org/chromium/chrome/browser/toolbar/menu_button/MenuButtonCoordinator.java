@@ -131,6 +131,7 @@ public class MenuButtonCoordinator {
     /**
      * Update the state of AppMenu components that need to know if the current page is loading, e.g.
      * the stop/reload button.
+     *
      * @param isLoading Whether the current page is loading.
      */
     public void updateReloadingState(boolean isLoading) {
@@ -240,6 +241,26 @@ public class MenuButtonCoordinator {
     public void setVisibility(boolean visible) {
         if (mMediator == null) return;
         mMediator.setVisibility(visible);
+    }
+
+    /**
+     * Hides menu button persistently until all tokens are released.
+     *
+     * @param token previously acquired token.
+     * @return a new token that keeps menu button hidden.
+     */
+    public int hideWithOldTokenRelease(int token) {
+        return mMediator.hideWithOldTokenRelease(token);
+    }
+
+    /**
+     * Releases menu button hide token that might cause menu button to become visible if no more
+     * tokens are held.
+     *
+     * @param token previously acquired token.
+     */
+    public void releaseHideToken(int token) {
+        mMediator.releaseHideToken(token);
     }
 
     /**

@@ -233,4 +233,67 @@ public class MenuButtonMediatorTest {
         mMenuButtonMediator.onMenuVisibilityChanged(true);
         verify(mKeyboardDelegate, never()).hideKeyboard(any());
     }
+
+    @Test
+    public void testHideMenuButtonPersistently() {
+        mMenuButtonMediator.hideWithOldTokenRelease(TokenHolder.INVALID_TOKEN);
+        assertFalse(
+                "Menu button should be hidden",
+                mPropertyModel.get(MenuButtonProperties.IS_VISIBLE));
+    }
+
+    @Test
+    public void testHideMenuButtonPersistently_ReclaimToken_KeepButtonHidden() {
+        int token = mMenuButtonMediator.hideWithOldTokenRelease(TokenHolder.INVALID_TOKEN);
+        assertFalse(
+                "Menu button should be hidden",
+                mPropertyModel.get(MenuButtonProperties.IS_VISIBLE));
+
+        mMenuButtonMediator.hideWithOldTokenRelease(token);
+        assertFalse(
+                "Menu button should be hidden",
+                mPropertyModel.get(MenuButtonProperties.IS_VISIBLE));
+    }
+
+    @Test
+    public void testHideMenuButtonPersistently_ReleaseToken_ShowButton() {
+        int token = mMenuButtonMediator.hideWithOldTokenRelease(TokenHolder.INVALID_TOKEN);
+        assertFalse(
+                "Menu button should be hidden",
+                mPropertyModel.get(MenuButtonProperties.IS_VISIBLE));
+
+        mMenuButtonMediator.releaseHideToken(token);
+        assertTrue(
+                "Menu button should be shown", mPropertyModel.get(MenuButtonProperties.IS_VISIBLE));
+    }
+
+    @Test
+    public void testMenuButtonHiddenPersistently_SetVisibilityHasNoEffect() {
+        mMenuButtonMediator.hideWithOldTokenRelease(TokenHolder.INVALID_TOKEN);
+        assertFalse(
+                "Menu button should be hidden",
+                mPropertyModel.get(MenuButtonProperties.IS_VISIBLE));
+
+        mMenuButtonMediator.setVisibility(true);
+        assertFalse(
+                "Menu button should be hidden",
+                mPropertyModel.get(MenuButtonProperties.IS_VISIBLE));
+    }
+
+    @Test
+    public void testMenuButtonHiddenPersistently_ReleaseToken_SetVisibilityIsNotBlocked() {
+        int token = mMenuButtonMediator.hideWithOldTokenRelease(TokenHolder.INVALID_TOKEN);
+        assertFalse(
+                "Menu button should be hidden",
+                mPropertyModel.get(MenuButtonProperties.IS_VISIBLE));
+
+        mMenuButtonMediator.releaseHideToken(token);
+        assertTrue(
+                "Menu button should be shown", mPropertyModel.get(MenuButtonProperties.IS_VISIBLE));
+
+        mMenuButtonMediator.setVisibility(false);
+        assertFalse(
+                "Menu button should be hidden",
+                mPropertyModel.get(MenuButtonProperties.IS_VISIBLE));
+    }
 }

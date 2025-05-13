@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -17,6 +18,8 @@ import static org.chromium.chrome.browser.flags.ChromeFeatureList.SHARE_CUSTOM_A
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Rect;
+import android.os.Build;
 
 import org.junit.After;
 import org.junit.Before;
@@ -27,10 +30,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.customtabs.CloseButtonVisibilityManager;
@@ -39,18 +44,31 @@ import org.chromium.chrome.browser.customtabs.CustomTabCompositorContentInitiali
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityContentTestEnvironment;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
+import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
 
 /** Tests for {@link CustomTabToolbarCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({SHARE_CUSTOM_ACTIONS_IN_CCT})
 public class CustomTabToolbarCoordinatorUnitTest {
+    private static final int SCREEN_WIDTH = 800;
+    private static final int SCREEN_HEIGHT = 1600;
+    private static final int SYS_APP_HEADER_HEIGHT = 40;
+    private static final int LEFT_INSET = 50;
+    private static final int RIGHT_INSET = 60;
+    private static final Rect WINDOW_RECT = new Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    private static final Rect WIDEST_UNOCCLUDED_RECT =
+            new Rect(LEFT_INSET, 0, SCREEN_WIDTH - RIGHT_INSET, SYS_APP_HEADER_HEIGHT);
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -79,22 +97,9 @@ public class CustomTabToolbarCoordinatorUnitTest {
 
     @Before
     public void setup() {
-
         mActivityForResources = Robolectric.setupActivity(Activity.class);
         mTabController = env.createTabController();
-        mCoordinator =
-                new CustomTabToolbarCoordinator(
-                        env.intentDataProvider,
-                        mTabProvider,
-                        mActivity,
-                        mActivityWindowAndroid,
-                        mBrowserControlsVisibilityManager,
-                        env.createNavigationController(mTabController),
-                        mCloseButtonVisibilityManager,
-                        mVisibilityDelegate,
-                        mToolbarColorController,
-                        mDesktopWindowStateManager,
-                        mCompositorContentInitializer);
+        mCoordinator = createCoordinator();
 
         ShareDelegateSupplier.setInstanceForTesting(mShareDelegateSupplier);
         when(mShareDelegateSupplier.get()).thenReturn(mShareDelegate);
@@ -103,6 +108,21 @@ public class CustomTabToolbarCoordinatorUnitTest {
         when(mTab.getTitle()).thenReturn("");
         when(mCustomButtonParams.getDescription()).thenReturn("");
         when(mCustomButtonParams.getPendingIntent()).thenReturn(mPendingIntent);
+    }
+
+    private CustomTabToolbarCoordinator createCoordinator() {
+        return new CustomTabToolbarCoordinator(
+                env.intentDataProvider,
+                mTabProvider,
+                mActivity,
+                mActivityWindowAndroid,
+                mBrowserControlsVisibilityManager,
+                env.createNavigationController(mTabController),
+                mCloseButtonVisibilityManager,
+                mVisibilityDelegate,
+                mToolbarColorController,
+                mDesktopWindowStateManager,
+                mCompositorContentInitializer);
     }
 
     @After
@@ -169,5 +189,63 @@ public class CustomTabToolbarCoordinatorUnitTest {
 
         mCoordinator.onToolbarInitialized(mToolbarManager);
         verify(mCloseButtonVisibilityManager).setVisibility(false);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    @EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
+    public void testWebAppEnterDW_HideMenuButton() {
+        // Setup web app in fullscreen mode.
+        when(env.intentDataProvider.getActivityType())
+                .thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
+        when(env.intentDataProvider.getResolvedDisplayMode()).thenReturn(DisplayMode.MINIMAL_UI);
+        var appHeaderState = new AppHeaderState(WINDOW_RECT, WIDEST_UNOCCLUDED_RECT, false);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
+        mCoordinator = createCoordinator();
+
+        // Verify menu button is visible.
+        mCoordinator.onToolbarInitialized(mToolbarManager);
+        verify(mToolbarManager).releaseHideMenuButtonToken(TokenHolder.INVALID_TOKEN);
+
+        // Enter desktop windowing.
+        when(mToolbarManager.hideMenuButtonPersistently(TokenHolder.INVALID_TOKEN)).thenReturn(0);
+        appHeaderState = new AppHeaderState(WINDOW_RECT, WIDEST_UNOCCLUDED_RECT, true);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
+
+        // Verify menu button is hidden.
+        var observer = mCoordinator.getAppHeaderObserver();
+        assertNotNull("Observer should be initialized", observer);
+
+        observer.onDesktopWindowingModeChanged(true);
+        verify(mToolbarManager).hideMenuButtonPersistently(TokenHolder.INVALID_TOKEN);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    @EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
+    public void testWebAppExitDW_ShowMenuButton() {
+        // Setup web app in desktop windowing mode.
+        when(env.intentDataProvider.getActivityType())
+                .thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
+        when(env.intentDataProvider.getResolvedDisplayMode()).thenReturn(DisplayMode.MINIMAL_UI);
+        var appHeaderState = new AppHeaderState(WINDOW_RECT, WIDEST_UNOCCLUDED_RECT, true);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
+        when(mToolbarManager.hideMenuButtonPersistently(TokenHolder.INVALID_TOKEN)).thenReturn(0);
+        mCoordinator = createCoordinator();
+
+        // Verify menu button is hidden.
+        mCoordinator.onToolbarInitialized(mToolbarManager);
+        verify(mToolbarManager).hideMenuButtonPersistently(TokenHolder.INVALID_TOKEN);
+
+        // Exit desktop windowing.
+        appHeaderState = new AppHeaderState(WINDOW_RECT, WIDEST_UNOCCLUDED_RECT, false);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
+
+        // Verify menu button is shown.
+        var observer = mCoordinator.getAppHeaderObserver();
+        assertNotNull("Observer should be initialized", observer);
+
+        observer.onDesktopWindowingModeChanged(false);
+        verify(mToolbarManager).releaseHideMenuButtonToken(0);
     }
 }
