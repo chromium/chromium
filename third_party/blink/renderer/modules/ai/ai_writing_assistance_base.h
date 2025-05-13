@@ -341,7 +341,7 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
         input, options->getContextOr(g_empty_string),
         WTF::BindOnce(
             [](ScriptPromiseResolver<IDLDouble>* resolver, AbortSignal* signal,
-               std::optional<uint64_t> usage) {
+               std::optional<uint32_t> usage) {
               ExecutionContext* context = resolver->GetExecutionContext();
               if (!context) {
                 return;

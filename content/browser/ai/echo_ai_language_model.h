@@ -39,8 +39,7 @@ class EchoAILanguageModel : public blink::mojom::AILanguageModel {
   void Destroy() override;
   void MeasureInputUsage(
       std::vector<blink::mojom::AILanguageModelPromptPtr> input,
-      mojo::PendingRemote<blink::mojom::AILanguageModelMeasureInputUsageClient>
-          client) override;
+      MeasureInputUsageCallback callback) override;
 
  private:
   void DoMockExecution(const std::string& input,

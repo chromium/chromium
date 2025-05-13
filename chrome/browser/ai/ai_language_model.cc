@@ -510,28 +510,14 @@ void AILanguageModel::Destroy() {
 
 void AILanguageModel::MeasureInputUsage(
     std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
-    mojo::PendingRemote<blink::mojom::AILanguageModelMeasureInputUsageClient>
-        client) {
-  mojo::Remote<blink::mojom::AILanguageModelMeasureInputUsageClient> remote(
-      std::move(client));
+    MeasureInputUsageCallback callback) {
   auto input = ConvertToInputForExecute(std::move(prompts),
                                         session_params_->capabilities);
   if (!input) {
-    remote->OnResult(0);
+    std::move(callback).Run(std::nullopt);
     return;
   }
-  GetSizeInTokens(
-      std::move(input),
-      base::BindOnce(
-          [](mojo::Remote<blink::mojom::AILanguageModelMeasureInputUsageClient>
-                 client_remote,
-             std::optional<uint32_t> result) {
-            // TODO(crbug.com/351935691): Explicitly return an error. Consider
-            // introducing a callback instead of remote client, as it's done
-            // for Writing Assistance APIs.
-            client_remote->OnResult(result.value_or(0));
-          },
-          std::move(remote)));
+  GetSizeInTokens(std::move(input), std::move(callback));
 }
 
 void AILanguageModel::SetPriority(on_device_model::mojom::Priority priority) {

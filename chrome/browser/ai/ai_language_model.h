@@ -134,8 +134,7 @@ class AILanguageModel : public AIContextBoundObject,
   void Destroy() override;
   void MeasureInputUsage(
       std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
-      mojo::PendingRemote<blink::mojom::AILanguageModelMeasureInputUsageClient>
-          client) override;
+      MeasureInputUsageCallback callback) override;
 
   // AIContextBoundObject:
   void SetPriority(on_device_model::mojom::Priority priority) override;

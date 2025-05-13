@@ -111,14 +111,6 @@ interface AIManagerCreateLanguageModelClient {
   OnError(AIManagerCreateClientError error);
 };
 
-// The client interface that receives the number of tokens measured by the
-// AIManager.
-interface AILanguageModelMeasureInputUsageClient {
-  // Called with a created language model's mojo interface as a result for the
-  // MeasureInputUsage() method of the AIManager.
-  OnResult(uint32 number_of_tokens);
-};
-
 // The client interface that receives the state update of the appended prompt.
 // The append operation is only considered finished when `OnAppendComplete()`
 // or `OnError()` is called. After that, there won't be any request sent
@@ -170,8 +162,8 @@ interface AILanguageModel {
   Destroy();
 
   // Counts the number of token in the given prompt text `input` which can
-  // be an arbitrary string from the JavaScript API.
+  // be an arbitrary string from the JavaScript API. If it's unable to
+  // measure, the method will return null.
   MeasureInputUsage(
-      array<AILanguageModelPrompt> input,
-      pending_remote<AILanguageModelMeasureInputUsageClient> client);
+      array<AILanguageModelPrompt> input) => (uint32? number_of_tokens);
 };

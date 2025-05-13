@@ -122,58 +122,6 @@ class CloneLanguageModelClient
       receiver_;
 };
 
-class MeasureInputUsageClient
-    : public GarbageCollected<MeasureInputUsageClient>,
-      public mojom::blink::AILanguageModelMeasureInputUsageClient,
-      public AIContextObserver<IDLDouble> {
- public:
-  MeasureInputUsageClient(
-      ScriptState* script_state,
-      LanguageModel* language_model,
-      ScriptPromiseResolver<IDLDouble>* resolver,
-      AbortSignal* signal,
-      WTF::Vector<mojom::blink::AILanguageModelPromptPtr> input)
-      : AIContextObserver(script_state, language_model, resolver, signal),
-        language_model_(language_model),
-        receiver_(this, language_model->GetExecutionContext()) {
-    mojo::PendingRemote<mojom::blink::AILanguageModelMeasureInputUsageClient>
-        client_remote;
-    receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
-                   language_model->GetTaskRunner());
-    language_model_->GetAILanguageModelRemote()->MeasureInputUsage(
-        std::move(input), std::move(client_remote));
-  }
-  ~MeasureInputUsageClient() override = default;
-
-  MeasureInputUsageClient(const MeasureInputUsageClient&) = delete;
-  MeasureInputUsageClient& operator=(const MeasureInputUsageClient&) = delete;
-
-  void Trace(Visitor* visitor) const override {
-    AIContextObserver::Trace(visitor);
-    visitor->Trace(language_model_);
-    visitor->Trace(receiver_);
-  }
-
-  // mojom::blink::AILanguageModelMeasureInputUsageClient implementation.
-  void OnResult(uint32_t number_of_tokens) override {
-    if (!GetResolver()) {
-      return;
-    }
-
-    GetResolver()->Resolve(number_of_tokens);
-    Cleanup();
-  }
-
- protected:
-  void ResetReceiver() override { receiver_.reset(); }
-
- private:
-  Member<LanguageModel> language_model_;
-  HeapMojoReceiver<mojom::blink::AILanguageModelMeasureInputUsageClient,
-                   MeasureInputUsageClient>
-      receiver_;
-};
-
 class AppendClient : public GarbageCollected<AppendClient>,
                      public mojom::blink::AILanguageModelAppendClient,
                      public AIContextObserver<IDLUndefined> {
@@ -605,8 +553,30 @@ ScriptPromise<IDLDouble> LanguageModel::measureInputUsage(
     return promise;
   }
 
-  MakeGarbageCollected<MeasureInputUsageClient>(
-      script_state, this, resolver, signal, std::move(prompts).value());
+  language_model_remote_->MeasureInputUsage(
+      std::move(prompts).value(),
+      WTF::BindOnce(
+          [](ScriptPromiseResolver<IDLDouble>* resolver, AbortSignal* signal,
+             std::optional<uint32_t> usage) {
+            ExecutionContext* context = resolver->GetExecutionContext();
+            if (!context) {
+              return;
+            }
+            if (signal && signal->aborted()) {
+              resolver->Reject(signal->reason(resolver->GetScriptState()));
+              return;
+            }
+            if (!usage.has_value()) {
+              resolver->Reject(
+                  DOMException::Create(kExceptionMessageUnableToCalculateUsage,
+                                       DOMException::GetErrorName(
+                                           DOMExceptionCode::kOperationError)));
+              return;
+            }
+            resolver->Resolve(static_cast<double>(usage.value()));
+          },
+          WrapPersistent(resolver),
+          WrapPersistent(options->getSignalOr(nullptr))));
 
   return promise;
 }

@@ -756,7 +756,7 @@ TEST_F(AIRewriterTest, MeasureUsage) {
           [&](optimization_guide::MultimodalMessageReadView request_metadata,
               optimization_guide::OptimizationGuideModelSizeInTokenCallback
                   callback) { std::move(callback).Run(expected_usage); }));
-  base::test::TestFuture<std::optional<uint64_t>> future;
+  base::test::TestFuture<std::optional<uint32_t>> future;
   rewriter_remote->MeasureUsage(kInputString, kContextString,
                                 future.GetCallback());
   ASSERT_EQ(future.Get<0>(), expected_usage);
@@ -772,7 +772,7 @@ TEST_F(AIRewriterTest, MeasureUsageFails) {
           [&](optimization_guide::MultimodalMessageReadView request_metadata,
               optimization_guide::OptimizationGuideModelSizeInTokenCallback
                   callback) { std::move(callback).Run(std::nullopt); }));
-  base::test::TestFuture<std::optional<uint64_t>> future;
+  base::test::TestFuture<std::optional<uint32_t>> future;
   rewriter_remote->MeasureUsage(kInputString, kContextString,
                                 future.GetCallback());
   ASSERT_EQ(future.Get<0>(), std::nullopt);

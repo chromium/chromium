@@ -215,35 +215,6 @@ class TestStreamingResponder
       this};
 };
 
-class TestMeasureInputUsageClient
-    : public blink::mojom::AILanguageModelMeasureInputUsageClient {
- public:
-  TestMeasureInputUsageClient() = default;
-  ~TestMeasureInputUsageClient() override = default;
-
-  mojo::PendingRemote<blink::mojom::AILanguageModelMeasureInputUsageClient>
-  BindRemote() {
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
-  uint32_t Wait() {
-    run_loop_.Run();
-    return number_of_tokens_;
-  }
-
- private:
-  // blink::mojom::AILanguageModelMeasureInputUsageClient::
-  void OnResult(uint32_t number_of_tokens) override {
-    number_of_tokens_ = number_of_tokens;
-    run_loop_.Quit();
-  }
-
-  base::RunLoop run_loop_;
-  uint32_t number_of_tokens_ = 0;
-  mojo::Receiver<blink::mojom::AILanguageModelMeasureInputUsageClient>
-      receiver_{this};
-};
-
 optimization_guide::proto::OnDeviceModelExecutionFeatureConfig CreateConfig() {
   optimization_guide::proto::OnDeviceModelExecutionFeatureConfig config;
   config.set_can_skip_text_safety(true);
@@ -758,9 +729,9 @@ TEST_F(AILanguageModelTest, MultimodalInputImageNotSpecified) {
     EXPECT_EQ(responder.error_status(),
               blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest);
   }
-  TestMeasureInputUsageClient client;
-  session->MeasureInputUsage(make_input(), client.BindRemote());
-  EXPECT_EQ(client.Wait(), 0u);
+  base::test::TestFuture<std::optional<uint32_t>> measure_future;
+  session->MeasureInputUsage(make_input(), measure_future.GetCallback());
+  EXPECT_EQ(measure_future.Get(), std::nullopt);
 }
 
 TEST_F(AILanguageModelTest, MultimodalInputAudioNotSpecified) {
@@ -793,9 +764,9 @@ TEST_F(AILanguageModelTest, MultimodalInputAudioNotSpecified) {
     EXPECT_EQ(responder.error_status(),
               blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest);
   }
-  TestMeasureInputUsageClient client;
-  session->MeasureInputUsage(make_input(), client.BindRemote());
-  EXPECT_EQ(client.Wait(), 0u);
+  base::test::TestFuture<std::optional<uint32_t>> measure_future;
+  session->MeasureInputUsage(make_input(), measure_future.GetCallback());
+  EXPECT_EQ(measure_future.Get(), std::nullopt);
 }
 
 TEST_F(AILanguageModelTest, MultimodalInput) {
@@ -850,9 +821,9 @@ TEST_F(AILanguageModelTest, ModelDownload) {
 
 TEST_F(AILanguageModelTest, MeasureInputUsage) {
   auto session = CreateSession();
-  TestMeasureInputUsageClient client;
-  session->MeasureInputUsage(MakeInput("foo"), client.BindRemote());
-  EXPECT_EQ(client.Wait(), std::string("UfooEM").size());
+  base::test::TestFuture<std::optional<uint32_t>> measure_future;
+  session->MeasureInputUsage(MakeInput("foo"), measure_future.GetCallback());
+  EXPECT_EQ(measure_future.Get(), std::string("UfooEM").size());
 }
 
 TEST_F(AILanguageModelTest, TextSafetyInput) {

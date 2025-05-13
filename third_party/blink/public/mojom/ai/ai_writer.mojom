@@ -55,7 +55,7 @@ interface AIWriter {
     string? context,
     pending_remote<ModelStreamingResponder> pending_responder);
 
-  // Returns the usage size of `input` and `context`, or std::nullopt if
-  // unable to retrieve the usage.
-  MeasureUsage(string input, string context) => (uint64? usage);
+  // Returns the usage size of `input` and `context`, or null if unable to
+  // retrieve the usage.
+  MeasureUsage(string input, string context) => (uint32? number_of_tokens);
 };
