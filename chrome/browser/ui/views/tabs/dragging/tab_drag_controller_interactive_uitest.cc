@@ -2698,6 +2698,50 @@ void DragAllToSeparateWindowStep2(DetachToBrowserTabDragControllerTest* test,
 
 }  // namespace
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Flaky on Mac10.14 and Linux: https://crbug.com/1213345
+#define MAYBE_DragPinnedAndUnpinnedToSeparateWindow \
+  DISABLED_DragPinnedAndUnpinnedToSeparateWindow
+#else
+#define MAYBE_DragPinnedAndUnpinnedToSeparateWindow \
+  DragPinnedAndUnpinnedToSeparateWindow
+#endif
+
+// Creates two browsers, then drags a group from one to the other.
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       MAYBE_DragPinnedAndUnpinnedToSeparateWindow) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+  AddTabsAndResetBrowser(browser(), 1);
+  browser()->tab_strip_model()->SetTabPinned(0, true);
+  StopAnimating(tab_strip);
+
+  // Create another browser.
+  Browser* browser2 = CreateAnotherBrowserAndResize();
+  TabStrip* tab_strip2 = GetTabStripForBrowser(browser2);
+  TabStripModel* model2 = browser2->tab_strip_model();
+  AddTabsAndResetBrowser(browser2, 1);
+  ResetIDs(model2, 100);
+  StopAnimating(tab_strip2);
+
+  // Click the first tab and select the second tab so they are the only ones
+  // selected.
+  ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(0)));
+  ASSERT_TRUE(ReleaseInput());
+  browser()->tab_strip_model()->SelectTabAt(1);
+
+  DragTabAndNotify(tab_strip, base::BindOnce(&DragAllToSeparateWindowStep2,
+                                             this, tab_strip, tab_strip2));
+
+  // Release the mouse, stopping the drag session.
+  ASSERT_TRUE(ReleaseInput());
+
+  EXPECT_EQ("0 100 1 101", IDString(model2));
+  EXPECT_TRUE(browser2->tab_strip_model()->IsTabPinned(0));
+  EXPECT_FALSE(browser2->tab_strip_model()->IsTabPinned(1));
+}
+
 // Flaky. http://crbug.com/1128774
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
