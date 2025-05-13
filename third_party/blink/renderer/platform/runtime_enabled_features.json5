@@ -320,13 +320,17 @@
     },
     {
       name: "AIPromptAPI",
-      public: true,
+      // OriginTrialContext::CanEnableTrialFromName limits access to extensions.
+      origin_trial_feature_name: "AIPromptAPIForExtension",
+      origin_trial_allows_third_party: true,
       status: "experimental",
-      implied_by: ["AIPromptAPIForWebPlatform", "AIPromptAPIMultimodalInput"],
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
+      implied_by: ["AIPromptAPIMultimodalInput", "AIPromptAPIForExtension"],
     },
     {
+      // Extension-specific feature checked in addition to "AIPromptAPI".
       name: "AIPromptAPIForExtension",
-      public: true,
       origin_trial_feature_name: "AIPromptAPIForExtension",
       origin_trial_allows_third_party: true,
       status: "experimental",
@@ -334,17 +338,11 @@
       copied_from_base_feature_if: "overridden",
     },
     {
-      name: "AIPromptAPIForWebPlatform",
-      public: true,
-      status: "experimental",
-    },
-    {
       name: "AIPromptAPIForWorkers",
       public: true,
     },
     {
       name: "AIPromptAPIMultimodalInput",
-      public: true,
       status: "experimental",
     },
     {
@@ -362,7 +360,6 @@
     },
     {
       name: "AIRewriterAPI",
-      public: true,
       status: "experimental",
       origin_trial_feature_name: "AIRewriterAPI",
       origin_trial_allows_third_party: true,
@@ -375,7 +372,6 @@
     },
     {
       name: "AISummarizationAPI",
-      public: true,
       status: "experimental",
       origin_trial_feature_name: "AISummarizationAPI",
       origin_trial_allows_third_party: true,
@@ -388,7 +384,6 @@
     },
     {
       name: "AIWriterAPI",
-      public: true,
       status: "experimental",
       origin_trial_feature_name: "AIWriterAPI",
       origin_trial_allows_third_party: true,

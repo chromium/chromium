@@ -11687,6 +11687,7 @@ from previous Chrome versions.
   <int value="-897660267" label="BluetoothDisconnectWarning:enabled"/>
   <int value="-897069393"
       label="kAutofillRationalizeRepeatedServerPredictions:disabled"/>
+  <int value="-896686564" label="AIPromptAPI:enabled"/>
   <int value="-896040242" label="PrefetchFontLookupTables:enabled"/>
   <int value="-895071695" label="DesktopScreenshots:enabled"/>
   <int value="-894774400" label="FiltersInRecentsV2:enabled"/>
@@ -17191,6 +17192,7 @@ from previous Chrome versions.
   <int value="1212526465" label="MediaAppPdfInInk:disabled"/>
   <int value="1214219155" label="gamepad-polling-interval"/>
   <int value="1214246730" label="TerminalAlternativeRenderer:enabled"/>
+  <int value="1214253278" label="AIPromptAPI:disabled"/>
   <int value="1214455758" label="VideoRotateToFullscreen:disabled"/>
   <int value="1214580867" label="ArcS2Idle:disabled"/>
   <int value="1214804717"

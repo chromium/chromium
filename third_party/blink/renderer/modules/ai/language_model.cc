@@ -27,13 +27,12 @@
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
-#include "third_party/blink/renderer/modules/ai/ai.h"
 #include "third_party/blink/renderer/modules/ai/ai_context_observer.h"
+#include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
-#include "third_party/blink/renderer/modules/ai/dom_ai.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
-#include "third_party/blink/renderer/modules/ai/language_model_factory.h"
+#include "third_party/blink/renderer/modules/ai/language_model_create_client.h"
 #include "third_party/blink/renderer/modules/ai/language_model_prompt_builder.h"
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_source_util.h"
@@ -286,11 +285,37 @@ ExecutionContext* LanguageModel::GetExecutionContext() const {
 // static
 ScriptPromise<LanguageModel> LanguageModel::create(
     ScriptState* script_state,
-    const LanguageModelCreateOptions* options,
+    LanguageModelCreateOptions* options,
     ExceptionState& exception_state) {
-  return DOMAI::ai(*ExecutionContext::From(script_state))
-      ->languageModel()
-      ->create(script_state, options, exception_state);
+  if (!script_state->ContextIsValid()) {
+    ThrowInvalidContextException(exception_state);
+    return EmptyPromise();
+  }
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<LanguageModel>>(script_state);
+  auto promise = resolver->Promise();
+
+  base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
+                                    AIMetrics::AISessionType::kLanguageModel),
+                                AIMetrics::AIAPI::kCreateSession);
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
+      AIInterfaceProxy::GetAIManagerRemote(execution_context);
+  if (!ai_manager_remote.is_connected()) {
+    RejectPromiseWithInternalError(resolver);
+    return promise;
+  }
+
+  CHECK(options);
+  AbortSignal* signal = options->getSignalOr(nullptr);
+  if (signal && signal->aborted()) {
+    resolver->Reject(signal->reason(script_state));
+    return promise;
+  }
+
+  MakeGarbageCollected<LanguageModelCreateClient>(resolver, options)->Create();
+  return promise;
 }
 
 // static
@@ -298,18 +323,84 @@ ScriptPromise<V8Availability> LanguageModel::availability(
     ScriptState* script_state,
     const LanguageModelCreateCoreOptions* options,
     ExceptionState& exception_state) {
-  return DOMAI::ai(*ExecutionContext::From(script_state))
-      ->languageModel()
-      ->availability(script_state, options, exception_state);
+  if (!script_state->ContextIsValid()) {
+    ThrowInvalidContextException(exception_state);
+    return EmptyPromise();
+  }
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<V8Availability>>(script_state);
+  auto promise = resolver->Promise();
+
+  base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
+                                    AIMetrics::AISessionType::kLanguageModel),
+                                AIMetrics::AIAPI::kCanCreateSession);
+  mojom::blink::AILanguageModelSamplingParamsPtr sampling_params;
+  Vector<mojom::blink::AILanguageModelExpectedInputPtr> expected_inputs;
+  String system_prompt;
+  Vector<mojom::blink::AILanguageModelPromptPtr> initial_prompts;
+  if (options && options->hasExpectedInputs()) {
+    expected_inputs = ToMojoExpectedInputs(options->expectedInputs());
+  }
+
+  auto sampling_params_or_exception = ResolveSamplingParamsOption(options);
+  if (!sampling_params_or_exception.has_value()) {
+    resolver->Resolve(AvailabilityToV8(Availability::kUnavailable));
+    return promise;
+  }
+  sampling_params = std::move(sampling_params_or_exception.value());
+
+  HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
+      AIInterfaceProxy::GetAIManagerRemote(
+          ExecutionContext::From(script_state));
+  ai_manager_remote->CanCreateLanguageModel(
+      mojom::blink::AILanguageModelCreateOptions::New(
+          std::move(sampling_params), std::move(initial_prompts),
+          std::move(expected_inputs)),
+      WTF::BindOnce(
+          [](ScriptPromiseResolver<V8Availability>* resolver,
+             mojom::blink::ModelAvailabilityCheckResult check_result) {
+            Availability availability = HandleModelAvailabilityCheckResult(
+                resolver->GetExecutionContext(),
+                AIMetrics::AISessionType::kLanguageModel, check_result);
+            resolver->Resolve(AvailabilityToV8(availability));
+          },
+          WrapPersistent(resolver)));
+  return promise;
 }
 
 // static
 ScriptPromise<IDLNullable<LanguageModelParams>> LanguageModel::params(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  return DOMAI::ai(*ExecutionContext::From(script_state))
-      ->languageModel()
-      ->params(script_state, exception_state);
+  if (!script_state->ContextIsValid()) {
+    ThrowInvalidContextException(exception_state);
+    return EmptyPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolver<IDLNullable<LanguageModelParams>>>(script_state);
+  auto promise = resolver->Promise();
+
+  HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
+      AIInterfaceProxy::GetAIManagerRemote(
+          ExecutionContext::From(script_state));
+  ai_manager_remote->GetLanguageModelParams(WTF::BindOnce(
+      [](ScriptPromiseResolver<IDLNullable<LanguageModelParams>>* resolver,
+         mojom::blink::AILanguageModelParamsPtr language_model_params) {
+        if (!language_model_params) {
+          resolver->Resolve(nullptr);
+          return;
+        }
+        auto* params = MakeGarbageCollected<LanguageModelParams>(
+            language_model_params->default_sampling_params->top_k,
+            language_model_params->max_sampling_params->top_k,
+            language_model_params->default_sampling_params->temperature,
+            language_model_params->max_sampling_params->temperature);
+        resolver->Resolve(params);
+      },
+      WrapPersistent(resolver)));
+  return promise;
 }
 
 ScriptPromise<IDLString> LanguageModel::prompt(
@@ -483,7 +574,7 @@ ScriptPromise<LanguageModel> LanguageModel::clone(
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return ScriptPromise<LanguageModel>();
+    return EmptyPromise();
   }
 
   base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
@@ -518,14 +609,14 @@ ScriptPromise<IDLDouble> LanguageModel::measureInputUsage(
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return ScriptPromise<IDLDouble>();
+    return EmptyPromise();
   }
 
   // The API impl only accepts a string by default for now, more to come soon!
   if (!input->IsString() &&
       !RuntimeEnabledFeatures::AIPromptAPIMultimodalInputEnabled()) {
     exception_state.ThrowTypeError("Input type not supported");
-    return ScriptPromise<IDLDouble>();
+    return EmptyPromise();
   }
 
   base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(

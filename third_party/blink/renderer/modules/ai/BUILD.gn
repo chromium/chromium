@@ -6,8 +6,6 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("ai") {
   sources = [
-    "ai.cc",
-    "ai.h",
     "ai_context_observer.h",
     "ai_interface_proxy.cc",
     "ai_interface_proxy.h",
@@ -21,14 +19,12 @@ blink_modules_sources("ai") {
     "availability.h",
     "create_monitor.cc",
     "create_monitor.h",
-    "dom_ai.cc",
-    "dom_ai.h",
     "exception_helpers.cc",
     "exception_helpers.h",
     "language_model.cc",
     "language_model.h",
-    "language_model_factory.cc",
-    "language_model_factory.h",
+    "language_model_create_client.cc",
+    "language_model_create_client.h",
     "language_model_params.cc",
     "language_model_params.h",
     "language_model_prompt_builder.cc",

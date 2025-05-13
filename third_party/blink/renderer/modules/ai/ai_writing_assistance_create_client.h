@@ -16,6 +16,7 @@
 
 namespace blink {
 
+// TODO(crbug.com/416021087): Consolidate with LanguageModelCreateClient.
 template <typename AIMojoClient,
           typename AIMojoCreateClient,
           typename CreateOptions,

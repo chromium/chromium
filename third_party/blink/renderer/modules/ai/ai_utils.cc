@@ -161,6 +161,18 @@ mojom::blink::AIProofreaderCreateOptionsPtr ToMojoProofreaderCreateOptionsImpl(
       ToMojoLanguageCodes(options->getExpectedInputLanguagesOr({})));
 }
 
+mojom::blink::AILanguageModelPromptType ToMojoInputType(
+    V8LanguageModelPromptType type) {
+  switch (type.AsEnum()) {
+    case V8LanguageModelPromptType::Enum::kText:
+      return mojom::blink::AILanguageModelPromptType::kText;
+    case V8LanguageModelPromptType::Enum::kAudio:
+      return mojom::blink::AILanguageModelPromptType::kAudio;
+    case V8LanguageModelPromptType::Enum::kImage:
+      return mojom::blink::AILanguageModelPromptType::kImage;
+  }
+}
+
 }  // namespace
 
 Vector<mojom::blink::AILanguageCodePtr> ToMojoLanguageCodes(
@@ -171,6 +183,23 @@ Vector<mojom::blink::AILanguageCodePtr> ToMojoLanguageCodes(
       language_codes, std::back_inserter(result),
       [](const String& language_code) {
         return mojom::blink::AILanguageCode::New(language_code);
+      });
+  return result;
+}
+
+Vector<mojom::blink::AILanguageModelExpectedInputPtr> ToMojoExpectedInputs(
+    const HeapVector<Member<LanguageModelExpectedInput>>& expected_inputs) {
+  Vector<mojom::blink::AILanguageModelExpectedInputPtr> result;
+  result.reserve(expected_inputs.size());
+  std::ranges::transform(
+      expected_inputs, std::back_inserter(result),
+      [](const Member<LanguageModelExpectedInput>& expected_input) {
+        auto value = mojom::blink::AILanguageModelExpectedInput::New();
+        value->type = ToMojoInputType(expected_input->type());
+        if (expected_input->hasLanguages()) {
+          value->languages = ToMojoLanguageCodes(expected_input->languages());
+        }
+        return value;
       });
   return result;
 }

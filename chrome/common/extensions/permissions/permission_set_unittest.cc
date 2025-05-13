@@ -834,10 +834,6 @@ TEST(PermissionsTest, PermissionMessages) {
   // The Identity API has its own server-driven permission prompts.
   skip.insert(APIPermissionID::kIdentity);
 
-  // This API is still in origin trial so we don't want to show a permission
-  // prompt.
-  skip.insert(APIPermissionID::kAILanguageModelOriginTrial);
-
   // These are private.
   skip.insert(APIPermissionID::kAccessibilityPrivate);
   skip.insert(APIPermissionID::kAccessibilityServicePrivate);

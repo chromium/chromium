@@ -1,9 +1,7 @@
 // META: script=resources/workaround-for-382640509.js
 
 promise_test(async t => {
-  // Make sure the prompt api is enabled.
-  assert_true(!!ai);
-
+  assert_true(!!LanguageModel);
   // Create the iframe and append it to the document.
   let iframe = document.createElement("iframe");
   document.childNodes[document.childNodes.length - 1].appendChild(iframe);

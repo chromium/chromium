@@ -38,10 +38,10 @@ const testSession = async (session) => {
 };
 
 const testPromptAPI = async () => {
-  if (!ai) {
+  if (!LanguageModel) {
     return {
       success: false,
-      error: "ai is not defined in the scope"
+      error: "LanguageModel is not defined in the scope"
     };
   }
 

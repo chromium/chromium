@@ -1,8 +1,5 @@
 This test documents all interface attributes and methods on the global window object and element instances.
 [INTERFACES]
-interface AI
-    attribute @@toStringTag
-    method constructor
 interface AbortController
     attribute @@toStringTag
     getter signal
@@ -5548,12 +5545,6 @@ interface LanguageModel : EventTarget
     method prompt
     method promptStreaming
     setter onquotaoverflow
-interface LanguageModelFactory
-    attribute @@toStringTag
-    method availability
-    method constructor
-    method create
-    method params
 interface LanguageModelParams
     attribute @@toStringTag
     getter defaultTemperature
@@ -12018,7 +12009,6 @@ namespace console
     attribute awConsole
     attribute globalThis
     attribute propertyNamesInGlobal
-    getter ai
     getter caches
     getter clientInformation
     getter closed
@@ -12264,7 +12254,6 @@ namespace console
     method structuredClone
     method webkitCancelAnimationFrame
     method webkitRequestAnimationFrame
-    setter ai
     setter clientInformation
     setter devicePixelRatio
     setter event

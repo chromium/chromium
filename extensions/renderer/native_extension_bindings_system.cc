@@ -62,12 +62,9 @@
 #include "gin/data_object_builder.h"
 #include "gin/handle.h"
 #include "gin/per_context_data.h"
-#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
-#include "third_party/blink/public/web/modules/ai/web_ai_features.h"
-#include "third_party/blink/public/web/modules/ai/web_ai_language_model.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_origin_trials.h"
@@ -84,10 +81,6 @@ namespace extensions {
 namespace {
 
 constexpr char kBindingsSystemPerContextKey[] = "extension_bindings_system";
-
-constexpr char kStringNameAIOriginTrial[] = "aiOriginTrial";
-constexpr char kStringNameLanguageModel[] = "languageModel";
-constexpr char kStringNameGlobalLanguageModel[] = "LanguageModel";
 
 // Returns true if the given |api| is a "prefixed" api of the |root_api|; that
 // is, if the api begins with the root.
@@ -455,12 +448,6 @@ bool ShouldCollectJSStackTrace(const APIRequestHandler::Request& request) {
   return true;
 }
 
-bool IsPromptAPIEnabledForExtension(v8::Local<v8::Context> v8_context) {
-  return blink::WebAIFeatures::IsPromptAPIEnabledForExtension(v8_context) &&
-         base::FeatureList::IsEnabled(
-             blink::features::kAIPromptAPIForExtension);
-}
-
 }  // namespace
 
 NativeExtensionBindingsSystem::NativeExtensionBindingsSystem(
@@ -529,12 +516,6 @@ void NativeExtensionBindingsSystem::DidCreateScriptContext(
   // since main world script contexts have a different mojom::ContextType type.
   if (context->context_type() == mojom::ContextType::kContentScript) {
     SetScriptingParams(context);
-  }
-
-  if (context->context_type() == mojom::ContextType::kPrivilegedExtension) {
-    if (IsPromptAPIEnabledForExtension(v8_context)) {
-      UpdateBindingsForPromptAPI(context);
-    }
   }
 }
 
@@ -1158,58 +1139,6 @@ void NativeExtensionBindingsSystem::SetScriptingParams(ScriptContext* context) {
           gin::StringToSymbol(context->isolate(), "globalParams"),
           gin::DataObjectBuilder(context->isolate()).Build())
       .Check();
-}
-
-void NativeExtensionBindingsSystem::UpdateBindingsForPromptAPI(
-    ScriptContext* context) {
-  v8::Isolate* isolate = context->isolate();
-  v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> v8_context = context->v8_context();
-
-  // Extensions with `kAILanguageModelOriginTrial` permission may access global
-  // `chrome.aiOriginTrial.languageModel` and `LanguageModel` entrypoints.
-  if (!context->extension() ||
-      !context->extension()
-           ->permissions_data()
-           ->active_permissions()
-           .HasAPIPermission(
-               mojom::APIPermissionID::kAILanguageModelOriginTrial)) {
-    return;
-  }
-
-  v8::Local<v8::Object> chrome =
-      GetOrCreateGlobalObjectProperty(v8_context, "chrome");
-
-  // Creates `chrome.aiOriginTrial`.
-  v8::Local<v8::Object> chrome_ai_object = v8::Object::New(isolate);
-  v8::Maybe<bool> success = chrome->CreateDataProperty(
-      v8_context, gin::StringToSymbol(isolate, kStringNameAIOriginTrial),
-      chrome_ai_object);
-  CHECK(success.IsJust() && success.FromJust());
-
-  // Set `chrome.aiOriginTrial.languageModel`.
-  v8::Local<v8::String> language_model_name =
-      gin::StringToSymbol(isolate, kStringNameLanguageModel);
-  v8::Local<v8::Value> language_model_value =
-      blink::WebAILanguageModel::GetLanguageModelFactory(v8_context, isolate);
-  success = chrome_ai_object->CreateDataProperty(
-      v8_context, language_model_name, language_model_value);
-  CHECK(success.IsJust() && success.FromJust());
-
-  // Also ensure extensions with an OT token and permission support the
-  // experimental Web API's `LanguageModel` entrypoint, even when Web-specific
-  // flags aren't enabled. This approach should be simplified through API IDL
-  // extended attributes, as Web and Extension configuration states are aligned,
-  // and bindings for aiOriginTrial are aligned with other Built-In AI APIs.
-  v8::Local<v8::String> global_language_model_name =
-      gin::StringToSymbol(isolate, kStringNameGlobalLanguageModel);
-  if (!v8_context->Global()
-           ->HasRealNamedProperty(v8_context, global_language_model_name)
-           .FromJust()) {
-    success = v8_context->Global()->CreateDataProperty(
-        v8_context, global_language_model_name, language_model_value);
-    CHECK(success.IsJust() && success.FromJust());
-  }
 }
 
 }  // namespace extensions

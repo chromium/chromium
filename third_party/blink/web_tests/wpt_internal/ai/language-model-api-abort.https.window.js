@@ -6,7 +6,7 @@ promise_test(async t => {
       signal: signal
     });
   });
-}, "Aborting AILanguageModelFactory.create().");
+}, "Aborting LanguageModel.create().");
 
 promise_test(async t => {
   const session = await LanguageModel.create();
@@ -15,14 +15,14 @@ promise_test(async t => {
       signal: signal
     });
   });
-}, "Aborting AILanguageModel.clone().");
+}, "Aborting LanguageModel.clone().");
 
 promise_test(async t => {
   const session = await LanguageModel.create();
   await testAbortPromise(t, signal => {
     return session.prompt(kTestPrompt, { signal: signal });
   });
-}, "Aborting AILanguageModel.prompt().");
+}, "Aborting LanguageModel.prompt().");
 
 promise_test(async t => {
   const session = await LanguageModel.create();
@@ -31,4 +31,4 @@ promise_test(async t => {
       kTestPrompt, { signal: signal }
     );
   });
-}, "Aborting AILanguageModel.promptStreaming().");
+}, "Aborting LanguageModel.promptStreaming().");

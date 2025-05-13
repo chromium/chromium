@@ -14,12 +14,10 @@ The implementation generally intends to follow the
 The API can be enabled by participating in the
 [extension origin trial](https://developer.chrome.com/blog/prompt-api-origin-trial)
 named `AIPromptAPIForExtension`. After obtaining the trial token, the
-extension authors need to configure it in the `manifest.json` together with
-the `aiLanguageModelOriginTrial` permission.
+extension authors need to configure it in the `manifest.json`:
 
 ```json
 {
-  "permissions": ["aiLanguageModelOriginTrial"],
   "trial_tokens": [<GENERATED_TOKEN>],
 }
 ```
@@ -27,10 +25,10 @@ the `aiLanguageModelOriginTrial` permission.
 ## Verifying the API is working
 
 The extension authors can verify if the API is available by checking for the
-presence of `LanguageModel` or `chrome.aiOriginTrial.languageModel` entrypoints
-from extension window and worker scripts. If the object is defined, the authors
-can follow the [explainer](https://github.com/explainers-by-googlers/prompt-api)
-and [developer docs](https://developer.chrome.com/docs/extensions/ai/prompt-api)
+presence of the `LanguageModel` entrypoint from extension window and worker
+scripts. If the object is defined, the authors can follow the
+[explainer](https://github.com/explainers-by-googlers/prompt-api) and
+[developer docs](https://developer.chrome.com/docs/extensions/ai/prompt-api)
 to check availability and test the APIs usage.
 
 ## Related Links

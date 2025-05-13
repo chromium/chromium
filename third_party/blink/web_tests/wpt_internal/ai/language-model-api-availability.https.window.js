@@ -1,5 +1,5 @@
 promise_test(async t => {
-  assert_true(!!ai);
+  assert_true(!!LanguageModel);
   assert_not_equals(
     await LanguageModel.availability(),
     'unavailable'

@@ -64,8 +64,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kAccessibilityServicePrivate,
      "accessibilityServicePrivate", APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermissionID::kAILanguageModelOriginTrial,
-     "aiLanguageModelOriginTrial"},
     {APIPermissionID::kBookmark, "bookmarks"},
     {APIPermissionID::kBrailleDisplayPrivate, "brailleDisplayPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
