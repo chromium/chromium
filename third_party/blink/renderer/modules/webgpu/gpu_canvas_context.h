@@ -8,7 +8,6 @@
 #include "base/containers/heap_array.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_alpha_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_tone_mapping_mode.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_factory.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"

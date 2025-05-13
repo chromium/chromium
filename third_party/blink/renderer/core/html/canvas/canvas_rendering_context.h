@@ -79,9 +79,9 @@ class ExecutionContext;
 class ImageBitmap;
 class ScriptState;
 class StaticBitmapImage;
-class
+using V8RenderingContext = class
     V8UnionCanvasRenderingContext2DOrGPUCanvasContextOrImageBitmapRenderingContextOrWebGL2RenderingContextOrWebGLRenderingContext;
-class
+using V8OffscreenRenderingContext = class
     V8UnionGPUCanvasContextOrImageBitmapRenderingContextOrOffscreenCanvasRenderingContext2DOrWebGL2RenderingContextOrWebGLRenderingContext;
 class WebGraphicsContext3DVideoFramePool;
 
@@ -209,12 +209,8 @@ class CORE_EXPORT CanvasRenderingContext
   virtual bool isContextLost() const { return true; }
   bool IsContextBeingRestored() const { return is_context_being_restored_; }
   // TODO(fserb): remove AsV8RenderingContext and AsV8OffscreenRenderingContext.
-  virtual V8UnionCanvasRenderingContext2DOrGPUCanvasContextOrImageBitmapRenderingContextOrWebGL2RenderingContextOrWebGLRenderingContext*
-  AsV8RenderingContext() {
-    NOTREACHED();
-  }
-  virtual V8UnionGPUCanvasContextOrImageBitmapRenderingContextOrOffscreenCanvasRenderingContext2DOrWebGL2RenderingContextOrWebGLRenderingContext*
-  AsV8OffscreenRenderingContext() {
+  virtual V8RenderingContext* AsV8RenderingContext() { NOTREACHED(); }
+  virtual V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() {
     NOTREACHED();
   }
   virtual bool IsPaintable() const = 0;
