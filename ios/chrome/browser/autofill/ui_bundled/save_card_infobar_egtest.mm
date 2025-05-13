@@ -127,7 +127,7 @@ id<GREYMatcher> UploadBottomSheetTitleMatcher() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 id<GREYMatcher> UploadBottomSheetSubTitleMatcher() {
   return grey_accessibilityLabel(l10n_util::GetNSString(
-      IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3));
+      IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY));
 }
 #endif
 
@@ -738,7 +738,7 @@ void FillAndSubmitXframeCreditCardForm() {
                      IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME))]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [[EarlGrey selectElementWithMatcher:UploadBottomSheetTitleMatcher()]
+  [[EarlGrey selectElementWithMatcher:UploadBottomSheetSubTitleMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 #endif
 
