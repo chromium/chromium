@@ -7,6 +7,7 @@
 #include <cinttypes>
 #include <string>
 
+#include "read_anything_node_utils.h"
 #include "read_anything_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -381,4 +382,60 @@ TEST_F(ReadAnythingNodeUtilsTest, GetAltText) {
   ui::AXNode node(&tree, nullptr, 2, 0);
   node.SetData(std::move(data));
   EXPECT_EQ(a11y::GetAltText(&node), alt_text);
+}
+
+TEST_F(ReadAnythingNodeUtilsTest, GetNameAttributeText) {
+  ui::AXNodeData data = test::TextNode(2);
+  data.AddStringAttribute(ax::mojom::StringAttribute::kName, "named text");
+
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, 2, 0);
+  node.SetData(std::move(data));
+  EXPECT_EQ(a11y::GetNameAttributeText(&node), u"named text");
+}
+
+TEST_F(ReadAnythingNodeUtilsTest, GetNameAttributeText_GetsChildText) {
+  std::string sentence1 = "Not like you-";
+  std::string sentence2 = "You lost your nerve";
+  std::string sentence3 = "You lost the game";
+
+  /*
+   * Sets up a tree of:
+   *           1
+   *        /  |  \
+   *       3   4   2
+   *               |
+   *               5
+   * Where ids 3, 4, and 5 have the name attribute.
+   */
+  static constexpr ui::AXNodeID rootId = 1;
+  static constexpr ui::AXNodeID childId = 2;
+  static constexpr ui::AXNodeID kId1 = 3;
+  static constexpr ui::AXNodeID kId2 = 4;
+  static constexpr ui::AXNodeID kId3 = 5;
+  ui::AXNodeData static_text1 = test::TextNode(kId1);
+  static_text1.AddStringAttribute(ax::mojom::StringAttribute::kName, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2);
+  static_text2.AddStringAttribute(ax::mojom::StringAttribute::kName, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(kId3);
+  static_text3.AddStringAttribute(ax::mojom::StringAttribute::kName, sentence3);
+
+  ui::AXNodeData child_data;
+  child_data.id = childId;
+  child_data.child_ids = {kId3};
+
+  ui::AXNodeData root_data;
+  root_data.id = rootId;
+  root_data.child_ids = {kId1, kId2, childId};
+
+  ui::AXTree tree;
+  ui::AXNode root(&tree, nullptr, 1, 0);
+  root.SetData(std::move(root_data));
+  ui::AXTreeUpdate update;
+  update.root_id = root_data.id;
+  update.nodes = {root_data, static_text1, static_text2, child_data,
+                  static_text3};
+  tree.Unserialize(update);
+  EXPECT_EQ(a11y::GetNameAttributeText(tree.root()),
+            u"Not like you- You lost your nerve You lost the game");
 }
