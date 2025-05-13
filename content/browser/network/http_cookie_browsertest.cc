@@ -41,14 +41,17 @@ using ::testing::UnorderedElementsAre;
 // See also (tests for cookie access via JavaScript):
 // //content/browser/renderer_host/cookie_browsertest.cc
 
-constexpr char kHostA[] = "a.test";
-constexpr char kHostB[] = "b.test";
-constexpr char kHostC[] = "c.test";
-constexpr char kSameSiteNoneCookieName[] = "samesite_none_cookie";
-constexpr char kSameSiteStrictCookieName[] = "samesite_strict_cookie";
-constexpr char kSameSiteLaxCookieName[] = "samesite_lax_cookie";
-constexpr char kSameSiteUnspecifiedCookieName[] = "samesite_unspecified_cookie";
-constexpr char kEchoCookiesWithCorsPath[] = "/echocookieswithcors";
+constexpr std::string_view kHostA = "a.test";
+constexpr std::string_view kHostB = "b.test";
+constexpr std::string_view kHostC = "c.test";
+constexpr std::string_view kSameSiteNoneCookieName = "samesite_none_cookie";
+constexpr std::string_view kSameSiteStrictCookieName = "samesite_strict_cookie";
+constexpr std::string_view kSameSiteLaxCookieName = "samesite_lax_cookie";
+constexpr std::string_view kSameSiteUnspecifiedCookieName =
+    "samesite_unspecified_cookie";
+constexpr std::string_view kHostPrefixCookieName = "__Host-prefixed_cookie";
+constexpr std::string_view kSecurePrefixCookieName = "__Secure-prefixed_cookie";
+constexpr std::string_view kEchoCookiesWithCorsPath = "/echocookieswithcors";
 
 std::string FrameTreeForHostAndUrl(std::string_view host, const GURL& url) {
   return base::StrCat({host, "(", url.spec(), ")"});
@@ -59,7 +62,7 @@ std::string FrameTreeForUrl(const GURL& url) {
 }
 
 GURL RedirectUrl(net::EmbeddedTestServer* test_server,
-                 const std::string& host,
+                 std::string_view host,
                  const GURL& target_url) {
   return test_server->GetURL(host, "/server-redirect?" + target_url.spec());
 }
@@ -80,12 +83,14 @@ class HttpCookieBrowserTest : public ContentBrowserTest,
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server()->AddDefaultHandlers(GetTestDataFilePath());
+    embedded_test_server()->AddDefaultHandlers(GetTestDataFilePath());
     ASSERT_TRUE(https_server()->Start());
+    ASSERT_TRUE(embedded_test_server()->Start());
   }
 
   bool DoesSameSiteConsiderRedirectChain() { return GetParam(); }
 
-  const std::string kSetSameSiteCookiesURL = base::StrCat({
+  const std::string kSetSameSiteCookiesPath = base::StrCat({
       "/set-cookie?",
       kSameSiteStrictCookieName,
       "=1;SameSite=Strict&",
@@ -97,7 +102,7 @@ class HttpCookieBrowserTest : public ContentBrowserTest,
       "=1;Secure;SameSite=None",
   });
 
-  void SetSameSiteCookies(const std::string& host) {
+  void SetSameSiteCookies(std::string_view host) {
     BrowserContext* context = shell()->web_contents()->GetBrowserContext();
     EXPECT_TRUE(SetCookie(
         context, https_server()->GetURL(host, "/"),
@@ -113,14 +118,43 @@ class HttpCookieBrowserTest : public ContentBrowserTest,
                   base::StrCat({kSameSiteUnspecifiedCookieName, "=1"})));
   }
 
+  // Gets a path that causes the EmbeddedTestServer to attempt to set prefixed
+  // cookies (some valid, some not).
+  std::string GetSetPrefixedCookiesPath(std::string_view host) {
+    return base::StrCat({
+        "/set-cookie?",
+        kSecurePrefixCookieName,
+        "=1;Secure&",
+        kHostPrefixCookieName,
+        "=1;Secure;Path=/&",
+        "__Secure-missing-attr=1&",
+        "__Host-wrong-path=1;Secure&",
+        "__Host-wrong-domain=1;Secure;Domain=",
+        host,
+        "&",
+        "__Host-wrong-secure=1;Path=/&",
+    });
+  }
+
+  // Sets some (valid) prefixed cookies.
+  void SetPrefixedCookies(std::string_view host) {
+    BrowserContext* context = shell()->web_contents()->GetBrowserContext();
+    ASSERT_TRUE(
+        SetCookie(context, https_server()->GetURL(host, "/"),
+                  base::StrCat({kHostPrefixCookieName, "=1; Secure; Path=/"})));
+    ASSERT_TRUE(
+        SetCookie(context, https_server()->GetURL(host, "/"),
+                  base::StrCat({kSecurePrefixCookieName, "=1; Secure"})));
+  }
+
   GURL EchoCookiesUrl(net::EmbeddedTestServer* test_server,
-                      const std::string& host) {
+                      std::string_view host) {
     return test_server->GetURL(host, "/echoheader?Cookie");
   }
 
   GURL SetSameSiteCookiesUrl(net::EmbeddedTestServer* test_server,
-                             const std::string& host) {
-    return test_server->GetURL(host, kSetSameSiteCookiesURL);
+                             std::string_view host) {
+    return test_server->GetURL(host, kSetSameSiteCookiesPath);
   }
 
   std::string ExtractFrameContent(RenderFrameHost* frame) const {
@@ -146,7 +180,7 @@ class HttpCookieBrowserTest : public ContentBrowserTest,
                                   bool is_cross_site_navigation,
                                   bool is_user_initiated_reload) {
     // Set target as A or B and cookies based on cross_site param
-    const char* target = is_cross_site_navigation ? kHostB : kHostA;
+    std::string_view target = is_cross_site_navigation ? kHostB : kHostA;
     GURL target_URL =
         https_server()->GetURL(target, "/echo-cookie-with-status?status=404");
     SetSameSiteCookies(target);
@@ -361,7 +395,7 @@ IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest, SendSameSiteCookies_Redirect) {
 IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest, SetSameSiteCookies) {
   // Main frame can set all SameSite cookies.
   ASSERT_TRUE(NavigateToURL(
-      web_contents(), https_server()->GetURL(kHostA, kSetSameSiteCookiesURL)));
+      web_contents(), https_server()->GetURL(kHostA, kSetSameSiteCookiesPath)));
   EXPECT_THAT(GetCanonicalCookies(web_contents()->GetBrowserContext(),
                                   https_server()->GetURL(kHostA, "/")),
               UnorderedElementsAre(
@@ -464,6 +498,52 @@ IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest, SetSameSiteCookies_Redirect) {
             net::MatchesCookieWithName(kSameSiteUnspecifiedCookieName)));
     ASSERT_EQ(4U, ClearCookies());
   }
+}
+
+IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest, SendPrefixedCookies) {
+  SetPrefixedCookies(kHostA);
+
+  // Main frame browser-initiated navigation sends all prefixed cookies.
+  ASSERT_TRUE(
+      NavigateToURL(web_contents(), EchoCookiesUrl(https_server(), kHostA)));
+  EXPECT_THAT(ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
+              net::CookieStringIs(UnorderedElementsAre(
+                  Key(kSecurePrefixCookieName), Key(kHostPrefixCookieName))));
+}
+
+IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest,
+                       SendPrefixedCookies_OmitsIfInsecure) {
+  SetPrefixedCookies(kHostA);
+
+  // Main frame browser-initiated navigation omits all prefixed cookies on
+  // insecure connections.
+  ASSERT_TRUE(NavigateToURL(web_contents(),
+                            EchoCookiesUrl(embedded_test_server(), kHostA)));
+  EXPECT_THAT(ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
+              net::CookieStringIs(IsEmpty()));
+}
+
+IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest, SetPrefixedCookies) {
+  // Main frame can set cookies with all prefixes.
+  ASSERT_TRUE(NavigateToURL(
+      web_contents(),
+      https_server()->GetURL(kHostA, GetSetPrefixedCookiesPath(kHostA))));
+  EXPECT_THAT(GetCanonicalCookies(web_contents()->GetBrowserContext(),
+                                  https_server()->GetURL(kHostA, "/")),
+              UnorderedElementsAre(
+                  net::MatchesCookieWithName(kHostPrefixCookieName),
+                  net::MatchesCookieWithName(kSecurePrefixCookieName)));
+}
+
+IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest,
+                       SetPrefixedCookies_DisallowedIfInsecure) {
+  // Main frame cannot set cookies with any prefix over an insecure connection.
+  ASSERT_TRUE(NavigateToURL(web_contents(),
+                            embedded_test_server()->GetURL(
+                                kHostA, GetSetPrefixedCookiesPath(kHostA))));
+  EXPECT_THAT(GetCanonicalCookies(web_contents()->GetBrowserContext(),
+                                  embedded_test_server()->GetURL(kHostA, "/")),
+              IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest,
@@ -612,7 +692,7 @@ class ThirdPartyCookiesHttpCookieBrowserTest : public ContentBrowserTest {
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
-  GURL EchoCookiesUrl(const std::string& host) {
+  GURL EchoCookiesUrl(std::string_view host) {
     return https_server()->GetURL(host, "/echoheader?Cookie");
   }
 
@@ -634,8 +714,8 @@ class ThirdPartyCookiesHttpCookieBrowserTest : public ContentBrowserTest {
 
   EvalJsResult Fetch(RenderFrameHost* frame,
                      const GURL& url,
-                     const std::string& mode,
-                     const std::string& credentials) {
+                     std::string_view mode,
+                     std::string_view credentials) {
     constexpr char script[] = R"JS(
       fetch($1, {mode: $2, credentials: $3}).then(result => result.text());
     )JS";
@@ -653,7 +733,7 @@ class ThirdPartyCookiesHttpCookieBrowserTest : public ContentBrowserTest {
   }
 
   EvalJsResult NavigateToURLWithPOST(RenderFrameHost* frame,
-                                     const std::string& host) {
+                                     std::string_view host) {
     TestNavigationObserver observer(web_contents());
 
     constexpr char script[] = R"JS(
@@ -673,8 +753,8 @@ class ThirdPartyCookiesHttpCookieBrowserTest : public ContentBrowserTest {
 
   EvalJsResult ReadCookiesViaFetchWithRedirect(
       RenderFrameHost* frame,
-      const std::string& intermediate_host,
-      const std::string& destination_host) {
+      std::string_view intermediate_host,
+      std::string_view destination_host) {
     constexpr char script[] = "fetch($1).then((result) => result.text());";
 
     GURL redirect_url = RedirectUrl(https_server(), intermediate_host,
