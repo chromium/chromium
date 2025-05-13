@@ -13754,6 +13754,21 @@
             ]
         }
     ],
+    "MacICloudKeychainRecoveryFactor": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableICloudKeychainRecoveryFactor"
+                    ]
+                }
+            ]
+        }
+    ],
     "MahiEnabled": [
         {
             "platforms": [
