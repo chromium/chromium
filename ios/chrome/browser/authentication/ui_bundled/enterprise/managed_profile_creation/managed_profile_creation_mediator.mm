@@ -56,7 +56,7 @@
         !skipBrowsingDataMigration &&
         AreSeparateProfilesForManagedAccountsEnabled() &&
         !identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
-    _keepBrowsingDataSeparate = !mergeBrowsingDataByDefault;
+    _browsingDataSeparate = !mergeBrowsingDataByDefault;
     _browsingDataMigrationDisabledByPolicy =
         browsingDataMigrationDisabledByPolicy;
   }
@@ -72,7 +72,7 @@
 }
 
 - (void)setKeepBrowsingDataSeparate:(BOOL)keepSeparate {
-  _keepBrowsingDataSeparate = keepSeparate;
+  _browsingDataSeparate = keepSeparate;
   [self.consumer setKeepBrowsingDataSeparate:keepSeparate];
 }
 
@@ -84,14 +84,14 @@
   _consumer.canShowBrowsingDataMigration = _canShowBrowsingDataMigration;
   _consumer.browsingDataMigrationDisabledByPolicy =
       _browsingDataMigrationDisabledByPolicy;
-  [_consumer setKeepBrowsingDataSeparate:self.keepBrowsingDataSeparate];
+  [_consumer setKeepBrowsingDataSeparate:self.browsingDataSeparate];
 }
 
 #pragma mark - BrowsingDataMigrationViewControllerDelegate
 
-- (void)updateShouldKeepBrowsingDataSeparate:(BOOL)keepBrowsingDataSeparate {
-  self.keepBrowsingDataSeparate = keepBrowsingDataSeparate;
-  [self.consumer setKeepBrowsingDataSeparate:self.keepBrowsingDataSeparate];
+- (void)updateShouldKeepBrowsingDataSeparate:(BOOL)browsingDataSeparate {
+  self.browsingDataSeparate = browsingDataSeparate;
+  [self.consumer setKeepBrowsingDataSeparate:self.browsingDataSeparate];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate

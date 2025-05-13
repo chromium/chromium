@@ -869,7 +869,8 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   [self continueFlow];
 }
 
-- (void)didAcceptManagedConfirmation:(BOOL)keepBrowsingDataSeparate {
+- (void)didAcceptManagedConfirmationWithBrowsingDataSeparate:
+    (BOOL)browsingDataSeparate {
   if (IsIdentityDiscAccountMenuEnabled()) {
     // Only show the dialog once per account.
     signin::GaiaIdHash gaiaIDHash =
@@ -881,7 +882,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 
   _shouldConvertPersonalProfileToManaged =
       AreSeparateProfilesForManagedAccountsEnabled() &&
-      (!keepBrowsingDataSeparate ||
+      (!browsingDataSeparate ||
        _accessPoint == signin_metrics::AccessPoint::kStartPage);
 
   // When we show the managed profile screen, the profile is a new one, ensure

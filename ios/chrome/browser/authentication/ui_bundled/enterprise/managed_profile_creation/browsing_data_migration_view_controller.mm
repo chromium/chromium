@@ -42,16 +42,16 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 @end
 
 @implementation BrowsingDataMigrationViewController {
-  BOOL _keepBrowsingDataSeparate;
+  BOOL _browsingDataSeparate;
   NSString* _userEmail;
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
 }
 
 - (instancetype)initWithUserEmail:(NSString*)userEmail
-         keepBrowsingDataSeparate:(BOOL)keepBrowsingDataSeparate {
+             browsingDataSeparate:(BOOL)browsingDataSeparate {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
-    _keepBrowsingDataSeparate = keepBrowsingDataSeparate;
+    _browsingDataSeparate = browsingDataSeparate;
     _userEmail = userEmail;
   }
   return self;
@@ -80,7 +80,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [self.tableView
       selectRowAtIndexPath:
           [_dataSource indexPathForItemIdentifier:
-                           _keepBrowsingDataSeparate
+                           _browsingDataSeparate
                                ? @(ItemIdentifierKeepBrowsingDataSeparate)
                                : @(ItemIdentifierMergeBrowsingData)]
                   animated:YES
@@ -93,9 +93,9 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
     willSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   auto selectedItemIdentifier =
       [_dataSource itemIdentifierForIndexPath:indexPath];
-  _keepBrowsingDataSeparate = [selectedItemIdentifier
+  _browsingDataSeparate = [selectedItemIdentifier
       isEqual:@(ItemIdentifierKeepBrowsingDataSeparate)];
-  [self.mutator updateShouldKeepBrowsingDataSeparate:_keepBrowsingDataSeparate];
+  [self.mutator updateShouldKeepBrowsingDataSeparate:_browsingDataSeparate];
   [self updateSelection];
   return indexPath;
 }
@@ -190,7 +190,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       return [self
           createBrowsingDataMigrationCellItem:title
                                       details:details
-                                     selected:_keepBrowsingDataSeparate
+                                     selected:_browsingDataSeparate
                       accessibilityIdentifier:kKeepBrowsingDataSeparateCellId];
     }
     case ItemIdentifierMergeBrowsingData: {
@@ -202,7 +202,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       return
           [self createBrowsingDataMigrationCellItem:title
                                             details:details
-                                           selected:!_keepBrowsingDataSeparate
+                                           selected:!_browsingDataSeparate
                             accessibilityIdentifier:kMergeBrowsingDataCellId];
     }
   }

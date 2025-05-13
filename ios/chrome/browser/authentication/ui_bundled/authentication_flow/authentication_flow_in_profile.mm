@@ -468,7 +468,8 @@ enum class AuthenticationFlowInProfileState {
   NOTREACHED();
 }
 
-- (void)didAcceptManagedConfirmation:(BOOL)keepBrowsingDataSeparate {
+- (void)didAcceptManagedConfirmationWithBrowsingDataSeparate:
+    (BOOL)browsingDataSeparate {
   NOTREACHED();
 }
 

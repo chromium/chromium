@@ -845,21 +845,21 @@ void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
   _managedConfirmationAlertCoordinator = nil;
   [self managedConfirmationDidAccept:accepted
                              browser:browser
-            keepBrowsingDataSeparate:
-                AreSeparateProfilesForManagedAccountsEnabled()];
+                browsingDataSeparate:
+                    AreSeparateProfilesForManagedAccountsEnabled()];
 }
 
 // Called when the user accepted to continue to sign-in with a managed account.
 // `accepted` is YES when the user confirmed or NO if the user canceled.
-// If `keepBrowsingDataSeparate` is `YES`, the managed account gets signed in to
+// If `browsingDataSeparate` is `YES`, the managed account gets signed in to
 // a new empty work profile. This must only be specified if
 // AreSeparateProfilesForManagedAccountsEnabled() is true.
-// If `keepBrowsingDataSeparate` is `NO`, the account gets signed in to the
+// If `browsingDataSeparate` is `NO`, the account gets signed in to the
 // current profile. If AreSeparateProfilesForManagedAccountsEnabled() is true,
 // this involves converting the current profile into a work profile.
 - (void)managedConfirmationDidAccept:(BOOL)accepted
                              browser:(Browser*)browser
-            keepBrowsingDataSeparate:(BOOL)keepBrowsingDataSeparate {
+                browsingDataSeparate:(BOOL)browsingDataSeparate {
   if (!accepted) {
     base::RecordAction(
         base::UserMetricsAction("Signin_AuthenticationFlowPerformer_"
@@ -868,7 +868,7 @@ void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
     return;
   }
   CHECK(AreSeparateProfilesForManagedAccountsEnabled() ||
-        !keepBrowsingDataSeparate);
+        !browsingDataSeparate);
   base::RecordAction(
       base::UserMetricsAction("Signin_AuthenticationFlowPerformer_"
                               "ManagedConfirmationDialog_Confirmed"));
@@ -883,7 +883,8 @@ void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
     // notification isn't needed anymore.
     [self updateUserPolicyNotificationStatusIfNeeded:prefService];
   }
-  [self.delegate didAcceptManagedConfirmation:keepBrowsingDataSeparate];
+  [self.delegate didAcceptManagedConfirmationWithBrowsingDataSeparate:
+                     browsingDataSeparate];
 }
 
 #pragma mark - ManagedProfileCreationCoordinatorDelegate
@@ -891,7 +892,7 @@ void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
 - (void)managedProfileCreationCoordinator:
             (ManagedProfileCreationCoordinator*)coordinator
                                 didAccept:(BOOL)accepted
-                 keepBrowsingDataSeparate:(BOOL)keepBrowsingDataSeparate {
+                     browsingDataSeparate:(BOOL)browsingDataSeparate {
   CHECK(!_managedConfirmationAlertCoordinator, base::NotFatalUntil::M136);
   CHECK(!_errorAlertCoordinator, base::NotFatalUntil::M136);
   CHECK_EQ(_managedConfirmationScreenCoordinator, coordinator);
@@ -900,7 +901,7 @@ void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
   _managedConfirmationScreenCoordinator = nil;
   [self managedConfirmationDidAccept:accepted
                              browser:browser
-            keepBrowsingDataSeparate:keepBrowsingDataSeparate];
+                browsingDataSeparate:browsingDataSeparate];
 }
 
 @end

@@ -48,7 +48,14 @@ class Browser;
         profileSeparationDataMigrationSettings;
 
 // Indicates that the user accepted signing in to a managed account.
-- (void)didAcceptManagedConfirmation:(BOOL)keepBrowsingDataSeparate;
+// If `browsingDataSeparate` is `YES`, the managed account gets signed in to
+// a new empty work profile. This must only be specified if
+// AreSeparateProfilesForManagedAccountsEnabled() is true.
+// If `browsingDataSeparate` is `NO`, the account gets signed in to the
+// current profile. If AreSeparateProfilesForManagedAccountsEnabled() is true,
+// this involves converting the current profile into a work profile.
+- (void)didAcceptManagedConfirmationWithBrowsingDataSeparate:
+    (BOOL)browsingDataSeparate;
 
 // Indicates that the user cancelled signing in to a managed account.
 - (void)didCancelManagedConfirmation;

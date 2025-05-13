@@ -319,7 +319,8 @@ class AuthenticationFlowTest : public PlatformTest,
       BOOL migrationDisabled = AreSeparateProfilesForManagedAccountsEnabled();
       auto showManagedConfirmationForHostedDomainCallback = ^(NSInvocation*) {
         managed_confirmation_dialog_shown_count_++;
-        [authentication_flow_ didAcceptManagedConfirmation:YES];
+        [authentication_flow_
+            didAcceptManagedConfirmationWithBrowsingDataSeparate:YES];
       };
       OCMStub([performer_mock_
                   showManagedConfirmationForHostedDomain:hosted_domain

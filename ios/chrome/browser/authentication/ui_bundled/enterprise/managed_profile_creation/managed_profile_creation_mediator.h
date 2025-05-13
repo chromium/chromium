@@ -36,7 +36,12 @@ class IdentityManager;
 
 @property(nonatomic, weak) id<ManagedProfileCreationMediatorDelegate> delegate;
 
-@property(nonatomic, assign) BOOL keepBrowsingDataSeparate;
+// If `browsingDataSeparate` is `YES`, the managed account gets signed in to
+// a new empty work profile.
+// If `browsingDataSeparate` is `NO`, the account gets signed in to the
+// current profile. This involves converting the current profile into a work
+// profile.
+@property(nonatomic, assign) BOOL browsingDataSeparate;
 
 - (instancetype)initWithIdentityManager:
                     (signin::IdentityManager*)identityManager

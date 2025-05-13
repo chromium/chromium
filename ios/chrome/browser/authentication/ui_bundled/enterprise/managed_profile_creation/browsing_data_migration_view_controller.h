@@ -11,7 +11,7 @@
 
 @protocol BrowsingDataMigrationViewControllerMutator
 
-- (void)updateShouldKeepBrowsingDataSeparate:(BOOL)keepBrowsingDataSeparate;
+- (void)updateShouldKeepBrowsingDataSeparate:(BOOL)browsingDataSeparate;
 
 @end
 
@@ -21,10 +21,10 @@
 @property(nonatomic, weak) id<BrowsingDataMigrationViewControllerMutator>
     mutator;
 
-// `keepBrowsingDataSeparate` is the default value initially shown to the user
+// `browsingDataSeparate` is the default value initially shown to the user
 // as the selected value.
 - (instancetype)initWithUserEmail:(NSString*)userEmail
-         keepBrowsingDataSeparate:(BOOL)keepBrowsingDataSeparate
+             browsingDataSeparate:(BOOL)browsingDataSeparate
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;

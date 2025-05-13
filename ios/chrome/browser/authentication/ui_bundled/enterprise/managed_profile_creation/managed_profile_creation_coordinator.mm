@@ -116,18 +116,18 @@
 - (void)didTapPrimaryActionButton {
   // `dismissViewControllerAnimated` will release the mediator, so grab this
   // value first.
-  BOOL keepBrowsingDataSeparate = _mediator.keepBrowsingDataSeparate;
+  BOOL browsingDataSeparate = _mediator.browsingDataSeparate;
   [self dismissViewControllerAnimated:YES];
   [self.delegate managedProfileCreationCoordinator:self
                                          didAccept:YES
-                          keepBrowsingDataSeparate:keepBrowsingDataSeparate];
+                              browsingDataSeparate:browsingDataSeparate];
 }
 
 - (void)didTapSecondaryActionButton {
   [self dismissViewControllerAnimated:YES];
   [self.delegate managedProfileCreationCoordinator:self
                                          didAccept:NO
-                          keepBrowsingDataSeparate:NO];
+                              browsingDataSeparate:NO];
 }
 
 - (void)didTapURLInDisclaimer:(NSURL*)URL {
@@ -145,8 +145,8 @@
   CHECK(!_browsingDataMigrationViewController);
   _browsingDataMigrationViewController =
       [[BrowsingDataMigrationViewController alloc]
-                 initWithUserEmail:_identity.userEmail
-          keepBrowsingDataSeparate:_mediator.keepBrowsingDataSeparate];
+             initWithUserEmail:_identity.userEmail
+          browsingDataSeparate:_mediator.browsingDataSeparate];
   _browsingDataMigrationViewController.mutator = _mediator;
   [_navigationController pushViewController:_browsingDataMigrationViewController
                                    animated:YES];
