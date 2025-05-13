@@ -50,6 +50,8 @@ class Loggable {
   base::unexpected<Loggable> UnexpectedWithContext(base::Location from_here,
                                                    std::string context) &&;
 
+  std::string ToString() const;
+
   friend std::ostream& operator<<(std::ostream&, const Loggable&);
 
  private:

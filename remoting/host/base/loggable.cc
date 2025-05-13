@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <ostream>
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -63,6 +64,12 @@ base::unexpected<Loggable> Loggable::UnexpectedWithContext(
     std::string context) && {
   AddContext(std::move(from_here), std::move(context));
   return base::unexpected(std::move(*this));
+}
+
+std::string Loggable::ToString() const {
+  std::ostringstream str;
+  str << *this;
+  return str.str();
 }
 
 std::ostream& operator<<(std::ostream& ostream, const Loggable& loggable) {

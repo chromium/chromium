@@ -12,6 +12,9 @@ source_set("interface_headers") {
   sources = [
     "org_chromium_TestInterface.h",
     "org_freedesktop_DBus_Properties.h",
+    "org_gnome_Mutter_RemoteDesktop.h",
+    "org_gnome_Mutter_ScreenCast.h",
+    "org_gnome_ScreenSaver.h",
   ]
   deps = [ "//remoting/host/linux:gvariant" ]
 }
