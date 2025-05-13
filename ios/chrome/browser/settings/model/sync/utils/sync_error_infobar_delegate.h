@@ -61,6 +61,10 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
   // Called when the infobar is dismissed through timing out.
   void InfoBarDismissedByTimeout() const;
 
+  // Whether the infobar should display a password error icon instead of the
+  // default sync error icon.
+  bool DisplayPasswordErrorIcon() const;
+
  private:
   const raw_ptr<ProfileIOS> profile_;
   const id<SyncPresenter> presenter_;

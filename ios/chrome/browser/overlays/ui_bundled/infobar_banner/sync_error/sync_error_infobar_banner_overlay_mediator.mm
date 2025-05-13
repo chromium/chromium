@@ -77,13 +77,21 @@
   [consumer setButtonText:base::SysUTF16ToNSString(delegate->GetButtonLabel(
                               SyncErrorInfoBarDelegate::BUTTON_OK))];
 
-  UIImage* iconImage = DefaultSymbolTemplateWithPointSize(
-      kSyncErrorSymbol, kInfobarSymbolPointSize);
+  if (delegate->DisplayPasswordErrorIcon()) {
+    [consumer
+        setIconImage:DefaultSymbolTemplateWithPointSize(
+                         kSyncPasswordErrorSymbol, kInfobarSymbolPointSize)];
+    [consumer setIconBackgroundColor:[UIColor colorNamed:kRed100Color]];
+    [consumer setIconImageTintColor:[UIColor colorNamed:kRedColor]];
+  } else {
+    [consumer setIconImage:DefaultSymbolTemplateWithPointSize(
+                               kSyncErrorSymbol, kInfobarSymbolPointSize)];
+    [consumer setIconBackgroundColor:[UIColor colorNamed:kRed500Color]];
+    [consumer
+        setIconImageTintColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
+  }
 
-  [consumer setIconImage:iconImage];
   [consumer setUseIconBackgroundTint:YES];
-  [consumer setIconBackgroundColor:[UIColor colorNamed:kRed500Color]];
-  [consumer setIconImageTintColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
 
   [consumer setPresentsModal:NO];
   if (delegate->GetTitleText().empty()) {

@@ -191,6 +191,7 @@ extern NSString* const kCheckmarkSealFillSymbol;
 extern NSString* const kWifiSymbol;
 extern NSString* const kBookmarksSymbol;
 extern NSString* const kSyncErrorSymbol;
+extern NSString* const kSyncPasswordErrorSymbol;
 extern NSString* const kMenuSymbol;
 extern NSString* const kSortSymbol;
 extern NSString* const kExpandSymbol;

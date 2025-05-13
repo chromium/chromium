@@ -209,3 +209,23 @@ void SyncErrorInfoBarDelegate::InfoBarDismissedByTimeout() const {
         prefs::kIosSyncInfobarErrorLastDismissedTimestamp, base::Time::Now());
   }
 }
+
+bool SyncErrorInfoBarDelegate::DisplayPasswordErrorIcon() const {
+  switch (error_state_) {
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForPasswords:
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForPasswords:
+      return base::FeatureList::IsEnabled(
+          syncer::kSyncTrustedVaultInfobarImprovements);
+    case syncer::SyncService::UserActionableError::kNone:
+    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
+    case syncer::SyncService::UserActionableError::kNeedsPassphrase:
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForEverything:
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForEverything:
+      return false;
+  }
+  NOTREACHED();
+}
