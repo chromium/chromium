@@ -16,6 +16,7 @@ import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.suggestions.RecyclerViewSelectionController;
+import org.chromium.chrome.browser.omnibox.suggestions.SelectionController;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SpacingRecyclerViewItemDecoration;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -42,8 +43,9 @@ public class BaseCarouselSuggestionView extends RecyclerView {
                 new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
         setLayoutManager(layoutManager);
 
-        mSelectionController = new RecyclerViewSelectionController(layoutManager);
-        mSelectionController.setCycleThroughNoSelection(true);
+        mSelectionController =
+                new RecyclerViewSelectionController(
+                        layoutManager, SelectionController.Mode.SATURATING_WITH_SENTINEL);
         addOnChildAttachStateChangeListener(mSelectionController);
 
         setAdapter(adapter);
@@ -73,16 +75,13 @@ public class BaseCarouselSuggestionView extends RecyclerView {
     }
 
     void resetSelection() {
-        mSelectionController.setSelectedItem(RecyclerView.NO_POSITION);
+        mSelectionController.reset();
     }
 
     @Override
     public void setSelected(boolean isSelected) {
-        if (isSelected) {
-            mSelectionController.setSelectedItem(0);
-        } else {
-            resetSelection();
-        }
+        resetSelection();
+        if (isSelected) mSelectionController.advanceForward();
     }
 
     @Override

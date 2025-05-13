@@ -39,7 +39,8 @@ public class SimpleSelectionController extends SelectionController {
 
         mListener = listener;
         mItemCount = itemCount;
-        reset();
+        // Note: this will calculate correct position if there are no items.
+        setItemCount(itemCount);
     }
 
     /** Returns the number of items in the container controlled by the SelectionController. */

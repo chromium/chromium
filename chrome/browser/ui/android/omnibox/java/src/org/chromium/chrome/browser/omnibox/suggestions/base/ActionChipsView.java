@@ -17,6 +17,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.RecyclerViewSelectionController;
+import org.chromium.chrome.browser.omnibox.suggestions.SelectionController;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 
@@ -41,8 +42,9 @@ public class ActionChipsView extends RecyclerView {
         var layoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
         setLayoutManager(layoutManager);
 
-        mSelectionController = new RecyclerViewSelectionController(layoutManager);
-        mSelectionController.setCycleThroughNoSelection(true);
+        mSelectionController =
+                new RecyclerViewSelectionController(
+                        layoutManager, SelectionController.Mode.SATURATING_WITH_SENTINEL);
         addOnChildAttachStateChangeListener(mSelectionController);
 
         setMinimumHeight(
@@ -90,10 +92,9 @@ public class ActionChipsView extends RecyclerView {
 
     @Override
     public void setSelected(boolean isSelected) {
-        mSelectionController.resetSelection();
+        mSelectionController.reset();
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     void setSelectionControllerForTesting(RecyclerViewSelectionController controller) {
         mSelectionController = controller;
     }
