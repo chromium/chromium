@@ -7,24 +7,32 @@
     <script type="module" src="webrtc_internals.js"></script>
   </head>
   <body>
-    <template id="dump-template">
+    <details class="peer-connection-dump-root">
+      <summary>Create a WebRTC-Internals dump</summary>
       <div id="dump">
-        <a>
-          <button>Download the "webrtc-internals dump"</button>
+        <a id="dump-anchor">
+          <button id="dump-click-target">
+            Download the "webrtc-internals dump"
+          </button>
         </a>
-        <label> <input type="checkbox" />Compress result </label>
+        <label>
+          <input type="checkbox" id="dump-checkbox" />
+          Compress result
+        </label>
         <p class="dumps-info">
           The "webrtc-internals" dump is a JSON file containing API calls,
           events and getStats-like information about RTCPeerConnection objects
           as well as getUsermedia/getDisplayMedia API calls.
         </p>
       </div>
-    </template>
-    <template id="audio-recording-template">
-      <div id="audio-recording">
-        <p>
+    </details>
+    <details class="peer-connection-dump-root">
+      <summary>Create diagnostic audio recordings</summary>
+      <div>
+        <p id="audio-recording-click-target">
           <label>
-            <input type="checkbox" />Enable diagnostic audio recordings
+            <input type="checkbox" id="audio-recording-checkbox" />
+            Enable diagnostic audio recordings
           </label>
         </p>
         <p class="dumps-info">
@@ -54,12 +62,13 @@
           audio files.
         </p>
       </div>
-    </template>
-    <template id="packet-recording-template">
+    </details>
+    <details class="peer-connection-dump-root">
+      <summary>Create diagnostic packet recordings</summary>
       <div id="packet-recording">
-        <p>
-          <label>
-            <input type="checkbox" disabled />
+        <p id="packet-recording-click-target">
+          <label id="packet-recording-label">
+            <input type="checkbox" id="packet-recording-checkbox" disabled />
             Enable diagnostic packet and event recording
           </label>
         </p>
@@ -91,7 +100,7 @@
           and rechecked to resume logging.
         </p>
       </div>
-    </template>
+    </details>
     <p id="content-root"></p>
     <template id="statsrow-template">
       <td></td>
