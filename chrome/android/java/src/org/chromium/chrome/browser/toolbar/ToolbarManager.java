@@ -2593,6 +2593,15 @@ public class ToolbarManager
     }
 
     /**
+     * Sets custom actions visibility of the custom tab toolbar.
+     *
+     * @param isVisible true if should be visible, false if should be hidden.
+     */
+    public void setCustomActionsVisibility(boolean isVisible) {
+        mToolbar.setCustomActionsVisibility(isVisible);
+    }
+
+    /**
      * Hides menu button persistently until all tokens are released.
      *
      * @param oldToken previously acquired token.

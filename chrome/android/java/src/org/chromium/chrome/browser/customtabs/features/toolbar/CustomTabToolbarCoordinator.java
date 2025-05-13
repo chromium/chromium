@@ -123,7 +123,7 @@ public class CustomTabToolbarCoordinator {
                     @Override
                     public void onDesktopWindowingModeChanged(boolean isInDesktopWindow) {
                         updateTitleBarVisibility();
-                        updateMenuButtonVisibility();
+                        updateToolbarControlsVisibilityForDesktopWindowing();
                     }
                 };
         mDesktopWindowStateManager.addObserver(mAppHeaderObserver);
@@ -150,10 +150,13 @@ public class CustomTabToolbarCoordinator {
         }
     }
 
-    private void updateMenuButtonVisibility() {
+    private void updateToolbarControlsVisibilityForDesktopWindowing() {
         if (mToolbarManager == null) return;
 
-        if (AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager)) {
+        boolean isInDesktopWindow = AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager);
+        mToolbarManager.setCustomActionsVisibility(!isInDesktopWindow);
+
+        if (isInDesktopWindow) {
             mMenuButtonHideToken = mToolbarManager.hideMenuButtonPersistently(mMenuButtonHideToken);
         } else {
             mToolbarManager.releaseHideMenuButtonToken(mMenuButtonHideToken);
@@ -184,7 +187,7 @@ public class CustomTabToolbarCoordinator {
 
         if (WebAppHeaderUtils.isMinimalUiEnabled(mIntentDataProvider)
                 && mDesktopWindowStateManager != null) {
-            updateMenuButtonVisibility();
+            updateToolbarControlsVisibilityForDesktopWindowing();
         }
     }
 

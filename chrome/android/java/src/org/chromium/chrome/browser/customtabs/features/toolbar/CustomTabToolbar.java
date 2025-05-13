@@ -346,6 +346,14 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mToolbarWidth = CustomTabDimensionUtils.getInitialWidth(activity, intentDataProvider);
     }
 
+    @Override
+    protected void setCustomActionsVisibility(boolean isVisible) {
+        int visibility = isVisible ? View.VISIBLE : View.GONE;
+        if (visibility == mCustomActionButtons.getVisibility()) return;
+
+        mCustomActionButtons.setVisibility(visibility);
+    }
+
     /**
      * Inflates and positions the buttons and the location bar within the toolbar based on the
      * provided available width and the current button model. If there isn't enough space for all

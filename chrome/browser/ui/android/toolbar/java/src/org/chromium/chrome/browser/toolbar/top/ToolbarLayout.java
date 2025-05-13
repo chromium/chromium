@@ -555,6 +555,13 @@ public abstract class ToolbarLayout extends FrameLayout
     protected void setCloseButtonImageResource(@Nullable Drawable drawable) {}
 
     /**
+     * Sets custom actions visibility of the custom tab toolbar, if it is supported.
+     *
+     * @param isVisible true if should be visible, false if should be hidden.
+     */
+    protected void setCustomActionsVisibility(boolean isVisible) {}
+
+    /**
      * Adds a custom action button to the toolbar layout, if it is supported.
      *
      * @param drawable The icon for the button.

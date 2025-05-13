@@ -203,9 +203,10 @@ public class CustomTabToolbarCoordinatorUnitTest {
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
         mCoordinator = createCoordinator();
 
-        // Verify menu button is visible.
+        // Verify menu button and custom actions are visible.
         mCoordinator.onToolbarInitialized(mToolbarManager);
         verify(mToolbarManager).releaseHideMenuButtonToken(TokenHolder.INVALID_TOKEN);
+        verify(mToolbarManager).setCustomActionsVisibility(true);
 
         // Enter desktop windowing.
         when(mToolbarManager.hideMenuButtonPersistently(TokenHolder.INVALID_TOKEN)).thenReturn(0);
@@ -216,8 +217,10 @@ public class CustomTabToolbarCoordinatorUnitTest {
         var observer = mCoordinator.getAppHeaderObserver();
         assertNotNull("Observer should be initialized", observer);
 
+        // Verify menu button and custom actions are hidden.
         observer.onDesktopWindowingModeChanged(true);
         verify(mToolbarManager).hideMenuButtonPersistently(TokenHolder.INVALID_TOKEN);
+        verify(mToolbarManager).setCustomActionsVisibility(false);
     }
 
     @Test
@@ -233,9 +236,10 @@ public class CustomTabToolbarCoordinatorUnitTest {
         when(mToolbarManager.hideMenuButtonPersistently(TokenHolder.INVALID_TOKEN)).thenReturn(0);
         mCoordinator = createCoordinator();
 
-        // Verify menu button is hidden.
+        // Verify menu button and custom actions are hidden.
         mCoordinator.onToolbarInitialized(mToolbarManager);
         verify(mToolbarManager).hideMenuButtonPersistently(TokenHolder.INVALID_TOKEN);
+        verify(mToolbarManager).setCustomActionsVisibility(false);
 
         // Exit desktop windowing.
         appHeaderState = new AppHeaderState(WINDOW_RECT, WIDEST_UNOCCLUDED_RECT, false);
@@ -247,5 +251,6 @@ public class CustomTabToolbarCoordinatorUnitTest {
 
         observer.onDesktopWindowingModeChanged(false);
         verify(mToolbarManager).releaseHideMenuButtonToken(0);
+        verify(mToolbarManager).setCustomActionsVisibility(true);
     }
 }

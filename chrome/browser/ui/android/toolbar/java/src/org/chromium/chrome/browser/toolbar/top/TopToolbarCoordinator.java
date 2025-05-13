@@ -572,6 +572,15 @@ public class TopToolbarCoordinator implements Toolbar {
     }
 
     /**
+     * Sets custom actions visibility of the custom tab toolbar.
+     *
+     * @param isVisible true if should be visible, false if should be hidden.
+     */
+    public void setCustomActionsVisibility(boolean isVisible) {
+        mToolbarLayout.setCustomActionsVisibility(isVisible);
+    }
+
+    /**
      * Adds a custom action button to the toolbar layout, if it is supported.
      *
      * @param drawable The icon for the button.
