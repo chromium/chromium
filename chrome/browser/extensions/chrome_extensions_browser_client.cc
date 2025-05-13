@@ -42,11 +42,14 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/favicon/favicon_util.h"
 #include "chrome/browser/extensions/pref_mapping.h"
+#include "chrome/browser/extensions/updater/chrome_update_client_config.h"
 #include "chrome/browser/extensions/user_script_listener.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/prefetch/pref_names.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -119,9 +122,24 @@ namespace extensions {
 
 namespace {
 
+constexpr std::string_view kCrxUrlPath = "/service/update2/crx";
+constexpr std::string_view kJsonUrlPath = "/service/update2/json";
+
 // If true, the extensions client will behave as though there is always a
 // new chrome update.
 bool g_did_chrome_update_for_testing = false;
+
+class UpdaterKeepAlive : public ScopedExtensionUpdaterKeepAlive {
+ public:
+  UpdaterKeepAlive(Profile* profile, ProfileKeepAliveOrigin origin)
+      : profile_keep_alive_(profile, origin) {}
+  UpdaterKeepAlive(const UpdaterKeepAlive&) = delete;
+  UpdaterKeepAlive& operator=(const UpdaterKeepAlive&) = delete;
+  ~UpdaterKeepAlive() override = default;
+
+ private:
+  ScopedProfileKeepAlive profile_keep_alive_;
+};
 
 bool ShouldLogExtensionAction(content::BrowserContext* browser_context,
                               const ExtensionId& extension_id) {
@@ -514,17 +532,25 @@ void ChromeExtensionsBrowserClient::ClearBackForwardCache() {
 scoped_refptr<update_client::UpdateClient>
 ChromeExtensionsBrowserClient::CreateUpdateClient(
     content::BrowserContext* context) {
-  // TODO(crbug.com/415033270): Move the code from util to here, since this is
-  // the only caller.
-  return util::CreateUpdateClient(context);
+  std::optional<GURL> override_url;
+  GURL update_url = extension_urls::GetWebstoreUpdateUrl();
+  if (update_url != extension_urls::GetDefaultWebstoreUpdateUrl()) {
+    if (update_url.path() == kCrxUrlPath) {
+      override_url = update_url.GetWithEmptyPath().Resolve(kJsonUrlPath);
+    } else {
+      override_url = update_url;
+    }
+  }
+  return update_client::UpdateClientFactory(
+      ChromeUpdateClientConfig::Create(context, override_url));
 }
 
 std::unique_ptr<ScopedExtensionUpdaterKeepAlive>
 ChromeExtensionsBrowserClient::CreateUpdaterKeepAlive(
     content::BrowserContext* context) {
-  // TODO(crbug.com/415033270): Move the code from util to here, since this is
-  // the only caller.
-  return util::CreateUpdaterKeepAlive(context);
+  return std::make_unique<UpdaterKeepAlive>(
+      Profile::FromBrowserContext(context),
+      ProfileKeepAliveOrigin::kExtensionUpdater);
 }
 
 bool ChromeExtensionsBrowserClient::IsActivityLoggingEnabled(

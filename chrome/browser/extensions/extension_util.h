@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
@@ -27,10 +26,6 @@ namespace extensions {
 class PermissionSet;
 }
 
-namespace update_client {
-class UpdateClient;
-}
-
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
@@ -40,7 +35,6 @@ class Profile;
 namespace extensions {
 
 class Extension;
-class ScopedExtensionUpdaterKeepAlive;
 
 namespace util {
 
@@ -97,18 +91,6 @@ std::u16string GetFixupExtensionNameForUIDisplay(
 
 // Registers miscellaneous chrome-level extension-related prefs.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
-// Returns a new UpdateClient.
-// TODO(crbug.com/415033270): Move this to ChromeExtensionsBrowserClient when
-// DesktopAndroidExtensionsBrowserClient is deleted.
-scoped_refptr<update_client::UpdateClient> CreateUpdateClient(
-    content::BrowserContext* context);
-
-// Returns a new ScopedExtensionUpdaterKeepAlive.
-// TODO(crbug.com/415033270): Move this to ChromeExtensionsBrowserClient when
-// DesktopAndroidExtensionsBrowserClient is deleted.
-std::unique_ptr<ScopedExtensionUpdaterKeepAlive> CreateUpdaterKeepAlive(
-    content::BrowserContext* context);
 
 // Returns true if extensions have been disabled (e.g. via a command-line flag
 // or preference).

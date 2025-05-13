@@ -15,9 +15,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/shared_module_service.h"
-#include "chrome/browser/extensions/updater/chrome_update_client_config.h"
-#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
-#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
@@ -25,7 +22,6 @@
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "components/update_client/update_client.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/site_instance.h"
 #include "extensions/browser/disable_reason.h"
@@ -39,7 +35,6 @@
 #include "extensions/browser/updater/scoped_extension_updater_keep_alive.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_urls.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
@@ -63,21 +58,6 @@
 namespace extensions::util {
 
 namespace {
-
-constexpr std::string_view kCrxUrlPath = "/service/update2/crx";
-constexpr std::string_view kJsonUrlPath = "/service/update2/json";
-
-class UpdaterKeepAlive : public ScopedExtensionUpdaterKeepAlive {
- public:
-  UpdaterKeepAlive(Profile* profile, ProfileKeepAliveOrigin origin)
-      : profile_keep_alive_(profile, origin) {}
-  UpdaterKeepAlive(const UpdaterKeepAlive&) = delete;
-  UpdaterKeepAlive& operator=(const UpdaterKeepAlive&) = delete;
-  ~UpdaterKeepAlive() override = default;
-
- private:
-  ScopedProfileKeepAlive profile_keep_alive_;
-};
 
 bool ExtensionsDisabledViaCommandLine(const base::CommandLine& command_line) {
   return command_line.HasSwitch(switches::kDisableExtensions) ||
@@ -372,28 +352,6 @@ std::u16string GetFixupExtensionNameForUIDisplay(
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kShouldGarbageCollectStoragePartitions,
                                 false);
-}
-
-scoped_refptr<update_client::UpdateClient> CreateUpdateClient(
-    content::BrowserContext* context) {
-  std::optional<GURL> override_url;
-  GURL update_url = extension_urls::GetWebstoreUpdateUrl();
-  if (update_url != extension_urls::GetDefaultWebstoreUpdateUrl()) {
-    if (update_url.path() == kCrxUrlPath) {
-      override_url = update_url.GetWithEmptyPath().Resolve(kJsonUrlPath);
-    } else {
-      override_url = update_url;
-    }
-  }
-  return update_client::UpdateClientFactory(
-      ChromeUpdateClientConfig::Create(context, override_url));
-}
-
-std::unique_ptr<ScopedExtensionUpdaterKeepAlive> CreateUpdaterKeepAlive(
-    content::BrowserContext* context) {
-  return std::make_unique<UpdaterKeepAlive>(
-      Profile::FromBrowserContext(context),
-      ProfileKeepAliveOrigin::kExtensionUpdater);
 }
 
 bool AreExtensionsDisabled(const base::CommandLine& command_line,
