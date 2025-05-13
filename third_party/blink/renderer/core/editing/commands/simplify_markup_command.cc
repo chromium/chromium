@@ -110,7 +110,7 @@ void SimplifyMarkupCommand::DoApply(EditingState* editing_state) {
     if (num_pruned_ancestors < 0)
       continue;
     RemoveNodePreservingChildren(nodes_to_remove[i], editing_state,
-                                 kAssumeContentIsAlwaysEditable);
+                                 ShouldAssumeContentIsAlwaysEditable(true));
     if (editing_state->IsAborted())
       return;
     i += num_pruned_ancestors;
@@ -141,16 +141,16 @@ int SimplifyMarkupCommand::PruneSubsequentAncestorsToRemove(
     return 0;
 
   RemoveNode(nodes_to_remove[start_node_index], editing_state,
-             kAssumeContentIsAlwaysEditable);
+             ShouldAssumeContentIsAlwaysEditable(true));
   if (editing_state->IsAborted())
     return -1;
   InsertNodeBefore(nodes_to_remove[start_node_index],
                    highest_ancestor_to_remove, editing_state,
-                   kAssumeContentIsAlwaysEditable);
+                   ShouldAssumeContentIsAlwaysEditable(true));
   if (editing_state->IsAborted())
     return -1;
   RemoveNode(highest_ancestor_to_remove, editing_state,
-             kAssumeContentIsAlwaysEditable);
+             ShouldAssumeContentIsAlwaysEditable(true));
   if (editing_state->IsAborted())
     return -1;
 

@@ -54,10 +54,10 @@ InsertNodeBeforeCommand::InsertNodeBeforeCommand(
 void InsertNodeBeforeCommand::DoApply(EditingState* editing_state) {
   ContainerNode* parent = ref_child_->parentNode();
   GetDocument().UpdateStyleAndLayoutTree();
-  if (!parent || (should_assume_content_is_always_editable_ ==
-                      kDoNotAssumeContentIsAlwaysEditable &&
-                  !IsEditable(*parent)))
+  if (!parent ||
+      (!should_assume_content_is_always_editable_ && !IsEditable(*parent))) {
     return;
+  }
   DCHECK(IsEditable(*parent)) << parent;
 
   DummyExceptionStateForTesting exception_state;

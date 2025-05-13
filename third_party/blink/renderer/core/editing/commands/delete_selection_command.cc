@@ -624,11 +624,9 @@ void DeleteSelectionCommand::RemoveCompletelySelectedNodes(
         });
   }
 
-  const ShouldAssumeContentIsAlwaysEditable always_editable =
+  const ShouldAssumeContentIsAlwaysEditable always_editable(
       RuntimeEnabledFeatures::EditingFastDeleteEnabled() &&
-              EnclosingTextControl(node)
-          ? kAssumeContentIsAlwaysEditable
-          : kDoNotAssumeContentIsAlwaysEditable;
+      EnclosingTextControl(node));
   // Actually remove the nodes in |nodes_to_be_removed|.
   for (Node* node_to_be_removed : nodes_to_be_removed) {
     if (!downstream_end_.AnchorNode()->IsDescendantOf(node_to_be_removed)) {
@@ -650,7 +648,7 @@ void DeleteSelectionCommand::RemoveCompletelySelectedNodes(
         // clear them.
         RemoveAllChildrenIfPossible(To<ContainerNode>(node_to_be_removed),
                                     editing_state,
-                                    kDoNotAssumeContentIsAlwaysEditable);
+                                    ShouldAssumeContentIsAlwaysEditable(false));
         if (editing_state->IsAborted())
           return;
 
@@ -664,7 +662,7 @@ void DeleteSelectionCommand::RemoveCompletelySelectedNodes(
       // Likewise for the root editable element.
       RemoveAllChildrenIfPossible(To<ContainerNode>(node_to_be_removed),
                                   editing_state,
-                                  kDoNotAssumeContentIsAlwaysEditable);
+                                  ShouldAssumeContentIsAlwaysEditable(false));
       if (editing_state->IsAborted())
         return;
 

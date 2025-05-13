@@ -26,7 +26,7 @@ class SampleCommand final : public CompositeEditCommand {
                         Node* ref_child,
                         EditingState*,
                         ShouldAssumeContentIsAlwaysEditable =
-                            kDoNotAssumeContentIsAlwaysEditable);
+                            ShouldAssumeContentIsAlwaysEditable(false));
   void InsertNodeAfter(Node*, Node*, EditingState*);
 
   void MoveParagraphContentsToNewBlockIfNecessary(const Position&,

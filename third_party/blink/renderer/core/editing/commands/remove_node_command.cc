@@ -51,8 +51,7 @@ void RemoveNodeCommand::DoApply(EditingState* editing_state) {
     return;
   }
   if (RuntimeEnabledFeatures::EditingFastDeleteEnabled()) {
-    if (should_assume_content_is_always_editable_ ==
-        kDoNotAssumeContentIsAlwaysEditable) {
+    if (!should_assume_content_is_always_editable_) {
       GetDocument().UpdateStyleAndLayoutTree();
       if (!IsEditable(*parent) && parent->InActiveDocument()) {
         return;
@@ -60,9 +59,8 @@ void RemoveNodeCommand::DoApply(EditingState* editing_state) {
     }
   } else {
     GetDocument().UpdateStyleAndLayoutTree();
-    if (should_assume_content_is_always_editable_ ==
-            kDoNotAssumeContentIsAlwaysEditable &&
-        !IsEditable(*parent) && parent->InActiveDocument()) {
+    if (!should_assume_content_is_always_editable_ && !IsEditable(*parent) &&
+        parent->InActiveDocument()) {
       return;
     }
   }

@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_EDIT_COMMAND_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_EDIT_COMMAND_H_
 
+#include "base/types/strong_alias.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/events/input_event.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -75,10 +76,8 @@ class CORE_EXPORT EditCommand : public GarbageCollected<EditCommand> {
   bool selection_is_directional_ = false;
 };
 
-enum ShouldAssumeContentIsAlwaysEditable {
-  kAssumeContentIsAlwaysEditable,
-  kDoNotAssumeContentIsAlwaysEditable,
-};
+using ShouldAssumeContentIsAlwaysEditable =
+    base::StrongAlias<class ShouldAssumeContentIsAlwaysEditableTag, bool>;
 
 class CORE_EXPORT SimpleEditCommand : public EditCommand {
  public:
