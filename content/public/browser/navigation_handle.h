@@ -305,6 +305,9 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // be net::OK.
   virtual net::Error GetNetErrorCode() = 0;
 
+  // The details why `net::Error` was emitted.
+  virtual int GetNetExtendedErrorCode() = 0;
+
   // Returns the RenderFrameHost this navigation is committing in.  The
   // RenderFrameHost returned will be the final host for the navigation. (Use
   // WebContentsObserver::RenderFrameHostChanged() to observe RenderFrameHost
