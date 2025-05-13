@@ -14,17 +14,18 @@
 #include "chrome/common/buildflags.h"
 
 class ChromeAutofillAiClient;
+class FileSystemAccessPageActionController;
 class FromGWSNavigationAndKeepAliveRequestObserver;
+class IntentPickerViewPageActionController;
 class LensOverlayController;
 class LensSearchController;
 class PinnedTranslateActionListener;
 class Profile;
+class PwaInstallPageActionController;
 class ReadAnythingSidePanelController;
 class SidePanelRegistry;
+class TabResourceUsageTabHelper;
 class TranslatePageActionController;
-class IntentPickerViewPageActionController;
-class FileSystemAccessPageActionController;
-class PwaInstallPageActionController;
 
 namespace commerce {
 class CommerceUiTabHelper;
@@ -226,6 +227,15 @@ class TabFeatures {
     return new_tab_footer_controller_.get();
   }
 
+  TabResourceUsageTabHelper* resource_usage_helper() {
+    return resource_usage_helper_.get();
+  }
+
+  // Note: Temporary until there is a more uniform way to swap out features for
+  // testing.
+  TabResourceUsageTabHelper* SetResourceUsageHelperForTesting(
+      std::unique_ptr<TabResourceUsageTabHelper> resource_usage_helper);
+
 #if BUILDFLAG(ENABLE_GLIC)
   glic::GlicPageContextEligibilityObserver*
   glic_page_context_eligibility_observer() {
@@ -363,6 +373,8 @@ class TabFeatures {
 
   std::unique_ptr<new_tab_footer::NewTabFooterController>
       new_tab_footer_controller_;
+
+  std::unique_ptr<TabResourceUsageTabHelper> resource_usage_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

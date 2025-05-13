@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_controller.h"
+#include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/tabs/inactive_window_mouse_event_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
@@ -322,6 +323,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       FromGWSNavigationAndKeepAliveRequestObserver::MaybeCreateForWebContents(
           tab.GetContents());
 
+  resource_usage_helper_ = std::make_unique<TabResourceUsageTabHelper>(tab);
+
   task_manager::WebContentsTags::CreateForTabContents(tab.GetContents());
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -332,6 +335,12 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 }
 
 TabFeatures::TabFeatures() = default;
+
+TabResourceUsageTabHelper* TabFeatures::SetResourceUsageHelperForTesting(
+    std::unique_ptr<TabResourceUsageTabHelper> resource_usage_helper) {
+  resource_usage_helper_ = std::move(resource_usage_helper);
+  return resource_usage_helper_.get();
+}
 
 std::unique_ptr<LensSearchController> TabFeatures::CreateLensController(
     TabInterface* tab) {

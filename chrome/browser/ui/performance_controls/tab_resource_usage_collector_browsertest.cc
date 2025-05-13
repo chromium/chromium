@@ -48,10 +48,10 @@ IN_PROC_BROWSER_TEST_F(TabResourceUsageCollectorBrowserTest,
   TabStripModel* const model = GetTabStripModel();
   uint64_t bytes_used = 100;
   TabResourceUsageTabHelper* const first_tab_helper =
-      TabResourceUsageTabHelper::FromWebContents(model->GetWebContentsAt(0));
+      model->GetTabAtIndex(0)->GetTabFeatures()->resource_usage_helper();
   first_tab_helper->SetMemoryUsageInBytes(bytes_used);
   TabResourceUsageTabHelper* const second_tab_helper =
-      TabResourceUsageTabHelper::FromWebContents(model->GetWebContentsAt(0));
+      model->GetTabAtIndex(1)->GetTabFeatures()->resource_usage_helper();
   second_tab_helper->SetMemoryUsageInBytes(bytes_used);
 
   // Collector refresh memory usage data for all tabs
@@ -77,19 +77,18 @@ IN_PROC_BROWSER_TEST_F(TabResourceUsageCollectorBrowserTest,
   AddAndWaitForTabReady();
   TabStripModel* const model = GetTabStripModel();
   uint64_t bytes_used = 100;
-  content::WebContents* const first_tab_contents = model->GetWebContentsAt(0);
   TabResourceUsageTabHelper* const first_tab_helper =
-      TabResourceUsageTabHelper::FromWebContents(first_tab_contents);
+      model->GetTabAtIndex(0)->GetTabFeatures()->resource_usage_helper();
   first_tab_helper->SetMemoryUsageInBytes(bytes_used);
   TabResourceUsageTabHelper* const second_tab_helper =
-      TabResourceUsageTabHelper::FromWebContents(model->GetWebContentsAt(1));
+      model->GetTabAtIndex(1)->GetTabFeatures()->resource_usage_helper();
   second_tab_helper->SetMemoryUsageInBytes(bytes_used);
 
   // Collector refresh memory usage data for the first web contents
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   ResourceUsageCollectorObserver observer(run_loop.QuitClosure());
   TabResourceUsageCollector::Get()->ImmediatelyRefreshMetrics(
-      first_tab_contents);
+      model->GetWebContentsAt(0));
   run_loop.Run();
 
   EXPECT_NE(bytes_used, first_tab_helper->GetMemoryUsageInBytes());

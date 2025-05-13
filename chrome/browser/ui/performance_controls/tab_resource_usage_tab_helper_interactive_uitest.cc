@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/bind.h"
+#include "base/test/bind.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_metrics_refresh_waiter.h"
 #include "chrome/browser/ui/performance_controls/test_support/resource_usage_collector_observer.h"
@@ -12,9 +15,16 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "url/gurl.h"
 
-class TabResourceUsageTabHelperTest : public InteractiveBrowserTest {
+namespace {
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabContents);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kUpdatedEvent);
+constexpr uint64_t kMaxByteUsed = std::numeric_limits<int64_t>::max();
+}  // namespace
+
+class TabResourceUsageTabHelperUiTest : public InteractiveBrowserTest {
  public:
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
@@ -32,38 +42,77 @@ class TabResourceUsageTabHelperTest : public InteractiveBrowserTest {
       waiter.Wait();
     });
   }
+
+  using WithTabHelperCallback =
+      base::OnceCallback<void(TabResourceUsageTabHelper&)>;
+  auto WithTabHelper(ui::ElementIdentifier instrumented_tab_id,
+                     WithTabHelperCallback callback) {
+    return WithElement(
+        instrumented_tab_id,
+        [callback = std::move(callback)](ui::TrackedElement* el) mutable {
+          auto* const tab = tabs::TabInterface::GetFromContents(
+              AsInstrumentedWebContents(el)->web_contents());
+          CHECK(tab);
+          std::move(callback).Run(
+              *tab->GetTabFeatures()->resource_usage_helper());
+        });
+  }
+
+  template <typename T>
+  using CheckTabHelperCallback =
+      base::OnceCallback<T(TabResourceUsageTabHelper&)>;
+  template <typename T, typename M>
+  auto CheckTabHelper(ui::ElementIdentifier instrumented_tab_id,
+                      CheckTabHelperCallback<T> callback,
+                      M&& matcher) {
+    return CheckElement(
+        instrumented_tab_id,
+        [callback = std::move(callback)](ui::TrackedElement* el) mutable -> T {
+          auto* const tab = tabs::TabInterface::GetFromContents(
+              AsInstrumentedWebContents(el)->web_contents());
+          CHECK(tab);
+          return std::move(callback).Run(
+              *tab->GetTabFeatures()->resource_usage_helper());
+        },
+        std::forward<M>(matcher));
+  }
 };
 
-IN_PROC_BROWSER_TEST_F(TabResourceUsageTabHelperTest, MemoryUsagePopulated) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabContents);
+IN_PROC_BROWSER_TEST_F(TabResourceUsageTabHelperUiTest, MemoryUsagePopulated) {
   RunTestSequence(
-      InstrumentTab(kFirstTabContents, 0),
+      InstrumentTab(kFirstTabContents),
       NavigateWebContents(kFirstTabContents, GetURL()),
-      ForceRefreshMemoryMetrics(), Check([=, this]() {
-        content::WebContents* const web_contents =
-            browser()->tab_strip_model()->GetWebContentsAt(0);
-        auto* const resource_usage =
-            TabResourceUsageTabHelper::FromWebContents(web_contents);
-        return resource_usage && resource_usage->GetMemoryUsageInBytes() != 0;
-      }));
+      ForceRefreshMemoryMetrics(),
+      CheckTabHelper(kFirstTabContents,
+                     base::BindOnce([](TabResourceUsageTabHelper& helper) {
+                       return helper.GetMemoryUsageInBytes();
+                     }),
+                     testing::Ne(0)));
 }
 
-IN_PROC_BROWSER_TEST_F(TabResourceUsageTabHelperTest,
+IN_PROC_BROWSER_TEST_F(TabResourceUsageTabHelperUiTest,
                        MemoryUsageUpdatesAfterNavigation) {
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  content::WebContents* const web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
-  auto* const resource_usage =
-      TabResourceUsageTabHelper::FromWebContents(web_contents);
-  const uint64_t bytes_used = std::numeric_limits<int64_t>::max();
-  resource_usage->SetMemoryUsageInBytes(bytes_used);
-  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  ResourceUsageCollectorObserver observer(run_loop.QuitClosure());
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GetURL(), WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NO_WAIT);
-  run_loop.Run();
-  EXPECT_NE(bytes_used, resource_usage->GetMemoryUsageInBytes());
+  std::unique_ptr<ResourceUsageCollectorObserver> observer;
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents),
+      WithTabHelper(kFirstTabContents,
+                    base::BindOnce([](TabResourceUsageTabHelper& helper) {
+                      helper.SetMemoryUsageInBytes(kMaxByteUsed);
+                    })),
+      WithElement(
+          kBrowserViewElementId,
+          [&observer](ui::TrackedElement* el) {
+            observer = std::make_unique<ResourceUsageCollectorObserver>(
+                base::BindLambdaForTesting([el]() {
+                  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+                      el, kUpdatedEvent);
+                }));
+          }),
+      NavigateWebContents(kFirstTabContents, GetURL()),
+      WaitForEvent(kBrowserViewElementId, kUpdatedEvent),
+      CheckTabHelper(kFirstTabContents,
+                     base::BindOnce([](TabResourceUsageTabHelper& helper) {
+                       return helper.GetMemoryUsageInBytes();
+                     }),
+                     testing::Ne(kMaxByteUsed)));
 }

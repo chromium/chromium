@@ -153,6 +153,14 @@ class TabHoverCardInteractiveUiTest
     return WaitForHide(TabHoverCardBubbleView::kHoverCardBubbleElementId);
   }
 
+  TabResourceUsageTabHelper* GetResourceUsageAt(int index) {
+    return browser()
+        ->tab_strip_model()
+        ->GetTabAtIndex(index)
+        ->GetTabFeatures()
+        ->resource_usage_helper();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -576,8 +584,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
 
   uint64_t bytes_used = 1000;
-  auto* const tab_resource_usage_tab_helper =
-      TabResourceUsageTabHelper::FromWebContents(GetWebContentsAt(1));
+  auto* const tab_resource_usage_tab_helper = GetResourceUsageAt(1);
   tab_resource_usage_tab_helper->SetMemoryUsageInBytes(bytes_used);
 
   // Show memory usage without savings
@@ -613,8 +620,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
 
   uint64_t bytes_used = 1000;
-  auto* const tab_resource_usage_tab_helper =
-      TabResourceUsageTabHelper::FromWebContents(GetWebContentsAt(1));
+  auto* const tab_resource_usage_tab_helper = GetResourceUsageAt(1);
   tab_resource_usage_tab_helper->SetMemoryUsageInBytes(bytes_used);
 
   // Don't show memory usage
@@ -638,8 +644,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
                        ActiveMemoryUsageHidesOnDiscard) {
   const uint64_t bytes_used = 1;
-  TabResourceUsageTabHelper::FromWebContents(GetWebContentsAt(0))
-      ->SetMemoryUsageInBytes(bytes_used);
+  GetResourceUsageAt(0)->SetMemoryUsageInBytes(bytes_used);
 
   RunTestSequence(InstrumentTab(kFirstTabContents, 0),
                   NavigateWebContents(kFirstTabContents, GetURL("a.com")),
@@ -690,8 +695,7 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterWithDiscardInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
                        MemoryUpdatesOnNavigation) {
   const uint64_t bytes_used = 1;
-  TabResourceUsageTabHelper::FromWebContents(GetWebContentsAt(0))
-      ->SetMemoryUsageInBytes(bytes_used);
+  GetResourceUsageAt(0)->SetMemoryUsageInBytes(bytes_used);
 
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0), UnhoverTab(), HoverTabAt(0),
@@ -720,8 +724,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
 
-  TabResourceUsageTabHelper::FromWebContents(GetWebContentsAt(0))
-      ->SetMemoryUsageInBytes(1000);
+  GetResourceUsageAt(0)->SetMemoryUsageInBytes(1000);
 
   // Footer should show when hovering over tab with memory usage
   views::View* const footer_view =
@@ -729,8 +732,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
   EXPECT_TRUE(footer_view->GetVisible());
 
   // Hover over a tab without memory usage
-  TabResourceUsageTabHelper::FromWebContents(GetWebContentsAt(1))
-      ->SetMemoryUsageInBytes(0);
+  GetResourceUsageAt(1)->SetMemoryUsageInBytes(0);
   SimulateHoverTab(browser(), 1);
 
   // Footer should no longer be visible because there is no memory data

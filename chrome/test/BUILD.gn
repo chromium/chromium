@@ -3399,6 +3399,7 @@ if (!is_android) {
       "../browser/ui/passwords/password_generation_popup_view_browsertest.cc",
       "../browser/ui/passwords/well_known_change_password_navigation_throttle_browsertest.cc",
       "../browser/ui/performance_controls/tab_resource_usage_collector_browsertest.cc",
+      "../browser/ui/performance_controls/tab_resource_usage_tab_helper_browsertest.cc",
       "../browser/ui/profiles/profile_error_browsertest.cc",
       "../browser/ui/promos/ios_promos_utils_browsertest.cc",
       "../browser/ui/renderer_event_injection_browsertest.cc",

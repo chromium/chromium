@@ -165,9 +165,8 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
         memory_saver::GetDiscardedMemorySavingsInBytes(contents);
   }
 
-  const auto* const resource_tab_helper =
-      TabResourceUsageTabHelper::FromWebContents(contents);
-  if (resource_tab_helper) {
+  if (const auto* const resource_tab_helper =
+          tab->GetTabFeatures()->resource_usage_helper()) {
     data.tab_resource_usage = resource_tab_helper->resource_usage();
   }
 
