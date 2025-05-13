@@ -464,7 +464,7 @@ void Channel::Message::ExtendPayload(MessagePtr& message,
 
 const void* Channel::Message::extra_header() const {
   DCHECK(!is_legacy_message());
-  return reinterpret_cast<const uint8_t*>(data()) + sizeof(Header);
+  return data_span().subspan(sizeof(Header)).data();
 }
 
 void* Channel::Message::mutable_extra_header() {
@@ -582,7 +582,8 @@ ComplexMessage::ComplexMessage(size_t capacity,
   // performance issue when dealing with large messages. Any sanitizer errors
   // complaining about an uninitialized read in the payload area should be
   // treated as an error and fixed.
-  memset(mutable_data(), 0, header_size + extra_header_size);
+  std::ranges::fill(mutable_data_span().first(header_size + extra_header_size),
+                    0);
 
   DCHECK(base::IsValueInRangeForNumericType<uint32_t>(size_));
   legacy_header()->num_bytes = static_cast<uint32_t>(size_);
@@ -728,7 +729,8 @@ Channel::MessagePtr TrivialMessage::TryConstruct(size_t payload_size,
   }
 
   auto message = base::WrapUnique(new TrivialMessage);
-  memset(message->mutable_data(), 0, sizeof(TrivialMessage::data_));
+  std::ranges::fill(
+      message->mutable_data_span().first(sizeof(TrivialMessage::data_)), 0);
 
   DCHECK(base::IsValueInRangeForNumericType<uint32_t>(size));
   message->size_ = size;
@@ -1091,11 +1093,10 @@ Channel::DispatchResult Channel::TryDispatchMessage(
     extra_header_size = header->num_header_bytes - sizeof(Message::Header);
     extra_header = extra_header_size ? header + 1 : nullptr;
     payload_size = header->num_bytes - header->num_header_bytes;
-    payload =
-        payload_size
-            ? reinterpret_cast<Message::Header*>(
-                  const_cast<char*>(buffer.data()) + header->num_header_bytes)
-            : nullptr;
+    payload = payload_size
+                  ? reinterpret_cast<Message::Header*>(const_cast<char*>(
+                        buffer.subspan(header->num_header_bytes).data()))
+                  : nullptr;
   } else {
     payload_size = legacy_header->num_bytes - sizeof(Message::LegacyHeader);
     payload = payload_size
