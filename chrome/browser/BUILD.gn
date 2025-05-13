@@ -4647,6 +4647,7 @@ static_library("browser") {
 
       deps += [
         "//chrome/browser/shortcuts",
+        "//chrome/browser/ui/webui/app_home",
         "//chrome/browser/ui/webui/signin:profile",
         "//chrome/browser/ui/webui/signin:profile_impl",
       ]

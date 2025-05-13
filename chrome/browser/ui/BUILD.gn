@@ -3144,10 +3144,6 @@ static_library("ui") {
       "views/web_apps/force_installed_deprecated_apps_dialog_view.h",
       "views/web_apps/force_installed_preinstalled_deprecated_app_dialog_view.cc",
       "views/web_apps/force_installed_preinstalled_deprecated_app_dialog_view.h",
-      "webui/app_home/app_home_page_handler.cc",
-      "webui/app_home/app_home_page_handler.h",
-      "webui/app_home/app_home_ui.cc",
-      "webui/app_home/app_home_ui.h",
       "webui/app_management/web_app_settings_page_handler.cc",
       "webui/app_management/web_app_settings_page_handler.h",
       "webui/app_settings/web_app_settings_navigation_throttle.cc",
@@ -3186,6 +3182,7 @@ static_library("ui") {
       "//chrome/browser/on_device_translation",
       "//chrome/browser/on_device_translation:language_pack_util",
       "//chrome/browser/shortcuts",
+      "//chrome/browser/ui/webui/app_home",
       "//chrome/browser/ui/webui/signin:profile",
       "//chrome/browser/ui/webui/signin:profile_impl",
       "//components/capture_mode",
@@ -3197,8 +3194,13 @@ static_library("ui") {
 
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     # Non-android and non-chromeos-ash circular deps.
-    allow_circular_includes_from +=
-        [ "//chrome/browser/ui/webui/signin:profile_impl" ]
+    allow_circular_includes_from += [
+      "//chrome/browser/ui/webui/signin:profile_impl",
+
+      # TODO(crbug.com/364667551): It includes quite a few files from //c/b/ui's
+      # subdirectories such as views and webui which are not modularized yet.
+      "//chrome/browser/ui/webui/app_home",
+    ]
 
     if (enable_dice_support) {
       sources += [

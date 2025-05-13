@@ -54,6 +54,10 @@ source_set("configs") {
       "//chrome/browser/ui/webui/new_tab_footer",
       "//chrome/browser/ui/webui/privacy_sandbox",
     ]
+
+    if (!is_chromeos) {
+      deps += [ "//chrome/browser/ui/webui/app_home" ]
+    }
   }
 
   if (safe_browsing_mode != 0) {

@@ -4513,10 +4513,9 @@ if (!is_android) {
           "../browser/extensions/api/web_authentication_proxy/web_authentication_proxy_apitest.cc",
           "../browser/supervised_user/supervised_user_pending_state_navigation_browsertest.cc",
           "../browser/ui/views/web_apps/file_handler_launch_dialog_browsertest.cc",
-          "../browser/ui/webui/app_home/app_home_page_handler_browsertest.cc",
-          "../browser/ui/webui/app_home/mock_app_home_page.cc",
-          "../browser/ui/webui/app_home/mock_app_home_page.h",
         ]
+
+        deps += [ "//chrome/browser/ui/webui/app_home:browser_tests" ]
       }
 
       if (enterprise_cloud_content_analysis || is_android) {
@@ -4886,6 +4885,8 @@ if (!is_android) {
           "../browser/ui/views/web_apps/deprecated_apps_dialog_view_browsertest.cc",
           "../browser/ui/views/web_apps/force_installed_deprecated_apps_dialog_view_browsertest.cc",
         ]
+
+        deps += [ "//chrome/browser/ui/webui/app_home" ]
       }
       if (is_chromeos) {
         sources += [ "../browser/ui/views/frame/system_web_app_non_client_frame_view_browsertest.cc" ]
@@ -10763,6 +10764,8 @@ if (!is_android) {
         "../browser/password_manager/password_manager_signin_intercept_test_helper.cc",
         "../browser/password_manager/password_manager_signin_intercept_test_helper.h",
       ]
+
+      public_deps += [ "//chrome/browser/ui/webui/app_home" ]
     }
     if (enable_dice_support) {
       sources += [
