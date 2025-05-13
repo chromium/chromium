@@ -158,17 +158,9 @@ const CGFloat kSelectionViewAnimationDuration = 0.2f;
 }
 
 - (void)fadeSelectionUIWithCompletion:(void (^)())completion {
-  __weak UIViewController* weakSelectionUI =
-      _containerViewController.selectionViewController;
-  [UIView animateWithDuration:kSelectionViewAnimationDuration
-      animations:^{
-        weakSelectionUI.view.alpha = 0;
-      }
-      completion:^(BOOL success) {
-        if (completion) {
-          completion();
-        }
-      }];
+  [_containerViewController
+      fadeSelectionUIWithDuration:kSelectionViewAnimationDuration
+                       completion:completion];
 }
 
 #pragma mark - LensOverlayContainerDelegate

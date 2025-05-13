@@ -41,6 +41,10 @@
 @property(nonatomic, readonly, getter=isSidePanelPresented)
     BOOL sidePanelPresented;
 
+// Animates fading the selection UI of the container.
+- (void)fadeSelectionUIWithDuration:(NSTimeInterval)duration
+                         completion:(void (^)())completion;
+
 /// Presents the given view controller in a side panel, optionally animated.
 - (void)presentViewControllerInSidePanel:(UIViewController*)viewController
                                 animated:(BOOL)animated
