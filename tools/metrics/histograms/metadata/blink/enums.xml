@@ -6355,6 +6355,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="135" label="DeviceAttributes"/>
   <int value="136" label="LocalNetworkAccess"/>
   <int value="137" label="RecordAdAuctionEvents"/>
+  <int value="138" label="OnDeviceSpeechRecognition"/>
 </enum>
 
 <enum name="FedCmAccountChooserResult">

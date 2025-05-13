@@ -60,6 +60,11 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace {
+const char kExceptionMessageCrossOriginAccess[] =
+    "Access denied from cross-origin iframes.";
+const char kExceptionMessagePermissionPolicy[] =
+    "Access denied because the Permission Policy is not enabled.";
+
 blink::V8AvailabilityStatus AvailabilityStatusToV8(
     media::mojom::blink::AvailabilityStatus status) {
   switch (status) {
@@ -205,7 +210,6 @@ ScriptPromise<V8AvailabilityStatus> SpeechRecognition::availableOnDevice(
     ExceptionState& exception_state) {
   LocalDOMWindow& window = *LocalDOMWindow::From(script_state);
   auto* controller = SpeechRecognitionController::From(window);
-
   if (!controller || !script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Execution context is detached.");
@@ -216,6 +220,18 @@ ScriptPromise<V8AvailabilityStatus> SpeechRecognition::availableOnDevice(
       MakeGarbageCollected<ScriptPromiseResolver<V8AvailabilityStatus>>(
           script_state, exception_state.GetContext());
   auto result = resolver->Promise();
+  bool is_cross_origin_iframe = window.IsCrossSiteSubframeIncludingScheme();
+
+  // Return unavailable if the Permission Policy is not enabled, or if the API
+  // is accessed from a cross-origin iframe.
+  if (!window.IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::
+                                   kOnDeviceSpeechRecognition) ||
+      is_cross_origin_iframe) {
+    resolver->Resolve(AvailabilityStatusToV8(
+        media::mojom::blink::AvailabilityStatus::kUnavailable));
+    return result;
+  }
+
   controller->OnDeviceWebSpeechAvailable(
       lang, WTF::BindOnce(
                 [](ScriptPromiseResolver<V8AvailabilityStatus>* resolver,
@@ -236,7 +252,6 @@ ScriptPromise<IDLBoolean> SpeechRecognition::installOnDevice(
     ExceptionState& exception_state) {
   LocalDOMWindow& window = *LocalDOMWindow::From(script_state);
   auto* controller = SpeechRecognitionController::From(window);
-
   if (!controller || !script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Execution context is detached.");
@@ -245,6 +260,21 @@ ScriptPromise<IDLBoolean> SpeechRecognition::installOnDevice(
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
       script_state, exception_state.GetContext());
+  // Block access for cross-origin iframes.
+  if (window.IsCrossSiteSubframeIncludingScheme()) {
+    resolver->Reject(
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotAllowedError,
+                                           kExceptionMessageCrossOriginAccess));
+    return resolver->Promise();
+  }
+
+  // Block access if the Permission Policy is not enabled.
+  if (!window.IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::
+                                   kOnDeviceSpeechRecognition)) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotAllowedError, kExceptionMessagePermissionPolicy));
+    return resolver->Promise();
+  }
   auto result = resolver->Promise();
 
   controller->OnDeviceWebSpeechAvailable(
@@ -255,8 +285,7 @@ ScriptPromise<IDLBoolean> SpeechRecognition::installOnDevice(
              media::mojom::blink::AvailabilityStatus status) {
             LocalDOMWindow& window = *LocalDOMWindow::From(script_state);
             auto* controller = SpeechRecognitionController::From(window);
-            if (!ExecutionContext::From(script_state)
-                     ->IsServiceWorkerGlobalScope() &&
+            if (!window.IsServiceWorkerGlobalScope() &&
                 status ==
                     media::mojom::blink::AvailabilityStatus::kDownloadable &&
                 !LocalFrame::ConsumeTransientUserActivation(
