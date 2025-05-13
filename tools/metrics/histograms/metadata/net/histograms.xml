@@ -613,6 +613,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HttpCache.NoVarySearch.EntriesLoaded" units="entries"
+    expires_after="2025-12-16">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Number of entries that were loaded from a previously persisted
+    NoVarySearchCache by a successful call to NoVarySearchCacheStorage::Start().
+    Logged once per successful call, which is once per on-the-record
+    NetworkContext.
+  </summary>
+</histogram>
+
 <histogram name="HttpCache.NoVarySearch.HeaderParseResult"
     enum="NoVarySearchHeaderParseResult" expires_after="2025-12-16">
   <owner>ricea@chromium.org</owner>
@@ -621,6 +633,92 @@ chromium-metrics-reviews@google.com.
     The result of parsing the No-Vary-Search value in the HTTP response header.
     This metric is emitted every time an HTTP response is written to the HTTP
     disk cache.
+  </summary>
+</histogram>
+
+<histogram name="HttpCache.NoVarySearch.JournalAppendError" enum="Boolean"
+    expires_after="2025-12-16">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    A true value is logged whenever appending to the &quot;journal.baj&quot;
+    file fails. Appending is done for every entry inserted into or erased from
+    the cache.
+
+    After an error, persistence is abandoned, and so this will be logged at most
+    once per NetworkContext created.
+  </summary>
+</histogram>
+
+<histogram name="HttpCache.NoVarySearch.JournalCreateError"
+    enum="PlatformFileError" expires_after="2025-12-16">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The filesystem error from a failed attempt to create the
+    &quot;journal.baj&quot; file by net::NoVarySearchCacheStorage. This is
+    logged any time creating &quot;journal.baj&quot; fails.
+    &quot;journal.baj&quot; is created when a new on-the-record profile is
+    created, and recreated when it gets too full or when a bulk erase is done on
+    the cache.
+
+    After an error, persistence is abandoned, and so this will be logged at most
+    once per NetworkContext created.
+  </summary>
+</histogram>
+
+<histogram name="HttpCache.NoVarySearch.JournalStartError" enum="Boolean"
+    expires_after="2025-12-16">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    A true value is logged whenever writing the magic number to a new
+    &quot;journal.baj&quot; file fails. This is done whenever the file is
+    created.
+
+    After an error, persistence is abandoned, and so this will be logged at most
+    once per NetworkContext created.
+  </summary>
+</histogram>
+
+<histogram name="HttpCache.NoVarySearch.LoadResult"
+    enum="NoVarySearchCacheStorageLoadResult" expires_after="2025-12-16">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The result of attempting to load a previously persisted NoVarySearchCache
+    from disk and start a new one. This is logged asynchronously after
+    net::NoVarySearchCacheStorage::Start() is called, once per on-the-record
+    NetworkContext creation.
+  </summary>
+</histogram>
+
+<histogram name="HttpCache.NoVarySearch.LoadTime.Failure" units="ms"
+    expires_after="2025-12-16">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The time between calling net::NoVarySearchCacheStorage::Start() and
+    discovering that persistence has failed to be initialized, including
+    cross-thread task posting overhead. See HttpCache.NoVarySearch.LoadResult
+    for the cause of failure.
+
+    Logged once per unsuccessful call to net::NoVarySearchCacheStorage::Start().
+  </summary>
+</histogram>
+
+<histogram name="HttpCache.NoVarySearch.LoadTime.Success" units="ms"
+    expires_after="2025-12-16">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The time between calling net::NoVarySearchCacheStorage::Start() and starting
+    to use the previously-persisted data, including cross-thread task posting
+    overhead. This is logged in any case where persistence is able to continue,
+    even when data may have been lost. See HttpCache.NoVarySearch.LoadResult for
+    the actual success rate in loading persisted data.
+
+    Logged once per successful call to net::NoVarySearchCacheStorage::Start().
   </summary>
 </histogram>
 
@@ -674,6 +772,36 @@ chromium-metrics-reviews@google.com.
 
     Logged once for each successful call to AtomicSave() in the concrete
     implementation of NoVarySearchCacheStorageFileOperations on Windows.
+  </summary>
+</histogram>
+
+<histogram name="HttpCache.NoVarySearch.ReplayedJournalEntries" units="entries"
+    expires_after="2025-12-16">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Number of entries successfully read from the &quot;journal.baj&quot; file.
+    This is logged once for every journal file that is successfully opened for
+    reading and found to have a correct magic number. Journal load is triggered
+    asynchronously by a call to net::NoVarySearchCacheStorage::Start() and
+    happens once per on-the-record NetworkContext.
+  </summary>
+</histogram>
+
+<histogram name="HttpCache.NoVarySearch.SnapshotSaveError"
+    enum="PlatformFileError" expires_after="2025-12-16">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The filesystem error from a failed attempt to write the
+    &quot;snapshot.baf&quot; file by net::NoVarySearchCacheStorage. This is
+    logged any time writing &quot;snapshot.baf&quot; fails.
+    &quot;snapshot.baf&quot; is written when a new on-the-record profile is
+    created, and rewritten when &quot;journal.baj&quot; gets too full or when a
+    bulk erase is done on the cache.
+
+    After an error, persistence is abandoned, and so this will be logged at most
+    once per NetworkContext created.
   </summary>
 </histogram>
 

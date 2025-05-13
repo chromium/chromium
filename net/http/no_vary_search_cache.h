@@ -203,7 +203,11 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
   void MergeFrom(const NoVarySearchCache& newer);
 
   // Returns the size (number of stored original query strings) of the cache.
-  size_t GetSizeForTesting() const;
+  size_t size() const { return size_; }
+
+  // Return the maximum size for the cache. Attempting to add more than this
+  // many entries will result in older entries being evicted.
+  size_t max_size() const { return max_size_; }
 
   // Returns true if the top-level map is empty. This should be equivalent to
   // GetSizeForTesting() == 0 in the absence of bugs.
