@@ -635,6 +635,7 @@ source_set("web_applications") {
       "//chrome/browser/web_applications/ash/migrations",
       "//chrome/common/chromeos/extensions",
       "//chromeos/ash/components/browser_context_helper",
+      "//chromeos/ash/components/file_manager:constants",
       "//chromeos/ash/components/policy/system_features_disable_list:system_features_disable_list",
       "//chromeos/ash/components/report:utils",
       "//chromeos/ash/components/settings",

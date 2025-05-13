@@ -138,6 +138,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -1277,7 +1278,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
             GURL(start_url));
     web_app_info->install_url = GURL(install_url ? *install_url : start_url);
     const webapps::AppId expected_web_app_id = web_app::GenerateAppId(
-        /*manifest_id=*/std::nullopt, web_app_info->start_url());
+        /*manifest_id_path=*/std::nullopt, web_app_info->start_url());
     webapps::AppId web_app_id = web_app::test::InstallWebApp(
         profile(), std::move(web_app_info),
         /*overwrite_existing_manifest_fields =*/false,
@@ -3485,7 +3486,7 @@ TEST_F(ChromeShelfControllerTest, Policy) {
   base::flat_map<std::string_view, std::string_view>
       preinstalled_web_apps_mapping;
   preinstalled_web_apps_mapping.emplace(kGmailPolicyId, ash::kGmailAppId);
-  apps_util::SetPreinstalledWebAppsMappingForTesting(
+  web_app::SetPreinstalledWebAppsMappingForTesting(
       preinstalled_web_apps_mapping);
 
   // Force-install Gmail.
@@ -3498,7 +3499,7 @@ TEST_F(ChromeShelfControllerTest, Policy) {
   AppendPrefValue(policy_value, extension1_->id());
   AppendPrefValue(policy_value, extension2_->id());
   AppendPrefValue(policy_value,
-                  std::string{*apps_util::GetPolicyIdForSystemWebAppType(
+                  std::string{*web_app::GetPolicyIdForSystemWebAppType(
                       ash::SystemWebAppType::CAMERA)});
   // Pin Gmail by its install_url (see above).
   AppendPrefValue(policy_value, gmail_install_url.spec());

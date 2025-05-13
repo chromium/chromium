@@ -39,11 +39,6 @@
 #include "url/origin.h"
 #include "url/url_util.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/web_applications/web_app_utils.h"
-#include "components/webapps/common/web_app_id.h"
-#endif
-
 namespace site_engagement {
 
 namespace {

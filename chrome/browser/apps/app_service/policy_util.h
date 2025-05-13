@@ -23,7 +23,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -37,28 +36,6 @@ namespace apps_util {
 #if BUILDFLAG(IS_CHROMEOS)
 inline constexpr char kVirtualTaskPrefix[] = "VirtualTask/";
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-// Checks whether |policy_id| specifies a Chrome App.
-bool IsChromeAppPolicyId(std::string_view policy_id);
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Checks whether |policy_id| specifies an Arc App.
-bool IsArcAppPolicyId(std::string_view policy_id);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-// Checks whether |policy_id| specifies a Web App.
-bool IsWebAppPolicyId(std::string_view policy_id);
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Checks whether |policy_id| specifies a System Web App.
-bool IsSystemWebAppPolicyId(std::string_view policy_id);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-// Checks whether |policy_id| specifies a Preinstalled Web App.
-bool IsPreinstalledWebAppPolicyId(std::string_view policy_id);
-
-// Checks whether |policy_id| specifies an Isolated Web App.
-bool IsIsolatedWebAppPolicyId(std::string_view policy_id);
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool IsFileManagerVirtualTaskPolicyId(std::string_view policy_id);
@@ -116,23 +93,6 @@ std::vector<std::string> GetAppIdsFromPolicyId(Profile*,
 std::optional<std::vector<std::string>> GetPolicyIdsFromAppId(
     Profile*,
     const std::string& app_id);
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Maps SystemWebAppType to a policy id.
-// Returns std::nullopt for apps not included in official builds.
-std::optional<std::string_view> GetPolicyIdForSystemWebAppType(
-    ash::SystemWebAppType);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-// Returns the policy ID for a given preinstalled web app ID. Note that not all
-// preinstalled web apps are supposed to have a policy ID (currently we only
-// support EDU apps) - in all other cases this will return std::nullopt.
-std::optional<std::string_view> GetPolicyIdForPreinstalledWebApp(
-    std::string_view preinstalled_web_app_id);
-
-void SetPreinstalledWebAppsMappingForTesting(
-    std::optional<base::flat_map<std::string_view, std::string_view>>
-        preinstalled_web_apps_mapping_for_testing);
 
 }  // namespace apps_util
 
