@@ -105,6 +105,10 @@ bool ShouldPredictionTriggerQuietUi(
   return likelihood == VeryUnlikely;
 }
 
+void LogSnapshotTakenSuccessfullyForAiv3(bool success) {
+  base::UmaHistogramBoolean("Permissions.AIv3.SnapshotTaken", success);
+}
+
 void LogModelInquireTime(base::TimeTicks model_inquire_start_time,
                          bool is_on_device) {
   using permissions::PredictionModelType;
@@ -236,6 +240,7 @@ void PredictionBasedPermissionUiSelector::OnSnapshotTakenForOnDeviceModel(
     permissions::RequestType request_type,
     const SkBitmap& snapshot) {
   VLOG(1) << "[PermissionsAIv3] On device AI prediction requested";
+  LogSnapshotTakenSuccessfullyForAiv3(/*success=*/!snapshot.drawsNothing());
   if (snapshot.drawsNothing()) {
     VLOG(1) << "[PermissionsAIv3] The page's snapshot is empty";
   } else {
