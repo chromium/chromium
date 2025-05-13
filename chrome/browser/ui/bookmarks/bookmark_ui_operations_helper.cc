@@ -471,7 +471,10 @@ const BookmarkNode*
 BookmarkUIOperationsHelperMergedSurfaces::GetDefaultParentForNonMergedSurfaces()
     const {
   CHECK(parent_folder());
-  CHECK(!target_parent_->IsManaged());
+  if (target_parent_->IsManaged()) {
+    return merged_surface_service_->GetParentForManagedNode(*parent_folder());
+  }
+
   return merged_surface_service_->GetDefaultParentForNewNodes(*parent_folder());
 }
 

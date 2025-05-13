@@ -19,6 +19,7 @@
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/bookmark_test_helpers.h"
+#include "chrome/browser/bookmarks/bookmark_test_utils.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
@@ -496,6 +497,36 @@ TEST(BookmarkUIOperationsHelperMergedSurfacesTest,
                   .GetDefaultParentForNonMergedSurfaces(),
               node);
   }
+}
+
+TEST(BookmarkUIOperationsHelperMergedSurfacesTest,
+     GetDefaultParentForNonMergedSurfacesForManagedNodes) {
+  sync_preferences::TestingPrefServiceSyncable prefs;
+  std::unique_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service(
+      CreateManagedBookmarkService(&prefs, 10));
+  BookmarkModel model(std::make_unique<TestBookmarkClientWithManagedService>(
+      managed_bookmark_service.get()));
+  BookmarkMergedSurfaceService service(&model, managed_bookmark_service.get());
+  model.LoadEmptyForTest();
+  service.LoadForTesting({});
+
+  const BookmarkNode* managed_node = managed_bookmark_service->managed_node();
+  ASSERT_TRUE(managed_node);
+
+  BookmarkParentFolder managed_peranent_folder =
+      BookmarkParentFolder::ManagedFolder();
+  EXPECT_EQ(BookmarkUIOperationsHelperMergedSurfaces(&service,
+                                                     &managed_peranent_folder)
+                .GetDefaultParentForNonMergedSurfaces(),
+            managed_node);
+
+  const BookmarkNode* managed_new_folder =
+      model.AddFolder(managed_node, 0, u"New Folder");
+  BookmarkParentFolder folder =
+      BookmarkParentFolder::FromFolderNode(managed_new_folder);
+  EXPECT_EQ(BookmarkUIOperationsHelperMergedSurfaces(&service, &folder)
+                .GetDefaultParentForNonMergedSurfaces(),
+            managed_new_folder);
 }
 
 }  // namespace
