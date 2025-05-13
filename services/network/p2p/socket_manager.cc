@@ -75,10 +75,6 @@ bool HasLocalTld(const std::string& host_name) {
   return EndsWith(host_name, kLocalTld, base::CompareCase::INSENSITIVE_ASCII);
 }
 
-net::DnsQueryType FamilyToDnsQueryType(int family) {
-  return net::AddressFamilyToDnsQueryType(net::ToAddressFamily(family));
-}
-
 }  // namespace
 
 DefaultLocalAddresses::DefaultLocalAddresses() = default;
@@ -92,7 +88,7 @@ class P2PSocketManager::DnsRequest {
       : resolver_(host_resolver), enable_mdns_(enable_mdns) {}
 
   void Resolve(const std::string& host_name,
-               std::optional<int> family,
+               std::optional<net::AddressFamily> family,
                const net::NetworkAnonymizationKey& network_anonymization_key,
                DoneCallback done_callback) {
     DCHECK(!done_callback.is_null());
@@ -123,7 +119,7 @@ class P2PSocketManager::DnsRequest {
 #endif  // ENABLE_MDNS
     }
     if (family.has_value()) {
-      parameters.dns_query_type = FamilyToDnsQueryType(family.value());
+      parameters.dns_query_type = net::AddressFamilyToDnsQueryType(*family);
     }
     request_ = resolver_->CreateRequest(host, network_anonymization_key,
                                         net::NetLogWithSource(), parameters);
@@ -387,24 +383,7 @@ void P2PSocketManager::StartNetworkNotifications(
 
 void P2PSocketManager::GetHostAddress(
     const std::string& host_name,
-    bool enable_mdns,
-    mojom::P2PSocketManager::GetHostAddressCallback callback) {
-  DoGetHostAddress(host_name, /*address_family=*/std::nullopt, enable_mdns,
-                   std::move(callback));
-}
-
-void P2PSocketManager::GetHostAddressWithFamily(
-    const std::string& host_name,
-    int address_family,
-    bool enable_mdns,
-    mojom::P2PSocketManager::GetHostAddressCallback callback) {
-  DoGetHostAddress(host_name, std::make_optional(address_family), enable_mdns,
-                   std::move(callback));
-}
-
-void P2PSocketManager::DoGetHostAddress(
-    const std::string& host_name,
-    std::optional<int> address_family,
+    std::optional<net::AddressFamily> address_family,
     bool enable_mdns,
     mojom::P2PSocketManager::GetHostAddressCallback callback) {
   auto request = std::make_unique<DnsRequest>(

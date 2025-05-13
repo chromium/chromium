@@ -192,6 +192,8 @@ component("cpp") {
 # need to depend on mojom_ip_address does not depend on the entire cpp_base.
 component("ip_address_mojom_support") {
   sources = [
+    "address_family_mojom_traits.cc",
+    "address_family_mojom_traits.h",
     "address_list_mojom_traits.cc",
     "address_list_mojom_traits.h",
     "alternate_protocol_usage_mojom_traits.cc",

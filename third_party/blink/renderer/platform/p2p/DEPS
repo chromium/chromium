@@ -2,6 +2,7 @@ include_rules = [
     "+crypto/random.h",
     "+components/webrtc/net_address_utils.h",
     "+media/base/media_permission.h",
+    "+net/base/address_family.h",
     "+net/base/ip_address.h",
     "+net/base/ip_endpoint.h",
     "+net/base/network_change_notifier.h",

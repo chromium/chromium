@@ -108,6 +108,22 @@ mojom("mojom_ip_address") {
         "//services/network/public/cpp:ip_address_mojom_support",
       ]
     },
+    {
+      types = [
+        {
+          mojom = "network.mojom.AddressFamily"
+          cpp = "::net::AddressFamily"
+        },
+      ]
+      traits_headers = [
+        "//net/base/address_family.h",
+        "//services/network/public/cpp/address_family_mojom_traits.h",
+      ]
+      traits_public_deps = [
+        "//net",
+        "//services/network/public/cpp:ip_address_mojom_support",
+      ]
+    },
   ]
 
   cpp_typemaps = [
@@ -124,19 +140,6 @@ mojom("mojom_ip_address") {
         "//net",
         "//services/network/public/cpp:ip_address_mojom_support",
       ]
-    },
-    {
-      types = [
-        {
-          mojom = "network.mojom.AddressFamily"
-          cpp = "::net::AddressFamily"
-        },
-      ]
-      traits_headers =
-          [ "//services/network/public/cpp/address_family_mojom_traits.h" ]
-      traits_sources =
-          [ "//services/network/public/cpp/address_family_mojom_traits.cc" ]
-      traits_public_deps = [ "//net" ]
     },
     {
       types = [
