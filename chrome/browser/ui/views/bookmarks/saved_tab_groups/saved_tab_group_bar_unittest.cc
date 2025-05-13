@@ -215,29 +215,6 @@ class SavedTabGroupBarUnitTest : public TestWithBrowserView {
   static constexpr int button_height_ = 20;
 };
 
-class STGEverythingMenuUnitTest : public SavedTabGroupBarUnitTest {
- public:
-  void SetUp() override {
-    SavedTabGroupBarUnitTest::SetUp();
-    everything_menu_ = std::make_unique<STGEverythingMenu>(nullptr, browser());
-  }
-
-  void TearDown() override {
-    everything_menu_.reset();
-    SavedTabGroupBarUnitTest::TearDown();
-  }
-
-  std::unique_ptr<ui::SimpleMenuModel> menu_model() {
-    return everything_menu_->CreateMenuModel();
-  }
-
- protected:
-  // Used to mock time elapsed between two tab groups creation.
-  static constexpr base::TimeDelta interval_ = base::Seconds(3);
-
-  std::unique_ptr<STGEverythingMenu> everything_menu_;
-};
-
 TEST_F(SavedTabGroupBarUnitTest, AddsButtonFromModelAdd) {
   // There's always an overflow button in the saved tab group bar.
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
