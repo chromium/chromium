@@ -61,17 +61,15 @@ bool ShouldRequestEarlyExit(const SyncProtocolError& error) {
     case CLIENT_DATA_OBSOLETE:
     case DISABLED_BY_ADMIN:
     case ENCRYPTION_OBSOLETE:
-      // If we send terminate sync early then `sync_cycle_ended` notification
-      // would not be sent. If there were no actions then `ACTIONABLE_ERROR`
-      // notification wouldn't be sent either. Then the UI layer would be left
-      // waiting forever. So assert we would send something.
-      DCHECK_NE(error.action, UNKNOWN_ACTION);
       return true;
     case CONFLICT:
     case INVALID_MESSAGE:
-      NOTREACHED();
+      // These cases should not occur here, but since the error ultimately comes
+      // from the server, handle them gracefully (by not doing anything in
+      // particular).
+      return false;
   }
-  return false;
+  NOTREACHED();
 }
 
 bool IsActionableProtocolError(const SyncProtocolError& error) {
