@@ -116,12 +116,8 @@ class METRICS_EXPORT SourceIdObj {
   constexpr SourceIdObj& operator=(const SourceIdObj& other) = default;
 
   // Allow identity comparisons.
-  constexpr bool operator==(SourceIdObj other) const {
-    return value_ == other.value_;
-  }
-  constexpr bool operator!=(SourceIdObj other) const {
-    return value_ != other.value_;
-  }
+  friend constexpr bool operator==(const SourceIdObj&,
+                                   const SourceIdObj&) = default;
 
   // Extract the Type of the SourceId.
   Type GetType() const;
