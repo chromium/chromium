@@ -209,7 +209,8 @@ void SyncErrorBrowserAgent::OnPasswordFormParsed(
       UserActionRequiredToFixPasswordSyncError(profile) &&
       base::FeatureList::IsEnabled(
           syncer::kSyncTrustedVaultInfobarImprovements)) {
-    DisplaySyncErrors(profile, active_web_state, sync_presenter_provider_);
+    DisplaySyncErrors(profile, active_web_state, sync_presenter_provider_,
+                      SyncErrorInfoBarTrigger::kPasswordFormParsed);
   }
 }
 
@@ -249,7 +250,8 @@ void SyncErrorBrowserAgent::CreateReSignInInfoBarDelegate(
         CreateConfirmInfoBar(std::move(delegate)));
     return;
   }
-  DisplaySyncErrors(profile, web_state, sync_presenter_provider_);
+  DisplaySyncErrors(profile, web_state, sync_presenter_provider_,
+                    SyncErrorInfoBarTrigger::kNewTabOpened);
 }
 
 void SyncErrorBrowserAgent::AddPasswordFormManagerObserver(

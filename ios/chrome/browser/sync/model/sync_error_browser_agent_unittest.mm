@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent.h"
 
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/mock_password_form_cache.h"
 #import "components/password_manager/core/browser/mock_password_manager.h"
@@ -68,6 +69,7 @@ class SyncErrorBrowserAgentTest : public PlatformTest {
 
 TEST_F(SyncErrorBrowserAgentTest,
        InfobarDisplayedOnPasswordFormParsedWithPasswordSyncError) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       syncer::kSyncTrustedVaultInfobarImprovements);
@@ -84,4 +86,12 @@ TEST_F(SyncErrorBrowserAgentTest,
       SyncErrorBrowserAgent::FromBrowser(browser_.get()))
       ->OnPasswordFormParsed(/*form_manager=*/nullptr);
   EXPECT_THAT(infobar_manager->infobars(), SizeIs(1));
+
+  constexpr int kSyncNeedsPassphraseBucket = 3;
+  histogram_tester.ExpectUniqueSample("Sync.SyncErrorInfobarDisplayed2",
+                                      kSyncNeedsPassphraseBucket, /*count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.SyncErrorInfobarDisplayed2.PasswordForm",
+      kSyncNeedsPassphraseBucket,
+      /*count=*/1);
 }
