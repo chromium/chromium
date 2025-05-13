@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 
 import android.animation.Animator;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -33,9 +34,12 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.ProgressBarObserver;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.util.ColorUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -48,6 +52,10 @@ public class ToolbarProgressBarTest {
     private ToolbarProgressBarAnimatingView mProgressBarAnimatingView;
     private ShadowLooper mShadowLooper;
     private ActivityScenario<TestActivity> mActivityScenario;
+    private TestActivity mActivity;
+    private @ColorInt int mThemeColor;
+
+    private static final float THEMED_BACKGROUND_WHITE_FRACTION = 0.2f;
 
     @Before
     public void setUp() {
@@ -57,6 +65,7 @@ public class ToolbarProgressBarTest {
                 ActivityScenario.launch(TestActivity.class)
                         .onActivity(
                                 activity -> {
+                                    mActivity = activity;
                                     activity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
                                     ViewGroup view = new FrameLayout(activity);
@@ -83,10 +92,9 @@ public class ToolbarProgressBarTest {
                                             new ToolbarProgressBarAnimatingView(activity, null);
                                     mProgressBar = new ToolbarProgressBar(activity, null);
                                     mProgressBar.setAnimatingView(mProgressBarAnimatingView);
-                                    final @ColorInt int toolbarColor =
-                                            SemanticColorUtils.getToolbarBackgroundPrimary(
-                                                    activity);
-                                    mProgressBar.setThemeColor(toolbarColor, false);
+                                    mThemeColor = SemanticColorUtils.getToolbarBackgroundPrimary(
+                                            mActivity);
+                                    mProgressBar.setThemeColor(mThemeColor, false);
                                     mProgressBar.setProgressBarObserver(mMockProgressBarObserver);
 
                                     view.addView(
@@ -283,5 +291,86 @@ public class ToolbarProgressBarTest {
         mProgressBar.onAndroidControlsVisibilityChanged(View.VISIBLE);
         assertEquals(View.VISIBLE, mProgressBar.getVisibility());
         assertEquals(View.VISIBLE, mProgressBarAnimatingView.getVisibility());
+    }
+
+    @Test
+    @Feature({"Android-Progress-Bar"})
+    public void testProgressBarColors_incognito() {
+        final boolean isIncognito = true;
+        mProgressBar.setThemeColor(mThemeColor, isIncognito);
+
+        assertEquals("Foreground color does not match expected color.",
+                ColorUtils.getThemedAssetColor(mThemeColor, isIncognito),
+                mProgressBar.getForegroundColor());
+        assertEquals("Background color does not match expected color.",
+                ColorUtils.getColorWithOverlay(mThemeColor, Color.WHITE,
+                        THEMED_BACKGROUND_WHITE_FRACTION), mProgressBar.getBackgroundColor());
+    }
+
+    @Test
+    @Feature({"Android-Progress-Bar"})
+    public void testProgressBarColors_TransparentTheme() {
+        mProgressBar.setThemeColor(Color.TRANSPARENT, /* isIncognito = */ false);
+        int foregroundColor = mProgressBar.getForegroundColor();
+        int backgroundColor = mProgressBar.getBackgroundColor();
+        mProgressBar.setAnimatingView(mProgressBarAnimatingView);
+
+        assertEquals(
+                "Foreground color does not match color.",
+                foregroundColor,
+                mProgressBar.getForegroundColor());
+        assertEquals(
+                "Background color does not match color.",
+                backgroundColor,
+                mProgressBar.getBackgroundColor());
+    }
+
+    @Test
+    @Feature({"Android-Progress-Bar"})
+    public void testProgressBarColors_nonDefaultTheme() {
+        final int themeColor = Color.BLUE;
+        final boolean isIncognito = false;
+        mProgressBar.setThemeColor(themeColor, isIncognito);
+
+        assertEquals(
+                "Foreground color does not match expected color.",
+                ColorUtils.getThemedAssetColor(themeColor, isIncognito),
+                mProgressBar.getForegroundColor());
+        assertEquals(
+                "Background color does not match expected color.",
+                ColorUtils.getColorWithOverlay(themeColor, Color.WHITE,
+                        THEMED_BACKGROUND_WHITE_FRACTION), mProgressBar.getBackgroundColor());
+    }
+
+    @Test
+    @Features.DisableFeatures(ChromeFeatureList.ANDROID_PROGRESS_BAR_VISUAL_UPDATE)
+    @Feature({"Android-Progress-Bar"})
+    public void testProgressBarColors_defaultTheme() {
+        mProgressBar.setThemeColor(mThemeColor, /* isIncognito = */ false);
+
+        assertEquals(
+                "Foreground color does not match expected color.",
+                SemanticColorUtils.getProgressBarForeground(mActivity),
+                mProgressBar.getForegroundColor());
+        assertEquals(
+                "Background color does not match expected color.",
+                mActivity.getColor(R.color.progress_bar_bg_color_list),
+                mProgressBar.getBackgroundColor());
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_PROGRESS_BAR_VISUAL_UPDATE)
+    @Feature({"Android-Progress-Bar"})
+    public void testProgressBarColors_defaultTheme_visualUpdate() {
+        mProgressBar.setThemeColor(mThemeColor, /* isIncognito = */ false);
+
+        assertEquals(
+                "Foreground color does not match expected color.",
+                SemanticColorUtils.getProgressBarForeground(mActivity),
+                mProgressBar.getForegroundColor());
+        assertEquals(
+                "Background color does not match expected color.",
+                SemanticColorUtils.getProgressBarTrackColor(mActivity),
+                mProgressBar.getBackgroundColor());
     }
 }

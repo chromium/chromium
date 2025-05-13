@@ -125,6 +125,11 @@ public class SemanticColorUtils {
         return getDefaultControlColorActive(context);
     }
 
+    /** Returns the semantic color value that corresponds to progress_bar_track_color. */
+    public static @ColorInt int getProgressBarTrackColor(Context context) {
+        return resolve(R.attr.colorSecondaryContainer, context);
+    }
+
     /** Returns the surface color value of the conceptual toolbar_background_primary. */
     public static @ColorInt int getToolbarBackgroundPrimary(Context context) {
         return getDefaultBgColor(context);
