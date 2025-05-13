@@ -3890,7 +3890,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3707034683772193706">Els llocs web que visites poden desar una quantitat petita de dades amb Chrome, principalment per validar que no ets un bot</translation>
 <translation id="3707163604290651814">Has iniciat la sessió com a <ph name="NAME" /></translation>
 <translation id="3707348585109246684">Obre l'enllaç en una pestanya nova de <ph name="APP" /></translation>
-<translation id="3708295717182051206">Subtítols</translation>
+<translation id="3708295717182051206">Subtítols descriptius</translation>
 <translation id="3708684582558000260">No permetis que els llocs web tancats acabin d'enviar o de rebre dades</translation>
 <translation id="3709244229496787112">S'ha tancat el navegador abans que la baixada es completés.</translation>
 <translation id="3710501561113687889">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà la teva informació (<ph name="FIELDS_STRING" />) amb aquest lloc web.</translation>
