@@ -378,7 +378,8 @@ void DesktopCaptureAccessHandler::HandleRequest(
             system_permission_settings::SystemPermission::kAllowed) {
       std::move(pending_request->callback)
           .Run(blink::mojom::StreamDevicesSet(),
-               blink::mojom::MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED,
+               blink::mojom::MediaStreamRequestResult::
+                   PERMISSION_DENIED_BY_SYSTEM,
                /*ui=*/nullptr);
       return;
     }
@@ -433,9 +434,10 @@ void DesktopCaptureAccessHandler::HandleRequest(
       system_media_permissions::CheckSystemScreenCapturePermission() !=
           system_permission_settings::SystemPermission::kAllowed) {
     std::move(pending_request->callback)
-        .Run(blink::mojom::StreamDevicesSet(),
-             blink::mojom::MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED,
-             /*ui=*/nullptr);
+        .Run(
+            blink::mojom::StreamDevicesSet(),
+            blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM,
+            /*ui=*/nullptr);
     return;
   }
 #endif

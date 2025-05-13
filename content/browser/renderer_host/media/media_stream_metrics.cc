@@ -72,7 +72,7 @@ MediaStreamRequestResult2 MapResultToResult2(
       return MediaStreamRequestResult2::kFailedDueToShutdown;
     case MediaStreamRequestResult::KILL_SWITCH_ON:
       return MediaStreamRequestResult2::kKillSwitchOn;
-    case MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED:
+    case MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM:
       return MediaStreamRequestResult2::kSystemPermissionDenied;
     case MediaStreamRequestResult::DEVICE_IN_USE:
       return MediaStreamRequestResult2::kDeviceInUse;

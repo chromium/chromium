@@ -111,8 +111,8 @@ const char* MediaStreamRequestResultToString(MediaStreamRequestResult value) {
       return "FAILED_DUE_TO_SHUTDOWN";
     case MediaStreamRequestResult::KILL_SWITCH_ON:
       return "KILL_SWITCH_ON";
-    case MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED:
-      return "SYSTEM_PERMISSION_DENIED";
+    case MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM:
+      return "PERMISSION_DENIED_BY_SYSTEM";
     case MediaStreamRequestResult::DEVICE_IN_USE:
       return "DEVICE_IN_USE";
     case MediaStreamRequestResult::REQUEST_CANCELLED:
@@ -281,7 +281,7 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
       return "Failed due to shutdown";
     case MediaStreamRequestResult::KILL_SWITCH_ON:
       return "Killswitch on";
-    case MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED:
+    case MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM:
       return "Permission denied by system";
     case MediaStreamRequestResult::DEVICE_IN_USE:
       return "Device in use";
@@ -2170,7 +2170,7 @@ bool UserMediaProcessor::RemoveLocalSource(MediaStreamSource* source) {
     auto error = MediaStreamAudioSource::From(source)->ErrorCode();
     switch (error.value_or(AudioSourceErrorCode::kUnknown)) {
       case AudioSourceErrorCode::kSystemPermissions:
-        result = MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED;
+        result = MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM;
         message = "System Permssions prevented access to audio capture device";
         break;
       case AudioSourceErrorCode::kDeviceInUse:

@@ -302,8 +302,8 @@ const char* RequestResultToString(
       return "FAILED_DUE_TO_SHUTDOWN";
     case blink::mojom::MediaStreamRequestResult::KILL_SWITCH_ON:
       return "KILL_SWITCH_ON";
-    case blink::mojom::MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED:
-      return "SYSTEM_PERMISSION_DENIED";
+    case blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM:
+      return "PERMISSION_DENIED_BY_SYSTEM";
     case blink::mojom::MediaStreamRequestResult::DEVICE_IN_USE:
       return "DEVICE_IN_USE";
     case blink::mojom::MediaStreamRequestResult::REQUEST_CANCELLED:

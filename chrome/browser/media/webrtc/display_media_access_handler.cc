@@ -663,7 +663,7 @@ void DisplayMediaAccessHandler::OnDisplaySurfaceSelected(
           system_permission_settings::SystemPermission::kAllowed) {
     RejectRequest(
         web_contents.get(),
-        blink::mojom::MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED);
+        blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM);
     return;
   }
 #endif  // BUILDFLAG(IS_MAC)

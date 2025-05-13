@@ -862,7 +862,7 @@ void UserMediaRequest::Fail(Result error, const String& message) {
     case Result::OK:
       NOTREACHED();  // Not a failure.
     case Result::PERMISSION_DENIED:
-    case Result::SYSTEM_PERMISSION_DENIED:
+    case Result::PERMISSION_DENIED_BY_SYSTEM:
     case Result::PERMISSION_DISMISSED:
     case Result::KILL_SWITCH_ON:
       exception_code = DOMExceptionCode::kNotAllowedError;

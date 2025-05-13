@@ -416,7 +416,8 @@ TEST_F(MediaStreamVideoCapturerSourceTest, FailStartSystemPermission) {
       StartSource(VideoTrackAdapterSettings(), std::nullopt, false, 0.0);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(source_stopped_);
-  EXPECT_EQ(start_result_, MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED);
+  EXPECT_EQ(start_result_,
+            MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM);
 }
 
 TEST_F(MediaStreamVideoCapturerSourceTest, FailStartCamInUse) {

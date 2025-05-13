@@ -358,7 +358,7 @@ void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
                  system_audio_permission == SystemPermission::kDenied) {
         content_settings::UpdateLocationBarUiForWebContents(web_contents);
         final_result =
-            blink::mojom::MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED;
+            blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM;
         system_media_permissions::SystemAudioCapturePermissionBlocked();
       } else {
         DCHECK_EQ(system_audio_permission, SystemPermission::kAllowed);
@@ -386,7 +386,7 @@ void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
                  system_video_permission == SystemPermission::kDenied) {
         content_settings::UpdateLocationBarUiForWebContents(web_contents);
         final_result =
-            blink::mojom::MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED;
+            blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM;
         system_media_permissions::SystemVideoCapturePermissionBlocked();
       } else {
         DCHECK_EQ(system_video_permission, SystemPermission::kAllowed);

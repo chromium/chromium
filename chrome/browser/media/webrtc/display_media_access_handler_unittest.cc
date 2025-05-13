@@ -256,7 +256,7 @@ TEST_F(DisplayMediaAccessHandlerTest, PermissionGiven) {
 #if BUILDFLAG(IS_MAC)
   // On macOS, screen capture requires system permissions that are disabled by
   // default.
-  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED,
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM,
             result);
   return;
 #endif
@@ -298,7 +298,7 @@ TEST_F(DisplayMediaAccessHandlerTest, PermissionGivenToRequestWithAudio) {
 #if BUILDFLAG(IS_MAC)
   // On macOS, screen capture requires system permissions that are disabled by
   // default.
-  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED,
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM,
             result);
   return;
 #endif
@@ -648,7 +648,7 @@ TEST_F(DisplayMediaAccessHandlerTest, MultipleRequests) {
 #if BUILDFLAG(IS_MAC)
   // On macOS, screen capture requires system permissions that are disabled by
   // default.
-  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED,
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM,
             result);
   return;
 #endif
@@ -754,7 +754,7 @@ TEST_F(DisplayMediaAccessHandlerTest, ChangeSourceWithPendingPickerRequest) {
 #if BUILDFLAG(IS_MAC)
   // On macOS, screen capture requires system permissions that are disabled by
   // default.
-  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED,
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM,
             results[0]);
   return;
 #endif
@@ -789,7 +789,7 @@ TEST_F(DisplayMediaAccessHandlerTest,
 #if BUILDFLAG(IS_MAC)
   // On macOS, screen capture requires system permissions that are disabled by
   // default.
-  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED,
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM,
             results[0]);
   return;
 #endif
@@ -825,7 +825,7 @@ TEST_F(DisplayMediaAccessHandlerTest,
 #if BUILDFLAG(IS_MAC)
   // On macOS, screen capture requires system permissions that are disabled by
   // default.
-  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED,
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM,
             results[0]);
   return;
 #endif

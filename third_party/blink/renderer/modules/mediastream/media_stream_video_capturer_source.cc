@@ -264,7 +264,7 @@ void MediaStreamVideoCapturerSource::OnRunStateChanged(
         MediaStreamRequestResult result;
         switch (run_state) {
           case VideoCaptureRunState::kSystemPermissionsError:
-            result = MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED;
+            result = MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM;
             break;
           case VideoCaptureRunState::kCameraBusyError:
             result = MediaStreamRequestResult::DEVICE_IN_USE;
