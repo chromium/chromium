@@ -682,10 +682,23 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
         _unsyncedDataTypes.value());
     _browserForAuthenticationFlowInProfile = _browser;
     CHECK(!_signInInProfileCompletion);
-    id<AuthenticationFlowRequestHelper> requestHelper =
+    PostSignInActionSet postSignInActions = _postSignInActions;
+    id<SystemIdentity> identityToSignIn = _identityToSignIn;
+    signin_metrics::AccessPoint accessPoint = _accessPoint;
+    // In case of sign-in in same profile, we can reuse the same browser.
+    raw_ptr<Browser> browser = _browser;
+    // In case of same profile signin, the request helper simply allows
+    // to update the view that started the authentication. If it gets
+    // deallocated, it means the view is closed, so it’s acceptable
+    // not to call its method.
+    __weak id<AuthenticationFlowRequestHelper> requestHelper =
         [self takeRequestHelper];
+    // Not using a call call to a method on self, because self will be
+    // deallocated by the time the `signinCompletion` is executed.
     _signInInProfileCompletion = ^(SigninCoordinatorResult result) {
       [requestHelper authenticationFlowDidSignInInSameProfileWithResult:result];
+      CompletePostSignInActions(postSignInActions, identityToSignIn, browser,
+                                accessPoint);
     };
     [self continueFlow];
     return;
@@ -709,7 +722,9 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   [_performer switchToProfileWithIdentity:_identityToSignIn
                                sceneState:sceneState
                                    reason:reason
-                            requestHelper:[self takeRequestHelper]];
+                            requestHelper:[self takeRequestHelper]
+                        postSignInActions:_postSignInActions
+                              accessPoint:_accessPoint];
 }
 
 // Hands the sign-in flow over to `AuthenticationFlowInProfile`. This step is

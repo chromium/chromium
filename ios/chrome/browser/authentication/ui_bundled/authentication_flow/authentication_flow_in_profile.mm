@@ -372,8 +372,6 @@ enum class AuthenticationFlowInProfileState {
   signin_ui::SigninCompletionCallback signInCompletion = _signInCompletion;
   _signInCompletion = nil;
   signInCompletion(SigninCoordinatorResult::SigninCoordinatorResultSuccess);
-  CompletePostSignInActions(_postSignInActions, _identityToSignIn, _browser,
-                            _accessPoint);
   [self continueFlow];
 }
 
@@ -405,7 +403,10 @@ enum class AuthenticationFlowInProfileState {
   [_performer switchToProfileWithName:personalProfileName
                            sceneState:sceneState
                                reason:ChangeProfileReason::kAuthenticationError
-            changeProfileContinuation:DoNothingContinuation()];
+            changeProfileContinuation:DoNothingContinuation()
+                    postSignInActions:_postSignInActions
+                         withIdentity:_identityToSignIn
+                          accessPoint:_accessPoint];
 }
 
 - (void)failureCompleteFlowStep {

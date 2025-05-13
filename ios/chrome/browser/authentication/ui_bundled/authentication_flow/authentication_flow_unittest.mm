@@ -270,6 +270,7 @@ class AuthenticationFlowTest : public PlatformTest,
               signin_metrics::AccessPoint access_point,
               bool adds_history_screen_post_profile_switch = true) {
     signin_result_ = signin::Tribool::kUnknown;
+
     // Can't use a RunLoop multiple times, create a new one.
     run_loop_ = std::make_unique<base::RunLoop>();
 
@@ -277,6 +278,14 @@ class AuthenticationFlowTest : public PlatformTest,
                              /*shouldHandOverToFlowInProfile=*/YES);
 
     NSString* hosted_domain = GetHostedDomainFromEmail(identity.userEmail);
+    const bool should_switch_profile =
+        hosted_domain.length && AreSeparateProfilesForManagedAccountsEnabled();
+
+    PostSignInActionSet postSignInActions;
+    if (should_switch_profile && adds_history_screen_post_profile_switch) {
+      postSignInActions.Put(
+          PostSignInAction::kShowHistorySyncScreenAfterProfileSwitch);
+    }
     auto fetchManagedStatusCallback = ^(NSInvocation*) {
       [authentication_flow_ didFetchManagedStatus:hosted_domain];
     };
@@ -352,7 +361,9 @@ class AuthenticationFlowTest : public PlatformTest,
                                  sceneState:personal_browser_->GetSceneState()
                                      reason:ChangeProfileReason::
                                                 kManagedAccountSignIn
-                              requestHelper:requestHelperChecker])
+                              requestHelper:requestHelperChecker
+                          postSignInActions:postSignInActions
+                                accessPoint:access_point])
             .andDo(switchToProfileWithIdentityCallback);
       }
       auto registerUserPolicyCallback = ^(NSInvocation*) {
@@ -375,21 +386,12 @@ class AuthenticationFlowTest : public PlatformTest,
           .andDo(fetchUserPolicyCallback);
     }
 
-    const bool should_switch_profile =
-        hosted_domain.length && AreSeparateProfilesForManagedAccountsEnabled();
-
     // If switching (to a managed profile), there's no explicit call to sign in,
     // since AuthenticationService does it internally.
     if (!should_switch_profile) {
       OCMExpect([performer_mock_ signInIdentity:identity
                                   atAccessPoint:access_point
                                  currentProfile:personal_profile_.get()]);
-    }
-
-    PostSignInActionSet postSignInActions;
-    if (should_switch_profile && adds_history_screen_post_profile_switch) {
-      postSignInActions.Put(
-          PostSignInAction::kShowHistorySyncScreenAfterProfileSwitch);
     }
 
     [authentication_flow_ startSignIn];

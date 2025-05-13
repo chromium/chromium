@@ -208,6 +208,27 @@ void TriggerAccountSwitchSnackbarWithIdentity(id<SystemIdentity> identity,
       showSnackbarMessageOverBrowserToolbar:snackbar_title];
 }
 
+void CompletePostSignInActionsContinuationImpl(
+    PostSignInActionSet post_signin_actions,
+    id<SystemIdentity> identity,
+    signin_metrics::AccessPoint access_point,
+    SceneState* scene_state,
+    base::OnceClosure closure) {
+  Browser* browser =
+      scene_state.browserProviderInterface.currentBrowserProvider.browser;
+  CompletePostSignInActions(post_signin_actions, identity, browser,
+                            access_point);
+  std::move(closure).Run();
+}
+
+ChangeProfileContinuation CompletePostSigninActionsContinuation(
+    PostSignInActionSet post_signin_actions,
+    id<SystemIdentity> identity,
+    signin_metrics::AccessPoint access_point) {
+  return base::BindOnce(&CompletePostSignInActionsContinuationImpl,
+                        post_signin_actions, identity, access_point);
+}
+
 }  // namespace
 
 void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
@@ -420,10 +441,14 @@ void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
                          sceneState:(SceneState*)sceneState
                              reason:(ChangeProfileReason)reason
                       requestHelper:
-                          (id<AuthenticationFlowRequestHelper>)requestHelper {
+                          (id<AuthenticationFlowRequestHelper>)requestHelper
+                  postSignInActions:(PostSignInActionSet)postSignInActions
+                        accessPoint:(signin_metrics::AccessPoint)accessPoint {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
   CHECK(requestHelper);
-  ChangeProfileContinuation continuation =
+  // The continuation specific to the place where the authentication was
+  // launched.
+  ChangeProfileContinuation requestHelperContinuation =
       [requestHelper authenticationFlowWillChangeProfile];
 
   std::optional<std::string> profileName =
@@ -444,19 +469,30 @@ void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
   [self switchToProfileWithName:*profileName
                      sceneState:sceneState
                          reason:reason
-      changeProfileContinuation:std::move(continuation)];
+      changeProfileContinuation:std::move(requestHelperContinuation)
+              postSignInActions:postSignInActions
+                   withIdentity:identity
+                    accessPoint:accessPoint];
 }
 
 - (void)switchToProfileWithName:(const std::string&)profileName
                      sceneState:(SceneState*)sceneState
                          reason:(ChangeProfileReason)reason
-      changeProfileContinuation:(ChangeProfileContinuation)continuation {
+      changeProfileContinuation:
+          (ChangeProfileContinuation)requestHelperContinuation
+              postSignInActions:(PostSignInActionSet)postSignInActions
+                   withIdentity:(id<SystemIdentity>)identity
+                    accessPoint:(signin_metrics::AccessPoint)accessPoint {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
-
+  ChangeProfileContinuation postSignInContinuation =
+      CompletePostSigninActionsContinuation(postSignInActions, identity,
+                                            accessPoint);
   ChangeProfileContinuation authenticationFlowContinuation =
       [self authenticationFlowContinuation];
   ChangeProfileContinuation fullContinuation = ChainChangeProfileContinuations(
-      std::move(authenticationFlowContinuation), std::move(continuation));
+      std::move(authenticationFlowContinuation),
+      ChainChangeProfileContinuations(std::move(requestHelperContinuation),
+                                      std::move(postSignInContinuation)));
   [_changeProfileHandler changeProfile:profileName
                               forScene:sceneState
                                 reason:reason

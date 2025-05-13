@@ -105,13 +105,18 @@ using OnProfileSwitchCompletion =
                          sceneState:(SceneState*)sceneState
                              reason:(ChangeProfileReason)reason
                       requestHelper:
-                          (id<AuthenticationFlowRequestHelper>)requestHelper;
+                          (id<AuthenticationFlowRequestHelper>)requestHelper
+                  postSignInActions:(PostSignInActionSet)postSignInActions
+                        accessPoint:(signin_metrics::AccessPoint)accessPoint;
 
 // Switches to the profile with `profileName`, for `sceneIdentifier`.
 - (void)switchToProfileWithName:(const std::string&)profileName
                      sceneState:(SceneState*)sceneState
                          reason:(ChangeProfileReason)reason
-      changeProfileContinuation:(ChangeProfileContinuation)continuation;
+      changeProfileContinuation:(ChangeProfileContinuation)continuation
+              postSignInActions:(PostSignInActionSet)postSignInActions
+                   withIdentity:(id<SystemIdentity>)identity
+                    accessPoint:(signin_metrics::AccessPoint)accessPoint;
 
 // Converts the personal profile to a managed one and attaches `identity` to it.
 - (void)makePersonalProfileManagedWithIdentity:(id<SystemIdentity>)identity;
