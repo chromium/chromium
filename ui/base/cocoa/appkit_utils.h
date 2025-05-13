@@ -5,8 +5,10 @@
 #ifndef UI_BASE_COCOA_APPKIT_UTILS_H_
 #define UI_BASE_COCOA_APPKIT_UTILS_H_
 
+#ifdef __OBJC__
 #import <Cocoa/Cocoa.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+#endif  // __OBJC__
 
 #include "base/component_export.h"
 
@@ -18,6 +20,9 @@ COMPONENT_EXPORT(UI_BASE) bool ForceClickInvokesQuickLook();
 // Returns true if both CGFloat values are equal.
 COMPONENT_EXPORT(UI_BASE) bool IsCGFloatEqual(CGFloat a, CGFloat b);
 
+// Returns true if the current application owns the menu bar.
+COMPONENT_EXPORT(UI_BASE) bool IsActiveApplication();
+
 // The NSServicesMenuRequestor protocol does not pass modern NSPasteboardType
 // constants in the `types` array, but only obsolete "Pboard" constants. This is
 // verified through macOS 15 (FB11838671). These are utility functions to
@@ -26,6 +31,7 @@ COMPONENT_EXPORT(UI_BASE) bool IsCGFloatEqual(CGFloat a, CGFloat b);
 // TODO(https://crbug.com/395661472): When this FB is fixed at the minimum
 // requirement for Chromium, remove these utility functions.
 
+#ifdef __OBJC__
 // Converts a single string value of either a modern pasteboard type or an
 // obsolete PBoard type to the corresponding UTType. Returns nil if nil is
 // specified as the type, or if the type cannot be found.
@@ -36,6 +42,7 @@ COMPONENT_EXPORT(UI_BASE) UTType* UTTypeForServicesType(NSString* type);
 // values are dropped, as NSArrays/NSSets cannot contain nils.
 COMPONENT_EXPORT(UI_BASE)
 NSSet<UTType*>* UTTypesForServicesTypeArray(NSArray* types);
+#endif  // __OBJC__
 
 }  // namespace ui
 

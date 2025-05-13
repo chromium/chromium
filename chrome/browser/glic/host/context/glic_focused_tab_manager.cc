@@ -16,6 +16,9 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "content/public/common/url_constants.h"
 #include "ui/views/widget/widget.h"
+#if BUILDFLAG(IS_MAC)
+#include "ui/base/cocoa/appkit_utils.h"
+#endif
 
 namespace glic {
 
@@ -278,6 +281,12 @@ GlicFocusedTabManager::ComputeFocusedTabState() {
 }
 
 BrowserWindowInterface* GlicFocusedTabManager::ComputeBrowserCandidate() {
+#if BUILDFLAG(IS_MAC)
+  if (!ui::IsActiveApplication()) {
+    return nullptr;
+  }
+#endif
+
   if (window_controller_->IsAttached()) {
     // When attached, we only allow focus if attached window is active.
     Browser* const attached_browser = window_controller_->attached_browser();
