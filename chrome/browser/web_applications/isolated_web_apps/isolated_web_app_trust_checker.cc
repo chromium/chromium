@@ -43,12 +43,7 @@ GetTrustedWebBundleIdsForTesting() {
 // a kiosk. Kiosk mode is configured via DeviceLocalAccounts enterprise
 // policy.
 bool IsTrustedAsKiosk(const web_package::SignedWebBundleId& web_bundle_id) {
-  std::optional<ash::KioskIwaPolicyData> kiosk_iwa_policy_data =
-      ash::GetCurrentKioskIwaPolicyData();
-  if (!kiosk_iwa_policy_data) {
-    return false;
-  }
-  return kiosk_iwa_policy_data->web_bundle_id == web_bundle_id;
+  return ash::GetCurrentKioskIwaBundleId() == web_bundle_id;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

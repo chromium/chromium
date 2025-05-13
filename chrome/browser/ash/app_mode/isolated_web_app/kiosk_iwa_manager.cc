@@ -217,12 +217,9 @@ void KioskIwaManager::ProcessDeviceLocalAccount(
   if (account.type != policy::DeviceLocalAccountType::kKioskIsolatedWebApp) {
     return;
   }
-  const std::string& web_bundle_id = account.kiosk_iwa_info.web_bundle_id();
-  const GURL update_manifest_url(account.kiosk_iwa_info.update_manifest_url());
 
-  auto new_iwa_data =
-      KioskIwaData::Create(local_state_.get(), account.user_id, web_bundle_id,
-                           update_manifest_url, *this);
+  auto new_iwa_data = KioskIwaData::Create(
+      account.user_id, account.kiosk_iwa_info, *this, local_state_.get());
 
   if (!new_iwa_data) {
     LOG(WARNING) << "Cannot create Kiosk IWA data for account "
@@ -234,20 +231,20 @@ void KioskIwaManager::ProcessDeviceLocalAccount(
   // implementing icon and title.
   auto previous_match = previous_apps.find(new_iwa_data->app_id());
   if (previous_match != previous_apps.end()) {
-    // Reuse the already existing app data and keep this app from deletion.
+    // Keep this app from deletion.
     auto previous_iwa_data = std::move(previous_match->second);
     previous_apps.erase(previous_match);
 
-    // But still replace with a new IWA entry if manifest URL changed.
-    if (new_iwa_data->update_manifest_url() !=
-        previous_iwa_data->update_manifest_url()) {
+    // Replace with the new IWA entry if there are changes (e.g. different
+    // update manifest URL or version setting).
+    if (*new_iwa_data != *previous_iwa_data) {
       isolated_web_apps_.push_back(std::move(new_iwa_data));
       isolated_web_apps_.back()->LoadFromCache();
     } else {
       isolated_web_apps_.push_back(std::move(previous_iwa_data));
     }
   } else {
-    // Add a new IWA entry (no existing matches).
+    // Add the new IWA entry (no previous matches).
     isolated_web_apps_.push_back(std::move(new_iwa_data));
     isolated_web_apps_.back()->LoadFromCache();
   }

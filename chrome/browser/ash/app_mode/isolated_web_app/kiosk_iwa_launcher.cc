@@ -4,8 +4,12 @@
 
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_launcher.h"
 
+#include <string>
+
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
+#include "base/types/expected_macros.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_data.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
@@ -61,18 +65,23 @@ bool KioskIwaLauncher::IsIsolatedWebAppInstalled() const {
 void KioskIwaLauncher::InstallIsolatedWebApp() {
   CHECK(!iwa_installer_);
 
-  // TODO(crbug.com/374069115): Add IWA update channel.
-  auto install_options = web_app::IsolatedWebAppExternalInstallOptions::Create(
-      iwa_data().update_manifest_url(), iwa_data().web_bundle_id());
-  CHECK(install_options.has_value())
-      << "Cannot configure IWA installation: " << install_options.error();
+  ASSIGN_OR_RETURN(
+      auto install_options,
+      web_app::IsolatedWebAppExternalInstallOptions::Create(
+          iwa_data().web_bundle_id(), iwa_data().update_manifest_url(),
+          iwa_data().update_channel(), iwa_data().pinned_version(),
+          iwa_data().allow_downgrades()),
+      [this](const std::string& error) {
+        LOG(ERROR) << "Cannot configure IWA installation: " << error;
+        NotifyLaunchFailed(KioskAppLaunchError::Error::kUnableToInstall);
+      });
 
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForWebApps(profile());
   CHECK(provider);
 
   iwa_installer_ = web_app::IwaInstallerFactory::Create(
-      install_options.value(), web_app::IwaInstaller::InstallSourceType::kKiosk,
+      install_options, web_app::IwaInstaller::InstallSourceType::kKiosk,
       profile()->GetURLLoaderFactory(), iwa_install_log_, provider,
       base::BindOnce(&KioskIwaLauncher::OnInstallComplete,
                      weak_ptr_factory_.GetWeakPtr()));

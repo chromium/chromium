@@ -46,20 +46,26 @@ IsolatedWebAppExternalInstallOptions::~IsolatedWebAppExternalInstallOptions() =
 // static
 base::expected<IsolatedWebAppExternalInstallOptions, std::string>
 IsolatedWebAppExternalInstallOptions::Create(
+    const web_package::SignedWebBundleId& web_bundle_id,
     const GURL& update_manifest_url,
-    const web_package::SignedWebBundleId& web_bundle_id) {
+    const UpdateChannel& update_channel,
+    const std::optional<base::Version>& maybe_pinned_version,
+    bool allow_downgrades) {
+  if (web_bundle_id.is_for_proxy_mode()) {
+    return base::unexpected("Bundle created for proxy mode");
+  }
+
   if (!update_manifest_url.is_valid()) {
     return base::unexpected("Bad update manifest URL");
   }
 
-  if (web_bundle_id.is_for_proxy_mode()) {
-    return base::unexpected(
-        "Cannot install a Wed Bundle created for ProxyMode");
+  if (allow_downgrades && !maybe_pinned_version) {
+    return base::unexpected("Pinned version required to allow downgrades");
   }
 
   return IsolatedWebAppExternalInstallOptions(
-      update_manifest_url, web_bundle_id, UpdateChannel::default_channel(),
-      /*allow_downgrades=*/false);
+      update_manifest_url, web_bundle_id, update_channel, allow_downgrades,
+      maybe_pinned_version);
 }
 
 // static

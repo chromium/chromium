@@ -181,15 +181,15 @@ IwaBundleIdToUpdateOptionsMap GetForceInstalledPolicyIsolatedWebApps(
 #if BUILDFLAG(IS_CHROMEOS)
 IwaBundleIdToUpdateOptionsMap GetKioskPolicyIsolatedWebApps() {
   IwaBundleIdToUpdateOptionsMap result;
-  std::optional<ash::KioskIwaPolicyData> kiosk_iwa_policy_data =
-      ash::GetCurrentKioskIwaPolicyData();
+  std::optional<ash::KioskIwaUpdateData> kiosk_iwa_policy_data =
+      ash::GetCurrentKioskIwaUpdateData();
   if (kiosk_iwa_policy_data) {
     result.emplace(
         kiosk_iwa_policy_data->web_bundle_id,
         IsolatedWebAppUpdateOptions(kiosk_iwa_policy_data->update_manifest_url,
-                                    UpdateChannel::default_channel(),
-                                    /*allow_downgrades=*/false,
-                                    /*pinned_version=*/std::nullopt));
+                                    kiosk_iwa_policy_data->update_channel,
+                                    kiosk_iwa_policy_data->allow_downgrades,
+                                    kiosk_iwa_policy_data->pinned_version));
   }
   return result;
 }

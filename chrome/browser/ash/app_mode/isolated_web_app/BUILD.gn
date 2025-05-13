@@ -17,6 +17,7 @@ static_library("isolated_web_app") {
   ]
   public_deps = []
   deps = [
+    ":policy_util",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/chromeos/app_mode",
     "//chrome/browser/web_applications",
@@ -24,6 +25,7 @@ static_library("isolated_web_app") {
     "//chromeos/ash/components/settings",
     "//components/prefs",
     "//components/web_package",
+    "//components/webapps/isolated_web_apps:isolated_web_apps",
     "//url",
   ]
 }
@@ -45,6 +47,7 @@ static_library("policy_util") {
     "//components/prefs",
     "//components/user_manager",
     "//components/web_package",
+    "//components/webapps/isolated_web_apps:isolated_web_apps",
   ]
 }
 
@@ -63,6 +66,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/settings",
     "//components/policy/core/common",
+    "//components/webapps/isolated_web_apps:isolated_web_apps",
     "//testing/gtest",
     "//url",
   ]
