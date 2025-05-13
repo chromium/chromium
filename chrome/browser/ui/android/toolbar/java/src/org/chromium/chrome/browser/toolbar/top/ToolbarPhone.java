@@ -250,7 +250,7 @@ public class ToolbarPhone extends ToolbarLayout
         VisualState.NEW_TAB_SEARCH_ENGINE_NO_LOGO
     })
     @Retention(RetentionPolicy.SOURCE)
-    @interface VisualState {
+    public @interface VisualState {
         int NORMAL = 0;
         int INCOGNITO = 1;
         int BRAND_COLOR = 2;
