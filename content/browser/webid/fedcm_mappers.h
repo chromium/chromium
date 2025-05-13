@@ -9,14 +9,15 @@
 #include <vector>
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/idp_network_request_manager.h"
+#include "content/public/browser/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
-#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
 
 namespace content {
 
-enum class FedCmRequestIdTokenStatus;
 enum class FedCmLifecycleStateFailureReason;
 
 // This header file defines functions which convert between FedCM types. It also
@@ -77,6 +78,25 @@ AccountParseStatusToRequestResultAndTokenStatus(
 FedCmLifecycleStateFailureReason
 LifecycleStateImplLifecycleStateImplToFedCmLifecycleStateFailureReason(
     RenderFrameHostImpl::LifecycleStateImpl lifecycle_state);
+
+// Converts a FederatedApiPermissionStatus to a (FederatedAuthRequestResult,
+// FedCmRequestIdTokenStatus) pair. Should not be invoked with
+// FederatedApiPermissionStatus::GRANTED.
+std::pair<blink::mojom::FederatedAuthRequestResult, FedCmRequestIdTokenStatus>
+PermissionStatusToRequestResultAndTokenStatus(
+    content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus
+        permission_status);
+
+FedCmErrorDialogResult DismissReasonToErrorDialogResult(
+    IdentityRequestDialogController::DismissReason dismiss_reason,
+    bool has_url);
+
+// Converts a FetchStatus from the ID assertion endpoint to a
+// (FederatedAuthRequestResult, FedCmRequestIdTokenStatus) pair. Should not be
+// invoked when the parse_status is ParseStatus::kSuccess.
+std::pair<blink::mojom::FederatedAuthRequestResult, FedCmRequestIdTokenStatus>
+IdAssertionFetchStatusToRequestResultAndTokenStatus(
+    IdpNetworkRequestManager::FetchStatus status);
 
 }  // namespace content
 

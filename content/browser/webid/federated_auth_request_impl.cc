@@ -599,32 +599,11 @@ void FederatedAuthRequestImpl::RequestToken(
   FederatedApiPermissionStatus permission_status = GetApiPermissionStatus();
 
   if (!CanBypassPermissionStatusCheck(rp_mode_, mediation_requirement_)) {
-    std::optional<TokenStatus> error_token_status;
-    FederatedAuthRequestResult request_result =
-        FederatedAuthRequestResult::kError;
-
-    switch (permission_status) {
-      case FederatedApiPermissionStatus::BLOCKED_VARIATIONS:
-        error_token_status = TokenStatus::kDisabledInFlags;
-        request_result = FederatedAuthRequestResult::kDisabledInFlags;
-        break;
-      case FederatedApiPermissionStatus::BLOCKED_SETTINGS:
-        error_token_status = TokenStatus::kDisabledInSettings;
-        request_result = FederatedAuthRequestResult::kDisabledInSettings;
-        break;
-      case FederatedApiPermissionStatus::BLOCKED_EMBARGO:
-        error_token_status = TokenStatus::kDisabledEmbargo;
-        request_result = FederatedAuthRequestResult::kDisabledInSettings;
-        break;
-      case FederatedApiPermissionStatus::GRANTED:
-        // Intentional fall-through.
-        break;
-      default:
-        NOTREACHED();
-    }
-
-    if (error_token_status) {
-      CompleteRequestWithError(request_result, *error_token_status,
+    if (permission_status != FederatedApiPermissionStatus::GRANTED) {
+      std::pair<FederatedAuthRequestResult, TokenStatus> resultAndTokenStatus =
+          PermissionStatusToRequestResultAndTokenStatus(permission_status);
+      CompleteRequestWithError(resultAndTokenStatus.first,
+                               resultAndTokenStatus.second,
                                /*should_delay_callback=*/true);
       return;
     }
@@ -2110,7 +2089,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
 
   bool idp_blindness =
       idp_info.provider->format &&
-      idp_info.provider->format == blink::mojom::Format::kSdJwt;
+      *idp_info.provider->format == blink::mojom::Format::kSdJwt;
 
   GURL endpoint;
   std::string query;
@@ -2158,16 +2137,10 @@ void FederatedAuthRequestImpl::OnDismissFailureDialog(
   // the virtual keyboard showing on Android. Dismissal through closing the
   // pop-up window is not embargoed since the user has taken some action to
   // continue to open the pop-up window.
-  bool should_embargo = false;
-  switch (dismiss_reason) {
-    case IdentityRequestDialogController::DismissReason::kCloseButton:
-    case IdentityRequestDialogController::DismissReason::kSwipe:
-      should_embargo = true;
-      break;
-    default:
-      break;
-  }
-
+  bool should_embargo =
+      dismiss_reason ==
+          IdentityRequestDialogController::DismissReason::kCloseButton ||
+      dismiss_reason == IdentityRequestDialogController::DismissReason::kSwipe;
   fedcm_metrics_->RecordCancelReason(dismiss_reason);
 
   should_embargo &= rp_mode_ == RpMode::kPassive;
@@ -2189,28 +2162,8 @@ void FederatedAuthRequestImpl::OnDismissErrorDialog(
     IdpNetworkRequestManager::FetchStatus status,
     IdentityRequestDialogController::DismissReason dismiss_reason) {
   bool has_url = token_error_ && !token_error_->url.is_empty();
-  ErrorDialogResult result;
-  switch (dismiss_reason) {
-    case IdentityRequestDialogController::DismissReason::kCloseButton:
-      result = has_url ? ErrorDialogResult::kCloseWithMoreDetails
-                       : ErrorDialogResult::kCloseWithoutMoreDetails;
-      break;
-    case IdentityRequestDialogController::DismissReason::kSwipe:
-      result = has_url ? ErrorDialogResult::kSwipeWithMoreDetails
-                       : ErrorDialogResult::kSwipeWithoutMoreDetails;
-      break;
-    case IdentityRequestDialogController::DismissReason::kGotItButton:
-      result = has_url ? ErrorDialogResult::kGotItWithMoreDetails
-                       : ErrorDialogResult::kGotItWithoutMoreDetails;
-      break;
-    case IdentityRequestDialogController::DismissReason::kMoreDetailsButton:
-      result = ErrorDialogResult::kMoreDetails;
-      break;
-    default:
-      result = has_url ? ErrorDialogResult::kOtherWithMoreDetails
-                       : ErrorDialogResult::kOtherWithoutMoreDetails;
-      break;
-  }
+  ErrorDialogResult result =
+      DismissReasonToErrorDialogResult(dismiss_reason, has_url);
   fedcm_metrics_->RecordErrorDialogResult(result, idp_config_url);
 
   CompleteTokenRequest(idp_config_url, status, /*token=*/std::nullopt,
@@ -2239,16 +2192,10 @@ void FederatedAuthRequestImpl::OnDialogDismissed(
   // Clicking the close active and swiping away the account chooser are more
   // intentional than other ways of dismissing the account chooser such as
   // the virtual keyboard showing on Android.
-  bool should_embargo = false;
-  switch (dismiss_reason) {
-    case IdentityRequestDialogController::DismissReason::kCloseButton:
-    case IdentityRequestDialogController::DismissReason::kSwipe:
-      should_embargo = true;
-      break;
-    default:
-      break;
-  }
-
+  bool should_embargo =
+      dismiss_reason ==
+          IdentityRequestDialogController::DismissReason::kCloseButton ||
+      dismiss_reason == IdentityRequestDialogController::DismissReason::kSwipe;
   if (should_embargo) {
     base::TimeTicks dismiss_dialog_time = base::TimeTicks::Now();
     fedcm_metrics_->RecordCancelOnDialogTime(
@@ -2475,86 +2422,51 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
     bool should_delay_callback) {
   DCHECK(!start_time_.is_null());
   constexpr char kIdAssertionUrl[] = "id assertion endpoint";
-  switch (status.parse_status) {
-    case IdpNetworkRequestManager::ParseStatus::kHttpNotFoundError: {
-      MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
-      CompleteRequestWithError(FederatedAuthRequestResult::kIdTokenHttpNotFound,
-                               TokenStatus::kIdTokenHttpNotFound,
-                               should_delay_callback);
-      return;
-    }
-    case IdpNetworkRequestManager::ParseStatus::kNoResponseError: {
-      MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
-      if (status.cors_error) {
-        CompleteRequestWithError(FederatedAuthRequestResult::kCorsError,
-                                 TokenStatus::kIdTokenNoResponse,
-                                 should_delay_callback);
-      } else {
-        CompleteRequestWithError(FederatedAuthRequestResult::kIdTokenNoResponse,
-                                 TokenStatus::kIdTokenNoResponse,
-                                 should_delay_callback);
-      }
-      return;
-    }
-    case IdpNetworkRequestManager::ParseStatus::kInvalidResponseError: {
-      MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
-      CompleteRequestWithError(
-          FederatedAuthRequestResult::kIdTokenInvalidResponse,
-          TokenStatus::kIdTokenInvalidResponse, should_delay_callback);
-      return;
-    }
-    case IdpNetworkRequestManager::ParseStatus::kInvalidContentTypeError: {
-      MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
-      CompleteRequestWithError(
-          FederatedAuthRequestResult::kIdTokenInvalidContentType,
-          TokenStatus::kIdTokenInvalidContentType, should_delay_callback);
-      return;
-    }
-    case IdpNetworkRequestManager::ParseStatus::kEmptyListError: {
-      NOTREACHED() << "kEmptyListError is undefined for CompleteTokenRequest";
-    }
-    case IdpNetworkRequestManager::ParseStatus::kSuccess: {
-      if (token_error_) {
-        MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
-        if (error_url_type_ && *error_url_type_ == ErrorUrlType::kCrossSite) {
-          CompleteRequestWithError(
-              FederatedAuthRequestResult::kIdTokenCrossSiteIdpErrorResponse,
-              TokenStatus::kIdTokenCrossSiteIdpErrorResponse,
-              should_delay_callback);
-          return;
-        }
-        CompleteRequestWithError(
-            FederatedAuthRequestResult::kIdTokenIdpErrorResponse,
-            TokenStatus::kIdTokenIdpErrorResponse, should_delay_callback);
-        return;
-      }
-
-      MarkUserAsSignedIn(idp_config_url, account_id_);
-
-      fedcm_metrics_->RecordTokenResponseAndTurnaroundTime(
-          idp_config_url, id_assertion_response_time_ - select_account_time_,
-          id_assertion_response_time_ - start_time_ -
-              (accounts_dialog_display_time_ -
-               ready_to_display_accounts_dialog_time_));
-
-      const blink::mojom::IdentityProviderRequestOptionsPtr& provider =
-          idp_infos_[idp_config_url]->provider;
-      DCHECK(provider);
-
-      if (provider->format &&
-          provider->format == blink::mojom::Format::kSdJwt) {
-        ProcessSdJwt(idp_config_url, token.value());
-        return;
-      }
-
-      CompleteRequest(FederatedAuthRequestResult::kSuccess,
-                      TokenStatus::kSuccessUsingTokenInHttpResponse,
-                      /*token_error=*/std::nullopt, idp_config_url,
-                      token.value(),
-                      /*should_delay_callback=*/false);
-      return;
-    }
+  if (status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess) {
+    MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
+    std::pair<FederatedAuthRequestResult, TokenStatus> resultAndTokenStatus =
+        IdAssertionFetchStatusToRequestResultAndTokenStatus(status);
+    CompleteRequestWithError(resultAndTokenStatus.first,
+                             resultAndTokenStatus.second,
+                             should_delay_callback);
+    return;
   }
+  if (token_error_) {
+    MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
+    if (error_url_type_ && *error_url_type_ == ErrorUrlType::kCrossSite) {
+      CompleteRequestWithError(
+          FederatedAuthRequestResult::kIdTokenCrossSiteIdpErrorResponse,
+          TokenStatus::kIdTokenCrossSiteIdpErrorResponse,
+          should_delay_callback);
+      return;
+    }
+    CompleteRequestWithError(
+        FederatedAuthRequestResult::kIdTokenIdpErrorResponse,
+        TokenStatus::kIdTokenIdpErrorResponse, should_delay_callback);
+    return;
+  }
+
+  MarkUserAsSignedIn(idp_config_url, account_id_);
+
+  fedcm_metrics_->RecordTokenResponseAndTurnaroundTime(
+      idp_config_url, id_assertion_response_time_ - select_account_time_,
+      id_assertion_response_time_ - start_time_ -
+          (accounts_dialog_display_time_ -
+           ready_to_display_accounts_dialog_time_));
+
+  const blink::mojom::IdentityProviderRequestOptionsPtr& provider =
+      idp_infos_[idp_config_url]->provider;
+  DCHECK(provider);
+
+  if (provider->format && *provider->format == blink::mojom::Format::kSdJwt) {
+    ProcessSdJwt(idp_config_url, token.value());
+    return;
+  }
+
+  CompleteRequest(FederatedAuthRequestResult::kSuccess,
+                  TokenStatus::kSuccessUsingTokenInHttpResponse,
+                  /*token_error=*/std::nullopt, idp_config_url, token.value(),
+                  /*should_delay_callback=*/false);
 }
 
 void FederatedAuthRequestImpl::CompleteRequestWithError(
@@ -3069,7 +2981,7 @@ bool FederatedAuthRequestImpl::OnResolve(
       idp_infos_[idp_config_url]->provider;
   DCHECK(provider);
 
-  if (provider->format && provider->format == blink::mojom::Format::kSdJwt) {
+  if (provider->format && *provider->format == blink::mojom::Format::kSdJwt) {
     ProcessSdJwt(idp_config_url, token);
     return true;
   }
