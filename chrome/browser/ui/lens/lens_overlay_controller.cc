@@ -797,6 +797,10 @@ void LensOverlayController::CopyText(const std::string& text) {
 }
 
 void LensOverlayController::CopyImage(lens::mojom::CenterRotatedBoxPtr region) {
+  if (initialization_data_->initial_screenshot_.drawsNothing()) {
+    return;
+  }
+
   SkBitmap cropped = lens::CropBitmapToRegion(
       initialization_data_->initial_screenshot_, std::move(region));
   ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
