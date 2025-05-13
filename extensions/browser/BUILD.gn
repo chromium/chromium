@@ -630,8 +630,6 @@ source_set("browser_sources") {
     sources += [
       "api/guest_view/app_view/app_view_guest_internal_api.cc",
       "api/guest_view/app_view/app_view_guest_internal_api.h",
-      "api/guest_view/guest_view_internal_api.cc",
-      "api/guest_view/guest_view_internal_api.h",
       "api/guest_view/web_view/web_view_internal_api.cc",
       "api/guest_view/web_view/web_view_internal_api.h",
       "guest_view/app_view/app_view_constants.cc",
