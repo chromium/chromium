@@ -75,6 +75,11 @@ suite('AppReceivesToolbarChanges', () => {
     emitEvent(app, ToolbarEvent.THEME);
   }
 
+  function emitPlayPause(): Promise<void> {
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+    return microtasksFinished();
+  }
+
   setup(async () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -199,10 +204,10 @@ suite('AppReceivesToolbarChanges', () => {
     });
   });
 
-  test('on speech rate change speech rate updated', () => {
+  test('on speech rate change speech rate updated', async () => {
     setupBasicSpeech(speech);
     app.updateContent();
-    app.playSpeech();
+    await emitPlayPause();
 
     const speechRate1 = 2;
     chrome.readingMode.speechRate = speechRate1;
@@ -297,7 +302,7 @@ suite('AppReceivesToolbarChanges', () => {
     setup(() => {
       emitColorTheme(chrome.readingMode.defaultTheme);
       app.updateContent();
-      app.playSpeech();
+      emitPlayPause();
     });
 
     test('on hide, uses transparent highlight', () => {
@@ -343,19 +348,18 @@ suite('AppReceivesToolbarChanges', () => {
 
     test('updates highlight', () => {
       emitHighlight(chrome.readingMode.wordHighlighting);
-      app.playSpeech();
+      emitPlayPause();
+
       assertEquals(
           chrome.readingMode.wordHighlighting,
           chrome.readingMode.highlightGranularity);
 
       emitHighlight(chrome.readingMode.phraseHighlighting);
-      app.playSpeech();
       assertEquals(
           chrome.readingMode.phraseHighlighting,
           chrome.readingMode.highlightGranularity);
 
       emitHighlight(chrome.readingMode.noHighlighting);
-      app.playSpeech();
       assertEquals(
           chrome.readingMode.noHighlighting,
           chrome.readingMode.highlightGranularity);

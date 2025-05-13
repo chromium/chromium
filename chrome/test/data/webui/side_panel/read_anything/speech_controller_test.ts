@@ -30,8 +30,8 @@ suite('SpeechController', () => {
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     speech = new TestSpeechBrowserProxy();
-    metrics = mockMetrics();
     SpeechBrowserProxyImpl.setInstance(speech);
+    metrics = mockMetrics();
     isSpeechActiveChanged = false;
     isAudioCurrentlyPlayingChanged = false;
     onPreviewVoicePlaying = false;
@@ -52,7 +52,6 @@ suite('SpeechController', () => {
       onPreviewVoicePlaying() {
         onPreviewVoicePlaying = true;
       },
-      onSpeechRateChange() {},
     };
 
     voicePackController = new VoicePackController();
@@ -67,6 +66,7 @@ suite('SpeechController', () => {
     ReadAloudHighlighter.setInstance(highlighter);
     speechController = new SpeechController();
     speechController.addListener(speechListener);
+    speech.reset();
   });
 
   test('setState', () => {
@@ -118,18 +118,14 @@ suite('SpeechController', () => {
   });
 
   test('isPausedFromButton', () => {
-    const pauseSource1 = PauseActionSource.ENGINE_INTERRUPT;
-    const pauseSource2 = PauseActionSource.DEFAULT;
-    const pauseSource3 = PauseActionSource.BUTTON_CLICK;
-
-    speechController.stopSpeech(pauseSource1);
     assertFalse(speechController.isPausedFromButton());
 
-    speechController.stopSpeech(pauseSource2);
-    assertFalse(speechController.isPausedFromButton());
-
-    speechController.stopSpeech(pauseSource3);
+    speechController.setIsSpeechActive(true);
+    speechController.onPlayPauseToggle(null, 'No matter how many times');
     assertTrue(speechController.isPausedFromButton());
+
+    speechController.previewVoice(null);
+    assertFalse(speechController.isPausedFromButton());
   });
 
   test('setIsSpeechActive notifies listeners if value changes', () => {
@@ -266,22 +262,42 @@ suite('SpeechController', () => {
     });
   });
 
-  test('onSpeechSettingsChange cancels speech', () => {
+  test('onSpeechSettingsChange cancels and resumes speech if playing', () => {
     speechController.initializeSpeechTree(1);
     speechController.setIsSpeechActive(true);
     speechController.setHasSpeechBeenTriggered(true);
     speechController.setIsAudioCurrentlyPlaying(true);
+    setSimpleNodeStoreWithText('In all the time I\'ve been by your side');
 
     speechController.onSpeechSettingsChange();
 
     assertTrue(isSpeechActiveChanged);
+    assertEquals(
+        PauseActionSource.VOICE_SETTINGS_CHANGE,
+        speechController.getPauseSource());
+    assertEquals(0, speech.getCallCount('pause'));
+    assertEquals(2, speech.getCallCount('cancel'));
+    assertEquals(1, speech.getCallCount('speak'));
+    assertEquals(0, metrics.getCallCount('recordSpeechPlaybackLength'));
+  });
+
+  test('onSpeechSettingsChange does not resume speech if not playing', () => {
+    speechController.initializeSpeechTree(1);
+    speechController.setHasSpeechBeenTriggered(true);
+    speechController.setIsSpeechActive(false);
+    speechController.setIsAudioCurrentlyPlaying(false);
+    setSimpleNodeStoreWithText('I\'ve never lost control');
+
+    speechController.onSpeechSettingsChange();
+
+    assertFalse(isSpeechActiveChanged);
     assertFalse(speechController.isSpeechActive());
-    assertFalse(speechController.isAudioCurrentlyPlaying());
     assertEquals(
         PauseActionSource.VOICE_SETTINGS_CHANGE,
         speechController.getPauseSource());
     assertEquals(0, speech.getCallCount('pause'));
     assertEquals(1, speech.getCallCount('cancel'));
+    assertEquals(0, speech.getCallCount('speak'));
     assertEquals(0, metrics.getCallCount('recordSpeechPlaybackLength'));
   });
 
@@ -510,9 +526,9 @@ suite('SpeechController', () => {
     utterance.onerror(createSpeechErrorEvent(utterance, 'invalid-argument'));
 
     assertEquals(1, chrome.readingMode.speechRate);
-    assertEquals(0, speech.getCallCount('cancel'));
+    assertEquals(2, speech.getCallCount('cancel'));
     assertEquals(0, speech.getCallCount('pause'));
-    assertEquals(0, speech.getCallCount('speak'));
+    assertEquals(1, speech.getCallCount('speak'));
     assertEquals(1, metrics.getCallCount('recordSpeechError'));
     assertEquals(0, metrics.getCallCount('recordSpeechStopSource'));
   });
@@ -666,5 +682,59 @@ suite('SpeechController', () => {
     assertEquals(1, speech.getCallCount('cancel'));
     assertEquals(0, speech.getCallCount('pause'));
     assertEquals(0, speech.getCallCount('speak'));
+  });
+
+  test('onVoiceMenuClose resumes speech only if it was active before', () => {
+    setSimpleNodeStoreWithText('You must agree that baby');
+    speechController.setIsSpeechActive(false);
+    speechController.onVoiceMenuOpen();
+
+    speechController.onVoiceMenuClose();
+
+    assertEquals(0, speech.getCallCount('cancel'));
+    assertEquals(0, speech.getCallCount('pause'));
+    assertEquals(0, speech.getCallCount('speak'));
+
+    speechController.setIsSpeechActive(true);
+    speechController.onVoiceMenuOpen();
+    speechController.setIsSpeechActive(false);
+
+    speechController.onVoiceMenuClose();
+
+    assertEquals(1, speech.getCallCount('cancel'), 'cancel');
+    assertEquals(0, speech.getCallCount('pause'));
+    assertEquals(1, speech.getCallCount('speak'), 'speak');
+  });
+
+  test('onVoiceSelected sets current voice', () => {
+    const voice1 = createSpeechSynthesisVoice({lang: 'pt-pt', name: 'Donkey'});
+    const voice2 = createSpeechSynthesisVoice({lang: 'pt-br', name: 'Corgi'});
+    voicePackController.setCurrentVoice(voice1);
+    let sentName = '';
+    let sentLang = '';
+    chrome.readingMode.onVoiceChange = (name, lang) => {
+      sentName = name;
+      sentLang = lang;
+    };
+
+    speechController.onVoiceSelected(voice2);
+
+    assertEquals(voice2, voicePackController.getCurrentVoice());
+    assertEquals(voice2.name, sentName);
+    assertEquals(voice2.lang, sentLang);
+  });
+
+  test('onVoiceSelected resets word boundaries on different locale', () => {
+    const voice1 = createSpeechSynthesisVoice({lang: 'pt-pt', name: 'Tabby'});
+    const voice2 = createSpeechSynthesisVoice({lang: 'pt-PT', name: 'Cheetah'});
+    const voice3 = createSpeechSynthesisVoice({lang: 'pt-br', name: 'Leopard'});
+    voicePackController.setCurrentVoice(voice1);
+    wordBoundaries.updateBoundary(10);
+
+    speechController.onVoiceSelected(voice2);
+    assertTrue(wordBoundaries.hasBoundaries());
+
+    speechController.onVoiceSelected(voice3);
+    assertFalse(wordBoundaries.hasBoundaries());
   });
 });

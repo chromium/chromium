@@ -78,7 +78,6 @@ export function getHtml(this: ReadAnythingToolbarElement) {
         .availableVoices="${this.availableVoices}"
         .enabledLangs="${this.enabledLangs}"
         .localeToDisplayName="${this.localeToDisplayName}"
-        .isSpeechActive="${this.isSpeechActive}"
         .previewVoicePlaying="${this.previewVoicePlaying}">
     </voice-selection-menu>
     <cr-icon-button class="toolbar-button" id="highlight" tabindex="-1"

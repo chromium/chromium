@@ -31,6 +31,8 @@ export enum ToolbarEvent {
   PLAY_PREVIEW = 'preview-voice',
   LANGUAGE_MENU_OPEN = 'language-menu-open',
   LANGUAGE_MENU_CLOSE = 'language-menu-close',
+  VOICE_MENU_OPEN = 'voice-menu-open',
+  VOICE_MENU_CLOSE = 'voice-menu-close',
 }
 
 // The user settings stored in preferences and restored on re-opening Reading

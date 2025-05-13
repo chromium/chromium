@@ -26,7 +26,6 @@ export interface SpeechListener {
   onIsAudioCurrentlyPlayingChange(): void;
   onEngineStateChange(): void;
   onPreviewVoicePlaying(): void;
-  onSpeechRateChange(): void;
 }
 
 export class SpeechController {
@@ -164,22 +163,37 @@ export class SpeechController {
   // If the screen is locked during speech, we should stop speaking.
   onLockScreen() {
     if (this.isSpeechActive()) {
-      this.stopSpeech(PauseActionSource.DEFAULT);
+      this.stopSpeech_(PauseActionSource.DEFAULT);
     }
   }
 
-  onSpeechSettingsChange(): boolean {
+  onVoiceSelected(selectedVoice: SpeechSynthesisVoice) {
+    const currentVoice = this.voicePackController_.getCurrentVoice();
+    this.voicePackController_.setUserPreferredVoice(selectedVoice);
+
+    // If the locales are identical, the voices are likely from the same
+    // voice pack and use the same TTS engine, therefore, we don't need
+    // to reset the word boundary state.
+    if (currentVoice?.lang.toLowerCase() !== selectedVoice.lang.toLowerCase()) {
+      this.wordBoundaries_.resetToDefaultState(
+          /*possibleWordBoundarySupportChange=*/ true);
+    }
+  }
+
+  onSpeechSettingsChange(): void {
     // Don't call stopSpeech() if the speech tree hasn't been initialized or
     // if speech hasn't been triggered yet.
     if (!this.isSpeechTreeInitialized() || !this.hasSpeechBeenTriggered()) {
-      return false;
+      return;
     }
 
-    const playSpeechOnChange = this.isSpeechActive();
+    const resumeSpeechOnChange = this.isSpeechActive();
 
     // Cancel the queued up Utterance using the old speech settings
-    this.stopSpeech(PauseActionSource.VOICE_SETTINGS_CHANGE);
-    return playSpeechOnChange;
+    this.stopSpeech_(PauseActionSource.VOICE_SETTINGS_CHANGE);
+    if (resumeSpeechOnChange) {
+      this.resumeSpeech_(null);
+    }
   }
 
   onHighlightGranularityChange(newGranularity: number) {
@@ -195,14 +209,14 @@ export class SpeechController {
 
   onPlayPauseToggle(selection: Selection|null, textContent: string|null) {
     if (this.isSpeechActive()) {
-      this.stopSpeech(PauseActionSource.BUTTON_CLICK);
+      this.stopSpeech_(PauseActionSource.BUTTON_CLICK);
     } else {
-      this.playSpeech(selection, textContent);
+      this.playSpeech_(selection, textContent);
       this.model_.setPlaySessionStartTime(Date.now());
     }
   }
 
-  playSpeech(selection: Selection|null, textContent: string|null) {
+  private playSpeech_(selection: Selection|null, textContent: string|null) {
     if (this.hasSpeechBeenTriggered() && !this.isSpeechActive()) {
       this.resumeSpeech_(selection);
     } else {
@@ -518,7 +532,7 @@ export class SpeechController {
       // is not supported by the synthesizer. Since we're only setting the
       // speech rate, update the speech rate to the WebSpeech default of 1.
       chrome.readingMode.onSpeechRateChange(1);
-      this.listeners_.forEach(l => l.onSpeechRateChange());
+      this.onSpeechSettingsChange();
       return;
     }
 
@@ -527,7 +541,7 @@ export class SpeechController {
     // something went wrong.
     // TODO: crbug.com/40927698 - Consider showing an error message.
     this.logger_.logSpeechStopSource(chrome.readingMode.engineErrorStopSource);
-    this.stopSpeech(PauseActionSource.DEFAULT);
+    this.stopSpeech_(PauseActionSource.DEFAULT);
 
     // No appropriate voice is available for the language designated in
     // SpeechSynthesisUtterance lang.
@@ -561,7 +575,7 @@ export class SpeechController {
     return utteranceText;
   }
 
-  stopSpeech(pauseSource: PauseActionSource) {
+  private stopSpeech_(pauseSource: PauseActionSource) {
     this.setIsSpeechActive(false);
     this.setIsAudioCurrentlyPlaying(false);
     this.model_.setPauseSource(pauseSource);
@@ -640,7 +654,7 @@ export class SpeechController {
   }
 
   previewVoice(previewVoice: SpeechSynthesisVoice|null) {
-    this.stopSpeech(PauseActionSource.VOICE_PREVIEW);
+    this.stopSpeech_(PauseActionSource.VOICE_PREVIEW);
 
     // If there's no previewVoice, return after stopping the current preview
     if (!previewVoice) {
@@ -676,6 +690,19 @@ export class SpeechController {
     this.speakWithDefaults_(utterance);
   }
 
+  onVoiceMenuOpen() {
+    this.model_.setResumeSpeechOnVoiceMenuClose(this.isSpeechActive());
+  }
+
+  onVoiceMenuClose() {
+    // TODO: crbug.com/323912186 - Handle when menu is closed mid-preview and
+    // the user presses play/pause button.
+    if (!this.isSpeechActive() &&
+        this.model_.getResumeSpeechOnVoiceMenuClose()) {
+      this.resumeSpeech_(null);
+    }
+  }
+
   private onSpeechInterrupted_() {
     // SpeechSynthesis.cancel() was called, which could have originated
     // either within or outside of reading mode. If it originated from
@@ -692,7 +719,7 @@ export class SpeechController {
       // updated.
       this.logger_.logSpeechStopSource(
           chrome.readingMode.engineInterruptStopSource);
-      this.stopSpeech(PauseActionSource.ENGINE_INTERRUPT);
+      this.stopSpeech_(PauseActionSource.ENGINE_INTERRUPT);
     }
   }
 
@@ -704,9 +731,19 @@ export class SpeechController {
     this.logSpeechPlaySession_();
   }
 
+  onScroll() {
+    // If the reading mode panel was scrolled while read aloud is speaking,
+    // we should disable autoscroll if the highlights are no longer visible,
+    // and we should re-enable autoscroll if the highlights are now
+    // visible.
+    if (this.isSpeechActive()) {
+      this.highlighter_.updateAutoScroll();
+    }
+  }
+
   clearReadAloudState() {
+    this.speech_.cancel();
     this.reset();
-    this.model_.setFirstTextNode(null);
     this.highlighter_.clearHighlightFormatting();
     this.wordBoundaries_.resetToDefaultState();
   }

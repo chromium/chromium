@@ -4,7 +4,7 @@
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {MetricsBrowserProxyImpl, NodeStore, playFromSelectionTimeout, ReadAnythingLogger, VoicePackController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {MetricsBrowserProxyImpl, NodeStore, playFromSelectionTimeout, ReadAnythingLogger, ToolbarEvent, VoicePackController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -40,7 +40,7 @@ export function stubAnimationFrame() {
 export function playFromSelectionWithMockTimer(app: AppElement): void {
   const mockTimer = new MockTimer();
   mockTimer.install();
-  app.playSpeech();
+  emitEvent(app, ToolbarEvent.PLAY_PAUSE);
   mockTimer.tick(playFromSelectionTimeout);
   mockTimer.uninstall();
 }

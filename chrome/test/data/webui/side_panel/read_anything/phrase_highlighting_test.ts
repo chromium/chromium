@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ReadAloudHighlighter, SpeechController, VoicePackController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ReadAloudHighlighter, SpeechController, ToolbarEvent, VoicePackController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createApp} from './common.js';
+import {createApp, emitEvent} from './common.js';
 
 suite('PhraseHighlighting', () => {
   let app: AppElement;
@@ -79,7 +79,7 @@ suite('PhraseHighlighting', () => {
         chrome.readingMode.wordHighlighting);
 
     wordBoundaries.updateBoundary(0);
-    app.playSpeech();
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
     const currentHighlight =
         app.$.container.querySelector('.current-read-highlight');
     assertTrue(currentHighlight !== undefined);
@@ -91,7 +91,7 @@ suite('PhraseHighlighting', () => {
         chrome.readingMode.phraseHighlighting);
 
     wordBoundaries.updateBoundary(0);
-    app.playSpeech();
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
 
     const currentHighlight =
         app.$.container.querySelector('.current-read-highlight');
@@ -104,7 +104,7 @@ suite('PhraseHighlighting', () => {
         chrome.readingMode.sentenceHighlighting);
 
     wordBoundaries.updateBoundary(0);
-    app.playSpeech();
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
 
     const currentHighlight =
         app.$.container.querySelector('.current-read-highlight');
@@ -117,7 +117,7 @@ suite('PhraseHighlighting', () => {
         chrome.readingMode.noHighlighting);
 
     wordBoundaries.updateBoundary(0);
-    app.playSpeech();
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
 
     const currentHighlight =
         app.$.container.querySelector('.current-read-highlight');
@@ -133,7 +133,7 @@ suite('PhraseHighlighting', () => {
     test('initially, phrase is highlighted', () => {
       chrome.readingMode.onHighlightGranularityChanged(
           chrome.readingMode.phraseHighlighting);
-      app.playSpeech();
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       const currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
       assertTrue(currentHighlight !== undefined);
@@ -144,7 +144,7 @@ suite('PhraseHighlighting', () => {
       chrome.readingMode.onHighlightGranularityChanged(
           chrome.readingMode.phraseHighlighting);
       wordBoundaries.updateBoundary(5);
-      app.playSpeech();
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       const currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
       assertTrue(currentHighlight !== undefined);
@@ -155,7 +155,7 @@ suite('PhraseHighlighting', () => {
       chrome.readingMode.onHighlightGranularityChanged(
           chrome.readingMode.phraseHighlighting);
       wordBoundaries.updateBoundary(10);
-      app.playSpeech();
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       const currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
       assertTrue(currentHighlight !== undefined);

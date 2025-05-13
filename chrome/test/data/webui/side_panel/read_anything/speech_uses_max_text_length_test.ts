@@ -4,10 +4,10 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {MAX_SPEECH_LENGTH, SpeechBrowserProxyImpl, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {MAX_SPEECH_LENGTH, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertGT, assertLT, assertNotEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createApp} from './common.js';
+import {createApp, emitEvent} from './common.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('SpeechUsesMaxTextLength', () => {
@@ -113,7 +113,7 @@ suite('SpeechUsesMaxTextLength', () => {
 
     test('highlights full sentence', () => {
       chrome.readingMode.setContentForTesting(axTree, [2, 3]);
-      app.playSpeech();
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
 
       assertEquals(
           app.$.container.querySelector('.current-read-highlight')!.textContent,

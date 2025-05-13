@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {PauseActionSource, ReadAloudHighlighter, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoicePackController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ReadAloudHighlighter, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoicePackController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createApp, createSpeechSynthesisVoice, emitEvent, playFromSelectionWithMockTimer, setSimpleAxTreeWithText} from './common.js';
@@ -79,7 +79,7 @@ suite('WordHighlighting', () => {
 
   test('word highlight used', () => {
     wordBoundaries.updateBoundary(10);
-    app.playSpeech();
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
 
     const currentHighlight =
         app.$.container.querySelector('.current-read-highlight');
@@ -96,7 +96,7 @@ suite('WordHighlighting', () => {
   test('with rate over 1 sentence highlight used', () => {
     wordBoundaries.updateBoundary(10);
     chrome.readingMode.onSpeechRateChange(2);
-    app.playSpeech();
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
 
     const currentHighlight =
         app.$.container.querySelector('.current-read-highlight');
@@ -105,7 +105,7 @@ suite('WordHighlighting', () => {
   });
 
   test('with no word boundary sentence highlight used', () => {
-    app.playSpeech();
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
 
     const currentHighlight =
         app.$.container.querySelector('.current-read-highlight');
@@ -116,7 +116,7 @@ suite('WordHighlighting', () => {
   test('word highlighting with only punctuation skips highlight', () => {
     setSimpleAxTreeWithText('.?!\'\",(){}[]');
     wordBoundaries.updateBoundary(10);
-    app.playSpeech();
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
 
     const currentHighlight =
         app.$.container.querySelector('.current-read-highlight');
@@ -127,7 +127,7 @@ suite('WordHighlighting', () => {
     const text = '4:00pm';
     setSimpleAxTreeWithText(text);
     wordBoundaries.updateBoundary(0, text.length);
-    app.playSpeech();
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
 
     const currentHighlight =
         app.$.container.querySelector('.current-read-highlight');
@@ -139,7 +139,7 @@ suite('WordHighlighting', () => {
     const text = '4:00pm';
     setSimpleAxTreeWithText(text);
     wordBoundaries.updateBoundary(0);
-    app.playSpeech();
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
 
     const currentHighlight =
         app.$.container.querySelector('.current-read-highlight');
@@ -188,7 +188,7 @@ suite('WordHighlighting', () => {
     };
     chrome.readingMode.setContentForTesting(axTree, [3, 4, 6]);
     wordBoundaries.updateBoundary(0, 14);
-    app.playSpeech();
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
 
     const currentHighlight =
         app.$.container.querySelector('.current-read-highlight');
@@ -237,7 +237,7 @@ suite('WordHighlighting', () => {
     };
     chrome.readingMode.setContentForTesting(axTree, [3, 4, 6]);
     wordBoundaries.updateBoundary(0);
-    app.playSpeech();
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
 
     const currentHighlight =
         app.$.container.querySelector('.current-read-highlight');
@@ -248,7 +248,7 @@ suite('WordHighlighting', () => {
   test('word highlighting with single alphabet character has highlight', () => {
     setSimpleAxTreeWithText('a');
     wordBoundaries.updateBoundary(0);
-    app.playSpeech();
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
 
     const currentHighlight =
         app.$.container.querySelector('.current-read-highlight');
@@ -263,7 +263,7 @@ suite('WordHighlighting', () => {
     for (const char of toTest) {
       setSimpleAxTreeWithText(char);
       wordBoundaries.updateBoundary(0);
-      app.playSpeech();
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       const currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
       assertFalse(!!currentHighlight);
@@ -275,9 +275,9 @@ suite('WordHighlighting', () => {
     const focusIndex = 2;
     const anchorOffset = 0;
     const focusOffset = 1;
-    app.playSpeech();
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
     wordBoundaries.updateBoundary(2);
-    speechController.stopSpeech(PauseActionSource.BUTTON_CLICK);
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
 
     // Update the selection directly on the document.
     const spans = app.$.container.querySelectorAll('span');
@@ -312,7 +312,7 @@ suite('WordHighlighting', () => {
     const sentence = 'Hello, how are you!';
     setSimpleAxTreeWithText(sentence);
     wordBoundaries.updateBoundary(0);
-    app.playSpeech();
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
 
     const currentHighlight =
         app.$.container.querySelector('.current-read-highlight');

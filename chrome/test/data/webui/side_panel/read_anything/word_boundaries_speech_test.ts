@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement, WordBoundaryState} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {PauseActionSource, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoicePackController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoicePackController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createApp, createSpeechSynthesisVoice, emitEvent, setupBasicSpeech} from './common.js';
@@ -80,7 +80,7 @@ suite('WordBoundariesUsedForSpeech', () => {
   test(
       'during speech with no boundaries wordBoundaryState in default state',
       () => {
-        app.playSpeech();
+        emitEvent(app, ToolbarEvent.PLAY_PAUSE);
         const state: WordBoundaryState = wordBoundaries.state;
         assertTrue(wordBoundaries.notSupported());
         assertEquals(0, state.previouslySpokenIndex);
@@ -90,7 +90,7 @@ suite('WordBoundariesUsedForSpeech', () => {
 
   suite('during speech with one initial word boundary ', () => {
     setup(() => {
-      app.playSpeech();
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       wordBoundaries.updateBoundary(10, 5);
     });
 
@@ -103,8 +103,8 @@ suite('WordBoundariesUsedForSpeech', () => {
     });
 
     test('pause / play toggle maintains word boundary state', () => {
-      speechController.stopSpeech(PauseActionSource.BUTTON_CLICK);
-      app.playSpeech();
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
 
       const state: WordBoundaryState = wordBoundaries.state;
       assertTrue(wordBoundaries.hasBoundaries());
@@ -115,8 +115,8 @@ suite('WordBoundariesUsedForSpeech', () => {
     });
 
     test('word boundaries update after pause / play toggle', () => {
-      speechController.stopSpeech(PauseActionSource.BUTTON_CLICK);
-      app.playSpeech();
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       wordBoundaries.updateBoundary(3, 9);
 
       const state: WordBoundaryState = wordBoundaries.state;
@@ -127,14 +127,14 @@ suite('WordBoundariesUsedForSpeech', () => {
     });
 
     test('word boundaries correct after multiple pause / play toggles', () => {
-      speechController.stopSpeech(PauseActionSource.BUTTON_CLICK);
-      app.playSpeech();
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       wordBoundaries.updateBoundary(3, 9);
-      speechController.stopSpeech(PauseActionSource.BUTTON_CLICK);
-      app.playSpeech();
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       wordBoundaries.updateBoundary(7);
-      speechController.stopSpeech(PauseActionSource.BUTTON_CLICK);
-      app.playSpeech();
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       wordBoundaries.updateBoundary(1, 15);
 
       const state: WordBoundaryState = wordBoundaries.state;
@@ -148,7 +148,7 @@ suite('WordBoundariesUsedForSpeech', () => {
   test(
       'with multiple word boundaries wordBoundaryState in default state during speech',
       () => {
-        app.playSpeech();
+        emitEvent(app, ToolbarEvent.PLAY_PAUSE);
         wordBoundaries.updateBoundary(10);
         wordBoundaries.updateBoundary(15, 5);
         wordBoundaries.updateBoundary(25, 10);
@@ -162,7 +162,7 @@ suite('WordBoundariesUsedForSpeech', () => {
       });
 
   test('after voice change resets to unsupported boundary mode', () => {
-    app.playSpeech();
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
     wordBoundaries.updateBoundary(10);
     assertTrue(wordBoundaries.hasBoundaries());
 
@@ -186,7 +186,7 @@ suite('WordBoundariesUsedForSpeech', () => {
   test(
       'after voice change to same language does not reset word boundary mode',
       () => {
-        app.playSpeech();
+        emitEvent(app, ToolbarEvent.PLAY_PAUSE);
         wordBoundaries.updateBoundary(10);
         assertTrue(wordBoundaries.hasBoundaries());
 

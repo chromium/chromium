@@ -31,8 +31,6 @@ import type {VoiceLanguageListener} from './read_aloud/voice_pack_controller.js'
 import {WordBoundaries} from './read_aloud/word_boundaries.js';
 import {ReadAnythingLogger, TimeFrom} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
-import type {SpeechBrowserProxy} from './speech_browser_proxy.js';
-import {SpeechBrowserProxyImpl} from './speech_browser_proxy.js';
 import {VoiceNotificationManager} from './voice_notification_manager.js';
 
 const AppElementBase = WebUiListenerMixinLit(CrLitElement);
@@ -128,7 +126,6 @@ export class AppElement extends AppElementBase implements
   private notificationManager_ = VoiceNotificationManager.getInstance();
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
   private styleUpdater_: AppStyleUpdater;
-  private speech_: SpeechBrowserProxy = SpeechBrowserProxyImpl.getInstance();
   private highlighter_: ReadAloudHighlighter =
       ReadAloudHighlighter.getInstance();
   private wordBoundaries_: WordBoundaries = WordBoundaries.getInstance();
@@ -191,7 +188,6 @@ export class AppElement extends AppElementBase implements
 
       // Clear state. We don't do this in disconnectedCallback because that's
       // not always reliabled called.
-      this.speech_.cancel();
       this.hasContent_ = false;
       this.nodeStore_.clearDomNodes();
     }
@@ -252,14 +248,7 @@ export class AppElement extends AppElementBase implements
     this.$.containerParent.onscroll = () => {
       chrome.readingMode.onScroll(this.scrollingOnSelection_);
       this.scrollingOnSelection_ = false;
-
-      // If the reading mode panel was scrolled while read aloud is speaking,
-      // we should disable autoscroll if the highlights are no longer visible,
-      // and we should re-enable autoscroll if the highlights are now
-      // visible.
-      if (this.speechController_.isSpeechActive()) {
-        this.highlighter_.updateAutoScroll();
-      }
+      this.speechController_.onScroll();
     };
 
     // Pass copy commands to main page. Copy commands will not work if they are
@@ -478,7 +467,6 @@ export class AppElement extends AppElementBase implements
     this.emptyStateSubheading_ = '';
     this.hasContent_ = false;
     if (this.isReadAloudEnabled_) {
-      this.speech_.cancel();
       this.speechController_.clearReadAloudState();
     }
   }
@@ -498,7 +486,6 @@ export class AppElement extends AppElementBase implements
     const previousSpeechPlayingState = {...this.speechController_.getState()};
     const previousWordBoundaryState = {...this.wordBoundaries_.state};
 
-    this.speech_.cancel();
     this.speechController_.clearReadAloudState();
     const container = this.$.container;
 
@@ -782,17 +769,16 @@ export class AppElement extends AppElementBase implements
     this.speechController_.previewVoice(event.detail.previewVoice);
   }
 
-  protected onVoiceMenuClose_(
-      event: CustomEvent<{voicePlayingWhenMenuOpened: boolean}>) {
+  protected onVoiceMenuOpen_(event: CustomEvent) {
     event.preventDefault();
     event.stopPropagation();
+    this.speechController_.onVoiceMenuOpen();
+  }
 
-    // TODO: crbug.com/323912186 - Handle when menu is closed mid-preview and
-    // the user presses play/pause button.
-    if (!this.speechController_.isSpeechActive() &&
-        event.detail.voicePlayingWhenMenuOpened) {
-      this.playSpeech();
-    }
+  protected onVoiceMenuClose_(event: CustomEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.speechController_.onVoiceMenuClose();
   }
 
   protected onPlayPauseClick_() {
@@ -828,10 +814,6 @@ export class AppElement extends AppElementBase implements
     this.previewVoicePlaying_ = this.speechController_.getPreviewVoicePlaying();
   }
 
-  onSpeechRateChange(): void {
-    this.resetSpeechPostSettingChange_();
-  }
-
   onEnabledLangsChange(): void {
     this.enabledLangs_ = this.voicePackController_.getEnabledLangs();
   }
@@ -844,7 +826,7 @@ export class AppElement extends AppElementBase implements
 
   onCurrentVoiceChange(): void {
     this.selectedVoice_ = this.voicePackController_.getCurrentVoice();
-    this.resetSpeechPostSettingChange_();
+    this.speechController_.onSpeechSettingsChange();
   }
 
   protected playNextGranularity_() {
@@ -853,12 +835,6 @@ export class AppElement extends AppElementBase implements
 
   protected playPreviousGranularity_() {
     this.speechController_.playPreviousGranularity();
-  }
-
-  playSpeech() {
-    const container = this.$.container;
-    this.speechController_.playSpeech(
-        this.getSelection(), container.textContent);
   }
 
   private getSelectedIds(): {
@@ -893,18 +869,7 @@ export class AppElement extends AppElementBase implements
       event: CustomEvent<{selectedVoice: SpeechSynthesisVoice}>) {
     event.preventDefault();
     event.stopPropagation();
-
-    const currentVoice = this.voicePackController_.getCurrentVoice();
-    this.voicePackController_.setUserPreferredVoice(event.detail.selectedVoice);
-
-    // If the locales are identical, the voices are likely from the same
-    // voice pack and use the same TTS engine, therefore, we don't need
-    // to reset the word boundary state.
-    if (currentVoice?.lang.toLowerCase() !==
-        event.detail.selectedVoice.lang.toLowerCase()) {
-      this.wordBoundaries_.resetToDefaultState(
-          /*possibleWordBoundarySupportChange=*/ true);
-    }
+    this.speechController_.onVoiceSelected(event.detail.selectedVoice);
   }
 
   protected onVoiceLanguageToggle_(event: CustomEvent<{language: string}>) {
@@ -913,12 +878,8 @@ export class AppElement extends AppElementBase implements
     this.voicePackController_.onLanguageToggle(event.detail.language);
   }
 
-  protected resetSpeechPostSettingChange_() {
-    // If speech was playing when a setting was changed, continue playing
-    // speech
-    if (this.speechController_.onSpeechSettingsChange()) {
-      this.playSpeech();
-    }
+  protected onSpeechRateChange_() {
+    this.speechController_.onSpeechSettingsChange();
   }
 
   private restoreSettingsFromPrefs_() {

@@ -4,11 +4,11 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {PauseActionSource, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {SpeechController, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, playFromSelectionWithMockTimer} from './common.js';
+import {createApp, emitEvent, playFromSelectionWithMockTimer} from './common.js';
 
 suite('ReadAloud_UpdateContentSelectionPDF', () => {
   let app: AppElement;
@@ -161,7 +161,7 @@ suite('ReadAloud_UpdateContentSelectionPDF', () => {
   suite('While Read Aloud paused', () => {
     setup(() => {
       playFromSelectionWithMockTimer(app);
-      speechController.stopSpeech(PauseActionSource.BUTTON_CLICK);
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       return microtasksFinished();
     });
     test('inner html of container matches expected html', () => {

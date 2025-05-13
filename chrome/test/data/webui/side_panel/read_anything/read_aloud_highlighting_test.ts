@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {PauseActionSource, playFromSelectionTimeout, SpeechController, ToolbarEvent, VoicePackController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {playFromSelectionTimeout, SpeechController, ToolbarEvent, VoicePackController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
@@ -74,7 +74,7 @@ suite('ReadAloudHighlight', () => {
   });
 
   test('on speak first sentence highlights are correct', () => {
-    app.playSpeech();
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
     const currentHighlight =
         app.$.container.querySelector('.current-read-highlight');
     const previousHighlight =
@@ -89,7 +89,7 @@ suite('ReadAloudHighlight', () => {
     let previousHighlights: NodeListOf<Element>;
 
     setup(() => {
-      app.playSpeech();
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       emitNextGranularity();
       emitNextGranularity();
     });
@@ -124,7 +124,7 @@ suite('ReadAloudHighlight', () => {
   });
 
   test('on speak next sentence highlights are correct', () => {
-    app.playSpeech();
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
     emitNextGranularity();
     const currentHighlight =
         app.$.container.querySelector('.current-read-highlight');
@@ -136,9 +136,9 @@ suite('ReadAloudHighlight', () => {
   });
 
   test('on update content after pause, keeps reading position', () => {
-    app.playSpeech();
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
     emitNextGranularity();
-    speechController.stopSpeech(PauseActionSource.BUTTON_CLICK);
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
 
     app.updateContent();
     const currentHighlight =
@@ -167,9 +167,9 @@ suite('ReadAloudHighlight', () => {
         },
       ],
     };
-    app.playSpeech();
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
     emitNextGranularity();
-    speechController.stopSpeech(PauseActionSource.BUTTON_CLICK);
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
 
     chrome.readingMode.setContentForTesting(newTree, [2]);
     const currentHighlight =
@@ -185,7 +185,7 @@ suite('ReadAloudHighlight', () => {
     let previousHighlights: NodeListOf<Element>;
 
     setup(() => {
-      app.playSpeech();
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       emitNextGranularity();
       emitNextGranularity();
       emitNextGranularity();
@@ -211,7 +211,7 @@ suite('ReadAloudHighlight', () => {
     let previousHighlights: NodeListOf<Element>;
 
     setup(() => {
-      app.playSpeech();
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       emitNextGranularity();
       emitPreviousGranularity();
 
@@ -288,7 +288,7 @@ suite('ReadAloudHighlight', () => {
           axTree);
       chrome.readingMode.setContentForTesting(selectedTree, leafIds);
       app.updateSelection();
-      app.playSpeech();
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       mockTimer.tick(playFromSelectionTimeout);
       mockTimer.uninstall();
     }

@@ -83,7 +83,6 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
       previewVoicePlaying: {type: Object},
       currentNotifications_: {type: Object},
       previewVoiceInitiated: {type: Object},
-      isSpeechActive: {type: Boolean},
       localeToDisplayName: {type: Object},
       showLanguageMenuDialog_: {type: Boolean},
       downloadingMessages_: {type: Boolean},
@@ -96,7 +95,6 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
   accessor previewVoicePlaying: SpeechSynthesisVoice|null = null;
   accessor enabledLangs: string[] = [];
   accessor availableVoices: SpeechSynthesisVoice[] = [];
-  accessor isSpeechActive: boolean = false;
 
   // The current notifications that should be used in the voice menu.
   private accessor currentNotifications_:
@@ -108,7 +106,6 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
   protected accessor voiceGroups_: VoiceDropdownGroup[] = [];
   protected accessor showLanguageMenuDialog_: boolean = false;
 
-  private voicePlayingWhenMenuOpened_: boolean = false;
   private readonly spBodyPadding_ = Number.parseInt(
       window.getComputedStyle(document.body)
           .getPropertyValue('--sp-body-padding'),
@@ -155,7 +152,6 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
   }
 
   onVoiceSelectionMenuClick(targetElement: HTMLElement) {
-    this.voicePlayingWhenMenuOpened_ = this.isSpeechActive;
     this.notificationManager_.addListener(this);
 
     const menu = this.$.voiceSelectionMenu.get();
@@ -166,6 +162,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
 
     // Scroll to the selected voice.
     requestAnimationFrame(() => {
+      this.fire(ToolbarEvent.VOICE_MENU_OPEN);
       const selectedItem =
           menu.querySelector<HTMLElement>('.item-invisible-false');
       selectedItem?.scrollIntoViewIfNeeded();
@@ -297,13 +294,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
   protected onClose_() {
     this.notificationManager_.removeListener(this);
     this.currentNotifications_ = {};
-    this.dispatchEvent(new CustomEvent('voice-menu-close', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        voicePlayingWhenMenuOpened: this.voicePlayingWhenMenuOpened_,
-      },
-    }));
+    this.fire(ToolbarEvent.VOICE_MENU_CLOSE);
   }
 
   private shouldAllowPropagation_(

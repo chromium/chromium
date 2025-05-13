@@ -75,6 +75,8 @@ export class SpeechModel {
   // has been set. This is null if the id has not been set.
   private firstTextNodeSetForReadAloud_: number|null = null;
 
+  private resumeSpeechOnVoiceMenuClose_: boolean = false;
+
   reset(): void {
     this.speechPlayingState_ = {
       isSpeechTreeInitialized: false,
@@ -86,6 +88,16 @@ export class SpeechModel {
     };
     this.speechEngineState_ = SpeechEngineState.NONE;
     this.previewVoicePlaying_ = null;
+    this.firstTextNodeSetForReadAloud_ = null;
+    this.resumeSpeechOnVoiceMenuClose_ = false;
+  }
+
+  getResumeSpeechOnVoiceMenuClose(): boolean {
+    return this.resumeSpeechOnVoiceMenuClose_;
+  }
+
+  setResumeSpeechOnVoiceMenuClose(shouldResume: boolean) {
+    this.resumeSpeechOnVoiceMenuClose_ = shouldResume;
   }
 
   getFirstTextNode(): number|null {
