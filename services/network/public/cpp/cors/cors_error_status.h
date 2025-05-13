@@ -39,7 +39,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) CorsErrorStatus {
   ~CorsErrorStatus();
 
   bool operator==(const CorsErrorStatus& rhs) const;
-  bool operator!=(const CorsErrorStatus& rhs) const { return !(*this == rhs); }
 
   // This constructor is used by generated IPC serialization code.
   explicit CorsErrorStatus(mojo::DefaultConstruct::Tag);
