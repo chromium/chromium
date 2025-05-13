@@ -1113,6 +1113,11 @@ bool DownloadToolbarUIController::ShouldShowScanningAnimation() const {
 }
 
 void DownloadToolbarUIController::UpdateIconDormant() {
+  // Ensure no updates are attempted once BrowserView destruction has started.
+  if (!browser_view_) {
+    return;
+  }
+
   // Check if the current browser is the last active browser in this profile.
   // TODO(crbug.com/323962334): This should also check whether the bubble is
   // open once the bubble is added.
