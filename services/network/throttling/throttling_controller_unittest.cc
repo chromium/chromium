@@ -68,9 +68,9 @@ class ThrottlingControllerTestHelper {
         profile_id_(base::UnguessableToken::Create()) {
     mock_transaction_.test_mode = TEST_MODE_SYNC_NET_START;
 
-    std::unique_ptr<net::HttpTransaction> network_transaction;
-    network_layer_.CreateTransaction(net::DEFAULT_PRIORITY,
-                                     &network_transaction);
+    auto network_transaction =
+        network_layer_.CreateTransaction(net::DEFAULT_PRIORITY);
+    CHECK(network_transaction);
     transaction_ = std::make_unique<ThrottlingNetworkTransaction>(
         std::move(network_transaction));
   }

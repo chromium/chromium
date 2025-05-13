@@ -208,8 +208,13 @@ int HttpNetworkTransaction::Start(const HttpRequestInfo* request_info,
   TRACE_EVENT("net", "HttpNetworkTransaction::Start",
               NetLogWithSourceToFlow(net_log), "url", request_info->url);
 
-  if (request_info->load_flags & LOAD_ONLY_FROM_CACHE)
+  if (session_->power_suspended()) {
+    return ERR_NETWORK_IO_SUSPENDED;
+  }
+
+  if (request_info->load_flags & LOAD_ONLY_FROM_CACHE) {
     return ERR_CACHE_MISS;
+  }
 
   DCHECK(request_info->traffic_annotation.is_valid());
   DCHECK(request_info->IsConsistent());

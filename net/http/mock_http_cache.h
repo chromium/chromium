@@ -302,8 +302,8 @@ class MockHttpCache {
   disk_cache::Backend* backend();
   MockDiskCache* disk_cache();
 
-  // Wrapper around http_cache()->CreateTransaction(DEFAULT_PRIORITY...)
-  int CreateTransaction(std::unique_ptr<HttpTransaction>* trans);
+  // Wrapper around http_cache()->CreateTransaction(DEFAULT_PRIORITY)
+  std::unique_ptr<HttpTransaction> CreateTransaction();
 
   // Wrapper to simulate cache lock timeout for new transactions.
   void SimulateCacheLockTimeout();

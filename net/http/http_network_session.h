@@ -22,6 +22,7 @@
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/power_monitor/power_observer.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "build/buildflag.h"
@@ -208,7 +209,7 @@ struct NET_EXPORT HttpNetworkSessionContext {
 };
 
 // This class holds session objects used by HttpNetworkTransaction objects.
-class NET_EXPORT HttpNetworkSession {
+class NET_EXPORT HttpNetworkSession : public base::PowerSuspendObserver {
  public:
   enum SocketPoolType {
     NORMAL_SOCKET_POOL,
@@ -218,7 +219,11 @@ class NET_EXPORT HttpNetworkSession {
 
   HttpNetworkSession(const HttpNetworkSessionParams& params,
                      const HttpNetworkSessionContext& context);
-  ~HttpNetworkSession();
+  ~HttpNetworkSession() override;
+
+  // base::PowerSuspendObserver methods:
+  void OnSuspend() override;
+  void OnResume() override;
 
   HttpAuthCache* http_auth_cache() { return &http_auth_cache_; }
   SSLClientContext* ssl_client_context() { return &ssl_client_context_; }
@@ -317,6 +322,8 @@ class NET_EXPORT HttpNetworkSession {
   // Rewrite the port of `endpoint` when testing fixed port is specified.
   void ApplyTestingFixedPort(url::SchemeHostPort& endpoint) const;
 
+  bool power_suspended() const { return power_suspended_; }
+
  private:
   friend class HttpNetworkSessionPeer;
 
@@ -365,6 +372,8 @@ class NET_EXPORT HttpNetworkSession {
   HttpNetworkSessionContext context_;
 
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+
+  bool power_suspended_ = false;
 
   THREAD_CHECKER(thread_checker_);
 };

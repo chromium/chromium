@@ -8785,14 +8785,14 @@ TEST_F(URLRequestTestHTTP, SetSubsequentJobPriority) {
 }
 
 // Check that creating a network request while entering/exiting suspend mode
-// fails as it should.  This is the only case where an HttpTransactionFactory
-// does not return an HttpTransaction.
+// fails as it should.  This is the only case where an HttpTransaction fails
+// with ERR_NETWORK_IO_SUSPENDED error.
 TEST_F(URLRequestTestHTTP, NetworkSuspendTest) {
   auto context_builder = CreateTestURLRequestContextBuilder();
   context_builder->SetWrapHttpNetworkLayerCallback(
       base::BindOnce([](std::unique_ptr<HttpNetworkLayer> network_layer) {
         // Make the HttpNetworkLayer think it's suspended.
-        network_layer->OnSuspend();
+        network_layer->GetSession()->OnSuspend();
         std::unique_ptr<HttpTransactionFactory> factory =
             std::make_unique<HttpCache>(std::move(network_layer),
                                         HttpCache::DefaultBackend::InMemory(0),
@@ -8810,81 +8810,6 @@ TEST_F(URLRequestTestHTTP, NetworkSuspendTest) {
 
   EXPECT_TRUE(d.request_failed());
   EXPECT_EQ(ERR_NETWORK_IO_SUSPENDED, d.request_status());
-}
-
-namespace {
-
-// HttpTransactionFactory that synchronously fails to create transactions.
-class FailingHttpTransactionFactory : public HttpTransactionFactory {
- public:
-  explicit FailingHttpTransactionFactory(
-      std::unique_ptr<HttpTransactionFactory> network_layer)
-      : network_layer_(std::move(network_layer)) {}
-
-  FailingHttpTransactionFactory(const FailingHttpTransactionFactory&) = delete;
-  FailingHttpTransactionFactory& operator=(
-      const FailingHttpTransactionFactory&) = delete;
-
-  ~FailingHttpTransactionFactory() override = default;
-
-  // HttpTransactionFactory methods:
-  int CreateTransaction(RequestPriority priority,
-                        std::unique_ptr<HttpTransaction>* trans) override {
-    return ERR_FAILED;
-  }
-
-  HttpCache* GetCache() override { return nullptr; }
-
-  HttpNetworkSession* GetSession() override {
-    return network_layer_->GetSession();
-  }
-
- private:
-  std::unique_ptr<HttpTransactionFactory> network_layer_;
-};
-
-}  // namespace
-
-// Check that when a request that fails to create an HttpTransaction can be
-// cancelled while the failure notification is pending, and doesn't send two
-// failure notifications.
-//
-// This currently only happens when in suspend mode and there's no cache, but
-// just use a special HttpTransactionFactory, to avoid depending on those
-// behaviors.
-TEST_F(URLRequestTestHTTP, NetworkCancelAfterCreateTransactionFailsTest) {
-  auto context_builder = CreateTestURLRequestContextBuilder();
-  context_builder->SetWrapHttpNetworkLayerCallback(
-      base::BindOnce([](std::unique_ptr<HttpNetworkLayer> network_layer) {
-        std::unique_ptr<HttpTransactionFactory> factory =
-            std::make_unique<FailingHttpTransactionFactory>(
-                std::move(network_layer));
-        return factory;
-      }));
-  auto& network_delegate = *context_builder->set_network_delegate(
-      std::make_unique<TestNetworkDelegate>());
-  auto context = context_builder->Build();
-
-  TestDelegate d;
-  std::unique_ptr<URLRequest> req(
-      context->CreateRequest(GURL("http://127.0.0.1/"), DEFAULT_PRIORITY, &d,
-                             TRAFFIC_ANNOTATION_FOR_TESTS));
-  // Don't send cookies (Collecting cookies is asynchronous, and need request to
-  // try to create an HttpNetworkTransaction synchronously on start).
-  req->set_allow_credentials(false);
-  req->Start();
-  req->Cancel();
-  d.RunUntilComplete();
-  // Run pending error task, if there is one.
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(d.request_failed());
-  EXPECT_EQ(1, d.response_started_count());
-  EXPECT_EQ(ERR_ABORTED, d.request_status());
-
-  // NetworkDelegate should see the cancellation, but not the error.
-  EXPECT_EQ(1, network_delegate.canceled_requests());
-  EXPECT_EQ(0, network_delegate.error_count());
 }
 
 TEST_F(URLRequestTestHTTP, NetworkAccessedSetOnNetworkRequest) {

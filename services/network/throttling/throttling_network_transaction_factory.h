@@ -35,8 +35,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkTransactionFactory
   ~ThrottlingNetworkTransactionFactory() override;
 
   // net::HttpTransactionFactory methods:
-  int CreateTransaction(net::RequestPriority priority,
-                        std::unique_ptr<net::HttpTransaction>* trans) override;
+  std::unique_ptr<net::HttpTransaction> CreateTransaction(
+      net::RequestPriority priority) override;
   net::HttpCache* GetCache() override;
   net::HttpNetworkSession* GetSession() override;
 

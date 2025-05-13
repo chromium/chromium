@@ -114,10 +114,8 @@ class WritersTest : public TestWithTaskEnvironment {
   }
 
   std::unique_ptr<HttpTransaction> CreateNetworkTransaction() {
-    std::unique_ptr<HttpTransaction> transaction;
     MockNetworkLayer* network_layer = cache_.network_layer();
-    network_layer->CreateTransaction(DEFAULT_PRIORITY, &transaction);
-    return transaction;
+    return network_layer->CreateTransaction(DEFAULT_PRIORITY);
   }
 
   void CreateWritersAddTransaction(

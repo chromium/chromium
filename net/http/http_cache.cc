@@ -564,9 +564,8 @@ void HttpCache::ClearNoVarySearchCache(
   }
 }
 
-int HttpCache::CreateTransaction(
-    RequestPriority priority,
-    std::unique_ptr<HttpTransaction>* transaction) {
+std::unique_ptr<HttpTransaction> HttpCache::CreateTransaction(
+    RequestPriority priority) {
   // Do lazy initialization of disk cache if needed.
   if (!disk_cache_.get()) {
     // We don't care about the result.
@@ -585,8 +584,7 @@ int HttpCache::CreateTransaction(
     new_transaction->FailConditionalizationForTest();
   }
 
-  *transaction = std::move(new_transaction);
-  return OK;
+  return new_transaction;
 }
 
 HttpCache* HttpCache::GetCache() {

@@ -265,8 +265,8 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   }
 
   // HttpTransactionFactory implementation:
-  int CreateTransaction(RequestPriority priority,
-                        std::unique_ptr<HttpTransaction>* transaction) override;
+  std::unique_ptr<HttpTransaction> CreateTransaction(
+      RequestPriority priority) override;
   HttpCache* GetCache() override;
   HttpNetworkSession* GetSession() override;
 

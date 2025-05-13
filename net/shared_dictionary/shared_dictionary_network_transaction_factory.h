@@ -27,8 +27,8 @@ class NET_EXPORT SharedDictionaryNetworkTransactionFactory
   ~SharedDictionaryNetworkTransactionFactory() override;
 
   // HttpTransactionFactory methods:
-  int CreateTransaction(RequestPriority priority,
-                        std::unique_ptr<HttpTransaction>* trans) override;
+  std::unique_ptr<HttpTransaction> CreateTransaction(
+      RequestPriority priority) override;
   HttpCache* GetCache() override;
   HttpNetworkSession* GetSession() override;
 

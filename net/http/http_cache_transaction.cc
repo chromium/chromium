@@ -1906,13 +1906,8 @@ int HttpCache::Transaction::DoSendRequest() {
   send_request_since_ = TimeTicks::Now();
 
   // Create a network transaction.
-  int rv =
-      cache_->network_layer_->CreateTransaction(priority_, &network_trans_);
-
-  if (rv != OK) {
-    TransitionToState(STATE_FINISH_HEADERS);
-    return rv;
-  }
+  network_trans_ = cache_->network_layer_->CreateTransaction(priority_);
+  CHECK(network_trans_);
 
   network_trans_->SetConnectedCallback(connected_callback_);
   network_trans_->SetRequestHeadersCallback(request_headers_callback_);
@@ -1942,7 +1937,7 @@ int HttpCache::Transaction::DoSendRequest() {
   }
 
   TransitionToState(STATE_SEND_REQUEST_COMPLETE);
-  rv = network_trans_->Start(request_, io_callback_, net_log_);
+  int rv = network_trans_->Start(request_, io_callback_, net_log_);
   if (rv != ERR_IO_PENDING && waiting_for_cache_io_) {
     // queue the state transition until the HttpCache transaction completes
     DCHECK(!pending_io_result_);

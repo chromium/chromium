@@ -257,10 +257,8 @@ std::string MockHttpRequest::CacheKey() {
 
 TestTransactionConsumer::TestTransactionConsumer(
     RequestPriority priority,
-    HttpTransactionFactory* factory) {
-  // Disregard the error code.
-  factory->CreateTransaction(priority, &trans_);
-}
+    HttpTransactionFactory* factory)
+    : trans_(factory->CreateTransaction(priority)) {}
 
 TestTransactionConsumer::~TestTransactionConsumer() = default;
 
@@ -785,16 +783,14 @@ void MockNetworkLayer::ResetTransactionCount() {
   transaction_count_ = 0;
 }
 
-int MockNetworkLayer::CreateTransaction(
-    RequestPriority priority,
-    std::unique_ptr<HttpTransaction>* trans) {
+std::unique_ptr<HttpTransaction> MockNetworkLayer::CreateTransaction(
+    RequestPriority priority) {
   transaction_count_++;
   last_create_transaction_priority_ = priority;
   auto mock_transaction =
       std::make_unique<MockNetworkTransaction>(priority, this);
   last_transaction_ = mock_transaction->AsWeakPtr();
-  *trans = std::move(mock_transaction);
-  return OK;
+  return std::move(mock_transaction);
 }
 
 HttpCache* MockNetworkLayer::GetCache() {

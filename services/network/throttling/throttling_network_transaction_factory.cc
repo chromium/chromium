@@ -5,13 +5,8 @@
 #include "services/network/throttling/throttling_network_transaction_factory.h"
 
 #include <memory>
-#include <set>
-#include <string>
-#include <utility>
 
-#include "net/base/net_errors.h"
 #include "net/http/http_network_transaction.h"
-#include "services/network/throttling/throttling_controller.h"
 #include "services/network/throttling/throttling_network_transaction.h"
 
 namespace network {
@@ -22,17 +17,11 @@ ThrottlingNetworkTransactionFactory::ThrottlingNetworkTransactionFactory(
 
 ThrottlingNetworkTransactionFactory::~ThrottlingNetworkTransactionFactory() {}
 
-int ThrottlingNetworkTransactionFactory::CreateTransaction(
-    net::RequestPriority priority,
-    std::unique_ptr<net::HttpTransaction>* trans) {
-  std::unique_ptr<net::HttpTransaction> network_transaction;
-  int rv = network_layer_->CreateTransaction(priority, &network_transaction);
-  if (rv != net::OK) {
-    return rv;
-  }
-  *trans = std::make_unique<ThrottlingNetworkTransaction>(
-      std::move(network_transaction));
-  return net::OK;
+std::unique_ptr<net::HttpTransaction>
+ThrottlingNetworkTransactionFactory::CreateTransaction(
+    net::RequestPriority priority) {
+  return std::make_unique<ThrottlingNetworkTransaction>(
+      network_layer_->CreateTransaction(priority));
 }
 
 net::HttpCache* ThrottlingNetworkTransactionFactory::GetCache() {
