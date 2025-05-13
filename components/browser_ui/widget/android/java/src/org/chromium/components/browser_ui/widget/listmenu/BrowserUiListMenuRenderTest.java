@@ -69,6 +69,7 @@ public class BrowserUiListMenuRenderTest {
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE)
+                    .setRevision(1)
                     .build();
 
     @Rule public MethodRule mMethodParamAnnotationProcessor = new MethodParamAnnotationRule();
