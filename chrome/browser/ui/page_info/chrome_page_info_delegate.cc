@@ -267,6 +267,11 @@ void ChromePageInfoDelegate::ShowCookiesSettings() {
   chrome::ShowSettingsSubPage(browser, chrome::kCookieSettingsSubPage);
 }
 
+void ChromePageInfoDelegate::ShowIncognitoSettings() {
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+  chrome::ShowSettingsSubPage(browser, chrome::kIncognitoSettingsSubPage);
+}
+
 void ChromePageInfoDelegate::ShowAllSitesSettingsFilteredByRwsOwner(
     const std::u16string& rws_owner) {
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);

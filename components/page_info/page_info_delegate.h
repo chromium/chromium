@@ -84,6 +84,7 @@ class PageInfoDelegate {
   virtual bool IsIsolatedWebApp() = 0;
   virtual void ShowSiteSettings(const GURL& site_url) = 0;
   virtual void ShowCookiesSettings() = 0;
+  virtual void ShowIncognitoSettings() = 0;
   virtual void ShowAllSitesSettingsFilteredByRwsOwner(
       const std::u16string& rws_owner) = 0;
   virtual void ShowSyncSettings() = 0;

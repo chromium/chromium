@@ -63,6 +63,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
   // page, depending on context.
   void ShowSiteSettings(const GURL& site_url) override;
   void ShowCookiesSettings() override;
+  void ShowIncognitoSettings() override;
   void ShowAllSitesSettingsFilteredByRwsOwner(
       const std::u16string& rws_owner) override;
   void ShowSyncSettings() override;
