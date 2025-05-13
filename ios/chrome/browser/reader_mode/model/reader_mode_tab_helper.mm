@@ -15,16 +15,19 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_viewer.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_content_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_distiller_page.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
+#import "net/base/apple/url_conversions.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
 
 namespace {
@@ -183,6 +186,9 @@ void ReaderModeTabHelper::SetActive(bool active) {
         ProfileIOS::FromBrowserState(web_state_->GetBrowserState())
             ->GetOffTheRecordProfile());
     reader_mode_web_state_ = web::WebState::Create(create_params);
+    ReaderModeContentTabHelper::CreateForWebState(reader_mode_web_state_.get());
+    ReaderModeContentTabHelper::FromWebState(reader_mode_web_state_.get())
+        ->SetDelegate(this);
     reader_mode_web_state_->SetWebUsageEnabled(true);
     // TODO(crbug.com/409940117): Decouple heuristic and distillation.
     TriggerReaderModeHeuristic();
@@ -244,7 +250,13 @@ void ReaderModeTabHelper::DidStartNavigation(
   if (trigger_reader_mode_timer_.IsRunning()) {
     trigger_reader_mode_timer_.Stop();
   }
-  if (IsReaderModeAvailable()) {
+}
+
+void ReaderModeTabHelper::DidFinishNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  if (!navigation_context->IsSameDocument() ||
+      navigation_context->HasUserGesture()) {
     HideReaderMode();
   }
 }
@@ -262,6 +274,24 @@ void ReaderModeTabHelper::WasHidden(web::WebState* web_state) {
     // Ensure the Reader mode UI is hidden when the tab is hidden.
     HideReaderMode();
   }
+}
+
+void ReaderModeTabHelper::ReaderModeContentDidCancelRequest(
+    ReaderModeContentTabHelper* reader_mode_content_tab_helper,
+    NSURLRequest* request,
+    web::WebStatePolicyDecider::RequestInfo request_info) {
+  // When the Reader mode content cancels a request to navigate, load the
+  // requested URL in the host WebState instead.
+  web::NavigationManager::WebLoadParams params(net::GURLWithNSURL(request.URL));
+  NSString* referrer_value = [request
+      valueForHTTPHeaderField:web::wk_navigation_util::kReferrerHeaderName];
+  if (referrer_value) {
+    NSURL* referrer_url = [NSURL URLWithString:referrer_value];
+    params.referrer.url = net::GURLWithNSURL(referrer_url);
+    params.referrer.policy = web::ReferrerPolicyDefault;
+  }
+  params.transition_type = request_info.transition_type;
+  web_state_->GetNavigationManager()->LoadURLWithParams(params);
 }
 
 void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
@@ -386,16 +416,12 @@ void ReaderModeTabHelper::PageDistillationCompleted(
 
   if (IsReaderModeAvailable()) {
     if (is_distillable_page) {
-      // `LoadData` requires an already committed navigation item.
-      std::vector<std::unique_ptr<web::NavigationItem>> navigation_items;
-      navigation_items.push_back(web::NavigationItem::Create());
-      reader_mode_web_state_->GetNavigationManager()->Restore(
-          0, std::move(navigation_items));
-      reader_mode_web_state_->GetNavigationManager()->LoadIfNecessary();
-      // Load the Reader mode content in the Reader mode WebState.
-      reader_mode_web_state_->LoadData(
-          [NSData dataWithBytes:html.data() length:html.length()], @"text/html",
-          web_state_->GetLastCommittedURL());
+      // Load the Reader mode content in the Reader mode content WebState.
+      const GURL content_url = web_state_->GetLastCommittedURL();
+      NSData* content_data = [NSData dataWithBytes:html.data()
+                                            length:html.length()];
+      ReaderModeContentTabHelper::FromWebState(reader_mode_web_state_.get())
+          ->LoadContent(content_url, content_data);
       // Once the Reader mode content is ready, show the Reader mode UI.
       [reader_mode_handler_ showReaderMode];
     } else {
