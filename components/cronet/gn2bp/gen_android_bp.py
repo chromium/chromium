@@ -2833,7 +2833,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
             module_target.shared_libs.update(dep_module.shared_libs)
           else:
             raise Exception(
-                f"Trying to add an unknown type {dep_module.type} to a type of {module.type}"
+                f"Cannot add {dep_module.name} ({dep_module.type}) to {module.name} ({module.type})"
             )
         elif dep_module.type == "rust_bindgen":
           module.srcs.add(":" + dep_module.name)
