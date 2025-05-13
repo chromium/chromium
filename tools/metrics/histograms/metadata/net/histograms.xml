@@ -7522,10 +7522,21 @@ chromium-metrics-reviews@google.com.
     not included in the original request during URLLoader to handle a
     connection. It is time just before the OnAcceptCHFrameReceived() IPC call
     until the IPC callback is called. Refer
-    URLLoader::ProcessAcceptCHFrameOnConnected() for details.
+    AcceptCHFrameInterceptor::OnConnected() for details.
 
     Note: The metrics is reported from all clients. Some of clients may not have
     high resolution timer that can send metrics with microseconds precision.
+  </summary>
+</histogram>
+
+<histogram name="Net.URLLoader.AcceptCH.RunObserverCall" enum="Boolean"
+    expires_after="2025-11-12">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records if the received the ACCEPT_CH frame should be checked by the
+    observer. It is recorded only if the received header has the ACCEPT_CH
+    frame. Refer AcceptCHFrameInterceptor::OnConnected() for details.
   </summary>
 </histogram>
 
@@ -7539,7 +7550,7 @@ chromium-metrics-reviews@google.com.
     that were not included in the original request during URLLoader to handle a
     connection. It is time just before the OnAcceptCHFrameReceived() IPC call
     until the IPC callback is called. Refer
-    URLLoader::ProcessAcceptCHFrameOnConnected() for details.
+    AcceptCHFrameInterceptor::OnConnected() for details.
   </summary>
 </histogram>
 

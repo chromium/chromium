@@ -80,6 +80,8 @@ net::Error AcceptCHFrameInterceptor::OnConnected(
   // Find client hints that are in the ACCEPT_CH frame that were not already
   // included in the request
   const auto hints = ComputeAcceptCHFrameHints(accept_ch_frame, headers);
+  base::UmaHistogramBoolean("Net.URLLoader.AcceptCH.RunObserverCall",
+                            !hints.empty());
   if (hints.empty()) {
     return net::OK;
   }
