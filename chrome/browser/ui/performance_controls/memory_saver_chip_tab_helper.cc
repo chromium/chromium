@@ -154,14 +154,30 @@ void MemorySaverChipTabHelper::UpdatePageActionState() {
     return;
   }
 
-  tabs::TabFeatures* tab_features =
-      tabs::TabInterface::GetFromContents(&GetWebContents())->GetTabFeatures();
+  // TODO(crbug.com/401033983): This code should only be running in a tab,
+  // so TabInterface::GetFromContents() should be reliable. However, some tests
+  // appear to end up with this tab helper failing to extract a TabInterface, so
+  // MaybeGetFromContents() is used as a test-only check. See
+  // crbug.com/417176824 for those tests. This should disappear when moving
+  // MemorySaver to run as a TabFeature.
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  if (tab_interface == nullptr) {
+    CHECK_IS_TEST();
+    return;
+  }
+  tabs::TabFeatures* tab_features = tab_interface->GetTabFeatures();
   if (!tab_features) {
     // Tab features may not be present at shutdown.
     return;
   }
   memory_saver::MemorySaverChipController* controller =
       tab_features->memory_saver_chip_controller();
+  if (!controller) {
+    // Tab features can be faked in tests.
+    CHECK_IS_TEST();
+    return;
+  }
 
   switch (chip_state_) {
     case memory_saver::ChipState::HIDDEN:

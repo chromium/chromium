@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_saver_browser_test_mixin.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -48,6 +49,11 @@
 class MemorySaverChipViewBrowserTest
     : public MemorySaverBrowserTestMixin<InProcessBrowserTest> {
  public:
+  MemorySaverChipViewBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(features::kPageActionsMigration,
+                                              false);
+  }
+
   void SetUpOnMainThread() override {
     MemorySaverBrowserTestMixin::SetUpOnMainThread();
 
@@ -74,11 +80,14 @@ class MemorySaverChipViewBrowserTest
         ->GetInkDrop()
         ->GetTargetInkDropState();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/376283619): Remove this test after the page action is
-// migrated to the new framework, and sufficient ink-drop test coverage is
-// present in the framework itself.
+// TODO(crbug.com/376283619): Remove this test (and entire file) after the page
+// action is migrated to the new framework, and sufficient ink-drop test
+// coverage is present in the framework itself.
 IN_PROC_BROWSER_TEST_F(MemorySaverChipViewBrowserTest,
                        ShowAndHideInkDropOnDialog) {
   PageActionIconView* chip = GetMemorySaverChipView();
