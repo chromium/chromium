@@ -68,6 +68,10 @@ NOINLINE void ExceptionState::ThrowTypeError(const char* message) {
   ThrowTypeError(String(message));
 }
 
+NOINLINE void ExceptionState::ThrowSyntaxError(const char* message) {
+  ThrowSyntaxError(String(message));
+}
+
 NOINLINE void ExceptionState::ThrowWasmCompileError(const char* message) {
   ThrowWasmCompileError(String(message));
 }
@@ -144,6 +148,17 @@ void ExceptionState::ThrowTypeError(const String& message) {
   SetExceptionInfo(ToExceptionCode(ESErrorType::kTypeError), message);
   if (isolate_) {
     V8ThrowException::ThrowTypeError(isolate_, message);
+  }
+}
+
+void ExceptionState::ThrowSyntaxError(const String& message) {
+#if DCHECK_IS_ON()
+  DCHECK_AT(!assert_no_exceptions_, location_)
+      << "SyntaxError should not be thrown.";
+#endif
+  SetExceptionInfo(ToExceptionCode(ESErrorType::kSyntaxError), message);
+  if (isolate_) {
+    V8ThrowException::ThrowSyntaxError(isolate_, message);
   }
 }
 

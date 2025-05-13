@@ -84,6 +84,7 @@ class PLATFORM_EXPORT ExceptionState {
   // Throws an ECMAScript Error object.
   NOINLINE void ThrowRangeError(const String& message);
   NOINLINE void ThrowTypeError(const String& message);
+  NOINLINE void ThrowSyntaxError(const String& message);
 
   // Throws WebAssembly Error object.
   NOINLINE void ThrowWasmCompileError(const String& message);
@@ -98,6 +99,7 @@ class PLATFORM_EXPORT ExceptionState {
                                    const char* unsanitized_message = nullptr);
   NOINLINE void ThrowRangeError(const char* message);
   NOINLINE void ThrowTypeError(const char* message);
+  NOINLINE void ThrowSyntaxError(const char* message);
   NOINLINE void ThrowWasmCompileError(const char* message);
 
   // Report the given value as the exception being thrown, but rethrow it

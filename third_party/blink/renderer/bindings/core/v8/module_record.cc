@@ -125,7 +125,9 @@ ScriptValue ModuleRecord::Instantiate(ScriptState* script_state,
                                  ? record->ScriptId()
                                  : v8::UnboundScript::kNoScriptId);
   bool success;
-  if (!record->InstantiateModule(context, &ResolveModuleCallback)
+  if (!record
+           ->InstantiateModule(context, &ResolveModuleCallback,
+                               &ResolveSourceCallback)
            .To(&success) ||
       !success) {
     DCHECK(try_catch.HasCaught());
@@ -202,18 +204,41 @@ v8::MaybeLocal<v8::Module> ModuleRecord::ResolveModuleCallback(
   Modulator* modulator = Modulator::From(ScriptState::From(isolate, context));
   DCHECK(modulator);
 
-  ModuleRequest module_request(
-      ToCoreStringWithNullCheck(isolate, specifier),
-      TextPosition::MinimumPosition(),
-      ModuleRecord::ToBlinkImportAttributes(
-          context, referrer, import_attributes,
-          /*v8_import_attributes_has_positions=*/true));
+  ModuleRequest module_request(ToCoreStringWithNullCheck(isolate, specifier),
+                               TextPosition::MinimumPosition(),
+                               ModuleRecord::ToBlinkImportAttributes(
+                                   context, referrer, import_attributes,
+                                   /*v8_import_attributes_has_positions=*/true),
+                               ModuleImportPhase::kEvaluation);
 
   v8::Local<v8::Module> resolved =
-      modulator->GetModuleRecordResolver()->Resolve(module_request, referrer,
-                                                    ASSERT_NO_EXCEPTION);
-  DCHECK(!resolved.IsEmpty());
+      modulator->GetModuleRecordResolver()->Resolve(
+          module_request, referrer, PassThroughException(isolate));
   return resolved;
+}
+
+v8::MaybeLocal<v8::Object> ModuleRecord::ResolveSourceCallback(
+    v8::Local<v8::Context> context,
+    v8::Local<v8::String> specifier,
+    v8::Local<v8::FixedArray> import_attributes,
+    v8::Local<v8::Module> referrer) {
+  v8::Isolate* isolate = context->GetIsolate();
+  ScriptState* script_state = ScriptState::From(isolate, context);
+  Modulator* modulator = Modulator::From(script_state);
+  DCHECK(modulator);
+
+  ModuleRequest module_request(ToCoreStringWithNullCheck(isolate, specifier),
+                               TextPosition::MinimumPosition(),
+                               ModuleRecord::ToBlinkImportAttributes(
+                                   context, referrer, import_attributes,
+                                   /*v8_import_attributes_has_positions=*/true),
+                               ModuleImportPhase::kSource);
+
+  v8::Local<v8::WasmModuleObject> wasm_module_source =
+      modulator->GetModuleRecordResolver()->ResolveSource(
+          module_request, referrer, PassThroughException(isolate));
+
+  return wasm_module_source;
 }
 
 Vector<ImportAttribute> ModuleRecord::ToBlinkImportAttributes(

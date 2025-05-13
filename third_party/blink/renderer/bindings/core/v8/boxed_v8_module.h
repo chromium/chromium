@@ -37,6 +37,14 @@ class CORE_EXPORT BoxedV8Module final : public GarbageCollected<BoxedV8Module> {
     return record.As<v8::Module>();
   }
 
+  v8::Local<v8::WasmModuleObject> NewWasmLocal(v8::Isolate* isolate) const {
+    v8::Local<v8::Data> record = record_.Get(isolate);
+    CHECK(record->IsValue());
+    v8::Local<v8::Value> record_value = record.As<v8::Value>();
+    CHECK(record_value->IsWasmModuleObject());
+    return record_value.As<v8::WasmModuleObject>();
+  }
+
  private:
   // Must be either `v8::Module` or `v8::WasmModuleObject`.
   TraceWrapperV8Reference<v8::Data> record_;

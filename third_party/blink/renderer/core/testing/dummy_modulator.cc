@@ -33,6 +33,13 @@ class EmptyModuleRecordResolver final : public ModuleRecordResolver {
                                 ExceptionState&) override {
     NOTREACHED();
   }
+
+  v8::Local<v8::WasmModuleObject> ResolveSource(
+      const ModuleRequest& module_request,
+      v8::Local<v8::Module> referrer,
+      ExceptionState&) override {
+    NOTREACHED();
+  }
 };
 
 }  // namespace

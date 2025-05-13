@@ -4328,8 +4328,8 @@
       "--disable-features=PreloadLinkRelDataUrls"
     ],
     "expires": "Jul 3, 2025"
-   },
-   {
+  },
+  {
     "prefix": "delegates-focus-text-control-disabled",
     "owners": ["dizhangg@google.com"],
     "platforms": ["Linux", "Mac", "Win"],
@@ -4351,6 +4351,25 @@
       "--enable-features=SecPurposePrefetchHeaderRelPrefetch"
     ],
     "expires": "Aug 1, 2025"
+  },
+  {
+    "prefix": "javascript-source-phase-imports",
+    "owners": ["lpardosixtos@microsoft.com"],
+    "platforms": ["Linux", "Win"],
+    "bases": [
+      "external/wpt/wasm/webapi/esm-integration/script-src-allows-source-phase-wasm.tentative.html",
+      "external/wpt/wasm/webapi/esm-integration/source-phase.tentative.html",
+      "external/wpt/wasm/webapi/esm-integration/source-phase-blocked-by-csp.tentative.html",
+      "external/wpt/wasm/webapi/esm-integration/source-phase-preload.tentative.html",
+      "external/wpt/wasm/webapi/esm-integration/wasm-import-wasm-export.tentative.html",
+      "external/wpt/wasm/webapi/esm-integration/worker-import-source-phase.tentative.html",
+      "external/wpt/wasm/webapi/esm-integration/worklet-import-source-phase.tentative.https.html",
+      "wpt_internal/js/source-phase-imports/invalid-module-types-throw.html"
+    ],
+    "args": [
+      "--enable-features=JavaScriptSourcePhaseImports"
+    ],
+    "expires": "Apr 4, 2026"
   }
 
 ]

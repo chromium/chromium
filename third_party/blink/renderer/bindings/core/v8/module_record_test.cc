@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/script/js_module_script.h"
 #include "third_party/blink/renderer/core/script/module_record_resolver.h"
+#include "third_party/blink/renderer/core/script/wasm_module_script.h"
 #include "third_party/blink/renderer/core/testing/dummy_modulator.h"
 #include "third_party/blink/renderer/core/testing/module_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
@@ -35,8 +36,13 @@ class TestModuleRecordResolver final : public ModuleRecordResolver {
   ~TestModuleRecordResolver() override = default;
 
   size_t ResolveCount() const { return specifiers_.size(); }
+  size_t ResolveSourceCount() const { return source_phase_specifiers_.size(); }
   const Vector<String>& Specifiers() const { return specifiers_; }
-  void PrepareMockResolveResult(v8::Local<v8::Module> module) {
+  const Vector<String>& SourcePhaseSpecifiers() const {
+    return source_phase_specifiers_;
+  }
+  template <typename T>
+  void PrepareMockResolveResult(v8::Local<T> module) {
     module_records_.push_back(
         MakeGarbageCollected<BoxedV8Module>(isolate_, module));
   }
@@ -59,13 +65,22 @@ class TestModuleRecordResolver final : public ModuleRecordResolver {
 
   v8::Local<v8::Module> Resolve(const ModuleRequest& module_request,
                                 v8::Local<v8::Module> module,
-                                ExceptionState&) override {
+                                ExceptionState& exception_state) override {
     specifiers_.push_back(module_request.specifier);
     return module_records_.TakeFirst()->NewLocal(isolate_);
   }
 
+  v8::Local<v8::WasmModuleObject> ResolveSource(
+      const ModuleRequest& module_request,
+      v8::Local<v8::Module> module,
+      ExceptionState&) override {
+    source_phase_specifiers_.push_back(module_request.specifier);
+    return module_records_.TakeFirst()->NewWasmLocal(isolate_);
+  }
+
   v8::Isolate* isolate_;
   Vector<String> specifiers_;
+  Vector<String> source_phase_specifiers_;
   HeapDeque<Member<BoxedV8Module>> module_records_;
 };
 
@@ -326,6 +341,36 @@ TEST_F(ModuleRecordTest, EvaluateCaptureError) {
   ASSERT_TRUE(exception->IsString());
   EXPECT_EQ("bar",
             ToCoreString(scope.GetIsolate(), exception.As<v8::String>()));
+}
+
+// Tests that source phase imports follow the path to the
+// `ModuleRecord::ResolveSourceCallback` callback.
+// TODO(https://crbug.com/42204365): this test requires v8 to be initialized
+// with the --js-source-phase-imports flag. Enable it when the feature is moved
+// to the experimental state.
+TEST_F(ModuleRecordTest, DISABLED_InstantiateWithSourcePhaseWasmDep) {
+  V8TestingScope scope;
+
+  auto* modulator =
+      MakeGarbageCollected<ModuleRecordTestModulator>(scope.GetScriptState());
+  auto* resolver = modulator->GetTestModuleRecordResolver();
+
+  v8::Local<v8::WasmModuleObject> wasm_module =
+      WasmModuleScript::EmptyModuleForTesting(scope.GetIsolate());
+  ASSERT_FALSE(wasm_module.IsEmpty());
+  resolver->PrepareMockResolveResult(wasm_module);
+
+  const KURL js_url("https://example.com/test.js");
+  v8::Local<v8::Module> module = ModuleTestBase::CompileModule(
+      scope.GetScriptState(), "import source x from 'test_module.wasm';",
+      js_url);
+  ASSERT_FALSE(module.IsEmpty());
+  ScriptValue exception =
+      ModuleRecord::Instantiate(scope.GetScriptState(), module, js_url);
+  ASSERT_TRUE(exception.IsEmpty());
+
+  ASSERT_EQ(1u, resolver->ResolveSourceCount());
+  EXPECT_EQ("test_module.wasm", resolver->SourcePhaseSpecifiers()[0]);
 }
 
 }  // namespace

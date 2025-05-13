@@ -29,8 +29,12 @@ class DynamicImportTreeClient final : public ModuleTreeClient {
  public:
   DynamicImportTreeClient(const KURL& url,
                           Modulator* modulator,
-                          ScriptPromiseResolver<IDLAny>* promise_resolver)
-      : url_(url), modulator_(modulator), promise_resolver_(promise_resolver) {}
+                          ScriptPromiseResolver<IDLAny>* promise_resolver,
+                          v8::ModuleImportPhase import_phase)
+      : url_(url),
+        modulator_(modulator),
+        promise_resolver_(promise_resolver),
+        import_phase_(import_phase) {}
 
   void Trace(Visitor*) const override;
 
@@ -41,6 +45,7 @@ class DynamicImportTreeClient final : public ModuleTreeClient {
   const KURL url_;
   const Member<Modulator> modulator_;
   const Member<ScriptPromiseResolver<IDLAny>> promise_resolver_;
+  const v8::ModuleImportPhase import_phase_;
 };
 
 // Abstract callback for modules resolution.
@@ -132,6 +137,23 @@ void DynamicImportTreeClient::NotifyModuleTreeLoadFinished(
     promise_resolver_->Reject(error);
 
     // <spec step="2.3">Return.</spec>
+    return;
+  }
+
+  if (import_phase_ == v8::ModuleImportPhase::kSource) {
+    if (!module_script->IsWasmModuleRecord()) {
+      v8::Local<v8::Value> error = V8ThrowException::CreateSyntaxError(
+          isolate, url_.GetString() + kNonWasmImportInSourcePhaseError);
+      promise_resolver_->Reject(error);
+      return;
+    }
+    if (module_script->HasParseError()) {
+      promise_resolver_->Reject(module_script->CreateParseError());
+      return;
+    }
+    DCHECK(!module_script->HasEmptyRecord());
+    v8::Local<v8::Value> wasm_module = module_script->WasmModule();
+    promise_resolver_->Resolve(wasm_module);
     return;
   }
 
@@ -296,7 +318,7 @@ void DynamicModuleResolver::ResolveDynamically(
   // those along as well. Wait until the algorithm asynchronously completes with
   // result.</spec>
   auto* tree_client = MakeGarbageCollected<DynamicImportTreeClient>(
-      url, modulator_.Get(), promise_resolver);
+      url, modulator_.Get(), promise_resolver, module_request.import_phase);
   // TODO(kouhei): ExecutionContext::From(modulator_->GetScriptState()) is
   // highly discouraged since it breaks layering. Rewrite this.
   auto* execution_context =

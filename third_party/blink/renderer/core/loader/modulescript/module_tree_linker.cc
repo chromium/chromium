@@ -557,8 +557,6 @@ void ModuleTreeLinker::Instantiate() {
 
     ScriptState* script_state = modulator_->GetScriptState();
     ScriptState::Scope scope(script_state);
-    // <spec step="5.1">Let record be result's record.</spec>
-    v8::Local<v8::Module> record = result_->V8Module();
 
     // <spec step="5.2">Perform record.Instantiate(). ...</spec>
     AdvanceState(State::kInstantiating);
@@ -566,8 +564,7 @@ void ModuleTreeLinker::Instantiate() {
     UseCounter::Count(ExecutionContext::From(script_state),
                       WebFeature::kInstantiateModuleScript);
 
-    ScriptValue instantiation_error =
-        ModuleRecord::Instantiate(script_state, record, result_->SourceUrl());
+    ScriptValue instantiation_error = result_->Instantiate();
 
     // <spec step="5.2">... If this throws an exception, set result's error to
     // rethrow to that exception.</spec>

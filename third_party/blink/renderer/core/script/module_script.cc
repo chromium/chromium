@@ -69,6 +69,13 @@ Vector<ModuleRequest> ModuleScript::GetModuleRecordRequests() const {
                                       record);
 }
 
+ScriptValue ModuleScript::Instantiate() const {
+  ScriptState* script_state = settings_object_->GetScriptState();
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::Local<v8::Module> record = record_.Get(isolate).As<v8::Module>();
+  return ModuleRecord::Instantiate(script_state, record, SourceUrl());
+}
+
 bool ModuleScript::HasEmptyRecord() const {
   return record_.IsEmpty();
 }

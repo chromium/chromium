@@ -90,6 +90,17 @@ WasmModuleScript::WasmModuleScript(Modulator* settings_object,
                    fetch_options,
                    start_position) {}
 
+v8::Local<v8::WasmModuleObject> WasmModuleScript::EmptyModuleForTesting(
+    v8::Isolate* isolate) {
+  v8::Local<v8::WasmModuleObject> result;
+  bool success =
+      v8::WasmModuleObject::Compile(
+          isolate, v8::MemorySpan<const uint8_t>(kEmptyWasmByteSequence, 8))
+          .ToLocal(&result);
+  CHECK(success);
+  return result;
+}
+
 BoxedV8Module* WasmModuleScript::BoxModuleRecord() const {
   CHECK(!record_.IsEmpty());
   v8::Isolate* isolate = settings_object_->GetScriptState()->GetIsolate();
@@ -104,6 +115,13 @@ v8::Local<v8::WasmModuleObject> WasmModuleScript::WasmModule() const {
   }
   v8::Isolate* isolate = settings_object_->GetScriptState()->GetIsolate();
   return record_.Get(isolate).As<v8::Value>().As<v8::WasmModuleObject>();
+}
+
+ScriptValue WasmModuleScript::Instantiate() const {
+  v8::Isolate* isolate = settings_object_->GetScriptState()->GetIsolate();
+  v8::Local<v8::Value> error = V8ThrowException::CreateSyntaxError(
+      isolate, SourceUrl().GetString() + kWasmImportInEvaluationPhaseError);
+  return ScriptValue(isolate, error);
 }
 
 }  // namespace blink

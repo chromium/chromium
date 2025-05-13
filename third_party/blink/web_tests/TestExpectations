@@ -7229,6 +7229,15 @@ crbug.com/40575658 external/wpt/wasm/webapi/esm-integration/wasm-js-cycle.tentat
 crbug.com/40575658 external/wpt/wasm/webapi/esm-integration/worker-import-source-phase.tentative.html [ Timeout ]
 crbug.com/40575658 external/wpt/wasm/webapi/esm-integration/worker-import.tentative.html [ Timeout ]
 
+# Source Phase Imports support.
+
+crbug.com/42204365 external/wpt/wasm/webapi/esm-integration/source-phase-blocked-by-csp.tentative.html [ Timeout ]
+crbug.com/42204365 virtual/javascript-source-phase-imports/external/wpt/wasm/webapi/esm-integration/worker-import-source-phase.tentative.html [ Pass ]
+crbug.com/42204365 virtual/javascript-source-phase-imports/external/wpt/wasm/webapi/esm-integration/source-phase-blocked-by-csp.tentative.html [ Pass ]
+# Test passes but expects a syntax error.
+crbug.com/42204365 virtual/javascript-source-phase-imports/external/wpt/wasm/webapi/esm-integration/wasm-import-wasm-export.tentative.html [ Pass ]
+crbug.com/42204365 virtual/javascript-source-phase-imports/wpt_internal/js/source-phase-imports/invalid-module-types-throw.html [ Pass ]
+
 # Sheriff 2022-10-19
 crbug.com/1376307 [ Fuchsia ] tables/mozilla_expected_failures/bugs/bug1055-2.html [ Failure ]
 

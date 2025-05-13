@@ -86,6 +86,13 @@ class TestModuleRecordResolver final : public ModuleRecordResolver {
     NOTREACHED();
   }
 
+  v8::Local<v8::WasmModuleObject> ResolveSource(
+      const ModuleRequest& module_request,
+      v8::Local<v8::Module> referrer,
+      ExceptionState&) override {
+    NOTREACHED();
+  }
+
  private:
   int register_module_script_call_count_ = 0;
 };

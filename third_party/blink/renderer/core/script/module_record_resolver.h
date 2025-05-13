@@ -45,6 +45,11 @@ class CORE_EXPORT ModuleRecordResolver
   virtual v8::Local<v8::Module> Resolve(const ModuleRequest& module_request,
                                         v8::Local<v8::Module> referrer,
                                         ExceptionState&) = 0;
+
+  virtual v8::Local<v8::WasmModuleObject> ResolveSource(
+      const ModuleRequest& module_request,
+      v8::Local<v8::Module> referrer,
+      ExceptionState&) = 0;
 };
 
 }  // namespace blink

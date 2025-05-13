@@ -97,6 +97,12 @@ class CORE_EXPORT ModuleRecord final {
       v8::Local<v8::String> specifier,
       v8::Local<v8::FixedArray> import_attributes,
       v8::Local<v8::Module> referrer);
+
+  static v8::MaybeLocal<v8::Object> ResolveSourceCallback(
+      v8::Local<v8::Context> context,
+      v8::Local<v8::String> specifier,
+      v8::Local<v8::FixedArray> import_attributes,
+      v8::Local<v8::Module> referrer);
 };
 
 }  // namespace blink

@@ -26,6 +26,13 @@ namespace blink {
 
 class BoxedV8Module;
 
+static constexpr char kWasmImportInEvaluationPhaseError[] =
+    " cannot be imported. Wasm module imports are only supported in the "
+    "source phase.";
+static constexpr char kNonWasmImportInSourcePhaseError[] =
+    " cannot be imported. Only Wasm module imports are supported in the "
+    "source phase.";
+
 // ModuleScript is a model object for the "module script" spec concept.
 // https://html.spec.whatwg.org/C/#module-script
 class CORE_EXPORT ModuleScript : public Script {
@@ -58,6 +65,7 @@ class CORE_EXPORT ModuleScript : public Script {
   virtual v8::Local<v8::WasmModuleObject> WasmModule() const { NOTREACHED(); }
   virtual bool IsWasmModuleRecord() const { return false; }
   virtual Vector<ModuleRequest> GetModuleRecordRequests() const;
+  virtual ScriptValue Instantiate() const;
 
   [[nodiscard]] ScriptEvaluationResult RunScriptOnScriptStateAndReturnValue(
       ScriptState*,

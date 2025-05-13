@@ -45,6 +45,9 @@ class CORE_EXPORT WasmModuleScript final : public ModuleScript,
   Vector<ModuleRequest> GetModuleRecordRequests() const override {
     return Vector<ModuleRequest>();
   }
+  ScriptValue Instantiate() const override;
+
+  static v8::Local<v8::WasmModuleObject> EmptyModuleForTesting(v8::Isolate*);
 
  private:
   friend class ModuleMapTestModulator;

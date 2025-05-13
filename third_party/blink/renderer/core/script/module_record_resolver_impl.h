@@ -42,11 +42,19 @@ class CORE_EXPORT ModuleRecordResolverImpl final
   const ModuleScript* GetModuleScriptFromModuleRecord(
       v8::Local<v8::Module>) const final;
 
+  ModuleScript* ResolveImpl(const ModuleRequest& module_request,
+                            v8::Local<v8::Module> referrer);
+
   // Implements "Runtime Semantics: HostResolveImportedModule" per HTML spec.
   // https://html.spec.whatwg.org/C/#hostresolveimportedmodule(referencingscriptormodule,-specifier))
   v8::Local<v8::Module> Resolve(const ModuleRequest& module_request,
                                 v8::Local<v8::Module> referrer,
                                 ExceptionState&) final;
+
+  v8::Local<v8::WasmModuleObject> ResolveSource(
+      const ModuleRequest& module_request,
+      v8::Local<v8::Module> referrer,
+      ExceptionState&) final;
 
   // Implements ExecutionContextLifecycleObserver:
   void ContextDestroyed() final;
