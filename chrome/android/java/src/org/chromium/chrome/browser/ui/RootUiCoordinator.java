@@ -179,6 +179,7 @@ import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageContainer;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessagesFactory;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -1184,10 +1185,10 @@ public class RootUiCoordinator
 
     /** Generate the LoadUrlParams necessary to load the specified search query. */
     private static LoadUrlParams generateUrlParamsForSearch(Tab tab, String query) {
-        String url =
-                TemplateUrlServiceFactory.getForProfile(tab.getProfile())
-                        .getUrlForSearchQuery(query);
-        String headers = GeolocationHeader.getGeoHeader(url, tab);
+        Profile profile = tab.getProfile();
+        TemplateUrlService service = TemplateUrlServiceFactory.getForProfile(profile);
+        String url = service.getUrlForSearchQuery(query);
+        String headers = GeolocationHeader.getGeoHeader(url, profile, service);
 
         LoadUrlParams loadUrlParams = new LoadUrlParams(url);
         loadUrlParams.setVerbatimHeaders(headers);

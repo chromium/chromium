@@ -99,6 +99,7 @@ public class GeolocationHeaderUnitTest {
         when(mProfileMock.isOffTheRecord()).thenReturn(false);
         when(mTemplateUrlServiceMock.getUrlForSearchQuery(anyString()))
                 .thenReturn("https://example.com/");
+        when(mTemplateUrlServiceMock.isDefaultSearchEngineGoogle()).thenReturn(true);
         sRefreshLastKnownLocation = 0;
         ShadowLocationServices.sFusedLocationProviderClient = mLocationProviderClient;
     }
@@ -116,7 +117,8 @@ public class GeolocationHeaderUnitTest {
         GeolocationTracker.setLocationForTesting(location, null);
         // 1 minute should be good enough and not require visible networks.
         GeolocationTracker.setLocationAgeForTesting(1 * 60 * 1000L);
-        String header = GeolocationHeader.getGeoHeader(SEARCH_URL, mTab);
+        String header =
+                GeolocationHeader.getGeoHeader(SEARCH_URL, mProfileMock, mTemplateUrlServiceMock);
         assertEquals("X-Geo: w " + ENCODED_PROTO_LOCATION, header);
     }
 
@@ -203,7 +205,8 @@ public class GeolocationHeaderUnitTest {
         GeolocationTracker.setLocationForTesting(location, null);
         // 6 minutes should hit the age limit, but the feature is off.
         GeolocationTracker.setLocationAgeForTesting(6 * 60 * 1000L);
-        String header = GeolocationHeader.getGeoHeader(SEARCH_URL, mTab);
+        String header =
+                GeolocationHeader.getGeoHeader(SEARCH_URL, mProfileMock, mTemplateUrlServiceMock);
         assertEquals(expectedHeader, header);
     }
 

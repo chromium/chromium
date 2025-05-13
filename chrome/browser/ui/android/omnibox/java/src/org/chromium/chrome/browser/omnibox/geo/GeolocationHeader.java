@@ -30,7 +30,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -39,6 +39,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -177,17 +178,28 @@ public class GeolocationHeader {
 
     private static boolean isGeoHeaderEnabledForDse(
             Profile profile, TemplateUrlService templateService) {
-        return geoHeaderStateForUrl(profile, templateService.getUrlForSearchQuery(DUMMY_URL_QUERY))
+        return geoHeaderStateForUrl(
+                        profile,
+                        templateService,
+                        templateService.getUrlForSearchQuery(DUMMY_URL_QUERY))
                 == HeaderState.HEADER_ENABLED;
     }
 
-    private static @HeaderState int geoHeaderStateForUrl(Profile profile, String url) {
+    private static @HeaderState int geoHeaderStateForUrl(
+            Profile profile, @Nullable TemplateUrlService service, String url) {
         try (TraceEvent e = TraceEvent.scoped("GeolocationHeader.geoHeaderStateForUrl")) {
+            // Only send X-Geo to search engines associated with the current profile.
+            if (profile == null || service == null) return HeaderState.UNSUITABLE_URL;
+
             // Only send X-Geo in normal mode.
             if (profile.isOffTheRecord()) return HeaderState.INCOGNITO;
 
-            // Only send X-Geo header to Google domains.
-            if (!UrlUtilitiesJni.get().isGoogleSearchUrl(url)) return HeaderState.UNSUITABLE_URL;
+            // Only send X-Geo header to Search Engines.
+            var isDseUrl = service.isSearchResultsPageFromDefaultSearchProvider(new GURL(url));
+            var isGoogleDse = service.isDefaultSearchEngineGoogle();
+            if (!(isDseUrl || (isGoogleDse && UrlUtilitiesJni.get().isGoogleSearchUrl(url)))) {
+                return HeaderState.UNSUITABLE_URL;
+            }
 
             Uri uri = Uri.parse(url);
             if (!UrlConstants.HTTPS_SCHEME.equals(uri.getScheme())) return HeaderState.NOT_HTTPS;
@@ -205,24 +217,11 @@ public class GeolocationHeader {
         }
     }
 
-    /**
-     * Returns an X-Geo HTTP header string if:
-     *
-     * <ul>
-     *   <li>The current mode is not incognito,
-     *   <li>The url is a google search URL (e.g. www.google.co.uk/search?q=cars),
-     *   <li>The user has not disabled sharing location with this url, and
-     *   <li>There is a valid and recent location available.
-     * </ul>
-     *
-     * <p>Returns null otherwise.
-     *
-     * @param url The URL of the request with which this header will be sent.
-     * @param tab The Tab currently being accessed.
-     * @return The X-Geo header string or null.
-     */
-    public static @Nullable String getGeoHeader(String url, Tab tab) {
-        return getGeoHeader(url, tab.getProfile());
+    @CalledByNative
+    private static @Nullable String getGeoHeader(String url, @Nullable Profile profile) {
+        if (profile == null) return null;
+        TemplateUrlService service = TemplateUrlServiceFactory.getForProfile(profile);
+        return getGeoHeader(url, profile, service);
     }
 
     /**
@@ -239,15 +238,15 @@ public class GeolocationHeader {
      *
      * @param url The URL of the request with which this header will be sent.
      * @param profile The user profile being accessed.
+     * @param service The TemplateUrlService representing default search engine.
      * @return The X-Geo header string or null.
      */
-    @CalledByNative
-    private static @Nullable String getGeoHeader(String url, Profile profile) {
-        if (profile == null) return null;
+    public static @Nullable String getGeoHeader(
+            String url, Profile profile, @Nullable TemplateUrlService service) {
         try (TraceEvent e = TraceEvent.scoped("GeolocationHeader.getGeoHeader")) {
             Location locationToAttach = null;
             long locationAge = Long.MAX_VALUE;
-            @HeaderState int headerState = geoHeaderStateForUrl(profile, url);
+            @HeaderState int headerState = geoHeaderStateForUrl(profile, service, url);
             if (headerState == HeaderState.HEADER_ENABLED) {
                 locationToAttach = getLastKnownLocation();
                 if (locationToAttach != null) {

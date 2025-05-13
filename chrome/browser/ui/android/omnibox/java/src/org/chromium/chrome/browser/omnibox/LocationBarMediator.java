@@ -605,7 +605,9 @@ class LocationBarMediator
             LoadUrlParams loadUrlParams = new LoadUrlParams(url);
             try (TimingMetric record =
                     TimingMetric.shortUptime("Android.Omnibox.SetGeolocationHeadersTime")) {
-                loadUrlParams.setVerbatimHeaders(GeolocationHeader.getGeoHeader(url, currentTab));
+                loadUrlParams.setVerbatimHeaders(
+                        GeolocationHeader.getGeoHeader(
+                                url, mProfileSupplier.get(), mTemplateUrlServiceSupplier.get()));
             }
             loadUrlParams.setTransitionType(
                     omniboxLoadUrlParams.transitionType | PageTransition.FROM_ADDRESS_BAR);
