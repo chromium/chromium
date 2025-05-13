@@ -235,10 +235,22 @@ IN_PROC_BROWSER_TEST_F(QuotaBrowserTest, StorageEstimateWithStaticQuota) {
   GURL empty_url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(NavigateToURL(shell(), empty_url));
 
-  EXPECT_EQ(true, EvalJs(shell(), R"(
+  // The `navigator.storage.estimate()` API returns an estimate of the amount of
+  // storage available to the website. This value is calculated by the quota
+  // system. This test verifies that the returned value is the expected one when
+  // using the static quota system. The expected value is usage + min(10GiB,
+  // disk rounded up to the nearest 1 GiB). The test verifies that the returned
+  // quota value is <= 10GiB and is rounded.
+  int64_t quota = EvalJs(shell(), R"(
         navigator.storage.estimate().then(
-          (result)=>{ return result.quota == 10 * 1024 * 1024 * 1024; },
-          ()=>{ return false; });)"));
+          (result)=> {
+            return result.quota;
+          },
+          ()=>{ return -1; });)")
+                      .ExtractDouble();
+  const int64_t kGBytes = 1024 * 1024 * 1024;
+  EXPECT_LE(quota, 10 * kGBytes);
+  EXPECT_EQ(0, quota % kGBytes);
 }
 
 }  // namespace content
