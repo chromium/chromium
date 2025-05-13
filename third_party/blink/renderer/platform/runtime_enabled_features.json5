@@ -1453,7 +1453,12 @@
     {
       // Allows the CSS "accent-color" property to support the system accent color as the default option.
       name: "CSSSystemAccentColor",
-      status: "experimental",
+      status: {
+        "ChromeOS": "stable",
+        "Mac": "stable",
+        "Win": "stable",
+        "default": "experimental",
+      },
     },
     {
       // crbug.com/1463890: CSS `text-autospace` property
