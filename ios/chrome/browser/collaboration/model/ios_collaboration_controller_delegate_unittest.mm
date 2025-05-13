@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/model/test_favicon_loader.h"
-#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/fake_share_kit_flow_view_controller.h"
@@ -160,7 +159,6 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
                      forProtocol:@protocol(ApplicationCommands)];
     share_kit_service_ = ShareKitServiceFactory::GetForProfile(profile_.get());
     base_view_controller_ = [[FakeUIViewController alloc] init];
-    tab_group_service_ = TabGroupServiceFactory::GetForProfile(profile_.get());
 
     mock_collaboration_service_ = static_cast<MockCollaborationService*>(
         CollaborationServiceFactory::GetForProfile(profile_.get()));
@@ -171,7 +169,8 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
   // Init the delegate for a `flow_type` flow.
   void InitDelegate(FlowType flow_type) {
     delegate_ = std::make_unique<IOSCollaborationControllerDelegate>(
-        browser_.get(), base_view_controller_, tab_group_service_, flow_type);
+        browser_.get(), CreateControllerDelegateParamsFromProfile(
+                            profile_.get(), base_view_controller_, flow_type));
   }
 
   // Sign in in the authentication service with a fake identity.
@@ -255,7 +254,6 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
   UIViewController* base_view_controller_;
   raw_ptr<const TabGroup> tab_group_;
   raw_ptr<ShareKitService> share_kit_service_;
-  raw_ptr<TabGroupService> tab_group_service_;
   ServiceStatus collaboration_status_;
 };
 

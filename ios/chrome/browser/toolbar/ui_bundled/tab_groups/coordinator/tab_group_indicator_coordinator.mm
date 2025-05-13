@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -213,9 +212,9 @@ using collaboration::IOSCollaborationControllerDelegate;
 
   std::unique_ptr<IOSCollaborationControllerDelegate> delegate =
       std::make_unique<IOSCollaborationControllerDelegate>(
-          browser, self.baseViewController,
-          TabGroupServiceFactory::GetForProfile(browser->GetProfile()),
-          FlowType::kLeaveOrDelete);
+          browser,
+          CreateControllerDelegateParamsFromProfile(
+              self.profile, self.baseViewController, FlowType::kLeaveOrDelete));
   delegate->SetLeaveOrDeleteConfirmationCallback(std::move(completionCallback));
 
   collaboration::CollaborationServiceLeaveOrDeleteEntryPoint entryPoint =
@@ -306,9 +305,9 @@ using collaboration::IOSCollaborationControllerDelegate;
 
   std::unique_ptr<CollaborationControllerDelegate> delegate =
       std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
-          browser, self.baseViewController,
-          TabGroupServiceFactory::GetForProfile(self.profile),
-          FlowType::kShareOrManage);
+          browser,
+          CreateControllerDelegateParamsFromProfile(
+              self.profile, self.baseViewController, FlowType::kShareOrManage));
   collaborationService->StartShareOrManageFlow(
       std::move(delegate), tabGroup->tab_group_id(), entryPoint);
 }

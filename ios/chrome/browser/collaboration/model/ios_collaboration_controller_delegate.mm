@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_action_context.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_service.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_flow_outcome.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_join_configuration.h"
@@ -85,30 +86,47 @@ constexpr base::TimeDelta kFetchPreviewItemsTimeDelay = base::Seconds(5);
 
 }  // namespace
 
+IOSCollaborationControllerDelegateParams
+CreateControllerDelegateParamsFromProfile(
+    ProfileIOS* profile,
+    UIViewController* base_view_controller,
+    FlowType flow_type) {
+  return IOSCollaborationControllerDelegateParams(
+      {TabGroupServiceFactory::GetForProfile(profile),
+       ShareKitServiceFactory::GetForProfile(profile),
+       IOSChromeFaviconLoaderFactory::GetForProfile(profile),
+       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile),
+       SyncServiceFactory::GetForProfile(profile),
+       CollaborationServiceFactory::GetForProfile(profile),
+       base_view_controller, flow_type});
+}
+
 IOSCollaborationControllerDelegate::IOSCollaborationControllerDelegate(
     Browser* browser,
-    UIViewController* base_view_controller,
-    TabGroupService* tab_group_service,
-    FlowType flow_type)
-    : browser_(browser),
-      flow_type_(flow_type),
-      base_view_controller_(base_view_controller),
-      tab_group_service_(tab_group_service) {
+    IOSCollaborationControllerDelegateParams params)
+    : browser_(browser) {
   CHECK(browser_);
-  CHECK(base_view_controller_);
-  CHECK(tab_group_service_);
-  ProfileIOS* profile = browser_->GetProfile();
+  browser_->AddObserver(this);
 
-  share_kit_service_ = ShareKitServiceFactory::GetForProfile(profile);
-  tab_groups::TabGroupSyncService* tab_group_sync_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
-  favicon_loader_ = IOSChromeFaviconLoaderFactory::GetForProfile(profile);
+  tab_group_service_ = params.tab_group_service;
+  tab_group_sync_service_ = params.tab_group_sync_service;
+  share_kit_service_ = params.share_kit_service;
+  sync_service_ = params.sync_service;
+  collaboration_service_ = params.collaboration_service;
+  favicon_loader_ = params.favicon_loader;
   favicons_grid_configurator_ =
-      std::make_unique<TabGroupFaviconsGridConfigurator>(tab_group_sync_service,
-                                                         favicon_loader_);
+      std::make_unique<TabGroupFaviconsGridConfigurator>(
+          tab_group_sync_service_, favicon_loader_);
+  flow_type_ = params.flow_type;
+  base_view_controller_ = params.base_view_controller;
+  CHECK(tab_group_service_);
+  CHECK(tab_group_sync_service_);
   CHECK(share_kit_service_);
+  CHECK(sync_service_);
+  CHECK(collaboration_service_);
   CHECK(favicon_loader_);
   CHECK(favicons_grid_configurator_);
+  CHECK(base_view_controller_);
 }
 
 IOSCollaborationControllerDelegate::~IOSCollaborationControllerDelegate() {}
@@ -117,6 +135,7 @@ IOSCollaborationControllerDelegate::~IOSCollaborationControllerDelegate() {}
 void IOSCollaborationControllerDelegate::PrepareFlowUI(
     base::OnceCallback<void()> exit_callback,
     ResultCallback result) {
+  exit_callback_ = std::move(exit_callback);
   switch (flow_type_) {
     case FlowType::kJoin:
     case FlowType::kShareOrManage:
@@ -130,6 +149,10 @@ void IOSCollaborationControllerDelegate::PrepareFlowUI(
 
 void IOSCollaborationControllerDelegate::ShowError(const ErrorInfo& error,
                                                    ResultCallback result) {
+  if (!browser_) {
+    return;
+  }
+
   NSString* title = base::SysUTF8ToNSString(error.error_header);
   NSString* message = base::SysUTF8ToNSString(error.error_body);
 
@@ -154,6 +177,10 @@ void IOSCollaborationControllerDelegate::ShowError(const ErrorInfo& error,
 }
 
 void IOSCollaborationControllerDelegate::Cancel(ResultCallback result) {
+  if (!browser_) {
+    return;
+  }
+
   if (dismiss_join_screen_callback_) {
     std::move(dismiss_join_screen_callback_).Run();
   }
@@ -167,9 +194,11 @@ void IOSCollaborationControllerDelegate::Cancel(ResultCallback result) {
 void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
     FlowType flow_type,
     ResultCallback result) {
-  CollaborationService* collaboration_service =
-      CollaborationServiceFactory::GetForProfile(browser_->GetProfile());
-  ServiceStatus service_status = collaboration_service->GetServiceStatus();
+  if (!browser_) {
+    return;
+  }
+
+  ServiceStatus service_status = collaboration_service_->GetServiceStatus();
 
   AuthenticationOperation operation;
 
@@ -240,6 +269,10 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(
     const data_sharing::GroupToken& token,
     const data_sharing::SharedDataPreview& preview_data,
     ResultCallback result) {
+  if (!browser_) {
+    return;
+  }
+
   const auto& tab_group_preview = preview_data.shared_tab_group_preview;
 
   std::string group_title = tab_group_preview ? tab_group_preview->title : "";
@@ -263,6 +296,10 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(
 void IOSCollaborationControllerDelegate::ShowShareDialog(
     const tab_groups::EitherGroupID& either_id,
     ResultWithGroupTokenCallback result) {
+  if (!browser_) {
+    return;
+  }
+
   const TabGroup* tab_group = GetLocalGroup(either_id);
   if (!tab_group) {
     std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure,
@@ -288,6 +325,10 @@ void IOSCollaborationControllerDelegate::OnUrlReadyToShare(
     const data_sharing::GroupId& group_id,
     const GURL& url,
     ResultCallback result) {
+  if (!browser_) {
+    return;
+  }
+
   CHECK(link_generation_callback_);
   std::move(link_generation_callback_).Run(url);
   std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
@@ -296,6 +337,10 @@ void IOSCollaborationControllerDelegate::OnUrlReadyToShare(
 void IOSCollaborationControllerDelegate::ShowManageDialog(
     const tab_groups::EitherGroupID& either_id,
     ResultCallback result) {
+  if (!browser_) {
+    return;
+  }
+
   const TabGroup* tab_group = GetLocalGroup(either_id);
   if (!tab_group) {
     std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
@@ -313,28 +358,37 @@ void IOSCollaborationControllerDelegate::ShowManageDialog(
 void IOSCollaborationControllerDelegate::ShowLeaveDialog(
     const tab_groups::EitherGroupID& either_id,
     ResultCallback result) {
+  if (!browser_) {
+    return;
+  }
+
   ShowLeaveOrDeleteDialog(either_id, std::move(result));
 }
 
 void IOSCollaborationControllerDelegate::ShowDeleteDialog(
     const tab_groups::EitherGroupID& either_id,
     ResultCallback result) {
+  if (!browser_) {
+    return;
+  }
+
   ShowLeaveOrDeleteDialog(either_id, std::move(result));
 }
 
 void IOSCollaborationControllerDelegate::PromoteTabGroup(
     const data_sharing::GroupId& group_id,
     ResultCallback result) {
+  if (!browser_) {
+    return;
+  }
+
   if (dismiss_join_screen_callback_) {
     std::move(dismiss_join_screen_callback_).Run();
   }
 
-  tab_groups::TabGroupSyncService* tab_group_sync_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          browser_->GetProfile());
   base::Uuid sync_id;
   for (const tab_groups::SavedTabGroup& group :
-       tab_group_sync_service->GetAllGroups()) {
+       tab_group_sync_service_->GetAllGroups()) {
     if (!group.collaboration_id().has_value()) {
       continue;
     }
@@ -349,7 +403,7 @@ void IOSCollaborationControllerDelegate::PromoteTabGroup(
   if (!sync_id.is_valid()) {
     std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
   }
-  tab_group_sync_service->OpenTabGroup(
+  tab_group_sync_service_->OpenTabGroup(
       sync_id,
       std::make_unique<tab_groups::IOSTabGroupActionContext>(browser_));
   std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
@@ -360,6 +414,10 @@ void IOSCollaborationControllerDelegate::PromoteCurrentScreen() {
 }
 
 void IOSCollaborationControllerDelegate::OnFlowFinished() {
+  if (!browser_) {
+    return;
+  }
+
   if (tab_group_service_registration_id_) {
     tab_group_service_->UnregisterCollaborationControllerDelegate(
         tab_group_service_registration_id_.value());
@@ -376,6 +434,10 @@ void IOSCollaborationControllerDelegate::ShareGroupAndGenerateLink(
     std::string collaboration_group_id,
     std::string access_token,
     base::OnceCallback<void(GURL)> callback) {
+  if (!browser_) {
+    return;
+  }
+
   CHECK(share_screen_callback_);
   link_generation_callback_ = std::move(callback);
   data_sharing::GroupToken token(data_sharing::GroupId(collaboration_group_id),
@@ -388,6 +450,16 @@ void IOSCollaborationControllerDelegate::ShareGroupAndGenerateLink(
 void IOSCollaborationControllerDelegate::SetLeaveOrDeleteConfirmationCallback(
     base::OnceCallback<void(ResultCallback)> callback) {
   leave_or_delete_confirmation_callback_ = std::move(callback);
+}
+
+#pragma mark - BrowserObserver
+
+void IOSCollaborationControllerDelegate::BrowserDestroyed(Browser* browser) {
+  browser->RemoveObserver(this);
+  browser_ = nullptr;
+  if (exit_callback_) {
+    std::move(exit_callback_).Run();
+  }
 }
 
 #pragma mark - Private
@@ -420,9 +492,7 @@ void IOSCollaborationControllerDelegate::OnAuthenticationComplete(
     return;
   }
 
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(browser_->GetProfile());
-  syncer::SyncUserSettings* user_settings = sync_service->GetUserSettings();
+  syncer::SyncUserSettings* user_settings = sync_service_->GetUserSettings();
 
   bool sync_opted_in = user_settings->GetSelectedTypes().HasAll(
       {syncer::UserSelectableType::kHistory,
@@ -456,10 +526,7 @@ void IOSCollaborationControllerDelegate::WillUnshareGroup(
   if (!local_id.has_value()) {
     continuation_block(YES);
   }
-  tab_groups::TabGroupSyncService* tab_group_sync_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          browser_->GetProfile());
-  tab_group_sync_service->AboutToUnShareTabGroup(
+  tab_group_sync_service_->AboutToUnShareTabGroup(
       local_id.value(), base::BindOnce(continuation_block, YES));
 }
 
@@ -470,10 +537,7 @@ void IOSCollaborationControllerDelegate::DidUnshareGroup(
     return;
   }
   bool success = (error == nil);
-  tab_groups::TabGroupSyncService* tab_group_sync_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          browser_->GetProfile());
-  tab_group_sync_service->OnTabGroupUnShareComplete(local_id.value(), success);
+  tab_group_sync_service_->OnTabGroupUnShareComplete(local_id.value(), success);
 }
 
 void IOSCollaborationControllerDelegate::ErrorAccepted(ResultCallback result) {
@@ -485,15 +549,12 @@ void IOSCollaborationControllerDelegate::ErrorAccepted(ResultCallback result) {
 
 const TabGroup* IOSCollaborationControllerDelegate::GetLocalGroup(
     const tab_groups::EitherGroupID& either_id) {
-  tab_groups::TabGroupSyncService* tab_group_sync_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          browser_->GetProfile());
-  if (!tab_group_sync_service) {
+  if (!tab_group_sync_service_) {
     return nullptr;
   }
 
   std::optional<tab_groups::SavedTabGroup> saved_group =
-      tab_group_sync_service->GetGroup(either_id);
+      tab_group_sync_service_->GetGroup(either_id);
   if (!saved_group.has_value()) {
     return nullptr;
   }
@@ -634,13 +695,11 @@ void IOSCollaborationControllerDelegate::ConfigureAndManageTabGroup(
     return;
   }
 
-  tab_groups::TabGroupSyncService* tab_group_sync_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          browser_->GetProfile());
   tab_groups::CollaborationId collaboration_id =
-      tab_groups::utils::GetTabGroupCollabID(either_id, tab_group_sync_service);
+      tab_groups::utils::GetTabGroupCollabID(either_id,
+                                             tab_group_sync_service_);
   std::optional<tab_groups::SavedTabGroup> group =
-      tab_group_sync_service->GetGroup(either_id);
+      tab_group_sync_service_->GetGroup(either_id);
   if (collaboration_id->empty() || !group.has_value()) {
     std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
     return;

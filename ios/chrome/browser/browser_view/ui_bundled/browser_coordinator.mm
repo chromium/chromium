@@ -3509,12 +3509,11 @@ enum class ToolbarKind {
                          kSuccess);
           });
 
-  TabGroupService* groupService =
-      TabGroupServiceFactory::GetForProfile(self.profile);
   std::unique_ptr<collaboration::IOSCollaborationControllerDelegate> delegate =
       std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
-          self.browser, viewController, groupService,
-          collaboration::FlowType::kLeaveOrDelete);
+          self.browser, CreateControllerDelegateParamsFromProfile(
+                            self.profile, viewController,
+                            collaboration::FlowType::kLeaveOrDelete));
   delegate->SetLeaveOrDeleteConfirmationCallback(std::move(completionCallback));
 
   collaboration::CollaborationService* collaborationService =
@@ -4441,9 +4440,9 @@ enum class ToolbarKind {
 
   std::unique_ptr<collaboration::IOSCollaborationControllerDelegate> delegate =
       std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
-          browser, self.viewController,
-          TabGroupServiceFactory::GetForProfile(browser->GetProfile()),
-          collaboration::FlowType::kShareOrManage);
+          browser, CreateControllerDelegateParamsFromProfile(
+                       self.profile, self.viewController,
+                       collaboration::FlowType::kShareOrManage));
   collaboration::CollaborationService* collaborationService =
       collaboration::CollaborationServiceFactory::GetForProfile(self.profile);
   collaborationService->StartShareOrManageFlow(

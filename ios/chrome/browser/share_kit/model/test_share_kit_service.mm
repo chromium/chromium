@@ -109,7 +109,7 @@ TestShareKitService::TestShareKitService(
   if (data_sharing_service_) {
     std::unique_ptr<data_sharing::DataSharingUIDelegateIOS> ui_delegate =
         std::make_unique<data_sharing::DataSharingUIDelegateIOS>(
-            this, collaboration_service, tab_group_service);
+            this, collaboration_service);
     data_sharing_service_->SetUIDelegate(std::move(ui_delegate));
 
     std::unique_ptr<data_sharing::DataSharingSDKDelegateIOS> sdk_delegate =

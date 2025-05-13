@@ -10,10 +10,12 @@
 #import "base/ios/block_types.h"
 #import "base/memory/weak_ptr.h"
 #import "components/collaboration/public/collaboration_controller_delegate.h"
+#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 
 @class AlertCoordinator;
 class Browser;
 class FaviconLoader;
+class ProfileIOS;
 enum class ShareKitFlowOutcome;
 @class ShareKitPreviewItem;
 class ShareKitService;
@@ -23,18 +25,47 @@ class TabGroup;
 class TabGroupFaviconsGridConfigurator;
 class TabGroupService;
 
+namespace tab_groups {
+class TabGroupSyncService;
+}  // namespace tab_groups
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 namespace collaboration {
 
+class CollaborationService;
 enum class FlowType;
+
+// Structure to hold parameters for IOSCollaborationControllerDelegate.
+struct IOSCollaborationControllerDelegateParams {
+  raw_ptr<TabGroupService> tab_group_service = nullptr;
+  raw_ptr<ShareKitService> share_kit_service = nullptr;
+  raw_ptr<FaviconLoader> favicon_loader = nullptr;
+  raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service = nullptr;
+  raw_ptr<syncer::SyncService> sync_service = nullptr;
+  raw_ptr<CollaborationService> collaboration_service = nullptr;
+
+  UIViewController* base_view_controller = nil;
+  FlowType flow_type;
+};
+
+// Creates IOSCollaborationControllerDelegateParams from `profile`.
+IOSCollaborationControllerDelegateParams
+CreateControllerDelegateParamsFromProfile(
+    ProfileIOS* profile,
+    UIViewController* base_view_controller,
+    FlowType flow_type);
 
 // iOS implementation of CollaborationControllerDelegate.
 class IOSCollaborationControllerDelegate
-    : public CollaborationControllerDelegate {
+    : public BrowserObserver,
+      public CollaborationControllerDelegate {
  public:
-  IOSCollaborationControllerDelegate(Browser* browser,
-                                     UIViewController* base_view_controller,
-                                     TabGroupService* tab_group_service,
-                                     FlowType flow_type);
+  IOSCollaborationControllerDelegate(
+      Browser* browser,
+      IOSCollaborationControllerDelegateParams params);
 
   IOSCollaborationControllerDelegate(
       const IOSCollaborationControllerDelegate&) = delete;
@@ -67,6 +98,9 @@ class IOSCollaborationControllerDelegate
                        ResultCallback result) override;
   void PromoteCurrentScreen() override;
   void OnFlowFinished() override;
+
+  // BrowserObserver.
+  void BrowserDestroyed(Browser* browser) override;
 
   // Shares the tab group this delegate is associated with to the
   // `collaboration_group_id`, then, once the group is shared, generates the
@@ -145,26 +179,31 @@ class IOSCollaborationControllerDelegate
   // Presents the scrim view.
   void AddScrimView();
 
-  raw_ptr<ShareKitService> share_kit_service_;
-  raw_ptr<FaviconLoader> favicon_loader_;
-  raw_ptr<Browser> browser_;
-  std::unique_ptr<TabGroupFaviconsGridConfigurator> favicons_grid_configurator_;
+  raw_ptr<Browser> browser_ = nullptr;
 
+  raw_ptr<TabGroupService> tab_group_service_ = nullptr;
+  raw_ptr<ShareKitService> share_kit_service_ = nullptr;
+  raw_ptr<FaviconLoader> favicon_loader_ = nullptr;
+  raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_ = nullptr;
+  raw_ptr<syncer::SyncService> sync_service_ = nullptr;
+  raw_ptr<collaboration::CollaborationService> collaboration_service_ = nullptr;
+
+  std::unique_ptr<TabGroupFaviconsGridConfigurator> favicons_grid_configurator_;
+  __weak UIViewController* base_view_controller_ = nil;
   // Collaboration flow that initiated this delegate.
   FlowType flow_type_;
 
-  __weak UIViewController* base_view_controller_;
   NSString* session_id_ = nil;
   AlertCoordinator* alert_coordinator_ = nil;
   // The scrim displayed on top of the base view to let the user know that
   // something is happening and prevent interaction with the rest of the app.
   UIView* scrim_view_ = nil;
 
-  // The tab group service for this collaboration delegate.
-  raw_ptr<TabGroupService> tab_group_service_;
-
-  // Callback that needs to be called to dismiss the join screen.
+  // Callback called to dismiss the join screen.
   base::OnceCallback<void()> dismiss_join_screen_callback_;
+
+  // Callback called when the `browser` is destroyed.
+  base::OnceCallback<void()> exit_callback_;
 
   // The tab group id used to register this delegate to the TabGroupService, if
   // any.
