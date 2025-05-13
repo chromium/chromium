@@ -23,6 +23,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.view.View;
 
@@ -40,20 +43,28 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.Token;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.Observer;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -62,6 +73,7 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -74,9 +86,18 @@ import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TriggerSource;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /** End-to-end test for ArchivedTabsDialogCoordinator. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -84,6 +105,12 @@ import org.chromium.url.GURL;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures("IPH_AndroidTabDeclutter")
 public class ArchivedTabsDialogCoordinatorTest {
+    private static final int TAB1_ID = 456;
+    private static final Token TAB_GROUP_ID1 = new Token(829L, 283L);
+    private static final String SYNC_GROUP_ID1 = "test_sync_group_id1";
+    private static final String GROUP_TITLE1 = "My Group";
+    private static final @TabGroupColorId int SYNC_GROUP_COLOR1 = TabGroupColorId.BLUE;
+
     @Rule
     public FreshCtaTransitTestRule mCtaTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
@@ -94,6 +121,12 @@ public class ArchivedTabsDialogCoordinatorTest {
                     .setRevision(1)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_HUB)
                     .build();
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private TabGroupSyncService mTabGroupSyncService;
+
+    @Captor ArgumentCaptor<TabGroupSyncService.Observer> mTabGroupSyncServiceObserverCaptor;
 
     private final TabListEditorTestingRobot mRobot = new TabListEditorTestingRobot();
 
@@ -110,6 +143,12 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     @Before
     public void setUp() throws Exception {
+        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
+        doNothing()
+                .when(mTabGroupSyncService)
+                .addObserver(mTabGroupSyncServiceObserverCaptor.capture());
+
         mInitialPage = mCtaTestRule.startOnBlankPage();
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         ThreadUtils.runOnUiThreadBlocking(
@@ -532,8 +571,6 @@ public class ArchivedTabsDialogCoordinatorTest {
         mRobot.actionRobot.clickItemAtAdapterPosition(1);
         mRobot.actionRobot.clickItemAtAdapterPosition(2);
         mRobot.resultRobot.verifyToolbarSelectionText("3 tabs");
-        // Closing all the tabs through selection mode will display a confirmation dialog. This is
-        // done because the opteration cannot be undone.
         mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Close tabs");
         mRobot.resultRobot.verifyUndoSnackbarWithTextIsShown("3 tabs closed");
 
@@ -801,6 +838,134 @@ public class ArchivedTabsDialogCoordinatorTest {
         ActivityTestUtils.clearActivityOrientation(cta);
     }
 
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS})
+    public void testCloseAllArchivedTabs_WithSyncedTabGroups() {
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
+        SavedTabGroup savedTabGroup =
+                createSavedTabGroup(SYNC_GROUP_ID1, GROUP_TITLE1, SYNC_GROUP_COLOR1, 1, true);
+        addArchivedTab(new GURL("https://google.com"), "test 1");
+
+        RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
+        tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
+
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher("Tabs.CloseAllArchivedTabs.TabCount", 1);
+
+        onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
+        onView(withText("Close all inactive tabs")).perform(click());
+        onView(withText("Close all")).perform(click());
+
+        // Assert that the group was archived and emit an event with the new archive status.
+        verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID1, false);
+        savedTabGroup.archivalTimeMs = null;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupSyncServiceObserverCaptor
+                            .getValue()
+                            .onTabGroupUpdated(savedTabGroup, TriggerSource.REMOTE);
+                });
+
+        mRobot.resultRobot.verifyTabListEditorIsHidden();
+        assertEquals(0, mArchivedTabModel.getCount());
+        histogramExpectation.assertExpected();
+        assertEquals(1, mUserActionTester.getActionCount("Tabs.CloseAllArchivedTabsMenuItem"));
+        assertNull(mCtaTestRule.getActivity().findViewById(R.id.archived_tabs_dialog));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS})
+    public void testSelectCloseArchivedTabs_WithSyncedTabGroups() {
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
+        SavedTabGroup savedTabGroup =
+                createSavedTabGroup(SYNC_GROUP_ID1, GROUP_TITLE1, SYNC_GROUP_COLOR1, 1, true);
+        addArchivedTab(new GURL("https://google.com"), "test 1");
+        addArchivedTab(new GURL("https://google.com"), "test 2");
+        addArchivedTab(new GURL("https://google.com"), "test 3");
+
+        RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
+        tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
+
+        assertEquals(1, mRegularTabModel.getCount());
+        assertEquals(3, mArchivedTabModel.getCount());
+
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
+
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.CloseArchivedTabsMenuItem.TabCount", 2);
+        mRobot.actionRobot.clickItemAtAdapterPosition(0);
+        mRobot.actionRobot.clickItemAtAdapterPosition(1);
+        mRobot.actionRobot.clickItemAtAdapterPosition(2);
+        mRobot.resultRobot.verifyToolbarSelectionText("3 tabs");
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Close tabs");
+
+        // Assert that the group was archived and emit an event with the new archive status.
+        verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID1, false);
+        savedTabGroup.archivalTimeMs = null;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupSyncServiceObserverCaptor
+                            .getValue()
+                            .onTabGroupUpdated(savedTabGroup, TriggerSource.REMOTE);
+                });
+
+        mRobot.resultRobot
+                .verifyAdapterHasItemCount(1)
+                .verifyUndoSnackbarWithTextIsShown("2 tabs closed");
+        assertEquals(1, mRegularTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
+        histogramExpectation.assertExpected();
+        assertEquals(1, mUserActionTester.getActionCount("Tabs.CloseArchivedTabsMenuItem"));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS})
+    public void testSelectAllCloseArchivedTabs_WithSyncedTabGroups() {
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
+        SavedTabGroup savedTabGroup =
+                createSavedTabGroup(SYNC_GROUP_ID1, GROUP_TITLE1, SYNC_GROUP_COLOR1, 1, true);
+        addArchivedTab(new GURL("https://google.com"), "test 1");
+        addArchivedTab(new GURL("https://google.com"), "test 2");
+
+        RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
+        tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
+
+        assertEquals(1, mRegularTabModel.getCount());
+        assertEquals(2, mArchivedTabModel.getCount());
+
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
+
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.CloseArchivedTabsMenuItem.TabCount", 2);
+        mRobot.actionRobot.clickItemAtAdapterPosition(0);
+        mRobot.actionRobot.clickItemAtAdapterPosition(1);
+        mRobot.actionRobot.clickItemAtAdapterPosition(2);
+        mRobot.resultRobot.verifyToolbarSelectionText("3 tabs");
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Close tabs");
+
+        // Assert that the group was archived and emit an event with the new archive status.
+        verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID1, false);
+        savedTabGroup.archivalTimeMs = null;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupSyncServiceObserverCaptor
+                            .getValue()
+                            .onTabGroupUpdated(savedTabGroup, TriggerSource.REMOTE);
+                });
+
+        mRobot.resultRobot.verifyUndoSnackbarWithTextIsShown("2 tabs closed");
+
+        assertEquals(1, mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
+        histogramExpectation.assertExpected();
+        assertEquals(1, mUserActionTester.getActionCount("Tabs.CloseArchivedTabsMenuItem"));
+    }
+
     private Tab addArchivedTab(GURL url, String title) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -812,6 +977,26 @@ public class ArchivedTabsDialogCoordinatorTest {
                                         TabLaunchType.FROM_RESTORE,
                                         null,
                                         mArchivedTabModel.getCount()));
+    }
+
+    private SavedTabGroup createSavedTabGroup(
+            String syncId,
+            String title,
+            @TabGroupColorId int color,
+            int tabCount,
+            boolean isArchived) {
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        List<SavedTabGroupTab> savedTabs = new ArrayList<>(Collections.nCopies(tabCount, savedTab));
+        SavedTabGroup savedTabGroup = new SavedTabGroup();
+        savedTabGroup.syncId = syncId;
+        savedTabGroup.savedTabs = savedTabs;
+        savedTabGroup.title = title;
+        savedTabGroup.color = color;
+        savedTabGroup.archivalTimeMs = isArchived ? System.currentTimeMillis() : null;
+
+        when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedTabGroup);
+
+        return savedTabGroup;
     }
 
     private void waitForArchivedTabModelsToLoad(

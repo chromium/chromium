@@ -251,6 +251,8 @@ public class TabListMediatorUnitTest {
             TabListEditorItemSelectionId.createTabId(TAB2_ID);
     private static final TabListEditorItemSelectionId ITEM3_ID =
             TabListEditorItemSelectionId.createTabId(TAB3_ID);
+    private static final TabListEditorItemSelectionId ITEM4_ID =
+            TabListEditorItemSelectionId.createTabGroupSyncId(SYNC_GROUP_ID1);
 
     public static final PropertyKey[] TAB_GRID_SELECTABLE_KEYS =
             new PropertyKey[] {
@@ -4925,6 +4927,25 @@ public class TabListMediatorUnitTest {
                         mModelList.get(0).model.get(TabProperties.TAB_GROUP_SYNC_ID),
                         /* triggeringMotionEvent= */ null);
         assertThat(mModelList.get(0).model.get(TabProperties.IS_SELECTED), equalTo(true));
+    }
+
+    @Test
+    public void removeListItem_TabGroup() {
+        List<String> syncIds = new ArrayList<>(Arrays.asList(SYNC_GROUP_ID1));
+        mMediator.setDefaultGridCardSize(new Size(100, 200));
+        mMediator.resetWithListOfTabs(null, syncIds, false);
+
+        PropertyModel model = mock(PropertyModel.class);
+        when(model.get(CARD_TYPE)).thenReturn(TAB_GROUP);
+        when(model.get(TabProperties.TAB_GROUP_SYNC_ID)).thenReturn(SYNC_GROUP_ID1);
+        assertEquals(1, mModelList.size());
+
+        // Assert removing a tab type does nothing.
+        mMediator.removeListItemFromModelList(TabProperties.UiType.TAB_GROUP, ITEM1_ID);
+        assertEquals(1, mModelList.size());
+
+        mMediator.removeListItemFromModelList(TabProperties.UiType.TAB_GROUP, ITEM4_ID);
+        assertEquals(0, mModelList.size());
     }
 
     private void setUpTabGroupCardDescriptionString() {
