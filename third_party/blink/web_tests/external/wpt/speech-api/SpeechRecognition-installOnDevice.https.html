@@ -7,6 +7,7 @@
 <script>
 promise_test(async (t) => {
   const validLang = "en-US";
+  const validLangAlternateLocale = "en-GB";
   const invalidLang = "invalid language code";
   window.SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -81,6 +82,26 @@ promise_test(async (t) => {
 
     assert_true(
       availableOnDeviceResult === "available",
+      "The resolved value of the availableOnDevice promise should be " +
+      "'available'."
+    );
+
+    // Verify that the newly installed language pack is available for an alternate locale.
+    const alternateLocaleResultPromise =
+      SpeechRecognition.availableOnDevice(validLangAlternateLocale);
+    assert_true(
+      alternateLocaleResultPromise instanceof Promise,
+      "availableOnDevice should return a Promise."
+    );
+
+    const alternateLocaleResult = await alternateLocaleResultPromise;
+    assert_true(
+      typeof alternateLocaleResult === "string",
+      "The resolved value of the availableOnDevice promise should be a string."
+    );
+
+    assert_true(
+      alternateLocaleResult === "available",
       "The resolved value of the availableOnDevice promise should be " +
       "'available'."
     );

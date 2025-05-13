@@ -86,7 +86,15 @@ void OnDeviceSpeechRecognitionImpl::OnDeviceWebSpeechAvailable(
     return;
   }
 
-  std::move(callback).Run(GetMaskedAvailabilityStatus(language));
+  std::optional<speech::SodaLanguagePackComponentConfig> language_config =
+      speech::GetLanguageComponentConfigMatchingLanguageSubtag(language);
+  if (!language_config.has_value()) {
+    std::move(callback).Run(media::mojom::AvailabilityStatus::kUnavailable);
+    return;
+  }
+
+  std::move(callback).Run(
+      GetMaskedAvailabilityStatus(language_config.value().language_name));
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
