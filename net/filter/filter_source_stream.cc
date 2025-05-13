@@ -165,7 +165,12 @@ std::unique_ptr<SourceStream> FilterSourceStream::CreateDecodingSourceStream(
       case SourceStreamType::kUnknown:
         NOTREACHED();
     }
-    CHECK(downstream);
+    // https://crbug.com/410771958: this can happen when zstd is disabled via
+    // disable_zstd_filter (GN arg), but we somehow still received a zstd
+    // encoded response.
+    if (downstream == nullptr) {
+      return nullptr;
+    }
     upstream = std::move(downstream);
   }
   return upstream;
