@@ -62,6 +62,11 @@
 #endif
 
 namespace {
+using ::blink::mojom::MediaStreamRequestResult;
+using ::content::DesktopMediaID;
+using ::content::WebContents;
+using ::content::WebContentsMediaCaptureId;
+
 constexpr UrlIdentity::TypeSet allowed_types = {
     UrlIdentity::Type::kDefault, UrlIdentity::Type::kIsolatedWebApp,
     UrlIdentity::Type::kFile, UrlIdentity::Type::kChromeExtension};
@@ -71,7 +76,7 @@ constexpr UrlIdentity::FormatOptions options = {
         UrlIdentity::DefaultFormatOptions::kOmitCryptographicScheme}};
 
 // Helper function to get the title of the calling application.
-std::u16string GetApplicationTitle(content::WebContents* web_contents) {
+std::u16string GetApplicationTitle(WebContents* web_contents) {
   DCHECK(web_contents);
   GURL content_origin =
       web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().GetURL();
@@ -83,7 +88,7 @@ std::u16string GetApplicationTitle(content::WebContents* web_contents) {
 
 #if !BUILDFLAG(IS_ANDROID)
 
-bool IsGlicWebUI(const content::WebContents* web_contents) {
+bool IsGlicWebUI(const WebContents* web_contents) {
 #if BUILDFLAG(ENABLE_GLIC)
   return glic::IsGlicWebUI(web_contents);
 #else
@@ -93,14 +98,14 @@ bool IsGlicWebUI(const content::WebContents* web_contents) {
 
 // If bypassing the media selection dialog is allowed for this request, this
 // returns the `DesktopMediaId` to use. Returns a null ID otherwise.
-content::DesktopMediaID GetMediaForSelectionDialogBypass(
+DesktopMediaID GetMediaForSelectionDialogBypass(
     const HostContentSettingsMap& content_settings,
-    content::WebContents* web_contents,
+    WebContents* web_contents,
     const content::MediaStreamRequest& request) {
   // Only bypass for chrome:// URLs.
   if (web_contents->GetLastCommittedURL().scheme() !=
       content::kChromeUIScheme) {
-    return content::DesktopMediaID();
+    return DesktopMediaID();
   }
 
   const GURL& origin_url = web_contents->GetLastCommittedURL();
@@ -108,10 +113,9 @@ content::DesktopMediaID GetMediaForSelectionDialogBypass(
   if (request.video_type ==
           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB &&
       IsGlicWebUI(web_contents)) {
-    content::DesktopMediaID media_id(
-        content::DesktopMediaID::TYPE_WEB_CONTENTS,
-        content::DesktopMediaID::kNullId,
-        content::WebContentsMediaCaptureId(
+    DesktopMediaID media_id(
+        DesktopMediaID::TYPE_WEB_CONTENTS, DesktopMediaID::kNullId,
+        WebContentsMediaCaptureId(
             web_contents->GetPrimaryMainFrame()
                 ->GetProcess()
                 ->GetDeprecatedID(),
@@ -126,11 +130,10 @@ content::DesktopMediaID GetMediaForSelectionDialogBypass(
                  origin_url, origin_url,
                  ContentSettingsType::DISPLAY_MEDIA_SYSTEM_AUDIO) ==
                  ContentSetting::CONTENT_SETTING_ALLOW) {
-    return content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
-                                   content::DesktopMediaID::kNullId,
-                                   /*audio_share=*/true);
+    return DesktopMediaID(DesktopMediaID::TYPE_SCREEN, DesktopMediaID::kNullId,
+                          /*audio_share=*/true);
   }
-  return content::DesktopMediaID();
+  return DesktopMediaID();
 }
 
 #endif
@@ -176,7 +179,7 @@ bool DisplayMediaAccessHandler::CheckMediaAccessPermission(
 }
 
 void DisplayMediaAccessHandler::HandleRequest(
-    content::WebContents* web_contents,
+    WebContents* web_contents,
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback,
     const extensions::Extension* extension) {
@@ -186,10 +189,9 @@ void DisplayMediaAccessHandler::HandleRequest(
   if (capture_policy::GetAllowedCaptureLevel(request.security_origin,
                                              web_contents) ==
       AllowedScreenCaptureLevel::kDisallowed) {
-    std::move(callback).Run(
-        blink::mojom::StreamDevicesSet(),
-        blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
-        /*ui=*/nullptr);
+    std::move(callback).Run(blink::mojom::StreamDevicesSet(),
+                            MediaStreamRequestResult::PERMISSION_DENIED,
+                            /*ui=*/nullptr);
     return;
   }
 
@@ -202,10 +204,9 @@ void DisplayMediaAccessHandler::HandleRequest(
       safe_browsing::SafeBrowsingUserInteractionObserver::FromWebContents(
           web_contents);
   if (observer) {
-    std::move(callback).Run(
-        blink::mojom::StreamDevicesSet(),
-        blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
-        /*ui=*/nullptr);
+    std::move(callback).Run(blink::mojom::StreamDevicesSet(),
+                            MediaStreamRequestResult::PERMISSION_DENIED,
+                            /*ui=*/nullptr);
     observer->OnDesktopCaptureRequest();
     return;
   }
@@ -226,9 +227,9 @@ void DisplayMediaAccessHandler::HandleRequest(
       !web_contents->HasPictureInPictureDocument() &&
       request.request_type != blink::MEDIA_DEVICE_UPDATE) {
     LOG(ERROR) << "Do not allow getDisplayMedia() on a backgrounded page.";
-    std::move(callback).Run(
-        blink::mojom::StreamDevicesSet(),
-        blink::mojom::MediaStreamRequestResult::INVALID_STATE, /*ui=*/nullptr);
+    std::move(callback).Run(blink::mojom::StreamDevicesSet(),
+                            MediaStreamRequestResult::INVALID_STATE,
+                            /*ui=*/nullptr);
     return;
   }
 #endif  // BUILDFLAG(IS_MAC)
@@ -250,10 +251,9 @@ void DisplayMediaAccessHandler::HandleRequest(
     content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
         request.render_process_id, request.render_frame_id);
     if (!rfh) {
-      std::move(callback).Run(
-          blink::mojom::StreamDevicesSet(),
-          blink::mojom::MediaStreamRequestResult::INVALID_STATE,
-          /*ui=*/nullptr);
+      std::move(callback).Run(blink::mojom::StreamDevicesSet(),
+                              MediaStreamRequestResult::INVALID_STATE,
+                              /*ui=*/nullptr);
       return;
     }
 
@@ -264,10 +264,9 @@ void DisplayMediaAccessHandler::HandleRequest(
       bad_message::ReceivedBadMessage(
           rfh->GetProcess(), bad_message::BadMessageReason::
                                  RFH_DISPLAY_CAPTURE_PERMISSION_MISSING);
-      std::move(callback).Run(
-          blink::mojom::StreamDevicesSet(),
-          blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
-          /*ui=*/nullptr);
+      std::move(callback).Run(blink::mojom::StreamDevicesSet(),
+                              MediaStreamRequestResult::PERMISSION_DENIED,
+                              /*ui=*/nullptr);
       return;
     }
 
@@ -278,10 +277,9 @@ void DisplayMediaAccessHandler::HandleRequest(
     if (!rfh->HasTransientUserActivation() &&
         capture_policy::IsTransientActivationRequiredForGetDisplayMedia(
             web_contents)) {
-      std::move(callback).Run(
-          blink::mojom::StreamDevicesSet(),
-          blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
-          /*ui=*/nullptr);
+      std::move(callback).Run(blink::mojom::StreamDevicesSet(),
+                              MediaStreamRequestResult::PERMISSION_DENIED,
+                              /*ui=*/nullptr);
       return;
     }
   }
@@ -292,7 +290,7 @@ void DisplayMediaAccessHandler::HandleRequest(
       HostContentSettingsMapFactory::GetForProfile(
           web_contents->GetBrowserContext());
   CHECK(content_settings);
-  content::DesktopMediaID media_id = GetMediaForSelectionDialogBypass(
+  DesktopMediaID media_id = GetMediaForSelectionDialogBypass(
       *content_settings, web_contents, request);
   if (!media_id.is_null()) {
     BypassMediaSelectionDialog(web_contents, request, media_id,
@@ -304,10 +302,9 @@ void DisplayMediaAccessHandler::HandleRequest(
   // Except for the case when DISPLAY_MEDIA_SYSTEM_AUDIO is allowed, all
   // requests should contain video stream.
   if (request.video_type == blink::mojom::MediaStreamType::NO_SERVICE) {
-    std::move(callback).Run(
-        blink::mojom::StreamDevicesSet(),
-        blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
-        /*ui=*/nullptr);
+    std::move(callback).Run(blink::mojom::StreamDevicesSet(),
+                            MediaStreamRequestResult::NOT_SUPPORTED,
+                            /*ui=*/nullptr);
     return;
   }
 
@@ -340,15 +337,15 @@ void DisplayMediaAccessHandler::UpdateMediaRequestState(
 }
 
 void DisplayMediaAccessHandler::ShowMediaSelectionDialog(
-    content::WebContents* web_contents,
+    WebContents* web_contents,
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
   std::unique_ptr<DesktopMediaPicker> picker =
       picker_factory_->CreatePicker(&request);
   if (!picker) {
-    std::move(callback).Run(
-        blink::mojom::StreamDevicesSet(),
-        blink::mojom::MediaStreamRequestResult::INVALID_STATE, /*ui=*/nullptr);
+    std::move(callback).Run(blink::mojom::StreamDevicesSet(),
+                            MediaStreamRequestResult::INVALID_STATE,
+                            /*ui=*/nullptr);
     return;
   }
 
@@ -368,16 +365,15 @@ void DisplayMediaAccessHandler::ShowMediaSelectionDialog(
 }
 
 void DisplayMediaAccessHandler::BypassMediaSelectionDialog(
-    content::WebContents* web_contents,
+    WebContents* web_contents,
     const content::MediaStreamRequest& request,
-    const content::DesktopMediaID& media_id,
+    const DesktopMediaID& media_id,
     content::MediaResponseCallback callback) {
   if (web_contents->GetLastCommittedURL().scheme() !=
       content::kChromeUIScheme) {
-    std::move(callback).Run(
-        blink::mojom::StreamDevicesSet(),
-        blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
-        /*ui=*/nullptr);
+    std::move(callback).Run(blink::mojom::StreamDevicesSet(),
+                            MediaStreamRequestResult::NOT_SUPPORTED,
+                            /*ui=*/nullptr);
     return;
   }
   blink::mojom::StreamDevicesSet stream_devices_set;
@@ -390,13 +386,12 @@ void DisplayMediaAccessHandler::BypassMediaSelectionDialog(
       request.disable_local_echo, request.suppress_local_audio_playback,
       /*display_notification=*/false, GetApplicationTitle(web_contents),
       request.captured_surface_control_active, stream_devices);
-  std::move(callback).Run(stream_devices_set,
-                          blink::mojom::MediaStreamRequestResult::OK,
+  std::move(callback).Run(stream_devices_set, MediaStreamRequestResult::OK,
                           std::move(ui));
 }
 
 void DisplayMediaAccessHandler::ProcessChangeSourceRequest(
-    content::WebContents* web_contents,
+    WebContents* web_contents,
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -412,13 +407,14 @@ void DisplayMediaAccessHandler::ProcessChangeSourceRequest(
       /*is_allowlisted_extension=*/false));
   // If this is the only request then pop it. Otherwise, there is already a task
   // scheduled to pop the next request.
-  if (queue.size() == 1)
+  if (queue.size() == 1) {
     ProcessQueuedAccessRequest(queue, web_contents);
+  }
 }
 
 void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
     const RequestsQueue& queue,
-    content::WebContents* web_contents) {
+    WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(web_contents);
 
@@ -431,8 +427,7 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
 
   // If Capture is not allowed, then reject.
   if (capture_level == AllowedScreenCaptureLevel::kDisallowed) {
-    RejectRequest(web_contents,
-                  blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED);
+    RejectRequest(web_contents, MediaStreamRequestResult::PERMISSION_DENIED);
     return;
   }
 
@@ -446,19 +441,19 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
 
 void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
     const PendingAccessRequest& pending_request,
-    content::WebContents* web_contents,
+    WebContents* web_contents,
     AllowedScreenCaptureLevel capture_level,
     const GURL& request_origin) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(web_contents);
 
-  content::WebContents* ui_web_contents = web_contents;
+  WebContents* ui_web_contents = web_contents;
 
 #if defined(TOOLKIT_VIEWS)
   // If `web_contents` is the opener of a Document Picture in Picture window,
   // and if the pip window currently has the focus, then show the request in the
   // pip window instead.
-  if (content::WebContents* const child_web_contents =
+  if (WebContents* const child_web_contents =
           web_contents->HasPictureInPictureDocument()
               ? PictureInPictureWindowManager::GetInstance()
                     ->GetChildWebContents()
@@ -540,54 +535,54 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
 
 void DisplayMediaAccessHandler::ProcessQueuedChangeSourceRequest(
     const content::MediaStreamRequest& request,
-    content::WebContents* web_contents) {
+    WebContents* web_contents) {
   DCHECK(web_contents);
   DCHECK(!request.requested_video_device_ids.empty());
 
-  content::WebContentsMediaCaptureId web_contents_id;
-  if (!content::WebContentsMediaCaptureId::Parse(
+  WebContentsMediaCaptureId web_contents_id;
+  if (!WebContentsMediaCaptureId::Parse(
           request.requested_video_device_ids.front(), &web_contents_id)) {
-    RejectRequest(web_contents,
-                  blink::mojom::MediaStreamRequestResult::INVALID_STATE);
+    RejectRequest(web_contents, MediaStreamRequestResult::INVALID_STATE);
     return;
   }
-  content::DesktopMediaID media_id(content::DesktopMediaID::TYPE_WEB_CONTENTS,
-                                   content::DesktopMediaID::kNullId,
-                                   web_contents_id);
+  DesktopMediaID media_id(DesktopMediaID::TYPE_WEB_CONTENTS,
+                          DesktopMediaID::kNullId, web_contents_id);
   media_id.audio_share =
       request.audio_type != blink::mojom::MediaStreamType::NO_SERVICE;
   OnDisplaySurfaceSelected(web_contents->GetWeakPtr(), media_id);
 }
 
-void DisplayMediaAccessHandler::RejectRequest(
-    content::WebContents* web_contents,
-    blink::mojom::MediaStreamRequestResult result) {
+void DisplayMediaAccessHandler::RejectRequest(WebContents* web_contents,
+                                              MediaStreamRequestResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(web_contents);
 
   auto it = pending_requests_.find(web_contents);
-  if (it == pending_requests_.end())
+  if (it == pending_requests_.end()) {
     return;
+  }
   RequestsQueue& mutable_queue = it->second;
-  if (mutable_queue.empty())
+  if (mutable_queue.empty()) {
     return;
+  }
   PendingAccessRequest& mutable_request = *mutable_queue.front();
   std::move(mutable_request.callback)
       .Run(blink::mojom::StreamDevicesSet(), result, /*ui=*/nullptr);
   mutable_queue.pop_front();
-  if (!mutable_queue.empty())
+  if (!mutable_queue.empty()) {
     ProcessQueuedAccessRequest(mutable_queue, web_contents);
+  }
 }
 
-void DisplayMediaAccessHandler::AcceptRequest(
-    content::WebContents* web_contents,
-    const content::DesktopMediaID& media_id) {
+void DisplayMediaAccessHandler::AcceptRequest(WebContents* web_contents,
+                                              const DesktopMediaID& media_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(web_contents);
 
   auto it = pending_requests_.find(web_contents);
-  if (it == pending_requests_.end())
+  if (it == pending_requests_.end()) {
     return;
+  }
   RequestsQueue& queue = it->second;
   if (queue.empty()) {
     // UpdateMediaRequestState() called with MEDIA_REQUEST_STATE_CLOSING. Don't
@@ -597,7 +592,7 @@ void DisplayMediaAccessHandler::AcceptRequest(
   PendingAccessRequest& pending_request = *queue.front();
 
   const bool disable_local_echo =
-      (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) &&
+      (media_id.type == DesktopMediaID::TYPE_WEB_CONTENTS) &&
       media_id.web_contents_id.disable_local_echo;
 
   blink::mojom::StreamDevicesSet stream_devices_set;
@@ -613,17 +608,17 @@ void DisplayMediaAccessHandler::AcceptRequest(
   UpdateTarget(pending_request.request, media_id);
 
   std::move(pending_request.callback)
-      .Run(stream_devices_set, blink::mojom::MediaStreamRequestResult::OK,
-           std::move(ui));
+      .Run(stream_devices_set, MediaStreamRequestResult::OK, std::move(ui));
   queue.pop_front();
 
-  if (!queue.empty())
+  if (!queue.empty()) {
     ProcessQueuedAccessRequest(queue, web_contents);
+  }
 }
 
 void DisplayMediaAccessHandler::OnDisplaySurfaceSelected(
-    base::WeakPtr<content::WebContents> web_contents,
-    content::DesktopMediaID media_id) {
+    base::WeakPtr<WebContents> web_contents,
+    DesktopMediaID media_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!web_contents) {
@@ -634,18 +629,17 @@ void DisplayMediaAccessHandler::OnDisplaySurfaceSelected(
 
   if (media_id.is_null()) {
     RejectRequest(web_contents.get(),
-                  blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED);
+                  MediaStreamRequestResult::PERMISSION_DENIED);
     return;
   }
 
   // If the media id is tied to a tab, check that it hasn't been destroyed.
-  if (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS &&
-      !content::WebContents::FromRenderFrameHost(
-          content::RenderFrameHost::FromID(
-              media_id.web_contents_id.render_process_id,
-              media_id.web_contents_id.main_render_frame_id))) {
+  if (media_id.type == DesktopMediaID::TYPE_WEB_CONTENTS &&
+      !WebContents::FromRenderFrameHost(content::RenderFrameHost::FromID(
+          media_id.web_contents_id.render_process_id,
+          media_id.web_contents_id.main_render_frame_id))) {
     RejectRequest(web_contents.get(),
-                  blink::mojom::MediaStreamRequestResult::TAB_CAPTURE_FAILURE);
+                  MediaStreamRequestResult::TAB_CAPTURE_FAILURE);
     return;
   }
 
@@ -656,14 +650,12 @@ void DisplayMediaAccessHandler::OnDisplaySurfaceSelected(
   // window which will be captured internally, the macOS screen capture APIs
   // will not be used.
   if (system_media_permissions::ScreenCaptureNeedsSystemLevelPermissions() &&
-      (media_id.type == content::DesktopMediaID::TYPE_SCREEN ||
-       (media_id.type == content::DesktopMediaID::TYPE_WINDOW &&
-        !media_id.window_id)) &&
+      (media_id.type == DesktopMediaID::TYPE_SCREEN ||
+       (media_id.type == DesktopMediaID::TYPE_WINDOW && !media_id.window_id)) &&
       system_media_permissions::CheckSystemScreenCapturePermission() !=
           system_permission_settings::SystemPermission::kAllowed) {
-    RejectRequest(
-        web_contents.get(),
-        blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM);
+    RejectRequest(web_contents.get(),
+                  MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM);
     return;
   }
 #endif  // BUILDFLAG(IS_MAC)
@@ -684,8 +676,8 @@ void DisplayMediaAccessHandler::OnDisplaySurfaceSelected(
 
 #if BUILDFLAG(IS_CHROMEOS)
 void DisplayMediaAccessHandler::OnDlpRestrictionChecked(
-    base::WeakPtr<content::WebContents> web_contents,
-    const content::DesktopMediaID& media_id,
+    base::WeakPtr<WebContents> web_contents,
+    const DesktopMediaID& media_id,
     bool is_dlp_allowed) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -695,7 +687,7 @@ void DisplayMediaAccessHandler::OnDlpRestrictionChecked(
 
   if (!is_dlp_allowed) {
     RejectRequest(web_contents.get(),
-                  blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED);
+                  MediaStreamRequestResult::PERMISSION_DENIED);
   }
   AcceptRequest(web_contents.get(), media_id);
 }
@@ -720,7 +712,7 @@ void DisplayMediaAccessHandler::DeletePendingAccessRequest(
 }
 
 void DisplayMediaAccessHandler::WebContentsDestroyed(
-    content::WebContents* web_contents) {
+    WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   pending_requests_.erase(web_contents);
