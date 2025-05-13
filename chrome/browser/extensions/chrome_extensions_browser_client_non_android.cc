@@ -54,10 +54,6 @@ void ChromeExtensionsBrowserClient::Init() {
   user_script_listener_ = std::make_unique<UserScriptListener>();
 }
 
-void ChromeExtensionsBrowserClient::StartTearDown() {
-  user_script_listener_->StartTearDown();
-}
-
 void ChromeExtensionsBrowserClient::GetEarlyExtensionPrefsObservers(
     content::BrowserContext* context,
     std::vector<EarlyExtensionPrefsObserver*>* observers) const {
@@ -163,15 +159,6 @@ KioskDelegate* ChromeExtensionsBrowserClient::GetKioskDelegate() {
     kiosk_delegate_ = std::make_unique<ChromeKioskDelegate>();
   }
   return kiosk_delegate_.get();
-}
-
-UserScriptListener* ChromeExtensionsBrowserClient::GetUserScriptListener() {
-  return user_script_listener_.get();
-}
-
-void ChromeExtensionsBrowserClient::SignalContentScriptsLoaded(
-    content::BrowserContext* context) {
-  user_script_listener_->OnScriptsLoaded(context);
 }
 
 ScriptExecutor* ChromeExtensionsBrowserClient::GetScriptExecutorForTab(

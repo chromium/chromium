@@ -64,6 +64,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
 
   // ExtensionsBrowserClient overrides:
   void Init() override;
+  void StartTearDown() override;
   bool IsShuttingDown() override;
   bool AreExtensionsDisabled(const base::CommandLine& command_line,
                              content::BrowserContext* context) override;
@@ -173,6 +174,8 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
                           content::BrowserContext* context) const override;
   bool IsWebUIAllowedToMakeNetworkRequests(const url::Origin& origin) override;
   network::mojom::NetworkContext* GetSystemNetworkContext() override;
+  UserScriptListener* GetUserScriptListener() override;
+  void SignalContentScriptsLoaded(content::BrowserContext* context) override;
   bool ShouldSchemeBypassNavigationChecks(
       const std::string& scheme) const override;
   base::FilePath GetSaveFilePath(content::BrowserContext* context) override;
@@ -230,14 +233,11 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
 // for these methods, so we cannot declare them here (otherwise the linker
 // sees them as un-implemented).
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  void StartTearDown() override;
   void CleanUpWebView(content::BrowserContext* browser_context,
                       int embedder_process_id,
                       int view_instance_id) override;
   void AttachExtensionTaskManagerTag(content::WebContents* web_contents,
                                      mojom::ViewType view_type) override;
-  UserScriptListener* GetUserScriptListener() override;
-  void SignalContentScriptsLoaded(content::BrowserContext* context) override;
   bool IsExtensionTelemetryServiceEnabled(
       content::BrowserContext* context) const override;
   ScriptExecutor* GetScriptExecutorForTab(

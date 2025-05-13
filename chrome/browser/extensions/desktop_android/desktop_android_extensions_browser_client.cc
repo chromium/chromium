@@ -11,6 +11,7 @@
 #include "chrome/browser/extensions/chrome_extensions_browser_client.h"
 #include "chrome/browser/extensions/desktop_android/desktop_android_extension_host_delegate.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
+#include "chrome/browser/extensions/user_script_listener.h"
 #include "chrome/browser/ui/webui/devtools/devtools_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/core/browser/signin_header_helper.h"
@@ -187,6 +188,8 @@ class DesktopAndroidExtensionsAPIClient : public ExtensionsAPIClient {
 void ChromeExtensionsBrowserClient::Init() {
   kiosk_delegate_ = std::make_unique<DesktopAndroidKioskDelegate>();
   api_client_ = std::make_unique<DesktopAndroidExtensionsAPIClient>();
+  // Must occur after g_browser_process is initialized.
+  user_script_listener_ = std::make_unique<UserScriptListener>();
 }
 
 void ChromeExtensionsBrowserClient::GetEarlyExtensionPrefsObservers(

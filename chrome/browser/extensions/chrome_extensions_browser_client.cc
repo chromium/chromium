@@ -184,6 +184,10 @@ ChromeExtensionsBrowserClient::ChromeExtensionsBrowserClient()
 
 ChromeExtensionsBrowserClient::~ChromeExtensionsBrowserClient() = default;
 
+void ChromeExtensionsBrowserClient::StartTearDown() {
+  user_script_listener_->StartTearDown();
+}
+
 bool ChromeExtensionsBrowserClient::IsShuttingDown() {
   return g_browser_process->IsShuttingDown();
 }
@@ -553,6 +557,15 @@ network::mojom::NetworkContext*
 ChromeExtensionsBrowserClient::GetSystemNetworkContext() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return g_browser_process->system_network_context_manager()->GetContext();
+}
+
+UserScriptListener* ChromeExtensionsBrowserClient::GetUserScriptListener() {
+  return user_script_listener_.get();
+}
+
+void ChromeExtensionsBrowserClient::SignalContentScriptsLoaded(
+    content::BrowserContext* context) {
+  user_script_listener_->OnScriptsLoaded(context);
 }
 
 bool ChromeExtensionsBrowserClient::ShouldSchemeBypassNavigationChecks(
