@@ -10808,6 +10808,7 @@ bool Element::ChildStyleRecalcBlockedByDisplayLock() const {
 }
 
 void Element::ChangeInterestState(Element* target, InterestState new_state) {
+  DCHECK_NE(this, target);
   EnsureElementRareData().EnsureInvokerData().SetInterestState(new_state);
   PseudoStateChanged(CSSSelector::kPseudoHasInterest);
   PseudoStateChanged(CSSSelector::kPseudoHasPartialInterest);
@@ -11010,6 +11011,13 @@ void Element::HandleInterestTargetHoverOrFocus(InterestTargetSource source) {
       // an interest invoker), even if the interesttarget attribute
       // has been removed.
       invoker_data->CancelInterestLostTask();
+      // If the invoker is at partial interest (it was keyboard-activated) but
+      // it just got mouse-hovered, upgrade it to full interest.
+      if (invoker_data->GetInterestState() == InterestState::kPartialInterest &&
+          source == InterestTargetSource::kHover) {
+        ChangeInterestState(InterestTargetElement(),
+                            InterestState::kFullInterest);
+      }
     }
     if (upstream_invoker) [[unlikely]] {
       // Cancel (unconditionally) any InterestLost tasks on the interest
@@ -11026,10 +11034,14 @@ void Element::HandleInterestTargetHoverOrFocus(InterestTargetSource source) {
                                               InterestState::kFullInterest);
       }
     }
-    if (auto* target = InterestTargetElement()) [[unlikely]] {
-      // This is an interest invoker that was just hovered or focused. Schedule
-      // an InterestGained task, with a new state of "full interest" (for
-      // hover), or "potential partial interest" (for focus).
+    if (auto* target = InterestTargetElement();
+        target && (!invoker_data || invoker_data->GetInterestState() ==
+                                        InterestState::kNoInterest))
+        [[unlikely]] {
+      // This is an interest invoker that doesn't already have interest, and was
+      // just hovered or focused. Schedule an InterestGained task, with a new
+      // state of "full interest" (for hover), or "potential partial interest"
+      // (for focus).
       auto* target_popover = DynamicTo<HTMLElement>(target);
       bool might_need_partial_interest =
           source == InterestTargetSource::kFocusElementChain &&

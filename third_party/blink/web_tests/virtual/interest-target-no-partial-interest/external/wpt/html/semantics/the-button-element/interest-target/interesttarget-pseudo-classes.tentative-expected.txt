@@ -5,6 +5,10 @@ This is a testharness.js-based test.
   assert_equals: initial: :has-interest mismatch expected false but got true
 [FAIL] Show interest hotkey confers "full interest", without any delays
   assert_equals: initial: :has-interest mismatch expected false but got true
+[FAIL] Hovering the popover confers "full interest", without any delays
+  assert_equals: initial: :has-interest mismatch expected false but got true
+[FAIL] Hovering the invoker confers "full interest", without any delays
+  assert_equals: initial: :has-interest mismatch expected false but got true
 [FAIL] With full interest, contents are keyboard focusable
   assert_equals: initial: :has-interest mismatch expected false but got true
 [FAIL] Lose interest hotkey works

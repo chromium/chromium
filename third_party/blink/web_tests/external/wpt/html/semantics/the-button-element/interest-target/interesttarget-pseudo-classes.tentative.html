@@ -128,6 +128,28 @@ promise_test(async (t) => {
 promise_test(async (t) => {
   checkPseudos(invoker,target,false,false,false,false,'initial');
   await focusOn(invoker);
+  checkPseudos(invoker,target,true,true,true,true,'focusing invoker shows partial interest');
+  invoker.setAttribute('style',`interest-target-delay: 10000s`);
+  await hoverOver(target);
+  checkPseudos(invoker,target,false,true,false,true,'invoker now has full interest');
+  assert_equals(document.activeElement,invoker,'focus does not move in this case');
+  await do_cleanup();
+},'Hovering the popover confers "full interest", without any delays');
+
+promise_test(async (t) => {
+  checkPseudos(invoker,target,false,false,false,false,'initial');
+  await focusOn(invoker);
+  checkPseudos(invoker,target,true,true,true,true,'focusing invoker shows partial interest');
+  invoker.setAttribute('style',`interest-target-delay: 10000s`);
+  await hoverOver(invoker);
+  checkPseudos(invoker,target,false,true,false,true,'invoker now has full interest');
+  assert_equals(document.activeElement,invoker,'focus does not move in this case');
+  await do_cleanup();
+},'Hovering the invoker confers "full interest", without any delays');
+
+promise_test(async (t) => {
+  checkPseudos(invoker,target,false,false,false,false,'initial');
+  await focusOn(invoker);
   await sendShowInterestHotkey();
   checkPseudos(invoker,target,false,true,false,true,'invoker now has full interest');
   await sendTab();
