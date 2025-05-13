@@ -243,13 +243,12 @@ optimization_guide::proto::OnDeviceModelExecutionFeatureConfig CreateConfig() {
 // fake service would look something like this:
 // - s1.Prompt("foo")
 //   - Adds "UfooEM" to the session
-//   - Gets output of ["Context: UfooEM\n"] from fake service
-//   - Adds "Context: UfooEM\nE" to the session (fake response + end token)
+//   - Gets output of ["UfooEM"] from fake service
+//   - Adds "UfooEME" to the session (fake response + end token)
 // - s1.Prompt("bar")
 //   - Adds "UbarEM" to the session
-//   - Gets output of ["Context: UfooEM\n", "Context: Context: UfooEM\nE\n",
-//     "Context: UbarEM\n"].
-//   - Adds "Context: UfooEM\nContext: Context: UfooEM\nE\nContext: UbarEM\n"
+//   - Gets output of ["UfooEM", "UfooEME", "UbarEM"].
+//   - Adds "UfooEMUfooEMEUbarEM"
 //     (concatenated output from fake service) to the session
 // This behavior verifies the correct inputs and outputs are being returned from
 // the model, and this helper makes it easier to construct these expectations.
@@ -260,10 +259,10 @@ std::vector<std::string> FormatResponses(
   std::string last_output;
   for (const std::string& response : responses) {
     if (!last_output.empty()) {
-      formatted.push_back("Context: " + last_output + "E\n");
+      formatted.push_back(last_output + "E");
       last_output += formatted.back();
     }
-    formatted.push_back("Context: " + response + "\n");
+    formatted.push_back(response);
     last_output += formatted.back();
   }
   return formatted;
@@ -383,7 +382,7 @@ TEST_F(AILanguageModelTest, Append) {
   auto session = CreateSession();
   Append(*session, MakeInput("foo"));
   EXPECT_THAT(Prompt(*session, MakeInput("bar")),
-              ElementsAre("Context: UfooE\n", "Context: UbarEM\n"));
+              ElementsAre("UfooE", "UbarEM"));
 }
 
 TEST_F(AILanguageModelTest, PromptTokenCounts) {
@@ -464,9 +463,9 @@ TEST_F(AILanguageModelTest, SamplingParams) {
   auto fork = Fork(*session);
 
   EXPECT_THAT(Prompt(*session, MakeInput("foo")),
-              ElementsAre("Context: UfooEM\n", "TopK: 2, Temp: 1\n"));
+              ElementsAre("UfooEM", "TopK: 2, Temp: 1"));
   EXPECT_THAT(Prompt(*fork, MakeInput("bar")),
-              ElementsAre("Context: UbarEM\n", "TopK: 2, Temp: 1\n"));
+              ElementsAre("UbarEM", "TopK: 2, Temp: 1"));
 }
 
 TEST_F(AILanguageModelTest, SamplingParamsTopKOutOfRange) {
@@ -479,7 +478,7 @@ TEST_F(AILanguageModelTest, SamplingParamsTopKOutOfRange) {
   auto session = CreateSession(std::move(options));
 
   EXPECT_THAT(Prompt(*session, MakeInput("foo")),
-              ElementsAre("Context: UfooEM\n", "TopK: 1, Temp: 1.5\n"));
+              ElementsAre("UfooEM", "TopK: 1, Temp: 1.5"));
 }
 
 TEST_F(AILanguageModelTest, SamplingParamsTemperatureOutOfRange) {
@@ -492,7 +491,7 @@ TEST_F(AILanguageModelTest, SamplingParamsTemperatureOutOfRange) {
   auto session = CreateSession(std::move(options));
 
   EXPECT_THAT(Prompt(*session, MakeInput("foo")),
-              ElementsAre("Context: UfooEM\n", "TopK: 2, Temp: 0\n"));
+              ElementsAre("UfooEM", "TopK: 2, Temp: 0"));
 }
 
 TEST_F(AILanguageModelTest, MaxSamplingParams) {
@@ -505,7 +504,7 @@ TEST_F(AILanguageModelTest, MaxSamplingParams) {
   auto session = CreateSession(std::move(options));
 
   EXPECT_THAT(Prompt(*session, MakeInput("foo")),
-              ElementsAre("Context: UfooEM\n", "TopK: 5, Temp: 1.5\n"));
+              ElementsAre("UfooEM", "TopK: 5, Temp: 1.5"));
 }
 
 TEST_F(AILanguageModelTest, InitialPrompts) {
@@ -515,7 +514,7 @@ TEST_F(AILanguageModelTest, InitialPrompts) {
   auto session = CreateSession(std::move(options));
 
   EXPECT_THAT(Prompt(*session, MakeInput("foo")),
-              ElementsAre("Context: ShiEUbyeE\n", "Context: UfooEM\n"));
+              ElementsAre("ShiEUbyeE", "UfooEM"));
 }
 
 TEST_F(AILanguageModelTest, InitialPromptsInstanceInfo) {
@@ -591,8 +590,7 @@ TEST_F(AILanguageModelTest, QuotaOverflowOnPromptInput) {
   // Response should include input/output of previous prompt with the original
   // long prompt not present.
   EXPECT_THAT(responder.responses(),
-              ElementsAre("Context: SinitE\n", "Context: UfooEMhiE\n",
-                          "Context: U" + long_prompt + "EM\n"));
+              ElementsAre("SinitE", "UfooEMhiE", "U" + long_prompt + "EM"));
 }
 
 TEST_F(AILanguageModelTest, QuotaOverflowOnAppend) {
@@ -609,10 +607,8 @@ TEST_F(AILanguageModelTest, QuotaOverflowOnAppend) {
   responder.WaitForQuotaOverflow();
   EXPECT_TRUE(responder.WaitForCompletion());
 
-  EXPECT_THAT(
-      Prompt(*session, MakeInput("foo")),
-      ElementsAre("Context: SinitE\n", "Context: U" + long_prompt + "E\n",
-                  "Context: UfooEM\n"));
+  EXPECT_THAT(Prompt(*session, MakeInput("foo")),
+              ElementsAre("SinitE", "U" + long_prompt + "E", "UfooEM"));
 }
 
 TEST_F(AILanguageModelTest, QuotaOverflowOnOutput) {
@@ -643,8 +639,7 @@ TEST_F(AILanguageModelTest, QuotaOverflowOnOutput) {
   // - "bar" from the current prompt call
   fake_broker_.settings().set_execute_result({});
   EXPECT_THAT(Prompt(*session, MakeInput("bar")),
-              ElementsAre("Context: UfooEM" + long_response + "E\n",
-                          "Context: UbarEM\n"));
+              ElementsAre("UfooEM" + long_response + "E", "UbarEM"));
 }
 
 TEST_F(AILanguageModelTest, Destroy) {
@@ -949,7 +944,7 @@ TEST_F(AILanguageModelTest, Constraint) {
   EXPECT_THAT(
       Prompt(*session, MakeInput("foo"),
              on_device_model::mojom::ResponseConstraint::NewRegex("reg")),
-      ElementsAre("Constraint: regex reg\n", "Context: UfooEM\n"));
+      ElementsAre("Constraint: regex reg", "UfooEM"));
 }
 
 TEST_F(AILanguageModelTest, ServiceCrash) {
@@ -1112,11 +1107,11 @@ TEST_F(AILanguageModelTest, Priority) {
 
   main_rfh()->GetRenderWidgetHost()->GetView()->Hide();
   EXPECT_THAT(Prompt(*session, MakeInput("bar")),
-              ElementsAre("Priority: background\n", "hi"));
+              ElementsAre("Priority: background", "hi"));
 
   auto fork = Fork(*session);
   EXPECT_THAT(Prompt(*fork, MakeInput("bar")),
-              ElementsAre("Priority: background\n", "hi"));
+              ElementsAre("Priority: background", "hi"));
 
   main_rfh()->GetRenderWidgetHost()->GetView()->Show();
   EXPECT_THAT(Prompt(*session, MakeInput("baz")), ElementsAre("hi"));

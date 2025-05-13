@@ -181,29 +181,28 @@ void FakeOnDeviceSession::GenerateImpl(
   if (model_->performance_hint() ==
       ml::ModelPerformanceHint::kFastestInference) {
     auto chunk = mojom::ResponseChunk::New();
-    chunk->text = "Fastest inference\n";
+    chunk->text = "Fastest inference";
     remote->OnResponse(std::move(chunk));
   }
   if (model_->data().base_weight != "0") {
     auto chunk = mojom::ResponseChunk::New();
-    chunk->text = "Base model: " + model_->data().base_weight + "\n";
+    chunk->text = "Base model: " + model_->data().base_weight;
     remote->OnResponse(std::move(chunk));
   }
   if (!model_->data().adaptation_model_weight.empty()) {
     auto chunk = mojom::ResponseChunk::New();
-    chunk->text =
-        "Adaptation model: " + model_->data().adaptation_model_weight + "\n";
+    chunk->text = "Adaptation model: " + model_->data().adaptation_model_weight;
     remote->OnResponse(std::move(chunk));
   }
   if (!model_->data().cache_weight.empty()) {
     auto chunk = mojom::ResponseChunk::New();
-    chunk->text = "Cache weight: " + model_->data().cache_weight + "\n";
+    chunk->text = "Cache weight: " + model_->data().cache_weight;
     remote->OnResponse(std::move(chunk));
   }
 
   if (priority_ == on_device_model::mojom::Priority::kBackground) {
     auto chunk = mojom::ResponseChunk::New();
-    chunk->text = "Priority: background\n";
+    chunk->text = "Priority: background";
     remote->OnResponse(std::move(chunk));
   }
 
@@ -211,11 +210,11 @@ void FakeOnDeviceSession::GenerateImpl(
     const auto& constraint = *options->constraint;
     auto chunk = mojom::ResponseChunk::New();
     if (constraint.is_json_schema()) {
-      chunk->text = "Constraint: json " + constraint.get_json_schema() + "\n";
+      chunk->text = "Constraint: json " + constraint.get_json_schema();
     } else if (constraint.is_regex()) {
-      chunk->text = "Constraint: regex " + constraint.get_regex() + "\n";
+      chunk->text = "Constraint: regex " + constraint.get_regex();
     } else {
-      chunk->text = "Constraint: unknown\n";
+      chunk->text = "Constraint: unknown";
     }
     remote->OnResponse(std::move(chunk));
   }
@@ -226,15 +225,14 @@ void FakeOnDeviceSession::GenerateImpl(
       std::string text = CtxToString(*context, params_->capabilities);
       output_token_count += text.size();
       auto chunk = mojom::ResponseChunk::New();
-      chunk->text = "Context: " + text + "\n";
+      chunk->text = text;
       remote->OnResponse(std::move(chunk));
     }
     if (params_->top_k != ml::kMinTopK ||
         params_->temperature != ml::kMinTemperature) {
       auto chunk = mojom::ResponseChunk::New();
       chunk->text += "TopK: " + base::NumberToString(params_->top_k) +
-                     ", Temp: " + base::NumberToString(params_->temperature) +
-                     "\n";
+                     ", Temp: " + base::NumberToString(params_->temperature);
       remote->OnResponse(std::move(chunk));
     }
   } else {

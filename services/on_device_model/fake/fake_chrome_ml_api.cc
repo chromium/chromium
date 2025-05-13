@@ -279,7 +279,7 @@ bool SessionGenerate(ChromeMLSession session,
 
   if (instance->model_instance->performance_hint ==
       ml::ModelPerformanceHint::kFastestInference) {
-    OutputChunk("Fastest inference\n");
+    OutputChunk("Fastest inference");
   }
   if (!instance->adaptation_data.empty()) {
     std::string adaptation_str = "Adaptation: " + instance->adaptation_data;
@@ -287,19 +287,19 @@ bool SessionGenerate(ChromeMLSession session,
       adaptation_str +=
           " (" + base::NumberToString(*instance->adaptation_file_id) + ")";
     }
-    OutputChunk(adaptation_str + "\n");
+    OutputChunk(adaptation_str);
   }
 
   // Only include sampling params if they're not the respective default values.
   if (instance->top_k != 1 || instance->temperature != 0) {
     OutputChunk(base::StrCat(
         {"TopK: ", base::NumberToString(instance->top_k),
-         ", Temp: ", base::NumberToString(instance->temperature), "\n"}));
+         ", Temp: ", base::NumberToString(instance->temperature)}));
   }
 
   if (!instance->context.empty()) {
     for (const std::string& context : instance->context) {
-      OutputChunk("Context: " + context + "\n");
+      OutputChunk(context);
     }
   }
   if (options->constraint) {
