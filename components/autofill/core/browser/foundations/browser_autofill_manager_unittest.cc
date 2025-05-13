@@ -2093,7 +2093,8 @@ TEST_F(BrowserAutofillManagerTestValuables, GetSuggestions_LoyaltyCards) {
       {Suggestion("1234", "Deutsche Bahn", Suggestion::Icon::kNoIcon,
                   SuggestionType::kLoyaltyCardEntry),
        CreateSeparator(),
-       Suggestion("Manage loyalty cards...", "", Suggestion::Icon::kSettings,
+       Suggestion(l10n_util::GetStringUTF8(IDS_AUTOFILL_MANAGE_LOYALTY_CARDS),
+                  "", Suggestion::Icon::kSettings,
                   SuggestionType::kManageLoyaltyCard)});
 }
 

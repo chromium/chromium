@@ -13,8 +13,10 @@
 #include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace autofill {
@@ -81,54 +83,58 @@ TEST_F(ValuableSuggestionGeneratorTest,
   test_api(valuables_data_manager()).SetLoyaltyCards(loyalty_cards);
 
   // No matching domains.
-  EXPECT_THAT(GetLoyaltyCardSuggestions(
-                  valuables_data_manager(),
-                  GURL("https://not-existing-domain.example/test")),
-              testing::ElementsAre(
-                  EqualsSuggestion(
-                      SuggestionType::kLoyaltyCardEntry, u"987654321987654321",
-                      /*is_main_text_primary=*/true, Suggestion::Icon::kNoIcon,
-                      {{Suggestion::Text(u"CVS Pharmacy")}},
-                      Suggestion::Guid("loyalty_card_id_1")),
-                  EqualsSuggestion(
-                      SuggestionType::kLoyaltyCardEntry, u"37262999281",
-                      /*is_main_text_primary=*/true, Suggestion::Icon::kNoIcon,
-                      {{Suggestion::Text(u"Ticket Maester")}},
-                      Suggestion::Guid("loyalty_card_id_2")),
-                  EqualsSuggestion(
-                      SuggestionType::kLoyaltyCardEntry, u"998766823",
-                      /*is_main_text_primary=*/true, Suggestion::Icon::kNoIcon,
-                      {{Suggestion::Text(u"Walgreens")}},
-                      Suggestion::Guid("loyalty_card_id_3")),
-                  EqualsSuggestion(SuggestionType::kSeparator),
-                  EqualsSuggestion(SuggestionType::kManageLoyaltyCard,
-                                   u"Manage loyalty cards...",
-                                   Suggestion::Icon::kSettings)));
+  EXPECT_THAT(
+      GetLoyaltyCardSuggestions(
+          valuables_data_manager(),
+          GURL("https://not-existing-domain.example/test")),
+      testing::ElementsAre(
+          EqualsSuggestion(
+              SuggestionType::kLoyaltyCardEntry, u"987654321987654321",
+              /*is_main_text_primary=*/true, Suggestion::Icon::kNoIcon,
+              {{Suggestion::Text(u"CVS Pharmacy")}},
+              Suggestion::Guid("loyalty_card_id_1")),
+          EqualsSuggestion(SuggestionType::kLoyaltyCardEntry, u"37262999281",
+                           /*is_main_text_primary=*/true,
+                           Suggestion::Icon::kNoIcon,
+                           {{Suggestion::Text(u"Ticket Maester")}},
+                           Suggestion::Guid("loyalty_card_id_2")),
+          EqualsSuggestion(SuggestionType::kLoyaltyCardEntry, u"998766823",
+                           /*is_main_text_primary=*/true,
+                           Suggestion::Icon::kNoIcon,
+                           {{Suggestion::Text(u"Walgreens")}},
+                           Suggestion::Guid("loyalty_card_id_3")),
+          EqualsSuggestion(SuggestionType::kSeparator),
+          EqualsSuggestion(
+              SuggestionType::kManageLoyaltyCard,
+              l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_LOYALTY_CARDS),
+              Suggestion::Icon::kSettings)));
 
   // A couple of matching domains.
-  EXPECT_THAT(GetLoyaltyCardSuggestions(valuables_data_manager(),
-                                        GURL("https://domain2.example/test")),
-              testing::ElementsAre(
-                  EqualsSuggestion(
-                      SuggestionType::kLoyaltyCardEntry, u"37262999281",
-                      /*is_main_text_primary=*/true, Suggestion::Icon::kNoIcon,
-                      {{Suggestion::Text(u"Ticket Maester")}},
-                      Suggestion::Guid("loyalty_card_id_2")),
-                  EqualsSuggestion(
-                      SuggestionType::kLoyaltyCardEntry, u"998766823",
-                      /*is_main_text_primary=*/true, Suggestion::Icon::kNoIcon,
-                      {{Suggestion::Text(u"Walgreens")}},
-                      Suggestion::Guid("loyalty_card_id_3")),
-                  EqualsSuggestion(SuggestionType::kSeparator),
-                  EqualsSuggestion(
-                      SuggestionType::kLoyaltyCardEntry, u"987654321987654321",
-                      /*is_main_text_primary=*/true, Suggestion::Icon::kNoIcon,
-                      {{Suggestion::Text(u"CVS Pharmacy")}},
-                      Suggestion::Guid("loyalty_card_id_1")),
-                  EqualsSuggestion(SuggestionType::kSeparator),
-                  EqualsSuggestion(SuggestionType::kManageLoyaltyCard,
-                                   u"Manage loyalty cards...",
-                                   Suggestion::Icon::kSettings)));
+  EXPECT_THAT(
+      GetLoyaltyCardSuggestions(valuables_data_manager(),
+                                GURL("https://domain2.example/test")),
+      testing::ElementsAre(
+          EqualsSuggestion(SuggestionType::kLoyaltyCardEntry, u"37262999281",
+                           /*is_main_text_primary=*/true,
+                           Suggestion::Icon::kNoIcon,
+                           {{Suggestion::Text(u"Ticket Maester")}},
+                           Suggestion::Guid("loyalty_card_id_2")),
+          EqualsSuggestion(SuggestionType::kLoyaltyCardEntry, u"998766823",
+                           /*is_main_text_primary=*/true,
+                           Suggestion::Icon::kNoIcon,
+                           {{Suggestion::Text(u"Walgreens")}},
+                           Suggestion::Guid("loyalty_card_id_3")),
+          EqualsSuggestion(SuggestionType::kSeparator),
+          EqualsSuggestion(
+              SuggestionType::kLoyaltyCardEntry, u"987654321987654321",
+              /*is_main_text_primary=*/true, Suggestion::Icon::kNoIcon,
+              {{Suggestion::Text(u"CVS Pharmacy")}},
+              Suggestion::Guid("loyalty_card_id_1")),
+          EqualsSuggestion(SuggestionType::kSeparator),
+          EqualsSuggestion(
+              SuggestionType::kManageLoyaltyCard,
+              l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_LOYALTY_CARDS),
+              Suggestion::Icon::kSettings)));
   // All matching domains.
   EXPECT_THAT(
       GetLoyaltyCardSuggestions(valuables_data_manager(),
@@ -150,9 +156,10 @@ TEST_F(ValuableSuggestionGeneratorTest,
                            {{Suggestion::Text(u"Walgreens")}},
                            Suggestion::Guid("loyalty_card_id_3")),
           EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsSuggestion(SuggestionType::kManageLoyaltyCard,
-                           u"Manage loyalty cards...",
-                           Suggestion::Icon::kSettings)));
+          EqualsSuggestion(
+              SuggestionType::kManageLoyaltyCard,
+              l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_LOYALTY_CARDS),
+              Suggestion::Icon::kSettings)));
 }
 
 TEST_F(ValuableSuggestionGeneratorTest,
@@ -183,7 +190,8 @@ TEST_F(ValuableSuggestionGeneratorTest,
                       Suggestion::Guid("loyalty_card_id_1")),
                   EqualsSuggestion(SuggestionType::kSeparator),
                   EqualsSuggestion(SuggestionType::kManageLoyaltyCard,
-                                   u"Manage loyalty cards...",
+                                   l10n_util::GetStringUTF16(
+                                       IDS_AUTOFILL_MANAGE_LOYALTY_CARDS),
                                    Suggestion::Icon::kSettings)));
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_THAT(suggestions.back(),
@@ -211,7 +219,8 @@ TEST_F(ValuableSuggestionGeneratorTest,
       Suggestion(u"test-email1@domain1.example", SuggestionType::kAddressEntry),
       Suggestion(u"test-email2@domain2.example", SuggestionType::kAddressEntry),
       Suggestion(SuggestionType::kSeparator),
-      Suggestion(u"Manage addresses...", SuggestionType::kManageAddress)};
+      Suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES),
+                 SuggestionType::kManageAddress)};
 
   ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
       email_suggestions, valuables_data_manager(),
@@ -225,10 +234,13 @@ TEST_F(ValuableSuggestionGeneratorTest,
           EqualsSuggestion(SuggestionType::kAddressEntry,
                            u"test-email2@domain2.example"),
           EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsSuggestion(SuggestionType::kLoyaltyCardEntry, u"Loyalty cards"),
+          EqualsSuggestion(
+              SuggestionType::kLoyaltyCardEntry,
+              l10n_util::GetStringUTF16(IDS_AUTOFILL_LOYALTY_CARD_GENERIC)),
           EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsSuggestion(SuggestionType::kManageAddress,
-                           u"Manage addresses...")));
+          EqualsSuggestion(
+              SuggestionType::kManageAddress,
+              l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES))));
 
   const Suggestion& lc_submenu_suggestion = email_suggestions[3];
   EXPECT_EQ(lc_submenu_suggestion.acceptability,
@@ -242,7 +254,8 @@ TEST_F(ValuableSuggestionGeneratorTest,
                       Suggestion::Guid("loyalty_card_id_1")),
                   EqualsSuggestion(SuggestionType::kSeparator),
                   EqualsSuggestion(SuggestionType::kManageLoyaltyCard,
-                                   u"Manage loyalty cards...",
+                                   l10n_util::GetStringUTF16(
+                                       IDS_AUTOFILL_MANAGE_LOYALTY_CARDS),
                                    Suggestion::Icon::kSettings)));
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_THAT(lc_submenu_suggestion.children.back(),
@@ -258,21 +271,23 @@ TEST_F(ValuableSuggestionGeneratorTest,
       Suggestion(u"test-email1@domain1.example", SuggestionType::kAddressEntry),
       Suggestion(u"test-email2@domain2.example", SuggestionType::kAddressEntry),
       Suggestion(SuggestionType::kSeparator),
-      Suggestion(u"Manage addresses...", SuggestionType::kManageAddress)};
+      Suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES),
+                 SuggestionType::kManageAddress)};
 
   ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
       email_suggestions, valuables_data_manager(),
       GURL("https://common-domain.example/test"));
 
-  EXPECT_THAT(
-      email_suggestions,
-      testing::ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntry,
-                                            u"test-email1@domain1.example"),
-                           EqualsSuggestion(SuggestionType::kAddressEntry,
-                                            u"test-email2@domain2.example"),
-                           EqualsSuggestion(SuggestionType::kSeparator),
-                           EqualsSuggestion(SuggestionType::kManageAddress,
-                                            u"Manage addresses...")));
+  EXPECT_THAT(email_suggestions,
+              testing::ElementsAre(
+                  EqualsSuggestion(SuggestionType::kAddressEntry,
+                                   u"test-email1@domain1.example"),
+                  EqualsSuggestion(SuggestionType::kAddressEntry,
+                                   u"test-email2@domain2.example"),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kManageAddress,
+                                   l10n_util::GetStringUTF16(
+                                       IDS_AUTOFILL_MANAGE_ADDRESSES))));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

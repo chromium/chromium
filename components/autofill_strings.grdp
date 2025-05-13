@@ -212,6 +212,11 @@
     <message name="IDS_AUTOFILL_MANAGE_PASSWORDS" desc="The text displayed at the bottom of the Autofill popup to allow the user to manage passwords that can be used by Chrome Autofill. Imperative. When the user clicks on it, opens the Passwords section of the Settings page." meaning="Manage passwords in the user profile that can be used by Chrome Autofill.">
       Manage passwords...
     </message>
+
+    <!-- TODO(crbug.com/404436027): Enable translatation after UX review is completed. -->
+    <message name="IDS_AUTOFILL_MANAGE_LOYALTY_CARDS" translateable="false" desc="The text displayed at the bottom of the Autofill popup to allow the user to manage loyalty cards that can be used by Chrome Autofill. Imperative. When the user clicks on it, opens the Wallet page." meaning="Manage loyalty cards in the user wallet that can be used by Chrome Autofill.">
+      Manage loyalty cards...
+    </message>
   </if>
   <if expr="use_titlecase">
     <message name="IDS_AUTOFILL_MANAGE_ADDRESSES" desc="In Title Case: The text displayed at the bottom of the Autofill popup to allow the user to manage their Autofill preferences for addresses. Imperative. When the user clicks on it, opens the Autofill settings page." meaning="Manage addresses in the user profile that can be used by Chrome Autofill.">
@@ -224,6 +229,11 @@
 
     <message name="IDS_AUTOFILL_MANAGE_PASSWORDS" desc="In Title Case: The text displayed at the bottom of the Autofill popup to allow the user to manage passwords that can be used by Chrome Autofill. Imperative. When the user clicks on it, opens the Passwords section of the Settings page." meaning="Manage passwords in the user profile that can be used by Chrome Autofill.">
       Manage Passwords...
+    </message>
+
+    <!-- TODO(crbug.com/404436027): Enable translatation after UX review is completed. -->
+    <message name="IDS_AUTOFILL_MANAGE_LOYALTY_CARDS" translateable="false" desc="In Title Case: The text displayed at the bottom of the Autofill popup to allow the user to manage loyalty cards that can be used by Chrome Autofill. Imperative. When the user clicks on it, opens the Wallet page." meaning="Manage loyalty cards in the user wallet that can be used by Chrome Autofill.">
+      Manage Loyalty Cards...
     </message>
   </if>
 

@@ -12,8 +12,9 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
-
 namespace autofill {
 
 namespace {
@@ -35,10 +36,9 @@ void SetIconURL(Suggestion& suggestion,
 }
 
 Suggestion CreateManageLoyaltyCardsSuggestion() {
-  // TODO(crbug.com/404436027): Add i18n, replace with:
-  // l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_LOYALTY_CARDS)
-  Suggestion suggestion(u"Manage loyalty cards...",
-                        SuggestionType::kManageLoyaltyCard);
+  Suggestion suggestion(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_LOYALTY_CARDS),
+      SuggestionType::kManageLoyaltyCard);
   suggestion.icon = Suggestion::Icon::kSettings;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   suggestion.trailing_icon = Suggestion::Icon::kGoogleWallet;
@@ -143,7 +143,8 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
 
   // TODO(crbug.com/404436027): Replace with i18n string.
   Suggestion submenu_suggestion =
-      Suggestion(u"Loyalty cards", SuggestionType::kLoyaltyCardEntry);
+      Suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_LOYALTY_CARD_GENERIC),
+                 SuggestionType::kLoyaltyCardEntry);
   submenu_suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
   submenu_suggestion.children = loyalty_card_suggestions;
 
