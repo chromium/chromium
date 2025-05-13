@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/omnibox/eg_tests/inttest/omnibox_inttest_app_interface.h"
 #import "ios/chrome/browser/omnibox/eg_tests/inttest/omnibox_inttest_earl_grey.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_earl_grey.h"
@@ -22,6 +23,10 @@
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/base/apple/url_conversions.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/base/test/ios/ui_image_test_utils.h"
+
+using base::test::ios::kWaitForUIElementTimeout;
 
 namespace {
 
@@ -29,6 +34,17 @@ namespace {
 NSString* const kShortcutText = @"shortcut";
 /// Shortcut URL. URL loaded when accepting the `kShortcutText` autocomplete.
 const GURL kShortcutURL = GURL("https://www.shortcut.com");
+/// URL of google search by image.
+const GURL kSearchByImageURL =
+    GURL("https://www.google.com/searchbyimage/upload");
+
+/// Returns Search Copied Image button from UIMenuController.
+id<GREYMatcher> SearchCopiedImageMenuButton() {
+  NSString* a11yLabelCopiedImage =
+      l10n_util::GetNSString(IDS_IOS_SEARCH_COPIED_IMAGE);
+  return grey_allOf(grey_accessibilityLabel(a11yLabelCopiedImage),
+                    chrome_test_util::SystemSelectionCallout(), nil);
+}
 
 }  // namespace
 
@@ -101,6 +117,63 @@ const GURL kShortcutURL = GURL("https://www.shortcut.com");
 
   [OmniboxEarlGrey acceptOmniboxText];
   [OmniboxInttestEarlGrey assertSearchLoaded:kShortcutText];
+}
+
+@end
+
+// Tests the omnibox integration with OmniboxInttestCoordinator.
+@interface OmniboxInttestTestCase : ChromeTestCase
+@end
+
+@implementation OmniboxInttestTestCase
+
+- (void)setUp {
+  [super setUp];
+  [ChromeCoordinatorAppInterface startOmniboxCoordinator];
+}
+
+- (void)tearDownHelper {
+  [super tearDownHelper];
+  [ChromeCoordinatorAppInterface reset];
+}
+
+#pragma mark - Omnibox long press menu test cases
+
+// Tests that Search Copied Image menu button is shown with an image in the
+// clipboard and is starting an image search.
+- (void)testOmniboxMenuSearchCopiedImage {
+  [OmniboxInttestEarlGrey focusOmnibox];
+
+  UIImage* image = ui::test::uiimage_utils::UIImageWithSizeAndSolidColor(
+      CGSizeMake(10, 10), [UIColor greenColor]);
+  [ChromeEarlGrey copyImageToPasteboard:image];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_longPress()];
+
+  // Wait for UIMenuController to appear or timeout after 2 seconds.
+  GREYCondition* SearchImageButtonIsDisplayed = [GREYCondition
+      conditionWithName:@"Search Copied Image button display condition"
+                  block:^BOOL {
+                    NSError* error = nil;
+                    [[EarlGrey
+                        selectElementWithMatcher:SearchCopiedImageMenuButton()]
+                        assertWithMatcher:grey_notNil()
+                                    error:&error];
+                    return error == nil;
+                  }];
+  GREYAssertTrue([SearchImageButtonIsDisplayed
+                     waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()],
+                 @"Search Copied Image button display failed");
+  [[EarlGrey selectElementWithMatcher:SearchCopiedImageMenuButton()]
+      performAction:grey_tap()];
+
+  // Check that the omnibox started an image search.
+  NSString* lastLoadedURL =
+      [NSString cr_fromString:ChromeCoordinatorAppInterface.lastURLLoaded
+                                  .absoluteString.UTF8String];
+  NSString* expectedURL = [NSString cr_fromString:kSearchByImageURL.spec()];
+  GREYAssertEqualObjects(lastLoadedURL, expectedURL, @"Image search expected");
 }
 
 @end

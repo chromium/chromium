@@ -60,12 +60,6 @@ const char kHeaderPageURL[] = "/page3.html";
 const char kHeaderPageSuccess[] = "header found!";
 const char kHeaderPageFailure[] = "header failure";
 
-// Path to a page containing the chromium logo and the text `kLogoPageText`.
-const char kLogoPagePath[] = "/chromium_logo_page.html";
-// The text of the message on the logo page.
-const char kLogoPageText[] = "Page with some text and the chromium logo image.";
-// The DOM element ID of the chromium image on the logo page.
-const char kLogoPageChromiumImageId[] = "chromium_image";
 // Y offset to tap on the middle of the text.
 const CGFloat kOmniboxTextFieldMidY = 18;
 // X offset to tap on the beginning of the text, tapping on the left edge
@@ -182,12 +176,6 @@ id<GREYMatcher> SearchCopiedImageButton() {
                     chrome_test_util::SystemSelectionCallout(), nil);
 }
 
-// Returns Clear button at the trailing edge of the omnibox's text field.
-id<GREYMatcher> ClearButton() {
-  return chrome_test_util::ButtonWithAccessibilityLabelId(
-      IDS_IOS_ACCNAME_CLEAR_TEXT);
-}
-
 #pragma mark LocationBar context menu buttons
 
 // LocationBar context menu buttons can be showed in different orders depending
@@ -295,31 +283,6 @@ void FocusFakebox() {
   // Go to a web page to have a normal location bar.
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
-}
-
-// Copies image from `kLogoPagePath` into the clipboard using web context menu
-// interactions.
-- (void)copyImageIntoClipboard {
-  [ChromeEarlGrey clearPasteboard];
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(kLogoPagePath)];
-  [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
-  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::LongPressElementForContextMenu(
-                        [ElementSelector
-                            selectorWithElementID:kLogoPageChromiumImageId],
-                        true /* menu should appear */)];
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                     IDS_IOS_CONTENT_CONTEXT_COPYIMAGE)]
-      performAction:grey_tap()];
-
-  GREYCondition* copyCondition =
-      [GREYCondition conditionWithName:@"Image copied condition"
-                                 block:^BOOL {
-                                   return [ChromeEarlGrey pasteboardHasImages];
-                                 }];
-  // Wait for copy to happen or timeout after 5 seconds.
-  GREYAssertTrue([copyCondition waitWithTimeout:5], @"Copying image failed");
 }
 
 // Tests that the XClientData header is sent when navigating to
@@ -444,44 +407,6 @@ void FocusFakebox() {
       performAction:grey_tap()];
   // Verify that the page is loaded.
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
-}
-
-// Tests that Search Copied Image menu button is shown with an image in the
-// clipboard and is starting an image search.
-// TODO(crbug.com/40928559): Fix flakiness and re-enable.
-- (void)DISABLED_testOmniboxMenuPasteImageToSearch {
-  [self copyImageIntoClipboard];
-
-  // Wait for the context menu to dismiss, so the omnibox can be tapped.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      chrome_test_util::DefocusedLocationView()];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ClearButton()] performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_longPress()];
-
-  // Wait for UIMenuController to appear or timeout after 2 seconds.
-  GREYCondition* SearchImageButtonIsDisplayed = [GREYCondition
-      conditionWithName:@"Search Copied Image button display condition"
-                  block:^BOOL {
-                    NSError* error = nil;
-                    [[EarlGrey
-                        selectElementWithMatcher:SearchCopiedImageButton()]
-                        assertWithMatcher:grey_notNil()
-                                    error:&error];
-                    return error == nil;
-                  }];
-  GREYAssertTrue([SearchImageButtonIsDisplayed
-                     waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()],
-                 @"Search Copied Image button display failed");
-  [[EarlGrey selectElementWithMatcher:SearchCopiedImageButton()]
-      performAction:grey_tap()];
-
-  // Check that the omnibox started a google search.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxContainingText("google")];
 }
 
 @end

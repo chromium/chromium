@@ -1415,6 +1415,10 @@ NSString* SerializedValue(const base::Value* value) {
   [UIPasteboard.generalPasteboard setURL:[NSURL URLWithString:link]];
 }
 
++ (void)copyImageToPasteboard:(NSData*)imageData {
+  [UIPasteboard.generalPasteboard setImage:[UIImage imageWithData:imageData]];
+}
+
 #pragma mark - Watcher utilities
 
 // Delay between two watch cycles.

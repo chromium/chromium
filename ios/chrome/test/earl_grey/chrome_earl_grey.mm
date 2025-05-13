@@ -1664,6 +1664,19 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGreyAppInterface copyLinkAsURLToPasteBoard:link];
 }
 
+- (void)copyImageToPasteboard:(UIImage*)image {
+  [ChromeEarlGreyAppInterface
+      copyImageToPasteboard:UIImagePNGRepresentation(image)];
+  GREYCondition* copyCondition =
+      [GREYCondition conditionWithName:@"Image copied condition"
+                                 block:^BOOL {
+                                   return [self pasteboardHasImages];
+                                 }];
+
+  // Wait for the image to be copied.
+  GREYAssertTrue([copyCondition waitWithTimeout:5], @"Copying image failed");
+}
+
 #pragma mark - Context Menus Utilities (EG2)
 
 - (void)verifyCopyLinkActionWithText:(NSString*)text {

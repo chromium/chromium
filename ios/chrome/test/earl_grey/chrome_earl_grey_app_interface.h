@@ -697,6 +697,9 @@ enum class TipsNotificationType;
 // Copies `link` into pasteboard as a NSURL.
 + (void)copyLinkAsURLToPasteBoard:(NSString*)link;
 
+// Copies png `data` as image into pasteboard.
++ (void)copyImageToPasteboard:(NSData*)imageData;
+
 #pragma mark - Watcher utilities
 
 // Starts monitoring for buttons (based on traits) with the given

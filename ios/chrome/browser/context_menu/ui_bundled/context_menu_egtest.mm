@@ -221,6 +221,12 @@ id<GREYMatcher> OpenLinkInGroupButton() {
       IDS_IOS_CONTENT_CONTEXT_OPENLINKINTABGROUP);
 }
 
+// Matcher for the open link in group button in the context menu.
+id<GREYMatcher> CopyImageButton() {
+  return ContextMenuItemWithAccessibilityLabelId(
+      IDS_IOS_CONTENT_CONTEXT_COPYIMAGE);
+}
+
 // Matcher for the open link in an existing tab group (a group containing one
 // tab) button in the context menu.
 id<GREYMatcher> OpenLinkInOneTabGroupButton() {
@@ -337,6 +343,28 @@ void RelaunchApp() {
         [MetricsAppInterface releaseHistogramTester]);
   }
   [super tearDownHelper];
+}
+
+// Tests that selecting "Copy Image" from the context menu properly copies the
+// image in the pasteboard.
+- (void)testCopyImageIntoPasteboard {
+  [ChromeEarlGrey clearPasteboard];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kLogoPagePath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+
+  TapOnContextMenuButton(CopyImageButton());
+  GREYCondition* copyCondition =
+      [GREYCondition conditionWithName:@"Image copied condition"
+                                 block:^BOOL {
+                                   return [ChromeEarlGrey pasteboardHasImages];
+                                 }];
+
+  // Wait for the image to be copied.
+  GREYAssertTrue([copyCondition waitWithTimeout:5], @"Copying image failed");
+  [ChromeEarlGrey clearPasteboard];
 }
 
 // Tests that selecting "Open Image" from the context menu properly opens the
