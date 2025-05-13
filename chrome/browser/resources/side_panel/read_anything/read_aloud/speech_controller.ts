@@ -219,7 +219,7 @@ export class SpeechController {
     this.wordBoundaries_.resetToDefaultState();
     chrome.readingMode.movePositionToNextGranularity();
 
-    if (!this.highlightAndPlayMessage()) {
+    if (!this.highlightAndPlayMessage_()) {
       this.onSpeechFinished();
     }
   }
@@ -236,7 +236,7 @@ export class SpeechController {
     this.wordBoundaries_.resetToDefaultState();
     chrome.readingMode.movePositionToPreviousGranularity();
 
-    if (!this.highlightAndPlayMessage(
+    if (!this.highlightAndPlayMessage_(
             /*isInterrupted=*/ false,
             /*isMovingBackward=*/ true)) {
       this.onSpeechFinished();
@@ -299,15 +299,16 @@ export class SpeechController {
     }
 
     this.initializeSpeechTree();
-    if (this.isSpeechTreeInitialized() && !this.highlightAndPlayMessage()) {
+    if (this.isSpeechTreeInitialized() && !this.highlightAndPlayMessage_()) {
       // Ensure we're updating Read Aloud state if there's no text to speak.
       this.onSpeechFinished();
     }
   }
 
   private hasSelection_(selection: Selection|null): boolean {
-    return !selection || selection.anchorNode !== selection.focusNode ||
-        selection.anchorOffset !== selection.focusOffset;
+    return (selection !== null) &&
+        (selection.anchorNode !== selection.focusNode ||
+         selection.anchorOffset !== selection.focusOffset);
   }
 
   private playFromSelection_(selection: Selection|null): boolean {
@@ -352,11 +353,11 @@ export class SpeechController {
     // Iterate through the nodes asynchronously so that we can show the spinner
     // in the toolbar while we move up to the selection.
     setTimeout(() => {
-      this.movePlaybackToNode(startingNodeId, startingOffset);
+      this.movePlaybackToNode_(startingNodeId, startingOffset);
       // Set everything to previous and then play the next granularity, which
       // includes the selection.
       this.highlighter_.resetPreviousHighlight();
-      if (!this.highlightAndPlayMessage()) {
+      if (!this.highlightAndPlayMessage_()) {
         this.onSpeechFinished();
       }
     }, playFromSelectionTimeout);
@@ -364,14 +365,14 @@ export class SpeechController {
   }
 
   private highlightAndPlayInterruptedMessage_(): boolean {
-    return this.highlightAndPlayMessage(/* isInterrupted = */ true);
+    return this.highlightAndPlayMessage_(/* isInterrupted = */ true);
   }
 
   // Play text of these axNodeIds. When finished, read and highlight to read the
   // following text.
   // TODO: crbug.com/1474951 - Investigate using AXRange.GetText to get text
   // between start node / end nodes and their offsets.
-  highlightAndPlayMessage(
+  private highlightAndPlayMessage_(
       isInterrupted: boolean = false,
       isMovingBackward: boolean = false): boolean {
     // getCurrentText gets the AX Node IDs of text that should be spoken and
@@ -430,7 +431,7 @@ export class SpeechController {
     } else {
       chrome.readingMode.movePositionToNextGranularity();
     }
-    return this.highlightAndPlayMessage(isInterrupted, isMovingBackward);
+    return this.highlightAndPlayMessage_(isInterrupted, isMovingBackward);
   }
 
   private playText_(utteranceText: string) {
@@ -440,7 +441,7 @@ export class SpeechController {
     // maximum text length if we're using a local voice. If we do somehow
     // attempt to speak text that's too long, this will be able to be handled
     // by listening for a text-too-long error in message.onerror.
-    const isTextTooLong = this.isTextTooLong(utteranceText);
+    const isTextTooLong = this.isTextTooLong_(utteranceText);
     const endBoundary =
         this.getUtteranceEndBoundary(utteranceText, isTextTooLong);
     this.playTextWithBoundaries_(utteranceText, isTextTooLong, endBoundary);
@@ -455,8 +456,8 @@ export class SpeechController {
       this.handleSpeechSynthesisError_(error, utteranceText);
     };
 
-    this.setOnBoundary(message);
-    this.setOnSpeechSynthesisUtteranceStart(message);
+    this.setOnBoundary_(message);
+    this.setOnSpeechSynthesisUtteranceStart_(message);
 
     message.onend = () => {
       if (isTextTooLong) {
@@ -474,12 +475,12 @@ export class SpeechController {
       this.wordBoundaries_.resetToDefaultState();
       chrome.readingMode.movePositionToNextGranularity();
       // Continue speaking with the next block of text.
-      if (!this.highlightAndPlayMessage()) {
+      if (!this.highlightAndPlayMessage_()) {
         this.onSpeechFinished();
       }
     };
 
-    this.speakMessage(message);
+    this.speakMessage_(message);
   }
 
   private handleSpeechSynthesisError_(
@@ -492,7 +493,7 @@ export class SpeechController {
     this.setEngineState(SpeechEngineState.LOADED);
 
     if (error.error === 'interrupted') {
-      this.onSpeechInterrupted();
+      this.onSpeechInterrupted_();
       return;
     }
 
@@ -583,7 +584,8 @@ export class SpeechController {
     }
   }
 
-  setOnSpeechSynthesisUtteranceStart(message: SpeechSynthesisUtterance) {
+  private setOnSpeechSynthesisUtteranceStart_(
+      message: SpeechSynthesisUtterance) {
     message.onstart = () => {
       // We've gotten the signal that the speech engine has started, therefore
       // we can enable the Read Aloud buttons.
@@ -596,7 +598,7 @@ export class SpeechController {
     };
   }
 
-  setOnBoundary(message: SpeechSynthesisUtterance) {
+  private setOnBoundary_(message: SpeechSynthesisUtterance) {
     message.onboundary = (event) => {
       // Some voices may give sentence boundaries, but we're only concerned
       // with word boundaries in boundary event because we're speaking text at
@@ -616,7 +618,7 @@ export class SpeechController {
     };
   }
 
-  speakMessage(message: SpeechSynthesisUtterance) {
+  private speakMessage_(message: SpeechSynthesisUtterance) {
     const voice = this.voicePackController_.getCurrentVoiceOrDefault();
     if (!voice) {
       // TODO: crbug.com/40927698 - Handle when no voices are available.
@@ -674,7 +676,7 @@ export class SpeechController {
     this.speakWithDefaults_(utterance);
   }
 
-  onSpeechInterrupted() {
+  private onSpeechInterrupted_() {
     // SpeechSynthesis.cancel() was called, which could have originated
     // either within or outside of reading mode. If it originated from
     // within reading mode, we should do nothing. If it came from outside
@@ -718,7 +720,7 @@ export class SpeechController {
     }
 
     if (this.nodeStore_.getDomNode(lastPosition.nodeId)) {
-      this.movePlaybackToNode(lastPosition.nodeId, lastPosition.offset);
+      this.movePlaybackToNode_(lastPosition.nodeId, lastPosition.offset);
       this.setState(previousSpeechPlayingState);
       this.wordBoundaries_.state = {...previousWordBoundaryState};
       // Since we're setting the reading position after a content update when
@@ -730,7 +732,7 @@ export class SpeechController {
     }
   }
 
-  movePlaybackToNode(nodeId: number, offset: number): void {
+  private movePlaybackToNode_(nodeId: number, offset: number): void {
     let currentTextIds = chrome.readingMode.getCurrentText();
     let hasCurrentText = currentTextIds.length > 0;
     // Since a node could spread across multiple granularities, we use the
@@ -766,7 +768,7 @@ export class SpeechController {
         axNodeIds, scrollIntoView, shouldUpdateSentenceHighlight);
   }
 
-  isTextTooLong(text: string): boolean {
+  private isTextTooLong_(text: string): boolean {
     return !this.voicePackController_.getCurrentVoice()?.localService &&
         text.length > MAX_SPEECH_LENGTH;
   }

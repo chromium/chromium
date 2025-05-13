@@ -114,7 +114,6 @@ suite('SpeechUsesMaxTextLength', () => {
     test('highlights full sentence', () => {
       chrome.readingMode.setContentForTesting(axTree, [2, 3]);
       app.playSpeech();
-      speechController.highlightAndPlayMessage();
 
       assertEquals(
           app.$.container.querySelector('.current-read-highlight')!.textContent,

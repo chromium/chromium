@@ -4,19 +4,17 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {MAX_SPEECH_LENGTH, PauseActionSource, playFromSelectionTimeout, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoicePackController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {playFromSelectionTimeout, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoicePackController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createAndSetVoices, createSpeechErrorEvent, createSpeechSynthesisVoice, emitEvent, mockMetrics, setSimpleAxTreeWithText, setupBasicSpeech} from './common.js';
-import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {createAndSetVoices, createSpeechSynthesisVoice, emitEvent, mockMetrics, setupBasicSpeech} from './common.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('Speech', () => {
   let app: AppElement;
   let speech: TestSpeechBrowserProxy;
-  let metrics: TestMetricsBrowserProxy;
   let voicePackController: VoicePackController;
   let speechController: SpeechController;
 
@@ -87,7 +85,7 @@ suite('Speech', () => {
     chrome.readingMode.restoreSettingsFromPrefs = () => {};
     chrome.readingMode.languageChanged = () => {};
     chrome.readingMode.onTtsEngineInstalled = () => {};
-    metrics = mockMetrics();
+    mockMetrics();
     voicePackController = new VoicePackController();
     VoicePackController.setInstance(voicePackController);
     speechController = new SpeechController();
@@ -170,22 +168,6 @@ suite('Speech', () => {
       assertEquals(1, speech.getCallCount('speak'));
       assertEquals(expectedLang, speech.getArgs('speak')[0].lang);
     });
-
-    test('speechPlayingState initialized correctly', () => {
-      assertFalse(speechController.isSpeechBeingRepositioned());
-    });
-  });
-
-  test('on finished, logs speech stop source', async () => {
-    app.playSpeech();
-    for (let i = 0; i < paragraph1.length + paragraph2.length; i++) {
-      const spoken = speech.getArgs('speak')[i];
-      assertTrue(!!spoken);
-      spoken.onend();
-    }
-    assertEquals(
-        chrome.readingMode.contentFinishedStopSource,
-        await metrics.whenCalled('recordSpeechStopSource'));
   });
 
   suite('with text selected', () => {
@@ -315,37 +297,6 @@ suite('Speech', () => {
     });
   });
 
-  suite('on pause via pause button', () => {
-    setup(() => {
-      speechController.initializeSpeechTree(1);
-      speechController.setHasSpeechBeenTriggered(true);
-      speechController.stopSpeech(PauseActionSource.BUTTON_CLICK);
-    });
-
-    test('then play with no word boundaries resumes speech', () => {
-      app.playSpeech();
-
-      assertEquals(1, speech.getCallCount('resume'));
-      assertEquals(0, speech.getCallCount('cancel'));
-    });
-
-    test('then play with word boundaries cancels and re-speaks', () => {
-      WordBoundaries.getInstance().updateBoundary(10);
-
-      app.playSpeech();
-
-      assertGT(speech.getCallCount('speak'), 0);
-      assertEquals(1, speech.getCallCount('cancel'));
-    });
-
-    test('lock screen stays paused', () => {
-      chrome.readingMode.onLockScreen();
-
-      assertEquals(1, speech.getCallCount('pause'));
-      assertEquals(0, speech.getCallCount('cancel'));
-    });
-  });
-
   test('next granularity plays from there', () => {
     emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
     assertEquals(paragraph1[1], getSpokenText());
@@ -361,109 +312,12 @@ suite('Speech', () => {
     assertEquals(paragraph1[0], getSpokenText());
   });
 
-  test(
-      'after previous granularity, onstart stops repositioning for speech',
-      () => {
-        chrome.readingMode.initAxPositionWithNode(2);
-        app.playSpeech();
-
-        emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
-
-        assertTrue(speechController.isSpeechBeingRepositioned());
-        app.playSpeech();
-        assertFalse(speechController.isSpeechBeingRepositioned());
-      });
-
-  test('after next granularity, onstart stops repositioning for speech', () => {
-    app.playSpeech();
-
-    emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
-
-    assertTrue(speechController.isSpeechBeingRepositioned());
-    app.playSpeech();
-    assertFalse(speechController.isSpeechBeingRepositioned());
-  });
-
-  suite('very long text', () => {
-    const longSentences =
-        'A kingdom of isolation, and it looks like I am the queen and the ' +
-        'wind is howling like this swirling storm inside, Couldn\'t keep it ' +
-        'in, heaven knows I tried, but don\'t let them in, don\'t let them ' +
-        'see, be the good girl you always have to be, and conceal, don\'t ' +
-        'feel, don\'t let them know.' +
-        'Well, now they know, let it go, let it go, can\'t hold it back ' +
-        'anymore, let it go, let it go, turn away and slam the ' +
-        'door- I don\'t care what they\'re going to say, let the storm rage ' +
-        'on- the cold never bothered me anyway- it\'s funny how some ' +
-        'distance makes everything seem small and the fears that once ' +
-        'controlled me can\'t get to me at all- it\'s time to see what I can ' +
-        'do to test the limits and break through- no right no wrong no rules ' +
-        'for me- I\'m free- let it go let it go I am one with the wind and ' +
-        'sky let it go let it go you\'ll never see me cry- here I stand and ' +
-        'here I stay- let the storm rage on';
-    setup(() => {
-      setSimpleAxTreeWithText(longSentences);
-    });
-
-    test('uses max speech length', () => {
-      const expectedNumSegments =
-          Math.ceil(longSentences.length / MAX_SPEECH_LENGTH);
-
-      app.playSpeech();
-
-      assertGT(expectedNumSegments, 0);
-      for (let i = 0; i < expectedNumSegments; i++) {
-        assertEquals(i + 1, speech.getCallCount('speak'));
-        assertGT(
-            MAX_SPEECH_LENGTH, speech.getArgs('speak')[i].text.trim().length);
-        speech.getArgs('speak')[i].onend();
-      }
-    });
-
-    test('on text-too-long error smaller text segment plays', () => {
-      createAndSetVoices(
-          speech, [{lang: 'en', name: 'Google Bob', localService: true}]);
-      emitEvent(app, ToolbarEvent.VOICE, {
-        detail: {
-          selectedVoice: speech.getVoices()[0],
-        },
-      });
-      const accessibleTextLength =
-          speechController.getUtteranceEndBoundary(longSentences, true);
-      app.playSpeech();
-      assertEquals(longSentences, getSpokenText());
-      const utterance = speech.getArgs('speak')[0];
-      speech.reset();
-
-      utterance.onerror(createSpeechErrorEvent(utterance, 'text-too-long'));
-
-      assertEquals(0, speech.getCallCount('pause'));
-      assertEquals(1, speech.getCallCount('cancel'));
-      assertEquals(0, metrics.getCallCount('recordSpeechStopSource'));
-      const spoken1 = speech.getArgs('speak')[0];
-      assertEquals(
-          longSentences.substring(0, accessibleTextLength), getSpokenText());
-      // When this segment is finished, we should speak the remaining text.
-      speech.reset();
-      spoken1.onend();
-      const spoken2 = speech.getArgs('speak')[0];
-      assertEquals(
-          longSentences.substring(accessibleTextLength), getSpokenText());
-
-      // There's nothing more to speak.
-      speech.reset();
-      spoken2.onend();
-      assertEquals(0, speech.getCallCount('speak'));
-    });
-  });
-
   suite('while playing', () => {
     setup(() => {
       speechController.initializeSpeechTree(1);
       speechController.setHasSpeechBeenTriggered(true);
       speechController.setIsSpeechActive(true);
     });
-
 
     test('voice change cancels and restarts speech', () => {
       createAndSetVoices(speech, [
@@ -489,14 +343,6 @@ suite('Speech', () => {
       assertEquals(0, speech.getCallCount('pause'));
     });
 
-    test('lock screen cancels speech', () => {
-      chrome.readingMode.onLockScreen();
-
-      assertEquals(1, speech.getCallCount('cancel'));
-      assertEquals(0, speech.getCallCount('pause'));
-      assertEquals(0, speech.getCallCount('speak'));
-    });
-
     test('is playable', async () => {
       await microtasksFinished();
       assertTrue(app.$.toolbar.isReadAloudPlayable);
@@ -516,79 +362,6 @@ suite('Speech', () => {
       await microtasksFinished();
 
       assertTrue(app.$.toolbar.isReadAloudPlayable);
-    });
-
-    test('stops speech on language-unavailable', async () => {
-      const pageLanguage = 'es';
-      assertNotEquals(
-          chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
-      assertNotEquals(
-          chrome.readingMode.defaultLanguageForSpeech,
-          voicePackController.getCurrentLanguage());
-      chrome.readingMode.setLanguageForTesting(pageLanguage);
-      app.playSpeech();
-      assertEquals(1, speech.getCallCount('speak'));
-      const utterance = speech.getArgs('speak')[0];
-      speech.reset();
-
-      utterance.onerror(
-          createSpeechErrorEvent(utterance, 'language-unavailable'));
-
-      assertEquals(1, speech.getCallCount('cancel'));
-      assertEquals(0, speech.getCallCount('pause'));
-      assertEquals(0, speech.getCallCount('speak'));
-      assertEquals(
-          chrome.readingMode.engineErrorStopSource,
-          await metrics.whenCalled('recordSpeechStopSource'));
-    });
-
-    test('stops speech on voice-unavailable', async () => {
-      const pageLanguage = 'es';
-      assertNotEquals(
-          chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
-      assertNotEquals(
-          chrome.readingMode.defaultLanguageForSpeech,
-          voicePackController.getCurrentLanguage());
-      chrome.readingMode.setLanguageForTesting(pageLanguage);
-      app.playSpeech();
-      assertEquals(1, speech.getCallCount('speak'), 'speak');
-      const utterance = speech.getArgs('speak')[0];
-      speech.reset();
-
-      utterance.onerror(createSpeechErrorEvent(utterance, 'voice-unavailable'));
-
-      assertEquals(2, speech.getCallCount('cancel'));
-      assertEquals(0, speech.getCallCount('pause'));
-      assertEquals(0, speech.getCallCount('speak'));
-      assertEquals(
-          chrome.readingMode.engineErrorStopSource,
-          await metrics.whenCalled('recordSpeechStopSource'));
-    });
-
-    test('invalid argument cancels and uses default rate', () => {
-      app.playSpeech();
-      assertEquals(1, speech.getCallCount('speak'));
-      const utterance = speech.getArgs('speak')[0];
-      let speechRate = 4;
-      chrome.readingMode.onSpeechRateChange = rate => {
-        speechRate = rate;
-      };
-      emitEvent(app, ToolbarEvent.VOICE, {
-        detail: {
-          selectedVoice:
-              createSpeechSynthesisVoice({lang: 'en', name: 'Google Lisie'}),
-        },
-      });
-      speech.reset();
-
-      assertTrue(!!utterance.onerror);
-      utterance.onerror(createSpeechErrorEvent(utterance, 'invalid-argument'));
-
-      assertEquals(2, speech.getCallCount('cancel'));
-      assertEquals(0, speech.getCallCount('pause'));
-      assertEquals(1, speech.getCallCount('speak'));
-      assertEquals(1, speechRate);
-      assertEquals(0, metrics.getCallCount('recordSpeechStopSource'));
     });
 
     suite('and voice preview is played', () => {

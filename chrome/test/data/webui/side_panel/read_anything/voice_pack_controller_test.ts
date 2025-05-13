@@ -1252,6 +1252,20 @@ suite('VoicePackController', () => {
     });
   });
 
+  test('onLanguageUnavailableError chooses new language', () => {
+    const pageLanguage = 'es';
+    const otherLanguage = 'tr';
+    voicePackController.setCurrentLanguage(pageLanguage);
+    chrome.readingMode.defaultLanguageForSpeech = otherLanguage;
+    speech.setVoices([createSpeechSynthesisVoice(
+        {lang: otherLanguage, name: 'Google Scorpion'})]);
+    voicePackController.onVoicesChanged();
+
+    voicePackController.onLanguageUnavailableError();
+
+    assertEquals(otherLanguage, voicePackController.getCurrentLanguage());
+  });
+
   test('voiceUnavailable selects default voice', () => {
     const voice =
         createSpeechSynthesisVoice({lang: 'en', name: 'Google Giraffe'});

@@ -111,7 +111,7 @@ export class VoicePackController {
     // language availability, especially around the new TTS engine.
 
     // <if expr="not is_chromeos">
-    this.enableNowAvailableLangs();
+    this.enableNowAvailableLangs_();
     // </if>
 
     if (!hadAvailableVoices && this.hasAvailableVoices()) {
@@ -403,7 +403,7 @@ export class VoicePackController {
   // happen on non-ChromeOS, since we're only installing the new engine
   // outside of ChromeOS.
   // <if expr="not is_chromeos">
-  enableNowAvailableLangs(): void {
+  private enableNowAvailableLangs_(): void {
     const nowAvailableLangs =
         [...this.model_.getPossiblyDisabledLangs()].filter(
             (lang: string) => this.isLangAvailable_(lang));

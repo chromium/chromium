@@ -1,10 +1,10 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {BrowserProxy, PauseActionSource, SpeechBrowserProxyImpl, SpeechController, SpeechEngineState, VoicePackController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {BrowserProxy, MAX_SPEECH_LENGTH, NodeStore, PauseActionSource, ReadAloudHighlighter, SpeechBrowserProxyImpl, SpeechController, SpeechEngineState, VoicePackController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createSpeechSynthesisVoice, mockMetrics} from './common.js';
+import {createSpeechErrorEvent, createSpeechSynthesisVoice, mockMetrics, setSimpleNodeStoreWithText} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -18,6 +18,10 @@ suite('SpeechController', () => {
   let onPreviewVoicePlaying: boolean;
   let onEngineStateChange: boolean;
   let metrics: TestMetricsBrowserProxy;
+  let wordBoundaries: WordBoundaries;
+  let nodeStore: NodeStore;
+  let highlighter: ReadAloudHighlighter;
+  let voicePackController: VoicePackController;
 
   setup(() => {
     // Clearing the DOM should always be done first.
@@ -51,10 +55,16 @@ suite('SpeechController', () => {
       onSpeechRateChange() {},
     };
 
-    const voicePackController = new VoicePackController();
+    voicePackController = new VoicePackController();
     voicePackController.setCurrentVoice(
         createSpeechSynthesisVoice({lang: 'en', name: 'Google Alpaca'}));
     VoicePackController.setInstance(voicePackController);
+    nodeStore = new NodeStore();
+    NodeStore.setInstance(nodeStore);
+    wordBoundaries = new WordBoundaries();
+    WordBoundaries.setInstance(wordBoundaries);
+    highlighter = new ReadAloudHighlighter();
+    ReadAloudHighlighter.setInstance(highlighter);
     speechController = new SpeechController();
     speechController.addListener(speechListener);
   });
@@ -182,38 +192,6 @@ suite('SpeechController', () => {
     assertEquals(voice, speechController.getPreviewVoicePlaying());
   });
 
-  test('speakMessage waits for engine load', async () => {
-    const msg =
-        new SpeechSynthesisUtterance('Sorry not sorry bout what I said');
-    speechController.setOnSpeechSynthesisUtteranceStart(msg);
-
-    speechController.speakMessage(msg);
-    assertEquals(msg, await speech.whenCalled('speak'));
-    assertFalse(speechController.isEngineLoaded());
-    assertFalse(speechController.isAudioCurrentlyPlaying());
-
-    assertTrue(!!msg.onstart);
-    msg.onstart(new SpeechSynthesisEvent('type', {utterance: msg}));
-    assertTrue(speechController.isEngineLoaded());
-    assertTrue(speechController.isAudioCurrentlyPlaying());
-  });
-
-  test('speakMessage uses current language and speech rate', async () => {
-    const rate = 1.5;
-    const lang = 'hi';
-    const msg = new SpeechSynthesisUtterance('I\'m just tryna have some fun');
-    chrome.readingMode.speechRate = rate;
-    chrome.readingMode.baseLanguageForSpeech = lang;
-    speechController.setOnSpeechSynthesisUtteranceStart(msg);
-
-    speechController.speakMessage(msg);
-
-    const spoken = await speech.whenCalled('speak');
-    assertEquals(msg, spoken);
-    assertEquals(rate, msg.rate);
-    assertEquals(lang, msg.lang);
-  });
-
   test('previewVoice stops speech', () => {
     speechController.setIsSpeechActive(true);
     speechController.setIsAudioCurrentlyPlaying(true);
@@ -288,12 +266,73 @@ suite('SpeechController', () => {
     });
   });
 
-  test('stopSpeech with button click pauses', () => {
-    const source = PauseActionSource.BUTTON_CLICK;
+  test('onSpeechSettingsChange cancels speech', () => {
+    speechController.initializeSpeechTree(1);
     speechController.setIsSpeechActive(true);
+    speechController.setHasSpeechBeenTriggered(true);
     speechController.setIsAudioCurrentlyPlaying(true);
 
-    speechController.stopSpeech(source);
+    speechController.onSpeechSettingsChange();
+
+    assertTrue(isSpeechActiveChanged);
+    assertFalse(speechController.isSpeechActive());
+    assertFalse(speechController.isAudioCurrentlyPlaying());
+    assertEquals(
+        PauseActionSource.VOICE_SETTINGS_CHANGE,
+        speechController.getPauseSource());
+    assertEquals(0, speech.getCallCount('pause'));
+    assertEquals(1, speech.getCallCount('cancel'));
+    assertEquals(0, metrics.getCallCount('recordSpeechPlaybackLength'));
+  });
+
+  test('onPlayPauseToggle updates state', () => {
+    speechController.onPlayPauseToggle(
+        null, 'Listen up, let me tell you a story');
+
+    assertTrue(isSpeechActiveChanged);
+    assertTrue(speechController.isSpeechActive());
+    assertTrue(speechController.hasSpeechBeenTriggered());
+    assertFalse(speechController.isSpeechBeingRepositioned());
+    assertEquals(1, metrics.getCallCount('recordNewPageWithSpeech'));
+  });
+
+  test('onPlayPauseToggle waits for engine load', async () => {
+    const text = 'Sorry not sorry bout what I said';
+    speechController.initializeSpeechTree(1);
+    setSimpleNodeStoreWithText(text);
+
+    speechController.onPlayPauseToggle(null, text);
+    const spoken = await speech.whenCalled('speak');
+    assertFalse(speechController.isEngineLoaded());
+    assertFalse(speechController.isAudioCurrentlyPlaying());
+
+    assertTrue(!!spoken.onstart, 'onstart');
+    spoken.onstart(new SpeechSynthesisEvent('type', {utterance: spoken}));
+    assertTrue(speechController.isEngineLoaded(), 'engine loaded');
+    assertTrue(speechController.isAudioCurrentlyPlaying(), 'audio playing');
+  });
+
+  test('onPlayPauseToggle uses current language and speech rate', async () => {
+    const rate = 1.5;
+    const lang = 'hi';
+    const text = 'I\'m just tryna have some fun';
+    chrome.readingMode.speechRate = rate;
+    chrome.readingMode.baseLanguageForSpeech = lang;
+    speechController.initializeSpeechTree(1);
+    setSimpleNodeStoreWithText(text);
+
+    speechController.onPlayPauseToggle(null, text);
+
+    const spoken = await speech.whenCalled('speak');
+    assertEquals(rate, spoken.rate);
+    assertEquals(lang, spoken.lang);
+  });
+
+  test('onPlayPauseToggle pauses with button click', () => {
+    const source = PauseActionSource.BUTTON_CLICK;
+
+    speechController.onPlayPauseToggle(null, 'A story that you think');
+    speechController.onPlayPauseToggle(null, 'A story that you think');
 
     assertTrue(isSpeechActiveChanged);
     assertFalse(speechController.isSpeechActive());
@@ -303,71 +342,248 @@ suite('SpeechController', () => {
     assertEquals(0, speech.getCallCount('cancel'));
   });
 
-  test('stopSpeech with button click logs play session', () => {
-    const source = PauseActionSource.BUTTON_CLICK;
-    speechController.onPlayPauseToggle(null, 'New phone who dis?');
+  test('onPlayPauseToggle logs play session on pause', () => {
+    speechController.onPlayPauseToggle(null, 'You\'ve heard before.');
+    speechController.onPlayPauseToggle(null, 'You\'ve heard before.');
 
-    speechController.stopSpeech(source);
-    assertEquals(1, metrics.getCallCount('recordSpeechPlaybackLength'));
-
-    // Calling it again without playing should not log again.
-    speechController.stopSpeech(source);
     assertEquals(1, metrics.getCallCount('recordSpeechPlaybackLength'));
   });
 
-  test('stopSpeech without button click cancels', () => {
-    const source = PauseActionSource.VOICE_SETTINGS_CHANGE;
-    speechController.setIsSpeechActive(true);
-    speechController.setIsAudioCurrentlyPlaying(true);
+  test(
+      'onPlayPauseToggle resume with no word boundaries resumes speech', () => {
+        speechController.onPlayPauseToggle(null, 'We know you know our names');
+        speechController.onPlayPauseToggle(null, 'We know you know our names');
+        speech.reset();
 
-    speechController.stopSpeech(source);
+        speechController.onPlayPauseToggle(null, 'We know you know our names');
 
-    assertTrue(isSpeechActiveChanged);
-    assertFalse(speechController.isSpeechActive());
-    assertFalse(speechController.isAudioCurrentlyPlaying());
-    assertEquals(source, speechController.getPauseSource());
-    assertEquals(0, speech.getCallCount('pause'));
+        assertEquals(1, speech.getCallCount('resume'));
+        assertEquals(0, speech.getCallCount('cancel'));
+      });
+
+  test(
+      'onPlayPauseToggle resume with word boundaries cancels and re-speaks',
+      () => {
+        const textContent = 'And our fame and our faces';
+        setSimpleNodeStoreWithText(textContent);
+        speechController.onPlayPauseToggle(null, textContent);
+        speechController.onPlayPauseToggle(null, textContent);
+        wordBoundaries.updateBoundary(10);
+        speech.reset();
+
+        speechController.onPlayPauseToggle(null, textContent);
+
+        assertEquals(1, speech.getCallCount('speak'));
+        assertEquals(1, speech.getCallCount('cancel'));
+      });
+
+  suite('very long text', () => {
+    function getSpokenText(): string {
+      assertEquals(1, speech.getCallCount('speak'));
+      return speech.getArgs('speak')[0].text.trim();
+    }
+
+    const longSentences =
+        'A kingdom of isolation, and it looks like I am the queen and the ' +
+        'wind is howling like this swirling storm inside, Couldn\'t keep it ' +
+        'in, heaven knows I tried, but don\'t let them in, don\'t let them ' +
+        'see, be the good girl you always have to be, and conceal, don\'t ' +
+        'feel, don\'t let them know.' +
+        'Well, now they know, let it go, let it go, can\'t hold it back ' +
+        'anymore, let it go, let it go, turn away and slam the ' +
+        'door- I don\'t care what they\'re going to say, let the storm rage ' +
+        'on- the cold never bothered me anyway- it\'s funny how some ' +
+        'distance makes everything seem small and the fears that once ' +
+        'controlled me can\'t get to me at all- it\'s time to see what I can ' +
+        'do to test the limits and break through- no right no wrong no rules ' +
+        'for me- I\'m free- let it go let it go I am one with the wind and ' +
+        'sky let it go let it go you\'ll never see me cry- here I stand and ' +
+        'here I stay- let the storm rage on';
+
+    setup(() => {
+      speechController.initializeSpeechTree(1);
+      setSimpleNodeStoreWithText(longSentences);
+    });
+
+    test('uses max speech length', () => {
+      const expectedNumSegments =
+          Math.ceil(longSentences.length / MAX_SPEECH_LENGTH);
+
+      speechController.onPlayPauseToggle(null, longSentences);
+
+      assertGT(expectedNumSegments, 0);
+      for (let i = 0; i < expectedNumSegments; i++) {
+        assertEquals(i + 1, speech.getCallCount('speak'));
+        assertGT(
+            MAX_SPEECH_LENGTH, speech.getArgs('speak')[i].text.trim().length);
+        speech.getArgs('speak')[i].onend();
+      }
+    });
+
+    test('on text-too-long error smaller text segment plays', () => {
+      voicePackController.setCurrentVoice(createSpeechSynthesisVoice(
+          {lang: 'en', name: 'Google Dinosaur', localService: true}));
+      const accessibleTextLength =
+          speechController.getUtteranceEndBoundary(longSentences, true);
+      speechController.onPlayPauseToggle(null, longSentences);
+      assertEquals(longSentences, getSpokenText());
+      const utterance = speech.getArgs('speak')[0];
+      speech.reset();
+
+      utterance.onerror(createSpeechErrorEvent(utterance, 'text-too-long'));
+
+      assertEquals(1, metrics.getCallCount('recordSpeechError'));
+      const spoken1 = speech.getArgs('speak')[0];
+      assertEquals(
+          longSentences.substring(0, accessibleTextLength), getSpokenText());
+      // When this segment is finished, we should speak the remaining text.
+      speech.reset();
+      spoken1.onend();
+      assertEquals(
+          longSentences.substring(accessibleTextLength), getSpokenText());
+    });
+  });
+
+  test('stops speech on language-unavailable', async () => {
+    const textContent = 'I\'m done cuz all this time';
+    const pageLanguage = 'es';
+    setSimpleNodeStoreWithText(textContent);
+    assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
+    voicePackController.setCurrentLanguage(pageLanguage);
+    speechController.initializeSpeechTree(1);
+
+    speechController.onPlayPauseToggle(null, textContent);
+    assertEquals(1, speech.getCallCount('speak'));
+    const utterance = speech.getArgs('speak')[0];
+    speech.reset();
+
+    utterance.onerror(
+        createSpeechErrorEvent(utterance, 'language-unavailable'));
+
+    assertEquals(1, metrics.getCallCount('recordSpeechError'));
     assertEquals(1, speech.getCallCount('cancel'));
-    assertEquals(0, metrics.getCallCount('recordSpeechPlaybackLength'));
+    assertEquals(0, speech.getCallCount('pause'));
+    assertEquals(0, speech.getCallCount('speak'));
+    assertEquals(
+        chrome.readingMode.engineErrorStopSource,
+        await metrics.whenCalled('recordSpeechStopSource'));
   });
 
-  test('onSpeechInterrupted while repositioning keeps playing speech', () => {
+  test('stops speech on voice-unavailable', async () => {
+    const textContent = 'I\'ve been just one word';
+    const pageLanguage = 'es';
+    setSimpleNodeStoreWithText(textContent);
+    assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
+    voicePackController.setCurrentLanguage(pageLanguage);
+    speechController.initializeSpeechTree(1);
+
+    speechController.onPlayPauseToggle(null, textContent);
+    assertEquals(1, speech.getCallCount('speak'));
+    const utterance = speech.getArgs('speak')[0];
+    speech.reset();
+
+    utterance.onerror(createSpeechErrorEvent(utterance, 'voice-unavailable'));
+
+    assertEquals(1, metrics.getCallCount('recordSpeechError'));
+    assertEquals(1, speech.getCallCount('cancel'));
+    assertEquals(0, speech.getCallCount('pause'));
+    assertEquals(0, speech.getCallCount('speak'));
+    assertEquals(
+        chrome.readingMode.engineErrorStopSource,
+        await metrics.whenCalled('recordSpeechStopSource'));
+  });
+
+  test('invalid argument updates speech rate', () => {
+    const textContent = 'In a stupid rhyme';
+    const pageLanguage = 'es';
+    setSimpleNodeStoreWithText(textContent);
+    assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
+    chrome.readingMode.speechRate = 4;
+    voicePackController.setCurrentLanguage(pageLanguage);
+    speechController.initializeSpeechTree(1);
+
+    speechController.onPlayPauseToggle(null, textContent);
+    assertEquals(1, speech.getCallCount('speak'));
+    const utterance = speech.getArgs('speak')[0];
+    speech.reset();
+
+    utterance.onerror(createSpeechErrorEvent(utterance, 'invalid-argument'));
+
+    assertEquals(1, chrome.readingMode.speechRate);
+    assertEquals(0, speech.getCallCount('cancel'));
+    assertEquals(0, speech.getCallCount('pause'));
+    assertEquals(0, speech.getCallCount('speak'));
+    assertEquals(1, metrics.getCallCount('recordSpeechError'));
+    assertEquals(0, metrics.getCallCount('recordSpeechStopSource'));
+  });
+
+  test('speech interrupt while repositioning keeps playing speech', () => {
+    const textContent = 'So I picked up a pen and a microphone';
+    const pageLanguage = 'es';
+    setSimpleNodeStoreWithText(textContent);
+    assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
+    chrome.readingMode.speechRate = 4;
+    voicePackController.setCurrentLanguage(pageLanguage);
+    speechController.initializeSpeechTree(1);
+
+    speechController.onPlayPauseToggle(null, textContent);
+    assertEquals(1, speech.getCallCount('speak'));
+    const utterance = speech.getArgs('speak')[0];
+    speech.reset();
     speechController.setIsSpeechBeingRepositioned(true);
     speechController.setIsSpeechActive(true);
     speechController.setIsAudioCurrentlyPlaying(true);
 
-    speechController.onSpeechInterrupted();
+    utterance.onerror(createSpeechErrorEvent(utterance, 'interrupted'));
 
     assertTrue(speechController.isAudioCurrentlyPlaying());
     assertTrue(speechController.isSpeechActive());
     assertTrue(speechController.isSpeechBeingRepositioned());
+    assertEquals(0, speech.getCallCount('cancel'));
+    assertEquals(0, speech.getCallCount('pause'));
+    assertEquals(0, metrics.getCallCount('recordSpeechError'));
   });
 
-  test('onSpeechInterrupted stops speech', async () => {
+  test('speech interrupt stops speech', async () => {
+    const textContent = 'History\'s about to get overthrown';
+    const pageLanguage = 'es';
+    setSimpleNodeStoreWithText(textContent);
+    assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
+    chrome.readingMode.speechRate = 4;
+    voicePackController.setCurrentLanguage(pageLanguage);
     speechController.initializeSpeechTree(1);
+
+    speechController.onPlayPauseToggle(null, textContent);
+    assertEquals(1, speech.getCallCount('speak'));
+    const utterance = speech.getArgs('speak')[0];
+    speech.reset();
     speechController.setIsAudioCurrentlyPlaying(true);
 
-    speechController.onSpeechInterrupted();
+    utterance.onerror(createSpeechErrorEvent(utterance, 'interrupted'));
 
     assertEquals(
         PauseActionSource.ENGINE_INTERRUPT, speechController.getPauseSource());
     assertFalse(speechController.isAudioCurrentlyPlaying());
     assertFalse(speechController.isSpeechActive());
     assertFalse(speechController.isSpeechBeingRepositioned());
+    assertEquals(1, speech.getCallCount('cancel'));
+    assertEquals(0, metrics.getCallCount('recordSpeechError'));
     assertEquals(
         chrome.readingMode.engineInterruptStopSource,
         await metrics.whenCalled('recordSpeechStopSource'));
   });
 
-  test('onSpeechFinished', () => {
+  test('onSpeechFinished', async () => {
     speechController.onPlayPauseToggle(null, 'New phone who dis?');
 
     speechController.onSpeechFinished();
 
     assertTrue(isSpeechActiveChanged);
-    assertEquals(1, metrics.getCallCount('recordSpeechPlaybackLength'));
-    assertEquals(1, metrics.getCallCount('recordSpeechStopSource'));
     assertFalse(speechController.isSpeechActive());
+    assertEquals(1, metrics.getCallCount('recordSpeechPlaybackLength'));
+    assertEquals(
+        chrome.readingMode.contentFinishedStopSource,
+        await metrics.whenCalled('recordSpeechStopSource'));
   });
 
   test('playNextGranularity propagates change', () => {
@@ -394,6 +610,30 @@ suite('SpeechController', () => {
     assertTrue(movedToPrevious);
   });
 
+  test('playNextGranularity updates state', () => {
+    setSimpleNodeStoreWithText('Know all about the glories');
+    speechController.setIsSpeechBeingRepositioned(false);
+    wordBoundaries.updateBoundary(5);
+
+    speechController.playNextGranularity();
+
+    assertTrue(speechController.isSpeechBeingRepositioned());
+    assertFalse(wordBoundaries.hasBoundaries());
+    assertEquals(1, speech.getCallCount('cancel'));
+  });
+
+  test('playPreviousGranularity updates state', () => {
+    setSimpleNodeStoreWithText('And the disgraces');
+    speechController.setIsSpeechBeingRepositioned(false);
+    wordBoundaries.updateBoundary(5);
+
+    speechController.playPreviousGranularity();
+
+    assertTrue(speechController.isSpeechBeingRepositioned());
+    assertFalse(wordBoundaries.hasBoundaries());
+    assertEquals(1, speech.getCallCount('cancel'));
+  });
+
   test('onHighlightGranularityChange', async () => {
     const granularity1 = chrome.readingMode.noHighlighting;
     const granularity2 = chrome.readingMode.wordHighlighting;
@@ -408,5 +648,23 @@ suite('SpeechController', () => {
     assertEquals(granularity2, chrome.readingMode.highlightGranularity);
     assertEquals(
         granularity2, await metrics.whenCalled('recordHighlightGranularity'));
+  });
+
+  test('onLockScreen while paused does nothing', () => {
+    speechController.onLockScreen();
+
+    assertEquals(0, speech.getCallCount('pause'));
+    assertEquals(0, speech.getCallCount('cancel'));
+    assertEquals(0, speech.getCallCount('speak'));
+  });
+
+  test('onLockScreen while playing cancels speech', () => {
+    speechController.setIsSpeechActive(true);
+
+    speechController.onLockScreen();
+
+    assertEquals(1, speech.getCallCount('cancel'));
+    assertEquals(0, speech.getCallCount('pause'));
+    assertEquals(0, speech.getCallCount('speak'));
   });
 });
