@@ -23,6 +23,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.readaloud.ReadAloudFeatures;
 import org.chromium.chrome.browser.readaloud.player.Colors;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
@@ -260,17 +261,37 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
             mModeSelectorButton.setSelected(true);
             chromeNowPlaying.setText(
                     mContext.getString(R.string.readaloud_chrome_now_playing_audio_overview));
-            mThumbUpButton.setVisibility(View.VISIBLE);
-            mThumbDownButton.setVisibility(View.VISIBLE);
-            mMoreOptionsButton.setVisibility(View.GONE);
+            if (ReadAloudFeatures.isAudioOverviewsFeedbackAllowed()) {
+                showFeedbackButtons();
+            } else {
+              hideFeedbackButtons();
+            }
+            hideMoreOptions();
         } else {
             mIsModeActive = false;
             mModeSelectorButton.setSelected(false);
             chromeNowPlaying.setText(mContext.getString(R.string.readaloud_chrome_now_playing));
-            mThumbUpButton.setVisibility(View.GONE);
-            mThumbDownButton.setVisibility(View.GONE);
-            mMoreOptionsButton.setVisibility(View.VISIBLE);
+            hideFeedbackButtons();
+            showMoreOptions();
         }
+    }
+
+    void showFeedbackButtons() {
+        mThumbUpButton.setVisibility(View.VISIBLE);
+        mThumbDownButton.setVisibility(View.VISIBLE);
+    }
+
+    void hideFeedbackButtons() {
+        mThumbUpButton.setVisibility(View.GONE);
+        mThumbDownButton.setVisibility(View.GONE);
+    }
+
+    void showMoreOptions() {
+        mMoreOptionsButton.setVisibility(View.VISIBLE);
+    }
+
+    void hideMoreOptions() {
+        mMoreOptionsButton.setVisibility(View.GONE);
     }
 
     void setPlaybackModeSelectionEnabled(PlaybackModeSelectionEnablementStatus status) {
