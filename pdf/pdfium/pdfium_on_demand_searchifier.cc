@@ -134,14 +134,6 @@ void PDFiumOnDemandSearchifier::SchedulePage(int page_index) {
   state_ = State::kWaitingForResults;
 }
 
-void PDFiumOnDemandSearchifier::CancelPage(int page_index) {
-  if (current_page_ && current_page_->index() == page_index) {
-    current_page_ = nullptr;
-    return;
-  }
-  base::Erase(pages_queue_, page_index);
-}
-
 void PDFiumOnDemandSearchifier::SearchifyNextPage() {
   // Do not proceed if OCR got disconnected.
   if (state_ == State::kFailed) {
@@ -157,8 +149,11 @@ void PDFiumOnDemandSearchifier::SearchifyNextPage() {
   state_ = State::kWaitingForResults;
   current_page_ = engine_->GetPage(pages_queue_.front());
   CHECK(current_page_);
+  current_page_was_loaded_ = !!current_page_->page();
   pages_queue_.pop_front();
 
+  // Load the page if needed.
+  current_page_->GetPage();
   current_page_image_object_indices_ = current_page_->GetImageObjectIndices();
   current_page_ocr_results_.clear();
   current_page_ocr_results_.reserve(current_page_image_object_indices_.size());
@@ -203,9 +198,8 @@ void PDFiumOnDemandSearchifier::CommitResultsToPage() {
       return;
     }
 
-    // It is expected that the page would be still loaded.
-    FPDF_PAGE page = current_page_->page();
-    CHECK(page);
+    // Reload page if needed.
+    FPDF_PAGE page = current_page_->GetPage();
     bool added_text = false;
     for (auto& result : current_page_ocr_results_) {
       FPDF_PAGEOBJECT image = FPDFPage_GetObject(page, result.image_index);
@@ -221,9 +215,14 @@ void PDFiumOnDemandSearchifier::CommitResultsToPage() {
     }
   }
 
+  if (!current_page_was_loaded_) {
+    engine_->MaybeUnloadPage(current_page_->index());
+  }
   current_page_ = nullptr;
 
   // Searchify next page.
+  // TODO(crbug.com/402265433): Since OCR is CPU intensive, add heuristic to
+  // avoid using system resources continuously if possible.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&PDFiumOnDemandSearchifier::SearchifyNextPage,
@@ -250,18 +249,7 @@ void PDFiumOnDemandSearchifier::OnGotOcrResult(
     const gfx::Size& image_size,
     screen_ai::mojom::VisualAnnotationPtr annotation) {
   CHECK_EQ(state_, State::kWaitingForResults);
-
-  // If current request got canceled while OCR was running, ignore the result
-  // and move to the next page.
-  if (!current_page_) {
-    current_page_ocr_results_.clear();
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&PDFiumOnDemandSearchifier::SearchifyNextPage,
-                       weak_factory_.GetWeakPtr()),
-        kSearchifyPageDelay);
-    return;
-  }
+  CHECK(current_page_);
 
   if (annotation) {
     current_page_ocr_results_.emplace_back(image_index, std::move(annotation),

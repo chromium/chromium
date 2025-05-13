@@ -41,10 +41,6 @@ class PDFiumOnDemandSearchifier {
   // starts.
   void SchedulePage(int page_index);
 
-  // If `page_index` in it the searchifying queue, it's removed. If it's
-  // currently being processed, the process gets stopped as soon as possible.
-  void CancelPage(int page_index);
-
   bool HasFailed() const { return state_ == State::kFailed; }
   bool IsIdleForTesting() const { return state_ == State::kIdle; }
 
@@ -98,6 +94,7 @@ class PDFiumOnDemandSearchifier {
 
   // The page that is currently OCRed.
   raw_ptr<PDFiumPage> current_page_ = nullptr;
+  bool current_page_was_loaded_ = false;
   std::vector<int> current_page_image_object_indices_;
   std::vector<OcrResult> current_page_ocr_results_;
 

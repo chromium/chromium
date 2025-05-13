@@ -517,10 +517,6 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // and in an available state.
   void ScheduleSearchifyIfNeeded(PDFiumPage* page);
 
-  // Cancels a pending searchify if it has not started yet. Ignores the request
-  // if the page is not scheduled for searchify.
-  void CancelPendingSearchify(int page_index);
-
   // Notifies that PDF searchifier has switched between busy or not busy.
   // A busy state is when it has some queued pages to process or is processing a
   // page at the moment. It comes out of this state either when all tasks are
@@ -536,6 +532,9 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 
   // Tells if the page is in `progressive_paints_`
   bool IsPageScheduledForPaint(int page_index) const;
+
+  // Unloads the page if it is not visible or prevented from unloading.
+  void MaybeUnloadPage(int page_index);
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   void UnsupportedFeature(const std::string& feature);

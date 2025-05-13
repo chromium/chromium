@@ -4480,12 +4480,6 @@ void PDFiumEngine::ScheduleSearchifyIfNeeded(PDFiumPage* page) {
   searchifier_->SchedulePage(page->index());
 }
 
-void PDFiumEngine::CancelPendingSearchify(int page_index) {
-  if (searchifier_) {
-    searchifier_->CancelPage(page_index);
-  }
-}
-
 void PDFiumEngine::OnSearchifyStateChange(bool busy) {
   client_->OnSearchifyStateChange(busy);
 }
@@ -4504,6 +4498,12 @@ bool PDFiumEngine::IsPageScheduledForPaint(int page_index) const {
     }
   }
   return false;
+}
+
+void PDFiumEngine::MaybeUnloadPage(int page_index) {
+  if (!IsPageVisible(page_index)) {
+    pages_[page_index]->Unload();
+  }
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 

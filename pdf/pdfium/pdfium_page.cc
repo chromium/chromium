@@ -432,10 +432,6 @@ void PDFiumPage::Unload() {
   text_page_.reset();
 
   if (page_) {
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-    // TODO(crbug.com/360803943): Keep objects added by searchify.
-    engine_->CancelPendingSearchify(index_);
-#endif
     if (engine_->form()) {
       FORM_OnBeforeClosePage(page(), engine_->form());
     }
