@@ -54,6 +54,11 @@ TEST_F(FastPairDecryptionTest, ParseDecryptedResponse_Success) {
 }
 
 TEST_F(FastPairDecryptionTest, ParseDecryptedResponse_Failure) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kFastPairKeyboards});
+
   std::array<uint8_t, kBlockByteSize> response_bytes = {/*message_type=*/0x02,
                                                         /*address_bytes=*/0x02,
                                                         0x03,
