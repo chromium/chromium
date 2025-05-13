@@ -342,6 +342,7 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   set_close_on_deactivate(init_params.close_on_deactivate);
   set_margins(init_params.margin.has_value() ? init_params.margin.value()
                                              : gfx::Insets());
+  set_corner_radius(params_.corner_radius);
 
   // Always create a layer so that the layer for FocusRing stays in this view's
   // layer. Without it, the layer for FocusRing goes above the NativeViewHost
@@ -351,7 +352,10 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   SetPaintToLayer(init_params.transparent ? ui::LAYER_NOT_DRAWN
                                           : ui::LAYER_TEXTURED);
 
-  if (!init_params.transparent) {
+  if (init_params.transparent) {
+    set_use_round_corners(false);
+    SetBackgroundColor(SK_ColorTRANSPARENT);
+  } else {
     layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF{static_cast<float>(params_.corner_radius)});
     layer()->SetIsFastRoundedCorner(true);
@@ -555,9 +559,8 @@ std::unique_ptr<NonClientFrameView> TrayBubbleView::CreateNonClientFrameView(
   // Create the customized bubble border.
   std::unique_ptr<BubbleBorder> bubble_border =
       std::make_unique<BubbleBorder>(arrow(), BubbleBorder::NO_SHADOW);
-  if (params_.corner_radius) {
-    bubble_border->set_rounded_corners(
-        gfx::RoundedCornersF(params_.corner_radius));
+  if (GetParams().round_corners) {
+    bubble_border->set_rounded_corners(gfx::RoundedCornersF(GetCornerRadius()));
   }
   bubble_border->set_avoid_shadow_overlap(true);
   if (params_.insets.has_value()) {
