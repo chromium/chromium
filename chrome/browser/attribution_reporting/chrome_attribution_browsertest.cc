@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+#include <tuple>
+
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h"
@@ -31,6 +35,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "url/gurl.h"
 
 // Tests for the Conversion Measurement API that rely on chrome/ layer features.
@@ -90,12 +95,18 @@ class ChromeAttributionBrowserTest : public MixinBasedInProcessBrowserTest {
     return new_contents;
   }
 
-  void RegisterTrigger(content::WebContents* contents) {
+  void RegisterTrigger(
+      content::WebContents* contents,
+      std::string_view registration_js = "createAttributionSrcImg($1)") {
     GURL register_trigger_url =
         server_.GetURL("c.test", "/register_trigger_headers.html");
-    EXPECT_TRUE(
-        ExecJs(contents, content::JsReplace("createAttributionSrcImg($1);",
-                                            register_trigger_url)));
+    EXPECT_TRUE(ExecJs(
+        contents, content::JsReplace(registration_js, register_trigger_url)));
+  }
+
+  void ExpectUseCounter(const base::HistogramTester& histogram_tester,
+                        blink::mojom::WebFeature feature) {
+    histogram_tester.ExpectBucketCount("Blink.UseCounter.Features", feature, 1);
   }
 
   net::EmbeddedTestServer server_{net::EmbeddedTestServer::TYPE_HTTPS};
@@ -206,4 +217,84 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
 
   ASSERT_TRUE(console_observer.Wait());
   EXPECT_FALSE(console_observer.messages().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
+                       SourceClicked_FeatureRecorded) {
+  base::HistogramTester histogram_tester;
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  page_load_metrics::PageLoadMetricsTestWaiter waiter(web_contents);
+  waiter.AddWebFeatureExpectation(
+      blink::mojom::WebFeature::kAttributionReportingAPIAll);
+
+  ASSERT_TRUE(server_.Start());
+
+  RegisterSourceWithNavigation();
+
+  waiter.Wait();
+
+  ExpectUseCounter(histogram_tester,
+                   blink::mojom::WebFeature::kAttributionReportingAPIAll);
+  ExpectUseCounter(histogram_tester,
+                   blink::mojom::WebFeature::kPrivacySandboxAdsAPIs);
+}
+
+class ChromeAttributionTriggerUseCounterBrowserTest
+    : public ChromeAttributionBrowserTest,
+      public ::testing::WithParamInterface<std::tuple<bool, std::string_view>> {
+ public:
+  ChromeAttributionTriggerUseCounterBrowserTest() {
+    if (std::get<0>(GetParam())) {
+      scoped_feature_list_.InitAndEnableFeature(
+          blink::features::kAttributionReportingInBrowserMigration);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          blink::features::kAttributionReportingInBrowserMigration);
+    }
+  }
+
+ protected:
+  void RegisterTrigger(content::WebContents* web_contents) {
+    ChromeAttributionBrowserTest::RegisterTrigger(web_contents,
+                                                  std::get<1>(GetParam()));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ChromeAttributionTriggerUseCounterBrowserTest,
+    ::testing::Combine(::testing::Bool(),
+                       ::testing::Values("createAttributionSrcImg($1);",
+                                         "createTrackingPixel($1);",
+                                         R"(fetch($1, {keepalive: true}))")));
+
+IN_PROC_BROWSER_TEST_P(ChromeAttributionTriggerUseCounterBrowserTest,
+                       UseCounterRecorded) {
+  base::HistogramTester histogram_tester;
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  page_load_metrics::PageLoadMetricsTestWaiter waiter(web_contents);
+  waiter.AddWebFeatureExpectation(
+      blink::mojom::WebFeature::kAttributionReportingAPIAll);
+
+  ASSERT_TRUE(server_.Start());
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      server_.GetURL("a.test", "/page_with_conversion_redirect.html")));
+
+  RegisterTrigger(web_contents);
+
+  waiter.Wait();
+
+  ExpectUseCounter(histogram_tester,
+                   blink::mojom::WebFeature::kAttributionReportingAPIAll);
+  ExpectUseCounter(histogram_tester,
+                   blink::mojom::WebFeature::kPrivacySandboxAdsAPIs);
 }

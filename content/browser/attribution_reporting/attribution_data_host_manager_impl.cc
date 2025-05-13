@@ -1331,6 +1331,14 @@ void AttributionDataHostManagerImpl::HandleRegistrationInfo(
     return;
   }
 
+  if (auto* rfh =
+          RenderFrameHostImpl::FromID(registrations.render_frame_id())) {
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        rfh, blink::mojom::WebFeature::kAttributionReportingAPIAll);
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        rfh, blink::mojom::WebFeature::kPrivacySandboxAdsAPIs);
+  }
+
   ParseHeader(registrations, *std::move(pending_decode),
               registrar_info.registrar.value());
 }
