@@ -63,6 +63,10 @@ class Notice {
   // Returns the cached was_fulfilled status.
   bool was_fulfilled() const { return was_fulfilled_; }
 
+  // Linked APIs accessors.
+  base::span<NoticeApi*> target_apis() { return target_apis_; }
+  base::span<NoticeApi*> pre_req_apis() { return pre_req_apis_; }
+
   // Returns the view_group, consisting of the group and the order in the group.
   std::pair<NoticeViewGroup, int> view_group() const { return view_group_; }
 
@@ -70,8 +74,6 @@ class Notice {
   void RefreshFulfillmentStatus(NoticeStorage& storage);
 
   // Accessors.
-  const std::vector<raw_ptr<NoticeApi>>& GetTargetApis();
-  const std::vector<raw_ptr<NoticeApi>>& GetPreReqApis();
   NoticeId GetNoticeId() const;
   const base::Feature* GetFeature() const;
   const char* GetStorageName() const;
@@ -101,8 +103,8 @@ class Notice {
 
   NoticeId notice_id_;
   bool was_fulfilled_ = false;
-  std::vector<raw_ptr<NoticeApi>> target_apis_;
-  std::vector<raw_ptr<NoticeApi>> pre_req_apis_;
+  std::vector<NoticeApi*> target_apis_;
+  std::vector<NoticeApi*> pre_req_apis_;
   raw_ptr<const base::Feature> feature_;
   std::pair<NoticeViewGroup, int> view_group_;
 };
@@ -131,8 +133,12 @@ class NoticeApi {
   virtual ~NoticeApi();
 
   // Accessors.
-  const std::vector<Notice*>& GetLinkedNotices();
+  base::span<Notice*> linked_notices() { return linked_notices_; }
+
+  // Computes the eligibility level
   EligibilityLevel GetEligibilityLevel();
+
+  // Runs the Result Callback.
   void UpdateResult(bool enabled);
 
   // Sets a notice this Api can be fulfilled by.

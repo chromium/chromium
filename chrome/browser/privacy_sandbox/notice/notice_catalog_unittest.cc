@@ -80,7 +80,7 @@ TEST_F(PrivacySandboxNoticeCatalogTest, AllNoticesTargetAtLeastOneApi) {
 
   for (Notice* notice : catalog_.GetNotices()) {
     ASSERT_NE(notice, nullptr);
-    EXPECT_THAT(notice->GetTargetApis(), Not(IsEmpty()));
+    EXPECT_THAT(notice->target_apis(), Not(IsEmpty()));
   }
 }
 
@@ -114,7 +114,7 @@ TEST_F(PrivacySandboxNoticeCatalogTest, AllApisAreTargetedByAtLeastOneNotice) {
 
   for (const auto& api : catalog_.GetNoticeApis()) {
     ASSERT_NE(api, nullptr);
-    EXPECT_THAT(api->GetLinkedNotices(), Not(IsEmpty()));
+    EXPECT_THAT(api->linked_notices(), Not(IsEmpty()));
   }
 }
 
@@ -146,7 +146,7 @@ TEST_F(PrivacySandboxNoticeCatalogTest, TargetApisAreValid) {
 
   for (Notice* notice : catalog_.GetNotices()) {
     ASSERT_NE(notice, nullptr);
-    for (const NoticeApi* target_api : notice->GetTargetApis()) {
+    for (const NoticeApi* target_api : notice->target_apis()) {
       EXPECT_THAT(valid_api_pointers, Contains(target_api));
     }
   }
@@ -169,7 +169,7 @@ TEST_F(PrivacySandboxNoticeCatalogTest, PrerequisiteApisAreValid) {
 
   for (Notice* notice : catalog_.GetNotices()) {
     ASSERT_NE(notice, nullptr);
-    for (const NoticeApi* prereq_api : notice->GetPreReqApis()) {
+    for (const NoticeApi* prereq_api : notice->pre_req_apis()) {
       EXPECT_THAT(valid_api_pointers, Contains(prereq_api));
     }
   }

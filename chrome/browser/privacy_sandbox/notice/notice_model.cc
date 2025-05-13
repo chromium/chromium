@@ -18,10 +18,6 @@ void NoticeApi::CanBeFulfilledBy(Notice* notice) {
   linked_notices_.emplace_back(notice);
 }
 
-const std::vector<Notice*>& NoticeApi::GetLinkedNotices() {
-  return linked_notices_;
-}
-
 NoticeApi* NoticeApi::SetEligibilityCallback(
     base::RepeatingCallback<EligibilityLevel()> callback) {
   eligibility_callback_ = std::move(callback);
@@ -57,7 +53,7 @@ void NoticeApi::UpdateResult(bool enabled) {
 bool NoticeApi::IsFulfilled() {
   EligibilityLevel eligibility = GetEligibilityLevel();
 
-  for (Notice* notice : linked_notices_) {
+  for (Notice* notice : linked_notices()) {
     if (eligibility == EligibilityLevel::kEligibleConsent &&
         notice->GetNoticeType() == NoticeType::kNotice) {
       continue;
@@ -70,14 +66,6 @@ bool NoticeApi::IsFulfilled() {
 // Notice class definitions.
 Notice::Notice(NoticeId notice_id) : notice_id_(notice_id) {}
 Notice::~Notice() = default;
-
-const std::vector<raw_ptr<NoticeApi>>& Notice::GetTargetApis() {
-  return target_apis_;
-}
-
-const std::vector<raw_ptr<NoticeApi>>& Notice::GetPreReqApis() {
-  return pre_req_apis_;
-}
 
 Notice* Notice::SetFeature(const base::Feature* feature) {
   feature_ = feature;
@@ -175,7 +163,7 @@ void Notice::UpdateTargetApiResults(PrivacySandboxNoticeEvent event) {
   if (!result.has_value()) {
     return;
   }
-  for (NoticeApi* api : target_apis_) {
+  for (NoticeApi* api : target_apis()) {
     api->UpdateResult(*result);
   }
 }

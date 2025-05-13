@@ -94,24 +94,24 @@ TEST_F(PrivacySandboxNoticeModelTest, GetStorageNameNullFeatureCrashes) {
 
 TEST_F(PrivacySandboxNoticeModelTest, SetAndGetTargetApis) {
   Notice notice(kTestNoticeId);
-  EXPECT_THAT(notice.GetTargetApis(), IsEmpty());
+  EXPECT_THAT(notice.target_apis(), IsEmpty());
 
   NoticeApi api1, api2;
   notice.SetTargetApis({&api1, &api2});
 
-  EXPECT_THAT(notice.GetTargetApis(), ElementsAre(&api1, &api2));
-  EXPECT_THAT(api1.GetLinkedNotices(), Contains(&notice));
-  EXPECT_THAT(api2.GetLinkedNotices(), Contains(&notice));
+  EXPECT_THAT(notice.target_apis(), ElementsAre(&api1, &api2));
+  EXPECT_THAT(api1.linked_notices(), Contains(&notice));
+  EXPECT_THAT(api2.linked_notices(), Contains(&notice));
 }
 
 TEST_F(PrivacySandboxNoticeModelTest, SetAndGetPreReqApis) {
   Notice notice(kTestNoticeId);
-  EXPECT_THAT(notice.GetPreReqApis(), IsEmpty());
+  EXPECT_THAT(notice.pre_req_apis(), IsEmpty());
 
   NoticeApi api1, api2;
   notice.SetPreReqApis({&api1, &api2});
 
-  EXPECT_THAT(notice.GetPreReqApis(), ElementsAre(&api1, &api2));
+  EXPECT_THAT(notice.pre_req_apis(), ElementsAre(&api1, &api2));
 }
 
 TEST_F(PrivacySandboxNoticeModelTest, Notice_InitialWasFulfilledIsFalse) {
@@ -332,7 +332,7 @@ class PrivacySandboxNoticeApiTest : public testing::Test {
 };
 
 TEST_F(PrivacySandboxNoticeApiTest, InitialState) {
-  EXPECT_THAT(api_.GetLinkedNotices(), IsEmpty());
+  EXPECT_THAT(api_.linked_notices(), IsEmpty());
   EXPECT_EQ(api_.GetEligibilityLevel(), kNotEligible);
   EXPECT_FALSE(api_.IsFulfilled());
 }
@@ -386,11 +386,11 @@ TEST_F(PrivacySandboxNoticeApiTest, IsEnabledFeatureNotSet) {
 }
 
 TEST_F(PrivacySandboxNoticeApiTest, CanBeFulfilledByAndGetLinkedNotices) {
-  EXPECT_THAT(api_.GetLinkedNotices(), IsEmpty());
+  EXPECT_THAT(api_.linked_notices(), IsEmpty());
   api_.CanBeFulfilledBy(notice_.get());
-  EXPECT_THAT(api_.GetLinkedNotices(), ElementsAre(notice_.get()));
+  EXPECT_THAT(api_.linked_notices(), ElementsAre(notice_.get()));
   api_.CanBeFulfilledBy(consent_.get());
-  EXPECT_THAT(api_.GetLinkedNotices(),
+  EXPECT_THAT(api_.linked_notices(),
               ElementsAre(notice_.get(), consent_.get()));
 }
 
