@@ -835,6 +835,13 @@ GlicView* GlicWindowControllerImpl::GetGlicView() {
   return static_cast<GlicView*>(GetGlicWidget()->GetContentsView());
 }
 
+base::WeakPtr<views::View> GlicWindowControllerImpl::GetGlicViewAsView() {
+  if (auto* view = GetGlicView()) {
+    return view->GetWeakPtr();
+  }
+  return nullptr;
+}
+
 GlicWidget* GlicWindowControllerImpl::GetGlicWidget() {
   return glic_widget_.get();
 }
@@ -1453,5 +1460,4 @@ GlicFreController* GlicWindowControllerImpl::fre_controller() {
 Browser* GlicWindowControllerImpl::attached_browser() {
   return attached_browser_;
 }
-
 }  // namespace glic

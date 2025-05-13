@@ -109,6 +109,7 @@ class GlicWindowControllerImpl : public GlicWindowController,
   base::WeakPtr<GlicWindowController> GetWeakPtr() override;
 
   GlicView* GetGlicView() override;
+  base::WeakPtr<views::View> GetGlicViewAsView() override;
   GlicWidget* GetGlicWidget() override;
   content::WebContents* GetFreWebContents() override;
 

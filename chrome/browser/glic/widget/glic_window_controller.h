@@ -195,6 +195,8 @@ class GlicWindowController : public Host::Delegate {
 
   virtual GlicView* GetGlicView() = 0;
 
+  virtual base::WeakPtr<views::View> GetGlicViewAsView() = 0;
+
   // Returns the widget that backs the glic window.
   virtual GlicWidget* GetGlicWidget() = 0;
 

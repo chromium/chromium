@@ -23,12 +23,11 @@ namespace glic {
 
 namespace {
 
-static constexpr std::array<glic::LocalHotkeyManager::Hotkey, 3>
-    kSupportedHotkeys = {
-        glic::LocalHotkeyManager::Hotkey::kClose,
-        glic::LocalHotkeyManager::Hotkey::kFocusToggle,
+static constexpr std::array kSupportedHotkeys = {
+    glic::LocalHotkeyManager::Hotkey::kClose,
+    glic::LocalHotkeyManager::Hotkey::kFocusToggle,
 #if BUILDFLAG(IS_WIN)
-        glic::LocalHotkeyManager::Hotkey::kTitleBarContextMenu,
+    glic::LocalHotkeyManager::Hotkey::kTitleBarContextMenu,
 #endif
 };
 
@@ -38,7 +37,7 @@ class GlicWindowScopedHotkeyRegistration
     : public LocalHotkeyManager::ScopedHotkeyRegistration {
  public:
   GlicWindowScopedHotkeyRegistration(ui::Accelerator accelerator,
-                                     base::WeakPtr<GlicView> glic_view)
+                                     base::WeakPtr<views::View> glic_view)
       : accelerator_(accelerator), glic_view_(glic_view) {
     CHECK(!accelerator.IsEmpty());
     CHECK(glic_view_);
@@ -54,7 +53,7 @@ class GlicWindowScopedHotkeyRegistration
 
  private:
   ui::Accelerator accelerator_;
-  base::WeakPtr<GlicView> glic_view_;
+  base::WeakPtr<views::View> glic_view_;
 };
 
 }  // namespace
@@ -109,9 +108,8 @@ GlicWindowHotkeyDelegate::CreateScopedHotkeyRegistration(
     ui::Accelerator accelerator,
     base::WeakPtr<ui::AcceleratorTarget> target) {
   CHECK(window_controller_);
-  CHECK(window_controller_->GetGlicView());
   return std::make_unique<GlicWindowScopedHotkeyRegistration>(
-      accelerator, window_controller_->GetGlicView()->GetWeakPtr());
+      accelerator, window_controller_->GetGlicViewAsView());
 }
 
 std::unique_ptr<LocalHotkeyManager> MakeGlicWindowHotkeyManager(
