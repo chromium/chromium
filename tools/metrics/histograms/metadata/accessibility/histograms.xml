@@ -1542,6 +1542,16 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.DisabledAfterHide" enum="BooleanHit"
+    expires_after="2026-05-06">
+  <owner>grt@chromium.org</owner>
+  <owner>aleventhal@chromium.org</owner>
+  <summary>
+    Recorded each time accessibility for a single WebContents is disabled due to
+    the ProgressiveAccessibility feature.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.DlcInstallerFaceGazeAssetsInstallationDuration"
     units="ms" expires_after="2026-03-30">
   <owner>akihiroota@chromium.org</owner>

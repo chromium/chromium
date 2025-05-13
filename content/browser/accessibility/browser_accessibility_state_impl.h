@@ -5,9 +5,11 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_STATE_IMPL_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_STATE_IMPL_H_
 
+#include <list>
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/metrics/metrics_provider.h"
@@ -22,6 +24,7 @@
 namespace content {
 
 struct FocusedNodeDetails;
+class WebContentsImpl;
 
 // The BrowserAccessibilityState class is used to determine if Chrome should be
 // customized for users with assistive technology, such as screen readers. We
@@ -112,6 +115,32 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // Signal to BrowserAccessibilityState that a page navigation has occurred.
   void OnPageNavigationComplete();
 
+  // Sets the initial accessibility mode for `web_contents` if it is not
+  // hidden or if ProgressiveAccessibility is not enabled.
+  void OnWebContentsInitialized(WebContentsImpl* web_contents);
+
+  // Applies the effective accessibility mode for `web_contents` if
+  // ProgressiveAccessibility is enabled.
+  void OnWebContentsRevealed(WebContentsImpl* web_contents);
+
+  // Tracks `web_contents` for the sake of disabling accessibility later if
+  // ProgressiveAccessibility is enabled and disable_on_hide is selected. A
+  // previously-hidden WebContents becomes eligible for disablement if it is
+  // not among the last five to be hidden once it has been hidden for at least
+  // five minutes.
+  void OnWebContentsHidden(WebContentsImpl* web_contents);
+
+  // A hidden WebContents is guaranteed to retain its accessibility state when
+  // the ProgressiveAccessibility feature is in disable_on_hide mode for at
+  // least five minutes, plus or minus twenty seconds.
+  static base::TimeDelta GetRandomizedDisableDelay();
+  static base::TimeDelta GetMaxDisableDelay();
+
+  // The number of recently-hidden WebContents that will not have accessibility
+  // disabled if the ProgressiveAccessibility feature is on in disable_on_hide
+  // mode.
+  static constexpr int kMaxPreservedWebContents = 5;
+
  protected:
   BrowserAccessibilityStateImpl();
 
@@ -137,6 +166,19 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
 
  private:
   void UpdateAccessibilityActivityTask();
+
+  // Stops tracking `web_contents` for disabling accessibility while it is
+  // hidden.
+  void OnDisablerDestroyedForWebContents(WebContentsImpl* web_contents);
+
+  // Combines the effective accessibility mode for the process, for
+  // `web_contents`'s BrowserContext, and for `web_contents` and applies it
+  // to `web_contents` if ProgressiveAccessibility is disabled or if
+  // `web_contents` is not hidden.
+  void ApplyAccessibilityModeToWebContents(WebContentsImpl* web_contents,
+                                           ui::AXMode process_mode,
+                                           ui::AXMode browser_context_mode,
+                                           ui::AXMode web_contents_mode);
 
   // ScopedModeCollection::Delegate:
   // Handles a change to the effective accessibility mode for the process.
@@ -232,6 +274,12 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // A ScopedAccessibilityMode that holds process-wide mode flags required to
   // support the platform API calls being used.
   std::unique_ptr<ScopedAccessibilityMode> platform_ax_mode_;
+
+  // The most recently hidden WebContentses; used only when the disable-on-hide
+  // feature of ProgressiveAccessibility is enabled. This container holds the
+  // most-recently hidden WebContentses. Accessibility is disabled for each one
+  // that is pushed out of this list when a sixth element is added.
+  std::list<raw_ptr<WebContentsImpl>> last_hidden_;
 
   friend class ui::AXPlatform;
 };

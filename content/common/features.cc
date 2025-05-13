@@ -411,6 +411,29 @@ BASE_FEATURE(kProcessReuseOnPrerenderCOOPSwap,
 #endif
 );
 
+// Causes the browser to progressively enable accessibility for WebContents as
+// they are unhidden and, optionally, disable accessibility some time after they
+// become hidden.
+BASE_FEATURE(kProgressiveAccessibility,
+             "ProgressiveAccessibility",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+namespace {
+
+constexpr base::FeatureParam<ProgressiveAccessibilityMode>::Option
+    kProgressiveAccessibilityModeOptions[] = {
+        {ProgressiveAccessibilityMode::kOnlyEnable, "only_enable"},
+        {ProgressiveAccessibilityMode::kDisableOnHide, "disable_on_hide"}};
+
+}  // namespace
+
+BASE_FEATURE_ENUM_PARAM(ProgressiveAccessibilityMode,
+                        kProgressiveAccessibilityModeParam,
+                        &kProgressiveAccessibility,
+                        "progressive_accessibility_mode",
+                        ProgressiveAccessibilityMode::kOnlyEnable,
+                        &kProgressiveAccessibilityModeOptions);
+
 // Causes hidden tabs with crashed subframes to be marked for reload, meaning
 // that if a user later switches to that tab, the current page will be
 // reloaded.  This will hide crashed subframes from the user at the cost of

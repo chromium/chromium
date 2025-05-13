@@ -18,11 +18,14 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "content/public/common/content_switches.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
@@ -53,6 +56,102 @@ constexpr int kOnAccessibilityUsageUpdateDelaySecs = 5;
 const char kAXModeBundleBasic[] = "basic";
 const char kAXModeBundleFormControls[] = "form-controls";
 const char kAXModeBundleComplete[] = "complete";
+
+// A data holder attached to a WebContents while it is hidden and has
+// accessibility enabled. Used only when the disable_on_hide feature of
+// ProgressiveAccessibility is enabled and an active screen reader has not been
+// detected.
+//
+// An instance of this class is attached to a WebContents when it is hidden
+// (thereby recording the TimeTicks at which the hide event took place). Its
+// `Schedule()` method can later be called to schedule disablement of
+// accessibility after the WebContents has been hidden for at least five
+// minutes (+/- a randomizer of up to twenty seconds).
+//
+// The instance is removed from the WebContents and destroyed on the first of:
+// *  the WebContents is destroyed (by virtue of being a WebContentsUserData),
+// *  the WebContents is revealed (see
+//    `BrowserAccessibilityStateImpl::OnWebContentsRevealed()`),
+// *  an active screen reader is detected (see
+//    `BrowserAccessibilityStateImpl::OnAssistiveTechFound()`), or
+// *  the task to disable accessibility runs.
+class AccessibilityDisabler
+    : public WebContentsUserData<AccessibilityDisabler> {
+ public:
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+  // Constructs an instance for `web_contents`; see comment above for
+  // details. `callback` will be run if this instance is destroyed (either
+  // because `web_contents` is destroyed or because `Remove()` is called) before
+  // `Schedule()` is called.
+  using OnDestroyedBeforeScheduleCallback =
+      base::OnceCallback<void(WebContentsImpl* web_contents)>;
+  AccessibilityDisabler(WebContents* web_contents,
+                        OnDestroyedBeforeScheduleCallback callback)
+      : WebContentsUserData(*web_contents),
+        on_destroyed_before_schedule_(std::move(callback)) {}
+
+  // This destructor is run either when the WebContents to which this instance
+  // is attached is destroyed or when `Remove()` is called.
+  ~AccessibilityDisabler() override {
+    // If the the instance still has the on_destroyed_before_schedule_ callback,
+    // then `Schedule()` has not yet been called. Run the callback now so that
+    // the BrowserAccessibilityStateImpl can remove the WebContents from its
+    // last_hidden_ collection.
+    if (on_destroyed_before_schedule_) {
+      std::move(on_destroyed_before_schedule_)
+          .Run(&static_cast<WebContentsImpl&>(GetWebContents()));
+    }
+  }
+
+  // Removes (and destroys) an instance attached to `web_contents`.
+  static void Remove(WebContentsImpl* web_contents) {
+    web_contents->RemoveUserData(UserDataKey());
+  }
+
+  // Schedules a task that will disable accessibility for `web_contents` once
+  // it has been hidden for at least five minutes +/- twenty seconds.
+  static void Schedule(WebContentsImpl* web_contents) {
+    auto* disabler = FromWebContents(web_contents);
+    CHECK(disabler);
+    // Elapsed ticks since the WebContents was hidden.
+    const base::TimeDelta since_hidden =
+        base::TimeTicks::Now() - disabler->hide_instant_;
+    // Ticks until accessibility should be disabled.
+    const base::TimeDelta disable_in =
+        BrowserAccessibilityStateImpl::GetRandomizedDisableDelay() -
+        since_hidden;
+
+    disabler->disable_ax_timer_.Start(
+        FROM_HERE, std::max(disable_in, base::TimeDelta()), disabler,
+        &AccessibilityDisabler::DisableAccessibility);
+
+    // Now that this WebContents has been scheduled for disablement, it is no
+    // longer in the BrowserAccessibilityStateImpl's last_hidden_ collection,
+    // therefore it is no longer necessary to notify it upon destruction.
+    disabler->on_destroyed_before_schedule_.Reset();
+  }
+
+ private:
+  void DisableAccessibility() {
+    base::UmaHistogramBoolean("Accessibility.DisabledAfterHide", true);
+    auto& web_contents = static_cast<WebContentsImpl&>(GetWebContents());
+    web_contents.SetAccessibilityMode({});
+    web_contents.RemoveUserData(UserDataKey());  // deletes `this`.
+  }
+
+  // A callback to be run if the WebContents is destroyed before `Schedule()` is
+  // called.
+  OnDestroyedBeforeScheduleCallback on_destroyed_before_schedule_;
+
+  // The time the WebContents was hidden.
+  base::TimeTicks hide_instant_{base::TimeTicks::Now()};
+
+  // A timer to disable accessibility after a delay.
+  base::OneShotTimer disable_ax_timer_;
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AccessibilityDisabler);
 
 // A holder of a ScopedModeCollection targeting a specific BrowserContext or
 // WebContents. The collection is bound to the lifetime of the target.
@@ -186,6 +285,25 @@ BrowserAccessibilityStateImpl::Create() {
 }
 #endif
 
+namespace {
+
+constexpr base::TimeDelta kDisableDelay = base::Minutes(5);
+constexpr int kDisableDelayVarianceSeconds = 20;
+
+}  // namespace
+
+// static
+base::TimeDelta BrowserAccessibilityStateImpl::GetRandomizedDisableDelay() {
+  const base::TimeDelta variance = base::Seconds(base::RandInt(
+      -kDisableDelayVarianceSeconds, kDisableDelayVarianceSeconds));
+  return kDisableDelay + variance;
+}
+
+// static
+base::TimeDelta BrowserAccessibilityStateImpl::GetMaxDisableDelay() {
+  return kDisableDelay + base::Seconds(kDisableDelayVarianceSeconds);
+}
+
 BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
     : platform_ax_mode_(CreateScopedModeForProcess(ui::AXMode())) {
   DCHECK_EQ(g_instance, nullptr);
@@ -255,11 +373,34 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
 BrowserAccessibilityStateImpl::~BrowserAccessibilityStateImpl() {
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
+
+  CHECK(last_hidden_.empty());
 }
 
 void BrowserAccessibilityStateImpl::OnAssistiveTechFound(
     ui::AssistiveTech assistive_tech) {
+  const bool was_screenreader_active = ax_platform_.IsScreenReaderActive();
   ax_platform_.NotifyAssistiveTechChanged(assistive_tech);
+
+  // Terminate disable_on_hide if a screen reader has just become active. Do
+  // this without first checking the feature to avoid activating the field trial
+  // when it's not already active. Performing this removal when the feature is
+  // off is harmless.
+  if (!was_screenreader_active && ax_platform_.IsScreenReaderActive()) {
+    // Cancel all disablers. There is one for each WebContents in `last_hidden_`
+    // and one for each that has had `AccessibilityDisabler::Schedule()` called.
+    // Since these are not specifically tracked, remove a potential disabler
+    // from every WebContents. OnDisablerDestroyedForWebContents will be called
+    // to remove a WebContents from `last_hidden_` if its disabler has not yet
+    // been scheduled.
+    std::ranges::for_each(WebContentsImpl::GetAllWebContents(),
+                          [](WebContentsImpl* web_contents) {
+                            if (!web_contents->IsBeingDestroyed() &&
+                                !web_contents->IsNeverComposited()) {
+                              AccessibilityDisabler::Remove(web_contents);
+                            }
+                          });
+  }
 }
 
 void BrowserAccessibilityStateImpl::RefreshAssistiveTech() {
@@ -512,6 +653,112 @@ void BrowserAccessibilityStateImpl::OnPageNavigationComplete() {
   ++num_page_navs_before_first_use_;
 }
 
+void BrowserAccessibilityStateImpl::OnWebContentsInitialized(
+    WebContentsImpl* web_contents) {
+  const ui::AXMode effective_mode = FilterAccessibilityModeInvariants(
+      GetAccessibilityMode() |
+      ModeCollectionForTarget::GetAccessibilityMode(
+          web_contents->GetBrowserContext()) |
+      ui::AXMode());
+
+  // Return early to avoid activating the field trial when accessibility is not
+  // enabled.
+  if (effective_mode.is_mode_off()) {
+    return;
+  }
+
+  // Do not set any initial accessibility mode if ProgressiveAccessibility is
+  // enabled and the WebContents is initially hidden. This behavior is the same
+  // for both the only_enable and disable_on_hide variants of the feature.
+  if (web_contents->GetVisibility() == Visibility::HIDDEN &&
+      base::FeatureList::IsEnabled(features::kProgressiveAccessibility)) {
+    return;
+  }
+
+  web_contents->SetAccessibilityMode(effective_mode);
+}
+
+void BrowserAccessibilityStateImpl::OnWebContentsRevealed(
+    WebContentsImpl* web_contents) {
+  // Unconditionally cancel the disabler; even if the "disable_on_hide" mode is
+  // not selected. Do this without first checking the feature to avoid
+  // activating the field trial when it's not already active. Performing this
+  // removal when the feature is off is harmless. When the feature is active,
+  // this removal will call OnDisablerDestroyedForWebContents to remove
+  // `web_contents` from `last_hidden_` if the disabler has not yet been
+  // scheduled.
+  AccessibilityDisabler::Remove(web_contents);
+
+  const ui::AXMode effective_mode = FilterAccessibilityModeInvariants(
+      GetAccessibilityMode() |
+      ModeCollectionForTarget::GetAccessibilityMode(
+          web_contents->GetBrowserContext()) |
+      ModeCollectionForTarget::GetAccessibilityMode(web_contents));
+
+  // Return early to avoid activating the field trial when accessibility is not
+  // enabled.
+  if (effective_mode == web_contents->GetAccessibilityMode()) {
+    return;
+  }
+
+  // No special behavior when ProgressiveAccessibility is not enabled.
+  if (!base::FeatureList::IsEnabled(features::kProgressiveAccessibility)) {
+    return;
+  }
+
+  // Send the current mode flags to the WebContents and its renderers.
+  web_contents->SetAccessibilityMode(effective_mode);
+}
+
+void BrowserAccessibilityStateImpl::OnWebContentsHidden(
+    WebContentsImpl* web_contents) {
+  // Return early to avoid activating the field trial when accessibility is not
+  // enabled.
+  if (web_contents->GetAccessibilityMode().is_mode_off()) {
+    return;
+  }
+
+  // No special behavior if ProgressiveAccessibility is not enabled, the
+  // "disable_on_hide" mode is not selected, or if a screen reader has been
+  // detected. This final limitation in in place because screen readers may lose
+  // their "point of regard" if the accessibility tree is destroyed and rebuilt;
+  // and because functional and fast accessibility is required to serve users of
+  // screen readers.
+  if (!base::FeatureList::IsEnabled(features::kProgressiveAccessibility) ||
+      features::kProgressiveAccessibilityModeParam.Get() !=
+          features::ProgressiveAccessibilityMode::kDisableOnHide ||
+      ax_platform_.IsScreenReaderActive()) {
+    return;
+  }
+
+  // Add `web_contents` to the list of the last five hidden WCs.
+  CHECK(!base::Contains(last_hidden_, web_contents));
+  last_hidden_.push_back(web_contents);
+
+  // Create the disabler for this WebContents. The provided callback will be run
+  // if `web_contents` is destroyed before the disabler's `Schedule()` method is
+  // called. This is the period in which the WebContents is in this instance's
+  // `last_hidden_` collection. `Unretained` is safe here because this instance
+  // outlives all WebContents.
+  AccessibilityDisabler::CreateForWebContents(
+      web_contents,
+      base::BindOnce(
+          &BrowserAccessibilityStateImpl::OnDisablerDestroyedForWebContents,
+          base::Unretained(this)));
+
+  // If there was a sixth, schedule it for dropping 5m after it was hidden.
+  if (last_hidden_.size() > kMaxPreservedWebContents) {
+    AccessibilityDisabler::Schedule(last_hidden_.front().get());
+    last_hidden_.pop_front();
+  }
+}
+
+void BrowserAccessibilityStateImpl::OnDisablerDestroyedForWebContents(
+    WebContentsImpl* web_contents) {
+  // Remove `web_contents` from the list of last five hidden WCs.
+  CHECK(std::erase(last_hidden_, web_contents));
+}
+
 void BrowserAccessibilityStateImpl::OnInputEvent(
     const RenderWidgetHost& widget,
     const blink::WebInputEvent& event) {
@@ -529,6 +776,43 @@ void BrowserAccessibilityStateImpl::OnInputEvent(
 std::unique_ptr<ScopedAccessibilityMode>
 BrowserAccessibilityStateImpl::CreateScopedModeForProcess(ui::AXMode mode) {
   return scoped_modes_for_process_.Add(mode);
+}
+
+void BrowserAccessibilityStateImpl::ApplyAccessibilityModeToWebContents(
+    WebContentsImpl* web_contents,
+    ui::AXMode process_mode,
+    ui::AXMode browser_context_mode,
+    ui::AXMode web_contents_mode) {
+  const ui::AXMode effective_mode = FilterAccessibilityModeInvariants(
+      process_mode | browser_context_mode | web_contents_mode);
+
+  // Nothing to do if no change in the WebContents's accessibility mode.
+  if (effective_mode == web_contents->GetAccessibilityMode()) {
+    return;
+  }
+
+  // Unconditionally update the WebContents when turning accessibility off.
+  // TODO(accessibility): If there is evidence of jank induced by accessibility
+  // being turned off for all WebContentses at once (e.g., if VoiceOver is
+  // turned off), consider putting WCs in a queue (maybe only hidden ones) and
+  // sending the empty effective mode one at a time with some delay between
+  // each.
+  if (effective_mode.is_mode_off()) {
+    web_contents->SetAccessibilityMode(effective_mode);
+    return;
+  }
+
+  // Unconditionally update the WebContents if ProgressiveAccessibility is not
+  // enabled.
+  if (!base::FeatureList::IsEnabled(features::kProgressiveAccessibility)) {
+    web_contents->SetAccessibilityMode(effective_mode);
+    return;
+  }
+
+  // Only update the WebContents if it is not hidden.
+  if (web_contents->GetVisibility() != Visibility::HIDDEN) {
+    web_contents->SetAccessibilityMode(effective_mode);
+  }  // else the WebContents will be updated when it is revealed.
 }
 
 // This ScopedModeCollection::Delegate override is called by
@@ -565,13 +849,14 @@ void BrowserAccessibilityStateImpl::OnModeChanged(ui::AXMode old_mode,
   // WebContents and its associated BrowserContext.
   std::ranges::for_each(
       WebContentsImpl::GetAllWebContents(),
-      [new_mode](WebContentsImpl* web_contents) {
-        if (!web_contents->IsBeingDestroyed()) {
-          web_contents->SetAccessibilityMode(FilterAccessibilityModeInvariants(
-              new_mode |
+      [this, new_mode](WebContentsImpl* web_contents) {
+        if (!web_contents->IsBeingDestroyed() &&
+            !web_contents->IsNeverComposited()) {
+          ApplyAccessibilityModeToWebContents(
+              web_contents, new_mode,
               ModeCollectionForTarget::GetAccessibilityMode(
-                  web_contents->GetBrowserContext()) |
-              ModeCollectionForTarget::GetAccessibilityMode(web_contents)));
+                  web_contents->GetBrowserContext()),
+              ModeCollectionForTarget::GetAccessibilityMode(web_contents));
         }
       });
 
@@ -622,19 +907,18 @@ void BrowserAccessibilityStateImpl::OnModeChangedForBrowserContext(
     BrowserContext* browser_context,
     ui::AXMode old_mode,
     ui::AXMode new_mode) {
-  // Combine the effective modes for the process and for `browser_context`.
-  ui::AXMode mode_for_context = GetAccessibilityMode() | new_mode;
-
   // Combine this with the effective mode for each WebContents associated with
   // `browser_context`.
   std::ranges::for_each(
       WebContentsImpl::GetAllWebContents(),
-      [browser_context, mode_for_context](WebContentsImpl* web_contents) {
+      [this, browser_context, process_mode = GetAccessibilityMode(),
+       new_mode](WebContentsImpl* web_contents) {
         if (!web_contents->IsBeingDestroyed() &&
+            !web_contents->IsNeverComposited() &&
             web_contents->GetBrowserContext() == browser_context) {
-          web_contents->SetAccessibilityMode(FilterAccessibilityModeInvariants(
-              mode_for_context |
-              ModeCollectionForTarget::GetAccessibilityMode(web_contents)));
+          ApplyAccessibilityModeToWebContents(
+              web_contents, process_mode, new_mode,
+              ModeCollectionForTarget::GetAccessibilityMode(web_contents));
         }
       });
 }
@@ -643,6 +927,8 @@ std::unique_ptr<ScopedAccessibilityMode>
 BrowserAccessibilityStateImpl::CreateScopedModeForWebContents(
     WebContents* web_contents,
     ui::AXMode mode) {
+  // WebContents that are never shown must never have accessibility enabled.
+  CHECK(!web_contents->IsNeverComposited());
   // kFromPlatform is only permissible for process-wide scopers.
   CHECK(!mode.has_mode(ui::AXMode::kFromPlatform));
   return ModeCollectionForTarget::Add(
@@ -660,12 +946,11 @@ void BrowserAccessibilityStateImpl::OnModeChangedForWebContents(
 
   // Combine the effective modes for the process, `web_contents`'s
   // BrowserContext, and for `web_contents.
-  static_cast<WebContentsImpl*>(web_contents)
-      ->SetAccessibilityMode(FilterAccessibilityModeInvariants(
-          GetAccessibilityMode() |
-          ModeCollectionForTarget::GetAccessibilityMode(
-              web_contents->GetBrowserContext()) |
-          new_mode));
+  ApplyAccessibilityModeToWebContents(
+      static_cast<WebContentsImpl*>(web_contents), GetAccessibilityMode(),
+      ModeCollectionForTarget::GetAccessibilityMode(
+          web_contents->GetBrowserContext()),
+      new_mode);
 }
 
 void BrowserAccessibilityStateImpl::OnFocusChangedInPage(

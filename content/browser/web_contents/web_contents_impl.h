@@ -137,7 +137,6 @@ struct AXUpdatesAndEvents;
 }
 
 namespace content {
-class AccessibilityModePolicy;
 class JavaScriptDialogDismissNotifier;
 enum class PictureInPictureResult;
 class BeforeUnloadBlockingDelegate;  // content_browser_test_utils_internal.h
@@ -370,8 +369,7 @@ class CONTENT_EXPORT WebContentsImpl
 
   // Sets the accessibility mode if this WebContents will potentially be
   // user-visible, and broadcasts it to all of its frames if it differs from the
-  // previous mode. Application of the new mode may be deferred to a later time
-  // by the AccessibilityModePolicy.
+  // previous mode.
   void SetAccessibilityMode(ui::AXMode mode);
 
   // Inform the WebContentsImpl object that a write-access Captured Surface
@@ -1873,11 +1871,6 @@ class CONTENT_EXPORT WebContentsImpl
   void AddObserver(WebContentsObserver* observer);
   void RemoveObserver(WebContentsObserver* observer);
 
-  // Sets the accessibility mode if this WebContents will potentially be
-  // user-visible, and broadcasts it to all of its frames if it differs from the
-  // previous mode.
-  void SetAccessibilityModeImpl(ui::AXMode accessibility_mode);
-
   // Indicates whether this tab should be considered crashed. The setter will
   // also notify the delegate when the flag is changed.
   void SetPrimaryMainFrameProcessStatus(base::TerminationStatus status,
@@ -2502,8 +2495,6 @@ class CONTENT_EXPORT WebContentsImpl
       color_chooser_factory_receivers_;
 
   std::unique_ptr<ScreenOrientationProvider> screen_orientation_provider_;
-
-  std::unique_ptr<AccessibilityModePolicy> accessibility_mode_policy_;
 
   // The accessibility mode for all frames. This is queried when each frame
   // is created, and broadcast to all frames when it changes.

@@ -2,6 +2,7 @@
 # run here.
 -Accessibility*
 -All/*DumpAccessibility*
+-*ProgressiveAccessibilityTest*
 -NavigationBrowserTest.SameDocumentLongURL204PopupHashNavigation
 -PortalBrowserTest.OrphanedPortalAccessibilityReset
 -SnapshotAXTree*

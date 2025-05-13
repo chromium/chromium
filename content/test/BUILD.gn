@@ -1414,6 +1414,7 @@ test("content_browsertests") {
     "../browser/accessibility/hit_testing_browsertest.cc",
     "../browser/accessibility/hit_testing_browsertest.h",
     "../browser/accessibility/line_layout_browsertest.cc",
+    "../browser/accessibility/progressive_accessibility_browsertest.cc",
     "../browser/accessibility/scoped_accessibility_mode_browsertest.cc",
     "../browser/accessibility/site_per_process_accessibility_browsertest.cc",
     "../browser/accessibility/snapshot_ax_tree_browsertest.cc",
