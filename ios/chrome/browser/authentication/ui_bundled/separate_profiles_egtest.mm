@@ -314,16 +314,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 // Tests that signing in from a signed out state with a managed account shows
 // the enterprise onboarding only the first time. And the user cannot merge
 // existing browsing data because it is disabled by policy.
-// TODO(crbug.com/411035267): Fix this flaky test on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testSigninWithManagedAccountFromUnsignedStateWithDataMigrationDisabled \
-  FLAKY_testSigninWithManagedAccountFromUnsignedStateWithDataMigrationDisabled
-#else
-#define MAYBE_testSigninWithManagedAccountFromUnsignedStateWithDataMigrationDisabled \
-  testSigninWithManagedAccountFromUnsignedStateWithDataMigrationDisabled
-#endif
-- (void)
-    MAYBE_testSigninWithManagedAccountFromUnsignedStateWithDataMigrationDisabled {
+- (void)testSigninWithManagedAccountFromUnsignedStateWithDataMigrationDisabled {
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;
@@ -388,7 +379,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
              @"Profile name should be unchanged");
 
   // Sign out - this should cause a switch back to the personal profile.
-  [SigninEarlGreyUI signOut];
+  SignoutFromAccountMenu();
   NSString* personalProfileName = [ChromeEarlGrey currentProfileName];
   GREYAssert([personalProfileName isEqualToString:originalProfileName],
              @"Profile name should be the personal one");
