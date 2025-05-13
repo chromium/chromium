@@ -57,6 +57,8 @@ std::u16string NodesToString(
                          });
 }
 
+}  // namespace
+
 class BookmarkContextMenuControllerTest : public testing::Test {
  public:
   BookmarkContextMenuControllerTest() : model_(nullptr) {
@@ -91,7 +93,7 @@ class BookmarkContextMenuControllerTest : public testing::Test {
     ui::Clipboard::DestroyClipboardForCurrentThread();
   }
 
-  // Creates the following structure:
+  // Creates the following structure under the Local BookmarkBar node:
   // a
   // F1
   //  f1a
@@ -101,7 +103,7 @@ class BookmarkContextMenuControllerTest : public testing::Test {
   // F3
   // F4
   //   f4a
-  static void AddTestData(BookmarkModel* model) {
+  void AddTestData(BookmarkModel* model) {
     const BookmarkNode* bb_node = model->bookmark_bar_node();
     std::string test_base = "file:///c:/tmp/";
     model->AddURL(bb_node, 0, u"a", GURL(test_base + "a"));
@@ -112,6 +114,31 @@ class BookmarkContextMenuControllerTest : public testing::Test {
     model->AddFolder(bb_node, 2, u"F2");
     model->AddFolder(bb_node, 3, u"F3");
     const BookmarkNode* f4 = model->AddFolder(bb_node, 4, u"F4");
+    model->AddURL(f4, 0, u"f4a", GURL(test_base + "f4a"));
+  }
+
+  // Creates the following structure under the Account BookmarkBar node:
+  // a
+  // F1
+  //  f1a
+  //  F11
+  //   f11a
+  // F2
+  // F3
+  // F4
+  //   f4a
+  void AddAccountTestData(BookmarkModel* model) {
+    const BookmarkNode* a_bb_node = model->account_bookmark_bar_node();
+    CHECK(a_bb_node);
+    std::string test_base = "file:///c:/tmp_account/";
+    model->AddURL(a_bb_node, 0, u"a", GURL(test_base + "a"));
+    const BookmarkNode* f1 = model->AddFolder(a_bb_node, 1, u"F1");
+    model->AddURL(f1, 0, u"f1a", GURL(test_base + "f1a"));
+    const BookmarkNode* f11 = model->AddFolder(f1, 1, u"F11");
+    model->AddURL(f11, 0, u"f11a", GURL(test_base + "f11a"));
+    model->AddFolder(a_bb_node, 2, u"F2");
+    model->AddFolder(a_bb_node, 3, u"F3");
+    const BookmarkNode* f4 = model->AddFolder(a_bb_node, 4, u"F4");
     model->AddURL(f4, 0, u"f4a", GURL(test_base + "f4a"));
   }
 
@@ -556,4 +583,151 @@ TEST_F(BookmarkContextMenuControllerTest,
   EXPECT_EQ(controller.GetIndexForNewNodes(), 0u);
 }
 
-}  // namespace
+TEST_F(BookmarkContextMenuControllerTest,
+       ComputeNodeToFocusForBookmarkManagerReturnsNoNode) {
+  model_->CreateAccountPermanentFolders();
+  AddAccountTestData(model_);
+  const BookmarkNode* a_bb_node = model_->account_bookmark_bar_node();
+  ASSERT_GE(a_bb_node->children().size(), 2u);
+  const BookmarkNode* child1_node = a_bb_node->children()[0].get();
+  const BookmarkNode* child2_node = a_bb_node->children()[1].get();
+
+  // Selecting two nodes that are not permanent nodes should not return any node to focus.
+  BookmarkContextMenuController controller(
+      gfx::NativeWindow(), nullptr, nullptr, profile_.get(),
+      BookmarkLaunchLocation::kNone, {child1_node, child2_node});
+  EXPECT_EQ(nullptr, controller.ComputeNodeToFocusForBookmarkManager());
+}
+
+TEST_F(BookmarkContextMenuControllerTest,
+       ComputeNodeToFocusForBookmarkManagerForPermanentNodesSelection) {
+  const BookmarkNode* l_bb_node = model_->bookmark_bar_node();
+
+  // Selecting local bookmark bar permanent node when not having account data.
+  {
+    ASSERT_FALSE(model_->account_bookmark_bar_node());
+    BookmarkContextMenuController controller(
+        gfx::NativeWindow(), nullptr, nullptr, profile_.get(),
+        BookmarkLaunchLocation::kNone, {l_bb_node});
+    EXPECT_EQ(l_bb_node, controller.ComputeNodeToFocusForBookmarkManager());
+  }
+
+  model_->CreateAccountPermanentFolders();
+  AddAccountTestData(model_);
+  const BookmarkNode* a_bb_node = model_->account_bookmark_bar_node();
+
+  // Selecting both bookmark bar permanent nodes should default to the account.
+  {
+    BookmarkContextMenuController controller(
+        gfx::NativeWindow(), nullptr, nullptr, profile_.get(),
+        BookmarkLaunchLocation::kNone, {a_bb_node, l_bb_node});
+    EXPECT_EQ(a_bb_node, controller.ComputeNodeToFocusForBookmarkManager());
+  }
+
+  // Selecting account bookmark bar permanent node directly.
+  {
+    BookmarkContextMenuController controller(
+        gfx::NativeWindow(), nullptr, nullptr, profile_.get(),
+        BookmarkLaunchLocation::kNone, {a_bb_node});
+    EXPECT_EQ(a_bb_node, controller.ComputeNodeToFocusForBookmarkManager());
+  }
+
+  // Selecting local bookmark bar permanent node directly will return the
+  // account one (assuming it exists).
+  {
+    ASSERT_TRUE(a_bb_node);
+    BookmarkContextMenuController controller(
+        gfx::NativeWindow(), nullptr, nullptr, profile_.get(),
+        BookmarkLaunchLocation::kNone, {l_bb_node});
+    EXPECT_EQ(a_bb_node, controller.ComputeNodeToFocusForBookmarkManager());
+  }
+}
+
+TEST_F(BookmarkContextMenuControllerTest,
+       ComputeNodeToFocusForBookmarkManagerForDirectChildrenOfPermanentNodes) {
+  model_->CreateAccountPermanentFolders();
+  AddAccountTestData(model_);
+
+  const BookmarkNode* l_bb_node = model_->bookmark_bar_node();
+  ASSERT_GE(l_bb_node->children().size(), 2u);
+  const BookmarkNode* a_bb_node = model_->account_bookmark_bar_node();
+  ASSERT_GE(a_bb_node->children().size(), 2u);
+
+  // Selecting a Url child of Local BookmarkBar. Should return Local
+  // BookmarkBar.
+  {
+    const BookmarkNode* local_url = l_bb_node->children()[0].get();
+    ASSERT_TRUE(local_url->is_url());
+    ASSERT_TRUE(local_url->parent()->is_permanent_node());
+    BookmarkContextMenuController controller(
+        gfx::NativeWindow(), nullptr, nullptr, profile_.get(),
+        BookmarkLaunchLocation::kNone, {local_url});
+    EXPECT_EQ(l_bb_node, controller.ComputeNodeToFocusForBookmarkManager());
+  }
+
+  // Selecting a Url child of Account BookmarkBar. Should return Account
+  // BookmarkBar.
+  {
+    const BookmarkNode* account_url = a_bb_node->children()[0].get();
+    ASSERT_TRUE(account_url->is_url());
+    ASSERT_TRUE(account_url->parent()->is_permanent_node());
+    BookmarkContextMenuController controller(
+        gfx::NativeWindow(), nullptr, nullptr, profile_.get(),
+        BookmarkLaunchLocation::kNone, {account_url});
+    EXPECT_EQ(a_bb_node, controller.ComputeNodeToFocusForBookmarkManager());
+  }
+
+  // Selecting a folder child of Local BookmarkBar. Should return the folder.
+  {
+    const BookmarkNode* local_folder = l_bb_node->children()[1].get();
+    ASSERT_TRUE(local_folder->is_folder());
+    ASSERT_TRUE(local_folder->parent()->is_permanent_node());
+    BookmarkContextMenuController controller(
+        gfx::NativeWindow(), nullptr, nullptr, profile_.get(),
+        BookmarkLaunchLocation::kNone, {local_folder});
+    EXPECT_EQ(local_folder, controller.ComputeNodeToFocusForBookmarkManager());
+  }
+
+  // Selecting a folder child of Account BookmarkBar. Should return the folder.
+  {
+    const BookmarkNode* account_folder = a_bb_node->children()[1].get();
+    ASSERT_TRUE(account_folder->is_folder());
+    ASSERT_TRUE(account_folder->parent()->is_permanent_node());
+    BookmarkContextMenuController controller(
+        gfx::NativeWindow(), nullptr, nullptr, profile_.get(),
+        BookmarkLaunchLocation::kNone, {account_folder});
+    EXPECT_EQ(account_folder,
+              controller.ComputeNodeToFocusForBookmarkManager());
+  }
+}
+
+TEST_F(
+    BookmarkContextMenuControllerTest,
+    ComputeNodeToFocusForBookmarkManagerForNonDirectChildrenOfPermanentNodes) {
+  const BookmarkNode* l_bb_node = model_->bookmark_bar_node();
+  ASSERT_GE(l_bb_node->children().size(), 2u);
+  const BookmarkNode* F1 = l_bb_node->children()[1].get();
+  ASSERT_GE(F1->children().size(), 2u);
+
+  // Selecting a url bookmark should focus on its parent.
+  {
+    const BookmarkNode* f1 = F1->children()[0].get();
+    ASSERT_TRUE(f1->is_url());
+    ASSERT_FALSE(f1->parent()->is_permanent_node());
+    BookmarkContextMenuController controller(
+        gfx::NativeWindow(), nullptr, nullptr, profile_.get(),
+        BookmarkLaunchLocation::kNone, {f1});
+    EXPECT_EQ(F1, controller.ComputeNodeToFocusForBookmarkManager());
+  }
+
+  // Selecting a folder should focus on itself.
+  {
+    const BookmarkNode* F11 = F1->children()[1].get();
+    ASSERT_TRUE(F11->is_folder());
+    ASSERT_FALSE(F11->parent()->is_permanent_node());
+    BookmarkContextMenuController controller(
+        gfx::NativeWindow(), nullptr, nullptr, profile_.get(),
+        BookmarkLaunchLocation::kNone, {F11});
+    EXPECT_EQ(F11, controller.ComputeNodeToFocusForBookmarkManager());
+  }
+}

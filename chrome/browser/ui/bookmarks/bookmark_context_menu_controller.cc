@@ -513,13 +513,10 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
     }
 
     case IDC_BOOKMARK_MANAGER: {
-      if (selection_.size() == 1 ||
-          IsSelectionPermanentBookmarkFolder(selection_)) {
-        chrome::ShowBookmarkManagerForNode(
-            browser_, BookmarkUIOperationsHelperMergedSurfaces(
-                          bookmark_service_, new_nodes_parent_.get())
-                          .GetDefaultParentForNonMergedSurfaces()
-                          ->id());
+      const bookmarks::BookmarkNode* node_to_focus =
+          ComputeNodeToFocusForBookmarkManager();
+      if (node_to_focus) {
+        chrome::ShowBookmarkManagerForNode(browser_, node_to_focus->id());
       } else {
         chrome::ShowBookmarkManager(browser_);
       }
@@ -718,4 +715,37 @@ void BookmarkContextMenuController::BookmarkModelChanged() {
   if (delegate_) {
     delegate_->CloseMenu();
   }
+}
+
+const bookmarks::BookmarkNode*
+BookmarkContextMenuController::ComputeNodeToFocusForBookmarkManager() const {
+  // If the selection is a permanent folder then query the merged service to
+  // deduce which type of permanent node should be focused.
+  if (IsSelectionPermanentBookmarkFolder(selection_)) {
+    CHECK(new_nodes_parent_);
+    return BookmarkUIOperationsHelperMergedSurfaces(bookmark_service_,
+                                                    new_nodes_parent_.get())
+        .GetDefaultParentForNonMergedSurfaces();
+  }
+
+  // If the selection is not specific to a single selection and not tied to a
+  // pair of permanent folders then we cannot deduce a node to focus.
+  if (selection_.size() != 1) {
+    return nullptr;
+  }
+
+  // If the previously computed parent is a non permanent folder we can return
+  // it directly.
+  CHECK(new_nodes_parent_);
+  if (new_nodes_parent_->HoldsNonPermanentFolder()) {
+    return new_nodes_parent_->as_non_permanent_folder();
+  }
+
+  // The selected value is not a folder and the computed parent is a merged
+  // permanent node, the direct parent of the node selected should be focused,
+  // without relying on the merged service logic, since it may not return the
+  // real parent of the selected node.
+  CHECK(!selection_[0]->is_folder());
+  CHECK(selection_[0]->parent()->is_permanent_node());
+  return selection_[0]->parent();
 }

@@ -92,6 +92,19 @@ class BookmarkContextMenuController
   size_t GetIndexForNewNodes() const;
 
  private:
+  friend class BookmarkContextMenuControllerTest;
+  FRIEND_TEST_ALL_PREFIXES(
+      BookmarkContextMenuControllerTest,
+      ComputeNodeToFocusForBookmarkManagerForPermanentNodesSelection);
+  FRIEND_TEST_ALL_PREFIXES(BookmarkContextMenuControllerTest,
+                           ComputeNodeToFocusForBookmarkManagerReturnsNoNode);
+  FRIEND_TEST_ALL_PREFIXES(
+      BookmarkContextMenuControllerTest,
+      ComputeNodeToFocusForBookmarkManagerForDirectChildrenOfPermanentNodes);
+  FRIEND_TEST_ALL_PREFIXES(
+      BookmarkContextMenuControllerTest,
+      ComputeNodeToFocusForBookmarkManagerForNonDirectChildrenOfPermanentNodes);
+
   void BuildMenu();
 
   // Adds a IDC_* style command to the menu with a string16.
@@ -106,6 +119,10 @@ class BookmarkContextMenuController
   // Overridden from bookmarks::BaseBookmarkModelObserver:
   // Any change to the model results in closing the menu.
   void BookmarkModelChanged() override;
+
+  // Returns the node that needs to be focused based on the `selection_`.
+  // Returns null if no node should be focused.
+  const bookmarks::BookmarkNode* ComputeNodeToFocusForBookmarkManager() const;
 
   gfx::NativeWindow parent_window_;
   raw_ptr<BookmarkContextMenuControllerDelegate> delegate_;
