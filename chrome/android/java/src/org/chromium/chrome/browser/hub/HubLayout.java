@@ -361,12 +361,13 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
             mRootView.addView(containerView, /* index= */ 0, params);
 
             if (!animate) {
-                // Don't post or wait for a layout as HubLayout is not in control of when the
-                // previous layout was hidden and this avoids a possibly empty frame.
-                queueAnimation();
-                forceAnimationToFinish();
-                hideCurrentTab();
-                maybeUpdateLayout();
+                if (containerView.getHeight() != 0) {
+                    // Don't post or wait for a layout as HubLayout is not in control of when the
+                    // previous layout was hidden and this avoids a possibly empty frame.
+                    forceShowLayout();
+                } else {
+                    containerView.runOnNextLayout(this::forceShowLayout);
+                }
             } else {
                 containerView.runOnNextLayout(this::queueAnimation);
             }
@@ -759,6 +760,13 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         }
         // Ignore edge offset and just ensure the width is correct. See crbug.com/1502437.
         finalRect.offset(-finalRect.left, -containerViewRect.top);
+    }
+
+    private void forceShowLayout() {
+        queueAnimation();
+        forceAnimationToFinish();
+        hideCurrentTab();
+        maybeUpdateLayout();
     }
 
     private void maybeAddPaneAnimationListener(HubLayoutAnimationRunner animationRunner) {
