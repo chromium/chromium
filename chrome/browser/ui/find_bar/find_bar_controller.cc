@@ -35,15 +35,17 @@ void FindBarController::Show(bool find_next, bool forward_direction) {
   find_in_page::FindTabHelper* find_tab_helper =
       find_in_page::FindTabHelper::FromWebContents(web_contents());
 
-  // Only show the animation if we're not already showing a find bar for the
-  // selected WebContents.
-  if (!find_tab_helper->find_ui_active()) {
+  const bool new_session = !find_tab_helper->find_ui_active();
+  if (new_session) {
     has_user_modified_text_ = false;
     MaybeSetPrepopulateText();
 
     find_tab_helper->set_find_ui_active(true);
-    find_bar_->Show(true);
   }
+
+  // FindBarController::Show() is triggered by users (e.g. Ctrl+F, or F3) so
+  // the find bar should always take focus.
+  find_bar_->Show(/*animate=*/true, /*focus=*/true);
   find_bar_->SetFocusAndSelection();
 
   if (find_next) {
@@ -88,6 +90,7 @@ void FindBarController::EndFindSession(
     // When we hide the window, we need to notify the renderer that we are done
     // for now, so that we can abort the scoping effort and clear all the
     // tickmarks and highlighting.
+    find_tab_helper->set_find_ui_focused(false);
     find_tab_helper->StopFinding(selection_action);
 
     if (result_action == find_in_page::ResultAction::kClear) {
@@ -141,7 +144,8 @@ void FindBarController::ChangeWebContents(WebContents* contents) {
     // visible state. We also want to reset the window location so that
     // we don't surprise the user by popping up to the left for no apparent
     // reason.
-    find_bar_->Show(false);
+    find_bar_->Show(/*animate=*/false,
+                    /*focus=*/find_tab_helper->find_ui_focused());
     // The condition below can be true on macOS if the global pasteboard changed
     // while this tab was inactive (the find result will have been reset by
     // FindBarPlatformHelperMac). In that case, we need to find the new text to

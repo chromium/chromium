@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
+#include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/views/find_bar_view.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
@@ -75,7 +76,7 @@ class FindBarHost : public FindBar,
   // FindBar implementation:
   FindBarController* GetFindBarController() const override;
   void SetFindBarController(FindBarController* find_bar_controller) override;
-  void Show(bool animate) override;
+  void Show(bool animate, bool focus) override;
   void Hide(bool animate) override;
   void SetFocusAndSelection() override;
   void ClearResults(
@@ -119,6 +120,12 @@ class FindBarHost : public FindBar,
   friend class FindInPageTest;
   friend class LegacyFindInPageTest;
 
+  // Return the current web contents.
+  content::WebContents* web_contents() {
+    return find_bar_controller_ ? find_bar_controller_->web_contents()
+                                : nullptr;
+  }
+
   // Allows implementation to tweak widget position.
   void GetWidgetPositionNative(gfx::Rect* avoid_overlapping_rect);
 
@@ -137,6 +144,11 @@ class FindBarHost : public FindBar,
   // Takes the focus tracker from a WebContents and restores it to the
   // FindBarHost. If no focus tracker is set, creates one.
   void RestoreOrCreateFocusTracker();
+
+  // Call when the find bar gains or loses focus on current tab. Used to restore
+  // focus state in tab switching. i.e. the focus state should not change after
+  // switching away and then back to the current tab.
+  void SetFindBarIsFocusedOnCurrentTab(bool focused);
 
   // Called when `is_visible_` changes.
   void OnVisibilityChanged();

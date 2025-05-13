@@ -356,7 +356,10 @@ gfx::NativeWindow InteractiveViewsTestPrivate::GetNativeWindowFromContext(
 std::string InteractiveViewsTestPrivate::DebugDumpWidget(
     const Widget& widget) const {
   std::string description = widget.GetName();
-  return base::StrCat({widget.GetClassName(), " \"", widget.GetName(), "\" at ",
+  return base::StrCat({// At any time, at most one widget can be active. It is
+                       // the widget that accepts keyboard inputs.
+                       widget.IsActive() ? "[ACTIVE] " : "",
+                       widget.GetClassName(), " \"", widget.GetName(), "\" at ",
                        DebugDumpBounds(widget.GetWindowBoundsInScreen())});
 }
 

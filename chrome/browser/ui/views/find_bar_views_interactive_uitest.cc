@@ -46,6 +46,7 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/view_focus_observer.h"
+#include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -253,7 +254,8 @@ class FindBarViewsUiTest : public InteractiveBrowserTest {
         ObserveState(
             views::test::kCurrentFocusedViewId,
             BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()),
-        InstrumentTab(kTabId), NavigateWebContents(kTabId, url));
+        ObserveState(views::test::kCurrentWidgetFocus), InstrumentTab(kTabId),
+        NavigateWebContents(kTabId, url));
   }
 
   template <typename M>
@@ -630,6 +632,36 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest,
       SendAccelerator(FindBarView::kTextField,
                       ui::Accelerator(ui::VKEY_ESCAPE, ui::MODIFIER_NONE)),
       WaitForHide(FindBarView::kTextField),
+      CheckHasFocus(ContentsWebView::kContentsWebViewElementId));
+}
+
+// Test for crbug.com/40164081. When a tab has find bar and the web content has
+// focus, the web content should retain the focus after switching the tab away
+// and then back.
+IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest,
+                       FocusRetainedOnPageWhenFindBarIsOpenOnTabSwitch) {
+  const GURL page_a = embedded_test_server()->GetURL("/a.html");
+  const GURL page_b = embedded_test_server()->GetURL("/b.html");
+
+  RunTestSequence(
+      // Open tab A and show the Find bar.
+      Init(page_a), ShowFindBar(), EnsurePresent(FindBarView::kElementId),
+      CheckHasFocus(FindBarView::kTextField),
+      // Focus tab A content.
+      Focus(ContentsWebView::kContentsWebViewElementId),
+      CheckHasFocus(ContentsWebView::kContentsWebViewElementId),
+      // Open tab B.
+      AddInstrumentedTab(kTabBId, page_b), WaitForHide(FindBarView::kTextField),
+      // Switch to tab A
+      SelectTab(kTabStripElementId, 0), WaitForShow(FindBarView::kTextField),
+      // The browser frame should be active.
+      WaitForState(views::test::kCurrentWidgetFocus,
+                   [this]() {
+                     return BrowserView::GetBrowserViewForBrowser(browser())
+                         ->GetWidget()
+                         ->GetNativeView();
+                   }),
+      // The content view should be focused.
       CheckHasFocus(ContentsWebView::kContentsWebViewElementId));
 }
 

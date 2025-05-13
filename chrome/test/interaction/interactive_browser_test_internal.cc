@@ -48,6 +48,9 @@ class BrowserWidgetFocusSupplier
       public views::WidgetObserver {
  public:
   BrowserWidgetFocusSupplier() {
+    for (Browser* browser : *BrowserList::GetInstance()) {
+      ObserveBrowserActivationChange(browser);
+    }
     observation_.Observe(BrowserList::GetInstance());
   }
 
@@ -60,11 +63,7 @@ class BrowserWidgetFocusSupplier
   DECLARE_FRAMEWORK_SPECIFIC_METADATA()
 
   void OnBrowserAdded(Browser* browser) override {
-    if (auto* const view = BrowserView::GetBrowserViewForBrowser(browser)) {
-      if (auto* const widget = view->GetWidget()) {
-        widget->AddObserver(this);
-      }
-    }
+    ObserveBrowserActivationChange(browser);
   }
 
   void OnBrowserRemoved(Browser* browser) override {
@@ -99,6 +98,14 @@ class BrowserWidgetFocusSupplier
   }
 
  private:
+  void ObserveBrowserActivationChange(Browser* browser) {
+    if (auto* const view = BrowserView::GetBrowserViewForBrowser(browser)) {
+      if (auto* const widget = view->GetWidget()) {
+        widget->AddObserver(this);
+      }
+    }
+  }
+
   base::ScopedObservation<BrowserList, BrowserListObserver> observation_{this};
 };
 

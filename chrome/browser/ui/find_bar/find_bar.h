@@ -40,8 +40,9 @@ class FindBar {
   virtual void SetFindBarController(FindBarController* find_bar_controller) = 0;
 
   // Shows the find bar. Any previous search string will again be visible.
-  // If |animate| is true, we try to slide the find bar in.
-  virtual void Show(bool animate) = 0;
+  // If `animate` is true, we try to slide the find bar in.
+  // If `focus` is true, the find bar takes focus and accepts keyboard input.
+  virtual void Show(bool animate, bool focus) = 0;
 
   // Hide the find bar.  If |animate| is true, we try to slide the find bar
   // away.
