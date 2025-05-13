@@ -25,6 +25,7 @@ import {getHtml} from './app.html.js';
 
 export interface SplitNewTabPageAppElement {
   $: {
+    header: HTMLElement,
     splitTabsList: CrLazyListElement,
   };
 }
@@ -48,6 +49,7 @@ export class SplitNewTabPageAppElement extends CrLitElement {
       scrollTarget_: {type: Object},
       focusedIndex_: {type: Number},
       focusedItem_: {type: Object},
+      minViewportHeight_: {type: Number},
     };
   }
 
@@ -55,6 +57,7 @@ export class SplitNewTabPageAppElement extends CrLitElement {
   protected accessor scrollTarget_: HTMLElement|null = null;
   protected accessor focusedIndex_: number = -1;
   protected accessor focusedItem_: HTMLElement|null = null;
+  protected accessor minViewportHeight_: number = 0;
   protected title_: string = '';
   private activeTabId_: number = -1;
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
@@ -88,6 +91,7 @@ export class SplitNewTabPageAppElement extends CrLitElement {
     this.scrollTarget_ = this.$.splitTabsList;
 
     this.apiProxy_.getProfileData().then(({profileData}) => {
+      this.updateViewportHeight_(profileData);
       this.onTabsChanged_(profileData);
     });
   }
@@ -207,6 +211,12 @@ export class SplitNewTabPageAppElement extends CrLitElement {
 
   private redirectToNtp_() {
     window.location.replace(loadTimeData.getString('newTabPageUrl'));
+  }
+
+  private updateViewportHeight_(profileData: ProfileData) {
+    const activeWindow = profileData.windows.find(({active}) => active)!;
+    this.minViewportHeight_ =
+        activeWindow ? activeWindow.height - this.$.header.offsetHeight : 0;
   }
 }
 

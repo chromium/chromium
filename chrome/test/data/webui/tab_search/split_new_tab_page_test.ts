@@ -80,10 +80,6 @@ suite('SplitNewTabPageTest', () => {
     splitNewTabPage = document.createElement('split-new-tab-page-app');
     document.body.appendChild(splitNewTabPage);
 
-    // TODO(crbug.com/412693981): Figure out why this is needed only in tests.
-    splitNewTabPage.shadowRoot.querySelector<HTMLElement>(
-                                  '.tab-list')!.style.flexGrow = '1';
-
     await eventToPromise('viewport-filled', splitNewTabPage.$.splitTabsList);
   }
 

@@ -15,7 +15,7 @@
   height: 100vh;
 }
 
-.header {
+#header {
   display: flex;
   flex-direction: column;
 }
@@ -48,7 +48,7 @@
 
 .tab-list:not([hidden]) {
   display: flex;
-  min-height: 16px;
+  max-height: calc(100% - 92px - 4 * 16px);
   background: var(--color-tab-search-background);
   border-radius: 16px;
   margin: 16px auto;
