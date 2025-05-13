@@ -575,17 +575,6 @@ public class AuxiliarySearchDonorUnitTest {
         assertTrue(mAuxiliarySearchDonor.isShareTabsWithOsEnabledKeyExist());
     }
 
-    @Test
-    public void testGetSupportedDocumentClasses() {
-        // Enables multiple data source.
-        when(mHooks.isMultiDataTypeEnabledOnDevice()).thenReturn(true);
-        assertTrue(AuxiliarySearchControllerFactory.getInstance().isMultiDataTypeEnabledOnDevice());
-        createAndInitAuxiliarySearchDonor();
-        List<Class<?>> list = mAuxiliarySearchDonor.getSupportedDocumentClasses();
-        assertEquals(1, list.size());
-        assertTrue(list.contains(WebPage.class));
-    }
-
     private SearchResult createSearchResult(int applicationType, @NonNull String schemaType) {
         GlobalSearchApplicationInfo appInfo =
                 new GlobalSearchApplicationInfo.Builder("namespace", "id", applicationType)

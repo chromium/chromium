@@ -259,7 +259,7 @@ public class AuxiliarySearchDonor {
             SetSchemaRequest.Builder requestBuilder =
                     new SetSchemaRequest.Builder()
                             .setForceOverride(true)
-                            .addDocumentClasses(getSupportedDocumentClasses());
+                            .addDocumentClasses(WebPage.class);
             AuxiliarySearchControllerFactory.getInstance()
                     .setSchemaTypeVisibilityForPackage(
                             (schemaClass, packageName, sha256Certificate) ->
@@ -273,14 +273,6 @@ public class AuxiliarySearchDonor {
             Log.i(TAG, "Failed to add document when building SetSchemaRequest.");
             return null;
         }
-    }
-
-    /** Returns a list of supported document classes. */
-    @VisibleForTesting
-    List<Class<?>> getSupportedDocumentClasses() {
-        List<Class<?>> documents = new ArrayList<>();
-        documents.add(WebPage.class);
-        return documents;
     }
 
     private void setDocumentClassVisibilityImpl(
