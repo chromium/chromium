@@ -3299,6 +3299,11 @@ static const CSSValue& ComputeRegisteredPropertyValue(
                              *relative_color_value, document, color_scheme);
   }
 
+  if (auto* unresolved_color_value =
+          DynamicTo<cssvalue::CSSUnresolvedColorValue>(value)) {
+    return ComputeColorValue(css_to_length_conversion_data,
+                             *unresolved_color_value, document, color_scheme);
+  }
   return value;
 }
 
