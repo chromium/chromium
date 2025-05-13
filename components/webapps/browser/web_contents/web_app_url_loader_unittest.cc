@@ -12,9 +12,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
-#include "content/public/test/test_renderer_host.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace webapps {
@@ -86,7 +87,8 @@ TEST_F(WebAppUrlLoaderTest, Url1DidFailLoad_ThenUrl2Loaded) {
   const GURL url2{"https://example.org"};
 
   EXPECT_EQ(WebAppUrlLoader::Result::kFailedUnknownReason,
-            LoadUrl(/*desired=*/url1, /*actual=*/url1, /*error_code=*/1));
+            LoadUrl(/*desired=*/url1, /*actual=*/url1,
+                    /*error_code=*/net::ERR_FAILED));
 
   EXPECT_EQ(WebAppUrlLoader::Result::kUrlLoaded,
             LoadUrl(/*desired=*/url2, /*actual=*/url2));

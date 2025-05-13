@@ -1681,7 +1681,8 @@ TEST_F(WebContentsImplTest, FilterURLs) {
   other_contents->NavigateAndCommit(url_normalized);
 
   // Check that an IPC with about:whatever is correctly normalized.
-  other_contents->GetPrimaryMainFrame()->DidFailLoadWithError(url_from_ipc, 1);
+  other_contents->GetPrimaryMainFrame()->DidFailLoadWithError(url_from_ipc,
+                                                              net::ERR_FAILED);
   EXPECT_EQ(url_blocked, other_observer.last_url());
 }
 

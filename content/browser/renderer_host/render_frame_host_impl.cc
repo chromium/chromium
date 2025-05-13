@@ -5680,6 +5680,13 @@ void RenderFrameHostImpl::DidFailLoadWithError(const GURL& url,
   TRACE_EVENT("navigation", "RenderFrameHostImpl::DidFailLoadWithError",
               ChromeTrackEvent::kRenderFrameHost, *this, "error", error_code);
 
+  // Terminate the renderer if it sends an invalid error code.
+  if (!net::IsOkOrDefinedError(error_code)) {
+    bad_message::ReceivedBadMessage(GetProcess(),
+                                    bad_message::RFHI_INVALID_NET_ERROR_CODE);
+    return;
+  }
+
   // Cancel prerendering if DidFailLoadWithError is called on the outermost main
   // document during prerendering. Don't dispatch the DidFailLoad event in such
   // a case as the embedders are unaware of prerender page yet and shouldn't
