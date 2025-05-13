@@ -2,18 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/ipcz_driver/invitation.h"
 
-#include <string.h>
-
 #include <algorithm>
+#include <array>
 #include <cstdint>
+#include <string>
 
+#include "base/numerics/byte_conversions.h"
 #include "build/build_config.h"
 #include "mojo/core/ipcz_api.h"
 #include "mojo/core/ipcz_driver/base_shared_memory_service.h"
@@ -63,8 +59,7 @@ size_t GetAttachmentIndex(base::span<const uint8_t> name) {
   }
 
   // Otherwise interpret the first 4 bytes as an integer.
-  uint32_t index;
-  memcpy(&index, name.data(), sizeof(uint32_t));
+  uint32_t index = base::U32FromLittleEndian(name.first<4u>());
   if (index < Invitation::kMaxAttachments) {
     // The resulting index is small enough to fit within the normal index range,
     // so assume case (b) above:
@@ -314,9 +309,10 @@ MojoResult Invitation::Send(
   // Note that we reserve the first initial portal for internal use, hence the
   // additional (kMaxAttachments + 1) portal here. Portals corresponding to
   // application-provided attachments begin at index 1.
-  IpczHandle portals[kMaxAttachments + 1];
-  IpczResult result = GetIpczAPI().ConnectNode(
-      GetIpczNode(), transport, num_attachments_ + 1, flags, nullptr, portals);
+  std::array<IpczHandle, kMaxAttachments + 1> portals;
+  IpczResult result =
+      GetIpczAPI().ConnectNode(GetIpczNode(), transport, num_attachments_ + 1,
+                               flags, nullptr, portals.data());
   if (result != IPCZ_RESULT_OK) {
     return result;
   }
@@ -403,7 +399,7 @@ MojoHandle Invitation::Accept(
   // Note that we reserve the first portal slot for internal use, hence an
   // the additional (kMaxAttachments + 1) portal here. Portals corresponding to
   // application-provided attachments begin at index 1.
-  IpczHandle portals[kMaxAttachments + 1];
+  std::array<IpczHandle, kMaxAttachments + 1> portals;
   IpczDriverHandle transport = CreateTransportForMojoEndpoint(
       {.source = is_isolated ? Transport::kBroker : Transport::kNonBroker,
        .destination = Transport::kBroker},
@@ -432,8 +428,9 @@ MojoHandle Invitation::Accept(
         std::move(remote_process));
   }
 
-  IpczResult result = GetIpczAPI().ConnectNode(
-      GetIpczNode(), transport, kMaxAttachments + 1, flags, nullptr, portals);
+  IpczResult result =
+      GetIpczAPI().ConnectNode(GetIpczNode(), transport, kMaxAttachments + 1,
+                               flags, nullptr, portals.data());
   CHECK_EQ(result, IPCZ_RESULT_OK);
 
   BaseSharedMemoryService::CreateClient(ScopedIpczHandle(portals[0]));
