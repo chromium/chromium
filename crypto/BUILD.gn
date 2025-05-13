@@ -225,6 +225,10 @@ test("crypto_unittests") {
     configs += [ "//build/config/linux/nss" ]
   }
 
+  if (is_win) {
+    libs = [ "ncrypt.lib" ]
+  }
+
   deps = [
     ":crypto",
     ":test_support",

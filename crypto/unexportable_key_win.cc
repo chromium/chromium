@@ -354,18 +354,18 @@ base::expected<std::vector<uint8_t>, SECURITY_STATUS> SignRSA(
   return sig;
 }
 
-bool LoadWrappedKey(base::span<const uint8_t> wrapped,
-                    ScopedNCryptProvider& provider,
-                    ProviderType provider_type,
-                    ScopedNCryptKey& key) {
+ScopedNCryptKey LoadWrappedKey(base::span<const uint8_t> wrapped,
+                               ProviderType provider_type) {
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+  ScopedNCryptProvider provider;
   if (FAILED(NCryptOpenStorageProvider(
           ScopedNCryptProvider::Receiver(provider).get(),
           GetWindowsIdentifierForProvider(provider_type),
           /*flags=*/0))) {
-    return false;
+    return ScopedNCryptKey();
   }
 
+  ScopedNCryptKey key;
   SECURITY_STATUS import_status = -1;
   if (provider_type == ProviderType::kSoftware) {
     // Software keys are labelled with a random identifier. Attempt to obtain a
@@ -387,9 +387,9 @@ bool LoadWrappedKey(base::span<const uint8_t> wrapped,
   if (FAILED(import_status)) {
     LogTPMOperationError(TPMOperation::kWrappedKeyCreation, import_status,
                          std::nullopt);
-    return false;
+    return ScopedNCryptKey();
   }
-  return true;
+  return key;
 }
 
 // ECDSAKey wraps a P-256 ECDSA key stored in the given provider.
@@ -607,9 +607,8 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::WILL_BLOCK);
 
-    ScopedNCryptProvider provider;
-    ScopedNCryptKey key;
-    if (!LoadWrappedKey(wrapped, provider, provider_type_, key)) {
+    ScopedNCryptKey key = LoadWrappedKey(wrapped, provider_type_);
+    if (!key.is_valid()) {
       return nullptr;
     }
 
@@ -918,10 +917,10 @@ class VirtualUnexportableKeyProviderWin
 
 }  // namespace
 
-bool LoadWrappedTPMKey(base::span<const uint8_t> wrapped,
-                       ScopedNCryptProvider& provider,
-                       ScopedNCryptKey& key) {
-  return LoadWrappedKey(wrapped, provider, ProviderType::kTPM, key);
+ScopedNCryptKey DuplicatePlatformKeyHandle(const UnexportableSigningKey& key) {
+  return LoadWrappedKey(key.GetWrappedKey(), key.IsHardwareBacked()
+                                                 ? ProviderType::kTPM
+                                                 : ProviderType::kSoftware);
 }
 
 std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderWin() {

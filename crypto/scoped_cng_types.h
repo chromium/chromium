@@ -5,8 +5,6 @@
 #ifndef CRYPTO_SCOPED_CNG_TYPES_H_
 #define CRYPTO_SCOPED_CNG_TYPES_H_
 
-#include <windows.h>
-
 #include "base/scoped_generic.h"
 #include "base/win/wincrypt_shim.h"
 

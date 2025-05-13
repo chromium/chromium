@@ -448,11 +448,9 @@ scoped_refptr<SSLPrivateKey> FetchClientCertPrivateKey(
 
 scoped_refptr<SSLPrivateKey> WrapUnexportableKeySlowly(
     const crypto::UnexportableSigningKey& key) {
-  // Load NCRYPT_KEY_HANDLE from wrapped.
-  auto wrapped = key.GetWrappedKey();
-  crypto::ScopedNCryptProvider provider;
-  crypto::ScopedNCryptKey key_handle;
-  if (!crypto::LoadWrappedTPMKey(wrapped, provider, key_handle)) {
+  // Load a duplicated NCRYPT_KEY_HANDLE from `key`.
+  crypto::ScopedNCryptKey key_handle = crypto::DuplicatePlatformKeyHandle(key);
+  if (!key_handle.is_valid()) {
     return nullptr;
   }
 
