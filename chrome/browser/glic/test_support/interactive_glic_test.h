@@ -186,8 +186,8 @@ class InteractiveGlicTestT : public T {
             Api::ObserveState(internal::kGlicWindowControllerState,
                               std::ref(window_controller)),
             Api::InAnyContext(Api::Steps(
-                Api::InstrumentNonTabWebView(
-                    kGlicHostElementId, GlicView::kWebViewElementIdForTesting),
+                Api::InstrumentNonTabWebView(kGlicHostElementId,
+                                             kGlicViewElementId),
                 Api::InstrumentInnerWebContents(kGlicContentsElementId,
                                                 kGlicHostElementId, 0),
                 Api::WaitForWebContentsReady(kGlicContentsElementId))),
@@ -201,8 +201,8 @@ class InteractiveGlicTestT : public T {
             Api::UninstrumentWebContents(kGlicHostElementId, false),
             Api::ObserveState(internal::kGlicWindowControllerState,
                               std::ref(window_controller)),
-            Api::InAnyContext(Api::InstrumentNonTabWebView(
-                kGlicHostElementId, GlicView::kWebViewElementIdForTesting)),
+            Api::InAnyContext(Api::InstrumentNonTabWebView(kGlicHostElementId,
+                                                           kGlicViewElementId)),
             Api::WaitForState(
                 internal::kGlicWindowControllerState,
                 testing::Matcher<GlicWindowController::State>(testing::AnyOf(

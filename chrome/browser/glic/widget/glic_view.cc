@@ -36,12 +36,7 @@ GlicView::GlicView(Profile* profile,
     : accelerator_delegate_(accelerator_delegate) {
   SetProperty(views::kElementIdentifierKey, kGlicViewElementId);
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  auto web_view = std::make_unique<views::WebView>(profile);
-  web_view->SetProperty(views::kElementIdentifierKey,
-                        kWebViewElementIdForTesting);
-  web_view_ = web_view.get();
-  web_view->SetSize(initial_size);
-  AddChildView(std::move(web_view));
+  SetSize(initial_size);
   // As there is no WebContents yet, this will apply the default background.
   UpdateBackgroundColor();
 }
@@ -70,11 +65,6 @@ void GlicView::UpdatePrimaryDraggableAreaOnResize() {
   draggable_areas_[0].set_width(width());
 }
 
-void GlicView::SetWebContents(content::WebContents* web_contents) {
-  web_view_->SetWebContents(web_contents);
-  UpdateBackgroundColor();
-}
-
 void GlicView::UpdateBackgroundColor() {
   std::optional<SkColor> client_background = GetClientBackgroundColor();
   if (client_background) {
@@ -93,7 +83,7 @@ bool GlicView::AcceleratorPressed(const ui::Accelerator& accelerator) {
 }
 
 std::optional<SkColor> GlicView::GetClientBackgroundColor() {
-  content::WebContents* host = web_view_->GetWebContents();
+  content::WebContents* host = GetWebContents();
   if (!host) {
     return std::nullopt;
   }

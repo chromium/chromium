@@ -41,9 +41,6 @@ class GlicWindowAnimator : public gfx::AnimationDelegate {
                        base::TimeDelta duration,
                        base::OnceClosure callback);
 
-  // Sets the visibility of the GlicView's web view.
-  void SetGlicWebViewVisibility(bool is_visible);
-
   // Called when the programmatic resize has finished. Public for use by
   // GlicWindowResizeAnimation.
   void ResizeFinished();

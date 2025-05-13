@@ -95,13 +95,6 @@ void GlicWindowAnimator::MaybeAnimateToTargetSize() {
   ResetLastTargetSize();
 }
 
-void GlicWindowAnimator::SetGlicWebViewVisibility(bool is_visible) {
-  views::WebView* web_view = window_controller_->GetGlicView()->web_view();
-  if (web_view->GetVisible() != is_visible) {
-    web_view->SetVisible(is_visible);
-  }
-}
-
 void GlicWindowAnimator::ResizeFinished() {
   // Destroy window_resize_animation_.
   window_resize_animation_.reset();

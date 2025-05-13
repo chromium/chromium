@@ -49,7 +49,7 @@ bool WebUIContentsContainer::HandleKeyboardEvent(
     const input::NativeWebKeyboardEvent& event) {
   GlicView* glic_view = glic_window_controller_->GetGlicView();
   return glic_view && unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-                          event, glic_view->web_view()->GetFocusManager());
+                          event, glic_view->GetFocusManager());
 }
 
 void WebUIContentsContainer::RequestMediaAccessPermission(

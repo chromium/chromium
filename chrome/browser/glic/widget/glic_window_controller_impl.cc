@@ -472,7 +472,7 @@ void GlicWindowControllerImpl::Toggle(BrowserWindowInterface* bwi,
   } else if (state_ == State::kOpen) {
     // TODO(crbug.com/404601783): Bring focus to the textbox.
     GetGlicWidget()->Activate();
-    GetGlicView()->web_view()->GetWebContents()->Focus();
+    GetGlicView()->GetWebContents()->Focus();
   }
 }
 
@@ -566,7 +566,7 @@ void GlicWindowControllerImpl::ToggleWhenNotAlwaysDetached(
 void GlicWindowControllerImpl::FocusIfOpen() {
   if (IsShowing() && !IsActive()) {
     GetGlicWidget()->Activate();
-    GetGlicView()->web_view()->GetWebContents()->Focus();
+    GetGlicView()->GetWebContents()->Focus();
   }
 }
 
@@ -670,6 +670,7 @@ void GlicWindowControllerImpl::SetupGlicWidget(Browser* browser) {
 
   // Immediately hook up the WebView to the WebContents.
   GetGlicView()->SetWebContents(host().webui_contents());
+  GetGlicView()->UpdateBackgroundColor();
 }
 
 void GlicWindowControllerImpl::SetupGlicWidgetAccessibilityText() {
@@ -795,21 +796,20 @@ void GlicWindowControllerImpl::GlicLoadedAndReadyToDisplay() {
     return;
   }
 
-  // Update the background color after fading in the webview so the transition
+  // Update the background color after showing the webview so the transition
   // isn't visible. This will be the widget background color the user sees next
   // time.
   GetGlicView()->UpdateBackgroundColor();
 
   // In the case that the open animation was skipped, the web view should still
   // be visible now.
-  glic_window_animator_->SetGlicWebViewVisibility(true);
   SetWindowState(State::kOpen);
 
   // Whenever the glic window is shown, it should have focus. The following line
   // of code appears to be necessary but not sufficient and there are still some
   // edge cases.
   // TODO(crbug.com/390637019): Fully fix and remove this comment.
-  GetGlicView()->web_view()->GetWebContents()->Focus();
+  GetGlicView()->GetWebContents()->Focus();
 
   SetDraggingAreasAndWatchForMouseEvents();
   NotifyIfPanelStateChanged();
@@ -1012,12 +1012,7 @@ void GlicWindowControllerImpl::CloseInternal(
   const bool reopen_detached = state_ == State::kClosingToReopenDetached;
   DCHECK(!reopen_detached || reopen_detached_source.has_value());
 
-  // The webview should be faded out instead.
-  if (GetGlicView()) {
-    glic_window_animator_->SetGlicWebViewVisibility(false);
-  }
-
-    CloseFinish(reopen_detached, reopen_detached_source);
+  CloseFinish(reopen_detached, reopen_detached_source);
 }
 
 void GlicWindowControllerImpl::CloseFinish(
