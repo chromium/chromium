@@ -6,7 +6,7 @@ import type {BaseDialogPageHandlerInterface} from './base_dialog.mojom-webui.js'
 import {BaseDialogPageHandler} from './base_dialog.mojom-webui.js';
 
 export class BaseDialogBrowserProxy {
-  private handler: BaseDialogPageHandlerInterface;
+  handler: BaseDialogPageHandlerInterface;
 
   constructor() {
     this.handler = BaseDialogPageHandler.getRemote();
@@ -18,10 +18,6 @@ export class BaseDialogBrowserProxy {
 
   static getInstance(): BaseDialogBrowserProxy {
     return instance || (instance = new BaseDialogBrowserProxy());
-  }
-
-  getHandler(): BaseDialogPageHandlerInterface {
-    return this.handler;
   }
 }
 

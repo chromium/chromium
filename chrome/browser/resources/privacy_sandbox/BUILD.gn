@@ -41,9 +41,12 @@ build_webui("build") {
     "base_dialog_app.html.ts",
     "base_dialog_app.ts",
     "base_dialog_browser_proxy.ts",
+    "topics_consent.html.ts",
+    "topics_consent.ts",
   ]
 
   css_files = [
+    "base_dialog_app.css",
     "privacy_sandbox_privacy_policy_dialog.css",
     "shared_style.css",
     "shared_vars.css",
@@ -61,7 +64,11 @@ build_webui("build") {
   webui_context_type = "trusted"
 
   mojo_files_deps = [
+    "//chrome/browser/privacy_sandbox/notice:notice_mojom_ts__generator",
     "//chrome/browser/ui/webui/privacy_sandbox:mojo_bindings_ts__generator",
   ]
-  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/privacy_sandbox/base_dialog.mojom-webui.ts" ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/privacy_sandbox/base_dialog.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/privacy_sandbox/notice/notice.mojom-webui.ts",
+  ]
 }

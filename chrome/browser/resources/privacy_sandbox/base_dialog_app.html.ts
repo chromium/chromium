@@ -5,12 +5,16 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {BaseDialogApp} from './base_dialog_app.js';
+import {PrivacySandboxNotice} from './notice.mojom-webui.js';
 
 export function getHtml(this: BaseDialogApp) {
   return html`
-    <div>Base Dialog App Placeholder</div>
-    <cr-button id="closeButton" @click="${this.onCloseButton_}">
-      Close
-    </cr-button>
+    <cr-view-manager id="viewManager">
+      <topics-consent id="${
+      this.getNoticeId(PrivacySandboxNotice.kTopicsConsentNotice)}"
+          slot="view"
+          fill-content>
+      </topics-consent>
+    </cr-view-manager>
   `;
 }
