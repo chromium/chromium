@@ -58,7 +58,7 @@ final class JniCallbackImpl<T extends @Nullable Object>
         JniCallbackImplJni.get().onResult(mIsRepeating, mNativePointer, result);
         if (!mIsRepeating) {
             mNativePointer = 0;
-            LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
+            LifetimeAssert.destroy(mLifetimeAssert);
         }
     }
 
@@ -68,7 +68,7 @@ final class JniCallbackImpl<T extends @Nullable Object>
         if (mNativePointer != 0) {
             JniCallbackImplJni.get().destroy(mIsRepeating, mNativePointer);
             mNativePointer = 0;
-            LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
+            LifetimeAssert.destroy(mLifetimeAssert);
         }
     }
 

@@ -4,6 +4,8 @@
 
 package org.chromium.base.lifetime;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.task.PostTask;
@@ -25,12 +27,12 @@ import java.util.Set;
  *
  * <pre>
  * class MyClassWithCleanup {
- *     private final mLifetimeAssert = LifetimeAssert.create(this);
+ *     private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
  *
  *     public void destroy() {
  *         // If mLifetimeAssert is GC'ed before this is called, it will throw an exception
  *         // with a stack trace showing the stack during LifetimeAssert.create().
- *         LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
+ *         LifetimeAssert.destroy(mLifetimeAssert, true);
  *     }
  * }
  * </pre>
@@ -147,6 +149,7 @@ public class LifetimeAssert {
                 new WrappedReference(target, new CreationException(), safeToGc), target);
     }
 
+    /** Most clients should probably use destroy() to ensure exactly 1 call. */
     public static void setSafeToGc(@Nullable LifetimeAssert asserter, boolean value) {
         if (BuildConfig.ENABLE_ASSERTS) {
             assert asserter != null;
@@ -161,6 +164,19 @@ public class LifetimeAssert {
                 asserter.mWrapper.mSafeToGc = value;
             }
         }
+    }
+
+    /** Asserts that mSafeToGc == false. */
+    public static void assertNotDestroyed(@Nullable LifetimeAssert asserter) {
+        if (BuildConfig.ENABLE_ASSERTS) {
+            assert !assumeNonNull(asserter).mWrapper.mSafeToGc;
+        }
+    }
+
+    /** Shorthand for assertNotDestroyed(_) + setSafeToGc(_, true). */
+    public static void destroy(@Nullable LifetimeAssert asserter) {
+        assertNotDestroyed(asserter);
+        setSafeToGc(asserter, true);
     }
 
     /**

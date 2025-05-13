@@ -28,7 +28,7 @@ public class RequiredCallback<T extends @Nullable Object> implements Callback<T>
     public void onResult(T result) {
         assert mCallback != null : "Callback was already called.";
         mCallback.onResult(result);
-        LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
+        LifetimeAssert.destroy(mLifetimeAssert);
         mCallback = null;
     }
 }

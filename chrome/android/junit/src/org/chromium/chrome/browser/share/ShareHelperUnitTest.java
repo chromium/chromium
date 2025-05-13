@@ -38,6 +38,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DestroyableHolder;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -66,6 +67,8 @@ public class ShareHelperUnitTest {
     private static final ComponentName TEST_COMPONENT_NAME_2 =
             new ComponentName("test.package.two", "test.class.name.two");
 
+    private final DestroyableHolder<WindowAndroid> mWindowDestroyRef = new DestroyableHolder<>();
+
     private WindowAndroid mWindow;
     private Activity mActivity;
     private Uri mImageUri;
@@ -80,6 +83,7 @@ public class ShareHelperUnitTest {
                         IntentRequestTracker.createFromActivity(mActivity),
                         /* insetObserver= */ null,
                         /* trackOcclusion= */ true);
+        mWindowDestroyRef.set(mWindow);
         mImageUri = Uri.parse(IMAGE_URI);
     }
 
@@ -87,7 +91,7 @@ public class ShareHelperUnitTest {
     public void tearDown() {
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SHARING_LAST_SHARED_COMPONENT_NAME);
-        mWindow.destroy();
+        mWindowDestroyRef.destroy();
         mActivity.finish();
     }
 
@@ -233,7 +237,7 @@ public class ShareHelperUnitTest {
 
     @Test
     public void doNotShareWhenWindowDestroying() {
-        mWindow.destroy();
+        mWindowDestroyRef.destroy();
         ShareHelper.shareWithSystemShareSheetUi(emptyShareParams(), null, true);
 
         Intent nextIntent = Shadows.shadowOf(mActivity).peekNextStartedActivity();
