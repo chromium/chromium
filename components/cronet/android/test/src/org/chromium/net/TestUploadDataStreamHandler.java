@@ -24,14 +24,14 @@ import org.chromium.net.impl.CronetUrlRequestContext;
 public final class TestUploadDataStreamHandler {
     private final CronetEngine mCronetEngine;
     private long mTestUploadDataStreamHandler;
-    private ConditionVariable mWaitInitCalled = new ConditionVariable();
-    private ConditionVariable mWaitInitComplete = new ConditionVariable();
-    private ConditionVariable mWaitReadComplete = new ConditionVariable();
-    private ConditionVariable mWaitResetComplete = new ConditionVariable();
+    private final ConditionVariable mWaitInitCalled = new ConditionVariable();
+    private final ConditionVariable mWaitInitComplete = new ConditionVariable();
+    private final ConditionVariable mWaitReadComplete = new ConditionVariable();
+    private final ConditionVariable mWaitResetComplete = new ConditionVariable();
     // Waits for checkIfInitCallbackInvoked() returns result asynchronously.
-    private ConditionVariable mWaitCheckInit = new ConditionVariable();
+    private final ConditionVariable mWaitCheckInit = new ConditionVariable();
     // Waits for checkIfReadCallbackInvoked() returns result asynchronously.
-    private ConditionVariable mWaitCheckRead = new ConditionVariable();
+    private final ConditionVariable mWaitCheckRead = new ConditionVariable();
     // If true, init completes synchronously.
     private boolean mInitCompletedSynchronously;
     private String mData = "";

@@ -2634,7 +2634,7 @@ public class CronetUrlRequestTest {
         class HangingUploadDataProvider extends UploadDataProvider {
             UploadDataSink mUploadDataSink;
             ByteBuffer mByteBuffer;
-            ConditionVariable mReadCalled = new ConditionVariable(false);
+            final ConditionVariable mReadCalled = new ConditionVariable(false);
 
             @Override
             public long getLength() {

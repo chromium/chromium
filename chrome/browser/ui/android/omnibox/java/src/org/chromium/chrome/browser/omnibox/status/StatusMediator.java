@@ -112,8 +112,6 @@ public class StatusMediator
 
     private float mUrlFocusPercent;
 
-    private final int mPermissionIconDisplayTimeoutMs = PERMISSION_ICON_DEFAULT_DISPLAY_TIMEOUT_MS;
-
     private @Nullable CookieControlsBridge mCookieControlsBridge;
     private boolean mCookieControlsVisible;
     private boolean mThirdPartyCookiesBlocked;
@@ -674,7 +672,8 @@ public class StatusMediator
         mPermissionTaskHandler.removeCallbacksAndMessages(null);
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, permissionIconResource);
         Runnable finishIconAnimation = () -> updateLocationBarIcon(IconTransitionType.ROTATE);
-        mPermissionTaskHandler.postDelayed(finishIconAnimation, mPermissionIconDisplayTimeoutMs);
+        mPermissionTaskHandler.postDelayed(
+                finishIconAnimation, PERMISSION_ICON_DEFAULT_DISPLAY_TIMEOUT_MS);
     }
 
     // CookieControlsObserver interface
@@ -737,7 +736,7 @@ public class StatusMediator
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, permissionIconResource);
         mPermissionTaskHandler.postDelayed(
                 () -> updateLocationBarIcon(IconTransitionType.ROTATE),
-                mPermissionIconDisplayTimeoutMs);
+                PERMISSION_ICON_DEFAULT_DISPLAY_TIMEOUT_MS);
     }
 
     private void startIph() {
@@ -781,7 +780,7 @@ public class StatusMediator
                 () -> {
                     updateLocationBarIcon(IconTransitionType.ROTATE);
                 },
-                mPermissionIconDisplayTimeoutMs);
+                PERMISSION_ICON_DEFAULT_DISPLAY_TIMEOUT_MS);
         mIsStoreIconShowing = true;
     }
 
@@ -799,7 +798,7 @@ public class StatusMediator
      *     finishes and should disappear when it animates out.
      */
     private int getIphTimeout() {
-        return mPermissionIconDisplayTimeoutMs - (2 * StatusView.ICON_ROTATION_DURATION_MS);
+        return PERMISSION_ICON_DEFAULT_DISPLAY_TIMEOUT_MS - (2 * StatusView.ICON_ROTATION_DURATION_MS);
     }
 
     /** Notifies that the page info was opened. */

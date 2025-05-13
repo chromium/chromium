@@ -81,8 +81,8 @@ public class MainFragment extends Fragment {
     }
 
     class SimpleUrlRequestCallback extends UrlRequest.Callback {
-        private ByteArrayOutputStream mBytesReceived = new ByteArrayOutputStream();
-        private WritableByteChannel mReceiveChannel = Channels.newChannel(mBytesReceived);
+        private final ByteArrayOutputStream mBytesReceived = new ByteArrayOutputStream();
+        private final WritableByteChannel mReceiveChannel = Channels.newChannel(mBytesReceived);
 
         @Override
         public void onRedirectReceived(

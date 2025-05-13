@@ -137,12 +137,12 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
 
     @GuardedBy("mNativeStreamLock")
     // Pending write data.
-    private LinkedList<ByteBuffer> mPendingData;
+    private final LinkedList<ByteBuffer> mPendingData;
 
     @GuardedBy("mNativeStreamLock")
     // Flush data queue that should be pushed to the native stack when the previous
     // CronetBidirectionalStreamJni.get().writevData completes.
-    private LinkedList<ByteBuffer> mFlushData;
+    private final LinkedList<ByteBuffer> mFlushData;
 
     @GuardedBy("mNativeStreamLock")
     // Whether an end-of-stream flag is passed in through write().

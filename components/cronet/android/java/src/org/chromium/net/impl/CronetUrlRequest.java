@@ -103,8 +103,8 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
     private final int mTrafficStatsUid;
     private final VersionSafeCallbacks.RequestFinishedInfoListener mRequestFinishedListener;
     // See {@link org.chromium.net.UrlRequest.Builder#setRawCompressionDictionary}.
-    private byte[] mDictionarySha256Hash;
-    private ByteBuffer mDictionary;
+    private final byte[] mDictionarySha256Hash;
+    private final ByteBuffer mDictionary;
     private final String mDictionaryId;
     private final long mNetworkHandle;
     private final CronetLogger mLogger;

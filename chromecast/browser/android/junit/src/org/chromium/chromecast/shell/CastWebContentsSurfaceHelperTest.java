@@ -51,7 +51,7 @@ public class CastWebContentsSurfaceHelperTest {
     private CastWebContentsSurfaceHelper mSurfaceHelper;
     private @Mock MediaSessionGetter mMediaSessionGetter;
     private @Mock MediaSession mMediaSession;
-    private Controller<Unit> mSurfaceAvailable = new Controller<>();
+    private final Controller<Unit> mSurfaceAvailable = new Controller<>();
 
     private static class StartParamsBuilder {
         private String mId = "0";

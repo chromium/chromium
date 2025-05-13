@@ -23,6 +23,8 @@ import org.chromium.components.omnibox.OmniboxSuggestionType;
  */
 @NullMarked
 class CalculatorAnswerTextLayout implements AnswerText {
+    private static final int MAX_LINES = 1;
+
     final Context mContext;
     private final boolean mIsAnswer;
     private final AnswerType mAnswerType;
@@ -31,7 +33,6 @@ class CalculatorAnswerTextLayout implements AnswerText {
     private final SpannableStringBuilder mText = new SpannableStringBuilder();
 
     private @Nullable String mAccessibilityDescription;
-    private final int mMaxLines = 1;
 
     // AnswerText implementation.
     @Override
@@ -46,7 +47,7 @@ class CalculatorAnswerTextLayout implements AnswerText {
 
     @Override
     public int getMaxLines() {
-        return mMaxLines;
+        return MAX_LINES;
     }
 
     /**

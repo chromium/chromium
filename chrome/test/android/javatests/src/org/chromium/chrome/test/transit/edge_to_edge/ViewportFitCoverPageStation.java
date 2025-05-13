@@ -35,8 +35,8 @@ public class ViewportFitCoverPageStation extends WebPageStation {
     public static final HtmlElementSpec FULLSCREEN_MAIN_BUTTON =
             new HtmlElementSpec("fullscreen-main");
 
-    private HtmlElement mAvoidBottomElement;
-    private HtmlElement mFullScreenButtonElement;
+    private final HtmlElement mAvoidBottomElement;
+    private final HtmlElement mFullScreenButtonElement;
 
     protected <T extends ViewportFitCoverPageStation> ViewportFitCoverPageStation(
             Builder<T> builder) {

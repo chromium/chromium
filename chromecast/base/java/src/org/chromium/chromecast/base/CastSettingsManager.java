@@ -41,7 +41,7 @@ public final class CastSettingsManager {
         public void onDeviceNameChanged(String deviceName) {}
     }
 
-    private OnSettingChangedListener mListener;
+    private final OnSettingChangedListener mListener;
 
     /**
      * Creates a fully-featured CastSettingsManager instance. Will fail if called from a

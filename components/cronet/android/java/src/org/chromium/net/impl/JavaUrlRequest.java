@@ -91,8 +91,8 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
 
     /* These don't change with redirects */
     private final String mInitialMethod;
-    private VersionSafeCallbacks.UploadDataProviderWrapper mUploadDataProvider;
-    private Executor mUploadExecutor;
+    private final VersionSafeCallbacks.UploadDataProviderWrapper mUploadDataProvider;
+    private final Executor mUploadExecutor;
 
     /**
      * Holds a subset of StatusValues - {@link State#STARTED} can represent {@link

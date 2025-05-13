@@ -50,7 +50,7 @@ public class CronetHttpURLConnection extends HttpURLConnection {
     private boolean mTrafficStatsUidSet;
     private int mTrafficStatsUid;
 
-    private CronetInputStream mInputStream;
+    private final CronetInputStream mInputStream;
     private CronetOutputStream mOutputStream;
     private UrlResponseInfo mResponseInfo;
     private IOException mException;

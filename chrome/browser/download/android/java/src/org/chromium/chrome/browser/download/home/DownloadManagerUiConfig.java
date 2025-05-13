@@ -41,7 +41,7 @@ public class DownloadManagerUiConfig {
      * The time interval during which a download update is considered recent enough to show
      * in Just Now section.
      */
-    public final long justNowThresholdSeconds;
+    public final long justNowThresholdSeconds = 30 * 60;
 
     /** Whether or not grouping items into a single card is supported. */
     public final boolean supportsGrouping;
@@ -60,7 +60,6 @@ public class DownloadManagerUiConfig {
         supportFullWidthImages = builder.mSupportFullWidthImages;
         inMemoryThumbnailCacheSizeBytes = builder.mInMemoryThumbnailCacheSizeBytes;
         maxThumbnailScaleFactor = builder.mMaxThumbnailScaleFactor;
-        justNowThresholdSeconds = builder.mJustNowThresholdSeconds;
         supportsGrouping = builder.mSupportsGrouping;
         showPaginationHeaders = builder.mShowPaginationHeaders;
         startWithPrefetchedContent = builder.mStartWithPrefetchedContent;
@@ -68,9 +67,6 @@ public class DownloadManagerUiConfig {
 
     /** Helper class for building a {@link DownloadManagerUiConfig}. */
     public static class Builder {
-        /** The threshold time interval to show up in Just Now section. */
-        private static final int JUST_NOW_THRESHOLD_SECONDS = 30 * 60;
-
         private static final int IN_MEMORY_THUMBNAIL_CACHE_SIZE_BYTES = 15 * BYTES_PER_MEGABYTE;
 
         private static final float MAX_THUMBNAIL_SCALE_FACTOR = 1.5f; /* hdpi scale factor. */
@@ -81,7 +77,6 @@ public class DownloadManagerUiConfig {
         private boolean mSupportFullWidthImages;
         private int mInMemoryThumbnailCacheSizeBytes = IN_MEMORY_THUMBNAIL_CACHE_SIZE_BYTES;
         private float mMaxThumbnailScaleFactor = MAX_THUMBNAIL_SCALE_FACTOR;
-        private final long mJustNowThresholdSeconds = JUST_NOW_THRESHOLD_SECONDS;
         private boolean mSupportsGrouping;
         private boolean mShowPaginationHeaders;
         private boolean mStartWithPrefetchedContent;

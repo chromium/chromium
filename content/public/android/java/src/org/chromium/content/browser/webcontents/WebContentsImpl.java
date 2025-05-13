@@ -151,7 +151,7 @@ public class WebContentsImpl
     private final List<RenderFrameHostImpl> mFrames = new ArrayList<>();
 
     private long mNativeWebContentsAndroid;
-    private NavigationController mNavigationController;
+    private final NavigationController mNavigationController;
 
     // Lazily created proxy observer for handling all Java-based WebContentsObservers.
     private @Nullable WebContentsObserverProxy mObserverProxy;

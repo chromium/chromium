@@ -58,11 +58,11 @@ public final class Http2TestHandler extends Http2ConnectionHandler implements Ht
     private static final ByteBuf RESPONSE_BYTES =
             unreleasableBuffer(copiedBuffer("HTTP/2 Test Server", CharsetUtil.UTF_8));
 
-    private HashMap<Integer, RequestResponder> mResponderMap = new HashMap<>();
+    private final HashMap<Integer, RequestResponder> mResponderMap = new HashMap<>();
 
-    private ReportingCollector mReportingCollector;
-    private String mServerUrl;
-    private CountDownLatch mHangingUrlLatch;
+    private final ReportingCollector mReportingCollector;
+    private final String mServerUrl;
+    private final CountDownLatch mHangingUrlLatch;
 
     /** Builder for HTTP/2 test handler. */
     public static final class Builder
@@ -507,7 +507,7 @@ public final class Http2TestHandler extends Http2ConnectionHandler implements Ht
 
     // A RequestResponder that implements a Reporting collector.
     private class ReportingCollectorResponder extends RequestResponder {
-        private ByteArrayOutputStream mPartialPayload = new ByteArrayOutputStream();
+        private final ByteArrayOutputStream mPartialPayload = new ByteArrayOutputStream();
 
         @Override
         void onHeadersRead(

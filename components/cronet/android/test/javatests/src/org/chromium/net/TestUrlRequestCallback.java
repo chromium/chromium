@@ -52,7 +52,7 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
 
     // The executor thread will block on this after reaching a terminal method.
     // Terminal methods are (onSucceeded, onFailed or onCancelled)
-    private ConditionVariable mBlockOnTerminalState = new ConditionVariable(true);
+    private final ConditionVariable mBlockOnTerminalState = new ConditionVariable(true);
 
     // Conditionally fail on certain steps.
     private FailureType mFailureType = FailureType.NONE;

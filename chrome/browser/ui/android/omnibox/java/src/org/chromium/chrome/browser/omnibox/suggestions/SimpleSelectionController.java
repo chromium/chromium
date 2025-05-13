@@ -11,7 +11,7 @@ import org.chromium.build.annotations.NullMarked;
  */
 @NullMarked
 public class SimpleSelectionController extends SelectionController {
-    private OnSelectionChangedListener mListener;
+    private final OnSelectionChangedListener mListener;
     private int mItemCount;
 
     @FunctionalInterface

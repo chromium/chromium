@@ -27,7 +27,7 @@ public class CastContentWindowAndroid
     // ref should be checked that it is not zero before it is used.
     private long mNativeCastContentWindowAndroid;
     private final String mSessionId;
-    private CastWebContentsComponent mComponent;
+    private final CastWebContentsComponent mComponent;
 
     private boolean mScreenAccess;
     private CastWebContentsComponent.StartParams mStartParams;
