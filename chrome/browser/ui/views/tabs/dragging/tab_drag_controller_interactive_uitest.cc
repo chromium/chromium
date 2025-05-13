@@ -2734,10 +2734,14 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   DragTabAndNotify(tab_strip, base::BindOnce(&DragAllToSeparateWindowStep2,
                                              this, tab_strip, tab_strip2));
 
-  // Release the mouse, stopping the drag session.
+  // Drag to the trailing end of the tabstrip to ensure we're in a
+  // predictable spot within the strip.
+  StopAnimating(tab_strip2);
+  ASSERT_TRUE(DragInputToCenter(tab_strip2->tab_at(3)));
+  // Release mouse or touch, stopping the drag session.
   ASSERT_TRUE(ReleaseInput());
 
-  EXPECT_EQ("0 100 1 101", IDString(model2));
+  EXPECT_EQ("0 100 101 1", IDString(model2));
   EXPECT_TRUE(browser2->tab_strip_model()->IsTabPinned(0));
   EXPECT_FALSE(browser2->tab_strip_model()->IsTabPinned(1));
 }
