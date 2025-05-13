@@ -39,6 +39,8 @@ source_set("toolbars_ui") {
     "tab_grid_new_tab_button.mm",
     "tab_grid_page_control.h",
     "tab_grid_page_control.mm",
+    "tab_grid_toolbar_background.h",
+    "tab_grid_toolbar_background.mm",
     "tab_grid_toolbars_grid_delegate.h",
     "tab_grid_toolbars_main_tab_grid_delegate.h",
     "tab_grid_toolbars_utils.h",

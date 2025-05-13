@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_new_tab_button.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbar_background.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_utils.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -39,10 +40,9 @@
   UIBarButtonItem* _shareButton;
   BOOL _undoActive;
   BOOL _scrolledToEdge;
-  UIView* _scrolledBackgroundView;
+  TabGridToolbarBackground* _backgroundView;
   // Configures the responder following the receiver in the responder chain.
   UIResponder* _followingNextResponder;
-  UIView* _scrolledToBottomBackgroundView;
 
   // TODO(crbug.com/398183785): Remove once we got feedback.
   UIBarButtonItem* _sendFeedbackGroupButton;
@@ -66,9 +66,9 @@
 #pragma mark - UIView
 
 - (void)didMoveToSuperview {
-  if (_scrolledBackgroundView) {
+  if (_backgroundView) {
     [self.superview.bottomAnchor
-        constraintEqualToAnchor:_scrolledBackgroundView.bottomAnchor]
+        constraintEqualToAnchor:_backgroundView.bottomAnchor]
         .active = YES;
   }
   [super didMoveToSuperview];
@@ -467,21 +467,12 @@
 - (void)createScrolledBackgrounds {
   _scrolledToEdge = YES;
 
-  // Background when the content is scrolled to the middle.
-  _scrolledBackgroundView = CreateTabGridOverContentBackground();
-  _scrolledBackgroundView.hidden = YES;
-  _scrolledBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-  [self addSubview:_scrolledBackgroundView];
+  _backgroundView = [[TabGridToolbarBackground alloc] initWithFrame:self.frame];
+  _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self addSubview:_backgroundView];
   AddSameConstraintsToSides(
-      self, _scrolledBackgroundView,
+      self, _backgroundView,
       LayoutSides::kLeading | LayoutSides::kTop | LayoutSides::kTrailing);
-
-  // Background when the content is scrolled to the top.
-  _scrolledToBottomBackgroundView = CreateTabGridScrolledToEdgeBackground();
-  _scrolledToBottomBackgroundView.translatesAutoresizingMaskIntoConstraints =
-      NO;
-  [self addSubview:_scrolledToBottomBackgroundView];
-  AddSameConstraints(_scrolledBackgroundView, _scrolledToBottomBackgroundView);
 
   // A non-nil UIImage has to be added in the background of the toolbar to avoid
   // having an additional blur effect.
@@ -492,11 +483,15 @@
 
 // Updates the visibility of the backgrounds based on the state of the TabGrid.
 - (void)updateBackgroundVisibility {
-  _scrolledToBottomBackgroundView.hidden =
+  BOOL scrolledToBottomHidden =
       _hideScrolledToEdgeBackground ||
       ([self isShowingFloatingButton] || !_scrolledToEdge);
-  _scrolledBackgroundView.hidden =
+  BOOL scrolledBackgroundViewHidden =
       [self isShowingFloatingButton] || _scrolledToEdge;
+  [_backgroundView
+      setScrolledOverContentBackgroundViewHidden:scrolledBackgroundViewHidden];
+  [_backgroundView
+      setScrolledToEdgeBackgroundViewHidden:scrolledToBottomHidden];
 }
 
 #pragma mark - Public
