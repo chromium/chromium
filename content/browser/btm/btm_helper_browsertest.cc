@@ -442,6 +442,7 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
       web_contents, embedded_test_server()->GetURL("a.test", "/title1.html")));
   UserActivationObserver observer(web_contents,
                                   web_contents->GetPrimaryMainFrame());
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
   SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
   observer.Wait();
 
