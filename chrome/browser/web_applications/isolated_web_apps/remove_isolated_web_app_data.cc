@@ -12,13 +12,17 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/url_constants.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "url/origin.h"
@@ -75,6 +79,13 @@ void RemoveIsolatedWebAppBrowsingData(Profile* profile,
                                       const url::Origin& iwa_origin,
                                       base::OnceClosure callback) {
   CHECK(iwa_origin.scheme() == chrome::kIsolatedAppScheme);
+
+  // Content settings for this Isolated Web App (IWA) are reset to default
+  // because `BrowseDataRemover` does not clear them. This prevents stale
+  // entries for the uninstalled IWA from appearing in Chrome's site settings
+  // page (e.g., showing granted permissions for an app that's no longer
+  //  present).
+  ResetAllContentSettingsForWebApp(profile, iwa_origin.GetURL());
 
   auto filter = content::BrowsingDataFilterBuilder::Create(
       content::BrowsingDataFilterBuilder::Mode::kDelete);

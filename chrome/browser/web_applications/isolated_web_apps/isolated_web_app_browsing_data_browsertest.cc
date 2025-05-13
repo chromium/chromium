@@ -20,6 +20,7 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -38,6 +39,7 @@
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "components/webapps/common/web_app_id.h"
@@ -91,6 +93,20 @@ class IsolatedWebAppBrowsingDataTest : public IsolatedWebAppBrowserTestHarness {
             .BuildBundle();
     app->TrustSigningKey();
     return app->InstallChecked(profile());
+  }
+
+  IsolatedWebAppUrlInfo ForceInstallIsolatedWebApp() {
+    std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+        web_app::IsolatedWebAppBuilder(
+            web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
+                network::mojom::PermissionsPolicyFeature::kControlledFrame))
+            .BuildBundle();
+    app->TrustSigningKey();
+    return app
+        ->InstallWithSource(
+            profile(),
+            &web_app::IsolatedWebAppInstallSource::FromExternalPolicy)
+        .value();
   }
 
   WebAppProvider& web_app_provider() {
@@ -313,6 +329,27 @@ class IsolatedWebAppBrowsingDataClearingTest
     run_loop.Run();
   }
 
+  void ForceUninstall(const IsolatedWebAppUrlInfo& url_info) {
+    base::RunLoop run_loop;
+    auto* browsing_data_remover = profile()->GetBrowsingDataRemover();
+    browsing_data_remover->SetWouldCompleteCallbackForTesting(
+        base::BindLambdaForTesting([&](base::OnceClosure callback) {
+          if (browsing_data_remover->GetPendingTaskCountForTesting() == 1) {
+            run_loop.Quit();
+          }
+          std::move(callback).Run();
+        }));
+
+    base::test::TestFuture<webapps::UninstallResultCode> future;
+    provider().scheduler().RemoveInstallManagementMaybeUninstall(
+        url_info.app_id(), WebAppManagement::Type::kIwaPolicy,
+        webapps::WebappUninstallSource::kIwaEnterprisePolicy,
+        future.GetCallback());
+    auto code = future.Get();
+    ASSERT_TRUE(code == webapps::UninstallResultCode::kAppRemoved);
+    run_loop.Run();
+  }
+
   int64_t GetCacheSize(content::StoragePartition* storage_partition) {
     base::test::TestFuture<bool, int64_t> future;
 
@@ -506,6 +543,32 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest, CookieCleared) {
     ASSERT_TRUE(partition);
     EXPECT_EQ(GetAllCookies(partition).size(), 0UL);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
+                       PopupsContentSettingClearedOnUninstall) {
+  IsolatedWebAppUrlInfo url_info = ForceInstallIsolatedWebApp();
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  const GURL app_scope = web_app_provider()
+                             .registrar_unsafe()
+                             .GetAppById(url_info.app_id())
+                             ->scope();
+
+  ContentSetting default_popup_setting =
+      settings_map->GetDefaultContentSetting(ContentSettingsType::POPUPS,
+                                             /*provider_id=*/nullptr);
+
+  EXPECT_EQ(settings_map->GetContentSetting(app_scope, GURL(),
+                                            ContentSettingsType::POPUPS),
+            CONTENT_SETTING_ALLOW);
+
+  ForceUninstall(url_info);
+
+  EXPECT_EQ(settings_map->GetContentSetting(app_scope, GURL(),
+                                            ContentSettingsType::POPUPS),
+            default_popup_setting);
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
@@ -799,8 +862,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
   ASSERT_TRUE(
       content::NavigateToURLFromRenderer(iframe_rfh, clear_site_data_url));
 
-  // Not all cache on the StoragePartition is deleted. But it should be smaller
-  // than previous value.
+  // Not all cache on the StoragePartition is deleted. But it should be
+  // smaller than previous value.
   EXPECT_LT(GetCacheSize(iwa_main_storage_partition), old_cache_size);
   // Verify cookie cleared.
   cookie_list = GetAllCookies(iwa_main_storage_partition);
