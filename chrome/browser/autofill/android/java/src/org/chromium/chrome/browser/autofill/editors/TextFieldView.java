@@ -25,6 +25,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView.OnEditorActionListener;
 
 import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -170,10 +171,25 @@ class TextFieldView extends FrameLayout implements FieldView {
     void setLabel(String label, boolean isRequired) {
         // Build up the label. Required fields are indicated by appending a '*'.
         if (isRequired) {
+            // TODO(crbug.com/417413188): Fix a bug where label is announced too many times.
+            // Build the accessibility description manually by combining "required" string with  the
+            // label, because '*' are not announced by the screen reader and it is more informative.
+            final int requiredFieldContentDescriptionId =
+                    R.string.autofill_address_edit_dialog_required_field_content_description;
+            final String labelForAccessibility =
+                    getContext().getString(requiredFieldContentDescriptionId, label);
+            mInputLayout.setTextInputAccessibilityDelegate(
+                    new TextInputLayout.AccessibilityDelegate(mInputLayout) {
+                        @Override
+                        public void onInitializeAccessibilityNodeInfo(
+                                View host, AccessibilityNodeInfoCompat info) {
+                            super.onInitializeAccessibilityNodeInfo(host, info);
+                            info.setText(labelForAccessibility);
+                        }
+                    });
             label += REQUIRED_FIELD_INDICATOR;
         }
         mInputLayout.setHint(label);
-        mInput.setContentDescription(label);
     }
 
     void setValidator(@Nullable EditorFieldValidator validator) {

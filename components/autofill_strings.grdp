@@ -629,4 +629,11 @@
   <message name="IDS_AUTOFILL_ADDRESS_EDIT_DIALOG_JAPANESE_ALTERNATIVE_NAME" desc="The label for the phonetic name field in japanese autofill profile. In Japanese it should be translated to 'ふりがな'.">
     Phonetic name
   </message>
+
+  <!-- Used on Android: -->
+  <if expr="is_android">
+  <message name="IDS_AUTOFILL_ADDRESS_EDIT_DIALOG_REQUIRED_FIELD_CONTENT_DESCRIPTION" desc="Content description for text edit field that is marked as 'required'. It is built from the label and a string that explicitly states that the field is required." formatter_data="android_java">
+    <ph name="FIELD_LABEL">%1$s<ex>City</ex></ph>, required
+  </message>
+  </if>
 </grit-part>
