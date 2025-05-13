@@ -96,6 +96,9 @@ class FakeTabGroupSyncService : public TabGroupSyncService {
   void RecordTabGroupEvent(const EventDetails& event_details) override;
   void UpdateArchivalStatus(const base::Uuid& sync_id,
                             bool archival_status) override;
+  void UpdateTabLastSeenTime(const base::Uuid& group_id,
+                             const base::Uuid& tab_id,
+                             TriggerSource source) override;
   TabGroupSyncMetricsLogger* GetTabGroupSyncMetricsLogger() override;
   base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSavedTabGroupControllerDelegate() override;

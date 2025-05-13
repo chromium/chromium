@@ -334,6 +334,12 @@ void TabGroupSyncServiceProxy::UpdateArchivalStatus(const base::Uuid& sync_id,
   NOTIMPLEMENTED();
 }
 
+void TabGroupSyncServiceProxy::UpdateTabLastSeenTime(const base::Uuid& group_id,
+                                                     const base::Uuid& tab_id,
+                                                     TriggerSource source) {
+  NOTIMPLEMENTED();
+}
+
 TabGroupSyncMetricsLogger*
 TabGroupSyncServiceProxy::GetTabGroupSyncMetricsLogger() {
   return service_->GetTabGroupSyncMetricsLogger();
