@@ -636,7 +636,6 @@ static_library("ui") {
     "//components/webrtc_logging/browser",
     "//components/webui/about",
     "//components/webui/chrome_urls",
-    "//components/webui/chrome_urls/mojom:mojo_bindings",
     "//components/webui/flags",
     "//components/webui/version",
     "//components/zoom",

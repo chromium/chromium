@@ -8575,6 +8575,7 @@ static_library("browser_generated_files") {
     "//chrome/browser/v8_compile_hints/proto",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//components/data_sharing/data_sharing_internals/webui:mojo_bindings",
+    "//components/webui/chrome_urls/mojom:mojo_bindings",
   ]
   if (is_android) {
     public_deps += [
