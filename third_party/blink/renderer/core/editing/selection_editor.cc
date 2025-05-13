@@ -165,14 +165,12 @@ void SelectionEditor::DidFinishTextChange(const Position& new_anchor,
   selection_.ResetDirectionCache();
 
   // See: https://w3c.github.io/selection-api/#selectionchange-event
-  if (RuntimeEnabledFeatures::ScheduleSelectionChangeOnBackspaceEnabled()) {
-    TextControlElement* text_control =
-        EnclosingTextControl(GetSelectionInDOMTree().Anchor());
-    if (text_control && !text_control->IsInShadowTree()) {
-      text_control->ScheduleSelectionchangeEvent();
-    } else {
-      GetDocument().ScheduleSelectionchangeEvent();
-    }
+  TextControlElement* text_control =
+      EnclosingTextControl(GetSelectionInDOMTree().Anchor());
+  if (text_control && !text_control->IsInShadowTree()) {
+    text_control->ScheduleSelectionchangeEvent();
+  } else {
+    GetDocument().ScheduleSelectionchangeEvent();
   }
 
   MarkCacheDirty();

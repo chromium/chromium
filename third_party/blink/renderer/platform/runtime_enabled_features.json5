@@ -4019,11 +4019,6 @@
       status: "stable",
     },
     {
-      // See crbug.com/41321247
-      name: "ScheduleSelectionChangeOnBackspace",
-      status: "stable",
-    },
-    {
       // https://wicg.github.io/webcomponents/proposals/Scoped-Custom-Element-Registries
       // https://github.com/whatwg/html/issues/10854
       // Spec PRs:
