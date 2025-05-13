@@ -1588,73 +1588,6 @@ void LensOverlayController::StorePageContentAndContinueInitialization(
   RecordDocumentMetrics(page_count);
 }
 
-#if BUILDFLAG(ENABLE_PDF)
-void LensOverlayController::FetchVisiblePageIndexAndGetPartialPdfText(
-    uint32_t page_count) {
-  pdf::PDFDocumentHelper* pdf_helper =
-      pdf::PDFDocumentHelper::MaybeGetForWebContents(tab_->GetContents());
-  if (!pdf_helper ||
-      lens::features::GetLensOverlayPdfSuggestCharacterTarget() == 0 ||
-      page_count == 0) {
-    return;
-  }
-
-  // TODO(387306854): Add logic to grab page text form the visible page index.
-
-  // Fetch the first page of text which will be then recursively fetch following
-  // pages.
-  initialization_data_->pdf_pages_text_.clear();
-  pdf_helper->GetPageText(
-      /*page_index=*/0,
-      base::BindOnce(&LensOverlayController::GetPartialPdfTextCallback,
-                     weak_factory_.GetWeakPtr(), /*page_index=*/0, page_count,
-                     /*total_characters_retrieved=*/0));
-}
-
-void LensOverlayController::GetPartialPdfTextCallback(
-    uint32_t page_index,
-    uint32_t total_page_count,
-    uint32_t total_characters_retrieved,
-    const std::u16string& page_text) {
-  // Sanity checks that the input is expected.
-  CHECK_GE(total_page_count, 1u);
-  CHECK_LT(page_index, total_page_count);
-  CHECK_EQ(initialization_data_->pdf_pages_text_.size(), page_index);
-
-  // Add the page text to the list of pages and update the total characters
-  // retrieved count.
-  initialization_data_->pdf_pages_text_.push_back(page_text);
-
-  // Ensure no integer overflow. If overflow, set the total characters retrieved
-  // to the max value so the loop will exit.
-  base::CheckedNumeric<uint32_t> total_characters_retrieved_check =
-      total_characters_retrieved;
-  total_characters_retrieved_check += page_text.size();
-  total_characters_retrieved = total_characters_retrieved_check.ValueOrDefault(
-      std::numeric_limits<uint32_t>::max());
-
-  pdf::PDFDocumentHelper* pdf_helper =
-      pdf::PDFDocumentHelper::MaybeGetForWebContents(tab_->GetContents());
-
-  // Stop the loop if the character limit is reached or if the page index is
-  // out of bounds or the PDF helper no longer exists.
-  if (!pdf_helper ||
-      total_characters_retrieved >=
-          lens::features::GetLensOverlayPdfSuggestCharacterTarget() ||
-      page_index + 1 >= total_page_count) {
-    lens_overlay_query_controller_->SendPartialPageContentRequest(
-        initialization_data_->pdf_pages_text_);
-    return;
-  }
-
-  pdf_helper->GetPageText(
-      page_index + 1,
-      base::BindOnce(&LensOverlayController::GetPartialPdfTextCallback,
-                     weak_factory_.GetWeakPtr(), page_index + 1,
-                     total_page_count, total_characters_retrieved));
-}
-#endif  // BUILDFLAG(ENABLE_PDF)
-
 std::vector<lens::mojom::CenterRotatedBoxPtr>
 LensOverlayController::ConvertSignificantRegionBoxes(
     const std::vector<gfx::Rect>& all_bounds) {
@@ -1851,7 +1784,7 @@ void LensOverlayController::UpdatePageContextualizationPart3(
   initialization_data_->primary_content_type_ = primary_content_type;
 
   // If no bytes were retrieved from the page, the query won't be able to be
-  // contexualized. Notify the side panel so the ghost loader isn't shown. No
+  // contextualized. Notify the side panel so the ghost loader isn't shown. No
   // need to update update the overlay as this update only happens on navigation
   // where the side panel will already be open.
   if (!new_page_content || new_page_content->bytes_.empty()) {
@@ -1863,7 +1796,10 @@ void LensOverlayController::UpdatePageContextualizationPart3(
   // suggest signals.
   if (new_page_content &&
       new_page_content->content_type_ == lens::MimeType::kPdf) {
-    FetchVisiblePageIndexAndGetPartialPdfText(page_count.value_or(0));
+    GetContextualizationController()->FetchVisiblePageIndexAndGetPartialPdfText(
+        lens_overlay_query_controller_, page_count.value_or(0),
+        base::BindOnce(&LensOverlayController::OnPdfPartialPageTextRetrieved,
+                       weak_factory_.GetWeakPtr()));
   }
 #endif
 
@@ -2052,8 +1988,11 @@ void LensOverlayController::InitializeOverlay(
       initialization_data_->page_contents_.front().content_type_ ==
           lens::MimeType::kPdf) {
     CHECK(initialization_data_->pdf_page_count_.has_value());
-    FetchVisiblePageIndexAndGetPartialPdfText(
-        initialization_data_->pdf_page_count_.value());
+    GetContextualizationController()->FetchVisiblePageIndexAndGetPartialPdfText(
+        lens_overlay_query_controller_,
+        initialization_data_->pdf_page_count_.value(),
+        base::BindOnce(&LensOverlayController::OnPdfPartialPageTextRetrieved,
+                       weak_factory_.GetWeakPtr()));
   }
 #endif
 
@@ -3418,6 +3357,11 @@ void LensOverlayController::UpdateEntryPointsState() {
       .lens_overlay_entry_point_controller()
       ->UpdateEntryPointsState(
           /*hide_toolbar_entrypoint=*/false);
+}
+
+void LensOverlayController::OnPdfPartialPageTextRetrieved(
+    std::vector<std::u16string> pdf_pages_text) {
+  initialization_data_->pdf_pages_text_ = std::move(pdf_pages_text);
 }
 
 lens::LensSearchboxController*

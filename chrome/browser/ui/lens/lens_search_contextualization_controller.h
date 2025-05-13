@@ -49,6 +49,10 @@ using PageContentRetrievedCallback =
                             lens::MimeType primary_content_type,
                             std::optional<uint32_t> pdf_page_count)>;
 
+// Callback type alias for retrieving the text from the PDF pages one by one.
+using PdfPartialPageTextRetrievedCallback =
+    base::OnceCallback<void(std::vector<std::u16string> pdf_pages_text)>;
+
 // Controller responsible for handling contextualization logic for Lens flows.
 // This includes grabbing content related to the page and issuing Lens requests
 // so searchbox requests are contextualized.
@@ -79,6 +83,17 @@ class LensSearchContextualizationController {
   // contextualization. If page content can not be retrieved, the callback will
   // be run with no bytes.
   void GetPageContextualization(PageContentRetrievedCallback callback);
+
+#if BUILDFLAG(ENABLE_PDF)
+  // Fetches the visible page index from the PDF renderer and then starts the
+  // process of fetching the text from the PDF to be used for suggest signals.
+  // This is a no-op if the tab is not a PDF. Once the partial text is
+  // retrieved, the text is sent to the server via the query controller.
+  void FetchVisiblePageIndexAndGetPartialPdfText(
+      lens::LensOverlayQueryController* lens_overlay_query_controller,
+      uint32_t page_count,
+      PdfPartialPageTextRetrievedCallback callback);
+#endif  // BUILDFLAG(ENABLE_PDF)
 
  private:
   // Gets the inner HTML for contextualization if flag enabled. Otherwise skip
@@ -135,6 +150,15 @@ class LensSearchContextualizationController {
                           pdf::mojom::PdfListener::GetPdfBytesStatus status,
                           const std::vector<uint8_t>& bytes,
                           uint32_t pdf_page_count);
+
+  // Gets the partial text from the PDF to be used for suggest. Schedules for
+  // the next page of text to be fetched, from the PDF in page order until
+  // either 1) all the text is received or 2) the character limit is reached.
+  // This method should only be called by GetPartialPdfText.
+  void GetPartialPdfTextCallback(uint32_t page_index,
+                                 uint32_t total_page_count,
+                                 uint32_t total_characters_retrieved,
+                                 const std::u16string& page_text);
 #endif  // BUILDFLAG(ENABLE_PDF)
 
   // The current state of the contextualization flow.
@@ -142,6 +166,18 @@ class LensSearchContextualizationController {
 
   // Indicates whether the user is currently on a context eligible page.
   bool is_page_context_eligible_ = true;
+
+  // The callback to run when the partial page text is retrieved. This is
+  // populated when FetchVisiblePageIndexAndGetPartialPdfText is called.
+  PdfPartialPageTextRetrievedCallback pdf_partial_page_text_retrieved_callback_;
+
+  // The partial representation of a PDF document. The element at a given
+  // index holds the text of the PDF page at the same index.
+  std::vector<std::u16string> pdf_pages_text_;
+
+  // The query controller to use for sending partial page content requests.
+  raw_ptr<lens::LensOverlayQueryController> lens_overlay_query_controller_ =
+      nullptr;
 
   // Owns this.
   const raw_ptr<LensSearchController> lens_search_controller_;

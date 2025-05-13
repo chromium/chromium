@@ -767,21 +767,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
       lens::MimeType primary_content_type,
       std::optional<uint32_t> page_count);
 
-#if BUILDFLAG(ENABLE_PDF)
-  // Fetches the visible page index from the PDF renderer and then starts the
-  // process of fetching the text from the PDF to be used for suggest signals.
-  void FetchVisiblePageIndexAndGetPartialPdfText(uint32_t page_count);
-
-  // Gets the partial text from the PDF to be used for suggest. Schedules for
-  // the next page of text to be fetched, from the PDF in page order until
-  // either 1) all the text is received or 2) the character limit is reached.
-  // This method should only be called by GetPartialPdfText.
-  void GetPartialPdfTextCallback(uint32_t page_index,
-                                 uint32_t total_page_count,
-                                 uint32_t total_characters_retrieved,
-                                 const std::u16string& page_text);
-#endif  // BUILDFLAG(ENABLE_PDF)
-
   // Creates the mojo bounding boxes for the significant regions.
   std::vector<lens::mojom::CenterRotatedBoxPtr> ConvertSignificantRegionBoxes(
       const std::vector<gfx::Rect>& all_bounds);
@@ -1057,6 +1042,10 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Notifies the entry point controller to update the state of the entry
   // points since the state of the overlay has changed.
   void UpdateEntryPointsState();
+
+  // Callback to run when the partial page text is retrieved from the PDF.
+  void OnPdfPartialPageTextRetrieved(
+      std::vector<std::u16string> pdf_pages_text);
 
   // Shorthand to grab the LensSearchboxController for this instance of Lens.
   lens::LensSearchboxController* GetLensSearchboxController();
