@@ -1964,11 +1964,13 @@ xsltSetSourceNodeFlags(xsltTransformContextPtr ctxt, xmlNodePtr node,
     switch (node->type) {
         case XML_DOCUMENT_NODE:
         case XML_HTML_DOCUMENT_NODE:
-            ((xmlDocPtr) node)->extra |= (flags << XSLT_SOURCE_NODE_SHIFT_32);
+            ((xmlDocPtr) node)->extra |=
+                ((unsigned) flags << XSLT_SOURCE_NODE_SHIFT_32);
             return 0;
 
         case XML_ATTRIBUTE_NODE:
-            ((xmlAttrPtr) node)->extra |= (flags << XSLT_SOURCE_NODE_SHIFT_32);
+            ((xmlAttrPtr) node)->extra |=
+                ((unsigned) flags << XSLT_SOURCE_NODE_SHIFT_32);
             return 0;
 
         case XML_ELEMENT_NODE:
@@ -1976,7 +1978,7 @@ xsltSetSourceNodeFlags(xsltTransformContextPtr ctxt, xmlNodePtr node,
         case XML_CDATA_SECTION_NODE:
         case XML_PI_NODE:
         case XML_COMMENT_NODE:
-            node->extra |= (flags << XSLT_SOURCE_NODE_SHIFT_16);
+            node->extra |= ((unsigned) flags << XSLT_SOURCE_NODE_SHIFT_16);
             return 0;
 
         default:
@@ -1998,11 +2000,13 @@ xsltClearSourceNodeFlags(xmlNodePtr node, int flags) {
     switch (node->type) {
         case XML_DOCUMENT_NODE:
         case XML_HTML_DOCUMENT_NODE:
-            ((xmlDocPtr) node)->extra &= ~(flags << XSLT_SOURCE_NODE_SHIFT_32);
+            ((xmlDocPtr) node)->extra &=
+                ~((unsigned) flags << XSLT_SOURCE_NODE_SHIFT_32);
             return 0;
 
         case XML_ATTRIBUTE_NODE:
-            ((xmlAttrPtr) node)->extra &= ~(flags << XSLT_SOURCE_NODE_SHIFT_32);
+            ((xmlAttrPtr) node)->extra &=
+                ~((unsigned) flags << XSLT_SOURCE_NODE_SHIFT_32);
             return 0;
 
         case XML_ELEMENT_NODE:
@@ -2010,7 +2014,7 @@ xsltClearSourceNodeFlags(xmlNodePtr node, int flags) {
         case XML_CDATA_SECTION_NODE:
         case XML_PI_NODE:
         case XML_COMMENT_NODE:
-            node->extra &= ~(flags << XSLT_SOURCE_NODE_SHIFT_16);
+            node->extra &= ~((unsigned) flags << XSLT_SOURCE_NODE_SHIFT_16);
             return 0;
 
         default:
