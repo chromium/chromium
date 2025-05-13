@@ -470,11 +470,12 @@ void PrefetchService::AddPrefetchContainerWithoutStartingPrefetch(
           std::move(owned_prefetch_container));
       if (UsePrefetchScheduler()) {
         scheduler_->NotifyAttributeMightChangedAndProgressAsync(
-            *prefetch_iter->second);
+            *prefetch_iter->second, /*should_progress=*/false);
       }
       break;
     case Action::kReplaceOldWithNew:
-      ResetPrefetchContainer(prefetch_iter->second->GetWeakPtr());
+      ResetPrefetchContainer(prefetch_iter->second->GetWeakPtr(),
+                             /*should_progress=*/false);
       owned_prefetches_[prefetch_container_key] =
           std::move(owned_prefetch_container);
       owned_prefetches_[prefetch_container_key]->OnAddedToPrefetchService();
@@ -1434,7 +1435,8 @@ void PrefetchService::MayReleasePrefetch(
 }
 
 void PrefetchService::ResetPrefetchContainer(
-    base::WeakPtr<PrefetchContainer> prefetch_container) {
+    base::WeakPtr<PrefetchContainer> prefetch_container,
+    bool should_progress) {
   CHECK(prefetch_container);
 
   if (!UsePrefetchScheduler()) {
@@ -1444,7 +1446,7 @@ void PrefetchService::ResetPrefetchContainer(
   } else {
     // Remove before calling `PrefetchContainer::dtor()` as `PrefetchScheduler`
     // manages them with weak pointers.
-    scheduler_->RemoveAndProgressAsync(*prefetch_container);
+    scheduler_->RemoveAndProgressAsync(*prefetch_container, should_progress);
   }
 
   auto it = owned_prefetches_.find(prefetch_container->key());
