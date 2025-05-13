@@ -79,10 +79,6 @@ bool MediaPosition::operator==(const MediaPosition& other) const {
   return GetPositionAtTime(now) == other.GetPositionAtTime(now);
 }
 
-bool MediaPosition::operator!=(const MediaPosition& other) const {
-  return !(*this == other);
-}
-
 std::string MediaPosition::ToString() const {
   return base::StringPrintf(
       "playback_rate=%f duration=%f current_time=%f end_of_media=%s",
