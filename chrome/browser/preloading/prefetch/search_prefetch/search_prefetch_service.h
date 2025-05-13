@@ -10,6 +10,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/containers/lru_cache.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -271,6 +272,9 @@ class SearchPrefetchService : public KeyedService,
   void MaybePreloadDictionary(const AutocompleteResult& result);
   void DeletePreloadedDictionaries();
 
+  void RecordInterceptionMetrics(const std::u16string& search_terms,
+                                 SearchPrefetchServingReason serving_status);
+
   // Prefetches that are started are stored using search terms as a key. Only
   // one prefetch should be started for a given search term until the old
   // prefetch expires.
@@ -294,6 +298,8 @@ class SearchPrefetchService : public KeyedService,
   // served from cache. The value is the prefetch URL in cache and the latest
   // serving time of the response.
   std::map<GURL, std::pair<GURL, base::Time>> prefetch_cache_;
+
+  base::LRUCache<std::u16string, base::Time> search_terms_cache_{50};
 
   mojo::PendingRemote<network::mojom::PreloadedSharedDictionaryInfoHandle>
       preloaded_shared_dictionaries_handle_;

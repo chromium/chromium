@@ -238,18 +238,29 @@ void SetIsNavigationInDomainCallback(content::PreloadingData* preloading_data) {
 
 struct SearchPrefetchService::SearchPrefetchServingReasonRecorder {
  public:
-  explicit SearchPrefetchServingReasonRecorder(bool for_prerender)
-      : for_prerender_(for_prerender) {}
+  // Passing the SearchPrefetchService pointer is optional. If it is passed,
+  // the recorder will ask the service to track the search terms it in its dtor.
+  explicit SearchPrefetchServingReasonRecorder(
+      bool for_prerender,
+      SearchPrefetchService* service = nullptr)
+      : for_prerender_(for_prerender), service_(service) {}
   ~SearchPrefetchServingReasonRecorder() {
     base::UmaHistogramEnumeration(
         for_prerender_
             ? "Omnibox.SearchPrefetch.PrefetchServingReason2.Prerender"
             : "Omnibox.SearchPrefetch.PrefetchServingReason2",
         reason_);
+    if (service_) {
+      service_->RecordInterceptionMetrics(search_terms_, reason_);
+    }
   }
 
-  SearchPrefetchServingReason reason_ = SearchPrefetchServingReason::kServed;
   const bool for_prerender_ = false;
+  // A method of SearchPrefetchService holds this instance, so it is safe to
+  // refer to it with pointer.
+  raw_ptr<SearchPrefetchService> service_;
+  SearchPrefetchServingReason reason_ = SearchPrefetchServingReason::kServed;
+  std::u16string search_terms_;
 };
 
 // static
@@ -542,7 +553,12 @@ SearchPrefetchURLLoader::RequestHandler
 SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
     const network::ResourceRequest& tentative_resource_request) {
   const GURL& navigation_url = tentative_resource_request.url;
-  SearchPrefetchServingReasonRecorder recorder(/*for_prerender=*/false);
+  SearchPrefetchServingReasonRecorder recorder(
+      /*for_prerender=*/false,
+      // Not to track back/forward style navigation.
+      tentative_resource_request.load_flags & net::LOAD_SKIP_CACHE_VALIDATION
+          ? nullptr
+          : this);
 
   auto iter =
       RetrieveSearchTermsInMemoryCache(tentative_resource_request, recorder);
@@ -1083,12 +1099,16 @@ SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
   }
 
   GURL canonical_search_url;
-  if (!HasCanonicalPreloadingOmniboxSearchURL(navigation_url, profile_,
-                                              &canonical_search_url)) {
+  std::u16string search_terms;
+  if (!HasCanonicalPreloadingOmniboxSearchURL(
+          navigation_url, profile_, &canonical_search_url, &search_terms)) {
     recorder.reason_ = SearchPrefetchServingReason::kNotDefaultSearchWithTerms;
     return prefetches_.end();
   }
-
+  // `HasCanonicalPreloadingOmniboxSearchURL` should return false if
+  // search_terms is empty.
+  CHECK(!search_terms.empty());
+  recorder.search_terms_ = search_terms;
   const auto& iter = prefetches_.find(canonical_search_url);
 
   // Return early if there is no prefetch found before checking for other
@@ -1245,4 +1265,37 @@ void SearchPrefetchService::MaybePreloadDictionary(
 
 void SearchPrefetchService::DeletePreloadedDictionaries() {
   preloaded_shared_dictionaries_handle_.reset();
+}
+
+void SearchPrefetchService::RecordInterceptionMetrics(
+    const std::u16string& search_terms,
+    SearchPrefetchServingReason serving_status) {
+  // Do not track empty search terms.
+  if (search_terms.empty()) {
+    return;
+  }
+  switch (serving_status) {
+    // Do not track non-DSE navigations.
+    case SearchPrefetchServingReason::kSearchEngineNotValid:
+    case SearchPrefetchServingReason::kJavascriptDisabled:
+    case SearchPrefetchServingReason::kNotDefaultSearchWithTerms:
+      return;
+    case SearchPrefetchServingReason::kServed:
+    case SearchPrefetchServingReason::kNoPrefetch:
+    case SearchPrefetchServingReason::kPrefetchWasForDifferentOrigin:
+    case SearchPrefetchServingReason::kRequestFailed:
+    case SearchPrefetchServingReason::kNotServedOtherReason:
+    case SearchPrefetchServingReason::kPostReloadFormOrLink:
+      break;
+    case SearchPrefetchServingReason::kRequestInFlightNotReady:
+      NOTREACHED();
+  }
+  auto iter = search_terms_cache_.Get(search_terms);
+  if (iter != search_terms_cache_.end()) {
+    base::UmaHistogramCustomTimes(
+        "Omnibox.SearchPrefetch.DuplicateSearchTermsAge",
+        base::Time::Now() - iter->second, base::Milliseconds(1),
+        base::Hours(10), 100);
+  }
+  search_terms_cache_.Put(search_terms, base::Time::Now());
 }
