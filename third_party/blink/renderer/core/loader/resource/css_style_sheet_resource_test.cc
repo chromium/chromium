@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
+#include "third_party/blink/renderer/core/css/style_sheet_list.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
@@ -258,6 +259,73 @@ TEST_F(CSSStyleSheetResourceSimTest, CachedWithDifferentMQEval) {
   Element* target2 = frame2_doc->getElementById(AtomicString("target"));
   ASSERT_TRUE(target2);
   EXPECT_EQ(target2->GetComputedStyle()->Opacity(), 0.3f);
+}
+
+// https://crbug.com/417406834
+TEST_F(CSSStyleSheetResourceSimTest, CopyOnWriteSharedContentsCrash) {
+  SimRequest main_resource("https://example.com", "text/html");
+  SimRequest::Params params;
+  params.response_http_headers = {{"Cache-Control", "max-age=3600"}};
+  SimSubresourceRequest css_resource("https://example.com/style.css",
+                                     "text/css", params);
+  SimRequest frame_resource("https://example.com/frame.html", "text/html");
+
+  LoadURL("https://example.com");
+
+  // This is intentionally in quirks mode, while the iframe's document
+  // is in standards mode. This is to make that we're using different
+  // CSSParserContexts against the same resource.
+  main_resource.Complete(R"HTML(
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css">
+    Some content
+    <iframe src="frame.html"></iframe>
+  )HTML");
+
+  test::RunPendingTasks();
+
+  css_resource.Complete(R"HTML(
+    div { color: green; }
+  )HTML");
+
+  // This frame exists to access style.css under a CSSParserContext which is
+  // different from the parent document's CSSParserContext.
+  frame_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <link rel="stylesheet" href="style.css">
+    <div>iframe</div>
+  )HTML");
+
+  test::RunPendingTasks();
+
+  ASSERT_EQ(2u, GetDocument().StyleSheets().length());
+  auto* sheet0 = To<CSSStyleSheet>(GetDocument().StyleSheets().item(0));
+  auto* sheet1 = To<CSSStyleSheet>(GetDocument().StyleSheets().item(1));
+
+  // Make sure CSSStyleRule wrappers exist. (Don't crash.)
+  for (wtf_size_t i = 0; i < sheet0->length(); ++i) {
+    ASSERT_TRUE(sheet0->ItemInternal(i));
+  }
+  for (wtf_size_t i = 0; i < sheet1->length(); ++i) {
+    ASSERT_TRUE(sheet1->ItemInternal(i));
+  }
+
+  EXPECT_EQ(sheet0->Contents(), sheet1->Contents());
+
+  DummyExceptionStateForTesting exception_state;
+  // Copy-on-write should occur here:
+  sheet1->insertRule("div { left:0; }", /*index=*/0u, exception_state);
+
+  // Access CSSStyleRule wrappers again. (Don't crash.)
+  for (wtf_size_t i = 0; i < sheet0->length(); ++i) {
+    ASSERT_TRUE(sheet0->ItemInternal(i));
+  }
+  for (wtf_size_t i = 0; i < sheet1->length(); ++i) {
+    ASSERT_TRUE(sheet1->ItemInternal(i));
+  }
+
+  // Copy-on-write should have happened:
+  EXPECT_NE(sheet0->Contents(), sheet1->Contents());
 }
 
 }  // namespace

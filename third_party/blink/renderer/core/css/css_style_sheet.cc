@@ -292,6 +292,7 @@ CSSStyleSheet::InspectorMutationScope::~InspectorMutationScope() {
 
 bool CSSStyleSheet::IsContentsShared() const {
   return contents_->IsUsedFromTextCache() ||
+         contents_->IsUsedFromResourceCache() ||
          contents_->IsReferencedFromResource();
 }
 

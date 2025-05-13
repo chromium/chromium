@@ -254,6 +254,8 @@ StyleSheetContents* CSSStyleSheetResource::CreateParsedStyleSheetFromCache(
   // adding, or removing stylesheets, while at the same time have different
   // media query evaluations in the different documents should be quite rare.
 
+  parsed_style_sheet_cache_->SetIsUsedFromResourceCache();
+
   DCHECK(!parsed_style_sheet_cache_->IsLoading());
   return parsed_style_sheet_cache_.Get();
 }
