@@ -408,6 +408,10 @@ bool NotificationChannelsProviderAndroid::SetWebsiteSetting(
   DCHECK_EQ(constraints.track_last_visit_for_autoexpiration(), false);
 
   ContentSetting setting = content_settings::ValueToContentSetting(value);
+  if (setting != CONTENT_SETTING_DEFAULT && setting != CONTENT_SETTING_ALLOW &&
+      setting != CONTENT_SETTING_BLOCK) {
+    return false;
+  }
   std::string origin_string = GetOriginStringFromPattern(primary_pattern);
   // Create a new pending channel for future GetRuleIterator() call. The
   // new channel should override the previous pending channel for the same
