@@ -48,6 +48,8 @@ void LoggerImpl::Log(base::Time event_time,
                      const std::string& source_file,
                      int source_line,
                      const std::string& message) {
+  VLOG(1) << log_source << ": " << message;
+
   if (!ShouldEnableDebugLogs()) {
     return;
   }

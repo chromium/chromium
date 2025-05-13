@@ -14,7 +14,6 @@
     if (logger && logger->ShouldEnableDebugLogs()) [[unlikely]] {              \
       logger->Log(base::Time::Now(), log_source, __FILE__, __LINE__, message); \
     }                                                                          \
-    VLOG(1) << "Data sharing flow event: " << message;                         \
   } while (0)
 
 #endif  // COMPONENTS_DATA_SHARING_PUBLIC_LOGGER_UTILS_H_
