@@ -297,6 +297,21 @@ BASE_FEATURE(kBocaSequentialSessionLoad,
              "BocaSequentialSessionLoad",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the updated lock / pause ui for boca.
+BASE_FEATURE(kBocaLockPauseUpdate,
+             "BocaLockPauseUpdate",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the updated nav settings ui for boca.
+BASE_FEATURE(kBocaNavSettingsDialog,
+             "BocaNavSettingsDialog",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the new caption toggle button for boca.
+BASE_FEATURE(kBocaCaptionToggle,
+             "BocaCaptionToggle",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCrosSwitcher, "CrosSwitcher", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Indicates whether the camera super resolution is supported. Note that this
@@ -3534,6 +3549,18 @@ bool IsBocaKeepSWAOpenOnSessionEndedEnabled() {
 
 bool IsBocaSequentialSessionLoadEnabled() {
   return base::FeatureList::IsEnabled(kBocaSequentialSessionLoad);
+}
+
+bool IsBocaLockPauseUpdateEnabled() {
+  return base::FeatureList::IsEnabled(kBocaLockPauseUpdate);
+}
+
+bool IsBocaNavSettingsDialogEnabled() {
+  return base::FeatureList::IsEnabled(kBocaNavSettingsDialog);
+}
+
+bool IsBocaCaptionToggleEnabled() {
+  return base::FeatureList::IsEnabled(kBocaCaptionToggle);
 }
 
 bool IsBrightnessControlInSettingsEnabled() {

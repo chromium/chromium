@@ -57,6 +57,11 @@ class ChromeBocaUIDelegate : public ash::boca::BocaUIDelegate {
       source->AddString("spotlightUrlTemplate",
                         features::kBocaSpotlightUrlTemplate.Get());
     }
+    source->AddBoolean("sessionControlsUpdate",
+                       features::IsBocaLockPauseUpdateEnabled());
+    source->AddBoolean("navSettingsDialog",
+                       features::IsBocaNavSettingsDialogEnabled());
+    source->AddBoolean("captionToggle", features::IsBocaCaptionToggleEnabled());
   }
 
  private:
