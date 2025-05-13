@@ -7,17 +7,23 @@ package org.chromium.chrome.test.transit.hub;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.util.Pair;
+import android.view.View;
+
+import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
+import org.chromium.base.test.transit.ViewSpec;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.CtaAppMenuFacility;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.tabmodel.TabCountChangedCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
+import org.chromium.ui.modelutil.MVCListAdapter;
 
 import java.util.List;
 
@@ -55,18 +61,26 @@ public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
                         itemDataMatcher(R.id.tab_list_editor_close_menu_item),
                         this::doCloseTabs);
 
+        // "Group tab(s)" or "Add tab(s) to new group"
+        ViewSpec<View> groupTabsViewSpec;
+        Matcher<MVCListAdapter.ListItem> groupTabsDataMatcher;
+        if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
+            groupTabsViewSpec =
+                    itemViewSpec(withText(String.format("Add %s to new group", tabOrTabs)));
+            groupTabsDataMatcher = itemDataMatcher(R.id.tab_list_editor_add_tab_to_group_menu_item);
+        } else {
+            groupTabsViewSpec = itemViewSpec(withText("Group " + tabOrTabs));
+            groupTabsDataMatcher = itemDataMatcher(R.id.tab_list_editor_group_menu_item);
+        }
         if (mListEditor.isAnyGroupSelected()) {
             mGroupWithoutDialogMenuItem =
                     items.declareItem(
-                            itemViewSpec(withText("Group " + tabOrTabs)),
-                            itemDataMatcher(R.id.tab_list_editor_group_menu_item),
+                            groupTabsViewSpec,
+                            groupTabsDataMatcher,
                             this::doGroupTabsWithoutDialog);
         } else {
             mGroupWithDialogMenuItem =
-                    items.declareItem(
-                            itemViewSpec(withText("Group " + tabOrTabs)),
-                            itemDataMatcher(R.id.tab_list_editor_group_menu_item),
-                            this::doGroupTabs);
+                    items.declareItem(groupTabsViewSpec, groupTabsDataMatcher, this::doGroupTabs);
         }
 
         items.declareStubItem(
