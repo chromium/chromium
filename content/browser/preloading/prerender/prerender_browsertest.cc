@@ -2798,6 +2798,48 @@ IN_PROC_BROWSER_TEST_F(PrerenderTargetHintEnabledBrowserTest,
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
 }
 
+// Tests that clicking a link annotated with "target=_blank" does not activate a
+// mismatched prerender url whose target_hint is "_blank" and the navigation
+// does not cancel the prerender.
+IN_PROC_BROWSER_TEST_F(
+    PrerenderTargetHintEnabledBrowserTest,
+    DoesNotActivateOnMismatchedLinkClick_TargetBlank_WithTargetHintBlank) {
+  const GURL initial_url = GetUrl("/simple_links.html");
+  const GURL prerendering_url = GetUrl("/title2.html?different");
+
+  // Navigate to an initial page which has a link other than `prerendering_url`.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Start prerendering `prerendering_url`.
+  FrameTreeNodeId host_id = prerender_helper()->AddPrerender(
+      prerendering_url, /*eagerness=*/std::nullopt, "_blank");
+  auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
+  ASSERT_NE(prerender_web_contents, web_contents_impl());
+  ExpectWebContentsIsForNewTabPrerendering(*prerender_web_contents);
+
+  // Click the link annotated with "target=_blank" but different from the
+  // prerendered url. This should not activate the prerendered page.
+  TestNavigationObserver nav_observer(GetUrl("/title2.html"));
+  nav_observer.StartWatchingNewWebContents();
+  test::PrerenderHostObserver prerender_observer(*prerender_web_contents,
+                                                 host_id);
+  const std::string kLinkClickScript = R"(
+      clickSameSiteNewWindowLink();
+  )";
+  EXPECT_TRUE(ExecJs(web_contents(), kLinkClickScript));
+  nav_observer.WaitForNavigationFinished();
+  EXPECT_FALSE(prerender_observer.was_activated());
+  EXPECT_FALSE(HasHostForUrl(prerendering_url));
+
+  // Navigating a different url than the prerendered url into a new tab should
+  // not cancel the prerender.
+  EXPECT_TRUE(prerender_helper()->HasNewTabHandle(host_id));
+
+  // The navigation occurred in a new WebContents, so the original WebContents
+  // should still be showing the initial trigger page.
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), initial_url);
+}
+
 // Tests that clicking a link annotated with "target=_blank" can activate a
 // prerender whose target_hint is "_blank" where the initiator page is in the
 // background when the speculation rules were added.
