@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -41,7 +42,9 @@ HistorySyncOptinUI::HistorySyncOptinUI(content::WebUI* web_ui)
        IDS_HISTORY_SYNC_OPT_IN_ACCEPT_BUTTON},
       {"historySyncOptInCancelButtonLabel",
        IDS_HISTORY_SYNC_OPT_IN_CANCEL_BUTTON},
-      {"historySyncOptInDescription", IDS_HISTORY_SYNC_OPT_IN_DESCRIPTION}};
+      {"historySyncOptInDescription", IDS_HISTORY_SYNC_OPT_IN_DESCRIPTION},
+  };
+
   source->AddLocalizedStrings(kLocalizedStrings);
   // Add avatar fallback value.
   source->AddString("accountPictureUrl",
@@ -59,10 +62,29 @@ void HistorySyncOptinUI::BindInterface(
   page_factory_receiver_.Bind(std::move(receiver));
 }
 
+void HistorySyncOptinUI::Initialize(Browser* browser) {
+  initialize_handler_callback_ =
+      base::BindOnce(&HistorySyncOptinUI::OnMojoHandlersReady,
+                     weak_ptr_factory_.GetWeakPtr(), browser);
+}
+
 void HistorySyncOptinUI::CreateHistorySyncOptinHandler(
     mojo::PendingRemote<history_sync_optin::mojom::Page> page,
     mojo::PendingReceiver<history_sync_optin::mojom::PageHandler> receiver) {
-  DCHECK(page);
+  CHECK(page);
+  CHECK(receiver);
+  CHECK(initialize_handler_callback_);
+  std::move(initialize_handler_callback_)
+      .Run(std::move(page), std::move(receiver));
+}
+
+void HistorySyncOptinUI::OnMojoHandlersReady(
+    Browser* browser,
+    mojo::PendingRemote<history_sync_optin::mojom::Page> page,
+    mojo::PendingReceiver<history_sync_optin::mojom::PageHandler> receiver) {
+  CHECK(!page_handler_);
+  // TODO(crbug.com/404807488): Pass the browser pointer to the handler.
+  // This is needed for closing the modal dialog.
   page_handler_ = std::make_unique<HistorySyncOptinHandler>(std::move(receiver),
                                                             std::move(page));
 }

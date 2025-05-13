@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_HISTORY_SYNC_OPTIN_HISTORY_SYNC_OPTIN_UI_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
@@ -14,6 +15,7 @@
 
 class HistorySyncOptinHandler;
 class HistorySyncOptinUI;
+class Browser;
 
 class HistorySyncOptinUIConfig
     : public content::DefaultWebUIConfig<HistorySyncOptinUI> {
@@ -43,6 +45,9 @@ class HistorySyncOptinUI
       mojo::PendingReceiver<history_sync_optin::mojom::PageHandlerFactory>
           receiver);
 
+  // Prepares the information to be given to the handler once ready.
+  void Initialize(Browser* browser);
+
  private:
   // history_sync_optin::mojom::PageHandlerFactory:
   void CreateHistorySyncOptinHandler(
@@ -50,10 +55,23 @@ class HistorySyncOptinUI
       mojo::PendingReceiver<history_sync_optin::mojom::PageHandler> receiver)
       override;
 
-  std::unique_ptr<HistorySyncOptinHandler> page_handler_;
+  // Callback awaiting `CreateHistorySyncOptinHandler` to create the handlers
+  // with all the needed information to display.
+  void OnMojoHandlersReady(
+      Browser* browser,
+      mojo::PendingRemote<history_sync_optin::mojom::Page> page,
+      mojo::PendingReceiver<history_sync_optin::mojom::PageHandler> receiver);
 
+  // Callback that temporarily holds the information to be passed onto the
+  // handler. The callback is called once the mojo handlers are available.
+  base::OnceCallback<void(
+      mojo::PendingRemote<history_sync_optin::mojom::Page>,
+      mojo::PendingReceiver<history_sync_optin::mojom::PageHandler>)>
+      initialize_handler_callback_;
+  std::unique_ptr<HistorySyncOptinHandler> page_handler_;
   mojo::Receiver<history_sync_optin::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
+  base::WeakPtrFactory<HistorySyncOptinUI> weak_ptr_factory_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

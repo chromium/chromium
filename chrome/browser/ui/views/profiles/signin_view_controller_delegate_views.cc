@@ -63,6 +63,10 @@
 #include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation_ui.h"
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin_ui.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 namespace {
 
 const int kModalDialogWidth = 448;
@@ -134,6 +138,28 @@ SigninViewControllerDelegateViews::CreateSyncConfirmationWebView(
       GetSyncConfirmationDialogPreferredHeight(browser->profile()),
       kSyncConfirmationDialogWidth, InitializeSigninWebDialogUI(true));
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+std::unique_ptr<views::WebView>
+SigninViewControllerDelegateViews::CreateHistorySyncOptInWebView(
+    Browser* browser) {
+  GURL url = GURL(chrome::kChromeUIHistorySyncOptinURL);
+  // TODO(crbug.com/404807488): Height to be adjusted dynamically on the dialog
+  // based on the contents' size.
+  int height = 300;
+  auto web_view = CreateDialogWebView(browser, url, height, kModalDialogWidth,
+                                      InitializeSigninWebDialogUI(false));
+
+  CHECK(web_view);
+  HistorySyncOptinUI* web_ui = web_view->GetWebContents()
+                                   ->GetWebUI()
+                                   ->GetController()
+                                   ->GetAs<HistorySyncOptinUI>();
+  DCHECK(web_ui);
+  web_ui->Initialize(browser);
+  return web_view;
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 // static
 std::unique_ptr<views::WebView>
@@ -514,6 +540,21 @@ SigninViewControllerDelegate::CreateSyncConfirmationDelegate(
       browser, ui::mojom::ModalType::kWindow, true, false,
       /*animate_on_resize=*/true);
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// static
+SigninViewControllerDelegate*
+SigninViewControllerDelegate::CreateSyncHistoryOptInDelegate(Browser* browser) {
+  auto content_view =
+      SigninViewControllerDelegateViews::CreateHistorySyncOptInWebView(browser);
+  return new SigninViewControllerDelegateViews(
+      std::move(content_view), browser, ui::mojom::ModalType::kWindow,
+      // TODO(crbug.com/404807488): Update wait for size once dynamic sizing is
+      // implemented for the view.
+      /*wait_for_size=*/false, /*should_show_close_button=*/false,
+      /*animate_on_resize=*/true);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 // static
 SigninViewControllerDelegate*

@@ -418,6 +418,14 @@ void ProfileMenuView::OnSigninButtonClicked(
   }
   GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // TODO(crbug.com/404807488): Update the button and the dialog strings.
+  if (base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin)) {
+    browser()->signin_view_controller()->ShowModalHistorySyncOptInDialog();
+    return;
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
   if (button_type == ActionableItem::kSigninReauthButton) {
     // The reauth button does not trigger a sync opt in.
     signin_ui_util::ShowReauthForAccount(browser()->profile(), account.email,

@@ -32,6 +32,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -440,6 +441,16 @@ void SigninViewController::ShowModalSyncConfirmationDialog(
           is_sync_promo),
       GetOnModalDialogClosedCallback());
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+void SigninViewController::ShowModalHistorySyncOptInDialog() {
+  CHECK(base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin));
+  CloseModalSignin();
+  dialog_ = std::make_unique<SigninModalDialogImpl>(
+      SigninViewControllerDelegate::CreateSyncHistoryOptInDelegate(browser_),
+      GetOnModalDialogClosedCallback());
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 void SigninViewController::ShowModalManagedUserNoticeDialog(
     std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>

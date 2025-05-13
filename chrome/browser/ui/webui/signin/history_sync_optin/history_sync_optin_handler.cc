@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/ui/browser.h"
 
 HistorySyncOptinHandler::HistorySyncOptinHandler(
     mojo::PendingReceiver<history_sync_optin::mojom::PageHandler> receiver,
