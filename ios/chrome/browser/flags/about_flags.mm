@@ -2675,7 +2675,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"colorful-tab-group", flag_descriptions::kColorfulTabGroupName,
      flag_descriptions::kColorfulTabGroupDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kColorfulTabGroup)},
-
+    {"lens-load-aim-in-lens-result-page",
+     flag_descriptions::kLensLoadAIMInLensResultPageName,
+     flag_descriptions::kLensLoadAIMInLensResultPageDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensLoadAIMInLensResultPage)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

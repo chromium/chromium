@@ -453,6 +453,9 @@ extern const char kLensGestureTextSelectionDisabledDescription[];
 extern const char kLensInkMultiSampleModeDisabledName[];
 extern const char kLensInkMultiSampleModeDisabledDescription[];
 
+extern const char kLensLoadAIMInLensResultPageName[];
+extern const char kLensLoadAIMInLensResultPageDescription[];
+
 extern const char kLensOverlayForceShowOnboardingScreenName[];
 extern const char kLensOverlayForceShowOnboardingScreenDescription[];
 

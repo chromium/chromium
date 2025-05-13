@@ -6100,6 +6100,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "lens-load-aim-in-lens-result-page",
+    "owners": [ "cmyang@google.com", "lens-chrome@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "lens-overlay-alternative-onboarding",
     "owners": [ "stkhapugin@chromium.org", "christianxu@chromium.org", "lens-chrome@google.com" ],
     "expiry_milestone": 140

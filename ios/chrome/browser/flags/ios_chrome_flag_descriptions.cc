@@ -779,6 +779,11 @@ const char kLensInkMultiSampleModeDisabledName[] =
 const char kLensInkMultiSampleModeDisabledDescription[] =
     "When disabled, turns off multi-sample mode and uses less memory.";
 
+const char kLensLoadAIMInLensResultPageName[] =
+    "Enable loading AIM in the Lens result page";
+const char kLensLoadAIMInLensResultPageDescription[] =
+    "Opens in Lens result page rather than a new tab.";
+
 extern const char kLensOverlayAlternativeOnboardingName[] =
     "Lens Overlay Onboarding";
 extern const char kLensOverlayAlternativeOnboardingDescription[] =

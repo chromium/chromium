@@ -19,6 +19,9 @@ bool IsLensOverlaySRP(const GURL& url);
 /// Whether the `url` is a lens multimodal SRP.
 bool IsLensMultimodalSRP(const GURL& url);
 
+/// Whether the `url` is a lens AIM SRP.
+bool IsLensAIMSRP(const GURL& url);
+
 /// Returns the search tearm of the lens overlay SRP.
 std::string ExtractQueryFromLensOverlaySRP(const GURL& url);
 

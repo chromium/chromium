@@ -80,7 +80,9 @@ BOOL URLHasLensRequestQueryParam(const GURL& URL) {
 /// them out explicitly.
 GURL URLByRemovingLensSurfaceParamIfNecessary(const GURL& URL) {
   // If not a finance or flights URL, do nothing
-  if (URLIsFinance(URL) || URLIsFlights(URL) || URLIsShopping(URL)) {
+  if (URLIsFinance(URL) || URLIsFlights(URL) || URLIsShopping(URL) ||
+      (lens::IsLensAIMSRP(URL) &&
+       !base::FeatureList::IsEnabled(kLensLoadAIMInLensResultPage))) {
     return net::AppendOrReplaceQueryParameter(URL, "lns_surface", std::nullopt);
   }
 
@@ -323,6 +325,12 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
       return;
     }
 
+    [self.delegate lensResultPageOpenURLInNewTabRequsted:URL];
+    [self.delegate
+         lensResultPageMediator:self
+        didOpenNewTabFromSource:lens::LensOverlayNewTabSource::kWebNavigation];
+  } else if (lens::IsLensAIMSRP(URL) &&
+             !base::FeatureList::IsEnabled(kLensLoadAIMInLensResultPage)) {
     [self.delegate lensResultPageOpenURLInNewTabRequsted:URL];
     [self.delegate
          lensResultPageMediator:self

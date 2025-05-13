@@ -57,6 +57,16 @@ bool IsLensMultimodalSRP(const GURL& url) {
          has_unified_drilldown_param && lens_surface == "4" && udm == "24";
 }
 
+bool IsLensAIMSRP(const GURL& url) {
+  if (!IsGoogleHostURL(url)) {
+    return false;
+  }
+  std::string udm;
+  bool has_unified_drilldown_param = net::GetValueForKeyInQuery(
+      url, lens::kUnifiedDrillDownQueryParameter, &udm);
+  return has_unified_drilldown_param && udm == "50";
+}
+
 std::string ExtractQueryFromLensOverlaySRP(const GURL& url) {
   std::string search_term = "";
   net::GetValueForKeyInQuery(url, "q", &search_term);
