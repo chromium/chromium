@@ -8053,7 +8053,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.Startup.CreationTime.StartChromiumLocked{StartupMode}"
-    units="ms" expires_after="2025-12-31">
+    units="ms" expires_after="never">
+<!-- expires-never: Guardrail metric for WebView startup performance. -->
+
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -8072,6 +8074,9 @@ chromium-metrics-reviews@google.com.
     This histogram is recorded in the last step of chromium init and so, is not
     recorded when init does not complete for any reason or if init had been
     completed in previous runs.
+
+    This histogram is of special interest, do not change its semantics or retire
+    it without talking to the owners first.
   </summary>
   <token key="StartupMode" variants="WebViewChromiumStartupMode"/>
 </histogram>
