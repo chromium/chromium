@@ -257,21 +257,6 @@ pp_set.add_printer('std::optional', '^std::__Cr::optional<.*>$',
                    StdOptionalPrinter)
 
 
-class ClampedNumericPrinter(Printer):
-  type_re = r'^base::internal::ClampedNumeric<(.*)>$'
-
-  def to_string(self):
-    m = type_re.search(self.val.type)
-    if m is None:
-      return self.val['value']
-    return '(%s) %s' % (m.group(1), self.val['value_'])
-
-
-pp_set.add_printer('base::internal::ClampedNumeric',
-                   '^base::internal::ClampedNumeric<.*>$',
-                   ClampedNumericPrinter)
-
-
 class TimeDeltaPrinter(object):
 
   def __init__(self, val):
