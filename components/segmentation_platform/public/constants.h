@@ -264,6 +264,7 @@ const char kFedCmPerClientClickthroughRate[] = "per_client_clickthrough_rate";
 const char kFedCmPerImpressionClickthroughRate[] =
     "per_impression_clickthrough_rate";
 const char kFedCmLikelyToSignin[] = "likely_to_signin";
+const char kFedCmLikelyInsufficientData[] = "likely_insufficient_data";
 
 }  // namespace segmentation_platform
 

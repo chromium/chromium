@@ -51,11 +51,12 @@ class IdentityDialogController
   // values at the end. This enum should be kept in sync with FedCmUserAction in
   // tools/metrics/histograms/enums.xml.
   enum class UserAction {
-    kSuccess = 0,
+    // kSuccess = 0,  // Deprecated.
     kIgnored = 1,
     kClosed = 2,
+    kSuccess = 3,
 
-    kMaxValue = kClosed
+    kMaxValue = kSuccess
   };
 
   // content::IdentityRequestDelegate

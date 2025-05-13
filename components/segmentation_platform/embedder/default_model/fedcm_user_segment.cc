@@ -21,7 +21,8 @@ namespace {
 using proto::SegmentId;
 
 // Default parameters for FedCM user model.
-constexpr SegmentId kFedCmUserSegmentId = SegmentId::FEDCM_USER;
+constexpr SegmentId kFedCmUserSegmentId =
+    SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEDCM_USER;
 // Store 28 buckets of input data (28 days).
 constexpr int64_t kFedCmUserSignalStorageLength = 28;
 // Collect signals immediately.
