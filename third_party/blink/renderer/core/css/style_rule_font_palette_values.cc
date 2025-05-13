@@ -101,7 +101,7 @@ StyleRuleFontPaletteValues::GetOverrideColorsAsVector(
             DynamicTo<cssvalue::CSSColor>(override_pair.Second())) {
       return css_color->Value();
     }
-    // TODO(crbug.com/417172068): The code above needs to call
+    // TODO(crbug.com/417398613): The code above needs to call
     // ResolveColorValue() with an appropriate context to resolve all kinds of
     // absolute colors here.
     // Ignore complex colors for now to avoid crashing.
