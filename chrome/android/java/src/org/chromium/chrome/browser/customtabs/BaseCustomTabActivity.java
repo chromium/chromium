@@ -656,6 +656,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                         getCloseButtonVisibilityManager(),
                         getCustomTabBrowserControlsVisibilityDelegate(),
                         getCustomTabToolbarColorController(),
+                        getAppHeaderCoordinator(),
                         getCustomTabCompositorContentInitializer());
 
         CustomTabIntentHandlingStrategy customTabIntentHandlingStrategy =

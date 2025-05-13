@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
 import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION_END;
-import static androidx.browser.customtabs.CustomTabsIntent.NO_TITLE;
 
 import static org.chromium.base.MathUtils.interpolate;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType.INCOGNITO;
@@ -71,6 +70,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.TitleVisibility;
 import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.customtabs.features.CustomTabDimensionUtils;
 import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingDelegate;
@@ -498,7 +498,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         if (mLocationBar.mOmniboxEnabled) {
             locationBarMinWidth +=
                     getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
-        } else if (mIntentDataProvider.getTitleVisibilityState() == NO_TITLE) {
+        } else if (mIntentDataProvider.getTitleVisibilityState() == TitleVisibility.HIDDEN) {
             locationBarMinWidth +=
                     getResources().getDimensionPixelSize(R.dimen.custom_tabs_security_icon_width);
         }

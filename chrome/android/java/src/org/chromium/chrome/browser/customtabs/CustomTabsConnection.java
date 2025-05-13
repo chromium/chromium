@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.SessionHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserCallbackWrapper;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.TitleVisibility;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.customtabs.ClientManager.CalledWarmup;
@@ -2184,9 +2185,10 @@ public class CustomTabsConnection {
     }
 
     /** Specifies what content should be presented by the CustomTabs instance in location bar. */
-    public int getTitleVisibilityState(BrowserServicesIntentDataProvider intentData) {
+    public @TitleVisibility int getTitleVisibilityState(
+            BrowserServicesIntentDataProvider intentData) {
         if (shouldEnableOmniboxForIntent(intentData)) {
-            return CustomTabsIntent.NO_TITLE;
+            return CustomTabIntentDataProvider.TitleVisibility.HIDDEN;
         }
         return intentData.getTitleVisibilityState();
     }

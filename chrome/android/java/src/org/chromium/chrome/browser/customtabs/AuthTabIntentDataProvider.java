@@ -153,8 +153,8 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
     }
 
     @Override
-    public int getTitleVisibilityState() {
-        return CustomTabsIntent.SHOW_PAGE_TITLE;
+    public @TitleVisibility int getTitleVisibilityState() {
+        return TitleVisibility.VISIBLE;
     }
 
     @Override

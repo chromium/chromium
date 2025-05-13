@@ -88,11 +88,14 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
         mShowShareItem =
                 IntentUtils.safeGetBooleanExtra(
                         intent, CustomTabsIntent.EXTRA_DEFAULT_SHARE_MENU_ITEM, false);
-        mTitleVisibilityState =
+        int intentVisibilityState =
                 IntentUtils.safeGetIntExtra(
                         intent,
                         CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE,
                         CustomTabsIntent.NO_TITLE);
+        mTitleVisibilityState =
+                BrowserServicesIntentDataProvider.customTabIntentTitleBarVisibility(
+                        intentVisibilityState, false);
 
         mUiType = getUiType(intent);
         updateExtraMenuItemsIfNecessary(intent);
@@ -305,7 +308,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     }
 
     @Override
-    public int getTitleVisibilityState() {
+    public @TitleVisibility int getTitleVisibilityState() {
         return mTitleVisibilityState;
     }
 

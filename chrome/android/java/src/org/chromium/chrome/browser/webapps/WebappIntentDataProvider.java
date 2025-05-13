@@ -14,7 +14,6 @@ import android.view.ContextThemeWrapper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode.DefaultMode;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode.ImmersiveMode;
@@ -133,8 +132,8 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     }
 
     @Override
-    public int getTitleVisibilityState() {
-        return CustomTabsIntent.SHOW_PAGE_TITLE;
+    public @TitleVisibility int getTitleVisibilityState() {
+        return TitleVisibility.VISIBLE;
     }
 
     @Override

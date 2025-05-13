@@ -39,6 +39,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.TitleVisibility;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.TestActivity;
@@ -85,7 +86,7 @@ public class AuthTabIntentDataProviderUnitTest {
                 mIntentDataProvider.shouldEnableUrlBarHiding());
         assertEquals(
                 "Page title should be visible.",
-                CustomTabsIntent.SHOW_PAGE_TITLE,
+                TitleVisibility.VISIBLE,
                 mIntentDataProvider.getTitleVisibilityState());
         assertEquals(
                 "Ui type should be AUTH_TAB.",

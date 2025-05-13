@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.url.GURL;
 
@@ -70,6 +71,7 @@ public class CustomTabToolbarCoordinatorUnitTest {
     @Mock private PendingIntent mPendingIntent;
     @Mock private Activity mActivity;
     @Mock private ToolbarManager mToolbarManager;
+    @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
 
     private Activity mActivityForResources;
     private CustomTabActivityTabController mTabController;
@@ -91,6 +93,7 @@ public class CustomTabToolbarCoordinatorUnitTest {
                         mCloseButtonVisibilityManager,
                         mVisibilityDelegate,
                         mToolbarColorController,
+                        mDesktopWindowStateManager,
                         mCompositorContentInitializer);
 
         ShareDelegateSupplier.setInstanceForTesting(mShareDelegateSupplier);

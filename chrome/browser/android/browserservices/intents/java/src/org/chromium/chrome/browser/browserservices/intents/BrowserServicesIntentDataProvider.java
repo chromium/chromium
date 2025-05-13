@@ -106,6 +106,40 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
+     * Defines whether the page title on the toolbar should be Visible, Hidden, or Visible only in
+     * Desktop Mode.
+     */
+    @IntDef({TitleVisibility.HIDDEN, TitleVisibility.VISIBLE, TitleVisibility.VISIBLE_IN_DESKTOP})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface TitleVisibility {
+        // Always hide
+        int HIDDEN = 0;
+        // Always show
+        int VISIBLE = 1;
+        // Only show in Desktop Mode
+        int VISIBLE_IN_DESKTOP = 2;
+    }
+
+    /**
+     * Converts from AndroidX's {@link CustomTabsIntent} values of title bar visibility to {@link
+     * TitleVisibility}.
+     *
+     * @see CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE
+     */
+    public static @TitleVisibility int customTabIntentTitleBarVisibility(
+            int intentValue, boolean isTWA) {
+        switch (intentValue) {
+            case CustomTabsIntent.NO_TITLE:
+                if (isTWA) return TitleVisibility.VISIBLE_IN_DESKTOP;
+                else return TitleVisibility.HIDDEN;
+            case CustomTabsIntent.SHOW_PAGE_TITLE:
+                return TitleVisibility.VISIBLE;
+            default:
+                return TitleVisibility.HIDDEN;
+        }
+    }
+
+    /**
      * Side sheet's default slide-in behavior. Same as {@link
      * ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE}.
      */
@@ -237,8 +271,8 @@ public abstract class BrowserServicesIntentDataProvider {
     /**
      * @return The title visibility state for the toolbar.
      */
-    public int getTitleVisibilityState() {
-        return CustomTabsIntent.NO_TITLE;
+    public @TitleVisibility int getTitleVisibilityState() {
+        return TitleVisibility.HIDDEN;
     }
 
     /**
