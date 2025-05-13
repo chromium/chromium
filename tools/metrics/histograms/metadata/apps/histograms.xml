@@ -229,7 +229,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppPreloadService.ServerResponseCodes"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-09-07">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-11-09">
   <owner>ovn@google.com</owner>
   <owner>cros-web-apps-team@google.com</owner>
   <summary>
