@@ -249,15 +249,17 @@ void SetNote(std::vector<PasswordNote>& notes,
                                     &PasswordNote::unique_display_name);
   // if the old note doesn't exist, the note is just created.
   if (note_itr == notes.end()) {
-    notes.emplace_back(new_note_value, base::Time::Now());
+    notes.emplace_back(unique_display_name, new_note_value, base::Time::Now(),
+                       /*hide_by_default=*/false);
     return;
   }
-  // Note existed, but it was empty.
+
+  // Note existed, but it was empty, so set date_created in addition to
+  // changing the value.
   if (note_itr->value.empty()) {
-    note_itr->value = new_note_value;
     note_itr->date_created = base::Time::Now();
-    return;
   }
+
   note_itr->value = new_note_value;
 }
 

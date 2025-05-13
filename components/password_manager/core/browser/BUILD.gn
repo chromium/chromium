@@ -484,6 +484,7 @@ source_set("unit_tests") {
     "password_form_manager_unittest.cc",
     "password_form_metrics_recorder_unittest.cc",
     "password_form_prediction_waiter_unittest.cc",
+    "password_form_unittest.cc",
     "password_generation_frame_helper_unittest.cc",
     "password_generation_manager_unittest.cc",
     "password_hash_data_unittest.cc",
