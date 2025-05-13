@@ -24,18 +24,21 @@ import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 
 /** Tests for the Paint Preview Tab Manager. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class LongScreenshotsTabServiceTest {
     @Rule
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public TemporaryFolder mTemporaryFolder = new TemporaryFolder();
 
+    private WebPageStation mInitialPage;
     private Tab mTab;
     private LongScreenshotsTabService mLongScreenshotsTabService;
     private TestCaptureProcessor mProcessor;
@@ -67,9 +70,12 @@ public class LongScreenshotsTabServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityWithURL(
-                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html"));
-        mTab = mActivityTestRule.getActivity().getActivityTab();
+        mInitialPage =
+                mActivityTestRule.startOnUrl(
+                        mActivityTestRule
+                                .getTestServer()
+                                .getURL("/chrome/test/data/android/about.html"));
+        mTab = mInitialPage.loadedTabElement.get();
         mProcessor = new TestCaptureProcessor();
 
         ThreadUtils.runOnUiThreadBlocking(

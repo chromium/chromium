@@ -30,7 +30,8 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.FileProviderHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.browser_ui.share.ClipboardImageFileProvider;
 import org.chromium.ui.base.Clipboard;
 
@@ -44,7 +45,8 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ClipboardImageFileProviderTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final long WAIT_TIMEOUT_SECONDS = 30L;
     private static final String TEST_PNG_IMAGE_FILE_EXTENSION = ".png";
@@ -79,7 +81,7 @@ public class ClipboardImageFileProviderTest {
         bitmap.compress(Bitmap.CompressFormat.PNG, /*quality = (0-100) */ 100, baos);
         mTestImageData = baos.toByteArray();
 
-        mActivityTestRule.startMainActivityFromLauncher();
+        mActivityTestRule.startFromLauncher();
         FileProviderUtils.setFileProviderUtil(new FileProviderHelper());
     }
 
