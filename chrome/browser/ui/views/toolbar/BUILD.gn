@@ -184,4 +184,7 @@ source_set("toolbar") {
       "//chromeos/components/mgs",
     ]
   }
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/views/zoom" ]
+  }
 }

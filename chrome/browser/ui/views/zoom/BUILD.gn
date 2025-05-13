@@ -4,7 +4,23 @@
 
 assert(!is_android, "Zoom Page actions are for desktop platforms only")
 
-# TODO(crbug.com/376284060): Fix cycle dependency with chrome/browser/ui.
+source_set("zoom") {
+  sources = [ "zoom_view_controller.h" ]
+
+  public_deps = [ "//components/tabs:public" ]
+}
+
+source_set("impl") {
+  sources = [ "zoom_view_controller.cc" ]
+
+  deps = [
+    ":zoom",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/views/page_action",
+    "//components/zoom",
+  ]
+}
 
 source_set("interactive_ui_tests") {
   testonly = true
@@ -19,7 +35,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/views/page_action",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/test:test_support_ui",
-    "//components/zoom:zoom",
+    "//components/zoom",
     "//content/test:test_support",
     "//ui/base:test_support",
   ]

@@ -386,6 +386,10 @@ if (!is_android) {
     if (enable_glic) {
       deps += [ "//chrome/browser/glic" ]
     }
+
+    if (!is_android) {
+      deps += [ "//chrome/browser/ui/views/zoom" ]
+    }
   }
 
   # This is a separate component to avoid possible circular deps.
