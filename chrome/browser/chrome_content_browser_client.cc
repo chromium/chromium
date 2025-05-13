@@ -1320,6 +1320,18 @@ ProfileSelections GetHumanProfileSelections() {
       .Build();
 }
 
+bool IsDefaultSearchEngine(Profile* profile, const GURL& url) {
+  auto* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile);
+
+  const TemplateURL* default_search_engine =
+      template_url_service->GetDefaultSearchProvider();
+
+  return default_search_engine &&
+         template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
+             url);
+}
+
 }  // namespace
 
 // static
@@ -1915,6 +1927,22 @@ bool ChromeContentBrowserClient::ShouldUseProcessPerSite(
   // Non-extension, non-NTP URLs should generally use process-per-site-instance
   // (rather than process-per-site).
   return false;
+}
+
+bool ChromeContentBrowserClient::
+    ShouldReuseExistingProcessForNewMainFrameSiteInstance(
+        content::BrowserContext* browser_context,
+        const GURL& site_instance_original_url) {
+  // When `kProcessPerSiteForDSE` is disabled,
+  // `ProcessPerSiteUpToMainFrameThreshold` can be used for any site.
+  if (!base::FeatureList::IsEnabled(features::kProcessPerSiteForDSE)) {
+    return true;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  CHECK(profile);
+
+  return IsDefaultSearchEngine(profile, site_instance_original_url);
 }
 
 bool ChromeContentBrowserClient::ShouldAllowProcessPerSiteForMultipleMainFrames(

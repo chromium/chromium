@@ -1048,7 +1048,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="SiteIsolation.ProcessPerSiteWithMainFrameThreshold.BlockReason"
     enum="ProcessPerSiteWithMainFrameThresholdBlockReason"
-    expires_after="2024-10-30">
+    expires_after="2025-06-07">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>

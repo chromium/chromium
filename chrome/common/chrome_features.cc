@@ -1438,6 +1438,14 @@ BASE_FEATURE(kProcessPerSiteSkipEnterpriseUsers,
              "ProcessPerSiteSkipEnterpriseUsers",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Restricts "ProcessPerSiteUpToMainFrameThreshold" to the default search
+// engine. Has no effect if "ProcessPerSiteUpToMainFrameThreshold" is disabled.
+// Note: The "ProcessPerSiteUpToMainFrameThreshold" feature is defined in
+// //content.
+BASE_FEATURE(kProcessPerSiteForDSE,
+             "ProcessPerSiteForDSE",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_CHROMEOS)
 // Enables the SkyVault (cloud-first) changes, some of which are also controlled
 // by policies: removing local storage, saving downloads and screen captures to

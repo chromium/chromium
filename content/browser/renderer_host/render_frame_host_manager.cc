@@ -365,7 +365,8 @@ enum class ProcessPerSiteWithMainFrameThresholdBlockReason {
   kDoesNotRequireDedicatedProcess = 3,
   kIsIpAddressOrLocalHost = 4,
   kSchemeIsNotHttpOrHttps = 5,
-  kMaxValue = kSchemeIsNotHttpOrHttps,
+  kEmbedderDisallowedReuseForUrl = 6,
+  kMaxValue = kEmbedderDisallowedReuseForUrl,
 };
 
 void RecordProcessPerSiteWithMainFrameThresholdBlockReason(
@@ -380,7 +381,8 @@ void RecordProcessPerSiteWithMainFrameThresholdBlockReason(
 // the process can host.
 void UpdateProcessReusePolicyForProcessPerSiteWithMainFrameThreshold(
     SiteInstanceImpl* site_instance,
-    FrameTreeNode* frame_tree_node) {
+    FrameTreeNode* frame_tree_node,
+    bool is_new_site_instance) {
   if (!GetContentClient()
            ->browser()
            ->ShouldAllowProcessPerSiteForMultipleMainFrames(
@@ -392,6 +394,12 @@ void UpdateProcessReusePolicyForProcessPerSiteWithMainFrameThreshold(
     return;
   }
   if (!frame_tree_node->IsOutermostMainFrame()) {
+    return;
+  }
+  // This policy applies only to new main frame SiteInstances. This ensures
+  // contextual checks (like embedder preference via original_url) are reliable
+  // and avoids conflicts with existing SiteInstance process logic (e.g., DSE).
+  if (!is_new_site_instance) {
     return;
   }
   if (base::FeatureList::IsEnabled(features::kDisableProcessReuse)) {
@@ -433,6 +441,22 @@ void UpdateProcessReusePolicyForProcessPerSiteWithMainFrameThreshold(
     RecordProcessPerSiteWithMainFrameThresholdBlockReason(
         ProcessPerSiteWithMainFrameThresholdBlockReason::
             kSchemeIsNotHttpOrHttps);
+    return;
+  }
+
+  // Check embedder preference for reusing the process for this main frame
+  // SiteInstance. Its original_url() allows path-specific embedder decisions.
+  // This is most reliable for initial navigations in new SiteInstances where
+  // original_url() accurately reflects the intended target. Return if the
+  // embedder does not prefer reuse here.
+  if (!GetContentClient()
+           ->browser()
+           ->ShouldReuseExistingProcessForNewMainFrameSiteInstance(
+               site_instance->GetBrowserContext(),
+               site_instance->original_url())) {
+    RecordProcessPerSiteWithMainFrameThresholdBlockReason(
+        ProcessPerSiteWithMainFrameThresholdBlockReason::
+            kEmbedderDisallowedReuseForUrl);
     return;
   }
 
@@ -670,8 +694,14 @@ void RenderFrameHostManager::InitRoot(
               : site_instance->GetBrowsingInstanceId());
   browsing_context_state->CommitFramePolicy(initial_main_frame_policy);
   browsing_context_state->SetFrameName(name, "");
+  // Determine if the SiteInstance should be treated as "new" for the purpose of
+  // initializing its process reuse policy. We approximate this by checking if
+  // it already has an associated process. A SiteInstance reused via
+  // window.open(), for example, might already have a process and thus wouldn't
+  // be "new" here.
+  const bool is_new_site_instance_for_init_root = !site_instance->HasProcess();
   UpdateProcessReusePolicyForProcessPerSiteWithMainFrameThreshold(
-      site_instance, frame_tree_node_);
+      site_instance, frame_tree_node_, is_new_site_instance_for_init_root);
   SetRenderFrameHost(CreateRenderFrameHost(
       CreateFrameCase::kInitRoot, site_instance,
       /*frame_routing_id=*/MSG_ROUTING_NONE,
@@ -3013,6 +3043,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
 
   scoped_refptr<SiteInstanceImpl> new_instance = ConvertToSiteInstance(
       new_instance_descriptor, candidate_instance, source_instance);
+
   DCHECK(IsSiteInstanceCompatibleWithWebExposedIsolation(
       new_instance.get(), dest_url_info.web_exposed_isolation_info));
   // TODO(crbug.com/395036622): Always apply this check once error pages in COI
@@ -3032,7 +3063,14 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
     CHECK(!new_instance->IsRelatedSiteInstance(current_instance));
   }
 
+  // Determine if the SiteInstance is changing for this navigation.
+  // This boolean is needed to conditionally apply policies that rely on
+  // site_instance->original_url(), which is only guaranteed to be correct for
+  // the first navigation in a new SiteInstance.
+  bool is_new_site_instance = true;
+
   if (new_instance == current_instance) {
+    is_new_site_instance = false;
     // If we're navigating to the same site instance, we won't need to use the
     // current spare RenderProcessHost.
     RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedSiteInstance(
@@ -3071,7 +3109,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   }
 
   UpdateProcessReusePolicyForProcessPerSiteWithMainFrameThreshold(
-      new_instance.get(), frame_tree_node_);
+      new_instance.get(), frame_tree_node_, is_new_site_instance);
 
   bool is_same_site_proactive_swap =
       (should_swap_result->reason() ==

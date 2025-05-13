@@ -203,6 +203,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const GURL& destination_url) override;
   bool ShouldUseProcessPerSite(content::BrowserContext* browser_context,
                                const GURL& site_url) override;
+  bool ShouldReuseExistingProcessForNewMainFrameSiteInstance(
+      content::BrowserContext* browser_context,
+      const GURL& site_instance_original_url) override;
   bool ShouldAllowProcessPerSiteForMultipleMainFrames(
       content::BrowserContext* context) override;
   std::optional<SpareProcessRefusedByEmbedderReason>

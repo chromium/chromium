@@ -444,6 +444,15 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldUseProcessPerSite(BrowserContext* browser_context,
                                        const GURL& site_url);
 
+  // Returns true if the embedder prefers reusing an existing process which is
+  // not over-utilized for a main frame site instance for
+  // `site_instance_original_url` in `browser_context`, for performance reasons.
+  // Note that other policies have precedence over this and can force or prevent
+  // process reuse irrespective of what this returns.
+  virtual bool ShouldReuseExistingProcessForNewMainFrameSiteInstance(
+      BrowserContext* browser_context,
+      const GURL& site_instance_original_url);
+
   // Returns true if process-per-site feature could be used for multiple main
   // frames. Actual usage of the feature may depend a number of heuristics.
   // This is different than `ShouldUseProcessPerSite` where process-per-siste

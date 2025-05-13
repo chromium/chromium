@@ -179,6 +179,14 @@ bool ContentBrowserClient::ShouldUseProcessPerSite(
   return false;
 }
 
+bool ContentBrowserClient::
+    ShouldReuseExistingProcessForNewMainFrameSiteInstance(
+        BrowserContext* browser_context,
+        const GURL& site_instance_original_url) {
+  DCHECK(browser_context);
+  return true;
+}
+
 bool ContentBrowserClient::ShouldAllowProcessPerSiteForMultipleMainFrames(
     BrowserContext* context) {
   return true;

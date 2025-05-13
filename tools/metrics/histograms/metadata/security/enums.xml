@@ -337,6 +337,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Does not require dedicated process"/>
   <int value="4" label="Localhost or IP address based host"/>
   <int value="5" label="Scheme is not http(s)"/>
+  <int value="6" label="Embedder disallowed reuse for URL"/>
 </enum>
 
 <enum name="ReusePendingOrCommittedSiteEnum">
