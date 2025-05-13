@@ -129,10 +129,10 @@ void PwgMarginsFromSizeAndPrintableArea(const gfx::Size& size_um,
                                         int* left_pwg,
                                         int* right_pwg,
                                         int* top_pwg) {
-  DCHECK(bottom_pwg);
-  DCHECK(left_pwg);
-  DCHECK(right_pwg);
-  DCHECK(top_pwg);
+  CHECK(bottom_pwg);
+  CHECK(left_pwg);
+  CHECK(right_pwg);
+  CHECK(top_pwg);
 
   // These values in microns were obtained in the first place by converting
   // from PWG units, so we can losslessly convert them back.
@@ -140,10 +140,10 @@ void PwgMarginsFromSizeAndPrintableArea(const gfx::Size& size_um,
   int left_um = printable_area_um.x();
   int right_um = size_um.width() - printable_area_um.right();
   int top_um = size_um.height() - printable_area_um.bottom();
-  DCHECK_EQ(bottom_um % kMicronsPerPwgUnit, 0);
-  DCHECK_EQ(left_um % kMicronsPerPwgUnit, 0);
-  DCHECK_EQ(right_um % kMicronsPerPwgUnit, 0);
-  DCHECK_EQ(top_um % kMicronsPerPwgUnit, 0);
+  CHECK_EQ(bottom_um % kMicronsPerPwgUnit, 0);
+  CHECK_EQ(left_um % kMicronsPerPwgUnit, 0);
+  CHECK_EQ(right_um % kMicronsPerPwgUnit, 0);
+  CHECK_EQ(top_um % kMicronsPerPwgUnit, 0);
 
   *bottom_pwg = bottom_um / kMicronsPerPwgUnit;
   *left_pwg = left_um / kMicronsPerPwgUnit;
