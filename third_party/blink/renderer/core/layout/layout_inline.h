@@ -325,6 +325,13 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   void AddDraggableRegions(Vector<DraggableRegionValue>&) final;
 
+  bool ShouldBeHandledAsInline(const ComputedStyle&) const override {
+    NOT_DESTROYED();
+    // This is needed (at a minimum) for LayoutSVGInline, which (including
+    // subclasses) is constructed for svg:a, svg:textPath, and svg:tspan,
+    // regardless of CSS 'display'.
+    return true;
+  }
   void UpdateFromStyle() final;
   bool AnonymousHasStylePropagationOverride() final {
     NOT_DESTROYED();

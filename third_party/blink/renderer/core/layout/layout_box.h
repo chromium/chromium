@@ -1253,6 +1253,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void StyleWillChange(StyleDifference,
                        const ComputedStyle& new_style) override;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  virtual bool ShouldBeHandledAsFloating(const ComputedStyle& style) const;
+  bool ShouldBeHandledAsFloating() const {
+    NOT_DESTROYED();
+    return ShouldBeHandledAsFloating(StyleRef());
+  }
   void UpdateFromStyle() override;
 
   void InLayoutNGInlineFormattingContextWillChange(bool) final;

@@ -71,12 +71,6 @@ void LayoutSVGBlock::WillBeRemovedFromTree() {
   LayoutBlockFlow::WillBeRemovedFromTree();
 }
 
-void LayoutSVGBlock::UpdateFromStyle() {
-  NOT_DESTROYED();
-  LayoutBlockFlow::UpdateFromStyle();
-  SetFloating(false);
-}
-
 bool LayoutSVGBlock::CheckForImplicitTransformChange(
     const SVGLayoutInfo& layout_info,
     bool bbox_changed) const {

@@ -1949,7 +1949,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // which is already marked for subtree recalc.
   void InvalidateSubtreePositionTry(bool mark_style_dirty);
 
- private:
+ protected:
   enum PositionedState {
     kIsStaticallyPositioned = 0,
     kIsRelativelyPositioned = 1,
@@ -1958,7 +1958,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   };
 
  public:
-  void SetPositionState(EPosition position) {
+  PositionedState ToPositionedState(EPosition position) const {
     NOT_DESTROYED();
     DCHECK(
         (position != EPosition::kAbsolute && position != EPosition::kFixed) ||
@@ -1967,21 +1967,26 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // IsOutOfFlowPositioned, saving one bit.
     switch (position) {
       case EPosition::kStatic:
-        positioned_state_ = kIsStaticallyPositioned;
-        break;
+        return kIsStaticallyPositioned;
       case EPosition::kRelative:
-        positioned_state_ = kIsRelativelyPositioned;
-        break;
+        return kIsRelativelyPositioned;
       case EPosition::kAbsolute:
       case EPosition::kFixed:
-        positioned_state_ = kIsOutOfFlowPositioned;
-        break;
+        return kIsOutOfFlowPositioned;
       case EPosition::kSticky:
-        positioned_state_ = kIsStickyPositioned;
-        break;
+        return kIsStickyPositioned;
       default:
         NOTREACHED();
     }
+  }
+  PositionedState ToPositionedState() const {
+    NOT_DESTROYED();
+    return ToPositionedState(StyleRef().GetPosition());
+  }
+
+  void SetPositionState(PositionedState position) {
+    NOT_DESTROYED();
+    positioned_state_ = position;
   }
   void ClearPositionedState() {
     NOT_DESTROYED();

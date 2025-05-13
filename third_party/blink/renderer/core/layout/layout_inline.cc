@@ -162,11 +162,6 @@ void LayoutInline::UpdateFromStyle() {
   NOT_DESTROYED();
   LayoutBoxModelObject::UpdateFromStyle();
 
-  // This is needed (at a minimum) for LayoutSVGInline, which (including
-  // subclasses) is constructed for svg:a, svg:textPath, and svg:tspan,
-  // regardless of CSS 'display'.
-  SetInline(true);
-
   // FIXME: Support transforms and reflections on inline flows someday.
   SetHasTransformRelatedProperty(false);
   SetHasReflection(false);

@@ -430,7 +430,11 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
                                     const PhysicalOffset& additional_offset,
                                     OutlineType) const;
 
-  bool ShouldBeHandledAsInline(const ComputedStyle& style) const;
+  virtual bool ShouldBeHandledAsInline(const ComputedStyle&) const;
+  bool ShouldBeHandledAsInline() const {
+    NOT_DESTROYED();
+    return ShouldBeHandledAsInline(StyleRef());
+  }
   void StyleWillChange(StyleDifference,
                        const ComputedStyle& new_style) override;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;

@@ -882,13 +882,19 @@ void LayoutBox::UpdateScrollSnapMappingAfterStyleChange(
     SnapAreaDidChange();
 }
 
+bool LayoutBox::ShouldBeHandledAsFloating(const ComputedStyle& style) const {
+  NOT_DESTROYED();
+  return style.IsFloating() &&
+         ToPositionedState(style.GetPosition()) != kIsOutOfFlowPositioned &&
+         !style.IsInsideDisplayIgnoringFloatingChildren();
+}
+
 void LayoutBox::UpdateFromStyle() {
   NOT_DESTROYED();
   LayoutBoxModelObject::UpdateFromStyle();
 
   const ComputedStyle& style_to_use = StyleRef();
-  SetFloating(style_to_use.IsFloating() && !IsOutOfFlowPositioned() &&
-              !style_to_use.IsInsideDisplayIgnoringFloatingChildren());
+  SetFloating(ShouldBeHandledAsFloating(style_to_use));
   SetHasTransformRelatedProperty(
       IsSVGChild() ? style_to_use.HasTransformRelatedPropertyForSVG()
                    : style_to_use.HasTransformRelatedProperty());
@@ -3010,7 +3016,8 @@ bool LayoutBox::IsValidColumnSpanner() const {
 
   // The spec says that column-span only applies to in-flow block-level
   // elements.
-  if (IsInline() || IsFloatingOrOutOfFlowPositioned()) {
+  if (ShouldBeHandledAsInline() || ShouldBeHandledAsFloating() ||
+      ToPositionedState() == kIsOutOfFlowPositioned) {
     return false;
   }
 

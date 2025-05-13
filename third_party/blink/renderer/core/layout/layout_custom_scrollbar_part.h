@@ -97,6 +97,14 @@ class CORE_EXPORT LayoutCustomScrollbarPart final : public LayoutReplaced {
                             bool suppress_use_counters);
 
  private:
+  bool ShouldBeHandledAsInline(const ComputedStyle&) const override {
+    NOT_DESTROYED();
+    return false;
+  }
+  bool ShouldBeHandledAsFloating(const ComputedStyle&) const override {
+    NOT_DESTROYED();
+    return false;
+  }
   void UpdateFromStyle() override;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;

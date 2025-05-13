@@ -475,7 +475,7 @@ void LayoutBoxModelObject::UpdateFromStyle() {
   const ComputedStyle& style = StyleRef();
   SetHasBoxDecorationBackground(style.HasBoxDecorationBackground());
   SetInline(ShouldBeHandledAsInline(style));
-  SetPositionState(style.GetPosition());
+  SetPositionState(ToPositionedState(style.GetPosition()));
   SetHorizontalWritingMode(style.IsHorizontalWritingMode());
 
   const bool is_fixed_container = ComputeIsFixedContainer(style);

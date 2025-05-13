@@ -95,7 +95,7 @@ LayoutView::LayoutView(ContainerNode* document)
 
   SetIntrinsicLogicalWidthsDirty(kMarkOnlyThis);
 
-  SetPositionState(EPosition::kAbsolute);  // to 0,0 :)
+  SetPositionState(kIsOutOfFlowPositioned);
 
   // Update the cached bit here since the Document is made the effective root
   // scroller before we've created the layout tree.
