@@ -270,6 +270,7 @@ source_set("fuzztest_internal") {
     "src/fuzztest/internal/domains/in_grammar_impl.cc",
     "src/fuzztest/internal/domains/in_grammar_impl.h",
     "src/fuzztest/internal/domains/in_range_impl.h",
+    "src/fuzztest/internal/domains/in_regexp_impl.cc",
     "src/fuzztest/internal/domains/in_regexp_impl.h",
     "src/fuzztest/internal/domains/map_impl.h",
     "src/fuzztest/internal/domains/one_of_impl.h",
