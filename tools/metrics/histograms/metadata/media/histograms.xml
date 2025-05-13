@@ -5944,7 +5944,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Media.Ui.GetDisplayMedia.ScreenSharingPermissionInteractionMac"
     enum="MediaUiGetDisplayMediaPermissionInteraction"
-    expires_after="2025-05-22">
+    expires_after="2026-05-13">
   <owner>tovep@chromium.org</owner>
   <owner>eladalon@chromium.org</owner>
   <owner>kron@chromium.org</owner>
@@ -5959,7 +5959,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Media.Ui.GetDisplayMedia.WindowSharingPermissionInteractionMac"
     enum="MediaUiGetDisplayMediaPermissionInteraction"
-    expires_after="2025-05-22">
+    expires_after="2026-05-13">
   <owner>tovep@chromium.org</owner>
   <owner>eladalon@chromium.org</owner>
   <owner>kron@chromium.org</owner>
