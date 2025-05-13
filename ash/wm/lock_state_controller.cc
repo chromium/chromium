@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/wm/lock_state_controller.h"
 
 #include <algorithm>
@@ -40,6 +35,7 @@
 #include "ash/wm/workspace/backdrop_controller.h"
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
+#include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
@@ -147,8 +143,7 @@ void EncodeAndSaveImage(const base::FilePath& file_path, gfx::Image image) {
       image, gfx::Size(informed_restore::kPreviewContainerWidth,
                        resized_image_height));
   auto png_bytes = resized_image.As1xPNGBytes();
-  if (!base::WriteFile(file_path,
-                       base::span(png_bytes->data(), png_bytes->size()))) {
+  if (!base::WriteFile(file_path, base::span(*png_bytes))) {
     LOG(ERROR) << "Failed to write informed restore image to "
                << file_path.MaybeAsASCII();
   }

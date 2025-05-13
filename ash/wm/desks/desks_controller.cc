@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/wm/desks/desks_controller.h"
 
 #include <algorithm>
+#include <array>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
@@ -125,7 +121,7 @@ constexpr base::TimeDelta kDeskTraversalsTimeout = base::Seconds(5);
 // its "close" hooks before being forcefully closed.
 base::TimeDelta g_close_all_window_close_timeout = base::Seconds(1);
 
-constexpr int kDeskDefaultNameIds[] = {
+constexpr auto kDeskDefaultNameIds = std::to_array<int>({
     IDS_ASH_DESKS_DESK_1_MINI_VIEW_TITLE,
     IDS_ASH_DESKS_DESK_2_MINI_VIEW_TITLE,
     IDS_ASH_DESKS_DESK_3_MINI_VIEW_TITLE,
@@ -142,7 +138,7 @@ constexpr int kDeskDefaultNameIds[] = {
     IDS_ASH_DESKS_DESK_14_MINI_VIEW_TITLE,
     IDS_ASH_DESKS_DESK_15_MINI_VIEW_TITLE,
     IDS_ASH_DESKS_DESK_16_MINI_VIEW_TITLE,
-};
+});
 
 // Appends the given |windows| to the end of the currently active overview mode
 // session such that the most-recently used window is added first. If

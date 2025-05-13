@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
@@ -11531,16 +11527,16 @@ TEST_P(DeskButtonTest, DeskSwitchButtonContextMenu) {
     bool enabled;
     bool show_context_menu;
   };
-  const DeskSwitchButtonTestCase prev_test_cases[] = {
+  const auto prev_test_cases = std::to_array<DeskSwitchButtonTestCase>({
       {.visible = false, .enabled = false, .show_context_menu = false},
       {.visible = true, .enabled = true, .show_context_menu = true},
       {.visible = true, .enabled = true, .show_context_menu = true},
-  };
-  const DeskSwitchButtonTestCase next_test_cases[] = {
+  });
+  const auto next_test_cases = std::to_array<DeskSwitchButtonTestCase>({
       {.visible = true, .enabled = true, .show_context_menu = true},
       {.visible = true, .enabled = true, .show_context_menu = true},
       {.visible = true, .enabled = false, .show_context_menu = false},
-  };
+  });
 
   auto* event_generator = GetEventGenerator();
   auto* shelf_view = GetPrimaryShelf()->GetShelfViewForTesting();

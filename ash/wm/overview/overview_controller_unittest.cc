@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/wm/overview/overview_controller.h"
 
+#include <array>
 #include <memory>
+#include <vector>
 
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
@@ -811,12 +808,13 @@ TEST_F(OverviewControllerTest, FrameThrottling) {
   FrameThrottlingController* frame_throttling_controller =
       Shell::Get()->frame_throttling_controller();
   frame_throttling_controller->AddArcObserver(&observer);
-  const int browser_window_count = 3;
-  const int arc_window_count = 2;
+  constexpr int browser_window_count = 3;
+  constexpr int arc_window_count = 2;
 
   const std::vector<viz::FrameSinkId> ids{{1u, 1u}, {2u, 2u}, {3u, 3u}};
-  std::unique_ptr<aura::Window>
-      created_windows[browser_window_count + arc_window_count];
+  std::array<std::unique_ptr<aura::Window>,
+             browser_window_count + arc_window_count>
+      created_windows;
   for (int i = 0; i < browser_window_count; ++i) {
     created_windows[i] =
         CreateAppWindow(gfx::Rect(), chromeos::AppType::BROWSER);

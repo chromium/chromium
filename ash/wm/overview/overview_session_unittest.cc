@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/wm/overview/overview_session.h"
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -5265,22 +5261,22 @@ TEST_F(TabletModeOverviewSessionTest, NoNudgingWhenLastItemOnPreviousRowDrops) {
   // item dropping down from the first row to the second row. Create the windows
   // backward so the the window indexs match the order seen in overview, as
   // overview windows are ordered by MRU.
-  const int kWindows = 5;
-  std::unique_ptr<aura::Window> windows[kWindows];
+  constexpr int kWindows = 5;
+  std::array<std::unique_ptr<aura::Window>, kWindows> windows;
   for (int i = kWindows - 1; i >= 0; --i)
     windows[i] = CreateTestWindow();
 
   ToggleOverview();
   ASSERT_TRUE(GetOverviewController()->InOverviewSession());
 
-  OverviewItemBase* items[kWindows];
-  gfx::RectF item_bounds[kWindows];
+  std::array<OverviewItemBase*, kWindows> items;
+  std::array<gfx::RectF, kWindows> item_bounds;
   for (int i = 0; i < kWindows; ++i) {
     items[i] = GetOverviewItemForWindow(windows[i].get());
     item_bounds[i] = items[i]->target_bounds();
   }
 
-  // Drag the forth item past the drag to swipe threshold. None of the other
+  // Drag the fourth item past the drag to swipe threshold. None of the other
   // window bounds should change, as none of them should be nudged, because
   // deleting the fourth item will cause the third item to drop down from the
   // first row to the second.

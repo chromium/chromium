@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <algorithm>
 #include <array>
 #include <string>
@@ -4510,12 +4505,13 @@ TEST_F(SavedDeskTest, ContextMenuLayout) {
                                                0);
   EXPECT_EQ(4u, menu_model.GetItemCount());
 
-  DeskActionContextMenu::CommandId expected_command[] = {
-      DeskActionContextMenu::CommandId::kSaveAsTemplate,
-      DeskActionContextMenu::CommandId::kSaveForLater,
-      DeskActionContextMenu::CommandId::kCombineDesks,
-      DeskActionContextMenu::CommandId::kCloseAll};
-  for (size_t i = 0; i < 4u; ++i) {
+  constexpr auto expected_command =
+      std::to_array<DeskActionContextMenu::CommandId>(
+          {DeskActionContextMenu::CommandId::kSaveAsTemplate,
+           DeskActionContextMenu::CommandId::kSaveForLater,
+           DeskActionContextMenu::CommandId::kCombineDesks,
+           DeskActionContextMenu::CommandId::kCloseAll});
+  for (size_t i = 0; i < expected_command.size(); ++i) {
     EXPECT_EQ(expected_command[i],
               static_cast<DeskActionContextMenu::CommandId>(
                   menu_model.GetCommandIdAt(i)));
