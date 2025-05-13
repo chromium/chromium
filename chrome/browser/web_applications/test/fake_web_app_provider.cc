@@ -353,6 +353,10 @@ FakeWebAppProvider* FakeWebAppProvider::AsFakeWebAppProviderForTesting() {
   return this;
 }
 
+FakeWebContentsManager* FakeWebAppProvider::GetFakeWebContentsManager() const {
+  return static_cast<FakeWebContentsManager*>(web_contents_manager_.get());
+}
+
 void FakeWebAppProvider::CheckNotStartedAndDisconnect(
     std::string optional_message) {
   CHECK(!started_) << "Attempted to set a WebAppProvider subsystem after "

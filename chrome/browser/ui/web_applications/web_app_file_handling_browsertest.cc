@@ -456,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   const GURL origin = GetSecureAppURL().DeprecatedGetOriginAsURL();
 
   EXPECT_EQ(ApiApprovalState::kRequiresPrompt,
-            registrar().GetAppFileHandlerApprovalState(app_id()));
+            registrar().GetAppFileHandlerUserApprovalState(app_id()));
   provider()->sync_bridge_unsafe().SetAppFileHandlerApprovalState(
       app_id(), ApiApprovalState::kAllowed);
 

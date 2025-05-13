@@ -17,6 +17,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -287,11 +288,25 @@ class WebAppRegistrar {
   bool IsAppFileHandlerPermissionBlocked(const webapps::AppId& app_id) const;
   bool IsIsolated(const webapps::AppId& app_id) const;
 
-  // Returns the state of the File Handling API for the given app.
+  // Returns approval state for File Handling API including
+  // DefaultHandlersForFileExtensions policy check.
   ApiApprovalState GetAppFileHandlerApprovalState(
+      const webapps::AppId& app_id,
+      std::optional<std::string> file_extension) const;
+
+  bool IsAppPolicyDefinedHandlerForFileExtension(
+      const webapps::AppId& app_id,
+      const std::string file_extension) const;
+
+  bool IsAppSetAsPolicyDefinedFileHandlerForAnyFileExtension(
       const webapps::AppId& app_id) const;
-  // Returns true iff it's expected that File Handlers have been, **or are in
-  // the process of being**, registered with the OS.
+
+  // Returns the state of the File Handling API for the given app.
+  ApiApprovalState GetAppFileHandlerUserApprovalState(
+      const webapps::AppId& app_id) const;
+
+  // Returns true iff it's expected that File Handlers have been, **or are
+  // in the process of being**, registered with the OS.
   bool ExpectThatFileHandlersAreRegisteredWithOs(
       const webapps::AppId& app_id) const;
 

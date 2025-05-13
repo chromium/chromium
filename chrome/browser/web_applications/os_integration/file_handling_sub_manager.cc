@@ -97,11 +97,20 @@ void FileHandlingSubManager::Configure(
     proto::os_state::WebAppOsIntegration& desired_state,
     base::OnceClosure configure_done) {
   DCHECK(!desired_state.has_file_handling());
+  const bool is_user_disallowed =
+      provider_->registrar_unsafe().GetAppFileHandlerUserApprovalState(
+          app_id) == ApiApprovalState::kDisallowed;
 
-  if (provider_->registrar_unsafe().GetInstallState(app_id) !=
-          proto::INSTALLED_WITH_OS_INTEGRATION ||
-      provider_->registrar_unsafe().GetAppFileHandlerApprovalState(app_id) ==
-          ApiApprovalState::kDisallowed) {
+  const bool app_has_policy_defined_file_handler_approval =
+      provider_->registrar_unsafe()
+          .IsAppSetAsPolicyDefinedFileHandlerForAnyFileExtension(app_id);
+
+  const bool has_os_integration =
+      provider_->registrar_unsafe().GetInstallState(app_id) ==
+      proto::INSTALLED_WITH_OS_INTEGRATION;
+
+  if (!has_os_integration ||
+      (is_user_disallowed && !app_has_policy_defined_file_handler_approval)) {
     std::move(configure_done).Run();
     return;
   }
@@ -122,9 +131,11 @@ void FileHandlingSubManager::Configure(
     for (const auto& accept_entry : file_handler.accept) {
       auto* accept_entry_proto = file_handler_proto->add_accept();
       accept_entry_proto->set_mimetype(accept_entry.mime_type);
-
       for (const auto& file_extension : accept_entry.file_extensions) {
-        accept_entry_proto->add_file_extensions(file_extension);
+        if (provider_->registrar_unsafe().GetAppFileHandlerApprovalState(
+                app_id, file_extension) != ApiApprovalState::kDisallowed) {
+          accept_entry_proto->add_file_extensions(file_extension);
+        }
       }
     }
   }

@@ -13,7 +13,9 @@
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/traits_bag.h"
 #include "build/buildflag.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -21,17 +23,23 @@
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
@@ -41,12 +49,24 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+using testing::_;
 
 namespace web_app {
 
 namespace {
+class MockWebAppUiManager : public web_app::FakeWebAppUiManager {
+ public:
+  MOCK_METHOD(void,
+              ShowWebAppFileLaunchDialog,
+              (const std::vector<base::FilePath>& file_paths,
+               const webapps::AppId& app_id,
+               WebAppLaunchAcceptanceCallback launch_callback),
+              (override));
+};
 
 class NoOpWebAppPublisherDelegate : public WebAppPublisherHelper::Delegate {
   // WebAppPublisherHelper::Delegate:
@@ -87,17 +107,30 @@ class WebAppPublisherHelperTest : public testing::Test {
 
     publisher_ = std::make_unique<WebAppPublisherHelper>(profile(), provider_,
                                                          &no_op_delegate_);
-
+    auto ui_manager = std::make_unique<MockWebAppUiManager>();
+    ui_manager_ = ui_manager.get();
+    web_app::FakeWebAppProvider::Get(profile())->SetWebAppUiManager(
+        std::move(ui_manager));
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
+  void TearDown() override {
+    ui_manager_ = nullptr;
+    testing::Test::TearDown();
+  }
+
   Profile* profile() { return profile_.get(); }
+
+  FakeWebAppUiManager& fake_ui_manager() {
+    return static_cast<FakeWebAppUiManager&>(provider_->ui_manager());
+  }
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   NoOpWebAppPublisherDelegate no_op_delegate_;
   raw_ptr<WebAppProvider> provider_ = nullptr;
   std::unique_ptr<WebAppPublisherHelper> publisher_;
+  raw_ptr<MockWebAppUiManager> ui_manager_ = nullptr;
 };
 
 TEST_F(WebAppPublisherHelperTest, CreateWebApp_Minimal) {
@@ -236,6 +269,7 @@ TEST_F(WebAppPublisherHelperTest,
     app = new_app.get();
     DCHECK(new_app->start_url().is_valid());
     new_app->SetScope(new_app->start_url().GetWithoutFilename());
+    // TODO(https://crbug.com/411126942): Stop using CreateApp.
     update->CreateApp(std::move(new_app));
   }
 
@@ -316,7 +350,7 @@ TEST_F(WebAppPublisherHelperTest, CreateIntentFiltersForWebApp_FileHandlers) {
     file_handler.accept.push_back(std::move(accept_entry));
     new_app->SetFileHandlers({std::move(file_handler)});
     new_app->SetCurrentOsIntegrationStates(test_state);
-
+    // TODO(https://crbug.com/411126942): Stop using CreateApp.
     update->CreateApp(std::move(new_app));
   }
 
@@ -345,6 +379,79 @@ TEST_F(WebAppPublisherHelperTest, CreateIntentFiltersForWebApp_FileHandlers) {
             apps::PatternMatchType::kFileExtension);
   EXPECT_EQ(file_cond.condition_values[1]->value, ".txt");
 }
+
+#if (BUILDFLAG(IS_CHROMEOS))
+TEST_F(WebAppPublisherHelperTest, LaunchWithFiles_AllowWithNoPrompt) {
+  const GURL start_url("https://example.com/start");
+  const GURL app_url("https://example.com/path/index.html");
+  const WebApp* app = nullptr;
+
+  base::Value::Dict pref_value;
+  pref_value.Set(".txt", "https://example.com/path/index.html");
+  profile()->GetPrefs()->SetDict(prefs::kDefaultHandlersForFileExtensions,
+                                 std::move(pref_value));
+  {
+    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
+    auto new_app = test::CreateWebApp(app_url);
+    app = new_app.get();
+    DCHECK(new_app->start_url().is_valid());
+    new_app->SetScope(new_app->start_url().GetWithoutFilename());
+
+    apps::FileHandler::AcceptEntry accept_entry;
+    proto::os_state::WebAppOsIntegration test_state;
+
+    accept_entry.mime_type = "text/plain";
+    accept_entry.file_extensions.insert(".txt");
+    apps::FileHandler file_handler;
+    file_handler.action = GURL("https://example.com/path/handler.html");
+
+    proto::os_state::FileHandling::FileHandler* file_handler_proto =
+        test_state.mutable_file_handling()->add_file_handlers();
+    file_handler_proto->set_action(file_handler.action.spec());
+    auto* accept_entry_proto = file_handler_proto->add_accept();
+    accept_entry_proto->set_mimetype(accept_entry.mime_type);
+    accept_entry_proto->add_file_extensions(".txt");
+
+    file_handler.accept.push_back(std::move(accept_entry));
+    new_app->SetFileHandlers({std::move(file_handler)});
+    new_app->SetCurrentOsIntegrationStates(test_state);
+    new_app->SetLatestInstallSource(
+        webapps::WebappInstallSource::EXTERNAL_POLICY);
+    new_app->AddInstallURLToManagementExternalConfigMap(
+        WebAppManagement::kPolicy, app_url);
+    // TODO(https://crbug.com/415780942): Do not use CreateWebApp here.
+    update->CreateApp(std::move(new_app));
+  }
+
+  MockWebAppUiManager& ui_manager =
+      static_cast<MockWebAppUiManager&>(fake_ui_manager());
+
+  EXPECT_EQ(provider_->registrar_unsafe().GetAppFileHandlerApprovalState(
+                app->app_id(), ".txt"),
+            ApiApprovalState::kAllowed);
+
+  // Default handlers pref setting does not influence user choice.
+  EXPECT_EQ(provider_->registrar_unsafe().GetAppFileHandlerUserApprovalState(
+                app->app_id()),
+            ApiApprovalState::kRequiresPrompt);
+
+  // Open a file using app as a handler.
+  std::vector<base::FilePath> test_files = {
+      base::FilePath::FromUTF8Unsafe("file.txt")};
+  apps::AppLaunchParams params(
+      app->app_id(), apps::LaunchContainer::kLaunchContainerWindow,
+      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromFileManager);
+  params.launch_files = test_files;
+
+  base::test::TestFuture<std::vector<content::WebContents*>> launch_future;
+  publisher_->LaunchAppWithFilesCheckingUserPermission(
+      app->app_id(), std::move(params), launch_future.GetCallback());
+
+  // Check if the app was launched without showing file handler dialog.
+  EXPECT_TRUE(launch_future.Wait());
+  EXPECT_CALL(ui_manager, ShowWebAppFileLaunchDialog(_, _, _)).Times(0);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class WebAppPublisherHelperTest_WebLockScreenApi
     : public WebAppPublisherHelperTest {

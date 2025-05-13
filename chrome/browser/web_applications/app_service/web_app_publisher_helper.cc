@@ -1861,21 +1861,33 @@ void WebAppPublisherHelper::LaunchAppWithFilesCheckingUserPermission(
                      weak_ptr_factory_.GetWeakPtr(), app_id, std::move(params),
                      std::move(callback));
 
-  switch (
-      provider_->registrar_unsafe().GetAppFileHandlerApprovalState(app_id)) {
-    case ApiApprovalState::kRequiresPrompt:
-      provider_->ui_manager().ShowWebAppFileLaunchDialog(
-          file_paths, app_id, std::move(launch_callback));
-      break;
-    case ApiApprovalState::kAllowed:
-      std::move(launch_callback)
-          .Run(/*allowed=*/true, /*remember_user_choice=*/false);
-      break;
-    case ApiApprovalState::kDisallowed:
-      // We shouldn't have gotten this far (i.e. "open with" should not have
-      // been selectable) if file handling was already disallowed for the app.
-      NOTREACHED();
+  if (std::ranges::all_of(file_paths, [this, &app_id](auto file) {
+        std::optional<std::string> file_extension_string;
+#if BUILDFLAG(IS_WIN)
+        std::string converted_extension_utf8;
+        std::wstring file_extension = file.Extension();
+        if (base::WideToUTF8(file_extension.c_str(), file_extension.size(),
+                             &converted_extension_utf8)) {
+          file_extension_string = converted_extension_utf8;
+        } else {
+          file_extension_string = std::nullopt;
+        }
+#else   // BUILDFLAG(IS_WIN)
+        file_extension_string = file.Extension();
+#endif  // BUILDFLAG(IS_WIN)
+        return provider_->registrar_unsafe().GetAppFileHandlerApprovalState(
+                   app_id, file_extension_string) == ApiApprovalState::kAllowed;
+      })) {
+    return std::move(launch_callback)
+        .Run(/*allowed=*/true, /*remember_user_choice=*/false);
   }
+
+  CHECK_EQ(
+      provider_->registrar_unsafe().GetAppFileHandlerUserApprovalState(app_id),
+      ApiApprovalState::kRequiresPrompt);
+
+  return provider_->ui_manager().ShowWebAppFileLaunchDialog(
+      file_paths, app_id, std::move(launch_callback));
 }
 
 void WebAppPublisherHelper::OnFileHandlerDialogCompleted(

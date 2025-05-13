@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -198,6 +199,8 @@ class FakeWebAppProvider : public WebAppProvider {
   void Shutdown() override;
 
   FakeWebAppProvider* AsFakeWebAppProviderForTesting() override;
+
+  FakeWebContentsManager* GetFakeWebContentsManager() const;
 
   syncer::MockDataTypeLocalChangeProcessor& processor() {
     return mock_processor_;

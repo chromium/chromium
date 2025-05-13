@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <bitset>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <variant>
@@ -50,6 +51,7 @@
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -1523,21 +1525,89 @@ bool WebAppRegistrar::IsAppFileHandlerPermissionBlocked(
   if (!web_app)
     return false;
 
-  return web_app->file_handler_approval_state() ==
-         ApiApprovalState::kDisallowed;
+  const bool user_disallowed =
+      web_app->file_handler_approval_state() == ApiApprovalState::kDisallowed;
+
+  // DefaultHandlersForFileExtensions policy can define file
+  // handlers for apps. Its value takes precedence over user
+  // choice.
+  const bool policy_forced =
+      provider_->registrar_unsafe()
+          .IsAppSetAsPolicyDefinedFileHandlerForAnyFileExtension(app_id);
+  return user_disallowed && !policy_forced;
 }
 
 ApiApprovalState WebAppRegistrar::GetAppFileHandlerApprovalState(
+    const webapps::AppId& app_id,
+    std::optional<std::string> file_extension) const {
+  if (file_extension && IsAppPolicyDefinedHandlerForFileExtension(
+                            app_id, file_extension.value())) {
+    return ApiApprovalState::kAllowed;
+  }
+  return GetAppFileHandlerUserApprovalState(app_id);
+}
+
+bool WebAppRegistrar::IsAppPolicyDefinedHandlerForFileExtension(
+    const webapps::AppId& app_id,
+    const std::string file_extension) const {
+#if BUILDFLAG(IS_CHROMEOS)
+  const std::string* file_extension_policy_id =
+      profile_->GetPrefs()
+          ->GetDict(prefs::kDefaultHandlersForFileExtensions)
+          .FindString(file_extension);
+  if (!file_extension_policy_id) {
+    return false;
+  }
+
+  const WebApp* web_app = GetAppById(app_id);
+  if (!web_app) {
+    return false;
+  }
+
+  std::optional<std::vector<std::string>> app_policy_ids =
+      web_app::GetPolicyIds(profile(), *web_app);
+
+  if (!app_policy_ids->empty()) {
+    return base::Contains(app_policy_ids.value(), *file_extension_policy_id);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  return false;
+}
+
+bool WebAppRegistrar::IsAppSetAsPolicyDefinedFileHandlerForAnyFileExtension(
+    const webapps::AppId& app_id) const {
+#if BUILDFLAG(IS_CHROMEOS)
+  const base::Value::Dict& default_handlers =
+      profile_->GetPrefs()->GetDict(prefs::kDefaultHandlersForFileExtensions);
+
+  const WebApp* web_app = GetAppById(app_id);
+  if (!web_app) {
+    return false;
+  }
+
+  std::optional<std::vector<std::string>> app_policy_ids =
+      web_app::GetPolicyIds(profile(), *web_app);
+
+  if (!app_policy_ids->empty()) {
+    return std::ranges::any_of(default_handlers, [&](const auto& handler) {
+      return base::Contains(*app_policy_ids, handler.second.GetString());
+    });
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  return false;
+}
+
+ApiApprovalState WebAppRegistrar::GetAppFileHandlerUserApprovalState(
     const webapps::AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
-  if (!web_app)
+  if (!web_app) {
     return ApiApprovalState::kDisallowed;
+  }
 
-  if (web_app->IsSystemApp())
+  if (web_app->IsSystemApp()) {
     return ApiApprovalState::kAllowed;
+  }
 
-  // TODO(estade): also consult the policy manager when File Handler policies
-  // exist.
   return web_app->file_handler_approval_state();
 }
 
