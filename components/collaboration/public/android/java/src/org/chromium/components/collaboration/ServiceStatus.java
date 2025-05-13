@@ -57,6 +57,10 @@ public class ServiceStatus {
      * @return Whether the user is allowed to create a collaboration group.
      */
     public boolean isAllowedToCreate() {
+        if (signinStatus == SigninStatus.SIGNIN_DISABLED) {
+            return false;
+        }
+
         switch (collaborationStatus) {
             case CollaborationStatus.DISABLED:
             case CollaborationStatus.DISABLED_PENDING:

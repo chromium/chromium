@@ -173,6 +173,8 @@ TEST_F(CollaborationServiceImplTest, GetServiceStatus_SigninDisabled) {
             SigninStatus::kSigninDisabled);
   EXPECT_EQ(service_->GetServiceStatus().collaboration_status,
             CollaborationStatus::kEnabledCreateAndJoin);
+  EXPECT_EQ(service_->GetServiceStatus().IsAllowedToJoin(), true);
+  EXPECT_EQ(service_->GetServiceStatus().IsAllowedToCreate(), false);
 
   pref_service_.SetManagedPref(prefs::kSigninAllowed, base::Value(false));
   EXPECT_EQ(service_->GetServiceStatus().collaboration_status,
