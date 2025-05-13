@@ -1051,14 +1051,8 @@ void LayoutText::TextDidChange() {
 void LayoutText::TextDidChangeWithoutInvalidation() {
   NOT_DESTROYED();
   TextOffsetMap offset_map;
-  String original_text =
-      (RuntimeEnabledFeatures::UseOriginalDomOffsetsForOffsetMapEnabled() &&
-       GetDocument().GetSettings() &&
-       GetDocument().GetSettings()->GetPasswordEchoEnabled())
-          ? OriginalText()
-          : text_;
-  wtf_size_t original_length = original_text.length();
-  text_ = TransformAndSecureText(original_text, offset_map);
+  wtf_size_t original_length = text_.length();
+  text_ = TransformAndSecureText(text_, offset_map);
   SetVariableLengthTransformResult(original_length, offset_map);
   if (auto* secure_text_timer = SecureTextTimer::ActiveInstanceFor(this)) {
     // text_ may be updated later before timer fires. We invalidate the
