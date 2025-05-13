@@ -12,6 +12,7 @@ boot_device.py
 browser_runner.py
 common.py
 compatible_utils.py
+component_storage.py
 component_storage_test.py
 ffx_emulator.py
 ffx_integration.py

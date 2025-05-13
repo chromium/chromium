@@ -20,9 +20,9 @@ COVERED_FILES = [
 
 # The files will be tested without coverage requirements.
 TESTED_FILES = [
-    'bundled_test_runner.py', 'common.py', 'ffx_emulator.py',
-    'modification_waiter.py', 'monitors.py', 'serial_boot_device.py',
-    'test_server.py', 'version.py'
+    'bundled_test_runner.py', 'common.py', 'component_storage.py',
+    'ffx_emulator.py', 'modification_waiter.py', 'monitors.py',
+    'serial_boot_device.py', 'test_server.py', 'version.py'
 ]
 
 
