@@ -1,10 +1,14 @@
+######################################################################
+# Very flaky/failing on mutter (more stable/passing on other builders)
+######################################################################
+
+-AdsPageLoadMetricsObserverBrowserTest.PageAdDensityMultipleFrames
+-AdsPageLoadMetricsObserverBrowserTest.PageAdDensityRecordsPageMax
+
 # TODO(crbug.com/348590032) Failing as test relies on window.devicePixelRatio
 # which doesn't work with per-window scaling.
 -All/GetDisplayMediaHiDpiBrowserTest.Capture/1
 
-# Very flaky/failing on mutter (more stable/passing on other builders)
--AdsPageLoadMetricsObserverBrowserTest.PageAdDensityMultipleFrames
--AdsPageLoadMetricsObserverBrowserTest.PageAdDensityRecordsPageMax
 -All/PDFExtensionJSInk2Test.Ink2/*
 -All/PDFExtensionJSInk2Test.Ink2BottomToolbar/*
 -All/PDFExtensionJSInk2Test.Ink2TextBottomToolbar/*
@@ -13,6 +17,10 @@
 -All/SoftNavigationTest.LayoutShift/*
 -BackForwardCachePageLoadMetricsObserverBrowserTest.LayoutShiftNormalization_AfterBackForwardCacheRestore
 -BorderlessIsolatedWebAppBrowserTest.PopupResize_CanSubceedMinimumWindowSize_And_InnerAndOuterSizesAreCorrect
+
+# TODO(crbug.com/40688401) This test requires full Picture-in-Picture support.
+-FedCmAccountSelectionViewBrowserTest.DisabledWhenOccluded
+
 -FindInPageControllerTest.FindMovesOnTabClose_Issue1343052
 -FindInPageControllerTest.FindMovesWhenObscuring
 -LayoutInstabilityTest.*
@@ -28,22 +36,32 @@
 -WebAppBrowserTest.WindowOffsetsClampedToScreen
 -WebAppFrameToolbarBrowserTest_WindowControlsOverlay.DownloadIconVisibilityForAppDownload
 
+#################################################
 # Also flaky/failing weston and/or other builders
--All/OmniboxSearchAggregatorHTTPErrorTest.HTTPErrorResponse/*
--BackForwardCachePageLoadMetricsObserverBrowserTest.CumulativeLayoutShiftAfterBackForwardCacheRestore
--BrowserViewTest.GetAccessibleTabModalDialogTree
--EnclaveAuthenticatorWithTimeout.SecurityDomainCheckTimesOut
--ExtensionWebRequestApiTest.ExtensionRequestRedirectToServer
--OmniboxSearchAggregatorTest.*
--PermissionElementBrowserTest.CombinedPermissionAndDeviceStatusesGranted
--ProfileHelperTest.OpenNewWindowForProfile
--SearchPrefetchServiceNavigationPrefetchBrowserTest.NavigationPrefetchIsServedForOmniboxOpenSelection
--TabRestoreTest.RestoreGroupWithUnloadHandlerRejected
+#################################################
 
-# TODO(crbug.com/40688401) This test requires full Picture-in-Picture support.
--FedCmAccountSelectionViewBrowserTest.DisabledWhenOccluded
+-All/OmniboxSearchAggregatorHTTPErrorTest.HTTPErrorResponse/*
 
 # TODO(crbug.com/395595608) Also disabled in weston, but maybe this could work
 # in mutter with some additional steps.
 -All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo/1
 -All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio/1
+
+-BackForwardCachePageLoadMetricsObserverBrowserTest.CumulativeLayoutShiftAfterBackForwardCacheRestore
+-BrowserViewTest.GetAccessibleTabModalDialogTree
+-CrElementsTest.CrLazyList
+-DevModeToggle/UserScriptsUITest.ToggleControls_UserScriptsAPIUsage/0
+-EnclaveAuthenticatorWithTimeout.SecurityDomainCheckTimesOut
+-ExtensionWebRequestApiTest.ExtensionRequestRedirectToServer
+-FrameNodeImplBrowserTest.ViewportIntersection_PartiallyVisible
+-HeadlessModeProtocolBrowserTest.InputClipboardOps
+-OmniboxSearchAggregatorTest.*
+-ParameterizedFrameNodeImplBrowserTest.ViewportIntersection_OutOfView/*
+-PermissionElementBrowserTest.CombinedPermissionAndDeviceStatusesGranted
+-ProfileHelperTest.OpenNewWindowForProfile
+-SearchPrefetchServiceNavigationPrefetchBrowserTest.NavigationPrefetchIsServedForOmniboxOpenSelection
+
+# TODO(crbug.com/417430921) Test crashes frequently
+-ServiceWorkerSubScopeWorkerTrackingBrowserTest.StoppingSubScopeWorkerDoesNotAffectExtensionWorker
+
+-TabRestoreTest.RestoreGroupWithUnloadHandlerRejected

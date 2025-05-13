@@ -21,6 +21,7 @@
 -NotificationsTestWithFakeMediaStream.ShouldQueueDuringScreenPresent
 -PasswordBubbleInteractiveUiTest.AutoSigninNoFocus
 -PopupBlockerBrowserTest.ModalPopUnder
+-SettingsGlicPageFocusTest.GlicPageFocus
 -StartupBrowserCreatorTest.LastUsedProfileActivated
 -WebAppProfileSwitcherBrowserTest.SwitchWebAppProfileActivateWindowOnly
 -WidgetInputMethodInteractiveTest.Activation
