@@ -236,6 +236,7 @@ void SupervisedUserService::SetActive(bool active) {
     UpdateManualHosts();
     UpdateManualURLs();
     GetURLFilter()->SetFilterInitialized(true);
+    current_web_filter_type_ = url_filter_->GetWebFilterType();
   } else {
     // 5. Destroy filter.
     url_filter_->Clear();
@@ -298,11 +299,23 @@ void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
   for (SupervisedUserServiceObserver& observer : observer_list_) {
     observer.OnURLFilterChanged();
   }
+
+  WebFilterType filter_type = url_filter_->GetWebFilterType();
+  if (current_web_filter_type_ != filter_type) {
+    url_filter_->ReportWebFilterTypeMetrics();
+    current_web_filter_type_ = filter_type;
+  }
 }
 
 void SupervisedUserService::OnSafeSitesSettingChanged() {
   for (SupervisedUserServiceObserver& observer : observer_list_) {
     observer.OnURLFilterChanged();
+  }
+
+  WebFilterType filter_type = url_filter_->GetWebFilterType();
+  if (current_web_filter_type_ != filter_type) {
+    url_filter_->ReportWebFilterTypeMetrics();
+    current_web_filter_type_ = filter_type;
   }
 }
 
@@ -310,14 +323,16 @@ void SupervisedUserService::UpdateManualHosts() {
   const base::Value::Dict& dict =
       user_prefs_->GetDict(prefs::kSupervisedUserManualHosts);
   std::map<std::string, bool> host_map;
-  for (auto&& [host, value] : dict) {
-    DCHECK(value.is_bool());
-    host_map[host] = value.GetIfBool().value_or(false);
+  for (auto it : dict) {
+    DCHECK(it.second.is_bool());
+    host_map[it.first] = it.second.GetIfBool().value_or(false);
   }
 
-  url_filter_->SetManualHosts(std::move(host_map));
-  for (SupervisedUserServiceObserver& observer : observer_list_) {
-    observer.OnURLFilterChanged();
+  if (url_filter_->SetManualHosts(std::move(host_map))) {
+    for (SupervisedUserServiceObserver& observer : observer_list_) {
+      observer.OnURLFilterChanged();
+    }
+    url_filter_->ReportManagedSiteListMetrics();
   }
 }
 
@@ -325,14 +340,16 @@ void SupervisedUserService::UpdateManualURLs() {
   const base::Value::Dict& dict =
       user_prefs_->GetDict(prefs::kSupervisedUserManualURLs);
   std::map<GURL, bool> url_map;
-  for (auto&& [url, value] : dict) {
-    DCHECK(value.is_bool());
-    url_map[GURL(url)] = value.GetIfBool().value_or(false);
+  for (auto it : dict) {
+    DCHECK(it.second.is_bool());
+    url_map[GURL(it.first)] = it.second.GetIfBool().value_or(false);
   }
 
-  url_filter_->SetManualURLs(std::move(url_map));
-  for (SupervisedUserServiceObserver& observer : observer_list_) {
-    observer.OnURLFilterChanged();
+  if (url_filter_->SetManualURLs(std::move(url_map))) {
+    for (SupervisedUserServiceObserver& observer : observer_list_) {
+      observer.OnURLFilterChanged();
+    }
+    url_filter_->ReportManagedSiteListMetrics();
   }
 }
 

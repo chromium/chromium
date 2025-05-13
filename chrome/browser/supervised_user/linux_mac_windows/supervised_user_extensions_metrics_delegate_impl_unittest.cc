@@ -50,8 +50,7 @@ class SupervisedUserExtensionsMetricsDelegateImplTest
 
     supervised_user_metrics_service_ =
         std::make_unique<supervised_user::SupervisedUserMetricsService>(
-            profile()->GetPrefs(),
-            *SupervisedUserServiceFactory::GetForProfile(profile_.get()),
+            profile()->GetPrefs(), GetURLFilter(),
             std::make_unique<SupervisedUserExtensionsMetricsDelegateImpl>(
                 extensions::ExtensionRegistry::Get(profile()), profile()));
     CHECK(supervised_user_metrics_service_);
@@ -67,6 +66,12 @@ class SupervisedUserExtensionsMetricsDelegateImplTest
   int GetDayIdPref() {
     return profile()->GetPrefs()->GetInteger(
         prefs::kSupervisedUserMetricsDayId);
+  }
+
+  supervised_user::SupervisedUserURLFilter* GetURLFilter() {
+    supervised_user::SupervisedUserService* service =
+        SupervisedUserServiceFactory::GetForProfile(profile_.get());
+    return service->GetURLFilter();
   }
 
   base::HistogramTester histogram_tester_;

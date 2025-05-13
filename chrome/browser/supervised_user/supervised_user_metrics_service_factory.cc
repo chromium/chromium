@@ -71,7 +71,7 @@ SupervisedUserMetricsServiceFactory::BuildServiceInstanceForBrowserContext(
 
   return std::make_unique<supervised_user::SupervisedUserMetricsService>(
       profile->GetPrefs(),
-      *SupervisedUserServiceFactory::GetForProfile(profile),
+      SupervisedUserServiceFactory::GetForProfile(profile)->GetURLFilter(),
       std::move(extensions_metrics_delegate));
 }
 

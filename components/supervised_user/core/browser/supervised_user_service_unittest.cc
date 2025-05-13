@@ -26,7 +26,6 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_sync_data_fake.h"
@@ -39,28 +38,15 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
-#include "supervised_user_metrics_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace supervised_user {
 namespace {
 
-constexpr char kWebFilterTypeHistogramName[] = "FamilyUser.WebFilterType";
-constexpr char kManagedSiteListHistogramName[] = "FamilyUser.ManagedSiteList";
-constexpr char kApprovedSitesCountHistogramName[] =
-    "FamilyUser.ManagedSiteListCount.Approved";
-constexpr char kBlockedSitesCountHistogramName[] =
-    "FamilyUser.ManagedSiteListCount.Blocked";
-
 const char kExampleUrl0[] = "http://www.example0.com";
 const char kExampleUrl1[] = "http://www.example1.com/123";
 
-class SupervisedUserMetricsServiceExtensionDelegateFake
-    : public SupervisedUserMetricsService::
-          SupervisedUserMetricsServiceExtensionDelegate {
-  bool RecordExtensionsMetrics() override { return false; }
-};
 
 class SupervisedUserServiceTestBase : public ::testing::Test {
  public:
@@ -82,13 +68,8 @@ class SupervisedUserServiceTestBase : public ::testing::Test {
         settings_service_, &sync_service_,
         std::make_unique<FakeURLFilterDelegate>(),
         std::make_unique<FakePlatformDelegate>());
-    service_->Init();
 
-    SupervisedUserMetricsService::RegisterProfilePrefs(
-        syncable_pref_service_.registry());
-    metrics_service_ = std::make_unique<SupervisedUserMetricsService>(
-        &syncable_pref_service_, *service_,
-        std::make_unique<SupervisedUserMetricsServiceExtensionDelegateFake>());
+    service_->Init();
   }
 
   void TearDown() override {
@@ -106,8 +87,8 @@ class SupervisedUserServiceTestBase : public ::testing::Test {
   sync_preferences::TestingPrefServiceSyncable syncable_pref_service_;
   SupervisedUserSyncDataFake supervised_user_sync_data_fake_;
   SupervisedUserSettingsService settings_service_;
+
   std::unique_ptr<SupervisedUserService> service_;
-  std::unique_ptr<SupervisedUserMetricsService> metrics_service_;
 };
 
 class SupervisedUserServiceTest : public SupervisedUserServiceTestBase {
@@ -157,29 +138,33 @@ TEST_F(SupervisedUserServiceTest, WebFilterTypeOnPrefsChange) {
 
   // This should not increase since setting user pref `kSupervisedUserSafeSites`
   // true won't take precedence over SupervisedUserPrefStore.
-  histogram_tester.ExpectUniqueSample(kWebFilterTypeHistogramName,
-                                      /*sample=*/
-                                      WebFilterType::kTryToBlockMatureSites,
-                                      /*expected_bucket_count=*/0);
+  histogram_tester.ExpectUniqueSample(
+      SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
+      /*sample=*/
+      WebFilterType::kTryToBlockMatureSites,
+      /*expected_bucket_count=*/0);
 
   // This configuration sets URL Filter in WebFilterType::kAllowAllSites mode.
   syncable_pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
                                                base::Value(false));
-  histogram_tester.ExpectBucketCount(kWebFilterTypeHistogramName,
-                                     /*sample=*/
-                                     WebFilterType::kAllowAllSites,
-                                     /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
+      /*sample=*/
+      WebFilterType::kAllowAllSites,
+      /*expected_count=*/1);
 
   // Tests filter "only allow certain sites".
   syncable_pref_service_.SetSupervisedUserPref(
       prefs::kDefaultSupervisedUserFilteringBehavior,
       base::Value(static_cast<int>(FilteringBehavior::kBlock)));
-  histogram_tester.ExpectBucketCount(kWebFilterTypeHistogramName,
-                                     /*sample=*/
-                                     WebFilterType::kCertainSites,
-                                     /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount(kWebFilterTypeHistogramName,
-                                    /*expected_count=*/2);
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
+      /*sample=*/
+      WebFilterType::kCertainSites,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
+      /*expected_count=*/2);
 }
 
 // Tests that changes to the allow or blocklist of the parent configuration are
@@ -203,14 +188,16 @@ TEST_F(SupervisedUserServiceTest, ManagedSiteListTypeMetricOnPrefsChange) {
   }
 
   histogram_tester.ExpectBucketCount(
-      kManagedSiteListHistogramName,
+      SupervisedUserURLFilter::GetManagedSiteListHistogramNameForTest(),
       /*sample=*/
       SupervisedUserURLFilter::ManagedSiteList::kBlockedListOnly,
       /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(kApprovedSitesCountHistogramName,
-                                     /*sample=*/0, /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(kBlockedSitesCountHistogramName,
-                                     /*sample=*/1, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserURLFilter::GetApprovedSitesCountHistogramNameForTest(),
+      /*sample=*/0, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest(),
+      /*sample=*/1, /*expected_count=*/1);
 
   // Approves `kExampleUrl0`.
   {
@@ -221,14 +208,16 @@ TEST_F(SupervisedUserServiceTest, ManagedSiteListTypeMetricOnPrefsChange) {
   }
 
   histogram_tester.ExpectBucketCount(
-      kManagedSiteListHistogramName,
+      SupervisedUserURLFilter::GetManagedSiteListHistogramNameForTest(),
       /*sample=*/
       SupervisedUserURLFilter::ManagedSiteList::kApprovedListOnly,
       /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(kApprovedSitesCountHistogramName,
-                                     /*sample=*/1, /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(kBlockedSitesCountHistogramName,
-                                     /*sample=*/0, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserURLFilter::GetApprovedSitesCountHistogramNameForTest(),
+      /*sample=*/1, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest(),
+      /*sample=*/0, /*expected_count=*/1);
 
   // Blocks `kExampleURL1`.
   {
@@ -239,21 +228,26 @@ TEST_F(SupervisedUserServiceTest, ManagedSiteListTypeMetricOnPrefsChange) {
   }
 
   histogram_tester.ExpectBucketCount(
-      kManagedSiteListHistogramName,
+      SupervisedUserURLFilter::GetManagedSiteListHistogramNameForTest(),
       /*sample=*/
       SupervisedUserURLFilter::ManagedSiteList::kBoth,
       /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(kApprovedSitesCountHistogramName,
-                                     /*sample=*/1, /*expected_count=*/2);
-  histogram_tester.ExpectBucketCount(kBlockedSitesCountHistogramName,
-                                     /*sample=*/1, /*expected_count=*/2);
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserURLFilter::GetApprovedSitesCountHistogramNameForTest(),
+      /*sample=*/1, /*expected_count=*/2);
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest(),
+      /*sample=*/1, /*expected_count=*/2);
 
-  histogram_tester.ExpectTotalCount(kManagedSiteListHistogramName,
-                                    /*expected_count=*/3);
-  histogram_tester.ExpectTotalCount(kApprovedSitesCountHistogramName,
-                                    /*expected_count=*/3);
-  histogram_tester.ExpectTotalCount(kBlockedSitesCountHistogramName,
-                                    /*expected_count=*/3);
+  histogram_tester.ExpectTotalCount(
+      SupervisedUserURLFilter::GetManagedSiteListHistogramNameForTest(),
+      /*expected_count=*/3);
+  histogram_tester.ExpectTotalCount(
+      SupervisedUserURLFilter::GetApprovedSitesCountHistogramNameForTest(),
+      /*expected_count=*/3);
+  histogram_tester.ExpectTotalCount(
+      SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest(),
+      /*expected_count=*/3);
 }
 
 class SupervisedUserServiceTestUnsupervised

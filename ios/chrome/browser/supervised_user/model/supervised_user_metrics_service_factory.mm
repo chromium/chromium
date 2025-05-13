@@ -35,6 +35,6 @@ SupervisedUserMetricsServiceFactory::BuildServiceInstanceFor(
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<supervised_user::SupervisedUserMetricsService>(
       profile->GetPrefs(),
-      *SupervisedUserServiceFactory::GetForProfile(profile),
+      SupervisedUserServiceFactory::GetForProfile(profile)->GetURLFilter(),
       /*extensions_metrics_delegate=*/nullptr);
 }

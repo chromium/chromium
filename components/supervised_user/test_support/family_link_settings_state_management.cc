@@ -204,10 +204,7 @@ bool UrlFiltersAreConfigured(const FamilyLinkSettingsState::Services& services,
 }
 
 bool UrlFiltersAreEmpty(const FamilyLinkSettingsState::Services& services) {
-  return services.supervised_user_service->GetURLFilter()
-             ->GetFilteringStatistics()
-             .GetManagedSiteList() ==
-         SupervisedUserURLFilter::ManagedSiteList::kEmpty;
+  return services.supervised_user_service->GetURLFilter()->IsManualHostsEmpty();
 }
 
 bool ToggleHasExpectedValue(const FamilyLinkSettingsState::Services& services,
