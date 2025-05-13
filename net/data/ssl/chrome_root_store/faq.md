@@ -1,5 +1,5 @@
 # Frequently Asked Questions
-Last updated: January 23, 2025
+Last updated: May 8, 2025
 
 [TOC]
 
@@ -8,18 +8,18 @@ Last updated: January 23, 2025
 ### What is the Chrome Root Store?
 Chrome uses
 [digital certificates](https://en.wikipedia.org/wiki/Public_key_certificate)
-(often referred to as “certificates,” “HTTPS certificates,” or “server
-authentication certificates”) to ensure the connections it makes on behalf
+(often referred to as "certificates," "HTTPS certificates," or "server
+authentication certificates") to ensure the connections it makes on behalf
 of its users are secure and private. Certificates bind a domain name to a
 public key, which Chrome uses to encrypt data sent to and from the
 corresponding website.
 
 As part of establishing a secure connection to a website, Chrome verifies
-that a recognized system known as a “Certification Authority” (CA) issued
+that a recognized system known as a "Certification Authority" (CA) issued
 its certificate. Certificates issued by a CA not recognized by Chrome or a
-user’s local settings can cause users to see warnings and error pages.
+user's local settings can cause users to see warnings and error pages.
 
-Root stores, sometimes called “trust stores,” tell operating systems and
+Root stores, sometimes called "trust stores," tell operating systems and
 applications what certificates to trust.
 
 The
@@ -70,11 +70,11 @@ during the certificate verification process.
 ### How can I apply for my CA's inclusion in the Chrome Root Store?
 CA Owners who meet the Chrome Root Program
 [policy](https://g.co/chrome/root-policy) requirements may apply for a CA
-certificate’s inclusion in the Chrome Root Store. CAs included in the
+certificate's inclusion in the Chrome Root Store. CAs included in the
 Chrome Root Store are expected to adhere to the Chrome Root Program policy
 and continue to operate in a consistent and trustworthy manner. A CA
-owner’s failure to follow the requirements defined in the Chrome Root
-Program policy may result in a CA certificate’s removal from the Chrome
+owner's failure to follow the requirements defined in the Chrome Root
+Program policy may result in a CA certificate's removal from the Chrome
 Root Store, limitations on Chrome's acceptance of the certificates they
 issue, or other technical or policy restrictions.
 
@@ -92,14 +92,6 @@ for the fastest delivery to the appropriate triage team.
 If you believe you've identified a Security Bug, follow
 [these](https://www.chromium.org/Home/chromium-security/reporting-security-bugs/)
 instructions.
-
-### Can I revert to the platform root store and verifier?
-An
-[enterprise policy](https://chromeenterprise.google/policies/?policy=ChromeRootStoreEnabled)
-was available for a limited time in support of troubleshooting during the
-transition to the Chrome Root Store and Chrome Certificate Verifier.
-
-This enterprise policy is now deprecated.
 
 ## Additional Information for Administrators, Engineers, and Power Users
 
@@ -131,7 +123,7 @@ Chrome will automatically include that change.
 Existing versions of Chrome [relying](#when-did-these-features-land) on the
 Chrome Root Store and capable of [receiving component updates](#how-is-the-chrome-root-store-updated)
 typically receive updated versions of the Chrome Root Store within 24-hours of
-the component’s release. Upon receiving the updated component, Chrome will rely
+the component's release. Upon receiving the updated component, Chrome will rely
 on the contents of the updated root store.
 
 Existing versions of Chrome *not* relying on the Chrome Root Store and/or that
@@ -141,7 +133,7 @@ installing a binary update following the publication of the updated root store.
 ### How does the Chrome Certificate Verifier consider local trust decisions?
 
 For TLS connections relying on the Transmission Control Protocol (TCP), the
- Chrome Certificate Verifier considers local trust decisions for both adding and
+Chrome Certificate Verifier considers local trust decisions for both adding and
 removing trust. Learn more [here](#how-does-the-chrome-certificate-verifier-integrate-with-platform-trust-stores-for-local-trust-decisions).
 
 For TLS connections relying on the Quick UDP Internet Connections (QUIC)
@@ -183,7 +175,6 @@ certificates **added** to the following certificate stores:
          set to "Always Trust" or
          - Any certificate where the "Secure Sockets Layer (SSL)" flag is
          set to "Always Trust."
-
     - Distrust:
          - Any certificate where the "When using this certificate" flag is
          set to "Never Trust" or
@@ -206,11 +197,58 @@ Authorities\Registry```, ```Trusted Root Certification Authorities\Group
 Policy```, or ```Trusted Root Certification Authorities\Enterprise```
 trust stores).
 
-### What about client authentication certificates?
-Historically, Chrome has integrated with platform certificate stores to
-support the use of client authentication certificates. This behavior is
-unchanged by the rollout of the Chrome Root Store and the Chrome
-Certificate Verifier.
+### Can I use the Chrome Root Store for my application's trust needs?
+
+The Chrome Root Store is optimized specifically for public TLS server
+authentication in scenarios that align with the security and
+[policy](https://googlechrome.github.io/chromerootprogram/) requirements of the
+Chrome web browser when establishing secure connections to websites. Its design
+and the Certification Authorities (CAs) included are curated to meet these
+particular user needs, risk profiles, and security objectives.
+
+While the contents of the Chrome Root Store are publicly available, applications
+with different use cases, risk profiles, or security objectives, such as
+authenticating client certificates, verifying email signatures, or validating
+the authenticity of signed code, may find that the Chrome Root Store isn't an
+ideal fit. Relying parties should carefully consider if their specific needs and
+risk tolerance mirror those of Chrome users browsing the web. For use cases
+beyond securing HTTPS connections, or where a different risk assessment is
+appropriate, exploring or establishing a more tailored trust solution might be
+more beneficial.
+
+### What's the Chrome Certificate Manager?
+The Chrome Certificate Manager unifies certificate management across the Chrome
+platforms [relying](#when-did-these-features-land) on the Chrome Root Store,
+offering a simple and common interface for modifying trust (e.g., adding
+certificates, constraining certificates, or removing certificates).
+
+It can be accessed by navigating to ```chrome://certificate-manager``` on Chrome
+134 and up.
+
+### Are there enterprise policies available to modify default certificate trust?
+Yes.
+
+Chrome's certificate management policies are described [here](https://chromeenterprise.google/policies/#CertificateManagement).
+
+### How does Chrome support client authentication use cases?
+Chrome integrates with platform certificate stores to support the use of client
+authentication certificates.
+
+Besides ensuring they are well-formed, Chrome passes client authentication
+certificates to relying servers, which then evaluate and enforce their chosen
+policy.
+
+### Does Chrome rely on the client authentication EKU when establishing secure connections to websites?
+No, Chrome does **not** depend on the id-kp-clientAuth Extended Key Usage (EKU)
+contained in server certificates when establishing secure connections to
+websites.
+
+Beginning [June 15, 2026](https://googlechrome.github.io/chromerootprogram/#322-pki-hierarchies-included-in-the-chrome-root-store),
+PKI hierarchies represented by a root CA certificate included in the Chrome Root
+Store are expected to only issue TLS server authentication certificates that
+contain *only* the id-kp-serverAuth EKU. This expectation does not apply to
+hierarchies whose corresponding root is not included in the Chrome Root Store
+(i.e., "enterprise", "private", or "only-locally trusted" PKI hierarchies).
 
 ### How can I tell which certificates are trusted by the Chrome Root Store?
 The most recent version of the Chrome Root Store is available
@@ -233,7 +271,7 @@ The set of constraints that may be applied to a CA certificate included in the
 Chrome Root Store is described [here](/net/cert/root_store.proto).
 
 To understand a constraint applied to a root included in the Chrome Root Store,
-view the certificate’s entry in [root_store.textproto](/net/data/ssl/chrome_root_store/root_store.textproto).
+view the certificate's entry in [root_store.textproto](/net/data/ssl/chrome_root_store/root_store.textproto).
 
 ### What criteria does the Chrome Certificate Verifier use to evaluate certificates?
 The Chrome Certificate Verifier applies standard processing to include
@@ -263,6 +301,5 @@ Source locations include
 and [//chrome/browser/component_updater/](/chrome/browser/component_updater/).
 
 ### Where is the Chrome Certificate Verifier source code located?
-Source locations include
-[//net/cert](/net/cert), [//net/cert/internal](/net/cert/internal), and
-[//net/cert/pki](/net/cert/pki).
+Source locations include [//net/cert](/net/cert),
+[//net/cert/internal](/net/cert/internal), and [//third_party/boringssl/src/pki/](https://boringssl.googlesource.com/boringssl/+/refs/heads/main/pki/).
