@@ -1,0 +1,2 @@
+Tests popup window open placement.
+Popup: {10,20 400x200}
