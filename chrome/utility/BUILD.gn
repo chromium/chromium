@@ -143,6 +143,7 @@ static_library("utility") {
       "//chrome/common:mojo_bindings",
       "//chrome/common/importer:interfaces",
       "//components/autofill/core/common",
+      "//components/user_data_importer/common",
       "//services/proxy_resolver:lib",
       "//services/screen_ai",
     ]

@@ -11,8 +11,8 @@
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "chrome/common/importer/importer_data_types.h"
-#include "chrome/common/importer/importer_url_row.h"
 #include "components/favicon_base/favicon_usage_data.h"
+#include "components/user_data_importer/common/importer_url_row.h"
 
 class GURL;
 struct ImportedBookmarkEntry;
@@ -37,8 +37,9 @@ class ImporterBridge : public base::RefCountedThreadSafe<ImporterBridge> {
   virtual void SetFavicons(
       const favicon_base::FaviconUsageDataList& favicons) = 0;
 
-  virtual void SetHistoryItems(const std::vector<ImporterURLRow>& rows,
-                               importer::VisitSource visit_source) = 0;
+  virtual void SetHistoryItems(
+      const std::vector<user_data_importer::ImporterURLRow>& rows,
+      importer::VisitSource visit_source) = 0;
 
   virtual void SetKeywords(
       const std::vector<importer::SearchEngineInfo>& search_engines,

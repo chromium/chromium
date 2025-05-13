@@ -11,9 +11,9 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "chrome/common/importer/importer_url_row.h"
 #include "chrome/utility/importer/importer.h"
 #include "components/favicon_base/favicon_usage_data.h"
+#include "components/user_data_importer/common/importer_url_row.h"
 
 struct ImportedBookmarkEntry;
 

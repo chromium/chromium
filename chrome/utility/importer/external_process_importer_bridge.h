@@ -16,10 +16,13 @@
 
 class GURL;
 struct ImportedBookmarkEntry;
-struct ImporterURLRow;
 
 namespace importer {
 struct SearchEngineInfo;
+}
+
+namespace user_data_importer {
+struct ImporterURLRow;
 }
 
 // TODO(tibell): Now that profile import is a Mojo service perhaps ImportBridge,
@@ -50,8 +53,9 @@ class ExternalProcessImporterBridge : public ImporterBridge {
 
   void SetFavicons(const favicon_base::FaviconUsageDataList& favicons) override;
 
-  void SetHistoryItems(const std::vector<ImporterURLRow>& rows,
-                       importer::VisitSource visit_source) override;
+  void SetHistoryItems(
+      const std::vector<user_data_importer::ImporterURLRow>& rows,
+      importer::VisitSource visit_source) override;
 
   void SetKeywords(
       const std::vector<importer::SearchEngineInfo>& search_engines,

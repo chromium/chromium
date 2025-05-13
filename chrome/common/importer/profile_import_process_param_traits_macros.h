@@ -12,8 +12,8 @@
 #include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
 #include "chrome/common/importer/importer_data_types.h"
-#include "chrome/common/importer/importer_url_row.h"
 #include "components/favicon_base/favicon_usage_data.h"
+#include "components/user_data_importer/common/importer_url_row.h"
 #include "content/public/common/common_param_traits.h"
 #include "ipc/ipc_message_macros.h"
 
@@ -40,7 +40,7 @@ IPC_STRUCT_TRAITS_BEGIN(importer::SourceProfile)
   IPC_STRUCT_TRAITS_MEMBER(locale)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(ImporterURLRow)
+IPC_STRUCT_TRAITS_BEGIN(user_data_importer::ImporterURLRow)
   IPC_STRUCT_TRAITS_MEMBER(url)
   IPC_STRUCT_TRAITS_MEMBER(title)
   IPC_STRUCT_TRAITS_MEMBER(visit_count)

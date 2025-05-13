@@ -82,7 +82,7 @@ void ExternalProcessImporterBridge::SetFavicons(
 }
 
 void ExternalProcessImporterBridge::SetHistoryItems(
-    const std::vector<ImporterURLRow>& rows,
+    const std::vector<user_data_importer::ImporterURLRow>& rows,
     importer::VisitSource visit_source) {
   observer_->OnHistoryImportStart(rows.size());
 
@@ -91,7 +91,7 @@ void ExternalProcessImporterBridge::SetHistoryItems(
   // (i.e., |it + 2 < s.end()| crashes in debug mode if |i + 1 == s.end()|).
   int rows_left = rows.end() - rows.begin();
   for (auto it = rows.begin(); it < rows.end();) {
-    std::vector<ImporterURLRow> row_group;
+    std::vector<user_data_importer::ImporterURLRow> row_group;
     auto end_group = it + std::min(rows_left, kNumHistoryRowsToSend);
     row_group.assign(it, end_group);
 

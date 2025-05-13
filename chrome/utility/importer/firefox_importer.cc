@@ -20,10 +20,10 @@
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
 #include "chrome/common/importer/importer_bridge.h"
 #include "chrome/common/importer/importer_data_types.h"
-#include "chrome/common/importer/importer_url_row.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/utility/importer/bookmark_html_reader.h"
 #include "chrome/utility/importer/favicon_reencode.h"
+#include "components/user_data_importer/common/importer_url_row.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "url/gurl.h"
@@ -200,7 +200,7 @@ void FirefoxImporter::ImportHistory() {
 
   sql::Statement s(db.GetUniqueStatement(query));
 
-  std::vector<ImporterURLRow> rows;
+  std::vector<user_data_importer::ImporterURLRow> rows;
   while (s.Step() && !cancelled()) {
     GURL url(s.ColumnStringView(0));
 
@@ -208,7 +208,7 @@ void FirefoxImporter::ImportHistory() {
     if (!CanImportURL(url))
       continue;
 
-    ImporterURLRow row(url);
+    user_data_importer::ImporterURLRow row(url);
     row.title = s.ColumnString16(1);
     row.visit_count = s.ColumnInt(2);
     row.hidden = s.ColumnInt(3) == 1;

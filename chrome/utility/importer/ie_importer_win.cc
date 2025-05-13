@@ -40,10 +40,10 @@
 #include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_bridge.h"
 #include "chrome/common/importer/importer_data_types.h"
-#include "chrome/common/importer/importer_url_row.h"
 #include "chrome/common/importer/pstore_declarations.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/utility/importer/favicon_reencode.h"
+#include "components/user_data_importer/common/importer_url_row.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -495,7 +495,7 @@ void IEImporter::ImportHistory() {
   }
   Microsoft::WRL::ComPtr<IEnumSTATURL> enum_url;
   if (SUCCEEDED(url_history_stg2->EnumUrls(&enum_url))) {
-    std::vector<ImporterURLRow> rows;
+    std::vector<user_data_importer::ImporterURLRow> rows;
     STATURL stat_url;
 
     // IEnumSTATURL::Next() doesn't fill STATURL::dwFlags by default. Need to
@@ -522,7 +522,7 @@ void IEImporter::ImportHistory() {
       if (!url.is_valid() || !base::Contains(kSchemes, url.scheme()))
         continue;
 
-      ImporterURLRow row(url);
+      user_data_importer::ImporterURLRow row(url);
       row.title = base::AsString16(title_string);
       row.last_visit = base::Time::FromFileTime(stat_url.ftLastVisited);
       if (stat_url.dwFlags == STATURLFLAG_ISTOPLEVEL) {

@@ -36,7 +36,7 @@ mojom("interfaces") {
         },
         {
           mojom = "chrome.mojom.ImporterURLRow"
-          cpp = "::ImporterURLRow"
+          cpp = "::user_data_importer::ImporterURLRow"
         },
         {
           mojom = "chrome.mojom.SearchEngineInfo"
@@ -59,8 +59,8 @@ mojom("interfaces") {
         "//chrome/common/importer/imported_bookmark_entry.h",
         "//chrome/common/importer/importer_autofill_form_data_entry.h",
         "//chrome/common/importer/importer_data_types.h",
-        "//chrome/common/importer/importer_url_row.h",
         "//components/favicon_base/favicon_usage_data.h",
+        "//components/user_data_importer/common/importer_url_row.h",
       ]
       traits_private_headers = [
         "profile_import_process_param_traits.h",
@@ -71,6 +71,7 @@ mojom("interfaces") {
         "//chrome/common",
         "//components/autofill/core/common",
         "//components/favicon_base",
+        "//components/user_data_importer/common",
         "//ipc",
       ]
     },
@@ -90,8 +91,6 @@ source_set("importer") {
     "importer_data_types.cc",
     "importer_data_types.h",
     "importer_type.h",
-    "importer_url_row.cc",
-    "importer_url_row.h",
     "pstore_declarations.h",
   ]
   if (is_chromeos || is_linux) {
@@ -118,6 +117,7 @@ source_set("importer") {
     "//chrome/app:generated_resources",
     "//chrome/common:ini_parser",
     "//components/favicon_base",
+    "//components/user_data_importer/common",
     "//content/public/common",
     "//ui/base",
     "//url",

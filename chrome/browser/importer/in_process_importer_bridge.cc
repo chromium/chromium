@@ -27,7 +27,7 @@
 namespace {
 
 history::URLRows ConvertImporterURLRowsToHistoryURLRows(
-    const std::vector<ImporterURLRow>& rows) {
+    const std::vector<user_data_importer::ImporterURLRow>& rows) {
   history::URLRows converted;
   converted.reserve(rows.size());
   for (auto it = rows.begin(); it != rows.end(); ++it) {
@@ -124,7 +124,7 @@ void InProcessImporterBridge::SetFavicons(
 }
 
 void InProcessImporterBridge::SetHistoryItems(
-    const std::vector<ImporterURLRow>& rows,
+    const std::vector<user_data_importer::ImporterURLRow>& rows,
     importer::VisitSource visit_source) {
   history::URLRows converted_rows =
       ConvertImporterURLRowsToHistoryURLRows(rows);

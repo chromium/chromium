@@ -188,6 +188,7 @@ include_rules = [
   "+components/history/core/test",
   "+components/history/metrics",
   "+components/image_fetcher/core",
+  "+components/user_data_importer/common",
   "+components/infobars/android",
   "+components/infobars/content",
   "+components/infobars/core",

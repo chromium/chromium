@@ -16,10 +16,10 @@
 #include "build/build_config.h"
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
 #include "chrome/common/importer/importer_data_types.h"
-#include "chrome/common/importer/importer_url_row.h"
 #include "chrome/common/importer/profile_import.mojom.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/user_data_importer/common/importer_url_row.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -63,7 +63,7 @@ class ExternalProcessImporterClient
   void OnImportItemFinished(importer::ImportItem item) override;
   void OnHistoryImportStart(uint32_t total_history_rows_count) override;
   void OnHistoryImportGroup(
-      const std::vector<ImporterURLRow>& history_rows_group,
+      const std::vector<user_data_importer::ImporterURLRow>& history_rows_group,
       int visit_source) override;
   void OnHomePageImportReady(const GURL& home_page) override;
   void OnBookmarksImportStart(const std::u16string& first_folder_name,
@@ -103,7 +103,7 @@ class ExternalProcessImporterClient
 
   // These variables store data being collected from the importer until the
   // entire group has been collected and is ready to be written to the profile.
-  std::vector<ImporterURLRow> history_rows_;
+  std::vector<user_data_importer::ImporterURLRow> history_rows_;
   std::vector<ImportedBookmarkEntry> bookmarks_;
   favicon_base::FaviconUsageDataList favicons_;
   std::vector<ImporterAutofillFormDataEntry> autofill_form_data_;

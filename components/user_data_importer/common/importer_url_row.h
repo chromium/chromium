@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_IMPORTER_IMPORTER_URL_ROW_H_
-#define CHROME_COMMON_IMPORTER_IMPORTER_URL_ROW_H_
+#ifndef COMPONENTS_USER_DATA_IMPORTER_COMMON_IMPORTER_URL_ROW_H_
+#define COMPONENTS_USER_DATA_IMPORTER_COMMON_IMPORTER_URL_ROW_H_
 
 #include <string>
 
 #include "base/time/time.h"
 #include "url/gurl.h"
+
+namespace user_data_importer {
 
 // Used as the target for importing history URLs from other browser's profiles
 // in the utility process. Converted to history::URLRow after being passed via
@@ -38,4 +40,6 @@ struct ImporterURLRow {
   bool hidden;
 };
 
-#endif  // CHROME_COMMON_IMPORTER_IMPORTER_URL_ROW_H_
+}  // namespace user_data_importer
+
+#endif  // COMPONENTS_USER_DATA_IMPORTER_COMMON_IMPORTER_URL_ROW_H_

@@ -1,0 +1,14 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("common") {
+  sources = [
+    "importer_url_row.cc",
+    "importer_url_row.h",
+  ]
+  deps = [
+    "//base",
+    "//url",
+  ]
+}
