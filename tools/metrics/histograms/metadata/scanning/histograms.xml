@@ -34,7 +34,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.DiscoverySession.MaxInterval" units="ms"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>

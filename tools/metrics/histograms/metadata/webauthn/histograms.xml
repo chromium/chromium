@@ -257,7 +257,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.CredentialFetchDuration.{ApiUsed}"
-    units="ms" expires_after="2025-09-07">
+    units="ms" expires_after="2025-11-09">
   <owner>kenrb@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
@@ -294,7 +294,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.EnclaveEvent"
-    enum="WebAuthenticationEnclaveEvent" expires_after="2025-09-07">
+    enum="WebAuthenticationEnclaveEvent" expires_after="2025-11-09">
   <owner>agl@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
@@ -450,7 +450,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.MakeCredential.Result"
-    enum="WebAuthenticationCredentialRequestResult" expires_after="2025-09-07">
+    enum="WebAuthenticationCredentialRequestResult" expires_after="2025-11-09">
   <owner>kenrb@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>Records the result of a make credential request.</summary>
@@ -561,7 +561,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Windows.KeyCredentialCreation"
-    enum="WindowsKeyCredentialCreateResult" expires_after="2025-09-07">
+    enum="WindowsKeyCredentialCreateResult" expires_after="2025-11-09">
   <owner>kenrb@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
@@ -573,7 +573,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Windows.KeyCredentialManagerSupported"
-    enum="WindowsKeyCredentialManagerSupportResults" expires_after="2025-07-06">
+    enum="WindowsKeyCredentialManagerSupportResults" expires_after="2025-11-09">
   <owner>kenrb@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>

@@ -889,7 +889,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.BrowsingInstance.MaxCountPerProcess"
-    units="units" expires_after="2025-09-07">
+    units="units" expires_after="2025-11-09">
   <owner>wjmaclean@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <summary>

@@ -547,7 +547,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.iOS.UTE.DeviceThermalState"
-    enum="IOSDeviceThermalState" expires_after="2025-07-27">
+    enum="IOSDeviceThermalState" expires_after="2025-11-09">
   <owner>michaeldo@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>

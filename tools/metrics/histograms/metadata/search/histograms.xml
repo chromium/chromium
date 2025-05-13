@@ -122,7 +122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.AuxiliarySearch.DonateTime" units="ms"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>gangwu@chromium.org</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>Time taken for donating contents to the auxiliary search.</summary>
@@ -1446,7 +1446,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.SearchEngineCountryDelegate.Connection{Result}Time"
-    units="ms" expires_after="2025-09-07">
+    units="ms" expires_after="2025-11-09">
   <owner>triploblastic@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <summary>
@@ -1465,7 +1465,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.SearchEngineCountryDelegate.Fetch{Result}Time"
-    units="ms" expires_after="2025-09-07">
+    units="ms" expires_after="2025-11-09">
   <owner>triploblastic@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <summary>
@@ -1485,7 +1485,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.SearchEngineCountryDelegate.ServiceBindStatus"
-    enum="BooleanStartedCompleted" expires_after="2025-09-07">
+    enum="BooleanStartedCompleted" expires_after="2025-11-09">
   <owner>triploblastic@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <summary>

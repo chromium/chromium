@@ -193,7 +193,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Cookie.CrossSiteRedirectDowngradeChangesInclusion2.{AccessType}"
-    enum="CookieSameSite2" expires_after="2025-09-07">
+    enum="CookieSameSite2" expires_after="2025-11-09">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
@@ -507,7 +507,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.FromStorageWithValidLength" enum="BooleanValid"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>bingler@chromium.org</owner>
   <owner>awillia@chromium.org</owner>
   <summary>

@@ -1099,7 +1099,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.ModelExecution.OnDeviceModelStatusAtUseTime"
-    enum="OptimizationGuideOnDeviceModelStatus" expires_after="2025-09-07">
+    enum="OptimizationGuideOnDeviceModelStatus" expires_after="2025-11-09">
   <owner>harringtond@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -1125,7 +1125,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.OnDeviceModelValidationResult"
-    enum="OnDeviceModelValidationResult" expires_after="2025-08-31">
+    enum="OnDeviceModelValidationResult" expires_after="2025-11-09">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -1347,7 +1347,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecutor.ExecutionThreadTime.{OptimizationTarget}"
-    units="ms" expires_after="2025-09-07">
+    units="ms" expires_after="2025-11-09">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1407,7 +1407,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecutor.TaskExecutionLatency.{OptimizationTarget}"
-    units="ms" expires_after="2025-09-07">
+    units="ms" expires_after="2025-11-09">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1801,7 +1801,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionManager.IsDownloadUrlValid.{OptimizationTarget}"
-    enum="BooleanValid" expires_after="2025-09-07">
+    enum="BooleanValid" expires_after="2025-11-09">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -1946,7 +1946,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionModelFetcher.GetModelsResponse.NetErrorCode"
-    enum="NetErrorCodes" expires_after="2025-09-07">
+    enum="NetErrorCodes" expires_after="2025-11-09">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>

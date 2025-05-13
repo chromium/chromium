@@ -59,7 +59,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.AddBookmarkType" enum="BookmarkType"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.AverageNodeSize" units="Bytes"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -390,7 +390,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.OpenBookmarkType" enum="BookmarkType"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -400,7 +400,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Opened.TimeSinceAdded" units="days"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -435,7 +435,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.ReadingList.NumberOfItems" units="items"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -519,7 +519,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Storage.FileSizeAtStartup2" units="KB"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -701,7 +701,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Utilization.OnProfileLoad.PercentageUsed"
-    units="Percentage (0-100)" expires_after="2025-09-07">
+    units="Percentage (0-100)" expires_after="2025-11-09">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -721,7 +721,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Utilization.OnProfileLoad.TotalUsed"
-    units="Bookmarks" expires_after="2025-09-07">
+    units="Bookmarks" expires_after="2025-11-09">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>

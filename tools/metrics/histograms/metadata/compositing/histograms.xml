@@ -489,7 +489,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Display.OverlayProcessorOzone.MaxPlanesSupported"
-    units="units" expires_after="2025-09-07">
+    units="units" expires_after="2025-11-09">
   <owner>harthuang@google.com</owner>
   <owner>fangzhoug@chromium.org</owner>
   <owner>petermcneeley@chromium.org</owner>
@@ -574,7 +574,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Compositing.Display.OverlayProcessorUsingStrategy.ShouldAttemptMultipleOverlays"
-    enum="AttemptingMultipleOverlays" expires_after="2025-09-07">
+    enum="AttemptingMultipleOverlays" expires_after="2025-11-09">
   <owner>harthuang@google.com</owner>
   <owner>fangzhoug@chromium.org</owner>
   <owner>petermcneeley@chromium.org</owner>
@@ -1146,7 +1146,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Graphics.Exo.Smoothness.BeginFrameArrivalToSubmission"
-    units="microseconds" expires_after="2025-09-07">
+    units="microseconds" expires_after="2025-11-09">
   <owner>jonross@chromium.org</owner>
   <owner>yzshen@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>

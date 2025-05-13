@@ -553,7 +553,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.Ads.AdPaintTiming.TopFrameNavigationToFirstAdFirstContentfulPaintAfter{Result}{AuctionType}Auction"
-    units="ms" expires_after="2025-09-07">
+    units="ms" expires_after="2025-11-09">
   <owner>abigailkatcoff@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -718,7 +718,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.AMP.InteractiveTiming.NumInteractions.Subframe"
-    units="Count" expires_after="2025-09-07">
+    units="Count" expires_after="2025-11-09">
   <owner>iclelland@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -822,7 +822,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.AMP.PaintTiming.InputToFirstContentfulPaint.Subframe"
-    units="ms" expires_after="2025-09-07">
+    units="ms" expires_after="2025-11-09">
   <owner>iclelland@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -993,7 +993,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleHomepage.DomainLookupTiming.NavigationToDomainLookupEnd.{NavigationCountType}{BrowserInitializationStatus}"
-    units="ms" expires_after="2025-08-10">
+    units="ms" expires_after="2025-11-09">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1033,7 +1033,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleHomepage.NavigationTiming.NavigationToConnectStart.{NavigationCountType}{BrowserInitializationStatus}"
-    units="ms" expires_after="2025-08-10">
+    units="ms" expires_after="2025-11-09">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -3058,7 +3058,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Experimental.NavigationTiming.NavigationStartToFinalResponseStart"
-    units="ms" expires_after="2025-08-31">
+    units="ms" expires_after="2025-11-09">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -3106,7 +3106,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Experimental.NavigationTiming.NavigationStartToNavigationCommitSent"
-    units="ms" expires_after="2025-08-31">
+    units="ms" expires_after="2025-11-09">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -3469,7 +3469,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.InteractiveTiming.ProcessingTime" units="ms"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -4158,7 +4158,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint.{Scheme}"
-    units="ms" expires_after="2025-09-07">
+    units="ms" expires_after="2025-11-09">
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>

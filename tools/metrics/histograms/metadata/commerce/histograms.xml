@@ -42,7 +42,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </variants>
 
 <histogram name="Commerce.BottomSheet.BrowsingTime" units="ms"
-    expires_after="2025-07-27">
+    expires_after="2025-11-09">
   <owner>qib@google.com</owner>
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>

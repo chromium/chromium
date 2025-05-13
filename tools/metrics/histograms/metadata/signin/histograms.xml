@@ -358,7 +358,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountInPref.State" enum="AccountInPrefState"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>rsult@google.com</owner>
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -1581,7 +1581,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Intercept.ChromeSignin.NumberOfDaysSinceLastDecline"
-    units="Days" expires_after="2025-09-07">
+    units="Days" expires_after="2025-11-09">
   <owner>rsult@google.com</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -1593,7 +1593,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Intercept.ChromeSignin.RepromptCount" units="reprompts"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>rsult@google.com</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -1648,7 +1648,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Intercept.Heuristic.SupervisionState.{InterceptType}"
-    enum="SinginInterceptSupervisionState" expires_after="2025-09-07">
+    enum="SinginInterceptSupervisionState" expires_after="2025-11-09">
   <owner>anthie@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -2303,7 +2303,7 @@ should be kept to monitor/debug signin Multilogin issues-->
 </histogram>
 
 <histogram name="Signin.PAMInitialize.PrimaryAccountInfoState"
-    enum="PAMInitializePrimaryAccountInfoState" expires_after="2025-08-24">
+    enum="PAMInitializePrimaryAccountInfoState" expires_after="2025-11-09">
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -2618,7 +2618,7 @@ OAuth Multilogin call. -->
 </histogram>
 
 <histogram name="Signin.SignIn.Offered{AccountState}" enum="SigninAccessPoint"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>bsazonov@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -2777,7 +2777,7 @@ OAuth Multilogin call. -->
 </histogram>
 
 <histogram name="Signin.SignInPromo.{UserAction}" enum="SigninAccessPoint"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>amelies@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

@@ -141,7 +141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.CriticalFonts.CriticalFontDelay" units="ms"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -154,7 +154,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.CriticalFonts.PreloadedFontsLoadTime" units="ms"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -554,7 +554,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.RenderThreadImpl.Init" units="ms"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>jam@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>

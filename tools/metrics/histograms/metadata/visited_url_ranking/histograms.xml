@@ -24,7 +24,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="GroupSuggestionsService.OpenedTabCount.Last10Mins"
-    units="counts" expires_after="2025-08-22">
+    units="counts" expires_after="2025-11-09">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>

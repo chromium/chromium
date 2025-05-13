@@ -1335,7 +1335,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Boca.PollingResult" enum="BocaPollingResult"
-    expires_after="2025-09-04">
+    expires_after="2025-11-09">
   <owner>aprilzhou@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -2193,7 +2193,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.SearchResultsPanelShown.{TabletOrClamshellMode}"
-    enum="Boolean" expires_after="2025-09-07">
+    enum="Boolean" expires_after="2025-11-09">
   <owner>hewer@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -3382,7 +3382,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DozeMode.{PowerStatus}.Duration" units="ms"
-    expires_after="2025-09-10">
+    expires_after="2025-11-09">
   <owner>yichenz@google.com</owner>
   <owner>xiyuan@google.com</owner>
   <summary>
@@ -4177,7 +4177,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.GameDashboard.ToggleMainMenu.{OnOrOff}"
-    enum="GameDashboardMainMenuToggleMethod" expires_after="2025-09-07">
+    enum="GameDashboardMainMenuToggleMethod" expires_after="2025-11-09">
   <owner>cuicuiruan@google.com</owner>
   <owner>phshah@chromium.org</owner>
   <summary>
@@ -5205,7 +5205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.MagicBoost.DisclaimerView.{OptInFeatures}"
-    enum="DisclaimerViewAction" expires_after="2025-09-07">
+    enum="DisclaimerViewAction" expires_after="2025-11-09">
   <owner>leandre@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -5261,7 +5261,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Mahi.QuestionCountPerMahiSession" units="count"
-    expires_after="2025-08-10">
+    expires_after="2025-11-09">
   <owner>andrewxu@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -5271,7 +5271,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Mahi.QuestionSource" enum="MahiQuestionSource"
-    expires_after="2025-08-10">
+    expires_after="2025-11-09">
   <owner>andrewxu@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -5281,7 +5281,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Mahi.Summary.LoadingTime" units="ms"
-    expires_after="2025-08-10">
+    expires_after="2025-11-09">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -5724,7 +5724,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.NotificationResource.ImageMemorySizeInKB" units="KB"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>andrewxu@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -6106,7 +6106,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.OSAuth.Login.ConfiguredAuthFactors.{AuthFactor}"
-    enum="Boolean" expires_after="2025-09-07">
+    enum="Boolean" expires_after="2025-11-09">
   <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -6153,7 +6153,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.OSAuth.{AuthenticationSurface}.NbPasswordAttempts.{AuthenticationOutcome}"
-    units="attempts" expires_after="2025-09-07">
+    units="attempts" expires_after="2025-11-09">
   <owner>emaamari@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -6222,7 +6222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.DelayedDeskBar.PresentationTime" units="ms"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>esum@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -7647,7 +7647,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.Api.Thumbnails.Count" units="count"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7679,7 +7679,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.Api.{Type}.Latency" units="ms"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -7709,7 +7709,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.CreateButton" enum="SeaPenTemplateId"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>ericamlee@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -9550,7 +9550,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WindowCycleController.Enter.PresentationTime" units="ms"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -9648,7 +9648,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WindowCycleView.AnimationSmoothness.Container" units="%"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>yichenz@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -9663,7 +9663,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WindowCycleView.AnimationSmoothness.Show" units="%"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>yichenz@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>

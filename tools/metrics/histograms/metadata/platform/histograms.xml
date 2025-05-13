@@ -821,7 +821,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FbPreprocessor.Pseudonymization.DumpType"
-    enum="Platform.FbPreprocessor.FirmwareType" expires_after="2025-09-07">
+    enum="Platform.FbPreprocessor.FirmwareType" expires_after="2025-11-09">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -833,7 +833,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.FbPreprocessor.{FirmwareType}.Collection.Allowed"
     enum="Platform.FbPreprocessor.CollectionAllowedStatus"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -845,7 +845,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FbPreprocessor.{FirmwareType}.Output.Number"
-    units="count" expires_after="2025-09-07">
+    units="count" expires_after="2025-11-09">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -859,7 +859,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Platform.FbPreprocessor.{FirmwareType}.Pseudonymization.Result"
     enum="Platform.FbPreprocessor.PseudonymizationResult"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1923,7 +1923,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Modemfwd.DlcUninstallResult"
-    enum="ModemfwdDlcUninstallResult" expires_after="2025-09-01">
+    enum="ModemfwdDlcUninstallResult" expires_after="2025-11-09">
   <owner>andrewlassalle@google.com</owner>
   <owner>ujjwalpande@google.com</owner>
   <summary>
@@ -1954,7 +1954,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Modemfwd.FWUpdateLocation"
-    enum="ModemfwdFWUpdateLocation" expires_after="2025-07-13">
+    enum="ModemfwdFWUpdateLocation" expires_after="2025-11-09">
   <owner>andrewlassalle@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>

@@ -1460,7 +1460,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="GPU.{GraphiteDawnOrWebGPU}.MaxTextureDimension2D.{AdapterType}"
-    units="dimensions" expires_after="2025-09-07">
+    units="dimensions" expires_after="2025-11-09">
   <owner>cduvall@chromium.org</owner>
   <owner>mdb.webgpu-dev-team@google.com</owner>
   <summary>
@@ -1521,7 +1521,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="GPU.{GraphiteDawnOrWebGPU}.{Cacheable}.{CacheHitMiss}.90SecondsPostStartup"
-    units="microseconds" expires_after="2025-09-07">
+    units="microseconds" expires_after="2025-11-09">
   <owner>hitawala@chromium.org</owner>
   <owner>mdb.webgpu-dev-team@google.com</owner>
   <summary>
@@ -1541,7 +1541,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="GPU.{GraphiteDawnOrWebGPU}.{Cacheable}.{CacheHitMiss}.Counts.90SecondsPostStartup"
-    units="count" expires_after="2025-09-07">
+    units="count" expires_after="2025-11-09">
   <owner>hitawala@chromium.org</owner>
   <owner>mdb.webgpu-dev-team@google.com</owner>
   <summary>

@@ -3134,7 +3134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.CrossOriginLcpImage" enum="Boolean"
-    expires_after="2025-09-09">
+    expires_after="2025-11-09">
   <owner>alexnj@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -3332,7 +3332,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.LCPP.NavigationToStartPreload.MainFrame.{SubresourceType}.Time"
-    units="ms" expires_after="2025-09-07">
+    units="ms" expires_after="2025-11-09">
   <owner>chikamune@chromium.org</owner>
   <owner>yyanagisawa@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
@@ -3368,7 +3368,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.PreconnectPredictionCount" units="count"
-    expires_after="2025-07-27">
+    expires_after="2025-11-09">
   <owner>alexnj@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -3382,7 +3382,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.PreconnectPredictionMatchCount" units="count"
-    expires_after="2025-09-09">
+    expires_after="2025-11-09">
   <owner>alexnj@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -3399,7 +3399,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.PreconnectPredictionMatchPercent" units="%"
-    expires_after="2025-09-09">
+    expires_after="2025-11-09">
   <owner>alexnj@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -3522,7 +3522,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.PrewarmHttpDiskCacheURL.Count.SameSiteRatio"
-    units="%" expires_after="2025-09-07">
+    units="%" expires_after="2025-11-09">
   <owner>yoichio@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -3536,7 +3536,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.PrewarmHttpDiskCacheURL.Count.{Site}" units="count"
-    expires_after="2025-09-07">
+    expires_after="2025-11-09">
   <owner>yoichio@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
