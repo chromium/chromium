@@ -421,6 +421,10 @@ crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pi
 crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pixel_CanvasLowLatency2DDrawImage [ Failure ]
 crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pixel_CanvasLowLatency2DImageData [ Failure ]
 
+crbug.com/417505381 [ android android-nexus-5x ] Pixel_Canvas2DBlitText [ Failure ]
+crbug.com/417505381 [ android android-pixel-4 ] Pixel_Canvas2DBlitText [ Failure ]
+crbug.com/417505381 [ linux nvidia ] Pixel_Canvas2DBlitText [ Failure ]
+
 crbug.com/40241616 [ android android-sm-a137f ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 
 crbug.com/1477318 [ mac ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
