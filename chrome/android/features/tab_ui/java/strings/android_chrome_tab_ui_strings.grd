@@ -952,6 +952,20 @@
         Send feedback
       </message>
 
+      <!-- Auto Delete Decision Promo Strings -->
+      <message name="IDS_ARCHIVED_TABS_AUTO_DELETE_PROMO_TITLE" desc="Title text for the Auto Delete Decision Bottom Sheet.">
+        Keep your inactive section tidy?
+      </message>
+      <message name="IDS_ARCHIVED_TABS_AUTO_DELETE_PROMO_DESCRIPTION" desc="Description text or the Auto Delete Decision Bottom Sheet.">
+        Chrome automatically closes items in the inactive section that you haven't used in 3 months. You can turn this off now or anytime in Settings.
+      </message>
+      <message name="IDS_ARCHIVED_TABS_AUTO_DELETE_PROMO_YES_BUTTON" desc="Button to accept the Auto Delete feature. ">
+        Yes. I'm in
+      </message>
+      <message name="IDS_ARCHIVED_TABS_AUTO_DELETE_PROMO_NO_BUTTON" desc="Button to deny the Auto Delete feature. ">
+        Turn off
+      </message>
+
       <!-- Tab Group Removed Message Strings -->
       <message name="IDS_ONE_TAB_GROUP_REMOVED_MESSAGE_CARD_DESCRIPTION" desc="Description text on the message card which is shown when user is no longer a part of one tab group. [CHAR_LIMIT=40]">
         "<ph name="TAB_GROUP_NAME">%1$s<ex>Vacation</ex></ph>" tab group no longer available

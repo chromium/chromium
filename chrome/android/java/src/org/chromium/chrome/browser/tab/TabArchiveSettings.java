@@ -56,7 +56,8 @@ public class TabArchiveSettings {
                     ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_ENABLED,
                     ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_TIME_DELTA_HOURS,
                     ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_ENABLED,
-                    ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS);
+                    ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS,
+                    ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_DECISION_MADE);
 
     private final SharedPreferences.OnSharedPreferenceChangeListener mPrefsListener =
             new SharedPreferences.OnSharedPreferenceChangeListener() {
@@ -111,6 +112,18 @@ public class TabArchiveSettings {
         mPrefsManager.writeBoolean(ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_ENABLED, enabled);
     }
 
+    /** Returns whether the user has already seen the promo. */
+    public boolean getAutoDeleteDecisionMade() {
+        return mPrefsManager.readBoolean(
+                ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_DECISION_MADE, false);
+    }
+
+    /** Sets whether the user has seen the promo. */
+    public void setAutoDeleteDecisionMade(boolean enabled) {
+        mPrefsManager.writeBoolean(
+                ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_DECISION_MADE, enabled);
+    }
+
     /** Returns the time delta used to determine if a tab is eligible for archive. */
     public int getArchiveTimeDeltaHours() {
         return mPrefsManager.readInt(
@@ -137,9 +150,9 @@ public class TabArchiveSettings {
     /** Returns whether auto-deletion of archived tabs is enabled. */
     public boolean isAutoDeleteEnabled() {
         return getArchiveEnabled()
+                && ChromeFeatureList.sAndroidTabDeclutterAutoDeleteKillSwitch.isEnabled()
                 && mPrefsManager.readBoolean(
-                        ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_ENABLED,
-                        ChromeFeatureList.sAndroidTabDeclutterAutoDelete.isEnabled());
+                        ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_ENABLED, false);
     }
 
     /** Sets whether auto deletion for archived tabs is enabled in settings. */
@@ -228,5 +241,6 @@ public class TabArchiveSettings {
         mPrefsManager.removeKey(ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_ENABLED);
         mPrefsManager.removeKey(ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS);
         mPrefsManager.removeKey(ChromePreferenceKeys.TAB_DECLUTTER_DIALOG_IPH_DISMISS_COUNT);
+        mPrefsManager.removeKey(ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_DECISION_MADE);
     }
 }

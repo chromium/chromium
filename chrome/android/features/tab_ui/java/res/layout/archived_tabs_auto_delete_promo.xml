@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="14dp">
+
+    <ImageView
+        android:importantForAccessibility="no"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="7dp"
+        android:src="@drawable/drag_handlebar"
+        app:tint="@macro/drag_handlebar_color" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="27dp"
+        android:layout_marginBottom="14dp">
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="16dp">
+
+            <ImageView
+                android:layout_width="@dimen/archived_tabs_auto_delete_bottom_sheet_container_dimen"
+                android:layout_height="@dimen/archived_tabs_auto_delete_bottom_sheet_container_dimen"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:src="@drawable/default_browser_promo_bottom_sheet_chrome_icon_background"
+                app:tint="?attr/colorPrimaryContainer"  />
+            <ImageView
+                android:src="@drawable/archived_tab_icon"
+                android:layout_width="@dimen/archived_tabs_auto_delete_bottom_sheet_icon_dimen"
+                android:layout_height="@dimen/archived_tabs_auto_delete_bottom_sheet_icon_dimen"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                app:tint="@color/default_icon_color_accent1_tint_list" />
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/promo_title_text"
+            android:layout_width="match_parent"
+            android:layout_height="28dp"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            android:gravity="center_horizontal|top"
+            android:text="@string/archived_tabs_auto_delete_promo_title"/>
+        <ScrollView
+            android:id="@+id/promo_description_scrollview"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginBottom="28dp"
+            android:scrollbars="none"
+            android:fadeScrollbars="false"
+            android:maxHeight="120dp">
+            <TextView
+                android:id="@+id/promo_description_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+                android:lineSpacingExtra="4dp"
+                android:gravity="center_horizontal|top"
+                android:text="@string/archived_tabs_auto_delete_promo_description"/>
+        </ScrollView>
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/promo_yes_button" style="@style/FilledButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/archived_tabs_auto_delete_bottom_sheet_button_padding"
+            android:text="@string/archived_tabs_auto_delete_promo_yes_button"/>
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/promo_no_button" style="@style/TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/archived_tabs_auto_delete_bottom_sheet_button_padding"
+            android:text="@string/archived_tabs_auto_delete_promo_no_button"/>
+    </LinearLayout>
+</LinearLayout>

@@ -70,6 +70,7 @@ android_resources("java_resources") {
     "java/res/drawable/tab_strip_tooltip_background.xml",
     "java/res/drawable/tablet_tab_switcher_empty_state_illustration.xml",
     "java/res/drawable/ungroup_bar_background.xml",
+    "java/res/layout/archived_tabs_auto_delete_promo.xml",
     "java/res/layout/archived_tabs_dialog.xml",
     "java/res/layout/archived_tabs_message_card_view.xml",
     "java/res/layout/bottom_tab_strip_toolbar.xml",
