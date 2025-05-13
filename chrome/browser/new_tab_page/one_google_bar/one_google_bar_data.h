@@ -18,6 +18,9 @@ struct OneGoogleBarData {
   OneGoogleBarData& operator=(const OneGoogleBarData&);
   OneGoogleBarData& operator=(OneGoogleBarData&&);
 
+  friend bool operator==(const OneGoogleBarData&,
+                         const OneGoogleBarData&) = default;
+
   // The main HTML for the bar itself.
   std::string bar_html;
 
@@ -31,8 +34,5 @@ struct OneGoogleBarData {
   // User's language code returned by the server
   std::string language_code;
 };
-
-bool operator==(const OneGoogleBarData& lhs, const OneGoogleBarData& rhs);
-bool operator!=(const OneGoogleBarData& lhs, const OneGoogleBarData& rhs);
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_ONE_GOOGLE_BAR_ONE_GOOGLE_BAR_DATA_H_

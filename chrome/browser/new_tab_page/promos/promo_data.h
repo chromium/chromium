@@ -35,6 +35,5 @@ struct PromoData {
 };
 
 bool operator==(const PromoData& lhs, const PromoData& rhs);
-bool operator!=(const PromoData& lhs, const PromoData& rhs);
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_PROMOS_PROMO_DATA_H_
