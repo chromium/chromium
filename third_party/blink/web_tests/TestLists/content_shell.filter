@@ -27,10 +27,6 @@ virtual/single-import-map/wpt_internal/*
 
 # Blocklisted tests fail unexpectedly on headless shell for at least one
 # platform, so continue running them on content shell.
-external/wpt/accelerometer/Accelerometer.https.html
-external/wpt/accelerometer/Accelerometer-iframe-access.https.html
-external/wpt/accelerometer/GravitySensor.https.html
-external/wpt/accelerometer/LinearAccelerationSensor.https.html
 external/wpt/accname/name/comp_host_language_label.html
 external/wpt/accname/name/comp_label.html
 external/wpt/accname/name/comp_name_from_content.html
@@ -540,7 +536,6 @@ external/wpt/fetch/stale-while-revalidate/stale-script.html
 external/wpt/fledge/tentative/component-ads.https.window.html?11-15
 external/wpt/fledge/tentative/reporting-arguments.https.window.html?16-last
 external/wpt/fs/FileSystemObserver-sync-access-handle.https.tentative.*
-external/wpt/gyroscope/Gyroscope-iframe-access.https.html
 external/wpt/html-aam/names.html
 external/wpt/html-aam/roles.html
 external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/inflight-fetch-redirects.html
@@ -685,12 +680,6 @@ external/wpt/notifications/getnotifications-across-processes.https.window.html
 external/wpt/notifications/lang.https.html
 external/wpt/notifications/registration-association.https.window.html
 external/wpt/notifications/shownotification-window.https.html
-external/wpt/orientation-event/motion/page-visibility.https.html
-external/wpt/orientation-event/orientation/page-visibility.https.html
-external/wpt/orientation-sensor/AbsoluteOrientationSensor.https.html
-external/wpt/orientation-sensor/AbsoluteOrientationSensor-iframe-access.https.html
-external/wpt/orientation-sensor/RelativeOrientationSensor.https.html
-external/wpt/orientation-sensor/RelativeOrientationSensor-iframe-access.https.html
 external/wpt/paint-timing/fcp-only/fcp-document-opacity-text.html
 external/wpt/paint-timing/with-first-paint/first-contentful-canvas-webgl2.html
 external/wpt/payment-request/onpaymentmethodchange-attribute.https.html
@@ -929,8 +918,6 @@ virtual/fenced-frame-mparch/external/wpt/fenced-frame/resize-lock*
 virtual/fledge-kanon-enforcement/external/wpt/fledge/tentative/component-ads.https.window.html?11-15
 virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-inline.html
 virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-large-top*
-virtual/generic-sensor-extra-classes/external/wpt/ambient-light/AmbientLightSensor-iframe-access.https.html
-virtual/generic-sensor-extra-classes/external/wpt/magnetometer/Magnetometer-iframe-access.https.html
 virtual/gpu-rasterization/external/wpt/css/css-images/object-fit-*
 virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-fit-*
 virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-focus.html
