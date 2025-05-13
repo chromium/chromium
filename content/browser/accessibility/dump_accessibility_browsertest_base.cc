@@ -440,27 +440,6 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   ui::AccessibilityState::ForceRespectDisplayedPasswordTextForTesting();
 #endif
 
-  // If there are unwanted AXMode flags already set, skip the test.
-  // TODO(crbug.com/371230119): This condition is mostly needed because the
-  // Android Automotive bot is enabling accessibility with kAXModeComplete,
-  // which causes form controls tests to fail, but it could also help prevent
-  // future failures where bots turn on the wrong flags for a test.
-  ui::AXMode initial_ax_mode =
-      BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
-  // Perform a bitwise AND between initial_ax_mode and the bitwise NOT of
-  // ax_mode_for_test. If the result is non-zero, it means there are flags set
-  // in initial_ax_mode that are NOT set in ax_mode_for_test.
-  ui::AXMode unwanted_mode_flags = ~ax_mode_for_test;
-  if ((initial_ax_mode & unwanted_mode_flags).is_mode_off() == false) {
-    // There were extra AXMode flags present, so the test cannot continue.
-    GTEST_SKIP() << "The initial AXMode contained more flags than the test is "
-                    "designed for."
-                 << "\n* Test requires: " << ax_mode_for_test
-                 << "\n* Initial AXMode: " << initial_ax_mode
-                 << "\n* Extra, unwanted flags: "
-                 << (initial_ax_mode & unwanted_mode_flags);
-  }
-
   // Normally some accessibility events that would be fired are suppressed or
   // delayed, depending on what has focus or the type of event. For testing,
   // we want all events to fire immediately to make tests predictable and not
