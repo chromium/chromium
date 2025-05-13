@@ -480,11 +480,24 @@ bool PrivacySandboxSettingsImpl::
         bool& can_bypass) const {
   content_settings::CookieSettingsBase::CookieSettingWithMetadata
       cookie_setting_with_metadata;
+  // With what is available here, we can create a cookie_partition_key for the
+  // given top_frame_origin and we can assume the ancestor chain bit is
+  // cross_site since the `IsFullCookieAccessAllowed` call below uses a null
+  // `SiteForCookies`, which means that we will always be in a cross site
+  // context.
+  net::SchemefulSite top_frame_site(top_frame_origin);
+  std::optional<net::CookiePartitionKey> cookie_partition_key =
+      net::CookiePartitionKey::FromStorageKeyComponents(
+          top_frame_site,
+          net::CookiePartitionKey::BoolToAncestorChainBit(/*cross_site=*/true),
+          /*nonce=*/std::nullopt);
+
   // Third party cookies must also be available for this context. An empty site
   // for cookies is provided so the context is always treated as a third party.
   bool allowed = cookie_settings_->IsFullCookieAccessAllowed(
       reporting_origin.GetURL(), net::SiteForCookies(), top_frame_origin,
-      net::CookieSettingOverrides(), &cookie_setting_with_metadata);
+      net::CookieSettingOverrides(), cookie_partition_key,
+      &cookie_setting_with_metadata);
 
   if (base::FeatureList::IsEnabled(
           kAttributionDebugReportingCookieDeprecationTesting)) {
@@ -830,6 +843,17 @@ bool PrivacySandboxSettingsImpl::IsPrivateAggregationDebugModeAllowed(
           kPrivateAggregationDebugReportingIgnoreSiteExceptions)) {
     top_frame_origin_to_query = top_frame_origin;
   }
+  // With what is available here, we can create a cookie_partition_key for the
+  // given top_frame_origin and we can assume the ancestor chain bit is
+  // cross_site since the `IsFullCookieAccessAllowed` call below uses a null
+  // `SiteForCookies`, which means that we will always be in a cross site
+  // context.
+  net::SchemefulSite top_frame_site(top_frame_origin);
+  std::optional<net::CookiePartitionKey> cookie_partition_key =
+      net::CookiePartitionKey::FromStorageKeyComponents(
+          top_frame_site,
+          net::CookiePartitionKey::BoolToAncestorChainBit(/*cross_site=*/true),
+          /*nonce=*/std::nullopt);
 
   // Third party cookies must also be available for this context. An empty site
   // for cookies and empty top-frame origin is provided so the context is always
@@ -840,7 +864,7 @@ bool PrivacySandboxSettingsImpl::IsPrivateAggregationDebugModeAllowed(
   if (cookie_settings_->IsFullCookieAccessAllowed(
           reporting_origin.GetURL(), net::SiteForCookies(),
           top_frame_origin_to_query, net::CookieSettingOverrides(),
-          &cookie_setting_with_metadata)) {
+          cookie_partition_key, &cookie_setting_with_metadata)) {
     return true;
   }
 

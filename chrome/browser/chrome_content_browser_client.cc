@@ -3656,7 +3656,8 @@ bool ChromeContentBrowserClient::IsFullCookieAccessAllowed(
   }
   return cookie_settings->IsFullCookieAccessAllowed(
       url, storage_key.ToNetSiteForCookies(),
-      url::Origin::Create(storage_key.top_level_site().GetURL()), overrides);
+      url::Origin::Create(storage_key.top_level_site().GetURL()), overrides,
+      storage_key.ToCookiePartitionKey());
 }
 
 void ChromeContentBrowserClient::GrantCookieAccessDueToHeuristic(
@@ -7325,11 +7326,12 @@ void ChromeContentBrowserClient::GetMediaDeviceIDSalt(
   privacy_sandbox::TrackingProtectionSettings* tracking_protection =
       TrackingProtectionSettingsFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context));
-  bool allowed = cookie_settings->IsFullCookieAccessAllowed(
-                     url, site_for_cookies, top_frame_origin,
-                     net::CookieSettingOverrides()) ||
-                 (tracking_protection->IsTrackingProtection3pcdEnabled() &&
-                  !tracking_protection->AreAllThirdPartyCookiesBlocked());
+  bool allowed =
+      cookie_settings->IsFullCookieAccessAllowed(
+          url, site_for_cookies, top_frame_origin,
+          net::CookieSettingOverrides(), storage_key.ToCookiePartitionKey()) ||
+      (tracking_protection->IsTrackingProtection3pcdEnabled() &&
+       !tracking_protection->AreAllThirdPartyCookiesBlocked());
   ChromeBrowsingDataModelDelegate::BrowsingDataAccessed(
       rfh, storage_key,
       ChromeBrowsingDataModelDelegate::StorageType::kMediaDeviceSalt, !allowed);
@@ -8016,23 +8018,44 @@ bool ChromeContentBrowserClient::
     return true;
   }
 
+  net::SchemefulSite top_frame_site(top_frame_origin);
+  std::optional<net::CookiePartitionKey> cookie_partition_key =
+      net::CookiePartitionKey::FromStorageKeyComponents(
+          top_frame_site,
+          net::CookiePartitionKey::BoolToAncestorChainBit(
+              !site_for_cookies.IsFirstParty(url)),
+          /*nonce=*/std::nullopt);
+
   // Cookie settings overrides are not relevant for this check.
   net::CookieSettingOverrides empty_overrides;
 
   return cookie_settings->IsFullCookieAccessAllowed(
-      url, site_for_cookies, top_frame_origin, empty_overrides);
+      url, site_for_cookies, top_frame_origin, empty_overrides,
+      cookie_partition_key);
 }
 
 bool ChromeContentBrowserClient::AreDeprecatedAutomaticBeaconCredentialsAllowed(
     content::BrowserContext* browser_context,
     const GURL& destination_url,
     const url::Origin& top_frame_origin) {
+  // With what is available here, we can create a cookie_partition_key for the
+  // given top_frame_origin and we can assume the ancestor chain bit is
+  // cross_site since the `IsFullCookieAccessAllowed` call below uses a null
+  // `SiteForCookies`, which means that we will always be in a cross site
+  // context.
+  net::SchemefulSite top_frame_site(top_frame_origin);
+  std::optional<net::CookiePartitionKey> cookie_partition_key =
+      net::CookiePartitionKey::FromStorageKeyComponents(
+          top_frame_site,
+          net::CookiePartitionKey::BoolToAncestorChainBit(/*cross_site=*/true),
+          /*nonce=*/std::nullopt);
+
   scoped_refptr<content_settings::CookieSettings> cookie_settings =
       CookieSettingsFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context));
   return cookie_settings->IsFullCookieAccessAllowed(
       destination_url, net::SiteForCookies(), top_frame_origin,
-      net::CookieSettingOverrides());
+      net::CookieSettingOverrides(), cookie_partition_key);
 }
 
 bool ChromeContentBrowserClient::

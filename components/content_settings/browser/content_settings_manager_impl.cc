@@ -19,6 +19,8 @@
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/features.h"
+#include "net/base/schemeful_site.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -159,9 +161,17 @@ void ContentSettingsManagerImpl::AllowStorageAccess(
 
   CookieSettingsBase::CookieSettingWithMetadata cookie_settings;
 
+  net::SchemefulSite top_frame_site(top_frame_origin);
+  std::optional<net::CookiePartitionKey> cookie_partition_key =
+      net::CookiePartitionKey::FromStorageKeyComponents(
+          top_frame_site,
+          net::CookiePartitionKey::BoolToAncestorChainBit(
+              !site_for_cookies.IsFirstParty(origin.GetURL())),
+          /*nonce=*/std::nullopt);
+
   bool allowed = cookie_settings_->IsFullCookieAccessAllowed(
       url, site_for_cookies, top_frame_origin, net::CookieSettingOverrides(),
-      &cookie_settings);
+      cookie_partition_key, &cookie_settings);
 
   //  If storage partitioning is active, third-party partitioned storage is
   //  allowed by default, and access is only blocked due to general third-party
