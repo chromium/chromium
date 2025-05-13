@@ -12,8 +12,8 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:138-
 items:
 - caption: Enable Floating SSO and move the user's web service authentications to new device
   value: true
