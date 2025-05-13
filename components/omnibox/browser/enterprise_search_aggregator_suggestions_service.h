@@ -31,6 +31,9 @@ class SharedURLLoaderFactory;
 class SimpleURLLoader;
 }  // namespace network
 
+// Identifier expected by the server in the body of suggestion requests.
+constexpr char kEnterpriseSearchAggregatorExperimentId[] = "103277467";
+
 // A service to fetch suggestions from the search aggregator endpoint URL.
 class EnterpriseSearchAggregatorSuggestionsService : public KeyedService {
  public:
