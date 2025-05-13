@@ -23068,7 +23068,7 @@
             ]
         }
     ],
-    "TabGroupParityAndroid": [
+    "TabGroupParityAndroidV2": [
         {
             "platforms": [
                 "android"
@@ -23077,7 +23077,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "TabGroupParityAndroid"
+                        "TabGroupEntryPointsAndroid",
+                        "TabGroupParityBottomSheetAndroid"
                     ]
                 }
             ]
