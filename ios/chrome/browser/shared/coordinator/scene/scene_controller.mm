@@ -3076,20 +3076,28 @@ using UserFeedbackDataCallback =
 }
 
 - (void)openClearBrowsingDataDialog {
-  if (!self.currentInterface.browser) {
+  if (!self.mainInterface.browser || [self isIncognitoForced]) {
     return;
   }
 
-  CommandDispatcher* dispatcher =
-      self.currentInterface.browser->GetCommandDispatcher();
-  if (IsIosQuickDeleteEnabled()) {
-    id<QuickDeleteCommands> quickDeleteHandler =
-        HandlerForProtocol(dispatcher, QuickDeleteCommands);
-    [quickDeleteHandler showQuickDeleteAndCanPerformTabsClosureAnimation:YES];
+  __weak CommandDispatcher* weakDispatcher =
+      self.mainInterface.browser->GetCommandDispatcher();
+  ProceduralBlock openQuickDeleteBlock = ^{
+    if (IsIosQuickDeleteEnabled()) {
+      id<QuickDeleteCommands> quickDeleteHandler =
+          HandlerForProtocol(weakDispatcher, QuickDeleteCommands);
+      [quickDeleteHandler showQuickDeleteAndCanPerformTabsClosureAnimation:YES];
+    } else {
+      id<SettingsCommands> settingsHandler =
+          HandlerForProtocol(weakDispatcher, SettingsCommands);
+      [settingsHandler showClearBrowsingDataSettings];
+    }
+  };
+
+  if (self.currentInterface.incognito) {
+    [self openNonIncognitoTab:openQuickDeleteBlock];
   } else {
-    id<SettingsCommands> settingsHandler =
-        HandlerForProtocol(dispatcher, SettingsCommands);
-    [settingsHandler showClearBrowsingDataSettings];
+    openQuickDeleteBlock();
   }
 }
 
