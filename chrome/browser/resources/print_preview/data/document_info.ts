@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {Coordinate2d} from './coordinate2d.js';
 import {Margins} from './margins.js';
@@ -47,7 +47,7 @@ export function createDocumentSettings(): DocumentSettings {
   };
 }
 
-const PrintPreviewDocumentInfoElementBase = WebUiListenerMixin(PolymerElement);
+const PrintPreviewDocumentInfoElementBase = WebUiListenerMixinLit(CrLitElement);
 
 export class PrintPreviewDocumentInfoElement extends
     PrintPreviewDocumentInfoElementBase {
@@ -55,17 +55,11 @@ export class PrintPreviewDocumentInfoElement extends
     return 'print-preview-document-info';
   }
 
-  static get properties() {
+  static override get properties() {
     return {
       documentSettings: {
         type: Object,
         notify: true,
-        value: () => createDocumentSettings(),
-      },
-
-      inFlightRequestId: {
-        type: Number,
-        value: -1,
       },
 
       margins: {
@@ -81,9 +75,6 @@ export class PrintPreviewDocumentInfoElement extends
       pageSize: {
         type: Object,
         notify: true,
-        value() {
-          return new Size(612, 792);
-        },
       },
 
       /**
@@ -92,18 +83,16 @@ export class PrintPreviewDocumentInfoElement extends
       printableArea: {
         type: Object,
         notify: true,
-        value() {
-          return new PrintableArea(new Coordinate2d(0, 0), new Size(612, 792));
-        },
       },
     };
   }
 
-  declare documentSettings: DocumentSettings;
-  declare inFlightRequestId: number;
-  declare margins: Margins;
-  declare pageSize: Size;
-  declare printableArea: PrintableArea;
+  accessor documentSettings: DocumentSettings = createDocumentSettings();
+  inFlightRequestId: number = -1;
+  accessor margins: Margins;
+  accessor pageSize: Size = new Size(612, 792);
+  accessor printableArea: PrintableArea =
+      new PrintableArea(new Coordinate2d(0, 0), new Size(612, 792));
   private isInitialized_: boolean = false;
 
   override connectedCallback() {

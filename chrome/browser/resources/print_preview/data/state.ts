@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 export enum State {
   NOT_READY = 0,
@@ -33,68 +33,81 @@ export enum Error {
 }
 
 
-export class PrintPreviewStateElement extends PolymerElement {
+export class PrintPreviewStateElement extends CrLitElement {
   static get is() {
     return 'print-preview-state';
   }
 
-  static get properties() {
+  static override get properties() {
     return {
-      state: {
-        type: Number,
-        notify: true,
-        value: State.NOT_READY,
-      },
-
       error: {
         type: Number,
         notify: true,
-        value: Error.NONE,
       },
     };
   }
 
-  declare state: State;
-  declare error: Error;
+  private state_: State = State.NOT_READY;
+  accessor error: Error = Error.NONE;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.sendStateChanged_();
+  }
+
+  private sendStateChanged_() {
+    this.dispatchEvent(
+        new CustomEvent('state-changed', {detail: {value: this.state_}}));
+  }
 
   transitTo(newState: State) {
     switch (newState) {
       case (State.NOT_READY):
         assert(
-            this.state === State.NOT_READY || this.state === State.READY ||
-            this.state === State.ERROR);
+            this.state_ === State.NOT_READY || this.state_ === State.READY ||
+            this.state_ === State.ERROR);
         break;
       case (State.READY):
         assert(
-            this.state === State.ERROR || this.state === State.NOT_READY ||
-            this.state === State.PRINTING);
+            this.state_ === State.ERROR || this.state_ === State.NOT_READY ||
+            this.state_ === State.PRINTING);
         break;
       case (State.PRINT_PENDING):
-        assert(this.state === State.READY);
+        assert(this.state_ === State.READY);
         break;
       case (State.HIDDEN):
-        assert(this.state === State.PRINT_PENDING);
+        assert(this.state_ === State.PRINT_PENDING);
         break;
       case (State.PRINTING):
         assert(
-            this.state === State.READY || this.state === State.HIDDEN ||
-            this.state === State.PRINT_PENDING);
+            this.state_ === State.READY || this.state_ === State.HIDDEN ||
+            this.state_ === State.PRINT_PENDING);
         break;
       case (State.SYSTEM_DIALOG):
         assert(
-            this.state !== State.HIDDEN && this.state !== State.PRINTING &&
-            this.state !== State.CLOSING);
+            this.state_ !== State.HIDDEN && this.state_ !== State.PRINTING &&
+            this.state_ !== State.CLOSING);
         break;
       case (State.ERROR):
         assert(
-            this.state === State.ERROR || this.state === State.NOT_READY ||
-            this.state === State.READY);
+            this.state_ === State.ERROR || this.state_ === State.NOT_READY ||
+            this.state_ === State.READY);
         break;
       case (State.CLOSING):
-        assert(this.state !== State.HIDDEN);
+        assert(this.state_ !== State.HIDDEN);
         break;
     }
-    this.state = newState;
+
+    const oldState = this.state_;
+    this.state_ = newState;
+
+    if (oldState !== newState) {
+      // Fire a manual 'state-changed' event to ensure that all states changes
+      // are reported, even if a state is changed twice in the same cycle, which
+      // wouldn't be the case if CrLitElement's 'notify: true' was used.
+      this.sendStateChanged_();
+    }
+
     if (newState !== State.ERROR && newState !== State.FATAL_ERROR) {
       this.error = Error.NONE;
     }
