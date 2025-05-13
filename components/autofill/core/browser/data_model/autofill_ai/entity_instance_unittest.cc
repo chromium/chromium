@@ -8,6 +8,7 @@
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,6 +48,33 @@ TEST(AutofillEntityInstanceTest, Attributes) {
     EXPECT_THAT(a->type(), AttributeType(kPassportName));
     EXPECT_EQ(GetInfo(*a, NAME_FULL), kName);
   }
+}
+
+// Tests that AttributeInstance appropriately handles various types in its
+// getters.
+TEST(AutofillEntityInstanceTest, Attributes_NormalizedType) {
+  AttributeInstance passport_name((AttributeType(kPassportName)));
+  passport_name.SetInfo(NAME_FULL, u"Some Name",
+                        /*app_locale=*/"", /*format_string=*/u"",
+                        VerificationStatus::kObserved);
+  passport_name.FinalizeInfo();
+
+  AttributeInstance passport_number((AttributeType(kPassportNumber)));
+  passport_number.SetInfo(PASSPORT_NUMBER, u"LR0123456",
+                          /*app_locale=*/"", /*format_string=*/u"",
+                          VerificationStatus::kObserved);
+
+  // We can retrieve info from structured attributes when the provided type
+  // gives us the information that is missing from the attribute's generic type
+  // (In that case `PASSPORT_NAME_TAG`). Otherwise we do not
+  EXPECT_EQ(GetInfo(passport_name, NAME_FULL), u"Some Name");
+  EXPECT_TRUE(GetInfo(passport_name, ADDRESS_HOME_STREET_NAME).empty());
+
+  // Non-structured attributes, on the other hand, have the complete information
+  // needed to fetch the value from the attribute type. Hence we just ignore the
+  // type given to the getter.
+  EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER), u"LR0123456");
+  EXPECT_EQ(GetInfo(passport_number, ADDRESS_HOME_STREET_NAME), u"LR0123456");
 }
 
 // Tests that AttributeInstance appropriately manages structured names.
