@@ -45,6 +45,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_unit_test_suite.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
@@ -201,8 +202,6 @@ class ChildStatusCollectorTest : public testing::Test {
     std::unique_ptr<base::Environment> env(base::Environment::Create());
     env->SetVar("TZ", "UTC");
 
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
-
     // Use FakeUpdateEngineClient.
     ash::UpdateEngineClient::InitializeFakeForTest();
     ash::CiceroneClient::InitializeFake();
@@ -223,7 +222,6 @@ class ChildStatusCollectorTest : public testing::Test {
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
     ash::UpdateEngineClient::Shutdown();
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 
     // Finish pending tasks.
     content::RunAllTasksUntilIdle();
@@ -423,6 +421,10 @@ class ChildStatusCollectorTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
+  // scoped_testing_local_state_ should be destructed after TestingProfile.
+  ScopedTestingLocalState scoped_testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
+
   ChromeContentClient content_client_;
   ChromeContentBrowserClient browser_content_client_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
@@ -430,8 +432,6 @@ class ChildStatusCollectorTest : public testing::Test {
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   ash::FakeOwnerSettingsService owner_settings_service_{
       scoped_testing_cros_settings_.device_settings(), nullptr};
-  // local_state_ should be destructed after TestingProfile.
-  TestingPrefServiceSimple local_state_;
   std::unique_ptr<TestingProfile> testing_profile_;
   user_manager::ScopedUserManager user_manager_enabler_;
   em::ChildStatusReportRequest child_status_;

@@ -26,6 +26,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/test/base/scoped_testing_local_state.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace site_protection {
 namespace {
 
@@ -83,23 +87,14 @@ class SiteProtectionMetricsObserverTest
     safe_browsing_factory_->SetTestDatabaseManager(
         safe_browsing_database_manager_.get());
 
-    auto* global_browser_process = TestingBrowserProcess::GetGlobal();
-    global_browser_process->SetSafeBrowsingService(
+    browser_process_->SetSafeBrowsingService(
         safe_browsing_factory_->CreateSafeBrowsingService());
-    global_browser_process->safe_browsing_service()->Initialize();
-
-#if BUILDFLAG(IS_CHROMEOS)
-    // Local state is needed to construct ProxyConfigService, which is a
-    // dependency of PingManager on ChromeOS.
-    global_browser_process->SetLocalState(profile()->GetPrefs());
-#endif
+    browser_process_->safe_browsing_service()->Initialize();
   }
 
   void TearDown() override {
-    auto* global_browser_process = TestingBrowserProcess::GetGlobal();
-    global_browser_process->SetLocalState(nullptr);
-    global_browser_process->safe_browsing_service()->ShutDown();
-    global_browser_process->SetSafeBrowsingService(nullptr);
+    browser_process_->safe_browsing_service()->ShutDown();
+    browser_process_->SetSafeBrowsingService(nullptr);
 
     ChromeRenderViewHostTestHarness::TearDown();
   }
@@ -111,11 +106,6 @@ class SiteProtectionMetricsObserverTest
   }
 
   void SetIncognito() {
-#if BUILDFLAG(IS_CHROMEOS)
-    auto* global_browser_process = TestingBrowserProcess::GetGlobal();
-    global_browser_process->SetLocalState(nullptr);
-#endif
-
     Profile* const otr_profile =
         profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     EXPECT_TRUE(otr_profile->IsIncognitoProfile());
@@ -125,10 +115,6 @@ class SiteProtectionMetricsObserverTest
         otr_profile, std::move(site_instance)));
 
     SetUpForNewWebContents();
-
-#if BUILDFLAG(IS_CHROMEOS)
-    global_browser_process->SetLocalState(profile()->GetPrefs());
-#endif
   }
 
   void SetUpForNewWebContents() {
@@ -218,6 +204,14 @@ class SiteProtectionMetricsObserverTest
 
  protected:
   raw_ptr<TestingBrowserProcess> browser_process_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Local state is needed to construct ProxyConfigService, which is a
+  // dependency of PingManager on ChromeOS.
+  ScopedTestingLocalState scoped_testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   scoped_refptr<TestSafeBrowsingDatabaseManager>
       safe_browsing_database_manager_;
   std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>

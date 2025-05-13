@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/system/automatic_reboot_manager_observer.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -224,7 +225,8 @@ class AutomaticRebootManagerBasicTest : public testing::Test {
   base::SingleThreadTaskRunner::CurrentHandleOverrideForTesting
       single_thread_task_runner_current_default_handle_override_;
 
-  TestingPrefServiceSimple local_state_;
+  ScopedTestingLocalState scoped_testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       user_manager_;
   session_manager::SessionManager session_manager_;
@@ -343,9 +345,6 @@ void AutomaticRebootManagerBasicTest::SetUp() {
                                        /*is_absolute=*/false,
                                        /*create=*/false);
 
-  TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
-  AutomaticRebootManager::RegisterPrefs(local_state_.registry());
-
   update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
   chromeos::PowerManagerClient::InitializeFake();
 }
@@ -365,7 +364,6 @@ void AutomaticRebootManagerBasicTest::TearDown() {
 
   chromeos::PowerManagerClient::Shutdown();
   UpdateEngineClient::Shutdown();
-  TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 }
 
 void AutomaticRebootManagerBasicTest::SetUpdateRebootNeededUptime(
@@ -378,7 +376,7 @@ void AutomaticRebootManagerBasicTest::SetRebootAfterUpdate(
     bool reboot_after_update,
     bool expect_reboot) {
   reboot_after_update_ = reboot_after_update;
-  local_state_.SetManagedPref(
+  scoped_testing_local_state_.Get()->SetManagedPref(
       prefs::kRebootAfterUpdate,
       std::make_unique<base::Value>(reboot_after_update));
   task_runner_->RunUntilIdle();
@@ -392,9 +390,9 @@ void AutomaticRebootManagerBasicTest::SetUptimeLimit(
     bool expect_reboot) {
   uptime_limit_ = limit;
   if (limit.is_zero()) {
-    local_state_.RemoveManagedPref(prefs::kUptimeLimit);
+    scoped_testing_local_state_.Get()->RemoveManagedPref(prefs::kUptimeLimit);
   } else {
-    local_state_.SetManagedPref(
+    scoped_testing_local_state_.Get()->SetManagedPref(
         prefs::kUptimeLimit,
         std::make_unique<base::Value>(static_cast<int>(limit.InSeconds())));
   }

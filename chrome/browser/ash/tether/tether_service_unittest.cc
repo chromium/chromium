@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/ash/network/tether_notification_presenter.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
@@ -344,14 +345,9 @@ class TetherServiceTest : public testing::Test {
         base::WrapUnique(new FakeTetherHostFetcherFactory(test_device_));
     TetherHostFetcherImpl::Factory::SetFactoryForTesting(
         fake_tether_host_fetcher_factory_.get());
-
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&local_pref_service_);
-    RegisterLocalState(local_pref_service_.registry());
   }
 
   void TearDown() override {
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
-
     device_sync::DeviceSyncClientImpl::Factory::SetFactoryForTesting(nullptr);
     secure_channel::SecureChannelClientImpl::Factory::SetFactoryForTesting(
         nullptr);
@@ -547,8 +543,8 @@ class TetherServiceTest : public testing::Test {
   bool is_adapter_powered_;
   bool shutdown_reason_verified_;
 
-  // PrefService which contains the browser process' local storage.
-  TestingPrefServiceSimple local_pref_service_;
+  ScopedTestingLocalState scoped_testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
 
   std::unique_ptr<TestTetherService> tether_service_;
   std::unique_ptr<TestingProfile> profile_;

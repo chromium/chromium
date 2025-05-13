@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
@@ -185,9 +186,6 @@ class AppInstallEventLoggerTest : public testing::Test {
       delete;
 
   void SetUp() override {
-    RegisterLocalState(pref_service_.registry());
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&pref_service_);
-
     chromeos::PowerManagerClient::InitializeFake();
   }
 
@@ -195,7 +193,6 @@ class AppInstallEventLoggerTest : public testing::Test {
     logger_.reset();
     task_environment_.RunUntilIdle();
     chromeos::PowerManagerClient::Shutdown();
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
   }
 
   // Runs |function|, verifies that the expected event is added to the logs for
@@ -282,8 +279,9 @@ class AppInstallEventLoggerTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  ScopedTestingLocalState scoped_testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
   ash::NetworkHandlerTestHelper network_handler_test_helper_;
-  TestingPrefServiceSimple pref_service_;
   TestingProfile profile_;
 
   MockAppInstallEventLoggerDelegate delegate_;

@@ -60,6 +60,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/test/base/scoped_testing_local_state.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 using ::testing::UnorderedElementsAre;
 
 namespace {
@@ -567,18 +571,10 @@ class RevokedPermissionsServiceTest
         fake_database_manager_.get());
     TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(
         safe_browsing_factory_->CreateSafeBrowsingService());
-#if BUILDFLAG(IS_CHROMEOS)
-    // Local state is needed to construct ProxyConfigService, which is a
-    // dependency of PingManager on ChromeOS.
-    TestingBrowserProcess::GetGlobal()->SetLocalState(profile()->GetPrefs());
-#endif
   }
 
   void TearDownSafeBrowsingService() {
     TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(nullptr);
-#if BUILDFLAG(IS_CHROMEOS)
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
-#endif
   }
 
   bool IsUrlInContentSettings(ContentSettingsForOneType content_settings,
@@ -595,6 +591,13 @@ class RevokedPermissionsServiceTest
     }
     return false;
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Local state is needed to construct ProxyConfigService, which is a
+  // dependency of PingManager on ChromeOS.
+  ScopedTestingLocalState scoped_testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::SimpleTestClock clock_;
   uint8_t callback_count_;

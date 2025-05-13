@@ -32,6 +32,10 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/test/base/scoped_testing_local_state.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 using network::GetUploadData;
 using testing::Return;
 using testing::ReturnRef;
@@ -86,12 +90,6 @@ class SafeBrowsingServiceTest : public testing::Test {
 
     profile_ = std::make_unique<TestingProfile>();
     profile2_ = std::make_unique<TestingProfile>();
-#if BUILDFLAG(IS_CHROMEOS)
-    // Local state is needed to construct ProxyConfigService, which is a
-    // dependency of PingManager on ChromeOS.
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
-    RegisterLocalState(local_state_.registry());
-#endif
   }
 
   void TearDown() override {
@@ -99,9 +97,6 @@ class SafeBrowsingServiceTest : public testing::Test {
     browser_process_->safe_browsing_service()->ShutDown();
     browser_process_->SetSafeBrowsingService(nullptr);
     safe_browsing::SafeBrowsingServiceInterface::RegisterFactory(nullptr);
-#if BUILDFLAG(IS_CHROMEOS)
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
-#endif
     base::RunLoop().RunUntilIdle();
   }
 
@@ -218,8 +213,15 @@ class SafeBrowsingServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   raw_ptr<TestingBrowserProcess> browser_process_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Local state is needed to construct ProxyConfigService, which is a
+  // dependency of PingManager on ChromeOS.
+  ScopedTestingLocalState scoped_testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   scoped_refptr<SafeBrowsingService> sb_service_;
-  TestingPrefServiceSimple local_state_;
   TestingProfile::Builder profile_builder_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<TestingProfile> profile2_;

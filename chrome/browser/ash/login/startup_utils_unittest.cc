@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_test_helper.h"
 #include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/prefs/testing_pref_service.h"
@@ -18,20 +19,16 @@
 // other utility functions in StartupUtils.
 class StartupUtilsTest : public testing::Test {
  protected:
-  StartupUtilsTest() {
-    RegisterLocalState(fake_local_state_.registry());
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&fake_local_state_);
-  }
-
   ~StartupUtilsTest() override {
     TestingBrowserProcess::GetGlobal()->SetShuttingDown(true);
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
   }
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  TestingPrefServiceSimple fake_local_state_;
+  ScopedTestingLocalState scoped_testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
+
   ash::system::ScopedFakeStatisticsProvider statistics_provider_;
   base::test::ScopedCommandLine command_line_;
   policy::test::EnrollmentTestHelper enrollment_test_helper_{

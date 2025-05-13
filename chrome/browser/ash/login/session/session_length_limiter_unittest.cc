@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
@@ -118,7 +119,13 @@ class SessionLengthLimiterTest : public testing::Test {
   base::Time session_stop_time_;
 
  private:
-  TestingPrefServiceSimple local_state_;
+  TestingPrefServiceSimple& local_state() {
+    return *scoped_testing_local_state_.Get();
+  }
+
+  ScopedTestingLocalState scoped_testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
+
   bool user_activity_seen_;
 
   raw_ptr<MockSessionLengthLimiterDelegate, DanglingUntriaged>
@@ -131,8 +138,6 @@ SessionLengthLimiterTest::SessionLengthLimiterTest()
     : user_activity_seen_(false), delegate_(nullptr) {}
 
 void SessionLengthLimiterTest::SetUp() {
-  TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
-  SessionLengthLimiter::RegisterPrefs(local_state_.registry());
   runner_ = new base::TestMockTimeTaskRunner;
   wall_clock_forwarder_ = std::make_unique<WallClockForwarder>(runner_.get());
   runner_->FastForwardBy(base::TimeDelta::FromInternalValue(1000));
@@ -141,66 +146,65 @@ void SessionLengthLimiterTest::SetUp() {
 void SessionLengthLimiterTest::TearDown() {
   wall_clock_forwarder_.reset();
   session_length_limiter_.reset();
-  TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 }
 
 void SessionLengthLimiterTest::SetSessionUserActivitySeenPref(
     bool user_activity_seen) {
-  local_state_.SetUserPref(prefs::kSessionUserActivitySeen,
-                           std::make_unique<base::Value>(user_activity_seen));
+  local_state().SetUserPref(prefs::kSessionUserActivitySeen,
+                            std::make_unique<base::Value>(user_activity_seen));
 }
 
 void SessionLengthLimiterTest::ClearSessionUserActivitySeenPref() {
-  local_state_.ClearPref(prefs::kSessionUserActivitySeen);
+  local_state().ClearPref(prefs::kSessionUserActivitySeen);
 }
 
 bool SessionLengthLimiterTest::IsSessionUserActivitySeenPrefSet() {
-  return local_state_.HasPrefPath(prefs::kSessionUserActivitySeen);
+  return local_state().HasPrefPath(prefs::kSessionUserActivitySeen);
 }
 
 bool SessionLengthLimiterTest::GetSessionUserActivitySeenPref() {
   EXPECT_TRUE(IsSessionUserActivitySeenPrefSet());
-  return local_state_.GetBoolean(prefs::kSessionUserActivitySeen);
+  return local_state().GetBoolean(prefs::kSessionUserActivitySeen);
 }
 
 void SessionLengthLimiterTest::SetSessionStartTimePref(
     const base::Time& session_start_time) {
-  local_state_.SetUserPref(prefs::kSessionStartTime,
-                           std::make_unique<base::Value>(base::NumberToString(
-                               session_start_time.ToInternalValue())));
+  local_state().SetUserPref(prefs::kSessionStartTime,
+                            std::make_unique<base::Value>(base::NumberToString(
+                                session_start_time.ToInternalValue())));
 }
 
 void SessionLengthLimiterTest::ClearSessionStartTimePref() {
-  local_state_.ClearPref(prefs::kSessionStartTime);
+  local_state().ClearPref(prefs::kSessionStartTime);
 }
 
 bool SessionLengthLimiterTest::IsSessionStartTimePrefSet() {
-  return local_state_.HasPrefPath(prefs::kSessionStartTime);
+  return local_state().HasPrefPath(prefs::kSessionStartTime);
 }
 
 base::Time SessionLengthLimiterTest::GetSessionStartTimePref() {
   EXPECT_TRUE(IsSessionStartTimePrefSet());
   return base::Time::FromInternalValue(
-      local_state_.GetInt64(prefs::kSessionStartTime));
+      local_state().GetInt64(prefs::kSessionStartTime));
 }
 
 void SessionLengthLimiterTest::SetSessionLengthLimitPref(
     const base::TimeDelta& session_length_limit) {
-  local_state_.SetUserPref(prefs::kSessionLengthLimit,
-                           std::make_unique<base::Value>(static_cast<int>(
-                               session_length_limit.InMilliseconds())));
+  local_state().SetUserPref(prefs::kSessionLengthLimit,
+                            std::make_unique<base::Value>(static_cast<int>(
+                                session_length_limit.InMilliseconds())));
   UpdateSessionStartTimeIfWaitingForUserActivity();
 }
 
 void SessionLengthLimiterTest::ClearSessionLengthLimitPref() {
-  local_state_.RemoveUserPref(prefs::kSessionLengthLimit);
+  local_state().RemoveUserPref(prefs::kSessionLengthLimit);
   UpdateSessionStartTimeIfWaitingForUserActivity();
 }
 
 void SessionLengthLimiterTest::SetWaitForInitialUserActivityPref(
     bool wait_for_initial_user_activity) {
   UpdateSessionStartTimeIfWaitingForUserActivity();
-  local_state_.SetUserPref(
+  local_state().SetUserPref(
       prefs::kSessionWaitForInitialUserActivity,
       std::make_unique<base::Value>(wait_for_initial_user_activity));
 }
@@ -215,7 +219,7 @@ void SessionLengthLimiterTest::SimulateUserActivity() {
 void SessionLengthLimiterTest::
     UpdateSessionStartTimeIfWaitingForUserActivity() {
   if (!user_activity_seen_ &&
-      local_state_.GetBoolean(prefs::kSessionWaitForInitialUserActivity)) {
+      local_state().GetBoolean(prefs::kSessionWaitForInitialUserActivity)) {
     session_start_time_ = runner_->Now();
   }
 }

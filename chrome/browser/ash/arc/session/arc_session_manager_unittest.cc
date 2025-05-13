@@ -51,6 +51,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/fake_login_display_host.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
@@ -278,8 +279,6 @@ class ArcSessionManagerTestBase : public testing::Test {
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&test_local_state_);
-    RegisterLocalState(test_local_state_.registry());
     auth_events_recorder_ = ash::AuthEventsRecorder::CreateForTesting();
   }
 
@@ -287,9 +286,7 @@ class ArcSessionManagerTestBase : public testing::Test {
   ArcSessionManagerTestBase& operator=(const ArcSessionManagerTestBase&) =
       delete;
 
-  ~ArcSessionManagerTestBase() override {
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
-  }
+  ~ArcSessionManagerTestBase() override = default;
 
   void SetUp() override {
     ash::ArcVmDataMigratorClient::InitializeFake();
@@ -370,6 +367,8 @@ class ArcSessionManagerTestBase : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  ScopedTestingLocalState scoped_testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   session_manager::SessionManager session_manager_;
@@ -377,7 +376,6 @@ class ArcSessionManagerTestBase : public testing::Test {
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   base::ScopedTempDir temp_dir_;
-  TestingPrefServiceSimple test_local_state_;
   std::unique_ptr<ash::AuthEventsRecorder> auth_events_recorder_;
 };
 
@@ -1830,7 +1828,6 @@ class ArcSessionManagerPolicyTest
   void TearDown() override {
     if (is_oobe_optin()) {
       fake_login_display_host_.reset();
-      TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
     }
     ArcSessionManagerTestBase::TearDown();
   }
@@ -2067,7 +2064,6 @@ class ArcSessionOobeOptInNegotiatorTest
 
     ArcSessionManager::SetArcTermsOfServiceOobeNegotiatorEnabledForTesting(
         false);
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 
     ArcSessionManagerTest::TearDown();
   }

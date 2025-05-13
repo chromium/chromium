@@ -15,6 +15,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
@@ -141,9 +142,6 @@ class ArcAppInstallEventLogCollectorTest : public testing::Test {
   ~ArcAppInstallEventLogCollectorTest() override = default;
 
   void SetUp() override {
-    RegisterLocalState(pref_service_.registry());
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&pref_service_);
-
     chromeos::PowerManagerClient::InitializeFake();
     profile_ = std::make_unique<TestingProfile>();
     arc_app_test_.SetUp(profile_.get());
@@ -165,7 +163,6 @@ class ArcAppInstallEventLogCollectorTest : public testing::Test {
 
     profile_.reset();
     chromeos::PowerManagerClient::Shutdown();
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
   }
 
   void SetNetworkState(
@@ -204,10 +201,11 @@ class ArcAppInstallEventLogCollectorTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  ScopedTestingLocalState scoped_testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
   std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<TestingProfile> profile_;
   FakeAppInstallEventLogCollectorDelegate delegate_;
-  TestingPrefServiceSimple pref_service_;
   ArcAppTest arc_app_test_;
 };
 

@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/ash/login/fake_login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
@@ -97,15 +98,11 @@ class EnrollmentScreenBaseTest : public testing::Test {
  protected:
   EnrollmentScreenBaseTest()
       : mock_error_screen_(mock_error_view_.AsWeakPtr()) {
-    RegisterLocalState(fake_local_state_.registry());
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&fake_local_state_);
-
     policy::EnrollmentRequisitionManager::Initialize();
   }
 
   ~EnrollmentScreenBaseTest() override {
     TestingBrowserProcess::GetGlobal()->SetShuttingDown(true);
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
   }
 
   // Creates the EnrollmentScreen and sets required parameters.
@@ -329,7 +326,9 @@ class EnrollmentScreenBaseTest : public testing::Test {
     return CHECK_DEREF(fake_login_display_host_.GetWizardContext());
   }
 
-  TestingPrefServiceSimple& local_state() { return fake_local_state_; }
+  TestingPrefServiceSimple& local_state() {
+    return *scoped_testing_local_state_.Get();
+  }
 
   MockEnrollmentLauncher& mock_enrollment_launcher() {
     return mock_enrollment_launcher_;
@@ -379,7 +378,8 @@ class EnrollmentScreenBaseTest : public testing::Test {
   ScopedStubInstallAttributes test_install_attributes_;
 
   // Used by `EnrollmentRequisitionManager` and `StartupUtils`.
-  TestingPrefServiceSimple fake_local_state_;
+  ScopedTestingLocalState scoped_testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
 
   // Used by `EnrollmentRequisitionManager`.
   system::ScopedFakeStatisticsProvider fake_statistics_provider_;
