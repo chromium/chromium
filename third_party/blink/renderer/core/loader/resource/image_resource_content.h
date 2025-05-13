@@ -207,11 +207,6 @@ class CORE_EXPORT ImageResourceContent final
     return !observers_.empty() || !finished_observers_.empty();
   }
   bool CanBeSpeculativelyDecoded() const;
-  bool HasNonDegenerateSizeForDecode() const {
-    // If an observer has 0x0 size, we will not consider it for speculative
-    // decode.
-    return !cached_info_.max_size_.IsZero();
-  }
   ImageDecoder::CompressionFormat GetCompressionFormat() const;
 
   // Returns the number of bytes of image data which should be used for entropy

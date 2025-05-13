@@ -70,6 +70,8 @@ class CORE_EXPORT ImageResource final
                                const DOMWrapperWorld* world);
   static ImageResource* CreateForTest(const KURL&);
 
+  static constexpr int kSpeculativeDecodeMinImageSize = 25;
+
   ImageResource(const ResourceRequest&,
                 const ResourceLoaderOptions&,
                 ImageResourceContent*);
@@ -102,7 +104,7 @@ class CORE_EXPORT ImageResource final
   void UpdateResourceInfoFromObservers() override;
   std::pair<ResourcePriority, ResourcePriority> PriorityFromObservers()
       const override;
-  bool HasNonDegenerateSizeForDecode() const override;
+  bool IsAboveSpeculativeDecodeSizeThreshold() const override;
 
   // MultipartImageResourceParser::Client
   void OnePartInMultipartReceived(const ResourceResponse&) final;

@@ -377,7 +377,7 @@ Resource* PopHighestPriorityDecodableResource(
   for (Resource* resource : resources) {
     const ResourcePriority& priority = resource->PriorityFromObservers().first;
     if (priority.visibility != ResourcePriority::kVisible ||
-        !resource->HasNonDegenerateSizeForDecode()) {
+        !resource->IsAboveSpeculativeDecodeSizeThreshold()) {
       continue;
     }
     if (!result || CompareResourcePriorities(

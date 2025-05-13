@@ -729,6 +729,28 @@ TEST_F(WebFrameWidgetImplSimTest, SpeculativeImageDecodeBeforeLayout) {
   GetDocument().GetAgent().PerformMicrotaskCheckpoint();
 }
 
+TEST_F(WebFrameWidgetImplSimTest, SpeculativeImageDecodeMinimumSize) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kSpeculativeImageDecodes,
+       ::features::kSendExplicitDecodeRequestsImmediately},
+      /*disabled_features=*/{});
+  url_test_helpers::RegisterMockedURLLoad(
+      url_test_helpers::ToKURL("https://example.com/image.png"),
+      test::CoreTestDataPath("background_image.png"));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest doc_request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _, _)).Times(0);
+  doc_request.Complete(
+      R"HTML(
+<!DOCTYPE html>
+<img id="img" width=4 height=5 src="image.png">
+      )HTML");
+  url_test_helpers::ServeAsynchronousRequests();
+}
+
 #if BUILDFLAG(IS_WIN)
 struct ProximateBoundsCollectionArgs final {
   base::RepeatingCallback<gfx::Rect(const Document&)>

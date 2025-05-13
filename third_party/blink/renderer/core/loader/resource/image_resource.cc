@@ -599,8 +599,10 @@ ImageResource::PriorityFromObservers() const {
   return GetContent()->PriorityFromObservers();
 }
 
-bool ImageResource::HasNonDegenerateSizeForDecode() const {
-  return GetContent()->HasNonDegenerateSizeForDecode();
+bool ImageResource::IsAboveSpeculativeDecodeSizeThreshold() const {
+  // Images with too few pixels will not be speculatively decoded.
+  return GetContent()->MaxSize().GetCheckedArea().ValueOrDefault(0) >=
+         kSpeculativeDecodeMinImageSize;
 }
 
 void ImageResource::OnePartInMultipartReceived(
