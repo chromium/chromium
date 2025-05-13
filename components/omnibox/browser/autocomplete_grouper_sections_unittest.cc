@@ -336,8 +336,6 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNTPZpsSectionWithMIA) {
         });
   }
   {
-    // TODO(crbug.com/416482046): Ensure local history zps is grouped with
-    // remote personalized zps. This test verifies this is currently not WAI.
     SCOPED_TRACE(
         "MIA below pSuggest - Local history zps is grouped with pSuggest but "
         "doesn't take precedence over non-Trends.");
@@ -372,12 +370,12 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNTPZpsSectionWithMIA) {
         {
             {90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
             {89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {50, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {49, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
             {88, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
             {87, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
             {86, omnibox::GROUP_MIA_RECOMMENDATIONS},
             {85, omnibox::GROUP_MIA_RECOMMENDATIONS},
-            {50, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-            {49, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
         });
   }
   {

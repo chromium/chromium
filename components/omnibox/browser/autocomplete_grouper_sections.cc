@@ -70,10 +70,7 @@ ACMatches Section::GroupMatches(PSections sections, ACMatches& matches) {
   ACMatches grouped_matches = {};
   for (auto& section : sections) {
     for (auto& group : section->groups_) {
-      if constexpr (is_android) {
-        group.GroupMatchesBySearchVsUrl();
-      }
-
+      group.GroupMatches();
       for (AutocompleteMatch* match : group.matches()) {
         grouped_matches.push_back(std::move(*match));
       }
@@ -203,14 +200,16 @@ AndroidNonZPSSection::AndroidNonZPSSection(
                                       kAnswerActionsShowAboveKeyboard.Get()
                              ? 1
                              : 0},
-                    }),
+                    },
+                    /*is_zps=*/false),
               // Top Group / above the keyboard.
               Group(num_visible_matches_ - 1,
                     {
                         {omnibox::GROUP_SEARCH, 14},
                         {omnibox::GROUP_OTHER_NAVS,
                          show_only_search_suggestions ? 0 : 14},
-                    }),
+                    },
+                    /*is_zps=*/false),
               // Dedicated Group for rich answer card just above the fold.
               Group(1,
                     {
@@ -220,14 +219,16 @@ AndroidNonZPSSection::AndroidNonZPSSection(
                                      kAnswerActionsShowAboveKeyboard.Get()
                              ? 1
                              : 0},
-                    }),
+                    },
+                    /*is_zps=*/false),
               // Bottom Group, up to the Section limit.
               Group(14,
                     {
                         {omnibox::GROUP_SEARCH, 14},
                         {omnibox::GROUP_OTHER_NAVS,
                          show_only_search_suggestions ? 0 : 14},
-                    }),
+                    },
+                    /*is_zps=*/false),
           },
           group_configs) {}
 
@@ -278,22 +279,26 @@ AndroidHubNonZPSSection::AndroidHubNonZPSSection(
               Group(20,
                     {
                         {omnibox::GROUP_MOBILE_OPEN_TABS, 20},
-                    }),
+                    },
+                    /*is_zps=*/false),
               Group(5,
                     {
                         {omnibox::GROUP_MOBILE_BOOKMARKS, 5},
-                    }),
+                    },
+                    /*is_zps=*/false),
               // LINT.IfChange(HubHistorySectionSlots)
               Group(5,
                     {
                         {omnibox::GROUP_MOBILE_HISTORY, 5},
-                    }),
+                    },
+                    /*is_zps=*/false),
               // LINT.ThenChange(//components/omnibox/browser/history_quick_provider.cc:HubHistoryMaxMatches)
               // Fallback to search suggestions at the bottom of the results.
               Group(5,
                     {
                         {omnibox::GROUP_SEARCH, 5},
-                    }),
+                    },
+                    /*is_zps=*/false),
           },
           group_configs) {}
 
@@ -593,20 +598,24 @@ DesktopNonZpsSection::DesktopNonZpsSection(
                             {omnibox::GROUP_SEARCH, 1},
                             {omnibox::GROUP_OTHER_NAVS, 1},
                         },
+                        /*is_zps=*/false,
                         /*is_default=*/true),
                   Group(9,
                         {
                             {omnibox::GROUP_STARTER_PACK, 9},
-                        }),
+                        },
+                        /*is_zps=*/false),
                   Group(9,
                         {
                             {omnibox::GROUP_SEARCH, 9},
                             {omnibox::GROUP_HISTORY_CLUSTER, 1},
-                        }),
+                        },
+                        /*is_zps=*/false),
                   Group(7,
                         {
                             {omnibox::GROUP_OTHER_NAVS, 7},
-                        }),
+                        },
+                        /*is_zps=*/false),
               },
               group_configs) {}
 

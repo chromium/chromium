@@ -62,6 +62,7 @@ TEST(AutocompleteGrouperGroupsTest, DefaultGroup) {
                           {omnibox::GROUP_SEARCH, 1},
                           {omnibox::GROUP_OTHER_NAVS, 1},
                       },
+                      /*is_zps=*/false,
                       /*is_default=*/true);
   ACMatches matches{{}, {}, {}};
 
