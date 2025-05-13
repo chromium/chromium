@@ -1741,6 +1741,11 @@ BASE_FEATURE(kPeriodicLogUploadMigration,
 BASE_FEATURE(kK12AgeClassificationMetricsProvider,
              "K12AgeClassificationMetricsProvider",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// A feature to enable periodic log class management enabled policy.
+BASE_FEATURE(kClassManagementEnabledMetricsProvider,
+             "ClassManagementEnabledMetricsProvider",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // A feature to disable shortcut creation from the Chrome UI, and instead use

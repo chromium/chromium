@@ -1077,6 +1077,8 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 bool IsK12AgeClassificationMetricsProviderEnabled();
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kK12AgeClassificationMetricsProvider);
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kClassManagementEnabledMetricsProvider);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool PrefServiceEnabled();

@@ -1153,6 +1153,16 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
       variants="AllCertProvisioningProtocolVersions"/>
 </histogram>
 
+<histogram name="ChromeOS.ClassManagementEnabled" enum="ClassManagementEnabled"
+    expires_after="2025-11-01">
+  <owner>zifanzhang@google.com</owner>
+  <owner>cros-client-wa@google.com</owner>
+  <summary>
+    Tracks the Class Management enabled status for users. Recorded when the user
+    session starts.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.CountryCode.MissingVariationData"
     enum="ChromeOSFallbackCountry" expires_after="2026-03-20">
   <owner>cschlosser@chromium.org</owner>

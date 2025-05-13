@@ -4978,6 +4978,7 @@ if (!is_android) {
         "../browser/file_system_access/cloud_identifier/cloud_identifier_util_ash_browsertest.cc",
         "../browser/metrics/chromeos_family_link_user_metrics_provider_browsertest.cc",
         "../browser/metrics/chromeos_metrics_provider_browsertest.cc",
+        "../browser/metrics/class_management_enabled_metrics_provider_browsertest.cc",
         "../browser/metrics/family_user_metrics_provider_browsertest.cc",
         "../browser/metrics/k12_age_classification_metrics_provider_browsertest.cc",
         "../browser/metrics/majority_age_user_metrics_provider_browsertest.cc",

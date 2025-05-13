@@ -826,6 +826,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="kLocked"/>
 </enum>
 
+<enum name="ClassManagementEnabled">
+  <int value="0" label="Class Management disabled"/>
+  <int value="1" label="Class Management enabled for student"/>
+  <int value="2" label="Class Management enabled for teacher"/>
+</enum>
+
 <enum name="ComboDeviceClassification">
   <int value="0" label="KnownKeyboardImposter"/>
   <int value="1" label="KnownMouseImposter"/>
