@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/core/animation/tree_counting_checker.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -65,6 +66,7 @@ InterpolationValue CSSFontWeightInterpolationType::MaybeConvertValue(
     ConversionCheckers& conversion_checkers) const {
   FontSelectionValue inherited_font_weight =
       state.ParentStyle()->GetFontWeight();
+  const CSSLengthResolver& length_resolver = state.CssToLengthConversionData();
   if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     CSSValueID keyword = identifier_value->GetValueID();
     if (keyword == CSSValueID::kBolder || keyword == CSSValueID::kLighter) {
@@ -72,15 +74,19 @@ InterpolationValue CSSFontWeightInterpolationType::MaybeConvertValue(
           MakeGarbageCollected<InheritedFontWeightChecker>(
               inherited_font_weight));
     }
+  } else if (const auto* primitive_value =
+                 DynamicTo<CSSPrimitiveValue>(value)) {
+    if (primitive_value->IsElementDependent()) {
+      conversion_checkers.push_back(
+          TreeCountingChecker::Create(length_resolver));
+    }
   }
   // TODO(40946458): Should do a proper interpolation here instead of converting
   // relative units first.
-  // TODO(crbug.com/415626999): Create a TreeCountingChecker for sibling-index()
-  // and sibling-count() if necessary.
   // TODO(crbug.com/415572412): Create a LengthUnitsChecker for relative units
   // if necessary.
   return CreateFontWeightValue(StyleBuilderConverterBase::ConvertFontWeight(
-      state.CssToLengthConversionData(), value, inherited_font_weight));
+      length_resolver, value, inherited_font_weight));
 }
 
 InterpolationValue
