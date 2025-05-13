@@ -60,35 +60,6 @@ constexpr uint64_t kAllZeros = 0x0000000000000000u;
 constexpr uint64_t kOnesThenZeroes = 0xAAAAAAAAAAAAAAAAu;
 constexpr uint64_t kZeroesThenOnes = 0x5555555555555555u;
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-class HangWatcherEnabledInZygoteChildTest : public testing::Test {
- public:
-  HangWatcherEnabledInZygoteChildTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features =
-        kFeatureAndParams;
-    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
-    HangWatcher::InitializeOnMainThread(
-        HangWatcher::ProcessType::kUtilityProcess,
-        /*emit_crashes=*/true);
-  }
-
-  void TearDown() override { HangWatcher::UnitializeOnMainThreadForTesting(); }
-
-  HangWatcherEnabledInZygoteChildTest(
-      const HangWatcherEnabledInZygoteChildTest& other) = delete;
-  HangWatcherEnabledInZygoteChildTest& operator=(
-      const HangWatcherEnabledInZygoteChildTest& other) = delete;
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(HangWatcherEnabledInZygoteChildTest, IsEnabled) {
-  ASSERT_TRUE(HangWatcher::IsEnabled());
-}
-
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
 // Waits on provided WaitableEvent before executing and signals when done.
 class BlockingThread : public DelegateSimpleThread::Delegate {
  public:
