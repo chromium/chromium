@@ -157,6 +157,7 @@ a sledge hammer."</string>
             <message name="IDS_HELLO">Hello!</message>
             <message name="IDS_HELLO_USER">Hello <ph name="USERNAME">%s<ex>Joi</ex></ph></message>
             <message name="IDS_PLUGIN_NOT_AUTHORIZED">Plugin <ph name="PLUGIN_NAME">%s<ex>Pluggy McPluginface</ex></ph> is not authorized.</message>
+            <message name="IDS_OPEN_IN_WINDOW">Open in a window</message>
           </messages>
         </release>
       </grit>'''
@@ -172,6 +173,7 @@ a sledge hammer."</string>
 <string name="hello">"Hello!"</string>
 <string name="hello_user">"Hello %s"</string>
 <string name="plugin_not_authorized">"Plugin %s is not authorized."</string>
+<string name="open_in_window">"Open in a window"</string>
 </resources>
 """
 
@@ -184,6 +186,8 @@ a sledge hammer."</string>
     expected_en_feminine = expected_en_neuter
     expected_en_masculine = expected_en_neuter
 
+    # The "Open in a window" string gets deduped because it is the same in 'en'
+    # and 'fr'.
     expected_fr_other = """<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 <string name="hello">"Salut!"</string>

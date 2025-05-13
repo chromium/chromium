@@ -133,7 +133,11 @@ def Format(root, lang='en', gender=constants.DEFAULT_GENDER, output_dir='.'):
       if not ShouldOutputNode(item, tagged_only):
         continue
 
-      value = _GetDedupedValue(item, lang, gender)
+      value = _GetGenderDedupedValue(item, lang, gender)
+      if gender == constants.DEFAULT_GENDER:
+        # Only try to dedupe by language if we're looking at the default gender.
+        # Other genders should only be deduped against the default gender.
+        value = _GetLangDedupedValue(item, lang, value)
       if value is not None:
         yield value
 
@@ -146,16 +150,29 @@ def Format(root, lang='en', gender=constants.DEFAULT_GENDER, output_dir='.'):
 # the given language, and if so, removes it. Chrome will attempt to find a
 # translation in the appropriate gender first, and if not found, it will fall
 # back to the default gender.
-#
-# TODO(crbug.com/413058329): consider also deduping strings that are identical
-# in the default language and a translated language.
-def _GetDedupedValue(item, lang, gender):
+def _GetGenderDedupedValue(item, lang, gender):
   value = _FormatMessage(item, lang, gender)
   assert value is not None
   if gender == constants.DEFAULT_GENDER:
     return value
 
   default_value = _FormatMessage(item, lang, constants.DEFAULT_GENDER)
+  assert default_value is not None
+  if value != default_value:
+    return value
+
+  return None
+
+
+# Some strings are not translated, and instead appear as English even in the
+# alternate-locale xml files. These can be deduped to save binary size.
+def _GetLangDedupedValue(item, lang, value):
+  assert value is not None
+
+  if lang == 'en' or lang == '':
+    return value
+
+  default_value = _FormatMessage(item, 'en', constants.DEFAULT_GENDER)
   assert default_value is not None
   if value != default_value:
     return value

@@ -91,7 +91,7 @@ def _FormatInternal(root, lang, gender):
     with node:
       if isinstance(node, (include.IncludeNode, message.MessageNode,
                            structure.StructureNode)):
-        value = _GetDedupedValue(node, lang, gender)
+        value = _GetGenderDedupedValue(node, lang, gender)
         if value is not None:
           resource_id = id_map[node.GetTextualIds()[0]]
           data[resource_id] = value
@@ -109,7 +109,7 @@ def _FormatInternal(root, lang, gender):
 #
 # TODO(crbug.com/413058329): consider also deduping strings that are identical
 # in the default language and a translated language.
-def _GetDedupedValue(node, lang, gender):
+def _GetGenderDedupedValue(node, lang, gender):
   value = node.GetDataPackValue(lang, gender, util.BINARY)
   if gender == constants.DEFAULT_GENDER or value is None:
     return value
