@@ -7251,7 +7251,7 @@
   },
   {
     "name": "optimization-guide-enable-dogfood-logging",
-    "owners": [ "isherman@chromium.org", "curranmax@chromium.org", "chrome-intelligence-core@google.com" ],
+    "owners": [ "spelchat@chromium.org", "curranmax@chromium.org", "chrome-intelligence-core@google.com" ],
     // This flag is used in regular manual QA and should not be removed.
     "expiry_milestone": -1
   },
