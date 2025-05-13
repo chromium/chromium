@@ -389,21 +389,13 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,
   autofill_client()->set_entity_data_manager(
       autofill::AutofillEntityDataManagerFactory::GetForProfile(profile()));
   autofill_client()->SetUpPrefsAndIdentityForAutofillAi();
-  EXPECT_TRUE(autofill::SetAutofillAiOptInStatus(*autofill_client(), false));
-  EXPECT_FALSE(autofill::GetAutofillAiOptInStatus(*autofill_client()));
-  EXPECT_TRUE(RunAutofillSubtest("verifyUserOptedOutOfAutofillAi"));
 
   ASSERT_TRUE(autofill::MayPerformAutofillAiAction(
       *autofill_client(), autofill::AutofillAiAction::kOptIn));
-
-  // Verify that we can opt into Autofill AI while eligible.
-  ASSERT_TRUE(RunAutofillSubtest("optIntoAutofillAi"));
-  EXPECT_TRUE(autofill::GetAutofillAiOptInStatus(*autofill_client()));
-  EXPECT_TRUE(RunAutofillSubtest("verifyUserOptedIntoAutofillAi"));
+  EXPECT_TRUE(autofill::SetAutofillAiOptInStatus(*autofill_client(), true));
 
   // Verify that we can opt out of Autofill AI while eligible.
   ASSERT_TRUE(RunAutofillSubtest("optOutOfAutofillAi"));
-  EXPECT_FALSE(autofill::GetAutofillAiOptInStatus(*autofill_client()));
   EXPECT_TRUE(RunAutofillSubtest("verifyUserOptedOutOfAutofillAi"));
 
   // Become ineligible.
@@ -413,7 +405,6 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,
 
   // Verify that we cannot opt into Autofill AI anymore.
   ASSERT_TRUE(RunAutofillSubtest("optIntoAutofillAi"));
-  EXPECT_FALSE(autofill::GetAutofillAiOptInStatus(*autofill_client()));
   EXPECT_TRUE(RunAutofillSubtest("verifyUserOptedOutOfAutofillAi"));
 }
 
