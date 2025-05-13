@@ -494,16 +494,37 @@ void DisruptiveNotificationPermissionsManager::CheckForFalsePositive(
   base::TimeDelta delta_since_revocation =
       base::Time::Now() -
       base::ValueToTime(stored_timestamp).value_or(base::Time::Now());
-  // TODO(crbug.com/406472515): Report false positive only after min cooldown
-  // period has passed or min site engagement delta was satisfied.
+  const int days_since_revocation = delta_since_revocation.InDays();
+
+  const int min_days =
+      safe_browsing::
+          kSafetyHubDisruptiveNotificationRevocationMinFalsePositiveCooldown
+              .Get();
+  const int max_days =
+      safe_browsing::
+          kSafetyHubDisruptiveNotificationRevocationMaxFalsePositivePeriod
+              .Get();
+  if (days_since_revocation < min_days || days_since_revocation > max_days) {
+    return;
+  }
+
+  const double old_site_engagement_score =
+      dict.FindDouble(safety_hub::kSiteEngagementStr).value_or(0.0);
+  const double new_site_engagement_score =
+      site_engagement::SiteEngagementService::Get(profile)->GetScore(url);
+  if (new_site_engagement_score - old_site_engagement_score <
+      safe_browsing::
+          kSafetyHubDisruptiveNotificationRevocationMinSiteEngagementScoreDelta
+              .Get()) {
+    return;
+  }
+
   ukm::builders::SafetyHub_DisruptiveNotificationRevocations_FalsePositive(
       source_id)
-      .SetDaysSinceRevocation(delta_since_revocation.InDays())
+      .SetDaysSinceRevocation(days_since_revocation)
       .SetReason(static_cast<int>(reason))
-      .SetNewSiteEngagement(
-          site_engagement::SiteEngagementService::Get(profile)->GetScore(url))
-      .SetOldSiteEngagement(
-          dict.FindDouble(safety_hub::kSiteEngagementStr).value_or(0))
+      .SetNewSiteEngagement(new_site_engagement_score)
+      .SetOldSiteEngagement(old_site_engagement_score)
       .SetDailyAverageVolume(
           dict.FindInt(safety_hub::kDailyNotificationCountStr).value_or(0))
       .Record(ukm::UkmRecorder::Get());
@@ -516,7 +537,10 @@ void DisruptiveNotificationPermissionsManager::CheckForFalsePositive(
   // catch possible user regrant.
   dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kFalsePositiveStr);
   content_settings::ContentSettingConstraints constraint(base::Time::Now());
-  constraint.set_lifetime(base::Days(7));  // get from params
+  constraint.set_lifetime(base::Days(
+      safe_browsing::
+          kSafetyHubDisruptiveNotificationRevocationUserRegrantWaitingPeriod
+              .Get()));
   UpdateContentSettingValue(hcsm, url, std::move(dict), constraint);
 }
 
