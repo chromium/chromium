@@ -72,7 +72,7 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
     (web::WebState*)webState {
   web::NavigationItem* navItem =
       webState->GetNavigationManager()->GetVisibleItem();
-  const GURL& URL = navItem->GetURL();
+  const GURL& URL = navItem->GetVirtualURL();
   web::SSLStatus& status = navItem->GetSSL();
   bool offlinePage =
       OfflinePageTabHelper::FromWebState(webState)->presenting_offline_page();
