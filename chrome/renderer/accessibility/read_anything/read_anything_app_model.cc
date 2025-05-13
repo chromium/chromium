@@ -688,6 +688,15 @@ void ReadAnythingAppModel::OnScroll(bool on_selection,
 }
 
 void ReadAnythingAppModel::SetActiveTreeId(ui::AXTreeID active_tree_id) {
+  // Unserialize any updates on the previous active tree;
+  // Otherwise, this can cause tree inconsistency issues if reading mode later
+  // incorrectly receives updates from the old tree.
+  if (active_tree_id_ != active_tree_id &&
+      active_tree_id_ != ui::AXTreeIDUnknown() &&
+      ContainsTree(active_tree_id_)) {
+    UnserializePendingUpdates(active_tree_id_);
+  }
+
   active_tree_id_ = std::move(active_tree_id);
   // If data collection mode for screen2x is enabled, begin
   // `timer_since_page_load_for_data_collection_` from here. This is a
