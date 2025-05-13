@@ -34,9 +34,6 @@ class Value;
 
 namespace attribution_reporting {
 
-COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-void RecordSourceRegistrationError(mojom::SourceRegistrationError);
-
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   // Doesn't log metric on parsing failures.
   static base::expected<SourceRegistration, mojom::SourceRegistrationError>

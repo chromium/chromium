@@ -92,8 +92,6 @@ bool ContributionsFilteringIdsFitWithinMaxBytes(
   return true;
 }
 
-}  // namespace
-
 void RecordTriggerRegistrationError(TriggerRegistrationError error) {
   base::UmaHistogramEnumeration("Conversions.TriggerRegistrationError11",
                                 error);
@@ -106,8 +104,6 @@ void RecordFeatureUsage(const TriggerRegistration& registration) {
       "Conversions.NamedBudgetsPerTriggerRegistration",
       registration.aggregatable_named_budget_candidates.size());
 }
-
-namespace {
 
 base::expected<TriggerRegistration, TriggerRegistrationError> ParseDict(
     base::Value::Dict dict) {

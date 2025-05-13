@@ -213,18 +213,13 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
                    HeaderPendingDecode,
                    attribution_reporting::Registrar);
   void HandleNextWebDecode(const Registrations&);
-  void OnWebHeaderParsed(RegistrationsId,
-                         data_decoder::DataDecoder::ValueOrError result);
+  void OnWebHeaderParsed(RegistrationsId);
 
   base::expected<void, attribution_reporting::mojom::SourceRegistrationError>
-  HandleParsedWebSource(const Registrations&,
-                        HeaderPendingDecode&,
-                        data_decoder::DataDecoder::ValueOrError);
+  HandleParsedWebSource(const Registrations&, HeaderPendingDecode&);
 
   base::expected<void, attribution_reporting::mojom::TriggerRegistrationError>
-  HandleParsedWebTrigger(const Registrations&,
-                         HeaderPendingDecode&,
-                         data_decoder::DataDecoder::ValueOrError);
+  HandleParsedWebTrigger(const Registrations&, HeaderPendingDecode&);
 
   void HandleNextOsDecode(const Registrations&);
 

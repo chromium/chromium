@@ -66,11 +66,11 @@ void RecordFeatureUsage(const SourceRegistration& result) {
                 25);
 }
 
-}  // namespace
-
 void RecordSourceRegistrationError(SourceRegistrationError error) {
   base::UmaHistogramEnumeration("Conversions.SourceRegistrationError13", error);
 }
+
+}  // namespace
 
 SourceRegistration::SourceRegistration(mojo::DefaultConstruct::Tag tag)
     : destination_set(tag) {}

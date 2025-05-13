@@ -1339,12 +1339,11 @@ void AttributionDataHostManagerImpl::HandleNextWebDecode(
     const Registrations& registrations) {
   CHECK(registrations.IsReadyToProcess());
 
-  CHECK(!registrations.pending_web_decodes().empty());
-
-  const auto& pending_decode = registrations.pending_web_decodes().front();
-
-  data_decoder_.ParseJson(
-      pending_decode.header,
+  // TODO(apaseltiner): `OnWebHeaderParsed()` currently assumes that it is
+  // called in a separate stack frame from `HandleNextWebDecode()`. Once this is
+  // no longer true, we can remove the `PostTask` call entirely.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
       base::BindOnce(&AttributionDataHostManagerImpl::OnWebHeaderParsed,
                      weak_factory_.GetWeakPtr(), registrations.id()));
 }
@@ -1990,19 +1989,14 @@ void AttributionDataHostManagerImpl::BackgroundRegistrationsTied(
 base::expected<void, SourceRegistrationError>
 AttributionDataHostManagerImpl::HandleParsedWebSource(
     const Registrations& registrations,
-    HeaderPendingDecode& pending_decode,
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value()) {
-    return base::unexpected(SourceRegistrationError::kInvalidJson);
-  }
-
+    HeaderPendingDecode& pending_decode) {
   auto source_type = registrations.navigation_id().has_value()
                          ? SourceType::kNavigation
                          : SourceType::kEvent;
 
   ASSIGN_OR_RETURN(auto registration,
                    attribution_reporting::SourceRegistration::Parse(
-                       *std::move(result), source_type));
+                       pending_decode.header, source_type));
 
   if (auto navigation_id = registrations.navigation_id();
       navigation_id.has_value() &&
@@ -2026,15 +2020,10 @@ AttributionDataHostManagerImpl::HandleParsedWebSource(
 base::expected<void, TriggerRegistrationError>
 AttributionDataHostManagerImpl::HandleParsedWebTrigger(
     const Registrations& registrations,
-    HeaderPendingDecode& pending_decode,
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value()) {
-    return base::unexpected(TriggerRegistrationError::kInvalidJson);
-  }
-
+    HeaderPendingDecode& pending_decode) {
   ASSIGN_OR_RETURN(
       auto registration,
-      attribution_reporting::TriggerRegistration::Parse(*std::move(result)));
+      attribution_reporting::TriggerRegistration::Parse(pending_decode.header));
 
   attribution_manager_->HandleTrigger(
       AttributionTrigger(std::move(pending_decode.reporting_origin),
@@ -2047,9 +2036,7 @@ AttributionDataHostManagerImpl::HandleParsedWebTrigger(
   return base::ok();
 }
 
-void AttributionDataHostManagerImpl::OnWebHeaderParsed(
-    RegistrationsId id,
-    data_decoder::DataDecoder::ValueOrError result) {
+void AttributionDataHostManagerImpl::OnWebHeaderParsed(RegistrationsId id) {
   auto registrations = registrations_.find(id);
   CHECK(registrations != registrations_.end());
 
@@ -2060,12 +2047,10 @@ void AttributionDataHostManagerImpl::OnWebHeaderParsed(
   auto& pending_decode = registrations->pending_web_decodes().front();
   switch (pending_decode.registration_type) {
     case RegistrationType::kSource:
-      handle_result = HandleParsedWebSource(*registrations, pending_decode,
-                                            std::move(result));
+      handle_result = HandleParsedWebSource(*registrations, pending_decode);
       break;
     case RegistrationType::kTrigger:
-      handle_result = HandleParsedWebTrigger(*registrations, pending_decode,
-                                             std::move(result));
+      handle_result = HandleParsedWebTrigger(*registrations, pending_decode);
       break;
   }
 
@@ -2415,13 +2400,11 @@ void AttributionDataHostManagerImpl::MaybeLogAuditIssueAndReportHeaderError(
 
   AttributionReportingIssueType issue_type = std::visit(
       base::Overloaded{
-          [](SourceRegistrationError error) {
-            attribution_reporting::RecordSourceRegistrationError(error);
+          [](SourceRegistrationError) {
             return AttributionReportingIssueType::kInvalidRegisterSourceHeader;
           },
 
-          [](TriggerRegistrationError error) {
-            attribution_reporting::RecordTriggerRegistrationError(error);
+          [](TriggerRegistrationError) {
             return AttributionReportingIssueType::kInvalidRegisterTriggerHeader;
           },
 
