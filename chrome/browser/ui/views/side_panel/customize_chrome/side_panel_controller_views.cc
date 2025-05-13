@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
+#include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_helper.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
@@ -102,7 +103,7 @@ bool SidePanelControllerViews::ShouldEnableEditTheme(const GURL& url) const {
       Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
   return NewTabPageUI::IsNewTabPageOrigin(url) ||
          (base::FeatureList::IsEnabled(ntp_features::kNtpFooter) &&
-          customize_chrome::IsExtensionNtp(url, profile));
+          ntp_footer::IsExtensionNtp(url, profile));
 }
 
 void SidePanelControllerViews::DidFinishNavigation(

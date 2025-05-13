@@ -22,9 +22,6 @@ bool IsWallpaperSearchEnabledForProfile(Profile* profile);
 void MaybeDisableExtensionOverridingNtp(
     content::BrowserContext* browser_context);
 
-// Returns whether `url` belongs to an extension NTP.
-bool IsExtensionNtp(const GURL& url, Profile* profile);
-
 }  // namespace customize_chrome
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_UTILS_H_

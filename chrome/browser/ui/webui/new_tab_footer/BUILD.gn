@@ -9,6 +9,7 @@ assert(!is_android)
 source_set("new_tab_footer") {
   sources = [
     "new_tab_footer_handler.h",
+    "new_tab_footer_helper.h",
     "new_tab_footer_ui.h",
   ]
   public_deps = [
@@ -21,6 +22,7 @@ source_set("new_tab_footer") {
 source_set("impl") {
   sources = [
     "new_tab_footer_handler.cc",
+    "new_tab_footer_helper.cc",
     "new_tab_footer_ui.cc",
   ]
 

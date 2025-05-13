@@ -56,19 +56,4 @@ void MaybeDisableExtensionOverridingNtp(
                          {extensions::disable_reason::DISABLE_USER_ACTION});
 }
 
-bool IsExtensionNtp(const GURL& url, Profile* profile) {
-  if (!url.SchemeIs(extensions::kExtensionScheme)) {
-    return false;
-  }
-
-  const extensions::Extension* extension_managing_ntp =
-      extensions::GetExtensionOverridingNewTabPage(profile);
-
-  if (!extension_managing_ntp) {
-    return false;
-  }
-
-  return extension_managing_ntp->id() == url.host();
-}
-
 }  // namespace customize_chrome

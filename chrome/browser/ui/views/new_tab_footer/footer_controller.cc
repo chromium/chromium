@@ -7,22 +7,66 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
+#include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_helper.h"
+#include "content/public/browser/navigation_entry.h"
 
 namespace new_tab_footer {
 
+// TODO (crbug.com/415116344) add unittest coverage.
 NewTabFooterController::NewTabFooterController(tabs::TabInterface* tab)
     : tab_(tab) {
   // TODO(crbug.com/4438803): Support SideBySide.
-  if (!features::IsNtpFooterEnabledWithoutSideBySide()) {
+  if (features::IsNtpFooterEnabledWithoutSideBySide()) {
+    footer_web_view_ = tab_->GetBrowserWindowInterface()->NewTabFooterWebView();
+  }
+  content::WebContentsObserver::Observe(tab_->GetContents());
+  tab_did_activate_callback_subscription_ = tab_->RegisterDidActivate(
+      base::BindRepeating(&NewTabFooterController::TabForegrounded,
+                          weak_factory_.GetWeakPtr()));
+}
+
+NewTabFooterController::~NewTabFooterController() = default;
+
+void NewTabFooterController::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (tab_->IsActivated()) {
+    UpdateFooterVisibility();
+  }
+}
+
+void NewTabFooterController::UpdateFooterVisibility() {
+  if (!footer_web_view_) {
     return;
   }
 
-  auto* footer_web_view =
-      tab_->GetBrowserWindowInterface()->NewTabFooterWebView();
-  CHECK(footer_web_view);
-  // TODO(crbug.com/409056427): Show/hide the footer based on what tab is being
-  // used.
-  footer_web_view->ShowUI();
+  GURL url =
+      tab_->GetContents()->GetController().GetLastCommittedEntry()->GetURL();
+  if (url.is_empty()) {
+    url = tab_->GetContents()->GetController().GetVisibleEntry()->GetURL();
+  }
+
+  if (ntp_footer::IsExtensionNtp(
+          url, tab_->GetBrowserWindowInterface()->GetProfile())) {
+    ShowUI();
+  } else {
+    CloseUI();
+  }
+}
+
+void NewTabFooterController::TabForegrounded(tabs::TabInterface* tab) {
+  UpdateFooterVisibility();
+}
+
+void NewTabFooterController::ShowUI() {
+  if (footer_web_view_) {
+    footer_web_view_->ShowUI();
+  }
+}
+
+void NewTabFooterController::CloseUI() {
+  if (footer_web_view_) {
+    footer_web_view_->CloseUI();
+  }
 }
 
 }  // namespace new_tab_footer

@@ -820,7 +820,7 @@ TEST_F(CustomizeChromePageHandlerTest, AttachedTabStateUpdated) {
   std::vector<std::pair<side_panel::mojom::NewTabPageType, GURL>>
       ntp_types_and_urls = {
           {side_panel::mojom::NewTabPageType::kNone,
-           GURL("https://www.google.com/")},
+           GURL("chrome-extension://someinvaldextension/index.html")},
           {side_panel::mojom::NewTabPageType::kFirstPartyWebUI,
            GURL(chrome::kChromeUINewTabPageURL)},
           {side_panel::mojom::NewTabPageType::kThirdPartyWebUI,

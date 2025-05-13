@@ -10937,6 +10937,7 @@ if (!is_android && !is_chromeos_device) {
       "../browser/ui/views/location_bar/content_setting_image_view_interactive_uitest.cc",
       "../browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view_pixel_test.cc",
       "../browser/ui/views/media_router/media_router_dialog_controller_views_interactive_uitest.cc",
+      "../browser/ui/views/new_tab_footer/footer_interactive_uitest.cc",
       "../browser/ui/views/optimization_guide/optimization_guide_icon_view_interactive_uitest.cc",
       "../browser/ui/views/page_info/page_info_bubble_view_interactive_uitest.cc",
       "../browser/ui/views/permissions/midi_permissions_flow_interactive_uitest.cc",
@@ -11035,6 +11036,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/prefs",
       "//chrome/browser/prefs:util",
       "//chrome/browser/privacy_sandbox:interactive_ui_tests",
+      "//chrome/browser/ui/views/new_tab_footer:new_tab_footer",
       "//chrome/browser/ui/webui/access_code_cast:interactive_ui_tests",
 
       # TODO(413315837): Remove this dependency when

@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/search/ntp_user_data_types.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
+#include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_helper.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
@@ -733,7 +734,7 @@ side_panel::mojom::NewTabPageType CustomizeChromePageHandler::GetNewTabPageType(
     const GURL& url) {
   if (NewTabPageUI::IsNewTabPageOrigin(url)) {
     return side_panel::mojom::NewTabPageType::kFirstPartyWebUI;
-  } else if (customize_chrome::IsExtensionNtp(url, profile_)) {
+  } else if (ntp_footer::IsExtensionNtp(url, profile_)) {
     return side_panel::mojom::NewTabPageType::kExtension;
   } else if (NewTabPageThirdPartyUI::IsNewTabPageOrigin(url)) {
     return side_panel::mojom::NewTabPageType::kThirdPartyWebUI;

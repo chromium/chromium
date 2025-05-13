@@ -100,6 +100,7 @@ source_set("side_panel") {
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/customize_chrome",
     "//chrome/browser/ui/tabs:tab_model",
+    "//chrome/browser/ui/webui/new_tab_footer:new_tab_footer",
     "//chrome/browser/ui/webui/side_panel/customize_chrome",
     "//chrome/common",
     "//chrome/common/read_anything:mojo_bindings",
