@@ -152,11 +152,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="First sync"/>
 </enum>
 
-<enum name="BooleanIsSignedIn">
-  <int value="0" label="Not signed in"/>
-  <int value="1" label="Signed in"/>
-</enum>
-
 <!-- LINT.IfChange(CrossUserSharingDecryptionResult) -->
 
 <enum name="CrossUserSharingDecryptionResult">

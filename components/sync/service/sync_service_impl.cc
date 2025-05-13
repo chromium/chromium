@@ -352,17 +352,6 @@ void SyncServiceImpl::Initialize(DataTypeController::TypeVector controllers) {
   sync_prefs_.MaybeMigrateCustomPassphrasePref(
       signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia));
 
-  if (!IsLocalSyncEnabled()) {
-    const bool account_info_fully_loaded =
-        auth_manager_->IsActiveAccountInfoFullyLoaded();
-    base::UmaHistogramBoolean("Sync.Startup.AccountInfoFullyLoaded2",
-                              account_info_fully_loaded);
-    if (!account_info_fully_loaded) {
-      base::UmaHistogramBoolean("Sync.Startup.SignedInWithoutAccountInfo2",
-                                IsSignedIn());
-    }
-  }
-
   // Update selected types prefs if a policy is applied.
   sync_prefs_policy_handler_ = std::make_unique<SyncPrefsPolicyHandler>(this);
 
