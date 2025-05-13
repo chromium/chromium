@@ -1,7 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {BrowserProxy, MAX_SPEECH_LENGTH, NodeStore, PauseActionSource, ReadAloudHighlighter, SpeechBrowserProxyImpl, SpeechController, SpeechEngineState, VoicePackController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, MAX_SPEECH_LENGTH, NodeStore, PauseActionSource, ReadAloudHighlighter, SpeechBrowserProxyImpl, SpeechController, VoicePackController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechErrorEvent, createSpeechSynthesisVoice, mockMetrics, setSimpleNodeStoreWithText} from './common.js';
@@ -55,7 +55,7 @@ suite('SpeechController', () => {
     };
 
     voicePackController = new VoicePackController();
-    voicePackController.setCurrentVoice(
+    voicePackController.setUserPreferredVoice(
         createSpeechSynthesisVoice({lang: 'en', name: 'Google Alpaca'}));
     VoicePackController.setInstance(voicePackController);
     nodeStore = new NodeStore();
@@ -120,7 +120,7 @@ suite('SpeechController', () => {
   test('isPausedFromButton', () => {
     assertFalse(speechController.isPausedFromButton());
 
-    speechController.setIsSpeechActive(true);
+    speechController.onPlayPauseToggle(null, 'No matter how many times');
     speechController.onPlayPauseToggle(null, 'No matter how many times');
     assertTrue(speechController.isPausedFromButton());
 
@@ -128,72 +128,12 @@ suite('SpeechController', () => {
     assertFalse(speechController.isPausedFromButton());
   });
 
-  test('setIsSpeechActive notifies listeners if value changes', () => {
-    let sentIsSpeechActive = false;
-    chrome.readingMode.onSpeechPlayingStateChanged = () => {
-      sentIsSpeechActive = true;
-    };
-
-    speechController.setIsSpeechActive(false);
-
-    assertFalse(isSpeechActiveChanged);
-    assertFalse(sentIsSpeechActive);
-    assertFalse(speechController.isSpeechActive());
-    assertFalse(isAudioCurrentlyPlayingChanged);
-
-    speechController.setIsSpeechActive(true);
-
-    assertTrue(isSpeechActiveChanged);
-    assertTrue(sentIsSpeechActive);
-    assertTrue(speechController.isSpeechActive());
-    assertFalse(isAudioCurrentlyPlayingChanged);
-  });
-
-  test('setIsAudioCurrentlyPlaying notifies listeners if value changes', () => {
-    speechController.setIsAudioCurrentlyPlaying(false);
-
-    assertFalse(isSpeechActiveChanged);
-    assertFalse(speechController.isAudioCurrentlyPlaying());
-    assertFalse(isAudioCurrentlyPlayingChanged);
-
-    speechController.setIsAudioCurrentlyPlaying(true);
-
-    assertFalse(isSpeechActiveChanged);
-    assertTrue(speechController.isAudioCurrentlyPlaying());
-    assertTrue(isAudioCurrentlyPlayingChanged);
-  });
-
-  test('setEngineState notifies listeners if value changes', () => {
-    speechController.setEngineState(SpeechEngineState.NONE);
-
-    assertFalse(onEngineStateChange);
-    assertFalse(speechController.isEngineLoaded());
-
-    speechController.setEngineState(SpeechEngineState.LOADED);
-
-    assertTrue(onEngineStateChange);
-    assertTrue(speechController.isEngineLoaded());
-  });
-
-  test('setPreviewVoicePlaying notifies listeners if value changes', () => {
-    speechController.setPreviewVoicePlaying(null);
-
-    assertFalse(onPreviewVoicePlaying);
-    assertFalse(!!speechController.getPreviewVoicePlaying());
-
-    const voice = createSpeechSynthesisVoice({lang: 'it', name: 'June'});
-    speechController.setPreviewVoicePlaying(voice);
-
-    assertTrue(onPreviewVoicePlaying);
-    assertEquals(voice, speechController.getPreviewVoicePlaying());
-  });
-
   test('previewVoice stops speech', () => {
-    speechController.setIsSpeechActive(true);
-    speechController.setIsAudioCurrentlyPlaying(true);
+    speechController.onPlayPauseToggle(null, 'Grew up in the French court');
 
     speechController.previewVoice(null);
 
+    assertFalse(onPreviewVoicePlaying);
     assertFalse(speechController.isSpeechActive());
     assertFalse(speechController.isAudioCurrentlyPlaying());
     assertEquals(
@@ -210,12 +150,16 @@ suite('SpeechController', () => {
     const voice = createSpeechSynthesisVoice({lang: 'yue', name: 'November'});
 
     speechController.previewVoice(voice);
+    assertFalse(onPreviewVoicePlaying);
 
     const spoken = await speech.whenCalled('speak');
     spoken.onstart(new SpeechSynthesisEvent('type', {utterance: spoken}));
+    assertTrue(onPreviewVoicePlaying);
     assertEquals(voice, speechController.getPreviewVoicePlaying());
 
+    onPreviewVoicePlaying = false;
     spoken.onend();
+    assertTrue(onPreviewVoicePlaying);
     assertFalse(!!speechController.getPreviewVoicePlaying());
   });
 
@@ -264,10 +208,10 @@ suite('SpeechController', () => {
 
   test('onSpeechSettingsChange cancels and resumes speech if playing', () => {
     speechController.initializeSpeechTree(1);
-    speechController.setIsSpeechActive(true);
-    speechController.setHasSpeechBeenTriggered(true);
-    speechController.setIsAudioCurrentlyPlaying(true);
-    setSimpleNodeStoreWithText('In all the time I\'ve been by your side');
+    const text = 'In all the time I\'ve been by your side';
+    setSimpleNodeStoreWithText(text);
+    speechController.onPlayPauseToggle(null, text);
+    speech.reset();
 
     speechController.onSpeechSettingsChange();
 
@@ -284,8 +228,6 @@ suite('SpeechController', () => {
   test('onSpeechSettingsChange does not resume speech if not playing', () => {
     speechController.initializeSpeechTree(1);
     speechController.setHasSpeechBeenTriggered(true);
-    speechController.setIsSpeechActive(false);
-    speechController.setIsAudioCurrentlyPlaying(false);
     setSimpleNodeStoreWithText('I\'ve never lost control');
 
     speechController.onSpeechSettingsChange();
@@ -319,13 +261,18 @@ suite('SpeechController', () => {
 
     speechController.onPlayPauseToggle(null, text);
     const spoken = await speech.whenCalled('speak');
+    assertTrue(onEngineStateChange);
+    assertFalse(isAudioCurrentlyPlayingChanged);
     assertFalse(speechController.isEngineLoaded());
     assertFalse(speechController.isAudioCurrentlyPlaying());
 
+    onEngineStateChange = false;
     assertTrue(!!spoken.onstart, 'onstart');
     spoken.onstart(new SpeechSynthesisEvent('type', {utterance: spoken}));
-    assertTrue(speechController.isEngineLoaded(), 'engine loaded');
-    assertTrue(speechController.isAudioCurrentlyPlaying(), 'audio playing');
+    assertTrue(onEngineStateChange);
+    assertTrue(isAudioCurrentlyPlayingChanged);
+    assertTrue(speechController.isEngineLoaded());
+    assertTrue(speechController.isAudioCurrentlyPlaying());
   });
 
   test('onPlayPauseToggle uses current language and speech rate', async () => {
@@ -437,7 +384,7 @@ suite('SpeechController', () => {
     });
 
     test('on text-too-long error smaller text segment plays', () => {
-      voicePackController.setCurrentVoice(createSpeechSynthesisVoice(
+      voicePackController.setUserPreferredVoice(createSpeechSynthesisVoice(
           {lang: 'en', name: 'Google Dinosaur', localService: true}));
       const accessibleTextLength =
           speechController.getUtteranceEndBoundary(longSentences, true);
@@ -448,6 +395,7 @@ suite('SpeechController', () => {
 
       utterance.onerror(createSpeechErrorEvent(utterance, 'text-too-long'));
 
+      assertTrue(onEngineStateChange);
       assertEquals(1, metrics.getCallCount('recordSpeechError'));
       const spoken1 = speech.getArgs('speak')[0];
       assertEquals(
@@ -465,7 +413,8 @@ suite('SpeechController', () => {
     const pageLanguage = 'es';
     setSimpleNodeStoreWithText(textContent);
     assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
-    voicePackController.setCurrentLanguage(pageLanguage);
+    chrome.readingMode.baseLanguageForSpeech = pageLanguage;
+    voicePackController.onPageLanguageChanged();
     speechController.initializeSpeechTree(1);
 
     speechController.onPlayPauseToggle(null, textContent);
@@ -476,6 +425,7 @@ suite('SpeechController', () => {
     utterance.onerror(
         createSpeechErrorEvent(utterance, 'language-unavailable'));
 
+    assertTrue(onEngineStateChange);
     assertEquals(1, metrics.getCallCount('recordSpeechError'));
     assertEquals(1, speech.getCallCount('cancel'));
     assertEquals(0, speech.getCallCount('pause'));
@@ -490,7 +440,8 @@ suite('SpeechController', () => {
     const pageLanguage = 'es';
     setSimpleNodeStoreWithText(textContent);
     assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
-    voicePackController.setCurrentLanguage(pageLanguage);
+    chrome.readingMode.baseLanguageForSpeech = pageLanguage;
+    voicePackController.onPageLanguageChanged();
     speechController.initializeSpeechTree(1);
 
     speechController.onPlayPauseToggle(null, textContent);
@@ -500,6 +451,7 @@ suite('SpeechController', () => {
 
     utterance.onerror(createSpeechErrorEvent(utterance, 'voice-unavailable'));
 
+    assertTrue(onEngineStateChange);
     assertEquals(1, metrics.getCallCount('recordSpeechError'));
     assertEquals(1, speech.getCallCount('cancel'));
     assertEquals(0, speech.getCallCount('pause'));
@@ -515,7 +467,8 @@ suite('SpeechController', () => {
     setSimpleNodeStoreWithText(textContent);
     assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
     chrome.readingMode.speechRate = 4;
-    voicePackController.setCurrentLanguage(pageLanguage);
+    chrome.readingMode.baseLanguageForSpeech = pageLanguage;
+    voicePackController.onPageLanguageChanged();
     speechController.initializeSpeechTree(1);
 
     speechController.onPlayPauseToggle(null, textContent);
@@ -525,6 +478,7 @@ suite('SpeechController', () => {
 
     utterance.onerror(createSpeechErrorEvent(utterance, 'invalid-argument'));
 
+    assertTrue(onEngineStateChange);
     assertEquals(1, chrome.readingMode.speechRate);
     assertEquals(2, speech.getCallCount('cancel'));
     assertEquals(0, speech.getCallCount('pause'));
@@ -539,19 +493,20 @@ suite('SpeechController', () => {
     setSimpleNodeStoreWithText(textContent);
     assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
     chrome.readingMode.speechRate = 4;
-    voicePackController.setCurrentLanguage(pageLanguage);
+    chrome.readingMode.baseLanguageForSpeech = pageLanguage;
+    voicePackController.onPageLanguageChanged();
     speechController.initializeSpeechTree(1);
 
     speechController.onPlayPauseToggle(null, textContent);
     assertEquals(1, speech.getCallCount('speak'));
     const utterance = speech.getArgs('speak')[0];
+    utterance.onstart(new SpeechSynthesisEvent('type', {utterance: utterance}));
+    speechController.playNextGranularity();
     speech.reset();
-    speechController.setIsSpeechBeingRepositioned(true);
-    speechController.setIsSpeechActive(true);
-    speechController.setIsAudioCurrentlyPlaying(true);
 
     utterance.onerror(createSpeechErrorEvent(utterance, 'interrupted'));
 
+    assertTrue(onEngineStateChange);
     assertTrue(speechController.isAudioCurrentlyPlaying());
     assertTrue(speechController.isSpeechActive());
     assertTrue(speechController.isSpeechBeingRepositioned());
@@ -566,17 +521,19 @@ suite('SpeechController', () => {
     setSimpleNodeStoreWithText(textContent);
     assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
     chrome.readingMode.speechRate = 4;
-    voicePackController.setCurrentLanguage(pageLanguage);
+    chrome.readingMode.baseLanguageForSpeech = pageLanguage;
+    voicePackController.onPageLanguageChanged();
     speechController.initializeSpeechTree(1);
 
     speechController.onPlayPauseToggle(null, textContent);
     assertEquals(1, speech.getCallCount('speak'));
     const utterance = speech.getArgs('speak')[0];
     speech.reset();
-    speechController.setIsAudioCurrentlyPlaying(true);
+    utterance.onstart(new SpeechSynthesisEvent('type', {utterance: utterance}));
 
     utterance.onerror(createSpeechErrorEvent(utterance, 'interrupted'));
 
+    assertTrue(onEngineStateChange);
     assertEquals(
         PauseActionSource.ENGINE_INTERRUPT, speechController.getPauseSource());
     assertFalse(speechController.isAudioCurrentlyPlaying());
@@ -628,7 +585,6 @@ suite('SpeechController', () => {
 
   test('playNextGranularity updates state', () => {
     setSimpleNodeStoreWithText('Know all about the glories');
-    speechController.setIsSpeechBeingRepositioned(false);
     wordBoundaries.updateBoundary(5);
 
     speechController.playNextGranularity();
@@ -640,7 +596,6 @@ suite('SpeechController', () => {
 
   test('playPreviousGranularity updates state', () => {
     setSimpleNodeStoreWithText('And the disgraces');
-    speechController.setIsSpeechBeingRepositioned(false);
     wordBoundaries.updateBoundary(5);
 
     speechController.playPreviousGranularity();
@@ -675,7 +630,8 @@ suite('SpeechController', () => {
   });
 
   test('onLockScreen while playing cancels speech', () => {
-    speechController.setIsSpeechActive(true);
+    speechController.onPlayPauseToggle(null, 'Oui, oui bonjour');
+    speech.reset();
 
     speechController.onLockScreen();
 
@@ -684,9 +640,9 @@ suite('SpeechController', () => {
     assertEquals(0, speech.getCallCount('speak'));
   });
 
-  test('onVoiceMenuClose resumes speech only if it was active before', () => {
-    setSimpleNodeStoreWithText('You must agree that baby');
-    speechController.setIsSpeechActive(false);
+  test('onVoiceMenuClose resume speech only if it was active before', () => {
+    const text = 'You must agree that baby';
+    setSimpleNodeStoreWithText(text);
     speechController.onVoiceMenuOpen();
 
     speechController.onVoiceMenuClose();
@@ -695,21 +651,22 @@ suite('SpeechController', () => {
     assertEquals(0, speech.getCallCount('pause'));
     assertEquals(0, speech.getCallCount('speak'));
 
-    speechController.setIsSpeechActive(true);
+    speechController.onPlayPauseToggle(null, text);
     speechController.onVoiceMenuOpen();
-    speechController.setIsSpeechActive(false);
+    speechController.onPlayPauseToggle(null, text);
+    speech.reset();
 
     speechController.onVoiceMenuClose();
 
-    assertEquals(1, speech.getCallCount('cancel'), 'cancel');
-    assertEquals(0, speech.getCallCount('pause'));
-    assertEquals(1, speech.getCallCount('speak'), 'speak');
+    assertEquals(1, speech.getCallCount('resume'));
+    assertEquals(0, speech.getCallCount('cancel'));
+    assertEquals(0, speech.getCallCount('speak'));
   });
 
   test('onVoiceSelected sets current voice', () => {
     const voice1 = createSpeechSynthesisVoice({lang: 'pt-pt', name: 'Donkey'});
     const voice2 = createSpeechSynthesisVoice({lang: 'pt-br', name: 'Corgi'});
-    voicePackController.setCurrentVoice(voice1);
+    voicePackController.setUserPreferredVoice(voice1);
     let sentName = '';
     let sentLang = '';
     chrome.readingMode.onVoiceChange = (name, lang) => {
@@ -728,7 +685,7 @@ suite('SpeechController', () => {
     const voice1 = createSpeechSynthesisVoice({lang: 'pt-pt', name: 'Tabby'});
     const voice2 = createSpeechSynthesisVoice({lang: 'pt-PT', name: 'Cheetah'});
     const voice3 = createSpeechSynthesisVoice({lang: 'pt-br', name: 'Leopard'});
-    voicePackController.setCurrentVoice(voice1);
+    voicePackController.setUserPreferredVoice(voice1);
     wordBoundaries.updateBoundary(10);
 
     speechController.onVoiceSelected(voice2);

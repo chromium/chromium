@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy, SpeechBrowserProxyImpl, SpeechController, VoicePackController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, SpeechBrowserProxyImpl, ToolbarEvent, VoicePackController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {mockMetrics, setupBasicSpeech} from './common.js';
+import {emitEvent, mockMetrics, setupBasicSpeech} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {FakeTreeBuilder} from './fake_tree_builder.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -75,7 +75,7 @@ suite('UpdateContent', () => {
   });
 
   test('logs speech stop if called while speech active', async () => {
-    SpeechController.getInstance().setIsSpeechActive(true);
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
     app.updateContent();
     await microtasksFinished();
 

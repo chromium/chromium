@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {playFromSelectionTimeout, SpeechBrowserProxyImpl, SpeechController, SpeechEngineState, ToolbarEvent, VoicePackController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {playFromSelectionTimeout, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoicePackController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
@@ -298,8 +298,7 @@ suite('Speech', () => {
   suite('while playing', () => {
     setup(() => {
       speechController.initializeSpeechTree(1);
-      speechController.setHasSpeechBeenTriggered(true);
-      speechController.setIsSpeechActive(true);
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
     });
 
     test('voice change cancels and restarts speech', () => {
@@ -319,6 +318,8 @@ suite('Speech', () => {
     });
 
     test('rate change cancels and restarts speech', () => {
+      speech.reset();
+
       emitEvent(app, ToolbarEvent.RATE);
 
       assertEquals(2, speech.getCallCount('cancel'));
@@ -326,20 +327,17 @@ suite('Speech', () => {
       assertEquals(0, speech.getCallCount('pause'));
     });
 
-    test('is playable', async () => {
-      await microtasksFinished();
-      assertTrue(app.$.toolbar.isReadAloudPlayable);
-    });
-
     test('before speech engine is loaded is not playable', async () => {
-      speechController.setEngineState(SpeechEngineState.LOADING);
       await microtasksFinished();
       assertFalse(app.$.toolbar.isReadAloudPlayable);
     });
 
     test('after speech engine is loaded is playable', async () => {
-      speechController.setEngineState(SpeechEngineState.LOADED);
+      assertEquals(1, speech.getCallCount('speak'));
+
+      speech.getArgs('speak')[0].onstart();
       await microtasksFinished();
+
       assertTrue(app.$.toolbar.isReadAloudPlayable);
     });
   });

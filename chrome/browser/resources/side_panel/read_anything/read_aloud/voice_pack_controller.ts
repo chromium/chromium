@@ -36,7 +36,7 @@ export class VoicePackController {
   private speechExtensionResponseCallbackHandle_?: number;
 
   constructor() {
-    this.setCurrentLanguage(chrome.readingMode.baseLanguageForSpeech);
+    this.model_.setCurrentLanguage(chrome.readingMode.baseLanguageForSpeech);
     this.speech_.setOnVoicesChanged(this.onVoicesChanged.bind(this));
   }
 
@@ -48,15 +48,11 @@ export class VoicePackController {
     return this.model_.getCurrentLanguage();
   }
 
-  setCurrentLanguage(language: string): void {
-    this.model_.setCurrentLanguage(language);
-  }
-
   getCurrentVoice(): SpeechSynthesisVoice|null {
     return this.model_.getCurrentVoice();
   }
 
-  setCurrentVoice(voice: SpeechSynthesisVoice|null): void {
+  private setCurrentVoice_(voice: SpeechSynthesisVoice|null): void {
     if (!areVoicesEqual(voice, this.getCurrentVoice())) {
       this.model_.setCurrentVoice(voice);
       this.listeners_.forEach(l => l.onCurrentVoiceChange());
@@ -71,7 +67,7 @@ export class VoicePackController {
     return [...this.model_.getAvailableLangs()];
   }
 
-  setAvailableVoices(voices: SpeechSynthesisVoice[]): void {
+  private setAvailableVoices_(voices: SpeechSynthesisVoice[]): void {
     this.model_.setAvailableVoices(voices);
     this.listeners_.forEach(l => l.onAvailableVoicesChange());
   }
@@ -202,13 +198,13 @@ export class VoicePackController {
   }
 
   setUserPreferredVoice(selectedVoice: SpeechSynthesisVoice): void {
-    this.setCurrentVoice(selectedVoice);
+    this.setCurrentVoice_(selectedVoice);
     chrome.readingMode.onVoiceChange(selectedVoice.name, selectedVoice.lang);
   }
 
   onPageLanguageChanged() {
     const lang = chrome.readingMode.baseLanguageForSpeech;
-    this.setCurrentLanguage(lang);
+    this.model_.setCurrentLanguage(lang);
     // Don't check for Google locales when the language has changed.
     this.installVoicePackIfPossible_(
         lang,
@@ -242,7 +238,7 @@ export class VoicePackController {
   private setUserPreferredVoiceFromPrefs_(): void {
     const storedVoiceName = chrome.readingMode.getStoredVoice();
     if (!storedVoiceName) {
-      this.setCurrentVoice(this.getDefaultVoice_());
+      this.setCurrentVoice_(this.getDefaultVoice_());
       return;
     }
 
@@ -252,7 +248,7 @@ export class VoicePackController {
     const newVoice = (selectedVoice.length && selectedVoice[0]) ?
         selectedVoice[0] :
         this.getDefaultVoice_();
-    this.setCurrentVoice(newVoice);
+    this.setCurrentVoice_(newVoice);
 
     // Enable the locale for the preferred voice for this language.
     this.enableLang(this.getCurrentVoice()?.lang);
@@ -270,7 +266,7 @@ export class VoicePackController {
       return;
     }
 
-    this.setCurrentVoice(naturalVoicesForLang[0]);
+    this.setCurrentVoice_(naturalVoicesForLang[0]);
   }
 
   // Checks the voice pack status of the current voice and updates to the
@@ -281,14 +277,14 @@ export class VoicePackController {
     }
     const currentVoice = this.getCurrentVoice();
     if (currentVoice && !this.isVoiceAvailable(currentVoice)) {
-      this.setCurrentVoice(this.getDefaultVoice_());
+      this.setCurrentVoice_(this.getDefaultVoice_());
     }
   }
 
   getCurrentVoiceOrDefault(): SpeechSynthesisVoice|null {
     const currentVoice = this.getCurrentVoice();
     if (!currentVoice) {
-      this.setCurrentVoice(this.getDefaultVoice_());
+      this.setCurrentVoice_(this.getDefaultVoice_());
     }
 
     return this.getCurrentVoice();
@@ -299,7 +295,7 @@ export class VoicePackController {
         this.getCurrentLanguage(), this.getAvailableLangs(),
         /* allowCurrentLanguageIfExists */ false);
     if (possibleNewLanguage) {
-      this.setCurrentLanguage(possibleNewLanguage);
+      this.model_.setCurrentLanguage(possibleNewLanguage);
     }
   }
 
@@ -315,7 +311,7 @@ export class VoicePackController {
     // If the default voice is not the same as the original, unavailable voice,
     // use that, only if the new voice is also defined.
     if (newVoice && !areVoicesEqual(newVoice, currentVoice)) {
-      this.setCurrentVoice(newVoice);
+      this.setCurrentVoice_(newVoice);
       return;
     }
 
@@ -338,7 +334,7 @@ export class VoicePackController {
       if (!areVoicesEqual(voicesForLanguage[voiceIndex], currentVoice)) {
         // Return another voice in the same language, ensuring we're not
         // returning the previously unavailable voice for extra safety.
-        this.setCurrentVoice(voicesForLanguage[voiceIndex] || null);
+        this.setCurrentVoice_(voicesForLanguage[voiceIndex] || null);
         return;
       }
       voiceIndex++;
@@ -347,7 +343,7 @@ export class VoicePackController {
     // TODO: crbug.com/336596926 - Handle language updates if there aren't any
     // available voices in the current language other than the unavailable
     // voice.
-    this.setCurrentVoice(null);
+    this.setCurrentVoice_(null);
   }
 
   private disableLangIfNoVoices_(lang: string): void {
@@ -424,7 +420,7 @@ export class VoicePackController {
     // We need to make sure the languages we choose correspond to voices, so
     // refresh the list of voices and available langs
     this.refreshAvailableVoices_();
-    this.setCurrentLanguage(chrome.readingMode.baseLanguageForSpeech);
+    this.model_.setCurrentLanguage(chrome.readingMode.baseLanguageForSpeech);
     const storedLanguagesPref = chrome.readingMode.getLanguagesEnabledInPref();
     const langOfDefaultVoice = this.getDefaultVoice_()?.lang;
 
@@ -443,7 +439,7 @@ export class VoicePackController {
   private refreshAvailableVoices_(forceRefresh: boolean = false): void {
     if (!this.hasAvailableVoices() || forceRefresh) {
       const availableVoices = getFilteredVoiceList(this.speech_.getVoices());
-      this.setAvailableVoices(availableVoices);
+      this.setAvailableVoices_(availableVoices);
       this.model_.setAvailableLangs(availableVoices.map(({lang}) => lang));
     }
   }

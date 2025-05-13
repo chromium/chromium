@@ -189,18 +189,6 @@ suite('VoicePackController', () => {
     assertTrue(voicePackController.isLangEnabled('NO'));
   });
 
-  test('setCurrentVoice', () => {
-    const voice = createSpeechSynthesisVoice({lang: 'tr', name: 'Zebra'});
-    voicePackController.setCurrentVoice(voice);
-    assertTrue(onCurrentVoiceChange);
-    assertEquals(voice, voicePackController.getCurrentVoice());
-
-    onCurrentVoiceChange = false;
-    voicePackController.setCurrentVoice(voice);
-    assertFalse(onCurrentVoiceChange);
-    assertEquals(voice, voicePackController.getCurrentVoice());
-  });
-
   test('setUserPreferredVoice', () => {
     let sentVoiceName = '';
     let sentLang = '';
@@ -450,8 +438,9 @@ suite('VoicePackController', () => {
     const naturalVoice = createSpeechSynthesisVoice(
         {lang: 'ja', name: 'Google Horse (Natural)'});
     speech.setVoices([voice, naturalVoice]);
-    voicePackController.setCurrentVoice(voice);
-    voicePackController.setCurrentLanguage(voice.lang);
+    voicePackController.setUserPreferredVoice(voice);
+    chrome.readingMode.baseLanguageForSpeech = voice.lang;
+    voicePackController.onPageLanguageChanged();
 
     voicePackController.onVoicesChanged();
 
@@ -469,8 +458,9 @@ suite('VoicePackController', () => {
         const naturalVoice = createSpeechSynthesisVoice(
             {lang: 'ja', name: 'Google Ostrich (Natural)'});
         speech.setVoices([voice, naturalVoice]);
-        voicePackController.setCurrentVoice(voice);
-        voicePackController.setCurrentLanguage(voice.lang);
+        voicePackController.setUserPreferredVoice(voice);
+        chrome.readingMode.baseLanguageForSpeech = voice.lang;
+        voicePackController.onPageLanguageChanged();
 
         voicePackController.onVoicesChanged();
 
@@ -584,7 +574,7 @@ suite('VoicePackController', () => {
             createSpeechSynthesisVoice({lang: 'id', name: 'Google Dog'});
         speech.setVoices([voice]);
         voicePackController.enableLang(voice.lang);
-        voicePackController.setCurrentVoice(voice);
+        voicePackController.setUserPreferredVoice(voice);
         onCurrentVoiceChange = false;
 
         voicePackController.onVoicesChanged();
@@ -603,7 +593,7 @@ suite('VoicePackController', () => {
             createSpeechSynthesisVoice({lang: 'id', name: 'Google Komodo'});
         speech.setVoices([defaultVoice]);
         voicePackController.enableLang(voice.lang);
-        voicePackController.setCurrentVoice(voice);
+        voicePackController.setUserPreferredVoice(voice);
         onCurrentVoiceChange = false;
 
         voicePackController.onVoicesChanged();
@@ -799,7 +789,7 @@ suite('VoicePackController', () => {
       });
 
       test('uses the current voice if there is one', () => {
-        voicePackController.setCurrentVoice(otherVoice);
+        voicePackController.setUserPreferredVoice(otherVoice);
         voicePackController.onPageLanguageChanged();
         assertEquals(otherVoice, voicePackController.getCurrentVoice());
       });
@@ -824,7 +814,6 @@ suite('VoicePackController', () => {
 
     test('enables pack manager locale', () => {
       chrome.readingMode.baseLanguageForSpeech = lang3;
-      voicePackController.setAvailableVoices([firstVoiceWithLang3]);
       voicePackController.onVoicesChanged();
 
       voicePackController.onPageLanguageChanged();
@@ -836,7 +825,6 @@ suite('VoicePackController', () => {
 
     test('enables other locale if not supported by pack manager', () => {
       chrome.readingMode.baseLanguageForSpeech = lang1;
-      voicePackController.setAvailableVoices([firstVoiceWithLang1]);
       voicePackController.onVoicesChanged();
 
       voicePackController.onPageLanguageChanged();
@@ -1226,7 +1214,7 @@ suite('VoicePackController', () => {
             name: 'Portuguese voice 1',
             lang: chrome.readingMode.baseLanguageForSpeech,
           });
-          voicePackController.setCurrentVoice(currentVoice);
+          voicePackController.setUserPreferredVoice(currentVoice);
           chrome.readingMode.getStoredVoice = () => '';
           setVoices(speech, [currentVoice]);
 
@@ -1255,7 +1243,8 @@ suite('VoicePackController', () => {
   test('onLanguageUnavailableError chooses new language', () => {
     const pageLanguage = 'es';
     const otherLanguage = 'tr';
-    voicePackController.setCurrentLanguage(pageLanguage);
+    chrome.readingMode.baseLanguageForSpeech = pageLanguage;
+    voicePackController.onPageLanguageChanged();
     chrome.readingMode.defaultLanguageForSpeech = otherLanguage;
     speech.setVoices([createSpeechSynthesisVoice(
         {lang: otherLanguage, name: 'Google Scorpion'})]);
@@ -1283,7 +1272,7 @@ suite('VoicePackController', () => {
             createSpeechSynthesisVoice({lang: 'en', name: 'Google George'});
         const voice2 =
             createSpeechSynthesisVoice({lang: 'en', name: 'Google Connie'});
-        voicePackController.setCurrentVoice(voice1);
+        voicePackController.setUserPreferredVoice(voice1);
         speech.setVoices([voice1, voice2]);
 
         voicePackController.onVoiceUnavailableError();

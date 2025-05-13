@@ -9,7 +9,7 @@ import {BrowserProxy, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, Vo
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {hasStyle, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, emitEvent, mockMetrics, setupBasicSpeech} from './common.js';
+import {createApp, createSpeechSynthesisVoice, emitEvent, mockMetrics, setupBasicSpeech} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -227,6 +227,12 @@ suite('AppReceivesToolbarChanges', () => {
     const speechRates =
         speech.getArgs('speak').map(utterance => utterance.rate);
     assertArrayEquals([1, 2, 0.5, 4], speechRates);
+  });
+
+  test('on voice selected, current voice updated', () => {
+    const voice = createSpeechSynthesisVoice({lang: 'es-us', name: 'Poodle'});
+    emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice: voice}});
+    assertEquals(voice, voicePackController.getCurrentVoice());
   });
 
   suite('play/pause', () => {

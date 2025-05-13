@@ -69,7 +69,7 @@ export class SpeechController {
     return this.model_.isSpeechActive();
   }
 
-  setIsSpeechActive(isSpeechActive: boolean) {
+  private setIsSpeechActive_(isSpeechActive: boolean) {
     if (isSpeechActive !== this.isSpeechActive()) {
       this.model_.setIsSpeechActive(isSpeechActive);
       this.isSpeechActiveChanged(isSpeechActive);
@@ -78,10 +78,6 @@ export class SpeechController {
 
   isSpeechBeingRepositioned(): boolean {
     return this.model_.isSpeechBeingRepositioned();
-  }
-
-  setIsSpeechBeingRepositioned(isSpeechBeingRepositioned: boolean) {
-    this.model_.setIsSpeechBeingRepositioned(isSpeechBeingRepositioned);
   }
 
   isAudioCurrentlyPlaying(): boolean {
@@ -99,7 +95,7 @@ export class SpeechController {
     return this.model_.getEngineState() === SpeechEngineState.LOADED;
   }
 
-  setEngineState(state: SpeechEngineState) {
+  private setEngineState_(state: SpeechEngineState) {
     if (state !== this.model_.getEngineState()) {
       this.model_.setEngineState(state);
       this.listeners_.forEach(l => l.onEngineStateChange());
@@ -110,7 +106,7 @@ export class SpeechController {
     return this.model_.getPreviewVoicePlaying();
   }
 
-  setPreviewVoicePlaying(voice: SpeechSynthesisVoice|null) {
+  private setPreviewVoicePlaying_(voice: SpeechSynthesisVoice|null) {
     if (voice !== this.model_.getPreviewVoicePlaying()) {
       this.model_.setPreviewVoicePlaying(voice);
       this.listeners_.forEach(l => l.onPreviewVoicePlaying());
@@ -225,7 +221,7 @@ export class SpeechController {
   }
 
   playNextGranularity() {
-    this.setIsSpeechBeingRepositioned(true);
+    this.model_.setIsSpeechBeingRepositioned(true);
 
     this.speech_.cancel();
     this.highlighter_.resetPreviousHighlight();
@@ -239,7 +235,7 @@ export class SpeechController {
   }
 
   playPreviousGranularity() {
-    this.setIsSpeechBeingRepositioned(true);
+    this.model_.setIsSpeechBeingRepositioned(true);
     this.speech_.cancel();
     // This must be called BEFORE calling
     // chrome.readingMode.movePositionToPreviousGranularity so we can accurately
@@ -281,8 +277,8 @@ export class SpeechController {
       }
     }
 
-    this.setIsSpeechActive(true);
-    this.setIsSpeechBeingRepositioned(false);
+    this.setIsSpeechActive_(true);
+    this.model_.setIsSpeechBeingRepositioned(false);
 
     // If the current read highlight has been cleared from a call to
     // updateContent, such as via a preference change, rehighlight the nodes
@@ -303,9 +299,9 @@ export class SpeechController {
     // speech played and without speech played. Counting resumes would
     // inflate the speech played number.
     this.logger_.logNewPage(/*speechPlayed=*/ true);
-    this.setIsSpeechActive(true);
+    this.setIsSpeechActive_(true);
     this.setHasSpeechBeenTriggered(true);
-    this.setIsSpeechBeingRepositioned(false);
+    this.model_.setIsSpeechBeingRepositioned(false);
 
     const playedFromSelection = this.playFromSelection_(selection);
     if (playedFromSelection) {
@@ -504,7 +500,7 @@ export class SpeechController {
     // to prevent trapping users in a state where they can no longer play
     // Read Aloud, as this is preferable to a long delay before speech
     // with no feedback.
-    this.setEngineState(SpeechEngineState.LOADED);
+    this.setEngineState_(SpeechEngineState.LOADED);
 
     if (error.error === 'interrupted') {
       this.onSpeechInterrupted_();
@@ -576,7 +572,7 @@ export class SpeechController {
   }
 
   private stopSpeech_(pauseSource: PauseActionSource) {
-    this.setIsSpeechActive(false);
+    this.setIsSpeechActive_(false);
     this.setIsAudioCurrentlyPlaying(false);
     this.model_.setPauseSource(pauseSource);
 
@@ -603,11 +599,11 @@ export class SpeechController {
     message.onstart = () => {
       // We've gotten the signal that the speech engine has started, therefore
       // we can enable the Read Aloud buttons.
-      this.setEngineState(SpeechEngineState.LOADED);
+      this.setEngineState_(SpeechEngineState.LOADED);
 
       // Reset the isSpeechBeingRepositioned property after speech starts
       // after a next / previous button.
-      this.setIsSpeechBeingRepositioned(false);
+      this.model_.setIsSpeechBeingRepositioned(false);
       this.setIsAudioCurrentlyPlaying(true);
     };
   }
@@ -647,7 +643,7 @@ export class SpeechController {
     }
 
     if (this.model_.getEngineState() === SpeechEngineState.NONE) {
-      this.setEngineState(SpeechEngineState.LOADING);
+      this.setEngineState_(SpeechEngineState.LOADING);
     }
 
     this.speakWithDefaults_(message);
@@ -658,7 +654,7 @@ export class SpeechController {
 
     // If there's no previewVoice, return after stopping the current preview
     if (!previewVoice) {
-      this.setPreviewVoicePlaying(null);
+      this.setPreviewVoicePlaying_(null);
       return;
     }
 
@@ -672,11 +668,11 @@ export class SpeechController {
     }
 
     utterance.onstart = () => {
-      this.setPreviewVoicePlaying(previewVoice);
+      this.setPreviewVoicePlaying_(previewVoice);
     };
 
     utterance.onend = () => {
-      this.setPreviewVoicePlaying(null);
+      this.setPreviewVoicePlaying_(null);
     };
 
     // TODO: crbug.com/40927698 - There should probably be more sophisticated
@@ -684,7 +680,7 @@ export class SpeechController {
     // preview voice to null should be sufficient to reset state if an error is
     // encountered during a preview.
     utterance.onerror = () => {
-      this.setPreviewVoicePlaying(null);
+      this.setPreviewVoicePlaying_(null);
     };
 
     this.speakWithDefaults_(utterance);
