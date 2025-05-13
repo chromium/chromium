@@ -152,6 +152,9 @@ specific_include_rules = {
         "+base/threading/thread_task_runner_handle.h",
         # Test harness may use cc directly instead of going through WebViewImpl etc.
         "+cc",
+        "+components/subresource_filter/content/renderer",
+        "+components/subresource_filter/core/common",
+        "+components/subresource_filter/core/mojom",
         "+components/ukm/test_ukm_recorder.h",
         "+components/viz/test",
 	# TODO(crbug.com/838693): Test harnesses use LayerTreeView

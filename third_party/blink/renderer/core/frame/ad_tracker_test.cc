@@ -9,6 +9,11 @@
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/subresource_filter/content/renderer/web_document_subresource_filter_impl.h"
+#include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
+#include "components/subresource_filter/core/common/test_ruleset_creator.h"
+#include "components/subresource_filter/core/common/test_ruleset_utils.h"
+#include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -90,6 +95,43 @@ const char kStylesheetWithAdResources[] = R"CSS(
     }
     )CSS";
 
+// Returns a new instance of `WebDocumentSubresourceFilterImpl`. The caller
+// assumes ownership and is responsible for its proper destruction.
+subresource_filter::WebDocumentSubresourceFilterImpl* CreateSubresourceFilter(
+    scoped_refptr<const subresource_filter::MemoryMappedRuleset> ruleset) {
+  subresource_filter::mojom::ActivationState activation_state(
+      subresource_filter::mojom::ActivationLevel::kDryRun,
+      /*filtering_disabled_for_document=*/false,
+      /*generic_blocking_rules_disabled=*/false,
+      /*measure_performance=*/false,
+      /*enable_logging=*/false);
+
+  return new subresource_filter::WebDocumentSubresourceFilterImpl(
+      url::Origin::Create(GURL("https://example.com")), activation_state,
+      ruleset,
+      /*first_disallowed_load_callback=*/base::DoNothing());
+}
+
+class FixedSubresourceFilterWebFrameClient
+    : public frame_test_helpers::TestWebFrameClient {
+ public:
+  explicit FixedSubresourceFilterWebFrameClient(
+      scoped_refptr<const subresource_filter::MemoryMappedRuleset> ruleset)
+      : ruleset_(ruleset) {}
+
+  void DidCommitNavigation(
+      WebHistoryCommitType commit_type,
+      bool should_reset_browser_interface_broker,
+      const network::ParsedPermissionsPolicy& permissions_policy_header,
+      const DocumentPolicyFeatureState& document_policy_header) override {
+    Frame()->GetDocumentLoader()->SetSubresourceFilter(
+        CreateSubresourceFilter(ruleset_));
+  }
+
+ private:
+  scoped_refptr<const subresource_filter::MemoryMappedRuleset> ruleset_;
+};
+
 class TestAdTracker : public AdTracker {
  public:
   explicit TestAdTracker(LocalFrame* frame) : AdTracker(frame) {}
@@ -98,7 +140,6 @@ class TestAdTracker : public AdTracker {
     execution_context_ = execution_context;
   }
 
-  void SetAdSuffix(const String& ad_suffix) { ad_suffix_ = ad_suffix; }
   ~TestAdTracker() override {}
 
   void Trace(Visitor* visitor) const override {
@@ -174,29 +215,24 @@ class TestAdTracker : public AdTracker {
                                 const KURL& request_url,
                                 ResourceType resource_type,
                                 const FetchInitiatorInfo& initiator_info,
-                                bool ad_request) override {
-    if (!ad_suffix_.empty() && request_url.GetString().EndsWith(ad_suffix_)) {
-      ad_request = true;
-    }
-
-    ad_request = AdTracker::CalculateIfAdSubresource(
+                                bool known_ad) override {
+    bool observed_result = AdTracker::CalculateIfAdSubresource(
         execution_context, request_url, resource_type, initiator_info,
-        ad_request);
+        known_ad);
 
     String resource_url = request_url.GetString();
-    is_ad_.insert(resource_url, ad_request);
+    is_ad_.insert(resource_url, observed_result);
 
     if (quit_closure_ && url_to_wait_for_ == resource_url) {
       std::move(quit_closure_).Run();
     }
-    return ad_request;
+    return observed_result;
   }
 
  private:
   HashMap<String, bool> is_ad_;
   String script_at_top_;
   Member<ExecutionContext> execution_context_;
-  String ad_suffix_;
   bool sim_test_ = false;
   Vector<AdScriptIdentifier> last_ad_script_ancestry_;
 
@@ -555,6 +591,22 @@ TEST_F(AdTrackerTest, BottommostAsyncAdScript) {
 
 class AdTrackerSimTest : public SimTest {
  protected:
+  AdTrackerSimTest() {
+    // Build a subresource filter ruleset that will consider *ad_script.js and
+    // *ad=true urls as ads.
+    std::vector<url_pattern_index::proto::UrlRule> rules;
+    rules.push_back(
+        subresource_filter::testing::CreateSuffixRule("ad_script.js"));
+    rules.push_back(subresource_filter::testing::CreateSuffixRule("ad=true"));
+
+    subresource_filter::testing::TestRulesetPair test_ruleset_pair;
+    subresource_filter::testing::TestRulesetCreator ruleset_creator;
+    ruleset_creator.CreateRulesetWithRules(rules, &test_ruleset_pair);
+    ruleset_ = subresource_filter::MemoryMappedRuleset::CreateAndInitialize(
+        subresource_filter::testing::TestRuleset::Open(
+            test_ruleset_pair.indexed));
+  }
+
   void SetUp() override {
     SimTest::SetUp();
     main_resource_ = std::make_unique<SimRequest>(
@@ -571,12 +623,18 @@ class AdTrackerSimTest : public SimTest {
     SimTest::TearDown();
   }
 
+  std::unique_ptr<frame_test_helpers::TestWebFrameClient>
+  CreateWebFrameClientForMainFrame() override {
+    return std::make_unique<FixedSubresourceFilterWebFrameClient>(ruleset_);
+  }
+
   bool IsKnownAdScript(ExecutionContext* execution_context, const String& url) {
     return ad_tracker_->IsKnownAdScript(execution_context, url);
   }
 
   std::unique_ptr<SimRequest> main_resource_;
   Persistent<TestAdTracker> ad_tracker_;
+  scoped_refptr<const subresource_filter::MemoryMappedRuleset> ruleset_;
 };
 
 // Script loaded by ad script is tagged as ad.
@@ -585,8 +643,6 @@ TEST_F(AdTrackerSimTest, ScriptLoadedWhileExecutingAdScript) {
   const char kVanillaUrl[] = "https://example.com/vanilla_script.js";
   SimSubresourceRequest ad_resource(kAdUrl, "text/javascript");
   SimSubresourceRequest vanilla_script(kVanillaUrl, "text/javascript");
-
-  ad_tracker_->SetAdSuffix("ad_script.js");
 
   main_resource_->Complete("<body></body><script src=ad_script.js></script>");
 
@@ -633,8 +689,6 @@ TEST_F(AdTrackerSimTest, EventHandlerForPostMessageFromAdFrame_NoAdInStack) {
   SimSubresourceRequest image_resource("https://example.com/image.gif",
                                        "image/gif");
 
-  ad_tracker_->SetAdSuffix("ad_script.js");
-
   // Create an iframe that's considered an ad.
   main_resource_->Complete(R"(<body>
     <script src='vanilla_script.js'></script>
@@ -680,8 +734,6 @@ TEST_F(AdTrackerSimTest, RedirectToAdUrl) {
   SimSubresourceRequest ad_script("https://example.com/ad_script.js",
                                   "text/javascript");
 
-  ad_tracker_->SetAdSuffix("ad_script.js");
-
   main_resource_->Complete(
       "<body><script src='redirect_script.js'></script></body>");
 
@@ -723,7 +775,6 @@ TEST_F(AdTrackerSimTest, InlineAdScriptRunningInNonAdContext) {
   SimSubresourceRequest ad_script("https://example.com/ad_script.js",
                                   "text/javascript");
   SimRequest ad_iframe("https://example.com/ad_frame.html", "text/html");
-  ad_tracker_->SetAdSuffix("ad_script.js");
 
   main_resource_->Complete("<body><script src='ad_script.js'></script></body>");
   ad_script.Complete(R"SCRIPT(
@@ -770,8 +821,6 @@ TEST_F(AdTrackerSimTest, ImageLoadedWhileExecutingAdScriptAsyncEnabled) {
   const char kVanillaUrl[] = "https://example.com/vanilla_image.gif";
   SimSubresourceRequest ad_resource(kAdUrl, "text/javascript");
   SimSubresourceRequest vanilla_image(kVanillaUrl, "image/gif");
-
-  ad_tracker_->SetAdSuffix("ad_script.js");
 
   main_resource_->Complete("<body></body><script src=ad_script.js></script>");
 
@@ -820,8 +869,6 @@ TEST_F(AdTrackerSimTest, DataURLImageLoadedWhileExecutingAdScriptAsyncEnabled) {
   const char kAdUrl[] = "https://example.com/ad_script.js";
   SimSubresourceRequest ad_resource(kAdUrl, "text/javascript");
 
-  ad_tracker_->SetAdSuffix("ad_script.js");
-
   main_resource_->Complete("<body></body><script src=ad_script.js></script>");
 
   ad_resource.Complete(R"SCRIPT(
@@ -856,8 +903,6 @@ TEST_F(AdTrackerSimTest, FrameLoadedWhileExecutingAdScript) {
   SimSubresourceRequest ad_resource(kAdUrl, "text/javascript");
   SimRequest vanilla_page(kVanillaUrl, "text/html");
   SimSubresourceRequest vanilla_image(kVanillaImgUrl, "image/jpeg");
-
-  ad_tracker_->SetAdSuffix("ad_script.js");
 
   main_resource_->Complete("<body></body><script src=ad_script.js></script>");
 
@@ -904,12 +949,27 @@ TEST_F(AdTrackerSimTest, Contexts) {
 
   // Complete the main frame's library.js.
   library_resource.Complete("");
+  base::RunLoop().RunUntilIdle();
+
+  Frame* subframe = GetDocument().GetFrame()->Tree().FirstChild();
+  auto* local_subframe = To<LocalFrame>(subframe);
+
+  subresource_filter::testing::TestRulesetPair test_ruleset_pair;
+  subresource_filter::testing::TestRulesetCreator ruleset_creator;
+  ruleset_creator.CreateRulesetToDisallowURLsWithPathSuffix("library.js",
+                                                            &test_ruleset_pair);
+  scoped_refptr<const subresource_filter::MemoryMappedRuleset> new_ruleset =
+      subresource_filter::MemoryMappedRuleset::CreateAndInitialize(
+          subresource_filter::testing::TestRuleset::Open(
+              test_ruleset_pair.indexed));
+
+  local_subframe->GetDocument()->Loader()->SetSubresourceFilter(
+      CreateSubresourceFilter(new_ruleset));
 
   // The library script is loaded for a second time, this time in the
-  // subframe. Mark it as an ad.
+  // subframe that treats 'library.js' as an ad suffix.
   SimSubresourceRequest library_resource_for_subframe(
       "https://example.com/library.js", "text/javascript");
-  ad_tracker_->SetAdSuffix("library.js");
 
   iframe_resource.Complete(R"HTML(
     <script src="library.js"></script>
@@ -918,8 +978,6 @@ TEST_F(AdTrackerSimTest, Contexts) {
 
   // Verify that library.js is an ad script in the subframe's context but not
   // in the main frame's context.
-  Frame* subframe = GetDocument().GetFrame()->Tree().FirstChild();
-  auto* local_subframe = To<LocalFrame>(subframe);
   EXPECT_TRUE(
       IsKnownAdScript(local_subframe->GetDocument()->GetExecutionContext(),
                       String("https://example.com/library.js")));
@@ -932,7 +990,6 @@ TEST_F(AdTrackerSimTest, SameOriginSubframeFromAdScript) {
   SimSubresourceRequest ad_resource("https://example.com/ad_script.js",
                                     "text/javascript");
   SimRequest iframe_resource("https://example.com/iframe.html", "text/html");
-  ad_tracker_->SetAdSuffix("ad_script.js");
 
   main_resource_->Complete(R"HTML(
     <body></body><script src=ad_script.js></script>
@@ -956,7 +1013,6 @@ TEST_F(AdTrackerSimTest, SameOriginSubframeFromAdScript) {
 TEST_F(AdTrackerSimTest, SameOriginDocWrittenSubframeFromAdScript) {
   SimSubresourceRequest ad_resource("https://example.com/ad_script.js",
                                     "text/javascript");
-  ad_tracker_->SetAdSuffix("ad_script.js");
 
   main_resource_->Complete(R"HTML(
     <body></body><script src=ad_script.js></script>
@@ -998,8 +1054,6 @@ TEST_P(AdTrackerVanillaOrAdSimTest, VanillaExternalStylesheetLoadsResources) {
   SimSubresourceRequest font(font_url, "font/woff2");
   SimSubresourceRequest image(image_url, "image/png");
 
-  ad_tracker_->SetAdSuffix("ad=true");
-
   main_resource_->Complete(kPageWithVanillaExternalStylesheet);
   stylesheet.Complete(IsAdRun() ? kStylesheetWithAdResources
                                 : kStylesheetWithVanillaResources);
@@ -1023,8 +1077,6 @@ TEST_P(AdTrackerVanillaOrAdSimTest, AdExternalStylesheetLoadsResources) {
   SimSubresourceRequest stylesheet(ad_stylesheet_url, "text/css");
   SimSubresourceRequest font(font_url, "font/woff2");
   SimSubresourceRequest image(image_url, "image/png");
-
-  ad_tracker_->SetAdSuffix("ad=true");
 
   main_resource_->Complete(kPageWithAdExternalStylesheet);
   stylesheet.Complete(IsAdRun() ? kStylesheetWithAdResources
@@ -1051,8 +1103,6 @@ TEST_P(AdTrackerVanillaOrAdSimTest, LinkRelStylesheetAddedByScript) {
   SimSubresourceRequest stylesheet(vanilla_stylesheet_url, "text/css");
   SimSubresourceRequest font(vanilla_font_url, "font/woff2");
   SimSubresourceRequest image(vanilla_image_url, "image/png");
-
-  ad_tracker_->SetAdSuffix("ad=true");
 
   main_resource_->Complete(IsAdRun() ? kPageWithAdScript
                                      : kPageWithVanillaScript);
@@ -1092,8 +1142,6 @@ TEST_P(AdTrackerVanillaOrAdSimTest, ExternalStylesheetInFrame) {
   SimSubresourceRequest font(vanilla_font_url, "font/woff2");
   SimSubresourceRequest image(vanilla_image_url, "image/png");
 
-  ad_tracker_->SetAdSuffix("ad=true");
-
   main_resource_->Complete(kPageWithFrame);
   if (IsAdRun()) {
     auto* subframe =
@@ -1126,8 +1174,6 @@ TEST_P(AdTrackerVanillaOrAdSimTest, InlineCSSSetByScript) {
   SimSubresourceRequest script(script_url, "text/javascript");
   SimSubresourceRequest image(vanilla_image_url, "image/png");
 
-  ad_tracker_->SetAdSuffix("ad=true");
-
   main_resource_->Complete(IsAdRun() ? kPageWithAdScript
                                      : kPageWithVanillaScript);
   script.Complete(R"SCRIPT(
@@ -1149,8 +1195,6 @@ TEST_F(AdTrackerSimTest, StyleTagInMainframe) {
   String vanilla_image_url = "https://example.com/pixel.png";
   SimSubresourceRequest font(vanilla_font_url, "font/woff2");
   SimSubresourceRequest image(vanilla_image_url, "image/png");
-
-  ad_tracker_->SetAdSuffix("ad=true");
 
   main_resource_->Complete(kPageWithStyleTagLoadingVanillaResources);
 
@@ -1174,8 +1218,6 @@ TEST_P(AdTrackerVanillaOrAdSimTest, StyleTagInSubframe) {
   SimRequest frame("https://example.com/frame.html", "text/html");
   SimSubresourceRequest font(vanilla_font_url, "font/woff2");
   SimSubresourceRequest image(vanilla_image_url, "image/png");
-
-  ad_tracker_->SetAdSuffix("ad=true");
 
   main_resource_->Complete(kPageWithFrame);
   if (IsAdRun()) {
@@ -1205,8 +1247,6 @@ TEST_P(AdTrackerVanillaOrAdSimTest, StyleTagAddedByScript) {
   SimSubresourceRequest script(script_url, "text/javascript");
   SimSubresourceRequest font(vanilla_font_url, "font/woff2");
   SimSubresourceRequest image(vanilla_image_url, "image/png");
-
-  ad_tracker_->SetAdSuffix("ad=true");
 
   main_resource_->Complete(IsAdRun() ? kPageWithAdScript
                                      : kPageWithVanillaScript);
@@ -1243,8 +1283,6 @@ TEST_P(AdTrackerVanillaOrAdSimTest, VanillaImportInStylesheet) {
   SimSubresourceRequest font(vanilla_font_url, "font/woff2");
   SimSubresourceRequest image(vanilla_image_url, "image/png");
 
-  ad_tracker_->SetAdSuffix("ad=true");
-
   main_resource_->Complete(IsAdRun() ? kPageWithAdExternalStylesheet
                                      : kPageWithVanillaExternalStylesheet);
   stylesheet.Complete(R"CSS(
@@ -1280,8 +1318,6 @@ TEST_P(AdTrackerVanillaOrAdSimTest, AdImportInStylesheet) {
   SimSubresourceRequest font(vanilla_font_url, "font/woff2");
   SimSubresourceRequest image(vanilla_image_url, "image/png");
 
-  ad_tracker_->SetAdSuffix("ad=true");
-
   main_resource_->Complete(IsAdRun() ? kPageWithAdExternalStylesheet
                                      : kPageWithVanillaExternalStylesheet);
   stylesheet.Complete(R"CSS(
@@ -1308,8 +1344,6 @@ TEST_P(AdTrackerVanillaOrAdSimTest, ImageSetInStylesheet) {
   String vanilla_image_url = "https://example.com/pixel.png";
   SimSubresourceRequest stylesheet(stylesheet_url, "text/css");
   SimSubresourceRequest image(vanilla_image_url, "image/png");
-
-  ad_tracker_->SetAdSuffix("ad=true");
 
   main_resource_->Complete(IsAdRun() ? kPageWithAdExternalStylesheet
                                      : kPageWithVanillaExternalStylesheet);
@@ -1340,8 +1374,6 @@ TEST_P(AdTrackerVanillaOrAdSimTest, ConstructableCSSCreatedByScript) {
   SimSubresourceRequest script(script_url, "text/javascript");
   SimSubresourceRequest font(vanilla_font_url, "font/woff2");
   SimSubresourceRequest image(vanilla_image_url, "image/png");
-
-  ad_tracker_->SetAdSuffix("ad=true");
 
   main_resource_->Complete(IsAdRun() ? kPageWithAdScript
                                      : kPageWithVanillaScript);
@@ -1384,8 +1416,6 @@ TEST_F(AdTrackerSimTest, StyleRecalcCausedByAdScript) {
   SimSubresourceRequest stylesheet(vanilla_stylesheet_url, "text/css");
   SimSubresourceRequest font(vanilla_font_url, "font/woff2");
   SimSubresourceRequest image(vanilla_image_url, "image/png");
-
-  ad_tracker_->SetAdSuffix("ad=true");
 
   main_resource_->Complete(R"HTML(
     <head><link rel="stylesheet" href="style.css">
@@ -1435,8 +1465,6 @@ TEST_F(AdTrackerSimTest, DynamicallyAddedScriptNoSrc_StillTagged) {
   SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
   SimSubresourceRequest image(vanilla_image_url, "image/png");
 
-  ad_tracker_->SetAdSuffix("ad=true");
-
   main_resource_->Complete(R"HTML(
     <body><script src="script.js?ad=true"></script>
         <script src="script.js"></script></body>
@@ -1475,8 +1503,6 @@ TEST_F(AdTrackerSimTest,
   SimSubresourceRequest vanilla_script2(vanilla_script2_url, "text/javascript");
   SimSubresourceRequest image(vanilla_image_url, "image/png");
 
-  ad_tracker_->SetAdSuffix("ad=true");
-
   main_resource_->Complete(R"HTML(
     <body><script src="script.js"></script>
         <script src="script.js?ad=true"></script>
@@ -1514,8 +1540,6 @@ TEST_F(AdTrackerSimTest, VanillaModuleScript_ResourceNotTagged) {
   SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
   SimSubresourceRequest image(vanilla_image_url, "image/png");
 
-  ad_tracker_->SetAdSuffix("ad=true");
-
   main_resource_->Complete(R"HTML(
     <head><script type="module" src="script.js"></script></head>
     <body><div>Test</div></body>
@@ -1536,8 +1560,6 @@ TEST_F(AdTrackerSimTest, AdModuleScript_ResourceTagged) {
   String vanilla_image_url = "https://example.com/pixel.png";
   SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
   SimSubresourceRequest image(vanilla_image_url, "image/png");
-
-  ad_tracker_->SetAdSuffix("ad=true");
 
   main_resource_->Complete(R"HTML(
     <head><script type="module" src="script.js?ad=true"></script></head>
@@ -1563,8 +1585,6 @@ TEST_F(AdTrackerSimTest, AdScriptWithSourceURLAtTopOfStack_StillTagged) {
   SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
   SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
   SimSubresourceRequest image(vanilla_image_url, "image/png");
-
-  ad_tracker_->SetAdSuffix("ad=true");
 
   main_resource_->Complete(R"HTML(
     <head><script src="script.js?ad=true"></script>
@@ -1599,8 +1619,6 @@ TEST_F(AdTrackerSimTest, InlineAdScriptWithSourceURLAtTopOfStack_StillTagged) {
   SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
   SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
   SimSubresourceRequest image(vanilla_image_url, "image/png");
-
-  ad_tracker_->SetAdSuffix("ad=true");
 
   main_resource_->Complete(R"HTML(
     <body><script src="script.js?ad=true"></script>
@@ -1643,8 +1661,6 @@ TEST_F(AdTrackerSimTest, AdScriptAncestry_AdScriptAtTopOfStack) {
   SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
   SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
   SimRequest ad_document(ad_document_url, "text/html");
-
-  ad_tracker_->SetAdSuffix("ad=true");
 
   main_resource_->Complete(R"HTML(
     <body><script src="script.js?ad=true"></script>
@@ -1696,8 +1712,6 @@ TEST_F(AdTrackerSimTest, AdScriptAncestry_AdScriptAtTopOfAsyncStack) {
   SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
   SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
   SimRequest ad_document(ad_document_url, "text/html");
-
-  ad_tracker_->SetAdSuffix("ad=true");
 
   main_resource_->Complete(R"HTML(
     <body><script src="script.js?ad=true"></script>
@@ -1762,8 +1776,6 @@ TEST_F(AdTrackerSimTest,
 
   SimRequest ad_document1(ad_document1_url, "text/html");
   SimRequest ad_document2(ad_document2_url, "text/html");
-
-  ad_tracker_->SetAdSuffix("ad=true");
 
   main_resource_->Complete(R"HTML(
     <body>
@@ -1846,8 +1858,6 @@ TEST_F(AdTrackerSimTest,
   SimRequest ad_document1(ad_document1_url, "text/html");
   SimRequest ad_document2(ad_document2_url, "text/html");
 
-  ad_tracker_->SetAdSuffix("ad=true");
-
   main_resource_->Complete(R"HTML(
     <body>
       <script src="script.js?ad=true"></script>
@@ -1929,8 +1939,6 @@ TEST_F(AdTrackerSimTest, AdScriptAncestry_TransitiveInlineScript) {
 
   SimRequest ad_document1(ad_document1_url, "text/html");
   SimRequest ad_document2(ad_document2_url, "text/html");
-
-  ad_tracker_->SetAdSuffix("ad=true");
 
   main_resource_->Complete(R"HTML(
     <body>
@@ -2024,8 +2032,6 @@ TEST_F(AdTrackerSimTest,
   SimRequest ad_document2(ad_document2_url, "text/html");
   SimRequest ad_document3(ad_document3_url, "text/html");
   SimRequest ad_document4(ad_document4_url, "text/html");
-
-  ad_tracker_->SetAdSuffix("ad=true");
 
   main_resource_->Complete(R"HTML(
     <body>
@@ -2175,8 +2181,6 @@ TEST_F(
 
   SimRequest ad_document(ad_document_url, "text/html");
 
-  ad_tracker_->SetAdSuffix("ad=true");
-
   main_resource_->Complete(R"HTML(
     <body>
       <script src="script.js?ad=true"></script>
@@ -2249,8 +2253,6 @@ TEST_F(AdTrackerSimTest,
   SimRequest ad_document1(ad_document1_url, "text/html");
   SimRequest ad_document2(ad_document2_url, "text/html");
   SimRequest ad_document3(ad_document3_url, "text/html");
-
-  ad_tracker_->SetAdSuffix("ad=true");
 
   main_resource_->Complete(R"HTML(
     <body>
@@ -2360,8 +2362,6 @@ TEST_F(AdTrackerSimTest, AdScriptAncestry_TrackedAcrossContexts) {
   SimRequest ad_document1(ad_document1_url, "text/html");
   SimRequest ad_document2(ad_document2_url, "text/html");
 
-  ad_tracker_->SetAdSuffix("ad=true");
-
   main_resource_->Complete(R"HTML(
     <body>
       <iframe src="vanilla_document.html"></iframe>
@@ -2373,6 +2373,9 @@ TEST_F(AdTrackerSimTest, AdScriptAncestry_TrackedAcrossContexts) {
   auto* child_frame1 =
       To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
   EXPECT_FALSE(child_frame1->IsFrameCreatedByAdScript());
+
+  child_frame1->GetDocument()->Loader()->SetSubresourceFilter(
+      CreateSubresourceFilter(ruleset_));
 
   vanilla_document.Complete(R"HTML(
     <body>
