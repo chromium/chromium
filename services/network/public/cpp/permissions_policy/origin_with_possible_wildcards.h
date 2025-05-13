@@ -75,19 +75,17 @@ class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) OriginWithPossibleWildcards {
     return csp_source;
   }
 
+  COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
+  friend bool operator==(const OriginWithPossibleWildcards&,
+                         const OriginWithPossibleWildcards&) = default;
+  COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
+  friend bool operator<(const OriginWithPossibleWildcards& lhs,
+                        const OriginWithPossibleWildcards& rhs);
+
  private:
   friend struct mojo::StructTraits<
       network::mojom::OriginWithPossibleWildcardsDataView,
       network::OriginWithPossibleWildcards>;
-  COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
-  friend bool operator==(const OriginWithPossibleWildcards& lhs,
-                         const OriginWithPossibleWildcards& rhs);
-  COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
-  friend bool operator!=(const OriginWithPossibleWildcards& lhs,
-                         const OriginWithPossibleWildcards& rhs);
-  COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
-  friend bool operator<(const OriginWithPossibleWildcards& lhs,
-                        const OriginWithPossibleWildcards& rhs);
 
   network::mojom::CSPSource csp_source;
 };

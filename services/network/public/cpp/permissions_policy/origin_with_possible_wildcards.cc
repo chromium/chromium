@@ -93,16 +93,6 @@ bool OriginWithPossibleWildcards::DoesMatchOrigin(
                                  network::CSPSourceContext::PermissionsPolicy);
 }
 
-bool operator==(const OriginWithPossibleWildcards& lhs,
-                const OriginWithPossibleWildcards& rhs) {
-  return lhs.csp_source == rhs.csp_source;
-}
-
-bool operator!=(const OriginWithPossibleWildcards& lhs,
-                const OriginWithPossibleWildcards& rhs) {
-  return lhs.csp_source != rhs.csp_source;
-}
-
 bool operator<(const OriginWithPossibleWildcards& lhs,
                const OriginWithPossibleWildcards& rhs) {
   return lhs.csp_source < rhs.csp_source;
