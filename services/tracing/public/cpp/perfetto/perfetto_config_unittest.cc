@@ -35,7 +35,19 @@ class AdaptPerfettoConfigForChromeTest : public ::testing::Test {
     return destination;
   }
 
+  void RemoveChromeConfigString(perfetto::DataSourceConfig* message) {
+    // .gen.h proto doesn't expose a clear method.
+    message->mutable_chrome_config()->set_trace_config("");
+  }
+
+  void RemoveChromeConfigString(perfetto::TraceConfig* mesaage) {
+    for (auto& data_source_config : *mesaage->mutable_data_sources()) {
+      RemoveChromeConfigString(data_source_config.mutable_config());
+    }
+  }
+
   std::string PrintConfigToText(perfetto::TraceConfig message) {
+    RemoveChromeConfigString(&message);
     std::string serialized_message = message.SerializeAsString();
     std::string proto_text = config_loader_.PrintToText(
         "perfetto.protos.TraceConfig", serialized_message);
@@ -47,6 +59,7 @@ class AdaptPerfettoConfigForChromeTest : public ::testing::Test {
     if (!message) {
       return "";
     }
+    RemoveChromeConfigString(&message.value());
     std::string serialized_message = message->SerializeAsString();
     std::string proto_text = config_loader_.PrintToText(
         "perfetto.protos.DataSourceConfig", serialized_message);
@@ -120,21 +133,6 @@ TEST_F(AdaptPerfettoConfigForChromeTest, LegacyTraceEvent) {
   EXPECT_TRUE(AdaptPerfettoConfigForChrome(&perfetto_config));
   EXPECT_EQ(PrintConfigToText(trace_config),
             PrintConfigToText(perfetto_config));
-}
-
-TEST_F(AdaptPerfettoConfigForChromeTest, UnsupportedTrackEvent) {
-  auto perfetto_config = ParsePerfettoConfigFromText(R"pb(
-    data_sources: {
-      config: {
-        name: "org.chromium.trace_event"
-        track_event_config: {
-          enabled_tags: [ "foo" ]
-          disabled_tags: [ "*" ]
-        }
-      }
-    }
-  )pb");
-  EXPECT_FALSE(AdaptPerfettoConfigForChrome(&perfetto_config));
 }
 
 TEST_F(AdaptPerfettoConfigForChromeTest, DisabledCategories) {

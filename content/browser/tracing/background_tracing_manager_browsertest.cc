@@ -769,11 +769,6 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   ASSERT_TRUE(trace_json->is_dict());
   auto* metadata_json = trace_json->GetDict().FindDict("metadata");
   ASSERT_TRUE(metadata_json);
-
-  const std::string* trace_config = metadata_json->FindString("trace-config");
-  ASSERT_TRUE(trace_config);
-  EXPECT_NE(trace_config->find("record-continuously"), trace_config->npos)
-      << *trace_config;
 }
 
 // Used as a known symbol to look up the current module.
