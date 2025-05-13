@@ -59,7 +59,6 @@ class DISPLAY_EXPORT DisplayInfo final {
   const std::wstring& device_name() const { return device_name_; }
 
   bool operator==(const DisplayInfo& rhs) const;
-  bool operator!=(const DisplayInfo& rhs) const { return !(*this == rhs); }
 
  private:
   int64_t id_;
