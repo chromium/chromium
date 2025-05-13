@@ -92,11 +92,12 @@ InterpolationValue CSSPercentageInterpolationType::MaybeConvertValue(
   }
   // TODO(crbug.com/415572412): Create a LengthUnitsChecker for relative units
   // if necessary.
+  const CSSLengthResolver& length_resolver = state.CssToLengthConversionData();
   if (primitive_value->IsElementDependent()) {
-    conversion_checkers.push_back(TreeCountingChecker::Create(state));
+    conversion_checkers.push_back(TreeCountingChecker::Create(length_resolver));
   }
   return CreatePercentageValue(
-      primitive_value->ComputePercentage(state.CssToLengthConversionData()));
+      primitive_value->ComputePercentage(length_resolver));
 }
 
 InterpolationValue

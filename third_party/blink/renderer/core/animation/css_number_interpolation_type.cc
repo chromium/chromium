@@ -92,11 +92,11 @@ InterpolationValue CSSNumberInterpolationType::MaybeConvertValue(
   if (!primitive_value || !primitive_value->IsNumber()) {
     return nullptr;
   }
+  const CSSLengthResolver& length_resolver = state.CssToLengthConversionData();
   if (primitive_value->IsElementDependent()) {
-    conversion_checkers.push_back(TreeCountingChecker::Create(state));
+    conversion_checkers.push_back(TreeCountingChecker::Create(length_resolver));
   }
-  return CreateNumberValue(
-      primitive_value->ComputeNumber(state.CssToLengthConversionData()));
+  return CreateNumberValue(primitive_value->ComputeNumber(length_resolver));
 }
 
 InterpolationValue

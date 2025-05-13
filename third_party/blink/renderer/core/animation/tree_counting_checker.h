@@ -19,7 +19,7 @@ class TreeCountingChecker : public CSSInterpolationType::CSSConversionChecker {
       : nth_child_index_(nth_child_index),
         nth_last_child_index_(nth_last_child_index) {}
 
-  static TreeCountingChecker* Create(const StyleResolverState& state);
+  static TreeCountingChecker* Create(const CSSLengthResolver& length_resolver);
 
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final;

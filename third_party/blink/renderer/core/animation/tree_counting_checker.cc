@@ -4,14 +4,14 @@
 
 #include "third_party/blink/renderer/core/animation/tree_counting_checker.h"
 
-#include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
+#include "third_party/blink/renderer/core/css/css_length_resolver.h"
 #include "third_party/blink/renderer/core/dom/nth_index_cache.h"
 
 namespace blink {
 
 TreeCountingChecker* TreeCountingChecker::Create(
-    const StyleResolverState& state) {
-  const Element* element = state.CssToLengthConversionData().GetElement();
+    const CSSLengthResolver& length_resolver) {
+  const Element* element = length_resolver.GetElement();
   CHECK(element);
   unsigned nth_child_index =
       NthIndexCache::NthChildIndex(const_cast<Element&>(*element),
