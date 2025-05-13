@@ -4,7 +4,6 @@
 
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 
-#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -244,26 +243,6 @@ const char kManagedSiteListConflictHistogramName[] =
 const char kManagedSiteListSubdomainConflictTypeHistogramName[] =
     "FamilyUser.ManagedSiteList.SubdomainConflictType";
 
-// UMA histogram FamilyUser.WebFilterType
-// Reports WebFilterType which indicates web filter behaviour are used for
-// current Family Link user.
-constexpr char kWebFilterTypeHistogramName[] = "FamilyUser.WebFilterType";
-
-// UMA histogram FamilyUser.ManualSiteListType
-// Reports ManualSiteListType which indicates approved list and blocked list
-// usage for current Family Link user.
-constexpr char kManagedSiteListHistogramName[] = "FamilyUser.ManagedSiteList";
-
-// UMA histogram FamilyUser.ManagedSiteListCount.Approved
-// Reports the number of approved urls and domains for current Family Link user.
-constexpr char kApprovedSitesCountHistogramName[] =
-    "FamilyUser.ManagedSiteListCount.Approved";
-
-// UMA histogram FamilyUser.ManagedSiteListCount.Blocked
-// Reports the number of blocked urls and domains for current Family Link user.
-constexpr char kBlockedSitesCountHistogramName[] =
-    "FamilyUser.ManagedSiteListCount.Blocked";
-
 constexpr std::string_view kHttpProtocol = "http://";
 constexpr std::string_view kHttpsProtocol = "https://";
 constexpr std::string_view kWwwSubdomain = "www.";
@@ -364,28 +343,6 @@ SupervisedUserURLFilter::~SupervisedUserURLFilter() {
 }
 
 // static
-const char* SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest() {
-  return kWebFilterTypeHistogramName;
-}
-
-// static
-const char* SupervisedUserURLFilter::GetManagedSiteListHistogramNameForTest() {
-  return kManagedSiteListHistogramName;
-}
-
-// static
-const char*
-SupervisedUserURLFilter::GetApprovedSitesCountHistogramNameForTest() {
-  return kApprovedSitesCountHistogramName;
-}
-
-// static
-const char*
-SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest() {
-  return kBlockedSitesCountHistogramName;
-}
-
-// static
 const char*
 SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest() {
   return kManagedSiteListConflictHistogramName;
@@ -407,6 +364,22 @@ supervised_user::FilteringBehavior SupervisedUserURLFilter::BehaviorFromInt(
          behavior_value == static_cast<int>(FilteringBehavior::kBlock))
       << "SupervisedUserURLFilter value not supported: " << behavior_value;
   return static_cast<FilteringBehavior>(behavior_value);
+}
+SupervisedUserURLFilter::ManagedSiteList
+SupervisedUserURLFilter::Statistics::GetManagedSiteList() const {
+  if (allowed_hosts_count + blocked_hosts_count + allowed_urls_count +
+          blocked_urls_count ==
+      0) {
+    return ManagedSiteList::kEmpty;
+  }
+  if (allowed_hosts_count + allowed_urls_count > 0 &&
+      blocked_hosts_count + blocked_urls_count > 0) {
+    return ManagedSiteList::kBoth;
+  }
+  if (allowed_hosts_count + allowed_urls_count > 0) {
+    return ManagedSiteList::kApprovedListOnly;
+  }
+  return ManagedSiteList::kBlockedListOnly;
 }
 
 // static
@@ -646,7 +619,7 @@ SupervisedUserURLFilter::GetDefaultFilteringBehavior() const {
   return default_behavior_;
 }
 
-bool SupervisedUserURLFilter::SetManualHosts(
+void SupervisedUserURLFilter::SetManualHosts(
     std::map<std::string, bool> host_map) {
   // TODO(b/305229682): Update this method to received the two
   // parental lists.
@@ -663,29 +636,31 @@ bool SupervisedUserURLFilter::SetManualHosts(
     }
   }
 
-  if (ContainersAreEqual(blocked_host_list_, new_blocked_host_list) &&
-      ContainersAreEqual(allowed_host_list_, new_allowed_host_list)) {
-    return false;
-  }
-
   blocked_host_list_ = std::move(new_blocked_host_list);
   allowed_host_list_ = std::move(new_allowed_host_list);
-  return true;
+
+  statistics_.blocked_hosts_count = blocked_host_list_.size();
+  statistics_.allowed_hosts_count = allowed_host_list_.size();
 }
 
-bool SupervisedUserURLFilter::IsManualHostsEmpty() const {
-  return allowed_host_list_.empty() && blocked_host_list_.empty();
-}
-
-bool SupervisedUserURLFilter::SetManualURLs(std::map<GURL, bool> url_map) {
+void SupervisedUserURLFilter::SetManualURLs(std::map<GURL, bool> url_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (ContainersAreEqual(url_map_, url_map)) {
-    return false;
-  }
-
   url_map_ = std::move(url_map);
-  return true;
+
+  statistics_.blocked_urls_count = 0;
+  statistics_.allowed_urls_count = 0;
+  for (auto&& [gurl, is_allowed] : url_map_) {
+    if (is_allowed) {
+      statistics_.allowed_urls_count++;
+    } else {
+      statistics_.blocked_urls_count++;
+    }
+  }
+}
+
+SupervisedUserURLFilter::Statistics
+SupervisedUserURLFilter::GetFilteringStatistics() const {
+  return statistics_;
 }
 
 void SupervisedUserURLFilter::Clear() {
@@ -715,63 +690,6 @@ WebFilterType SupervisedUserURLFilter::GetWebFilterType() const {
   return supervised_user::IsSafeSitesEnabled(user_prefs_.get())
              ? WebFilterType::kTryToBlockMatureSites
              : WebFilterType::kAllowAllSites;
-}
-
-bool SupervisedUserURLFilter::EmitURLFilterMetrics() const {
-  // Do not record metrics if the parent web filter configuration is not
-  // applied to the user.
-  if (!is_filter_initialized_) {
-    return false;
-  }
-
-  ReportWebFilterTypeMetrics();
-  ReportManagedSiteListMetrics();
-  return true;
-}
-
-void SupervisedUserURLFilter::ReportWebFilterTypeMetrics() const {
-  base::UmaHistogramEnumeration(kWebFilterTypeHistogramName,
-                                GetWebFilterType());
-}
-
-void SupervisedUserURLFilter::ReportManagedSiteListMetrics() const {
-  if (url_map_.empty() && allowed_host_list_.empty() &&
-      blocked_host_list_.empty()) {
-    base::UmaHistogramEnumeration(kManagedSiteListHistogramName,
-                                  ManagedSiteList::kEmpty);
-    base::UmaHistogramCounts1000(kApprovedSitesCountHistogramName, 0);
-    base::UmaHistogramCounts1000(kBlockedSitesCountHistogramName, 0);
-    return;
-  }
-
-  ManagedSiteList managed_site_list = ManagedSiteList::kMaxValue;
-  int approved_count = 0;
-  int blocked_count = 0;
-  for (const auto& it : url_map_) {
-    if (it.second) {
-      approved_count++;
-    } else {
-      blocked_count++;
-    }
-  }
-
-  approved_count += allowed_host_list_.size();
-  blocked_count += blocked_host_list_.size();
-
-  if (approved_count > 0 && blocked_count > 0) {
-    managed_site_list = ManagedSiteList::kBoth;
-  } else if (approved_count > 0) {
-    managed_site_list = ManagedSiteList::kApprovedListOnly;
-  } else {
-    managed_site_list = ManagedSiteList::kBlockedListOnly;
-  }
-
-  base::UmaHistogramCounts1000(kApprovedSitesCountHistogramName,
-                               approved_count);
-  base::UmaHistogramCounts1000(kBlockedSitesCountHistogramName, blocked_count);
-
-  base::UmaHistogramEnumeration(kManagedSiteListHistogramName,
-                                managed_site_list);
 }
 
 void SupervisedUserURLFilter::SetFilterInitialized(bool is_filter_initialized) {
