@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/core/animation/tree_counting_checker.h"
 #include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_font_variation_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -144,9 +145,18 @@ CSSFontVariationSettingsInterpolationType::MaybeConvertInherit(
 InterpolationValue CSSFontVariationSettingsInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState& state,
-    ConversionCheckers&) const {
-  // TODO(crbug.com/415626999): Create a TreeCountingChecker for sibling-index()
-  // and sibling-count() if necessary.
+    ConversionCheckers& conversion_checkers) const {
+  if (const auto* value_list = DynamicTo<CSSValueList>(value)) {
+    for (const CSSValue* feature : *value_list) {
+      if (To<cssvalue::CSSFontVariationValue>(feature)
+              ->Value()
+              ->IsElementDependent()) {
+        conversion_checkers.push_back(
+            TreeCountingChecker::Create(state.CssToLengthConversionData()));
+        break;
+      }
+    }
+  }
   // TODO(crbug.com/415572412): Create a LengthUnitsChecker for relative units
   // if necessary.
   scoped_refptr<FontVariationSettings> settings =
