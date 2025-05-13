@@ -1562,9 +1562,12 @@ int watchRunNumber = 0;
   UNUserNotificationCenter* center =
       UNUserNotificationCenter.currentNotificationCenter;
 
+  std::string_view profileName =
+      chrome_test_util::GetOriginalProfile()->GetProfileName();
   UNNotificationRequest* request = [UNNotificationRequest
       requestWithIdentifier:kTipsNotificationId
-                    content:ContentForTipsNotificationType(type, false)
+                    content:ContentForTipsNotificationType(type, false,
+                                                           profileName)
                     trigger:nil];
 
   [center addNotificationRequest:request withCompletionHandler:nil];

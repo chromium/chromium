@@ -84,7 +84,7 @@ TEST_F(PushNotificationClientTest, VerifyDelayNotification) {
   ScheduledNotificationRequest tip_request = {
       kTipsNotificationId,
       ContentForTipsNotificationType(TipsNotificationType::kDefaultBrowser,
-                                     false),
+                                     false, ""),
       TipsNotificationTriggerDelta(false, TipsNotificationUserType::kUnknown)};
 
   id request_check =

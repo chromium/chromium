@@ -60,6 +60,8 @@ using startup_metric_utils::FirstRunSentinelCreationResult;
 class TipsNotificationClientTest : public PlatformTest {
  protected:
   TipsNotificationClientTest() {
+    [[NSUserDefaults standardUserDefaults]
+        removeObjectForKey:@"TipsNotificationTrigger"];
     SetupMockNotificationCenter();
     profile_ =
         profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
@@ -87,6 +89,10 @@ class TipsNotificationClientTest : public PlatformTest {
     notification_center_swizzler_ = std::make_unique<ScopedBlockSwizzler>(
         [UNUserNotificationCenter class], @selector(currentNotificationCenter),
         swizzle_block);
+  }
+
+  std::string_view GetProfileName() {
+    return browser_->GetProfile()->GetProfileName();
   }
 
   // Writes the first run sentinel file, to allow notifications to be
@@ -129,8 +135,8 @@ class TipsNotificationClientTest : public PlatformTest {
   id MockNotification(TipsNotificationType type, bool for_reactivation) {
     UNNotificationRequest* request = [UNNotificationRequest
         requestWithIdentifier:kTipsNotificationId
-                      content:ContentForTipsNotificationType(type,
-                                                             for_reactivation)
+                      content:ContentForTipsNotificationType(
+                                  type, for_reactivation, GetProfileName())
                       trigger:[UNTimeIntervalNotificationTrigger
                                   triggerWithTimeInterval:
                                       TipsNotificationTriggerDelta(
@@ -263,8 +269,8 @@ class TipsNotificationClientTest : public PlatformTest {
 // Tests that HandleNotificationReception does nothing and returns "NoData".
 TEST_F(TipsNotificationClientTest, HandleNotificationReception) {
   EXPECT_EQ(client_->HandleNotificationReception(nil), std::nullopt);
-  NSDictionary* user_info =
-      UserInfoForTipsNotificationType(TipsNotificationType::kWhatsNew, false);
+  NSDictionary* user_info = UserInfoForTipsNotificationType(
+      TipsNotificationType::kWhatsNew, false, GetProfileName());
   EXPECT_EQ(client_->HandleNotificationReception(user_info),
             UIBackgroundFetchResultNoData);
 }

@@ -102,6 +102,10 @@ void MaybeDismissNotification() {
     config.features_disabled.push_back(kIOSReactivationNotifications);
   }
 
+  if ([self isRunningTest:@selector(testNotificationMIM)]) {
+    config.features_enabled.push_back(kSeparateProfilesForManagedAccounts);
+  }
+
   return config;
 }
 
@@ -322,6 +326,12 @@ void MaybeDismissNotification() {
       performAction:grey_tap()];
   MaybeTapAllowOnPopup();
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"escape" flags:0];
+}
+
+// Tests that a Tips notification can be triggered and tapped when multiprofile
+// is enabled.
+- (void)testNotificationMIM {
+  [self testLensNotification];
 }
 
 // Tests that the ESB Promo appears when tapping on the ESB notification.

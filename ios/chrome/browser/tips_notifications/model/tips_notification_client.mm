@@ -105,9 +105,9 @@ bool DefaultBrowserPromoCanceled() {
 
 // Returns true if the Feature Engagement Tracker has ever triggered for the
 // given `feature`.
-bool FETHasEverTriggered(Browser* browser, const base::Feature& feature) {
+bool FETHasEverTriggered(ProfileIOS* profile, const base::Feature& feature) {
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForProfile(browser->GetProfile());
+      feature_engagement::TrackerFactory::GetForProfile(profile);
   return tracker->HasEverTriggered(feature, true);
 }
 
@@ -349,8 +349,16 @@ void TipsNotificationClient::MaybeRequestNotification(
     return;
   }
 
+  Browser* browser = GetActiveForegroundBrowser();
+  if (!browser) {
+    std::move(completion).Run();
+    return;
+  }
+  ProfileIOS* profile = browser->GetProfile();
+
   if (forced_type_.has_value()) {
-    RequestNotification(forced_type_.value(), std::move(completion));
+    RequestNotification(forced_type_.value(), profile->GetProfileName(),
+                        std::move(completion));
     return;
   }
 
@@ -372,8 +380,9 @@ void TipsNotificationClient::MaybeRequestNotification(
       // This type of notification is not enabled.
       continue;
     }
-    if (ShouldSendNotification(type)) {
-      RequestNotification(type, std::move(completion));
+    if (ShouldSendNotification(type, profile)) {
+      RequestNotification(type, profile->GetProfileName(),
+                          std::move(completion));
       return;
     }
   }
@@ -388,13 +397,15 @@ void TipsNotificationClient::ClearAllRequestedNotifications() {
 }
 
 void TipsNotificationClient::RequestNotification(TipsNotificationType type,
+                                                 std::string_view profile_name,
                                                  base::OnceClosure completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (IsNotificationCollisionManagementEnabled()) {
     ScheduledNotificationRequest request = {
         kTipsNotificationId,
-        ContentForTipsNotificationType(type, CanSendReactivation()),
+        ContentForTipsNotificationType(type, CanSendReactivation(),
+                                       profile_name),
         TipsNotificationTriggerDelta(CanSendReactivation(), user_type_)};
     CheckRateLimitBeforeSchedulingNotification(
         request,
@@ -410,7 +421,7 @@ void TipsNotificationClient::RequestNotification(TipsNotificationType type,
   UNNotificationRequest* request = [UNNotificationRequest
       requestWithIdentifier:kTipsNotificationId
                     content:ContentForTipsNotificationType(
-                                type, CanSendReactivation())
+                                type, CanSendReactivation(), profile_name)
                     trigger:[UNTimeIntervalNotificationTrigger
                                 triggerWithTimeInterval:
                                     TipsNotificationTriggerDelta(
@@ -439,25 +450,26 @@ void TipsNotificationClient::OnNotificationRequested(TipsNotificationType type,
   }
 }
 
-bool TipsNotificationClient::ShouldSendNotification(TipsNotificationType type) {
+bool TipsNotificationClient::ShouldSendNotification(TipsNotificationType type,
+                                                    ProfileIOS* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (type) {
     case TipsNotificationType::kDefaultBrowser:
       return ShouldSendDefaultBrowser();
     case TipsNotificationType::kWhatsNew:
-      return ShouldSendWhatsNew();
+      return ShouldSendWhatsNew(profile);
     case TipsNotificationType::kSignin:
-      return ShouldSendSignin();
+      return ShouldSendSignin(profile);
     case TipsNotificationType::kSetUpListContinuation:
-      return ShouldSendSetUpListContinuation();
+      return ShouldSendSetUpListContinuation(profile);
     case TipsNotificationType::kDocking:
-      return ShouldSendDocking();
+      return ShouldSendDocking(profile);
     case TipsNotificationType::kOmniboxPosition:
       return ShouldSendOmniboxPosition();
     case TipsNotificationType::kLens:
-      return ShouldSendLens();
+      return ShouldSendLens(profile);
     case TipsNotificationType::kEnhancedSafeBrowsing:
-      return ShouldSendEnhancedSafeBrowsing();
+      return ShouldSendEnhancedSafeBrowsing(profile);
     case TipsNotificationType::kLensOverlay:
     case TipsNotificationType::kCPE:
     case TipsNotificationType::kIncognitoLock:
@@ -471,23 +483,14 @@ bool TipsNotificationClient::ShouldSendDefaultBrowser() {
   return !IsChromeLikelyDefaultBrowser() && !DefaultBrowserPromoCanceled();
 }
 
-bool TipsNotificationClient::ShouldSendWhatsNew() {
+bool TipsNotificationClient::ShouldSendWhatsNew(ProfileIOS* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  Browser* browser = GetActiveForegroundBrowser();
-  if (!browser) {
-    return false;
-  }
-  return !FETHasEverTriggered(browser,
+  return !FETHasEverTriggered(profile,
                               feature_engagement::kIPHWhatsNewUpdatedFeature);
 }
 
-bool TipsNotificationClient::ShouldSendSignin() {
+bool TipsNotificationClient::ShouldSendSignin(ProfileIOS* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  Browser* browser = GetActiveForegroundBrowser();
-  if (!browser) {
-    return false;
-  }
-  ProfileIOS* profile = browser->GetProfile();
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForProfile(profile);
 
@@ -495,13 +498,10 @@ bool TipsNotificationClient::ShouldSendSignin() {
          !auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
 }
 
-bool TipsNotificationClient::ShouldSendSetUpListContinuation() {
-  Browser* browser = GetActiveForegroundBrowser();
-  if (!browser) {
-    return false;
-  }
+bool TipsNotificationClient::ShouldSendSetUpListContinuation(
+    ProfileIOS* profile) {
   PrefService* local_prefs = GetApplicationContext()->GetLocalState();
-  PrefService* user_prefs = browser->GetProfile()->GetPrefs();
+  PrefService* user_prefs = profile->GetPrefs();
   if (!set_up_list_utils::IsSetUpListActive(local_prefs, user_prefs)) {
     return false;
   }
@@ -516,16 +516,12 @@ bool TipsNotificationClient::ShouldSendSetUpListContinuation() {
   return !set_up_list_prefs::AllItemsComplete(local_prefs);
 }
 
-bool TipsNotificationClient::ShouldSendDocking() {
+bool TipsNotificationClient::ShouldSendDocking(ProfileIOS* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  Browser* browser = GetActiveForegroundBrowser();
-  if (!browser) {
-    return false;
-  }
-  return !FETHasEverTriggered(browser,
+  return !FETHasEverTriggered(profile,
                               feature_engagement::kIPHiOSDockingPromoFeature) &&
          !FETHasEverTriggered(
-             browser,
+             profile,
              feature_engagement::kIPHiOSDockingPromoRemindMeLaterFeature);
 }
 
@@ -539,15 +535,11 @@ bool TipsNotificationClient::ShouldSendOmniboxPosition() {
       prefs::kBottomOmnibox);
 }
 
-bool TipsNotificationClient::ShouldSendLens() {
+bool TipsNotificationClient::ShouldSendLens(ProfileIOS* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Early return if Lens is not available or disabled by policy.
-  Browser* browser = GetActiveForegroundBrowser();
-  if (!browser) {
-    return false;
-  }
   TemplateURLService* template_url_service =
-      ios::TemplateURLServiceFactory::GetForProfile(browser->GetProfile());
+      ios::TemplateURLServiceFactory::GetForProfile(profile);
   bool default_search_is_google =
       search::DefaultSearchProviderIsGoogle(template_url_service);
   const bool lens_enabled =
@@ -562,13 +554,10 @@ bool TipsNotificationClient::ShouldSendLens() {
   return base::Time::Now() - last_opened > kLensOpenedRecency;
 }
 
-bool TipsNotificationClient::ShouldSendEnhancedSafeBrowsing() {
+bool TipsNotificationClient::ShouldSendEnhancedSafeBrowsing(
+    ProfileIOS* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  Browser* browser = GetActiveForegroundBrowser();
-  if (!browser) {
-    return false;
-  }
-  PrefService* user_prefs = browser->GetProfile()->GetPrefs();
+  PrefService* user_prefs = profile->GetPrefs();
   return user_prefs->GetBoolean(prefs::kAdvancedProtectionAllowed) &&
          !safe_browsing::IsEnhancedProtectionEnabled(*user_prefs);
 }

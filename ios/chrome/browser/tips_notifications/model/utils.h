@@ -8,6 +8,7 @@
 #import <UserNotifications/UserNotifications.h>
 
 #import <optional>
+#import <string_view>
 #import <vector>
 
 namespace base {
@@ -84,15 +85,18 @@ bool IsProactiveTipsNotification(UNNotificationRequest* request);
 
 // Returns a userInfo dictionary pre-filled with the notification `type`.
 NSDictionary* UserInfoForTipsNotificationType(TipsNotificationType type,
-                                              bool for_reactivation);
+                                              bool for_reactivation,
+                                              std::string_view profile_name);
 
 // Returns the notification type found in a notification's userInfo dictionary.
 std::optional<TipsNotificationType> ParseTipsNotificationType(
     UNNotificationRequest* request);
 
 // Returns the notification content for a given Tips notification type.
-UNNotificationContent* ContentForTipsNotificationType(TipsNotificationType type,
-                                                      bool for_reactivation);
+UNNotificationContent* ContentForTipsNotificationType(
+    TipsNotificationType type,
+    bool for_reactivation,
+    std::string_view profile_name);
 
 // Returns the time delta used to trigger Tips notifications.
 base::TimeDelta TipsNotificationTriggerDelta(
