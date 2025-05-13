@@ -7413,7 +7413,21 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_FLOATING_WORKSPACE_STARTUP_DIALOG_BUTTON" desc="Button for floating workspace dialog that closes the dialog without waiting for browser and app windows to be restored.">
     Don't restore windows
   </message>
-
+  <message name="IDS_FLOATING_WORKSPACE_NETWORK_DIALOG_TITLE" desc="Title for floating workspace network dialog which is shown when there is no network connection.">
+    Network not available
+  </message>
+  <message name="IDS_FLOATING_WORKSPACE_NETWORK_DIALOG_SUBTITLE" desc="Subtitle for floating workspace network dialog which is shown when there is no network connection.">
+    Internet connection is required.
+  </message>
+  <message name="IDS_FLOATING_WORKSPACE_ERROR_DIALOG_TITLE" desc="Title for floating dialog error screen which is shown when floating workspace can not restore the session.">
+    Can't restore windows from your previous session
+  </message>
+  <message name="IDS_FLOATING_WORKSPACE_ERROR_DIALOG_SUBTITLE" desc="Subtitle for floating dialog error screen which is shown when floating workspace can not restore the session.">
+    An error occured
+  </message>
+  <message name="IDS_FLOATING_WORKSPACE_ERROR_DIALOG_BUTTON" desc="Button for floating workspace error dialog that disables floating workspace and closes the dialog after the error screen is shown.">
+    Continue to new session
+  </message>
 
   <!-- Shortcut Accessibility Label-->
   <message name="IDS_APP_SHORTCUT_ACCESSIBILITY_LABEL"
