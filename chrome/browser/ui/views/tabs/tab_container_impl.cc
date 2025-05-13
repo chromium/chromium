@@ -511,6 +511,14 @@ void TabContainerImpl::OnSplitRemoved(const std::vector<int>& indices) {
   AnimateToIdealBounds();
 }
 
+void TabContainerImpl::OnSplitContentsChanged(const std::vector<int>& indices) {
+  for (const int index : indices) {
+    Tab* const tab = GetTabAtModelIndex(index);
+    CHECK(tab->split().has_value());
+    tab->UpdateInsets();
+  }
+}
+
 std::optional<int> TabContainerImpl::GetModelIndexOf(
     const TabSlotView* slot_view) const {
   return tabs_view_model_.GetIndexOfView(slot_view);

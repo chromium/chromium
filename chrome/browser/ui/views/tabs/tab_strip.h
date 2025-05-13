@@ -183,8 +183,11 @@ class TabStrip : public views::View,
   void OnSplitCreated(const std::vector<int>& split_indices,
                       split_tabs::SplitTabId split_id);
 
-  // Updates the tab slot view split state and  animates to bounds.
+  // Updates the tab slot view split state and animates to bounds.
   void OnSplitRemoved(const std::vector<int>& split_indices);
+
+  // Updates the tab slot view split state and animates to bounds.
+  void OnSplitContentsChanged(const std::vector<int>& split_indices);
 
   // Returns whether or not strokes should be drawn around and under the tabs.
   bool ShouldDrawStrokes() const;

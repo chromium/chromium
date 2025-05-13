@@ -1334,6 +1334,10 @@ void TabStrip::OnSplitRemoved(const std::vector<int>& split_indices) {
   tab_container_->OnSplitRemoved(split_indices);
 }
 
+void TabStrip::OnSplitContentsChanged(const std::vector<int>& split_indices) {
+  tab_container_->OnSplitContentsChanged(split_indices);
+}
+
 bool TabStrip::ShouldDrawStrokes() const {
 #if BUILDFLAG(IS_CHROMEOS)
   return false;

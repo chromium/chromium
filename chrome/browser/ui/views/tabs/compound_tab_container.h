@@ -65,6 +65,7 @@ class CompoundTabContainer : public TabContainer,
   void NotifyTabstripBubbleClosed() override;
   void OnSplitCreated(const std::vector<int>& indices) override;
   void OnSplitRemoved(const std::vector<int>& indices) override;
+  void OnSplitContentsChanged(const std::vector<int>& indices) override;
   std::optional<int> GetModelIndexOf(
       const TabSlotView* slot_view) const override;
   Tab* GetTabAtModelIndex(int index) const override;

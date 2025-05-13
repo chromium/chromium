@@ -108,6 +108,7 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
 
   virtual void OnSplitCreated(const std::vector<int>& indices) = 0;
   virtual void OnSplitRemoved(const std::vector<int>& indices) = 0;
+  virtual void OnSplitContentsChanged(const std::vector<int>& indices) = 0;
 
   virtual std::optional<int> GetModelIndexOf(
       const TabSlotView* slot_view) const = 0;

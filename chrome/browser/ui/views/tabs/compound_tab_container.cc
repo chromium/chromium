@@ -460,6 +460,11 @@ void CompoundTabContainer::OnSplitRemoved(const std::vector<int>& indices) {
   unpinned_tab_container_->OnSplitRemoved(indices);
 }
 
+void CompoundTabContainer::OnSplitContentsChanged(
+    const std::vector<int>& indices) {
+  unpinned_tab_container_->OnSplitContentsChanged(indices);
+}
+
 std::optional<int> CompoundTabContainer::GetModelIndexOf(
     const TabSlotView* slot_view) const {
   const std::optional<int> unpinned_index =

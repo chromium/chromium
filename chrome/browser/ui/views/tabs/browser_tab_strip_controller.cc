@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -994,6 +995,14 @@ void BrowserTabStripController::OnSplitTabChanged(
         SplitTabChange::SplitTabRemoveReason::kSplitTabRemoved) {
       tabstrip_->StopAnimating(true);
     }
+  } else if (change.type == SplitTabChange::Type::kContentsChanged) {
+    std::vector<int> split_indices;
+    std::transform(
+        change.GetContentsChange()->new_tabs().begin(),
+        change.GetContentsChange()->new_tabs().end(),
+        std::back_inserter(split_indices),
+        [](const std::pair<tabs::TabInterface*, int>& p) { return p.second; });
+    tabstrip_->OnSplitContentsChanged(split_indices);
   }
 }
 
