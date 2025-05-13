@@ -146,56 +146,38 @@ std::u16string GetProfileIdentifier(const ProfileAttributesEntry& entry) {
   }
 }
 
-std::u16string GetSyncPromoDescription(signin_metrics::AccessPoint access_point,
-                                       std::string_view email) {
-  switch (access_point) {
-    case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup:
-    case signin_metrics::AccessPoint::
-        kHistorySyncOptinExpansionPillOnInactivity:
+std::u16string GetSyncPromoDescription(std::string_view email) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-      if (base::FeatureList::IsEnabled(
-              switches::kEnableHistorySyncOptinExpansionPill)) {
-        switch (switches::kHistorySyncOptinExpansionPillOption.Get()) {
-          case switches::HistorySyncOptinExpansionPillOption::
-              kBrowseAcrossDevices:
-            return l10n_util::GetStringFUTF16(
-                IDS_PROFILE_MENU_SYNC_PROMO_BROWSE_ACROSS_DEVICES_DESCRIPTION,
-                base::UTF8ToUTF16(email));
-          case switches::HistorySyncOptinExpansionPillOption::kSyncHistory:
-            return l10n_util::GetStringFUTF16(
-                IDS_PROFILE_MENU_SYNC_PROMO_SYNC_HISTORY_DESCRIPTION,
-                base::UTF8ToUTF16(email));
-          case switches::HistorySyncOptinExpansionPillOption::
-              kSeeTabsFromOtherDevices:
-            return l10n_util::GetStringFUTF16(
-                IDS_PROFILE_MENU_SYNC_PROMO_SEE_TABS_FROM_OTHER_DEVICES_DESCRIPTION,
-                base::UTF8ToUTF16(email));
-        }
-      }
-#endif
-      [[fallthrough]];
-    default:
-      return l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SYNC_PROMO);
+  if (base::FeatureList::IsEnabled(
+          switches::kEnableHistorySyncOptinExpansionPill)) {
+    switch (switches::kHistorySyncOptinExpansionPillOption.Get()) {
+      case switches::HistorySyncOptinExpansionPillOption::kBrowseAcrossDevices:
+        return l10n_util::GetStringFUTF16(
+            IDS_PROFILE_MENU_SYNC_PROMO_BROWSE_ACROSS_DEVICES_DESCRIPTION,
+            base::UTF8ToUTF16(email));
+      case switches::HistorySyncOptinExpansionPillOption::kSyncHistory:
+        return l10n_util::GetStringFUTF16(
+            IDS_PROFILE_MENU_SYNC_PROMO_SYNC_HISTORY_DESCRIPTION,
+            base::UTF8ToUTF16(email));
+      case switches::HistorySyncOptinExpansionPillOption::
+          kSeeTabsFromOtherDevices:
+        return l10n_util::GetStringFUTF16(
+            IDS_PROFILE_MENU_SYNC_PROMO_SEE_TABS_FROM_OTHER_DEVICES_DESCRIPTION,
+            base::UTF8ToUTF16(email));
+    }
   }
+#endif
+  return l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SYNC_PROMO);
 }
 
-std::u16string GetSyncPromoButtonLabel(
-    signin_metrics::AccessPoint access_point) {
-  switch (access_point) {
-    case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup:
-    case signin_metrics::AccessPoint::
-        kHistorySyncOptinExpansionPillOnInactivity:
+std::u16string GetSyncPromoButtonLabel() {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-      if (base::FeatureList::IsEnabled(
-              switches::kEnableHistorySyncOptinExpansionPill)) {
-        return l10n_util::GetStringUTF16(
-            IDS_PROFILE_MENU_SYNC_PROMO_BUTTON_LABEL);
-      }
-#endif
-      [[fallthrough]];
-    default:
-      return l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON);
+  if (base::FeatureList::IsEnabled(
+          switches::kEnableHistorySyncOptinExpansionPill)) {
+    return l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SYNC_PROMO_BUTTON_LABEL);
   }
+#endif
+  return l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON);
 }
 
 }  // namespace
@@ -748,11 +730,8 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       break;
     }
     case signin_util::SignedInState::kSignedIn:
-      params.subtitle = GetSyncPromoDescription(
-          explicit_signin_access_point_.value_or(access_point),
-          primary_account_info.email);
-      params.button_text = GetSyncPromoButtonLabel(
-          explicit_signin_access_point_.value_or(access_point));
+      params.subtitle = GetSyncPromoDescription(primary_account_info.email);
+      params.button_text = GetSyncPromoButtonLabel();
       signin_metrics::LogSyncOptInOffered(
           explicit_signin_access_point_.value_or(access_point));
       break;
