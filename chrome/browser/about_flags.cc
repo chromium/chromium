@@ -1253,6 +1253,10 @@ const FeatureEntry::FeatureParam kPageContentAnnotationsTitleParams[] = {
     {"extract_related_searches", "true"},
     {"write_to_history_service", "true"},
 };
+const FeatureEntry::FeatureParam
+    kPageContentAnnotationsTimeoutDurationParams[] = {
+        {"PageContentAnnotationBatchSizeTimeoutDuration", "0"},
+};
 const FeatureEntry::FeatureVariation kPageContentAnnotationsVariations[] = {
     {"All Annotations and Persistence on Content",
      kPageContentAnnotationsContentParams,
@@ -1260,7 +1264,9 @@ const FeatureEntry::FeatureVariation kPageContentAnnotationsVariations[] = {
     {"All Annotations and Persistence on Title",
      kPageContentAnnotationsTitleParams,
      std::size(kPageContentAnnotationsTitleParams), nullptr},
-};
+    {"Annotation timeout duration 0 seconds",
+     kPageContentAnnotationsTimeoutDurationParams,
+     std::size(kPageContentAnnotationsTimeoutDurationParams), nullptr}};
 
 #if !BUILDFLAG(IS_ANDROID)
 constexpr FeatureEntry::FeatureParam

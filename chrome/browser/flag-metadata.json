@@ -7332,7 +7332,7 @@
   {
     "name": "page-content-annotations",
     "owners": [ "sophiechang@chromium.org", "mcrouse@chromium.org", "chrome-intelligence-core@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 150
   },
   {
     "name": "page-content-annotations-persist-salient-image-metadata",
