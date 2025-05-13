@@ -850,16 +850,21 @@ void UserMediaRequest::FailConstraint(const String& constraint_name,
 
 void UserMediaRequest::Fail(Result error, const String& message) {
   DCHECK(!is_resolved_);
-  if (!GetExecutionContext())
+
+  if (!GetExecutionContext()) {
     return;
-  DOMExceptionCode exception_code = DOMExceptionCode::kNotSupportedError;
-  UserMediaRequestResult result_enum =
-      UserMediaRequestResult::kNotSupportedError;
+  }
+
+  std::optional<DOMExceptionCode> exception_code;
+  std::optional<UserMediaRequestResult> result_enum;
+
   switch (error) {
+    case Result::OK:
+      NOTREACHED();  // Not a failure.
     case Result::PERMISSION_DENIED:
+    case Result::SYSTEM_PERMISSION_DENIED:
     case Result::PERMISSION_DISMISSED:
     case Result::KILL_SWITCH_ON:
-    case Result::SYSTEM_PERMISSION_DENIED:
       exception_code = DOMExceptionCode::kNotAllowedError;
       result_enum = UserMediaRequestResult::kNotAllowedError;
       break;
@@ -890,20 +895,28 @@ void UserMediaRequest::Fail(Result error, const String& message) {
       exception_code = DOMExceptionCode::kSecurityError;
       result_enum = UserMediaRequestResult::kSecurityError;
       break;
-    default:
+    case Result::CONSTRAINT_NOT_SATISFIED:
+    case Result::REQUEST_CANCELLED:
+      // TODO(crbug.com/416456028): Either handle these or document why
+      // they cannot be encountered by this method.
       NOTREACHED();
+    case Result::NUM_MEDIA_REQUEST_RESULTS:
+      NOTREACHED();  // Not a valid enum value.
   }
+  CHECK(exception_code.has_value());
+  CHECK(result_enum.has_value());
+
   RecordIdentifiabilityMetric(surface_, GetExecutionContext(),
                               IdentifiabilityBenignStringToken(message));
 
   if (auto* window = GetWindow()) {
     if (media_type_ == UserMediaRequestType::kUserMedia) {
       PeerConnectionTracker::From(*window).TrackGetUserMediaFailure(
-          this, DOMException::GetErrorName(exception_code), message);
+          this, DOMException::GetErrorName(*exception_code), message);
     } else if (media_type_ == UserMediaRequestType::kDisplayMedia ||
                media_type_ == UserMediaRequestType::kAllScreensMedia) {
       PeerConnectionTracker::From(*window).TrackGetDisplayMediaFailure(
-          this, DOMException::GetErrorName(exception_code), message);
+          this, DOMException::GetErrorName(*exception_code), message);
     } else {
       NOTREACHED();
     }
@@ -913,8 +926,8 @@ void UserMediaRequest::Fail(Result error, const String& message) {
   callbacks_->OnError(
       nullptr,
       MakeGarbageCollected<V8MediaStreamError>(
-          MakeGarbageCollected<DOMException>(exception_code, message)),
-      capture_controller_, result_enum);
+          MakeGarbageCollected<DOMException>(*exception_code, message)),
+      capture_controller_, *result_enum);
   is_resolved_ = true;
 }
 

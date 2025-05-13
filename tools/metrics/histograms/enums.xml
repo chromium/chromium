@@ -20145,6 +20145,8 @@ from previous Chrome versions.
   <int value="14" label="Kill Switch On (NotAllowedError)"/>
   <int value="15" label="Permission Denied By System (NotAllowedError)"/>
   <int value="16" label="Device In Use (NotReadableError)"/>
+  <int value="17" label="Request cancelled (?)"/>
+  <int value="18" label="Start timeout (AbortError)"/>
 </enum>
 
 <enum name="MediaStreamType">

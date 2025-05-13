@@ -304,11 +304,16 @@ const char* RequestResultToString(
       return "KILL_SWITCH_ON";
     case blink::mojom::MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED:
       return "SYSTEM_PERMISSION_DENIED";
+    case blink::mojom::MediaStreamRequestResult::DEVICE_IN_USE:
+      return "DEVICE_IN_USE";
+    case blink::mojom::MediaStreamRequestResult::REQUEST_CANCELLED:
+      return "REQUEST_CANCELLED";
+    case blink::mojom::MediaStreamRequestResult::START_TIMEOUT:
+      return "START_TIMEOUT";
     case blink::mojom::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
-      return "NUM_MEDIA_REQUEST_RESULTS";
-    default:
-      NOTREACHED();
+      break;  // Not a valid enum value.
   }
+  NOTREACHED();
 }
 
 std::string GetGenerateStreamsLogString(
