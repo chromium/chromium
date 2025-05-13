@@ -189,7 +189,8 @@ struct StickyPositionNodeData {
   // Must be a valid index into the scroll tree.
   int32 scroll_ancestor;
 
-  // Additional fields derived from StickyPositionScrollingConstraints.
+  // Additional fields derived from StickyPositionConstraint (which itself is
+  // populated from StickyPositionScrollingConstraints).
   bool is_anchored_left;
   bool is_anchored_right;
   bool is_anchored_top;
