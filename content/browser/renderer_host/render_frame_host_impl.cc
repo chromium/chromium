@@ -445,6 +445,8 @@ bool g_allow_injecting_javascript = false;
 
 const char kDotGoogleDotCom[] = ".google.com";
 
+const char kCrashReportingGroupName[] = "crash-reporting";
+
 using RoutingIDFrameMap =
     absl::flat_hash_map<GlobalRenderFrameHostId, RenderFrameHostImpl*>;
 base::LazyInstance<RoutingIDFrameMap>::DestructorAtExit g_routing_id_frame_map =
@@ -15776,9 +15778,16 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   if (GURL::SchemeIsCryptographic(origin.scheme()) &&
       navigation_request->response() &&
       navigation_request->response()->parsed_headers->reporting_endpoints) {
+    base::flat_map<std::string, std::string> endpoints =
+        navigation_request->response()
+            ->parsed_headers->reporting_endpoints.value();
+    if (base::FeatureList::IsEnabled(
+            blink::features::kOverrideCrashReportingEndpoint) &&
+        endpoints.find(kCrashReportingGroupName) != endpoints.end()) {
+      crash_reporting_group_ = kCrashReportingGroupName;
+    }
     GetStoragePartition()->GetNetworkContext()->SetDocumentReportingEndpoints(
-        GetReportingSource(), origin, isolation_info_,
-        *(navigation_request->response()->parsed_headers->reporting_endpoints));
+        GetReportingSource(), origin, isolation_info_, endpoints);
   }
 
   // We move the PolicyContainerHost of |navigation_request| into the
@@ -15903,7 +15912,7 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
 
   // Send the crash report to the Reporting API.
   GetProcess()->GetStoragePartition()->GetNetworkContext()->QueueReport(
-      /*type=*/"crash", /*group=*/"default", last_committed_url_,
+      /*type=*/"crash", crash_reporting_group_, last_committed_url_,
       GetReportingSource(), isolation_info_.network_anonymization_key(),
       std::move(body));
 }

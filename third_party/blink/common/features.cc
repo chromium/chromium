@@ -58,6 +58,10 @@ BASE_FEATURE(kCrashReportingAPIMoreContextData,
              "CrashReportingAPIMoreContextData",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOverrideCrashReportingEndpoint,
+             "OverrideCrashReportingEndpoint",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLowerHighResolutionTimerThreshold,
              "LowerHighResolutionTimerThreshold",
              base::FEATURE_DISABLED_BY_DEFAULT);

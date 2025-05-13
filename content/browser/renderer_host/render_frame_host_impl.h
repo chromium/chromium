@@ -5512,6 +5512,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // nonce returned is unique.
   base::Uuid base_auction_nonce_;
 
+  // The default group for crash reports is `default`. However, if
+  // `Reporting-Endpoints` response header specifies `crash-reporting`, crash
+  // reports will be grouped under `crash-reporting`.
+  // See for https://github.com/WICG/crash-reporting/issues/24 more details.
+  std::string crash_reporting_group_ = "default";
+
   base::OnceClosure on_process_before_unload_completed_for_testing_;
 
   // WeakPtrFactories are the last members, to ensure they are destroyed before

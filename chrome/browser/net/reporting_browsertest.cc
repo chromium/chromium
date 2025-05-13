@@ -94,7 +94,7 @@ class BaseReportingBrowserTest : public CertVerifierBrowserTest,
                                        /*use_plus=*/false);
   }
 
-  std::string GetReportingEndpointsHeader() const {
+  virtual std::string GetReportingEndpointsHeader() const {
     return "Reporting-Endpoints: default=\"" + GetCollectorURL().spec() + "\"";
   }
 
@@ -216,6 +216,32 @@ class ReportingBrowserTestMoreContextData : public BaseReportingBrowserTest {
 
   void SetUpOnMainThread() override {
     BaseReportingBrowserTest::SetUpOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class ReportingBrowserTestSpecifyCrashEndpoint
+    : public BaseReportingBrowserTest {
+ public:
+  ReportingBrowserTestSpecifyCrashEndpoint() {
+    scoped_feature_list_.InitWithFeatureState(
+        blink::features::kOverrideCrashReportingEndpoint,
+        /*enabled=*/GetParam());
+  }
+
+  ReportingBrowserTestSpecifyCrashEndpoint(
+      const ReportingBrowserTestSpecifyCrashEndpoint&) = delete;
+  ReportingBrowserTestSpecifyCrashEndpoint& operator=(
+      const ReportingBrowserTestSpecifyCrashEndpoint&) = delete;
+
+  ~ReportingBrowserTestSpecifyCrashEndpoint() override = default;
+
+  std::string GetReportingEndpointsHeader() const override {
+    // Override the endpoint name of crash reporting.
+    return "Reporting-Endpoints: crash-reporting=\"" +
+           GetCollectorURL().spec() + "\"";
   }
 
  private:
@@ -604,6 +630,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
   DISABLED_IframeUnresponsiveWithJSCallStackOptedIn
 #define MAYBE_IframeUnresponsiveWithJSCallStackNotOptedIn \
   DISABLED_IframeUnresponsiveWithJSCallStackNotOptedIn
+#define MAYBE_SpecifyCrashEndpoint DISABLED_SpecifyCrashEndpoint
 #else
 #define MAYBE_CrashReport CrashReport
 #define MAYBE_CrashReportUnresponsive CrashReportUnresponsive
@@ -615,6 +642,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
   IframeUnresponsiveWithJSCallStackOptedIn
 #define MAYBE_IframeUnresponsiveWithJSCallStackNotOptedIn \
   IframeUnresponsiveWithJSCallStackNotOptedIn
+#define MAYBE_SpecifyCrashEndpoint SpecifyCrashEndpoint
 #endif  // defined(ADDRESS_SANITIZER)
 
 IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReport) {
@@ -812,6 +840,39 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestMoreContextData,
   } else {
     EXPECT_EQ(nullptr, is_top_level);
   }
+}
+
+IN_PROC_BROWSER_TEST_P(ReportingBrowserTestSpecifyCrashEndpoint,
+                       MAYBE_SpecifyCrashEndpoint) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  GURL main_url = server()->GetURL(
+      kReportingHost, "/set-header?" + GetAppropriateReportingHeader());
+  EXPECT_TRUE(NavigateToURL(contents, main_url));
+
+  // Simulate a crash on the page.
+  content::RenderProcessHostWatcher crash_observer(
+      contents, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  contents->GetController().LoadURL(GURL(blink::kChromeUICrashURL),
+                                    content::Referrer(),
+                                    ui::PAGE_TRANSITION_TYPED, std::string());
+  crash_observer.Wait();
+
+  upload_response()->WaitForRequest();
+  base::Value::List response =
+      ParseReportUpload(upload_response()->http_request()->content);
+  upload_response()->Send("HTTP/1.1 200 OK\r\n");
+  upload_response()->Send("\r\n");
+  upload_response()->Done();
+
+  // Verify the contents of the report that we received.
+  const base::Value::Dict& report = response.begin()->GetDict();
+  const std::string* type = report.FindString("type");
+  const std::string* url = report.FindString("url");
+
+  EXPECT_EQ("crash", *type);
+  EXPECT_EQ(*url, main_url.spec());
 }
 
 IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest, MAYBE_MainPageOptedIn) {
@@ -1170,6 +1231,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Bool());
 INSTANTIATE_TEST_SUITE_P(All,
                          ReportingBrowserTestMoreContextData,
+                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         ReportingBrowserTestSpecifyCrashEndpoint,
                          ::testing::Bool());
 INSTANTIATE_TEST_SUITE_P(All,
                          JSCallStackReportingBrowserTest,
