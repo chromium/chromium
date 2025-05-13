@@ -2294,7 +2294,7 @@ See your search engine’s instructions for deleting your search history, if app
         Managed Account
       </message>
       <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE" desc="Message displayed in the secondary button on a screen where the user is asked to create a work profile.">
-        Signing in with your managed account helps you separate browsing related to your organization, like tabs, history, and passwords.
+        Signing in with your managed account helps you keep browsing related to your organization (including tabs, history, and passwords) separate from your other browsing
       </message>
       <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_TITLE" desc="Message displayed in the secondary button on a screen where the user is asked to create a work profile.">
        A separate space for work
