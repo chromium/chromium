@@ -14301,6 +14301,8 @@ from previous Chrome versions.
   <int value="106235373" label="LauncherSystemInfoAnswerCards:enabled"/>
   <int value="106596969" label="HideIncognitoMediaMetadata:disabled"/>
   <int value="106744400" label="OmniboxModernizeVisualUpdate:enabled"/>
+  <int value="106789059"
+      label="ReduceUserAgentDataLinuxPlatformVersion:disabled"/>
   <int value="106840653" label="mus"/>
   <int value="107358678" label="GalleryAppPdfEditNotification:enabled"/>
   <int value="107900612" label="ChromeHomePersistentIph:disabled"/>
@@ -15198,6 +15200,8 @@ from previous Chrome versions.
   <int value="436980707" label="ContextualSearchForceCaption:enabled"/>
   <int value="437371666"
       label="AutofillEnableCardInfoRuntimeRetrieval:enabled"/>
+  <int value="438220199"
+      label="ReduceUserAgentDataLinuxPlatformVersion:enabled"/>
   <int value="438307192" label="FirstPartySets:disabled"/>
   <int value="438398886"
       label="AutofillEnableStickyManualFallbackForCards:enabled"/>

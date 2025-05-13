@@ -19273,6 +19273,21 @@
             ]
         }
     ],
+    "ReduceUserAgentDataLinuxPlatformVersion": [
+        {
+            "platforms": [
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ReduceUserAgentDataLinuxPlatformVersion"
+                    ]
+                }
+            ]
+        }
+    ],
     "RefreshTokenV3Feature": [
         {
             "platforms": [

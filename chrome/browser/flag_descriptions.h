@@ -2578,6 +2578,11 @@ extern const char kReduceAcceptLanguageDescription[];
 extern const char kReduceTransferSizeUpdatedIPCName[];
 extern const char kReduceTransferSizeUpdatedIPCDescription[];
 
+#if BUILDFLAG(IS_LINUX)
+extern const char kReduceUserAgentDataLinuxPlatformVersionName[];
+extern const char kReduceUserAgentDataLinuxPlatformVersionDescription[];
+#endif  // #if BUILDFLAG(IS_LINUX)
+
 extern const char kResetAudioSelectionImprovementPrefName[];
 extern const char kResetAudioSelectionImprovementPrefDescription[];
 

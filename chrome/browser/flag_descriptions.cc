@@ -3509,6 +3509,13 @@ const char kReduceTransferSizeUpdatedIPCDescription[] =
     "When enabled, the network service will send TransferSizeUpdatedIPC IPC "
     "only when DevTools is attached or the request is for an ad request.";
 
+#if BUILDFLAG(IS_LINUX)
+const char kReduceUserAgentDataLinuxPlatformVersionName[] =
+    "Reduce Linux platform version Client Hint";
+const char kReduceUserAgentDataLinuxPlatformVersionDescription[] =
+    "Set platform version Client Hint on Linux to empty string.";
+#endif  // BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(IS_ANDROID)
 const char kReplaceSyncPromosWithSignInPromosName[] =
     "Replace all sync-related UI with sign-in ones";

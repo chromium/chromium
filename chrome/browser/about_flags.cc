@@ -9675,6 +9675,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReduceTransferSizeUpdatedIPCDescription, kOsAll,
      FEATURE_VALUE_TYPE(network::features::kReduceTransferSizeUpdatedIPC)},
 
+#if BUILDFLAG(IS_LINUX)
+    {"reduce-user-agent-data-linux-platform-version",
+     flag_descriptions::kReduceUserAgentDataLinuxPlatformVersionName,
+     flag_descriptions::kReduceUserAgentDataLinuxPlatformVersionDescription,
+     kOsLinux,
+     FEATURE_VALUE_TYPE(
+         blink::features::kReduceUserAgentDataLinuxPlatformVersion)},
+#endif  // BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-variable-refresh-rate",
      flag_descriptions::kEnableVariableRefreshRateName,
