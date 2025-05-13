@@ -167,7 +167,7 @@ class SessionStorageMetadataTest : public testing::Test {
                 base::OnceCallback<void(leveldb::Status)> callback) {
     base::RunLoop loop;
     database_->RunBatchDatabaseTasks(
-        std::move(tasks),
+        RunBatchTasksContext::kTest, std::move(tasks),
         base::BindLambdaForTesting([&](leveldb::Status status) {
           std::move(callback).Run(status);
           loop.Quit();

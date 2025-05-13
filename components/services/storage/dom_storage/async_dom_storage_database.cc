@@ -76,14 +76,17 @@ void AsyncDomStorageDatabase::RewriteDB(StatusCallback callback) {
 }
 
 void AsyncDomStorageDatabase::RunBatchDatabaseTasks(
+    RunBatchTasksContext context,
     std::vector<BatchDatabaseTask> tasks,
     base::OnceCallback<void(leveldb::Status)> callback) {
   RunDatabaseTask(base::BindOnce(
-                      [](std::vector<BatchDatabaseTask> tasks,
+                      [](RunBatchTasksContext context,
+                         std::vector<BatchDatabaseTask> tasks,
                          const DomStorageDatabase& db) {
                         leveldb::WriteBatch batch;
                         // TODO(crbug.com/40245293): Remove this after debugging
                         // is complete.
+                        base::debug::Alias(&context);
                         size_t batch_task_count = tasks.size();
                         size_t iteration_count = 0;
                         size_t current_batch_size = 0;
@@ -115,7 +118,7 @@ void AsyncDomStorageDatabase::RunBatchDatabaseTasks(
                         }
                         return db.Commit(&batch);
                       },
-                      std::move(tasks)),
+                      context, std::move(tasks)),
                   std::move(callback));
 }
 

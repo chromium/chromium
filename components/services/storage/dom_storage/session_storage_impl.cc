@@ -244,7 +244,7 @@ void SessionStorageImpl::CloneNamespace(
                                                  namespace_entry, &save_tasks);
         if (database_) {
           database_->RunBatchDatabaseTasks(
-              std::move(save_tasks),
+              RunBatchTasksContext::kCloneNamespace, std::move(save_tasks),
               base::BindOnce(&SessionStorageImpl::OnCommitResult,
                              weak_ptr_factory_.GetWeakPtr()));
         }
@@ -348,7 +348,7 @@ void SessionStorageImpl::DeleteStorage(const blink::StorageKey& storage_key,
     metadata_.DeleteArea(namespace_id, storage_key, &tasks);
     if (database_) {
       database_->RunBatchDatabaseTasks(
-          std::move(tasks),
+          RunBatchTasksContext::kDeleteStorage, std::move(tasks),
           base::BindOnce(&SessionStorageImpl::OnCommitResultWithCallback,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     } else {
@@ -494,7 +494,7 @@ void SessionStorageImpl::ScavengeUnusedNamespaces(
 
   if (database_) {
     database_->RunBatchDatabaseTasks(
-        std::move(save_tasks),
+        RunBatchTasksContext::kScavengeUnusedNamespaces, std::move(save_tasks),
         base::BindOnce(&SessionStorageImpl::OnCommitResult,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -576,7 +576,7 @@ SessionStorageImpl::RegisterNewAreaMap(
 
   if (database_) {
     database_->RunBatchDatabaseTasks(
-        std::move(save_tasks),
+        RunBatchTasksContext::kRegisterNewAreaMap, std::move(save_tasks),
         base::BindOnce(&SessionStorageImpl::OnCommitResult,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -665,6 +665,7 @@ void SessionStorageImpl::RegisterShallowClonedNamespace(
                                            namespace_entry, &save_tasks);
   if (database_) {
     database_->RunBatchDatabaseTasks(
+        RunBatchTasksContext::kRegisterShallowClonedNamespace,
         std::move(save_tasks),
         base::BindOnce(&SessionStorageImpl::OnCommitResult,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -701,8 +702,9 @@ void SessionStorageImpl::DoDatabaseDelete(const std::string& namespace_id) {
   metadata_.DeleteNamespace(namespace_id, &tasks);
   if (database_) {
     database_->RunBatchDatabaseTasks(
-        std::move(tasks), base::BindOnce(&SessionStorageImpl::OnCommitResult,
-                                         weak_ptr_factory_.GetWeakPtr()));
+        RunBatchTasksContext::kDoDatabaseDelete, std::move(tasks),
+        base::BindOnce(&SessionStorageImpl::OnCommitResult,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -920,7 +922,7 @@ SessionStorageImpl::MetadataParseResult SessionStorageImpl::ParseNamespaces(
     // initialized. There's no harm in deferring in other situations, so we just
     // always defer here.
     database_->RunBatchDatabaseTasks(
-        std::move(migration_tasks),
+        RunBatchTasksContext::kParseNamespaces, std::move(migration_tasks),
         base::BindOnce(
             [](base::OnceCallback<void(leveldb::Status)> callback,
                scoped_refptr<base::SequencedTaskRunner> callback_task_runner,

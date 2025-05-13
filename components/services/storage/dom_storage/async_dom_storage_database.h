@@ -28,6 +28,21 @@ template <typename ResultType>
 struct DatabaseTaskTraits;
 }  // namespace internal
 
+// Describes the context in which RunBatchDatabaseTasks is called, for
+// debugging.
+// TODO(crbug.com/40245293): Remove this debug enum once the investigation is
+// complete.
+enum class RunBatchTasksContext {
+  kScavengeUnusedNamespaces,
+  kDeleteStorage,
+  kCloneNamespace,
+  kRegisterNewAreaMap,
+  kRegisterShallowClonedNamespace,
+  kDoDatabaseDelete,
+  kParseNamespaces,
+  kTest,
+};
+
 // A wrapper around DomStorageDatabase which simplifies usage by queueing
 // database operations until the database is opened.
 class AsyncDomStorageDatabase {
@@ -122,6 +137,7 @@ class AsyncDomStorageDatabase {
   using BatchDatabaseTask =
       base::OnceCallback<void(leveldb::WriteBatch*, const DomStorageDatabase&)>;
   void RunBatchDatabaseTasks(
+      RunBatchTasksContext context,
       std::vector<BatchDatabaseTask> tasks,
       base::OnceCallback<void(leveldb::Status)> callback);
 

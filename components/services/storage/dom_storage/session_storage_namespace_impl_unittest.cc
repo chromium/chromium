@@ -64,7 +64,7 @@ class SessionStorageNamespaceImplTest
   void RunBatch(std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> tasks) {
     base::RunLoop loop(base::RunLoop::Type::kNestableTasksAllowed);
     database_->RunBatchDatabaseTasks(
-        std::move(tasks),
+        RunBatchTasksContext::kTest, std::move(tasks),
         base::BindLambdaForTesting([&](leveldb::Status) { loop.Quit(); }));
     loop.Run();
   }
