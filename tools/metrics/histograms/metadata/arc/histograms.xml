@@ -692,6 +692,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.Attestation.CertificateSigning.Result"
+    enum="CertificateSigningResult" expires_after="2026-04-01">
+  <owner>batoon@google.com</owner>
+  <owner>arc-commercial@google.com</owner>
+  <summary>
+    Records the result received from the Android Attestation server when
+    requesting signed certificates. It is emitted for every request for signed
+    certificates.
+  </summary>
+</histogram>
+
 <histogram name="Arc.Auth.AccountCheck.Status{ArcUserTypes}"
     enum="ArcAuthAccountCheckStatus" expires_after="never">
 <!-- expires-never: Needed for long-term health monitoring of ARC provisioning. -->

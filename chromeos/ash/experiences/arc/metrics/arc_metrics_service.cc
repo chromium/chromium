@@ -911,6 +911,13 @@ void ArcMetricsService::ReportDataDirectorySizeList(
   }
 }
 
+void ArcMetricsService::ReportCertificateSigningResult(
+    mojom::CertificateSigningResult result) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::UmaHistogramEnumeration("Arc.Attestation.CertificateSigning.Result",
+                                result);
+}
+
 void ArcMetricsService::OnWindowActivated(
     wm::ActivationChangeObserver::ActivationReason reason,
     aura::Window* gained_active,

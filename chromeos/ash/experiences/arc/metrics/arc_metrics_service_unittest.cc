@@ -486,6 +486,30 @@ TEST_F(ArcMetricsServiceTest, ReportApkCacheHit) {
   tester.ExpectTotalCount("Arc.AppInstall.CacheHit", 2);
 }
 
+TEST_F(ArcMetricsServiceTest, ReportCertificateSigningResult_ResultOk) {
+  base::HistogramTester tester;
+
+  service()->ReportCertificateSigningResult(
+      arc::mojom::CertificateSigningResult::kOk);
+
+  tester.ExpectUniqueSample(
+      "Arc.Attestation.CertificateSigning.Result",
+      static_cast<int>(mojom::CertificateSigningResult::kOk), 1);
+}
+
+TEST_F(ArcMetricsServiceTest,
+       ReportCertificateSigningResult_ResultDeviceNotRegistered) {
+  base::HistogramTester tester;
+
+  service()->ReportCertificateSigningResult(
+      arc::mojom::CertificateSigningResult::kDeviceNotRegistered);
+
+  tester.ExpectUniqueSample(
+      "Arc.Attestation.CertificateSigning.Result",
+      static_cast<int>(mojom::CertificateSigningResult::kDeviceNotRegistered),
+      1);
+}
+
 class ArcVmArcMetricsServiceTest
     : public ArcMetricsServiceTest,
       public testing::WithParamInterface<
@@ -540,7 +564,7 @@ static std::optional<vm_tools::concierge::ListVmsResponse> VmsList(
 
 struct KillCounterInfo {
   const char* name;
-  uint32_t mojom::LowMemoryKillCounts::*const member;
+  uint32_t mojom::LowMemoryKillCounts::* const member;
 };
 
 // Store a list of the different kill counter names and which field in the

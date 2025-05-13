@@ -166,6 +166,8 @@ class ArcMetricsService : public KeyedService,
   void ReportArcKeyMintErrorForOperation(
       mojom::ArcKeyMintError error,
       mojom::ArcKeyMintLoggedOperation operation) override;
+  void ReportCertificateSigningResult(
+      mojom::CertificateSigningResult result) override;
 
   // wm::ActivationChangeObserver overrides.
   // Records to UMA when a user has interacted with an ARC app window.

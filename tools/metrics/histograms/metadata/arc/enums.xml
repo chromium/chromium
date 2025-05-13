@@ -728,6 +728,19 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Is Custom Notification"/>
 </enum>
 
+<enum name="CertificateSigningResult">
+  <int value="0" label="Other"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Device not registered"/>
+  <int value="3" label="Timeout"/>
+  <int value="4" label="IO exception"/>
+  <int value="5" label="Http error 200"/>
+  <int value="6" label="Http error 403"/>
+  <int value="7" label="Http error 404"/>
+  <int value="8" label="Http error 500"/>
+  <int value="9" label="Http error 503"/>
+</enum>
+
 <enum name="CompanionLibraryApisList">
 <!-- Value from components/arc/mojom/metrics.mojom -->
 

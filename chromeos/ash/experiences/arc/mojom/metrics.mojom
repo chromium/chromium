@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 37
+// Next MinVersion: 38
 module arc.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
@@ -375,6 +375,23 @@ enum ArcKeyMintLoggedOperation {
   kGenerateCertificateRequest = 1,
 };
 
+// Enumerates the result codes of certification signing operations.
+// This enum is persisted to logs. Existing values should not be changed and new
+// values should only be appended to the end.
+[Extensible]
+enum CertificateSigningResult {
+  [Default] kOther = 0,
+  kOk = 1,
+  kDeviceNotRegistered = 2,
+  kTimeout = 3,
+  kIOException = 4,
+  kHttp200 = 5,
+  kHttp403 = 6,
+  kHttp404 = 7,
+  kHttp500 = 8,
+  kHttp503 = 9,
+};
+
 // Enumerates the types of Anr and Crash dialogs, based on the resource id the
 // dialog uses.
 [Extensible]
@@ -430,7 +447,7 @@ struct DataDirectorySize {
 // This interface is implemented in ash by ArcMetricsService. It is called by
 // ARC side.
 // Deprecated method IDs: 8, 14, 15, 18, 25, 26, 27, 28, 29
-// Next method ID: 42
+// Next method ID: 43
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
   ReportBootProgress@0(array<BootProgressEvent> events,
@@ -557,6 +574,10 @@ interface MetricsHost {
   // Reports error codes for select KeyMint calls (on ARC T+ only).
   [MinVersion=36] ReportArcKeyMintErrorForOperation@41(
       ArcKeyMintError error, ArcKeyMintLoggedOperation operation);
+
+  // Reports certificate signing result during attestation (for ARC T+ only).
+  [MinVersion=37] ReportCertificateSigningResult@42(
+      CertificateSigningResult result);
 };
 
 // Deprecated method IDs: 0
