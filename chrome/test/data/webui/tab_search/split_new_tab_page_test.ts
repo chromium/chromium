@@ -13,91 +13,98 @@ import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
 
 const ACTIVE_TAB_ID = 5;
 
+function createWindowData() {
+  return [
+    {
+      active: true,
+      height: SAMPLE_WINDOW_HEIGHT,
+      tabs: [
+        createTab({
+          tabId: 3,
+          title: 'Google',
+          url: {url: 'https://www.google.com'},
+          visible: true,
+        }),
+        createTab({
+          active: true,
+          index: 1,
+          tabId: ACTIVE_TAB_ID,
+          title: 'Split View New Tab Page',
+          url: {url: 'chrome://tab-search.top-chrome/split_new_tab_page.html'},
+          visible: true,
+        }),
+        createTab({
+          alertStates: [TabAlertState.kMediaRecording],
+          index: 2,
+          lastActiveTimeTicks: {internalValue: BigInt(2)},
+          tabId: 6,
+          title: 'Facebook',
+          url: {url: 'https://www.facebook.com'},
+        }),
+        createTab({
+          index: 4,
+          lastActiveTimeTicks: {internalValue: BigInt(7)},
+          tabId: 7,
+          title: 'Expedia',
+          url: {url: 'https://www.expedia.com'},
+        }),
+        createTab({
+          index: 5,
+          lastActiveTimeTicks: {internalValue: BigInt(8)},
+          tabId: 8,
+          title: 'Wikipedia',
+          url: {url: 'https://en.wikipedia.org'},
+        }),
+      ],
+    },
+    {
+      active: false,
+      height: SAMPLE_WINDOW_HEIGHT,
+      tabs: [
+        createTab({
+          active: true,
+          tabId: 4,
+          title: 'Apple',
+          url: {url: 'https://www.apple.com/'},
+        }),
+      ],
+    },
+  ];
+}
+
 suite('SplitNewTabPageTest', () => {
   let splitNewTabPage: SplitNewTabPageAppElement;
   let testApiProxy: TestTabSearchApiProxy;
 
-  function createWindowData() {
-    return [
-      {
-        active: true,
-        height: SAMPLE_WINDOW_HEIGHT,
-        tabs: [
-          createTab({
-            tabId: 3,
-            title: 'Google',
-            url: {url: 'https://www.google.com'},
-            visible: true,
-          }),
-          createTab({
-            active: true,
-            index: 1,
-            tabId: ACTIVE_TAB_ID,
-            title: 'Split View New Tab Page',
-            url:
-                {url: 'chrome://tab-search.top-chrome/split_new_tab_page.html'},
-            visible: true,
-          }),
-          createTab({
-            alertStates: [TabAlertState.kMediaRecording],
-            index: 2,
-            lastActiveTimeTicks: {internalValue: BigInt(2)},
-            tabId: 6,
-            title: 'Facebook',
-            url: {url: 'https://www.facebook.com'},
-          }),
-          createTab({
-            index: 4,
-            lastActiveTimeTicks: {internalValue: BigInt(7)},
-            tabId: 7,
-            title: 'Expedia',
-            url: {url: 'https://www.expedia.com'},
-          }),
-          createTab({
-            index: 5,
-            lastActiveTimeTicks: {internalValue: BigInt(8)},
-            tabId: 8,
-            title: 'Wikipedia',
-            url: {url: 'https://en.wikipedia.org'},
-          }),
-        ],
-      },
-      {
-        active: false,
-        height: SAMPLE_WINDOW_HEIGHT,
-        tabs: [
-          createTab({
-            active: true,
-            tabId: 4,
-            title: 'Apple',
-            url: {url: 'https://www.apple.com/'},
-          }),
-        ],
-      },
-    ];
-  }
-
-  async function splitNewTabPageSetup(windowData?: any) {
-    loadTimeData.overrideValues({
-      splitViewEnabled: true,
-    });
-
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    testApiProxy = new TestTabSearchApiProxy();
-    testApiProxy.setProfileData(
-        createProfileData({windows: (windowData || createWindowData())}));
-    testApiProxy.setIsSplit(true);
-    TabSearchApiProxyImpl.setInstance(testApiProxy);
-
+  async function splitNewTabPageSetup() {
     splitNewTabPage = document.createElement('split-new-tab-page-app');
     document.body.appendChild(splitNewTabPage);
 
     // TODO(crbug.com/412693981): Figure out why this is needed only in tests.
     splitNewTabPage.shadowRoot.querySelector<HTMLElement>(
                                   '.tab-list')!.style.flexGrow = '1';
+
     await eventToPromise('viewport-filled', splitNewTabPage.$.splitTabsList);
   }
+
+  setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    loadTimeData.overrideValues({
+      splitViewEnabled: true,
+    });
+
+    testApiProxy = new TestTabSearchApiProxy();
+    testApiProxy.setProfileData(
+        createProfileData({windows: createWindowData()}));
+    testApiProxy.setIsSplit(true);
+    TabSearchApiProxyImpl.setInstance(testApiProxy);
+  });
+
+  teardown(() => {
+    testApiProxy.reset();
+    splitNewTabPage.remove();
+  });
 
   test('Shows correct tab count', async () => {
     await splitNewTabPageSetup();
@@ -147,7 +154,8 @@ suite('SplitNewTabPageTest', () => {
     const windowData = createWindowData();
     const tab = windowData[0]!.tabs[1] as Tab;
     tab.visible = false;
-    await splitNewTabPageSetup(windowData);
+    testApiProxy.setProfileData(createProfileData({windows: windowData}));
+    await splitNewTabPageSetup();
     const initialTabSearchItems =
         splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item');
     assertEquals(4, initialTabSearchItems.length);
