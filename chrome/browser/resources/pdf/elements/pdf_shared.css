@@ -37,3 +37,17 @@ viewer-bookmark {
   --cr-action-menu-disabled-item-color: var(--cr-primary-text-color);
   --cr-action-menu-disabled-item-opacity: var(--cr-disabled-opacity);
 }
+
+.md-select {
+  --cr-fallback-color-neutral-outline: rgb(117, 117, 117);
+  --cr-focus-outline-color: var(--viewer-icon-focus-outline-color);
+  --md-select-option-bg-color: var(--google-grey-900-white-4-percent);
+  /* cr-fallback-color-on-surface for dark mode */
+  --md-select-text-color: rgb(227, 227, 227);
+  background-image: url(chrome://resources/images/dark/arrow_down.svg);
+}
+
+.md-select:hover {
+  /* --cr-fallback-color-state-hover-on-subtle_ in dark mode */
+  background-color: rgba(253, 252, 251, .10);
+}

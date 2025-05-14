@@ -9,13 +9,14 @@
 
 :host {
   display: flex;
+  gap: 16px;
 }
 
 cr-icon-button {
   --cr-icon-button-fill-color: var(--viewer-icon-ink-fill-color);
   --cr-icon-button-focus-outline-color: var(--viewer-icon-focus-outline-color);
-  --cr-icon-button-margin-end: 8px;
-  --cr-icon-button-margin-start: 8px;
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-margin-start: 0;
 }
 
 cr-icon-button.active {

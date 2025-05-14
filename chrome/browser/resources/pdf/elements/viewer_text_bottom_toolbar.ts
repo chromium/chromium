@@ -64,8 +64,6 @@ export class ViewerTextBottomToolbarElement extends
         return 'pdf-ink:text-align-center';
       case TextAlignment.RIGHT:
         return 'pdf-ink:text-align-right';
-      case TextAlignment.JUSTIFY:
-        return 'pdf-ink:text-align-justify';
       default:
         assertNotReached();
     }

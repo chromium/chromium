@@ -6,44 +6,36 @@
  * #type=style-lit
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #import=chrome://resources/cr_elements/md_select_lit.css.js
+ * #import=./pdf_shared.css.js
  * #import=./shared_vars.css.js
  * #import=./side_panel_shared.css.js
- * #include=md-select-lit side-panel-shared
+ * #include=md-select-lit side-panel-shared pdf-shared
  * #css_wrapper_metadata_end */
 
+/* Different styling for margin vs the ink side panel. */
+h2 {
+  margin-inline-start: 0;
+  margin-bottom: 8px;
+}
+
 .md-select {
-  --cr-focus-outline-color: var(--viewer-icon-focus-outline-color);
-  --md-select-option-bg-color: var(--google-grey-800);
-  --md-select-text-color: var(--google-grey-100);
   --md-select-width: 240px;
-  background-image: url(chrome://resources/images/dark/arrow_down.svg);
-  background-color: var(--google-grey-800);
-  border: none;
-  margin-top: 12px;
-}
-
-.md-select:first-child {
-  margin-top: 16px;
-}
-
-.md-select:hover {
-  /* TODO: Do we want a different background on hover? */
-  background-color: var(--google-grey-800);
+  margin-top: 8px;
 }
 
 text-styles-selector {
-  padding-top: 16px;
-}
-
-text-alignment-selector {
   padding-top: 8px;
 }
 
-.side-panel-content:nth-child(2) {
-  /* 4px + 24px bottom padding from first item to make 28px total spacing */
+text-alignment-selector {
+  padding-top: 16px;
+}
+
+ink-color-selector {
   padding-top: 4px;
 }
 
-.side-panel-content:nth-child(3) {
-  padding-top: 0;
+.side-panel-content:not(:first-child) {
+  /* 8px + 24px bottom padding from first item to make 32px total spacing */
+  padding-top: 8px;
 }

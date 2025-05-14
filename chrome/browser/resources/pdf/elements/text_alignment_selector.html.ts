@@ -24,9 +24,6 @@ export function getHtml(this: TextAlignmentSelectorElement) {
       <selectable-icon-button icon="pdf-ink:text-align-center"
           name="${TextAlignment.CENTER}" label="Center">
       </selectable-icon-button>
-      <selectable-icon-button icon="pdf-ink:text-align-justify"
-          name="${TextAlignment.JUSTIFY}" label="Justify">
-      </selectable-icon-button>
       <selectable-icon-button icon="pdf-ink:text-align-right"
           name="${TextAlignment.RIGHT}" label="Right">
       </selectable-icon-button>

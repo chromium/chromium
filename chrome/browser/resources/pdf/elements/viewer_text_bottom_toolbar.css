@@ -7,7 +7,8 @@
  * #import=chrome://resources/cr_elements/md_select_lit.css.js
  * #import=./shared_vars.css.js
  * #import=./bottom_toolbar_shared.css.js
- * #include=bottom-toolbar-shared md-select-lit
+ * #import=./pdf_shared.css.js
+ * #include=bottom-toolbar-shared md-select-lit pdf-shared
  * #css_wrapper_metadata_end */
 
 :host {
@@ -16,20 +17,18 @@
 }
 
 .md-select {
-  --md-select-option-bg-color: var(--google-grey-800);
-  --md-select-text-color: var(--google-grey-100);
   --md-select-width: 120px;
-  background-image: url(chrome://resources/images/dark/arrow_down.svg);
-  background-color: var(--google-grey-800);
-  border: none;
   margin-inline-end: 4px;
-}
-
-.md-select:hover {
-  /* TODO(crbug.com/402546154): Do we want a different background on hover? */
-  background-color: var(--google-grey-800);
 }
 
 .md-select.size-select {
   --md-select-width: 60px;
+}
+
+text-styles-selector {
+  padding: 0 12px;
+}
+
+text-alignment-selector {
+  padding: 6px;
 }

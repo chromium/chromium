@@ -19,7 +19,7 @@ chrome.test.runTests([
     // Initial state
     const buttons =
         alignmentSelector.shadowRoot.querySelectorAll('selectable-icon-button');
-    chrome.test.assertEq(4, buttons.length);
+    chrome.test.assertEq(3, buttons.length);
     chrome.test.assertEq(
         TextAlignment.LEFT, manager.getCurrentTextAttributes().alignment);
     chrome.test.assertTrue(buttons[0]!.checked);
@@ -44,9 +44,7 @@ chrome.test.runTests([
     await testButton(
         buttons[1]!, TextAlignment.CENTER, 'pdf-ink:text-align-center');
     await testButton(
-        buttons[2]!, TextAlignment.JUSTIFY, 'pdf-ink:text-align-justify');
-    await testButton(
-        buttons[3]!, TextAlignment.RIGHT, 'pdf-ink:text-align-right');
+        buttons[2]!, TextAlignment.RIGHT, 'pdf-ink:text-align-right');
     await testButton(
         buttons[0]!, TextAlignment.LEFT, 'pdf-ink:text-align-left');
 
