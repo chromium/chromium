@@ -90,6 +90,9 @@ extern const char kAutofillPaymentsSheetV2Description[];
 extern const char kPasswordSuggestionBottomSheetV2Name[];
 extern const char kPasswordSuggestionBottomSheetV2Description[];
 
+extern const char kAutofillLocalSaveCardBottomSheetName[];
+extern const char kAutofillLocalSaveCardBottomSheetDescription[];
+
 extern const char kAutofillPruneSuggestionsName[];
 extern const char kAutofillPruneSuggestionsDescription[];
 

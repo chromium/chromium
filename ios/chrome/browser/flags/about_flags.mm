@@ -2683,6 +2683,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensExactMatchesEnabledName,
      flag_descriptions::kLensExactMatchesEnabledDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kLensExactMatchesEnabled)},
+    {"autofill-local-save-card-bottomsheet",
+     flag_descriptions::kAutofillLocalSaveCardBottomSheetName,
+     flag_descriptions::kAutofillLocalSaveCardBottomSheetDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillLocalSaveCardBottomSheet)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

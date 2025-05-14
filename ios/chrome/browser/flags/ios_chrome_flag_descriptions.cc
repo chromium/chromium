@@ -143,15 +143,23 @@ const char kPasswordSuggestionBottomSheetV2Description[] =
     "When enabled, the V2 of the password suggestion bottom sheet will be "
     "used.";
 
+const char kAutofillLocalSaveCardBottomSheetName[] =
+    "Enable save card bottomsheet for local save";
+const char kAutofillLocalSaveCardBottomSheetDescription[] =
+    "When enabled, save card bottomsheet will be shown to save the card "
+    "locally when the user has not previously rejected the offer to save the "
+    "card.";
+
 const char kAutofillPruneSuggestionsName[] = "Autofill Prune Suggestions";
 const char kAutofillPruneSuggestionsDescription[] =
     "Further limits the number of suggestions in the Autofill dropdown.";
 
-const char kAutofillSaveCardBottomSheetName[] = "Enable save card bottomsheet";
+const char kAutofillSaveCardBottomSheetName[] =
+    "Enable save card bottomsheet for upload save";
 const char kAutofillSaveCardBottomSheetDescription[] =
-    "When enabled, save card bottomsheet will be shown when the user has not "
-    "previously rejected the offer to save the card, and both a valid expiry "
-    "date and cardholder name are present.";
+    "When enabled, save card bottomsheet will be shown to save the card to the "
+    "server when the user has not previously rejected the offer to save the "
+    "card, and both a valid expiry date and cardholder name are present.";
 
 const char kAutofillShowManualFillForVirtualCardsName[] =
     "Show Manual Fill for Virtual Cards";
