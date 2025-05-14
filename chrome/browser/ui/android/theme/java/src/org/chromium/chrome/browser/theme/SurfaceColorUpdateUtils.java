@@ -31,7 +31,8 @@ public class SurfaceColorUpdateUtils {
                 || ChromeFeatureList.sGridTabSwitcherSurfaceColorUpdate.isEnabled();
     }
 
-    private static boolean useNewToolbarSurfaceColor() {
+    /** Whether new toolbar and omnibox/location bar surface colors are being used. */
+    public static boolean useNewToolbarSurfaceColor() {
         return ThemeModuleUtils.isForceEnableDependencies()
                 || ChromeFeatureList.sAndroidSurfaceColorUpdate.isEnabled();
     }

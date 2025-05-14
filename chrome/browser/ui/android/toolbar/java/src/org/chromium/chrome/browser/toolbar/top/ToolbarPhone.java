@@ -55,7 +55,6 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -315,14 +314,10 @@ public class ToolbarPhone extends ToolbarLayout
         float LocationBarBackgroundColorAlphaForNtp =
                 ResourcesCompat.getFloat(
                         getResources(), R.dimen.home_surface_search_box_background_alpha);
-        // Explicitly checking the flag value since the default color value is colorPrimary tinted.
         mLocationBarBackgroundColorForNtp =
-                ChromeFeatureList.sAndroidSurfaceColorUpdate.isEnabled()
-                        ? SurfaceColorUpdateUtils.getOmniboxBackgroundColor(
-                                getContext(), /* isIncognito= */ false)
-                        : ColorUtils.setAlphaComponentWithFloat(
-                                SemanticColorUtils.getDefaultIconColorAccent1(context),
-                                LocationBarBackgroundColorAlphaForNtp);
+                ColorUtils.setAlphaComponentWithFloat(
+                        SemanticColorUtils.getDefaultIconColorAccent1(context),
+                        LocationBarBackgroundColorAlphaForNtp);
         mTabCountSupplierObserver = this::onTabCountChanged;
     }
 
@@ -472,7 +467,12 @@ public class ToolbarPhone extends ToolbarLayout
      * @return The location bar color.
      */
     private @ColorInt int getLocationBarColorForToolbarColor(@ColorInt int toolbarColor) {
-        if (isLocationBarShownInGeneralNtp() || mIsInLoadingPhaseFromNtpToWebpage) {
+        // When AndroidSurfaceColorUpdate is enabled, use default location bar color when loading
+        // NTP to WebPage
+        boolean isInLoadingPhaseWithFlagDisabled =
+                mIsInLoadingPhaseFromNtpToWebpage
+                        && !SurfaceColorUpdateUtils.useNewToolbarSurfaceColor();
+        if (isLocationBarShownInGeneralNtp() || isInLoadingPhaseWithFlagDisabled) {
             return mLocationBarBackgroundColorForNtp;
         }
         return ThemeUtils.getTextBoxColorForToolbarBackgroundInNonNativePage(
