@@ -280,11 +280,6 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
         &model().display_node_ids());
   }
 
-  a11y::ReadAloudCurrentGranularity GetNextNodes() {
-    return read_aloud_model().GetNextNodes(model().is_pdf(), model().IsDocs(),
-                                           &model().display_node_ids());
-  }
-
   void ProcessDisplayNodes(const std::vector<ui::AXNodeID>& content_node_ids) {
     model().Reset(content_node_ids);
     model().ComputeDisplayNodeIdsForDistilledTree();
@@ -3936,92 +3931,6 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXNodePosition::AXPositionInstance new_position =
       GetNextNodePosition(current_granularity);
   EXPECT_TRUE(new_position->IsNullPosition());
-}
-
-TEST_F(ReadAnythingAppControllerTest,
-       GetNextValidPosition_UsesCurrentGranularity) {
-  std::u16string sentence1 = u"But from up here. The ";
-  std::u16string sentence2 = u"world ";
-  std::u16string sentence3 =
-      u"looks so small. And suddenly life seems so clear. And from up here. "
-      u"You coast past it all. The obstacles just disappear.";
-
-  static constexpr ui::AXNodeID kId1 = 2;
-  static constexpr ui::AXNodeID kId2 = 3;
-  static constexpr ui::AXNodeID kId3 = 4;
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
-  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
-
-  InitializeWithAndProcessNodes({std::move(static_text1),
-                                 std::move(static_text2),
-                                 std::move(static_text3)});
-
-  a11y::ReadAloudCurrentGranularity current_granularity = GetNextNodes();
-  // Expect that current_granularity contains static_text1
-  // Expect that the indices aren't returned correctly
-  // Expect that GetNextValidPosition fails without inserted the granularity.
-  // The first segment was returned correctly.
-  EXPECT_EQ(current_granularity.node_ids.size(), 1u);
-  EXPECT_TRUE(base::Contains(current_granularity.node_ids, kId1));
-  EXPECT_EQ(controller().GetCurrentTextStartIndex(kId1), -1);
-  EXPECT_EQ(controller().GetCurrentTextEndIndex(kId1), -1);
-
-  ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
-  EXPECT_EQ(new_position->anchor_id(), kId2);
-
-  // Simulate adding to the current granularity.
-  current_granularity.AddText(kId2, 0, sentence2.length(), sentence2);
-
-  // Now get the next position using the correct current granularity. This
-  // simulates calling GetNextNodePosition from within GetNextNodes before
-  // the nodes have been added to the list of processed granularities. This
-  // should correctly return the next node in the tree.
-  new_position = GetNextNodePosition(current_granularity);
-  EXPECT_EQ(new_position->anchor_id(), kId3);
-}
-
-TEST_F(ReadAnythingAppControllerTest,
-       GetNextNodes_AfterResetReadAloudState_StartsOver) {
-  std::u16string sentence1 = u"Where the north wind meets the sea. ";
-  std::u16string sentence2 = u"There's a river full of memory. ";
-  std::u16string sentence3 = u"Sleep my darling safe and sound. ";
-
-  static constexpr ui::AXNodeID kId1 = 2;
-  static constexpr ui::AXNodeID kId2 = 3;
-  static constexpr ui::AXNodeID kId3 = 4;
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
-  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
-
-  InitializeWithAndProcessNodes({std::move(static_text1),
-                                 std::move(static_text2),
-                                 std::move(static_text3)});
-
-  // Get first and second granularity.
-  a11y::ReadAloudCurrentGranularity first_granularity = GetNextNodes();
-  EXPECT_EQ(first_granularity.node_ids.size(), 1u);
-  EXPECT_TRUE(base::Contains(first_granularity.node_ids, kId1));
-  EXPECT_EQ(first_granularity.text, sentence1);
-  a11y::ReadAloudCurrentGranularity next_granularity = GetNextNodes();
-  EXPECT_EQ(next_granularity.node_ids.size(), 1u);
-  EXPECT_TRUE(base::Contains(next_granularity.node_ids, kId2));
-  EXPECT_EQ(next_granularity.text, sentence2);
-
-  // If we init without resetting we should just go to the next sentence
-  controller().InitAXPositionWithNode(kId1);
-  a11y::ReadAloudCurrentGranularity last_granularity = GetNextNodes();
-  EXPECT_EQ(last_granularity.node_ids.size(), 1u);
-  EXPECT_TRUE(base::Contains(last_granularity.node_ids, kId3));
-  EXPECT_EQ(last_granularity.text, sentence3);
-
-  // After reset and then init, we should get the first sentence again.
-  read_aloud_model().ResetReadAloudState();
-  controller().InitAXPositionWithNode(kId1);
-  a11y::ReadAloudCurrentGranularity after_reset = GetNextNodes();
-  EXPECT_EQ(after_reset.node_ids.size(), 1u);
-  EXPECT_TRUE(base::Contains(after_reset.node_ids, kId1));
-  EXPECT_EQ(first_granularity.text, sentence1);
 }
 
 TEST_F(ReadAnythingAppControllerTest,

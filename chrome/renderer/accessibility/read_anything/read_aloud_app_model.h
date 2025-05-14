@@ -12,6 +12,8 @@
 #include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
 #include "ui/accessibility/ax_node_position.h"
 
+class ReadAnythingReadAloudAppModelTest;
+
 // A class that holds state related to Read Aloud for the
 // ReadAnythingAppController for the Read Anything WebUI app.
 class ReadAloudAppModel {
@@ -126,12 +128,6 @@ class ReadAloudAppModel {
   // decremented less than 0.
   void MovePositionToPreviousGranularity();
 
-  // Helper method for GetCurrentText.
-  a11y::ReadAloudCurrentGranularity GetNextNodes(
-      bool is_pdf,
-      bool is_docs,
-      const std::set<ui::AXNodeID>* current_nodes);
-
   // Returns the Read Aloud starting text index for a node. For example,
   // if the entire text of the node should be read by Read Aloud at a particular
   // moment, this will return 0. Returns -1 if the node isn't in the current
@@ -173,6 +169,14 @@ class ReadAloudAppModel {
   void LogSpeechStop(ReadAloudStopSource source);
 
  private:
+  friend ReadAnythingReadAloudAppModelTest;
+
+  // Helper method for GetCurrentText.
+  a11y::ReadAloudCurrentGranularity GetNextNodes(
+      bool is_pdf,
+      bool is_docs,
+      const std::set<ui::AXNodeID>* current_nodes);
+
   // Returns true if the node was previously spoken or we expect to speak it
   // to be spoken once the current run of #GetCurrentText which called
   // #NodeBeenOrWillBeSpoken finishes executing. Because AXPosition
