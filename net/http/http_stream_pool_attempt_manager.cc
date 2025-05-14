@@ -1624,14 +1624,16 @@ void HttpStreamPool::AttemptManager::MaybeCreateSpdyStreamAndNotify(
                                             dns_aliases);
   });
 
+  // This WeakPtr is to ensure `this` is not destroyed while notifying.
+  // TODO(crbug.com/417339803): Remove once we stabilize the implementation.
   base::WeakPtr<AttemptManager> weak_this = weak_ptr_factory_.GetWeakPtr();
-  while (weak_this && !streams.empty()) {
+  while (!streams.empty()) {
     std::unique_ptr<SpdyHttpStream> stream = std::move(streams.back());
     streams.pop_back();
     NotifyStreamReady(std::move(stream), NextProto::kProtoHTTP2);
-    // `this` may be deleted.
+    CHECK(weak_this);
   }
-  CHECK(!weak_this || jobs_.empty());
+  CHECK(jobs_.empty());
 }
 
 void HttpStreamPool::AttemptManager::MaybeCreateQuicStreamAndNotify(
@@ -1653,14 +1655,16 @@ void HttpStreamPool::AttemptManager::MaybeCreateQuicStreamAndNotify(
         quic_session->CreateHandle(stream_key().destination()), dns_aliases);
   });
 
+  // This WeakPtr is to ensure `this` is not destroyed while notifying.
+  // TODO(crbug.com/417339803): Remove once we stabilize the implementation.
   base::WeakPtr<AttemptManager> weak_this = weak_ptr_factory_.GetWeakPtr();
-  while (weak_this && !streams.empty()) {
+  while (!streams.empty()) {
     std::unique_ptr<QuicHttpStream> stream = std::move(streams.back());
     streams.pop_back();
     NotifyStreamReady(std::move(stream), NextProto::kProtoQUIC);
-    // `this` may be deleted.
+    CHECK(weak_this);
   }
-  CHECK(!weak_this || jobs_.empty());
+  CHECK(jobs_.empty());
 }
 
 void HttpStreamPool::AttemptManager::NotifyStreamReady(
