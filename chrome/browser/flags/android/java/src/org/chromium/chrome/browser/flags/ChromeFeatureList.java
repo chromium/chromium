@@ -826,7 +826,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTabStripLayoutOptimization =
             newCachedFlag(
                     TAB_STRIP_LAYOUT_OPTIMIZATION,
-                    /* defaultValue= */ true,
+                    /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sTabStripGroupCollapse =
             newCachedFlag(TAB_STRIP_GROUP_COLLAPSE, /* defaultValue= */ true);
