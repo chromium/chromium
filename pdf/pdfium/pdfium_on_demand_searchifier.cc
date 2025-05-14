@@ -4,6 +4,7 @@
 
 #include "pdf/pdfium/pdfium_on_demand_searchifier.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check.h"
@@ -15,8 +16,10 @@
 namespace {
 
 // A delay to wait between page searchify tasks to give more priority to other
-// PDF tasks.
+// PDF tasks. The longer delay is used when the next task seems to be not urgent
+// and its helpful to reduce CPU load.
 constexpr base::TimeDelta kSearchifyPageDelay = base::Milliseconds(100);
+constexpr base::TimeDelta kSearchifyPageLongDelay = base::Milliseconds(300);
 
 }  // namespace
 
@@ -221,13 +224,16 @@ void PDFiumOnDemandSearchifier::CommitResultsToPage() {
   current_page_ = nullptr;
 
   // Searchify next page.
-  // TODO(crbug.com/402265433): Since OCR is CPU intensive, add heuristic to
-  // avoid using system resources continuously if possible.
+  // If none of the scheduled pages are visible, post the task with more delay
+  // to reduce CPU load.
+  bool long_delay = std::ranges::none_of(pages_queue_, [this](int page_index) {
+    return this->engine_->IsPageVisible(page_index);
+  });
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&PDFiumOnDemandSearchifier::SearchifyNextPage,
                      weak_factory_.GetWeakPtr()),
-      kSearchifyPageDelay);
+      long_delay ? kSearchifyPageLongDelay : kSearchifyPageDelay);
 }
 
 std::optional<PDFiumOnDemandSearchifier::BitmapResult>
