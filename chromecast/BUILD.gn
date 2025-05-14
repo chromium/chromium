@@ -584,13 +584,15 @@ if (!is_fuchsia) {
   # should not be depended on directly; depend on ":chromecast_locales_pak"
   # instead.
   foreach(locale, cast_locales) {
-    repack("_cast_repack_${locale}") {
-      visibility = [ ":chromecast_locales_pak" ]
-      output = "$root_out_dir/chromecast_locales/${locale}.pak"
-      mark_as_data = true
-      sources =
-          [ "$root_gen_dir/chromecast/app/chromecast_settings_${locale}.pak" ]
-      deps = [ "//chromecast/app:chromecast_settings" ]
+    foreach(_gender_suffix, gender_suffixes) {
+      repack("_cast_repack_${locale}${_gender_suffix}") {
+        visibility = [ ":chromecast_locales_pak" ]
+        output =
+            "$root_out_dir/chromecast_locales/${locale}${_gender_suffix}.pak"
+        mark_as_data = true
+        sources = [ "$root_gen_dir/chromecast/app/chromecast_settings_${locale}${_gender_suffix}.pak" ]
+        deps = [ "//chromecast/app:chromecast_settings" ]
+      }
     }
   }
 
@@ -598,7 +600,9 @@ if (!is_fuchsia) {
   group("chromecast_locales_pak") {
     public_deps = []
     foreach(locale, cast_locales) {
-      public_deps += [ ":_cast_repack_${locale}" ]
+      foreach(_gender_suffix, gender_suffixes) {
+        public_deps += [ ":_cast_repack_${locale}${_gender_suffix}" ]
+      }
     }
   }
 }  # !is_fuchsia
@@ -638,8 +642,13 @@ if (is_android) {
     renaming_destinations = []
 
     foreach(locale, cast_locales) {
-      renaming_sources += [ "$root_out_dir/chromecast_locales/${locale}.pak" ]
-      renaming_destinations += [ "stored-locales/${locale}.pak" ]
+      foreach(_gender_suffix, gender_suffixes) {
+        renaming_sources += [
+          "$root_out_dir/chromecast_locales/${locale}${_gender_suffix}.pak",
+        ]
+        renaming_destinations +=
+            [ "stored-locales/${locale}${_gender_suffix}.pak" ]
+      }
     }
 
     deps = [ ":chromecast_locales_pak" ]

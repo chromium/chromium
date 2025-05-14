@@ -93,6 +93,13 @@ action("copy_locales") {
     }
   }
 
+  _locales = []
+  foreach(_locale, remoting_locales) {
+    foreach(_gender_suffix, gender_suffixes) {
+      _locales += [ "${_locale}${_gender_suffix}" ]
+    }
+  }
+
   args = [
            "-p",
            current_os,
@@ -100,7 +107,7 @@ action("copy_locales") {
            rebase_path(root_gen_dir, root_build_dir),
            "-x",
            rebase_path(root_out_dir, root_build_dir),
-         ] + remoting_locales
+         ] + _locales
 
   deps = [ ":strings" ]
 }
