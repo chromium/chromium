@@ -6,16 +6,12 @@
 
 namespace blink {
 
-FlexLineBreakerResult BreakFlexItemsIntoLines(
-    base::span<FlexItem> all_items,
-    const LayoutUnit line_break_size,
-    const LayoutUnit gap_between_items,
-    const bool is_multi_line,
-    const bool is_balanced) {
-  if (all_items.empty()) {
-    return FlexLineBreakerResult();
-  }
+namespace {
 
+template <typename ShouldBreakFunc>
+FlexLineBreakerResult BreakIntoLines(base::span<FlexItem> all_items,
+                                     const LayoutUnit gap_between_items,
+                                     const ShouldBreakFunc should_break) {
   HeapVector<InitialFlexLine, 1> flex_lines;
   LayoutUnit max_sum_hypothetical_main_size;
 
@@ -27,10 +23,8 @@ FlexLineBreakerResult BreakFlexItemsIntoLines(
     wtf_size_t count = 0u;
 
     for (auto& item : items) {
-      if (is_multi_line && count &&
-          sum_hypothetical_main_size +
-                  item.HypotheticalMainAxisMarginBoxSize() >
-              line_break_size) {
+      if (should_break(count, sum_hypothetical_main_size +
+                                  item.HypotheticalMainAxisMarginBoxSize())) {
         break;
       }
 
@@ -52,6 +46,28 @@ FlexLineBreakerResult BreakFlexItemsIntoLines(
   }
 
   return {flex_lines, max_sum_hypothetical_main_size};
+}
+
+}  // namespace
+
+FlexLineBreakerResult BalanceBreakFlexItemsIntoLines(
+    base::span<FlexItem> all_items,
+    const LayoutUnit line_break_size,
+    const LayoutUnit gap_between_items) {
+  return GreedyBreakFlexItemsIntoLines(all_items, line_break_size,
+                                       gap_between_items, true);
+}
+
+FlexLineBreakerResult GreedyBreakFlexItemsIntoLines(
+    base::span<FlexItem> all_items,
+    const LayoutUnit line_break_size,
+    const LayoutUnit gap_between_items,
+    const bool is_multi_line) {
+  // Greedily break if the current line-size exceeds the break-size.
+  auto should_break = [&](wtf_size_t count, LayoutUnit line_size) {
+    return is_multi_line && count && line_size > line_break_size;
+  };
+  return BreakIntoLines(all_items, gap_between_items, should_break);
 }
 
 }  // namespace blink

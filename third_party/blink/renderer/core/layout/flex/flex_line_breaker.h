@@ -40,11 +40,34 @@ struct FlexLineBreakerResult {
   LayoutUnit max_sum_hypothetical_main_size;
 };
 
-FlexLineBreakerResult BreakFlexItemsIntoLines(base::span<FlexItem> all_items,
-                                              LayoutUnit line_break_size,
-                                              LayoutUnit gap_between_items,
-                                              bool is_multi_line,
-                                              bool is_balanced);
+FlexLineBreakerResult BalanceBreakFlexItemsIntoLines(
+    base::span<FlexItem> all_items,
+    LayoutUnit line_break_size,
+    LayoutUnit gap_between_items);
+FlexLineBreakerResult GreedyBreakFlexItemsIntoLines(
+    base::span<FlexItem> all_items,
+    LayoutUnit line_break_size,
+    LayoutUnit gap_between_items,
+    bool is_multi_line);
+
+inline FlexLineBreakerResult BreakFlexItemsIntoLines(
+    base::span<FlexItem> all_items,
+    LayoutUnit line_break_size,
+    LayoutUnit gap_between_items,
+    bool is_multi_line,
+    bool is_balanced) {
+  if (all_items.empty()) {
+    return FlexLineBreakerResult();
+  }
+
+  if (is_balanced) {
+    return BalanceBreakFlexItemsIntoLines(all_items, line_break_size,
+                                          gap_between_items);
+  }
+
+  return GreedyBreakFlexItemsIntoLines(all_items, line_break_size,
+                                       gap_between_items, is_multi_line);
+}
 
 }  // namespace blink
 
