@@ -703,8 +703,6 @@ crbug.com/332743717 conformance/uniforms/uniform-location.html [ Failure ]
 crbug.com/1230619 conformance/offscreencanvas/methods-worker.html [ Failure ]
 crbug.com/1230619 conformance/offscreencanvas/methods.html [ Failure ]
 
-# Flaky Failure on Mac ARM
-crbug.com/412679364 [ mac mac-arm64 ] conformance/textures/canvas/tex-2d-alpha-alpha-unsigned_byte.html [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
