@@ -51,9 +51,11 @@
             </settings-section>
           </template>
 </if>
-          <settings-section page-title="[[aiPageTitle_]]" section="ai">
-            <settings-ai-page prefs="{{prefs}}"></settings-ai-page>
-          </settings-section>
+          <template is="dom-if" if="[[showAiPageAiFeatureSection_]]" restamp>
+            <settings-section page-title="[[aiPageTitle_]]" section="ai">
+              <settings-ai-page prefs="{{prefs}}"></settings-ai-page>
+            </settings-section>
+          </template>
         </template>
         <template is="dom-if" if="[[showPage_(pageVisibility.autofill)]]"
             restamp>
