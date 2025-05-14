@@ -50,7 +50,7 @@ public class TabListEditorCloseArchivedTabsAction extends TabListEditorAction {
 
     @Override
     public boolean performAction(List<Tab> tabs, List<String> tabGroupSyncIds) {
-        mArchiveDelegate.closeArchivedTabs(tabs);
+        mArchiveDelegate.closeArchivedTabs(tabs, tabGroupSyncIds);
         return true;
     }
 
