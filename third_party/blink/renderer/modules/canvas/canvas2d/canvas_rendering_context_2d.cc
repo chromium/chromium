@@ -745,24 +745,20 @@ void CanvasRenderingContext2D::DrawElementInternal(
 
   cc::PaintRecord paint_record = builder.EndRecording(property_tree_state);
 
-  cc::PaintImage paint_image =
-      PaintImageBuilder::WithDefault()
-          .set_id(PaintImage::GetNextId())
-          .set_paint_record(std::move(paint_record), box_rect,
-                            PaintImage::GetNextId())
-          .TakePaintImage();
   WillDraw(SkIRect::MakeXYWH(0, 0, Width(), Height()),
            CanvasPerformanceMonitor::DrawType::kOther);
 
   cc::PaintCanvas* canvas = GetOrCreatePaintCanvas();
+  canvas->translate(x, y);
   if (dwidth && dheight) {
     canvas->save();
-    canvas->translate(x, y);
     canvas->scale(*dwidth / box_rect.width(), *dheight / box_rect.height());
-    canvas->translate(-x, -y);
   }
 
-  canvas->drawImage(paint_image, x, y);
+  canvas->drawPicture(
+      paint_record,
+      // use a save at the beginning of the record to keep transforms local:
+      true);
 
   if (dwidth && dheight) {
     canvas->restore();
