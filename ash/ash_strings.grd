@@ -6581,6 +6581,12 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_VIDEO_RECORD" desc="The capture label message which shows in the middle of the screen when in region video record mode.">
         Drag to select an area to record
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_IMAGE_CAPTURE_KEYBOARD_NAVIGATION" desc="The capture label message which shows in the middle of the screen when in region image capture mode. Includes keyboard navigation instructions.">
+        Drag or press Space to select an area to capture
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_VIDEO_RECORD_KEYBOARD_NAVIGATION" desc="The capture label message which shows in the middle of the screen when in region video record mode. Includes keyboard navigation instructions.">
+        Drag or press Space to select an area to record
+      </message>
       <message name="IDS_ASH_SUNFISH_CAPTURE_LABEL" desc="The capture label message which shows in the middle of the screen when in sunfish session." translateable="false">
         Drag to select an area to search
       </message>

@@ -652,8 +652,8 @@ const std::u16string CaptureModeBehavior::GetCaptureLabelRegionText() const {
   DCHECK(controller->user_capture_region().IsEmpty());
   return l10n_util::GetStringUTF16(
       controller->type() == CaptureModeType::kImage
-          ? IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_IMAGE_CAPTURE
-          : IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_VIDEO_RECORD);
+          ? IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_IMAGE_CAPTURE_KEYBOARD_NAVIGATION
+          : IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_VIDEO_RECORD_KEYBOARD_NAVIGATION);
 }
 
 const std::u16string CaptureModeBehavior::GetActionButtonContainerTitle()
