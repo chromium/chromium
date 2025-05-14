@@ -43,17 +43,13 @@ export class PumpkinParseStrategy extends ParseStrategy {
   private locale_: PumpkinConstants.PumpkinLocale|null = null;
   private requestedPumpkinInstall_ = false;
   private onPumpkinTaggerReadyChangedForTesting_: VoidFunction|null = null;
+  private offscreenMessageListenerRegistered_ = false;
 
   private init_(): void {
     this.refreshLocale_();
     if (!this.locale_) {
       return;
     }
-
-    chrome.runtime.onMessage.addListener(
-        (message: any|undefined, _sender: chrome.runtime.MessageSender,
-         _sendResponse: (value: any) => void) =>
-            this.handleMessageFromOffscreen_(message));
 
     this.requestedPumpkinInstall_ = true;
     chrome.accessibilityPrivate.installPumpkinForDictation(data => {
@@ -83,6 +79,17 @@ export class PumpkinParseStrategy extends ParseStrategy {
     // Create SandboxedPumpkinTagger.
     this.setPumpkinTaggerReady_(false);
     this.pumpkinData_ = data;
+
+    // Register the offscreen document's message listener when
+    // pumpkin data is available and we are ready to communicate with
+    // the tagger worker via the offscreen document.
+    if (!this.offscreenMessageListenerRegistered_) {
+      chrome.runtime.onMessage.addListener(
+          (message: any|undefined, _sender: chrome.runtime.MessageSender,
+           _sendResponse: (value: any) => void) =>
+              this.handleMessageFromOffscreen_(message));
+      this.offscreenMessageListenerRegistered_ = true;
+    }
 
     this.sendToOffscreen_(OffscreenCommandType.DICTATION_PUMPKIN_INSTALL);
   }
