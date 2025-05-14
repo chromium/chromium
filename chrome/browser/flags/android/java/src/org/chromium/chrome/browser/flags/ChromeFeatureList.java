@@ -1399,6 +1399,15 @@ public abstract class ChromeFeatureList {
                     14400); // 4 hours
     public static final BooleanCachedFeatureParam sTabStateFlatBufferMigrateStaleTabs =
             newBooleanCachedFeatureParam(TAB_STATE_FLAT_BUFFER, "migrate_stale_tabs", true);
+
+    public static final StringCachedFeatureParam sTabStripLayoutOptimizationOemDenylist =
+            newStringCachedFeatureParam(
+                    TAB_STRIP_LAYOUT_OPTIMIZATION, "custom_headers_oem_denylist", "");
+
+    public static final BooleanCachedFeatureParam sTabStripLayoutOptimizationOnExternalDisplay =
+            newBooleanCachedFeatureParam(
+                    TAB_STRIP_LAYOUT_OPTIMIZATION, "enable_on_external_display", false);
+
     public static final IntCachedFeatureParam
             sTabWindowManagerReportIndicesMismatchTimeDiffThresholdMs =
                     newIntCachedFeatureParam(
@@ -1480,6 +1489,8 @@ public abstract class ChromeFeatureList {
                     sStartSurfaceReturnTimeTabletSecs,
                     sTabGroupListContainment,
                     sTabStateFlatBufferMigrateStaleTabs,
+                    sTabStripLayoutOptimizationOemDenylist,
+                    sTabStripLayoutOptimizationOnExternalDisplay,
                     sTabWindowManagerReportIndicesMismatchTimeDiffThresholdMs,
                     sUseChimeAndroidSdkAlwaysRegister,
                     sWebApkMinShellApkVersionValue);

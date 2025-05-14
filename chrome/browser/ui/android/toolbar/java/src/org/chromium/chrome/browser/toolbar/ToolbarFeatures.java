@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+import android.text.TextUtils;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
@@ -13,9 +15,15 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+
 /** Utility class for toolbar code interacting with features and params. */
 @NullMarked
 public final class ToolbarFeatures {
+    private static @Nullable Boolean sHeaderCustomizationDisallowedForOem;
 
     private static @Nullable Boolean sTabStripLayoutOptimizationEnabledForTesting;
 
@@ -32,13 +40,39 @@ public final class ToolbarFeatures {
     }
 
     /** Returns if we are using optimized window layout for tab strip. */
-    public static boolean isTabStripWindowLayoutOptimizationEnabled(boolean isTablet) {
+    public static boolean isTabStripWindowLayoutOptimizationEnabled(
+            boolean isTablet, boolean isDefaultDisplay) {
         if (sTabStripLayoutOptimizationEnabledForTesting != null) {
             return sTabStripLayoutOptimizationEnabledForTesting;
         }
         if (DeviceInfo.isAutomotive()) {
             return false;
         }
+
+        // Determine if app header customization will be supported on an external display.
+        boolean showCustomHeadersOnExternalDisplay =
+                ChromeFeatureList.sTabStripLayoutOptimizationOnExternalDisplay.getValue();
+        if (!showCustomHeadersOnExternalDisplay && !isDefaultDisplay) {
+            return false;
+        }
+
+        // Determine if app header customization will be ignored on specific OEMs.
+        if (sHeaderCustomizationDisallowedForOem == null) {
+            Set<String> customHeadersOemDenylist = new HashSet<>();
+            String denylistStr =
+                    ChromeFeatureList.sTabStripLayoutOptimizationOemDenylist.getDefaultValue();
+            if (!TextUtils.isEmpty(denylistStr)) {
+                Collections.addAll(customHeadersOemDenylist, denylistStr.split(","));
+            }
+            sHeaderCustomizationDisallowedForOem =
+                    !customHeadersOemDenylist.isEmpty()
+                            && customHeadersOemDenylist.contains(
+                                    Build.MANUFACTURER.toLowerCase(Locale.US));
+        }
+        if (sHeaderCustomizationDisallowedForOem) {
+            return false;
+        }
+
         return ChromeFeatureList.sTabStripLayoutOptimization.isEnabled()
                 && isTablet
                 && VERSION.SDK_INT >= VERSION_CODES.R;

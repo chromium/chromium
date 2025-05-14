@@ -216,6 +216,7 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
@@ -1393,7 +1394,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private void initAppHeaderCoordinator(
             Bundle savedInstanceState, EdgeToEdgeStateProvider edgeToEdgeStateProvider) {
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
-        if (!ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(isTablet)) {
+        if (!ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(
+                isTablet, DisplayUtil.isContextInDefaultDisplay(mActivity))) {
             return;
         }
 

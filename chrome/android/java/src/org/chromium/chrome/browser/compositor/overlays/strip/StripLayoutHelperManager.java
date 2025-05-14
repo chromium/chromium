@@ -101,6 +101,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.interpolators.Interpolators;
@@ -468,7 +469,8 @@ public class StripLayoutHelperManager
                 new AreaMotionEventFilter(context, mTabStripEventHandler, null, false, false);
 
         mIsLayoutOptimizationsEnabled =
-                ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(true);
+                ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(
+                        /* isTablet= */ true, DisplayUtil.isContextInDefaultDisplay(mContext));
         mScrollableStripHeight = res.getDimension(R.dimen.tab_strip_height) / mDensity;
         mHeight =
                 mIsLayoutOptimizationsEnabled

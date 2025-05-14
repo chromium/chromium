@@ -30,6 +30,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
@@ -42,6 +43,7 @@ import org.chromium.ui.CaptionBarInsetsRectProvider;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
 import org.chromium.ui.InsetsRectProvider;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.TokenHolder;
 
@@ -200,7 +202,12 @@ public class AppHeaderCoordinator
     }
 
     private void onInsetsRectsUpdated(Rect widestUnoccludedRect) {
-        mHeuristicResult = checkIsInDesktopWindow(mCaptionBarRectProvider, mHeuristicResult);
+        // mActivity is only set to null in destroy().
+        boolean isOnExternalDisplay =
+                DisplayUtil.isContextInDefaultDisplay(assumeNonNull(mActivity));
+        mHeuristicResult =
+                checkIsInDesktopWindow(
+                        mCaptionBarRectProvider, mHeuristicResult, isOnExternalDisplay);
         var isInDesktopWindow = mHeuristicResult == DesktopWindowHeuristicResult.IN_DESKTOP_WINDOW;
 
         // Avoid determining the mode when there are no window insets, which may be the case in the
@@ -209,10 +216,8 @@ public class AppHeaderCoordinator
         assert mInsetObserver.getLastRawWindowInsets() != null
                 : "Attempt to read the insets too early.";
         if (mInsetObserver.getLastRawWindowInsets().hasInsets()) {
-            // mActivity is only set to null in destroy().
             mWindowingMode =
-                    AppHeaderUtils.getWindowingMode(
-                            assumeNonNull(mActivity), isInDesktopWindow, mWindowingMode);
+                    AppHeaderUtils.getWindowingMode(mActivity, isInDesktopWindow, mWindowingMode);
         }
 
         var appHeaderState =
@@ -254,6 +259,10 @@ public class AppHeaderCoordinator
         }
     }
 
+    private static boolean shouldAllowCustomizationOnNonDefaultDisplay() {
+        return ChromeFeatureList.sTabStripLayoutOptimizationOnExternalDisplay.getValue();
+    }
+
     /**
      * Check if the desktop windowing mode is enabled by checking all the criteria:
      *
@@ -261,6 +270,7 @@ public class AppHeaderCoordinator
      *   <li>Caption bar has insets.top > 0;
      *   <li>Widest unoccluded rect in caption bar has space available to draw the tab strip;
      *   <li>Widest unoccluded rect in captionBar insets is connected to the bottom;
+     *   <li>Header customization is not disallowed;
      * </ol>
      *
      * This method is marked as static, in order to ensure it does not change / read any state from
@@ -268,10 +278,13 @@ public class AppHeaderCoordinator
      */
     private static @DesktopWindowHeuristicResult int checkIsInDesktopWindow(
             InsetsRectProvider insetsRectProvider,
-            @DesktopWindowHeuristicResult int currentResult) {
-        @DesktopWindowHeuristicResult int newResult;
+            @DesktopWindowHeuristicResult int currentResult,
+            boolean isOnExternalDisplay) {
+        @DesktopWindowHeuristicResult int newResult = DesktopWindowHeuristicResult.UNKNOWN;
 
         Insets captionBarInset = insetsRectProvider.getCachedInset();
+        boolean allowHeaderCustomization =
+                shouldAllowCustomizationOnNonDefaultDisplay() || !isOnExternalDisplay;
 
         if (insetsRectProvider.getWidestUnoccludedRect().isEmpty()) {
             newResult = DesktopWindowHeuristicResult.WIDEST_UNOCCLUDED_RECT_EMPTY;
@@ -279,10 +292,14 @@ public class AppHeaderCoordinator
             newResult = DesktopWindowHeuristicResult.CAPTION_BAR_TOP_INSETS_ABSENT;
         } else if (insetsRectProvider.getWidestUnoccludedRect().bottom != captionBarInset.top) {
             newResult = DesktopWindowHeuristicResult.CAPTION_BAR_BOUNDING_RECT_INVALID_HEIGHT;
+        } else if (!allowHeaderCustomization) {
+            Log.d(
+                    TAG,
+                    "Not logging heuristic result because app header customization is disallowed.");
         } else {
             newResult = DesktopWindowHeuristicResult.IN_DESKTOP_WINDOW;
         }
-        if (newResult != currentResult) {
+        if (newResult != currentResult && newResult != DesktopWindowHeuristicResult.UNKNOWN) {
             Log.i(TAG, "Recording desktop windowing heuristic result: " + newResult);
             // Only record histogram when heuristics result has changed.
             AppHeaderUtils.recordDesktopWindowHeuristicResult(newResult);

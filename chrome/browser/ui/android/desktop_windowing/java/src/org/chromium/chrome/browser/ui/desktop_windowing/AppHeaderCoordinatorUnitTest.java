@@ -21,6 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderCoordinator.INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -40,13 +41,18 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderCoordinatorUnitTest.ShadowDisplayUtil;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.DesktopWindowHeuristicResult;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.WindowingMode;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
@@ -56,14 +62,29 @@ import org.chromium.ui.CaptionBarInsetsRectProvider;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.InsetsRectProvider;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.display.DisplayUtil;
 
 import java.util.List;
 
 /** Unit test for {@link AppHeaderCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = 30)
+@Config(sdk = 30, shadows = ShadowDisplayUtil.class)
 @LooperMode(Mode.PAUSED)
 public class AppHeaderCoordinatorUnitTest {
+    @Implements(DisplayUtil.class)
+    static class ShadowDisplayUtil {
+        private static boolean sIsOnExternalDisplay;
+
+        private static void setOnExternalDisplay(boolean isOnExternalDisplay) {
+            sIsOnExternalDisplay = isOnExternalDisplay;
+        }
+
+        @Implementation
+        public static boolean isContextInDefaultDisplay(Context context) {
+            return sIsOnExternalDisplay;
+        }
+    }
+
     private static final int WINDOW_WIDTH = 600;
     private static final int WINDOW_HEIGHT = 800;
     private static final Rect WINDOW_RECT = new Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -99,6 +120,7 @@ public class AppHeaderCoordinatorUnitTest {
 
     @Before
     public void setup() {
+        ShadowDisplayUtil.setOnExternalDisplay(false);
         mActivityScenarioRule.getScenario().onActivity(activity -> mSpyActivity = spy(activity));
         mEdgeToEdgeStateProvider = new EdgeToEdgeStateProvider(mSpyActivity.getWindow());
         mSpyRootView = spy(mSpyActivity.getWindow().getDecorView());
@@ -173,6 +195,28 @@ public class AppHeaderCoordinatorUnitTest {
                 /* error= */ "Desktop windowing should not be enabled when widest unoccluded rect"
                         + " is empty.");
         watcher.assertExpected();
+    }
+
+    @Test
+    public void notEnabledOnExternalDisplayWhenDisallowed() {
+        ShadowDisplayUtil.setOnExternalDisplay(true);
+        updateFeatureParams(/* enableOnExternalDisplay= */ false);
+        setupWithLeftAndRightBoundingRect();
+        notifyInsetsRectObserver();
+
+        verifyDesktopWindowingDisabled(
+                /* error= */ "Desktop windowing should not be enabled on an external display when"
+                        + " it is disallowed.");
+    }
+
+    @Test
+    public void enabledOnExternalDisplayWhenAllowed() {
+        ShadowDisplayUtil.setOnExternalDisplay(true);
+        updateFeatureParams(/* enableOnExternalDisplay= */ true);
+        setupWithLeftAndRightBoundingRect();
+        notifyInsetsRectObserver();
+
+        verifyDesktopWindowingEnabled();
     }
 
     @Test
@@ -691,5 +735,15 @@ public class AppHeaderCoordinatorUnitTest {
                     WindowInsetsCompat.Type.navigationBars(), Insets.of(0, 0, 0, navBarInset));
         }
         return mAppHeaderCoordinator.onApplyWindowInsets(mSpyRootView, windowInsetsBuilder.build());
+    }
+
+    private void updateFeatureParams(boolean enableOnExternalDisplay) {
+        FeatureOverrides.Builder overrides =
+                FeatureOverrides.newBuilder()
+                        .enable(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
+                        .param(
+                                "enable_on_external_display",
+                                enableOnExternalDisplay ? "true" : "false");
+        overrides.apply();
     }
 }

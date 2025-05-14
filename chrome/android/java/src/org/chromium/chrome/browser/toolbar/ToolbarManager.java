@@ -199,6 +199,7 @@ import org.chromium.ui.base.BackGestureEventSwipeEdge;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.ui.widget.ChromeImageButton;
@@ -861,10 +862,12 @@ public class ToolbarManager
         mTopUiThemeColorProvider.addThemeColorObserver(this);
 
         final boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
+        final boolean isDefaultDisplay = DisplayUtil.isContextInDefaultDisplay(mActivity);
         mAppThemeColorProvider =
                 new AppThemeColorProvider(
                         /* context= */ mActivity,
-                        ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(isTablet)
+                        ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(
+                                        isTablet, isDefaultDisplay)
                                 ? mActivityLifecycleDispatcher
                                 : null,
                         mDesktopWindowStateManager);

@@ -17,6 +17,7 @@ import android.os.Build.VERSION_CODES;
 import android.util.DisplayMetrics;
 import android.util.Pair;
 import android.util.TypedValue;
+import android.view.Display;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 
@@ -374,5 +375,17 @@ public abstract class DisplayUtil {
         int bottomPx = Math.round(globalCoordinatesDp.bottom * displayDensity);
 
         return Pair.create(targetDisplayId, new Rect(leftPx, topPx, rightPx, bottomPx));
+    }
+
+    /**
+     * Determine whether the given context is associated with the default display.
+     *
+     * @param context The context to determine display state.
+     * @return {@code true} if the context is associated with the default display, {@code false}
+     *     otherwise.
+     */
+    public static boolean isContextInDefaultDisplay(Context context) {
+        Display display = DisplayAndroidManager.getDefaultDisplayForContext(context);
+        return display.getDisplayId() == Display.DEFAULT_DISPLAY;
     }
 }
