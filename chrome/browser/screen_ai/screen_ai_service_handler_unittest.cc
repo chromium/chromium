@@ -4,7 +4,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/screen_ai/screen_ai_service_handler.h"
+#include "chrome/browser/screen_ai/screen_ai_service_handler_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace screen_ai {
@@ -13,11 +13,28 @@ constexpr char kIsSuspendedMetric[] = "Accessibility.OCR.Service.IsSuspended";
 constexpr char kCrashCountBeforeResumeMetric[] =
     "Accessibility.OCR.Service.CrashCountBeforeResume";
 
-// TODO(crbug.com/408174918): Rename this file as the functionality is now moved
-// `to screen_ai_service_handler.h/cc`.
+class TestScreenAIServiceHandler : public ScreenAIServiceHandlerBase {
+ public:
+  std::string GetServiceName() const override { return "OCR"; }
+
+  void LoadModelFilesAndInitialize(
+      base::TimeTicks request_start_time) override {
+    service_connected_ = true;
+  }
+
+  bool IsConnectionBound() const override { return service_connected_; }
+  bool IsServiceEnabled() const override { return true; }
+  void ResetConnection() override { service_connected_ = false; }
+  void OnDisconnected(bool crashed) override { service_connected_ = false; }
+  void PerformPrelaunchSteps() override {}
+
+ private:
+  bool service_connected_ = false;
+};
+
 class ScreenAIServiceShutdownHandlerTest : public ::testing::Test {
  public:
-  ScreenAIServiceShutdownHandlerTest() : handler(true) {}
+  ScreenAIServiceShutdownHandlerTest() : handler() {}
 
   bool IsSuspended() { return handler.GetAndRecordSuspendedState(); }
   void DisconnectService() { handler.OnScreenAIServiceDisconnected(); }
@@ -36,7 +53,7 @@ class ScreenAIServiceShutdownHandlerTest : public ::testing::Test {
   }
 
  protected:
-  ScreenAIServiceHandler handler;
+  TestScreenAIServiceHandler handler;
   base::HistogramTester histogram_tester_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

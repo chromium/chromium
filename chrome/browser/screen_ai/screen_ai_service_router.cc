@@ -74,17 +74,18 @@ base::TimeDelta ScreenAIServiceRouter::SuggestedWaitTimeBeforeReAttempt(
 }
 // LINT.ThenChange(//chrome/browser/ash/app_list/search/local_image_search/image_annotation_worker.cc:SuggestedWaitTimeBeforeReAttempt)
 
-ScreenAIServiceHandler* ScreenAIServiceRouter::GetHandler(Service service) {
+ScreenAIServiceHandlerBase* ScreenAIServiceRouter::GetHandler(Service service) {
   switch (service) {
     case Service::kMainContentExtraction:
       if (!mce_handler_) {
-        mce_handler_ = std::make_unique<ScreenAIServiceHandler>(false);
+        mce_handler_ =
+            std::make_unique<ScreenAIServiceHandlerMainContentExtraction>();
       }
       return mce_handler_.get();
 
     case Service::kOCR:
       if (!ocr_handler_) {
-        ocr_handler_ = std::make_unique<ScreenAIServiceHandler>(true);
+        ocr_handler_ = std::make_unique<ScreenAIServiceHandlerOCR>();
       }
       return ocr_handler_.get();
   }
@@ -148,13 +149,16 @@ void ScreenAIServiceRouter::StateChanged(ScreenAIInstallState::State state) {
 
 void ScreenAIServiceRouter::BindScreenAIAnnotator(
     mojo::PendingReceiver<mojom::ScreenAIAnnotator> receiver) {
-  GetHandler(Service::kOCR)->BindScreenAIAnnotator(std::move(receiver));
+  // Ensure handler exists.
+  GetHandler(Service::kOCR);
+  ocr_handler_->BindService(std::move(receiver));
 }
 
 void ScreenAIServiceRouter::BindMainContentExtractor(
     mojo::PendingReceiver<mojom::Screen2xMainContentExtractor> receiver) {
-  GetHandler(Service::kMainContentExtraction)
-      ->BindMainContentExtractor(std::move(receiver));
+  // Ensure handler exists.
+  GetHandler(Service::kMainContentExtraction);
+  mce_handler_->BindService(std::move(receiver));
 }
 
 bool ScreenAIServiceRouter::IsConnectionBoundForTesting(Service service) {

@@ -10,13 +10,16 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
-#include "chrome/browser/screen_ai/screen_ai_service_handler.h"
+#include "chrome/browser/screen_ai/screen_ai_service_handler_main_content_extraction.h"
+#include "chrome/browser/screen_ai/screen_ai_service_handler_ocr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 
 namespace screen_ai {
 
+// TODO(crbug.com/417378344): Split this class and its factory to two separate
+// classes for OCR and main content extraction.
 class ScreenAIServiceRouter : public KeyedService,
                               ScreenAIInstallState::Observer {
  public:
@@ -58,10 +61,10 @@ class ScreenAIServiceRouter : public KeyedService,
 
   ScreenAIServiceRouter();
 
-  ScreenAIServiceHandler* GetHandler(Service service);
+  ScreenAIServiceHandlerBase* GetHandler(Service service);
 
-  std::unique_ptr<ScreenAIServiceHandler> ocr_handler_;
-  std::unique_ptr<ScreenAIServiceHandler> mce_handler_;
+  std::unique_ptr<ScreenAIServiceHandlerOCR> ocr_handler_;
+  std::unique_ptr<ScreenAIServiceHandlerMainContentExtraction> mce_handler_;
 
   // Observes changes in Screen AI component download state.
   base::ScopedObservation<ScreenAIInstallState, ScreenAIInstallState::Observer>
