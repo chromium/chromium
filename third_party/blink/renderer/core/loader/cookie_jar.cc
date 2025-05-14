@@ -7,9 +7,12 @@
 #include <cstdint>
 
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/base/shared_memory_version.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-forward.h"
@@ -51,6 +54,24 @@ bool ContainsTruncatingChar(UChar c) {
 }
 
 }  // namespace
+
+// Controls whether we apply an artificial delay to priming the CookieJar access
+// for all APIs. There are 2 parameters for each API that influence how long the
+// delay is, `factor` and `offset`. If the actual time taken is `elapsed` then
+// the delay will be `elapsed * factor + offset`.
+BASE_FEATURE(kCookieJarAblation,
+             "CookieJarAblation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(double,
+                   kCookieJarAblationDelayFactor,
+                   &kCookieJarAblation,
+                   "factor",
+                   0.0);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kCookieJarAblationDelayOffset,
+                   &kCookieJarAblation,
+                   "offset",
+                   base::Milliseconds(0));
 
 CookieJar::CookieJar(blink::Document* document)
     : backend_(document->GetExecutionContext()), document_(document) {}
@@ -103,7 +124,19 @@ void CookieJar::SetCookie(const String& value) {
                         std::move(response));
   }
   last_operation_was_set_ = true;
-  base::UmaHistogramTimes("Blink.SetCookieTime", timer.Elapsed());
+
+  base::TimeDelta elapsed = timer.Elapsed();
+  base::UmaHistogramTimes("Blink.SetCookieTime", elapsed);
+
+  if (base::FeatureList::IsEnabled(kCookieJarAblation)) {
+    base::TimeDelta delay = elapsed * kCookieJarAblationDelayFactor.Get() +
+                            kCookieJarAblationDelayOffset.Get();
+    base::UmaHistogramMediumTimes("Blink.SetCookieTime.AblationDelay", delay);
+    if (delay.is_positive()) {
+      base::PlatformThread::Sleep(delay);
+    }
+  }
+
   if (is_first_operation_) {
     LogFirstCookieRequest(FirstCookieRequest::kFirstOperationWasSet);
   }
@@ -185,7 +218,19 @@ String CookieJar::Cookies() {
   if (new_mapped_region.IsValid()) {
     shared_memory_version_client_.emplace(std::move(new_mapped_region));
   }
-  base::UmaHistogramTimes("Blink.CookiesTime", timer.Elapsed());
+
+  base::TimeDelta elapsed = timer.Elapsed();
+  base::UmaHistogramTimes("Blink.CookiesTime", elapsed);
+
+  if (base::FeatureList::IsEnabled(kCookieJarAblation)) {
+    base::TimeDelta delay = elapsed * kCookieJarAblationDelayFactor.Get() +
+                            kCookieJarAblationDelayOffset.Get();
+    base::UmaHistogramMediumTimes("Blink.CookiesTime.AblationDelay", delay);
+    if (delay.is_positive()) {
+      base::PlatformThread::Sleep(delay);
+    }
+  }
+
   UpdateCacheAfterGetRequest(cookie_url, value, new_version);
 
   last_operation_was_set_ = false;
