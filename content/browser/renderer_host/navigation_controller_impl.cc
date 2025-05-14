@@ -2618,7 +2618,14 @@ void NavigationControllerImpl::DiscardPendingEntry(bool was_failure) {
   // when the tab is being destroyed for shutdown, since it won't return to
   // NavigateToEntry in that case.)  http://crbug.com/347742.
   CHECK(!in_navigate_to_pending_entry_ || frame_tree_->IsBeingDestroyed());
-  if (can_be_in_navigate_to_pending_entry_ &&
+  // If `was_failure` is true, it means that the pending entry was discarded by
+  // a `PendingEntryRefDeleted` call within `OnRequestFailedInternal`, in
+  // response to a navigation request failure. This case is not at risk for
+  // re-entrancy when `can_be_in_navigate_to_pending_entry_` is true, because
+  // that code also creates another `PendingEntryRef` that would prevent the
+  // `DiscardPendingEntry` call if the PostTask were skipped. See
+  // https://crbug.com/411855273.
+  if (!was_failure && can_be_in_navigate_to_pending_entry_ &&
       !frame_tree_->IsBeingDestroyed()) {
     CheckPotentialNavigationReentrancy();
   }
@@ -5035,11 +5042,7 @@ void NavigationControllerImpl::DidChangeReferrerPolicy(
 }
 
 void NavigationControllerImpl::CheckPotentialNavigationReentrancy() {
-  // DumpWithoutCrashing will be reported just once in one Chrome session since
-  // we want to avoid too many reports.
-  static bool has_dumped_without_crashing = false;
-  if (can_be_in_navigate_to_pending_entry_ && !has_dumped_without_crashing) {
-    has_dumped_without_crashing = true;
+  if (can_be_in_navigate_to_pending_entry_) {
     // This DumpWithoutCrashing is an investigation code for
     // https://crbug.com/396998476.
     base::debug::DumpWithoutCrashing();

@@ -2548,6 +2548,79 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithLegacyBeforeUnloadBrowserTest,
       "Navigation.StartAdjustment.LegacyPostTask.Percentage", 0);
 }
 
+class AvoidUnnecessaryBeforeUnloadCheckSyncBrowserTest
+    : public RenderFrameHostImplBrowserTest,
+      public testing::WithParamInterface<std::string> {
+ public:
+  AvoidUnnecessaryBeforeUnloadCheckSyncBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kAvoidUnnecessaryBeforeUnloadCheckSync,
+          {{features::kAvoidUnnecessaryBeforeUnloadCheckSyncMode.name,
+            GetMode()}}}},
+        /*disabled_features=*/{});
+  }
+
+  const std::string& GetMode() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AvoidUnnecessaryBeforeUnloadCheckSyncBrowserTest,
+    ::testing::Values("DumpWithoutCrashing",
+                      "WithSendBeforeUnload",
+                      "WithoutSendBeforeUnload"),
+    [](const testing::TestParamInfo<
+        AvoidUnnecessaryBeforeUnloadCheckSyncBrowserTest::ParamType>& info) {
+      return info.param;
+    });
+
+// Regression test for https://crbug.com/411855273.
+// Confirms that the back navigation in the following scenario must not report
+// DumpWithoutCrashing and must not crash with the navigation re-entrancy issue.
+IN_PROC_BROWSER_TEST_P(AvoidUnnecessaryBeforeUnloadCheckSyncBrowserTest,
+                       PotentialReentrancyOnFailedSubframeBackNavigation) {
+  const base::HistogramTester histogram_tester;
+
+  // Load a page with a CSP policy that causes all subframe loads to fail.
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            GURL("data:text/html,"
+                                 "<html><head>"
+                                 "<meta http-equiv=\"Content-Security-Policy\" "
+                                 "content=\"frame-src 'none'\">"
+                                 "</head><body></body></html>")));
+
+  // Create an iframe, and navigate to title1.html in iframe. This subframe load
+  // fails the CSP policy above and ends up in OnRequestFailedInternal.
+  TestNavigationObserver test_navigation_observer1(web_contents());
+  EXPECT_TRUE(
+      ExecJs(root_frame_host(),
+             JsReplace("const frame = document.createElement('iframe');"
+                       "frame.src = $1;"
+                       "document.body.appendChild(frame);",
+                       embedded_test_server()->GetURL("/title1.html"))));
+  test_navigation_observer1.Wait();
+
+  // Navigate to title2.html in iframe. This subframe load fails the CSP policy
+  // above and ends up in OnRequestFailedInternal.
+  TestNavigationObserver test_navigation_observer2(web_contents());
+  EXPECT_TRUE(
+      ExecJs(root_frame_host(),
+             JsReplace("document.getElementsByTagName('iframe')[0].src = $1;",
+                       embedded_test_server()->GetURL("/title2.html"))));
+  test_navigation_observer2.Wait();
+
+  // The following back navigation used to trigger https://crbug.com/411855273,
+  // but it is fixed now.
+  TestNavigationObserver test_navigation_observer3(web_contents());
+  web_contents()->GetController().GoBack();
+  test_navigation_observer3.Wait();
+  histogram_tester.ExpectTotalCount("Stability.DumpWithoutCrashingStatus", 0);
+}
+
 namespace {
 
 class NavigationHandleGrabber : public WebContentsObserver {
