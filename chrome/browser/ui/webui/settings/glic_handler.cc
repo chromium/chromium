@@ -14,6 +14,7 @@
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/widget/local_hotkey_manager.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
@@ -39,6 +40,14 @@ void GlicHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "setGlicShortcut",
       base::BindRepeating(&GlicHandler::HandleSetGlicShortcut,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getGlicFocusToggleShortcut",
+      base::BindRepeating(&GlicHandler::HandleGetGlicFocusToggleShortcut,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "setGlicFocusToggleShortcut",
+      base::BindRepeating(&GlicHandler::HandleSetGlicFocusToggleShortcut,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "setShortcutSuspensionState",
@@ -77,6 +86,31 @@ void GlicHandler::HandleSetGlicShortcut(const base::Value::List& args) {
   UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
       web_ui()->GetWebContents()->GetBrowserContext(),
       features::kGlicKeyboardShortcutNewBadge);
+
+  AllowJavascript();
+  ResolveJavascriptCallback(callback_id, base::Value());
+}
+
+void GlicHandler::HandleGetGlicFocusToggleShortcut(
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+
+  AllowJavascript();
+  ResolveJavascriptCallback(
+      callback_id,
+      base::UTF16ToUTF8(glic::LocalHotkeyManager::GetAccelerator(
+                            glic::LocalHotkeyManager::Hotkey::kFocusToggle)
+                            .GetShortcutText()));
+}
+
+void GlicHandler::HandleSetGlicFocusToggleShortcut(
+    const base::Value::List& args) {
+  CHECK_EQ(2U, args.size());
+  const base::Value& callback_id = args[0];
+  const std::string accelerator_string = args[1].GetString();
+  g_browser_process->local_state()->SetString(
+      glic::prefs::kGlicFocusToggleHotkey, accelerator_string);
 
   AllowJavascript();
   ResolveJavascriptCallback(callback_id, base::Value());

@@ -4,8 +4,7 @@
 
 import 'chrome://settings/settings.js';
 
-import type {CrCollapseElement} from 'chrome://settings/lazy_load.js';
-import {AiPageActions} from 'chrome://settings/lazy_load.js';
+import {AiPageActions, type CrCollapseElement} from 'chrome://settings/lazy_load.js';
 import type {SettingsGlicPageElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, GlicBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, resetRouterForTesting, Router, routes, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -30,7 +29,7 @@ suite('GlicPage', function() {
   let openWindowProxy: TestOpenWindowProxy;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
-  function createGlicPage(initialShortcut: string) {
+  async function createGlicPage(initialShortcut: string) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
@@ -48,7 +47,16 @@ suite('GlicPage', function() {
     document.body.appendChild(page);
 
     page.setPrefValue(PrefName.SETTINGS_POLICY, POLICY_ENABLED_VALUE);
-    return flushTasks();
+    await flushTasks();
+    disableAnimationForCrCollapseElements();
+  }
+
+  function disableAnimationForCrCollapseElements() {
+    const collapseElements = page.shadowRoot!.querySelectorAll('cr-collapse');
+
+    for (const collapseElement of collapseElements) {
+      collapseElement.noAnimation = true;
+    }
   }
 
   function $<T extends HTMLElement = HTMLElement>(id: string): T|null {
@@ -125,27 +133,30 @@ suite('GlicPage', function() {
       // Test that the keyboard shortcut is collapsed/invisible when the
       // launcher is disabled and shown when the launcher is enabled.
       test('KeyboardShortcutVisibility' + clickTypeName, async () => {
-        const keyboardShortcutSetting = $('keyboardShortcutSetting');
+        const mainShortcutSettingId = 'mainShortcutSetting';
 
         // The pref starts off disabled, the keyboard shortcut row should be
         // hidden.
         page.setPrefValue(PrefName.LAUNCHER_ENABLED, false);
-        assertFalse(isVisible(keyboardShortcutSetting));
+        await flushTasks();
+        assertFalse(isVisible($(mainShortcutSettingId)));
 
         // Enable using the launcher toggle, the row should show.
         await clickType();
         assertTrue(page.getPref(PrefName.LAUNCHER_ENABLED).value);
-        assertTrue(isVisible(keyboardShortcutSetting));
+        await flushTasks();
+        assertTrue(isVisible($(mainShortcutSettingId)));
 
         // Disable using the launcher toggle, the row should hide.
         await clickType();
         assertFalse(page.getPref(PrefName.LAUNCHER_ENABLED).value);
-        assertFalse(isVisible(keyboardShortcutSetting));
+        await flushTasks();
+        assertFalse(isVisible($(mainShortcutSettingId)));
 
         // Enable via pref, the row should show.
         page.setPrefValue(PrefName.LAUNCHER_ENABLED, true);
         await flushTasks();
-        assertTrue(isVisible(keyboardShortcutSetting));
+        assertTrue(isVisible($(mainShortcutSettingId)));
       });
     }
 
@@ -293,10 +304,11 @@ suite('GlicPage', function() {
       page.setPrefValue(PrefName.MICROPHONE_ENABLED, true);
       page.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, true);
 
+      const shortcutInputSelector = 'mainShortcutSetting .shortcut-input';
+
       // Page starts off with policy enabled. The shortcut editor, info card
       // expand, and activity button are all present.
-      assertTrue(!!$('shortcutInput'));
-      assertTrue(isVisible($('shortcutInput')));
+      assertTrue(isVisible($(shortcutInputSelector)));
       assertTrue(!!$('activityButton'));
       assertTrue(!!$('tabAccessExpandButton'));
       assertTrue(!!$('tabAccessInfoCollapse'));
@@ -312,7 +324,7 @@ suite('GlicPage', function() {
       // Now that the policy is disabled, the shortcut edit, info card expand,
       // and activity button should be removed. Toggles should all show "off"
       // and be disabled.
-      assertFalse(!!$('shortcutInput'));
+      assertFalse(!!$(shortcutInputSelector));
       assertFalse(!!$('activityButton'));
       assertFalse(!!$('tabAccessExpandButton'));
       assertFalse(!!$('tabAccessInfoCollapse'));
@@ -325,8 +337,7 @@ suite('GlicPage', function() {
       page.setPrefValue(PrefName.SETTINGS_POLICY, POLICY_ENABLED_VALUE);
       await flushTasks();
 
-      assertTrue(!!$('shortcutInput'));
-      assertTrue(isVisible($('shortcutInput')));
+      assertTrue(isVisible($(shortcutInputSelector)));
       assertTrue(!!$('activityButton'));
       assertTrue(!!$('tabAccessExpandButton'));
       assertTrue(!!$('tabAccessInfoCollapse'));

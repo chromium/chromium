@@ -8,6 +8,8 @@ export interface GlicBrowserProxy {
   setGlicOsLauncherEnabled(enabled: boolean): void;
   getGlicShortcut(): Promise<string>;
   setGlicShortcut(shortcut: string): Promise<void>;
+  getGlicFocusToggleShortcut(): Promise<string>;
+  setGlicFocusToggleShortcut(shortcut: string): Promise<void>;
   setShortcutSuspensionState(isSuspended: boolean): void;
 }
 
@@ -22,6 +24,14 @@ export class GlicBrowserProxyImpl implements GlicBrowserProxy {
 
   setGlicShortcut(shortcut: string) {
     return sendWithPromise('setGlicShortcut', shortcut);
+  }
+
+  getGlicFocusToggleShortcut() {
+    return sendWithPromise('getGlicFocusToggleShortcut');
+  }
+
+  setGlicFocusToggleShortcut(shortcut: string) {
+    return sendWithPromise('setGlicFocusToggleShortcut', shortcut);
   }
 
   setShortcutSuspensionState(shouldSuspend: boolean) {

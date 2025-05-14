@@ -5,15 +5,23 @@
 import type {GlicBrowserProxy} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
+export enum Shortcut {
+  MAIN = 'main',
+  FOCUS_TOGGLE = 'focusToggle',
+}
+
 export class TestGlicBrowserProxy extends TestBrowserProxy implements
     GlicBrowserProxy {
   private glicShortcutResponse_: string = '';
+  private glicFocusToggleShortcutResponse_: string = '';
 
   constructor() {
     super([
       'setGlicOsLauncherEnabled',
       'getGlicShortcut',
       'setGlicShortcut',
+      'getGlicFocusToggleShortcut',
+      'setGlicFocusToggleShortcut',
       'setShortcutSuspensionState',
     ]);
   }
@@ -21,6 +29,7 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
   override reset() {
     super.reset();
     this.glicShortcutResponse_ = '';
+    this.glicFocusToggleShortcutResponse_ = '';
   }
 
   setGlicOsLauncherEnabled(enabled: boolean) {
@@ -31,6 +40,21 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
     this.glicShortcutResponse_ = response;
   }
 
+  setGlicFocusToggleShortcutResponse(response: string) {
+    this.glicFocusToggleShortcutResponse_ = response;
+  }
+
+  setShortcutResponse(shortcut: Shortcut, response: string) {
+    switch (shortcut) {
+      case Shortcut.MAIN:
+        this.setGlicShortcutResponse(response);
+        break;
+      case Shortcut.FOCUS_TOGGLE:
+        this.setGlicFocusToggleShortcutResponse(response);
+        break;
+    }
+  }
+
   getGlicShortcut() {
     this.methodCalled('getGlicShortcut');
     return Promise.resolve(this.glicShortcutResponse_);
@@ -38,6 +62,16 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
 
   setGlicShortcut(shortcut: string) {
     this.methodCalled('setGlicShortcut', shortcut);
+    return Promise.resolve();
+  }
+
+  getGlicFocusToggleShortcut() {
+    this.methodCalled('getGlicFocusToggleShortcut');
+    return Promise.resolve(this.glicFocusToggleShortcutResponse_);
+  }
+
+  setGlicFocusToggleShortcut(shortcut: string) {
+    this.methodCalled('setGlicFocusToggleShortcut', shortcut);
     return Promise.resolve();
   }
 
