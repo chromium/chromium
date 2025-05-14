@@ -241,15 +241,6 @@ class SupervisedUserService : public KeyedService {
   bool signout_required_after_supervision_enabled_ = false;
 #endif
 
-  // When there is change between WebFilterType::kTryToBlockMatureSites and
-  // WebFilterType::kCertainSites, both
-  // prefs::kDefaultSupervisedUserFilteringBehavior and
-  // prefs::kSupervisedUserSafeSites change. Uses this member to avoid duplicate
-  // reports. Initialized in the SetActive(). This default value is derived from
-  // default value of both prefs.
-  WebFilterType current_web_filter_type_ =
-      WebFilterType::kTryToBlockMatureSites;
-
   base::WeakPtrFactory<SupervisedUserService> weak_ptr_factory_{this};
 };
 
