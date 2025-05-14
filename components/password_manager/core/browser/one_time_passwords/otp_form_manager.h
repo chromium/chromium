@@ -14,6 +14,7 @@
 namespace password_manager {
 
 class PasswordManagerClient;
+class SmsOtpBackend;
 
 // Various options to where an OTP value can be sent.
 enum class OtpSource {
@@ -60,6 +61,8 @@ class OtpFormManager {
 
   // Tracks where the OTP is sent to.
   OtpSource otp_source_;
+
+  raw_ptr<SmsOtpBackend> sms_otp_backend_ = nullptr;
 };
 
 }  // namespace password_manager

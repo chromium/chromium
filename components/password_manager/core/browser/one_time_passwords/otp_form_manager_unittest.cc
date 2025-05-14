@@ -5,8 +5,10 @@
 #include "components/password_manager/core/browser/one_time_passwords/otp_form_manager.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 
@@ -30,6 +32,9 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
 
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const, override));
   MOCK_METHOD(FieldInfoManager*, GetFieldInfoManager, (), (const, override));
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(SmsOtpBackend*, GetSmsOtpBackend, (), (const, override));
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 FieldInfo CreatePhoneNumberFieldInfo() {
@@ -64,6 +69,7 @@ class OtpFormManagerTest : public testing::Test {
   FormGlobalId form_id_;
   std::vector<FieldGlobalId> field_ids_;
   std::unique_ptr<FieldInfoManager> field_info_manager_;
+  GURL test_otp_url_ = GURL(kTestOtpUrl);
 
  private:
   autofill::test::AutofillUnitTestEnvironment autofill_environment_;
@@ -78,7 +84,7 @@ TEST_F(OtpFormManagerTest, BasicOtpSourceIdentification) {
                                     FormPredictions());
 
   const GURL otp_url(kTestOtpUrl);
-  EXPECT_CALL(client_, GetLastCommittedURL).WillOnce(ReturnRef(otp_url));
+  EXPECT_CALL(client_, GetLastCommittedURL).WillOnce(ReturnRef(test_otp_url_));
   OtpFormManager form_manager(form_id_, field_ids_, &client_);
 
   // Email field was interacted with last, it should be picked as most probable.
@@ -87,7 +93,8 @@ TEST_F(OtpFormManagerTest, BasicOtpSourceIdentification) {
 
 TEST_F(OtpFormManagerTest, OtpSourceUpdatedWithNewPredictions) {
   const GURL otp_url(kTestOtpUrl);
-  EXPECT_CALL(client_, GetLastCommittedURL).WillRepeatedly(ReturnRef(otp_url));
+  EXPECT_CALL(client_, GetLastCommittedURL)
+      .WillRepeatedly(ReturnRef(test_otp_url_));
   OtpFormManager form_manager(form_id_, field_ids_, &client_);
   EXPECT_EQ(OtpSource::kUnknown, form_manager.otp_source());
 
@@ -111,7 +118,8 @@ TEST_F(OtpFormManagerTest, OtpSourceNotRemovedOnceDataGetsStale) {
                                     FormPredictions());
 
   const GURL otp_url(kTestOtpUrl);
-  EXPECT_CALL(client_, GetLastCommittedURL).WillRepeatedly(ReturnRef(otp_url));
+  EXPECT_CALL(client_, GetLastCommittedURL)
+      .WillRepeatedly(ReturnRef(test_otp_url_));
   OtpFormManager form_manager(form_id_, field_ids_, &client_);
   EXPECT_EQ(OtpSource::kSms, form_manager.otp_source());
 
@@ -129,5 +137,16 @@ TEST_F(OtpFormManagerTest, OtpSourceNotRemovedOnceDataGetsStale) {
   // Check that the OTP source is still available.
   EXPECT_EQ(OtpSource::kSms, form_manager.otp_source());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(OtpFormManagerTest, SmsOtpBackendRetrievedOnManagerCreation) {
+  base::test::ScopedFeatureList scoped_feature_list_(
+      features::kAndroidSmsOtpFilling);
+
+  EXPECT_CALL(client_, GetLastCommittedURL).WillOnce(ReturnRef(test_otp_url_));
+  EXPECT_CALL(client_, GetSmsOtpBackend);
+  OtpFormManager form_manager(form_id_, field_ids_, &client_);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager

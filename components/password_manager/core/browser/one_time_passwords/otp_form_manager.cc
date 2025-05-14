@@ -4,8 +4,11 @@
 
 #include "components/password_manager/core/browser/one_time_passwords/otp_form_manager.h"
 
+#include "base/feature_list.h"
 #include "components/autofill/core/common/autofill_regexes.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
+#include "components/password_manager/core/browser/one_time_passwords/sms_otp_backend.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 
@@ -50,7 +53,11 @@ OtpFormManager::OtpFormManager(
   otp_source_ = DetermineWhereOtpWasLikelySent(client_->GetFieldInfoManager(),
                                                client_->GetLastCommittedURL());
 
-  // TODO(crbug.com/415273770): Trigger OTP fetching if needed.
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kAndroidSmsOtpFilling)) {
+    sms_otp_backend_ = client_->GetSmsOtpBackend();
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 OtpFormManager::OtpFormManager(OtpFormManager&&) = default;

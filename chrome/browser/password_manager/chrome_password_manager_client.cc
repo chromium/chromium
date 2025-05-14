@@ -149,6 +149,7 @@
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_bridge.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
 #include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
+#include "chrome/browser/password_manager/android/one_time_passwords/android_sms_otp_backend_factory.h"
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper_impl.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
@@ -161,6 +162,7 @@
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_autofill_delegate.h"
 #include "components/password_manager/content/browser/keyboard_replacing_surface_visibility_controller_impl.h"
 #include "components/password_manager/core/browser/credential_cache.h"
+#include "components/password_manager/core/browser/one_time_passwords/sms_otp_backend.h"
 #include "components/password_manager/core/browser/password_credential_filler_impl.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate_factory.h"
@@ -1376,6 +1378,11 @@ void ChromePasswordManagerClient::MarkSharedCredentialsAsNotified(
       GetProfilePasswordStore()->UpdateLogin(std::move(updatedForm));
     }
   }
+}
+
+password_manager::SmsOtpBackend* ChromePasswordManagerClient::GetSmsOtpBackend()
+    const {
+  return AndroidSmsOtpBackendFactory::GetForProfile(profile_);
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

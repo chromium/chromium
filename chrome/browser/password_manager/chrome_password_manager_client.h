@@ -96,11 +96,12 @@ class DeviceAuthenticator;
 }
 
 namespace password_manager {
-class FieldInfoManager;
-class PasswordCredentialFillerImpl;
-class WebAuthnCredentialsDelegate;
 class CredManController;
+class FieldInfoManager;
 class KeyboardReplacingSurfaceVisibilityController;
+class PasswordCredentialFillerImpl;
+class SmsOtpBackend;
+class WebAuthnCredentialsDelegate;
 }  // namespace password_manager
 
 namespace webauthn {
@@ -319,6 +320,7 @@ class ChromePasswordManagerClient
   webauthn::WebAuthnCredManDelegate* GetWebAuthnCredManDelegateForDriver(
       password_manager::PasswordManagerDriver* driver) override;
   void MarkSharedCredentialsAsNotified(const GURL& url) override;
+  password_manager::SmsOtpBackend* GetSmsOtpBackend() const override;
 #endif  // BUILDFLAG(IS_ANDROID)
   version_info::Channel GetChannel() const override;
   void RefreshPasswordManagerSettingsIfNeeded() const override;

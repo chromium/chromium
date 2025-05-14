@@ -1,0 +1,19 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("backend") {
+  sources = [
+    "android_sms_otp_backend.cc",
+    "android_sms_otp_backend.h",
+    "android_sms_otp_backend_factory.cc",
+    "android_sms_otp_backend_factory.h",
+  ]
+
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//components/password_manager/core/browser:browser",
+    "//content/public/browser",
+  ]
+}
