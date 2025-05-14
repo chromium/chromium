@@ -108,7 +108,13 @@ content::WebContents& ChromeAppWebContents(Profile& profile,
 // Verifies the `chrome.identity` API works in Kiosk.
 class KioskIdentityTest : public MixinBasedInProcessBrowserTest {
  public:
-  KioskIdentityTest() = default;
+  KioskIdentityTest() {
+    // Force allow Chrome Apps in Kiosk, since they are default disabled since
+    // M138.
+    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
+                                             "");
+  }
+
   KioskIdentityTest(const KioskIdentityTest&) = delete;
   KioskIdentityTest& operator=(const KioskIdentityTest&) = delete;
   ~KioskIdentityTest() override = default;
@@ -139,6 +145,7 @@ class KioskIdentityTest : public MixinBasedInProcessBrowserTest {
           /*name=*/{},
           KioskMixin::AutoLaunchAccount{EnterpriseKioskAppV1().account_id},
           {EnterpriseKioskAppV1()}}};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(KioskIdentityTest, GetAuthTokenWorks) {

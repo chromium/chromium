@@ -164,14 +164,14 @@ class ChromeAppDeprecationKioskTest : public ChromeAppDeprecationTest {
 
 TEST_F(ChromeAppDeprecationKioskTest, DefaultFeatureFlag) {
   scoped_feature_list_.InitWithEmptyFeatureAndFieldTrialLists();
-  ASSERT_TRUE(base::FeatureList::IsEnabled(kAllowChromeAppsInKioskSessions));
+  ASSERT_FALSE(base::FeatureList::IsEnabled(kAllowChromeAppsInKioskSessions));
 
   EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
-            DeprecationStatus::kLaunchAllowed);
+            DeprecationStatus::kLaunchBlocked);
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(kHistogram),
               BucketsAre(base::Bucket(
-                  /*DeprecationCheckOutcome::kKioskModeAllowedByFlag*/ 3, 1)));
+                  /*DeprecationCheckOutcome::kKioskModeBlocked*/ 6, 1)));
 }
 
 TEST_F(ChromeAppDeprecationKioskTest, DisabledFeatureFlag) {

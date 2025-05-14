@@ -27,7 +27,7 @@ BASE_FEATURE(kAllowUserInstalledChromeApps,
 
 BASE_FEATURE(kAllowChromeAppsInKioskSessions,
              "AllowChromeAppsInKioskSessions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 constexpr auto kCommonAllowlist = base::MakeFixedFlatSet<std::string_view>(

@@ -112,9 +112,13 @@ class KioskDefaultFeatureFlag
 };
 
 IN_PROC_BROWSER_TEST_F(KioskDefaultFeatureFlag, FeatureFlag) {
-  ASSERT_TRUE(base::FeatureList::IsEnabled(
+  ASSERT_FALSE(base::FeatureList::IsEnabled(
       chrome_app_deprecation::kAllowChromeAppsInKioskSessions));
-  ASSERT_TRUE(WaitKioskLaunched());
+
+  RunUntilBrowserProcessQuits();
+  EXPECT_EQ(ash::KioskAppLaunchError::Error::kChromeAppDeprecated,
+            ash::KioskAppLaunchError::Get());
+  EXPECT_FALSE(ash::KioskController::Get().IsSessionStarting());
 }
 
 class KioskEnabledFeatureFlag

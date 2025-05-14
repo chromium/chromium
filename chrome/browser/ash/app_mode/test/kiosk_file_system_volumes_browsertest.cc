@@ -45,7 +45,13 @@ KioskMixin::CwsChromeAppOption VolumeListChromeApp() {
 // Verifies the chrome.fileSystem.getVolumeList extension API works in Kiosk.
 class KioskFileSystemVolumesTest : public MixinBasedInProcessBrowserTest {
  public:
-  KioskFileSystemVolumesTest() = default;
+  KioskFileSystemVolumesTest() {
+    // Force allow Chrome Apps in Kiosk, since they are default disabled since
+    // M138.
+    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
+                                             "");
+  }
+
   KioskFileSystemVolumesTest(const KioskFileSystemVolumesTest&) = delete;
   KioskFileSystemVolumesTest& operator=(const KioskFileSystemVolumesTest&) =
       delete;
@@ -57,6 +63,7 @@ class KioskFileSystemVolumesTest : public MixinBasedInProcessBrowserTest {
       /*cached_configuration=*/KioskMixin::Config{/*name=*/{},
                                                   /*auto_launch_account_id=*/{},
                                                   {VolumeListChromeApp()}}};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(KioskFileSystemVolumesTest, GetVolumeList) {
