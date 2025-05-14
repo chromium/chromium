@@ -10,36 +10,17 @@
 void SyncSigninDelegateAndroid::SigninFake(Profile* profile,
                                            const std::string& username,
                                            signin::ConsentLevel consent_level) {
-  switch (consent_level) {
-    case signin::ConsentLevel::kSignin:
-      sync_test_utils_android::SetUpFakeAccountAndSignInForTesting(username);
-      return;
-    case signin::ConsentLevel::kSync:
-      // TODO(crbug.com/1117345,crbug.com/40165479): Ideally (for consistency
-      // with desktop), this should sign in an account with ConsentLevel::kSync,
-      // but *not* actually enable Sync-the-feature.
-      sync_test_utils_android::SetUpFakeAccountAndSignInAndEnableSyncForTesting(
-          username);
-      return;
-  }
-  NOTREACHED();
+  sync_test_utils_android::SetUpFakeAccountAndSignInForTesting(username,
+                                                               consent_level);
 }
 
 bool SyncSigninDelegateAndroid::SigninUI(Profile* profile,
                                          const std::string& username,
                                          const std::string& password,
                                          signin::ConsentLevel consent_level) {
-  switch (consent_level) {
-    case signin::ConsentLevel::kSignin:
-      sync_test_utils_android::SetUpLiveAccountAndSignInForTesting(username,
-                                                                   password);
-      return true;
-    case signin::ConsentLevel::kSync:
-      sync_test_utils_android::SetUpLiveAccountAndSignInAndEnableSyncForTesting(
-          username, password);
-      return true;
-  }
-  NOTREACHED();
+  sync_test_utils_android::SetUpLiveAccountAndSignInForTesting(
+      username, password, consent_level);
+  return true;
 }
 
 bool SyncSigninDelegateAndroid::ConfirmSyncUI(Profile* profile) {

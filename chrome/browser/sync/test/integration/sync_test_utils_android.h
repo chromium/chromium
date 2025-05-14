@@ -10,6 +10,7 @@
 
 #include "chrome/browser/android/tab_android.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "url/gurl.h"
@@ -19,12 +20,8 @@
 namespace sync_test_utils_android {
 
 // Sets up the test account and signs in synchronously.
-void SetUpFakeAccountAndSignInForTesting(const std::string& username);
-
-// Sets up the test account, signs in, and enables Sync-the-feature
-// synchronously.
-void SetUpFakeAccountAndSignInAndEnableSyncForTesting(
-    const std::string& username);
+void SetUpFakeAccountAndSignInForTesting(const std::string& username,
+                                         signin::ConsentLevel consent_level);
 
 // Signs out and clears the primary account.
 void SignOutForTesting();
@@ -49,13 +46,8 @@ void TearDownFakeAuthForTesting();
 // Sets up an account with given username and password, signs in synchronously
 // on the live server.
 void SetUpLiveAccountAndSignInForTesting(const std::string& username,
-                                         const std::string& password);
-
-// Sets up an account with given username and password, signs in, and enable
-// Sync-the-feature synchronously on the live server.
-void SetUpLiveAccountAndSignInAndEnableSyncForTesting(
-    const std::string& username,
-    const std::string& password);
+                                         const std::string& password,
+                                         signin::ConsentLevel consent_level);
 
 // Shuts down the live authentication environment. Blocks until all pending
 // token requests are finished.

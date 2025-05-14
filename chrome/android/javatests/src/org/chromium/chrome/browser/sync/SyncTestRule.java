@@ -43,6 +43,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.components.sync.SyncFirstSetupCompleteSource;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.internal.SyncPrefNames;
 import org.chromium.components.sync.protocol.AutofillWalletSpecifics;
@@ -236,7 +237,16 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     @Deprecated
     public CoreAccountInfo setUpAccountAndEnableSyncForTesting() {
         CoreAccountInfo accountInfo =
-                mSigninTestRule.addTestAccountThenSigninAndEnableSync(mSyncService);
+                mSigninTestRule.addTestAccountThenSigninWithConsentLevelSync();
+
+        // In addition to using ConsentLevel.SYNC above, configure SyncService
+        // to enable the legacy Sync-the-feature.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSyncService.setSyncRequested();
+                    mSyncService.setInitialSyncFeatureSetupComplete(
+                            SyncFirstSetupCompleteSource.BASIC_FLOW);
+                });
 
         // Enable UKM when enabling sync as it is done by the sync confirmation UI.
         enableUKM();

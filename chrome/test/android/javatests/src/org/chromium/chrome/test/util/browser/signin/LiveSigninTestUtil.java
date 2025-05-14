@@ -13,7 +13,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
 /**
@@ -42,11 +41,11 @@ public class LiveSigninTestUtil {
         Log.i(TAG, "Finished signin for account %s", coreAccountInfo.toString());
     }
 
-    /** Add a live account to the device and signs in for testing, and enables Sync-the-feature. */
-    public void addAccountWithPasswordThenSigninAndEnableSync(String accountName, String password) {
+    /** Add a live account to the device and signs in for testing with consent level Sync. */
+    public void addAccountWithPasswordThenSigninWithConsentLevelSync(
+            String accountName, String password) {
         CoreAccountInfo coreAccountInfo = addAccountWithPassword(accountName, password);
-        SigninTestUtil.signinAndEnableSync(
-                coreAccountInfo, SyncTestUtil.getSyncServiceForLastUsedProfile());
+        SigninTestUtil.signinWithConsentLevelSync(coreAccountInfo);
         Log.i(TAG, "Finished signin and enabling sync for account %s", coreAccountInfo.toString());
     }
 

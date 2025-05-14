@@ -14,24 +14,23 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 
 /** Utility class for sign-in functionalities in native Sync browser tests. */
 @JNINamespace("sync_test_utils_android")
 final class SyncTestSigninUtils {
     private static final SigninTestRule sSigninTestRule = new SigninTestRule();
 
-    /** Sets up the test account and signs in, but does not enable Sync. */
+    /** Sets up the test account and signs in. */
+    // TODO(crbug.com/40066949): Remove param `consentLevel` once Sync-the-feature is fully removed.
     @CalledByNative
     private static void setUpAccountAndSignInForTesting(
-            @JniType("AccountInfo") AccountInfo accountInfo) {
-        sSigninTestRule.addAccountThenSignin(accountInfo);
-    }
-
-    /** Sets up the test account, signs in, and enables Sync-the-feature. */
-    @CalledByNative
-    private static void setUpAccountAndSignInAndEnableSyncForTesting(
-            @JniType("AccountInfo") AccountInfo accountInfo) {
-        sSigninTestRule.addAccountThenSigninAndEnableSync(accountInfo);
+            @JniType("AccountInfo") AccountInfo accountInfo, @ConsentLevel int consentLevel) {
+        if (consentLevel == ConsentLevel.SIGNIN) {
+            sSigninTestRule.addAccountThenSignin(accountInfo);
+        } else if (consentLevel == ConsentLevel.SYNC) {
+            sSigninTestRule.addAccountThenSigninWithConsentLevelSync(accountInfo);
+        }
     }
 
     /** Signs out from the current test account. */
@@ -53,19 +52,20 @@ final class SyncTestSigninUtils {
         sSigninTestRule.tearDownRule();
     }
 
-    /** Add an account to the device and signs in for live testing, but does not enable Sync. */
+    /** Add an account to the device and signs in for live testing. */
+    // TODO(crbug.com/40066949): Remove param `consentLevel` once Sync-the-feature is fully removed.
     @CalledByNative
     private static void setUpLiveAccountAndSignInForTesting(
-            @JniType("std::string") String accountName, @JniType("std::string") String password) {
-        LiveSigninTestUtil.getInstance().addAccountWithPasswordThenSignin(accountName, password);
-    }
-
-    /** Add an account to the device and signs in for live testing, and enables Sync-the-feature. */
-    @CalledByNative
-    private static void setUpLiveAccountAndSignInAndEnableSyncForTesting(
-            @JniType("std::string") String accountName, @JniType("std::string") String password) {
-        LiveSigninTestUtil.getInstance()
-                .addAccountWithPasswordThenSigninAndEnableSync(accountName, password);
+            @JniType("std::string") String accountName,
+            @JniType("std::string") String password,
+            @ConsentLevel int consentLevel) {
+        if (consentLevel == ConsentLevel.SIGNIN) {
+            LiveSigninTestUtil.getInstance()
+                    .addAccountWithPasswordThenSignin(accountName, password);
+        } else if (consentLevel == ConsentLevel.SYNC) {
+            LiveSigninTestUtil.getInstance()
+                    .addAccountWithPasswordThenSigninWithConsentLevelSync(accountName, password);
+        }
     }
 
     /**

@@ -13,7 +13,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.Tribool;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -21,7 +20,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
-import org.chromium.components.sync.SyncService;
 
 /**
  * This test rule mocks AccountManagerFacade and manages sign-in/sign-out.
@@ -88,13 +86,12 @@ public class SigninTestRule extends AccountManagerTestRule {
         mIsSignedIn = true;
     }
 
-    /** Adds and signs in with the provided account and enables sync. */
+    /** Adds and signs in with the provided account with consent level Sync. */
     // TODO(crbug.com/40066949): Remove once Sync-the-feature is fully removed.
-    public void addAccountThenSigninAndEnableSync(AccountInfo accountInfo) {
+    public void addAccountThenSigninWithConsentLevelSync(AccountInfo accountInfo) {
         assert !mIsSignedIn : "An account is already signed in!";
         addAccount(accountInfo);
-        SigninTestUtil.signinAndEnableSync(
-                accountInfo, SyncTestUtil.getSyncServiceForLastUsedProfile());
+        SigninTestUtil.signinWithConsentLevelSync(accountInfo);
         mIsSignedIn = true;
     }
 
@@ -106,17 +103,12 @@ public class SigninTestRule extends AccountManagerTestRule {
         mIsSignedIn = true;
     }
 
-    /**
-     * Adds and signs in an account with the default name and enables sync.
-     *
-     * @param syncService SyncService object to set up sync.
-     */
+    /** Adds and signs in an account with the default name using consent level Sync. */
     // TODO(crbug.com/40066949): Remove once Sync-the-feature is fully removed.
-    public CoreAccountInfo addTestAccountThenSigninAndEnableSync(SyncService syncService) {
+    public CoreAccountInfo addTestAccountThenSigninWithConsentLevelSync() {
         assert !mIsSignedIn : "An account is already signed in!";
-        assert syncService != null : "SyncService must not be null";
         CoreAccountInfo coreAccountInfo = addAccount(TEST_ACCOUNT_EMAIL);
-        SigninTestUtil.signinAndEnableSync(coreAccountInfo, syncService);
+        SigninTestUtil.signinWithConsentLevelSync(coreAccountInfo);
         mIsSignedIn = true;
         return coreAccountInfo;
     }

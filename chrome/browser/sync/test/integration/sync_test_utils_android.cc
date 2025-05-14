@@ -47,24 +47,14 @@ AccountInfo GetFakeAccountInfo(const std::string& username) {
 
 }  // namespace
 
-void SetUpFakeAccountAndSignInForTesting(const std::string& username) {
+void SetUpFakeAccountAndSignInForTesting(const std::string& username,
+                                         signin::ConsentLevel consent_level) {
   base::RunLoop run_loop;
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock()}, base::BindLambdaForTesting([&]() {
         Java_SyncTestSigninUtils_setUpAccountAndSignInForTesting(
-            base::android::AttachCurrentThread(), GetFakeAccountInfo(username));
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-}
-
-void SetUpFakeAccountAndSignInAndEnableSyncForTesting(
-    const std::string& username) {
-  base::RunLoop run_loop;
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock()}, base::BindLambdaForTesting([&]() {
-        Java_SyncTestSigninUtils_setUpAccountAndSignInAndEnableSyncForTesting(
-            base::android::AttachCurrentThread(), GetFakeAccountInfo(username));
+            base::android::AttachCurrentThread(), GetFakeAccountInfo(username),
+            static_cast<int>(consent_level));
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -98,27 +88,14 @@ void TearDownFakeAuthForTesting() {
 }
 
 void SetUpLiveAccountAndSignInForTesting(const std::string& username,
-                                         const std::string& password) {
+                                         const std::string& password,
+                                         signin::ConsentLevel consent_level) {
   base::RunLoop run_loop;
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock()}, base::BindLambdaForTesting([&]() {
         JNIEnv* env = base::android::AttachCurrentThread();
         Java_SyncTestSigninUtils_setUpLiveAccountAndSignInForTesting(
-            env, username, password);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-}
-
-void SetUpLiveAccountAndSignInAndEnableSyncForTesting(
-    const std::string& username,
-    const std::string& password) {
-  base::RunLoop run_loop;
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock()}, base::BindLambdaForTesting([&]() {
-        JNIEnv* env = base::android::AttachCurrentThread();
-        Java_SyncTestSigninUtils_setUpLiveAccountAndSignInAndEnableSyncForTesting(
-            env, username, password);
+            env, username, password, static_cast<int>(consent_level));
         run_loop.Quit();
       }));
   run_loop.Run();
