@@ -201,9 +201,10 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
                        TimeDelta delay,
                        OnceClosure task);
     scoped_refptr<base::SequencedTaskRunner> task_runner_;
-    base::DelayedTaskHandle task_handle_;
+    base::DelayedTaskHandle GUARDED_BY_CONTEXT(sequence_checker_) task_handle_;
 
     OnceCallback<void(MemoryReductionTaskContext)> task_;
+    SEQUENCE_CHECKER(sequence_checker_);
   };
 
  private:
