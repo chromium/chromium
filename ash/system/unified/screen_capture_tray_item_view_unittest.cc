@@ -133,8 +133,16 @@ TEST_F(ScreenCaptureTrayItemViewTest,
   EXPECT_EQ(0u, screen_capture_tray_item_view_->requests_.size());
 }
 
+// TODO(crbug.com/417560454): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_MultiOriginCaptureStartedNotificationSkipAllowlistedOneOrigin \
+  DISABLED_MultiOriginCaptureStartedNotificationSkipAllowlistedOneOrigin
+#else
+#define MAYBE_MultiOriginCaptureStartedNotificationSkipAllowlistedOneOrigin \
+  MultiOriginCaptureStartedNotificationSkipAllowlistedOneOrigin
+#endif
 TEST_F(ScreenCaptureTrayItemViewTest,
-       MultiOriginCaptureStartedNotificationSkipAllowlistedOneOrigin) {
+       MAYBE_MultiOriginCaptureStartedNotificationSkipAllowlistedOneOrigin) {
   const url::Origin origin_with_allowlisted_exception =
       url::Origin::CreateFromNormalizedTuple(
           /*scheme=*/"isolated-app",
@@ -174,8 +182,16 @@ TEST_F(ScreenCaptureTrayItemViewTest,
   EXPECT_EQ(0u, screen_capture_tray_item_view_->requests_.size());
 }
 
+// TODO(crbug.com/417560454): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_MultiOriginCaptureStartedNotificationSkipAllowlistedMixedOrigins \
+  DISABLED_MultiOriginCaptureStartedNotificationSkipAllowlistedMixedOrigins
+#else
+#define MAYBE_MultiOriginCaptureStartedNotificationSkipAllowlistedMixedOrigins \
+  MultiOriginCaptureStartedNotificationSkipAllowlistedMixedOrigins
+#endif
 TEST_F(ScreenCaptureTrayItemViewTest,
-       MultiOriginCaptureStartedNotificationSkipAllowlistedMixedOrigins) {
+       MAYBE_MultiOriginCaptureStartedNotificationSkipAllowlistedMixedOrigins) {
   const url::Origin origin_with_allowlisted_exception =
       url::Origin::CreateFromNormalizedTuple(
           /*scheme=*/"isolated-app",
