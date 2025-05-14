@@ -673,7 +673,8 @@ OnDeviceModelServiceController::Solution::operator=(Solution&&) = default;
 
 bool OnDeviceModelServiceController::Solution::IsValid() {
   return model_controller_ &&
-         (adapter_->CanSkipTextSafety() || safety_checker_->client());
+         (!features::ShouldUseTextSafetyClassifierModel() ||
+          adapter_->CanSkipTextSafety() || safety_checker_->client());
 }
 
 // Creates a config describing this solution;
