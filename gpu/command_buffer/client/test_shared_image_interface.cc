@@ -337,6 +337,10 @@ void TestSharedImageInterface::DestroySharedImage(
   base::AutoLock locked(lock_);
   shared_images_.erase(mailbox);
   most_recent_destroy_token_ = sync_token;
+
+  if (test_client_) {
+    test_client_->DidDestroySharedImage();
+  }
 }
 
 void TestSharedImageInterface::DestroySharedImage(

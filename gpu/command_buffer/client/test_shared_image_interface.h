@@ -25,6 +25,12 @@ namespace gpu {
 
 class TestBufferCollection;
 
+class TestSharedImageInterfaceClient {
+ public:
+  virtual ~TestSharedImageInterfaceClient() {}
+  virtual void DidDestroySharedImage() = 0;
+};
+
 class TestSharedImageInterface : public SharedImageInterface {
  public:
   TestSharedImageInterface();
@@ -121,6 +127,10 @@ class TestSharedImageInterface : public SharedImageInterface {
     }
   }
 
+  void SetClient(TestSharedImageInterfaceClient* client) {
+    test_client_ = client;
+  }
+
   size_t shared_image_count() const { return shared_images_.size(); }
   size_t num_update_shared_image_no_fence_calls() const {
     return num_update_shared_image_no_fence_calls_;
@@ -165,6 +175,8 @@ class TestSharedImageInterface : public SharedImageInterface {
   void InitializeSharedImageCapabilities();
 
   mutable base::Lock lock_;
+
+  raw_ptr<TestSharedImageInterfaceClient> test_client_ = nullptr;
 
   uint64_t release_id_ = 0;
   size_t num_update_shared_image_no_fence_calls_ = 0;
