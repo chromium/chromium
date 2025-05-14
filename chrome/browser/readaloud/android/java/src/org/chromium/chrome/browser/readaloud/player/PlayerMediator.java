@@ -72,13 +72,15 @@ class PlayerMediator implements InteractionHandler {
                   }
 
                     if (!isHiddenAndPlaying()) {
-                        mModel.set(PlayerProperties.ELAPSED_NANOS, data.absolutePositionNanos());
                         mModel.set(PlayerProperties.DURATION_NANOS, data.totalDurationNanos());
                         float percent =
                                 (float) data.absolutePositionNanos()
                                         / (float) data.totalDurationNanos();
-                        mModel.set(PlayerProperties.PROGRESS, percent);
-                        mModel.set(PlayerProperties.ELAPSED_NANOS, data.absolutePositionNanos());
+                        // We update the progress only if the user is not currently interacting with the seekbar (i.e. scrubbing).
+                        if (!mIsScrubbingSeekBar) {
+                          mModel.set(PlayerProperties.PROGRESS, percent);
+                          mModel.set(PlayerProperties.ELAPSED_NANOS, data.absolutePositionNanos());
+                        }
                         mModel.set(PlayerProperties.DURATION_NANOS, data.totalDurationNanos());
                     }
 
@@ -104,6 +106,8 @@ class PlayerMediator implements InteractionHandler {
                     }
                 }
             };
+
+    private boolean mIsScrubbingSeekBar;
     private final OnSeekBarChangeListener mSeekBarChangeListener =
             new OnSeekBarChangeListener() {
                 @PlaybackListener.State int mPrevState;
@@ -114,11 +118,18 @@ class PlayerMediator implements InteractionHandler {
                         return;
                     }
                     float percent = (float) progress / (float) seekBar.getMax();
-                    mPlayback.seek((long) (mModel.get(PlayerProperties.DURATION_NANOS) * percent));
+                    long locationNanos = (long) (mModel.get(PlayerProperties.DURATION_NANOS) * percent);
+                    if (!mIsScrubbingSeekBar) {
+                      // This happens when user seeks with the volume keys while in TalkBack
+                      mPlayback.seek(locationNanos);
+                      return;
+                    }
+                    mModel.set(PlayerProperties.ELAPSED_NANOS, locationNanos);
                 }
 
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
+                    mIsScrubbingSeekBar = true;
                     mPrevState = mModel.get(PlayerProperties.PLAYBACK_STATE);
                     setPlaybackState(PlaybackListener.State.PAUSED);
                     mSeekbarStartTimeNanos = mModel.get(PlayerProperties.ELAPSED_NANOS);
@@ -126,6 +137,10 @@ class PlayerMediator implements InteractionHandler {
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
+                  mIsScrubbingSeekBar = false;
+                  if (mPlayback == null) {
+                    return;
+                  }
                     setPlaybackState(mPrevState);
                     long seekbarDurationMillis =
                             TimeUnit.NANOSECONDS.toMillis(
@@ -137,6 +152,8 @@ class PlayerMediator implements InteractionHandler {
                     } else {
                         ReadAloudMetrics.recordDurationScrubbingForwards(seekbarDurationMillis);
                     }
+                    float percent = (float) seekBar.getProgress() / (float) seekBar.getMax();
+                    mPlayback.seek((long) (mModel.get(PlayerProperties.DURATION_NANOS) * percent));
                 }
             };
     private final PlaybackListener mPreviewPlaybackListener =

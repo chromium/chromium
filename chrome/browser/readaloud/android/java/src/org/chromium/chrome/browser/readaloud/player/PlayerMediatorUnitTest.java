@@ -166,6 +166,7 @@ public class PlayerMediatorUnitTest {
         doReturn(TITLE).when(mPlaybackMetadata).title();
         doReturn(PUBLISHER).when(mPlaybackMetadata).publisher();
         doReturn(PlaybackMode.OVERVIEW).when(mPlaybackMetadata).playbackMode();
+        doReturn(1000).when(mSeekbar).getMax();
         mVoicesSupplier = new ObservableSupplierImpl<>();
         mVoicesSupplier.set(List.of(new PlaybackVoice("en", "a")));
         mSelectedVoiceIdSupplier = new ObservableSupplierImpl<>();
@@ -564,7 +565,31 @@ public class PlayerMediatorUnitTest {
     }
 
     @Test
+    public void testOnProgressChangedDuringScrubbing_notSeeking() {
+        mMediator.setPlayback(mPlayback);
+        mModel.set(PlayerProperties.DURATION_NANOS, 100L);
+
+        mOnSeekBarChangeListener.onStartTrackingTouch(mSeekbar);
+
+        mOnSeekBarChangeListener.onProgressChanged(mSeekbar, 20, true);
+        verify(mPlayback, never()).seek(anyLong());
+    }
+
+    @Test
+    public void testOnStopTrackingTouch_seeking() {
+        mMediator.setPlayback(mPlayback);
+        mModel.set(PlayerProperties.DURATION_NANOS, 100L);
+
+        mOnSeekBarChangeListener.onStartTrackingTouch(mSeekbar);
+        mOnSeekBarChangeListener.onProgressChanged(mSeekbar, 20, true);
+        mOnSeekBarChangeListener.onStopTrackingTouch(mSeekbar);
+
+        verify(mPlayback).seek(anyLong());
+    }
+
+    @Test
     public void testOnStartStopTrackingTouch() {
+      mMediator.setPlayback(mPlayback);
         int initialState = PLAYING;
         mMediator.setPlaybackState(initialState);
 
@@ -595,6 +620,7 @@ public class PlayerMediatorUnitTest {
         mOnSeekBarChangeListener.onStartTrackingTouch(mSeekbar);
         mPlaybackData.mAbsolutePositionNanos = 20 * 1_000_000_000L;
         mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+        mOnSeekBarChangeListener.onProgressChanged(mSeekbar, mSeekbar.getMax() / 2, true);
         mOnSeekBarChangeListener.onStopTrackingTouch(mSeekbar);
 
         histogram.assertExpected();
@@ -611,6 +637,7 @@ public class PlayerMediatorUnitTest {
         mOnSeekBarChangeListener.onStartTrackingTouch(mSeekbar);
         mPlaybackData.mAbsolutePositionNanos = 20 * 1_000_000_000L;
         mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+        mOnSeekBarChangeListener.onProgressChanged(mSeekbar, mSeekbar.getMax() / 2, true);
         mOnSeekBarChangeListener.onStopTrackingTouch(mSeekbar);
 
         histogram.assertExpected();
