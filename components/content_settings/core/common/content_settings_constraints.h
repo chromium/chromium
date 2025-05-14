@@ -29,8 +29,8 @@ class ContentSettingConstraints {
 
   ~ContentSettingConstraints();
 
-  bool operator==(const ContentSettingConstraints& other) const;
-  bool operator!=(const ContentSettingConstraints& other) const;
+  friend bool operator==(const ContentSettingConstraints&,
+                         const ContentSettingConstraints&) = default;
 
   ContentSettingConstraints Clone() const;
 

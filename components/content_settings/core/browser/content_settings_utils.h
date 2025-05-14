@@ -26,9 +26,8 @@ class MapValueIterator {
  public:
   explicit MapValueIterator(IteratorType iterator) : iterator_(iterator) {}
 
-  bool operator!=(const MapValueIterator& other) const {
-    return iterator_ != other.iterator_;
-  }
+  friend bool operator==(const MapValueIterator&,
+                         const MapValueIterator&) = default;
 
   MapValueIterator& operator++() {
     ++iterator_;

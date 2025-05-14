@@ -80,10 +80,6 @@ class HostIndexedContentSettings {
       return a.current_iterator_ == b.current_iterator_;
     }
 
-    friend bool operator!=(const Iterator& a, const Iterator& b) {
-      return !(a == b);
-    }
-
    private:
     enum class Stage { kInvalid, kPrimaryHost, kSecondaryHost, kWildcard };
 

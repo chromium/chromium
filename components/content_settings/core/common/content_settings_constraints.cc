@@ -20,12 +20,6 @@ ContentSettingConstraints& ContentSettingConstraints::operator=(
 
 ContentSettingConstraints::~ContentSettingConstraints() = default;
 
-bool ContentSettingConstraints::operator==(
-    const ContentSettingConstraints& other) const = default;
-
-bool ContentSettingConstraints::operator!=(
-    const ContentSettingConstraints& other) const = default;
-
 ContentSettingConstraints ContentSettingConstraints::Clone() const {
   ContentSettingConstraints clone;
   clone.created_at_ = created_at_;
