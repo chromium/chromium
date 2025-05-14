@@ -70,6 +70,8 @@ const char kExceptionMessageInvalidResponseJsonSchema[] =
     "stringified into a JSON string.";
 const char kExceptionMessageCrossOriginAccess[] =
     "Access denied from cross-origin iframes.";
+const char kExceptionMessagePermissionPolicy[] =
+    "Access denied because the Permission Policy is not enabled.";
 
 void ThrowInvalidContextException(ExceptionState& exception_state) {
   exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
