@@ -11,7 +11,7 @@ import type {AddSiteDialogElement, SettingsEditExceptionDialogElement, SiteExcep
 import {CookiesExceptionType, ContentSetting, ContentSettingsTypes, SITE_EXCEPTION_WILDCARD, SiteSettingSource, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, loadTimeData, Router} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
@@ -136,13 +136,19 @@ function populateTestExceptions() {
     createContentSettingTypeToValuePair(
         ContentSettingsTypes.GEOLOCATION,
         [
-          createRawSiteException('https://bar-allow.com:443'),
-          createRawSiteException('https://foo-allow.com:443'),
+          createRawSiteException('https://bar-allow.com:443', {
+            embeddingOrigin: '',
+          }),
+          createRawSiteException('https://foo-allow.com:443', {
+            embeddingOrigin: '',
+          }),
           createRawSiteException('https://bar-block.com:443', {
             setting: ContentSetting.BLOCK,
+            embeddingOrigin: '',
           }),
           createRawSiteException('https://foo-block.com:443', {
             setting: ContentSetting.BLOCK,
+            embeddingOrigin: '',
           }),
         ]),
   ]);
@@ -738,9 +744,12 @@ suite('SiteList', function() {
    *     open the action menu for.
    */
   function openActionMenu(index: number) {
-    const actionMenuButton =
-        testElement.$.listContainer.querySelectorAll('site-list-entry')[index]!
-            .$.actionMenuButton;
+    const siteListEntry =
+        testElement.$.listContainer.querySelectorAll('site-list-entry')[index];
+    assertTrue(!!siteListEntry);
+    const actionMenuButton: HTMLElement|null =
+        siteListEntry.shadowRoot!.querySelector('#actionMenuButton');
+    assertTrue(!!actionMenuButton);
     actionMenuButton.click();
     flush();
   }
@@ -788,16 +797,17 @@ suite('SiteList', function() {
     await browserProxy.whenCalled('getExceptionList');
     // Flush to be sure list container is populated.
     flush();
-    const dotsMenu =
-        testElement.shadowRoot!.querySelector(
-                                   'site-list-entry')!.$.actionMenuButton;
-    assertFalse(dotsMenu.hidden);
+    const siteListEntry =
+        testElement.shadowRoot!.querySelector('site-list-entry');
+    assertTrue(!!siteListEntry);
+
+    assertTrue(isChildVisible(siteListEntry, '#actionMenuButton'));
     testElement.toggleAttribute('read-only-list', true);
     flush();
-    assertTrue(dotsMenu.hidden);
+    assertFalse(isChildVisible(siteListEntry, '#actionMenuButton'));
     testElement.removeAttribute('read-only-list');
     flush();
-    assertFalse(dotsMenu.hidden);
+    assertTrue(isChildVisible(siteListEntry, '#actionMenuButton'));
   });
 
   test('getExceptionList API used', async function() {
@@ -1103,16 +1113,11 @@ suite('SiteList', function() {
 
     const item = testElement.shadowRoot!.querySelector('site-list-entry')!;
 
-    // Assert action button is hidden.
-    const dots = item.$.actionMenuButton;
-    assertTrue(!!dots);
-    assertTrue(dots.hidden);
-
-    // Assert reset button is visible.
+    assertFalse(isChildVisible(item, '#actionMenuButton'));
     const resetButton =
         item.shadowRoot!.querySelector<HTMLElement>('#resetSite');
     assertTrue(!!resetButton);
-    assertFalse(resetButton.hidden);
+    assertTrue(isVisible(resetButton));
 
     resetButton.click();
     const args =
@@ -1245,14 +1250,12 @@ suite('SiteList', function() {
     // Validate that embeddingOrigin sites cannot be edited.
     const entries = testElement.shadowRoot!.querySelectorAll('site-list-entry');
     const firstItem = entries[0]!;
-    assertTrue(firstItem.$.actionMenuButton.hidden);
-    assertFalse(
-        firstItem.shadowRoot!.querySelector<HTMLElement>('#resetSite')!.hidden);
+    assertFalse(isChildVisible(firstItem, '#actionMenuButton'));
+    assertTrue(isChildVisible(firstItem, '#resetSite'));
     // Validate that non-embeddingOrigin sites can be edited.
     const secondItem = entries[1]!;
-    assertFalse(secondItem.$.actionMenuButton.hidden);
-    assertTrue(secondItem.shadowRoot!.querySelector<HTMLElement>(
-                                         '#resetSite')!.hidden);
+    assertTrue(isChildVisible(secondItem, '#actionMenuButton'));
+    assertFalse(isChildVisible(secondItem, '#resetSite'));
   });
 
   test('Isolated Web Apps', async function() {
@@ -1267,9 +1270,8 @@ suite('SiteList', function() {
     // Validate that IWAs cannot be edited.
     const entries = testElement.shadowRoot!.querySelectorAll('site-list-entry');
     const firstItem = entries[0]!;
-    assertTrue(firstItem.$.actionMenuButton.hidden);
-    assertFalse(
-        firstItem.shadowRoot!.querySelector<HTMLElement>('#resetSite')!.hidden);
+    assertFalse(isChildVisible(firstItem, '#actionMenuButton'));
+    assertTrue(isChildVisible(firstItem, '#resetSite'));
 
     // Validate that IWA displays app name and not origin.
     assertEquals(
@@ -1279,9 +1281,8 @@ suite('SiteList', function() {
 
     // Validate that non-IWAs can be edited.
     const secondItem = entries[1]!;
-    assertFalse(secondItem.$.actionMenuButton.hidden);
-    assertTrue(secondItem.shadowRoot!.querySelector<HTMLElement>(
-                                         '#resetSite')!.hidden);
+    assertTrue(isChildVisible(secondItem, '#actionMenuButton'));
+    assertFalse(isChildVisible(secondItem, '#resetSite'));
 
     // Validate that non-IWA displays the displayName (in most cases same as
     // the origin).

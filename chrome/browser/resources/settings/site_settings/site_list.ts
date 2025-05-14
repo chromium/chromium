@@ -481,7 +481,7 @@ export class SiteListElement extends SiteListElementBase {
 
   private onAllowClick_() {
     // Removing the last visible item should focus the list's header.
-    const shouldMoveFocus = this.getFilteredSites_().length === 1;
+    const shouldMoveFocus = this.hasOneFilteredSite_();
     this.setContentSettingForActionMenuSite_(ContentSetting.ALLOW);
     this.closeActionMenu_();
     if (shouldMoveFocus) {
@@ -491,7 +491,7 @@ export class SiteListElement extends SiteListElementBase {
 
   private onBlockClick_() {
     // Removing the last visible item should focus the list's header.
-    const shouldMoveFocus = this.getFilteredSites_().length === 1;
+    const shouldMoveFocus = this.hasOneFilteredSite_();
     this.setContentSettingForActionMenuSite_(ContentSetting.BLOCK);
     this.closeActionMenu_();
     if (shouldMoveFocus) {
@@ -522,7 +522,7 @@ export class SiteListElement extends SiteListElementBase {
 
   private onResetClick_() {
     // Removing the last visible item should focus the list's header.
-    const shouldMoveFocus = this.getFilteredSites_().length === 1;
+    const shouldMoveFocus = this.hasOneFilteredSite_();
     assert(this.actionMenuSite_);
     this.browserProxy.resetCategoryPermissionForPattern(
         this.actionMenuSite_.origin, this.actionMenuSite_.embeddingOrigin,
@@ -543,7 +543,7 @@ export class SiteListElement extends SiteListElementBase {
 
   private onResetEntry_() {
     // Removing the last visible item should focus the list's header.
-    if (this.getFilteredSites_().length === 1) {
+    if (this.hasOneFilteredSite_()) {
       this.$.listHeader.focus();
     }
   }
@@ -569,6 +569,10 @@ export class SiteListElement extends SiteListElementBase {
     return this.sites.filter(
         site => propNames.some(
             propName => site[propName].toLowerCase().includes(searchFilter)));
+  }
+
+  private hasOneFilteredSite_(): boolean {
+    return this.getFilteredSites_().length === 1;
   }
 
   private getAddButtonLabel_(): string {

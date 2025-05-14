@@ -18,51 +18,67 @@
       }
     </style>
     <div class="list-item" focus-row-container>
-      <div class="settings-row"
-          actionable$="[[allowNavigateToSiteDetail_]]" on-click="onOriginClick_">
-        <site-favicon url="[[computeFaviconOrigin_(model)]]"></site-favicon>
-        <div class="middle no-min-width">
-          <div class="text-elide">
-            <span class="url-directionality">
-              [[computeDisplayName_(model)]]</span>
+      <div class="settings-row" role="row"
+          aria-label="[[computeAriaLabel_(model)]]">
+        <div role="gridcell" class="settings-row" on-click="onOriginClick_"
+            id="originArea" aria-label="[[computeAriaLabel_(model)]]"
+            actionable$="[[allowNavigateToSiteDetail_]]">
+          <site-favicon url="[[computeFaviconOrigin_(model)]]"></site-favicon>
+          <div class="middle no-min-width">
+            <div class="text-elide">
+              <span class="url-directionality">
+                [[computeDisplayName_(model)]]</span>
+            </div>
+            <!-- This div must not contain extra whitespace. -->
+            <div class="secondary"
+                id="siteDescription">[[computeSiteDescription_(model)]]</div>
           </div>
 
-          <!-- This div must not contain extra whitespace. -->
-          <div class="secondary"
-              id="siteDescription">[[computeSiteDescription_(model)]]</div>
+          <template is="dom-if" if="[[allowNavigateToSiteDetail_]]">
+            <cr-icon-button class="subpage-arrow"
+                aria-label$="[[computeAriaLabel_(model)]]"
+                aria-describedby="siteDescription"
+                aria-roledescription="$i18n{subpageArrowRoleDescription}"
+                focus-type="site-details" focus-row-control></cr-icon-button>
+            <div class="separator"></div>
+          </template>
         </div>
-        <template is="dom-if" if="[[allowNavigateToSiteDetail_]]">
-          <cr-icon-button class="subpage-arrow"
-              aria-label$="[[computeDisplayName_(model)]]"
-              aria-describedby="siteDescription"
-              aria-roledescription="$i18n{subpageArrowRoleDescription}"
-              focus-type="site-details" focus-row-control></cr-icon-button>
-          <div class="separator"></div>
+        <template is="dom-if" if="[[showPolicyPrefIndicator_]]">
+          <div role="gridcell">
+            <cr-policy-pref-indicator pref="[[model]]"
+                on-mouseenter="onShowTooltip_"
+                on-focus="onShowTooltip_" focus-row-control focus-type="policy">
+            </cr-policy-pref-indicator>
+          </div>
+        </template>
+        <template is="dom-if" if="[[model.incognito]]">
+          <div role="gridcell">
+            <cr-tooltip-icon id="incognitoTooltip"
+                icon-aria-label="$i18n{incognitoSiteExceptionDesc}"
+                icon-class="settings20:incognito"
+                focus-row-control focus-type="incognito"
+                on-mouseenter="onShowIncognitoTooltip_"
+                on-focus="onShowIncognitoTooltip_"></cr-tooltip-icon>
+          </div>
+        </template>
+        <template is="dom-if"
+            if="[[shouldShowResetButton_(model, readOnlyList)]]">
+          <div role="gridcell">
+            <cr-icon-button id="resetSite" class="icon-delete-gray"
+                on-click="onResetButtonClick_"
+                aria-label="$i18n{siteSettingsActionReset}
+                    [[computeDisplayName_(model)]]" focus-row-control
+                focus-type="reset"></cr-icon-button>
+          </div>
+        </template>
+        <template is="dom-if"
+            if="[[shouldShowActionMenu_(model, readOnlyList)]]">
+          <div role="gridcell">
+            <cr-icon-button id="actionMenuButton" class="icon-more-vert"
+                on-click="onShowActionMenuClick_"
+                title$="[[getActionMenuButtonLabel_(model)]]"
+                focus-row-control focus-type="menu"></cr-icon-button>
+          </div>
         </template>
       </div>
-      <template is="dom-if" if="[[showPolicyPrefIndicator_]]">
-        <cr-policy-pref-indicator pref="[[model]]"
-            on-mouseenter="onShowTooltip_"
-            on-focus="onShowTooltip_" focus-row-control focus-type="policy">
-        </cr-policy-pref-indicator>
-      </template>
-      <template is="dom-if" if="[[model.incognito]]">
-        <cr-tooltip-icon id="incognitoTooltip"
-            icon-aria-label="$i18n{incognitoSiteExceptionDesc}"
-            icon-class="settings20:incognito"
-            focus-row-control focus-type="incognito"
-            on-mouseenter="onShowIncognitoTooltip_"
-            on-focus="onShowIncognitoTooltip_"></cr-tooltip-icon>
-      </template>
-      <cr-icon-button id="resetSite" class="icon-delete-gray"
-          hidden="[[!shouldShowResetButton_(model, readOnlyList)]]"
-          on-click="onResetButtonClick_"
-          aria-label="$i18n{siteSettingsActionReset}
-              [[computeDisplayName_(model)]]" focus-row-control
-          focus-type="reset"></cr-icon-button>
-      <cr-icon-button id="actionMenuButton" class="icon-more-vert"
-          hidden="[[!shouldShowActionMenu_(model, readOnlyList)]]"
-          on-click="onShowActionMenuClick_"
-          title$="[[getActionMenuButtonLabel_(model)]]"
-          focus-row-control focus-type="menu"></cr-icon-button>
     </div>

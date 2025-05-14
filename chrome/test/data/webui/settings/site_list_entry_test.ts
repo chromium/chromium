@@ -13,7 +13,7 @@ import type {SiteListEntryElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, ContentSettingsTypes, CookiesExceptionType, SITE_EXCEPTION_WILDCARD, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 import {assertTooltipIsHidden} from './test_util.js';
@@ -108,14 +108,13 @@ suite('SiteListEntry', function() {
     const args = await browserProxy.whenCalled('isOriginValid');
     assertEquals('http://example.com', args);
     flush();
-    const settingsRow =
-        testElement.shadowRoot!.querySelector<HTMLElement>('.settings-row')!;
-    assertTrue(settingsRow.hasAttribute('actionable'));
-    const subpageArrow = settingsRow.querySelector('.subpage-arrow');
-    assertFalse(!subpageArrow);
-    const separator = settingsRow.querySelector('.separator');
-    assertFalse(!separator);
-    settingsRow.click();
+    const originArea =
+        testElement.shadowRoot!.querySelector<HTMLElement>('#originArea');
+    assertTrue(!!originArea);
+    assertTrue(originArea.hasAttribute('actionable'));
+    assertTrue(isChildVisible(originArea, '.subpage-arrow', true));
+    assertTrue(isChildVisible(originArea, '.separator', true));
+    originArea.click();
     assertEquals(
         routes.SITE_SETTINGS_SITE_DETAILS.path,
         Router.getInstance().getCurrentRoute().path);

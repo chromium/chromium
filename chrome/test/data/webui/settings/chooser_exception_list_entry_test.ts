@@ -9,7 +9,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {ChooserExceptionListEntryElement} from 'chrome://settings/lazy_load.js';
 import {ChooserType, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 import {assertTooltipIsHidden, createChooserException, createSiteException} from './test_util.js';
@@ -54,18 +54,12 @@ suite('ChooserExceptionListEntry', function() {
             testElement.shadowRoot!.querySelector('site-list-entry');
         assertTrue(!!siteListEntry);
 
-        // Ensure that the action menu button container is hidden.
-        const dotsMenu = siteListEntry.$.actionMenuButton;
-        assertTrue(dotsMenu.hidden);
-
-        // Ensure that the reset button is not hidden.
-        const resetButton = siteListEntry.$.resetSite;
-        assertFalse(resetButton.hidden);
-
-        // Ensure that the policy enforced indicator is hidden.
-        const policyIndicator =
-            siteListEntry.shadowRoot!.querySelector('cr-policy-pref-indicator');
-        assertFalse(!!policyIndicator);
+        // Ensure that the action menu button is not visible.
+        assertFalse(isChildVisible(siteListEntry, '#actionMenuButton'));
+        // Ensure that the reset button is visible.
+        assertTrue(isChildVisible(siteListEntry, '#resetSite'));
+        // Ensure that the policy enforced indicator is not visible.
+        assertFalse(isChildVisible(siteListEntry, 'cr-policy-pref-indicator'));
       });
 
   test(
@@ -87,18 +81,12 @@ suite('ChooserExceptionListEntry', function() {
             testElement.shadowRoot!.querySelector('site-list-entry');
         assertTrue(!!siteListEntry);
 
-        // Ensure that the action menu button container is hidden.
-        const dotsMenu = siteListEntry.$.actionMenuButton;
-        assertTrue(dotsMenu.hidden);
-
-        // Ensure that the reset button is hidden.
-        const resetButton = siteListEntry.$.resetSite;
-        assertTrue(resetButton.hidden);
-
-        // Ensure that the policy enforced indicator is not hidden.
-        const policyIndicator =
-            siteListEntry.shadowRoot!.querySelector('cr-policy-pref-indicator');
-        assertTrue(!!policyIndicator);
+        // Ensure that the action menu button is not visible.
+        assertFalse(isChildVisible(siteListEntry, '#actionMenuButton'));
+        // Ensure that the reset button is not visible.
+        assertFalse(isChildVisible(siteListEntry, '#resetSite'));
+        // Ensure that the policy enforced indicator is visible.
+        assertTrue(isChildVisible(siteListEntry, 'cr-policy-pref-indicator'));
       });
 
   test(
@@ -124,30 +112,16 @@ suite('ChooserExceptionListEntry', function() {
         assertEquals(siteListEntries.length, 2);
 
         // The first entry should be policy enforced.
-        const firstDotsMenu = siteListEntries[0]!.$.actionMenuButton;
-        assertTrue(!!firstDotsMenu);
-        assertTrue(firstDotsMenu.hidden);
-
-        const firstResetButton = siteListEntries[0]!.$.resetSite;
-        assertTrue(firstResetButton.hidden);
-
-        const firstPolicyIndicator =
-            siteListEntries[0]!.shadowRoot!.querySelector(
-                'cr-policy-pref-indicator');
-        assertTrue(!!firstPolicyIndicator);
+        assertFalse(isChildVisible(siteListEntries[0]!, '#actionMenuButton'));
+        assertFalse(isChildVisible(siteListEntries[0]!, '#resetSite'));
+        assertTrue(
+            isChildVisible(siteListEntries[0]!, 'cr-policy-pref-indicator'));
 
         // The second entry should be user granted.
-        const secondDotsMenu = siteListEntries[1]!.$.actionMenuButton;
-        assertTrue(!!secondDotsMenu);
-        assertTrue(secondDotsMenu.hidden);
-
-        const secondResetButton = siteListEntries[1]!.$.resetSite;
-        assertFalse(secondResetButton.hidden);
-
-        const secondPolicyIndicator =
-            siteListEntries[1]!.shadowRoot!.querySelector(
-                'cr-policy-pref-indicator');
-        assertFalse(!!secondPolicyIndicator);
+        assertFalse(isChildVisible(siteListEntries[1]!, '#actionMenuButton'));
+        assertTrue(isChildVisible(siteListEntries[1]!, '#resetSite'));
+        assertFalse(
+            isChildVisible(siteListEntries[1]!, 'cr-policy-pref-indicator'));
       });
 
   test(
@@ -206,13 +180,13 @@ suite('ChooserExceptionListEntry', function() {
             testElement.shadowRoot!.querySelector('site-list-entry');
         assertTrue(!!siteListEntry);
 
-        // Ensure that the action menu button is hidden.
-        const dotsMenu = siteListEntry.$.actionMenuButton;
-        assertTrue(dotsMenu.hidden);
+        // Ensure that the action menu button is not visible.
+        assertFalse(isChildVisible(siteListEntry, '#actionMenuButton'));
 
-        // Ensure that the reset button is not hidden.
-        const resetButton = siteListEntry.$.resetSite;
-        assertFalse(resetButton.hidden);
+        const resetButton =
+            siteListEntry.shadowRoot!.querySelector<HTMLElement>('#resetSite');
+        assertTrue(!!resetButton);
+        assertTrue(isVisible(resetButton));
 
         resetButton.click();
         const args =

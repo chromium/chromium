@@ -58,10 +58,13 @@
       <div class="list-frame menu-content vertical-list" id="listContainer"
           hidden$="[[!hasSites_(sites.*)]]">
         <iron-list items="[[getFilteredSites_(searchFilter, sites.*)]]"
-            preserve-focus risk-selection>
+            role="grid" aria-labelledby="listHeader"
+            aria-describedby="[[categoryHeader]]" preserve-focus risk-selection>
           <template>
             <site-list-entry model="[[item]]" read-only-list="[[readOnlyList]]"
-                on-show-action-menu="onShowActionMenu_" tabindex$="[[tabIndex]]"
+                on-show-action-menu="onShowActionMenu_"
+                singleton-entry="[[hasOneFilteredSite_(searchFilter, sites.*)]]"
+                section-header="[[categoryHeader]]" tabindex$="[[tabIndex]]"
                 first$="[[!index]]" iron-list-tab-index="[[tabIndex]]"
                 last-focused="{{lastFocused_}}" list-blurred="{{listBlurred_}}"
                 on-show-tooltip="onShowTooltip_" focus-row-index="[[index]]"
