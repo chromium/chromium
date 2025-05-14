@@ -57,6 +57,7 @@ class FakeEnterpriseSearchAggregatorProvider
   using EnterpriseSearchAggregatorProvider::RequestCompleted;
   using EnterpriseSearchAggregatorProvider::RequestStarted;
   using EnterpriseSearchAggregatorProvider::SearchAggregatorRequest;
+  using EnterpriseSearchAggregatorProvider::SetTimeRequestSent;
 
   using EnterpriseSearchAggregatorProvider::adjusted_input_;
   using EnterpriseSearchAggregatorProvider::done_;
@@ -547,6 +548,7 @@ class EnterpriseSearchAggregatorProviderTest : public testing::Test {
                                .multiple_requests
                            ? provider_->kNumMultipleRequests
                            : 1;
+    provider_->SetTimeRequestSent();
     for (int i = 0; i < num_requests; ++i) {
       provider_->RequestStarted(i, nullptr);
       provider_->RequestCompleted(i, nullptr, response_code,
@@ -1759,6 +1761,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Logging) {
     base::HistogramTester histogram_tester;
     provider_->done_ = false;
     InitRequests();
+    provider_->SetTimeRequestSent();
     provider_->RequestStarted(
         0, network::SimpleURLLoader::Create(
                std::make_unique<network::ResourceRequest>(),

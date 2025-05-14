@@ -559,7 +559,11 @@ void EnterpriseSearchAggregatorProvider::Run(const AutocompleteInput& input) {
       kMultipleRequests()
           ? std::vector<std::vector<int>>{people, content, query}
           : std::vector<std::vector<int>>{all_types};
-
+  // For now, set time requests started as when the requests are run.
+  // TODO(crbug.com/415786421): This bug will add a `start_time` for each
+  //   `SearchAggregatorRequest` and log latencies for each request instead of
+  //   once for all requests.
+  SetTimeRequestSent();
   for (size_t i = 0; i < request_types.size(); ++i) {
     requests_.push_back({});
   }
@@ -580,7 +584,6 @@ void EnterpriseSearchAggregatorProvider::Run(const AutocompleteInput& input) {
 void EnterpriseSearchAggregatorProvider::RequestStarted(
     int request_index,
     std::unique_ptr<network::SimpleURLLoader> loader) {
-  SetTimeRequestSent();
   requests_[request_index].loader = std::move(loader);
 }
 
@@ -1056,7 +1059,7 @@ AutocompleteMatch EnterpriseSearchAggregatorProvider::CreateMatch(
 }
 
 void EnterpriseSearchAggregatorProvider::SetTimeRequestSent() {
-  client_->GetRemoteSuggestionsService(/*create_if_necessary=*/false)
+  client_->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
       ->SetTimeRequestSent(
           RemoteRequestType::kEnterpriseSearchAggregatorSuggest,
           base::TimeTicks::Now());
