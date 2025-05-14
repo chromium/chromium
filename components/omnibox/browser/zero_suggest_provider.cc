@@ -495,7 +495,9 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
   }
 
   // Do not start a request if async requests are disallowed.
-  if (input.omit_asynchronous_matches()) {
+  if (input.omit_asynchronous_matches() ||
+      omnibox_feature_configs::ContextualSearch::Get()
+          .zero_suggest_synchronous_matches_only) {
     return;
   }
 

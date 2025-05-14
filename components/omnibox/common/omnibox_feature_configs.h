@@ -140,6 +140,7 @@ struct ContextualSearch : Config<ContextualSearch> {
   DECLARE_FEATURE(kSendContextualUrlSuggestParam);
   DECLARE_FEATURE(kOmniboxContextualSearchOnFocusSuggestions);
   DECLARE_FEATURE(kContextualSearchBoxUsesContextualSearchProvider);
+  DECLARE_FEATURE(kOmniboxZeroSuggestSynchronousMatchesOnly);
 
   // Whether to use contextual search features, for example the lens action.
   bool IsContextualSearchEnabled() const;
@@ -164,6 +165,10 @@ struct ContextualSearch : Config<ContextualSearch> {
   // Whether to use ContextualSearchProvider instead of ZeroSuggestProvider for
   // sourcing contextual search box matches.
   bool csb_uses_csp;
+
+  // Whether to omit asynchronous matches in ZeroSuggestProvider specifically,
+  // a behavior that is relevant to one planned configuration of this feature.
+  bool zero_suggest_synchronous_matches_only;
 };
 
 // If enabled, allows MIA zero-prefix suggestions in NTP omnibox and realbox.
