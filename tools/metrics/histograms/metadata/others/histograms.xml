@@ -7155,9 +7155,29 @@ chromium-metrics-reviews@google.com.
   <owner>markrowe@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
-    The error code returned by SecKeychainFindGenericPassword.
-    errSecItemNotFound is handled and will not be emitted. This is emitted every
-    time OSCrypt fails to retrieve the safe storage password from the keychain.
+    Once per launch of Mac Chrome, OSCrypt retrieves the &quot;safe
+    storage&quot; item from the Keychain. If an error occurs during this
+    retrieval, the OSCrypt.Mac.FindGenericPasswordResult histogram will have a
+    kErrorOccurred enum recorded, and this histogram will have the actual error
+    code returned by SecItemCopyMatching/SecKeychainFindGenericPassword
+    recorded. In all other cases (either the &quot;safe storage&quot; item was
+    found or it was not found but there was no error), this metric is not
+    recorded.
+  </summary>
+</histogram>
+
+<histogram name="OSCrypt.Mac.FindGenericPasswordResult"
+    enum="FindGenericPasswordResult" expires_after="2025-12-01">
+  <owner>avi@chromium.org</owner>
+  <owner>lgrey@chromium.org</owner>
+  <owner>markrowe@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Once per launch of Mac Chrome, OSCrypt retrieves the &quot;safe
+    storage&quot; item from the Keychain. This metric is logged for every such
+    retrieval, recording an enum of whether the item was found, not found, or an
+    error occurred. In the case of an error occurring, the actual error returned
+    by the API will be recorded in OSCrypt.Mac.FindGenericPasswordError.
   </summary>
 </histogram>
 

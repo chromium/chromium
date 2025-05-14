@@ -26,6 +26,12 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="FindGenericPasswordResult">
+  <int value="0" label="kPasswordFound"/>
+  <int value="1" label="kPasswordNotFound"/>
+  <int value="2" label="kErrorOccurred"/>
+</enum>
+
 <enum name="MacCloneExists">
   <int value="0" label="EXISTS"/>
   <int value="1" label="MISSING_MAIN_EXECUTABLE"/>

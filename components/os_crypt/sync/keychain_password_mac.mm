@@ -15,6 +15,7 @@
 #include "base/rand_util.h"
 #include "build/branding_buildflags.h"
 #include "crypto/apple_keychain.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 using crypto::AppleKeychain;
 
@@ -36,6 +37,15 @@ const char kDefaultAccountName[] = "Chrome";
 const char kDefaultServiceName[] = "Chromium Safe Storage";
 const char kDefaultAccountName[] = "Chromium";
 #endif
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FindGenericPasswordResult {
+  kPasswordFound = 0,
+  kPasswordNotFound = 1,
+  kErrorOccurred = 2,
+  kMaxValue = kErrorOccurred,
+};
 
 // Generates a random password and adds it to the Keychain.  The added password
 // is returned from the function.  If an error occurs, an empty password is
@@ -78,19 +88,28 @@ KeychainPassword::KeychainPassword(const AppleKeychain& keychain)
 KeychainPassword::~KeychainPassword() = default;
 
 std::string KeychainPassword::GetPassword() const {
+  FindGenericPasswordResult uma_result;
+  absl::Cleanup log_uma_result = [&uma_result] {
+    base::UmaHistogramEnumeration("OSCrypt.Mac.FindGenericPasswordResult",
+                                  uma_result);
+  };
+
   auto password =
       keychain_->FindGenericPassword(GetServiceName(), GetAccountName());
 
   if (password.has_value()) {
+    uma_result = FindGenericPasswordResult::kPasswordFound;
     return std::string(base::as_string_view(*password));
   }
 
   if (password.error() == errSecItemNotFound) {
+    uma_result = FindGenericPasswordResult::kPasswordNotFound;
     return AddRandomPasswordToKeychain(*keychain_, GetServiceName(),
                                        GetAccountName());
   }
 
   OSSTATUS_LOG(ERROR, password.error()) << "Keychain lookup failed";
+  uma_result = FindGenericPasswordResult::kErrorOccurred;
   base::UmaHistogramSparse("OSCrypt.Mac.FindGenericPasswordError",
                            password.error());
   return std::string();
