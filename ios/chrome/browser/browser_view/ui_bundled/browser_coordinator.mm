@@ -4348,15 +4348,11 @@ enum class ToolbarKind {
 - (void)stopQuickDeleteForAnimationWithCompletion:(ProceduralBlock)completion {
   CHECK(IsIosQuickDeleteEnabled());
 
-  // If BrowserViewController has not presented any view controller, then
-  // trigger `completion` immediately.
-  if (!self.viewController.presentedViewController) {
-    // TODO(crbug.com/335387869): Remove NotFatalUntil when we're sure this code
-    // path is infeasible. If Quick Delete is not visible because it was
-    // dismissed while the deletion was occuring, then the tab grid should be
-    // visible.
-    CHECK(self.sceneState.controller.isTabGridVisible,
-          base::NotFatalUntil::M139);
+  // If BrowserViewController has not presented any view controller (i.e. QD has
+  // been dismissed) and the tab grid is also not visible, then just trigger
+  // `completion` immediately.
+  if (!self.viewController.presentedViewController &&
+      !self.sceneState.controller.isTabGridVisible) {
     if (completion) {
       completion();
     }
