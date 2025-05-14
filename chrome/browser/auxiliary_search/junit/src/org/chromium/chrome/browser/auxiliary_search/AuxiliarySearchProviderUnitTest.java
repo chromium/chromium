@@ -284,6 +284,39 @@ public class AuxiliarySearchProviderUnitTest {
     }
 
     @Test
+    public void testSaveAndReadDonationMetadataAsync_V2_CustomTabs() {
+        @MetaDataVersion int metaDataVersion = MetaDataVersion.MULTI_TYPE_V2;
+        long now = TimeUtils.uptimeMillis();
+        // The entries include 3 elements, and the second and third ones will be saved to the
+        // metadata file. This is because testSaveAndReadDonationMetadataAsyncImpl() sets the
+        // starting index to 1.
+        List<AuxiliarySearchDataEntry> entries =
+                AuxiliarySearchTestHelper.createAuxiliarySearchDataEntries_CustomTabs(now);
+
+        testSaveAndReadDonationMetadataAsyncImpl(
+                entries,
+                metaDataVersion,
+                (entryList) -> {
+                    assertEquals(2, entryList.size());
+
+                    AuxiliarySearchDataEntry entry = (AuxiliarySearchDataEntry) entryList.get(0);
+                    assertEquals(AuxiliarySearchEntryType.CUSTOM_TAB, entry.type);
+                    assertEquals(Tab.INVALID_TAB_ID, entry.tabId);
+                    assertEquals(JUnitTestGURLs.URL_2, entry.url);
+                    assertEquals(AuxiliarySearchTestHelper.TITLE_2, entry.title);
+                    assertEquals(now, entry.lastActiveTime);
+                    // Verifies the case with an empty string as app id.
+                    assertEquals("", entry.appId);
+                    assertEquals(AuxiliarySearchTestHelper.VISIT_ID_2, entry.visitId);
+                    assertEquals(0, entry.score);
+
+                    // Verifies the case with an non-empty app id.
+                    entry = (AuxiliarySearchDataEntry) entryList.get(1);
+                    assertEquals(AuxiliarySearchTestHelper.APP_ID_2, entry.appId);
+                });
+    }
+
+    @Test
     public void testCreationViaCTABackgroundTask() {
         mAuxiliarySearchProvider =
                 new AuxiliarySearchProvider(
