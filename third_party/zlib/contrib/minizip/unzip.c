@@ -482,6 +482,44 @@ local ZPOS64_T unz64local_SearchCentralDir64(const zlib_filefunc64_32_def* pzlib
     if (uL != 1)
         return CENTRALDIRINVALID;
 
+    /* If bytes are pre-pended to the archive, relativeOffset must be advanced
+       by that many bytes. The central dir must exist between the specified
+       relativeOffset and uPosFound. */
+    const int BUFSIZE = 1024 * 4;
+    buf = (unsigned char*)ALLOC(BUFSIZE);
+    if (buf==NULL)
+        return CENTRALDIRINVALID;
+    // Zip64 EOCDR is at least 48 bytes long.
+    while (relativeOffset <= uPosFound - 48) {
+        int found = 0;
+        uLong uReadSize = uPosFound - relativeOffset;
+        if (uReadSize > BUFSIZE) {
+            uReadSize = BUFSIZE;
+        }
+        if (ZSEEK64(*pzlib_filefunc_def, filestream, relativeOffset, ZLIB_FILEFUNC_SEEK_SET) != 0) {
+            break;
+        }
+        if (ZREAD64(*pzlib_filefunc_def, filestream, buf, uReadSize) != uReadSize) {
+            break;
+        }
+        for (int i = 0; i < uReadSize - 3; ++i) {
+            // Looking for 0x06064b50, the Zip64 EOCDR signature.
+            if (buf[i] == 0x50 && buf[i + 1] == 0x4b &&
+                buf[i + 2] == 0x06 && buf[i + 3] == 0x06)
+            {
+                relativeOffset += i;
+                found = 1;
+                break;
+            }
+        }
+        if (found) {
+            break;
+        }
+        // Re-read the last 3 bytes, in case they're the front of the signature.
+        relativeOffset += uReadSize - 3;
+    }
+    free(buf);
+
     /* Goto end of central directory record */
     if (ZSEEK64(*pzlib_filefunc_def,filestream, relativeOffset,ZLIB_FILEFUNC_SEEK_SET)!=0)
         return CENTRALDIRINVALID;
