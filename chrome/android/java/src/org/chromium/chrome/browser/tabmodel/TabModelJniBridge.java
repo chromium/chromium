@@ -110,6 +110,12 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     /** Returns whether the model is done initializing itself and should be used. */
     public abstract boolean isInitializationComplete();
 
+    /**
+     * Required to be called before this object is ready for most usage. Used to indicate all tabs
+     * have been loaded and native is ready.
+     */
+    public abstract void completeInitialization();
+
     /** Broadcast a native-side notification that all tabs are now loaded from storage. */
     public void broadcastSessionRestoreComplete() {
         assert isNativeInitialized();
@@ -170,7 +176,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
             Tab parent, Profile profile, WebContents webContents, boolean select);
 
     @CalledByNative
-    protected abstract void openNewTab(
+    public abstract void openNewTab(
             Tab parent,
             GURL url,
             @Nullable Origin initiatorOrigin,

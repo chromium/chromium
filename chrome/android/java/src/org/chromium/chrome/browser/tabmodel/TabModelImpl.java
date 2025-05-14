@@ -232,7 +232,7 @@ public class TabModelImpl extends TabModelJniBridge {
         super.destroy();
     }
 
-    /** Required to be called before this object is ready for most usage. */
+    @Override
     public void completeInitialization() {
         mInitializationComplete = true;
 

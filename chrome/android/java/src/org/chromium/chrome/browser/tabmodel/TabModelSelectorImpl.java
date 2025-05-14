@@ -96,7 +96,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         if (isTabStateInitialized()) return;
         super.markTabStateInitialized();
 
-        TabModelImpl model = (TabModelImpl) getModel(false);
+        TabModelJniBridge model = (TabModelJniBridge) getModel(false);
         if (model != null) {
             model.completeInitialization();
             if (!ChromeFeatureList.isEnabled(ChromeFeatureList.HEADLESS_TAB_MODEL)) {

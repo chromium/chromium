@@ -87,7 +87,7 @@ import org.chromium.chrome.browser.tab.InterceptNavigationDelegateTabHelper;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tabmodel.TabModelImpl;
+import org.chromium.chrome.browser.tabmodel.TabModelJniBridge;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -1937,7 +1937,8 @@ public class UrlOverridingTest {
     public void testWindowOpenRedirect() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         ChromeActivity activity = mActivityTestRule.getActivity();
-        TabModelImpl tabModel = (TabModelImpl) activity.getTabModelSelector().getModel(false);
+        TabModelJniBridge tabModel =
+                (TabModelJniBridge) activity.getTabModelSelector().getModel(false);
         GURL url = new GURL(EXTERNAL_APP_URL);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

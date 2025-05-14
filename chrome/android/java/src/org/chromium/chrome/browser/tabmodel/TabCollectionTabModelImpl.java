@@ -25,7 +25,9 @@ import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -43,11 +45,18 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Integer> mTabCountSupplier =
             new ObservableSupplierImpl<>(0);
+
+    // Efficient lookup of tabs by id rather than index (stored in C++). Also ensures the Java Tab
+    // objects are not
+    // GC'd as the C++ TabAndroid objects only hold weak references to their Java counterparts.
+    private final Map<Integer, Tab> mTabIdToTabs = new HashMap<>();
+
     private final TabCreator mRegularTabCreator;
     private final TabCreator mIncognitoTabCreator;
     // TODO(crbug.com/405343634): Replace this with the appropriate TabUngrouper.
     private final TabUngrouper mTabUngrouper = new PassthroughTabUngrouper(() -> this);
 
+    private boolean mInitializationComplete;
     private boolean mActive;
 
     /**
@@ -72,6 +81,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public void destroy() {
+        // TODO(crbug.com/405343634): Destroy any still open tabs.
+        mTabCountSupplier.set(0);
+        mTabIdToTabs.clear();
+        mTabModelObservers.clear();
+        mTabGroupObservers.clear();
         super.destroy();
     }
 
@@ -113,7 +127,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public @Nullable Tab getTabById(int tabId) {
-        return null;
+        return mTabIdToTabs.get(tabId);
     }
 
     @Override
@@ -168,7 +182,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public boolean isInitializationComplete() {
-        return true;
+        return mInitializationComplete;
     }
 
     @Override
@@ -186,7 +200,18 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public void addTab(
-            Tab tab, int index, @TabLaunchType int type, @TabCreationState int creationState) {}
+            Tab tab, int index, @TabLaunchType int type, @TabCreationState int creationState) {
+
+        assert !mTabIdToTabs.containsKey(tab.getId())
+                : "Attempting to add a duplicate tab id=" + tab.getId();
+        if (tab.isOffTheRecord() != isOffTheRecord()) {
+            throw new IllegalStateException("Attempting to open a tab in the wrong model.");
+        }
+
+        // TODO(crbug.com/405343634): Add the tab to the collection and select the tab if required.
+
+        mTabIdToTabs.put(tab.getId(), tab);
+    }
 
     // TabCloser overrides.
 
@@ -196,6 +221,16 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     // TabModelInternal overrides.
+
+    @Override
+    public void completeInitialization() {
+        assert !mInitializationComplete : "TabCollectionTabModelImpl initialized multiple times.";
+        mInitializationComplete = true;
+
+        // TODO(crbug.com/405343634): set activated and current index if applicable.
+
+        for (TabModelObserver observer : mTabModelObservers) observer.restoreCompleted();
+    }
 
     @Override
     public void removeTab(Tab tab) {}
@@ -222,7 +257,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
-    protected void openNewTab(
+    public void openNewTab(
             Tab parent,
             GURL url,
             @Nullable Origin initiatorOrigin,

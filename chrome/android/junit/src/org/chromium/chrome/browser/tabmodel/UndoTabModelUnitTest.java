@@ -145,7 +145,7 @@ public class UndoTabModelUnitTest {
 
         @Override
         public void forceCloseTabs(@NonNull TabClosureParams tabClosureParams) {
-            ((TabModelImpl) mSelector.getModel(mIsIncognito)).closeTabs(tabClosureParams);
+            ((TabCloser) mSelector.getModel(mIsIncognito)).closeTabs(tabClosureParams);
         }
 
         @Override

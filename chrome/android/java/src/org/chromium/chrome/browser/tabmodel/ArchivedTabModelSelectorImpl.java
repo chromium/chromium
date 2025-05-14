@@ -50,7 +50,7 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
         if (isTabStateInitialized()) return;
 
         super.markTabStateInitialized();
-        TabModelImpl model = (TabModelImpl) getModel(false);
+        TabModelJniBridge model = (TabModelJniBridge) getModel(false);
         model.completeInitialization();
     }
 
