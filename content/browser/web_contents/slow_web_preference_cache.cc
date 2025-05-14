@@ -22,7 +22,7 @@
 #elif BUILDFLAG(IS_ANDROID)
 #include "ui/base/device_form_factor.h"
 #include "ui/events/devices/input_device_observer_android.h"
-#elif BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
+#elif BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS) && BUILDFLAG(USE_BLINK)
 #include "ui/events/devices/input_device_observer_ios.h"
 #endif
 
@@ -61,7 +61,7 @@ SlowWebPreferenceCache::SlowWebPreferenceCache() {
   ui::DeviceDataManager::GetInstance()->AddObserver(this);
 #elif BUILDFLAG(IS_ANDROID)
   ui::InputDeviceObserverAndroid::GetInstance()->AddObserver(this);
-#elif BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
+#elif BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS) && BUILDFLAG(USE_BLINK)
   ui::InputDeviceObserverIOS::GetInstance()->AddObserver(this);
 #endif
 }
@@ -73,7 +73,7 @@ SlowWebPreferenceCache::~SlowWebPreferenceCache() {
   ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
 #elif BUILDFLAG(IS_ANDROID)
   ui::InputDeviceObserverAndroid::GetInstance()->RemoveObserver(this);
-#elif BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
+#elif BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS) && BUILDFLAG(USE_BLINK)
   ui::InputDeviceObserverIOS::GetInstance()->RemoveObserver(this);
 #endif
 }

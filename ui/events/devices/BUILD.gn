@@ -10,6 +10,10 @@ if (is_android) {
   import("//third_party/jni_zero/jni_zero.gni")
 }
 
+if (is_ios) {
+  import("//build/config/apple/mobile_config.gni")  # For `target_platform`
+}
+
 component("devices") {
   sources = [
     "device_data_manager.cc",
@@ -56,7 +60,7 @@ component("devices") {
     ]
   }
 
-  if (is_ios && use_blink) {
+  if (is_ios && use_blink && target_platform == "iphoneos") {
     sources += [
       "input_device_observer_ios.h",
       "input_device_observer_ios.mm",

@@ -437,7 +437,7 @@ component("base") {
       sources += [ "pointer/pointer_device_win.cc" ]
     } else if (is_android) {
       sources += [ "pointer/pointer_device_android.cc" ]
-    } else if (is_ios) {
+    } else if (is_ios && target_platform == "iphoneos") {
       sources += [ "pointer/pointer_device_ios.cc" ]
     } else if (is_linux || is_chromeos) {
       sources += [ "pointer/pointer_device_linux.cc" ]
