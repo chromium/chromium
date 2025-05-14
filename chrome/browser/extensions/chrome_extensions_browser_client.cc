@@ -53,6 +53,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
@@ -89,6 +90,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/mojom/view_type.mojom-shared.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "ipc/ipc_message.h"
 #include "url/gurl.h"
@@ -527,6 +529,40 @@ ChromeExtensionsBrowserClient::GetExtensionWebContentsObserver(
 
 void ChromeExtensionsBrowserClient::ClearBackForwardCache() {
   ExtensionTabUtil::ClearBackForwardCache();
+}
+
+void ChromeExtensionsBrowserClient::AttachExtensionTaskManagerTag(
+    content::WebContents* web_contents,
+    mojom::ViewType view_type) {
+  switch (view_type) {
+    case mojom::ViewType::kAppWindow:
+    case mojom::ViewType::kComponent:
+    case mojom::ViewType::kExtensionBackgroundPage:
+    case mojom::ViewType::kExtensionPopup:
+    case mojom::ViewType::kOffscreenDocument:
+    case mojom::ViewType::kExtensionSidePanel:
+      // These are the only types that are tracked by the ExtensionTag.
+      task_manager::WebContentsTags::CreateForExtension(web_contents,
+                                                        view_type);
+      return;
+
+    case mojom::ViewType::kBackgroundContents:
+    case mojom::ViewType::kExtensionGuest:
+    case mojom::ViewType::kTabContents:
+    case mojom::ViewType::kDeveloperTools:
+      // Those types are tracked by other tags:
+      // BACKGROUND_CONTENTS --> task_manager::BackgroundContentsTag.
+      // GUEST --> ChromeGuestViewManagerDelegate.
+      // PANEL --> task_manager::PanelTag.
+      // TAB_CONTENTS --> task_manager::TabContentsTag.
+      // DEVELOPER_TOOLS --> task_manager::DevToolsTag.
+      // These tags are created and attached to the web_contents in other
+      // locations, and they must be ignored here.
+      return;
+
+    case mojom::ViewType::kInvalid:
+      NOTREACHED();
+  }
 }
 
 scoped_refptr<update_client::UpdateClient>

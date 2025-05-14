@@ -20,7 +20,6 @@
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/extensions/user_script_listener.h"
-#include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_loader_factory.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -28,7 +27,6 @@
 #include "chrome/common/url_constants.h"
 #include "extensions/browser/api/content_settings/content_settings_service.h"
 #include "extensions/browser/extensions_browser_interface_binders.h"
-#include "extensions/common/mojom/view_type.mojom-shared.h"
 
 namespace extensions {
 
@@ -106,40 +104,6 @@ void ChromeExtensionsBrowserClient::CleanUpWebView(
   menu_manager->RemoveAllContextItems(MenuItem::ExtensionKey(
       "", embedder_process_id, /*webview_embedder_frame_id=*/MSG_ROUTING_NONE,
       view_instance_id));
-}
-
-void ChromeExtensionsBrowserClient::AttachExtensionTaskManagerTag(
-    content::WebContents* web_contents,
-    mojom::ViewType view_type) {
-  switch (view_type) {
-    case mojom::ViewType::kAppWindow:
-    case mojom::ViewType::kComponent:
-    case mojom::ViewType::kExtensionBackgroundPage:
-    case mojom::ViewType::kExtensionPopup:
-    case mojom::ViewType::kOffscreenDocument:
-    case mojom::ViewType::kExtensionSidePanel:
-      // These are the only types that are tracked by the ExtensionTag.
-      task_manager::WebContentsTags::CreateForExtension(web_contents,
-                                                        view_type);
-      return;
-
-    case mojom::ViewType::kBackgroundContents:
-    case mojom::ViewType::kExtensionGuest:
-    case mojom::ViewType::kTabContents:
-    case mojom::ViewType::kDeveloperTools:
-      // Those types are tracked by other tags:
-      // BACKGROUND_CONTENTS --> task_manager::BackgroundContentsTag.
-      // GUEST --> ChromeGuestViewManagerDelegate.
-      // PANEL --> task_manager::PanelTag.
-      // TAB_CONTENTS --> task_manager::TabContentsTag.
-      // DEVELOPER_TOOLS --> task_manager::DevToolsTag.
-      // These tags are created and attached to the web_contents in other
-      // locations, and they must be ignored here.
-      return;
-
-    case mojom::ViewType::kInvalid:
-      NOTREACHED();
-  }
 }
 
 KioskDelegate* ChromeExtensionsBrowserClient::GetKioskDelegate() {

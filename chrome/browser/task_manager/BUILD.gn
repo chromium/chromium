@@ -3,7 +3,9 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//components/nacl/features.gni")
+import("//extensions/buildflags/buildflags.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -61,10 +63,12 @@ source_set("task_manager") {
     "//chrome/browser/profiles:profile_util",
     "//chrome/common:buildflags",
     "//components/favicon/core",
+    "//components/guest_view/buildflags",
     "//components/nacl/common:buildflags",
     "//components/sessions:session_id",
     "//components/webapps/common",
     "//content/public/browser",
+    "//extensions/buildflags",
     "//services/resource_coordinator/public/cpp/memory_instrumentation",
     "//third_party/blink/public/common:headers",
     "//third_party/blink/public/common/tokens:tokens_headers",
@@ -231,10 +235,23 @@ source_set("impl") {
     ]
   }
   if (!is_android) {
+    deps += [ "//chrome/browser/background" ]
+    sources += [
+      "providers/web_contents/background_contents_tag.cc",
+      "providers/web_contents/background_contents_task.cc",
+    ]
+  }
+  if (enable_guest_view) {
+    deps += [ "//components/guest_view/browser" ]
+    sources += [
+      "providers/web_contents/guest_tag.cc",
+      "providers/web_contents/guest_task.cc",
+      "providers/web_contents/guest_task_mparch.cc",
+    ]
+  }
+  if (enable_extensions_core) {
     deps += [
-      "//chrome/browser/background:background",
       "//chrome/browser/extensions",
-      "//components/guest_view/browser",
       "//extensions:extensions_browser_resources",
       "//extensions:extensions_browser_resources_grit",
       "//extensions/browser",
@@ -242,13 +259,8 @@ source_set("impl") {
       "//extensions/common",
     ]
     sources += [
-      "providers/web_contents/background_contents_tag.cc",
-      "providers/web_contents/background_contents_task.cc",
       "providers/web_contents/extension_tag.cc",
       "providers/web_contents/extension_task.cc",
-      "providers/web_contents/guest_tag.cc",
-      "providers/web_contents/guest_task.cc",
-      "providers/web_contents/guest_task_mparch.cc",
     ]
   }
   if (enable_glic) {

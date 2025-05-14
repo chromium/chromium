@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_TASK_MANAGER_WEB_CONTENTS_TAGS_H_
 
 #include "build/build_config.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "components/webapps/common/web_app_id.h"
+#include "extensions/buildflags/buildflags.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/common/mojom/view_type.mojom.h"  // nogncheck
-#endif                                                // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if !BUILDFLAG(IS_ANDROID)
 class BackgroundContents;
@@ -74,14 +76,16 @@ class WebContentsTags {
   // up by the caller, as it is owned by |web_contents|.
   static void CreateForPrintingContents(content::WebContents* web_contents);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   // Tags a WebContents owned by a GuestViewBase so that it shows up in the
   // task manager. Calling this function creates a GuestTag, and attaches it to
   // |web_contents|. If an instance is already attached, this does nothing. The
   // resulting tag does not have to be cleaned up by the caller, as it is owned
   // by |web_contents|.
   static void CreateForGuestContents(content::WebContents* web_contents);
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Tags a WebContents that belongs to |extension| so that it shows up in the
   // task manager. Calling this function creates a ExtensionTag, and attaches
   // it to |web_contents|. If an instance is already attached, this does
@@ -91,7 +95,7 @@ class WebContentsTags {
   // non-background contents Extension.
   static void CreateForExtension(content::WebContents* web_contents,
                                  extensions::mojom::ViewType view_type);
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   // Tags a WebContents created for a tool so that it shows up in the task
   // manager. Calling this function creates a ToolTag, and attaches it to

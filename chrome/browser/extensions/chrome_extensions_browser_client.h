@@ -160,6 +160,8 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   void ReportError(content::BrowserContext* context,
                    std::unique_ptr<ExtensionError> error) override;
   void ClearBackForwardCache() override;
+  void AttachExtensionTaskManagerTag(content::WebContents* web_contents,
+                                     mojom::ViewType view_type) override;
   scoped_refptr<update_client::UpdateClient> CreateUpdateClient(
       content::BrowserContext* context) override;
   std::unique_ptr<ScopedExtensionUpdaterKeepAlive> CreateUpdaterKeepAlive(
@@ -253,8 +255,6 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   void CleanUpWebView(content::BrowserContext* browser_context,
                       int embedder_process_id,
                       int view_instance_id) override;
-  void AttachExtensionTaskManagerTag(content::WebContents* web_contents,
-                                     mojom::ViewType view_type) override;
   ScriptExecutor* GetScriptExecutorForTab(
       content::WebContents& web_contents) override;
   void GetWebViewStoragePartitionConfig(

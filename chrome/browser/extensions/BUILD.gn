@@ -1647,6 +1647,7 @@ source_set("chrome_extensions_browser_client") {
     "//chrome/browser/media/webrtc",
     "//chrome/browser/prefetch",
     "//chrome/browser/safe_browsing",
+    "//chrome/browser/task_manager",
     "//chrome/browser/ui",
     "//components/content_settings/core/browser",
     "//components/embedder_support:user_agent",

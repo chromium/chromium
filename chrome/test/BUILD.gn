@@ -1361,6 +1361,8 @@ source_set("platform_browser_tests") {
     "../browser/share/qr_code_generator_pixeltest.cc",
     "../browser/ssl/crlset_browsertest.cc",
     "../browser/storage/shared_storage_browsertest.cc",
+    "../browser/task_manager/mock_web_contents_task_manager.cc",
+    "../browser/task_manager/mock_web_contents_task_manager.h",
     "../browser/tpcd/support/origin_trial_service_browsertest.cc",
     "../browser/tpcd/support/tpcd_support_browsertest.cc",
     "../browser/tpcd/support/validity_service_browsertest.cc",
@@ -1543,6 +1545,7 @@ source_set("platform_browser_tests") {
       "../browser/extensions/webstore_installer_test.cc",
       "../browser/extensions/webstore_installer_test.h",
       "../browser/extensions/webstore_reinstaller_browsertest.cc",
+      "../browser/task_manager/providers/web_contents/extension_tag_browsertest.cc",
       "../browser/ui/webui/extensions/extensions_internals_browsertest.cc",
     ]
     deps += [
@@ -3351,11 +3354,8 @@ if (!is_android) {
       "../browser/sync/sessions/sync_sessions_router_tab_helper_browsertest.cc",
       "../browser/tab_contents/navigation_metrics_recorder_browsertest.cc",
       "../browser/tab_contents/view_source_browsertest.cc",
-      "../browser/task_manager/mock_web_contents_task_manager.cc",
-      "../browser/task_manager/mock_web_contents_task_manager.h",
       "../browser/task_manager/providers/web_contents/background_contents_tag_browsertest.cc",
       "../browser/task_manager/providers/web_contents/devtools_tag_browsertest.cc",
-      "../browser/task_manager/providers/web_contents/extension_tag_browsertest.cc",
       "../browser/task_manager/providers/web_contents/subframe_task_browsertest.cc",
       "../browser/task_manager/providers/web_contents/tab_contents_tag_browsertest.cc",
       "../browser/task_manager/providers/web_contents/web_app_tag_browsertest.cc",
