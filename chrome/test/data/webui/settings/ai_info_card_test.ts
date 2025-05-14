@@ -37,7 +37,7 @@ suite('AiInfoCard', function() {
     const thirdRow =
         infoCard.shadowRoot!.querySelector<HTMLElement>('li:nth-child(3)');
     assertTrue(!!thirdRow);
-    assertStringContains(thirdRow.innerText, 'Your organization controls how');
+    assertStringContains(thirdRow.innerText, 'Your organization manages how');
     // The managed string contains a learn more link.
     assertTrue(!!thirdRow.querySelector('a'));
     const crIcon = thirdRow.querySelector('cr-icon');
