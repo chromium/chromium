@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -89,6 +90,30 @@ class InspectorGhostRuleTest : public testing::Test,
     }
   }
 
+  CSSStyleSheet* CreateExpectedSheet(String expected_text) {
+    CSSStyleSheet* expected_sheet =
+        css_test_helpers::CreateStyleSheet(GetDocument());
+    expected_sheet->SetText(expected_text, CSSImportRules::kIgnoreWithWarning);
+    // Remove any '--ghost' declarations, leaving empty CSSNestedDeclarations
+    // behind. (See `ghost_rules_data`).
+    RemoveGhostDeclarations(expected_sheet);
+    return expected_sheet;
+  }
+
+  CSSStyleSheet* CreateActualSheet(String actual_text) {
+    CSSStyleSheet* actual_sheet =
+        css_test_helpers::CreateStyleSheet(GetDocument());
+    // InspectorGhostRules should create the ghost rules (i.e. empty
+    // CSSNestedDeclarations).
+    actual_text.Replace("--ghost: 1;", "");  // See `ghost_rules_data`.
+    actual_sheet->SetText(actual_text, CSSImportRules::kIgnoreWithWarning);
+    return actual_sheet;
+  }
+
+  void Populate(InspectorGhostRules& ghost_rules, CSSStyleSheet& sheet) {
+    ghost_rules.Populate(sheet);
+  }
+
  private:
   test::TaskEnvironment task_environment_;
 
@@ -106,25 +131,14 @@ TEST_P(InspectorGhostRuleTest, RefTest) {
   SCOPED_TRACE(testing::Message() << "Actual input text: " << actual_text);
   SCOPED_TRACE(testing::Message() << "Expected input text: " << expected_text);
 
-  CSSStyleSheet* expected_sheet =
-      css_test_helpers::CreateStyleSheet(GetDocument());
-  expected_sheet->SetText(expected_text, CSSImportRules::kIgnoreWithWarning);
-  // Remove any '--ghost' declarations, leaving empty CSSNestedDeclarations
-  // behind.
-  RemoveGhostDeclarations(expected_sheet);
-
-  CSSStyleSheet* actual_sheet =
-      css_test_helpers::CreateStyleSheet(GetDocument());
-  // InspectorGhostRules should create the ghost rules (i.e. empty
-  // CSSNestedDeclarations).
-  actual_text.Replace("--ghost: 1;", "");
-  actual_sheet->SetText(actual_text, CSSImportRules::kIgnoreWithWarning);
+  CSSStyleSheet* expected_sheet = CreateExpectedSheet(expected_text);
+  CSSStyleSheet* actual_sheet = CreateActualSheet(actual_text);
 
   String before_string = Serialize(actual_sheet);
 
   {
     InspectorGhostRules ghost_rules;
-    ghost_rules.Populate(*actual_sheet);
+    Populate(ghost_rules, *actual_sheet);
     EXPECT_EQ(Serialize(expected_sheet), Serialize(actual_sheet));
   }
 
@@ -141,19 +155,8 @@ TEST_P(InspectorGhostRuleTest, SharedContents) {
   SCOPED_TRACE(testing::Message() << "Actual input text: " << actual_text);
   SCOPED_TRACE(testing::Message() << "Expected input text: " << expected_text);
 
-  CSSStyleSheet* expected_sheet =
-      css_test_helpers::CreateStyleSheet(GetDocument());
-  expected_sheet->SetText(expected_text, CSSImportRules::kIgnoreWithWarning);
-  // Remove any '--ghost' declarations, leaving empty CSSNestedDeclarations
-  // behind.
-  RemoveGhostDeclarations(expected_sheet);
-
-  CSSStyleSheet* actual_sheet =
-      css_test_helpers::CreateStyleSheet(GetDocument());
-  // InspectorGhostRules should create the ghost rules (i.e. empty
-  // CSSNestedDeclarations).
-  actual_text.Replace("--ghost: 1;", "");
-  actual_sheet->SetText(actual_text, CSSImportRules::kIgnoreWithWarning);
+  CSSStyleSheet* expected_sheet = CreateExpectedSheet(expected_text);
+  CSSStyleSheet* actual_sheet = CreateActualSheet(actual_text);
 
   // Share contents with actual_sheet.
   CSSStyleSheet* second_sheet =
@@ -169,7 +172,7 @@ TEST_P(InspectorGhostRuleTest, SharedContents) {
 
   {
     InspectorGhostRules ghost_rules;
-    ghost_rules.Populate(*actual_sheet);
+    Populate(ghost_rules, *actual_sheet);
 
     EXPECT_EQ(Serialize(actual_sheet), Serialize(expected_sheet));
 
@@ -181,6 +184,79 @@ TEST_P(InspectorGhostRuleTest, SharedContents) {
 
   EXPECT_EQ(actual_sheet->Contents(), original_contents);
   EXPECT_EQ(second_sheet->Contents(), original_contents);
+}
+
+// crbug.com/417619104
+TEST_P(InspectorGhostRuleTest, IncorrectlySharedContents) {
+  String actual_text(GetParam());
+  String expected_text(GetParam());
+
+  SCOPED_TRACE(testing::Message() << "Actual input text: " << actual_text);
+  SCOPED_TRACE(testing::Message() << "Expected input text: " << expected_text);
+
+  CSSStyleSheet* expected_sheet = CreateExpectedSheet(expected_text);
+
+  CSSStyleSheet* actual1 = CreateActualSheet(actual_text);
+  CSSStyleSheet* actual2 = CreateActualSheet(actual_text);
+  CSSStyleSheet* actual3 = CreateActualSheet(actual_text);
+
+  // Nothing shares contents with actual1.
+
+  // actual2 has proper sharing:
+  CSSStyleSheet* actual2b =
+      MakeGarbageCollected<CSSStyleSheet>(actual2->Contents(), GetDocument());
+  // Pretend it's a cache hit.
+  actual2b->Contents()->SetIsUsedFromTextCache();
+
+  // actual3 has invalid sharing:
+  CSSStyleSheet* actual3b =
+      MakeGarbageCollected<CSSStyleSheet>(actual3->Contents(), GetDocument());
+  // No call to SetIsUsedFromTextCache here.
+
+  StyleSheetContents* original_contents1 = actual1->Contents();
+  StyleSheetContents* original_contents2 = actual2->Contents();
+  StyleSheetContents* original_contents3 = actual3->Contents();
+
+  ASSERT_NE(original_contents1, original_contents2);
+  ASSERT_NE(original_contents2, original_contents3);
+  ASSERT_EQ(actual2b->Contents(), original_contents2);
+  ASSERT_EQ(actual3b->Contents(), original_contents3);
+
+  String before_string = Serialize(actual2);
+  ASSERT_EQ(Serialize(actual2b), before_string);
+  ASSERT_EQ(Serialize(actual3b), before_string);
+
+  {
+    InspectorGhostRules ghost_rules;
+
+    HeapVector<Member<CSSStyleSheet>> sheets;
+    // In "random" order:
+    sheets.push_back(actual2b);
+    sheets.push_back(actual1);
+    sheets.push_back(actual3b);
+    sheets.push_back(actual2);
+    sheets.push_back(actual3);
+
+    bool success = ghost_rules.PopulateSheets(std::move(sheets));
+    EXPECT_FALSE(success);
+
+    // Population should have succeeded for actual1:
+    EXPECT_EQ(Serialize(actual1), Serialize(expected_sheet));
+
+    // Population should have succeeded for actual2[b]:
+    EXPECT_EQ(Serialize(actual2), Serialize(expected_sheet));
+    EXPECT_EQ(Serialize(actual2b), Serialize(expected_sheet));
+
+    // actual3[b] should be untouched due to illegal sharing:
+    EXPECT_EQ(Serialize(actual3), before_string);
+    EXPECT_EQ(Serialize(actual3b), before_string);
+  }
+
+  EXPECT_EQ(actual1->Contents(), original_contents1);
+  EXPECT_EQ(actual2->Contents(), original_contents2);
+  EXPECT_EQ(actual2b->Contents(), original_contents2);
+  EXPECT_EQ(actual3->Contents(), original_contents3);
+  EXPECT_EQ(actual3b->Contents(), original_contents3);
 }
 
 // For each of the items in this array, we'll produce an 'actual' stylesheet

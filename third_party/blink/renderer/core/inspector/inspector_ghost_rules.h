@@ -20,6 +20,7 @@ class CSSStyleSheet;
 class Document;
 class ExecutionContext;
 class TreeScope;
+class InspectorGhostRuleTest;
 
 // Ghost Rules are style rules that exist only during getMatchedStylesForNode
 // in order to surface the CSSNestedDeclaration rules that *could* be there,
@@ -51,13 +52,18 @@ class CORE_EXPORT InspectorGhostRules {
   STACK_ALLOCATED();
 
  public:
-  // Insert CSSNestedDeclaration rules in any place where they can occur.
+  // Attempts to call Populate() on every sheet.
   //
-  // Note that this *quietly* inserts rules (see CSSStyleRule/CSSGroupingRule::
-  // QuietlyInsertRule), which means that no style invalidation will take place
-  // as a result of calling this function. The ghost rules are instead made
-  // available for rule matching by `Activate`.
-  void Populate(CSSStyleSheet&);
+  // A return value of 'true' means every sheet was populated, and a return
+  // value of 'false' means *some* CSSStyleSheets were skipped due to invalid
+  // StyleSheetContents sharing (crbug.com/417619104). Some sheets being skipped
+  // is non-fatal: those sheets will just not contain any ghost rules, but are
+  // as normal otherwise.
+  [[nodiscard]] bool PopulateSheets(HeapVector<Member<CSSStyleSheet>>);
+
+  // Like PopulateSheets, does DCHECK+DumpWithoutCrashing on failure.
+  // TODO(crbug.com/417619104): Remove when investigation is done.
+  void PopulateSheetsWithAssertion(HeapVector<Member<CSSStyleSheet>>);
 
   // Temporarily make rules inserted by `Populate` available for rule matching.
   // Like `Populate`, this is a "quiet" process, causing no invalidation.
@@ -71,6 +77,16 @@ class CORE_EXPORT InspectorGhostRules {
   }
 
  private:
+  friend class InspectorGhostRuleTest;
+
+  // Insert CSSNestedDeclaration rules in any place where they can occur.
+  //
+  // Note that this *quietly* inserts rules (see CSSStyleRule/CSSGroupingRule::
+  // QuietlyInsertRule), which means that no style invalidation will take place
+  // as a result of calling this function. The ghost rules are instead made
+  // available for rule matching by `Activate`.
+  void Populate(CSSStyleSheet&);
+
   void PopulateSheet(const ExecutionContext&, CSSStyleSheet&);
   void DepopulateSheet(CSSStyleSheet&);
 

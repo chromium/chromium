@@ -1445,6 +1445,7 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
     return protocol::Response::ServerError("Document is not active");
 
   InspectorGhostRules ghost_rules;
+  HeapVector<Member<CSSStyleSheet>> ghost_sheets;
 
   // The source text of mutable stylesheets needs to be updated
   // to sync the latest changes.
@@ -1452,11 +1453,12 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
        css_style_sheet_to_inspector_style_sheet_.Values()) {
     stylesheet->SyncTextIfNeeded();
     if (RuntimeEnabledFeatures::InspectorGhostRulesEnabled()) {
-      ghost_rules.Populate(*stylesheet->PageStyleSheet());
+      ghost_sheets.push_back(stylesheet->PageStyleSheet());
     }
   }
 
   if (RuntimeEnabledFeatures::InspectorGhostRulesEnabled()) {
+    ghost_rules.PopulateSheetsWithAssertion(std::move(ghost_sheets));
     ghost_rules.Activate(document);
   }
 

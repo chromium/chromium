@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_ghost_rules.h"
 
+#include <algorithm>
+
 #include "base/debug/dump_without_crashing.h"
 #include "third_party/blink/renderer/core/css/css_grouping_rule.h"
 #include "third_party/blink/renderer/core/css/css_nested_declarations_rule.h"
@@ -51,6 +53,47 @@ void InspectorGhostRules::Populate(CSSStyleSheet& sheet) {
   wtf_size_t size_after = inserted_rules_.size();
   if (size_before != size_after) {
     affected_stylesheets_.insert(&sheet);
+  }
+}
+
+bool InspectorGhostRules::PopulateSheets(
+    HeapVector<Member<CSSStyleSheet>> sheets) {
+  // Collect all StyleSheetContents that claim to not be shared between
+  // multiple CSSStyleSheets.
+  HeapHashCountedSet<Member<StyleSheetContents>> unshared_contents;
+  for (const Member<CSSStyleSheet>& sheet : sheets) {
+    if (!sheet->IsContentsShared()) {
+      unshared_contents.insert(sheet->Contents());
+    }
+  }
+
+  wtf_size_t size_before = sheets.size();
+
+  // Remove all CSSStyleSheets that share a StyleSheetContents instance
+  // with another CSSStyleSheet without being aware of it.
+  auto new_end =
+      std::remove_if(sheets.begin(), sheets.end(),
+                     [&unshared_contents](const Member<CSSStyleSheet>& sheet) {
+                       auto it = unshared_contents.find(sheet->Contents());
+                       return it != unshared_contents.end() && it->value > 1;
+                     });
+  sheets.erase(new_end, sheets.end());
+
+  wtf_size_t size_after = sheets.size();
+
+  for (const Member<CSSStyleSheet>& sheet : sheets) {
+    Populate(*sheet);
+  }
+
+  return size_before == size_after;
+}
+
+void InspectorGhostRules::PopulateSheetsWithAssertion(
+    HeapVector<Member<CSSStyleSheet>> sheets) {
+  bool success = PopulateSheets(std::move(sheets));
+  if (!success) {
+    base::debug::DumpWithoutCrashing();
+    DCHECK(false) << "Invalid sharing of StyleSheetContents";
   }
 }
 

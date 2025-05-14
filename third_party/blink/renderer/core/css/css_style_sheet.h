@@ -50,6 +50,7 @@ class CSSStyleSheetInit;
 class Document;
 class Element;
 class ExceptionState;
+class InspectorGhostRules;
 class MediaQuerySet;
 class QuietMutationScope;
 class ScriptState;
@@ -261,6 +262,7 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet,
 
  private:
   friend class QuietMutationScope;
+  friend class InspectorGhostRules;
 
   bool IsAlternate() const;
   bool IsCSSStyleSheet() const override { return true; }

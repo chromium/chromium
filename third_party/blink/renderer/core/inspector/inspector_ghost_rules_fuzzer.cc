@@ -22,7 +22,9 @@ void PopulateFuzzer(const std::string& input) {
   sheet->replaceSync(WTF::String(input), IGNORE_EXCEPTION_FOR_TESTING);
   {
     blink::InspectorGhostRules ghost_rules;
-    ghost_rules.Populate(*sheet);
+    blink::HeapVector<blink::Member<blink::CSSStyleSheet>> sheets;
+    sheets.push_back(sheet);
+    ghost_rules.PopulateSheetsWithAssertion(std::move(sheets));
     // Note: ~InspectorGhostRules() is a relevant part of this test.
   }
 }
