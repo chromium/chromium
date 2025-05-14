@@ -1516,14 +1516,14 @@
   <message desc="In an editable text box, describes a line with only whitespace." meaning="UI element" name="IDS_CHROMEVOX_TEXT_BOX_WHITESPACE">
     Space
   </message>
-  <message desc="Further describes a list-like element with a number of items. e.g. This will be combined with other messages to produce: List with 3 items." name="IDS_CHROMEVOX_LIST_WITH_ITEMS">
-    {COUNT, plural, =1{with # item} other{with # items}}
+  <message desc="Further describes a list-like element with a number of items. e.g. This will be combined with other messages to produce: List with 3 items. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_LIST_WITH_ITEMS" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{with {$$COUNT} item}} * {{with {$$COUNT} items}}
   </message>
-  <message desc="Further describes the level of nesting of a list-like element on the last item. e.g. This will be combined with other messages to produce: List end nested level 2." name="IDS_CHROMEVOX_LIST_NESTED_LEVEL">
-    {COUNT, plural, =1{} other{nested level #}}
+  <message desc="Further describes the level of nesting of a list-like element on the last item. e.g. This will be combined with other messages to produce: List end nested level 2. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_LIST_NESTED_LEVEL" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{}} *{{nested level {$$COUNT}}}
   </message>
-  <!-- TODO(crbug.com/999781): This should not need ICU msg format. Fix where the message is used. -->  <message desc="Further describes a list-like element with a number of items in braille." name="IDS_CHROMEVOX_LIST_WITH_ITEMS_BRL">
-    {COUNT, plural, =1{+#} other{+#}}
+  <!-- TODO(crbug.com/999781): This should not need ICU msg format. Fix where the message is used. -->  <message desc="Further describes a list-like element with a number of items in braille. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_LIST_WITH_ITEMS_BRL" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{+{$$COUNT}}} *{{+{$$COUNT}}}
   </message>
   <message desc="Phrase indicating a menu item has a submenu." name="IDS_CHROMEVOX_HAS_SUBMENU">
     with submenu
@@ -1798,116 +1798,116 @@
   <message desc="Describes the perform default action command. This is usually triggered by hitting the enter key over a control. Shown in options page." name="IDS_CHROMEVOX_PERFORM_DEFAULT_ACTION">
     Perform default action
   </message>
-  <message desc="Exclamation (!) character description." name="IDS_CHROMEVOX_EXCLAMATION">
-    {COUNT, plural, =1 {exclamation}other {# exclamations}}
+  <message desc="Exclamation (!) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_EXCLAMATION" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{exclamation}} *{{{$$COUNT} exclamations}}
   </message>
-  <message desc="Space ( ) character description." name="IDS_CHROMEVOX_SPACE">
-    {COUNT, plural, =1 {space}other {# spaces}}
+  <message desc="Space ( ) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_SPACE" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{space}} *{{{$$COUNT} spaces}}
   </message>
-  <message desc="Backtcik (`) character description." name="IDS_CHROMEVOX_BACKTICK">
-    {COUNT, plural, =1 {backtick}other {# backticks}}
+  <message desc="Backtick (`) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_BACKTICK" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{backtick}} *{{{$$COUNT} backticks}}
   </message>
-  <message desc="Tilde (~) character description." name="IDS_CHROMEVOX_TILDE">
-    {COUNT, plural, =1 {TILDE}other {# tildes}}
+  <message desc="Tilde (~) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_TILDE" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{tilde}} *{{{$$COUNT} tildes}}
   </message>
-  <message desc="At (@) character description." name="IDS_CHROMEVOX_AT">
-    {COUNT, plural, =1 {at}other {# at signs}}
+  <message desc="At (@) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_AT" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{at}} *{{{$$COUNT} at signs}}
   </message>
-  <message desc="Pound (#) character description." name="IDS_CHROMEVOX_POUND">
-    {COUNT, plural, =1 {pound}other {# pound signs}}
+  <message desc="Pound (#) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_POUND" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{pound}} *{{{$$COUNT} pound signs}}
   </message>
-  <message desc="Dollar ($) character description." name="IDS_CHROMEVOX_DOLLAR">
-    {COUNT, plural, =1 {dollar}other {# dollar signs}}
+  <message desc="Dollar ($) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_DOLLAR" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{dollar}} *{{{$$COUNT} dollar signs}}
   </message>
-  <message desc="Percent (%) character description." name="IDS_CHROMEVOX_PERCENT">
-    {COUNT, plural, =1 {percent}other {# percent signs}}
+  <message desc="Percent (%) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_PERCENT" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{percent}} *{{{$$COUNT} percent signs}}
   </message>
-  <message desc="Caret (^) character description." name="IDS_CHROMEVOX_CARET">
-    {COUNT, plural, =1 {caret}other {# carets}}
+  <message desc="Caret (^) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_CARET" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{caret}} *{{{$$COUNT} carets}}
   </message>
-  <message desc="Ampersand (&amp;) character description." name="IDS_CHROMEVOX_AMPERSAND">
-    {COUNT, plural, =1 {ampersand}other {# ampersands}}
+  <message desc="Ampersand (&amp;) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_AMPERSAND" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{ampersand}} *{{{$$COUNT} ampersands}}
   </message>
-  <message desc="Asterisk (*) character description." name="IDS_CHROMEVOX_ASTERISK">
-    {COUNT, plural, =1 {asterisk}other {# asterisks}}
+  <message desc="Asterisk (*) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_ASTERISK" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{asterisk}} *{{{$$COUNT} asterisks}}
   </message>
-  <message desc="Left parenthesis (() character description." name="IDS_CHROMEVOX_OPEN_PAREN">
-    {COUNT, plural, =1 {open paren}other {# open parens}}
+  <message desc="Left parenthesis (() character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_OPEN_PAREN" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{open paren}} *{{{$$COUNT} open parens}}
   </message>
-  <message desc="Right parenthesis ()) character description." name="IDS_CHROMEVOX_CLOSE_PAREN">
-    {COUNT, plural, =1 {close paren}other {# close parens}}
+  <message desc="Right parenthesis ()) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_CLOSE_PAREN" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{close paren}} *{{{$$COUNT} close parens}}
   </message>
-  <message desc="Dash (-) character description." name="IDS_CHROMEVOX_DASH">
-    {COUNT, plural, =1 {dash}other {# dashes}}
+  <message desc="Dash (-) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_DASH" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{dash}} *{{{$$COUNT} dashes}}
   </message>
-  <message desc="Underscore (_) character description." name="IDS_CHROMEVOX_UNDERSCORE">
-    {COUNT, plural, =1 {underscore}other {# underscores}}
+  <message desc="Underscore (_) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_UNDERSCORE" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{underscore}} *{{{$$COUNT} underscores}}
   </message>
-  <message desc="Equals (=) character description." name="IDS_CHROMEVOX_EQUALS">
-    {COUNT, plural, =1 {equal}other {# equal signs}}
+  <message desc="Equals (=) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_EQUALS" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{equal}} *{{{$$COUNT} equal signs}}
   </message>
-  <message desc="Plus (+) character description." name="IDS_CHROMEVOX_PLUS">
-    {COUNT, plural, =1 {plus}other {# plus signs}}
+  <message desc="Plus (+) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_PLUS" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{plus}} *{{{$$COUNT} plus signs}}
   </message>
-  <message desc="Left bracket ([) character description." name="IDS_CHROMEVOX_LEFT_BRACKET">
-    {COUNT, plural, =1 {left bracket}other {# left brackets}}
+  <message desc="Left bracket ([) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_LEFT_BRACKET" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{left bracket}} *{{{$$COUNT} left brackets}}
   </message>
-  <message desc="Right bracket (]) character description." name="IDS_CHROMEVOX_RIGHT_BRACKET">
-    {COUNT, plural, =1 {right bracket}other {# right brackets}}
+  <message desc="Right bracket (]) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_RIGHT_BRACKET" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{right bracket}} *{{{$$COUNT} right brackets}}
   </message>
-  <message desc="Left brace ({) character description." name="IDS_CHROMEVOX_LEFT_BRACE">
-    {COUNT, plural, =1 {left brace}other {# left braces}}
+  <message desc="Left brace ({) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_LEFT_BRACE" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{left brace}} *{{{$$COUNT} left braces}}
   </message>
-  <message desc="Right brace (}) character description." name="IDS_CHROMEVOX_RIGHT_BRACE">
-    {COUNT, plural, =1 {right brace}other {# right braces}}
+  <message desc="Right brace (}) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_RIGHT_BRACE" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{right brace}} *{{{$$COUNT} right braces}}
   </message>
-  <message desc="Pipe (|) character description." name="IDS_CHROMEVOX_PIPE">
-    {COUNT, plural, =1 {pipe}other {# vertical pipes}}
+  <message desc="Pipe (|) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_PIPE" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{pipe}} *{{{$$COUNT} vertical pipes}}
   </message>
-  <message desc="Semicolon (;) character description." name="IDS_CHROMEVOX_SEMICOLON">
-    {COUNT, plural, =1 {semicolon}other {# semicolons}}
+  <message desc="Semicolon (;) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_SEMICOLON" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{semicolon}} *{{{$$COUNT} semicolons}}
   </message>
-  <message desc="Colon (:) character description." name="IDS_CHROMEVOX_COLON">
-    {COUNT, plural, =1 {colon}other {# colons}}
+  <message desc="Colon (:) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_COLON" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{colon}} *{{{$$COUNT} colons}}
   </message>
-  <message desc="Comma (,) character description." name="IDS_CHROMEVOX_COMMA">
-    {COUNT, plural, =1 {comma}other {# commas}}
+  <message desc="Comma (,) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_COMMA" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{comma}} *{{{$$COUNT} commas}}
   </message>
-  <message desc="Dot (.) character description." name="IDS_CHROMEVOX_DOT">
-    {COUNT, plural, =1 {dot}=3 {ellipsis}other {# dots}}
+  <message desc="Dot (.) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_DOT" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{dot}} 3{{ellipsis}} *{{{$$COUNT} dots}}
   </message>
-  <message desc="Less than (&lt;) character description." name="IDS_CHROMEVOX_LESS_THAN">
-    {COUNT, plural, =1 {less than}other {# less than signs}}
+  <message desc="Less than (&lt;) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_LESS_THAN" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{less than}} *{{{$$COUNT} less than signs}}
   </message>
-  <message desc="Greater than (&gt;) character description." name="IDS_CHROMEVOX_GREATER_THAN">
-    {COUNT, plural, =1 {greater than}other {# greater than signs}}
+  <message desc="Greater than (&gt;) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_GREATER_THAN" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{greater than}} *{{{$$COUNT} greater than signs}}
   </message>
-  <message desc="Slash (/) character description." name="IDS_CHROMEVOX_SLASH">
-    {COUNT, plural, =1 {slash}other {# slashes}}
+  <message desc="Slash (/) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_SLASH" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{slash}} *{{{$$COUNT} slashes}}
   </message>
-  <message desc="Question mark (?) character description." name="IDS_CHROMEVOX_QUESTION_MARK">
-    {COUNT, plural, =1 {question mark}other {# question marks}}
+  <message desc="Question mark (?) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_QUESTION_MARK" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{question mark}} *{{{$$COUNT} question marks}}
   </message>
-  <message desc="Quote (&quot;) character description." name="IDS_CHROMEVOX_QUOTE">
-    {COUNT, plural, =1 {quote}other {# quotes}}
+  <message desc="Quote (&quot;) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_QUOTE" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{quote}} *{{{$$COUNT} quotes}}
   </message>
-  <message desc="Apostrophe (') character description." name="IDS_CHROMEVOX_APOSTROPHE">
-    {COUNT, plural, =1 {apostrophe}other {# apostrophes}}
+  <message desc="Apostrophe (') character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_APOSTROPHE" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{apostrophe}} *{{{$$COUNT} apostrophes}}
   </message>
-  <message desc="Tab (\t) character description." name="IDS_CHROMEVOX_TAB">
-    {COUNT, plural, =1 {tab}other {# tabs}}
+  <message desc="Tab (\t) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_TAB" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{tab}} *{{{$$COUNT} tabs}}
   </message>
-  <message desc="Backslash (\) character description." name="IDS_CHROMEVOX_BACKSLASH">
-    {COUNT, plural, =1 {backslash}other {# backslashes}}
+  <message desc="Backslash (\) character description. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_BACKSLASH" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{backslash}} *{{{$$COUNT} backslashes}}
   </message>
-  <message desc="BULLET (•) character description announced by ChromeVox screen reader." name="IDS_CHROMEVOX_BULLET">
-    {COUNT, plural, =1 {bullet}other {# bullets}}
+  <message desc="BULLET (•) character description announced by ChromeVox screen reader. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_BULLET" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{bullet}} *{{{$$COUNT} bullets}}
   </message>
-  <message desc="Second level bullet (◦) character description announced by ChromeVox screen reader." name="IDS_CHROMEVOX_WHITE_BULLET">
-    {COUNT, plural, =1 {white bullet}other {# white bullets}}
+  <message desc="Second level bullet (◦) character description announced by ChromeVox screen reader. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_WHITE_BULLET" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{white bullet}} *{{{$$COUNT} white bullets}}
   </message>
-  <message desc="Third level bullet (■) character description announced by ChromeVox screen reader." name="IDS_CHROMEVOX_SQUARE_BULLET">
-    {COUNT, plural, =1 {square bullet}other {# square bullets}}
+  <message desc="Third level bullet (■) character description announced by ChromeVox screen reader. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_SQUARE_BULLET" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{square bullet}} *{{{$$COUNT} square bullets}}
   </message>
   <message desc="Describes the braille click command. Displayed in the options page." name="IDS_CHROMEVOX_BRAILLE_ROUTING">
     Click the item under routing key <ph name="ROUTING_KEY_NUMBER">$1</ph>
@@ -2925,14 +2925,14 @@
   <message desc="Spoken to give progress on a current download, specifying percent complete and time remaining." name="IDS_CHROMEVOX_DOWNLOAD_PROGRESS">
     Download <ph name="progress">$1<ex>50</ex></ph>% complete <ph name="file_name">$2<ex>test.pdf</ex></ph>. About <ph name="time">$3<ex>30</ex></ph> <ph name="units">$4<ex>minutes</ex></ph> remaining.
   </message>
-  <message desc="A string to specify time units in seconds." name="IDS_CHROMEVOX_SECONDS">
-    {COUNT, plural, =1 {second}other {seconds}}
+  <message desc="A string to specify time units in seconds. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_SECONDS" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{second}} *{{seconds}}
   </message>
-  <message desc="A string to specify time units in minutes." name="IDS_CHROMEVOX_MINUTES">
-    {COUNT, plural, =1 {minute}other {minutes}}
+  <message desc="A string to specify time units in minutes. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_MINUTES" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{minute}} *{{minutes}}
   </message>
-  <message desc="A string to specify time units in hours." name="IDS_CHROMEVOX_HOURS">
-    {COUNT, plural, =1 {hour}other {hours}}
+  <message desc="A string to specify time units in hours. Note that this message is in Unicode MessageFormat 2.0 (MF2), with a small modification to use $$ instead of $ because of the way $ signs are parsed. See https://github.com/unicode-org/message-format-wg/blob/main/spec/syntax.md#matcher for proper syntax." name="IDS_CHROMEVOX_HOURS" is_accessibility_with_no_ui="true">
+    .input {$$COUNT :number} .match $$COUNT 1{{hour}} *{{hours}}
   </message>
   <message desc="Appends language in front of content." name="IDS_CHROMEVOX_LANGUAGE_SWITCH">
     <ph name="language">$1<ex>English</ex></ph>: <ph name="content">$2<ex>This is example content</ex></ph>

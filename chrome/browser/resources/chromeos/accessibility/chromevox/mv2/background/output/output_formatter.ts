@@ -5,6 +5,7 @@
 /**
  * @fileoverview Class that formats the parsed output tree.
  */
+import {MessageFormat} from '/chromevox/mv2/third_party/messageformat/messageformat.rollup.js';
 import {AutomationPredicate} from '/common/automation_predicate.js';
 import {AutomationUtil} from '/common/automation_util.js';
 import {constants} from '/common/constants.js';
@@ -1028,7 +1029,8 @@ export class OutputFormatter implements OutputFormatParserObserver {
       outputFormatLogger: formatLog,
     });
     const namedArgs = {COUNT: Number(argBuff[0])};
-    return new goog.i18n.MessageFormat(msg).format(namedArgs);
+    const formatter = new MessageFormat(chrome.i18n.getUILanguage(), msg);
+    return formatter.format(namedArgs, () => {});
   }
 
   private unexpectedValue_(formatLog: OutputFormatLogger, value: string): void {
