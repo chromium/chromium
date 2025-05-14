@@ -219,6 +219,7 @@ void FeaturePromoController25::MaybeShowPromo(FeaturePromoParams params) {
       current_promo()->iph_feature() == &params.feature.get()) {
     PostShowPromoResult(std::move(params.show_promo_result_callback),
                         FeaturePromoResult::kAlreadyQueued);
+    return;
   }
 
   params.show_promo_result_callback = base::BindOnce(
