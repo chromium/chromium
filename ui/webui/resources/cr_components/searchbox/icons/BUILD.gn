@@ -54,6 +54,7 @@ generate_grd("build_grdp") {
     "sites.svg",
     "spark.svg",
     "star_active.svg",
+    "subdirectory_arrow_right.svg",
     "sunrise_cr23.svg",
     "sunrise.svg",
     "tab_cr23.svg",
