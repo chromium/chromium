@@ -23,8 +23,8 @@ source_set("suggested_actions") {
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/util:util",
-    "//ui/base:base",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
   ]
 }
 
@@ -40,6 +40,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//third_party/ocmock",
-    "//ui/base:base",
+    "//ui/base",
   ]
 }

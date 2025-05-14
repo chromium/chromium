@@ -279,7 +279,7 @@ source_set("eg2_tests") {
     "//components/commerce/core:proto",
     "//components/feature_engagement/public",
     "//components/sync/base:features",
-    "//components/unified_consent:unified_consent",
+    "//components/unified_consent",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
