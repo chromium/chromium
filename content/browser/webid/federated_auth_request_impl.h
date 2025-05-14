@@ -52,6 +52,7 @@ class FederatedIdentityAutoReauthnPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
 class RenderFrameHost;
 
+using blink::mojom::IdentityProviderGetParametersPtr;
 using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
 using IdentityRequestAccountPtr =
     scoped_refptr<content::IdentityRequestAccount>;
@@ -388,6 +389,27 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       const GURL& metrics_endpoint,
       blink::mojom::FederatedAuthRequestResult result);
   void SendSuccessfulTokenRequestMetrics(const GURL& idp_config_url);
+
+  // When two APIs that are associated with the same frame, hence
+  // fedcm_metrics_, are triggered concurrently, we need to reset
+  // `fedcm_metrics` to record UKM for the first request when it's completed and
+  // recreate one for the second if needed.
+  void HandleMetricsForPotentialConcurrentRequests();
+
+  // Validates the input from the renderer and signals to terminate the request
+  // if needed.
+  bool ShouldTerminateRequest(
+      const std::vector<IdentityProviderGetParametersPtr>& idp_get_params_ptrs,
+      const MediationRequirement& requirement);
+
+  // If a new request is associated with active mode, it can replace the pending
+  // request with passive mode. Otherwise a new request will be cancelled when
+  // there's a pending request. Returns `true` if the new request needs to be
+  // cancelled.
+  bool HandlePendingRequestAndCancelNewRequest(
+      const std::vector<GURL>& old_idp_order,
+      const std::vector<IdentityProviderGetParametersPtr>& idps,
+      const MediationRequirement& requirement);
 
   void CleanUp();
 

@@ -68,7 +68,6 @@ using blink::mojom::DisconnectStatus;
 using blink::mojom::FederatedAuthRequestResult;
 using blink::mojom::IdentityProviderConfig;
 using blink::mojom::IdentityProviderConfigPtr;
-using blink::mojom::IdentityProviderGetParametersPtr;
 using blink::mojom::IdentityProviderRequestOptions;
 using blink::mojom::IdentityProviderRequestOptionsPtr;
 using blink::mojom::RegisterIdpStatus;
@@ -319,48 +318,7 @@ void FederatedAuthRequestImpl::RequestToken(
     std::vector<IdentityProviderGetParametersPtr> idp_get_params_ptrs,
     MediationRequirement requirement,
     RequestTokenCallback callback) {
-  // idp_get_params_ptrs sent from the renderer should be of size 1.
-  if (idp_get_params_ptrs.size() != 1u) {
-    ReportBadMessageAndDeleteThis("idp_get_params_ptrs should be of size 1.");
-    return;
-  }
-  // This could only happen with a compromised renderer process. We ensure that
-  // the provider list size is > 0 on the renderer side at the beginning of
-  // parsing |IdentityCredentialRequestOptions|.
-  for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
-    if (idp_get_params_ptr->providers.size() == 0) {
-      ReportBadMessageAndDeleteThis("The provider list should not be empty.");
-      return;
-    }
-    if (idp_get_params_ptr->providers.size() > 10u) {
-      ReportBadMessageAndDeleteThis(
-          "The provider list should not be greater than 10.");
-      return;
-    }
-    if (idp_get_params_ptr->mode == RpMode::kActive &&
-        requirement == MediationRequirement::kSilent) {
-      ReportBadMessageAndDeleteThis(
-          "mediation: silent is not supported in active mode.");
-      return;
-    }
-  }
-
-  if (requirement == MediationRequirement::kConditional &&
-      !IsFedCmAutofillEnabled()) {
-    // The conditional mediation parameter can only be used when delegation
-    // is enabled while it is under development.
-    //
-    // TODO(crbug.com/380367784): handle all of the many cases in which a
-    // conditional mediation may interact with other features.
-    ReportBadMessageAndDeleteThis(
-        "Conditional mediation is not supported when both autofill and "
-        "delegation are disabled.");
-    return;
-  }
-
-  if (render_frame_host().IsNestedWithinFencedFrame()) {
-    ReportBadMessageAndDeleteThis(
-        "FedCM should not be allowed in fenced frame trees.");
+  if (ShouldTerminateRequest(idp_get_params_ptrs, requirement)) {
     return;
   }
 
@@ -409,12 +367,7 @@ void FederatedAuthRequestImpl::RequestToken(
     std::move(callback).Run(RequestTokenStatus::kError, std::nullopt, "",
                             /*error=*/nullptr,
                             /*is_auto_selected=*/false);
-    fedcm_metrics_.reset();
-    // If there's an existing auth request token callback, we will need to
-    // record metrics for it once it is resolved.
-    if (auth_request_token_callback_) {
-      MaybeCreateFedCmMetrics();
-    }
+    HandleMetricsForPotentialConcurrentRequests();
     return;
   }
 
@@ -427,19 +380,14 @@ void FederatedAuthRequestImpl::RequestToken(
     std::move(callback).Run(RequestTokenStatus::kError, std::nullopt, "",
                             /*error=*/nullptr,
                             /*is_auto_selected=*/false);
-    fedcm_metrics_.reset();
-    // If there's an existing auth request token callback, we will need to
-    // record metrics for it once it is resolved.
-    if (auth_request_token_callback_) {
-      MaybeCreateFedCmMetrics();
-    }
+    HandleMetricsForPotentialConcurrentRequests();
     return;
   }
 
   had_transient_user_activation_ =
       render_frame_host().HasTransientUserActivation();
-
   MaybeCreateFedCmMetrics();
+
   // Store the previous `idp_order_` value from this class. Note that this is {}
   // unless there is a pending request from the same RFH. In particular, this is
   // still {} if there is a pending request but from a different RFH.
@@ -450,84 +398,13 @@ void FederatedAuthRequestImpl::RequestToken(
       idp_order_.push_back(idp_ptr->config->config_url);
     }
   }
-
-  if (HasPendingRequest()) {
-    FederatedAuthRequestImpl* pending_request =
-        webid::GetPageData(render_frame_host().GetPage())
-            ->PendingWebIdentityRequest();
-
-    RpMode pending_request_rp_mode = pending_request->GetRpMode();
-    RpMode new_request_rp_mode = idp_get_params_ptrs[0]->mode;
-    fedcm_metrics_->RecordMultipleRequestsRpMode(
-        pending_request_rp_mode, new_request_rp_mode, idp_order_);
-
-    bool can_replace_pending_request =
-        had_transient_user_activation_ &&
-        new_request_rp_mode == RpMode::kActive &&
-        pending_request_rp_mode != RpMode::kActive;
-    if (!can_replace_pending_request) {
-      // Cancel this new request.
-      fedcm_metrics_->RecordRequestTokenStatus(
-          TokenStatus::kTooManyRequests, requirement, idp_order_,
-          /*num_idps_mismatch=*/0,
-          /*selected_idp_config_url=*/std::nullopt,
-          (idp_get_params_ptrs[0]->mode == blink::mojom::RpMode::kActive)
-              ? RpMode::kActive
-              : RpMode::kPassive,
-          /*use_other_account_result=*/std::nullopt,
-          /*verifying_dialog_result=*/std::nullopt,
-          api_permission_delegate_->AreThirdPartyCookiesEnabledInSettings()
-              ? FedCmThirdPartyCookiesStatus::kEnabledInSettings
-              : FedCmThirdPartyCookiesStatus::kDisabledInSettings,
-          webid::ComputeRequesterFrameType(render_frame_host(), origin(),
-                                           GetEmbeddingOrigin()),
-          /*has_signin_account=*/std::nullopt);
-
-      AddDevToolsIssue(
-          blink::mojom::FederatedAuthRequestResult::kTooManyRequests);
-      AddConsoleErrorMessage(
-          blink::mojom::FederatedAuthRequestResult::kTooManyRequests);
-
-      std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests,
-                              std::nullopt, "", /*error=*/nullptr,
-                              /*is_auto_selected=*/false);
-
-      // Since multiple `get` calls is not yet supported, if one IdP invokes the
-      // API while another request from different IdPs is in-flight, the new API
-      // call will be rejected. The two requests may be from different RFHs so
-      // we should calculate properly.
-      if (old_idp_order.empty()) {
-        fedcm_metrics_->RecordMultipleRequestsFromDifferentIdPs(
-            idp_order_ != pending_request->idp_order_);
-      } else {
-        fedcm_metrics_->RecordMultipleRequestsFromDifferentIdPs(idp_order_ !=
-                                                                old_idp_order);
-      }
-
-      // Reset to record kErrorTooManyRequests but recreate to continue
-      // recording for the pending request.
-      fedcm_metrics_.reset();
-      MaybeCreateFedCmMetrics();
-      idp_order_ = std::move(old_idp_order);
-      return;
-    }
-
-    // Cancel the pending request before starting the new active flow request.
-    // Set the old values before completing in case the pending request
-    // corresponds to one in this object.
-    std::vector<GURL> new_idp_order = std::move(idp_order_);
-    idp_order_ = std::move(old_idp_order);
-    pending_request->CompleteRequestWithError(
-        FederatedAuthRequestResult::kReplacedByActiveMode,
-        TokenStatus::kReplacedByActiveMode,
-        /*should_delay_callback=*/false);
-    CHECK(!auth_request_token_callback_);
-
-    // Some members were reset to false during CleanUp when replacing a passive
-    // flow from the same frame so we need to set them again.
-    had_transient_user_activation_ = true;
-    MaybeCreateFedCmMetrics();
-    idp_order_ = std::move(new_idp_order);
+  if (HasPendingRequest() &&
+      HandlePendingRequestAndCancelNewRequest(
+          old_idp_order, idp_get_params_ptrs, requirement)) {
+    std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests,
+                            std::nullopt, "", /*error=*/nullptr,
+                            /*is_auto_selected=*/false);
+    return;
   }
 
   should_complete_request_immediately_ = should_complete_request_immediately;
@@ -667,6 +544,7 @@ void FederatedAuthRequestImpl::RequestToken(
                                                   rp_context, rp_mode, format));
     }
   }
+
   if (any_idp_has_parameters || any_idp_has_custom_scopes) {
     FedCmRpParameters parameters;
     if (any_idp_has_custom_scopes && any_idp_has_parameters) {
@@ -1045,12 +923,7 @@ void FederatedAuthRequestImpl::CompleteDisconnectRequest(
   }
   std::move(callback).Run(status);
   disconnect_request_.reset();
-  fedcm_metrics_.reset();
-  // If there's an existing auth request token callback, we will need to record
-  // metrics for it once it is resolved.
-  if (auth_request_token_callback_) {
-    MaybeCreateFedCmMetrics();
-  }
+  HandleMetricsForPotentialConcurrentRequests();
 }
 
 void FederatedAuthRequestImpl::OnClientMetadataResponseReceived(
@@ -3333,6 +3206,145 @@ bool FederatedAuthRequestImpl::FilterAccountsWithDomainHint(
   }
   fedcm_metrics_->RecordNumMatchingAccounts(accounts_remaining, "DomainHint");
   return IsFedCmShowFilteredAccountsEnabled() || accounts_remaining > 0u;
+}
+
+void FederatedAuthRequestImpl::HandleMetricsForPotentialConcurrentRequests() {
+  // Record UKM for the request that's completed, either successfully or with
+  // errors.
+  // TODO(crbug.com/417784830): fedcm_metrics_ should be bound to each request.
+  // Otherwise UKMs in a single flow may be recorded in different events.
+  fedcm_metrics_.reset();
+  // If there's an existing auth request token callback, we will need to
+  // record metrics for it once it is resolved.
+  if (auth_request_token_callback_) {
+    MaybeCreateFedCmMetrics();
+  }
+}
+
+bool FederatedAuthRequestImpl::ShouldTerminateRequest(
+    const std::vector<IdentityProviderGetParametersPtr>& idp_get_params_ptrs,
+    const MediationRequirement& requirement) {
+  // idp_get_params_ptrs sent from the renderer should be of size 1.
+  if (idp_get_params_ptrs.size() != 1u) {
+    ReportBadMessageAndDeleteThis("idp_get_params_ptrs should be of size 1.");
+    return true;
+  }
+  // This could only happen with a compromised renderer process. We ensure that
+  // the provider list size is > 0 on the renderer side at the beginning of
+  // parsing |IdentityCredentialRequestOptions|.
+  for (const auto& idp_get_params_ptr : idp_get_params_ptrs) {
+    if (idp_get_params_ptr->providers.size() == 0) {
+      ReportBadMessageAndDeleteThis("The provider list should not be empty.");
+      return true;
+    }
+    if (idp_get_params_ptr->providers.size() > 10u) {
+      ReportBadMessageAndDeleteThis(
+          "The provider list should not be greater than 10.");
+      return true;
+    }
+    if (idp_get_params_ptr->mode == RpMode::kActive &&
+        requirement == MediationRequirement::kSilent) {
+      ReportBadMessageAndDeleteThis(
+          "mediation: silent is not supported in active mode.");
+      return true;
+    }
+  }
+
+  if (requirement == MediationRequirement::kConditional &&
+      !IsFedCmAutofillEnabled()) {
+    // The conditional mediation parameter can only be used when delegation
+    // is enabled while it is under development.
+    //
+    // TODO(crbug.com/380367784): handle all of the many cases in which a
+    // conditional mediation may interact with other features.
+    ReportBadMessageAndDeleteThis(
+        "Conditional mediation is not supported when both autofill and "
+        "delegation are disabled.");
+    return true;
+  }
+
+  if (render_frame_host().IsNestedWithinFencedFrame()) {
+    ReportBadMessageAndDeleteThis(
+        "FedCM should not be allowed in fenced frame trees.");
+    return true;
+  }
+
+  return false;
+}
+
+bool FederatedAuthRequestImpl::HandlePendingRequestAndCancelNewRequest(
+    const std::vector<GURL>& old_idp_order,
+    const std::vector<IdentityProviderGetParametersPtr>& idp_get_params_ptrs,
+    const MediationRequirement& requirement) {
+  FederatedAuthRequestImpl* pending_request =
+      webid::GetPageData(render_frame_host().GetPage())
+          ->PendingWebIdentityRequest();
+
+  RpMode pending_request_rp_mode = pending_request->GetRpMode();
+  RpMode new_request_rp_mode = idp_get_params_ptrs[0]->mode;
+  fedcm_metrics_->RecordMultipleRequestsRpMode(pending_request_rp_mode,
+                                               new_request_rp_mode, idp_order_);
+
+  bool can_replace_pending_request = had_transient_user_activation_ &&
+                                     new_request_rp_mode == RpMode::kActive &&
+                                     pending_request_rp_mode != RpMode::kActive;
+  if (!can_replace_pending_request) {
+    // Cancel this new request.
+    fedcm_metrics_->RecordRequestTokenStatus(
+        TokenStatus::kTooManyRequests, requirement, idp_order_,
+        /*num_idps_mismatch=*/0,
+        /*selected_idp_config_url=*/std::nullopt,
+        (idp_get_params_ptrs[0]->mode == blink::mojom::RpMode::kActive)
+            ? RpMode::kActive
+            : RpMode::kPassive,
+        /*use_other_account_result=*/std::nullopt,
+        /*verifying_dialog_result=*/std::nullopt,
+        api_permission_delegate_->AreThirdPartyCookiesEnabledInSettings()
+            ? FedCmThirdPartyCookiesStatus::kEnabledInSettings
+            : FedCmThirdPartyCookiesStatus::kDisabledInSettings,
+        webid::ComputeRequesterFrameType(render_frame_host(), origin(),
+                                         GetEmbeddingOrigin()),
+        /*has_signin_account=*/std::nullopt);
+
+    AddDevToolsIssue(
+        blink::mojom::FederatedAuthRequestResult::kTooManyRequests);
+    AddConsoleErrorMessage(
+        blink::mojom::FederatedAuthRequestResult::kTooManyRequests);
+
+    // Since multiple `get` calls is not yet supported, if one IdP invokes the
+    // API while another request from different IdPs is in-flight, the new API
+    // call will be rejected. The two requests may be from different RFHs so
+    // we should calculate properly.
+    if (old_idp_order.empty()) {
+      fedcm_metrics_->RecordMultipleRequestsFromDifferentIdPs(
+          idp_order_ != pending_request->idp_order_);
+    } else {
+      fedcm_metrics_->RecordMultipleRequestsFromDifferentIdPs(idp_order_ !=
+                                                              old_idp_order);
+    }
+    idp_order_ = std::move(old_idp_order);
+    HandleMetricsForPotentialConcurrentRequests();
+    return true;
+  }
+
+  // Cancel the pending request before starting the new active flow request.
+  // Set the old values before completing in case the pending request
+  // corresponds to one in this object.
+  std::vector<GURL> new_idp_order = std::move(idp_order_);
+  idp_order_ = std::move(old_idp_order);
+  pending_request->CompleteRequestWithError(
+      FederatedAuthRequestResult::kReplacedByActiveMode,
+      TokenStatus::kReplacedByActiveMode,
+      /*should_delay_callback=*/false);
+  CHECK(!auth_request_token_callback_);
+
+  // Some members were reset to false during CleanUp when replacing a passive
+  // flow from the same frame so we need to set them again.
+  had_transient_user_activation_ = true;
+  MaybeCreateFedCmMetrics();
+  idp_order_ = std::move(new_idp_order);
+
+  return false;
 }
 
 RelyingPartyData FederatedAuthRequestImpl::CreateRpData() const {
