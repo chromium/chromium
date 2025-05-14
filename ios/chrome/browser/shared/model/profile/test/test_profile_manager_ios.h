@@ -57,6 +57,9 @@ class TestProfileManagerIOS : public ProfileManagerIOS {
   TestProfileIOS* AddProfileWithBuilder(TestProfileIOS::Builder builder);
 
  private:
+  // Returns a ScopedProfileKeepAliveIOS for `profile`.
+  ScopedProfileKeepAliveIOS CreateScopedProfileKeepAlive(ProfileIOS* profile);
+
   // Storage for the TestProfileIOS.
   using ProfileMap =
       std::map<std::string, std::unique_ptr<TestProfileIOS>, std::less<>>;

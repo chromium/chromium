@@ -104,6 +104,10 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
                                  const std::string& profile_name,
                                  ProfileDeleterIOS::Result result);
 
+  // Returns a ScopedProfileKeepAliveIOS for `info` (which may be null if
+  // the profile could not be loaded).
+  ScopedProfileKeepAliveIOS CreateScopedProfileKeepAlive(ProfileInfo* info);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The PrefService storing the local state.

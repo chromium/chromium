@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/profile/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/scoped_profile_keep_alive_ios.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/thread/web_task_traits.h"
@@ -109,24 +110,26 @@ TestWithProfile::~TestWithProfile() {
   application_context->SetIOSChromeIOThread(nullptr);
 }
 
-ProfileIOS* TestWithProfile::LoadProfile(std::string_view profile_name) {
-  ProfileIOS* profile = nullptr;
+ScopedProfileKeepAliveIOS TestWithProfile::LoadProfile(
+    std::string_view profile_name) {
+  ScopedProfileKeepAliveIOS keep_alive;
 
   base::RunLoop run_loop;
   profile_manager_.LoadProfileAsync(
-      profile_name, CaptureArg(profile).Then(run_loop.QuitClosure()), {});
+      profile_name, CaptureArg(keep_alive).Then(run_loop.QuitClosure()), {});
   run_loop.Run();
 
-  return profile;
+  return keep_alive;
 }
 
-ProfileIOS* TestWithProfile::CreateProfile(std::string_view profile_name) {
-  ProfileIOS* profile = nullptr;
+ScopedProfileKeepAliveIOS TestWithProfile::CreateProfile(
+    std::string_view profile_name) {
+  ScopedProfileKeepAliveIOS keep_alive;
 
   base::RunLoop run_loop;
   profile_manager_.CreateProfileAsync(
-      profile_name, CaptureArg(profile).Then(run_loop.QuitClosure()), {});
+      profile_name, CaptureArg(keep_alive).Then(run_loop.QuitClosure()), {});
   run_loop.Run();
 
-  return profile;
+  return keep_alive;
 }

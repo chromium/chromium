@@ -11,6 +11,7 @@
 #import "base/test/test_file_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
+#import "ios/chrome/browser/shared/model/profile/scoped_profile_keep_alive_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/test/testing_application_context.h"
@@ -111,11 +112,11 @@ bool TestProfileManagerIOS::CreateProfileAsync(
 
   ProfileIOS* profile = iterator->second.get();
   if (!created_callback.is_null()) {
-    std::move(created_callback).Run(profile);
+    std::move(created_callback).Run(CreateScopedProfileKeepAlive(profile));
   }
 
   if (!initialized_callback.is_null()) {
-    std::move(initialized_callback).Run(profile);
+    std::move(initialized_callback).Run(CreateScopedProfileKeepAlive(profile));
   }
 
   return true;
@@ -214,4 +215,9 @@ TestProfileIOS* TestProfileManagerIOS::AddProfileWithBuilder(
   }
 
   return iterator->second.get();
+}
+
+ScopedProfileKeepAliveIOS TestProfileManagerIOS::CreateScopedProfileKeepAlive(
+    ProfileIOS* profile) {
+  return ScopedProfileKeepAliveIOS(CreatePassKey(), profile, {});
 }

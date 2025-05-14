@@ -10,17 +10,23 @@
 #import <vector>
 
 #import "base/functional/callback.h"
+#import "base/types/pass_key.h"
 
 class ProfileAttributesStorageIOS;
 class ProfileIOS;
 class ProfileManagerObserverIOS;
+class ScopedProfileKeepAliveIOS;
 
 // Provides methods that allow for various ways of creating non-incognito
 // Profile instances. Owns all instances that it creates.
 class ProfileManagerIOS {
  public:
+  // PassKey to create ScopedProfileKeepAliveIOS.
+  using PassKey = base::PassKey<ProfileManagerIOS>;
+
   // Callback invoked when a Profile has been loaded asynchronously.
-  using ProfileLoadedCallback = base::OnceCallback<void(ProfileIOS*)>;
+  using ProfileLoadedCallback =
+      base::OnceCallback<void(ScopedProfileKeepAliveIOS)>;
 
   ProfileManagerIOS(const ProfileManagerIOS&) = delete;
   ProfileManagerIOS& operator=(const ProfileManagerIOS&) = delete;
@@ -114,6 +120,9 @@ class ProfileManagerIOS {
 
  protected:
   ProfileManagerIOS() {}
+
+  // Returns a PassKey instance for use by sub-classes.
+  static PassKey CreatePassKey() { return PassKey{}; }
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_MANAGER_IOS_H_

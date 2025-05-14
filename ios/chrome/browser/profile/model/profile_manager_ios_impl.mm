@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/profile_metrics/model/profile_metrics.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
+#import "ios/chrome/browser/shared/model/profile/scoped_profile_keep_alive_ios.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/supervised_user/model/child_account_service_factory.h"
@@ -288,7 +289,7 @@ void ProfileManagerIOSImpl::UnloadProfile(std::string_view name) {
   // by calling the ProfileLoadedCallbacks with nullptr.
   if (!info.is_loaded()) {
     for (auto& callback : info.TakeCallbacks()) {
-      std::move(callback).Run(nullptr);
+      std::move(callback).Run(CreateScopedProfileKeepAlive(nullptr));
     }
   } else {
     // If profile is loaded, notify all observers that it is unloaded.
@@ -336,7 +337,7 @@ void ProfileManagerIOSImpl::MarkProfileForDeletion(std::string_view name) {
   ProfileInfo& info = iter->second;
   if (!info.is_loaded()) {
     for (auto& callback : info.TakeCallbacks()) {
-      std::move(callback).Run(nullptr);
+      std::move(callback).Run(CreateScopedProfileKeepAlive(nullptr));
     }
   } else {
     ProfileIOS* profile = info.profile();
@@ -411,13 +412,15 @@ void ProfileManagerIOSImpl::OnProfileCreationFinished(
   DCHECK(profile);
   DCHECK(!profile->IsOffTheRecord());
 
-  auto iter = profiles_map_.find(profile->GetProfileName());
+  const std::string& name = profile->GetProfileName();
+  auto iter = profiles_map_.find(name);
   DCHECK(iter != profiles_map_.end());
-  auto callbacks = iter->second.TakeCallbacks();
+
+  ProfileInfo* profile_info = &(iter->second);
+  auto callbacks = profile_info->TakeCallbacks();
 
   // Update the ProfileAttributesStorageIOS before notifying the observers
   // and callbacks of the success or failure of the operation.
-  const std::string& name = profile->GetProfileName();
   if (is_new_profile) {
     if (success) {
       profile_attributes_storage_.UpdateAttributesForProfileWithName(
@@ -433,8 +436,9 @@ void ProfileManagerIOSImpl::OnProfileCreationFinished(
   // return (the callback would have been called with nullptr when it
   // was marked for deletion, so there is no need to call them again).
   if (IsProfileMarkedForDeletion(name)) {
-    ProfileInfo info = std::move(iter->second);
+    ProfileInfo profile_info_copy = std::move(*profile_info);
     profiles_map_.erase(iter);
+    profile_info = nullptr;
 
     profile_deleter_.DeleteProfile(
         name, profile_data_dir_,
@@ -449,12 +453,13 @@ void ProfileManagerIOSImpl::OnProfileCreationFinished(
     iter->second.SetIsLoaded();
   } else {
     profile = nullptr;
+    profile_info = nullptr;
     profiles_map_.erase(iter);
   }
 
   // Invoke the callbacks, if the load failed, `profile` will be null.
   for (auto& callback : callbacks) {
-    std::move(callback).Run(profile);
+    std::move(callback).Run(CreateScopedProfileKeepAlive(profile_info));
   }
 
   // Notify the observers after invoking the callbacks in case of success.
@@ -480,7 +485,8 @@ bool ProfileManagerIOSImpl::CreateOrLoadProfile(
   // usages after the deletion.
   if (IsProfileMarkedForDeletion(name)) {
     if (!initialized_callback.is_null()) {
-      std::move(initialized_callback).Run(nullptr);
+      std::move(initialized_callback)
+          .Run(CreateScopedProfileKeepAlive(nullptr));
     }
     return false;
   }
@@ -508,7 +514,8 @@ bool ProfileManagerIOSImpl::CreateOrLoadProfile(
 
       if (!creation_allowed) {
         if (!initialized_callback.is_null()) {
-          std::move(initialized_callback).Run(nullptr);
+          std::move(initialized_callback)
+              .Run(CreateScopedProfileKeepAlive(nullptr));
         }
         return false;
       }
@@ -532,14 +539,16 @@ bool ProfileManagerIOSImpl::CreateOrLoadProfile(
   DCHECK(profile_info.profile());
 
   if (!created_callback.is_null()) {
-    std::move(created_callback).Run(profile_info.profile());
+    std::move(created_callback)
+        .Run(CreateScopedProfileKeepAlive(&profile_info));
   }
 
   if (!initialized_callback.is_null()) {
     if (inserted || !profile_info.is_loaded()) {
       profile_info.AddCallback(std::move(initialized_callback));
     } else {
-      std::move(initialized_callback).Run(profile_info.profile());
+      std::move(initialized_callback)
+          .Run(CreateScopedProfileKeepAlive(&profile_info));
     }
   }
 
@@ -586,4 +595,12 @@ void ProfileManagerIOSImpl::OnProfileDeletionComplete(
   }
 
   std::move(closure).Run();
+}
+
+ScopedProfileKeepAliveIOS ProfileManagerIOSImpl::CreateScopedProfileKeepAlive(
+    ProfileInfo* info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!info || info->profile());
+  ProfileIOS* profile = info ? info->profile() : nullptr;
+  return ScopedProfileKeepAliveIOS(CreatePassKey(), profile, {});
 }

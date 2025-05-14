@@ -59,6 +59,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
+#import "ios/chrome/browser/shared/model/profile/scoped_profile_keep_alive_ios.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -311,12 +312,16 @@ using ClientManagerCallback =
 // It retrieves the `PushNotificationClientManager` for the loaded Profile (if
 // successful) and runs the original callback with the result.
 //
-// TODO(crbug.com/414585765): Create ScopedProfileKeepAlive-like mechanism for
-// Profiles loaded outside MainController.
+// TODO(crbug.com/414585765): Ensure that the ScopedProfileKeepAliveIOS is
+// not destroyed before `original_callback` and any background processing,
+// if any, is complete. Currently the profile will be unloaded as soon as
+// the current function returns, even if `original_callback` starts any
+// background processing.
 void OnProfileLoadedForClientManager(ClientManagerCallback original_callback,
-                                     ProfileIOS* profile_after_load) {
+                                     ScopedProfileKeepAliveIOS keep_alive) {
   CHECK(IsMultiProfilePushNotificationHandlingEnabled());
 
+  ProfileIOS* profile_after_load = keep_alive.profile();
   if (!profile_after_load) {
     RecordClientManagerAccessFailure(PushNotificationClientManagerFailurePoint::
                                          kGetClientManagerProfileLoadFailed);

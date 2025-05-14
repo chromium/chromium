@@ -78,6 +78,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
+#import "ios/chrome/browser/shared/model/profile/scoped_profile_keep_alive_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -238,6 +239,9 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
   // during the current profile startup (used to detect whether data loss
   // occurred).
   SessionIds _purgedSessionIdentifiers;
+
+  // Keep the loaded profile alive.
+  ScopedProfileKeepAliveIOS _scopedProfileKeepAlive;
 }
 
 - (instancetype)initWithAppState:(AppState*)appState
@@ -266,10 +270,10 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
   [_state queueTransitionToNextInitStage];
 
   __weak ProfileController* weakSelf = self;
-  _profileManager->CreateProfileAsync(profileName,
-                                      base::BindOnce(^(ProfileIOS* profile) {
-                                        [weakSelf profileLoaded:profile];
-                                      }));
+  _profileManager->CreateProfileAsync(
+      profileName, base::BindOnce(^(ScopedProfileKeepAliveIOS keep_alive) {
+        [weakSelf profileLoaded:std::move(keep_alive)];
+      }));
 }
 
 - (void)shutdown {
@@ -293,6 +297,13 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
 
   // Inform the AppState of the ProfileState destruction.
   [_state.appState profileStateDestroyed:_state];
+
+  // Clear the -profile property of ProfileState before unloading the object.
+  [_state setProfile:nullptr];
+
+  // Destroy the ScopedProfileKeepAlive which will allow the ProfileManagerIOS
+  // to unload the profile (if this was the last object keeping it alive).
+  _scopedProfileKeepAlive.Reset();
 }
 
 #pragma mark ProfileStateObserver
@@ -526,7 +537,10 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
 
 #pragma mark Private methods
 
-- (void)profileLoaded:(ProfileIOS*)profile {
+- (void)profileLoaded:(ScopedProfileKeepAliveIOS)keepAlive {
+  CHECK(!_scopedProfileKeepAlive.profile());
+  _scopedProfileKeepAlive = std::move(keepAlive);
+  ProfileIOS* profile = _scopedProfileKeepAlive.profile();
   CHECK(profile);
 
   [_state setProfile:profile];

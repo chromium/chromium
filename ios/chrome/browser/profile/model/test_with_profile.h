@@ -18,6 +18,7 @@
 #include "testing/platform_test.h"
 
 class IOSChromeIOThread;
+class ScopedProfileKeepAliveIOS;
 
 // Test class that allows creating real profiles.
 class TestWithProfile : public PlatformTest {
@@ -40,10 +41,10 @@ class TestWithProfile : public PlatformTest {
   }
 
   // Helper to synchronously load a profile with `profile_name`.
-  ProfileIOS* LoadProfile(std::string_view name);
+  ScopedProfileKeepAliveIOS LoadProfile(std::string_view name);
 
   // Helper to synchronously create a profile with `profile_name`.
-  ProfileIOS* CreateProfile(std::string_view name);
+  ScopedProfileKeepAliveIOS CreateProfile(std::string_view name);
 
  private:
   // Helper around a ScopedFeatureList that initialize it in its constructor.

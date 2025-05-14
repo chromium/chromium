@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/profile/model/test_with_profile.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/scoped_profile_keep_alive_ios.h"
 
 using ProfileIOSImplTest = TestWithProfile;
 
@@ -18,7 +19,8 @@ TEST_F(ProfileIOSImplTest, GetWebKitStorageID) {
   const base::Uuid uuid = base::Uuid::GenerateRandomV4();
   const std::string name = uuid.AsLowercaseString();
 
-  ProfileIOS* profile = CreateProfile(name);
+  ScopedProfileKeepAliveIOS keep_alive = CreateProfile(name);
+  ProfileIOS* profile = keep_alive.profile();
   ASSERT_TRUE(profile);
 
   // The profile storage identifier should be equal to its name as an UUID.
@@ -36,7 +38,8 @@ TEST_F(ProfileIOSImplTest, GetWebKitStorageID_PreM133) {
   const base::FilePath path = profile_data_dir().Append(name);
   ASSERT_FALSE(base::DirectoryExists(path));
 
-  ProfileIOS* profile = CreateProfile(name);
+  ScopedProfileKeepAliveIOS keep_alive = CreateProfile(name);
+  ProfileIOS* profile = keep_alive.profile();
   ASSERT_TRUE(profile);
 
   // The profile storage identifier should be an invalid base::Uuid.
@@ -59,7 +62,8 @@ TEST_F(ProfileIOSImplTest, GetWebKitStorageID_PreM128) {
   const base::FilePath path = profile_data_dir().Append(name);
   ASSERT_TRUE(base::CreateDirectory(path));
 
-  ProfileIOS* profile = CreateProfile(name);
+  ScopedProfileKeepAliveIOS keep_alive = CreateProfile(name);
+  ProfileIOS* profile = keep_alive.profile();
   ASSERT_TRUE(profile);
 
   // The profile storage identifier should be an invalid base::Uuid.

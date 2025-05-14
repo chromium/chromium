@@ -49,22 +49,6 @@ TEST_F(ProfileStateTest, initializer) {
   EXPECT_EQ(state.profile, nullptr);
 }
 
-// Tests that -profile uses a weak pointer.
-TEST_F(ProfileStateTest, profile) {
-  web::WebTaskEnvironment task_environment;
-  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
-
-  ProfileState* state = [[ProfileState alloc] initWithAppState:nil];
-  EXPECT_EQ(state.profile, nullptr);
-
-  state.profile = profile.get();
-  EXPECT_EQ(state.profile, profile.get());
-
-  // Destroy the profile and check that the property becomes null.
-  profile.reset();
-  EXPECT_EQ(state.profile, nullptr);
-}
-
 // Tests that initStage can be set and get correctly.
 TEST_F(ProfileStateTest, initStages) {
   ProfileState* state = [[ProfileState alloc] initWithAppState:nil];
