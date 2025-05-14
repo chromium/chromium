@@ -30,7 +30,7 @@ int GetResizeFrameOnlyThickness(HMONITOR monitor) {
       monitor, SM_CXSIZEFRAME);
 }
 
-int GetFrameThickness(HMONITOR monitor) {
+int GetFrameThickness(HMONITOR monitor, bool has_caption) {
   // On Windows 10 the visible frame border is one pixel thick, but there is
   // some additional non-visible space: SM_CXSIZEFRAME (the resize handle)
   // and SM_CXPADDEDBORDER (additional border space that isn't part of the
@@ -39,7 +39,7 @@ int GetFrameThickness(HMONITOR monitor) {
   const int padding_thickness =
       display::win::GetScreenWin()->GetSystemMetricsForMonitor(
           monitor, SM_CXPADDEDBORDER);
-  return resize_frame_thickness + padding_thickness;
+  return resize_frame_thickness + padding_thickness - (has_caption ? 0 : 1);
 }
 
 int GetFrameThicknessFromWindow(HWND hwnd, DWORD default_options) {
@@ -49,7 +49,8 @@ int GetFrameThicknessFromWindow(HWND hwnd, DWORD default_options) {
             hwnd, default_options));
   } else {
     HMONITOR monitor = ::MonitorFromWindow(hwnd, default_options);
-    return GetFrameThickness(monitor);
+    return GetFrameThickness(monitor,
+                             GetWindowLong(hwnd, GWL_STYLE) & WS_CAPTION);
   }
 }
 

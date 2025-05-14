@@ -24,10 +24,12 @@ COMPONENT_EXPORT(UI_BASE) int GetResizeFrameOnlyThickness(HMONITOR monitor);
 //  - A visible border.
 // This thickness *excludes* the top border (title bar), which is typically
 // thicker than other borders.
-// This function assumes the window has WS_THICKFRAME and WS_CAPTION styles.
-// WS_CAPTION style adds 1px to frame thickness.
+// This function assumes the window has WS_THICKFRAME style.
+// `has_caption` means the window has the WS_CAPTION style, which adds adds 1px
+// to frame thickness.
 // TODO(kerenzhu): this should be renamed to GetResizableFrameThickness().
-COMPONENT_EXPORT(UI_BASE) int GetFrameThickness(HMONITOR monitor);
+COMPONENT_EXPORT(UI_BASE)
+int GetFrameThickness(HMONITOR monitor, bool has_caption);
 
 // Returns the above given the window handle. Note that during WM_NCCALCSIZE
 // Windows does not return the correct monitor for the HWND, so it must be

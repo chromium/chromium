@@ -1294,7 +1294,8 @@ gfx::Size PictureInPictureBrowserFrameView::GetNonClientViewAreaSize() const {
 #if BUILDFLAG(IS_WIN)
 gfx::Insets PictureInPictureBrowserFrameView::GetClientAreaInsets(
     HMONITOR monitor) const {
-  const int frame_thickness = ui::GetFrameThickness(monitor);
+  const int frame_thickness =
+      ui::GetFrameThickness(monitor, /*has_caption=*/true);
   return gfx::Insets::TLBR(0, frame_thickness, frame_thickness,
                            frame_thickness);
 }
