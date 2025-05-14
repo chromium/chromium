@@ -593,8 +593,6 @@ public abstract class ChromeFeatureList {
     public static final String TOP_CONTROLS_REFACTOR = "TopControlsRefactor";
     public static final String TRACE_BINDER_IPC = "TraceBinderIpc";
     public static final String TRACKING_PROTECTION_3PCD = "TrackingProtection3pcd";
-    public static final String TRACKING_PROTECTION_CONTENT_SETTING_UB_CONTROL =
-            "TrackingProtectionContentSettingUbControl";
     public static final String TRACKING_PROTECTION_USER_BYPASS_PWA =
             "TrackingProtectionUserBypassPwa";
     public static final String TRACKING_PROTECTION_USER_BYPASS_PWA_TRIGGER =

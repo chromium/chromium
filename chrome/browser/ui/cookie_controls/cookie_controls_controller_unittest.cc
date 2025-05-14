@@ -1578,8 +1578,6 @@ class CookieControlsUserBypassIncognitoTest
 
   void SetUp() override {
     CookieControlsUserBypassTest::SetUp();
-    feature_list_.InitAndEnableFeature(
-        privacy_sandbox::kTrackingProtectionContentSettingUbControl);
 
     incognito_cookie_controls_ =
         std::make_unique<content_settings::CookieControlsController>(
@@ -1608,7 +1606,6 @@ class CookieControlsUserBypassIncognitoTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<content_settings::CookieControlsController>
       incognito_cookie_controls_;
 };
@@ -1727,7 +1724,6 @@ class CookieControlsUserBypassTrackingProtectionUiTest
     CookieControlsUserBypassTest::SetUp();
 
     std::vector<base::test::FeatureRef> enabled_features = {
-        privacy_sandbox::kTrackingProtectionContentSettingUbControl,
         privacy_sandbox::kActUserBypassUx};
     if (std::get<1>(GetParam()) != ActFeatureState::kIppDisabled) {
       enabled_features.push_back(privacy_sandbox::kIpProtectionUx);

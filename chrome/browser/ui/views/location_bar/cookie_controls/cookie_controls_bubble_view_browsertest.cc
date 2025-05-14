@@ -190,8 +190,7 @@ class TrackingProtectionBubbleViewBrowserTest
         net::EmbeddedTestServer::TYPE_HTTPS);
     // Enable FPP to display UB UX with ACT features
     feature_list_.InitWithFeatures(
-        {privacy_sandbox::kTrackingProtectionContentSettingUbControl,
-         privacy_sandbox::kActUserBypassUx,
+        {privacy_sandbox::kActUserBypassUx,
          privacy_sandbox::kFingerprintingProtectionUx},
         {});
   }

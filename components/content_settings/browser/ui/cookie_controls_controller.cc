@@ -248,16 +248,10 @@ void CookieControlsController::RecordActMetrics(bool pause_protections) {
 }
 
 bool CookieControlsController::ShowActFeatures() {
-  return base::FeatureList::IsEnabled(privacy_sandbox::kActUserBypassUx) &&
-         ShouldUpdateTpContentSetting() &&
+  return is_incognito_profile_ &&
          (tracking_protection_settings_->IsIpProtectionEnabled() ||
-          tracking_protection_settings_->IsFpProtectionEnabled());
-}
-
-bool CookieControlsController::ShouldUpdateTpContentSetting() {
-  return base::FeatureList::IsEnabled(
-             privacy_sandbox::kTrackingProtectionContentSettingUbControl) &&
-         is_incognito_profile_;
+          tracking_protection_settings_->IsFpProtectionEnabled()) &&
+         base::FeatureList::IsEnabled(privacy_sandbox::kActUserBypassUx);
 }
 
 CookieControlsEnforcement

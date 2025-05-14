@@ -1763,11 +1763,9 @@ class PageInfoBubbleViewBrowserTestTrackingProtectionSubpage
  public:
   PageInfoBubbleViewBrowserTestTrackingProtectionSubpage() {
     std::vector<base::test::FeatureRef>
-        enabled_features =
-            {privacy_sandbox::kTrackingProtectionContentSettingUbControl,
-             privacy_sandbox::kActUserBypassUx,
-             privacy_sandbox::kFingerprintingProtectionUx,
-             privacy_sandbox::kIpProtectionUx},
+        enabled_features = {privacy_sandbox::kActUserBypassUx,
+                            privacy_sandbox::kFingerprintingProtectionUx,
+                            privacy_sandbox::kIpProtectionUx},
         disabled_features = {
 #if BUILDFLAG(ENABLE_GLIC)
             // GlicBorderView doesn't like it when the profile type is changed

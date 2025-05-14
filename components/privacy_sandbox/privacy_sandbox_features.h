@@ -166,10 +166,6 @@ BASE_DECLARE_FEATURE(kIpProtectionUx);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kActUserBypassUx);
 
-// Enables UserBypass to set/reset TRACKING_PROTECTION content settings.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kTrackingProtectionContentSettingUbControl);
-
 // Enables TRACKING_PROTECTION content settings to control 3pcb.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionContentSettingFor3pcb);
