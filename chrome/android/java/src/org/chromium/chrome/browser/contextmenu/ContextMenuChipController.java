@@ -10,9 +10,10 @@ import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.embedder_support.contextmenu.ChipRenderParams;
@@ -22,13 +23,15 @@ import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /** A controller to handle chip construction and cross-app communication. */
+@NullMarked
 class ContextMenuChipController implements View.OnClickListener {
     private final View mAnchorView;
-    private ChipView mChipView;
-    private AnchoredPopupWindow mPopupWindow;
     private final Context mContext;
-    private ChipRenderParams mChipRenderParams;
     private final Runnable mDismissContextMenuCallback;
+
+    private @Nullable AnchoredPopupWindow mPopupWindow;
+    private @Nullable ChipRenderParams mChipRenderParams;
+    private @Nullable ChipView mChipView;
 
     ContextMenuChipController(
             Context context, View anchorView, final Runnable dismissContextMenuCallback) {
@@ -91,7 +94,8 @@ class ContextMenuChipController implements View.OnClickListener {
             // The onClick callback may result in a cross-app switch so dismiss the menu before
             // executing that logic. Also note that dismissing the menu will also dismiss the chip.
             mDismissContextMenuCallback.run();
-            mChipRenderParams.onClickCallback.run();
+            Runnable onClick = mChipRenderParams == null ? null : mChipRenderParams.onClickCallback;
+            if (onClick != null) onClick.run();
         }
     }
 
@@ -107,9 +111,10 @@ class ContextMenuChipController implements View.OnClickListener {
 
     /**
      * Inflate an anchored chip view, set it up, and show it to the user.
+     *
      * @param chipRenderParams The data to construct the chip.
      */
-    protected void showChip(@NonNull ChipRenderParams chipRenderParams) {
+    protected void showChip(ChipRenderParams chipRenderParams) {
         if (mPopupWindow != null) {
             // Chip has already been shown for this context menu.
             return;
@@ -176,7 +181,7 @@ class ContextMenuChipController implements View.OnClickListener {
     // This method should only be used in test files.  It is not marked
     // @VisibleForTesting to allow the Coordinator to reference it in its
     // own testing methods.
-    AnchoredPopupWindow getCurrentPopupWindowForTesting() {
+    @Nullable AnchoredPopupWindow getCurrentPopupWindowForTesting() {
         return mPopupWindow;
     }
 
@@ -184,6 +189,6 @@ class ContextMenuChipController implements View.OnClickListener {
     // @VisibleForTesting to allow the Coordinator to reference it in its
     // own testing methods.
     void clickChipForTesting() {
-        onClick(mChipView);
+        if (mChipView != null) onClick(mChipView);
     }
 }

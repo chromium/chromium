@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.contextmenu;
 import android.graphics.Bitmap;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
+@NullMarked
 class ContextMenuHeaderProperties {
     /** Invalid value for OVERRIDE_*_PIXEL resources */
     static final int INVALID_OVERRIDE = -1;

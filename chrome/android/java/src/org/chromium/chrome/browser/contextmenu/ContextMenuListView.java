@@ -9,6 +9,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ListView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
 
@@ -16,6 +17,7 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
  * A custom ListView to be able to set width and height using the contents. Width and height are
  * constrained to make sure the view fits the screen size with margins.
  */
+@NullMarked
 public class ContextMenuListView extends ListView {
     // Whether the max width of this list view is limited by screen width.
     private final boolean mLimitedByScreenWidth;
