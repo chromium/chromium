@@ -63,6 +63,8 @@ id<GREYMatcher> UsernameChipButton() {
   const GURL URL = self.testServer->GetURL(kFormHTMLFile);
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey waitForWebStateContainingText:"Hello"];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:chrome_test_util::WebViewMatcher()];
 }
 
 - (void)tearDownHelper {
@@ -130,8 +132,8 @@ id<GREYMatcher> UsernameChipButton() {
       performAction:TapWebElementWithId(kFormElementNormal)];
 
   // Verify that the address manual fill button is visible.
-  [[EarlGrey selectElementWithMatcher:KeyboardAccessoryAddressManualFill()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:KeyboardAccessoryAddressManualFill()];
 }
 
 // Tests that saved passwords for the current site are visible in the manual
