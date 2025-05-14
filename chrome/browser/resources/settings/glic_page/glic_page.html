@@ -125,7 +125,16 @@
               <div class="shortcut-label" aria-hidden>
                 $i18n{glicNavigationShortcut}
               </div>
-              <div class="secondary">$i18n{glicNavigationShortcutSublabel}</div>
+              <div class="secondary">$i18n{glicNavigationShortcutSublabel}
+                  <a id="shortcutsNavigationLearnMoreLabel"
+                      class="learn-more-label"
+                      href="$i18n{glicKeyboardShortcutLearnMoreUrl}"
+                      aria-label="$i18n{glicKeyboardShortcutLearnMoreLabel}"
+                      aria-description="$i18n{opensInNewTab}"
+                      on-click="onShortcutsLearnMoreClick_" target="_blank">
+                    $i18n{glicKeyboardShortcutLearnMoreLabel}
+                  </a>
+              </div>
             </div>
             <cr-shortcut-input class="cr-padded-text shortcut-input"
                 input-aria-label="$i18n{glicNavigationShortcut}"
@@ -233,18 +242,18 @@
                         icon="settings-internal:screensaver-auto">
 </if>
                     </cr-icon>
-                    <div class="secondary">$i18n{glicTabAccessConsider1}</div>
-                  </li>
-                  <li>
-                    <cr-icon aria-hidden="true"
-<if expr="not _google_chrome">
-                        icon="settings:language">
-</if>
-<if expr="_google_chrome">
-                        icon="settings-internal:google-g">
-</if>
-                    </cr-icon>
-                    <div class="secondary">$i18n{glicTabAccessConsider2}</div>
+                    <div class="secondary">$i18n{glicTabAccessConsider1}
+                      <a id="shortcutTabAccessConsider1LearnMoreLabel"
+                          class="learn-more-label"
+                          href="$i18n{glicTabAccessToggleLearnMoreUrl}"
+                          on-click="onTabAccessToggleLearnMoreClick_"
+                          aria-label=
+                             "$i18n{glicTabAccessConsider1LearnMoreLabel}"
+                          aria-description="$i18n{opensInNewTab}"
+                          target="_blank">
+                      $i18n{glicTabAccessConsider1LearnMoreLabel}
+                    </a>
+                    </div>
                   </li>
                 </ul>
               </div>
