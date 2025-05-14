@@ -95,6 +95,7 @@ group("api_implementations") {
       public_deps += [
         "//extensions/browser/api/guest_view",
         "//extensions/browser/api/guest_view/app_view",
+        "//extensions/browser/api/guest_view/web_view",
       ]
     }
   }
