@@ -1710,8 +1710,9 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
                         features::kDevToolsFreestylerPatching.Get());
     freestyler_dict.Set("multimodal",
                         features::kDevToolsFreestylerMultimodal.Get());
-    freestyler_dict.Set("multimodalUploadInput",
-                        features::kDevToolsFreestylerMultimodalUploadInput.Get());
+    freestyler_dict.Set(
+        "multimodalUploadInput",
+        features::kDevToolsFreestylerMultimodalUploadInput.Get());
     freestyler_dict.Set("functionCalling",
                         features::kDevToolsFreestylerFunctionCalling.Get());
     response_dict.Set("devToolsFreestyler", std::move(freestyler_dict));
@@ -2000,10 +2001,33 @@ bool DevToolsUIBindings::MaybeStartLogging() {
     session_id_for_logging_ = base::UnguessableToken::Create();
     session_start_time_ = base::TimeTicks::Now();
     base::Value::Dict sync_info = GetSyncInformationForProfile(profile_);
+    int64_t session_tags = 0;
     bool is_signed_in = sync_info.FindBool("isSyncActive").value_or(false) &&
                         !sync_info.FindBool("isSyncPaused").value_or(false);
+    if (is_signed_in) {
+      session_tags |= SessionTags::kUserSignedIn;
+    }
+    int gen_ai_settings =
+        profile_->GetPrefs()->GetInteger(prefs::kDevToolsGenAiSettings);
+    if (gen_ai_settings &
+        static_cast<int>(DevToolsGenAiEnterprisePolicyValue::kDisable)) {
+      session_tags |= SessionTags::kDevToolsGetAiEnterprisePolicyDisabled;
+    }
+    if (gen_ai_settings &
+        static_cast<int>(
+            DevToolsGenAiEnterprisePolicyValue::kAllowWithoutLogging)) {
+      session_tags |=
+          SessionTags::kDevToolsGetAiEnterprisePolicyAllowWithLogging;
+    }
+    bool remote_debugging_enabled =
+        g_browser_process->local_state()->GetBoolean(
+            prefs::kDevToolsRemoteDebuggingAllowed);
+    if (!remote_debugging_enabled) {
+      session_tags |= SessionTags::kDevToolsRemoteDebuggingDisabled;
+    }
     metrics::structured::StructuredMetricsClient::Record(
         metrics::structured::events::v2::dev_tools::SessionStart()
+            .SetTags(session_tags)
             .SetTrigger(delegate_->GetOpenedByForLogging())
             .SetDockSide(delegate_->GetDockStateForLogging())
             .SetSessionId(session_id_for_logging_.GetLowForSerialization())

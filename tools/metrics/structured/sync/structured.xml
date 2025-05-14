@@ -3168,6 +3168,13 @@
     <metric name="IsSignedIn" type="int">
       <summary>
         Whether the user is signed in or not.
+        Deprecated in favor of the Tags bitmask metric
+      </summary>
+    </metric>
+    <metric name="Tags" type="int">
+      <summary>
+        Various tags associated with the session, e.g. whether the user is signed in or not,
+        if certain enterprise policies are enabled, etc. Stored as a bitmask.
       </summary>
     </metric>
   </event>
