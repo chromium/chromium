@@ -62,10 +62,19 @@ export class SplitNewTabPageAppElement extends CrLitElement {
   private activeTabId_: number = -1;
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
+  private visibilityChangedListener_: () => void;
 
   constructor() {
     super();
     ColorChangeUpdater.forDocument().start();
+
+    this.visibilityChangedListener_ = () => {
+      if (document.visibilityState === 'visible') {
+        this.apiProxy_.getProfileData().then(({profileData}) => {
+          this.onTabsChanged_(profileData);
+        });
+      }
+    };
   }
 
   override connectedCallback() {
@@ -94,6 +103,9 @@ export class SplitNewTabPageAppElement extends CrLitElement {
       this.updateViewportHeight_(profileData);
       this.onTabsChanged_(profileData);
     });
+
+    document.addEventListener(
+        'visibilitychange', this.visibilityChangedListener_);
   }
 
   override disconnectedCallback() {
@@ -102,6 +114,9 @@ export class SplitNewTabPageAppElement extends CrLitElement {
     this.listenerIds_.forEach(
         id => this.apiProxy_.getCallbackRouter().removeListener(id));
     this.listenerIds_ = [];
+
+    document.removeEventListener(
+        'visibilitychange', this.visibilityChangedListener_);
   }
 
   override updated(changedProperties: PropertyValues<this>) {
