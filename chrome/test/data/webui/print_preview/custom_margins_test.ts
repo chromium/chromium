@@ -182,12 +182,12 @@ suite('CustomMarginsTest', function() {
       [orientationEnum.BOTTOM, 108],
       [orientationEnum.LEFT, 18],
     ]);
-    model.settings.customMargins.value = {
+    model.setSetting('customMargins', {
       marginTop: marginValues.get(orientationEnum.TOP),
       marginRight: marginValues.get(orientationEnum.RIGHT),
       marginBottom: marginValues.get(orientationEnum.BOTTOM),
       marginLeft: marginValues.get(orientationEnum.LEFT),
-    };
+    });
     return marginValues;
   }
 
@@ -300,7 +300,6 @@ suite('CustomMarginsTest', function() {
       // Simulate setting custom margins from sticky settings.
       model.setSetting('margins', MarginsType.CUSTOM);
       const marginValues = setupCustomMargins();
-      model.notifyPath('settings.customMargins.value');
 
       // Validate control positions have been updated.
       controls.forEach((control, index) => {

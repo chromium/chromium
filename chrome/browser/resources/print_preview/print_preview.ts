@@ -12,7 +12,7 @@ export {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 export {Cdd, ColorOption, DpiOption, DuplexOption, DuplexType, MediaSizeCapability, MediaSizeOption, PageOrientationOption, SelectOption, VendorCapabilityValueType} from './data/cdd.js';
 export {ColorMode, createDestinationKey, Destination, DestinationOptionalParams, DestinationOrigin, GooglePromotedDestinationId, makeRecentDestination, PDF_DESTINATION_KEY, PrinterType, RecentDestination} from './data/destination.js';
 export {DestinationErrorType, DestinationStore, DestinationStoreEventType} from './data/destination_store.js';
-export {PageLayoutInfo} from './data/document_info.js';
+export {createDocumentSettings, DocumentSettings, PageLayoutInfo} from './data/document_info.js';
 export {ExtensionDestinationInfo, LocalDestinationInfo} from './data/local_parsers.js';
 export {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from './data/margins.js';
 export {MeasurementSystem, MeasurementSystemUnitType} from './data/measurement_system.js';

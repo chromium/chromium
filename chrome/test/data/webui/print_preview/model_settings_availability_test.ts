@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {Cdd, DuplexOption, MediaSizeOption, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
-import {Destination, DestinationOrigin, DuplexType, Margins, MarginsType, Size} from 'chrome://print/print_preview.js';
+import 'chrome://print/print_preview.js';
+
+import type {Cdd, DocumentSettings, DuplexOption, MediaSizeOption, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
+import {createDocumentSettings as createDefaultDocumentSettings, Destination, DestinationOrigin, DuplexType, Margins, MarginsType, Size} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {getCddTemplate, getSaveAsPdfDestination} from './print_preview_test_utils.js';
@@ -18,22 +20,20 @@ suite('ModelSettingsAvailabilityTest', function() {
     model.updateSettingsFromDestination();
   }
 
+  function createDocumentSettings(
+      ...overrides: Array<Partial<DocumentSettings>>): DocumentSettings {
+    return Object.assign(createDefaultDocumentSettings(), ...overrides);
+  }
+
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     model = document.createElement('print-preview-model');
     document.body.appendChild(model);
 
-    model.documentSettings = {
-      allPagesHaveCustomSize: false,
-      allPagesHaveCustomOrientation: false,
-      hasSelection: false,
-      isModifiable: true,
-      isScalingDisabled: false,
-      fitToPageScaling: 100,
+    model.documentSettings = createDocumentSettings({
       pageCount: 3,
       title: 'title',
-    };
-
+    });
     model.pageSize = new Size(612, 792);
     model.margins = new Margins(72, 72, 72, 72);
 
@@ -118,11 +118,13 @@ suite('ModelSettingsAvailabilityTest', function() {
     assertTrue(model.settings.layout.available);
 
     // Test with PDF - should be hidden.
-    model.set('documentSettings.isModifiable', false);
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: false});
     assertFalse(model.settings.layout.available);
 
     // Unavailable if all pages have specified an orientation.
-    model.set('documentSettings.allPagesHaveCustomOrientation', true);
+    model.documentSettings = createDocumentSettings(
+        model.documentSettings, {allPagesHaveCustomOrientation: true});
     assertFalse(model.settings.layout.available);
     assertFalse(model.settings.layout.setFromUi);
   });
@@ -221,7 +223,7 @@ suite('ModelSettingsAvailabilityTest', function() {
   function setSaveAsPdfDestination() {
     const saveAsPdf = getSaveAsPdfDestination();
     saveAsPdf.capabilities = getCddTemplate(model.destination.id).capabilities;
-    model.set('destination', saveAsPdf);
+    model.destination = saveAsPdf;
   }
 
   test('media size', function() {
@@ -243,19 +245,24 @@ suite('ModelSettingsAvailabilityTest', function() {
     assertTrue(model.settings.mediaSize.available);
 
     // PDF to PDF -> media size is unavailable.
-    model.set('documentSettings.isModifiable', false);
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: false});
     assertFalse(model.settings.mediaSize.available);
-    model.set('documentSettings.isModifiable', true);
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: true});
 
     // Even if all pages have specified their orientation, the size option
     // should still be available.
-    model.set('documentSettings.allPagesHaveCustomOrientation', true);
+    model.documentSettings = createDocumentSettings(
+        model.documentSettings, {allPagesHaveCustomOrientation: true});
     assertTrue(model.settings.mediaSize.available);
-    model.set('documentSettings.allPagesHaveCustomOrientation', false);
+    model.documentSettings = createDocumentSettings(
+        model.documentSettings, {allPagesHaveCustomOrientation: false});
 
     // If all pages have specified a size, the size option shouldn't be
     // available.
-    model.set('documentSettings.allPagesHaveCustomSize', true);
+    model.documentSettings = createDocumentSettings(
+        model.documentSettings, {allPagesHaveCustomSize: true});
     assertFalse(model.settings.mediaSize.available);
     assertFalse(model.settings.color.setFromUi);
   });
@@ -266,7 +273,8 @@ suite('ModelSettingsAvailabilityTest', function() {
     assertTrue(model.settings.customMargins.available);
 
     // No margins settings for PDFs.
-    model.set('documentSettings.isModifiable', false);
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: false});
     assertFalse(model.settings.margins.available);
     assertFalse(model.settings.customMargins.available);
     assertFalse(model.settings.margins.setFromUi);
@@ -306,11 +314,12 @@ suite('ModelSettingsAvailabilityTest', function() {
     assertTrue(model.settings.scaling.available);
 
     // PDF -> Save as PDF
-    model.set('documentSettings.isModifiable', false);
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: false});
     assertFalse(model.settings.scaling.available);
 
     // PDF -> printer
-    model.set('destination', defaultDestination);
+    model.destination = defaultDestination;
     assertTrue(model.settings.scaling.available);
     assertFalse(model.settings.scaling.setFromUi);
   });
@@ -325,11 +334,12 @@ suite('ModelSettingsAvailabilityTest', function() {
     assertTrue(model.settings.scalingType.available);
 
     // PDF -> Save as PDF
-    model.set('documentSettings.isModifiable', false);
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: false});
     assertFalse(model.settings.scalingType.available);
 
     // PDF -> printer
-    model.set('destination', defaultDestination);
+    model.destination = defaultDestination;
     assertFalse(model.settings.scalingType.available);
   });
 
@@ -343,11 +353,12 @@ suite('ModelSettingsAvailabilityTest', function() {
     assertFalse(model.settings.scalingTypePdf.available);
 
     // PDF -> Save as PDF
-    model.set('documentSettings.isModifiable', false);
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: false});
     assertFalse(model.settings.scalingTypePdf.available);
 
     // PDF -> printer
-    model.set('destination', defaultDestination);
+    model.destination = defaultDestination;
     assertTrue(model.settings.scalingTypePdf.available);
   });
 
@@ -373,28 +384,28 @@ suite('ModelSettingsAvailabilityTest', function() {
     model.setSetting(
         'customMargins',
         {marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: 0});
-    model.set('margins', new Margins(0, 0, 0, 0));
+    model.margins = new Margins(0, 0, 0, 0);
     assertFalse(model.settings.headerFooter.available);
 
     // Custom margins of 36 -> header/footer available
     model.setSetting(
         'customMargins',
         {marginTop: 36, marginLeft: 36, marginRight: 36, marginBottom: 36});
-    model.set('margins', new Margins(36, 36, 36, 36));
+    model.margins = new Margins(36, 36, 36, 36);
     assertTrue(model.settings.headerFooter.available);
 
     // Zero top and bottom -> header/footer unavailable
     model.setSetting(
         'customMargins',
         {marginTop: 0, marginLeft: 36, marginRight: 36, marginBottom: 0});
-    model.set('margins', new Margins(0, 36, 0, 36));
+    model.margins = new Margins(0, 36, 0, 36);
     assertFalse(model.settings.headerFooter.available);
 
     // Zero top and nonzero bottom -> header/footer available
     model.setSetting(
         'customMargins',
         {marginTop: 0, marginLeft: 36, marginRight: 36, marginBottom: 36});
-    model.set('margins', new Margins(0, 36, 36, 36));
+    model.margins = new Margins(0, 36, 36, 36);
     assertTrue(model.settings.headerFooter.available);
 
     // Small paper sizes
@@ -432,7 +443,8 @@ suite('ModelSettingsAvailabilityTest', function() {
     assertTrue(model.settings.headerFooter.available);
 
     // Header/footer is never available for PDFs.
-    model.set('documentSettings.isModifiable', false);
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: false});
     assertFalse(model.settings.headerFooter.available);
     assertFalse(model.settings.headerFooter.setFromUi);
   });
@@ -442,7 +454,8 @@ suite('ModelSettingsAvailabilityTest', function() {
     assertTrue(model.settings.cssBackground.available);
 
     // No CSS background setting for PDFs.
-    model.set('documentSettings.isModifiable', false);
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: false});
     assertFalse(model.settings.cssBackground.available);
     assertFalse(model.settings.cssBackground.setFromUi);
   });
@@ -488,7 +501,8 @@ suite('ModelSettingsAvailabilityTest', function() {
     // Availability for PDFs varies depening upon OS.
     // Windows and macOS depend on policy - see policy_test.js for their
     // testing coverage.
-    model.set('documentSettings.isModifiable', false);
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: false});
     // <if expr="is_linux">
     // Always available for PDFs on Linux.
     assertTrue(model.settings.rasterize.available);
@@ -500,11 +514,13 @@ suite('ModelSettingsAvailabilityTest', function() {
     // Not available with no selection.
     assertFalse(model.settings.selectionOnly.available);
 
-    model.set('documentSettings.hasSelection', true);
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {hasSelection: true});
     assertTrue(model.settings.selectionOnly.available);
 
     // Not available for PDFs.
-    model.set('documentSettings.isModifiable', false);
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: false});
     assertFalse(model.settings.selectionOnly.available);
     assertFalse(model.settings.selectionOnly.setFromUi);
   });
@@ -512,11 +528,13 @@ suite('ModelSettingsAvailabilityTest', function() {
   test('pages per sheet', function() {
     // Pages per sheet is available everywhere except for ARC.
     // With the default settings for Blink content, it is available.
-    model.set('documentSettings.isModifiable', true);
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: true});
     assertTrue(model.settings.pagesPerSheet.available);
 
     // Still available for PDF content.
-    model.set('documentSettings.isModifiable', false);
+    model.documentSettings =
+        createDocumentSettings(model.documentSettings, {isModifiable: false});
     assertTrue(model.settings.pagesPerSheet.available);
   });
 });
