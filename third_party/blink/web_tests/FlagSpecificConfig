@@ -63,7 +63,8 @@
     "name": "trees-in-viz",
     "args": [
           "--enable-features=TreesInViz"
-    ]
+    ],
+    "smoke_file": "TestLists/trees-in-viz"
   },
   {
     "name": "webgpu",
