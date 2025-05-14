@@ -695,7 +695,7 @@ void StyleAdjuster::AdjustOverflow(ComputedStyleBuilder& builder,
 
 // g-issues.chromium.org/issues/349835587
 // https://github.com/WICG/canvas-place-element
-static bool IsCanvasPlaceOrDrawElement(const Element* element) {
+static bool IsCanvasDrawElement(const Element* element) {
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() && element &&
       element->IsInCanvasSubtree()) {
     // Placed elements are always immediate children of the canvas.
@@ -708,7 +708,7 @@ static bool IsCanvasPlaceOrDrawElement(const Element* element) {
   return false;
 }
 
-static bool IsCanvasWithPlaceOrDrawElements(const Element* element) {
+static bool IsCanvasWithDrawElements(const Element* element) {
   if (!RuntimeEnabledFeatures::CanvasDrawElementEnabled() || !element) {
     return false;
   }
@@ -725,10 +725,10 @@ void StyleAdjuster::AdjustStyleForDisplay(
     const ComputedStyle& layout_parent_style,
     const Element* element,
     Document* document) {
-  bool is_canvas_place_or_draw_element = IsCanvasPlaceOrDrawElement(element);
+  bool is_canvas_draw_element = IsCanvasDrawElement(element);
 
   if ((layout_parent_style.BlockifiesChildren() && !HostIsInputFile(element)) ||
-      is_canvas_place_or_draw_element) {
+      is_canvas_draw_element) {
     builder.SetIsInBlockifyingDisplay();
     if (builder.Display() != EDisplay::kContents) {
       builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
@@ -737,13 +737,13 @@ void StyleAdjuster::AdjustStyleForDisplay(
       }
     }
     if (layout_parent_style.IsDisplayFlexibleOrGridBox() ||
-        layout_parent_style.IsDisplayMathType() ||
-        is_canvas_place_or_draw_element) {
+        layout_parent_style.IsDisplayMathType() || is_canvas_draw_element) {
       builder.SetIsInsideDisplayIgnoringFloatingChildren();
     }
 
-    if (is_canvas_place_or_draw_element) {
+    if (is_canvas_draw_element) {
       builder.SetPosition(EPosition::kStatic);
+      builder.SetContain(builder.Contain() | kContainsPaint);
     }
   }
 
@@ -1165,8 +1165,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       builder.Overlay() == EOverlay::kAuto ||
       builder.StyleType() == kPseudoIdBackdrop ||
       builder.StyleType() == kPseudoIdViewTransition ||
-      IsCanvasPlaceOrDrawElement(element) ||
-      IsCanvasWithPlaceOrDrawElements(element)) {
+      IsCanvasWithDrawElements(element)) {
     builder.SetForcesStackingContext(true);
   }
 

@@ -27,6 +27,9 @@ constexpr const char kTestHarness[]{"test-harness"};
 
 // See content/test/data/accessibility/readme.md for an overview.
 //
+// Use tools/accessibility/rebase_dump_accessibility_tree_tests.py to
+// update test expectations.
+//
 // This test takes a snapshot of the platform BrowserAccessibility tree and
 // tests it against an expected baseline.
 //

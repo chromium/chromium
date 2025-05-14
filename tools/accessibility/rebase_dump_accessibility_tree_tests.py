@@ -140,7 +140,8 @@ def get_trybot_log(patch_set: Optional[int]) -> List:
       capture_output=True,
       text=True,
   ).stdout):
-    raise ValueError('Did not find an issue attached to the current branch.')
+    raise ValueError('Did not find an issue attached to the current branch. '
+                     'Note for Googlers: you might just need to run gcert.')
   return json.loads(output)
 
 

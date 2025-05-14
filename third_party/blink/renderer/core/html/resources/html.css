@@ -2112,5 +2112,4 @@ dialog:where(:modal) {
   select:-internal-list-box::picker-icon {
     display: none !important;
   }
-
 }
