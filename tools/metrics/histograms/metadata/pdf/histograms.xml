@@ -124,7 +124,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Tracks the brush color used for an Ink2 Highlighter stroke modification in
     the PDF viewer. This is only recorded when drawing actions are performed by
-    the user, but not if they occur as part of undo or redo operations.
+    the user, but not if they occur as part of undo or redo operations. Note
+    that this histogram shares the same enum with PDF.Ink2TextHighlighterColor.
   </summary>
 </histogram>
 
@@ -138,7 +139,8 @@ chromium-metrics-reviews@google.com.
     strokes that erase pre-existing strokes in a PDF are also included. This is
     only recorded when drawing or erasing actions are performed by the user, but
     not if they occur as part of undo or redo operations. Eraser strokes that do
-    not erase any other strokes are ignored.
+    not erase any other strokes are ignored. Note that this histogram shares the
+    same enum with PDF.Ink2TextHighlightInputDeviceType.
   </summary>
 </histogram>
 
@@ -168,6 +170,34 @@ chromium-metrics-reviews@google.com.
     <variant name="Highlighter"/>
     <variant name="Pen"/>
   </token>
+</histogram>
+
+<histogram name="PDF.Ink2TextHighlighterColor"
+    enum="PDFInk2StrokeHighlighterColor" expires_after="2025-12-01">
+  <owner>andyphan@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Tracks the highlighter color used for a single Ink2 text highlight action in
+    the PDF viewer. A text highlight action consists of one or more highlight
+    strokes that cover the user's text selection in the PDF. This is only
+    recorded when the text highlighting action is performed by the user, but not
+    if they occur as part of undo or redo operations. Note that this histogram
+    shares the same enum with PDF.Ink2StrokeHighlighterColor.
+  </summary>
+</histogram>
+
+<histogram name="PDF.Ink2TextHighlightInputDeviceType"
+    enum="PDFInk2StrokeInputDeviceType" expires_after="2025-12-01">
+  <owner>andyphan@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Tracks the input device type used for a single Ink2 text highlight action in
+    the PDF viewer. A text highlight action consists of one or more highlight
+    strokes that cover the user's text selection in the PDF. This is only
+    recorded when the text highlighting action is performed by the user, but not
+    if they occur as part of undo or redo operations. Note that this histogram
+    shares the same enum with PDF.Ink2StrokeInputDeviceType.
+  </summary>
 </histogram>
 
 <histogram name="PDF.LoadedWithV2InkAnnotations2"

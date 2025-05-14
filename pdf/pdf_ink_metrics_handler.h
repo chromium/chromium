@@ -117,6 +117,9 @@ void ReportDrawStroke(PdfInkBrush::Type type,
 
 void ReportEraseStroke(ink::StrokeInput::ToolType tool_type);
 
+void ReportTextHighlight(const ink::Brush& brush,
+                         ink::StrokeInput::ToolType tool_type);
+
 void RecordPdfLoadedWithV2InkAnnotations(
     PDFLoadedWithV2InkAnnotations loaded_with_annotations);
 

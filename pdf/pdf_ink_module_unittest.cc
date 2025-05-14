@@ -19,6 +19,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -47,6 +48,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom.h"
+#include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -3084,7 +3086,7 @@ TEST_P(PdfInkModuleMetricsTest, StrokeInputDevicePen) {
                                   StrokeMetricInputDeviceType::kPen, 2);
 }
 
-class PdfInkModuleTextHighlightTest : public PdfInkModuleStrokeTest {
+class PdfInkModuleTextHighlightTest : public PdfInkModuleUndoRedoTest {
  public:
   static constexpr TestAnnotationBrushMessageParams kOrangeBrushParams{
       SkColorSetRGB(0xFF, 0x63, 0x0C),
@@ -3188,7 +3190,10 @@ class PdfInkModuleTextHighlightTest : public PdfInkModuleStrokeTest {
     // Do not create a mouse move event, as it would reset the click count.
 
     blink::WebMouseEvent mouse_up_event =
-        MouseEventBuilder().CreateLeftMouseUpAtPosition(point).Build();
+        MouseEventBuilder()
+            .CreateLeftMouseUpAtPosition(point)
+            .SetClickCount(click_count)
+            .Build();
     EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
   }
 };
@@ -3942,6 +3947,335 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMoveWhileBrushDrawing) {
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 }
 
+class PdfInkModuleTextHighlightMetricsTest
+    : public PdfInkModuleMetricsTestBase,
+      public PdfInkModuleTextHighlightTest {
+ protected:
+  static constexpr char kTextHighlightColorMetric[] =
+      "PDF.Ink2TextHighlighterColor";
+  static constexpr char kTextHighlightInputDeviceMetric[] =
+      "PDF.Ink2TextHighlightInputDeviceType";
+  static constexpr base::TimeDelta kOneMs = base::Milliseconds(1);
+  static constexpr base::TimeDelta kTextSelectionClickTimeMs =
+      base::Milliseconds(ui::kDoubleClickTimeMs);
+
+  // Helper for moving the mouse and releasing left click at `point` with
+  // `click_count` clicks.
+  void MouseMoveAndUpAtPoint(const gfx::PointF& point, int click_count) {
+    EXPECT_TRUE(ink_module().HandleInputEvent(
+        CreateMouseMoveWithLeftButtonEventAtPoint(point)));
+
+    blink::WebMouseEvent mouse_up_event =
+        MouseEventBuilder()
+            .CreateLeftMouseUpAtPosition(point)
+            .SetClickCount(click_count)
+            .Build();
+    EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
+  }
+
+  // Validates the number of strokes and the total counts of all relevant text
+  // highlight metrics.
+  void ValidateHighlightMetricCounts(int expected_stroke_count,
+                                     int expected_metric_count) {
+    EXPECT_EQ(expected_stroke_count, client().stroke_finished_count());
+    histograms().ExpectTotalCount(kTextHighlightColorMetric,
+                                  expected_metric_count);
+    histograms().ExpectTotalCount(kTextHighlightInputDeviceMetric,
+                                  expected_metric_count);
+  }
+};
+
+TEST_P(PdfInkModuleTextHighlightMetricsTest,
+       StrokeDoesNotAffectTextHighlightMetrics) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+  RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+
+  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
+                                /*expected_metric_count=*/0);
+}
+
+TEST_P(PdfInkModuleTextHighlightMetricsTest,
+       TextHighlightDoesNotAffectStrokeMetrics) {
+  RunSingleSelectionWithMouseTest(
+      /*selection_rect=*/kHorizontalSelection,
+      /*expected_inputs=*/
+      {PdfInkInputData(gfx::PointF(15.0, 20.0)),
+       PdfInkInputData(gfx::PointF(35.0, 20.0))},
+      /*expected_size=*/10.0);
+
+  histograms().ExpectTotalCount(kHighlighterColorMetric, 0);
+  histograms().ExpectTotalCount(kInputDeviceMetric, 0);
+  histograms().ExpectTotalCount(kHighlighterSizeMetric, 0);
+  histograms().ExpectTotalCount(kTypeMetric, 0);
+}
+
+TEST_P(PdfInkModuleTextHighlightMetricsTest,
+       TextHighlightUndoRedoDoesNotAffectMetrics) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  RunSingleSelectionWithMouseTest(
+      /*selection_rect=*/kHorizontalSelection,
+      /*expected_inputs=*/
+      {PdfInkInputData(gfx::PointF(15.0, 20.0)),
+       PdfInkInputData(gfx::PointF(35.0, 20.0))},
+      /*expected_size=*/10.0);
+
+  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
+                                /*expected_metric_count=*/1);
+
+  PerformUndo();
+  PerformRedo();
+
+  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
+                                /*expected_metric_count=*/1);
+}
+
+TEST_P(PdfInkModuleTextHighlightMetricsTest, Color) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kRedBrushParams);
+
+  histograms().ExpectTotalCount(kTextHighlightColorMetric, 0);
+
+  SetSelectionRects(base::span_from_ref(kHorizontalSelection));
+  SetTextAreaPoints({kStartPointInsidePage0, kEndPointInsidePage0});
+
+  ApplyStrokeWithMouseAtPoints(kStartPointInsidePage0, {kEndPointInsidePage0},
+                               kEndPointInsidePage0);
+
+  histograms().ExpectUniqueSample(kTextHighlightColorMetric,
+                                  StrokeMetricHighlighterColor::kLightRed, 1);
+
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+  ApplyStrokeWithMouseAtPoints(kStartPointInsidePage0, {kEndPointInsidePage0},
+                               kEndPointInsidePage0);
+
+  EXPECT_EQ(2, client().stroke_finished_count());
+  histograms().ExpectBucketCount(kTextHighlightColorMetric,
+                                 StrokeMetricHighlighterColor::kOrange, 1);
+  histograms().ExpectTotalCount(kTextHighlightColorMetric, 2);
+}
+
+TEST_P(PdfInkModuleTextHighlightMetricsTest, InputDevice) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+
+  histograms().ExpectTotalCount(kTextHighlightInputDeviceMetric, 0);
+
+  SetSelectionRects(base::span_from_ref(kHorizontalSelection));
+  SetTextAreaPoints({kStartPointInsidePage0, kEndPointInsidePage0});
+
+  // Apply a text highlight stroke with mouse.
+  ApplyStrokeWithMouseAtPoints(kStartPointInsidePage0, {kEndPointInsidePage0},
+                               kEndPointInsidePage0);
+
+  histograms().ExpectUniqueSample(kTextHighlightInputDeviceMetric,
+                                  StrokeMetricInputDeviceType::kMouse, 1);
+
+  // Apply a text highlight stroke with touch.
+  ApplyStrokeWithTouchAtPoints(base::span_from_ref(kStartPointInsidePage0),
+                               {base::span_from_ref(kEndPointInsidePage0)},
+                               base::span_from_ref(kEndPointInsidePage0));
+
+  EXPECT_EQ(2, client().stroke_finished_count());
+  histograms().ExpectBucketCount(kTextHighlightInputDeviceMetric,
+                                 StrokeMetricInputDeviceType::kTouch, 1);
+  histograms().ExpectTotalCount(kTextHighlightInputDeviceMetric, 2);
+
+  // Apply a text highlight stroke with pen.
+  ApplyStrokeWithPenAtPoints(base::span_from_ref(kStartPointInsidePage0),
+                             {base::span_from_ref(kEndPointInsidePage0)},
+                             base::span_from_ref(kEndPointInsidePage0));
+
+  EXPECT_EQ(3, client().stroke_finished_count());
+  histograms().ExpectBucketCount(kTextHighlightInputDeviceMetric,
+                                 StrokeMetricInputDeviceType::kPen, 1);
+  histograms().ExpectTotalCount(kTextHighlightInputDeviceMetric, 3);
+}
+
+TEST_P(PdfInkModuleTextHighlightMetricsTest, TwoClickDelay) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+  SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
+
+  // Click twice.
+  ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/1);
+  SetSelectionRects(base::span_from_ref(kHorizontalSelection));
+  ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/2);
+
+  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
+                                /*expected_metric_count=*/0);
+
+  // Fast forward to just one ms before the timer should fire.
+  GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs - kOneMs);
+
+  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
+                                /*expected_metric_count=*/0);
+
+  // Fast forward by one ms so the timer fires.
+  GetPdfTestTaskEnvironment().FastForwardBy(kOneMs);
+
+  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
+                                /*expected_metric_count=*/1);
+}
+
+TEST_P(PdfInkModuleTextHighlightMetricsTest, TwoClickMove) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+  SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
+
+  // Click once.
+  ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/1);
+
+  // Click the second time, but without mouseup.
+  SetSelectionRects(base::span_from_ref(kHorizontalSelection));
+  blink::WebMouseEvent mouse_event =
+      MouseEventBuilder()
+          .CreateLeftClickAtPosition(kStartPointInsidePage0)
+          .SetClickCount(2)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_event));
+
+  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
+                                /*expected_metric_count=*/0);
+
+  // Fast forward by the click time duration.
+  GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs);
+
+  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
+                                /*expected_metric_count=*/1);
+
+  // Now move and release at a new position.
+  MouseMoveAndUpAtPoint(kEndPointInsidePage0, /*click_count=*/2);
+
+  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
+                                /*expected_metric_count=*/1);
+
+  // Fast forward by the click time duration.
+  GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs);
+
+  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
+                                /*expected_metric_count=*/1);
+}
+
+TEST_P(PdfInkModuleTextHighlightMetricsTest, TwoClickMoveHighlight) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+  constexpr gfx::PointF kStartPoint2InsidePage0{12.0f, 10.0f};
+  SetTextAreaPoints({kStartPointInsidePage0, kStartPoint2InsidePage0});
+
+  // Click twice.
+  ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/1);
+  SetSelectionRects(base::span_from_ref(kHorizontalSelection));
+  ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/2);
+
+  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
+                                /*expected_metric_count=*/0);
+
+  // Text highlight elsewhere.
+  EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPoint2InsidePage0,
+                                              /*click_count=*/1));
+  EXPECT_CALL(client(), ExtendSelectionByPoint(kEndPointInsidePage0));
+  ApplyStrokeWithMouseAtPoints(kStartPoint2InsidePage0, {kEndPointInsidePage0},
+                               kEndPointInsidePage0);
+
+  // There should be reports for the two click highlight and the new highlight.
+  ValidateHighlightMetricCounts(/*expected_stroke_count=*/2,
+                                /*expected_metric_count=*/2);
+
+  // Fast forward by the click time duration.
+  GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs);
+
+  ValidateHighlightMetricCounts(/*expected_stroke_count=*/2,
+                                /*expected_metric_count=*/2);
+}
+
+TEST_P(PdfInkModuleTextHighlightMetricsTest, ThreeClickDelay) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+  SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
+
+  // Click twice.
+  ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/1);
+  SetSelectionRects(base::span_from_ref(kHorizontalSelection));
+  ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/2);
+
+  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
+                                /*expected_metric_count=*/0);
+
+  // Fast forward to just one ms before the timer would fire.
+  GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs - kOneMs);
+
+  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
+                                /*expected_metric_count=*/0);
+
+  // Click the third time.
+  ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/3);
+
+  ValidateHighlightMetricCounts(/*expected_stroke_count=*/2,
+                                /*expected_metric_count=*/1);
+
+  // Fast forward by the click time duration.
+  GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs);
+
+  ValidateHighlightMetricCounts(/*expected_stroke_count=*/2,
+                                /*expected_metric_count=*/1);
+}
+
+TEST_P(PdfInkModuleTextHighlightMetricsTest, ThreeClickMove) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+  SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
+
+  // Click twice.
+  ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/1);
+  SetSelectionRects(base::span_from_ref(kHorizontalSelection));
+  ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/2);
+
+  ValidateHighlightMetricCounts(/*expected_stroke_count=*/1,
+                                /*expected_metric_count=*/0);
+
+  // Click the third time, but without mouseup.
+  blink::WebMouseEvent mouse_event =
+      MouseEventBuilder()
+          .CreateLeftClickAtPosition(kStartPointInsidePage0)
+          .SetClickCount(3)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_event));
+
+  ValidateHighlightMetricCounts(/*expected_stroke_count=*/2,
+                                /*expected_metric_count=*/1);
+
+  // Fast forward by the click time duration.
+  GetPdfTestTaskEnvironment().FastForwardBy(kTextSelectionClickTimeMs);
+
+  ValidateHighlightMetricCounts(/*expected_stroke_count=*/2,
+                                /*expected_metric_count=*/1);
+
+  // Now move and release at a new position.
+  MouseMoveAndUpAtPoint(kEndPointInsidePage0, /*click_count=*/3);
+
+  ValidateHighlightMetricCounts(/*expected_stroke_count=*/2,
+                                /*expected_metric_count=*/1);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          PdfInkModuleTest,
                          testing::ValuesIn(GetAllInkTestVariations()));
@@ -3960,6 +4294,10 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(
     All,
     PdfInkModuleTextHighlightTest,
+    testing::ValuesIn(GetInkTestVariationsWithTextHighlighting()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PdfInkModuleTextHighlightMetricsTest,
     testing::ValuesIn(GetInkTestVariationsWithTextHighlighting()));
 
 }  // namespace chrome_pdf

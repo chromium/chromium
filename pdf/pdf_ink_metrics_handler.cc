@@ -87,6 +87,8 @@ constexpr auto kHighlighterColors =
     });
 // LINT.ThenChange(//chrome/browser/resources/pdf/elements//ink_annotation_brush_mixin.ts:HighlighterColors)
 
+constexpr char kStrokeInputDeviceMetricName[] = "PDF.Ink2StrokeInputDeviceType";
+
 void ReportStrokeTypeAndMaybeSize(StrokeMetricBrushType type,
                                   std::optional<StrokeMetricBrushSize> size) {
   base::UmaHistogramEnumeration("PDF.Ink2StrokeBrushType", type);
@@ -106,22 +108,19 @@ void ReportStrokeTypeAndMaybeSize(StrokeMetricBrushType type,
   base::UmaHistogramEnumeration(size_metric, size.value());
 }
 
-void ReportStrokeInputDeviceType(ink::StrokeInput::ToolType tool_type) {
-  StrokeMetricInputDeviceType type;
+StrokeMetricInputDeviceType GetStrokeInputDeviceType(
+    ink::StrokeInput::ToolType tool_type) {
   switch (tool_type) {
-    case ink::StrokeInput::ToolType::kMouse:
-      type = StrokeMetricInputDeviceType::kMouse;
-      break;
-    case ink::StrokeInput::ToolType::kTouch:
-      type = StrokeMetricInputDeviceType::kTouch;
-      break;
-    case ink::StrokeInput::ToolType::kStylus:
-      type = StrokeMetricInputDeviceType::kPen;
-      break;
-    default:
+    case ink::StrokeInput::ToolType::kUnknown:
       NOTREACHED();
+    case ink::StrokeInput::ToolType::kMouse:
+      return StrokeMetricInputDeviceType::kMouse;
+    case ink::StrokeInput::ToolType::kTouch:
+      return StrokeMetricInputDeviceType::kTouch;
+    case ink::StrokeInput::ToolType::kStylus:
+      return StrokeMetricInputDeviceType::kPen;
   }
-  base::UmaHistogramEnumeration("PDF.Ink2StrokeInputDeviceType", type);
+  NOTREACHED();
 }
 
 }  // namespace
@@ -137,7 +136,8 @@ void ReportDrawStroke(PdfInkBrush::Type type,
   ReportStrokeTypeAndMaybeSize(is_pen ? StrokeMetricBrushType::kPen
                                       : StrokeMetricBrushType::kHighlighter,
                                size_iter->second);
-  ReportStrokeInputDeviceType(tool_type);
+  base::UmaHistogramEnumeration(kStrokeInputDeviceMetricName,
+                                GetStrokeInputDeviceType(tool_type));
 
   SkColor sk_color = GetSkColorFromInkBrush(brush);
   if (is_pen) {
@@ -154,7 +154,19 @@ void ReportDrawStroke(PdfInkBrush::Type type,
 
 void ReportEraseStroke(ink::StrokeInput::ToolType tool_type) {
   ReportStrokeTypeAndMaybeSize(StrokeMetricBrushType::kEraser, std::nullopt);
-  ReportStrokeInputDeviceType(tool_type);
+  base::UmaHistogramEnumeration(kStrokeInputDeviceMetricName,
+                                GetStrokeInputDeviceType(tool_type));
+}
+
+void ReportTextHighlight(const ink::Brush& brush,
+                         ink::StrokeInput::ToolType tool_type) {
+  SkColor sk_color = GetSkColorFromInkBrush(brush);
+  auto color_iter = kHighlighterColors.find(sk_color);
+  CHECK(color_iter != kHighlighterColors.end());
+  base::UmaHistogramEnumeration("PDF.Ink2TextHighlighterColor",
+                                color_iter->second);
+  base::UmaHistogramEnumeration("PDF.Ink2TextHighlightInputDeviceType",
+                                GetStrokeInputDeviceType(tool_type));
 }
 
 void RecordPdfLoadedWithV2InkAnnotations(

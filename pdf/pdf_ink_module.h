@@ -18,6 +18,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "pdf/buildflags.h"
 #include "pdf/page_orientation.h"
@@ -362,9 +363,12 @@ class PdfInkModule {
   // Return values have the same semantics as On{Mouse,Touch}*() above.
   bool StartTextHighlight(const gfx::PointF& position,
                           int click_count,
-                          base::TimeTicks timestamp);
+                          base::TimeTicks timestamp,
+                          ink::StrokeInput::ToolType tool_type);
   bool ContinueTextHighlight(const gfx::PointF& position);
-  bool FinishTextHighlight(const gfx::PointF& position, bool is_multi_click);
+  bool FinishTextHighlight(const gfx::PointF& position,
+                           bool is_multi_click,
+                           ink::StrokeInput::ToolType tool_type);
 
   // Returns a highlighter stroke that matches the position and size of
   // `selection_rect`. `selection_rect` must be in screen coordinates.
@@ -383,6 +387,14 @@ class PdfInkModule {
   // mapping of 0-based page indices to a list of those strokes. See comments
   // for `TextHighlightState::highlight_strokes`.
   std::map<int, std::vector<ink::Stroke>> GetTextSelectionAsStrokes();
+
+  // Starts a timer for text selection multi-clicks that, when fired, will
+  // report text highlight metrics.
+  void StartTextSelectionMultiClickTimer(ink::StrokeInput::ToolType tool_type);
+
+  // Stops the timer from `StartTextSelectionMultiClickTimer()` without
+  // reporting any metrics.
+  void StopTextSelectionMultiClickTimer();
 
   // Sets `using_stylus_instead_of_touch_` to true if `tool_type` is
   // `ink::StrokeInput::ToolType::kStylus`. Otherwise do nothing.
@@ -549,6 +561,9 @@ class PdfInkModule {
   DocumentStrokesMap strokes_;
 
   PdfInkUndoRedoModel undo_redo_model_;
+
+  // A timer used for reporting metrics during multi-click text selection.
+  base::OneShotTimer text_selection_click_timer_;
 
   base::WeakPtrFactory<PdfInkModule> weak_factory_{this};
 };
