@@ -56,11 +56,13 @@
 #import "ios/chrome/browser/app_store_rating/ui_bundled/app_store_rating_scene_agent.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
 #import "ios/chrome/browser/appearance/ui_bundled/appearance_customization.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_authentication_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_load_url.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/features.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/promo/signin_fullscreen_promo_scene_agent.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
@@ -359,7 +361,8 @@ void OnListFamilyMembersResponse(
 
 }  // namespace
 
-@interface SceneController () <AuthenticationFlowDelegate,
+@interface SceneController () <AccountMenuCoordinatorDelegate,
+                               AuthenticationFlowDelegate,
                                HistoryCoordinatorDelegate,
                                IncognitoInterstitialCoordinatorDelegate,
                                PasswordCheckupCoordinatorDelegate,
@@ -396,6 +399,7 @@ void OnListFamilyMembersResponse(
   // Fetches the Family Link member role asynchronously from KidsManagement API.
   std::unique_ptr<supervised_user::ListFamilyMembersFetcher>
       _familyMembersFetcher;
+  AccountMenuCoordinator* _accountMenuCoordinator;
   // The authentication flow, if one is currently running.
   AuthenticationFlow* _authenticationFlow;
 }
@@ -834,6 +838,12 @@ void OnListFamilyMembersResponse(
 }
 
 #pragma mark - private
+
+- (void)stopAccountMenu {
+  [_accountMenuCoordinator stop];
+  _accountMenuCoordinator.delegate = nil;
+  _accountMenuCoordinator = nil;
+}
 
 - (void)handleURLContextsToOpen {
   if (self.sceneState.URLContextsToOpen.count == 0) {
@@ -1383,6 +1393,8 @@ void OnListFamilyMembersResponse(
 
   [_mainCoordinator stop];
   _mainCoordinator = nil;
+
+  [self stopAccountMenu];
 
   _incognitoWebStateObserver.reset();
   _mainWebStateObserver.reset();
@@ -2057,19 +2069,16 @@ using UserFeedbackDataCallback =
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
   Browser* browser = self.mainInterface.browser;
   UIViewController* baseViewController = self.mainInterface.viewController;
-  SigninCoordinator* accountMenuCoordinator = [SigninCoordinator
-      accountMenuCoordinatorWithBaseViewController:baseViewController
-                                           browser:browser
-                                      contextStyle:SigninContextStyle::kDefault
-                                        anchorView:nil
-                                       accessPoint:accessPoint
-                                               URL:url];
-
-  [self stopSigninCoordinatorAnimated:NO fromExternalTrigger:NO];
-  self.signinCoordinator = accountMenuCoordinator;
+  _accountMenuCoordinator = [[AccountMenuCoordinator alloc]
+      initWithBaseViewController:baseViewController
+                         browser:browser
+                      anchorView:nil
+                     accessPoint:AccountMenuAccessPoint::kWeb
+                             URL:url];
+  _accountMenuCoordinator.delegate = self;
   // TODO(crbug.com/336719423): Record signin metrics based on the
   // selected action from the account switcher.
-  [self startSigninCoordinatorWithCompletion:nil];
+  [_accountMenuCoordinator start];
 }
 
 - (void)showWebSigninPromoFromViewController:
@@ -4379,6 +4388,16 @@ using UserFeedbackDataCallback =
 
 - (void)closeHistory {
   [self closeHistoryWithCompletion:nil];
+}
+
+#pragma mark - AccountMenuCoordinatorDelegate
+
+// Update the state, to take into account that the account menu coordinator is
+// stopped.
+- (void)accountMenuCoordinatorWantsToBeStopped:
+    (AccountMenuCoordinator*)coordinator {
+  CHECK_EQ(_accountMenuCoordinator, coordinator, base::NotFatalUntil::M140);
+  [self stopAccountMenu];
 }
 
 #pragma mark - AuthenticationFlowDelegate

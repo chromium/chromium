@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_ACCOUNT_MENU_ACCOUNT_MENU_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_ACCOUNT_MENU_ACCOUNT_MENU_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_ACCOUNT_MENU_ACCOUNT_MENU_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_ACCOUNT_MENU_ACCOUNT_MENU_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
 
 #import "base/ios/block_types.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_data_source.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_mutator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_data_source.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_mutator.h"
 
 enum class AccountMenuAccessPoint;
 @protocol AccountMenuConsumer;
 @protocol AccountMenuMediatorDelegate;
+@protocol SyncErrorSettingsCommandHandler;
 class AuthenticationService;
 class ChromeAccountManagerService;
 class GURL;
 class PrefService;
-typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -35,6 +35,10 @@ class SyncService;
 
 // The delegate of the mediator.
 @property(nonatomic, weak) id<AccountMenuMediatorDelegate> delegate;
+
+// The sync error settings command handler.
+@property(nonatomic, weak) id<SyncErrorSettingsCommandHandler>
+    syncErrorSettingsCommandHandler;
 
 - (instancetype)initWithSyncService:(syncer::SyncService*)syncService
               accountManagerService:
@@ -53,4 +57,4 @@ class SyncService;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_ACCOUNT_MENU_ACCOUNT_MENU_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_ACCOUNT_MENU_ACCOUNT_MENU_MEDIATOR_H_

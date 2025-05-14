@@ -10,7 +10,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
@@ -1807,10 +1807,14 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
       performAction:grey_tap()];
 
   // Verify the account menu is shown.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kAccountMenuTableViewId)]
+  id<GREYMatcher> account_menu_view_matcher =
+      grey_accessibilityID(kAccountMenuTableViewId);
+  [[EarlGrey selectElementWithMatcher:account_menu_view_matcher]
       assertWithMatcher:grey_sufficientlyVisible()];
 
+  // Scroll to the bottom to view the sign-out button.
+  [[EarlGrey selectElementWithMatcher:account_menu_view_matcher]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
   // Sign out.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kAccountMenuSignoutButtonId)]
