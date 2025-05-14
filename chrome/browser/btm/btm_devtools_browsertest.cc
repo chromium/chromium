@@ -150,7 +150,5 @@ IN_PROC_BROWSER_TEST_F(BtmBounceTrackingDevToolsIssueTest,
           "/cross-site-with-cookie/f.test/cross-site-with-cookie/g.test/"
           "title1.html"),
       embedded_test_server()->GetURL("g.test", "/title1.html")));
-  // Note d.test is not listed as a potentially tracking site since it did not
-  // write cookies before bouncing the user.
-  WaitForIssueAndCheckTrackingSites({"e.test", "f.test"});
+  WaitForIssueAndCheckTrackingSites({"d.test", "e.test", "f.test"});
 }

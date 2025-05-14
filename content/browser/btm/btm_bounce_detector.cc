@@ -212,9 +212,7 @@ BtmRedirectContext::~BtmRedirectContext() = default;
 void BtmRedirectContext::AppendClientRedirect(
     BtmRedirectInfoPtr client_redirect) {
   DCHECK_EQ(client_redirect->redirect_type, BtmRedirectType::kClient);
-  if (client_redirect->access_type > BtmDataAccessType::kRead) {
-    redirectors_.insert(client_redirect->site);
-  }
+  redirectors_.insert(client_redirect->site);
   redirects_.push_back(std::move(client_redirect));
   MaybeTrimAndHandlePartialRedirectChain();
 }
@@ -223,9 +221,7 @@ void BtmRedirectContext::AppendServerRedirects(
     std::vector<BtmRedirectInfoPtr> server_redirects) {
   for (auto& redirect : server_redirects) {
     DCHECK_EQ(redirect->redirect_type, BtmRedirectType::kServer);
-    if (redirect->access_type > BtmDataAccessType::kRead) {
-      redirectors_.insert(redirect->site);
-    }
+    redirectors_.insert(redirect->site);
     redirects_.push_back(std::move(redirect));
   }
   MaybeTrimAndHandlePartialRedirectChain();

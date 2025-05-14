@@ -1264,17 +1264,19 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
   AccessCookieViaJSIn(web_contents, web_contents->GetPrimaryMainFrame());
 
   // Navigate without a click (i.e. by C-redirecting) to e.test, which
-  // statefully S-redirects to f.test, which statefully S-redirects to g.test.
+  // statelessly S-redirects to f.test, which statefully S-redirects to g.test.
   ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       web_contents,
       embedded_test_server()->GetURL(
           "e.test",
-          "/cross-site-with-cookie/f.test/cross-site-with-cookie/g.test/"
+          "/cross-site/f.test/cross-site-with-cookie/g.test/"
           "title1.html"),
       embedded_test_server()->GetURL("g.test", "/title1.html")));
   EndRedirectChain();
   WaitOnStorage(GetBtmService(web_contents));
 
+  // Verify that d.test is not reported (because it had previous user
+  // interaction), but the rest of the chain is reported.
   EXPECT_THAT(reports, ElementsAre(("b.test"), ("c.test"), ("e.test, f.test")));
 }
 
@@ -2686,7 +2688,8 @@ IN_PROC_BROWSER_TEST_F(
   EndRedirectChain();
   WaitOnStorage(GetBtmService(web_contents));
 
-  EXPECT_THAT(reports, ElementsAre(("d.test"), ("c.test"), ("e.test, f.test")));
+  EXPECT_THAT(reports, ElementsAre(("a.test"), ("d.test"), ("c.test"),
+                                   ("e.test, f.test")));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
