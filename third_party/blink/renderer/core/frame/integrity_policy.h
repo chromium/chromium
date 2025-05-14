@@ -16,6 +16,7 @@ namespace blink {
 
 class KURL;
 class ExecutionContext;
+class DOMWrapperWorld;
 struct IntegrityMetadataSet;
 
 class IntegrityPolicy {
@@ -23,6 +24,7 @@ class IntegrityPolicy {
   CORE_EXPORT
   static bool AllowRequest(
       ExecutionContext* context,
+      const DOMWrapperWorld* world,
       network::mojom::RequestDestination request_destination,
       network::mojom::RequestMode request_mode,
       const IntegrityMetadataSet& integrity_metadata,

@@ -97,4 +97,22 @@ IN_PROC_BROWSER_TEST_F(IsolatedWorldCspBrowserTest,
       << message_;
 }
 
+// Test that a Manifest V2 content script can execute a remote script even if
+// it is disallowed by the main world Integrity Policy.
+IN_PROC_BROWSER_TEST_F(IsolatedWorldCspBrowserTest, IntegrityPolicyManifestV2) {
+  GURL url = embedded_test_server()->GetURL("remote-script.com",
+                                            "/page_with_integrity_policy.html");
+  ASSERT_TRUE(RunExtensionTest("mv2", {.page_url = url.spec().c_str()}))
+      << message_;
+}
+
+// Test that a Manifest V3 content script can execute a remote script even if
+// it is disallowed by the main world Integrity Policy.
+IN_PROC_BROWSER_TEST_F(IsolatedWorldCspBrowserTest, IntegrityPolicyManifestV3) {
+  GURL url = embedded_test_server()->GetURL("remote-script.com",
+                                            "/page_with_integrity_policy.html");
+  ASSERT_TRUE(RunExtensionTest("mv3", {.page_url = url.spec().c_str()}))
+      << message_;
+}
+
 }  // namespace extensions

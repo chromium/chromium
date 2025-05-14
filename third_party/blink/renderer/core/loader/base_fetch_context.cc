@@ -262,10 +262,10 @@ BaseFetchContext::CanRequestInternal(
 
   CHECK(!GetResourceFetcherProperties().IsDetached() ||
         resource_request.GetKeepalive() || redirect_info.has_value());
-  if (RuntimeEnabledFeatures::IntegrityPolicyScriptEnabled() &&
-      !IntegrityPolicy::AllowRequest(GetExecutionContext(), request_destination,
-                                     request_mode, options.integrity_metadata,
-                                     url)) {
+
+  if (!IntegrityPolicy::AllowRequest(
+          GetExecutionContext(), options.world_for_csp.Get(),
+          request_destination, request_mode, options.integrity_metadata, url)) {
     return ResourceRequestBlockedReason::kIntegrity;
   }
 

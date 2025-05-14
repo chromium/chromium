@@ -9568,14 +9568,7 @@ NavigationRequest::ComputeIntegrityPolicies() {
           network::features::kIntegrityPolicyScript)) {
     return policies;
   }
-  const GURL& url = common_params_->url;
-  const GURL& top_level_creation_url = GetParentFrameOrOuterDocument()
-                                           ? GetParentFrameOrOuterDocument()
-                                                 ->GetOutermostMainFrame()
-                                                 ->GetLastCommittedURL()
-                                           : url;
-  if (network::IsUrlPotentiallyTrustworthy(top_level_creation_url) &&
-      response_head_ && response_head_->parsed_headers) {
+  if (response_head_ && response_head_->parsed_headers) {
     policies.enforced = response_head_->parsed_headers->integrity_policy;
     policies.report_only =
         response_head_->parsed_headers->integrity_policy_report_only;

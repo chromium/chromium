@@ -95,9 +95,9 @@ TEST_F(IntegrityPolicyTest, AllowRequestTest) {
   for (const auto& test : cases) {
     SCOPED_TRACE(testing::Message() << "destination: " << test.destination
                                     << ", mode: " << test.mode);
-    bool result =
-        IntegrityPolicy::AllowRequest(execution_context, test.destination,
-                                      test.mode, test.metadata, test.url);
+    bool result = IntegrityPolicy::AllowRequest(
+        execution_context, execution_context->GetCurrentWorld(),
+        test.destination, test.mode, test.metadata, test.url);
     EXPECT_EQ(test.allow, result);
   }
 }
