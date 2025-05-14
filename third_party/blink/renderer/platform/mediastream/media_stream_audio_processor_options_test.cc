@@ -160,27 +160,4 @@ TEST(AudioProcessingPropertiesTest, VerifyDefaultProcessingState) {
             VoiceIsolationType::kVoiceIsolationDefault);
 }
 
-TEST(AudioProcessingPropertiesTest,
-     GainControlEnabledReturnsTrueIfBrowserAgcEnabled) {
-  constexpr AudioProcessingProperties kPropertiesWithBrowserAgc{
-      .auto_gain_control = true};
-  EXPECT_TRUE(kPropertiesWithBrowserAgc.GainControlEnabled());
-}
-
-TEST(AudioProcessingPropertiesTest,
-     GainControlEnabledReturnsTrueIfSystemAgcEnabled) {
-  constexpr AudioProcessingProperties kPropertiesWithBrowserAgc{
-      .system_gain_control_activated = true,
-      .auto_gain_control = true,
-  };
-  EXPECT_TRUE(kPropertiesWithBrowserAgc.GainControlEnabled());
-}
-
-TEST(AudioProcessingPropertiesTest,
-     GainControlEnabledReturnsFalseIfAgcDisabled) {
-  constexpr AudioProcessingProperties kPropertiesWithBrowserAgc{
-      .auto_gain_control = false};
-  EXPECT_FALSE(kPropertiesWithBrowserAgc.GainControlEnabled());
-}
-
 }  // namespace blink

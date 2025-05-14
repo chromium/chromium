@@ -27,10 +27,6 @@ bool AudioProcessingProperties::HasSameNonReconfigurableSettings(
          voice_isolation == other.voice_isolation;
 }
 
-bool AudioProcessingProperties::GainControlEnabled() const {
-  return auto_gain_control;
-}
-
 media::AudioProcessingSettings
 AudioProcessingProperties::ToAudioProcessingSettings(
     bool multi_channel_capture_processing) const {

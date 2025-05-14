@@ -258,7 +258,7 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
 
   if (base::FeatureList::IsEnabled(media::kIgnoreUiGains)) {
     // Ignore UI Gains if AGC is running in either browser or system
-    if (audio_processing_properties_.GainControlEnabled()) {
+    if (audio_processing_properties_.auto_gain_control) {
       device_effects |= media::AudioParameters::IGNORE_UI_GAINS;
     }
   }
