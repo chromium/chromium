@@ -577,7 +577,7 @@ TEST_P(SupervisedUserURLFilteringWithConflictsTest,
 // Tests that conflict tracking histogram records a result for no conflicts
 // even for paths that determine a result and exit early.
 TEST_F(SupervisedUserURLFilteringWithConflictsTest,
-       PatterWithoutConflictOnEarlyExit) {
+       PatternWithoutConflictOnEarlyExit) {
   base::HistogramTester histogram_tester;
   // The host map is empty but the url map contains an exact match.
   std::map<std::string, bool> host_map;
