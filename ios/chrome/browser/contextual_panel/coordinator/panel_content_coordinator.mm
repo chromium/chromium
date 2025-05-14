@@ -124,6 +124,10 @@
           initWithBaseViewController:_viewController
                              browser:self.browser
                    itemConfiguration:configuration];
+    case ContextualPanelItemType::ReaderModeItem:
+      // Reader mode is not using the contextual panel. Instead it only uses the
+      // contextual panel entry point which does not require a modulator.
+      return nil;
   }
 }
 

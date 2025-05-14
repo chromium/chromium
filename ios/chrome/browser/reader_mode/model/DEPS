@@ -1,5 +1,6 @@
 include_rules = [
   "+ios/chrome/browser/dom_distiller/model",
+  "+ios/chrome/browser/contextual_panel/model",
   "+third_party/dom_distiller_js",
   "+ios/web/navigation/wk_navigation_util.h"
 ]

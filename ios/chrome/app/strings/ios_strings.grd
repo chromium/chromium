@@ -1594,6 +1594,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_WHATS_NEW" desc="The What's New title on the new tab page [Length: 10em]">
         What's New
       </message>
+      <message name="IDS_IOS_CONTEXTUAL_PANEL_READER_MODE_MODEL_ENTRYPOINT_MESSAGE" desc="Message appearing as the Contextual Panel entry point for Reader mode (appears in the omnibox)">
+        Reading mode available
+      </message>
       <message name="IDS_IOS_CONTEXTUAL_PANEL_SAMPLE_MODEL_ENTRYPOINT_IPH_TEXT" desc="The body text for the in-product help bubble of the Contextual Panel's sample model entry point, used for demo purposes">
         Sample rich in-product help for the Contextual Panel, which should appear multiple times a day.
       </message>

@@ -37,6 +37,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="ContextualPanelItemType">
   <variant name="PriceInsightsItem" summary="Price insights item"/>
+  <variant name="ReaderModeItem" summary="Reader mode item"/>
   <variant name="SamplePanelItem" summary="Sample panel item"/>
 </variants>
 

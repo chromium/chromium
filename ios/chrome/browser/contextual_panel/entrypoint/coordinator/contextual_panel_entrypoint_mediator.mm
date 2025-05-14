@@ -156,6 +156,8 @@
     [_contextualSheetHandler closeContextualSheet];
   } else {
     [self logEntrypointFirstTapMetrics];
+    // TODO(crbug.com/416224001): If the tapped item configuration is for
+    // Reading mode, open reading mode instead.
     [_contextualSheetHandler openContextualSheet];
   }
 

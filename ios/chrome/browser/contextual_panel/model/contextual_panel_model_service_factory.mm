@@ -12,6 +12,9 @@
 #import "ios/chrome/browser/price_insights/model/price_insights_feature.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_model.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_model_factory.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_model.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_model_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
@@ -33,6 +36,7 @@ ContextualPanelModelServiceFactory::ContextualPanelModelServiceFactory()
     : ProfileKeyedServiceFactoryIOS("ContextualPanelModelService") {
   DependsOn(SamplePanelModelFactory::GetInstance());
   DependsOn(PriceInsightsModelFactory::GetInstance());
+  DependsOn(ReaderModeModelFactory::GetInstance());
 }
 
 ContextualPanelModelServiceFactory::~ContextualPanelModelServiceFactory() {}
@@ -51,5 +55,11 @@ ContextualPanelModelServiceFactory::BuildServiceInstanceFor(
     models.emplace(ContextualPanelItemType::PriceInsightsItem,
                    PriceInsightsModelFactory::GetForProfile(profile));
   }
+
+  if (IsReaderModeAvailable()) {
+    models.emplace(ContextualPanelItemType::ReaderModeItem,
+                   ReaderModeModelFactory::GetForProfile(profile));
+  }
+
   return std::make_unique<ContextualPanelModelService>(models);
 }

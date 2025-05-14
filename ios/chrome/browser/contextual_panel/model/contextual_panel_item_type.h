@@ -12,7 +12,8 @@
 enum class ContextualPanelItemType {
   SamplePanelItem = 0,
   PriceInsightsItem = 1,
-  kMaxValue = PriceInsightsItem,
+  ReaderModeItem = 2,
+  kMaxValue = ReaderModeItem,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/histograms.xml:ContextualPanelItemType)
 

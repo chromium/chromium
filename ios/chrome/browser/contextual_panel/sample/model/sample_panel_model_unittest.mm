@@ -64,7 +64,7 @@ TEST_F(SamplePanelModelTest, TestFetchConfiguration) {
             config->iph_feature);
   EXPECT_EQ(ContextualPanelItemConfiguration::high_relevance,
             config->relevance);
-  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol,
+  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::Image,
             config->image_type);
 }
 

@@ -454,9 +454,19 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 
   _label.text = base::SysUTF8ToNSString(config->entrypoint_message);
 
-  UIImage* image = CustomSymbolWithPointSize(
-      base::SysUTF8ToNSString(config->entrypoint_image_name),
-      kEntrypointSymbolPointSize);
+  UIImage* image;
+  switch (config->image_type) {
+    case ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol:
+      image = DefaultSymbolWithPointSize(
+          base::SysUTF8ToNSString(config->entrypoint_image_name),
+          kEntrypointSymbolPointSize);
+      break;
+    case ContextualPanelItemConfiguration::EntrypointImageType::Image:
+      image = CustomSymbolWithPointSize(
+          base::SysUTF8ToNSString(config->entrypoint_image_name),
+          kEntrypointSymbolPointSize);
+      break;
+  }
 
   _imageView.image = image;
 }

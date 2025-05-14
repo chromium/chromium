@@ -19,6 +19,8 @@ source_set("model") {
     "//ios/chrome/browser/contextual_panel/utils",
     "//ios/chrome/browser/price_insights/model",
     "//ios/chrome/browser/price_insights/model:feature",
+    "//ios/chrome/browser/reader_mode/model",
+    "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
