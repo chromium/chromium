@@ -59,14 +59,6 @@
 -TextureLayerChangeInvisibleMailboxTest.RunSingleThread_DelegatingRenderer
 -TextureLayerChangeInvisibleMailboxTest.RunMultiThread_DelegatingRenderer
 
-# TODO(crbug.com/406272671) Returned resources are needed for partial raster
--All/LayerTreeHostTilesTestPartialInvalidation.PartialRaster/SkiaGL_GPU
--All/LayerTreeHostTilesTestPartialInvalidation.PartialRaster/SkiaGraphiteDawn_GPU
--All/LayerTreeHostTilesTestPartialInvalidation.PartialRaster/SkiaVulkan_GPU
--All/LayerTreeHostTilesTestPartialInvalidation.PartialRaster/Software_Bitmap
--All/LayerTreeHostTilesTestPartialInvalidationMultiThread.PartialRaster/SkiaGraphiteDawn_GPU
--All/LayerTreeHostTilesTestPartialInvalidationMultiThread.PartialRaster/SkiaVulkan_GPU
-
 # TODO(crbug.com/406010462) View transition requests are lost between cc and viz
 -LayerTreeHostTestDamagePropagatesFromViewTransitionSurface.RunMultiThread_DelegatingRenderer
 
