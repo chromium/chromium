@@ -130,4 +130,9 @@ public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment 
     /*package*/ void setCanUseVoiceSearchForTesting(boolean canUseVoiceSearch) {
         mRadioButtonGroup.setCanUseVoiceSearch(false);
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }

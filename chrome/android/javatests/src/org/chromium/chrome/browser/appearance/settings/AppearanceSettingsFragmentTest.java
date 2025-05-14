@@ -199,7 +199,9 @@ public class AppearanceSettingsFragmentTest {
         final var prefs = ChromeSharedPreferences.getInstance();
         for (int theme = 0; theme < ThemeType.NUM_ENTRIES; theme++) {
             ThreadUtils.runOnUiThreadBlocking(mSettings::onPause);
+            ThreadUtils.runOnUiThreadBlocking(mSettings::onStop);
             prefs.writeInt(UI_THEME_SETTING, theme);
+            ThreadUtils.runOnUiThreadBlocking(mSettings::onStart);
             ThreadUtils.runOnUiThreadBlocking(mSettings::onResume);
             Assert.assertEquals(
                     NightModeUtils.getThemeSettingTitle(context, theme), uiThemePref.getSummary());

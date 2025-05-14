@@ -57,8 +57,8 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         updatePreferences();
     }
 
@@ -144,5 +144,10 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
                 .setSummary(
                         NightModeUtils.getThemeSettingTitle(
                                 getContext(), NightModeUtils.getThemeSetting()));
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

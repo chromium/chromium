@@ -62,4 +62,9 @@ public class AddressBarSettingsFragment extends ChromeBaseSettingsFragment {
     public static String getTitle(Context context) {
         return context.getString(R.string.address_bar_settings);
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }
