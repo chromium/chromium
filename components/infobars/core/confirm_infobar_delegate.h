@@ -77,14 +77,6 @@ class ConfirmInfoBarDelegate : public infobars::InfoBarDelegate {
   // returns an empty tooltip.
   virtual std::u16string GetButtonTooltip(InfoBarButton button) const;
 
-  // Returns true if this specific infobar instance should use the
-  // custom layout to show the link text before the button.
-  virtual bool ShouldShowLinkBeforeButton() const;
-
-  // Returns spacing which is to be used when the link shows before the button
-  // on the infobar.
-  virtual int GetLinkSpacingWhenPositionedBeforeButton() const;
-
 #if BUILDFLAG(IS_IOS)
   // Returns whether or not a tint should be applied to the icon background.
   // Defaults to true.
