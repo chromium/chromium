@@ -54,11 +54,8 @@ class TabGroup {
   // Returns the title of the group from `visual_data_`, even if empty.
   NSString* GetRawTitle() const;
 
-  // Returns the color of the group.
-  UIColor* GetColor() const;
-
-  // Returns the color for the elements displayed on top of the group color.
-  UIColor* GetForegroundColor() const;
+  // Returns the color ID of the tab group.
+  tab_groups::TabGroupColorId GetColor() const;
 
   // The underlying visual data specific to the group.
   const tab_groups::TabGroupVisualData& visual_data() const {

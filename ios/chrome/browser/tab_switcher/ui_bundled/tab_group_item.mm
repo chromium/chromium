@@ -7,6 +7,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/saved_tab_groups/ui/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_range.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -55,14 +56,14 @@
   if (!_tabGroup) {
     return nil;
   }
-  return _tabGroup->GetColor();
+  return tab_groups::ColorForTabGroupColorId(_tabGroup->GetColor());
 }
 
 - (UIColor*)foregroundColor {
   if (!_tabGroup) {
     return nil;
   }
-  return _tabGroup->GetForegroundColor();
+  return tab_groups::ForegroundColorForTabGroupColorId(_tabGroup->GetColor());
 }
 
 - (NSInteger)numberOfTabsInGroup {

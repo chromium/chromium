@@ -195,8 +195,7 @@
       base::RecordAction(
           base::UserMetricsAction("MobileTabGroupUserUpdatedGroupName"));
     }
-    if (![_tabGroup->GetColor()
-            isEqual:tab_groups::ColorForTabGroupColorId(colorID)]) {
+    if (_tabGroup->GetColor() != colorID) {
       base::RecordAction(
           base::UserMetricsAction("MobileTabGroupUserUpdatedGroupColor"));
     }

@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/menu/ui_bundled/menu_action_type.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/saved_tab_groups/ui/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -716,11 +717,13 @@
       }
     };
 
-    UIAction* groupAction =
-        [self actionWithTitle:title
-                        image:[circleImage imageWithTintColor:group->GetColor()]
-                         type:MenuActionType::MoveTabToExistingGroup
-                        block:actionBlock];
+    UIAction* groupAction = [self
+        actionWithTitle:title
+                  image:[circleImage imageWithTintColor:
+                                         tab_groups::ColorForTabGroupColorId(
+                                             group->GetColor())]
+                   type:MenuActionType::MoveTabToExistingGroup
+                  block:actionBlock];
 
     if (group == currentGroup) {
       groupAction.state = UIMenuElementStateOn;

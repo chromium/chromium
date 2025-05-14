@@ -5,4 +5,5 @@ include_rules = [
   "+components/data_sharing/test_support",
   "+components/saved_tab_groups/public",
   "+components/saved_tab_groups/test_support",
+  "+ios/chrome/browser/saved_tab_groups/ui",
 ]

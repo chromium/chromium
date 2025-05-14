@@ -30,12 +30,8 @@ NSString* TabGroup::GetRawTitle() const {
   return base::SysUTF16ToNSString(visual_data_.title());
 }
 
-UIColor* TabGroup::GetColor() const {
-  return ColorForTabGroupColorId(visual_data_.color());
-}
-
-UIColor* TabGroup::GetForegroundColor() const {
-  return ForegroundColorForTabGroupColorId(visual_data_.color());
+tab_groups::TabGroupColorId TabGroup::GetColor() const {
+  return visual_data_.color();
 }
 
 // static

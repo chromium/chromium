@@ -6,6 +6,7 @@ include_rules = [
   "+ios/chrome/browser/signin/model/system_identity.h",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/lens/ui_bundled",
+  "+ios/chrome/browser/saved_tab_groups/ui/tab_group_utils.h",
   "+ios/chrome/browser/sharing/ui_bundled",
   "+ios/chrome/browser/window_activities/model/window_activity_helpers.h",
 ]

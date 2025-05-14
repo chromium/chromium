@@ -438,8 +438,7 @@ TEST_F(IOSTabGroupSyncDelegateTest, UpdateLocalTabGroup) {
   EXPECT_EQ(kFirstTabTitle, first_web_state->GetTitle());
   EXPECT_EQ(1, tab_group->range().count());
   EXPECT_NSEQ(tab_group->GetTitle(), @"my group");
-  EXPECT_TRUE([tab_group->GetColor()
-      isEqual:tab_groups::ColorForTabGroupColorId(TabGroupColorId::kPink)]);
+  EXPECT_EQ(TabGroupColorId::kPink, tab_group->GetColor());
 
   // Update the local group by adding 2 new tabs.
   saved_group.AddTabFromSync(second_tab);
@@ -535,8 +534,7 @@ TEST_F(IOSTabGroupSyncDelegateTest, UpdateLocalTabGroupOneTab) {
   EXPECT_EQ(kFirstTabTitle, first_web_state->GetTitle());
   EXPECT_EQ(1, tab_group->range().count());
   EXPECT_NSEQ(tab_group->GetTitle(), @"my group");
-  EXPECT_TRUE([tab_group->GetColor()
-      isEqual:tab_groups::ColorForTabGroupColorId(TabGroupColorId::kPink)]);
+  EXPECT_EQ(TabGroupColorId::kPink, tab_group->GetColor());
 }
 
 // Tests that the service correctly returns local ids.

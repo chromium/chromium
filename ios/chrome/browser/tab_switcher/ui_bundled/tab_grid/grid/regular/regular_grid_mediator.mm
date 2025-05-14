@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_bridge.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
+#import "ios/chrome/browser/saved_tab_groups/ui/tab_group_utils.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -500,7 +501,8 @@ constexpr CGFloat kFacePileAvatarSize = 16;
   ShareKitFacePileConfiguration* config =
       [[ShareKitFacePileConfiguration alloc] init];
   config.collabID = savedCollabID;
-  config.backgroundColor = tabGroup->GetColor();
+  config.backgroundColor =
+      tab_groups::ColorForTabGroupColorId(tabGroup->GetColor());
   config.showsEmptyState = NO;
   config.avatarSize = kFacePileAvatarSize;
 
