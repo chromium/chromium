@@ -966,12 +966,17 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         int exceptionDialogMessageResourceId = getAddExceptionDialogMessageResourceId();
         assert allowSpecifyingExceptions == (exceptionDialogMessageResourceId != 0);
         if (allowSpecifyingExceptions) {
+            boolean enableAddExceptionButton =
+                    (!mCategory.isManaged()
+                            || mCategory.getType()
+                                    == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
             getPreferenceScreen()
                     .addPreference(
                             new AddExceptionPreference(
                                     getStyledContext(),
                                     ADD_EXCEPTION_KEY,
                                     getString(exceptionDialogMessageResourceId),
+                                    enableAddExceptionButton,
                                     mCategory,
                                     this));
         }

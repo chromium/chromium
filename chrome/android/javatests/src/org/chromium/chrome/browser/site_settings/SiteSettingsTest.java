@@ -1139,6 +1139,13 @@ public class SiteSettingsTest {
                 ToggleButtonState.EnabledChecked);
         onView(getManagedViewMatcher(/* activeView= */ true)).check(matches(isDisplayed()));
         onView(getManagedViewMatcher(/* activeView= */ false)).check(matches(not(isDisplayed())));
+
+        SingleCategorySettings singleCategorySettings =
+                (SingleCategorySettings) settingsActivity.getMainFragment();
+        Preference addExceptionPreference =
+                singleCategorySettings.findPreference(SingleCategorySettings.ADD_EXCEPTION_KEY);
+        Assert.assertTrue(addExceptionPreference.isEnabled());
+
         settingsActivity.finish();
     }
 
@@ -2737,7 +2744,6 @@ public class SiteSettingsTest {
                     SingleCategorySettings singleCategorySettings =
                             (SingleCategorySettings) settingsActivity.getMainFragment();
 
-                    // TODO(crbug.com/399933929) Do not show "Add Exception" button.
                     checkPreferencesForSettingsActivity(
                             settingsActivity,
                             new String[] {
@@ -2752,6 +2758,11 @@ public class SiteSettingsTest {
                                             SingleCategorySettings.BINARY_TOGGLE_KEY);
                     Assert.assertTrue(binaryToggle.isChecked());
                     Assert.assertFalse(binaryToggle.isEnabled());
+
+                    Preference addExceptionPreference =
+                            singleCategorySettings.findPreference(
+                                    SingleCategorySettings.ADD_EXCEPTION_KEY);
+                    Assert.assertFalse(addExceptionPreference.isEnabled());
 
                     onData(withKey(SingleCategorySettings.ALLOWED_GROUP))
                             .inAdapterView(
@@ -3315,9 +3326,8 @@ public class SiteSettingsTest {
     public void deleteSingleSiteDataRemovesRowSingleWebsiteSettings() throws Exception {
         final String currentSiteUrl = "one-test.com";
         final String rwsMemberUrl = "two-test.com";
-        final SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSingleWebsitePreferences(
-                        getRwsOwnerSiteForUrls(currentSiteUrl, rwsMemberUrl));
+        SiteSettingsTestUtils.startSingleWebsitePreferences(
+                getRwsOwnerSiteForUrls(currentSiteUrl, rwsMemberUrl));
 
         onView(
                         allOf(
@@ -3360,9 +3370,8 @@ public class SiteSettingsTest {
         final String currentSiteUrl = "one-test.com";
         final String rwsMemberUrl = "two-test.com";
 
-        final SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startGroupedWebsitesPreferences(
-                        getRwsSiteGroupForUrls(currentSiteUrl, rwsMemberUrl));
+        SiteSettingsTestUtils.startGroupedWebsitesPreferences(
+                getRwsSiteGroupForUrls(currentSiteUrl, rwsMemberUrl));
 
         onView(
                         allOf(

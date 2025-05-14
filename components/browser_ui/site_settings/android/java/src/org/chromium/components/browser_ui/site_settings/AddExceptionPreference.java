@@ -8,6 +8,7 @@ import static org.chromium.components.browser_ui.site_settings.WebsitePreference
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -78,6 +79,7 @@ public class AddExceptionPreference extends Preference
             Context context,
             String key,
             String message,
+            boolean isEnabled,
             SiteSettingsCategory category,
             SiteAddedCallback callback) {
         super(context);
@@ -88,11 +90,17 @@ public class AddExceptionPreference extends Preference
 
         setKey(key);
         Resources resources = context.getResources();
-        mPrefAccentColor = SemanticColorUtils.getDefaultControlColorActive(context);
         mErrorColor = context.getColor(R.color.default_red);
-        mDefaultColor =
-                AppCompatResources.getColorStateList(context, R.color.default_text_color_list)
-                        .getDefaultColor();
+        ColorStateList textColorList =
+                AppCompatResources.getColorStateList(context, R.color.default_text_color_list);
+        mDefaultColor = textColorList.getDefaultColor();
+
+        int enabledAccentColor = SemanticColorUtils.getDefaultControlColorActive(context);
+        mPrefAccentColor =
+                isEnabled
+                        ? enabledAccentColor
+                        : textColorList.getColorForState(
+                                new int[] {-android.R.attr.state_enabled}, enabledAccentColor);
 
         Drawable plusIcon = ApiCompatibilityUtils.getDrawable(resources, R.drawable.plus);
         plusIcon.mutate();
@@ -100,6 +108,7 @@ public class AddExceptionPreference extends Preference
         setIcon(plusIcon);
 
         setTitle(resources.getString(R.string.website_settings_add_site));
+        setEnabled(isEnabled);
     }
 
     @Override

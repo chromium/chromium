@@ -130,6 +130,7 @@ public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
                                 getString(
                                         R.string
                                                 .website_settings_third_party_cookies_page_add_allow_exception_description),
+                                /* isEnabled= */ true,
                                 cookiesCategory,
                                 this));
     }
