@@ -60,6 +60,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/authentication/ui_bundled:signin_presenter",
     "//ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_prompt",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/authentication/ui_bundled/signin_promo/coordinator",
     "//ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication",
     "//ios/chrome/browser/autofill/model:model_internal",
