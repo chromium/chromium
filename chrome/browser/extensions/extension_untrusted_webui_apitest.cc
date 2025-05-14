@@ -122,8 +122,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionUntrustedWebUITest,
   RunTestOnApiTestPage("confidence_check_available_apis.js");
 }
 
+// TODO(crbug.com/417615981): Re-enable this test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ConfidenceCheckAvailableAPIsReadAnything \
+  DISABLED_ConfidenceCheckAvailableAPIsReadAnything
+#else
+#define MAYBE_ConfidenceCheckAvailableAPIsReadAnything \
+  ConfidenceCheckAvailableAPIsReadAnything
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionUntrustedWebUITest,
-                       ConfidenceCheckAvailableAPIsReadAnything) {
+                       MAYBE_ConfidenceCheckAvailableAPIsReadAnything) {
   ASSERT_TRUE(RunTestOnReadAnythingPage(
       "confidence_check_available_apis_read_anything.js"));
 }
