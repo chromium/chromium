@@ -456,9 +456,10 @@ TEST_F('MagnifierE2ETest', 'ScreenMagnifierChromeVoxFollowingPref', function() {
   })();
 });
 
+// TODO(crbug.com/417555323): Test is flaky.
 TEST_F(
-    'MagnifierE2ETest', 'ScreenMagnifierChromeVoxDoesNotFollowWhenPrefOff',
-    function() {
+    'MagnifierE2ETest',
+    'DISABLED_ScreenMagnifierChromeVoxDoesNotFollowWhenPrefOff', function() {
       this.newCallback(async () => {
         // Disable ChromeVox following for full screen magnifier, and
         // verify prefs and state.
