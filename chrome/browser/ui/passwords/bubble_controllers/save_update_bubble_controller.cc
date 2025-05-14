@@ -20,6 +20,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
@@ -265,9 +266,11 @@ void SaveUpdateBubbleController::ReportInteractions() {
     // Update the statistics for the save password bubble.
     Profile* profile = GetProfile();
     if (profile) {
-      if (GetDismissalReason() == metrics_util::NO_DIRECT_INTERACTION &&
+      if ((GetDismissalReason() == metrics_util::NO_DIRECT_INTERACTION ||
+           GetDismissalReason() == metrics_util::CLICKED_NOT_NOW) &&
           GetDisplayDisposition() ==
               metrics_util::AUTOMATIC_WITH_PASSWORD_PENDING) {
+        // When closed via X or "Not now", count the dismissals.
         if (interaction_stats_.dismissal_count <
             std::numeric_limits<
                 decltype(interaction_stats_.dismissal_count)>::max()) {

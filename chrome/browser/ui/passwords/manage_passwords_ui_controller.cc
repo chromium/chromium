@@ -876,8 +876,8 @@ void ManagePasswordsUIController::NeverSavePassword() {
 
 void ManagePasswordsUIController::OnNotNowClicked() {
   DCHECK_EQ(password_manager::ui::PENDING_PASSWORD_STATE, GetState());
-  // TODO(crbug.com/414573697): Log appropriate metrics.
-  UpdateBubbleAndIconVisibility();
+  // Treat this identically to dismissing via the X button.
+  OnNoInteraction();
 }
 
 void ManagePasswordsUIController::OnPasswordsRevealed() {

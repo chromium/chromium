@@ -382,6 +382,18 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickNever) {
   DestroyModelExpectReason(password_manager::metrics_util::CLICKED_NEVER);
 }
 
+TEST_F(SaveUpdateBubbleControllerTest, ClickNotNow) {
+  PretendPasswordWaiting();
+
+  EXPECT_CALL(*delegate(), SavePassword(_, _)).Times(0);
+  EXPECT_CALL(*delegate(), NeverSavePassword()).Times(0);
+  EXPECT_CALL(*delegate(), OnNotNowClicked());
+  controller()->OnNotNowClicked();
+  EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
+            controller()->state());
+  DestroyModelExpectReason(password_manager::metrics_util::CLICKED_NOT_NOW);
+}
+
 TEST_F(SaveUpdateBubbleControllerTest, ClickUpdate) {
   PretendUpdatePasswordWaiting();
 
