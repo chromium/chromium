@@ -4,6 +4,7 @@
 
 //! GN build file generation.
 
+use crate::condition::Condition;
 use crate::config::BuildConfig;
 use crate::crates::CrateFiles;
 use crate::crates::{Epoch, NormalizedName, VendoredCrate, Visibility};
@@ -88,6 +89,9 @@ pub struct RuleDetail {
     /// Whether this rule depends on the main lib target in its group (e.g. a
     /// bin target alongside a lib inside a package).
     pub dep_on_lib: bool,
+    /// `if` condition for GN, or `None` for unconditional packages that can be
+    /// built on any Chromium platform.
+    pub cond: Option<String>,
 }
 
 /// Set of rule dependencies with a shared condition.
@@ -175,6 +179,13 @@ pub fn build_rule_from_dep(
         _ => dep.is_toplevel_dep,
     };
 
+    let cond = dep
+        .dependency_kinds
+        .values()
+        .map(|per_kind_info| per_kind_info.condition.clone())
+        .reduce(Condition::or)
+        .expect("Each package should have at least one item in `dependency_kinds`")
+        .to_handlebars_value()?;
     let mut detail_template = RuleDetail {
         edition: dep.edition.clone(),
         cargo_pkg_version: dep.version.to_string(),
@@ -182,6 +193,7 @@ pub fn build_rule_from_dep(
         cargo_pkg_name: dep.package_name.to_string(),
         cargo_pkg_description: dep.description.as_ref().map(|s| s.trim_end().to_string()),
 
+        cond,
         extra_kv,
         ..Default::default()
     };

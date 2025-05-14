@@ -8,6 +8,9 @@ import("//build/rust/cargo_crate.gni")
 
 {{#each rules}}
 {{#with this.detail}}
+{{#if cond}}
+if ({{cond}}) {
+{{/if}}
 cargo_crate("{{../name}}") {
   crate_type = "{{crate_type}}"
   crate_root = "{{crate_root}}"
@@ -156,6 +159,9 @@ cargo_crate("{{../name}}") {
   {{this}}
   {{/with}}
   {{/if}}
-  {{/with}}
 }
+{{#if cond}}
+}
+{{/if}}
+{{/with}}
 {{/each}}
