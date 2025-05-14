@@ -105,7 +105,8 @@ void ContextualSearchProvider::Start(
     if (omnibox::IsOtherWebPage(input.current_page_classification()) &&
         input.current_url().SchemeIsHTTPOrHTTPS() &&
         (input.IsZeroSuggest() ||
-         input.type() == metrics::OmniboxInputType::EMPTY)) {
+         input.type() == metrics::OmniboxInputType::EMPTY) &&
+       client()->IsLensEnabled()) {
       AddPageSearchActionMatches(input);
     }
     return;

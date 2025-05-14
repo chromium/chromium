@@ -3014,20 +3014,30 @@ TEST_F(ZeroSuggestProviderTest, SuggestUrlIncludesCtxus) {
       config;
   config.Get().contextual_url_suggest_param = "1";
 
-  // Web gets the param.
+  // Web gets the param when Lens is enabled.
   {
+    EXPECT_CALL(*client_, IsLensEnabled()).WillOnce(testing::Return(true));
     GURL url =
         get_provider_request_url(ZeroPrefixInputForWeb(/*is_prefetch=*/false));
     EXPECT_NE(url.spec().find("ctxus=1"), std::string::npos);
   }
+  // Web does not get the param when Lens is disabled.
+  {
+    EXPECT_CALL(*client_, IsLensEnabled()).WillOnce(testing::Return(false));
+    GURL url =
+        get_provider_request_url(ZeroPrefixInputForWeb(/*is_prefetch=*/false));
+    EXPECT_EQ(url.spec().find("ctxus=1"), std::string::npos);
+  }
   // NTP does not, even when enabled.
   {
+    EXPECT_CALL(*client_, IsLensEnabled()).WillOnce(testing::Return(true));
     GURL url =
         get_provider_request_url(ZeroPrefixInputForNTP(/*is_prefetch=*/false));
     EXPECT_EQ(url.spec().find("ctxus=1"), std::string::npos);
   }
   // SRP does not, even when enabled.
   {
+    EXPECT_CALL(*client_, IsLensEnabled()).WillOnce(testing::Return(true));
     GURL url =
         get_provider_request_url(ZeroPrefixInputForSRP(/*is_prefetch=*/false));
     EXPECT_EQ(url.spec().find("ctxus=1"), std::string::npos);

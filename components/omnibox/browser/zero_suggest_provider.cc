@@ -287,7 +287,13 @@ ResultType ResultTypeForInput(const AutocompleteInput& input) {
 }
 
 void MaybeAddContextualUrlSuggestParam(
+    const AutocompleteProviderClient* client,
     TemplateURLRef::SearchTermsArgs& search_terms_args) {
+  // Do not add the contextual URL suggest param if Lens is not enabled to
+  // fulfill the suggestion.
+  if (!client->IsLensEnabled()) {
+    return;
+  }
   if (!search_terms_args.current_page_url.empty() &&
       omnibox::IsOtherWebPage(search_terms_args.page_classification)) {
     std::string_view contextual_url_suggest_param =
@@ -427,7 +433,7 @@ void ZeroSuggestProvider::RunZeroSuggestPrefetch(const AutocompleteInput& input,
                                            : std::string();
   search_terms_args.lens_overlay_suggest_inputs =
       input.lens_overlay_suggest_inputs();
-  MaybeAddContextualUrlSuggestParam(search_terms_args);
+  MaybeAddContextualUrlSuggestParam(client(), search_terms_args);
 
   std::unique_ptr<network::SimpleURLLoader>* prefetch_loader = nullptr;
   if (result_type == ResultType::kRemoteNoURL) {
@@ -513,7 +519,7 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
           : std::string();
   search_terms_args.lens_overlay_suggest_inputs =
       input.lens_overlay_suggest_inputs();
-  MaybeAddContextualUrlSuggestParam(search_terms_args);
+  MaybeAddContextualUrlSuggestParam(client(), search_terms_args);
 
   const auto* template_url_service = client()->GetTemplateURLService();
   // Create a loader for the request and take ownership of it.

@@ -45,6 +45,10 @@ bool AutocompleteProviderClient::IsHistoryEmbeddingsSettingVisible() const {
   return false;
 }
 
+bool AutocompleteProviderClient::IsLensEnabled() const {
+  return false;
+}
+
 bool AutocompleteProviderClient::in_background_state() const {
   return false;
 }

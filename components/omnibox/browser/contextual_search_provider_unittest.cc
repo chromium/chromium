@@ -46,6 +46,8 @@ TEST_F(ContextualSearchProviderTest, PageModeAdActionConditions) {
       return !!match.takeover_action;
     });
   };
+  EXPECT_CALL(*client_, IsLensEnabled()).WillRepeatedly(testing::Return(true));
+
   {
     AutocompleteInput input(u"nonempty input text",
                             metrics::OmniboxEventProto::OTHER,
@@ -69,6 +71,17 @@ TEST_F(ContextualSearchProviderTest, PageModeAdActionConditions) {
     AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
     input.set_current_url(GURL("chrome://flags"));
+    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+    provider_->Start(input, false);
+    EXPECT_TRUE(provider_->done());
+    EXPECT_FALSE(has_actions());
+  }
+    // Lens action missing if Lens is disabled.
+  {
+    EXPECT_CALL(*client_, IsLensEnabled()).WillOnce(testing::Return(false));
+    AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+    input.set_current_url(GURL("https://example.com"));
     input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
     provider_->Start(input, false);
     EXPECT_TRUE(provider_->done());

@@ -151,6 +151,7 @@ class MockAutocompleteProviderClient
   MOCK_CONST_METHOD0(IsSyncActive, bool());
   MOCK_CONST_METHOD0(IsHistoryEmbeddingsEnabled, bool());
   MOCK_CONST_METHOD0(IsHistoryEmbeddingsSettingVisible, bool());
+  MOCK_CONST_METHOD0(IsLensEnabled, bool());
   MOCK_CONST_METHOD1(GetLensSuggestInputsWhenReady,
                      base::CallbackListSubscription(
                          LensOverlaySuggestInputsCallback callback));
