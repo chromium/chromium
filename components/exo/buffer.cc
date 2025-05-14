@@ -11,6 +11,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -74,6 +75,11 @@ const gfx::BufferUsage kDefaultBufferUsage = gfx::BufferUsage::GPU_READ;
 const gpu::SharedImageUsageSet kDefaultMappableSIUsage =
     gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
+// Killswitch for disabling RG88 format support over exo.
+BASE_FEATURE(kExoDisableRG88Format,
+             "kExoDisableRG88Format",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Gets the color type of |format| for creating bitmap. If it returns
 // SkColorType::kUnknown_SkColorType, it means with this format, this buffer
 // contents should not be used to create bitmap.
@@ -105,6 +111,9 @@ viz::SharedImageFormat GetSharedImageFormat(gfx::BufferFormat buffer_format) {
     case gfx::BufferFormat::BGR_565:
       return viz::SinglePlaneFormat::kBGR_565;
     case gfx::BufferFormat::RG_88:
+      if (base::FeatureList::IsEnabled(kExoDisableRG88Format)) {
+        NOTREACHED();
+      }
       return viz::SinglePlaneFormat::kRG_88;
     case gfx::BufferFormat::RGBX_8888:
       return viz::SinglePlaneFormat::kRGBX_8888;
