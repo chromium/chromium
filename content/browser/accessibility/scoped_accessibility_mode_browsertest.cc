@@ -8,7 +8,9 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/scoped_observation.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -16,6 +18,7 @@
 #include "content/shell/browser/shell.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/ax_mode_observer.h"
 #include "ui/accessibility/platform/ax_platform.h"
@@ -326,6 +329,118 @@ IN_PROC_BROWSER_TEST_F(ScopedAccessibilityModeTest, Filtering) {
       web_contents1().GetAccessibilityMode() & ~kIgnoredModeFlags,
       (ui::kAXModeComplete | ui::AXMode::kPDFOcr | ui::AXMode::kLabelImages) &
           ~kIgnoredModeFlags);
+}
+
+class AccessibilityPerformanceMeasurementExperimentTest
+    : public ScopedAccessibilityModeTest,
+      public testing::WithParamInterface<std::string> {
+ protected:
+  AccessibilityPerformanceMeasurementExperimentTest() {
+    // Initialize the feature and its parameters before the browser is created,
+    // as its value is accessed during browser initialization. Please see
+    // base::test::ScopedFeatureList documentation for more details. Note that
+    // `GetParam()`will be instantiated for each test case with the possible
+    // experiment groups.
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kAccessibilityPerformanceMeasurementExperiment,
+        {{"accessibility_performance_group_name", GetParam()}});
+  }
+
+  static ui::AXMode ExpectedAXModeForExperimentGroup() {
+    if (GetParam() == "AXModeComplete") {
+      return ui::kAXModeComplete & ~kIgnoredModeFlags;
+    }
+    if (GetParam() == "WebContentsOnly") {
+      return ui::kAXModeBasic & ~kIgnoredModeFlags;
+    }
+    if (GetParam() == "AXModeCompleteNoInlineTextBoxes") {
+      return (ui::kAXModeComplete & ~ui::AXMode::kInlineTextBoxes) &
+             ~kIgnoredModeFlags;
+    }
+    if (GetParam() == "RendererSerializationOnly") {
+      return ui::kAXModeComplete & ~kIgnoredModeFlags;
+    }
+    NOTREACHED();
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(AXModeComplete,
+                         AccessibilityPerformanceMeasurementExperimentTest,
+                         testing::Values("AXModeComplete"));
+INSTANTIATE_TEST_SUITE_P(WebContentsOnly,
+                         AccessibilityPerformanceMeasurementExperimentTest,
+                         testing::Values("WebContentsOnly"));
+INSTANTIATE_TEST_SUITE_P(AXModeCompleteNoInlineTextBoxes,
+                         AccessibilityPerformanceMeasurementExperimentTest,
+                         testing::Values("AXModeCompleteNoInlineTextBoxes"));
+INSTANTIATE_TEST_SUITE_P(RendererSerializationOnly,
+                         AccessibilityPerformanceMeasurementExperimentTest,
+                         testing::Values("RendererSerializationOnly"));
+
+// Verifies that when the feature
+// `AccessibilityPerformanceMeasurementExperiment`is enabled, it modifies the
+// AXModes.
+IN_PROC_BROWSER_TEST_P(
+    AccessibilityPerformanceMeasurementExperimentTest,
+    AccessibilityPerformanceMeasurementExperimentChangesAXModes) {
+  ASSERT_TRUE(
+      features::IsAccessibilityPerformanceMeasurementExperimentEnabled());
+  ASSERT_TRUE(accessibility_state()
+                  .IsAccessibilityPerformanceMeasurementExperimentActive());
+
+  // The AXModes must be the ones coming from the experiment group.
+  ASSERT_EQ(web_contents1().GetAccessibilityMode() & ~kIgnoredModeFlags,
+            ExpectedAXModeForExperimentGroup());
+  ASSERT_EQ(web_contents2().GetAccessibilityMode() & ~kIgnoredModeFlags,
+            ExpectedAXModeForExperimentGroup());
+  ASSERT_EQ(web_contents3().GetAccessibilityMode() & ~kIgnoredModeFlags,
+            ExpectedAXModeForExperimentGroup());
+
+  // Set a new AXMode, which will cause the experiment to stop running and the
+  // new AXMode to be only the one being set.
+  auto scoped_mode = accessibility_state().CreateScopedModeForProcess(
+      ui::kAXModeBasic & ~kIgnoredModeFlags);
+  ASSERT_FALSE(accessibility_state()
+                   .IsAccessibilityPerformanceMeasurementExperimentActive());
+
+  EXPECT_EQ(web_contents1().GetAccessibilityMode() & ~kIgnoredModeFlags,
+            ui::kAXModeBasic & ~kIgnoredModeFlags);
+  EXPECT_EQ(web_contents2().GetAccessibilityMode() & ~kIgnoredModeFlags,
+            ui::kAXModeBasic & ~kIgnoredModeFlags);
+  EXPECT_EQ(web_contents3().GetAccessibilityMode() & ~kIgnoredModeFlags,
+            ui::kAXModeBasic & ~kIgnoredModeFlags);
+}
+
+// Verifies that when the experiment is running, it gets turned off in case a
+// BrowserContext has AXModes set.
+IN_PROC_BROWSER_TEST_P(AccessibilityPerformanceMeasurementExperimentTest,
+                       ExperimentStopsAfterAXModeChangesForBrowserContext) {
+  ASSERT_TRUE(
+      features::IsAccessibilityPerformanceMeasurementExperimentEnabled());
+  ASSERT_TRUE(accessibility_state()
+                  .IsAccessibilityPerformanceMeasurementExperimentActive());
+
+  auto scoped_mode = accessibility_state().CreateScopedModeForBrowserContext(
+      &browser_context1(), ui::kAXModeComplete);
+
+  ASSERT_FALSE(accessibility_state()
+                   .IsAccessibilityPerformanceMeasurementExperimentActive());
+  EXPECT_EQ(web_contents1().GetAccessibilityMode() & ~kIgnoredModeFlags,
+            ui::kAXModeComplete & ~kIgnoredModeFlags);
+  EXPECT_EQ(web_contents2().GetAccessibilityMode() & ~kIgnoredModeFlags,
+            ui::kAXModeComplete & ~kIgnoredModeFlags);
+  EXPECT_EQ(web_contents3().GetAccessibilityMode() & ~kIgnoredModeFlags,
+            ui::AXMode() & ~kIgnoredModeFlags);
+  EXPECT_EQ(accessibility_state().GetAccessibilityModeForBrowserContext(
+                &browser_context1()) &
+                ~kIgnoredModeFlags,
+            ui::kAXModeComplete & ~kIgnoredModeFlags);
+  EXPECT_EQ(accessibility_state().GetAccessibilityModeForBrowserContext(
+                &browser_context2()) &
+                ~kIgnoredModeFlags,
+            ui::AXMode() & ~kIgnoredModeFlags);
 }
 
 }  // namespace content

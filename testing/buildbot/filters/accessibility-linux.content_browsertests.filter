@@ -7,6 +7,7 @@
 -PortalBrowserTest.OrphanedPortalAccessibilityReset
 -SnapshotAXTree*
 -WebContentsImplBrowserTest.DumpAccessibilityTreeWithoutTreeID
+-*AccessibilityPerformanceMeasurementExperimentTest*
 
 # These tests require that accessibility is disabled at startup, which is the
 # opposite of the situation when --force-renderer-accessibility is used.

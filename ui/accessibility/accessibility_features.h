@@ -72,6 +72,22 @@ AX_BASE_EXPORT bool IsAccessibilityTreeForViewsEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kViewsAccessibilitySerializeOnDataChange);
 AX_BASE_EXPORT bool IsViewsAccessibilitySerializeOnDataChangeEnabled();
 
+// Experiment to measure the performance impact of various accessibility
+// changes.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kAccessibilityPerformanceMeasurementExperiment);
+AX_BASE_EXPORT bool IsAccessibilityPerformanceMeasurementExperimentEnabled();
+
+enum class AccessibilityPerformanceMeasurementExperimentGroup {
+  kAXModeComplete,
+  kWebContentsOnly,
+  kAXModeCompleteNoInlineTextBoxes,
+  kRendererSerializationOnly,
+};
+
+AX_BASE_EXPORT AccessibilityPerformanceMeasurementExperimentGroup
+GetAccessibilityPerformanceMeasurementExperimentGroup();
+
 // Use Alternative mechanism for acquiring image descriptions.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kImageDescriptionsAlternateRouting);
 AX_BASE_EXPORT bool IsImageDescriptionsAlternateRoutingEnabled();

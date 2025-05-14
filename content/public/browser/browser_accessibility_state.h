@@ -88,6 +88,11 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   virtual void SetActivationFromPlatformEnabled(bool enabled) = 0;
   virtual bool IsActivationFromPlatformEnabled() = 0;
 
+  // Returns true if the current AXMode was set as part of the accessibility
+  // performance measurement experiment.
+  virtual bool IsAccessibilityPerformanceMeasurementExperimentActive()
+      const = 0;
+
   // Notifies web contents that preferences have changed.
   virtual void NotifyWebContentsPreferencesChanged() const = 0;
 

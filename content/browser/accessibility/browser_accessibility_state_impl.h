@@ -85,6 +85,7 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   bool IsAXModeChangeAllowed() const override;
   void SetActivationFromPlatformEnabled(bool enabled) override;
   bool IsActivationFromPlatformEnabled() override;
+  bool IsAccessibilityPerformanceMeasurementExperimentActive() const override;
   void NotifyWebContentsPreferencesChanged() const override;
 
   // ui::AXPlatform::Delegate:
@@ -208,6 +209,10 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // discovery.
   virtual void RefreshAssistiveTech();
 
+  // Helper function to configure the accessibility performance experiment.
+  std::unique_ptr<ScopedAccessibilityMode>
+  ConfigureAccessibilityPerformanceExperiment();
+
   // The process's single AXPlatform instance.
   ui::AXPlatform ax_platform_{*this};
 
@@ -274,6 +279,14 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // A ScopedAccessibilityMode that holds process-wide mode flags required to
   // support the platform API calls being used.
   std::unique_ptr<ScopedAccessibilityMode> platform_ax_mode_;
+
+  // Keeps track of whether the Accessibility Performance Measurement Experiment
+  // is currently active. This is necessary because there are cases where we
+  // don't want to make the experiment active, and checking the state of the
+  // feature flag causes the study to be active. In this case, if the conditions
+  // are met, this will contain the mode of the current experiment group,
+  // nullptr otherwise.
+  std::unique_ptr<ScopedAccessibilityMode> experiment_accessibility_mode_;
 
   // The most recently hidden WebContentses; used only when the disable-on-hide
   // feature of ProgressiveAccessibility is enabled. This container holds the

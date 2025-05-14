@@ -63,6 +63,13 @@ void AccessibilityStateProvider::ProvideSystemProfileMetrics(
   if (mode.is_mode_off()) {
     return;
   }
+  if (content::BrowserAccessibilityState::GetInstance()
+          ->IsAccessibilityPerformanceMeasurementExperimentActive()) {
+    // An active experiment means that the existing AXMode were not user
+    // initiated. We don't want to record those AXModes in the UMA.
+    return;
+  }
+
   auto* state = system_profile->mutable_accessibility_state();
 
   MaybeAddAccessibilityModeFlags(mode, ui::AXMode::kNativeAPIs, state);

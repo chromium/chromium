@@ -52,6 +52,12 @@ class RenderAccessibilityHost : public blink::mojom::RenderAccessibilityHost {
 
   ~RenderAccessibilityHost() override;
 
+  // Sets the current state of the "renderer serialization only" variant of the
+  // accessibility performance measurement experiment. When enabled, all
+  // instances silently ignore inbound calls to `HandleAXEvents()` and
+  // `HandleAXLocationChanges()` from renderers.
+  static void SetRendererSerializationExperimentEnabled(bool enabled);
+
   void HandleAXEvents(
       const ui::AXUpdatesAndEvents& updates_and_events,
       const ui::AXLocationAndScrollUpdates& location_and_scroll_updates,
