@@ -7,19 +7,27 @@ package org.chromium.chrome.browser.contextmenu;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_CONTENT_DESC;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_IMAGE;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import org.chromium.chrome.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-class ContextMenuItemWithIconButtonViewBinder extends ContextMenuItemViewBinder {
+class ContextMenuItemWithIconButtonViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        ContextMenuItemViewBinder.bind(model, view.findViewById(R.id.menu_row_text), propertyKey);
-        if (propertyKey == BUTTON_IMAGE) {
+        TextView textView = view.findViewById(R.id.menu_row_text);
+        if (propertyKey == TITLE) {
+            textView.setText(model.get(TITLE));
+        } else if (propertyKey == ENABLED) {
+            textView.setEnabled(model.get(ENABLED));
+            view.setEnabled(model.get(ENABLED));
+        } else if (propertyKey == BUTTON_IMAGE) {
             Drawable drawable = model.get(BUTTON_IMAGE);
             final ImageView imageView = view.findViewById(R.id.menu_row_share_icon);
             imageView.setImageDrawable(drawable);

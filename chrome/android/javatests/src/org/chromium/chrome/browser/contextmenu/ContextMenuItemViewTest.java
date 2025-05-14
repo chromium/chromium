@@ -31,12 +31,13 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.ui.listmenu.ListMenuItemViewBinder;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /**
- * Tests for ContextMenu item view, {@link ContextMenuItemViewBinder}, and {@link
+ * Tests for ContextMenu item view, {@link ListMenuItemViewBinder}, and {@link
  * ContextMenuItemWithIconButtonViewBinder}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -99,7 +100,7 @@ public class ContextMenuItemViewTest {
 
     @After
     public void tearDown() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
+        if (mMCP != null) ThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
     }
 
     @Test

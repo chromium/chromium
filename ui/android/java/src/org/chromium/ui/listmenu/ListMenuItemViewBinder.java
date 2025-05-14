@@ -33,9 +33,10 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 @NullMarked
 public class ListMenuItemViewBinder {
     public static void binder(PropertyModel model, View view, PropertyKey propertyKey) {
-        TextView textView = view.findViewById(R.id.menu_item_text);
-        ImageView startIcon = view.findViewById(R.id.menu_item_icon);
-        ImageView endIcon = view.findViewById(R.id.menu_item_end_icon);
+        TextView textView =
+                (view instanceof TextView text) ? text : view.findViewById(R.id.menu_item_text);
+        @Nullable ImageView startIcon = view.findViewById(R.id.menu_item_icon);
+        @Nullable ImageView endIcon = view.findViewById(R.id.menu_item_end_icon);
         if (propertyKey == ListMenuItemProperties.TITLE_ID) {
             @StringRes int titleId = model.get(ListMenuItemProperties.TITLE_ID);
             if (titleId != 0) {
@@ -88,8 +89,8 @@ public class ListMenuItemViewBinder {
             }
         } else if (propertyKey == ListMenuItemProperties.ENABLED) {
             textView.setEnabled(model.get(ListMenuItemProperties.ENABLED));
-            startIcon.setEnabled(model.get(ListMenuItemProperties.ENABLED));
-            endIcon.setEnabled(model.get(ListMenuItemProperties.ENABLED));
+            if (startIcon != null) startIcon.setEnabled(model.get(ListMenuItemProperties.ENABLED));
+            if (endIcon != null) endIcon.setEnabled(model.get(ListMenuItemProperties.ENABLED));
         } else if (propertyKey == ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID) {
             @ColorRes
             int tintColorId = model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID);

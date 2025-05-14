@@ -36,6 +36,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuSwitches;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.listmenu.ListMenuItemViewBinder;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -109,7 +110,7 @@ public class ContextMenuRenderTest {
                     mAdapter.registerType(
                             ListItemType.CONTEXT_MENU_ITEM,
                             new LayoutViewBuilder(R.layout.context_menu_row),
-                            ContextMenuItemViewBinder::bind);
+                            ListMenuItemViewBinder::binder);
                     mAdapter.registerType(
                             ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
                             new LayoutViewBuilder(R.layout.context_menu_share_row),
