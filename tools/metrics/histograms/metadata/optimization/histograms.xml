@@ -2195,8 +2195,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="OptimizationGuide.TextSafetyChecker.InferenceResult"
     enum="OptimizationGuideTextSafetyInferenceResult"
     expires_after="2025-10-26">
-  <owner>rockot@google.com</owner>
-  <owner>sophiechange@chromium.org</owner>
+  <owner>holte@google.com</owner>
+  <owner>sophiechang@chromium.org</owner>
   <summary>
     The result of a text safety inference request. Recorded once for each such
     request.
@@ -2205,8 +2205,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="OptimizationGuide.TextSafetyChecker.InitTime" units="ms"
     expires_after="2025-10-19">
-  <owner>rockot@google.com</owner>
-  <owner>sophiechange@chromium.org</owner>
+  <owner>holte@google.com</owner>
+  <owner>sophiechang@chromium.org</owner>
   <summary>
     The duration of the text safety checker's initialization time. Recorded once
     for each new model execution session.
@@ -2215,8 +2215,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="OptimizationGuide.TextSafetyChecker.ModelCreationTime"
     units="ms" expires_after="2025-10-19">
-  <owner>rockot@google.com</owner>
-  <owner>sophiechange@chromium.org</owner>
+  <owner>holte@google.com</owner>
+  <owner>sophiechang@chromium.org</owner>
   <summary>
     The duration elapsed during text safety model creation. Recorded once for
     each text safety inference request.
@@ -2225,8 +2225,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="OptimizationGuide.TextSafetyChecker.ModelExecutionTime"
     units="ms" expires_after="M145">
-  <owner>rockot@google.com</owner>
-  <owner>sophiechange@chromium.org</owner>
+  <owner>holte@google.com</owner>
+  <owner>sophiechang@chromium.org</owner>
   <summary>
     The duration of text safety model execution. Recorded once for each text
     safety inference request.
@@ -2235,8 +2235,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="OptimizationGuide.TextSafetyChecker.TokensPerSecond"
     units="counts" expires_after="2025-10-26">
-  <owner>rockot@google.com</owner>
-  <owner>sophiechange@chromium.org</owner>
+  <owner>holte@google.com</owner>
+  <owner>sophiechang@chromium.org</owner>
   <summary>
     An estimate of the text safety model's inference throughput in tokens per
     second. Recorded once for each text safety inference request.
