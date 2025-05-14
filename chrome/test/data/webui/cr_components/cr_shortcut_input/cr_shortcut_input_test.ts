@@ -141,7 +141,7 @@ suite('CrShortcutInputTest', function() {
     assertFalse(input.allowCtrlAltShortcuts);
     activateInputCapture();
 
-    // Press Ctrl + Alt which should be invalid.
+    // Press Ctrl + Alt, which should be invalid.
     await assertError(true, 17, ['ctrl', 'alt'], 'shortcutTooManyModifiers');
     // Remove alt.
     await assertError(false, 17, ['ctrl'], 'shortcutNeedCharacter');
@@ -159,7 +159,7 @@ suite('CrShortcutInputTest', function() {
     assertFalse(input.allowCtrlAltShortcuts);
     activateInputCapture();
 
-    // Press Command + Alt which should be invalid.
+    // Press Command + Alt, which should be invalid.
     await assertError(true, 65, ['meta', 'alt'], 'shortcutTooManyModifiers');
     // Remove alt.
     await assertError(false, 17, ['meta'], 'shortcutNeedCharacter');
@@ -170,6 +170,18 @@ suite('CrShortcutInputTest', function() {
     await microtasksFinished();
     assertEquals('Command + Alt + A', field.value);
     assertEquals('Command+Alt+A', input.shortcut);
+  });
+
+  test('allowCtrlAltShortcuts_AllModifiers', async function() {
+    input.allowCtrlAltShortcuts = true;
+    activateInputCapture();
+
+    // Press Command + Alt + Ctrl + Shift, which should be invalid.
+    await assertError(
+        true, 65, ['meta', 'alt', 'ctrl', 'shift'], 'shortcutTooManyModifiers');
+    // Remove alt.
+    await assertError(
+        false, 17, ['meta', 'ctrl', 'shift'], 'shortcutNeedCharacter');
   });
   // </if>
 });

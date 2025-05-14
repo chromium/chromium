@@ -201,6 +201,16 @@ export class CrShortcutInputElement extends CrShortcutInputElementBase {
       this.error_ = ShortcutError.TOO_MANY_MODIFIERS;
       return;
     }
+    // <if expr="is_macosx">
+    // If Ctrl+Alt shortcuts are allowed, instances of too many modifiers
+    // should still be blocked. This can only occur on Mac when all modifiers
+    // are used.
+    if (this.allowCtrlAltShortcuts && e.metaKey && e.altKey && e.shiftKey &&
+        e.ctrlKey) {
+      this.error_ = ShortcutError.TOO_MANY_MODIFIERS;
+      return;
+    }
+    // </if>
     if (!hasValidModifiers(e)) {
       this.pendingShortcut_ = '';
       this.error_ = ShortcutError.INCLUDE_START_MODIFIER;
