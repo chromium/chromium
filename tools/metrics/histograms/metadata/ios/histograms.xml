@@ -4602,7 +4602,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.SafeBrowsing.Enhanced.Infobar.Interaction"
     enum="IOSEnhancedSafeBrowseringInfobarInteraction"
-    expires_after="2025-06-26">
+    expires_after="2026-06-26">
   <owner>danieltwhite@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
