@@ -143,10 +143,10 @@ class GraphBuilderTflite final {
   };
 
   // Serialize tensor for input, constant and output operand and return the
-  // tensor information if it's successful. The `override_tensor_type` is used
-  // to override the tensor type, such as when dequantising a float16 operator
-  // to float32 before serializing an operator which does not support float32.
-  base::expected<TensorInfo, std::string> SerializeOperand(
+  // tensor information. The `override_tensor_type` is used to override the
+  // tensor type, such as when dequantising a float16 operator to float32 before
+  // serializing an operator which does not support float32.
+  TensorInfo SerializeOperand(
       OperandId operand_id,
       QuantizateParametersOffset quantize_params,
       std::optional<::tflite::TensorType> override_tensor_type = std::nullopt);
@@ -169,7 +169,7 @@ class GraphBuilderTflite final {
   // as input, for example the input data type has been overridden to float32 of
   // intermediate operands (Reshape), so the output tensor type should be
   // float32 with the argument.
-  base::expected<TensorInfo, std::string> SerializeOutputTensorInfo(
+  TensorInfo SerializeOutputTensorInfo(
       OperandId operand_id,
       QuantizateParametersOffset quantize_params = 0,
       bool operation_supports_float16 = false,
@@ -735,12 +735,12 @@ class GraphBuilderTflite final {
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
       const mojom::LeakyRelu& leaky_relu);
   // Helper for activation operations to check if specific fusion criteria
-  // required by TFLite are met and return next quantizeLinear operation id
-  // if so.
+  // required by TFLite are met and return next quantizeLinear operation
+  // information if so.
   // This is shared by `tanh`, `sigmoid` and `leakyRelu`.
   template <typename OpType>
-  std::optional<OperationId> CanFuseQuantizeForActivationOperation(
-      const OpType& op);
+  std::optional<std::pair<OperationId, QuantizateParametersOffset>>
+  CanFuseQuantizeForActivationOperation(const OpType& op);
   bool IsDequantizeOutput(OperandId operand_id);
   // Get the dequantize op by its output operand id.
   const mojom::DequantizeLinear& GetDequantizeOp(OperandId operand_id);
@@ -757,15 +757,15 @@ class GraphBuilderTflite final {
   bool TrySerializeQuantizedInput(
       const mojom::DequantizeLinear& dequantize_linear,
       OperationId operation_index);
-  // Try to serialize `quantize_linear`'s output with quantization params and
+  // Serialize `quantize_linear`'s output with quantization params and
   // mark the `quantize_linear` to be skipped.
-  std::optional<TensorInfo> TrySerializeQuantizedOutput(
-      OperationId quantize_op_idx);
-  // Check if next op is quantize, if so mark it to-be skipped and return the
-  // quantized output.
-  std::optional<OperationId> IsNextOpQuantize(
-      OperandId output_operand_id,
-      SupportedDataTypes supported_quantized_types);
+  TensorInfo SerializeQuantizedOutput(
+      std::pair<OperationId, QuantizateParametersOffset> quantize_op_info);
+  // Check if next op is quantize and its parameters can be serialized, if so
+  // mark it to-be skipped and return the quantized output.
+  std::optional<std::pair<OperationId, QuantizateParametersOffset>>
+  IsNextOpQuantize(OperandId output_operand_id,
+                   SupportedDataTypes supported_quantized_types);
   // Check if the input of DequantizeLinear is (u)int8, the output of
   // QuantizeLinear has been validated (u)int8 in `IsNextOpQuantize`, and its
   // scale and zero point are scalar values.
