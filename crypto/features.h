@@ -15,6 +15,8 @@ CRYPTO_EXPORT BASE_DECLARE_FEATURE(kProcessBoundStringEncryption);
 
 // Enables the fix for `UnexportableSigningKey::IsHardwareBacked` when
 // dealing with Windows software keys.
+// Currently disabled until a workaround is landed for existing enclave
+// keys.
 CRYPTO_EXPORT BASE_DECLARE_FEATURE(kIsHardwareBackedFixEnabled);
 
 }  // namespace crypto::features
