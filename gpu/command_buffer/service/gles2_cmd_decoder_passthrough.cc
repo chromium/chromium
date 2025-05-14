@@ -1088,8 +1088,9 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
           switches::kEnableUnsafeSwiftShader)) {
     constexpr const char* kSwiftShaderFallbackDeprcationMessage =
         "Automatic fallback to software WebGL has been deprecated. Please use "
-        "the --enable-unsafe-swiftshader flag to opt in to lower security "
-        "guarantees for trusted content.";
+        "the --enable-unsafe-swiftshader "
+        "(about:flags#enable-unsafe-swiftshader) flag to opt in to lower "
+        "security guarantees for trusted content.";
     logger_.LogMessage(__FILE__, __LINE__,
                        kSwiftShaderFallbackDeprcationMessage);
   }

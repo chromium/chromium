@@ -4403,6 +4403,12 @@ const char kUsePassthroughCommandDecoderDescription[] =
     "Use chrome passthrough command decoder instead of validating command "
     "decoder.";
 
+const char kEnableUnsafeSwiftShaderName[] =
+    "Enable unsafe SwiftShader fallback";
+const char kEnableUnsafeSwiftShaderDescription[] =
+    "Allow SwiftShader to be used as a fallback for software WebGL. Using this "
+    "flag is unsafe and should only be used for local development.";
+
 const char kEnablePasswordSharingName[] = "Enables password sharing";
 const char kEnablePasswordSharingDescription[] =
     "Enables sharing of password between members of the same family.";

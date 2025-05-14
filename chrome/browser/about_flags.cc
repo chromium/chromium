@@ -9202,6 +9202,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kDefaultPassthroughCommandDecoder)},
 #endif  // BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
 
+#if BUILDFLAG(ENABLE_SWIFTSHADER)
+    {"enable-unsafe-swiftshader",
+     flag_descriptions::kEnableUnsafeSwiftShaderName,
+     flag_descriptions::kEnableUnsafeSwiftShaderDescription, kOsAll,
+     SINGLE_VALUE_TYPE(switches::kEnableUnsafeSwiftShader)},
+#endif  // BUILDFLAG(ENABLE_SWIFTSHADER)
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"focus-follows-cursor", flag_descriptions::kFocusFollowsCursorName,
      flag_descriptions::kFocusFollowsCursorDescription, kOsCrOS,

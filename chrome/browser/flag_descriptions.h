@@ -2577,6 +2577,9 @@ extern const char kSanitizerApiDescription[];
 extern const char kUsePassthroughCommandDecoderName[];
 extern const char kUsePassthroughCommandDecoderDescription[];
 
+extern const char kEnableUnsafeSwiftShaderName[];
+extern const char kEnableUnsafeSwiftShaderDescription[];
+
 extern const char kReduceAcceptLanguageHTTPName[];
 extern const char kReduceAcceptLanguageHTTPDescription[];
 

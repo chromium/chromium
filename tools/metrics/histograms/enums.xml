@@ -12874,6 +12874,7 @@ from previous Chrome versions.
   <int value="-441139232" label="ExcludeDisplayInMirrorMode:enabled"/>
   <int value="-439110184" label="AndroidWebAppLaunchHandler:disabled"/>
   <int value="-438529902" label="CaptivePortalErrorPage:enabled"/>
+  <int value="-438495497" label="enable-unsafe-swiftshader"/>
   <int value="-438379844" label="SwapSideVolumeButtonsForOrientation:enabled"/>
   <int value="-438348502" label="LogUrlScoringSignals:disabled"/>
   <int value="-437937965" label="AccessibilityShakeToLocate:disabled"/>
