@@ -21,6 +21,7 @@
 #include "base/files/file_util.h"
 #include "base/files/safe_base_name.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/not_fatal_until.h"
@@ -2012,7 +2013,8 @@ std::optional<uint32_t> MTPDeviceDelegateImplLinux::CachedPathToId(
 
 void MTPDeviceDelegateImplLinux::EvictCachedPathToId(uint32_t id) {
   const MTPFileNodesById::const_iterator it = nodes_by_id_.find(id);
-  if (it != nodes_by_id_.cend()) {
+  if (it == nodes_by_id_.cend()) {
+    VLOG(1) << "Cannot find MTP node with file ID " << id;
     return;
   }
 
