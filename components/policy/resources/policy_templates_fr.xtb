@@ -10315,6 +10315,17 @@ Les certificats doivent être encodés en base64.</translation>
 <translation id="8381774264911275515">Désactiver le transfert des cookies d'authentification unique SAML dans la session utilisateur lors de la connexion</translation>
 <translation id="8382184662529825177">Autoriser l'utilisation de l'attestation à distance pour assurer la protection du contenu de l'appareil</translation>
 <translation id="838870586332499308">Activer l'itinérance des données</translation>
+<translation id="8389925503559691525">Cette règle détermine si les URL blob sont partitionnées lors de l'extraction et de la navigation.
+Si cette règle est activée ou n'est pas configurée, les URL blob sont partitionnées.
+Si elle est désactivée, les URL blob ne sont pas partitionnées.
+
+De plus, si le partitionnement du stockage est désactivé pour une origine de premier niveau donnée par <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> ou <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />, les URL blob ne sont pas partitionnées.
+
+Si vous devez utiliser cette règle, veuillez signaler un bug sur <ph name="BUG_URL" /> en expliquant votre cas d'utilisation. Cette règle sera disponible jusqu'à la version 143 de <ph name="PRODUCT_NAME" />, après quoi l'ancienne implémentation sera supprimée.
+
+REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les modifications apportées à cette règle lorsque le navigateur sera en cours d'exécution.
+
+Pour en savoir plus sur le partitionnement du stockage tiers, consultez https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="8392478748777481636">Cette règle est obsolète et non compatible, veuillez utiliser la règle <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> à la place.</translation>
 <translation id="8393850527597048037">Plate-forme uniquement</translation>
 <translation id="8395350646076131800">Délai d'inactivité pour l'écran de verrouillage de l'économiseur d'écran de l'utilisateur.</translation>

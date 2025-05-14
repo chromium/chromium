@@ -10296,6 +10296,17 @@ Zertifikate müssen mit Base64 codiert sein.</translation>
 <translation id="8381774264911275515">Übertragung von SAML-SSO-Cookies in die Nutzersitzung während der Anmeldung deaktivieren</translation>
 <translation id="8382184662529825177">Verwendung von Remote-Bescheinigung (Remote Attestation) zum Schutz von Inhalten für das Gerät aktivieren</translation>
 <translation id="838870586332499308">Daten-Roaming aktivieren</translation>
+<translation id="8389925503559691525">Mit dieser Richtlinie wird festgelegt, ob Blob-URLs beim Abrufen und Navigieren partitioniert werden.
+Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden Blob-URLs partitioniert.
+Ist die Richtlinie deaktiviert, werden Blob-URLs nicht partitioniert.
+
+Blob-URLs werden ebenfalls nicht partitioniert, wenn die Speicherpartitionierung für einen Ursprung der obersten Ebene deaktiviert ist (entweder durch „<ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" />“ oder „<ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />“).
+
+Falls du die Richtlinie verwenden musst, melde auf <ph name="BUG_URL" /> einen Fehler unter Angabe deines Anwendungsfalls. Die Richtlinie kann bis zum Ende von Version 143 von <ph name="PRODUCT_NAME" /> verwendet werden. Danach wird die alte Implementierung entfernt.
+
+HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Richtlinie nur für neu gestartete Rendererprozesse übernommen.
+
+Ausführliche Informationen zur Drittanbieter-Speicherpartitionierung findest du unter https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="8392478748777481636">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen die Richtlinie „<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />“.</translation>
 <translation id="8393850527597048037">Nur Plattform</translation>
 <translation id="8395350646076131800">Zeitlimit für die Inaktivität für den Bildschirmschoner auf dem Sperrbildschirm des Nutzers.</translation>

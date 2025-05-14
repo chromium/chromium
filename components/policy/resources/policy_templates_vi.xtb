@@ -4693,6 +4693,7 @@ Chính sách này đã bị loại bỏ ở M112.</translation>
 Khi bạn đặt chính sách này thành Disabled (Tắt), các tệp PDF sẽ được mở trừ phi người dùng tắt trình bổ trợ PDF.
 
 Nếu bạn đặt chính sách này, người dùng sẽ không thể thay đổi lựa chọn của bạn trong <ph name="PRODUCT_NAME" />. Nếu bạn không đặt chính sách này, người dùng có thể chọn có mở tệp PDF bằng trình xem bên ngoài hay không.</translation>
+<translation id="4413764344717830250">Kiểm soát chế độ hiển thị của thông tin về nguồn gốc tiện ích trên Trang thẻ mới cho trình duyệt được quản lý</translation>
 <translation id="4415603335307944578">Nếu bạn không định cấu hình chính sách này hoặc nếu bạn đặt thành true, trình duyệt sẽ hiển thị lại trang chào mừng vào lần khởi chạy đầu tiên sau khi nâng cấp hệ điều hành.
 
       Nếu bạn đặt chính sách này thành false, trình duyệt sẽ không hiển thị lại trang chào mừng vào lần khởi chạy đầu tiên sau khi nâng cấp hệ điều hành.</translation>
@@ -6643,6 +6644,11 @@ Vui lòng tham khảo <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, 
 <translation id="5670249935663090320">Nếu bạn đặt chính sách này thành Bật hoặc không đặt, thì <ph name="PRODUCT_NAME" /> sẽ bật. Người dùng có thể chạy ứng dụng này từ trình đơn ứng dụng, trình đơn theo bối cảnh của trang, các chức năng điều khiển nội dung nghe nhìn trên trang web hỗ trợ Cast và biểu tượng thanh công cụ Cast (nếu hiển thị).
 
 Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" /> sẽ tắt.</translation>
+<translation id="5671392367521500075">Chính sách này kiểm soát chế độ hiển thị của thông tin về nguồn gốc tiện ích trong chân trang của Trang thẻ mới (NTP) khi một tiện ích kiểm soát NTP. Theo mặc định, chân trang của NTP sẽ hiển thị thông tin về tiện ích kiểm soát NTP.
+
+Nếu bạn không đặt chính sách này hoặc đặt thành true (đúng), thì trình duyệt có NTP do tiện ích kiểm soát sẽ hiển thị tên tiện ích và đường liên kết đến tiện ích đó.
+
+Nếu bạn đặt chính sách này thành false (sai), thông tin về nguồn gốc tiện ích sẽ bị ẩn.</translation>
 <translation id="5673254755365419402">Bật tính năng Chống tạo vân tay số của <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="567377007899266033">Nếu bạn đặt chính sách này thành True, thì hệ thống sẽ gửi cho Google các báo cáo về sự kiện cài đặt tiện ích do khóa, chính sách kích hoạt. Nếu bạn đặt chính sách này thành False, thì sẽ không có sự kiện nào được ghi lại. Nếu bạn không đặt chính sách này, thì giá trị mặc định sẽ được đặt thành True.</translation>
 <translation id="5673780539191375049">Đặt khoảng thời gian (tính bằng phút) dùng để tự động tải lại quy trình xác thực của người dùng trên thiết bị <ph name="PRODUCT_OS_NAME" />. Chúng tôi đưa ra chính sách này để giúp bạn xử lý thời gian hết hạn của một số dịch vụ được sử dụng trong quy trình xác thực khi thiết bị không hoạt động trong một khoảng thời gian.
