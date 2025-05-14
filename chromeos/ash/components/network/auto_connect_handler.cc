@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/network/auto_connect_handler.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -376,9 +377,26 @@ void AutoConnectHandler::DisconnectAndRemoveConfigOrDisableAutoConnect(
       if (is_cellular_type) {
         DisableAutoconnectForNetwork(network->path(),
                                      ::onc::network_config::kCellular);
-      } else if (network->IsInProfile() && !available_only) {
+      }
+
+      // Determines if the network configuration should be persisted.
+      // Persistence is allowed if:
+      // 1. The SSID is not explicitly blocked by policy.
+      // 2. The network is not temporarily blocked due to a managed network
+      // being in range. (Users should retain settings to reconnect once the
+      // managed network is out of range.)
+      bool network_config_allowed =
+          available_only &&
+          !base::Contains(managed_configuration_handler_->GetBlockedHexSSIDs(),
+                          network->GetHexSsid());
+      bool shouldRemoveWifiConfig =
+          (network->type() == shill::kTypeWifi && network->IsInProfile()) &&
+          !network_config_allowed;
+
+      if (shouldRemoveWifiConfig) {
         RemoveNetworkConfigurationForNetwork(network->path());
       }
+
     } else if (only_managed_autoconnect) {
       // Disconnect & disable auto-connect.
       if (network->IsConnectingOrConnected())
