@@ -2967,7 +2967,7 @@
     },
     {
       name: "MediaSourceNewAbortAndDuration",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "MediaStreamTrackTransfer",
