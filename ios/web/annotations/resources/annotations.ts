@@ -468,7 +468,7 @@ function enumerateTextNodes(
     // Formatting and filtering.
     if (node.nodeType === Node.ELEMENT_NODE) {
       // Reject non-text nodes such as scripts.
-      if (NON_TEXT_NODE_NAMES.has(node.nodeName)) {
+      if (!node.nodeName || NON_TEXT_NODE_NAMES.has(node.nodeName)) {
         continue;
       }
       // Reject editable nodes.

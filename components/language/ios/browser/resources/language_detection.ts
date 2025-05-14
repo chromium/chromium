@@ -83,7 +83,7 @@ function getTextContent(node: ChildNode, maxLen: number): string {
   // Formatting and filtering.
   if (node.nodeType === Node.ELEMENT_NODE && node instanceof Element) {
     // Reject non-text nodes such as scripts.
-    if (NON_TEXT_NODE_NAMES.has(node.nodeName)) {
+    if (!node.nodeName || NON_TEXT_NODE_NAMES.has(node.nodeName)) {
       return '';
     }
     if (node.nodeName === 'BR') {
