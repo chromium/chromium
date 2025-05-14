@@ -2813,6 +2813,9 @@ crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/
 crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrerpolicy-same-origin.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac14 ] external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Timeout ]
+[ Mac15-arm64 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-iframe-self.html [ Skip Timeout ]
+[ Mac14-arm64 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-iframe-self.html [ Skip Timeout ]
 [ Win11 ] external/wpt/css/css-display/display-contents-inline-002.html [ Failure ]
 [ Win11-arm64 ] external/wpt/css/css-display/display-contents-inline-002.html [ Failure ]
 [ Win10.20h2 ] external/wpt/css/css-display/display-contents-inline-002.html [ Failure ]
