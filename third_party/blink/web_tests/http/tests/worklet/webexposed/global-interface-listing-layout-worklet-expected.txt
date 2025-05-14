@@ -282,6 +282,11 @@ CONSOLE MESSAGE:     setter inlineOffset
 CONSOLE MESSAGE: interface LayoutWorkletGlobalScope : WorkletGlobalScope
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     method constructor
+CONSOLE MESSAGE: interface QuotaExceededError : DOMException
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter quota
+CONSOLE MESSAGE:     getter requested
+CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface ReadableByteStreamController
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter byobRequest
@@ -694,6 +699,11 @@ CONSOLE MESSAGE:     setter blockOffset
 CONSOLE MESSAGE:     setter inlineOffset
 CONSOLE MESSAGE: interface LayoutWorkletGlobalScope : WorkletGlobalScope
 CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     method constructor
+CONSOLE MESSAGE: interface QuotaExceededError : DOMException
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter quota
+CONSOLE MESSAGE:     getter requested
 CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface ReadableByteStreamController
 CONSOLE MESSAGE:     attribute @@toStringTag

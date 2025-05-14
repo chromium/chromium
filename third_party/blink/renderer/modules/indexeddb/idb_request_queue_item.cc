@@ -12,11 +12,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_request.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_request_loader.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value_wrapping.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -88,9 +90,18 @@ class IDBDatabaseGetAllResultSinkImpl
 
   void OnError(mojom::blink::IDBErrorPtr error) override {
     DCHECK(active_);
+    DOMException* dom_exception;
+    if (error->error_code == mojom::blink::IDBException::kQuotaError &&
+        RuntimeEnabledFeatures::QuotaExceededErrorUpdateEnabled()) {
+      dom_exception =
+          MakeGarbageCollected<QuotaExceededError>(error->error_message);
+    } else {
+      dom_exception = MakeGarbageCollected<DOMException>(
+          static_cast<DOMExceptionCode>(error->error_code),
+          error->error_message);
+    }
     owner_->response_type_ = IDBRequestQueueItem::kError;
-    owner_->error_ = MakeGarbageCollected<DOMException>(
-        static_cast<DOMExceptionCode>(error->error_code), error->error_message);
+    owner_->error_ = dom_exception;
     active_ = false;
     owner_->OnResultReady();
   }

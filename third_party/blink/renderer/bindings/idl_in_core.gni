@@ -188,6 +188,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/dom/pointer_lock_options.idl",
   "//third_party/blink/renderer/core/dom/popover_invoker_element.idl",
   "//third_party/blink/renderer/core/dom/processing_instruction.idl",
+  "//third_party/blink/renderer/core/dom/quota_exceeded_error.idl",
   "//third_party/blink/renderer/core/dom/range.idl",
   "//third_party/blink/renderer/core/dom/shadow_root.idl",
   "//third_party/blink/renderer/core/dom/shadow_root_init.idl",

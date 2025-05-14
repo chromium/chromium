@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
@@ -55,6 +56,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -211,9 +213,15 @@ void IDBDatabase::Abort(int64_t transaction_id,
                         mojom::blink::IDBException code,
                         const WTF::String& message) {
   DCHECK(transactions_.Contains(transaction_id));
-  transactions_.at(transaction_id)
-      ->OnAbort(MakeGarbageCollected<DOMException>(
-          static_cast<DOMExceptionCode>(code), message));
+  DOMException* dom_exception;
+  if (code == mojom::blink::IDBException::kQuotaError &&
+      RuntimeEnabledFeatures::QuotaExceededErrorUpdateEnabled()) {
+    dom_exception = MakeGarbageCollected<QuotaExceededError>(message);
+  } else {
+    dom_exception = MakeGarbageCollected<DOMException>(
+        static_cast<DOMExceptionCode>(code), message);
+  }
+  transactions_.at(transaction_id)->OnAbort(dom_exception);
 }
 
 void IDBDatabase::Complete(int64_t transaction_id) {

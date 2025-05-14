@@ -3711,6 +3711,11 @@
       base_feature: "none",
     },
     {
+      // ChromeStatus: https://chromestatus.com/feature/6194847180128256
+      name: "QuotaExceededErrorUpdate",
+      status: "experimental",
+    },
+    {
      // crbug.com/323953913
      // Fix looking for next radio button in the form's scope. This was added
      // in M135 and can be removed after M138.

@@ -163,7 +163,7 @@ enum IDBException {
   kVersionError = 33,
   kAbortError = 20,
   kIgnorableAbortError = 11,
-  kQuotaError = 22,
+  kQuotaError = 37,
   kTimeoutError = 23,
 };
 

@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_idbcursor_idbindex_idbobjectstore.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_idbindex_idbobjectstore.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
@@ -56,6 +57,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -662,12 +664,19 @@ void IDBRequest::HandleError(mojom::blink::IDBErrorPtr error) {
   }
   probe::AsyncTask async_task(GetExecutionContext(), &async_task_context_,
                               "error");
-  auto* exception = MakeGarbageCollected<DOMException>(
-      static_cast<DOMExceptionCode>(code),
-      error ? error->error_message : "Invalid response");
+
+  DOMException* dom_exception;
+  auto message = error ? error->error_message : "Invalid response";
+  if (code == mojom::blink::IDBException::kQuotaError &&
+      RuntimeEnabledFeatures::QuotaExceededErrorUpdateEnabled()) {
+    dom_exception = MakeGarbageCollected<QuotaExceededError>(message);
+  } else {
+    dom_exception = MakeGarbageCollected<DOMException>(
+        static_cast<DOMExceptionCode>(code), message);
+  }
 
   transaction_->EnqueueResult(std::make_unique<IDBRequestQueueItem>(
-      this, exception,
+      this, dom_exception,
       WTF::BindOnce(&IDBTransaction::OnResultReady,
                     WrapPersistent(transaction_.Get()))));
 }

@@ -2279,7 +2279,6 @@
                 NetworkError: 19,
                 AbortError: 20,
                 URLMismatchError: 21,
-                QuotaExceededError: 22,
                 TimeoutError: 23,
                 InvalidNodeTypeError: 24,
                 DataCloneError: 25,
@@ -2294,7 +2293,8 @@
                 VersionError: 0,
                 OperationError: 0,
                 NotAllowedError: 0,
-                OptOutError: 0
+                OptOutError: 0,
+                QuotaExceededError: 0
             };
 
             var code_name_map = {};

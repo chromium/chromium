@@ -163,6 +163,11 @@ CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter promise
 CONSOLE MESSAGE:     getter reason
 CONSOLE MESSAGE:     method constructor
+CONSOLE MESSAGE: interface QuotaExceededError : DOMException
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter quota
+CONSOLE MESSAGE:     getter requested
+CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface ReadableByteStreamController
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter byobRequest

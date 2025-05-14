@@ -231,6 +231,8 @@ blink_core_sources_dom = [
   "pseudo_element.cc",
   "pseudo_element.h",
   "pseudo_element_data.h",
+  "quota_exceeded_error.cc",
+  "quota_exceeded_error.h",
   "range.cc",
   "range.h",
   "range_boundary_point.h",
