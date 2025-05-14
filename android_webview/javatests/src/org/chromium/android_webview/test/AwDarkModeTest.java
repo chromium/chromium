@@ -103,7 +103,8 @@ public class AwDarkModeTest extends AwParameterizedTest {
         DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_FALSE);
         Configuration newConfig = new Configuration();
         newConfig.uiMode = Configuration.UI_MODE_NIGHT_YES;
-        ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.onConfigurationChanged(newConfig));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mAwContents.getViewMethods().onConfigurationChanged(newConfig));
         loadUrlSync(url);
         assertEquals("true", getPrefersColorSchemeDark());
     }

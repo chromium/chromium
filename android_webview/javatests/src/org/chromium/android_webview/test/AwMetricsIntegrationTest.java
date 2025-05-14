@@ -580,7 +580,7 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(1, AwWindowCoverageTracker.sWindowCoverageTrackers.size());
-                    mAwContents.onDetachedFromWindow();
+                    mAwContents.getViewMethods().onDetachedFromWindow();
                     assertEquals(0, AwWindowCoverageTracker.sWindowCoverageTrackers.size());
                 });
     }

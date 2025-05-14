@@ -925,7 +925,6 @@ public class AwContents implements SmartClipProvider {
             updateDefaultLocale();
         }
     }
-    ;
 
     // --------------------------------------------------------------------------------------------
     private class AwDisplayAndroidObserver implements DisplayAndroidObserver {
@@ -1267,7 +1266,7 @@ public class AwContents implements SmartClipProvider {
         // Detach to tear down the GL functor if this is still associated with the old
         // container view. It will be recreated during the next call to onDraw attached to
         // the new container view.
-        onDetachedFromWindow();
+        getViewMethods().onDetachedFromWindow();
 
         // In fullscreen mode FullScreenView owns the AwViewMethodsImpl and AwContents
         // a NullAwViewMethods.
@@ -1708,11 +1707,11 @@ public class AwContents implements SmartClipProvider {
         StateSnapshot state = new StateSnapshot(this);
 
         // Reset the view state.
-        if (state.wasFocused) onFocusChanged(false, 0, null);
-        if (state.wasWindowFocused) onWindowFocusChanged(false);
+        if (state.wasFocused) getViewMethods().onFocusChanged(false, 0, null);
+        if (state.wasWindowFocused) getViewMethods().onWindowFocusChanged(false);
         if (state.wasViewVisible) setViewVisibilityInternal(false);
         if (state.wasWindowVisible) setWindowVisibilityInternal(false);
-        if (state.wasAttached) onDetachedFromWindow();
+        if (state.wasAttached) getViewMethods().onDetachedFromWindow();
         if (!state.wasPaused) onPause();
 
         return state;
@@ -1725,14 +1724,16 @@ public class AwContents implements SmartClipProvider {
     private void restoreState(StateSnapshot previousState) {
         if (!previousState.wasPaused) onResume();
         if (previousState.wasAttached) {
-            onAttachedToWindow();
+            getViewMethods().onAttachedToWindow();
             mContainerView.postInvalidateOnAnimation();
         }
-        onSizeChanged(mContainerView.getWidth(), mContainerView.getHeight(), 0, 0);
+        int w = mContainerView.getWidth();
+        int h = mContainerView.getHeight();
+        getViewMethods().onSizeChanged(w, h, 0, 0);
         if (previousState.wasWindowVisible) setWindowVisibilityInternal(true);
         if (previousState.wasViewVisible) setViewVisibilityInternal(true);
-        if (previousState.wasWindowFocused) onWindowFocusChanged(true);
-        if (previousState.wasFocused) onFocusChanged(true, 0, null);
+        if (previousState.wasWindowFocused) getViewMethods().onWindowFocusChanged(true);
+        if (previousState.wasFocused) getViewMethods().onFocusChanged(true, 0, null);
 
         // Restore injected JavaScript interfaces.
         for (Map.Entry<String, JavascriptInjector.InjectedInterface> entry :
@@ -1910,7 +1911,7 @@ public class AwContents implements SmartClipProvider {
         if (mIsAttachedToWindow) {
             Log.w(TAG, "WebView.destroy() called while WebView is still attached to window.");
             // Need to call detach to avoid leaks because the real detach later will be ignored.
-            onDetachedFromWindow();
+            getViewMethods().onDetachedFromWindow();
         }
         mIsDestroyed = true;
         PostTask.postTask(TaskTraits.UI_DEFAULT, () -> destroyNatives());
@@ -2094,16 +2095,8 @@ public class AwContents implements SmartClipProvider {
     //  WebView[Provider] method implementations
     // --------------------------------------------------------------------------------------------
 
-    public void onDraw(Canvas canvas) {
-        mAwViewMethods.onDraw(canvas);
-    }
-
     public void setLayoutParams(final ViewGroup.LayoutParams layoutParams) {
         mLayoutSizer.onLayoutParamsChange();
-    }
-
-    public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        mAwViewMethods.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     public int getContentHeightCss() {
@@ -2530,10 +2523,6 @@ public class AwContents implements SmartClipProvider {
         return url.getSpec();
     }
 
-    public void requestFocus() {
-        mAwViewMethods.requestFocus();
-    }
-
     public void setBackgroundColor(int color) {
         if (TRACE) Log.i(TAG, "%s setBackgroundColor=%x", this, color);
         mBaseBackgroundColor = color;
@@ -2541,11 +2530,6 @@ public class AwContents implements SmartClipProvider {
         if (!isDestroyed(WARN)) {
             AwContentsJni.get().setBackgroundColor(mNativeAwContents, color);
         }
-    }
-
-    /** @see android.view.View#setLayerType() */
-    public void setLayerType(int layerType, Paint paint) {
-        mAwViewMethods.setLayerType(layerType, paint);
     }
 
     public int getEffectiveBackgroundColorForTesting() {
@@ -2633,23 +2617,6 @@ public class AwContents implements SmartClipProvider {
         return mOverlayVerticalScrollbar;
     }
 
-    /**
-     * Called by the embedder when the scroll offset of the containing view has changed.
-     * @see View#onScrollChanged(int,int)
-     */
-    public void onContainerViewScrollChanged(int l, int t, int oldl, int oldt) {
-        mAwViewMethods.onContainerViewScrollChanged(l, t, oldl, oldt);
-    }
-
-    /**
-     * Called by the embedder when the containing view is to be scrolled or overscrolled.
-     * @see View#onOverScrolled(int,int,int,int)
-     */
-    public void onContainerViewOverScrolled(
-            int scrollX, int scrollY, boolean clampedX, boolean clampedY) {
-        mAwViewMethods.onContainerViewOverScrolled(scrollX, scrollY, clampedX, clampedY);
-    }
-
     /** @see android.webkit.WebView#requestChildRectangleOnScreen(View, Rect, boolean) */
     public boolean requestChildRectangleOnScreen(View child, Rect rect, boolean immediate) {
         if (isDestroyed(WARN)) return false;
@@ -2658,41 +2625,6 @@ public class AwContents implements SmartClipProvider {
                 child.getTop() - child.getScrollY(),
                 rect,
                 immediate);
-    }
-
-    /** @see View#computeHorizontalScrollRange() */
-    public int computeHorizontalScrollRange() {
-        return mAwViewMethods.computeHorizontalScrollRange();
-    }
-
-    /** @see View#computeHorizontalScrollOffset() */
-    public int computeHorizontalScrollOffset() {
-        return mAwViewMethods.computeHorizontalScrollOffset();
-    }
-
-    /** @see View#computeVerticalScrollRange() */
-    public int computeVerticalScrollRange() {
-        return mAwViewMethods.computeVerticalScrollRange();
-    }
-
-    /** @see View#computeVerticalScrollOffset() */
-    public int computeVerticalScrollOffset() {
-        return mAwViewMethods.computeVerticalScrollOffset();
-    }
-
-    /** @see View#computeVerticalScrollExtent() */
-    public int computeVerticalScrollExtent() {
-        return mAwViewMethods.computeVerticalScrollExtent();
-    }
-
-    /** @see View.computeScroll() */
-    public void computeScroll() {
-        mAwViewMethods.computeScroll();
-    }
-
-    /** @see View#onCheckIsTextEditor() */
-    public boolean onCheckIsTextEditor() {
-        return mAwViewMethods.onCheckIsTextEditor();
     }
 
     /** @see android.webkit.WebView#stopLoading() */
@@ -2787,26 +2719,6 @@ public class AwContents implements SmartClipProvider {
     public boolean isPaused() {
         if (TRACE) Log.i(TAG, "%s isPaused", this);
         return isDestroyed(WARN) ? false : mIsPaused;
-    }
-
-    /** @see android.webkit.WebView#onCreateInputConnection(EditorInfo) */
-    public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-        return mAwViewMethods.onCreateInputConnection(outAttrs);
-    }
-
-    /** @see android.webkit.WebView#onDragEvent(DragEvent) */
-    public boolean onDragEvent(DragEvent event) {
-        return mAwViewMethods.onDragEvent(event);
-    }
-
-    /** @see android.webkit.WebView#onKeyUp(int, KeyEvent) */
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        return mAwViewMethods.onKeyUp(keyCode, event);
-    }
-
-    /** @see android.webkit.WebView#dispatchKeyEvent(KeyEvent) */
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        return mAwViewMethods.dispatchKeyEvent(event);
     }
 
     /**
@@ -3318,40 +3230,6 @@ public class AwContents implements SmartClipProvider {
         Log.e(TAG, "Received activity result for an unknown request code %d", requestCode);
     }
 
-    /** @see android.webkit.View#onTouchEvent() */
-    public boolean onTouchEvent(MotionEvent event) {
-        return mAwViewMethods.onTouchEvent(event);
-    }
-
-    /** @see android.view.View#onHoverEvent() */
-    public boolean onHoverEvent(MotionEvent event) {
-        return mAwViewMethods.onHoverEvent(event);
-    }
-
-    /** @see android.view.View#onGenericMotionEvent() */
-    public boolean onGenericMotionEvent(MotionEvent event) {
-        return mAwViewMethods.onGenericMotionEvent(event);
-    }
-
-    /** @see android.view.View#onConfigurationChanged() */
-    public void onConfigurationChanged(Configuration newConfig) {
-        mAwViewMethods.onConfigurationChanged(newConfig);
-    }
-
-    /** @see android.view.View#onAttachedToWindow() */
-    public void onAttachedToWindow() {
-        // Before adding to this method, consider whether your could would make more sense living
-        // in AwViewMethodsImpl#onAttachedToWindow. The difference is that:
-        //
-        // - AwContents#onAttachedToWindow is called when the WebView is attached to the window.
-        // - AwViewMethodsImpl#onAttachedToWindow is called when the View that holds the AwContents
-        //   is attached to the window.
-        //
-        // The difference is important when the user enters full screen and the AwContents is
-        // instead attached to a FullScreenView.
-        mAwViewMethods.onAttachedToWindow();
-    }
-
     private static void recordIfAttachedToPopupWindow(View view) {
         ViewGroup.LayoutParams viewGroupParams = view.getRootView().getLayoutParams();
         if (viewGroupParams instanceof WindowManager.LayoutParams params) {
@@ -3369,49 +3247,6 @@ public class AwContents implements SmartClipProvider {
     private static void recordUsedInPopupWindow(@UsedInPopupWindow int value) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.WebView.UsedInPopupWindow", value, UsedInPopupWindow.COUNT);
-    }
-
-    /** @see android.view.View#onDetachedFromWindow() */
-    @SuppressLint("MissingSuperCall")
-    public void onDetachedFromWindow() {
-        mAwViewMethods.onDetachedFromWindow();
-    }
-
-    /** @see android.view.View#onWindowFocusChanged() */
-    public void onWindowFocusChanged(boolean hasWindowFocus) {
-        mAwViewMethods.onWindowFocusChanged(hasWindowFocus);
-    }
-
-    /** @see android.view.View#onFocusChanged() */
-    public void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
-        mAwViewMethods.onFocusChanged(focused, direction, previouslyFocusedRect);
-    }
-
-    /** @see android.view.View#onStartTemporaryDetach() */
-    public void onStartTemporaryDetach() {
-        mAwViewMethods.onStartTemporaryDetach();
-    }
-
-    /** @see android.view.View#onFinishTemporaryDetach() */
-    public void onFinishTemporaryDetach() {
-        mAwViewMethods.onFinishTemporaryDetach();
-    }
-
-    /**
-     * @see android.view.View#onSizeChanged()
-     */
-    public void onSizeChanged(int w, int h, int ow, int oh) {
-        mAwViewMethods.onSizeChanged(w, h, ow, oh);
-    }
-
-    /** @see android.view.View#onVisibilityChanged() */
-    public void onVisibilityChanged(View changedView, int visibility) {
-        mAwViewMethods.onVisibilityChanged(changedView, visibility);
-    }
-
-    /** @see android.view.View#onWindowVisibilityChanged() */
-    public void onWindowVisibilityChanged(int visibility) {
-        mAwViewMethods.onWindowVisibilityChanged(visibility);
     }
 
     /**
@@ -3667,21 +3502,6 @@ public class AwContents implements SmartClipProvider {
         if (isDestroyed(WARN)) return;
 
         getJavascriptInjector().removeInterface(interfaceName);
-    }
-
-    /**
-     * If native accessibility (not script injection) is enabled, and if this is
-     * running on JellyBean or later, returns an AccessibilityNodeProvider that
-     * implements native accessibility for this view. Returns null otherwise.
-     * @return The AccessibilityNodeProvider, if available, or null otherwise.
-     */
-    public AccessibilityNodeProvider getAccessibilityNodeProvider() {
-        return mAwViewMethods.getAccessibilityNodeProvider();
-    }
-
-    /** @see android.webkit.WebView#performAccessibilityAction(int, Bundle) */
-    public boolean performAccessibilityAction(int action, Bundle arguments) {
-        return mAwViewMethods.performAccessibilityAction(action, arguments);
     }
 
     /**
@@ -4313,6 +4133,15 @@ public class AwContents implements SmartClipProvider {
 
     public static void resetRecordMemoryForTesting() {
         sLastCollectionTime = -MEMORY_COLLECTION_INTERVAL_MS;
+    }
+
+    /**
+     * Returns the {@code AwViewMethods} instance that should be used for the WebView. This will be
+     * the production implementation when the WebView is hosting the AwContents and the null
+     * implementation when it isn't (and the AwContents is attached to a FullScreenView).
+     */
+    public AwViewMethods getViewMethods() {
+        return mAwViewMethods;
     }
 
     // --------------------------------------------------------------------------------------------

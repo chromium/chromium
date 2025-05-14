@@ -209,21 +209,22 @@ public class AwContentsTest extends AwParameterizedTest {
                     awContents.invokeZoomPicker();
                     awContents.onResume();
                     awContents.stopLoading();
-                    awContents.onWindowVisibilityChanged(View.VISIBLE);
-                    awContents.requestFocus();
+                    awContents.getViewMethods().onWindowVisibilityChanged(View.VISIBLE);
+                    awContents.getViewMethods().requestFocus();
                     awContents.isMultiTouchZoomSupported();
                     awContents.setOverScrollMode(View.OVER_SCROLL_NEVER);
                     awContents.pauseTimers();
-                    awContents.onContainerViewScrollChanged(200, 200, 100, 100);
-                    awContents.computeScroll();
-                    awContents.onMeasure(100, 100);
-                    awContents.onDraw(new Canvas());
+                    awContents.getViewMethods().onContainerViewScrollChanged(200, 200, 100, 100);
+                    awContents.getViewMethods().computeScroll();
+                    awContents.getViewMethods().onMeasure(100, 100);
+                    Canvas canvas = new Canvas();
+                    awContents.getViewMethods().onDraw(canvas);
                     awContents.getMostRecentProgress();
-                    Assert.assertEquals(0, awContents.computeHorizontalScrollOffset());
+                    Assert.assertEquals(
+                            0, awContents.getViewMethods().computeHorizontalScrollOffset());
                     Assert.assertEquals(0, awContents.getContentWidthCss());
-                    awContents.onKeyUp(
-                            KeyEvent.KEYCODE_BACK,
-                            new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MENU));
+                    KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MENU);
+                    awContents.getViewMethods().onKeyUp(KeyEvent.KEYCODE_BACK, event);
                 });
     }
 
@@ -1682,7 +1683,7 @@ public class AwContentsTest extends AwParameterizedTest {
                 () -> {
                     var postTask = new FakePostDelayedTask();
                     awContents.setPostDelayedTaskForTesting(postTask);
-                    awContents.onWindowVisibilityChanged(View.INVISIBLE);
+                    awContents.getViewMethods().onWindowVisibilityChanged(View.INVISIBLE);
 
                     // Delayed release task.
                     Assert.assertEquals(1, postTask.getPendingTasksCount());
@@ -1692,7 +1693,7 @@ public class AwContentsTest extends AwParameterizedTest {
                     Assert.assertEquals(1, postTask.getPendingTasksCount());
                     Assert.assertFalse(awContents.hasDrawFunctor());
 
-                    awContents.onWindowVisibilityChanged(View.VISIBLE);
+                    awContents.getViewMethods().onWindowVisibilityChanged(View.VISIBLE);
                     Assert.assertFalse(awContents.hasDrawFunctor());
 
                     // Metrics task will not report histograms because we went back to foreground in
@@ -1734,13 +1735,13 @@ public class AwContentsTest extends AwParameterizedTest {
                 () -> {
                     var postTask = new FakePostDelayedTask();
                     awContents.setPostDelayedTaskForTesting(postTask);
-                    awContents.onWindowVisibilityChanged(View.INVISIBLE);
+                    awContents.getViewMethods().onWindowVisibilityChanged(View.INVISIBLE);
 
                     Assert.assertEquals(1, postTask.getPendingTasksCount());
 
                     postTask.fastForwardBy(AwContents.FUNCTOR_RECLAIM_DELAY_MS / 2);
-                    awContents.onWindowVisibilityChanged(View.VISIBLE);
-                    awContents.onWindowVisibilityChanged(View.INVISIBLE);
+                    awContents.getViewMethods().onWindowVisibilityChanged(View.VISIBLE);
+                    awContents.getViewMethods().onWindowVisibilityChanged(View.INVISIBLE);
                     Assert.assertEquals(1, postTask.getPendingTasksCount());
                     postTask.fastForwardBy(AwContents.FUNCTOR_RECLAIM_DELAY_MS / 2);
 
@@ -1750,8 +1751,8 @@ public class AwContentsTest extends AwParameterizedTest {
                     Assert.assertEquals(1, postTask.getPendingTasksCount());
 
                     // Multiple transitions do not post multiple tasks.
-                    awContents.onWindowVisibilityChanged(View.VISIBLE);
-                    awContents.onWindowVisibilityChanged(View.INVISIBLE);
+                    awContents.getViewMethods().onWindowVisibilityChanged(View.VISIBLE);
+                    awContents.getViewMethods().onWindowVisibilityChanged(View.INVISIBLE);
                     Assert.assertEquals(1, postTask.getPendingTasksCount());
 
                     // Functor is reclaimed after enough continuous time in background.
@@ -1796,7 +1797,7 @@ public class AwContentsTest extends AwParameterizedTest {
 
                     // Not required to happen in background, but this is how the notification is
                     // dispatched in real code.
-                    awContents.onWindowVisibilityChanged(View.INVISIBLE);
+                    awContents.getViewMethods().onWindowVisibilityChanged(View.INVISIBLE);
                     Assert.assertTrue(awContents.hasDrawFunctor());
                     Assert.assertEquals(1, postTask.getPendingTasksCount());
 
@@ -1814,7 +1815,7 @@ public class AwContentsTest extends AwParameterizedTest {
                     Assert.assertEquals(1, postTask.getPendingTasksCount());
                     histograms.assertExpected();
 
-                    awContents.onWindowVisibilityChanged(View.VISIBLE);
+                    awContents.getViewMethods().onWindowVisibilityChanged(View.VISIBLE);
                     Assert.assertFalse(awContents.hasDrawFunctor());
                 });
 
@@ -1845,7 +1846,7 @@ public class AwContentsTest extends AwParameterizedTest {
         // Frame metrics listener is detached when AwContents becomes invisible.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    awContents.onWindowVisibilityChanged(View.INVISIBLE);
+                    awContents.getViewMethods().onWindowVisibilityChanged(View.INVISIBLE);
                 });
 
         Assert.assertFalse(testView.isBackedByHardwareView());
@@ -1884,7 +1885,7 @@ public class AwContentsTest extends AwParameterizedTest {
                         0);
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher("Input.ToolType.Android", 20);
-        Assert.assertFalse(awContents.onTouchEvent(event));
+        Assert.assertFalse(awContents.getViewMethods().onTouchEvent(event));
         watcher.assertExpected();
     }
 }

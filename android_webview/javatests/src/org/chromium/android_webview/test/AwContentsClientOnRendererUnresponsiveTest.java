@@ -183,13 +183,14 @@ public class AwContentsClientOnRendererUnresponsiveTest extends AwParameterizedT
                 TaskTraits.UI_DEFAULT,
                 () -> {
                     long eventTime = SystemClock.uptimeMillis();
-                    awContents.dispatchKeyEvent(
+                    KeyEvent event =
                             new KeyEvent(
                                     eventTime,
                                     eventTime,
                                     KeyEvent.ACTION_DOWN,
                                     KeyEvent.KEYCODE_ENTER,
-                                    0));
+                                    0);
+                    awContents.getViewMethods().dispatchKeyEvent(event);
                 });
     }
 

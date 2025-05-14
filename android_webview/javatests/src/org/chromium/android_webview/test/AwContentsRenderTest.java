@@ -173,7 +173,7 @@ public class AwContentsRenderTest extends AwParameterizedTest {
 
                             // Simulate a window visibility change. WebView test app can't
                             // manipulate the window visibility directly.
-                            mAwContents.onWindowVisibilityChanged(View.INVISIBLE);
+                            mAwContents.getViewMethods().onWindowVisibilityChanged(View.INVISIBLE);
                             Assert.assertFalse(mAwContents.isPageVisible());
                         });
 
@@ -192,7 +192,7 @@ public class AwContentsRenderTest extends AwParameterizedTest {
     public void testSoftwareCanvas() throws Throwable {
         mAwContents.getSettings().setAllowFileAccess(true);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mAwContents.setLayerType(View.LAYER_TYPE_SOFTWARE, null));
+                () -> mAwContents.getViewMethods().setLayerType(View.LAYER_TYPE_SOFTWARE, null));
 
         String testFile = "android_webview/test/data/green_canvas.html";
         String url = UrlUtils.getIsolatedTestFileUrl(testFile);

@@ -749,7 +749,10 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
         final int maxScrollYPix =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                (testContainerView.getAwContents().computeVerticalScrollRange()
+                                (testContainerView
+                                                .getAwContents()
+                                                .getViewMethods()
+                                                .computeVerticalScrollRange()
                                         - testContainerView.getHeight()));
 
         final CallbackHelper onScrollToCallbackHelper =
@@ -899,22 +902,26 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
                             canZoomIn.set(awContents.canZoomIn());
 
                             int oldScrollRange =
-                                    awContents.computeVerticalScrollRange()
+                                    awContents.getViewMethods().computeVerticalScrollRange()
                                             - testContainerView.getHeight();
                             float oldScale = awContents.getScale();
                             double oldHeight =
-                                    Math.ceil(awContents.computeVerticalScrollRange() / oldScale);
+                                    Math.ceil(
+                                            awContents.getViewMethods().computeVerticalScrollRange()
+                                                    / oldScale);
                             atomicOldContentHeightApproximation.set((int) oldHeight);
 
                             awContents.zoomIn();
 
                             int newScrollRange =
-                                    awContents.computeVerticalScrollRange()
+                                    awContents.getViewMethods().computeVerticalScrollRange()
                                             - testContainerView.getHeight();
                             float newScale = awContents.getScale();
 
                             double newHeight =
-                                    Math.ceil(awContents.computeVerticalScrollRange() / newScale);
+                                    Math.ceil(
+                                            awContents.getViewMethods().computeVerticalScrollRange()
+                                                    / newScale);
                             atomicNewContentHeightApproximation.set((int) newHeight);
 
                             atomicOldScale.set(oldScale);
