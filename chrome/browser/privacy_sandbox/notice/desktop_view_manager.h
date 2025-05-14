@@ -41,6 +41,10 @@ class DesktopViewManagerInterface {
   // been found. All suitable URLs are chrome-owned.
   virtual void HandleChromeOwnedPageNavigation(
       BrowserWindowInterface* browser_interface) = 0;
+  // Triggered by the WebUI handler once an event occurs on a |notice|.
+  virtual void OnEventOccurred(
+      notice::mojom::PrivacySandboxNotice notice,
+      notice::mojom::PrivacySandboxNoticeEvent event) = 0;
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
@@ -56,10 +60,6 @@ class DesktopViewManager : public DesktopViewManagerInterface {
       PrivacySandboxNoticeServiceInterface* notice_service);
   ~DesktopViewManager() override;
 
-  // Triggered by the WebUI handler once an event occurs on a |notice|.
-  void OnEventOccurred(notice::mojom::PrivacySandboxNotice notice,
-                       notice::mojom::PrivacySandboxNoticeEvent event);
-
   // Accessors
   std::vector<notice::mojom::PrivacySandboxNotice> GetPendingNoticesToShow();
 
@@ -67,6 +67,8 @@ class DesktopViewManager : public DesktopViewManagerInterface {
   NavigationHandler* GetNavigationHandler() override;
   void HandleChromeOwnedPageNavigation(
       BrowserWindowInterface* browser_interface) override;
+  void OnEventOccurred(notice::mojom::PrivacySandboxNotice notice,
+                       notice::mojom::PrivacySandboxNoticeEvent event) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 

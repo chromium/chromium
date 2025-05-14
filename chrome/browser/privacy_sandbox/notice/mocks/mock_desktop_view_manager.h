@@ -22,6 +22,11 @@ class MockDesktopViewManager : public DesktopViewManagerInterface {
               HandleChromeOwnedPageNavigation,
               (BrowserWindowInterface* browser_interface),
               (override));
+  MOCK_METHOD(void,
+              OnEventOccurred,
+              (notice::mojom::PrivacySandboxNotice notice,
+               notice::mojom::PrivacySandboxNoticeEvent event),
+              (override));
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
 
