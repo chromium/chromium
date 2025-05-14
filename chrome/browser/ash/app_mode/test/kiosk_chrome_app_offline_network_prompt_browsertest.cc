@@ -81,12 +81,7 @@ class KioskChromeAppOfflineNetworkPromptTest
     : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<PolicyValue> {
  public:
-  KioskChromeAppOfflineNetworkPromptTest() {
-    // Force allow Chrome Apps in Kiosk, since they are default disabled since
-    // M138.
-    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
-                                             "");
-  }
+  KioskChromeAppOfflineNetworkPromptTest() = default;
 
   KioskChromeAppOfflineNetworkPromptTest(
       const KioskChromeAppOfflineNetworkPromptTest&) = delete;
@@ -111,7 +106,6 @@ class KioskChromeAppOfflineNetworkPromptTest
                         KioskMixin::AutoLaunchAccount{
                             KioskMixin::SimpleChromeAppOption().account_id},
                         /*options=*/{KioskMixin::SimpleChromeAppOption()}}};
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Alias to test policy values `kUnset` and `kEnabled`.

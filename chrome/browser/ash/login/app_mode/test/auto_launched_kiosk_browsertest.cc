@@ -87,10 +87,6 @@ class AutoLaunchedKioskTest : public OobeBaseTest {
   AutoLaunchedKioskTest()
       : verifier_format_override_(crx_file::VerifierFormat::CRX3) {
     device_state_.set_domain("domain.com");
-    // Force allow Chrome Apps in Kiosk, since they are default disabled since
-    // M138.
-    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
-                                             "");
   }
 
   AutoLaunchedKioskTest(const AutoLaunchedKioskTest&) = delete;
@@ -237,8 +233,6 @@ class AutoLaunchedKioskTest : public OobeBaseTest {
   FakeCWS fake_cws_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   extensions::SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
       verifier_format_override_;
   base::AutoReset<bool> skip_splash_wait_override_ =

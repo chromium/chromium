@@ -55,24 +55,10 @@ void TriggerCacheUpdateAndWait(std::string app_id, std::string crx_version) {
   waiter.Wait();
 }
 
-class KioskChromeAppUpdateTestBase {
- protected:
-  KioskChromeAppUpdateTestBase() {
-    // Force allow Chrome Apps in Kiosk, since they are default disabled since
-    // M138.
-    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
-                                             "");
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 }  // namespace
 
 // Verifies Chrome app update behavior in Kiosk.
-class KioskChromeAppUpdateTest : public KioskChromeAppUpdateTestBase,
-                                 public MixinBasedInProcessBrowserTest {
+class KioskChromeAppUpdateTest : public MixinBasedInProcessBrowserTest {
  public:
   KioskChromeAppUpdateTest() = default;
   KioskChromeAppUpdateTest(const KioskChromeAppUpdateTest&) = delete;
@@ -146,8 +132,7 @@ IN_PROC_BROWSER_TEST_F(KioskChromeAppUpdateTest, LaunchesAppWhenItHasNoUpdate) {
 // `KioskChromeAppUpdateTest` class, but launches apps manually to better
 // control launch timings.
 class KioskManualLaunchChromeAppUpdateTest
-    : public KioskChromeAppUpdateTestBase,
-      public MixinBasedInProcessBrowserTest {
+    : public MixinBasedInProcessBrowserTest {
  public:
   KioskManualLaunchChromeAppUpdateTest() = default;
   KioskManualLaunchChromeAppUpdateTest(
@@ -220,8 +205,7 @@ IN_PROC_BROWSER_TEST_F(KioskManualLaunchChromeAppUpdateTest,
 }
 
 // Verifies Chrome app data is maintained across updates in Kiosk.
-class KioskChromeAppDataUpdateTest : public KioskChromeAppUpdateTestBase,
-                                     public MixinBasedInProcessBrowserTest {
+class KioskChromeAppDataUpdateTest : public MixinBasedInProcessBrowserTest {
  public:
   KioskChromeAppDataUpdateTest() = default;
   KioskChromeAppDataUpdateTest(const KioskChromeAppDataUpdateTest&) = delete;

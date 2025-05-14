@@ -83,22 +83,10 @@ void SimulateSwipeUpGesture() {
                              /*duration=*/base::Milliseconds(300), /*steps=*/4);
 }
 
-class KioskTestBase {
- public:
-  KioskTestBase() {
-    // Force allow Chrome Apps in Kiosk, since they are default disabled since
-    // M138.
-    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
-                                             "");
-  }
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 }  // namespace
 
 // Verifies generic Kiosk behavior.
-class KioskTest : public KioskTestBase,
-                  public MixinBasedInProcessBrowserTest,
+class KioskTest : public MixinBasedInProcessBrowserTest,
                   public testing::WithParamInterface<KioskMixin::Config> {
  public:
   KioskTest() = default;
@@ -173,8 +161,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Verifies generic online/offline related behavior in Kiosk.
 class OfflineKioskTest
-    : public KioskTestBase,
-      public MixinBasedInProcessBrowserTest,
+    : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<KioskMixin::Config> {
  public:
   OfflineKioskTest() = default;

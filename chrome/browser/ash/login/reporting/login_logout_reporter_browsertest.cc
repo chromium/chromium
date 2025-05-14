@@ -425,13 +425,6 @@ IN_PROC_BROWSER_TEST_F(LoginLogoutReporterPublicSessionBrowserTest,
 class LoginLogoutReporterKioskBrowserTest
     : public MixinBasedInProcessBrowserTest {
  protected:
-  LoginLogoutReporterKioskBrowserTest() {
-    // Force allow Chrome Apps in Kiosk, since they are default disabled since
-    // M138.
-    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
-                                             "");
-  }
-
   void SetUp() override {
     login_manager_.set_session_restore_enabled();
 
@@ -474,7 +467,6 @@ class LoginLogoutReporterKioskBrowserTest
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   LoginManagerMixin login_manager_{&mixin_host_, {}};
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(LoginLogoutReporterKioskBrowserTest,

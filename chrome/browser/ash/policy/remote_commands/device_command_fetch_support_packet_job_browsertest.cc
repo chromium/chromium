@@ -312,12 +312,7 @@ class DeviceCommandFetchSupportPacketBrowserTestKioskSession
           MixinBasedInProcessBrowserTest>,
       public testing::WithParamInterface<ash::KioskMixin::Config> {
  protected:
-  DeviceCommandFetchSupportPacketBrowserTestKioskSession() {
-    // Force allow Chrome Apps in Kiosk, since they are default disabled since
-    // M138.
-    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
-                                             "");
-  }
+  DeviceCommandFetchSupportPacketBrowserTestKioskSession() = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     DeviceCommandFetchSupportPacketBrowserTestBase<
@@ -345,7 +340,6 @@ class DeviceCommandFetchSupportPacketBrowserTestKioskSession
 
   ash::KioskMixin kiosk_{&mixin_host_,
                          /*cached_configuration=*/GetParam()};
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace

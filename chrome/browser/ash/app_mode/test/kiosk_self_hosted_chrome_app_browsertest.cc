@@ -33,13 +33,7 @@ KioskMixin::CwsChromeAppOption ChromeAppInConfig() {
 // Verifies that self hosted Chrome apps work in Kiosk.
 class KioskSelfHostedChromeAppTest : public MixinBasedInProcessBrowserTest {
  public:
-  KioskSelfHostedChromeAppTest() {
-    // Force allow Chrome Apps in Kiosk, since they are default disabled since
-    // M138.
-    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
-                                             "");
-  }
-
+  KioskSelfHostedChromeAppTest() = default;
   KioskSelfHostedChromeAppTest(const KioskSelfHostedChromeAppTest&) = delete;
   KioskSelfHostedChromeAppTest& operator=(const KioskSelfHostedChromeAppTest&) =
       delete;
@@ -66,7 +60,6 @@ class KioskSelfHostedChromeAppTest : public MixinBasedInProcessBrowserTest {
                             /*account_id=*/ChromeAppInConfig().account_id,
                             /*app_id=*/ChromeAppInConfig().app_id,
                             /*update_url=*/private_cws_.UpdateUrl())}}};
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(KioskSelfHostedChromeAppTest,

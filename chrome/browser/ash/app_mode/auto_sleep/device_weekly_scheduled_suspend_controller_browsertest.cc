@@ -140,12 +140,7 @@ class DeviceWeeklyScheduledSuspendControllerTest
     : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<KioskMixin::Config> {
  public:
-  DeviceWeeklyScheduledSuspendControllerTest() {
-    // Force allow Chrome Apps in Kiosk, since they are default disabled since
-    // M138.
-    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
-                                             "");
-  }
+  DeviceWeeklyScheduledSuspendControllerTest() = default;
   DeviceWeeklyScheduledSuspendControllerTest(
       const DeviceWeeklyScheduledSuspendControllerTest&) = delete;
   DeviceWeeklyScheduledSuspendControllerTest(
@@ -160,7 +155,6 @@ class DeviceWeeklyScheduledSuspendControllerTest
   FakePowerManagerMixin power_manager_{&mixin_host_};
   KioskMixin kiosk_{&mixin_host_,
                     /*cached_configuration=*/GetParam()};
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(DeviceWeeklyScheduledSuspendControllerTest,

@@ -74,12 +74,7 @@ class SplashScreenTest
     : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<KioskMixin::Config> {
  public:
-  SplashScreenTest() {
-    // Force allow Chrome Apps in Kiosk, since they are default disabled since
-    // M138.
-    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
-                                             "");
-  }
+  SplashScreenTest() = default;
 
   SplashScreenTest(const SplashScreenTest&) = delete;
   SplashScreenTest& operator=(const SplashScreenTest&) = delete;
@@ -91,7 +86,6 @@ class SplashScreenTest
   NetworkStateMixin network_state_{&mixin_host_};
 
   KioskMixin kiosk_{&mixin_host_, /*cached_configuration=*/config()};
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(SplashScreenTest, DisplaysNetworkScreenUntilOnline) {
