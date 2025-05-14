@@ -1,4 +1,5 @@
 ci/Centipede High End Upload Linux ASan
+ci/Centipede High End Upload Linux ASan DCheck
 ci/Centipede Upload Linux ASan
 ci/Libfuzzer High End Upload Linux ASan
 ci/Libfuzzer High End Upload Linux ASan Debug
@@ -12,6 +13,7 @@ ci/Libfuzzer Upload Mac ASan
 ci/Libfuzzer Upload Windows ASan
 ci/Libfuzzer Upload iOS Catalyst Debug
 try/chromeos-libfuzzer-asan-rel
+try/linux-centipede-high-end-asan-dcheck
 try/linux-libfuzzer-high-end-asan-dbg
 try/linux-libfuzzer-high-end-asan-rel
 try/mac-libfuzzer-asan-rel

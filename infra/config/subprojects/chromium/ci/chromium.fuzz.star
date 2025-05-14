@@ -392,7 +392,7 @@ ci.builder(
     ),
     console_view_entry = consoles.console_view_entry(
         category = "centipede",
-        short_name = "centipede",
+        short_name = "cent",
     ),
     contact_team_email = "chrome-deet-core@google.com",
     execution_timeout = 4 * time.hour,
@@ -446,13 +446,63 @@ Those fuzzers require more resources to run correctly.\
     ),
     console_view_entry = consoles.console_view_entry(
         category = "centipede",
-        short_name = "centipede high end",
+        short_name = "cent high",
     ),
     contact_team_email = "chrome-deet-core@google.com",
     properties = {
         "upload_bucket": "chromium-browser-centipede",
         "upload_directory": "asan",
         "archive_prefix": "centipede-high-end",
+    },
+)
+
+ci.builder(
+    name = "Centipede High End Upload Linux ASan DCheck",
+    description_html = """This builder uploads centipede high end fuzzers \
+in release mode with dcheck_always_on.\
+""",
+    executable = "recipe:chromium/fuzz",
+    triggering_policy = scheduler.greedy_batching(),
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "clobber",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "centipede",
+            "disable_seed_corpus",
+            "high_end_fuzzer_targets",
+            "linux",
+            "optimize_for_fuzzing",
+            "release_with_dchecks",
+            "remoteexec",
+            "shared",
+            "x64",
+        ],
+    ),
+    # TODO(crbug.com/399002817): add this to the gardener_rotations.
+    gardener_rotations = args.ignore_default(None),
+    console_view_entry = consoles.console_view_entry(
+        category = "centipede",
+        short_name = "cent high dc",
+    ),
+    contact_team_email = "chrome-deet-core@google.com",
+    properties = {
+        "upload_bucket": "chromium-browser-centipede",
+        "upload_directory": "asan",
+        "archive_prefix": "centipede-high-end-dcheck",
     },
 )
 

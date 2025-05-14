@@ -1199,6 +1199,14 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "release_with_dchecks",
+    args = {
+        "is_debug": False,
+        "dcheck_always_on": True,
+    },
+)
+
+gn_args.config(
     name = "resource_allowlisting",
     args = {
         "enable_resource_allowlist_generation": True,
