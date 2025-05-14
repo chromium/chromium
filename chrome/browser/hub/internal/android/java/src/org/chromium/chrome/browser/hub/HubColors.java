@@ -31,6 +31,8 @@ public final class HubColors {
             new int[][] {new int[] {android.R.attr.state_selected}, new int[] {}};
     private static final int[][] DISABLED_AND_NORMAL_STATES =
             new int[][] {new int[] {-android.R.attr.state_enabled}, new int[] {}};
+    private static final int[][] HOVERED_STATE =
+            new int[][] {new int[] {android.R.attr.state_hovered}};
 
     private HubColors() {}
 
@@ -202,17 +204,51 @@ public final class HubColors {
         }
     }
 
+    /** Returns the hub pane switcher tab item hover color as per the given color scheme. */
+    public static @ColorInt int getPaneSwitcherTabItemHoverColor(
+            Context context, @HubColorScheme int colorScheme) {
+        switch (colorScheme) {
+            case HubColorScheme.DEFAULT -> {
+                return SemanticColorUtils.getColorOnSurface(context);
+            }
+            case HubColorScheme.INCOGNITO -> {
+                return ContextCompat.getColor(
+                        context, R.color.pane_switcher_tab_item_hover_incognito);
+            }
+            default -> {
+                assert false;
+                return Color.TRANSPARENT;
+            }
+        }
+    }
+
     public static ColorStateList getActionButtonColor(Context context, @ColorInt int color) {
         @DimenRes int disabledAlpha = R.dimen.default_disabled_alpha;
         return generateDisabledAndNormalStatesColorStateList(context, color, disabledAlpha);
     }
 
+    /**
+     * Generates a {@link ColorStateList} with a specific color applied when the view is in a
+     * hovered state.
+     */
+    public static ColorStateList generateHoveredStateColorStateList(Context context, int color) {
+        @DimenRes int hoveredAlpha = R.dimen.hub_pane_switcher_tab_item_hover_alpha;
+        int hoveredColor = getColorWithAlphaApplied(context, color, hoveredAlpha);
+        return new ColorStateList(HOVERED_STATE, new int[] {hoveredColor});
+    }
+
     private static ColorStateList generateDisabledAndNormalStatesColorStateList(
             Context context, int color, int disabledAlpha) {
-        Resources resources = context.getResources();
-        float alpha = ValueUtils.getFloat(resources, disabledAlpha);
-        int alphaScaled = Math.round(alpha * 255);
-        int[] colors = new int[] {ColorUtils.setAlphaComponent(color, alphaScaled), color};
+        int[] colors = new int[] {getColorWithAlphaApplied(context, color, disabledAlpha), color};
         return new ColorStateList(DISABLED_AND_NORMAL_STATES, colors);
+    }
+
+    private static @ColorInt int getColorWithAlphaApplied(
+            Context context, int color, @DimenRes int alphaRes) {
+        Resources resources = context.getResources();
+        float alpha = ValueUtils.getFloat(resources, alphaRes);
+        int alphaScaled = Math.round(alpha * 255);
+
+        return ColorUtils.setAlphaComponent(color, alphaScaled);
     }
 }
