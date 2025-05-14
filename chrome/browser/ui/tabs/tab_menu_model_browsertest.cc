@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
-#include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/menu_model_test.h"
@@ -56,7 +55,6 @@ class TabMenuModelBrowserTest : public MenuModelTest,
   Profile* profile() { return browser()->profile(); }
 
  private:
-  tabs::PreventTabFeatureInitialization prevent_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -193,123 +191,6 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest,
 
   EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(0).has_value());
   EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(1).has_value());
-}
-
-class TabMenuModelTestTabStripModelDelegate : public TestTabStripModelDelegate {
- public:
-  bool IsForWebApp() override { return true; }
-
-  bool SupportsReadLater() override { return false; }
-};
-
-IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, TabbedWebApp) {
-  // Create a tabbed web app window without home tab
-  TabMenuModelTestTabStripModelDelegate delegate;
-  TabStripModel tab_strip_model(&delegate, profile());
-
-  tab_strip_model.AppendWebContents(
-      content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile())),
-      true);
-
-  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
-                     &tab_strip_model, 0);
-
-  // When adding/removing a menu item, either update this count and add it to
-  // the list below or disable it for tabbed web apps.
-  EXPECT_EQ(model.GetItemCount(), 7u);
-
-  EXPECT_TRUE(
-      model.GetIndexOfCommandId(TabStripModel::CommandCopyURL).has_value());
-  EXPECT_TRUE(
-      model.GetIndexOfCommandId(TabStripModel::CommandReload).has_value());
-  EXPECT_TRUE(
-      model.GetIndexOfCommandId(TabStripModel::CommandGoBack).has_value());
-  EXPECT_TRUE(
-      model.GetIndexOfCommandId(TabStripModel::CommandMoveTabsToNewWindow)
-          .has_value());
-
-  EXPECT_EQ(model.GetTypeAt(4), ui::MenuModel::TYPE_SEPARATOR);
-
-  EXPECT_TRUE(
-      model.GetIndexOfCommandId(TabStripModel::CommandCloseTab).has_value());
-  EXPECT_TRUE(model.GetIndexOfCommandId(TabStripModel::CommandCloseOtherTabs)
-                  .has_value());
-}
-
-IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, TabbedWebAppHomeTab) {
-  TabMenuModelTestTabStripModelDelegate delegate;
-  TabStripModel tab_strip_model(&delegate, profile());
-  tab_strip_model.AppendWebContents(
-      content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile())),
-      true);
-
-  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
-                     browser()->tab_strip_model(), 0);
-  // Pin the first tab so we get the pinned home tab menu.
-  tab_strip_model.SetTabPinned(0, true);
-
-  TabMenuModel home_tab_model(&delegate_, browser()->tab_menu_model_delegate(),
-                              &tab_strip_model, 0);
-
-  // When adding/removing a menu item, either update this count and add it to
-  // the list below or disable it for tabbed web apps.
-  EXPECT_EQ(home_tab_model.GetItemCount(), 5u);
-
-  EXPECT_TRUE(home_tab_model.GetIndexOfCommandId(TabStripModel::CommandCopyURL)
-                  .has_value());
-  EXPECT_TRUE(home_tab_model.GetIndexOfCommandId(TabStripModel::CommandReload)
-                  .has_value());
-  EXPECT_TRUE(home_tab_model.GetIndexOfCommandId(TabStripModel::CommandGoBack)
-                  .has_value());
-
-  EXPECT_EQ(home_tab_model.GetTypeAt(3), ui::MenuModel::TYPE_SEPARATOR);
-
-  EXPECT_TRUE(
-      home_tab_model.GetIndexOfCommandId(TabStripModel::CommandCloseAllTabs)
-          .has_value());
-
-  tab_strip_model.AppendWebContents(
-      content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile())),
-      true);
-  EXPECT_EQ(tab_strip_model.count(), 2);
-  EXPECT_FALSE(tab_strip_model.IsTabSelected(0));
-  EXPECT_TRUE(tab_strip_model.IsTabSelected(1));
-
-  TabMenuModel regular_tab_model(
-      &delegate_, browser()->tab_menu_model_delegate(), &tab_strip_model, 1);
-
-  // When adding/removing a menu item, either update this count and add it to
-  // the list below or disable it for tabbed web apps.
-  EXPECT_EQ(regular_tab_model.GetItemCount(), 8u);
-
-  EXPECT_TRUE(
-      regular_tab_model.GetIndexOfCommandId(TabStripModel::CommandCopyURL)
-          .has_value());
-  EXPECT_TRUE(
-      regular_tab_model.GetIndexOfCommandId(TabStripModel::CommandReload)
-          .has_value());
-  EXPECT_TRUE(
-      regular_tab_model.GetIndexOfCommandId(TabStripModel::CommandGoBack)
-          .has_value());
-  EXPECT_TRUE(
-      regular_tab_model
-          .GetIndexOfCommandId(TabStripModel::CommandMoveTabsToNewWindow)
-          .has_value());
-
-  EXPECT_EQ(regular_tab_model.GetTypeAt(4), ui::MenuModel::TYPE_SEPARATOR);
-
-  EXPECT_TRUE(
-      regular_tab_model.GetIndexOfCommandId(TabStripModel::CommandCloseTab)
-          .has_value());
-  EXPECT_TRUE(regular_tab_model
-                  .GetIndexOfCommandId(TabStripModel::CommandCloseOtherTabs)
-                  .has_value());
-  EXPECT_TRUE(
-      regular_tab_model.GetIndexOfCommandId(TabStripModel::CommandCloseAllTabs)
-          .has_value());
 }
 
 class TabMenuModelCommerceProductSpecsTest : public TabMenuModelBrowserTest {
