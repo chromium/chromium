@@ -40133,6 +40133,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Signin_FromNonModalSigninBookmarkPromo">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::kNonModalSigninBookmarkPromo.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromNonModalSigninPasswordPromo">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::kNonModalSigninPasswordPromo.
+  </description>
+</action>
+
 <action name="Signin_Signin_FromNotificationsOptInScreenContentToggle">
   <owner>hiramahmood@google.com</owner>
   <owner>scottyoder@google.com</owner>

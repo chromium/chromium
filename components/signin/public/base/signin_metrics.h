@@ -284,10 +284,14 @@ enum class AccessPoint : int {
   // iOS only: The user switched to a managed account for the first time, and
   // the corresponding profile was automatically signed in.
   kManagedProfileAutoSigninIos = 82,
+  // iOS only: Access point for the contextual non modal sign-in password promo.
+  kNonModalSigninPasswordPromo = 83,
+  // iOS only: Access point for the contextual non modal sign-in bookmark promo.
+  kNonModalSigninBookmarkPromo = 84,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kManagedProfileAutoSigninIos,  // This must be last.
+  kMaxValue = kNonModalSigninBookmarkPromo,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

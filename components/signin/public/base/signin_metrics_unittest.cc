@@ -50,6 +50,8 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::kProductSpecifications,
     AccessPoint::kAddressBubble,
     AccessPoint::kGlicLaunchButton,
+    AccessPoint::kNonModalSigninPasswordPromo,
+    AccessPoint::kNonModalSigninBookmarkPromo,
 };
 
 const AccessPoint kAccessPointsThatSupportImpression[] = {
@@ -234,6 +236,10 @@ class SigninMetricsTest : public ::testing::Test {
         return "HistorySyncEducationalTip";
       case AccessPoint::kManagedProfileAutoSigninIos:
         return "ManagedProfileAutoSigninIos";
+      case AccessPoint::kNonModalSigninPasswordPromo:
+        return "NonModalSigninPasswordPromo";
+      case AccessPoint::kNonModalSigninBookmarkPromo:
+        return "NonModalSigninBookmarkPromo";
     }
   }
 };

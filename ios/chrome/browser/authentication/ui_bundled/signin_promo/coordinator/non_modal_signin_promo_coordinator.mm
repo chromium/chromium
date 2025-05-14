@@ -238,12 +238,23 @@ constexpr CGFloat kLogoSize = 22;
 
   [self hideBannerUI];
 
+  // Select the appropriate access point based on promo type
+  signin_metrics::AccessPoint accessPoint;
+  switch (_promoType) {
+    case SignInPromoType::kPassword:
+      accessPoint = signin_metrics::AccessPoint::kNonModalSigninPasswordPromo;
+      break;
+    case SignInPromoType::kBookmark:
+      accessPoint = signin_metrics::AccessPoint::kNonModalSigninBookmarkPromo;
+      break;
+  }
+
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   ShowSigninCommand* const showSigninCommand = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kSheetSigninAndHistorySync
                identity:nil
-            accessPoint:signin_metrics::AccessPoint::kNtpSignedOutIcon
+            accessPoint:accessPoint
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:nil];
