@@ -341,7 +341,13 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
       enableIncognitoTrackingProtections_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('enableIncognitoTrackingProtections'),
+        value: () =>
+            loadTimeData.getBoolean('enableIncognitoTrackingProtections'),
+      },
+
+      enableBundledSecuritySettings_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableBundledSecuritySettings'),
       },
 
       allSitesPageTitle_: String,
@@ -395,6 +401,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   declare private enableRelatedWebsiteSetsV2Ui_: boolean;
   declare private allSitesPageTitle_: string;
   declare private enableIncognitoTrackingProtections_: boolean;
+  declare private enableBundledSecuritySettings_: boolean;
 
   override ready() {
     super.ready();

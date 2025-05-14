@@ -202,9 +202,15 @@
         <settings-subpage id="security" page-title="$i18n{securityPageTitle}"
             associated-control="[[$$('#securityLinkRow')]]"
             learn-more-url="$i18n{safeBrowsingHelpCenterURL}">
-          <settings-security-page prefs="{{prefs}}"
-              focus-config="[[focusConfig_]]">
-          </settings-security-page>
+          <template is="dom-if" if="[[!enableBundledSecuritySettings_]]">
+            <settings-security-page prefs="{{prefs}}"
+                focus-config="[[focusConfig_]]">
+            </settings-security-page>
+          </template>
+          <template is="dom-if" if="[[enableBundledSecuritySettings_]]">
+            <settings-security-page-v2 prefs="{{prefs}}">
+            </settings-security-page-v2>
+          </template>
         </settings-subpage>
       </template>
 

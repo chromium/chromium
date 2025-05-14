@@ -395,6 +395,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   const bool compose_visible = false;
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
   html_source->AddBoolean(
+      "enableBundledSecuritySettings",
+      base::FeatureList::IsEnabled(safe_browsing::kBundledSecuritySettings));
+
+  html_source->AddBoolean(
       "enableComposeProactiveNudge",
       compose_enabled && base::FeatureList::IsEnabled(
                              compose::features::kEnableComposeProactiveNudge));
