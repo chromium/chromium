@@ -289,7 +289,7 @@ class FormFieldData {
   // FormFieldData::form_control_type().
   //
   // To get a field's initial value or the value for submission, see
-  // AutofillField::value() and AutofillField::value_for_import().
+  // AutofillField::initial_value() and AutofillField::value_for_import().
   //
   // A note on FormFieldData objects of type FormControlType::kSelect*, i.e.,
   // <select> elements:
