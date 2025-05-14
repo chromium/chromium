@@ -22,3 +22,7 @@ const CGFloat kGLICConsentMainStackSpacing = 16.0;
 // TODO(crbug.com/414778685): Add strings.
 NSString* const kGLICConsentPrimaryAction = @"Yes, I'm in";
 NSString* const kGLICConsentSecondaryAction = @"No thanks";
+
+// Text constants.
+NSString* const kGLIConsentSubText =
+    @"Lorem ipsum dolor sit amet, consecte tur adipiscing elit.";

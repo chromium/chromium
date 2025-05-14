@@ -24,4 +24,7 @@ extern const CGFloat kGLICConsentMainStackSpacing;
 extern NSString* const kGLICConsentPrimaryAction;
 extern NSString* const kGLICConsentSecondaryAction;
 
+// Text constants.
+extern NSString* const kGLIConsentSubText;
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_GLIC_UI_GLIC_CONSTANTS_H_

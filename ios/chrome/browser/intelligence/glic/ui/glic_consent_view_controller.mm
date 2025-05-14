@@ -37,6 +37,7 @@
 // Configure all the stacks.
 - (void)setupStackView {
   [self configureMainStackView];
+  [_mainStackView addArrangedSubview:[self createSubtextLabel]];
 }
 
 // Configure the differents detents for the expanded and collapsed view.
@@ -109,6 +110,16 @@
         constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
                                               .bottomAnchor]
   ]];
+}
+
+// Create the subtext label.
+- (UILabel*)createSubtextLabel {
+  UILabel* subText = [[UILabel alloc] init];
+  subText.text = kGLIConsentSubText;
+  subText.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
+  subText.numberOfLines = 2;
+  subText.textAlignment = NSTextAlignmentCenter;
+  return subText;
 }
 
 #pragma mark - PromoStyleViewControllerDelegate
