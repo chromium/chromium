@@ -22,6 +22,7 @@
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/cpp/creative_info.h"
+#include "content/services/auction_worklet/public/cpp/trusted_signals_url_builder.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/trusted_kvv2_signals.h"
@@ -272,11 +273,6 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
 
   using RequestSet =
       std::set<raw_ptr<RequestImpl, SetExperimental>, CompareRequestImpl>;
-
-  // Manages building and loading trusted signals URLs.
-  class TrustedSignalsUrlBuilder;
-  class TrustedBiddingSignalsUrlBuilder;
-  class TrustedScoringSignalsUrlBuilder;
 
   // Manages a single TrustedSignals object, which is associated with one or
   // more Requests. Tracks all associated live Requests, and manages invoking

@@ -176,6 +176,7 @@ source_set("tests") {
     "direct_from_seller_signals_requester_unittest.cc",
     "public/cpp/auction_downloader_unittest.cc",
     "public/cpp/private_aggregation_reporting_unittest.cc",
+    "public/cpp/trusted_signals_url_builder_unittest.cc",
     "seller_worklet_unittest.cc",
     "trusted_kvv2_signals_unittest.cc",
     "trusted_signals_kvv2_helper_unittest.cc",

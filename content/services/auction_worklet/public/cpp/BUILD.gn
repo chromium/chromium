@@ -10,6 +10,8 @@ source_set("cpp") {
     "private_aggregation_reporting.h",
     "private_model_training_reporting.h",
     "real_time_reporting.h",
+    "trusted_signals_url_builder.cc",
+    "trusted_signals_url_builder.h",
   ]
 
   configs += [
