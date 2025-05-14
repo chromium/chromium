@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/test_authentication_flow_request_helper.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/test_authentication_flow_delegate.h"
 
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 
 // Callbacks for the Authentication Flow. At most one callback must be called.
-@implementation TestAuthenticationFlowRequest {
+@implementation TestAuthenticationFlowDelegate {
   // Callback after a sign-in succeeded or failed in the same profile. It is set
   // until a callback is called.
   signin_ui::SigninCompletionCallback _signinCompletion;
@@ -46,7 +46,7 @@
            changeProfileContinuationProvider:DoNothingContinuationProvider()];
 }
 
-#pragma mark - AuthenticationFlowRequestHelper
+#pragma mark - AuthenticationFlowDelegate
 
 - (void)authenticationFlowDidSignInInSameProfileWithResult:
     (SigninCoordinatorResult)result {

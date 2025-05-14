@@ -9,12 +9,12 @@
 
 #import "components/policy/core/browser/signin/profile_separation_policies.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_delegate.h"
-#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 
-@protocol AuthenticationFlowRequestHelper;
+@protocol AuthenticationFlowDelegate;
 @class AuthenticationFlowPerformer;
 class Browser;
 @class UIViewController;
@@ -27,8 +27,8 @@ class Browser;
 @interface AuthenticationFlow : NSObject <AuthenticationFlowPerformerDelegate>
 
 // The object providing the code to execute after the sign-in.
-// It must be set before start. It is unset after being used once.
-@property(nonatomic, strong) id<AuthenticationFlowRequestHelper> requestHelper;
+// It is unset after being used once.
+@property(nonatomic, weak) id<AuthenticationFlowDelegate> delegate;
 
 // Designated initializer.
 // * `browser` is the current browser where the authentication flow is being

@@ -27,11 +27,11 @@
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/change_profile_continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_profile.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_delegate.h"
-#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
-#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/test_authentication_flow_request_helper.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/test_authentication_flow_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_test_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
@@ -227,12 +227,10 @@ class AuthenticationFlowTest : public PlatformTest,
             sign_in_completion);
 
     // Each mock expect its methods to be called at most once.
-    test_authentication_flow_request_helper_ =
-        [[TestAuthenticationFlowRequest alloc]
-             initWithSigninCompletionCallback:sign_in_completion
-            changeProfileContinuationProvider:continuation_provider];
-    authentication_flow_.requestHelper =
-        test_authentication_flow_request_helper_;
+    test_authentication_flow_delegate_ = [[TestAuthenticationFlowDelegate alloc]
+         initWithSigninCompletionCallback:sign_in_completion
+        changeProfileContinuationProvider:continuation_provider];
+    authentication_flow_.delegate = test_authentication_flow_delegate_;
   }
 
   // Checks if the AuthenticationFlow operation has completed, and whether it
@@ -348,9 +346,8 @@ class AuthenticationFlowTest : public PlatformTest,
               didSwitchToProfileWithNewProfileBrowser:final_browser
                                            completion:std::move(completion)];
         };
-        id requestHelperChecker =
-            [OCMArg checkWithBlock:^(
-                        id<AuthenticationFlowRequestHelper> request_helper) {
+        id delegateChecker = [OCMArg
+            checkWithBlock:^(id<AuthenticationFlowDelegate> request_helper) {
               CHECK(request_helper);
               continuation =
                   [request_helper authenticationFlowWillChangeProfile];
@@ -362,7 +359,7 @@ class AuthenticationFlowTest : public PlatformTest,
                                  sceneState:personal_browser_->GetSceneState()
                                      reason:ChangeProfileReason::
                                                 kManagedAccountSignIn
-                              requestHelper:requestHelperChecker
+                                   delegate:delegateChecker
                           postSignInActions:postSignInActions
                                 accessPoint:access_point])
             .andDo(switchToProfileWithIdentityCallback);
@@ -432,7 +429,7 @@ class AuthenticationFlowTest : public PlatformTest,
   id<SystemIdentity> managed_identity1_ = nil;
   id<SystemIdentity> managed_identity2_ = nil;
   AuthenticationFlow* authentication_flow_ = nil;
-  TestAuthenticationFlowRequest* test_authentication_flow_request_helper_ = nil;
+  TestAuthenticationFlowDelegate* test_authentication_flow_delegate_ = nil;
   AuthenticationFlowInProfile<AuthenticationFlowPerformerDelegate>*
       authentication_flow_in_profile_ = nil;
   AuthenticationFlowPerformer* performer_mock_ = nil;

@@ -27,9 +27,9 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_profile.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer.h"
-#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 #import "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
@@ -292,7 +292,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 
   // This AuthenticationFlow keeps a reference to `self` while a sign-in flow is
   // is in progress to ensure it outlives any attempt to destroy it in
-  // `self.requestHelper`’s method.
+  // `self.delegate`’s method.
   AuthenticationFlow* _selfRetainer;
 
   // Value of the ProfileSeparationDataMigrationSettings for
@@ -357,13 +357,8 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   return self;
 }
 
-- (void)dealloc {
-  CHECK(!self.requestHelper, base::NotFatalUntil::M140);
-}
-
 - (void)startSignIn {
   DCHECK_EQ(AuthenticationState::kBegin, _state);
-  CHECK(self.requestHelper);
   _selfRetainer = self;
   // Kick off the state machine.
   id<ChangeProfileCommands> changeProfileHandler = HandlerForProtocol(
@@ -458,7 +453,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 }
 
 // Continues the sign-in state machine starting from `_state` and invokes
-// a `self.requestHelper`’s method when finished.
+// a `self.delegate`’s method when finished.
 - (void)continueFlow {
   ProfileIOS* profile = [self originalProfile];
   if (self.handlingError) {
@@ -688,16 +683,15 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     signin_metrics::AccessPoint accessPoint = _accessPoint;
     // In case of sign-in in same profile, we can reuse the same browser.
     raw_ptr<Browser> browser = _browser;
-    // In case of same profile signin, the request helper simply allows
+    // In case of same profile signin, the delegate simply allows
     // to update the view that started the authentication. If it gets
     // deallocated, it means the view is closed, so it’s acceptable
     // not to call its method.
-    __weak id<AuthenticationFlowRequestHelper> requestHelper =
-        [self takeRequestHelper];
+    __weak id<AuthenticationFlowDelegate> delegate = [self takeDelegate];
     // Not using a call call to a method on self, because self will be
     // deallocated by the time the `signinCompletion` is executed.
     _signInInProfileCompletion = ^(SigninCoordinatorResult result) {
-      [requestHelper authenticationFlowDidSignInInSameProfileWithResult:result];
+      [delegate authenticationFlowDidSignInInSameProfileWithResult:result];
       CompletePostSignInActions(postSignInActions, identityToSignIn, browser,
                                 accessPoint);
     };
@@ -723,7 +717,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   [_performer switchToProfileWithIdentity:_identityToSignIn
                                sceneState:sceneState
                                    reason:reason
-                            requestHelper:[self takeRequestHelper]
+                                 delegate:[self takeDelegate]
                         postSignInActions:_postSignInActions
                               accessPoint:_accessPoint];
 }
@@ -765,7 +759,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   [self continueFlow];
 }
 
-// Runs `[self.requestHelper
+// Runs `[self.delegate
 // authenticationFlowDidSignInInSameProfile:withResult:]` synchronously when the
 // flow failed.
 - (void)completeWithFailureStep {
@@ -780,7 +774,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     case CancelationReason::kNotCanceled:
       NOTREACHED();
   }
-  [[self takeRequestHelper]
+  [[self takeDelegate]
       authenticationFlowDidSignInInSameProfileWithResult:result];
   [self continueFlow];
 }
@@ -954,12 +948,11 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 
 #pragma mark - Private methods
 
-// Returns the request helper exactly once. CHECK fail if its accessed twice.
-- (id<AuthenticationFlowRequestHelper>)takeRequestHelper {
-  CHECK(self.requestHelper, base::NotFatalUntil::M140);
-  id<AuthenticationFlowRequestHelper> requestHelper = self.requestHelper;
-  self.requestHelper = nil;
-  return requestHelper;
+// Returns the delegate at most once.
+- (id<AuthenticationFlowDelegate>)takeDelegate {
+  id<AuthenticationFlowDelegate> delegate = self.delegate;
+  self.delegate = nil;
+  return delegate;
 }
 
 // The original profile used for services that don't exist in incognito mode.

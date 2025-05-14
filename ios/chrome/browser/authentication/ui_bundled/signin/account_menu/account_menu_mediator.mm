@@ -15,7 +15,7 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
-#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_load_url.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_open_ntp.h"
@@ -39,7 +39,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 
-@interface AccountMenuMediator () <AuthenticationFlowRequestHelper,
+@interface AccountMenuMediator () <AuthenticationFlowDelegate,
                                    IdentityManagerObserverBridgeDelegate,
                                    SyncObserverModelBridge>
 
@@ -296,7 +296,7 @@
 
   _authenticationFlow = [self.delegate authenticationFlow:_identityToSignin
                                                anchorRect:targetRect];
-  _authenticationFlow.requestHelper = self;
+  _authenticationFlow.delegate = self;
   [_authenticationFlow startSignIn];
 }
 
@@ -411,7 +411,7 @@
   }
 }
 
-#pragma mark - AuthenticationFlowRequestHelper
+#pragma mark - AuthenticationFlowDelegate
 
 - (void)authenticationFlowDidSignInInSameProfileWithResult:
     (SigninCoordinatorResult)result {

@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 
-@protocol AuthenticationFlowRequestHelper;
+@protocol AuthenticationFlowDelegate;
 class Browser;
 enum class ChangeProfileReason;
 @protocol ChangeProfileCommands;
@@ -97,15 +97,14 @@ using OnProfileSwitchCompletion =
         currentProfile:(ProfileIOS*)currentProfile;
 
 // Switches to the profile that `identity` is assigned, for `sceneIdentifier`.
-// The requestHelper must be called before the change of profile.
+// The delegate’s command must be called before the change of profile.
 // ChangeProfileContinuationProvider is a base::RepeatingCallback, which is not
 // compatible with unit tests mocks. This is why this method use a protocol as
 // argument instead.
 - (void)switchToProfileWithIdentity:(id<SystemIdentity>)identity
                          sceneState:(SceneState*)sceneState
                              reason:(ChangeProfileReason)reason
-                      requestHelper:
-                          (id<AuthenticationFlowRequestHelper>)requestHelper
+                           delegate:(id<AuthenticationFlowDelegate>)delegate
                   postSignInActions:(PostSignInActionSet)postSignInActions
                         accessPoint:(signin_metrics::AccessPoint)accessPoint;
 

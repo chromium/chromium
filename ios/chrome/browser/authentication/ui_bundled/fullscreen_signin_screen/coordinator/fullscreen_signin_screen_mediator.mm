@@ -16,7 +16,7 @@
 #import "components/web_resource/web_resource_pref_names.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
-#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile_continuation_provider.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
@@ -46,7 +46,7 @@ enum class SigninScreenState {
 }  // namespace
 
 @interface FullscreenSigninScreenMediator () <
-    AuthenticationFlowRequestHelper,
+    AuthenticationFlowDelegate,
     IdentityManagerObserverBridgeDelegate> {
 }
 
@@ -182,7 +182,7 @@ enum class SigninScreenState {
             signin::ConsentLevel::kSignin),
         base::NotFatalUntil::M140);
   [self.consumer setUIEnabled:NO];
-  authenticationFlow.requestHelper = self;
+  authenticationFlow.delegate = self;
   [authenticationFlow startSignIn];
 }
 
@@ -302,7 +302,7 @@ enum class SigninScreenState {
   [self updateConsumerIdentity];
 }
 
-#pragma mark - AuthenticationFlowRequestHelper
+#pragma mark - AuthenticationFlowDelegate
 
 - (void)authenticationFlowDidSignInInSameProfileWithResult:
     (SigninCoordinatorResult)result {

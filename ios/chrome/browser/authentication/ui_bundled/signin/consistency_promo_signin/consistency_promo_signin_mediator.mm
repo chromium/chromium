@@ -19,7 +19,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
-#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -36,7 +36,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
 }  // namespace
 
 @interface ConsistencyPromoSigninMediator () <
-    AuthenticationFlowRequestHelper,
+    AuthenticationFlowDelegate,
     IdentityManagerObserverBridgeDelegate> {
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   raw_ptr<AuthenticationService> _authenticationService;
@@ -205,12 +205,12 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
     // Reset dismissal count if the user wants to sign-in.
     _prefService->SetInteger(prefs::kSigninWebSignDismissalCount, 0);
   }
-  _authenticationFlow.requestHelper = self;
+  _authenticationFlow.delegate = self;
   [_authenticationFlow startSignIn];
   [self.delegate consistencyPromoSigninMediatorSigninStarted:self];
 }
 
-#pragma mark - AuthenticationFlowRequestHelper
+#pragma mark - AuthenticationFlowDelegate
 
 - (void)authenticationFlowDidSignInInSameProfileWithResult:
     (SigninCoordinatorResult)result {
@@ -268,7 +268,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
 }
 
 - (ChangeProfileContinuation)authenticationFlowWillChangeProfile {
-  _authenticationFlow.requestHelper = nil;
+  _authenticationFlow.delegate = nil;
   _authenticationFlow = nil;
   return [self.delegate changeProfileContinuation];
 }

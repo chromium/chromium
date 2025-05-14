@@ -468,10 +468,10 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
   OCMExpect([delegate_mock_ authenticationFlow:kSecondaryIdentity
                                     anchorRect:target])
       .andReturn(authentication_flow_mock_);
-  __block id<AuthenticationFlowRequestHelper>
-      authentication_flow_request_helper = nil;
+  __block id<AuthenticationFlowDelegate> authentication_flow_request_helper =
+      nil;
   OCMExpect([authentication_flow_mock_
-      setRequestHelper:[OCMArg checkWithBlock:^(id value) {
+      setDelegate:[OCMArg checkWithBlock:^(id value) {
         authentication_flow_request_helper = value;
         return mediator_ == value;
       }]]);
@@ -512,10 +512,10 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
   OCMExpect([delegate_mock_ authenticationFlow:kSecondaryIdentity
                                     anchorRect:target])
       .andReturn(authentication_flow_mock_);
-  __block id<AuthenticationFlowRequestHelper>
-      authentication_flow_request_helper = nil;
+  __block id<AuthenticationFlowDelegate> authentication_flow_request_helper =
+      nil;
   OCMExpect([authentication_flow_mock_
-      setRequestHelper:[OCMArg checkWithBlock:^(id value) {
+      setDelegate:[OCMArg checkWithBlock:^(id value) {
         authentication_flow_request_helper = value;
         return mediator_ == value;
       }]]);
@@ -557,10 +557,10 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedWithSuccessfulSwitch) {
   OCMExpect([delegate_mock_ authenticationFlow:kSecondaryIdentity
                                     anchorRect:target])
       .andReturn(authentication_flow_mock_);
-  __block id<AuthenticationFlowRequestHelper>
-      authentication_flow_request_helper = nil;
+  __block id<AuthenticationFlowDelegate> authentication_flow_request_helper =
+      nil;
   OCMExpect([authentication_flow_mock_
-      setRequestHelper:[OCMArg checkWithBlock:^(id value) {
+      setDelegate:[OCMArg checkWithBlock:^(id value) {
         authentication_flow_request_helper = value;
         return mediator_ == value;
       }]]);

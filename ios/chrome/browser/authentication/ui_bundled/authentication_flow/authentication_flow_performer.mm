@@ -32,7 +32,7 @@
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/change_profile_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_capabilities_fetcher.h"
@@ -451,16 +451,14 @@ void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
 - (void)switchToProfileWithIdentity:(id<SystemIdentity>)identity
                          sceneState:(SceneState*)sceneState
                              reason:(ChangeProfileReason)reason
-                      requestHelper:
-                          (id<AuthenticationFlowRequestHelper>)requestHelper
+                           delegate:(id<AuthenticationFlowDelegate>)delegate
                   postSignInActions:(PostSignInActionSet)postSignInActions
                         accessPoint:(signin_metrics::AccessPoint)accessPoint {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
-  CHECK(requestHelper);
   // The continuation specific to the place where the authentication was
   // launched.
-  ChangeProfileContinuation requestHelperContinuation =
-      [requestHelper authenticationFlowWillChangeProfile];
+  ChangeProfileContinuation continuation =
+      [delegate authenticationFlowWillChangeProfile];
 
   std::optional<std::string> profileName =
       GetApplicationContext()
@@ -480,7 +478,7 @@ void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
   [self switchToProfileWithName:*profileName
                      sceneState:sceneState
                          reason:reason
-      changeProfileContinuation:std::move(requestHelperContinuation)
+      changeProfileContinuation:std::move(continuation)
               postSignInActions:postSignInActions
                    withIdentity:identity
                     accessPoint:accessPoint];

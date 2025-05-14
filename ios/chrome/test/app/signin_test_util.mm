@@ -17,9 +17,9 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "google_apis/gaia/gaia_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer.h"
-#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
-#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/test_authentication_flow_request_helper.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/test_authentication_flow_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
@@ -172,12 +172,12 @@ void SignIn(id<SystemIdentity> identity) {
                     anchorView:nil
                     anchorRect:CGRectNull];
   // The delegate is retaining itself and the flow.
-  __block TestAuthenticationFlowRequest* testRequestHelper = nil;
+  __block TestAuthenticationFlowDelegate* testRequestDelegate = nil;
   // Unsetting those variables to ensure that they are not retained anymore.
   // The authentication flow should retain them.
   void (^unsetVariables)() = ^() {
     authenticationFlow = nil;
-    testRequestHelper = nil;
+    testRequestDelegate = nil;
   };
   signin_ui::SigninCompletionCallback callback =
       ^(SigninCoordinatorResult result) {
@@ -194,10 +194,10 @@ void SignIn(id<SystemIdentity> identity) {
             unsetVariables);
       },
       unsetVariables);
-  testRequestHelper = [[TestAuthenticationFlowRequest alloc]
+  testRequestDelegate = [[TestAuthenticationFlowDelegate alloc]
        initWithSigninCompletionCallback:callback
       changeProfileContinuationProvider:provider];
-  authenticationFlow.requestHelper = testRequestHelper;
+  authenticationFlow.delegate = testRequestDelegate;
   [authenticationFlow startSignIn];
 }
 

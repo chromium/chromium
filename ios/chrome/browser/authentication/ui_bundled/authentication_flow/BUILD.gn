@@ -132,7 +132,7 @@ source_set("authentication_flow_performer") {
 }
 
 source_set("request_helper") {
-  sources = [ "authentication_flow_request_helper.h" ]
+  sources = [ "authentication_flow_delegate.h" ]
   deps = [
     "//base",
     "//ios/chrome/app:change_profile_continuation",
@@ -193,8 +193,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
-    "test_authentication_flow_request_helper.h",
-    "test_authentication_flow_request_helper.mm",
+    "test_authentication_flow_delegate.h",
+    "test_authentication_flow_delegate.mm",
   ]
   deps = [
     ":authentication_flow",

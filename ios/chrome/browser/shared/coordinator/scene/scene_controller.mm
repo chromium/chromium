@@ -362,7 +362,8 @@ void OnListFamilyMembersResponse(
 
 }  // namespace
 
-@interface SceneController () <HistoryCoordinatorDelegate,
+@interface SceneController () <AuthenticationFlowDelegate,
+                               HistoryCoordinatorDelegate,
                                IncognitoInterstitialCoordinatorDelegate,
                                PasswordCheckupCoordinatorDelegate,
                                PolicyWatcherBrowserAgentObserving,
@@ -398,6 +399,8 @@ void OnListFamilyMembersResponse(
   // Fetches the Family Link member role asynchronously from KidsManagement API.
   std::unique_ptr<supervised_user::ListFamilyMembersFetcher>
       _familyMembersFetcher;
+  // The authentication flow, if one is currently running.
+  AuthenticationFlow* _authenticationFlow;
 }
 
 // Navigation View controller for the settings.
@@ -4379,6 +4382,18 @@ using UserFeedbackDataCallback =
 
 - (void)closeHistory {
   [self closeHistoryWithCompletion:nil];
+}
+
+#pragma mark - AuthenticationFlowDelegate
+
+- (void)authenticationFlowDidSignInInSameProfileWithResult:
+    (SigninCoordinatorResult)result {
+  _authenticationFlow = nil;
+}
+
+- (ChangeProfileContinuation)authenticationFlowWillChangeProfile {
+  _authenticationFlow = nil;
+  return DoNothingContinuation();
 }
 
 @end

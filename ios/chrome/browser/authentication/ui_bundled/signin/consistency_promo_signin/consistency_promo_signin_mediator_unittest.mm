@@ -154,12 +154,11 @@ class ConsistencyPromoSigninMediatorTest
           authenticationFlowDidSignInInSameProfileWithResult:result];
     };
     OCMExpect([authentication_flow_mock_
-        setRequestHelper:[OCMArg
-                             checkWithBlock:^(
-                                 id<AuthenticationFlowRequestHelper> value) {
-                               authentication_flow_mock_delegate_ = value;
-                               return value == mediator_;
-                             }]]);
+        setDelegate:[OCMArg
+                        checkWithBlock:^(id<AuthenticationFlowDelegate> value) {
+                          authentication_flow_mock_delegate_ = value;
+                          return value == mediator_;
+                        }]]);
     OCMExpect([authentication_flow_mock_ startSignIn])
         .andDo(startSignInCallback);
   }
@@ -205,7 +204,7 @@ class ConsistencyPromoSigninMediatorTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  id<AuthenticationFlowRequestHelper> authentication_flow_mock_delegate_;
+  id<AuthenticationFlowDelegate> authentication_flow_mock_delegate_;
   // Needed for test profile.
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

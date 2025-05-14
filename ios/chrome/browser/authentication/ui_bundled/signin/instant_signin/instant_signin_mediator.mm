@@ -6,7 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
-#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -15,7 +15,7 @@
 using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
 
-@interface InstantSigninMediator () <AuthenticationFlowRequestHelper>
+@interface InstantSigninMediator () <AuthenticationFlowDelegate>
 @end
 
 @implementation InstantSigninMediator {
@@ -43,7 +43,7 @@ using signin_metrics::PromoAction;
   CHECK(!_authenticationFlow);
   _authenticationFlow = authenticationFlow;
   signin_metrics::RecordSigninUserActionForAccessPoint(_accessPoint);
-  _authenticationFlow.requestHelper = self;
+  _authenticationFlow.delegate = self;
   [_authenticationFlow startSignIn];
 }
 
@@ -51,7 +51,7 @@ using signin_metrics::PromoAction;
   [_authenticationFlow interrupt];
 }
 
-#pragma mark - AuthenticationFlowRequestHelper
+#pragma mark - AuthenticationFlowDelegate
 
 - (void)authenticationFlowDidSignInInSameProfileWithResult:
     (SigninCoordinatorResult)result {
