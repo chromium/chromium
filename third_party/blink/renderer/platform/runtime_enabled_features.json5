@@ -5291,8 +5291,13 @@
       public: true,
     },
     {
+      // Switch WebGL to use an experimental implementation where WebGL calls
+      // are translated in Blink, via ANGLE, to WebGPU calls. Note that this
+      // is not marked as "experimental" because it is not an incremental
+      // addition like other experimental features but a code switch, so we
+      // don't want to enable it when testing all "experimental Web platform
+      // features".
       name: "WebGLOnWebGPU",
-      status: "experimental",
     },
     {
       name: "WebGPUAdapterInfoIsFallbackAdapter",
