@@ -31,12 +31,16 @@ FreezingVote::~FreezingVote() {
   CHECK_DEREF(freezing_policy).RemoveFreezeVote(page_node_.get());
 }
 
-std::set<std::string> GetCannotFreezeReasonsForPageNode(
-    const PageNode* page_node) {
+CanFreezeDetails::CanFreezeDetails() = default;
+CanFreezeDetails::~CanFreezeDetails() = default;
+CanFreezeDetails::CanFreezeDetails(CanFreezeDetails&&) = default;
+CanFreezeDetails& CanFreezeDetails::operator=(CanFreezeDetails&&) = default;
+
+CanFreezeDetails GetCanFreezeDetailsForPageNode(const PageNode* page_node) {
   auto* freezing_policy =
       performance_manager::FreezingPolicy::GetFromGraph(page_node->GetGraph());
   CHECK(freezing_policy);
-  return freezing_policy->GetCannotFreezeReasons(page_node);
+  return freezing_policy->GetCanFreezeDetails(page_node);
 }
 
 Discarder::Discarder() = default;

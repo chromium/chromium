@@ -5,12 +5,11 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FREEZING_FREEZING_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FREEZING_FREEZING_H_
 
-#include <set>
-#include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "components/performance_manager/public/freezing/cannot_freeze_reason.h"
 #include "components/performance_manager/public/graph/page_node.h"
 
 class GURL;
@@ -72,11 +71,40 @@ class OptOutChecker {
                                         const GURL& main_frame_url) = 0;
 };
 
-// Returns a list of human-readable reasons why a page can't be frozen
-// automatically, or an empty list if it can be frozen automatically. Must be
-// invoked on the PM sequence.
-std::set<std::string> GetCannotFreezeReasonsForPageNode(
-    const PageNode* page_node);
+// Whether a page can be frozen.
+enum class CanFreeze {
+  // All types of freezing are possible for the page.
+  kYes,
+  // Only some types of freezing are possible for the page.
+  kVaries,
+  // No freezing is possible for the page.
+  kNo,
+};
+
+// Whether a page can be frozen, and reasons behind that decision.
+struct CanFreezeDetails {
+  CanFreezeDetails();
+  ~CanFreezeDetails();
+
+  // Move-only.
+  CanFreezeDetails(CanFreezeDetails&&);
+  CanFreezeDetails& operator=(CanFreezeDetails&&);
+  CanFreezeDetails(const CanFreezeDetails&) = delete;
+  CanFreezeDetails& operator=(const CanFreezeDetails&) = delete;
+
+  // Whether the page can be frozen.
+  CanFreeze can_freeze;
+
+  // `CannotFreezeReason`s for the page.
+  CannotFreezeReasonSet cannot_freeze_reasons;
+
+  // `CannotFreezeReason`s for connected pages.
+  CannotFreezeReasonSet cannot_freeze_reasons_connected_pages;
+};
+
+// Returns a `CanFreezeDetails` for `page_node`, indicating whether it can be
+// frozen and why.
+CanFreezeDetails GetCanFreezeDetailsForPageNode(const PageNode* page_node);
 
 }  // namespace performance_manager::freezing
 

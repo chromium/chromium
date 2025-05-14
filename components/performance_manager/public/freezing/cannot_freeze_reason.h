@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERFORMANCE_MANAGER_FREEZING_CANNOT_FREEZE_REASON_H_
-#define COMPONENTS_PERFORMANCE_MANAGER_FREEZING_CANNOT_FREEZE_REASON_H_
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FREEZING_CANNOT_FREEZE_REASON_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FREEZING_CANNOT_FREEZE_REASON_H_
 
 #include "base/containers/enum_set.h"
 
-namespace performance_manager {
+namespace performance_manager::freezing {
 
 // List of reasons not to freeze a browsing instance.
 //
@@ -46,6 +46,6 @@ using CannotFreezeReasonSet = base::EnumSet<CannotFreezeReason,
 
 const char* CannotFreezeReasonToString(CannotFreezeReason reason);
 
-}  // namespace performance_manager
+}  // namespace performance_manager::freezing
 
-#endif  // COMPONENTS_PERFORMANCE_MANAGER_FREEZING_CANNOT_FREEZE_REASON_H_
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FREEZING_CANNOT_FREEZE_REASON_H_

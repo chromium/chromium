@@ -379,8 +379,8 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
         return '✔';
       case CanFreeze.NO:
         return '✘️';
-      case CanFreeze.UNKNOWN:
-        return '?';
+      case CanFreeze.VARIES:
+        return '~';
     }
   }
 
@@ -457,7 +457,7 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
    * @return true iff the tab should show the reason why it cannot be frozen.
    */
   protected shouldShowCannotFreezeReason_(tab: TabDiscardsInfo): boolean {
-    return tab.canFreeze === CanFreeze.NO &&
+    return tab.canFreeze !== CanFreeze.YES &&
         tab.state !== LifecycleUnitState.FROZEN &&
         tab.state !== LifecycleUnitState.DISCARDED;
   }

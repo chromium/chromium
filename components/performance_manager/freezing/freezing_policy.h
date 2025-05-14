@@ -19,9 +19,9 @@
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/performance_manager/freezing/cannot_freeze_reason.h"
 #include "components/performance_manager/freezing/freezer.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
+#include "components/performance_manager/public/freezing/cannot_freeze_reason.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -58,6 +58,15 @@ class FreezingPolicy : public PageNodeObserver,
                        public GraphOwnedAndRegistered<FreezingPolicy>,
                        public NodeDataDescriberDefaultImpl {
  public:
+  enum class FreezingType {
+    // Freezing via the voting system exposed to embedders.
+    kVoting,
+    // Freezing of CPU-intensive background tabs when Battery Saver is active.
+    kBatterySaver,
+  };
+  using FreezingTypeSet = base::
+      EnumSet<FreezingType, FreezingType::kVoting, FreezingType::kBatterySaver>;
+
   explicit FreezingPolicy(
       std::unique_ptr<freezing::Discarder> discarder,
       std::unique_ptr<freezing::OptOutChecker> opt_out_checker = nullptr);
@@ -79,13 +88,14 @@ class FreezingPolicy : public PageNodeObserver,
   void AddFreezeVote(PageNode* page_node);
   void RemoveFreezeVote(PageNode* page_node);
 
-  // Returns a list of human-readable reasons why a page can't be frozen
-  // automatically, or an empty list if it can be frozen automatically.
-  std::set<std::string> GetCannotFreezeReasons(const PageNode* page_node);
+  // Returns details about whether a page can be frozen.
+  freezing::CanFreezeDetails GetCanFreezeDetails(const PageNode* page_node);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FreezingPolicyBatterySaverTest,
                            RecordFreezingEligibilityUKMForPageStatic);
+
+  class CanFreezePerTypeTracker;
 
   // State of a browsing instance.
   struct BrowsingInstanceState {
@@ -105,12 +115,13 @@ class FreezingPolicy : public PageNodeObserver,
     std::optional<double> highest_cpu_current_interval;
     // Highest CPU measurement for a group of same-origin frames/workers
     // associated within this browsing instance, over any past measurement
-    // period during which no `CannotFreezeReason` was applicable.
-    // (1.0 = 100% of 1 core)
-    double highest_cpu_any_interval_without_cannot_freeze_reason = 0.0;
+    // period during which no `CannotFreezeReason` associated with
+    // `FreezingType::kBatterySaver` was applicable. (1.0 = 100% of 1 core)
+    double highest_cpu_without_battery_saver_cannot_freeze = 0.0;
     // `CannotFreezeReason`s applicable to this browsing instance at any point
     // since the last CPU measurement.
-    CannotFreezeReasonSet cannot_freeze_reasons_since_last_cpu_measurement;
+    freezing::CannotFreezeReasonSet
+        cannot_freeze_reasons_since_last_cpu_measurement;
     // First per-origin Private Memory Footprint measurement taken after this
     // browsing instance became frozen. Empty if not all pages in this browsing
     // instance are frozen.
@@ -135,11 +146,11 @@ class FreezingPolicy : public PageNodeObserver,
   // Helper to add or remove a `CannotFreezeReason` for `page_node`.
   void OnCannotFreezeReasonChange(const PageNode* page_node,
                                   bool add,
-                                  CannotFreezeReason reason);
+                                  freezing::CannotFreezeReason reason);
 
   // Returns the union of `CannotFreezeReason`s applicable to pages associated
   // with `browsing_instance_state`.
-  static CannotFreezeReasonSet GetCannotFreezeReasons(
+  static freezing::CannotFreezeReasonSet GetCannotFreezeReasons(
       const BrowsingInstanceState& browsing_instance_state);
 
   // GraphOwned implementation:
@@ -215,8 +226,8 @@ class FreezingPolicy : public PageNodeObserver,
   virtual void RecordFreezingEligibilityUKMForPage(
       ukm::SourceId source_id,
       double highest_cpu_current_interval,
-      double highest_cpu_any_interval_without_cannot_freeze_reason,
-      CannotFreezeReasonSet cannot_freeze_reasons);
+      double highest_cpu_without_battery_saver_cannot_freeze,
+      freezing::CannotFreezeReasonSet battery_saver_cannot_freeze_reasons);
 
   // Records freezing eligibility UKM for a page. Static implementation.
   //
@@ -227,8 +238,8 @@ class FreezingPolicy : public PageNodeObserver,
   static void RecordFreezingEligibilityUKMForPageStatic(
       ukm::SourceId source_id,
       double highest_cpu_current_interval,
-      double highest_cpu_any_interval_without_cannot_freeze_reason,
-      CannotFreezeReasonSet cannot_freeze_reasons);
+      double highest_cpu_without_battery_saver_cannot_freeze,
+      freezing::CannotFreezeReasonSet battery_saver_cannot_freeze_reasons);
 
   // Used to freeze pages.
   std::unique_ptr<Freezer> freezer_;

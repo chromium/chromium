@@ -17,15 +17,14 @@ enum LifecycleUnitVisibility {
   VISIBLE = 2,
 };
 
-// Whether a tab can be frozen or not, or whether that info is unavailable.
-//
-// TODO(crbug.com/40755583): When the "RunPerformanceManagerOnMainThreadSync"
-// feature is enabled by default, the UNKNOWN value will no longer be needed.
-// This enum can be replaced with a boolean.
+// Whether a tab can be frozen.
 enum CanFreeze {
+  // All types of freezing are possible for the page.
   YES,
+  // Only some types of freezing are possible for the page.
+  VARIES,
+  // No freezing is possible for the page.
   NO,
-  UNKNOWN,
 };
 
 // Discard related information about a single tab in a browser. Sent from
