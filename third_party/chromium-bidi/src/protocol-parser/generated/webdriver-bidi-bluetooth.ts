@@ -302,6 +302,7 @@ export namespace Bluetooth {
         'unsubscribe-from-notifications',
       ]),
       code: z.number().int().nonnegative(),
+      data: z.array(z.number().int().nonnegative()).optional(),
     }),
   );
 }
@@ -343,6 +344,7 @@ export namespace Bluetooth {
       descriptorUuid: Bluetooth.BluetoothUuidSchema,
       type: z.enum(['read', 'write']),
       code: z.number().int().nonnegative(),
+      data: z.array(z.number().int().nonnegative()).optional(),
     }),
   );
 }
