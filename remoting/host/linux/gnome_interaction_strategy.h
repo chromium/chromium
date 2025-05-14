@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_LINUX_GNOME_REMOTE_DESKTOP_INTERACTION_STRATEGY_H_
-#define REMOTING_HOST_LINUX_GNOME_REMOTE_DESKTOP_INTERACTION_STRATEGY_H_
+#ifndef REMOTING_HOST_LINUX_GNOME_INTERACTION_STRATEGY_H_
+#define REMOTING_HOST_LINUX_GNOME_INTERACTION_STRATEGY_H_
 
 #include <memory>
 #include <string>
@@ -25,14 +25,11 @@
 
 namespace remoting {
 
-class GnomeRemoteDesktopInteractionStrategy
-    : public DesktopInteractionStrategy {
+class GnomeInteractionStrategy : public DesktopInteractionStrategy {
  public:
-  GnomeRemoteDesktopInteractionStrategy(
-      const GnomeRemoteDesktopInteractionStrategy&) = delete;
-  GnomeRemoteDesktopInteractionStrategy& operator=(
-      const GnomeRemoteDesktopInteractionStrategy&) = delete;
-  ~GnomeRemoteDesktopInteractionStrategy() override;
+  GnomeInteractionStrategy(const GnomeInteractionStrategy&) = delete;
+  GnomeInteractionStrategy& operator=(const GnomeInteractionStrategy&) = delete;
+  ~GnomeInteractionStrategy() override;
 
   // Correspond to the equivalent methods on DesktopEnvironment.
   std::unique_ptr<ActionExecutor> CreateActionExecutor() override;
@@ -55,17 +52,16 @@ class GnomeRemoteDesktopInteractionStrategy
   std::unique_ptr<LocalInputMonitor> CreateLocalInputMonitor() override;
 
  private:
-  friend class GnomeRemoteDesktopInteractionStrategyFactory;
+  friend class GnomeInteractionStrategyFactory;
   friend class GnomeInputInjector;
 
   using InitCallback =
       base::OnceCallback<void(base::expected<void, std::string>)>;
-  explicit GnomeRemoteDesktopInteractionStrategy(
+  explicit GnomeInteractionStrategy(
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
   template <typename SuccessType, typename String>
   GDBusConnectionRef::CallCallback<SuccessType> CheckResultAndContinue(
-      void (GnomeRemoteDesktopInteractionStrategy::*success_method)(
-          SuccessType),
+      void (GnomeInteractionStrategy::*success_method)(SuccessType),
       String&& error_context);
   void OnInitError(std::string_view what, Loggable why);
   void Init(InitCallback callback);
@@ -101,21 +97,21 @@ class GnomeRemoteDesktopInteractionStrategy
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
-  base::WeakPtrFactory<GnomeRemoteDesktopInteractionStrategy> weak_ptr_factory_;
+  base::WeakPtrFactory<GnomeInteractionStrategy> weak_ptr_factory_;
 };
 
-class GnomeRemoteDesktopInteractionStrategyFactory
+class GnomeInteractionStrategyFactory
     : public DesktopInteractionStrategyFactory {
  public:
-  explicit GnomeRemoteDesktopInteractionStrategyFactory(
+  explicit GnomeInteractionStrategyFactory(
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
-  ~GnomeRemoteDesktopInteractionStrategyFactory() override;
+  ~GnomeInteractionStrategyFactory() override;
   void Create(const DesktopEnvironmentOptions& options,
               CreateCallback callback) override;
 
  private:
   static void OnSessionInit(
-      std::unique_ptr<GnomeRemoteDesktopInteractionStrategy> session,
+      std::unique_ptr<GnomeInteractionStrategy> session,
       base::OnceCallback<void(std::unique_ptr<DesktopInteractionStrategy>)>
           callback,
       base::expected<void, std::string> result);
@@ -124,4 +120,4 @@ class GnomeRemoteDesktopInteractionStrategyFactory
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_LINUX_GNOME_REMOTE_DESKTOP_INTERACTION_STRATEGY_H_
+#endif  // REMOTING_HOST_LINUX_GNOME_INTERACTION_STRATEGY_H_

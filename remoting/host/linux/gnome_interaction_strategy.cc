@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/linux/gnome_remote_desktop_interaction_strategy.h"
+#include "remoting/host/linux/gnome_interaction_strategy.h"
 
 #include <glib.h>
 
@@ -84,8 +84,7 @@ base::OnceCallback<Ret(base::expected<Success, Error>)> MakeExpectedCallback(
 
 }  // namespace
 
-GnomeRemoteDesktopInteractionStrategy::
-    ~GnomeRemoteDesktopInteractionStrategy() {
+GnomeInteractionStrategy::~GnomeInteractionStrategy() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (session_path_ != ObjectPath()) {
     connection_.Call<org_gnome_Mutter_RemoteDesktop_Session::Stop>(
@@ -95,7 +94,7 @@ GnomeRemoteDesktopInteractionStrategy::
 }
 
 std::unique_ptr<ActionExecutor>
-GnomeRemoteDesktopInteractionStrategy::CreateActionExecutor() {
+GnomeInteractionStrategy::CreateActionExecutor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   class GnomeActionExecutor : public ActionExecutor {
    public:
@@ -125,19 +124,16 @@ GnomeRemoteDesktopInteractionStrategy::CreateActionExecutor() {
   return std::make_unique<GnomeActionExecutor>(connection_);
 }
 
-std::unique_ptr<AudioCapturer>
-GnomeRemoteDesktopInteractionStrategy::CreateAudioCapturer() {
+std::unique_ptr<AudioCapturer> GnomeInteractionStrategy::CreateAudioCapturer() {
   // TODO(jamiewalch): Support both pipe and session capture.
   return AudioCapturer::Create();
 }
 
-std::unique_ptr<InputInjector>
-GnomeRemoteDesktopInteractionStrategy::CreateInputInjector() {
+std::unique_ptr<InputInjector> GnomeInteractionStrategy::CreateInputInjector() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   class GnomeInputInjector : public InputInjector {
    public:
-    explicit GnomeInputInjector(
-        base::WeakPtr<GnomeRemoteDesktopInteractionStrategy> session)
+    explicit GnomeInputInjector(base::WeakPtr<GnomeInteractionStrategy> session)
         : session_(std::move(session)) {}
     ~GnomeInputInjector() override = default;
 
@@ -171,18 +167,18 @@ GnomeRemoteDesktopInteractionStrategy::CreateInputInjector() {
     }
 
    private:
-    base::WeakPtr<GnomeRemoteDesktopInteractionStrategy> session_;
+    base::WeakPtr<GnomeInteractionStrategy> session_;
   };
   return std::make_unique<GnomeInputInjector>(weak_ptr_factory_.GetWeakPtr());
 }
 
 std::unique_ptr<DesktopResizer>
-GnomeRemoteDesktopInteractionStrategy::CreateDesktopResizer() {
+GnomeInteractionStrategy::CreateDesktopResizer() {
   // TODO(jamiewalch): Actually implement.
   class GnomeDesktopResizer : public DesktopResizer {
    public:
     explicit GnomeDesktopResizer(
-        base::WeakPtr<GnomeRemoteDesktopInteractionStrategy> session)
+        base::WeakPtr<GnomeInteractionStrategy> session)
         : session_(std::move(session)) {}
     ~GnomeDesktopResizer() override = default;
     ScreenResolution GetCurrentResolution(webrtc::ScreenId screen_id) override {
@@ -209,27 +205,26 @@ GnomeRemoteDesktopInteractionStrategy::CreateDesktopResizer() {
     void SetVideoLayout(const protocol::VideoLayout& layout) override {}
 
    private:
-    base::WeakPtr<GnomeRemoteDesktopInteractionStrategy> session_;
+    base::WeakPtr<GnomeInteractionStrategy> session_;
   };
   return std::make_unique<GnomeDesktopResizer>(weak_ptr_factory_.GetWeakPtr());
 }
 
-std::unique_ptr<DesktopCapturer>
-GnomeRemoteDesktopInteractionStrategy::CreateVideoCapturer(
+std::unique_ptr<DesktopCapturer> GnomeInteractionStrategy::CreateVideoCapturer(
     webrtc::ScreenId id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<PipewireDesktopCapturer>(
       capture_stream_.GetWeakPtr());
 }
 std::unique_ptr<webrtc::MouseCursorMonitor>
-GnomeRemoteDesktopInteractionStrategy::CreateMouseCursorMonitor() {
+GnomeInteractionStrategy::CreateMouseCursorMonitor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<PipewireMouseCursorMonitor>(
       capture_stream_.GetWeakPtr());
 }
 
 std::unique_ptr<KeyboardLayoutMonitor>
-GnomeRemoteDesktopInteractionStrategy::CreateKeyboardLayoutMonitor(
+GnomeInteractionStrategy::CreateKeyboardLayoutMonitor(
     base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback) {
   // TODO(jamiewalch): Implement
   class GnomeKeyboardLayoutMonitor : public KeyboardLayoutMonitor {
@@ -241,7 +236,7 @@ GnomeRemoteDesktopInteractionStrategy::CreateKeyboardLayoutMonitor(
 }
 
 std::unique_ptr<ActiveDisplayMonitor>
-GnomeRemoteDesktopInteractionStrategy::CreateActiveDisplayMonitor(
+GnomeInteractionStrategy::CreateActiveDisplayMonitor(
     base::RepeatingCallback<void(webrtc::ScreenId)> callback) {
   // TODO(jamiewalch): Implement
   class GnomeActiveDisplayMonitor : public ActiveDisplayMonitor {
@@ -252,7 +247,7 @@ GnomeRemoteDesktopInteractionStrategy::CreateActiveDisplayMonitor(
 }
 
 std::unique_ptr<DesktopDisplayInfoMonitor>
-GnomeRemoteDesktopInteractionStrategy::CreateDisplayInfoMonitor() {
+GnomeInteractionStrategy::CreateDisplayInfoMonitor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(jamiewalch): Implement
   class GnomeDisplayInfoLoader : public DesktopDisplayInfoLoader {
@@ -270,7 +265,7 @@ GnomeRemoteDesktopInteractionStrategy::CreateDisplayInfoMonitor() {
 }
 
 std::unique_ptr<LocalInputMonitor>
-GnomeRemoteDesktopInteractionStrategy::CreateLocalInputMonitor() {
+GnomeInteractionStrategy::CreateLocalInputMonitor() {
   // TODO(jamiewalch): Implement
   class GnomeLocalInputMonitor : public LocalInputMonitor {
    public:
@@ -283,18 +278,18 @@ GnomeRemoteDesktopInteractionStrategy::CreateLocalInputMonitor() {
   return std::make_unique<GnomeLocalInputMonitor>();
 }
 
-GnomeRemoteDesktopInteractionStrategy::GnomeRemoteDesktopInteractionStrategy(
+GnomeInteractionStrategy::GnomeInteractionStrategy(
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : ui_task_runner_(std::move(ui_task_runner)), weak_ptr_factory_(this) {}
 
 template <typename SuccessType, typename String>
 GDBusConnectionRef::CallCallback<SuccessType>
-GnomeRemoteDesktopInteractionStrategy::CheckResultAndContinue(
-    void (GnomeRemoteDesktopInteractionStrategy::*success_method)(SuccessType),
+GnomeInteractionStrategy::CheckResultAndContinue(
+    void (GnomeInteractionStrategy::*success_method)(SuccessType),
     String&& error_context) {
   // Unretained is sound because callback owns this.
   return base::BindOnce(
-      [](GnomeRemoteDesktopInteractionStrategy* that,
+      [](GnomeInteractionStrategy* that,
          decltype(success_method) success_method,
          std::string_view error_context,
          base::expected<SuccessType, Loggable> result) {
@@ -308,9 +303,8 @@ GnomeRemoteDesktopInteractionStrategy::CheckResultAndContinue(
       std::forward<String>(error_context));
 }
 
-void GnomeRemoteDesktopInteractionStrategy::OnInitError(
-    std::string_view error_message,
-    Loggable error_context) {
+void GnomeInteractionStrategy::OnInitError(std::string_view error_message,
+                                           Loggable error_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::move(init_callback_)
@@ -318,17 +312,17 @@ void GnomeRemoteDesktopInteractionStrategy::OnInitError(
           base::StrCat({error_message, ": ", error_context.ToString()})));
 }
 
-void GnomeRemoteDesktopInteractionStrategy::Init(
+void GnomeInteractionStrategy::Init(
     base::OnceCallback<void(base::expected<void, std::string>)> callback) {
   HOST_LOG << "Starting Mutter remote desktop session";
   DCHECK(!init_callback_);
   init_callback_ = std::move(callback);
-  GDBusConnectionRef::CreateForSessionBus(CheckResultAndContinue(
-      &GnomeRemoteDesktopInteractionStrategy::OnConnectionCreated,
-      "Failed to connect to D-Bus session bus"));
+  GDBusConnectionRef::CreateForSessionBus(
+      CheckResultAndContinue(&GnomeInteractionStrategy::OnConnectionCreated,
+                             "Failed to connect to D-Bus session bus"));
 }
 
-void GnomeRemoteDesktopInteractionStrategy::OnConnectionCreated(
+void GnomeInteractionStrategy::OnConnectionCreated(
     GDBusConnectionRef connection) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   connection_ = std::move(connection);
@@ -337,7 +331,7 @@ void GnomeRemoteDesktopInteractionStrategy::OnConnectionCreated(
   // To ease the transition, try the patched signature if the upstream signature
   // fails.
   auto call_patched_if_failed =
-      [](GnomeRemoteDesktopInteractionStrategy* that,
+      [](GnomeInteractionStrategy* that,
          base::expected<std::tuple<ObjectPath>, Loggable> result) {
         DCHECK_CALLED_ON_VALID_SEQUENCE(that->sequence_checker_);
         if (!result.has_value()) {
@@ -358,7 +352,7 @@ void GnomeRemoteDesktopInteractionStrategy::OnConnectionCreated(
                   },
                   std::move(result).error())
                   .Then(that->CheckResultAndContinue(
-                      &GnomeRemoteDesktopInteractionStrategy::OnSessionCreated,
+                      &GnomeInteractionStrategy::OnSessionCreated,
                       "Failed to create remote-desktop session")));
         } else {
           that->OnSessionCreated(std::move(result).value());
@@ -370,7 +364,7 @@ void GnomeRemoteDesktopInteractionStrategy::OnConnectionCreated(
       base::BindOnce(call_patched_if_failed, base::Unretained(this)));
 }
 
-void GnomeRemoteDesktopInteractionStrategy::OnSessionCreated(
+void GnomeInteractionStrategy::OnSessionCreated(
     std::tuple<gvariant::ObjectPath> args) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::tie(session_path_) = args;
@@ -378,13 +372,11 @@ void GnomeRemoteDesktopInteractionStrategy::OnSessionCreated(
 
   connection_.GetProperty<org_gnome_Mutter_RemoteDesktop_Session::SessionId>(
       kRemoteDesktopBusName, session_path_,
-      CheckResultAndContinue(
-          &GnomeRemoteDesktopInteractionStrategy::OnGotSessionId,
-          "Failed to get session ID"));
+      CheckResultAndContinue(&GnomeInteractionStrategy::OnGotSessionId,
+                             "Failed to get session ID"));
 }
 
-void GnomeRemoteDesktopInteractionStrategy::OnGotSessionId(
-    std::string session_id) {
+void GnomeInteractionStrategy::OnGotSessionId(std::string session_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   connection_.Call<org_gnome_Mutter_ScreenCast::CreateSession>(
       kScreenCastBusName, kScreenCastObjectPath,
@@ -393,32 +385,31 @@ void GnomeRemoteDesktopInteractionStrategy::OnGotSessionId(
                     GVariantFrom(BoxedRef(session_id))},
           std::pair{"disable-animations", GVariantFrom(Boxed{true})}}),
       CheckResultAndContinue(
-          &GnomeRemoteDesktopInteractionStrategy::OnScreenCastSessionCreated,
+          &GnomeInteractionStrategy::OnScreenCastSessionCreated,
           "Failed to create screen-cast session"));
 }
 
-void GnomeRemoteDesktopInteractionStrategy::OnScreenCastSessionCreated(
+void GnomeInteractionStrategy::OnScreenCastSessionCreated(
     std::tuple<gvariant::ObjectPath> args) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::tie(screencast_session_path_) = args;
 
   connection_.Call<org_gnome_Mutter_RemoteDesktop_Session::Start>(
       kRemoteDesktopBusName, session_path_, std::tuple(),
-      CheckResultAndContinue(
-          &GnomeRemoteDesktopInteractionStrategy::OnSessionStarted,
-          "Failed to start remote-desktop session"));
+      CheckResultAndContinue(&GnomeInteractionStrategy::OnSessionStarted,
+                             "Failed to start remote-desktop session"));
 }
 
-void GnomeRemoteDesktopInteractionStrategy::OnSessionStarted(std::tuple<>) {
+void GnomeInteractionStrategy::OnSessionStarted(std::tuple<>) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   connection_.Call<org_gnome_Mutter_RemoteDesktop_Session::ConnectToEIS>(
       kRemoteDesktopBusName, session_path_,
       std::tuple(gvariant::EmptyArrayOf<"{sv}">()),
-      CheckResultAndContinue(&GnomeRemoteDesktopInteractionStrategy::OnEisFd,
+      CheckResultAndContinue(&GnomeInteractionStrategy::OnEisFd,
                              "Failed to get EIS FD"));
 }
 
-void GnomeRemoteDesktopInteractionStrategy::OnEisFd(
+void GnomeInteractionStrategy::OnEisFd(
     std::pair<std::tuple<GDBusFdList::Handle>, GDBusFdList> args) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto fd_list = std::move(args.second).MakeSparse();
@@ -431,12 +422,11 @@ void GnomeRemoteDesktopInteractionStrategy::OnEisFd(
   }
   EiSenderSession::CreateWithFd(
       std::move(eis_fd),
-      CheckResultAndContinue(
-          &GnomeRemoteDesktopInteractionStrategy::OnEiSession,
-          "Failed to create EI session"));
+      CheckResultAndContinue(&GnomeInteractionStrategy::OnEiSession,
+                             "Failed to create EI session"));
 }
 
-void GnomeRemoteDesktopInteractionStrategy::OnEiSession(
+void GnomeInteractionStrategy::OnEiSession(
     std::unique_ptr<EiSenderSession> ei_session) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ei_session_ = std::move(ei_session);
@@ -449,12 +439,11 @@ void GnomeRemoteDesktopInteractionStrategy::OnEiSession(
       std::tuple{std::array{
           std::pair{"cursor-mode", GVariantFrom(Boxed{kCursorModeMetadata})},
           std::pair{"is-platform", GVariantFrom(Boxed{true})}}},
-      CheckResultAndContinue(
-          &GnomeRemoteDesktopInteractionStrategy::OnStreamCreated,
-          "Failed to record virtual monitor"));
+      CheckResultAndContinue(&GnomeInteractionStrategy::OnStreamCreated,
+                             "Failed to record virtual monitor"));
 }
 
-void GnomeRemoteDesktopInteractionStrategy::OnStreamCreated(
+void GnomeInteractionStrategy::OnStreamCreated(
     std::tuple<gvariant::ObjectPath> args) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   HOST_LOG << "Starting initial monitor stream";
@@ -462,12 +451,11 @@ void GnomeRemoteDesktopInteractionStrategy::OnStreamCreated(
 
   connection_.GetProperty<org_gnome_Mutter_ScreenCast_Stream::Parameters>(
       kScreenCastBusName, stream_path_,
-      CheckResultAndContinue(
-          &GnomeRemoteDesktopInteractionStrategy::OnStreamParameters,
-          "Failed to retrieve stream parameters"));
+      CheckResultAndContinue(&GnomeInteractionStrategy::OnStreamParameters,
+                             "Failed to retrieve stream parameters"));
 }
 
-void GnomeRemoteDesktopInteractionStrategy::OnStreamParameters(
+void GnomeInteractionStrategy::OnStreamParameters(
     GVariantRef<"a{sv}"> parameters) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   gchar* param_str = g_variant_print(parameters.raw(), true);
@@ -496,21 +484,20 @@ void GnomeRemoteDesktopInteractionStrategy::OnStreamParameters(
   stream_added_signal_ = connection_.SignalSubscribe<
       org_gnome_Mutter_ScreenCast_Stream::PipeWireStreamAdded>(
       kScreenCastBusName, stream_path_,
-      base::BindRepeating(
-          &GnomeRemoteDesktopInteractionStrategy::OnPipeWireStreamAdded,
-          weak_ptr_factory_.GetWeakPtr(), std::move(mapping_id)));
+      base::BindRepeating(&GnomeInteractionStrategy::OnPipeWireStreamAdded,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          std::move(mapping_id)));
   connection_.Call<org_gnome_Mutter_ScreenCast_Stream::Start>(
       kScreenCastBusName, stream_path_, std::tuple(),
-      CheckResultAndContinue(
-          &GnomeRemoteDesktopInteractionStrategy::OnStreamStarted,
-          "Failed to start monitor stream"));
+      CheckResultAndContinue(&GnomeInteractionStrategy::OnStreamStarted,
+                             "Failed to start monitor stream"));
 }
 
-void GnomeRemoteDesktopInteractionStrategy::OnStreamStarted(std::tuple<> args) {
+void GnomeInteractionStrategy::OnStreamStarted(std::tuple<> args) {
   // Do nothing. Still need to wait for PipeWire-stream-added signal.
 }
 
-void GnomeRemoteDesktopInteractionStrategy::OnPipeWireStreamAdded(
+void GnomeInteractionStrategy::OnPipeWireStreamAdded(
     std::string mapping_id,
     std::tuple<std::uint32_t> args) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -523,8 +510,7 @@ void GnomeRemoteDesktopInteractionStrategy::OnPipeWireStreamAdded(
   std::move(init_callback_).Run(base::ok());
 }
 
-void GnomeRemoteDesktopInteractionStrategy::InjectKeyEvent(
-    const protocol::KeyEvent& event) {
+void GnomeInteractionStrategy::InjectKeyEvent(const protocol::KeyEvent& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!event.has_usb_keycode() || !event.has_pressed()) {
     LOG(WARNING) << "Key event with no key info";
@@ -533,7 +519,7 @@ void GnomeRemoteDesktopInteractionStrategy::InjectKeyEvent(
   ei_session_->InjectKeyEvent(event.usb_keycode(), event.pressed());
 }
 
-void GnomeRemoteDesktopInteractionStrategy::InjectMouseEvent(
+void GnomeInteractionStrategy::InjectMouseEvent(
     const protocol::MouseEvent& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool event_sent = false;
@@ -575,22 +561,20 @@ void GnomeRemoteDesktopInteractionStrategy::InjectMouseEvent(
   }
 }
 
-GnomeRemoteDesktopInteractionStrategyFactory::
-    GnomeRemoteDesktopInteractionStrategyFactory(
-        scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
+GnomeInteractionStrategyFactory::GnomeInteractionStrategyFactory(
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : ui_task_runner_(std::move(ui_task_runner)) {}
 
-GnomeRemoteDesktopInteractionStrategyFactory::
-    ~GnomeRemoteDesktopInteractionStrategyFactory() = default;
+GnomeInteractionStrategyFactory::~GnomeInteractionStrategyFactory() = default;
 
-void GnomeRemoteDesktopInteractionStrategyFactory::Create(
+void GnomeInteractionStrategyFactory::Create(
     const DesktopEnvironmentOptions& options,
     CreateCallback callback) {
-  auto session = base::WrapUnique(
-      new GnomeRemoteDesktopInteractionStrategy(ui_task_runner_));
+  auto session =
+      base::WrapUnique(new GnomeInteractionStrategy(ui_task_runner_));
   auto* raw = session.get();
   raw->Init(base::BindOnce(
-      [](std::unique_ptr<GnomeRemoteDesktopInteractionStrategy> session,
+      [](std::unique_ptr<GnomeInteractionStrategy> session,
          CreateCallback callback, base::expected<void, std::string> result) {
         if (!result.has_value()) {
           LOG(ERROR) << result.error();
@@ -603,8 +587,8 @@ void GnomeRemoteDesktopInteractionStrategyFactory::Create(
       std::move(session), std::move(callback)));
 }
 
-void GnomeRemoteDesktopInteractionStrategyFactory::OnSessionInit(
-    std::unique_ptr<GnomeRemoteDesktopInteractionStrategy> session,
+void GnomeInteractionStrategyFactory::OnSessionInit(
+    std::unique_ptr<GnomeInteractionStrategy> session,
     CreateCallback callback,
     base::expected<void, std::string> result) {
   if (!result.has_value()) {
