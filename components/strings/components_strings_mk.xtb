@@ -770,6 +770,7 @@
 <translation id="2305294852062272447">Да се зачува возачката дозвола?</translation>
 <translation id="2306124309679506798">Да се дозволи реалистично доживување?</translation>
 <translation id="2307711332257985952">Вашата домашна и адреса на работа отсега се достапни во Chrome</translation>
+<translation id="2310789833878085574">Зачувај и пополнувај автоматски</translation>
 <translation id="2312234273148520048">Зачини и преливи</translation>
 <translation id="2316087952091171402">Помало од <ph name="UPPER_ESTIMATE" />. Некои сајтови можеби ќе се вчитуваат побавно при вашата следна посета.</translation>
 <translation id="2316159751672436664">Персонализирајте ги алатките за пристапност во поставките за Chrome OS</translation>
@@ -779,6 +780,7 @@
 <translation id="2320564945062300737">Производи за нега на лице</translation>
 <translation id="2321291402658100099">Управувајте со податоците</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 прозорец}one{# прозорец}other{# прозорци}}</translation>
+<translation id="232390861414237658">Автоматско пополнување на картичкава за купувањата извршени во Chrome кога е зачувана за да се користи со Google Pay</translation>
 <translation id="2328651992442742497">Дозволено (стандардно)</translation>
 <translation id="2328955282645810595">Алати за градежништво и електрични алати</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, истекува на <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -939,6 +941,7 @@
 <translation id="2595719060046994702">Со уредов и со сметкава не управува компанија или друга организација.</translation>
 <translation id="2596415276201385844">За воспоставување безбедна врска, вашиот часовник треба да биде правилно поставен. Ова е така затоа што сертификатите кои веб-локациите ги користат за да се идентификуваат важат само определени периоди на време. Бидејќи часовникот на вашиот уред не е точен, Chrome не може да ги потврди овие сертификати.</translation>
 <translation id="2597378329261239068">Овој документ е заштитен со лозинка. Внесете лозинка.</translation>
+<translation id="2600083925285092409">Автоматско пополнување на картичкава за купувањата извршени во Chromium кога е зачувана за да се користи со Google Pay</translation>
 <translation id="2605979593348332811">Фонетско име</translation>
 <translation id="2606760465469169465">Автоматска потврда</translation>
 <translation id="2608019759319359258">Кога ќе се блокира некоја тема, нема да се користи за персонализирање реклами</translation>
@@ -3587,6 +3590,7 @@
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195432682252510959">Користете го кодов при плаќање. Важи до <ph name="DATE" />.</translation>
 <translation id="7195852673246414183">Откако ќе ја вклучите поставкава, вратете се на картичкава за да започнете со пишување</translation>
+<translation id="7196370964328811506">Автоматско пополнување на картичкава за купувањата извршени во Chrome кога е зачувана на уредов</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да отворите нова картичка „Инкогнито“ и да прелистувате приватно</translation>
 <translation id="7203375778433816396">Поставете го Chrome како стандарден прелистувач на системот</translation>
@@ -4758,6 +4762,7 @@
 <translation id="940524522703752213">Прикачувањето на вашата датотека во <ph name="CLOUD_PROVIDER" /> ќе започне по <ph name="MINUTES" /> минути</translation>
 <translation id="944578681290094302">Приказ на наградите и поволностите што се достапни за вашите картички при плаќање <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Дознајте повеќе за поволностите за картичките<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome блокира сајтовите да користат колачиња од трети страни за да ве следат додека прелистувате.</translation>
+<translation id="945673208656386843">Автоматско пополнување на картичкава за купувањата извршени во Chromium кога е зачувана на уредов</translation>
 <translation id="94613679163347541">Да се споредат <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да набрзина создадете нов сајт во Google Sites</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome пак ќе ограничи колачиња денес}=1{Chrome пак ќе ограничи колачиња утре}one{Chrome пак ќе ограничи колачиња по # ден}other{Chrome пак ќе ограничи колачиња по # дена}}</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
+<translation id="1036348656032585052">Kapat</translation>
 <translation id="1045448422538531528">Gruba ekle</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> hafta önce oluşturuldu}other{<ph name="NUM_WEEKS_MANY" /> hafta önce oluşturuldu}}</translation>
 <translation id="1063300264396686489">Diğer cihazlardaki sekme gruplarını otomatik olarak aç</translation>

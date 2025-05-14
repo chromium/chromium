@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
+<translation id="1036348656032585052">ปิด</translation>
 <translation id="1045448422538531528">เพิ่มในกลุ่ม</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{สร้างเมื่อ <ph name="NUM_WEEKS_ONE" /> สัปดาห์ที่ผ่านมา}other{สร้างเมื่อ <ph name="NUM_WEEKS_MANY" /> สัปดาห์ที่ผ่านมา}}</translation>
 <translation id="1063300264396686489">เปิดกลุ่มแท็บจากอุปกรณ์อื่นๆ โดยอัตโนมัติ</translation>

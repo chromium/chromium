@@ -84,6 +84,7 @@
 <translation id="2028449514182362831">Οι λειτουργίες που πρέπει να χρησιμοποιούν αισθητήρες κίνησης δεν θα είναι διαθέσιμες.</translation>
 <translation id="2030769033451695672">Πατήστε για επιστροφή σε <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Αναίρεση</translation>
+<translation id="2080070583977670716">Περισσότερες ρυθμίσεις</translation>
 <translation id="2091887806945687916">Ήχος</translation>
 <translation id="2096716221239095980">Διαγραφή όλων των δεδομένων</translation>
 <translation id="2102396546234652240">Να μην επιτρέπεται στους ιστοτόπους να χρησιμοποιούν το μικρόφωνό σας</translation>
@@ -492,7 +493,6 @@
 <translation id="7141896414559753902">Αποκλεισμός εμφάνισης αναδυόμενων παραθύρων και ανακατευθύνσεων σε ιστοτόπους (συνιστάται)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Ανανέωση</translation>
-<translation id="7180865173735832675">Προσαρμογή</translation>
 <translation id="7188508872042490670">Δεδομένα ιστοτόπων στη συσκευή</translation>
 <translation id="7201549776650881587">Με αυτή την ενέργεια, θα διαγραφούν όλα τα δεδομένα και τα cookie που έχουν αποθηκευτεί από όλους τους ιστοτόπους στο <ph name="ORIGIN" /> ή από την εφαρμογή του στην Αρχική οθόνη σας.</translation>
 <translation id="7203150201908454328">Ανεπτυγμένο</translation>

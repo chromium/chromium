@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
+<translation id="1036348656032585052">Deaktivieren</translation>
 <translation id="1045448422538531528">Zur Gruppe hinzufügen</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Vor <ph name="NUM_WEEKS_ONE" /> Woche erstellt}other{Vor <ph name="NUM_WEEKS_MANY" /> Wochen erstellt}}</translation>
 <translation id="1063300264396686489">Tabgruppen von anderen Geräten automatisch öffnen</translation>

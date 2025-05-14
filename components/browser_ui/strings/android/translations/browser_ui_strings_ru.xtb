@@ -84,6 +84,7 @@
 <translation id="2028449514182362831">Функции, которые используют датчики движения, не будут работать</translation>
 <translation id="2030769033451695672">Нажмите, чтобы вернуться на страницу <ph name="URL_OF_THE_CURRENT_TAB" />.</translation>
 <translation id="2079545284768500474">Отмена</translation>
+<translation id="2080070583977670716">Дополнительные настройки</translation>
 <translation id="2091887806945687916">Звук</translation>
 <translation id="2096716221239095980">Удалить все данные</translation>
 <translation id="2102396546234652240">Запретить сайтам доступ к микрофону</translation>
@@ -492,7 +493,6 @@
 <translation id="7141896414559753902">Блокировать всплывающие окна и переадресацию на сайтах (рекомендуется)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> КБ</translation>
 <translation id="7180611975245234373">Обновить</translation>
-<translation id="7180865173735832675">Настроить</translation>
 <translation id="7188508872042490670">Данные сайтов, сохраненные на устройстве</translation>
 <translation id="7201549776650881587">Будут удалены все данные и файлы cookie, сохраненные сайтами, которые связаны с <ph name="ORIGIN" />, или их приложением, добавленным на главный экран.</translation>
 <translation id="7203150201908454328">Развернуто</translation>

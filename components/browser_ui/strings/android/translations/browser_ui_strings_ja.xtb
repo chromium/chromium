@@ -84,6 +84,7 @@
 <translation id="2028449514182362831">モーション センサーを必要とする機能は動作しなくなります</translation>
 <translation id="2030769033451695672">タップして <ph name="URL_OF_THE_CURRENT_TAB" /> に戻る</translation>
 <translation id="2079545284768500474">元に戻す</translation>
+<translation id="2080070583977670716">詳細設定</translation>
 <translation id="2091887806945687916">音声</translation>
 <translation id="2096716221239095980">すべてのデータを削除</translation>
 <translation id="2102396546234652240">サイトにマイクの使用を許可しない</translation>
@@ -492,7 +493,6 @@
 <translation id="7141896414559753902">サイトでのポップアップ表示とリダイレクトをブロックする（推奨）</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">更新</translation>
-<translation id="7180865173735832675">カスタマイズ</translation>
 <translation id="7188508872042490670">デバイス上のサイトデータ</translation>
 <translation id="7201549776650881587">この操作を行うと、<ph name="ORIGIN" /> とそのドメインの全サイトまたはホーム画面の同アプリにより保存されたデータと Cookie がすべて削除されます</translation>
 <translation id="7203150201908454328">展開表示中</translation>

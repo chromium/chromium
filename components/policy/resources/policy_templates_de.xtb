@@ -2953,6 +2953,11 @@ Ist diese Richtlinie deaktiviert oder nicht konfiguriert, wird das unverankerte 
 <translation id="3159375329008977062">Nutzer darf Crostini-Container über die Benutzeroberfläche exportieren/importieren</translation>
 <translation id="3163167792874598128">Wenn die Richtlinie nicht konfiguriert oder aktiviert ist, wird dem Nutzer die Werbung für App Store-Bewertungen maximal einmal pro Jahr angezeigt.
 Ist die Richtlinie deaktiviert, wird dem Nutzer die Werbung für App Store-Bewertungen nicht angezeigt.</translation>
+<translation id="3163880369487075383">Mit dieser Richtlinie wird festgelegt, ob „window.name“ für websiteübergreifende Seitenaufrufe auf oberster Ebene, die dazu führen, dass eine neue Gruppe für den Browserkontext erstellt wird, gelöscht werden kann, wenn die Variante „ClearCrossSiteCrossBrowsingContextGroupWindowName“ aktiviert ist.
+
+Die Variante „ClearCrossSiteCrossBrowsingContextGroupWindowName“ legt fest, ob „window.name“ bei websiteübergreifenden Seitenaufrufen auf oberster Ebene gelöscht wird. Solche Seitenaufrufe finden beispielsweise statt, wenn ein Nutzer über die Omnibox eine neue Website öffnet oder auf einen Link zu einer neuen Website klickt, der „target='_blank' rel='noopener'“ beinhaltet. Wenn „window.name“ in diesen Fällen gelöscht wird, wird verhindert, das Daten unbeabsichtigt über die Property „window.name“ zwischen Websites übertragen werden. Dadurch wird der Datenschutz für Nutzer verbessert. Die Richtlinie „ClearWindowNameForNewBrowsingContextGroup“ dient dazu, das vorherige Verhalten wiederherzustellen. Wenn die Variante „ClearCrossSiteCrossBrowsingContextGroupWindowName“ aktiviert ist, wird „window.name“ für entsprechende Seitenaufrufe gelöscht, sofern diese Richtlinie aktiviert oder nicht konfiguriert ist. Ist sie deaktiviert, wird „window.name“ nicht gelöscht.
+
+Wenn du die Richtlinie verwenden musst, damit entsprechenden Seitenaufrufe von „window.name“ nicht gelöscht werden, melde auf <ph name="BUG_URL" /> einen Fehler unter Angabe deines Anwendungsfalls. Die Richtlinie kann bis zum Ende von Version 142 von <ph name="PRODUCT_NAME" /> verwendet werden.</translation>
 <translation id="3164531087779621747">Im PostScript-Modus drucken</translation>
 <translation id="3165808775394012744">Diese Richtlinien sind hier verfügbar, damit sie einfach entfernt werden können.</translation>
 <translation id="3166210414652928099">Zulassen, dass Nutzer Android-Apps aus nicht vertrauenswürdigen Quellen verwenden</translation>
@@ -4156,6 +4161,7 @@ Die Richtlinie gilt sowohl für die vom Nutzer aufgerufene URL als auch für iFr
 <translation id="4051723201852944592">Fenster-Okklusion aktivieren</translation>
 <translation id="4052529125939620019">Komponentenerweiterung „CryptoToken“ beim Start laden</translation>
 <translation id="4053157306171963473">Melden der Aktivitätszeit auf Geräten deaktivieren</translation>
+<translation id="4056842786707010434">Festlegen, ob „window.name“ bei websiteübergreifenden Seitenaufrufen auf oberster Ebene, die dazu führen, dass eine neue Gruppe für den Browserkontext erstellt wird, gelöscht werden soll.</translation>
 <translation id="4056910949759281379">SPDY-Protokoll deaktivieren</translation>
 <translation id="4057442294431066708">Mit dieser Richtlinie wird die ausgewählte Tastenkombination für die Neuzuordnung von Ereignissen zu F11/F12 auf der Unterseite für die Tastenneuzuordnung festgelegt. Diese Einstellungen gelten nur für ChromeOS-Tastaturen und sind standardmäßig deaktiviert, wenn die Richtlinie nicht konfiguriert ist.</translation>
 <translation id="4061590579642538878">Informationen über Absturzberichte melden.</translation>
@@ -5079,7 +5085,6 @@ Wenn <ph name="CONTEXTUAL_GOOGLE_INTEGRATIONS_ENABLED" /> aktiviert oder nicht k
 Ist die Richtlinie nicht konfiguriert, werden alle Dienste aktiviert.
 
 Andernfalls werden nur ausgewählte Dienste aktiviert.</translation>
-<translation id="4758335997982239449">Die <ph name="PRIVACY_SANDBOX_NAME" />-Funktion „IP-Schutz“ aktivieren.</translation>
 <translation id="4767059955897420757">Wenn die Richtlinie nicht konfiguriert ist oder wenn sie aktiviert ist, wird dem Nutzer möglicherweise Werbung zur Erweiterung für Anmeldeinformationsanbieter angezeigt.
 Ist sie deaktiviert, sieht der Nutzer keine Werbung zur Erweiterung für Anmeldeinformationsanbieter.</translation>
 <translation id="4768446404233019970">Cipher Suites von 3DES in TLS aktivieren</translation>
@@ -6802,7 +6807,6 @@ Wenn die Richtlinie auf EnabledFocusSoundsOnly gesetzt ist, wird die Musikfunkti
 
 Wenn die Richtlinie deaktiviert ist, werden im Konzentrationsmodus keine Klänge abgespielt.</translation>
 <translation id="5890063326284543943">Verwendung der Serial API steuern</translation>
-<translation id="5893223274510346852">Die <ph name="PRIVACY_SANDBOX_NAME" />-Funktion „IP-Schutz“ deaktivieren.</translation>
 <translation id="5893303508158298667">Wenn „<ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" />“ aktiviert ist, kann es Remote-Clients durch Aktivieren oder Nichtkonfigurieren von „<ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" />“ ermöglicht werden, über Relayserver eine Verbindung zu diesem Computer herzustellen, falls keine direkte Verbindung verfügbar ist, z. B. aufgrund von Firewallbeschränkungen.
 
       Ist diese Richtlinie deaktiviert, wird dadurch nicht der Remote-Zugriff deaktiviert. Stattdessen werden nur Verbindungen desselben Netzwerks zugelassen (nicht NAT-Traversal oder Relay).</translation>
@@ -9336,6 +9340,7 @@ Diese Richtlinie kann für bestimmte Ursprünge der isolierten Web-App überschr
 <translation id="768925347918758827">USA.</translation>
 <translation id="7696412993033202071">Starten von externen Authentifizierungs-Apps bei Aufruf von URLs</translation>
 <translation id="7696534428021833264">Karte mit SharePoint- und OneDrive-Dateien auf der Seite „Neuer Tab“ aktivieren</translation>
+<translation id="7699644797467448158">„window.name“ löschen, wenn websiteübergreifende Seitenaufrufe auf oberster Ebene stattfinden und einen Wechsel von „BrowsingContextGroup“ herbeiführen.</translation>
 <translation id="7701341006446125684">Cache-Größe für Apps und Erweiterungen in Byte festlegen</translation>
 <translation id="7703041979684393741">Erfassen von WebRTC-Ereignisprotokollen aus Google-Diensten nicht zulassen</translation>
 <translation id="770339941914297201">Neues Verhalten: Kiosk-Chrome-Apps werden nur anhand der von der Richtlinie stammenden Update-URL aktualisiert</translation>
@@ -11044,6 +11049,7 @@ Mit dieser Richtlinie wird nur <ph name="ARC_VM" /> auf <ph name="PRODUCT_OS_FLE
       Status von Display und Grafikkarte nicht gemeldet. Ist die Richtlinie auf "true" gesetzt, wird der
       Status von Display und Grafikkarte gemeldet.</translation>
 <translation id="891435090623616439">Als JSON-String codiert, weitere Informationen unter <ph name="COMPLEX_POLICIES_URL" /></translation>
+<translation id="8916106787085606382">„window.name“ nicht löschen, wenn websiteübergreifende Seitenaufrufe auf oberster Ebene stattfinden und einen Wechsel von „BrowsingContextGroup“ herbeiführen.</translation>
 <translation id="8917070657147922192">Nutzern erlauben, installierte CA-Zertifikate zu verwalten.</translation>
 <translation id="8919100556245407184">Zeitraum in Tagen nach dem Ende des AUE-Zeitraums (Auto Update Expiration), nach dem der Nutzer abgemeldet wird, wenn die Version von <ph name="PRODUCT_OS_NAME" /> niedriger ist als die angegebene <ph name="CHROMEOS_VERSION_PROPERTY_NAME" />.</translation>
 <translation id="8919369436496201075">Gerät erlauben, LTS-Updates zu erhalten</translation>

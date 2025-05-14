@@ -84,6 +84,7 @@
 <translation id="2028449514182362831">所有需要使用移动传感器的功能都将无法正常运行</translation>
 <translation id="2030769033451695672">点按即可返回到 <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">撤消</translation>
+<translation id="2080070583977670716">更多设置</translation>
 <translation id="2091887806945687916">声音</translation>
 <translation id="2096716221239095980">删除所有数据</translation>
 <translation id="2102396546234652240">不允许网站使用您的麦克风</translation>
@@ -492,7 +493,6 @@
 <translation id="7141896414559753902">禁止网站显示弹出式窗口和重定向（推荐）</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">刷新</translation>
-<translation id="7180865173735832675">自定义</translation>
 <translation id="7188508872042490670">设备端网站数据</translation>
 <translation id="7201549776650881587">此操作会删除 <ph name="ORIGIN" /> 下属所有网站或其在主屏幕中安装的应用存储的全部数据和 Cookie</translation>
 <translation id="7203150201908454328">已展开</translation>

@@ -103,7 +103,6 @@
 <translation id="1397144142234474689">ઇતિહાસ છુપાવો</translation>
 <translation id="1407135791313364759">બધું ખોલો</translation>
 <translation id="1408847409015257906">"પ્રાઇવસી અને સુરક્ષા" પર ટૅપ કરો.</translation>
-<translation id="1411311327083909515">તમારા મેનેજ કરેલા એકાઉન્ટ વડે સાઇન ઇન કરવાથી તમને ટૅબ, ઇતિહાસ અને પાસવર્ડ જેવા તમારી સંસ્થા સાથે સંબંધિત બ્રાઉઝિંગ ડેટાને અલગ કરવામાં સહાય મળે છે.</translation>
 <translation id="1411386976162024013">Lens દ્વારા વિઝ્યુઅલ શોધ</translation>
 <translation id="1417474386970818917">સાઇન આઉટ કરો અને ડિલીટ કરો</translation>
 <translation id="1426410128494586442">હા</translation>
@@ -305,6 +304,7 @@
 <translation id="2216366330550244277">કોઈ પ્રોડક્ટના પેજ પર જાઓ</translation>
 <translation id="2220529011494928058">સમસ્યાની જાણ કરો</translation>
 <translation id="2223461067862937305">કોઈ QR કોડ બનાવો</translation>
+<translation id="2225701818156393674">ટ્રૅક કરેલી પ્રોડક્ટની તમારી સૂચિમાં પ્રોડક્ટ ઉમેરી.</translation>
 <translation id="2229345671837147090">રિમોટ ટૅબ ગ્રિડ</translation>
 <translation id="2230173723195178503">વેબપેજ લોડ કર્યું</translation>
 <translation id="2236949375853147973">મારી ઍક્ટિવિટી</translation>
@@ -1179,6 +1179,7 @@
 <translation id="594324569139756587">ત્રીજા પક્ષની કુકીને બ્લૉક કરો</translation>
 <translation id="5944869793365969636">QR કોડ સ્કૅન કરો</translation>
 <translation id="5948291296578561264">આ તમને તમારી ફોટો લાઇબ્રેરીમાં ફોટો સાચવવા દે છે.</translation>
+<translation id="5948605885471592910">તમે જે કંઈ ખોલ્યું છે તે બધું જુઓ અને તેને મેનેજ કરો</translation>
 <translation id="5952641243319721872">શું તમે ખરેખર તમારી પસંદગીને કાઢી નાખવા માગો છો?</translation>
 <translation id="5956112131836209882">ટૅબનું ગ્રૂપ ટૅબ. <ph name="NUMBER_OF_TABS_IN_GROUP" />માંથી <ph name="TAB_INDEX_IN_GROUP" />.</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> વડે શોધો</translation>
@@ -1386,6 +1387,7 @@
 જ્યારે છૂપા મોડમાં હો, ત્યારે વિભિન્ન સાઇટ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે, સાઇટ કુકીનો ઉપયોગ કરી શકશે નહીં, ઉદાહરણ તરીકે, જાહેરાતોને વ્યક્તિગત બનાવવા માટે.</translation>
 <translation id="6672697278890207089">તમારો પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="6674917187596384849">તમે સરળતાથી એકાઉન્ટ વચ્ચે સ્વિચ કરી શકો છો</translation>
+<translation id="6676349090816247042">સાઇન-ઇનના વિકલ્પો.</translation>
 <translation id="667999046851023355">દસ્તાવેજ</translation>
 <translation id="6680416467695217368">મેનૂ કસ્ટમાઇઝ કરો</translation>
 <translation id="6681586159478273915">વૉઇસ શોધ</translation>
@@ -1675,6 +1677,7 @@
 <translation id="7933880123415105005"><ph name="SEARCH_PROVIDER" /> શોધો</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{તમારા એકાઉન્ટ, {email}માં તમારી વાંચન સૂચિમાં પેજ ઉમેરવામાં આવ્યું}one{તમારા એકાઉન્ટ, {email}માં તમારી વાંચન સૂચિમાં {count} પેજ ઉમેરવામાં આવ્યું}other{તમારા એકાઉન્ટ, {email}માં તમારી વાંચન સૂચિમાં {count} પેજ ઉમેરવામાં આવ્યા}}</translation>
+<translation id="7952353944614086413">તમારા ખુલ્લા ટૅબ અને ગ્રૂપ</translation>
 <translation id="7952670906562503188">તમે {passkey_count} પાસકી અને જેના માટે તમે સાઇન-ઇન માહિતી ક્યારેય ન સાચવવાનો વિકલ્પ પસંદ કર્યો છે તેવી સાઇટ અને ઍપની સૂચિ ડિલીટ કરવા જઈ રહ્યાં છો. સાઇટ અને ઍપ માટે તમે બનાવેલું કોઈપણ એકાઉન્ટ ડિલીટ કરવામાં આવશે નહીં.</translation>
 <translation id="7958575506592576831">પેજની સુરક્ષા સંબંધિત માહિતી</translation>
 <translation id="7961015016161918242">ક્યારેય નહીં</translation>
@@ -1967,6 +1970,7 @@
 <translation id="9008201768610948239">અવગણો</translation>
 <translation id="9012585441087414258">જોખમકારક જણાતી હોય એવી સાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે રક્ષણ આપે છે. જો કોઈ પેજ કંઈપણ શંકાસ્પદ કરે છે, તો URL અને પેજ કન્ટેન્ટના બિટ Google Safe Browsingને મોકલવામાં આવે છે.</translation>
 <translation id="9013605037177245304">નોટિફિકેશન ચાલુ કરો</translation>
+<translation id="9013632079355478927">રીડર મોડ છુપાવો</translation>
 <translation id="9029650858822697271">તમને સાઇન આઉટ કરવામાં આવ્યા</translation>
 <translation id="9032405509996909363">બ્રાઉઝિંગ ડેટા ડિલીટ કરવાનું કન્ફર્મ કરો</translation>
 <translation id="9039373489628511875">બેન્ડવિડ્થ</translation>

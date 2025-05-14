@@ -103,7 +103,6 @@
 <translation id="1397144142234474689">Ocultar historial</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="1408847409015257906">Toca Privacidad y seguridad.</translation>
-<translation id="1411311327083909515">Iniciar sesión con tu cuenta gestionada te ayuda a separar la navegación relacionada con tu organización, como las pestañas, el historial y las contraseñas.</translation>
 <translation id="1411386976162024013">Búsqueda visual de Lens</translation>
 <translation id="1417474386970818917">Cerrar sesión y eliminar</translation>
 <translation id="1426410128494586442">Sí</translation>
@@ -305,6 +304,7 @@
 <translation id="2216366330550244277">Ir a la página de un producto</translation>
 <translation id="2220529011494928058">Notificar un problema</translation>
 <translation id="2223461067862937305">Crear un código QR</translation>
+<translation id="2225701818156393674">Producto añadido a tu lista de productos que sigues.</translation>
 <translation id="2229345671837147090">Cuadrícula de pestañas remotas</translation>
 <translation id="2230173723195178503">Página web cargada</translation>
 <translation id="2236949375853147973">Mi Actividad</translation>
@@ -355,7 +355,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="2393230427496852974">Leer opiniones de los usuarios</translation>
 <translation id="2394659309569789395">Abrir sitio de todas formas</translation>
 <translation id="2403129868389095715">Tu paquete no se puede entregar</translation>
-<translation id="2408110434434717724">Tus datos de navegación actuales se mantendrán separados. Para usarlos, cierra sesión en tu cuenta gestionada.</translation>
+<translation id="2408110434434717724">Tus datos de navegación actuales se guardarán separados. Para usarlos, cierra sesión en tu cuenta gestionada.</translation>
 <translation id="2410754283952462441">Elige una cuenta</translation>
 <translation id="2422174748424038845">Si lo eliminas, todos los usuarios perderán inmediatamente el acceso al grupo de pestañas <ph name="GROUP_NAME" /> y se eliminará de todos los dispositivos.</translation>
 <translation id="2424805048070062787">Continuar con esta pestaña</translation>
@@ -933,7 +933,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4895540042460820904">Abierto por última vez</translation>
 <translation id="4896467949657706481">Se han cerrado las pestañas y se ha cerrado tu sesión</translation>
 <translation id="4913626501929406101">Puedes compartir de forma segura una copia de tu contraseña con un miembro de tu grupo familiar. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
-<translation id="4917025507570489430">Puedes usar los datos de navegación actuales al iniciar sesión como <ph name="USER_EMAIL" />. Es posible que tu organización pueda ver estos datos.</translation>
+<translation id="4917025507570489430">Puedes usar los datos de navegación actuales al iniciar sesión como <ph name="USER_EMAIL" />. Es posible que tu organización vea estos datos.</translation>
 <translation id="4918086044614829423">Aceptar</translation>
 <translation id="4930714375720679147">Activar</translation>
 <translation id="4932733599132424254">Fecha</translation>
@@ -1387,6 +1387,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para ver tu actividad de navegación en otros sitios con el objetivo de, por ejemplo, personalizar tus anuncios.</translation>
 <translation id="6672697278890207089">Introduce tu frase de contraseña</translation>
 <translation id="6674917187596384849">Puedes cambiar fácilmente de una cuenta a otra</translation>
+<translation id="6676349090816247042">Opciones de inicio de sesión.</translation>
 <translation id="667999046851023355">Documento</translation>
 <translation id="6680416467695217368">Personalizar menú</translation>
 <translation id="6681586159478273915">Búsqueda por voz</translation>

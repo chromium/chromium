@@ -162,6 +162,7 @@
 <translation id="6264365405983206840">ເລືອກ​ທັງ​ຫມົດ</translation>
 <translation id="6346952829206698721">ວາງຈາກຄລິບບອດ</translation>
 <translation id="6364916375976753737">ເລື່ອນທາງຊ້າຍ</translation>
+<translation id="63712816010840859">ຫາກໜ້າຈໍປັດຈຸບັນບໍ່ແມ່ນໜ້າຈໍສຳຜັດ, ໃຫ້ກົດ Esc.</translation>
 <translation id="6394627529324717982">ຈຸດ</translation>
 <translation id="6397363302884558537">ເຊົາ​ເວົ້າ</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{1 ວິ​ນາ​ທີ​ກ່ອນ​​ນີ້}other{ # ວິ​ນາ​ທີກ່ອນ​ນີ້}}</translation>
@@ -173,6 +174,7 @@
 <translation id="6612467943526193239">ເພື່ອອອກຈາການປັບຕັ້ງຄ່າ ໃຫ້ກົດ Esc.</translation>
 <translation id="6620110761915583480">ບັນທຶກໄຟລ໌</translation>
 <translation id="6699343763173986273">ເພງຕໍ່ໄປຂອງມີເດຍ</translation>
+<translation id="6738856801552481343">ຫາກຈໍສະແດງຜົນນີ້ບໍ່ແມ່ນໜ້າຈໍສຳຜັດ, ໃຫ້ກົດ Esc.</translation>
 <translation id="6807086321996342431">ຖັນ <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">ຢຸດມີເດຍ</translation>
 <translation id="6845383723252244143">ເລືອກໂຟນເດີ</translation>

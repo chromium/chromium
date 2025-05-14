@@ -3360,6 +3360,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6789062271869667677">Continuous (long)</translation>
 <translation id="678982761784843853">Protected content IDs</translation>
 <translation id="6790428901817661496">Play</translation>
+<translation id="6792631792628412749">Passkey • <ph name="PROVIDER_NAME" /></translation>
 <translation id="6793213097893210590">Cardboard</translation>
 <translation id="679355240208270552">Ignored because default search is not enabled by policy.</translation>
 <translation id="6794951432696553238">Confirm your cards faster by using Windows Hello from now on</translation>
@@ -3863,6 +3864,7 @@ Additional details:
 <translation id="7639968568612851608">Dark grey</translation>
 <translation id="7646681339175747202">The password that you just used was found in a data breach. Google Password Manager recommends changing your password now.</translation>
 <translation id="7647206758853451655">Print quality</translation>
+<translation id="7648527891719919697">This site will remain blocked because you have Advanced Protection turned on in <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android settings<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more about this warning<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Store files on this device</translation>
 <translation id="7653957176542370971">Payment handler sheet is closed</translation>
 <translation id="7654909834015434372">When you edit annotations, this document will return to its original rotation</translation>

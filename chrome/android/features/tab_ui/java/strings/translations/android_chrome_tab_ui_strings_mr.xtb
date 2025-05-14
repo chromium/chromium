@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
+<translation id="1036348656032585052">बंद करा</translation>
 <translation id="1045448422538531528">गटामध्ये जोडा</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> आठवड्यापूर्वी तयार केला आहे}other{<ph name="NUM_WEEKS_MANY" /> आठवड्यांपूर्वी तयार केला आहे}}</translation>
 <translation id="1063300264396686489">इतर डिव्हाइसवरून टॅब गट आपोआप उघडा</translation>

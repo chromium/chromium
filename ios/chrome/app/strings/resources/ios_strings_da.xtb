@@ -103,7 +103,6 @@
 <translation id="1397144142234474689">Skjul historik</translation>
 <translation id="1407135791313364759">Åbn alle</translation>
 <translation id="1408847409015257906">Tryk på "Sikkerhed og privatliv".</translation>
-<translation id="1411311327083909515">Når du logger ind med din administrerede konto, kan du adskille browserdata, der er relateret til din organisation, f.eks. faner, historik og adgangskoder.</translation>
 <translation id="1411386976162024013">Visuel søgning med Lens</translation>
 <translation id="1417474386970818917">Log ud og slet</translation>
 <translation id="1426410128494586442">Ja</translation>
@@ -305,6 +304,7 @@
 <translation id="2216366330550244277">Gå til siden for et produkt</translation>
 <translation id="2220529011494928058">Rapportér et problem</translation>
 <translation id="2223461067862937305">Opret en QR-kode</translation>
+<translation id="2225701818156393674">Produktet er føjet til din liste over produkter, du holder øje med.</translation>
 <translation id="2229345671837147090">Gitter for fjernstyrede faner</translation>
 <translation id="2230173723195178503">Websiden er indlæst</translation>
 <translation id="2236949375853147973">Min aktivitet</translation>
@@ -1179,6 +1179,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="594324569139756587">Bloker cookies fra tredjeparter</translation>
 <translation id="5944869793365969636">Scan QR-kode</translation>
 <translation id="5948291296578561264">Dermed kan du gemme billeder i din billederamling.</translation>
+<translation id="5948605885471592910">Se og administrer alt det, du har åbent</translation>
 <translation id="5952641243319721872">Er du sikker på, at du vil kassere dit valg?</translation>
 <translation id="5956112131836209882">Fanen Fanegruppe. <ph name="TAB_INDEX_IN_GROUP" /> af <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Søg med <ph name="SEARCH_PROVIDER" /></translation>
@@ -1386,6 +1387,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhistorik på forskellige websites for f.eks. at personligt tilpasse annoncer.</translation>
 <translation id="6672697278890207089">Angiv din adgangssætning</translation>
 <translation id="6674917187596384849">Du kan nemt skifte mellem konti</translation>
+<translation id="6676349090816247042">Loginmetoder.</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6680416467695217368">Tilpas menu</translation>
 <translation id="6681586159478273915">Stemmesøgning</translation>
@@ -1675,6 +1677,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7933880123415105005">Søg med <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Siden blev føjet til din læseliste på kontoen {email}}one{{count} side blev føjet til din læseliste på kontoen {email}}other{{count} sider blev føjet til din læseliste på kontoen {email}}}</translation>
+<translation id="7952353944614086413">Dine åbne faner og grupper</translation>
 <translation id="7952670906562503188">Du er ved at slette {passkey_count} adgangsnøgler og listen over websites og apps, hvor du har valgt aldrig at gemme loginoplysninger. Alle konti, du har oprettet til websites og apps, slettes ikke.</translation>
 <translation id="7958575506592576831">Oplysninger om sidesikkerhed</translation>
 <translation id="7961015016161918242">Aldrig</translation>
@@ -1967,6 +1970,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="9008201768610948239">Ignorer</translation>
 <translation id="9012585441087414258">Beskytter mod websites, downloads og udvidelser, der er registreret som skadelige. Hvis en side udviser mistænkelig adfærd, sendes webadresser og uddrag af sideindhold til Google Beskyttet browsing.</translation>
 <translation id="9013605037177245304">Aktivér notifikationer</translation>
+<translation id="9013632079355478927">Skjul Læser-tilstand</translation>
 <translation id="9029650858822697271">Du er blevet logget ud</translation>
 <translation id="9032405509996909363">Bekræft sletning af browserdata</translation>
 <translation id="9039373489628511875">Båndbredde</translation>

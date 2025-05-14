@@ -3285,6 +3285,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3269689705184377744">{COUNT,plural, =1{File}other{# files}}</translation>
 <translation id="326999365752735949">Downloading diff</translation>
 <translation id="3270965368676314374">Read, change and delete photos, music and other media from your computer</translation>
+<translation id="3275464924531706548">Collapse <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Your internal security key is currently insecure. Please remove it from any services that you used it with. In order to resolve the issue, please reset the security key.</translation>
 <translation id="3275778913554317645">Open as window</translation>
 <translation id="3277214528693754078">Navigate with text cursor (Caret Browsing)</translation>
@@ -3616,6 +3617,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3510471875518562537">Use this address on your iPhone</translation>
 <translation id="3511200754045804813">Re-scan</translation>
 <translation id="3511307672085573050">Copy Link Addr&amp;ess</translation>
+<translation id="3511358375261756531">Expand <ph name="HEADER" /></translation>
 <translation id="351152300840026870">Fixed-width font</translation>
 <translation id="3511528412952710609">Short</translation>
 <translation id="3513019849832307207">Join and open</translation>
@@ -6169,6 +6171,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5296536303670088158">You have Chrome's strongest security against harmful websites</translation>
 <translation id="5297005732522718715">Refresh tethering configuration</translation>
 <translation id="5297082477358294722">Password saved. View and manage saved passwords in your <ph name="SAVED_PASSWORDS_STORE" />.</translation>
+<translation id="5297548311167268289">Sign in to <ph name="RP_ID" /></translation>
 <translation id="5297946558563358707">When someone else looks at your screen, show the privacy eye icon on the bottom right of your screen</translation>
 <translation id="5297984209202974345">Recent AI theme <ph name="INDEX" /> of <ph name="SUBJECT" />, in <ph name="STYLE" /> style</translation>
 <translation id="5298219193514155779">Theme created by</translation>

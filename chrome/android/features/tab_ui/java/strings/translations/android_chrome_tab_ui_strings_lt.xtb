@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
+<translation id="1036348656032585052">Išjungti</translation>
 <translation id="1045448422538531528">Pridėti prie grupės</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Sukurta prieš <ph name="NUM_WEEKS_ONE" /> savaitę}one{Sukurta prieš <ph name="NUM_WEEKS_MANY" /> savaitę}few{Sukurta prieš <ph name="NUM_WEEKS_MANY" /> savaites}many{Sukurta prieš <ph name="NUM_WEEKS_MANY" /> savaitės}other{Sukurta prieš <ph name="NUM_WEEKS_MANY" /> savaičių}}</translation>
 <translation id="1063300264396686489">Automatiškai atidaryti skirtukų grupes iš kitų įrenginių</translation>

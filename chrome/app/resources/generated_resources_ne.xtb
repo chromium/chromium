@@ -418,6 +418,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" /> अनइन्स्टल गर्न सकिएन</translation>
 <translation id="1277020343994096713">तपाईंले हाल प्रयोग गरिराख्नुभएको भन्दा फरक PIN सिर्जना गर्नुहोस्</translation>
 <translation id="1277597051786235230"><ph name="SEARCH_ENGINE" /> को नयाँ ट्याबमा “<ph name="SEARCH_TERMS" />” खोज्नुहोस्</translation>
+<translation id="127849925363482083">पिन गरिएको ट्याब बन्द गर्न फेरि <ph name="SHORTCUT_TEXT" /> थिच्नुहोस्</translation>
 <translation id="1278859221870828664">Google Play का एप तथा सेवाहरूको समीक्षा गर्नुहोस्</translation>
 <translation id="127946606521051357">नजिकैको यन्त्रले डेटा सेयर गर्ने प्रयास गर्दै छ।</translation>
 <translation id="1280332775949918163">स्न्याप विन्डो</translation>
@@ -4114,6 +4115,7 @@
 <translation id="3838486795898716504">थप <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">कुनै पनि साइटलाई जुम इन वा जुम आउट गरिएको छैन</translation>
 <translation id="3839516600093027468"><ph name="HOST" /> लाई क्लिपबोर्ड हेर्न सधैँ रोक लगाउनुहोस्</translation>
+<translation id="3840096463915153852">कुराकानीको हिस्ट्री</translation>
 <translation id="3841282988425489367">Steam for Chromebook (बिटा) सेटअप गर्न मिल्दैन</translation>
 <translation id="3841319830220785495">डिफल्ट प्राकृतिक आवाज</translation>
 <translation id="3841356782900714251">स्मार्ट कार्ड रिडरहरू</translation>
@@ -6984,6 +6986,7 @@
 <translation id="5916664084637901428">अन</translation>
 <translation id="59174027418879706">सक्षम गरिएको</translation>
 <translation id="5919305207330938913">सङ्कलन गरिएका सबै डेटा Google को <ph name="BEGIN_LINK" />गोपनीयता नीति<ph name="END_LINK" />बमोजिम प्रयोग गरिने छ।</translation>
+<translation id="5919486630433391408">तपाईंका एड्मिनले फर्मवेयर अपडेटसम्बन्धी सुविधा अफ गर्नुभएको छ।</translation>
 <translation id="5920543303088087579">तपाईंका प्रशासकले यस नेवर्टकमा जडान गर्ने सुविधालाई असक्षम पार्नुभएको छ</translation>
 <translation id="5922963926582976524">इन्स्ट्यान्ट हटस्पटको नेटवर्क डिस्कनेक्ट गर्नुहोस्</translation>
 <translation id="5924047253200400718">मद्दत प्राप्त गर्नुहोस्<ph name="SCANNING_STATUS" /></translation>
@@ -7531,6 +7534,7 @@
 <translation id="630292539633944562">व्यक्तिगत जानकारीसम्बन्धी सिफारिसहरू</translation>
 <translation id="6304017513498618504">तपाईं "सारांश प्रस्तुत गर्नुहोस्" भन्ने जस्ता अनुरोधहरू पेस गर्न पनि सक्नुहुन्छ</translation>
 <translation id="6305607932814307878">विश्वव्यापी नीति:</translation>
+<translation id="6305627295927385295">निम्न सामग्री मेटाउनुहोस्:</translation>
 <translation id="6305702903308659374">ChromeVox बोलिरहेको भए तापनि अडियो कम आवाजमा बजाउनुहोस्</translation>
 <translation id="6307268917612054609">क्यामेरा प्रयोग गर्ने अनुमति दिइएका एप तथा वेबसाइटका साथै सिस्टमका सेवाहरू तपाईंको डिभाइसको क्यामेरा प्रयोग गर्न सक्छन्</translation>
 <translation id="6307990684951724544">प्रणाली व्यस्त</translation>
@@ -9294,6 +9298,7 @@
 <translation id="7583948862126372804">गणना</translation>
 <translation id="7585106857920830898">तपाईंको सङ्गठनका सुरक्षासम्बन्धी नीतिहरू अनुकूल छन् कि छैनन् भन्ने कुरा जाँच गरिँदै छ...</translation>
 <translation id="7586498138629385861">Chrome एपहरू खुल्ला हुँदा Chrome चालू भइरहन्छ।</translation>
+<translation id="7587806318633605613">सुझावको हिस्ट्री</translation>
 <translation id="7589461650300748890">ओहो। ध्यान दिनुहोस्।</translation>
 <translation id="7590883480672980941">इनपुटसम्बन्धी सेटिङ</translation>
 <translation id="7592060599656252486">केही</translation>
@@ -9958,6 +9963,7 @@
 <translation id="8028138772801251745">AI प्रयोग गरी जानकारी स्वतः भर्ने सुविधा</translation>
 <translation id="8028803902702117856">डाउनलोड गर्दै <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">आकार</translation>
+<translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{रिडिङ लिस्ट}=1{रिडिङ लिस्ट ({SELECTED_ITEMS})}other{रिडिङ लिस्ट ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - अनुमति मागियो, यस सम्बन्धमा कारबाही गर्न ⌘ + Option + अप एरो थिच्नुहोस्</translation>
 <translation id="8030169304546394654">जडान विच्छेद भयो</translation>
 <translation id="8030852056903932865">अनुमोदन गर्नुहोस्</translation>
@@ -10829,6 +10835,7 @@
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> वा <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">रात्रि प्रकाशको रङको तापक्रम</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> निम्न कार्यहरू गर्न चाहन्छ: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> र अन्य</translation>
+<translation id="8648889679430451455">पर्सनलाइजेसन डेटा मेटाउनुहोस्</translation>
 <translation id="8649026945479135076">तपाईंले खोल्ने साइटहरूले तपाईंलाई उपलब्ध गराइने सुविधा पर्सनलाइज गर्ने प्रयोजनका लागि तपाईंको रुचि भएका कुराहरू याद राख्नु सामान्य कुरा हो। साइटहरूले Chrome मा तपाईंका रुचिसम्बन्धी जानकारी भण्डारण गर्न पनि सक्छन्।</translation>
 <translation id="8650543407998814195">आफ्नो पुरानो प्रोफाइलमाथि अब उप्रान्त पहुँच राख्न नसके तापनि तपाईं अझै पनि यसलाई हटाउन भने सक्नुहुन्छ।</translation>
 <translation id="8651585100578802546">यो पेज रिलोड गर्न दबाब दिनुहोस्</translation>

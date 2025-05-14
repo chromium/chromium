@@ -84,6 +84,7 @@
 <translation id="2028449514182362831">需要動作感應器的功能將無法運作</translation>
 <translation id="2030769033451695672">輕觸即可返回 <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">復原</translation>
+<translation id="2080070583977670716">顯示更多設定</translation>
 <translation id="2091887806945687916">音訊</translation>
 <translation id="2096716221239095980">刪除所有資料</translation>
 <translation id="2102396546234652240">禁止網站使用麥克風</translation>
@@ -492,7 +493,6 @@
 <translation id="7141896414559753902">禁止網站顯示彈出式視窗及重新導向 (建議)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">重新整理</translation>
-<translation id="7180865173735832675">自訂</translation>
 <translation id="7188508872042490670">網站在裝置端的資料</translation>
 <translation id="7201549776650881587">這項操作會刪除 <ph name="ORIGIN" /> 底下所有網站或該網站在主畫面上的應用程式儲存的所有資料和 Cookie</translation>
 <translation id="7203150201908454328">已展開</translation>

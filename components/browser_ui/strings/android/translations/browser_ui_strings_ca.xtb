@@ -84,6 +84,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="2028449514182362831">Les funcions que necessiten un sensor de moviment no funcionaran</translation>
 <translation id="2030769033451695672">Toca per tornar a <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Desfés</translation>
+<translation id="2080070583977670716">Més opcions de configuració</translation>
 <translation id="2091887806945687916">So</translation>
 <translation id="2096716221239095980">Suprimeix totes les dades</translation>
 <translation id="2102396546234652240">No permetis que els llocs web utilitzin el micròfon</translation>
@@ -492,7 +493,6 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="7141896414559753902">Bloqueja les finestres emergents i les redireccions als llocs web (opció recomanada)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Actualitza</translation>
-<translation id="7180865173735832675">Personalitza</translation>
 <translation id="7188508872042490670">Dades dels llocs web al dispositiu</translation>
 <translation id="7201549776650881587">Aquesta acció suprimirà de la pantalla d'inici totes les dades i galetes emmagatzemades per tots els llocs web de <ph name="ORIGIN" /> o per la seva aplicació</translation>
 <translation id="7203150201908454328">Ampliat</translation>

@@ -84,6 +84,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="2028449514182362831">Fitur yang memerlukan sensor gerakan tidak akan berfungsi</translation>
 <translation id="2030769033451695672">Ketuk untuk kembali ke <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Urungkan</translation>
+<translation id="2080070583977670716">Setelan lain</translation>
 <translation id="2091887806945687916">Suara</translation>
 <translation id="2096716221239095980">Hapus semua data</translation>
 <translation id="2102396546234652240">Jangan izinkan situs menggunakan mikrofon Anda</translation>
@@ -492,7 +493,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="7141896414559753902">Blokir situs agar tidak menampilkan pop-up dan pengalihan (disarankan)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Perbarui</translation>
-<translation id="7180865173735832675">Sesuaikan</translation>
 <translation id="7188508872042490670">Data situs di perangkat</translation>
 <translation id="7201549776650881587">Tindakan ini akan menghapus semua data dan cookie yang disimpan oleh semua situs di bawah <ph name="ORIGIN" /> atau oleh aplikasinya di Layar utama</translation>
 <translation id="7203150201908454328">Diperluas</translation>

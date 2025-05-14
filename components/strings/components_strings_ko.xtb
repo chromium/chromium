@@ -2324,6 +2324,7 @@
 <translation id="4998950033665438990">단면</translation>
 <translation id="5001526427543320409">서드 파티 쿠키</translation>
 <translation id="5002932099480077015">선택하면 Chrome에서 양식을 더 빠르게 작성할 수 있도록 이 기기에 카드 사본을 저장합니다.</translation>
+<translation id="5007344584818503324">공유 탭 그룹 활동</translation>
 <translation id="5007392906805964215">검토</translation>
 <translation id="5010599530303458903">월별 또는 무이자 할부 4회로 결제(자격 요건에 따라 다름)</translation>
 <translation id="5011561501798487822">감지된 언어</translation>
@@ -2751,6 +2752,7 @@
 <translation id="5732392974455271431">부모님이 차단 해제할 수 있습니다.</translation>
 <translation id="573555826359077410">양식 만들기 버튼, Google Forms에서 새 양식을 빠르게 만들려면 활성화하세요.</translation>
 <translation id="5738385766833540397">추적 중인 제품의 가격 인하 알림을 받을 방법 관리</translation>
+<translation id="5739619009927381786">다음 단계에서는 일반적으로 지문을 사용하여 화면을 잠금 해제합니다. 또는 <ph name="BEGIN_LINK" />다른 방법으로 인증<ph name="END_LINK" />할 수도 있습니다.</translation>
 <translation id="573974402615125334">탭 그룹을 공유하고, 탭 그룹에 참여하고, 탭 그룹에서 공동작업하려면 방문 기록과 탭을 동기화하세요.</translation>
 <translation id="5740911612628596808">봉투 C9</translation>
 <translation id="5742806904559466333">바, 클럽, 밤문화</translation>
@@ -3360,6 +3362,7 @@
 <translation id="6789062271869667677">연속(긴)</translation>
 <translation id="678982761784843853">보호된 콘텐츠 ID</translation>
 <translation id="6790428901817661496">재생</translation>
+<translation id="6792631792628412749">패스키 • <ph name="PROVIDER_NAME" /></translation>
 <translation id="6793213097893210590">골판지</translation>
 <translation id="679355240208270552">정책에 의해 기본 검색이 사용 설정되지 않았기 때문에 무시되었습니다.</translation>
 <translation id="6794951432696553238">지금부터 Windows Hello를 사용하여 빠르게 카드를 확인합니다.</translation>

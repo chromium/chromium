@@ -103,7 +103,6 @@
 <translation id="1397144142234474689">Ocultar Histórico</translation>
 <translation id="1407135791313364759">Abrir tudo</translation>
 <translation id="1408847409015257906">Toque em "Privacidade e segurança".</translation>
-<translation id="1411311327083909515">Iniciar sessão com a sua conta gerida ajuda a separar a navegação relacionada com a sua organização, como separadores, histórico e palavras-passe.</translation>
 <translation id="1411386976162024013">Pesquisa visual do Lens</translation>
 <translation id="1417474386970818917">Terminar sessão e eliminar</translation>
 <translation id="1426410128494586442">Sim</translation>
@@ -305,6 +304,7 @@
 <translation id="2216366330550244277">Aceda à página de um produto</translation>
 <translation id="2220529011494928058">Comunicar um problema</translation>
 <translation id="2223461067862937305">Criar código QR</translation>
+<translation id="2225701818156393674">Produto adicionado à sua lista de produtos acompanhados.</translation>
 <translation id="2229345671837147090">Grelha de separadores remotos</translation>
 <translation id="2230173723195178503">Página Web carregada</translation>
 <translation id="2236949375853147973">A minha atividade</translation>
@@ -1387,6 +1387,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 Quando estiver na Navegação anónima, os sites não podem utilizar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios.</translation>
 <translation id="6672697278890207089">Introduza a frase de acesso</translation>
 <translation id="6674917187596384849">Pode alternar facilmente entre contas</translation>
+<translation id="6676349090816247042">Opções de início de sessão.</translation>
 <translation id="667999046851023355">Documento</translation>
 <translation id="6680416467695217368">Personalize o menu</translation>
 <translation id="6681586159478273915">Pesquisa por voz</translation>

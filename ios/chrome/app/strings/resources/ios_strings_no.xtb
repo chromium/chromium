@@ -103,7 +103,6 @@
 <translation id="1397144142234474689">Skjul loggen</translation>
 <translation id="1407135791313364759">Åpne alle</translation>
 <translation id="1408847409015257906">Trykk på «Personvern og sikkerhet».</translation>
-<translation id="1411311327083909515">Hvis du logger på med den administrerte kontoen din, kan du skille ut nettlesing som er knyttet til organisasjonen din, for eksempel faner, logg og passord.</translation>
 <translation id="1411386976162024013">Visuelt søk med Lens</translation>
 <translation id="1417474386970818917">Logg av og slett</translation>
 <translation id="1426410128494586442">Ja</translation>
@@ -305,6 +304,7 @@
 <translation id="2216366330550244277">Gå til siden for et produkt</translation>
 <translation id="2220529011494928058">Rapporter et problem</translation>
 <translation id="2223461067862937305">Lag en QR-kode</translation>
+<translation id="2225701818156393674">Produktet er lagt til på listen over sporede produkter.</translation>
 <translation id="2229345671837147090">Rutenett for eksterne faner</translation>
 <translation id="2230173723195178503">Nettsiden er lastet inn</translation>
 <translation id="2236949375853147973">Min aktivitet</translation>
@@ -1387,6 +1387,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se nettleseraktiviteten din på andre nettsteder, for eksempel for å vise deg personlig tilpassede annonser.</translation>
 <translation id="6672697278890207089">Angi passordfrasen din</translation>
 <translation id="6674917187596384849">Du kan enkelt bytte mellom kontoer</translation>
+<translation id="6676349090816247042">Påloggingsalternativer.</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6680416467695217368">Tilpass menyen</translation>
 <translation id="6681586159478273915">Talesøk</translation>

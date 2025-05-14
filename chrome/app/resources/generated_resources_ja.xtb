@@ -3158,6 +3158,7 @@
 <translation id="3188465121994729530">移動平均</translation>
 <translation id="3189187154924005138">大きいカーソル</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{1 件のパスワードとその他の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}other{{PASSWORD_COUNT} 件のパスワードとその他の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}}</translation>
+<translation id="319044078641740013">過去にアクセスしたサイトに簡単に戻るには、履歴とタブを <ph name="ACCOUNT_EMAIL" /> に同期します</translation>
 <translation id="3190558889382726167">パスワードを保存しました</translation>
 <translation id="3192586965067888278">問題の内容を詳しく説明します。フィードバックは、人間によるレビューのため Google に送信され、Google のプロダクトやサービスの改善または開発の目的で使用される場合があります。</translation>
 <translation id="3192947282887913208">音声ファイル</translation>
@@ -10327,6 +10328,7 @@
 <translation id="8280848878018088610">砕け散る海の波と、幻想的な市街と城郭、暗い雰囲気の背景。</translation>
 <translation id="828180235270931531">その他の利用可能なプリンタ</translation>
 <translation id="8281886186245836920">スキップ</translation>
+<translation id="8283802069507225582">他のデバイスで中断したところから再開するには、履歴とタブを <ph name="ACCOUNT_EMAIL" /> に同期します</translation>
 <translation id="8284279544186306258"><ph name="WEBSITE_1" /> の全サイト</translation>
 <translation id="8284326494547611709">字幕</translation>
 <translation id="8286036467436129157">ログイン</translation>
@@ -11005,6 +11007,7 @@
 <translation id="8754200782896249056">&lt;p&gt;<ph name="PRODUCT_NAME" /> をサポート対象のデスクトップ環境で実行するとシステムのプロキシ設定が使用されますが、お使いのシステムがサポートされていないか、システム設定の適用で問題が発生した可能性があります。&lt;/p&gt;
 
           &lt;p&gt;コマンドラインからの設定は可能です。フラグや環境変数について詳しくは、&lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; を実行してご確認ください。&lt;/p&gt;</translation>
+<translation id="8754810799862630650">他のパソコンやスマートフォンで開いているタブを表示するには、履歴とタブを <ph name="ACCOUNT_EMAIL" /> に同期します</translation>
 <translation id="8755175579224030324">デバイスに保存された証明書やキーの管理など、組織のセキュリティ関連のタスクを実行する</translation>
 <translation id="875532100880844232"><ph name="DEVICE_NAME" /> のキーごとにアクションを選択します</translation>
 <translation id="8755376271068075440">拡大(&amp;L)</translation>

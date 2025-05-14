@@ -84,6 +84,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="2028449514182362831">Funkcie vyžadujúce senzory pohybu nebudú fungovať</translation>
 <translation id="2030769033451695672">Klepnutím sa vrátite na kartu <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Späť</translation>
+<translation id="2080070583977670716">Ďalšie nastavenia</translation>
 <translation id="2091887806945687916">Zvuk</translation>
 <translation id="2096716221239095980">Odstrániť všetky dáta</translation>
 <translation id="2102396546234652240">Nepovoliť webom používať mikrofón</translation>
@@ -492,7 +493,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="7141896414559753902">Brániť webom otvárať vyskakovacie okná a používať presmerovania (odporúčané)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Obnoviť</translation>
-<translation id="7180865173735832675">Prispôsobiť</translation>
 <translation id="7188508872042490670">Dáta webov v zariadení</translation>
 <translation id="7201549776650881587">Touto akciou odstránite všetky údaje a súbory cookie uložené všetkými webmi domény <ph name="ORIGIN" /> alebo jej aplikáciou na ploche</translation>
 <translation id="7203150201908454328">Rozbalené</translation>

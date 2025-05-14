@@ -84,6 +84,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="2028449514182362831">Funktioner, der skal bruge bevægelsessensorer, fungerer ikke</translation>
 <translation id="2030769033451695672">Tryk for at vende tilbage til <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Fortryd</translation>
+<translation id="2080070583977670716">Flere indstillinger</translation>
 <translation id="2091887806945687916">Lyd</translation>
 <translation id="2096716221239095980">Slet alle data</translation>
 <translation id="2102396546234652240">Tillad ikke, at websites anvender din mikrofon</translation>
@@ -492,7 +493,6 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="7141896414559753902">Bloker visning af pop up-vinduer på websites og omdirigeringer (anbefales)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Opdater</translation>
-<translation id="7180865173735832675">Tilpas</translation>
 <translation id="7188508872042490670">Websitedata på enheden</translation>
 <translation id="7201549776650881587">Denne handling sletter alle data og cookies, som er gemt af alle websites i gruppen <ph name="ORIGIN" /> eller den tilhørende app på din startside</translation>
 <translation id="7203150201908454328">Udvidet</translation>

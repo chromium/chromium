@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
+<translation id="1036348656032585052">Исклучи</translation>
 <translation id="1045448422538531528">Додајте во група</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Создадено пред <ph name="NUM_WEEKS_ONE" /> седмица}one{Создадено пред <ph name="NUM_WEEKS_MANY" /> седмица}other{Создадено пред <ph name="NUM_WEEKS_MANY" /> седмици}}</translation>
 <translation id="1063300264396686489">Автоматски отворај групи картички од други уреди</translation>

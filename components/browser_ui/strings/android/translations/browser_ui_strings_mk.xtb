@@ -84,6 +84,7 @@
 <translation id="2028449514182362831">Функциите на коишто им требаат сензорите за движење нема да работат</translation>
 <translation id="2030769033451695672">Допрете за да се вратите на <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Врати</translation>
+<translation id="2080070583977670716">Повеќе поставки</translation>
 <translation id="2091887806945687916">Звук</translation>
 <translation id="2096716221239095980">Избриши ги сите податоци</translation>
 <translation id="2102396546234652240">Не им дозволувај на сајтовите да го користат микрофонот</translation>
@@ -492,7 +493,6 @@
 <translation id="7141896414559753902">Блокирај го прикажувањето скокачки прозорци и пренасочувања на сајтовите (се препорачува)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Освежи</translation>
-<translation id="7180865173735832675">Приспособи</translation>
 <translation id="7188508872042490670">Податоци за сајт на уред</translation>
 <translation id="7201549776650881587">Дејствово ќе ги избрише сите податоци и колачиња што ги складирале сите сајтови под сајтот <ph name="ORIGIN" /> или неговата апликација на почетниот екран</translation>
 <translation id="7203150201908454328">Проширено</translation>

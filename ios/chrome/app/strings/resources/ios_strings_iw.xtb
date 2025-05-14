@@ -103,7 +103,6 @@
 <translation id="1397144142234474689">הסתרת ההיסטוריה</translation>
 <translation id="1407135791313364759">פתיחת כל הכרטיסיות</translation>
 <translation id="1408847409015257906">לוחצים על 'פרטיות ואבטחה'.</translation>
-<translation id="1411311327083909515">כניסה באמצעות החשבון המנוהל שלך עוזרת לך להפריד בין נתוני הגלישה הקשורים לארגון שלך, כמו כרטיסיות, היסטוריה וסיסמאות.</translation>
 <translation id="1411386976162024013">‏חיפוש חזותי ב-Lens</translation>
 <translation id="1417474386970818917">יציאה מהחשבון ומחיקה</translation>
 <translation id="1426410128494586442">כן</translation>
@@ -305,6 +304,7 @@
 <translation id="2216366330550244277">מעבר לדף של מוצר</translation>
 <translation id="2220529011494928058">דיווח על בעיה</translation>
 <translation id="2223461067862937305">‏יצירת קוד QR</translation>
+<translation id="2225701818156393674">המוצר נוסף לרשימת המוצרים שבמעקב.</translation>
 <translation id="2229345671837147090">תצוגה של כרטיסיות ממכשירים אחרים</translation>
 <translation id="2230173723195178503">דף האינטרנט נטען</translation>
 <translation id="2236949375853147973">הפעילות שלי</translation>
@@ -1387,6 +1387,7 @@
 במצב אנונימי אתרים לא יכולים להשתמש בקובצי cookie כדי לקבל מידע על פעילות הגלישה שלך באתרים שונים – למשל כדי להציג מודעות בהתאמה אישית.</translation>
 <translation id="6672697278890207089">הזן את משפט הסיסמה</translation>
 <translation id="6674917187596384849">אפשר לעבור בקלות בין חשבונות</translation>
+<translation id="6676349090816247042">אפשרויות כניסה לחשבון.</translation>
 <translation id="667999046851023355">מסמך</translation>
 <translation id="6680416467695217368">התאמה אישית של התפריט</translation>
 <translation id="6681586159478273915">חיפוש קולי</translation>

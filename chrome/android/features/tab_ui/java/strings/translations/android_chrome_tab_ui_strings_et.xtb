@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
+<translation id="1036348656032585052">Lülita välja</translation>
 <translation id="1045448422538531528">Lisa gruppi</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Loodud <ph name="NUM_WEEKS_ONE" /> nädal tagasi}other{Loodud <ph name="NUM_WEEKS_MANY" /> nädalat tagasi}}</translation>
 <translation id="1063300264396686489">Vahelehegrupi automaatne avamine teisest seadmest</translation>

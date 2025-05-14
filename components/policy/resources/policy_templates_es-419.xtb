@@ -3086,6 +3086,28 @@ Si la inhabilitas o no la estableces, nunca se mostrará el menú de accesibilid
 <translation id="3159375329008977062">El usuario está habilitado para exportar o importar contenedores de Crostini mediante la IU</translation>
 <translation id="3163167792874598128">Si estableces la política o no la habilitas, es posible que la promoción para calificar en la App Store se muestre al usuario como máximo una vez al año.
 Si inhabilitas la política, no se mostrará al usuario la promoción para calificar en la App Store.</translation>
+<translation id="3163880369487075383">Esta política controla si se puede borrar window.name para las navegaciones de nivel superior
+entre sitios que dan como resultado la creación de un nuevo
+grupo de contexto de navegación cuando se habilita la variación
+ClearCrossSiteCrossBrowsingContextGroupWindowName.
+
+La variación ClearCrossSiteCrossBrowsingContextGroupWindowName controla si
+window.name se borrará para las navegaciones de nivel superior entre sitios. Algunos ejemplos de
+esas navegaciones incluyen a un usuario que navega a un sitio nuevo a través del cuadro multifunción o
+que hace clic en un vínculo a un sitio nuevo cuando el vínculo usa "target='_blank'
+rel='noopener'". Si se borra window.name en estos casos, se evita que la información se
+filtre potencialmente entre sitios mediante la propiedad window.name, lo que mejora la privacidad
+del usuario. La política ClearWindowNameForNewBrowsingContextGroup está vigente para
+restaurar el comportamiento anterior. Cuando se habilita la variación
+ClearCrossSiteCrossBrowsingContextGroupWindowName,
+se borrará window.name para las navegaciones que cumplan los requisitos si esta política se
+habilita o no se establece. Si la inhabilitas, no se borrará window.name.
+
+Si tienes que utilizar la política para inhabilitar que se borre window.name para las navegaciones
+que califican, informa un error en
+<ph name="BUG_URL" />
+en el que expliques tu caso de uso. La política está programada para
+ofrecerse en la versión 142 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3164531087779621747">Imprimir con el modo PostScript</translation>
 <translation id="3165808775394012744">Se incluyen estas políticas aquí para que sea más fácil quitarlas.</translation>
 <translation id="3166210414652928099">Permite que el usuario utilice apps para Android de fuentes no confiables</translation>
@@ -4312,6 +4334,7 @@ La política se aplica a la URL a la que navega el usuario y a los iframes. La p
 <translation id="4051723201852944592">Habilita la oclusión de ventanas</translation>
 <translation id="4052529125939620019">Cargar la extensión del componente CryptoToken al iniciar el navegador</translation>
 <translation id="4053157306171963473">Inhabilitar los informes de tiempo de actividad del dispositivo</translation>
+<translation id="4056842786707010434">Elegir si permitir que se borre window.name para las navegaciones de nivel superior entre sitios que dan como resultado un nuevo grupo de contexto de navegación.</translation>
 <translation id="4056910949759281379">Inhabilitar el protocolo SPDY</translation>
 <translation id="4057442294431066708">Esta política controla la opción de combinación de teclas seleccionada para volver a asignar eventos a
 F11/F12 en la subpágina de las teclas de reasignación. Esta configuración solo se aplica a los
@@ -5283,7 +5306,6 @@ Si habilitas <ph name="CONTEXTUAL_GOOGLE_INTEGRATIONS_ENABLED" /> o no la establ
 Si no estableces esta política, se habilitarán todos los servicios.
 
 De lo contrario, solo se habilitarán los servicios seleccionados.</translation>
-<translation id="4758335997982239449">Activar la función IP Protection de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="4767059955897420757">Si no estableces la política o la habilitas, es posible que la promoción para la extensión del Proveedor de credenciales se muestre al usuario.
 Si la inhabilitas, no se le mostrará la promoción para la extensión del Proveedor de credenciales al usuario.</translation>
 <translation id="4768446404233019970">Habilitar los conjuntos de algoritmos de cifrado 3DES en TLS</translation>
@@ -7062,7 +7084,6 @@ Si estableces la política en EnabledFocusSoundsOnly, se habilitará la función
 
 Si inhabilitas la política, se inhabilitarán los sonidos del Modo sin distracciones.</translation>
 <translation id="5890063326284543943">Controla el uso de la API de Serial</translation>
-<translation id="5893223274510346852">Desactivar la función IP Protection de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="5893303508158298667">Si habilitas la política <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> y habilitas la política <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> o no la estableces, los clientes remotos podrán usar servidores de retransmisión para conectarse con este equipo cuando no haya conexiones directas disponibles, por ejemplo, debido a la presencia de firewalls.
 
       Si inhabilitas la política, no se desactivará el acceso remoto, pero solo se permitirán conexiones de la misma red (no se permitirán retransmisiones ni técnicas NAT traversal).</translation>
@@ -9747,6 +9768,7 @@ Esta política puede anularse para orígenes específicos de apps web aisladas a
 <translation id="768925347918758827">Estados Unidos.</translation>
 <translation id="7696412993033202071">URLs de inicio de apps de autenticador externas</translation>
 <translation id="7696534428021833264">Habilitar la tarjeta de archivos de SharePoint y OneDrive de NTP</translation>
+<translation id="7699644797467448158">Borrar window.name cuando la navegación es de nivel superior, entre sitios y cambia BrowsingContextGroup.</translation>
 <translation id="7701341006446125684">Establecer tamaño de caché de apps y extensiones (en bytes)</translation>
 <translation id="7703041979684393741">No permitir la recopilación de registros de eventos de WebRTC de los servicios de Google</translation>
 <translation id="770339941914297201">Nuevo comportamiento: Las apps de Chrome para kiosco solo se actualizarán con la URL de actualización que se encuentra en la política</translation>
@@ -11554,6 +11576,7 @@ Esta política solo controla <ph name="ARC_VM" /> en <ph name="PRODUCT_OS_FLEX_N
       los estados de la pantalla y la tarjeta gráfica. Si se configura como verdadera, se informarán
       estos estados.</translation>
 <translation id="891435090623616439">codificada como cadena JSON; para obtener detalles, se puede consultar <ph name="COMPLEX_POLICIES_URL" /></translation>
+<translation id="8916106787085606382">No borrar window.name cuando la navegación es de nivel superior, entre sitios y cambia BrowsingContextGroup.</translation>
 <translation id="8917070657147922192">Permite que los usuarios administren los Certificados de CA instalados</translation>
 <translation id="8919100556245407184">El tiempo restante (en días) después del aviso de vencimiento de la actualización automática para que se haga salir al usuario de la cuenta si la versión de <ph name="PRODUCT_OS_NAME" /> es anterior a la versión <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> especificada.</translation>
 <translation id="8919369436496201075">Permite que el dispositivo reciba actualizaciones de LTS</translation>

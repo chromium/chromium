@@ -84,6 +84,7 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="2028449514182362831">Գործառույթները, որոնց համար պահանջվում են շարժման տվիչները, չեն աշխատի</translation>
 <translation id="2030769033451695672">Հպեք՝ <ph name="URL_OF_THE_CURRENT_TAB" /> վերադառնալու համար</translation>
 <translation id="2079545284768500474">Հետարկել</translation>
+<translation id="2080070583977670716">Այլ կարգավորումներ</translation>
 <translation id="2091887806945687916">Ձայն</translation>
 <translation id="2096716221239095980">Ջնջել բոլոր տվյալները</translation>
 <translation id="2102396546234652240">Թույլ չտալ կայքերին օգտագործել ձեր սարքի խոսափողը</translation>
@@ -492,7 +493,6 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="7141896414559753902">Արգելափակել ելնող պատուհանները և վերահասցեավորումը կայքերում (խորհուրդ է տրվում)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> ԿԲ</translation>
 <translation id="7180611975245234373">Թարմացնել</translation>
-<translation id="7180865173735832675">Հարմարեցնել</translation>
 <translation id="7188508872042490670">Կայքերի տվյալները սարքում</translation>
 <translation id="7201549776650881587">Կջնջվեն բոլոր տվյալներն ու քուքիները, որոնք հիմնական էկրանին են պահվել <ph name="ORIGIN" /> կայքերի խմբի կամ դրա հավելվածի կողմից</translation>
 <translation id="7203150201908454328">Ընդլայնված</translation>

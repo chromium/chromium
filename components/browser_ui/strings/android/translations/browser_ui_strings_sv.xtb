@@ -84,6 +84,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="2028449514182362831">Funktioner som kräver rörelsesensorer slutar fungera</translation>
 <translation id="2030769033451695672">Återgå till <ph name="URL_OF_THE_CURRENT_TAB" /> genom att trycka här</translation>
 <translation id="2079545284768500474">Ångra</translation>
+<translation id="2080070583977670716">Fler inställningar</translation>
 <translation id="2091887806945687916">Ljud</translation>
 <translation id="2096716221239095980">Radera all data</translation>
 <translation id="2102396546234652240">Tillåt inte att webbplatser använder mikrofonen</translation>
@@ -492,7 +493,6 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="7141896414559753902">Blockera webbplatser från att visa popup-fönster (rekommenderas)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Uppdatera</translation>
-<translation id="7180865173735832675">Anpassa</translation>
 <translation id="7188508872042490670">Webbplatsdata på enheten</translation>
 <translation id="7201549776650881587">När du gör detta raderas all data och alla cookies som lagras av alla underordnade webbplatser för <ph name="ORIGIN" /> eller tillhörande app på startskärmen</translation>
 <translation id="7203150201908454328">Utökat</translation>

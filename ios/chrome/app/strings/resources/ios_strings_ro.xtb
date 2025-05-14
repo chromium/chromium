@@ -103,7 +103,6 @@
 <translation id="1397144142234474689">Ascunde istoricul</translation>
 <translation id="1407135791313364759">Deschideți-le pe toate</translation>
 <translation id="1408847409015257906">Atinge Confidențialitate și securitate.</translation>
-<translation id="1411311327083909515">Dacă te conectezi cu contul gestionat, poți să separi datele de navigare asociate organizației tale, cum ar fi filele, istoricul și parolele.</translation>
 <translation id="1411386976162024013">Căutare vizuală cu Lens</translation>
 <translation id="1417474386970818917">Deconectează-te și șterge</translation>
 <translation id="1426410128494586442">Da</translation>
@@ -305,6 +304,7 @@
 <translation id="2216366330550244277">Accesează pagina unui produs</translation>
 <translation id="2220529011494928058">Semnalați o problemă</translation>
 <translation id="2223461067862937305">Creează un cod QR</translation>
+<translation id="2225701818156393674">Produsul a fost adăugat la lista de produse urmărite.</translation>
 <translation id="2229345671837147090">Grila de file de la distanță</translation>
 <translation id="2230173723195178503">Pagina web s-a încărcat</translation>
 <translation id="2236949375853147973">Activitatea mea</translation>
@@ -1387,6 +1387,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 În modul incognito, site-urile nu pot folosi cookie-urile pentru a vedea activitatea ta de navigare de pe diferite site-uri, de exemplu, pentru a personaliza anunțurile.</translation>
 <translation id="6672697278890207089">Introduceți expresia de acces</translation>
 <translation id="6674917187596384849">Poți comuta cu ușurință între conturi</translation>
+<translation id="6676349090816247042">Opțiuni de conectare.</translation>
 <translation id="667999046851023355">Document</translation>
 <translation id="6680416467695217368">Personalizează meniul</translation>
 <translation id="6681586159478273915">Căutare vocală</translation>

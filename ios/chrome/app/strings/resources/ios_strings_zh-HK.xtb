@@ -103,7 +103,6 @@
 <translation id="1397144142234474689">隱藏記錄</translation>
 <translation id="1407135791313364759">全部開啟</translation>
 <translation id="1408847409015257906">輕按 [私隱權和安全性]。</translation>
-<translation id="1411311327083909515">登入受管帳戶後，就能將機構相關的瀏覽資料 (例如分頁、記錄和密碼) 與個人資料分開。</translation>
 <translation id="1411386976162024013">「智能鏡頭」視像搜尋</translation>
 <translation id="1417474386970818917">登出並刪除</translation>
 <translation id="1426410128494586442">是</translation>
@@ -305,6 +304,7 @@
 <translation id="2216366330550244277">前往產品頁面</translation>
 <translation id="2220529011494928058">報告問題</translation>
 <translation id="2223461067862937305">建立 QR 碼</translation>
+<translation id="2225701818156393674">產品已加至你的追蹤產品清單。</translation>
 <translation id="2229345671837147090">遠端分頁網格</translation>
 <translation id="2230173723195178503">已載入網頁</translation>
 <translation id="2236949375853147973">我的活動</translation>
@@ -1387,6 +1387,7 @@
 在無痕模式中，網站不能使用 Cookie 查看您在各網站的瀏覽活動，例如放送個人化廣告。</translation>
 <translation id="6672697278890207089">請輸入你的複雜密碼</translation>
 <translation id="6674917187596384849">你可以輕鬆切換帳戶</translation>
+<translation id="6676349090816247042">登入選項。</translation>
 <translation id="667999046851023355">文件</translation>
 <translation id="6680416467695217368">自訂選單</translation>
 <translation id="6681586159478273915">語音搜尋</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
+<translation id="1036348656032585052">Выключыць</translation>
 <translation id="1045448422538531528">Дадаць да групы</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Створана <ph name="NUM_WEEKS_ONE" /> тыдзень таму}one{Створана <ph name="NUM_WEEKS_MANY" /> тыдзень таму}few{Створана <ph name="NUM_WEEKS_MANY" /> тыдні таму}many{Створана <ph name="NUM_WEEKS_MANY" /> тыдняў таму}other{Створана <ph name="NUM_WEEKS_MANY" /> тыдня таму}}</translation>
 <translation id="1063300264396686489">Аўтаматычна адкрываць групы ўкладак з іншых прылад</translation>

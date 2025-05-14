@@ -3272,6 +3272,7 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{فائل}other{# فائلز}}</translation>
 <translation id="326999365752735949">ڈف ڈاؤن لوڈ ہو رہا ہے</translation>
 <translation id="3270965368676314374">اپنے کمپیوٹر سے تصاویر، موسیقی اور دیگر میڈیا پڑھیں، تبدیل اور حذف کریں</translation>
+<translation id="3275464924531706548">‫<ph name="HEADER" /> کو سکیڑیں</translation>
 <translation id="3275778809241512831">آپ کی داخلی سیکیورٹی کلید فی الحال غیر محفوظ ہے۔ براہ کرم اس کو کسی ایسی سروس سے ہٹا دیں جس کے ساتھ آپ نے اسے استعمال کیا ہے۔ مسئلے کو حل کرنے کے لیے، براہ کرم سیکیورٹی کلید کو دوبارہ ترتیب دیں۔</translation>
 <translation id="3275778913554317645">بطور ونڈو کھولیں</translation>
 <translation id="3277214528693754078">ٹیکسٹ کرسر کی مدد سے نیویگیٹ کریں (کیرٹ براؤزنگ)</translation>
@@ -3603,6 +3604,7 @@
 <translation id="3510471875518562537">‏اپنے iPhone پر اس پتہ کا استعمال کریں</translation>
 <translation id="3511200754045804813">دوبارہ اسکین کریں</translation>
 <translation id="3511307672085573050">لنک پ&amp;تہ کاپی کریں</translation>
+<translation id="3511358375261756531">‫<ph name="HEADER" /> کو پھیلائیں</translation>
 <translation id="351152300840026870">مقررہ چوڑائی کا فونٹ</translation>
 <translation id="3511528412952710609">مختصر</translation>
 <translation id="3513019849832307207">شامل ہوں اور کھولیں</translation>
@@ -6154,6 +6156,7 @@
 <translation id="5296536303670088158">‏آپ کے پاس نقصان دہ ویب سائٹس کے خلاف Chrome کی مضبوط ترین سیکیورٹی ہے</translation>
 <translation id="5297005732522718715">ٹیدرنگ کنفیگریشن کو ریفریش کریں</translation>
 <translation id="5297082477358294722">پاس ورڈز محفوظ ہیں۔ اپنے <ph name="SAVED_PASSWORDS_STORE" /> میں محفوظ کردہ پاس ورڈز دیکھیں اور ان کا نظم کریں۔</translation>
+<translation id="5297548311167268289">‫<ph name="RP_ID" /> میں سائن ان کریں</translation>
 <translation id="5297946558563358707">جب کوئی آپ کی اسکرین پر دیکھتا ہے تو آپ کی اسکرین کے نیچے دائیں جانب پر رازداری کی آنکھ والا آئیکن دکھائی دیتا ہے</translation>
 <translation id="5297984209202974345"><ph name="STYLE" /> اسٹائل میں <ph name="SUBJECT" /> کی حالیہ تھیم <ph name="INDEX" /></translation>
 <translation id="5298219193514155779">تھیم بنائی گئی بذریعہ</translation>

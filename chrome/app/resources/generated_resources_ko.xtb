@@ -3627,6 +3627,7 @@
 <translation id="3514681096978190000">이 보관 파일에는 멀웨어를 숨길 수 있는 기타 파일이 포함되어 있습니다.</translation>
 <translation id="3515983984924808886">보안 키를 다시 터치하여 초기화 여부를 확인하세요. PIN을 비롯하여 보안 키에 저장된 모든 정보가 삭제됩니다.</translation>
 <translation id="3518866566087677312">나중에 다시 보고 싶은 항목을 북마크에 추가하세요.</translation>
+<translation id="3519014757432845220">알림 콘텐츠와 사이트 URL을 Google과 공유하여 스팸 보호 기능을 개선하는 데 도움을 주세요. 콘텐츠가 사람에 의해 검토될 수 있습니다.</translation>
 <translation id="3519382402703204668">탭 선택</translation>
 <translation id="3519564332031442870">인쇄 백엔드 서비스</translation>
 <translation id="3519938335881974273">페이지를 다른 이름으로 저장...</translation>
@@ -6634,6 +6635,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="563371367637259496">모바일</translation>
 <translation id="5635312199252507107">특정 사이트에서 허용</translation>
 <translation id="5636012309446422"><ph name="PRIMARY_EMAIL" />에서 <ph name="DEVICE" /> 기기를 삭제하시겠습니까?</translation>
+<translation id="56360247219959198"><ph name="DICTIONARY" />이 완전히 삭제됩니다. 이 작업은 되돌릴 수 없습니다.</translation>
 <translation id="5636140764387862062">PIN 관련 작업 더보기</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" />을(를) 사용하려면 먼저 몇 초 뒤에 자동으로 열리는 <ph name="LINK_START" />네트워크 로그인 페이지로 이동<ph name="LINK_END" />해야 합니다. 네트워크 로그인 페이지가 자동으로 열리지 않으면 네트워크를 사용할 수 없습니다.</translation>
 <translation id="5637476008227280525">모바일 데이터 사용</translation>
@@ -7751,6 +7753,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6459799433792303855">활성 창이 다른 디스플레이로 이동했습니다.</translation>
 <translation id="6460601847208524483">다음 찾기</translation>
 <translation id="6461170143930046705">네트워크 검색 중...</translation>
+<translation id="6463488491707167747">이 사전 삭제</translation>
 <translation id="6463596731306859179">원치 않는 팝업이 표시되거나 예기치 않은 기타 동작이 발생하나요? 때때로, 설치하는 앱과 확장 프로그램으로 인해 나도 모르는 사이에 ChromeOS 설정이 변경될 수 있습니다.</translation>
 <translation id="6463668944631062248"><ph name="DEVICE_NAME" />에서 전송 요청 수락</translation>
 <translation id="6463795194797719782">편집(&amp;E)</translation>

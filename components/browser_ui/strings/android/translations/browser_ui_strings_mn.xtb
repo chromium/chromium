@@ -84,6 +84,7 @@
 <translation id="2028449514182362831">Хөдөлгөөн мэдрэгч шаардлагатай онцлогууд ажиллахгүй</translation>
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> руу буцах бол товшино уу</translation>
 <translation id="2079545284768500474">Буцаах</translation>
+<translation id="2080070583977670716">Нэмэлт тохиргоо</translation>
 <translation id="2091887806945687916">Дуу</translation>
 <translation id="2096716221239095980">Бүх өгөгдлийг устгах</translation>
 <translation id="2102396546234652240">Сайтуудад таны микрофоныг ашиглахыг бүү зөвшөөр</translation>
@@ -492,7 +493,6 @@
 <translation id="7141896414559753902">Сайтыг попап болон дахин чиглүүлэлтийг харуулахаас блоклох (санал болгосон)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> килобайт</translation>
 <translation id="7180611975245234373">Дахин сэргээх</translation>
-<translation id="7180865173735832675">Хүссэнээр өөрчлөх</translation>
 <translation id="7188508872042490670">Төхөөрөмж дээрх сайтын өгөгдөл</translation>
 <translation id="7201549776650881587">Энэ үйлдэл <ph name="ORIGIN" />-н доорх бүх сайтын эсвэл таны Үндсэн нүүрэн дээрх аппынх нь хадгалсан бүх өгөгдөл, күүкиг устгана</translation>
 <translation id="7203150201908454328">Өргөтгөсөн</translation>

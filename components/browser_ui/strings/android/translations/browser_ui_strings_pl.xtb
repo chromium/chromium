@@ -84,6 +84,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="2028449514182362831">Nie będą działać funkcje, które potrzebują czujników ruchu</translation>
 <translation id="2030769033451695672">Kliknij, by wrócić na <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Cofnij</translation>
+<translation id="2080070583977670716">Więcej ustawień</translation>
 <translation id="2091887806945687916">Dźwięk</translation>
 <translation id="2096716221239095980">Usuń wszystkie dane</translation>
 <translation id="2102396546234652240">Nie zezwalaj witrynom na używanie mikrofonu</translation>
@@ -492,7 +493,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="7141896414559753902">Blokuj wyskakujące okienka i przekierowania na stronach (zalecane)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Odśwież</translation>
-<translation id="7180865173735832675">Dostosuj</translation>
 <translation id="7188508872042490670">Dane witryn na urządzeniu</translation>
 <translation id="7201549776650881587">Spowoduje to usunięcie wszystkich danych i plików cookie zapisanych przez strony internetowe w grupie <ph name="ORIGIN" /> lub jej aplikację na ekranie głównym</translation>
 <translation id="7203150201908454328">Rozwinięty</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1036348656032585052">사용 중지</translation>
 <translation id="1045448422538531528">그룹에 추가</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" />주 전 생성됨}other{<ph name="NUM_WEEKS_MANY" />주 전 생성됨}}</translation>
 <translation id="1063300264396686489">다른 기기에서 생성된 탭 그룹 자동 열기</translation>

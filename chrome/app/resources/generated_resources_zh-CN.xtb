@@ -3604,6 +3604,7 @@
 <translation id="3514681096978190000">此归档文件包含可能隐藏恶意软件的其他文件</translation>
 <translation id="3515983984924808886">请再次轻触安全密钥以确认重置。安全密钥上存储的所有信息（包括它的 PIN 码）都会被删除。</translation>
 <translation id="3518866566087677312">为您暂不需要的内容添加书签以备后用</translation>
+<translation id="3519014757432845220">与 Google 分享通知内容和网站网址，帮助我们改进垃圾信息防范功能。内容可能会经过人工审核。</translation>
 <translation id="3519382402703204668">选择标签页</translation>
 <translation id="3519564332031442870">打印后端服务</translation>
 <translation id="3519938335881974273">将页面另存为…</translation>
@@ -6608,6 +6609,7 @@
 <translation id="563371367637259496">移动网络</translation>
 <translation id="5635312199252507107">在特定网站上允许</translation>
 <translation id="5636012309446422">从 <ph name="PRIMARY_EMAIL" /> 中移除“<ph name="DEVICE" />”？</translation>
+<translation id="56360247219959198">“<ph name="DICTIONARY" />”会被永久删除。此操作无法撤消。</translation>
 <translation id="5636140764387862062">可对 PIN 码执行的更多操作</translation>
 <translation id="5636996382092289526">要使用“<ph name="NETWORK_ID" />”，您可能需要先<ph name="LINK_START" />访问该网络的登录页面<ph name="LINK_END" />，该页面会在几秒钟后自动打开。如果未打开，就表示该网络无法使用。</translation>
 <translation id="5637476008227280525">移动数据开关</translation>
@@ -7724,6 +7726,7 @@
 <translation id="6459799433792303855">活动窗口已移至另一显示屏。</translation>
 <translation id="6460601847208524483">查找下一个</translation>
 <translation id="6461170143930046705">正在搜索网络…</translation>
+<translation id="6463488491707167747">删除此字典</translation>
 <translation id="6463596731306859179">遇到不希望显示的弹出式窗口或其他意外行为？您安装的应用和扩展程序有时可能会在您不知情的情况下擅自更改 ChromeOS 设置。</translation>
 <translation id="6463668944631062248">请在您的“<ph name="DEVICE_NAME" />”上接受投放请求</translation>
 <translation id="6463795194797719782">修改(&amp;E)</translation>

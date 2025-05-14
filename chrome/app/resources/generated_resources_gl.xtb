@@ -3611,6 +3611,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3514681096978190000">Este ficheiro de arquivo inclúe outros ficheiros que poden ocultar software malicioso</translation>
 <translation id="3515983984924808886">Toca a chave de seguranza de novo para confirmar o seu restablecemento. Eliminarase toda a información almacenada nela, incluídos os PIN.</translation>
 <translation id="3518866566087677312">Engade aos marcadores os sitios web que queiras consultar de novo máis tarde</translation>
+<translation id="3519014757432845220">Axúdanos a mellorar a protección contra o spam compartindo o contido das notificacións e o URL do sitio con Google. O contido pode someterse a un proceso de revisión manual.</translation>
 <translation id="3519382402703204668">Escoller unha táboa</translation>
 <translation id="3519564332031442870">Servizo de impresión do back end</translation>
 <translation id="3519938335881974273">Gardar páxina como...</translation>
@@ -6620,6 +6621,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="563371367637259496">Móbil</translation>
 <translation id="5635312199252507107">Permitir en sitios específicos</translation>
 <translation id="5636012309446422">Queres quitar o dispositivo (<ph name="DEVICE" />) de <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="56360247219959198">Eliminarase <ph name="DICTIONARY" /> de forma permanente. Esta acción non se pode desfacer.</translation>
 <translation id="5636140764387862062">Máis accións para o PIN</translation>
 <translation id="5636996382092289526">Para utilizar <ph name="NETWORK_ID" /> é posible que primeiro necesites <ph name="LINK_START" />visitar a páxina de inicio de sesión da rede<ph name="LINK_END" />, que se abrirá automaticamente dentro duns segundos. De non ser así, a rede non se poderá usar.</translation>
 <translation id="5637476008227280525">Activación/desactivación de datos móbiles</translation>
@@ -7736,6 +7738,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6459799433792303855">A ventá activa moveuse a outra pantalla.</translation>
 <translation id="6460601847208524483">Buscar seguinte</translation>
 <translation id="6461170143930046705">Buscando redes…</translation>
+<translation id="6463488491707167747">Eliminar este dicionario</translation>
 <translation id="6463596731306859179">Aparécenche ventás emerxentes non desexadas ou notas algún outro tipo de comportamento inesperado? Ás veces, as aplicacións e extensións que instalas poden modificar a configuración de ChromeOS sen que o saibas.</translation>
 <translation id="6463668944631062248">Acepta a solicitude de emisión no dispositivo (<ph name="DEVICE_NAME" />)</translation>
 <translation id="6463795194797719782">&amp;Editar</translation>

@@ -3622,6 +3622,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3514681096978190000">Faili hii iliyo kwenye kumbukumbu ina faili nyinginezo ambazo huenda zikaficha programu hasidi</translation>
 <translation id="3515983984924808886">Gusa ufunguo wako wa usalama tena ili uthibitishe hatua ya kuubadilisha. Maelezo yote yaliyohifadhiwa kwenye ufunguo wa usalama, ikiwa ni pamoja na PIN, yatafutwa.</translation>
 <translation id="3518866566087677312">Alamisha vitu unavyotaka kuvirejelea baadaye</translation>
+<translation id="3519014757432845220">Saidia kuimarisha ulinzi dhidi ya taka kwa kuitumia Google maudhui ya arifa na URL ya tovuti. Maudhui yanaweza kuhakikiwa na wanadamu.</translation>
 <translation id="3519382402703204668">Chagua kichupo</translation>
 <translation id="3519564332031442870">Huduma ya Ndani ya Uchapishaji</translation>
 <translation id="3519938335881974273">Hifadhi ukurasa kama...</translation>
@@ -6628,6 +6629,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="563371367637259496">Kifaa cha mkononi</translation>
 <translation id="5635312199252507107">Ruhusu kwenye tovuti kadhaa</translation>
 <translation id="5636012309446422">Ungependa kuondoa kifaa cha <ph name="DEVICE" /> kwenye <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="56360247219959198"><ph name="DICTIONARY" /> itafutwa kabisa. Kitendo hiki hakiwezi kutenduliwa.</translation>
 <translation id="5636140764387862062">Vitendo zaidi vya PIN</translation>
 <translation id="5636996382092289526">Ili kutumia <ph name="NETWORK_ID" /> huenda kwanza ukahitaji kutembelea <ph name="LINK_START" /> ukurasa wa kuingia wa mtandao<ph name="LINK_END" />, ambao utafunguka otomatiki katika sekunde chache. Ikiwa haitafanyika, mtandao hauwezi kutumika.</translation>
 <translation id="5637476008227280525">Washa data ya kifaa cha mkononi</translation>
@@ -7745,6 +7747,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6459799433792303855">Dirisha linalotumika limehamishiwa kwenye skrini nyingine.</translation>
 <translation id="6460601847208524483">Pata Ifuatayo</translation>
 <translation id="6461170143930046705">Inatafuta mitandao...</translation>
+<translation id="6463488491707167747">Futa kamusi hii</translation>
 <translation id="6463596731306859179">Je, unapata madirisha ibukizi usiyoyahitaji au hali nyingine isiyotarajiwa? Wakati mwingine, programu na viendelezi unavyoweka kwenye kifaa vinaweza kubadilisha mipangilio yako ya ChromeOS bila wewe kujua.</translation>
 <translation id="6463668944631062248">Kubali ombi la kutuma maudhui kwenye <ph name="DEVICE_NAME" /> yako</translation>
 <translation id="6463795194797719782">&amp;Hariri</translation>

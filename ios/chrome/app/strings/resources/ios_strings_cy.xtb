@@ -103,7 +103,6 @@
 <translation id="1397144142234474689">Cuddio Hanes</translation>
 <translation id="1407135791313364759">Agor pob un</translation>
 <translation id="1408847409015257906">Tapio "Preifatrwydd a Diogelwch."</translation>
-<translation id="1411311327083909515">Mae mewngofnodi gyda'ch cyfrif a reolir yn eich helpu i wahanu pori sy'n gysylltiedig â'ch sefydliad, megis tabiau, hanes a chyfrineiriau.</translation>
 <translation id="1411386976162024013">Chwiliad gweledol Lens</translation>
 <translation id="1417474386970818917">Allgofnodi a dileu</translation>
 <translation id="1426410128494586442">Iawn</translation>
@@ -305,6 +304,7 @@
 <translation id="2216366330550244277">Mynd at dudalen cynnyrch</translation>
 <translation id="2220529011494928058">Adrodd am broblem</translation>
 <translation id="2223461067862937305">Wrthi'n creu cod QR</translation>
+<translation id="2225701818156393674">Cynnyrch wedi'i ychwanegu at eich rhestr o gynhyrchion sy'n cael eu dilyn.</translation>
 <translation id="2229345671837147090">Grid tabiau o bell</translation>
 <translation id="2230173723195178503">Mae tudalen we wedi'i llwytho</translation>
 <translation id="2236949375853147973">Fy Ngweithgarwch</translation>
@@ -1387,6 +1387,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol wefannau, er enghraifft, i bersonoleiddio hysbysebion.</translation>
 <translation id="6672697278890207089">Rhowch eich cyfrinymadrodd</translation>
 <translation id="6674917187596384849">Gallwch chi newid rhwng cyfrifon yn hawdd</translation>
+<translation id="6676349090816247042">Dewisiadau mewngofnodi.</translation>
 <translation id="667999046851023355">Dogfen</translation>
 <translation id="6680416467695217368">Personoleiddio Dewislen</translation>
 <translation id="6681586159478273915">Chwilio â llais</translation>

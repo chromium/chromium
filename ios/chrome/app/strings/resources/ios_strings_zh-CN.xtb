@@ -103,7 +103,6 @@
 <translation id="1397144142234474689">隐藏历史记录</translation>
 <translation id="1407135791313364759">全部打开</translation>
 <translation id="1408847409015257906">点按“隐私与安全”。</translation>
-<translation id="1411311327083909515">使用受管理的账号登录有助于您将与组织相关的浏览数据（例如标签页、历史记录和密码）与个人数据分开。</translation>
 <translation id="1411386976162024013">智能镜头视觉搜索</translation>
 <translation id="1417474386970818917">退出账号并删除</translation>
 <translation id="1426410128494586442">是</translation>
@@ -305,6 +304,7 @@
 <translation id="2216366330550244277">前往商品页面</translation>
 <translation id="2220529011494928058">报告问题</translation>
 <translation id="2223461067862937305">生成二维码</translation>
+<translation id="2225701818156393674">商品已添加到跟踪的商品列表。</translation>
 <translation id="2229345671837147090">远程标签页网格</translation>
 <translation id="2230173723195178503">已加载网页</translation>
 <translation id="2236949375853147973">我的活动记录</translation>
@@ -1387,6 +1387,7 @@
 不过，在无痕模式下，网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。</translation>
 <translation id="6672697278890207089">请输入密码</translation>
 <translation id="6674917187596384849">您可以轻松地在账号之间切换</translation>
+<translation id="6676349090816247042">登录方式。</translation>
 <translation id="667999046851023355">文档</translation>
 <translation id="6680416467695217368">自定义菜单</translation>
 <translation id="6681586159478273915">语音搜索</translation>

@@ -103,7 +103,6 @@
 <translation id="1397144142234474689">Ukryj opcję Historia</translation>
 <translation id="1407135791313364759">Otwórz wszystkie</translation>
 <translation id="1408847409015257906">Kliknij „Prywatność i bezpieczeństwo”.</translation>
-<translation id="1411311327083909515">Logowanie się na konto zarządzane pozwala oddzielić dane przeglądania związane z organizacją, takie jak karty, historia i hasła, od pozostałych danych.</translation>
 <translation id="1411386976162024013">Wyszukiwanie wizualne za pomocą Obiektywu</translation>
 <translation id="1417474386970818917">Wyloguj się i usuń</translation>
 <translation id="1426410128494586442">Tak</translation>
@@ -305,6 +304,7 @@
 <translation id="2216366330550244277">Otwórz stronę produktu</translation>
 <translation id="2220529011494928058">Zgłoś problem</translation>
 <translation id="2223461067862937305">Utwórz kod QR</translation>
+<translation id="2225701818156393674">Produkt został dodany do listy śledzonych produktów.</translation>
 <translation id="2229345671837147090">Siatka kart zdalnych</translation>
 <translation id="2230173723195178503">Wczytano stronę internetową</translation>
 <translation id="2236949375853147973">Moja aktywność</translation>
@@ -1387,6 +1387,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem różnych stron, na przykład w celu personalizowania reklam.</translation>
 <translation id="6672697278890207089">Wprowadź swoje hasło</translation>
 <translation id="6674917187596384849">Możesz łatwo przełączać się między kontami</translation>
+<translation id="6676349090816247042">Opcje logowania.</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6680416467695217368">Dostosuj menu</translation>
 <translation id="6681586159478273915">Wyszukiwanie głosowe</translation>

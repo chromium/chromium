@@ -103,7 +103,6 @@
 <translation id="1397144142234474689">Sembunyikan Sejarah</translation>
 <translation id="1407135791313364759">Buka semua</translation>
 <translation id="1408847409015257906">Ketik “Privasi &amp; Keselamatan”.</translation>
-<translation id="1411311327083909515">Tindakan log masuk dengan akaun terurus anda membantu anda mengasingkan penyemakan imbas berkaitan dengan organisasi anda, seperti tab, sejarah dan kata laluan.</translation>
 <translation id="1411386976162024013">Carian visual Lens</translation>
 <translation id="1417474386970818917">Log Keluar dan Padam</translation>
 <translation id="1426410128494586442">Ya</translation>
@@ -305,6 +304,7 @@
 <translation id="2216366330550244277">Akses halaman produk tersebut</translation>
 <translation id="2220529011494928058">Laporkan isu</translation>
 <translation id="2223461067862937305">Buat Kod QR</translation>
+<translation id="2225701818156393674">Produk ditambahkan pada senarai produk yang dijejaki anda.</translation>
 <translation id="2229345671837147090">Grid tab jauh</translation>
 <translation id="2230173723195178503">Halaman web dimuatkan</translation>
 <translation id="2236949375853147973">Aktiviti Saya</translation>
@@ -1387,6 +1387,7 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas merentas beberapa laman lain, contohnya, untuk memperibadikan iklan.</translation>
 <translation id="6672697278890207089">Masukkan ungkapan laluan anda</translation>
 <translation id="6674917187596384849">Anda boleh menukar antara akaun dengan mudah</translation>
+<translation id="6676349090816247042">Pilihan log masuk.</translation>
 <translation id="667999046851023355">Dokumen</translation>
 <translation id="6680416467695217368">Sesuaikan Menu</translation>
 <translation id="6681586159478273915">Carian suara</translation>

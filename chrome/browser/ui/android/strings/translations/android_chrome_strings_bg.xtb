@@ -432,6 +432,7 @@
 <translation id="2979639724566107830">Отваряне в нов прозорец</translation>
 <translation id="2981364137500752533">Можете да отворите до 5 прозореца.</translation>
 <translation id="2983102365694924129">Въз основа на активността ви в даден сайт. Тази настройка е изключена.</translation>
+<translation id="2983398917942897288">Неактивно (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Включване на съседния текст в търсенията с Google</translation>
 <translation id="2988638966064514052">Подобрете паролите си</translation>
 <translation id="2989523299700148168">Наскоро посетени</translation>
@@ -464,6 +465,7 @@
 <translation id="314939179385989105">Началната страница на Chrome</translation>
 <translation id="3158667104057012316">Сортиране по ръчен ред</translation>
 <translation id="3159335509547415276">Научете за блокираните профили</translation>
+<translation id="3161699713309727585"><ph name="BUTTON_TEXT" /> – отваря се в нов раздел</translation>
 <translation id="3166827708714933426">Комбинации за раздели и прозорци</translation>
 <translation id="316694332262407393">Chrome вече се изпълнява тук.</translation>
 <translation id="3167258285411721858">Можете да заявите мобилната версия на сайта <ph name="HOST_NAME" /></translation>
@@ -787,6 +789,7 @@
 <translation id="469286762610133730">Получавайте по-добро съдържание</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4698061626562952596">Преглеждайте неактивните си раздели оттук</translation>
+<translation id="4698757800236023795">Активно (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Кеширани изображения и файлове</translation>
 <translation id="4710167854527459075">Сортиране по най-нови</translation>
 <translation id="4718044610319080485">Извиква асистента с AI</translation>
@@ -1388,6 +1391,7 @@
 <translation id="7236515828900885295">Преминаване към търсенето</translation>
 <translation id="7237724030342645845">Google Мениджър на пароли спря да работи</translation>
 <translation id="72415438529550637">Долният лист с предложение за парола е затворен.</translation>
+<translation id="7248671827512403053">Приложение</translation>
 <translation id="7260367682327802201">Възможно е устройството ви с Android да има подобна настройка. Ако функцията за измерване на рекламите е включена в Chrome и на устройството ви с Android, дадена компания може да измерва ефективността на рекламите в посещаваните от вас уебсайтове и използваните от вас приложения.</translation>
 <translation id="727288900855680735">Да се изпрати ли <ph name="ONE_TIME_CODE" /> до <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Блокиран сайт</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
+<translation id="1036348656032585052">Deaktiver</translation>
 <translation id="1045448422538531528">Føj til gruppe</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Oprettet for <ph name="NUM_WEEKS_ONE" /> uge siden}one{Oprettet for <ph name="NUM_WEEKS_MANY" /> uge siden}other{Oprettet for <ph name="NUM_WEEKS_MANY" /> uger siden}}</translation>
 <translation id="1063300264396686489">Åbn automatisk fanegrupper fra andre enheder</translation>

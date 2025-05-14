@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
+<translation id="1036348656032585052">O‘chirib qo‘yish</translation>
 <translation id="1045448422538531528">Guruh chatiga kiritish</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> hafta oldin yaratilgan}other{<ph name="NUM_WEEKS_MANY" /> hafta oldin yaratilgan}}</translation>
 <translation id="1063300264396686489">Boshqa qurilmalardagi varaqlar guruhini avtomatik ochish</translation>

@@ -103,7 +103,6 @@
 <translation id="1397144142234474689">Amaga l'historial</translation>
 <translation id="1407135791313364759">Obre-les totes</translation>
 <translation id="1408847409015257906">Toca Privadesa i seguretat.</translation>
-<translation id="1411311327083909515">Si inicies la sessió amb el compte gestionat, podràs separar la navegació relacionada amb la teva organització, com ara les pestanyes, l'historial i les contrasenyes.</translation>
 <translation id="1411386976162024013">Cerca visual de Lens</translation>
 <translation id="1417474386970818917">Tanca la sessió i suprimeix</translation>
 <translation id="1426410128494586442">Sí</translation>
@@ -1180,6 +1179,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="594324569139756587">Bloqueja les de tercers</translation>
 <translation id="5944869793365969636">Escaneja un codi QR</translation>
 <translation id="5948291296578561264">Et permet desar fotos a la biblioteca de fotos.</translation>
+<translation id="5948605885471592910">Consulta i gestiona tot el que tens obert</translation>
 <translation id="5952641243319721872">Confirmes que vols descartar la selecció?</translation>
 <translation id="5956112131836209882">Pestanya del grup de pestanyes. <ph name="TAB_INDEX_IN_GROUP" /> de <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Cerca amb <ph name="SEARCH_PROVIDER" /></translation>
@@ -1677,6 +1677,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7933880123415105005">Cerca <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{La pàgina s'ha afegit a la llista de lectura del teu compte, {email}}other{{count} pàgines s'han afegit a la llista de lectura del teu compte, {email}}}</translation>
+<translation id="7952353944614086413">Pestanyes i grups que tens oberts</translation>
 <translation id="7952670906562503188">Estàs a punt de suprimir {passkey_count} claus d'accés i la llista de llocs web i aplicacions per als quals has triat que no es desi mai la informació d'inici de sessió. No se suprimiran els comptes que hagis creat per a llocs web i aplicacions.</translation>
 <translation id="7958575506592576831">Informació de seguretat de la pàgina</translation>
 <translation id="7961015016161918242">Mai</translation>
@@ -1969,6 +1970,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="9008201768610948239">Ignora</translation>
 <translation id="9012585441087414258">Protegeix contra llocs web, baixades i extensions que se sap que són perillosos. Si una pàgina fa res sospitós, els URL i els fragments de contingut de les pàgines s'envien a Navegació segura de Google.</translation>
 <translation id="9013605037177245304">Activa les notificacions</translation>
+<translation id="9013632079355478927">Amaga el mode de lector</translation>
 <translation id="9029650858822697271">S'ha tancat la teva sessió</translation>
 <translation id="9032405509996909363">Confirma si vols suprimir les dades de navegació</translation>
 <translation id="9039373489628511875">Amplada de banda</translation>

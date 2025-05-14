@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
+<translation id="1036348656032585052">გამორთვა</translation>
 <translation id="1045448422538531528">ჯგუფში დამატება</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{შეიქმნა <ph name="NUM_WEEKS_ONE" /> კვირის წინ}other{შეიქმნა <ph name="NUM_WEEKS_MANY" /> კვირის წინ}}</translation>
 <translation id="1063300264396686489">ჩანართების ჯგუფების სხვა მოწყობილობებიდან ავტომატურად გახსნა</translation>

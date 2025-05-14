@@ -84,6 +84,7 @@
 <translation id="2028449514182362831">لن تعمل الميزات التي تحتاج إلى مستشعرات الحركة.</translation>
 <translation id="2030769033451695672">يُرجى النقر للرجوع إلى <ph name="URL_OF_THE_CURRENT_TAB" />.</translation>
 <translation id="2079545284768500474">تراجع</translation>
+<translation id="2080070583977670716">مزيد من الإعدادات</translation>
 <translation id="2091887806945687916">الصوت</translation>
 <translation id="2096716221239095980">حذف كل البيانات</translation>
 <translation id="2102396546234652240">عدم السماح للمواقع الإلكترونية باستخدام الميكروفون</translation>
@@ -493,7 +494,6 @@
 <translation id="7141896414559753902">منع المواقع الإلكترونية من عرض النوافذ المنبثقة وعمليات إعادة التوجيه (مُوصى به)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> كيلوبايت</translation>
 <translation id="7180611975245234373">إعادة التحميل</translation>
-<translation id="7180865173735832675">تخصيص</translation>
 <translation id="7188508872042490670">بيانات المواقع الإلكترونية على الجهاز فقط</translation>
 <translation id="7201549776650881587">سيؤدي هذا الإجراء إلى حذف جميع البيانات وملفات تعريف الارتباط المُخزَّنة من خلال جميع المواقع الإلكترونية المندرجة ضِمن الموقع الإلكتروني <ph name="ORIGIN" /> أو من خلال التطبيق التابع لهذا الموقع الإلكتروني على الشاشة الرئيسية.</translation>
 <translation id="7203150201908454328">موسع</translation>

@@ -103,7 +103,6 @@
 <translation id="1397144142234474689">Ocultar historial</translation>
 <translation id="1407135791313364759">Abrir todo</translation>
 <translation id="1408847409015257906">Toca Privacidade e seguranza.</translation>
-<translation id="1411311327083909515">Iniciar sesión coa túa conta xestionada axudarache a separar a navegación relacionada coa túa organización, como as pestanas, o historial e os contrasinais.</translation>
 <translation id="1411386976162024013">Busca visual de Lens</translation>
 <translation id="1417474386970818917">Pechar sesión e eliminar</translation>
 <translation id="1426410128494586442">Si</translation>
@@ -305,6 +304,7 @@
 <translation id="2216366330550244277">Vai á páxina dun produto</translation>
 <translation id="2220529011494928058">Informar dun problema</translation>
 <translation id="2223461067862937305">Crear código QR</translation>
+<translation id="2225701818156393674">Engadiuse o artigo á lista de produtos seguidos.</translation>
 <translation id="2229345671837147090">Grade de pestanas remotas</translation>
 <translation id="2230173723195178503">Cargouse a páxina web</translation>
 <translation id="2236949375853147973">A miña actividade</translation>
@@ -1387,6 +1387,7 @@ Non poden utilizalas para ver a túa actividade de navegación en distintos siti
 Co modo de incógnito activado, non poden utilizalas para ver a túa actividade de navegación en distintos sitios (por exemplo, co fin de personalizar os anuncios).</translation>
 <translation id="6672697278890207089">Introduce a frase de acceso</translation>
 <translation id="6674917187596384849">Podes cambiar de conta facilmente</translation>
+<translation id="6676349090816247042">Opcións de inicio de sesión.</translation>
 <translation id="667999046851023355">Documento</translation>
 <translation id="6680416467695217368">Personalizar o menú</translation>
 <translation id="6681586159478273915">Busca por voz</translation>

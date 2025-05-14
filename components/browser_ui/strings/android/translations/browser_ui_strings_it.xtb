@@ -84,6 +84,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="2028449514182362831">Le funzionalità che richiedono sensori di movimento non funzioneranno</translation>
 <translation id="2030769033451695672">Tocca per tornare a <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Annulla</translation>
+<translation id="2080070583977670716">Altre impostazioni</translation>
 <translation id="2091887806945687916">Audio</translation>
 <translation id="2096716221239095980">Elimina tutti i dati</translation>
 <translation id="2102396546234652240">Non consentire ai siti di usare il microfono</translation>
@@ -492,7 +493,6 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="7141896414559753902">Impedisci ai siti di mostrare popup e reindirizzamenti (opzione consigliata)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Aggiorna</translation>
-<translation id="7180865173735832675">Personalizza</translation>
 <translation id="7188508872042490670">Dati dei siti sul dispositivo</translation>
 <translation id="7201549776650881587">Questa azione eliminerà tutti i dati e i cookie memorizzati da tutti i siti in <ph name="ORIGIN" /> o dalla relativa app nella schermata Home</translation>
 <translation id="7203150201908454328">Espanso</translation>

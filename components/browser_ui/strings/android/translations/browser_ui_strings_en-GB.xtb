@@ -84,6 +84,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="2028449514182362831">Features that need motion sensors won't work</translation>
 <translation id="2030769033451695672">Tap to return to <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Undo</translation>
+<translation id="2080070583977670716">More settings</translation>
 <translation id="2091887806945687916">Sound</translation>
 <translation id="2096716221239095980">Delete all data</translation>
 <translation id="2102396546234652240">Don't allow sites to use your microphone</translation>
@@ -492,7 +493,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="7141896414559753902">Block sites from showing pop-ups and redirects (recommended)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Refresh</translation>
-<translation id="7180865173735832675">Customise</translation>
 <translation id="7188508872042490670">On-device site data</translation>
 <translation id="7201549776650881587">This action will clear all data and cookies stored by all sites under <ph name="ORIGIN" /> or by its app on your Home screen</translation>
 <translation id="7203150201908454328">Expanded</translation>

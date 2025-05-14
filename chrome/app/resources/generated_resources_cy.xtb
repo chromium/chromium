@@ -3628,6 +3628,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3514681096978190000">Mae'r ffeil archif hon yn cynnwys ffeiliau eraill a allai guddio drwgwedd</translation>
 <translation id="3515983984924808886">Cyffyrddwch â'ch allwedd ddiogelwch eto i gadarnhau ailosod. Bydd yr holl wybodaeth sy'n cael ei storio ar yr allwedd ddiogelwch, gan gynnwys ei PIN, yn cael ei dileu.</translation>
 <translation id="3518866566087677312">Rhowch nod tudalen ar y pethau rydych am ddychwelyd atynt yn nes ymlaen</translation>
+<translation id="3519014757432845220">Helpu i wella amddiffyniad rhag sothach drwy rannu cynnwys hysbysiadau ac URL y wefan â Google. Gall y cynnwys gael ei adolygu gan bobl.</translation>
 <translation id="3519382402703204668">Dewis tab</translation>
 <translation id="3519564332031442870">Gwasanaeth Ôl-system Argraffu</translation>
 <translation id="3519938335881974273">Cadw'r dudalen fel...</translation>
@@ -6636,6 +6637,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="563371367637259496">Symudol</translation>
 <translation id="5635312199252507107">Caniatáu ar wefannau penodol</translation>
 <translation id="5636012309446422">Tynnu <ph name="DEVICE" /> o <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="56360247219959198">Bydd <ph name="DICTIONARY" /> yn cael ei ddileu'n barhaol. Nid oes modd dadwneud y weithred hon.</translation>
 <translation id="5636140764387862062">Rhagor o weithredoedd ar gyfer y PIN</translation>
 <translation id="5636996382092289526">Er mwyn defnyddio <ph name="NETWORK_ID" /> mae'n bosib y bydd rhaid i chi <ph name="LINK_START" />fynd i dudalen fewngofnodi'r rhwydwaith<ph name="LINK_END" /> yn gyntaf, a fydd yn agor yn awtomatig ymhen rhai eiliadau. Os na fydd yn agor yn awtomatig, ni fydd modd i chi ddefnyddio'r rhwydwaith.</translation>
 <translation id="5637476008227280525">Galluogi data symudol</translation>
@@ -7753,6 +7755,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="6459799433792303855">Symudwyd y ffenestr weithredol i sgrîn arall.</translation>
 <translation id="6460601847208524483">Dod o hyd i'r un Nesaf</translation>
 <translation id="6461170143930046705">Wrthi'n chwilio am rwydweithiau...</translation>
+<translation id="6463488491707167747">Dileu'r geiriadur hwn</translation>
 <translation id="6463596731306859179">Cael ffenestri naid digroeso, neu ymddygiad annisgwyl arall? Weithiau, gall apiau ac estyniadau rydych yn eu gosod newid eich gosodiadau ChromeOS heb i chi wybod.</translation>
 <translation id="6463668944631062248">Derbyn cais castio ar eich <ph name="DEVICE_NAME" /></translation>
 <translation id="6463795194797719782">&amp;Golygu</translation>

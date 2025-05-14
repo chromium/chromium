@@ -3282,6 +3282,7 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{檔案}other{# 個檔案}}</translation>
 <translation id="326999365752735949">正在下載差異部分</translation>
 <translation id="3270965368676314374">讀取、變更及刪除您電腦中的相片、音樂及其他媒體</translation>
+<translation id="3275464924531706548">收合「<ph name="HEADER" />」</translation>
 <translation id="3275778809241512831">您目前的內部安全密鑰並不安全。請將其從所有您使用此密鑰的服務中移除。如要解決此問題，請重設安全密鑰。</translation>
 <translation id="3275778913554317645">在視窗中開啟</translation>
 <translation id="3277214528693754078">透過文字游標導覽 (鍵盤瀏覽)</translation>
@@ -3613,6 +3614,7 @@
 <translation id="3510471875518562537">在 iPhone 上使用此地址</translation>
 <translation id="3511200754045804813">重新掃描</translation>
 <translation id="3511307672085573050">複製連結網址(&amp;E)</translation>
+<translation id="3511358375261756531">展開「<ph name="HEADER" />」</translation>
 <translation id="351152300840026870">固定寬度字型</translation>
 <translation id="3511528412952710609">短</translation>
 <translation id="3513019849832307207">加入並開啟</translation>
@@ -3622,6 +3624,7 @@
 <translation id="3514681096978190000">此封存檔案包含其他可能隱藏惡意軟件的檔案</translation>
 <translation id="3515983984924808886">再次輕觸安全密鑰即可確認重設。此安全密鑰上儲存的所有資料 (包括 PIN) 將被刪除。</translation>
 <translation id="3518866566087677312">將稍後重溫的內容加上書籤</translation>
+<translation id="3519014757432845220">與 Google 分享通知內容和網站網址，協助改善垃圾內容阻截功能。內容可能會送交真人審核。</translation>
 <translation id="3519382402703204668">選擇分頁</translation>
 <translation id="3519564332031442870">列印後端服務</translation>
 <translation id="3519938335881974273">另存網頁…</translation>
@@ -6161,6 +6164,7 @@
 <translation id="5296536303670088158">Chrome 最強大的安全功能可協助防範有害網站</translation>
 <translation id="5297005732522718715">重新整理網絡共享設定</translation>
 <translation id="5297082477358294722">密碼已儲存。查看和管理儲存在「<ph name="SAVED_PASSWORDS_STORE" />」的密碼。</translation>
+<translation id="5297548311167268289">登入 <ph name="RP_ID" /></translation>
 <translation id="5297946558563358707">當有人窺探您的螢幕時，螢幕右下方會顯示「私隱權」眼睛圖示</translation>
 <translation id="5297984209202974345">最近嘅<ph name="SUBJECT" /> AI 主題 <ph name="INDEX" />，風格係 <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">主題製作者</translation>
@@ -6623,6 +6627,7 @@
 <translation id="563371367637259496">流動網絡</translation>
 <translation id="5635312199252507107">允許在特定網站上執行</translation>
 <translation id="5636012309446422">要從 <ph name="PRIMARY_EMAIL" /> 移除 <ph name="DEVICE" /> 嗎？</translation>
+<translation id="56360247219959198">「<ph name="DICTIONARY" />」將永久刪除。此操作無法復原。</translation>
 <translation id="5636140764387862062">其他 PIN 操作</translation>
 <translation id="5636996382092289526">如要使用 <ph name="NETWORK_ID" />，您必須先<ph name="LINK_START" />前往網絡的登入頁面<ph name="LINK_END" /> (該頁面將在數秒內自動開啟)；如果沒有，表示您無法使用該網絡。</translation>
 <translation id="5637476008227280525">啟用流動數據</translation>
@@ -7739,6 +7744,7 @@
 <translation id="6459799433792303855">使用中的視窗已移至其他顯示屏。</translation>
 <translation id="6460601847208524483">尋找下一個項目</translation>
 <translation id="6461170143930046705">正在搜尋網絡...</translation>
+<translation id="6463488491707167747">刪除此字典</translation>
 <translation id="6463596731306859179">看到不必要的彈出式視窗或其他非預期的行為嗎？你安裝的應用程式和擴充程式有時可能會擅自變更 ChromeOS 設定。</translation>
 <translation id="6463668944631062248">請在「<ph name="DEVICE_NAME" />」上接受投放要求</translation>
 <translation id="6463795194797719782">編輯(&amp;E)</translation>

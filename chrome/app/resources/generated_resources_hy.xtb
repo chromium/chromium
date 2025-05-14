@@ -422,6 +422,7 @@
 <translation id="1276994519141842946">Չհաջողվեց հեռացնել <ph name="APP_NAME" /> հավելվածը</translation>
 <translation id="1277020343994096713">Ստեղծեք ձեր ընթացիկ կոդից տարբերվող նոր PIN կոդ</translation>
 <translation id="1277597051786235230">&amp;Որոնել «<ph name="SEARCH_TERMS" />» <ph name="SEARCH_ENGINE" />-ում նոր ներդիրում</translation>
+<translation id="127849925363482083">Նորից սեղմեք <ph name="SHORTCUT_TEXT" />՝ ամրացված ներդիրը փակելու համար</translation>
 <translation id="1278859221870828664">Ստուգեք Google Play հավելվածներն ու ծառայությունները</translation>
 <translation id="127946606521051357">Մոտակա սարքերից մեկը տվյալներ է ուղարկում</translation>
 <translation id="1280332775949918163">Կապել պատուհանը</translation>
@@ -4116,6 +4117,7 @@
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> վերնագրով այլ էջեր</translation>
 <translation id="383891835335927981">Ոչ մի կայք չի մասշտաբավորվել</translation>
 <translation id="3839516600093027468">Միշտ արգելափակել <ph name="HOST" /> կայքի մուտքը սեղմատախտակին</translation>
+<translation id="3840096463915153852">Զրույցի պատմություն</translation>
 <translation id="3841282988425489367">Չհաջողվեց տեղադրել Chromebook-ի համար Steam-ը (բետա)</translation>
 <translation id="3841319830220785495">Կանխադրված բնական ձայն</translation>
 <translation id="3841356782900714251">Խելացի քարտերի ընթերցման սարքեր</translation>
@@ -6986,6 +6988,7 @@
 <translation id="5916664084637901428">Միացնել</translation>
 <translation id="59174027418879706">Միացված</translation>
 <translation id="5919305207330938913">Հավաքված բոլոր տվյալները կօգտագործվեն Google-ի <ph name="BEGIN_LINK" />Գաղտնիության քաղաքականության<ph name="END_LINK" /> համաձայն։</translation>
+<translation id="5919486630433391408">Ներկառուցված ծրագրակազմի թարմացումներն անջատված են ձեր ադմինիստրատորի կողմից։</translation>
 <translation id="5920543303088087579">Ձեր ադմինիստրատորն արգելափակել է այս ցանցին միանալու հնարավորությունը</translation>
 <translation id="5922963926582976524">Անջատել կապը ակնթարթային թեժ կետի հետ</translation>
 <translation id="5924047253200400718">Օգնություն<ph name="SCANNING_STATUS" /></translation>
@@ -7531,6 +7534,7 @@
 <translation id="630292539633944562">Անձնական տեղեկությունների հուշումներ</translation>
 <translation id="6304017513498618504">Կարող եք նաև խնդրել այլ բաներ, օրինակ՝ «ամփոփել»</translation>
 <translation id="6305607932814307878">Գլոբալ քաղաքականություն՝</translation>
+<translation id="6305627295927385295">Ջնջել հետևյալը՝</translation>
 <translation id="6305702903308659374">Նվագարկել սովորական ձայնով, երբ ChromeVox-ը միացված է</translation>
 <translation id="6307268917612054609">«Տեսախցիկ» թույլտվությունն ունեցող հավելվածներն ու կայքերը, ինչպես նաև համակարգային ծառայությունները կարող են օգտագործել ձեր տեսախցիկը</translation>
 <translation id="6307990684951724544">Համակարգը զբաղված է</translation>
@@ -9296,6 +9300,7 @@
 <translation id="7583948862126372804">Քանակ</translation>
 <translation id="7585106857920830898">Ստուգվում է՝ արդյոք ֆայլը համապատասխանում է ձեր կազմակերպության անվտանգության կանոններին...</translation>
 <translation id="7586498138629385861">Chrome-ը կշարունակի աշխատել, երբ հավելվածները բաց են:</translation>
+<translation id="7587806318633605613">Հուշումների պատմություն</translation>
 <translation id="7589461650300748890">Զգո՛ւյշ եղեք:</translation>
 <translation id="7590883480672980941">Ներածման կարգավորումներ</translation>
 <translation id="7592060599656252486">Որոշ նշաններ</translation>
@@ -9959,6 +9964,7 @@
 <translation id="8028138772801251745">Ինքնալրացում ԱԲ-ի օգնությամբ</translation>
 <translation id="8028803902702117856">Ներբեռնվում է <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Չափ</translation>
+<translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Ընթերցանության ցանկ}=1{Ընթերցանության ցանկ ({SELECTED_ITEMS})}one{Ընթերցանության ցանկ ({SELECTED_ITEMS})}other{Ընթերցանության ցանկ ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – Պահանջվում է թույլտվություն։ Արձագանքելու համար սեղմեք ⌘ + Option + վեր սլաք։</translation>
 <translation id="8030169304546394654">Անջատված է</translation>
 <translation id="8030852056903932865">Հաստատել</translation>
@@ -10830,6 +10836,7 @@
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> կամ <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Գիշերային լույսի ռեժիմում գույնի ջերմաստիճանը</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> կայքն ուզում է <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> և այլն</translation>
+<translation id="8648889679430451455">Մաքրել անհատականացման տվյալները</translation>
 <translation id="8649026945479135076">Սովորաբար կայքերը, որոնք դուք այցելում եք, հիշում են, թե ձեզ ինչն է հետաքրքրում, որպեսզի անհատականացնեն գովազդը ձեզ համար։ Կայքերը կարող են նաև ձեր հետաքրքրությունների մասին տեղեկություններ պահել Chrome-ում։</translation>
 <translation id="8650543407998814195">Չնայած այլևս չեք կարող մուտք գործել ձեր հին պրոֆիլ, դուք կարող եք այն ջնջել:</translation>
 <translation id="8651585100578802546">Force Reload This Page</translation>

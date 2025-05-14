@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
+<translation id="1036348656032585052">Désactiver</translation>
 <translation id="1045448422538531528">Ajouter au groupe</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Créé il y a <ph name="NUM_WEEKS_ONE" /> semaine}one{Créé il y a <ph name="NUM_WEEKS_MANY" /> semaine}other{Créé il y a <ph name="NUM_WEEKS_MANY" /> semaines}}</translation>
 <translation id="1063300264396686489">Ouvrir automatiquement les groupes d'onglets des autres appareils</translation>

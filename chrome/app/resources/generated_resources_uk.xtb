@@ -423,6 +423,7 @@
 <translation id="1276994519141842946">Не вдалося видалити додаток <ph name="APP_NAME" /></translation>
 <translation id="1277020343994096713">Створіть новий PIN-код, який відрізняється від поточного</translation>
 <translation id="1277597051786235230">&amp;Пошук у <ph name="SEARCH_ENGINE" /> за запитом "<ph name="SEARCH_TERMS" />" у новій вкладці</translation>
+<translation id="127849925363482083">Щоб закрити закріплену вкладку, знову натисніть <ph name="SHORTCUT_TEXT" /></translation>
 <translation id="1278859221870828664">Перегляньте додатки й сервіси Google Play</translation>
 <translation id="127946606521051357">Пристрій поблизу надсилає дані</translation>
 <translation id="1280332775949918163">Прив’язати вікно</translation>
@@ -4134,6 +4135,7 @@
 <translation id="3838486795898716504">Інші <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">Масштабування сайтів не змінено</translation>
 <translation id="3839516600093027468">Завжди забороняти сайту <ph name="HOST" /> переглядати буфер обміну</translation>
+<translation id="3840096463915153852">Історія чату</translation>
 <translation id="3841282988425489367">Не вдалося налаштувати додаток Steam для Chromebook (бета-версія)</translation>
 <translation id="3841319830220785495">Природний голос за умовчанням</translation>
 <translation id="3841356782900714251">Сканери розумних карток</translation>
@@ -7003,6 +7005,7 @@
 <translation id="5916664084637901428">Увімкнено</translation>
 <translation id="59174027418879706">Увімкнено</translation>
 <translation id="5919305207330938913">Усі зібрані дані використовуватимуться згідно з <ph name="BEGIN_LINK" />Політикою конфіденційності Google<ph name="END_LINK" />.</translation>
+<translation id="5919486630433391408">Адміністратор вимкнув оновлення мікропрограм.</translation>
 <translation id="5920543303088087579">Ваш адміністратор заборонив під’єднуватися до цієї мережі</translation>
 <translation id="5922963926582976524">Від’єднати мережу миттєвої точки доступу</translation>
 <translation id="5924047253200400718">Довідка<ph name="SCANNING_STATUS" /></translation>
@@ -7548,6 +7551,7 @@
 <translation id="630292539633944562">Підказки з особистою інформацією</translation>
 <translation id="6304017513498618504">Ви також можете, наприклад, попросити підсумувати сторінку</translation>
 <translation id="6305607932814307878">Глобальна політика:</translation>
+<translation id="6305627295927385295">Видалити наведені нижче дані:</translation>
 <translation id="6305702903308659374">Не змінювати гучність, навіть коли ChromeVox зчитує з екрана</translation>
 <translation id="6307268917612054609">Камеру можуть використовувати додатки й вебсайти з відповідним дозволом, а також системні сервіси</translation>
 <translation id="6307990684951724544">Система зайнята</translation>
@@ -9317,6 +9321,7 @@
 <translation id="7583948862126372804">Кількість</translation>
 <translation id="7585106857920830898">Перевірка відповідності правилам безпеки вашої організації…</translation>
 <translation id="7586498138629385861">Chrome працюватиме, доки будуть відкриті додатки Chrome.</translation>
+<translation id="7587806318633605613">Історія пропозицій</translation>
 <translation id="7589461650300748890">Обережно!</translation>
 <translation id="7590883480672980941">Налаштування введення</translation>
 <translation id="7592060599656252486">Деякі розділові знаки</translation>
@@ -9982,6 +9987,7 @@
 <translation id="8028138772801251745">Автозаповнення за допомогою ШІ</translation>
 <translation id="8028803902702117856">Завантаження <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Розмір</translation>
+<translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Список читання}=1{Список читання ({SELECTED_ITEMS})}one{Список читання ({SELECTED_ITEMS})}few{Список читання ({SELECTED_ITEMS})}many{Список читання ({SELECTED_ITEMS})}other{Список читання ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – Потрібен дозвіл. Натисніть клавіші ⌘ + Option + стрілку вгору, щоб відповісти</translation>
 <translation id="8030169304546394654">Роз'єднано</translation>
 <translation id="8030852056903932865">Дозволити</translation>
@@ -10853,6 +10859,7 @@
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> або <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Температура кольору нічного екрана</translation>
 <translation id="8648544143274677280">Сайту <ph name="SITE_NAME" /> потрібен дозвіл, щоб <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> та інше</translation>
+<translation id="8648889679430451455">Очистити дані персоналізації</translation>
 <translation id="8649026945479135076">Зазвичай сайти, які ви відвідуєте, запам’ятовують, що вас цікавить, щоб персоналізувати для вас оголошення. Також сайти можуть зберігати в Chrome інформацію про ваші інтереси.</translation>
 <translation id="8650543407998814195">Хоча у вас більше немає доступу до старого профілю, ви можете видалити його.</translation>
 <translation id="8651585100578802546">Примусово перезавантажити цю сторінку</translation>

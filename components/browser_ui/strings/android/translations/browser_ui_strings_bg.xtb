@@ -84,6 +84,7 @@
 <translation id="2028449514182362831">Функциите, които изискват достъп до сензорите за движение, няма да работят</translation>
 <translation id="2030769033451695672">Докоснете, за да се върнете към <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Отмяна</translation>
+<translation id="2080070583977670716">Още настройки</translation>
 <translation id="2091887806945687916">Звук</translation>
 <translation id="2096716221239095980">Изтриване на всички данни</translation>
 <translation id="2102396546234652240">Да не се разрешава на сайтовете да използват микрофона ви</translation>
@@ -492,7 +493,6 @@
 <translation id="7141896414559753902">Блокиране на показването на изскачащи прозорци и пренасочвания от сайтовете (препоръчително)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> КБ</translation>
 <translation id="7180611975245234373">Опресняване</translation>
-<translation id="7180865173735832675">Персонализиране</translation>
 <translation id="7188508872042490670">Локални данни за сайтовете</translation>
 <translation id="7201549776650881587">Всички данни и „бисквитки“, съхранявани от сайтовете от домейна <ph name="ORIGIN" /> или съответното приложение на началния ви екран, ще бъдат изтрити.</translation>
 <translation id="7203150201908454328">Разгънато</translation>

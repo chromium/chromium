@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
+<translation id="1036348656032585052">Izklop</translation>
 <translation id="1045448422538531528">Dodajanje v skupino</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Ustvarjeno pred <ph name="NUM_WEEKS_ONE" /> tednom}one{Ustvarjeno pred <ph name="NUM_WEEKS_MANY" /> tednom}two{Ustvarjeno pred <ph name="NUM_WEEKS_MANY" /> tednoma}few{Ustvarjeno pred <ph name="NUM_WEEKS_MANY" /> tedni}other{Ustvarjeno pred <ph name="NUM_WEEKS_MANY" /> tedni}}</translation>
 <translation id="1063300264396686489">Samodejno odpiranje skupin zavihkov iz drugih naprav</translation>
