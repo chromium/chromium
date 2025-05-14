@@ -23,6 +23,11 @@ class BrowserImplTest : public PlatformTest {
                                                     profile:profile_.get()];
   }
 
+  ~BrowserImplTest() override {
+    [scene_state_ shutdown];
+    scene_state_ = nil;
+  }
+
   std::unique_ptr<BrowserImpl> CreateBrowser() {
     return std::make_unique<BrowserImpl>(
         profile_.get(), scene_state_, [[CommandDispatcher alloc] init],

@@ -41,10 +41,10 @@ using HandleLaunchOptions = void (^)(id,
 class TabOpenerTest : public PlatformTest {
  protected:
   void TearDown() override {
-    if (scene_controller_) {
-      [scene_controller_ teardownUI];
-      scene_controller_ = nil;
-    }
+    [scene_controller_ teardownUI];
+    scene_controller_ = nil;
+    [scene_state_ shutdown];
+    scene_state_ = nil;
     PlatformTest::TearDown();
   }
 
@@ -106,7 +106,7 @@ class TabOpenerTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   ProfileState* profile_state_;
-  SceneState* scene_state_;
+  FakeSceneState* scene_state_;
   SceneController* scene_controller_;
 
   BOOL swizzle_block_executed_;

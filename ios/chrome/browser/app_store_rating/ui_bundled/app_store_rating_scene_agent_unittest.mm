@@ -143,6 +143,8 @@ class AppStoreRatingSceneAgentTest : public PlatformTest {
   ~AppStoreRatingSceneAgentTest() override {
     ClearDefaultBrowserPromoData();
     local_state()->ClearPref(prefs::kAppStoreRatingPolicyEnabled);
+    [fake_scene_state_ shutdown];
+    fake_scene_state_ = nil;
   }
 
   PrefService* local_state() {

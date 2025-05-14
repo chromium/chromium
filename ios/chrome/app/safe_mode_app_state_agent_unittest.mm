@@ -42,6 +42,11 @@ class SafeModeAppStateAgentTest : public BlockCleanupTest {
     [agent_ setAppState:app_state_mock_];
   }
 
+  ~SafeModeAppStateAgentTest() override {
+    [main_scene_state_ shutdown];
+    main_scene_state_ = nil;
+  }
+
   void SwizzleSafeModeShouldStart(BOOL shouldStart) {
     safe_mode_swizzle_block_ = ^BOOL(id self) {
       return shouldStart;

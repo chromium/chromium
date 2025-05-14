@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/check.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -27,6 +28,8 @@
   std::unique_ptr<TestBrowser> _browser;
   std::unique_ptr<TestBrowser> _inactive_browser;
   std::unique_ptr<TestBrowser> _incognito_browser;
+  // Used to check that -shutdown is called before -dealloc.
+  BOOL _shutdown;
 }
 
 @synthesize browserProviderInterface = _browserProviderInterface;
@@ -62,13 +65,8 @@
   return self;
 }
 
-+ (NSArray<FakeSceneState*>*)sceneArrayWithCount:(int)count
-                                         profile:(ProfileIOS*)profile {
-  NSMutableArray<SceneState*>* scenes = [NSMutableArray array];
-  for (int i = 0; i < count; i++) {
-    [scenes addObject:[[self alloc] initWithAppState:nil profile:profile]];
-  }
-  return [scenes copy];
+- (void)dealloc {
+  CHECK(_shutdown) << "-shutdown must be called before -dealloc";
 }
 
 - (void)appendWebStateWithURL:(const GURL)URL {
@@ -84,6 +82,13 @@
   for (int i = 0; i < count; i++) {
     [self appendWebStateWithURL:URL];
   }
+}
+
+- (void)shutdown {
+  _incognito_browser.reset();
+  _inactive_browser.reset();
+  _browser.reset();
+  _shutdown = YES;
 }
 
 @end

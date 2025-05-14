@@ -138,6 +138,15 @@ class IOSTabGroupSyncDelegateTest : public PlatformTest {
                              forProtocol:@protocol(TabGridCommands)];
   }
 
+  ~IOSTabGroupSyncDelegateTest() override {
+    [other_scene_state_ shutdown];
+    other_scene_state_ = nil;
+    [scene_state_same_profile_ shutdown];
+    scene_state_same_profile_ = nil;
+    [scene_state_ shutdown];
+    scene_state_ = nil;
+  }
+
   // Returns a vector containing the 3 distant tabs.
   std::vector<SavedTabGroupTab> CreateSavedTabs(base::Uuid saved_tab_group_id) {
     std::vector<SavedTabGroupTab> tabs;

@@ -69,6 +69,7 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
   IdleTimeoutPolicySceneAgentTest() = default;
 
   void SetUp() override {
+    PlatformTest::SetUp();
     profile_ = TestProfileIOS::Builder().Build();
 
     // Setyp idle timeout policies.
@@ -94,9 +95,15 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
     InitSceneWithAgent();
   }
 
-  void TearDown() override { [agent_ sceneStateDidDisableUI:scene_state_]; }
+  void TearDown() override {
+    [agent_ sceneStateDidDisableUI:scene_state_];
+    [scene_state_ shutdown];
+    scene_state_ = nil;
+    PlatformTest::TearDown();
+  }
 
   void InitSceneWithAgent() {
+    CHECK(!scene_state_);
     scene_state_ = [[FakeSceneState alloc] initWithAppState:app_state_
                                                     profile:profile_.get()];
     scene_state_.scene = static_cast<UIWindowScene*>(

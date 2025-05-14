@@ -148,6 +148,9 @@ TEST_F(DefaultBrowserBannerPromoAppAgentTest, TestPromoAppears) {
   EXPECT_TRUE(observer_.promoDisplayed);
   histogram_tester_.ExpectBucketCount("IOS.DefaultBrowserBannerPromo.Shown", 1,
                                       1);
+
+  [scene_state shutdown];
+  scene_state = nil;
 }
 
 // Tests that the promo appears for the required number of navigations and then
@@ -199,6 +202,9 @@ TEST_F(DefaultBrowserBannerPromoAppAgentTest,
   histogram_tester_.ExpectBucketCount(
       "IOS.DefaultBrowserBannerPromo.PromoSessionEnded",
       IOSDefaultBrowserBannerPromoPromoSessionEndedReason::kImpressionsMet, 1);
+
+  [scene_state shutdown];
+  scene_state = nil;
 }
 
 // Tests that the promo will disappear when the close button is tapped.
@@ -232,6 +238,9 @@ TEST_F(DefaultBrowserBannerPromoAppAgentTest,
       IOSDefaultBrowserBannerPromoPromoSessionEndedReason::kUserClosed, 1);
   histogram_tester_.ExpectBucketCount(
       "IOS.DefaultBrowserBannerPromo.ManuallyDismissed", 1, 1);
+
+  [scene_state shutdown];
+  scene_state = nil;
 }
 
 // Tests that the promo should disappear when the user regularly interacts with
@@ -266,6 +275,9 @@ TEST_F(DefaultBrowserBannerPromoAppAgentTest,
       IOSDefaultBrowserBannerPromoPromoSessionEndedReason::kUserTappedPromo, 1);
   histogram_tester_.ExpectBucketCount("IOS.DefaultBrowserBannerPromo.Tapped", 1,
                                       1);
+
+  [scene_state shutdown];
+  scene_state = nil;
 }
 
 // Tests that the promo should disappear after the user navigates to the Google
@@ -308,6 +320,9 @@ TEST_F(DefaultBrowserBannerPromoAppAgentTest,
   histogram_tester_.ExpectBucketCount(
       "IOS.DefaultBrowserBannerPromo.PromoSessionEnded",
       IOSDefaultBrowserBannerPromoPromoSessionEndedReason::kNavigationToSRP, 1);
+
+  [scene_state shutdown];
+  scene_state = nil;
 }
 
 // Tests that the promo should disappear after the user navigates to the new tab
@@ -347,6 +362,9 @@ TEST_F(DefaultBrowserBannerPromoAppAgentTest,
   histogram_tester_.ExpectBucketCount(
       "IOS.DefaultBrowserBannerPromo.PromoSessionEnded",
       IOSDefaultBrowserBannerPromoPromoSessionEndedReason::kNavigationToNTP, 1);
+
+  [scene_state shutdown];
+  scene_state = nil;
 }
 
 // Tests that the AppAgent will switch active web states and observe the
@@ -422,6 +440,9 @@ TEST_F(DefaultBrowserBannerPromoAppAgentTest,
   histogram_tester_.ExpectBucketCount(
       "IOS.DefaultBrowserBannerPromo.PromoSessionEnded",
       IOSDefaultBrowserBannerPromoPromoSessionEndedReason::kImpressionsMet, 1);
+
+  [scene_state shutdown];
+  scene_state = nil;
 }
 
 // Tests that the app agent can observe navigations in multiple scenes at once.
@@ -520,6 +541,16 @@ TEST_F(DefaultBrowserBannerPromoAppAgentTest,
   histogram_tester_.ExpectBucketCount(
       "IOS.DefaultBrowserBannerPromo.PromoSessionEnded",
       IOSDefaultBrowserBannerPromoPromoSessionEndedReason::kImpressionsMet, 1);
+
+  // Check expectations now, since destroying the FakeSceneState will cause
+  // more methods to be called.
+  testing::Mock::VerifyAndClearExpectations(mock_tracker_);
+
+  [scene_state_2 shutdown];
+  scene_state_2 = nil;
+
+  [scene_state shutdown];
+  scene_state = nil;
 }
 
 // Tests that the promo doesn't reappear on subsequent navigations after being
@@ -569,4 +600,7 @@ TEST_F(DefaultBrowserBannerPromoAppAgentTest, TestPromoDoesNotReappear) {
   web_state->OnNavigationFinished(&context);
 
   EXPECT_FALSE(observer_.promoDisplayed);
+
+  [scene_state shutdown];
+  scene_state = nil;
 }

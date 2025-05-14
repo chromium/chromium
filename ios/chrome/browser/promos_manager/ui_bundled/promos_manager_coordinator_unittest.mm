@@ -43,6 +43,7 @@ namespace {
 class PromosManagerCoordinatorTest : public PlatformTest {
  public:
   void SetUp() override {
+    PlatformTest::SetUp();
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
@@ -66,6 +67,12 @@ class PromosManagerCoordinatorTest : public PlatformTest {
     scene_state_.profileState = profile_state_;
     scene_state_.scene = static_cast<UIWindowScene*>(
         [[[UIApplication sharedApplication] connectedScenes] anyObject]);
+  }
+
+  void TearDown() override {
+    [scene_state_ shutdown];
+    scene_state_ = nil;
+    PlatformTest::TearDown();
   }
 
   // Initializes a new `PromosManagerCoordinator` for testing.

@@ -83,6 +83,7 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
     startup_information_ = nil;
     app_state_ = nil;
     profile_state_ = nil;
+    [scene_state_ shutdown];
     scene_state_ = nil;
     agent_ = nil;
 

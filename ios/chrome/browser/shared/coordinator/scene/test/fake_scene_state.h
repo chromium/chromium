@@ -16,10 +16,6 @@ class ProfileIOS;
 // because of the embedded test profile.
 @interface FakeSceneState : SceneState
 
-// Creates an array of `count` instances, without any associated AppState.
-+ (NSArray<FakeSceneState*>*)sceneArrayWithCount:(int)count
-                                         profile:(ProfileIOS*)profile;
-
 // Initializer.
 - (instancetype)initWithAppState:(AppState*)appState
                          profile:(ProfileIOS*)profile NS_DESIGNATED_INITIALIZER;
@@ -39,6 +35,9 @@ class ProfileIOS;
 
 // Append `count` web states, all with `url` as the current URL, to the
 - (void)appendWebStatesWithURL:(const GURL)URL count:(int)count;
+
+// Must be called before -dealloc.
+- (void)shutdown;
 
 @end
 

@@ -208,6 +208,7 @@ class AppStateTest : public BlockCleanupTest {
   }
 
   void TearDown() override {
+    [main_scene_state_ shutdown];
     main_scene_state_ = nil;
     BlockCleanupTest::TearDown();
   }

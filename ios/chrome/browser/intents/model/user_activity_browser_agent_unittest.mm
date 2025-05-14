@@ -132,7 +132,10 @@ class UserActivityBrowserAgentTest : public PlatformTest {
     connection_information_ = scene_state_.controller;
   }
 
-  ~UserActivityBrowserAgentTest() override {}
+  ~UserActivityBrowserAgentTest() override {
+    [scene_state_ shutdown];
+    scene_state_ = nil;
+  }
 
  protected:
   // Mock & stub a NSUserActivity object with an arbitrary `interaction`

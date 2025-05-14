@@ -117,6 +117,8 @@ class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
 
   ~NonModalDefaultBrowserPromoSchedulerSceneAgentTest() override {
     [application_ stopMocking];
+    [scene_state_ shutdown];
+    scene_state_ = nil;
   }
 
   void TearDown() override {
