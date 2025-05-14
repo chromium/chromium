@@ -455,6 +455,8 @@ void ReloadInternal(Browser* browser,
         browser->tab_strip_model()->GetWebContentsAt(selected_index));
   }
 
+  base::UmaHistogramCounts100("TabStrip.Tab.ReloadCount", selected_tabs.size());
+
   for (WebContents* const selected_tab : selected_tabs) {
     // Skip this tab if it is no longer part of this tabstrip. N.B. we do this
     // instead of using WeakPtr<WebContents> because we do not want to reload

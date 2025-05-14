@@ -28,6 +28,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -2107,7 +2108,10 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       if (!delegate_->CanReload()) {
         break;
       }
-      for (int index : GetIndicesForCommand(context_index)) {
+      const std::vector<int> indices = GetIndicesForCommand(context_index);
+      base::UmaHistogramCounts100("TabStrip.Tab.ContextMenuReloadCount",
+                                  indices.size());
+      for (int index : indices) {
         WebContents* tab = GetWebContentsAt(index);
         if (tab) {
           tab->GetController().Reload(content::ReloadType::NORMAL, true);

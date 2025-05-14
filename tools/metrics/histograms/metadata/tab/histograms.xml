@@ -3573,6 +3573,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabStrip.Tab.ContextMenuReloadCount" units="tabs"
+    expires_after="2025-11-14">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    When the user reloads a tab using the tab context menu, records the number
+    of tabs being reloaded.
+  </summary>
+</histogram>
+
+<histogram name="TabStrip.Tab.ReloadCount" units="tabs"
+    expires_after="2025-11-14">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    When the user reloads a tab using the toolbar button, hotkey, or contents
+    context menu, records the number of tabs being reloaded.
+  </summary>
+</histogram>
+
 <histogram name="TabStrip.Tab.{Framework}.ActivationAction"
     enum="TabActivationTypes" expires_after="2025-09-14">
   <owner>yuhengh@chromium.org</owner>
