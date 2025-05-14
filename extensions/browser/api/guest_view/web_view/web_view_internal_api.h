@@ -17,6 +17,8 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/url_fetcher.h"
 
+class SkBitmap;
+
 namespace base {
 class TaskRunner;
 }

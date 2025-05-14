@@ -853,7 +853,10 @@ ExtensionFunction::ResponseAction WebViewInternalFindFunction::Run() {
         params->options->match_case ? *params->options->match_case : false;
   }
 
-  GetGuest().StartFind(search_text, std::move(options), this);
+  GetGuest().StartFind(
+      search_text, std::move(options),
+      base::BindOnce(&WebViewInternalFindFunction::ForwardResponse, this));
+
   // It is possible that StartFind has already responded.
   return did_respond() ? AlreadyResponded() : RespondLater();
 }

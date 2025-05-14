@@ -32,8 +32,6 @@ class StoragePartitionConfig;
 
 namespace extensions {
 
-class WebViewInternalFindFunction;
-
 // A WebViewGuest provides the browser-side implementation of the <webview> API
 // and manages the dispatch of <webview> extension events. WebViewGuest is
 // created on attachment. That is, when a guest WebContents is associated with
@@ -116,7 +114,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // Begin or continue a find request.
   void StartFind(const std::u16string& search_text,
                  blink::mojom::FindOptionsPtr options,
-                 scoped_refptr<WebViewInternalFindFunction> find_function);
+                 WebViewFindHelper::ForwardResponseCallback callback);
 
   // Conclude a find request to clear highlighting.
   void StopFinding(content::StopFindAction);

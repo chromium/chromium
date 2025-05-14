@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -18,13 +19,14 @@
 #include "ui/gfx/geometry/rect.h"
 
 namespace extensions {
-class WebViewInternalFindFunction;
 class WebViewGuest;
 
 // Helper class for find requests and replies for the web_view_internal find
 // API.
 class WebViewFindHelper {
  public:
+  using ForwardResponseCallback = base::OnceCallback<void(base::Value::Dict)>;
+
   explicit WebViewFindHelper(WebViewGuest* webview_guest);
 
   WebViewFindHelper(const WebViewFindHelper&) = delete;
@@ -46,7 +48,7 @@ class WebViewFindHelper {
   void Find(content::WebContents* guest_web_contents,
             const std::u16string& search_text,
             blink::mojom::FindOptionsPtr options,
-            scoped_refptr<WebViewInternalFindFunction> find_function);
+            ForwardResponseCallback callback);
 
   // Helper function for WeViewGuest:FindReply().
   void FindReply(int request_id,
@@ -114,7 +116,7 @@ class WebViewFindHelper {
     FindInfo(int request_id,
              const std::u16string& search_text,
              blink::mojom::FindOptionsPtr options,
-             scoped_refptr<WebViewInternalFindFunction> find_function);
+             ForwardResponseCallback callback);
 
     FindInfo(const FindInfo&) = delete;
     FindInfo& operator=(const FindInfo&) = delete;
@@ -156,7 +158,7 @@ class WebViewFindHelper {
     const int request_id_;
     const std::u16string search_text_;
     blink::mojom::FindOptionsPtr options_;
-    scoped_refptr<WebViewInternalFindFunction> find_function_;
+    ForwardResponseCallback callback_;
     FindResults find_results_;
 
     // A find reply has been received for this find request.

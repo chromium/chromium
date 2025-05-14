@@ -55,7 +55,6 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 #include "extensions/browser/api/extensions_api_client.h"
-#include "extensions/browser/api/guest_view/web_view/web_view_internal_api.h"
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/bad_message.h"
 #include "extensions/browser/extension_system.h"
@@ -990,9 +989,9 @@ void WebViewGuest::RendererUnresponsive(
 void WebViewGuest::StartFind(
     const std::u16string& search_text,
     blink::mojom::FindOptionsPtr options,
-    scoped_refptr<WebViewInternalFindFunction> find_function) {
+    WebViewFindHelper::ForwardResponseCallback callback) {
   find_helper_.Find(web_contents(), search_text, std::move(options),
-                    find_function);
+                    std::move(callback));
 }
 
 void WebViewGuest::StopFinding(content::StopFindAction action) {

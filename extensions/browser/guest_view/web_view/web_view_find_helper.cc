@@ -10,8 +10,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/not_fatal_until.h"
 #include "components/guest_view/browser/guest_view_event.h"
-#include "extensions/browser/api/guest_view/web_view/web_view_internal_api.h"
 #include "extensions/browser/guest_view/web_view/web_view_constants.h"
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 
 using guest_view::GuestViewEvent;
 
@@ -101,11 +101,10 @@ void WebViewFindHelper::EndFindSession(int session_request_id, bool canceled) {
   find_info_map_.erase(session_request_id);
 }
 
-void WebViewFindHelper::Find(
-    content::WebContents* guest_web_contents,
-    const std::u16string& search_text,
-    blink::mojom::FindOptionsPtr options,
-    scoped_refptr<WebViewInternalFindFunction> find_function) {
+void WebViewFindHelper::Find(content::WebContents* guest_web_contents,
+                             const std::u16string& search_text,
+                             blink::mojom::FindOptionsPtr options,
+                             ForwardResponseCallback callback) {
   // Need a new request_id for each new find request.
   ++current_find_request_id_;
 
@@ -124,9 +123,9 @@ void WebViewFindHelper::Find(
   // function can be called when the find results are available.
   std::pair<FindInfoMap::iterator, bool> insert_result =
       find_info_map_.insert(std::make_pair(
-          current_find_request_id_,
-          base::MakeRefCounted<FindInfo>(current_find_request_id_, search_text,
-                                         options.Clone(), find_function)));
+          current_find_request_id_, base::MakeRefCounted<FindInfo>(
+                                        current_find_request_id_, search_text,
+                                        options.Clone(), std::move(callback))));
   // No duplicate insertions.
   CHECK(insert_result.second);
 
@@ -259,15 +258,14 @@ void WebViewFindHelper::FindUpdateEvent::PrepareResults(
   find_results_.PrepareResults(results);
 }
 
-WebViewFindHelper::FindInfo::FindInfo(
-    int request_id,
-    const std::u16string& search_text,
-    blink::mojom::FindOptionsPtr options,
-    scoped_refptr<WebViewInternalFindFunction> find_function)
+WebViewFindHelper::FindInfo::FindInfo(int request_id,
+                                      const std::u16string& search_text,
+                                      blink::mojom::FindOptionsPtr options,
+                                      ForwardResponseCallback callback)
     : request_id_(request_id),
       search_text_(search_text),
       options_(std::move(options)),
-      find_function_(find_function),
+      callback_(std::move(callback)),
       replied_(false) {}
 
 void WebViewFindHelper::FindInfo::AggregateResults(
@@ -292,7 +290,7 @@ void WebViewFindHelper::FindInfo::SendResponse(bool canceled) {
   results.Set(kFindCanceled, canceled);
 
   // Call the callback.
-  find_function_->ForwardResponse(std::move(results));
+  std::move(callback_).Run(std::move(results));
 }
 
 WebViewFindHelper::FindInfo::~FindInfo() = default;
