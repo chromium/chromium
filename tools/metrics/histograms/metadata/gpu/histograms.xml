@@ -1084,6 +1084,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Gpu.Metal.FamilyMac" enum="MetalFamilyMac"
+    expires_after="2025-12-31">
+  <owner>cwallez@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    MTLGPUFamilyMac1 is deprecated since macOS 13 and iOS 16. This histograms is
+    meant to gather information so that the WebGPU W3C group can decide whether
+    to drop MTLGPUFamilyMac1 support. The histogram is recorded at GPU process
+    startup time.
+  </summary>
+</histogram>
+
 <histogram name="Gpu.Metal.ReadWriteTextureSupport"
     enum="MetalReadWriteTextureSupportTier" expires_after="2024-09-01">
   <owner>cwallez@chromium.org</owner>
