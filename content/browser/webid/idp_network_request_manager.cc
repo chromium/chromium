@@ -1399,7 +1399,6 @@ void IdpNetworkRequestManager::OnAllAccountPicturesAndBrandIconUrlReceived(
     rp_brand_icon = it->second;
   }
 
-  gfx::Image idp_brand_icon;
   it = downloaded_images_.find(idp_info->metadata.brand_icon_url);
   if (it != downloaded_images_.end()) {
     idp_info->metadata.brand_decoded_icon = it->second;
