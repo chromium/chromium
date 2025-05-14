@@ -482,7 +482,7 @@ suite('VoicePackController', () => {
     ]);
     voicePackController.restoreFromPrefs();
     assertArrayEquals([lang1], voicePackController.getEnabledLangs());
-    assertArrayEquals([lang1], chrome.readingMode.getLanguagesEnabledInPref());
+    assertArrayEquals([], chrome.readingMode.getLanguagesEnabledInPref());
     onEnabledLangsChange = false;
 
     speech.setVoices([
