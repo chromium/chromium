@@ -113,12 +113,12 @@ void LogModelInquireTime(base::TimeTicks model_inquire_start_time,
                          bool is_on_device) {
   using permissions::PredictionModelType;
 
-  std::string histogram_name =
-      base::StrCat({"Permissions.",
-                    permissions::PermissionUmaUtil::GetPredictionModelString(
-                        is_on_device ? PredictionModelType::kTfLiteOnDevice
-                                     : PredictionModelType::kServerSide),
-                    ".InquiryDuration"});
+  std::string histogram_name = base::StrCat(
+      {"Permissions.",
+       permissions::PermissionUmaUtil::GetPredictionModelString(
+           is_on_device ? PredictionModelType::kOnDeviceCpssV1Model
+                        : PredictionModelType::kServerSideCpssV3Model),
+       ".InquiryDuration"});
   base::UmaHistogramMediumTimes(
       histogram_name, base::TimeTicks::Now() - model_inquire_start_time);
 }

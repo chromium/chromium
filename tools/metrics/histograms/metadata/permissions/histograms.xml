@@ -191,11 +191,14 @@ chromium-metrics-reviews@google.com.
   <variant name="WindowPlacement"/>
 </variants>
 
+<!-- LINT.IfChange(PredictionModels) -->
+
 <variants name="PredictionModels">
-  <variant name="AIv1"/>
   <variant name="OnDevicePredictionService"/>
   <variant name="PredictionService"/>
 </variants>
+
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PredictionModelType) -->
 
 <variants name="PromptDisposition">
   <variant name="AnchoredBubble"/>

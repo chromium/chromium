@@ -1500,12 +1500,10 @@ std::string PermissionUmaUtil::GetOneTimePermissionEventHistogram(
 std::string PermissionUmaUtil::GetPredictionModelString(
     PredictionModelType model_type) {
   switch (model_type) {
-    case PredictionModelType::kServerSide:
+    case PredictionModelType::kServerSideCpssV3Model:
       return "PredictionService";
-    case PredictionModelType::kTfLiteOnDevice:
+    case PredictionModelType::kOnDeviceCpssV1Model:
       return "OnDevicePredictionService";
-    case PredictionModelType::kGenAiOnDevice:
-      return "AIv1";
     default:
       NOTREACHED();
   }

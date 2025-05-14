@@ -48,14 +48,13 @@ enum class ActivityIndicatorState {
 
 // Used for UMA histograms to record model execution stats for the different
 // models we use for a permission prediction.
-// When updating, you also need to update the PredictionModels variant in
-//      tools/metrics/histograms/metadata/permissions/histograms.xml.
+// LINT.IfChange(PredictionModelType)
 enum class PredictionModelType {
   kUnknown = 0,
-  kServerSide = 1,      // url based cpss v2
-  kTfLiteOnDevice = 2,  // on device cpss v1
-  kGenAiOnDevice = 3,   // on device genAI v1
+  kServerSideCpssV3Model = 1,
+  kOnDeviceCpssV1Model = 2,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/histograms.xml:PredictionModels)
 
 // Used for UMA to record the types of permission prompts shown.
 // When updating, you also need to update:
