@@ -821,6 +821,33 @@ TEST_F(AILanguageModelTest, MeasureInputUsage) {
   EXPECT_EQ(measure_future.Get(), std::string("UfooEM").size());
 }
 
+TEST_F(AILanguageModelTest, TextSafetyInitialPrompts) {
+  auto config = CreateConfig();
+  config.set_can_skip_text_safety(false);
+  fake_broker_.UpdateModelAdaptation(
+      optimization_guide::FakeAdaptationAsset({.config = config}));
+  auto safety_config = CreateSafetyConfig();
+  auto* check = safety_config.add_request_check();
+  check->mutable_input_template()->Add(
+      FieldSubstitution("%s", StringValueField()));
+  optimization_guide::FakeSafetyModelAsset safety_asset(
+      std::move(safety_config));
+  fake_broker_.UpdateSafetyModel(safety_asset.model_info());
+
+  base::test::TestFuture<blink::mojom::AIManagerCreateClientError> future;
+  AITestUtils::MockCreateLanguageModelClient language_model_client;
+  EXPECT_CALL(language_model_client, OnError(_)).WillOnce([&](auto error) {
+    future.SetValue(error);
+  });
+
+  auto options = blink::mojom::AILanguageModelCreateOptions::New();
+  options->initial_prompts.push_back(MakePrompt(Role::kSystem, "unsafe"));
+  GetAIManagerRemote()->CreateLanguageModel(
+      language_model_client.BindNewPipeAndPassRemote(), std::move(options));
+  EXPECT_EQ(future.Take(),
+            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+}
+
 TEST_F(AILanguageModelTest, TextSafetyInput) {
   auto config = CreateConfig();
   config.set_can_skip_text_safety(false);

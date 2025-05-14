@@ -580,26 +580,56 @@ void AILanguageModel::InitializeGetInputSizeComplete(
     mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
         create_client,
     std::optional<uint32_t> token_count) {
-  mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient> client(
-      std::move(create_client));
   if (!initial_session_ || !token_count) {
-    client->OnError(
-        blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+    mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>(
+        std::move(create_client))
+        ->OnError(
+            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
     return;
   }
 
   uint32_t max_tokens = context_->max_tokens();
   if (*token_count > max_tokens) {
-    client->OnError(
-        blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge);
+    mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>(
+        std::move(create_client))
+        ->OnError(
+            blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge);
     return;
   }
 
-  if (input) {
-    // `context_` will track how many tokens are remaining after the initial
-    // prompts. The initial prompts cannot be evicted.
-    context_ = std::make_unique<Context>(max_tokens - *token_count);
+  // `context_` will track how many tokens are remaining after the initial
+  // prompts. The initial prompts cannot be evicted.
+  context_ = std::make_unique<Context>(max_tokens - *token_count);
 
+  if (input) {
+    auto safety_input = CreateStringMessage(*input);
+    safety_checker_->RunRequestChecks(
+        safety_input,
+        base::BindOnce(&AILanguageModel::InitializeSafetyChecksComplete,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(input),
+                       std::move(create_client)));
+  } else {
+    InitializeSafetyChecksComplete(nullptr, std::move(create_client),
+                                   optimization_guide::SafetyChecker::Result());
+  }
+}
+
+void AILanguageModel::InitializeSafetyChecksComplete(
+    on_device_model::mojom::InputPtr input,
+    mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
+        create_client,
+    optimization_guide::SafetyChecker::Result safety_result) {
+  mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient> client(
+      std::move(create_client));
+  // TODO(crbug.com/415808003): Add more fine grained errors on safety check
+  // failure.
+  if (safety_result.failed_to_run || safety_result.is_unsafe ||
+      safety_result.is_unsupported_language) {
+    client->OnError(
+        blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+    return;
+  }
+  if (input) {
     // No ContextClient is passed here since this operation should never be
     // cancelled unless the session is destroyed.
     initial_session_->Append(MakeAppendOptions(std::move(input)), {});

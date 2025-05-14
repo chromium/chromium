@@ -155,6 +155,11 @@ class AILanguageModel : public AIContextBoundObject,
       mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
           create_client,
       std::optional<uint32_t> token_count);
+  void InitializeSafetyChecksComplete(
+      on_device_model::mojom::InputPtr input,
+      mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
+          create_client,
+      optimization_guide::SafetyChecker::Result safety_result);
 
   void ForkInternal(
       mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
