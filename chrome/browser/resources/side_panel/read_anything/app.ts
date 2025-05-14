@@ -27,7 +27,6 @@ import {SpeechController} from './read_aloud/speech_controller.js';
 import type {SpeechListener} from './read_aloud/speech_controller.js';
 import {VoicePackController} from './read_aloud/voice_pack_controller.js';
 import type {VoiceLanguageListener} from './read_aloud/voice_pack_controller.js';
-import {WordBoundaries} from './read_aloud/word_boundaries.js';
 import {ReadAnythingLogger, TimeFrom} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 import {VoiceNotificationManager} from './voice_notification_manager.js';
@@ -127,7 +126,6 @@ export class AppElement extends AppElementBase implements
   private styleUpdater_: AppStyleUpdater;
   private highlighter_: ReadAloudHighlighter =
       ReadAloudHighlighter.getInstance();
-  private wordBoundaries_: WordBoundaries = WordBoundaries.getInstance();
   private nodeStore_: NodeStore = NodeStore.getInstance();
   private voicePackController_: VoicePackController =
       VoicePackController.getInstance();
@@ -482,9 +480,8 @@ export class AppElement extends AppElementBase implements
       this.logger_.logSpeechStopSource(
           chrome.readingMode.unexpectedUpdateContentStopSource);
     }
-    const previousSpeechPlayingState = {...this.speechController_.getState()};
-    const previousWordBoundaryState = {...this.wordBoundaries_.state};
 
+    this.speechController_.saveReadAloudState();
     this.speechController_.clearReadAloudState();
     const container = this.$.container;
 
@@ -553,10 +550,7 @@ export class AppElement extends AppElementBase implements
 
     // If the previous reading position still exists and we haven't reached the
     // end of speech, keep that spot.
-    if (previousSpeechPlayingState.hasSpeechBeenTriggered) {
-      this.speechController_.setPreviousReadingPositionIfExists(
-          previousWordBoundaryState, previousSpeechPlayingState);
-    }
+    this.speechController_.setPreviousReadingPositionIfExists();
   }
 
   async onImageDownloaded(nodeId: number) {
@@ -670,12 +664,11 @@ export class AppElement extends AppElementBase implements
     startElement.scrollIntoViewIfNeeded();
   }
 
-  protected updateLinks_(shouldRehighlightCurrentNodes: boolean = true) {
+  protected updateLinks_() {
     if (!this.shadowRoot) {
       return;
     }
 
-    const originallyHadHighlights = this.highlighter_.hasCurrentHighlights();
     const selector = this.shouldShowLinks() ? 'span[data-link]' : 'a';
     const elements = this.shadowRoot.querySelectorAll(selector);
 
@@ -687,13 +680,7 @@ export class AppElement extends AppElementBase implements
       this.nodeStore_.replaceDomNode(elem, replacement);
     }
 
-    // Rehighlight the current granularity text after links have been
-    // toggled on or off to ensure the entire granularity segment is
-    // highlighted.
-    if (shouldRehighlightCurrentNodes && originallyHadHighlights) {
-      this.speechController_.highlightCurrentGranularity(
-          chrome.readingMode.getCurrentText());
-    }
+    this.speechController_.onLinksToggled();
     this.loadImages_();
   }
 
@@ -821,12 +808,12 @@ export class AppElement extends AppElementBase implements
     this.speechController_.onSpeechSettingsChange();
   }
 
-  protected playNextGranularity_() {
-    this.speechController_.playNextGranularity();
+  protected onNextGranularityClick_() {
+    this.speechController_.onNextGranularityClick();
   }
 
-  protected playPreviousGranularity_() {
-    this.speechController_.playPreviousGranularity();
+  protected onPreviousGranularityClick_() {
+    this.speechController_.onPreviousGranularityClick();
   }
 
   private getSelectedIds(): {

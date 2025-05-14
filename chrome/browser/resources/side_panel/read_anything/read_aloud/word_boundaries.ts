@@ -29,7 +29,7 @@ export interface WordBoundaryState {
 }
 
 export class WordBoundaries {
-  accessor state: WordBoundaryState = {
+  state: WordBoundaryState = {
     mode: WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED,
     speechUtteranceStartIndex: 0,
     previouslySpokenIndex: 0,

@@ -203,8 +203,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ToolbarOverflow) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest,
-                       DISABLED_LinksToggledIntegration) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LinksToggledIntegration) {
   RunSidePanelTest("side_panel/read_anything/links_toggled_integration_test.js",
                    "mocha.run()");
 }

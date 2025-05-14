@@ -5,9 +5,9 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {MAX_SPEECH_LENGTH, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertGT, assertLT, assertNotEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertGT} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createApp, emitEvent} from './common.js';
+import {createApp, createSpeechSynthesisVoice, emitEvent} from './common.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('SpeechUsesMaxTextLength', () => {
@@ -16,9 +16,6 @@ suite('SpeechUsesMaxTextLength', () => {
   let speech: TestSpeechBrowserProxy;
   let speechController: SpeechController;
 
-  const shortSentence =
-      'The snow glows white on the mountain tonight, not a footprint to be ' +
-      'seen. ';
   const longSentence =
       'A kingdom of isolation, and it looks like I am the queen and the ' +
       'wind is howling like this swirling storm inside, Couldn\t keep it ' +
@@ -48,28 +45,44 @@ suite('SpeechUsesMaxTextLength', () => {
       'girl is gone- here I stand in the light of day, let the storm rage ' +
       'on- the cold never bothered me anyway';
 
-  // The page needs some text to start speaking
-  const axTree = {
-    rootId: 1,
-    nodes: [
-      {
-        id: 1,
-        role: 'rootWebArea',
-        htmlTag: '#document',
-        childIds: [2, 3],
-      },
-      {
-        id: 2,
-        role: 'staticText',
-        name: longSentence,
-      },
-      {
-        id: 3,
-        role: 'staticText',
-        name: shortSentence,
-      },
-    ],
-  };
+  const localVoice = createSpeechSynthesisVoice(
+      {lang: 'en', name: 'Google Raccoon', localService: true});
+  const remoteVoice = createSpeechSynthesisVoice(
+      {lang: 'en', name: 'Google Red Panda', localService: false});
+
+  function setContentWithText(text: string) {
+    const axTree = {
+      rootId: 1,
+      nodes: [
+        {
+          id: 1,
+          role: 'rootWebArea',
+          htmlTag: '#document',
+          childIds: [2],
+        },
+        {
+          id: 2,
+          role: 'staticText',
+          name: text,
+        },
+      ],
+    };
+
+    chrome.readingMode.setContentForTesting(axTree, [2]);
+  }
+
+  async function assertSpeaksWithNumSegments(expectedNumSegments: number) {
+    assertGT(expectedNumSegments, 0);
+    for (let i = 0; i < expectedNumSegments; i++) {
+      console.error('waiting for speak', i);
+      const spoken = await speech.whenCalled('speak');
+      assertGT(maxSpeechLength, spoken.text.length);
+      speech.reset();
+      spoken.onend();
+    }
+
+    assertEquals(0, speech.getCallCount('speak'));
+  }
 
   setup(async () => {
     // Clearing the DOM should always be done first.
@@ -86,13 +99,10 @@ suite('SpeechUsesMaxTextLength', () => {
     app = await createApp();
     maxSpeechLength = MAX_SPEECH_LENGTH;
   });
+
   // These checks ensure the text used in this test stays up to date
   // in case the maximum speech length changes.
   suite('compared to max speech length', () => {
-    test('short sentence is shorter', () => {
-      assertLT(shortSentence.length, maxSpeechLength);
-    });
-
     test('long sentences are longer', () => {
       assertGT(longSentence.length, maxSpeechLength);
       assertGT(longSentenceWithFewCommas.length, maxSpeechLength);
@@ -104,90 +114,86 @@ suite('SpeechUsesMaxTextLength', () => {
     });
   });
 
-  suite('on long sentence', () => {
-    test('accessible text boundary is before max speech length', () => {
-      const firstBoundary =
-          speechController.getUtteranceEndBoundary(longSentence, true);
-      assertLT(firstBoundary, maxSpeechLength);
-    });
+  test('long sentence with local voice speaks full sentence', async () => {
+    setContentWithText(longSentence);
+    emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice: localVoice}});
 
-    test('highlights full sentence', () => {
-      chrome.readingMode.setContentForTesting(axTree, [2, 3]);
-      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
 
-      assertEquals(
-          app.$.container.querySelector('.current-read-highlight')!.textContent,
-          longSentence);
-    });
+    const spoken = await speech.whenCalled('speak');
+    assertEquals(longSentence, spoken.text);
   });
 
-  suite('on long sentence with few commas', () => {
-    let firstBoundary: number;
+  test('long sentence with remote voice uses max length', () => {
+    setContentWithText(longSentence);
+    const expectedNumSegments =
+        Math.ceil(longSentence.length / maxSpeechLength);
+    emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice: remoteVoice}});
 
-    setup(() => {
-      firstBoundary = speechController.getUtteranceEndBoundary(
-          longSentenceWithFewCommas, true);
-    });
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
 
-
-    test('first accessible text boundary is at last comma', () => {
-      assertLT(firstBoundary, longSentenceWithFewCommas.length);
-      assertEquals(firstBoundary, longSentenceWithFewCommas.lastIndexOf(','));
-    });
-
-    test('next accessible text boundary is before end of string', () => {
-      const afterFirstBoundary = longSentenceWithFewCommas.substring(
-          firstBoundary, longSentenceWithFewCommas.length);
-      const secondBoundary =
-          speechController.getUtteranceEndBoundary(afterFirstBoundary, true);
-      const afterSecondBoundary = longSentenceWithFewCommas.substring(
-          secondBoundary, longSentenceWithFewCommas.length);
-
-      assertGT(afterFirstBoundary.length, maxSpeechLength);
-      assertLT(secondBoundary, afterFirstBoundary.length);
-      assertNotEquals(afterSecondBoundary, afterFirstBoundary);
-    });
+    assertSpeaksWithNumSegments(expectedNumSegments);
   });
 
-  test('commas in numbers ignored', () => {
-    const invalidCommaSplices = '525,600 minutes 525,000 moments so dear';
-    const validCommaSplice = '525,600 minutes, 525,000 moments so dear';
+  test(
+      'long sentence with few commas with local voice speaks full sentence',
+      async () => {
+        setContentWithText(longSentenceWithFewCommas);
+        emitEvent(
+            app, ToolbarEvent.VOICE, {detail: {selectedVoice: localVoice}});
 
-    // When there are no other commas in a phrase, we don't splice on the
-    // commas within numbers.
-    let boundary =
-        speechController.getUtteranceEndBoundary(invalidCommaSplices, true);
-    assertEquals(
-        invalidCommaSplices, invalidCommaSplices.substring(0, boundary));
+        emitEvent(app, ToolbarEvent.PLAY_PAUSE);
 
-    // When there is a valid comma in a string, we splice on that instead of
-    // on the commas within numbers
-    boundary = speechController.getUtteranceEndBoundary(validCommaSplice, true);
-    assertEquals('525,600 minutes', validCommaSplice.substring(0, boundary));
-  });
+        const spoken = await speech.whenCalled('speak');
+        assertEquals(longSentenceWithFewCommas, spoken.text);
+      });
 
-  suite('on long sentence with commas after max speech length', () => {
-    let firstBoundary: number;
+  test(
+      'long sentence with few commas with remote voice uses last comma and ' +
+          'then max length',
+      async () => {
+        const expectedFirstText = longSentenceWithFewCommas.substring(
+            0, longSentenceWithFewCommas.lastIndexOf(','));
+        const expectedNumSegments =
+            Math.ceil(longSentence.length / maxSpeechLength) - 1;
+        setContentWithText(longSentenceWithFewCommas);
+        emitEvent(
+            app, ToolbarEvent.VOICE, {detail: {selectedVoice: remoteVoice}});
 
-    setup(() => {
-      firstBoundary = speechController.getUtteranceEndBoundary(
-          longSentenceWithLateComma, true);
-    });
+        emitEvent(app, ToolbarEvent.PLAY_PAUSE);
 
+        const spoken1 = await speech.whenCalled('speak');
+        assertEquals(expectedFirstText, spoken1.text);
+        speech.reset();
+        spoken1.onend();
+        assertSpeaksWithNumSegments(expectedNumSegments);
+      });
 
-    test('commas after max speech length aren\'t used', () => {
-      const afterFirstBoundary = longSentenceWithFewCommas.substring(
-          firstBoundary, longSentenceWithFewCommas.length);
-      const secondBoundary =
-          speechController.getUtteranceEndBoundary(afterFirstBoundary, true);
-      const afterSecondBoundary = longSentenceWithFewCommas.substring(
-          firstBoundary, longSentenceWithFewCommas.length);
-      const thirdBoundary =
-          speechController.getUtteranceEndBoundary(afterSecondBoundary, true);
+  test(
+      'long sentence with late commas with local voice speaks full sentence',
+      async () => {
+        setContentWithText(longSentenceWithLateComma);
+        emitEvent(
+            app, ToolbarEvent.VOICE, {detail: {selectedVoice: localVoice}});
 
-      assertLT(firstBoundary, maxSpeechLength);
-      assertLT(secondBoundary, maxSpeechLength);
-      assertLT(thirdBoundary, maxSpeechLength);
-    });
-  });
+        emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+
+        const spoken = await speech.whenCalled('speak');
+        assertEquals(longSentenceWithLateComma, spoken.text);
+      });
+
+  test(
+      'long sentence with late commas with remote voice uses comma before max' +
+          ' length',
+      () => {
+        const expectedNumSegments =
+            Math.ceil(longSentence.length / maxSpeechLength);
+        setContentWithText(longSentenceWithLateComma);
+        emitEvent(
+            app, ToolbarEvent.VOICE, {detail: {selectedVoice: remoteVoice}});
+
+        emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+
+        assertSpeaksWithNumSegments(expectedNumSegments);
+      });
 });

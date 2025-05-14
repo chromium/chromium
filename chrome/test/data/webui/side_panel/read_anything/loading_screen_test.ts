@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy, PauseActionSource, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, SpeechController, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement, SpEmptyStateElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp} from './common.js';
+import {createApp, emitEvent, setSimpleAxTreeWithText} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
@@ -40,24 +40,16 @@ suite('LoadingScreen', () => {
     assertStringContains(emptyState.imagePath, spinner);
   });
 
-  test('with flag clears read aloud state', () => {
-    speechController.setState({
-      isSpeechActive: true,
-      isSpeechTreeInitialized: true,
-      pauseSource: PauseActionSource.BUTTON_CLICK,
-      isAudioCurrentlyPlaying: true,
-      hasSpeechBeenTriggered: true,
-      isSpeechBeingRepositioned: true,
-    });
+  test('clears read aloud state', () => {
+    setSimpleAxTreeWithText('My name is Regina George');
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+    assertTrue(speechController.isSpeechActive());
 
     app.showLoading();
 
     assertFalse(speechController.isSpeechActive());
-    assertFalse(speechController.isSpeechTreeInitialized());
     assertFalse(speechController.isPausedFromButton());
-    assertFalse(speechController.isAudioCurrentlyPlaying());
-    assertFalse(speechController.hasSpeechBeenTriggered());
-    assertFalse(speechController.isSpeechBeingRepositioned());
+    assertFalse(speechController.isTemporaryPause());
   });
 
   test('selection on loading screen does nothing', async () => {
