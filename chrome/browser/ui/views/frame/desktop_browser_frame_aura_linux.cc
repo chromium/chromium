@@ -92,6 +92,11 @@ void DesktopBrowserFrameAuraLinux::TabDraggingKindChanged(
   host_->TabDraggingKindChanged(tab_drag_kind);
 }
 
+void DesktopBrowserFrameAuraLinux::ClientDestroyedWidget() {
+  use_custom_frame_pref_.Destroy();
+  DesktopBrowserFrameAura::ClientDestroyedWidget();
+}
+
 bool DesktopBrowserFrameAuraLinux::ShouldDrawRestoredFrameShadow() const {
   return host_->SupportsClientFrameShadow() && UseCustomFrame();
 }
