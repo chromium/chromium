@@ -59,7 +59,9 @@ FromGWSAbandonedPageLoadMetricsObserver::OnNavigationHandleTimingUpdated(
 
   if (navigation_handle->GetNetErrorCode() < 0) {
     CHECK(!net_error_.has_value());
+    CHECK(!net_extended_error_code_.has_value());
     net_error_ = navigation_handle->GetNetErrorCode();
+    net_extended_error_code_ = navigation_handle->GetNetExtendedErrorCode();
   }
 
   // Set the request / response time of the second redirect by checking:
@@ -122,6 +124,8 @@ void FromGWSAbandonedPageLoadMetricsObserver::OnFailedProvisionalLoad(
   // through `OnNavigationHandleTimingUpdated`.
   if (!net_error_.has_value()) {
     net_error_ = failed_provisional_load_info.error;
+    net_extended_error_code_ =
+        failed_provisional_load_info.net_extended_error_code;
   }
   AbandonedPageLoadMetricsObserver::OnFailedProvisionalLoad(
       failed_provisional_load_info);
@@ -213,8 +217,11 @@ void FromGWSAbandonedPageLoadMetricsObserver::LogUKMHistograms(
   }
 
   if (net_error_.has_value()) {
+    CHECK(net_extended_error_code_.has_value());
     builder.SetNet_ErrorCode(
         std::abs(static_cast<int64_t>(net_error_.value())));
+    builder.SetNet_ExtendedErrorCode(
+        std::abs(net_extended_error_code_.value()));
   }
 
   LogUKMHistogramsForAbandonMetrics(builder, abandon_reason, milestone,
