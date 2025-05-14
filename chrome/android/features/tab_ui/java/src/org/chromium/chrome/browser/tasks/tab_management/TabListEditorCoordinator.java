@@ -475,18 +475,6 @@ class TabListEditorCoordinator {
     }
 
     /**
-     * Removes a {@link org.chromium.ui.modelutil.MVCListAdapter.ListItem} that has the given {@code
-     * uiType} and the {@link PropertyModel} has the given {@link TabListEditorItemSelectionId}.
-     *
-     * @param uiType The uiType to match.
-     * @param itemId The itemId to match.
-     */
-    public void removeListItem(@UiType int uiType, TabListEditorItemSelectionId itemId) {
-        assert mTabListCoordinator != null;
-        mTabListCoordinator.removeListItem(uiType, itemId);
-    }
-
-    /**
      * Override the content descriptions of the top-level layout and back button.
      *
      * @param containerContentDescription The content description for the top-level layout.

@@ -811,17 +811,6 @@ public class TabListCoordinator
         mMediator.removeSpecialItemFromModelList(uiType, itemIdentifier);
     }
 
-    /**
-     * Removes a {@link org.chromium.ui.modelutil.MVCListAdapter.ListItem} that has the given {@code
-     * uiType} and the {@link PropertyModel} has the given {@link TabListEditorItemSelectionId}.
-     *
-     * @param uiType The uiType to match.
-     * @param itemId The itemId to match.
-     */
-    void removeListItem(@UiType int uiType, TabListEditorItemSelectionId itemId) {
-        mMediator.removeListItemFromModelList(uiType, itemId);
-    }
-
     // PriceWelcomeMessageService.PriceWelcomeMessageProvider implementation.
     @Override
     public int getTabIndexFromTabId(int tabId) {
