@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_logger.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
 #import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_mediator.h"
 #import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_mediator_delegate.h"
@@ -53,6 +55,7 @@
   UIAlertController* _alertController;
   StoreKitCoordinator* _storeKitCoordinator;
   AccountPickerCoordinator* _accountPickerCoordinator;
+  SigninCoordinator* _addAccountCoordinator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -104,6 +107,7 @@
 }
 
 - (void)stop {
+  [self stopAddAccountCoordinator];
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
   [_mediator disconnect];
   _mediator = nil;
@@ -248,23 +252,26 @@
 - (void)accountPickerCoordinator:
             (AccountPickerCoordinator*)accountPickerCoordinator
     openAddAccountWithCompletion:(void (^)(id<SystemIdentity>))completion {
-  id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  ShowSigninCommand* addAccountCommand = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperation::kAddAccount
-               identity:nil
-            accessPoint:signin_metrics::AccessPoint::kSaveToPhotosIos
-            promoAction:signin_metrics::PromoAction::
-                            PROMO_ACTION_NO_SIGNIN_PROMO
-             completion:^(SigninCoordinatorResult result,
-                          id<SystemIdentity> completionIdentity) {
-               if (completion) {
-                 completion(completionIdentity);
-               }
-             }];
-  [applicationCommandsHandler
-              showSignin:addAccountCommand
-      baseViewController:accountPickerCoordinator.viewController];
+  signin_metrics::AccessPoint accessPoint =
+      signin_metrics::AccessPoint::kSaveToPhotosIos;
+  SigninContextStyle contextStyle = SigninContextStyle::kDefault;
+  _addAccountCoordinator = [SigninCoordinator
+      addAccountCoordinatorWithBaseViewController:accountPickerCoordinator
+                                                      .viewController
+                                          browser:self.browser
+                                     contextStyle:contextStyle
+                                      accessPoint:accessPoint
+                             continuationProvider:
+                                 DoNothingContinuationProvider()];
+  __weak __typeof(self) weakSelf = self;
+  _addAccountCoordinator.signinCompletion =
+      ^(SigninCoordinatorResult result, id<SystemIdentity> completionIdentity) {
+        if (completion) {
+          completion(completionIdentity);
+        }
+        [weakSelf stopAddAccountCoordinator];
+      };
+  [_addAccountCoordinator start];
 }
 
 - (void)accountPickerCoordinator:
@@ -357,6 +364,13 @@
   [alertBaseViewController presentViewController:_alertController
                                         animated:YES
                                       completion:nil];
+}
+
+#pragma mark - Private
+
+- (void)stopAddAccountCoordinator {
+  [_addAccountCoordinator stop];
+  _addAccountCoordinator = nil;
 }
 
 @end

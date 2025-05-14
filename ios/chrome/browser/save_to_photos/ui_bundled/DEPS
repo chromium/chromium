@@ -7,3 +7,10 @@ include_rules = [
   "+ios/chrome/browser/store_kit/model",
   "+ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h",
 ]
+
+specific_include_rules = {
+ "^save_to_photos_coordinator.mm": [
+   "+ios/chrome/browser/authentication/ui_bundled/continuation.h",
+   "+ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h",
+ ],
+}

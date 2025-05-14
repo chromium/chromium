@@ -11,6 +11,9 @@
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator_delegate.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_enums.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
 #import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_coordinator.h"
@@ -429,27 +432,26 @@ TEST_F(SaveToPhotosCoordinatorTest, ShowsAddAccount) {
   ASSERT_TRUE([coordinator
       conformsToProtocol:@protocol(AccountPickerCoordinatorDelegate)]);
 
+  AddAccountSigninCoordinator* signin_coordinator_mock =
+      OCMClassMock([AddAccountSigninCoordinator class]);
+  OCMExpect([(id)signin_coordinator_mock alloc])
+      .andReturn(signin_coordinator_mock);
+  OCMExpect([signin_coordinator_mock
+                initWithBaseViewController:account_picker_view_controller
+                                   browser:browser_.get()
+                              contextStyle:SigninContextStyle::kDefault
+                               accessPoint:signin_metrics::AccessPoint::
+                                               kSaveToPhotosIos
+                               promoAction:signin_metrics::PromoAction::
+                                               PROMO_ACTION_NO_SIGNIN_PROMO
+                              signinIntent:AddAccountSigninIntent::kAddAccount
+                      continuationProvider:DoNothingContinuationProvider()])
+      .ignoringNonObjectArgs()
+      .andReturn(signin_coordinator_mock);
+
   // Expect that a ShowSigninCommand will be dispatched to present the Add
   // account view on top of the account picker view.
   id<SystemIdentity> added_identity = [FakeSystemIdentity fakeIdentity1];
-  OCMExpect([mock_application_commands_handler_
-              showSignin:[OCMArg checkWithBlock:^BOOL(
-                                     ShowSigninCommand* command) {
-                if (command) {
-                  command.completion(SigninCoordinatorResultSuccess,
-                                     added_identity);
-                }
-                EXPECT_EQ(AuthenticationOperation::kAddAccount,
-                          command.operation);
-                EXPECT_FALSE(command.identity);
-                EXPECT_EQ(signin_metrics::AccessPoint::kSaveToPhotosIos,
-                          command.accessPoint);
-                EXPECT_EQ(
-                    signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-                    command.promoAction);
-                return YES;
-              }]
-      baseViewController:account_picker_view_controller]);
 
   // Ask the SaveToPhotosCoordinator to open the Add account view and verify the
   // ShowSigninCommand was dispatched.
@@ -458,7 +460,6 @@ TEST_F(SaveToPhotosCoordinatorTest, ShowsAddAccount) {
       openAddAccountWithCompletion:^(id<SystemIdentity> identity) {
         EXPECT_EQ(added_identity, identity);
       }];
-  EXPECT_OCMOCK_VERIFY(mock_application_commands_handler_);
 
   [coordinator stop];
 }

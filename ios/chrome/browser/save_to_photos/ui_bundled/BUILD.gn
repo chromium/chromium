@@ -64,6 +64,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/account_picker/ui_bundled:account_picker_configuration",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin",
     "//ios/chrome/browser/photos/model:metrics",
     "//ios/chrome/browser/photos/model:photos_service_factory",
     "//ios/chrome/browser/shared/coordinator/alert",
