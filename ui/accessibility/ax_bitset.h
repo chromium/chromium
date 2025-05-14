@@ -2,19 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <array>
-
 #ifndef UI_ACCESSIBILITY_AX_BITSET_H_
 #define UI_ACCESSIBILITY_AX_BITSET_H_
 
 #include <stdint.h>
 
-#include <memory>
 #include <optional>
-#include <string>
-#include <tuple>
-
-#include "base/check.h"
 
 namespace ui {
 
