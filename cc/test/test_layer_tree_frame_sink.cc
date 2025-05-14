@@ -58,6 +58,18 @@ class TestLayerTreeFrameSink::TestCompositorFrameSinkSupport
     DebugScopedSetImplThread impl(task_runner_provider_);
     test_client_->DisplayReceivedCompositorFrame(frame);
 
+    CHECK(local_surface_id.is_valid()) << "Tests should ensure a valid LSIid";
+
+    if (last_submitted_display_size_ != frame.size_in_pixels() ||
+        last_submitted_device_scale_factor_ != frame.device_scale_factor()) {
+      CHECK_NE(last_submitted_local_surface_id_, local_surface_id)
+          << "Tests should update LSIid when changing display size or scale";
+      last_submitted_display_size_ = frame.size_in_pixels();
+      last_submitted_device_scale_factor_ = frame.device_scale_factor();
+    }
+
+    last_submitted_local_surface_id_ = local_surface_id;
+
     // Ensure that the display's local surface ID and its size are initialized
     // (note that these calls will be no-ops if already called for this surface
     // ID/device scale factor/frame size on a previous invocation of
@@ -67,12 +79,20 @@ class TestLayerTreeFrameSink::TestCompositorFrameSinkSupport
 
     viz::CompositorFrameSinkSupport::SubmitCompositorFrame(
         local_surface_id, std::move(frame), hit_test_region_list, submit_time);
+
+    if (!display_->has_scheduler()) {
+      // In synchronous mode, we manually issue DrawAndSwap.
+      display_->DrawAndSwap({base::TimeTicks::Now(), base::TimeTicks::Now()});
+    }
   }
 
  private:
   raw_ptr<viz::Display> display_;
   raw_ptr<TestLayerTreeFrameSinkClient> test_client_ = nullptr;
   raw_ptr<TaskRunnerProvider> task_runner_provider_;
+  gfx::Size last_submitted_display_size_;
+  float last_submitted_device_scale_factor_;
+  viz::LocalSurfaceId last_submitted_local_surface_id_;
 };
 
 class TestLayerTreeFrameSink::TestCompositorFrameSinkImpl
@@ -154,8 +174,6 @@ TestLayerTreeFrameSink::TestLayerTreeFrameSink(
       debug_settings_(debug_settings),
       refresh_rate_(refresh_rate),
       frame_sink_id_(kLayerTreeFrameSinkId),
-      parent_local_surface_id_allocator_(
-          new viz::ParentLocalSurfaceIdAllocator),
       client_provided_begin_frame_source_(begin_frame_source),
       external_begin_frame_source_(this),
       task_runner_provider_(task_runner_provider),
@@ -164,7 +182,6 @@ TestLayerTreeFrameSink::TestLayerTreeFrameSink(
               ? std::make_unique<viz::TestSharedImageInterfaceProvider>(
                     shared_image_interface)
               : std::make_unique<viz::TestSharedImageInterfaceProvider>()) {
-  parent_local_surface_id_allocator_->GenerateId();
 }
 
 TestLayerTreeFrameSink::~TestLayerTreeFrameSink() = default;
@@ -286,7 +303,6 @@ void TestLayerTreeFrameSink::DetachFromClient() {
   support_ = nullptr;
   display_ = nullptr;
   begin_frame_source_ = nullptr;
-  parent_local_surface_id_allocator_ = nullptr;
   frame_sink_manager_ = nullptr;
   test_client_ = nullptr;
   LayerTreeFrameSink::DetachFromClient();
@@ -295,6 +311,7 @@ void TestLayerTreeFrameSink::DetachFromClient() {
 void TestLayerTreeFrameSink::SetLocalSurfaceId(
     const viz::LocalSurfaceId& local_surface_id) {
   DebugScopedSetImplThread impl(task_runner_provider_);
+  local_surface_id_ = local_surface_id;
   test_client_->DisplayReceivedLocalSurfaceId(local_surface_id);
 }
 
@@ -313,24 +330,10 @@ void TestLayerTreeFrameSink::SubmitCompositorFrame(viz::CompositorFrame frame,
   DCHECK(frame.metadata.begin_frame_ack.has_damage);
   DCHECK(frame.metadata.begin_frame_ack.frame_id.IsSequenceValid());
 
-  gfx::Size frame_size = frame.size_in_pixels();
-  float device_scale_factor = frame.device_scale_factor();
-
-  if (frame_size != display_size_ ||
-      device_scale_factor != device_scale_factor_) {
-    parent_local_surface_id_allocator_->GenerateId();
-    display_size_ = frame_size;
-    device_scale_factor_ = device_scale_factor;
-  }
-
-  viz::LocalSurfaceId local_surface_id =
-      parent_local_surface_id_allocator_->GetCurrentLocalSurfaceId();
-
-  support_->SubmitCompositorFrame(local_surface_id, std::move(frame),
+  support_->SubmitCompositorFrame(local_surface_id_, std::move(frame),
                                   std::nullopt, 0);
 
   if (!display_->has_scheduler()) {
-    display_->DrawAndSwap({base::TimeTicks::Now(), base::TimeTicks::Now()});
     // Post this to get a new stack frame so that we exit this function before
     // calling the client to tell it that it is done.
     compositor_task_runner_->PostTask(

@@ -9,6 +9,7 @@
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/layer_tree_pixel_test.h"
 #include "cc/test/pixel_comparator.h"
+#include "cc/trees/layer_tree_impl.h"
 #include "components/viz/test/test_types.h"
 
 #if !BUILDFLAG(IS_ANDROID)
