@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -46,6 +47,10 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/media_ui_ash.h"
+#endif
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_keyed_service.h"
 #endif
 
 namespace mojom {
@@ -127,6 +132,7 @@ bool ShouldInitializeWithRemotePlaybackSource(
 
   return true;
 }
+
 }  // namespace
 
 MediaNotificationService::MediaNotificationService(Profile* profile,
@@ -156,6 +162,11 @@ MediaNotificationService::MediaNotificationService(Profile* profile,
       std::make_unique<global_media_controls::MediaSessionItemProducer>(
           std::move(audio_focus_remote), std::move(controller_manager_remote),
           item_manager_.get(), source_id);
+
+  // It is safe to use `base::Unretained` here because
+  // `media_session_item_producer_` is owned by `this`.
+  media_session_item_producer_->SetIsIdBlockedCallback(base::BindRepeating(
+      &MediaNotificationService::IsIdBlocked, base::Unretained(this)));
 
   media_session_item_producer_->AddObserver(this);
   item_manager_->AddItemProducer(media_session_item_producer_.get());
@@ -613,4 +624,27 @@ void MediaNotificationService::RemoveDeviceListHost(int host_id) {
   if (!shutdown_has_started_) {
     host_receivers_.erase(host_id);
   }
+}
+
+bool MediaNotificationService::IsIdBlocked(
+    const std::string& request_id) const {
+#if BUILDFLAG(ENABLE_GLIC)
+  auto* glic_keyed_service = glic::GlicKeyedService::Get(profile_);
+  if (!glic_keyed_service) {
+    return false;
+  }
+
+  auto* host = glic_keyed_service->host().webui_contents();
+  if (!host) {
+    return false;
+  }
+
+  std::vector<content::WebContents*> inner_contents =
+      host->GetInnerWebContents();
+  if (inner_contents.size() == 1ul) {
+    return content::MediaSession::GetRequestIdFromWebContents(inner_contents[0])
+               .ToString() == request_id;
+  }
+#endif
+  return false;
 }

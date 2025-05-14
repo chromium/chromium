@@ -63,11 +63,13 @@ MediaSessionNotificationItem::MediaSessionNotificationItem(
     const std::string& source_name,
     const std::optional<base::UnguessableToken>& source_id,
     mojo::Remote<media_session::mojom::MediaController> controller,
-    media_session::mojom::MediaSessionInfoPtr session_info)
+    media_session::mojom::MediaSessionInfoPtr session_info,
+    bool always_hidden)
     : delegate_(delegate),
       request_id_(request_id),
       source_(GetSourceFromName(source_name)),
-      source_id_(source_id) {
+      source_id_(source_id),
+      always_hidden_(always_hidden) {
   DCHECK(delegate_);
 
   SetController(std::move(controller), std::move(session_info));
@@ -412,6 +414,10 @@ MediaSessionNotificationItem::GetMediaSessionActions() const {
 }
 
 bool MediaSessionNotificationItem::ShouldShowNotification() const {
+  if (always_hidden_) {
+    return false;
+  }
+
   // Hide the media notification if it is not controllable or the notification
   // title is missing.
   if (!session_info_ || !session_info_->is_controllable ||

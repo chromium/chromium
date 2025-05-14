@@ -271,6 +271,8 @@ void MediaSessionItemProducer::OnFocusGained(
     it->second.item()->SetController(std::move(item_controller),
                                      std::move(session->session_info));
   } else {
+    bool always_hidden =
+        is_id_blocked_callback_ && is_id_blocked_callback_.Run(id);
     sessions_.emplace(
         std::piecewise_construct, std::forward_as_tuple(id),
         std::forward_as_tuple(
@@ -278,7 +280,7 @@ void MediaSessionItemProducer::OnFocusGained(
             std::make_unique<MediaSessionNotificationItem>(
                 this, id, session->source_name.value_or(std::string()),
                 session->source_id, std::move(item_controller),
-                std::move(session->session_info)),
+                std::move(session->session_info), always_hidden),
             std::move(session_controller)));
   }
 }
@@ -432,6 +434,11 @@ MediaSessionItemProducer::RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
 
   return it->second.RegisterIsAudioDeviceSwitchingSupportedCallback(
       std::move(callback));
+}
+
+void MediaSessionItemProducer::SetIsIdBlockedCallback(
+    base::RepeatingCallback<bool(const std::string&)> callback) {
+  is_id_blocked_callback_ = std::move(callback);
 }
 
 void MediaSessionItemProducer::UpdateMediaItemSourceOrigin(

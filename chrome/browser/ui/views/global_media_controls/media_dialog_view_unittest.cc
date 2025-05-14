@@ -83,7 +83,7 @@ class MediaDialogViewTest : public ChromeViewsTestBase,
         content::MediaSession::GetRequestIdFromWebContents(web_contents())
             .ToString(),
         "source_name", std::nullopt, controller_.CreateMediaControllerRemote(),
-        std::move(session_info));
+        std::move(session_info), /*always_hidden=*/false);
   }
 
   void SimulateMediaRouteUpdate(std::vector<media_router::MediaRoute> routes) {
