@@ -61,11 +61,9 @@ class COMPONENT_EXPORT(SCENARIO_API) MatchingScenarioObserver
 
   // Allows PerformanceScenarioObserverList to notify of scenario changes. Will
   // invoke OnScenarioMatchChanged if necessary.
-  void NotifyIfScenarioMatchChanged(
-      base::PassKey<PerformanceScenarioObserverList>,
-      ScenarioScope scope,
-      LoadingScenario loading_scenario,
-      InputScenario input_scenario);
+  void NotifyIfScenarioMatchChanged(ScenarioScope scope,
+                                    LoadingScenario loading_scenario,
+                                    InputScenario input_scenario);
 
  private:
   // Returns a reference into `last_match_notifications_` for `scope`.
@@ -136,8 +134,6 @@ class COMPONENT_EXPORT(SCENARIO_API) PerformanceScenarioObserverList
 
  private:
   friend class base::RefCountedThreadSafe<PerformanceScenarioObserverList>;
-
-  using PassKey = base::PassKey<PerformanceScenarioObserverList>;
 
   explicit PerformanceScenarioObserverList(ScenarioScope scope);
   ~PerformanceScenarioObserverList();

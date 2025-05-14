@@ -26,6 +26,10 @@ namespace performance_scenarios {
 // child processes over shared memory. Each process can view a global scenario
 // list over the entire browser (eg. some page is loading) or a scenario list
 // targeted only to that process (eg. a page hosted in this process is loading).
+//
+// Additional functions to let the browser process query the performance
+// scenarios for a child process are in
+// components/performance_manager/public/scenarios/process_performance_scenarios.h.
 
 // Scenarios indicating a page is loading, ordered from least-specific to
 // most-specific.

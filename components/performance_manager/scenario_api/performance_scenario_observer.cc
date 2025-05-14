@@ -82,7 +82,6 @@ MatchingScenarioObserver::MatchingScenarioObserver(ScenarioPattern pattern)
 MatchingScenarioObserver::~MatchingScenarioObserver() = default;
 
 void MatchingScenarioObserver::NotifyIfScenarioMatchChanged(
-    base::PassKey<PerformanceScenarioObserverList>,
     ScenarioScope scope,
     LoadingScenario loading_scenario,
     InputScenario input_scenario) {
@@ -149,8 +148,8 @@ void PerformanceScenarioObserverList::NotifyIfScenarioChanged(
     last_input_scenario_ = input_scenario;
   }
   matching_observers_->Notify(
-      location, &MatchingScenarioObserver::NotifyIfScenarioMatchChanged,
-      PassKey(), scope_, loading_scenario, input_scenario);
+      location, &MatchingScenarioObserver::NotifyIfScenarioMatchChanged, scope_,
+      loading_scenario, input_scenario);
 }
 
 // static

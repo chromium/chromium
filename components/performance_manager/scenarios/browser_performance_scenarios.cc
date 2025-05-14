@@ -31,6 +31,9 @@
 
 namespace performance_manager {
 
+using performance_scenarios::MatchingScenarioObserver;
+using performance_scenarios::PerformanceScenarioObserver;
+using performance_scenarios::PerformanceScenarioObserverList;
 using performance_scenarios::ScenarioScope;
 
 namespace {
@@ -62,6 +65,11 @@ struct ScenarioTraits {
   // a tracing track is registered.
   void MaybeRecordTraceEvent(Scenario old_scenario,
                              Scenario new_scenario) const;
+
+  // Notifies a ProcessNode's PerformanceScenarioObserver list of a switch from
+  // `old_scenario` to `new_scenario`.
+  void NotifyProcessObservers(Scenario old_scenario,
+                              Scenario new_scenario) const;
 };
 
 template <>
@@ -79,6 +87,19 @@ struct ScenarioTraits<LoadingScenario> {
         state_ptr->loading_tracing_track(), static_cast<size_t>(old_scenario),
         static_cast<size_t>(new_scenario),
         {"AnyPageLoading", "VisiblePageLoading", "FocusedPageLoading"});
+  }
+
+  void NotifyProcessObservers(LoadingScenario old_scenario,
+                              LoadingScenario new_scenario) const {
+    state_ptr->observers().Notify(
+        &PerformanceScenarioObserver::OnLoadingScenarioChanged,
+        ScenarioScope::kCurrentProcess, old_scenario, new_scenario);
+    InputScenario input_scenario =
+        state_ptr->shared_state().ReadOnlyRef().input.load(
+            std::memory_order_relaxed);
+    state_ptr->matching_observers().Notify(
+        &MatchingScenarioObserver::NotifyIfScenarioMatchChanged,
+        ScenarioScope::kCurrentProcess, new_scenario, input_scenario);
   }
 
   raw_ptr<PerformanceScenarioData> state_ptr;
@@ -99,6 +120,19 @@ struct ScenarioTraits<InputScenario> {
                                 static_cast<size_t>(old_scenario),
                                 static_cast<size_t>(new_scenario),
                                 {"TypingTapOrScroll", "TapOrScroll", "Scroll"});
+  }
+
+  void NotifyProcessObservers(InputScenario old_scenario,
+                              InputScenario new_scenario) const {
+    state_ptr->observers().Notify(
+        &PerformanceScenarioObserver::OnInputScenarioChanged,
+        ScenarioScope::kCurrentProcess, old_scenario, new_scenario);
+    LoadingScenario loading_scenario =
+        state_ptr->shared_state().ReadOnlyRef().loading.load(
+            std::memory_order_relaxed);
+    state_ptr->matching_observers().Notify(
+        &MatchingScenarioObserver::NotifyIfScenarioMatchChanged,
+        ScenarioScope::kCurrentProcess, loading_scenario, new_scenario);
   }
 
   raw_ptr<PerformanceScenarioData> state_ptr;
@@ -132,7 +166,8 @@ PerformanceScenarioData* GetGlobalSharedState() {
 // Sets the value for Scenario in the memory region held in `state_ptr` to
 // `new_scenario`.
 template <typename Scenario>
-void SetScenarioValue(Scenario new_scenario,
+void SetScenarioValue(ScenarioScope scope,
+                      Scenario new_scenario,
                       PerformanceScenarioData* state_ptr) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (state_ptr) {
@@ -143,6 +178,19 @@ void SetScenarioValue(Scenario new_scenario,
         traits.ScenarioRef().exchange(new_scenario, std::memory_order_relaxed);
     if (old_scenario != new_scenario) {
       traits.MaybeRecordTraceEvent(old_scenario, new_scenario);
+      switch (scope) {
+        case ScenarioScope::kCurrentProcess:
+          // Notify observers for the ProcessNode holding `state_ptr`.
+          traits.NotifyProcessObservers(old_scenario, new_scenario);
+          break;
+        case ScenarioScope::kGlobal:
+          // Notify all global observers registered in the browser process.
+          if (auto observers = PerformanceScenarioObserverList::GetForScope(
+                  ScenarioScope::kGlobal)) {
+            observers->NotifyIfScenarioChanged();
+          }
+          break;
+      }
     }
   }
 }
@@ -154,19 +202,8 @@ void SetScenarioValueForRenderProcessHost(Scenario scenario,
   base::WeakPtr<ProcessNode> process_node =
       PerformanceManager::GetProcessNodeForRenderProcessHost(host);
   CHECK(process_node);
-  SetScenarioValue(scenario, GetSharedStateForProcessNode(process_node.get()));
-}
-
-template <typename Scenario>
-void SetGlobalScenarioValue(Scenario scenario) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  SetScenarioValue(scenario, GetGlobalSharedState());
-  // Notify kGlobal observers in the browser process.
-  if (auto observers =
-          performance_scenarios::PerformanceScenarioObserverList::GetForScope(
-              ScenarioScope::kGlobal)) {
-    observers->NotifyIfScenarioChanged();
-  }
+  SetScenarioValue(ScenarioScope::kCurrentProcess, scenario,
+                   GetSharedStateForProcessNode(process_node.get()));
 }
 
 }  // namespace
@@ -209,12 +246,13 @@ void SetLoadingScenarioForProcess(LoadingScenario scenario,
 void SetLoadingScenarioForProcessNode(LoadingScenario scenario,
                                       const ProcessNode* process_node) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  SetScenarioValue(scenario, GetSharedStateForProcessNode(process_node));
+  SetScenarioValue(ScenarioScope::kCurrentProcess, scenario,
+                   GetSharedStateForProcessNode(process_node));
 }
 
 void SetGlobalLoadingScenario(LoadingScenario scenario) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  SetGlobalScenarioValue(scenario);
+  SetScenarioValue(ScenarioScope::kGlobal, scenario, GetGlobalSharedState());
 }
 
 void SetInputScenarioForProcess(InputScenario scenario,
@@ -226,12 +264,13 @@ void SetInputScenarioForProcess(InputScenario scenario,
 void SetInputScenarioForProcessNode(InputScenario scenario,
                                     const ProcessNode* process_node) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  SetScenarioValue(scenario, GetSharedStateForProcessNode(process_node));
+  SetScenarioValue(ScenarioScope::kCurrentProcess, scenario,
+                   GetSharedStateForProcessNode(process_node));
 }
 
 void SetGlobalInputScenario(InputScenario scenario) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  SetGlobalScenarioValue(scenario);
+  SetScenarioValue(ScenarioScope::kGlobal, scenario, GetGlobalSharedState());
 }
 
 }  // namespace performance_manager
