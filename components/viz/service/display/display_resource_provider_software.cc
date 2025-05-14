@@ -134,8 +134,7 @@ DisplayResourceProviderSoftware::DeleteAndReturnUnusedResourcesToChildImpl(
 
 DisplayResourceProviderSoftware::ScopedReadLockSkImage::ScopedReadLockSkImage(
     DisplayResourceProviderSoftware* resource_provider,
-    ResourceId resource_id,
-    SkAlphaType alpha_type)
+    ResourceId resource_id)
     : resource_provider_(resource_provider), resource_id_(resource_id) {
   const ChildResource* resource = resource_provider->LockForRead(resource_id);
   if (!resource) {

@@ -148,7 +148,7 @@ TEST_F(DisplayResourceProviderSoftwareTest, ReadSoftwareResources) {
                                             kPremul_SkAlphaType));
 
     DisplayResourceProviderSoftware::ScopedReadLockSkImage lock(
-        resource_provider_.get(), mapped_resource_id, kPremul_SkAlphaType);
+        resource_provider_.get(), mapped_resource_id);
     const SkImage* sk_image = lock.sk_image();
     bool result = sk_image->readPixels(nullptr, dstBitmap.pixmap(),
                                        /*srcX=*/0, /*srcY=*/0);

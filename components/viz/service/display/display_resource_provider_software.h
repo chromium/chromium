@@ -36,8 +36,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
   class VIZ_SERVICE_EXPORT ScopedReadLockSkImage {
    public:
     ScopedReadLockSkImage(DisplayResourceProviderSoftware* resource_provider,
-                          ResourceId resource_id,
-                          SkAlphaType alpha_type);
+                          ResourceId resource_id);
     ~ScopedReadLockSkImage();
 
     ScopedReadLockSkImage(const ScopedReadLockSkImage&) = delete;

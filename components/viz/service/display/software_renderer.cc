@@ -441,8 +441,7 @@ void SoftwareRenderer::DrawTextureQuad(const TextureDrawQuad* quad) {
   }
 
   DisplayResourceProviderSoftware::ScopedReadLockSkImage lock(
-      resource_provider(), quad->resource_id,
-      quad->premultiplied_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType);
+      resource_provider(), quad->resource_id);
 
   if (!lock.valid())
     return;
@@ -497,7 +496,7 @@ void SoftwareRenderer::DrawTileQuad(const TileDrawQuad* quad) {
   DCHECK(IsSoftwareResource(quad->resource_id));
 
   DisplayResourceProviderSoftware::ScopedReadLockSkImage lock(
-      resource_provider(), quad->resource_id, kPremul_SkAlphaType);
+      resource_provider(), quad->resource_id);
   if (!lock.valid())
     return;
 
@@ -594,7 +593,7 @@ void SoftwareRenderer::DrawRenderPassQuad(
 
   if (quad->mask_resource_id()) {
     DisplayResourceProviderSoftware::ScopedReadLockSkImage mask_lock(
-        resource_provider(), quad->mask_resource_id(), kPremul_SkAlphaType);
+        resource_provider(), quad->mask_resource_id());
     if (!mask_lock.valid())
       return;
 
