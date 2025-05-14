@@ -444,9 +444,8 @@ void OnListFamilyMembersResponse(
 @property(nonatomic, readwrite)
     TabOpeningPostOpeningAction NTPActionAfterTabSwitcherDismissal;
 
-// The main coordinator, lazily created the first time it is accessed. Manages
-// the main view controller. This property should not be accessed before the
-// browser has started up to the FOREGROUND stage.
+// The main coordinator to manage the main view controller. This property should
+// not be accessed before the browser has started up to the FOREGROUND stage.
 @property(nonatomic, strong) TabGridCoordinator* mainCoordinator;
 
 // YES while activating a new browser (often leading to dismissing the tab
@@ -549,20 +548,6 @@ void OnListFamilyMembersResponse(
 }
 
 #pragma mark - Setters and getters
-
-- (TabGridCoordinator*)mainCoordinator {
-  if (!_mainCoordinator) {
-    // Lazily create the main coordinator.
-    TabGridCoordinator* tabGridCoordinator = [[TabGridCoordinator alloc]
-        initWithApplicationCommandEndpoint:self
-                            regularBrowser:self.mainInterface.browser
-                           inactiveBrowser:self.mainInterface.inactiveBrowser
-                          incognitoBrowser:self.incognitoInterface.browser];
-    tabGridCoordinator.delegate = self;
-    _mainCoordinator = tabGridCoordinator;
-  }
-  return _mainCoordinator;
-}
 
 - (WrangledBrowser*)mainInterface {
   return self.browserViewWrangler.mainInterface;
@@ -1307,8 +1292,14 @@ void OnListFamilyMembersResponse(
     [self.sceneState setRootViewControllerKeyAndVisible];
   }
 
-  // Lazy init of mainCoordinator.
-  [self.mainCoordinator start];
+  _mainCoordinator = [[TabGridCoordinator alloc]
+      initWithApplicationCommandEndpoint:self
+                          regularBrowser:self.mainInterface.browser
+                         inactiveBrowser:self.mainInterface.inactiveBrowser
+                        incognitoBrowser:self.incognitoInterface.browser];
+  _mainCoordinator.delegate = self;
+
+  [_mainCoordinator start];
 
   if (!base::FeatureList::IsEnabled(
           kMakeKeyAndVisibleBeforeMainCoordinatorStart)) {
