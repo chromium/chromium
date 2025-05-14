@@ -2238,7 +2238,7 @@
     },
     {
       name: "FlexWrapBalance",
-      status: "test",
+      status: "experimental",
     },
     {
       // Don't create LayoutMultiColumnFlowThread objects, or any of the other
