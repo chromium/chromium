@@ -11,6 +11,7 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -31,6 +32,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_constants.h"
@@ -133,7 +135,7 @@ void MultiCaptureNotifications::MultiCaptureStarted(const std::string& label,
                                                     const url::Origin& origin) {
   const std::string host = origin.host();
   MultiCaptureStartedInternal(label, base::StrCat({kMultiCaptureId, ":", host}),
-                              host);
+                              host, origin);
 }
 
 void MultiCaptureNotifications::MultiCaptureStartedFromApp(
@@ -141,15 +143,15 @@ void MultiCaptureNotifications::MultiCaptureStartedFromApp(
     const std::string& app_id,
     const std::string& app_short_name,
     const url::Origin& app_origin) {
-  MultiCaptureStartedInternal(
-      label, base::StrCat({kMultiCaptureId, ":", label}), app_short_name);
+  MultiCaptureStartedInternal(label,
+                              base::StrCat({kMultiCaptureId, ":", label}),
+                              app_short_name, app_origin);
 }
 
 void MultiCaptureNotifications::MultiCaptureStopped(const std::string& label) {
   const auto notifications_metadata_iterator =
       notifications_metadata_.find(label);
   if (notifications_metadata_iterator == notifications_metadata_.end()) {
-    LOG(ERROR) << "Label could not be found";
     return;
   }
 
@@ -194,7 +196,15 @@ void MultiCaptureNotifications::LoggedInStateChanged() {
 void MultiCaptureNotifications::MultiCaptureStartedInternal(
     const std::string& label,
     const std::string& notification_id,
-    const std::string& app_name) {
+    const std::string& app_name,
+    const url::Origin& app_origin) {
+  if (base::Contains(
+          CHECK_DEREF(web_app::IwaKeyDistributionInfoProvider::GetInstance())
+              .GetSkipMultiCaptureNotificationBundleIds(),
+          app_origin.host())) {
+    return;
+  }
+
   notifications_metadata_.emplace(
       label, NotificationMetadata(notification_id, base::TimeTicks::Now()));
 

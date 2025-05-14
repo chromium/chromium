@@ -38,6 +38,7 @@ include_rules = [
   "+chrome/test/base",
 
   # Dependencies outside of //chrome:
+  "+components/webapps/isolated_web_apps",
   "+ui/message_center",
 ]
 

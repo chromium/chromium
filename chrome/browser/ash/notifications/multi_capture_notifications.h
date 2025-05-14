@@ -76,7 +76,8 @@ class MultiCaptureNotifications : public MultiCaptureService::Observer,
  private:
   void MultiCaptureStartedInternal(const std::string& label,
                                    const std::string& notification_id,
-                                   const std::string& app_name);
+                                   const std::string& app_name,
+                                   const url::Origin& app_origin);
 
   // Maps the multi capture label (as received in `MultiCaptureStarted` and
   // `MultiCaptureStopped`) to the notification metadata.

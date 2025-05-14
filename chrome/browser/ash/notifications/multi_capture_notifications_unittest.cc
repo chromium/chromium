@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
@@ -28,6 +29,7 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -303,6 +305,31 @@ TEST_F(
   EXPECT_EQ(2u, notification_count_);
 
   task_environment()->FastForwardBy(base::Milliseconds(2));
+  EXPECT_EQ(0u, notification_count_);
+}
+
+TEST_F(MultiCaptureNotificationsTest,
+       AppOnSkipNotificationAllowlistNoNotification) {
+  const url::Origin origin_with_allowlisted_exception =
+      url::Origin::CreateFromNormalizedTuple(
+          /*scheme=*/"isolated-app",
+          /*host=*/"aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic",
+          /*port=*/0);
+  CHECK_DEREF(web_app::IwaKeyDistributionInfoProvider::GetInstance())
+      .SetComponentDataForTesting(
+          web_app::IwaKeyDistributionInfoProvider::ComponentData(
+              /*version=*/base::Version("1.0.0"),
+              /*key_rotations=*/{},
+              /*special_app_permissions=*/
+              {{origin_with_allowlisted_exception.host(),
+                {.skip_capture_started_notification = true}}},
+              /*managed_allowlist=*/{},
+              /*is_preloaded=*/true));
+
+  multi_capture_notifications_->MultiCaptureStartedFromApp(
+      /*label=*/"test_label",
+      /*app_id*/ "test_app_id",
+      /*app_short_name=*/"app_name", origin_with_allowlisted_exception);
   EXPECT_EQ(0u, notification_count_);
 }
 
