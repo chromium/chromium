@@ -118,12 +118,11 @@ NSString* RecentActivityLogCellAccessibilityIdentifier(NSUInteger index) {
   menuButton.translatesAutoresizingMaskIntoConstraints = NO;
   [menuButton.widthAnchor constraintEqualToConstant:kButtonSize].active = YES;
 
-  UIStackView* stackView = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ menuButton, closeButton ]];
-  stackView.axis = UILayoutConstraintAxisHorizontal;
-
   self.navigationItem.rightBarButtonItem =
-      [[UIBarButtonItem alloc] initWithCustomView:stackView];
+      [[UIBarButtonItem alloc] initWithCustomView:closeButton];
+
+  self.navigationItem.leftBarButtonItem =
+      [[UIBarButtonItem alloc] initWithCustomView:menuButton];
 
   // Configure a table view.
   UITableView* tableView = self.tableView;
