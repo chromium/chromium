@@ -669,6 +669,16 @@ export class PrintPreviewModelElement extends PolymerElement {
   }
 
   /**
+   * Sets the availability of |settingName| to |available|, exposed only for
+   * testing purposes, where `destination` and `documentSettings` are not
+   * always set and therefore availability is not automatically inferred.
+   */
+  setSettingAvailableForTesting(
+      settingName: keyof Settings, available: boolean) {
+    this.set(`settings.${settingName}.available`, available);
+  }
+
+  /**
    * Updates the availability of the settings sections and values of various
    * settings based on the destination capabilities.
    */

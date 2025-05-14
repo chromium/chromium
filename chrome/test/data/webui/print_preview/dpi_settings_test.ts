@@ -33,7 +33,7 @@ suite('DpiSettingsTest', function() {
     dpiSection = document.createElement('print-preview-dpi-settings');
     dpiSection.capability = dpiCapability;
     dpiSection.disabled = false;
-    model.set('settings.dpi.available', true);
+    model.setSettingAvailableForTesting('dpi', true);
     document.body.appendChild(dpiSection);
   });
 

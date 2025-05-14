@@ -25,7 +25,7 @@ suite('AdvancedItemTest', function() {
     // Create capability.
     item.capability = getCddTemplateWithAdvancedSettings(2, 'FooDevice')
                           .capabilities!.printer.vendor_capability![1]!;
-    model.set('settings.vendorItems.available', true);
+    model.setSettingAvailableForTesting('vendorItems', true);
 
     document.body.appendChild(item);
   });

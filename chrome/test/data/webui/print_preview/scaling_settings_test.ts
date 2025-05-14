@@ -100,8 +100,8 @@ suite('ScalingSettingsTest', function() {
    * @param isPdf Whether the document is a PDF
    */
   function setDocumentPdf(isPdf: boolean) {
-    model.set('settings.scalingType.available', !isPdf);
-    model.set('settings.scalingTypePdf.available', isPdf);
+    model.setSettingAvailableForTesting('scalingType', !isPdf);
+    model.setSettingAvailableForTesting('scalingTypePdf', isPdf);
     scalingSection.isPdf = isPdf;
   }
 

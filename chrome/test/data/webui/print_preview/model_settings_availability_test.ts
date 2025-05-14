@@ -357,42 +357,42 @@ suite('ModelSettingsAvailabilityTest', function() {
 
     // Custom margins initializes with customMargins undefined and margins
     // values matching the defaults.
-    model.set('settings.margins.value', MarginsType.CUSTOM);
+    model.setSetting('margins', MarginsType.CUSTOM);
     assertTrue(model.settings.headerFooter.available);
 
     // Set margins to NONE
-    model.set('settings.margins.value', MarginsType.NO_MARGINS);
+    model.setSetting('margins', MarginsType.NO_MARGINS);
     assertFalse(model.settings.headerFooter.available);
 
     // Set margins to MINIMUM
-    model.set('settings.margins.value', MarginsType.MINIMUM);
+    model.setSetting('margins', MarginsType.MINIMUM);
     assertTrue(model.settings.headerFooter.available);
 
     // Custom margins of 0.
-    model.set('settings.margins.value', MarginsType.CUSTOM);
-    model.set(
-        'settings.customMargins.value',
+    model.setSetting('margins', MarginsType.CUSTOM);
+    model.setSetting(
+        'customMargins',
         {marginTop: 0, marginLeft: 0, marginRight: 0, marginBottom: 0});
     model.set('margins', new Margins(0, 0, 0, 0));
     assertFalse(model.settings.headerFooter.available);
 
     // Custom margins of 36 -> header/footer available
-    model.set(
-        'settings.customMargins.value',
+    model.setSetting(
+        'customMargins',
         {marginTop: 36, marginLeft: 36, marginRight: 36, marginBottom: 36});
     model.set('margins', new Margins(36, 36, 36, 36));
     assertTrue(model.settings.headerFooter.available);
 
     // Zero top and bottom -> header/footer unavailable
-    model.set(
-        'settings.customMargins.value',
+    model.setSetting(
+        'customMargins',
         {marginTop: 0, marginLeft: 36, marginRight: 36, marginBottom: 0});
     model.set('margins', new Margins(0, 36, 0, 36));
     assertFalse(model.settings.headerFooter.available);
 
     // Zero top and nonzero bottom -> header/footer available
-    model.set(
-        'settings.customMargins.value',
+    model.setSetting(
+        'customMargins',
         {marginTop: 0, marginLeft: 36, marginRight: 36, marginBottom: 36});
     model.set('margins', new Margins(0, 36, 36, 36));
     assertTrue(model.settings.headerFooter.available);
@@ -416,21 +416,19 @@ suite('ModelSettingsAvailabilityTest', function() {
       ] as MediaSizeOption[],
     };
     simulateCapabilitiesChange(capabilities);
-    model.set('settings.margins.value', MarginsType.DEFAULT);
+    model.setSetting('margins', MarginsType.DEFAULT);
 
     // Header/footer should be available for default big label with
     // default margins.
     assertTrue(model.settings.headerFooter.available);
 
-    model.set(
-        'settings.mediaSize.value', capabilities.printer.media_size.option[0]);
+    model.setSetting('mediaSize', capabilities.printer.media_size.option[0]);
 
     // Header/footer should not be available for small label
     assertFalse(model.settings.headerFooter.available);
 
     // Reset to big label.
-    model.set(
-        'settings.mediaSize.value', capabilities.printer.media_size.option[1]);
+    model.setSetting('mediaSize', capabilities.printer.media_size.option[1]);
     assertTrue(model.settings.headerFooter.available);
 
     // Header/footer is never available for PDFs.

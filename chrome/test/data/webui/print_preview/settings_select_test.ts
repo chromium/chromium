@@ -27,7 +27,7 @@ suite('SettingsSelectTest', function() {
 
   // Test that destinations are correctly displayed in the lists.
   test('custom media names', async function() {
-    model.set('settings.mediaSize.available', true);
+    model.setSettingAvailableForTesting('mediaSize', true);
 
     // Set a capability with custom paper sizes.
     settingsSelect.settingName = 'mediaSize';
@@ -71,8 +71,9 @@ suite('SettingsSelectTest', function() {
     const select = settingsSelect.shadowRoot.querySelector('select')!;
 
     // Normally done for initialization by the model and parent section.
-    model.set(
-        'settings.headerFooter.value', settingsSelect.capability.option[1]!);
+    model.setSetting(
+        'headerFooter', settingsSelect.capability.option[1]!,
+        /*noSticky=*/ true);
     settingsSelect.selectValue(option1);
     await microtasksFinished();
 

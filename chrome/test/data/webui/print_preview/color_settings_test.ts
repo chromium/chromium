@@ -22,7 +22,7 @@ suite('ColorSettingsTest', function() {
 
     colorSection = document.createElement('print-preview-color-settings');
     colorSection.disabled = false;
-    model.set('settings.color.available', true);
+    model.setSettingAvailableForTesting('color', true);
     document.body.appendChild(colorSection);
     return microtasksFinished();
   });

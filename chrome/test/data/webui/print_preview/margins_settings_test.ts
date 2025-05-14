@@ -62,14 +62,14 @@ suite('MarginsSettingsTest', function() {
         MarginsType.MINIMUM, marginsSection.getSettingValue('margins'));
     assertFalse(select.disabled);
 
-    model.set('settings.pagesPerSheet.value', 2);
+    model.setSetting('pagesPerSheet', 2);
     await microtasksFinished();
     assertEquals(
         MarginsType.DEFAULT, marginsSection.getSettingValue('margins'));
     assertEquals(MarginsType.DEFAULT.toString(), select.value);
     assertTrue(select.disabled);
 
-    model.set('settings.pagesPerSheet.value', 1);
+    model.setSetting('pagesPerSheet', 1);
     await microtasksFinished();
     assertEquals(
         MarginsType.DEFAULT, marginsSection.getSettingValue('margins'));
@@ -84,7 +84,7 @@ suite('MarginsSettingsTest', function() {
     assertEquals(MarginsType.CUSTOM, marginsSection.getSettingValue('margins'));
 
     // Changing layout clears custom margins.
-    model.set('settings.layout.value', true);
+    model.setSetting('layout', true);
     await microtasksFinished();
     assertEquals(
         MarginsType.DEFAULT, marginsSection.getSettingValue('margins'));
@@ -94,9 +94,7 @@ suite('MarginsSettingsTest', function() {
     assertEquals(MarginsType.CUSTOM, marginsSection.getSettingValue('margins'));
 
     // Changing media size clears custom margins.
-    model.set(
-        'settings.mediaSize.value',
-        '{height_microns: 400, width_microns: 300}');
+    model.setSetting('mediaSize', '{height_microns: 400, width_microns: 300}');
     await microtasksFinished();
     assertEquals(
         MarginsType.DEFAULT, marginsSection.getSettingValue('margins'));

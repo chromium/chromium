@@ -10,17 +10,11 @@ import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.
 
 suite('CustomMarginsTest', function() {
   let container: PrintPreviewMarginControlContainerElement;
-
   let model: PrintPreviewModelElement;
-
   let sides: CustomMarginsOrientation[] = [];
-
   let measurementSystem: MeasurementSystem;
-
   const pixelsPerInch: number = 100;
-
   const pointsPerInch: number = 72.0;
-
   const defaultMarginPts: number = 36;  // 0.5 inch
 
   // Keys for the custom margins setting, in order.
@@ -33,7 +27,7 @@ suite('CustomMarginsTest', function() {
         new MeasurementSystem(',', '.', MeasurementSystemUnitType.IMPERIAL);
     model = document.createElement('print-preview-model');
     document.body.appendChild(model);
-    model.set('settings.mediaSize.available', true);
+    model.setSettingAvailableForTesting('mediaSize', true);
 
     sides = [
       CustomMarginsOrientation.TOP,
@@ -209,7 +203,7 @@ suite('CustomMarginsTest', function() {
     const marginValues = setupCustomMargins();
     return finishSetup().then(() => {
       // Simulate setting custom margins.
-      model.set('settings.margins.value', MarginsType.CUSTOM);
+      model.setSetting('margins', MarginsType.CUSTOM);
 
       // Validate control positions are set based on the custom values.
       const controls = getControls();
@@ -227,7 +221,7 @@ suite('CustomMarginsTest', function() {
       assertEquals(
           '{}', JSON.stringify(container.getSettingValue('customMargins')));
       // The margins-settings element will also set the margins type to DEFAULT.
-      model.set('settings.margins.value', MarginsType.DEFAULT);
+      model.setSetting('margins', MarginsType.DEFAULT);
 
       // When preview loads, custom margins should still be empty, since
       // custom margins are not selected. We do not want to set the sticky
@@ -256,7 +250,7 @@ suite('CustomMarginsTest', function() {
 
           const onTransitionEnd = getAllTransitions(controls);
           // Controls become visible when margin type CUSTOM is selected.
-          model.set('settings.margins.value', MarginsType.CUSTOM);
+          model.setSetting('margins', MarginsType.CUSTOM);
 
           // Wait for the opacity transitions to finish.
           return onTransitionEnd;
@@ -304,7 +298,7 @@ suite('CustomMarginsTest', function() {
       const controls = getControls();
 
       // Simulate setting custom margins from sticky settings.
-      model.set('settings.margins.value', MarginsType.CUSTOM);
+      model.setSetting('margins', MarginsType.CUSTOM);
       const marginValues = setupCustomMargins();
       model.notifyPath('settings.customMargins.value');
 
@@ -350,7 +344,7 @@ suite('CustomMarginsTest', function() {
 
     return finishSetup().then(() => {
       const controls = getControls();
-      model.set('settings.margins.value', MarginsType.CUSTOM);
+      model.setSetting('margins', MarginsType.CUSTOM);
 
 
       // Wait for an animation frame. The position of the controls is set in
@@ -407,7 +401,7 @@ suite('CustomMarginsTest', function() {
       controls.forEach(c => {
         c.getInput().setAttribute('data-timeout-delay', '1');
       });
-      model.set('settings.margins.value', MarginsType.CUSTOM);
+      model.setSetting('margins', MarginsType.CUSTOM);
       await microtasksFinished();
 
       // Verify entering a new value updates the settings.
@@ -453,7 +447,7 @@ suite('CustomMarginsTest', function() {
       controls.forEach(c => {
         c.getInput().setAttribute('data-timeout-delay', '1');
       });
-      model.set('settings.margins.value', MarginsType.CUSTOM);
+      model.setSetting('margins', MarginsType.CUSTOM);
       await microtasksFinished();
 
       // Verify entering a new value updates the settings.
@@ -507,7 +501,7 @@ suite('CustomMarginsTest', function() {
         return finishSetup().then(() => {
           // Simulate setting custom margins.
           const controls = getControls();
-          model.set('settings.margins.value', MarginsType.CUSTOM);
+          model.setSetting('margins', MarginsType.CUSTOM);
 
           // Validate control positions are set based on the custom values.
           controls.forEach((control, index) => {
@@ -517,7 +511,7 @@ suite('CustomMarginsTest', function() {
           });
 
           // Simulate setting minimum margins.
-          model.set('settings.margins.value', MarginsType.MINIMUM);
+          model.setSetting('margins', MarginsType.MINIMUM);
 
           // Validate control positions still reflect the custom values.
           controls.forEach((control, index) => {
@@ -533,7 +527,7 @@ suite('CustomMarginsTest', function() {
     await validateMarginsClearedForSetting(
         'mediaSize', {height_microns: 200000, width_microns: 200000});
     // Simulate setting custom margins again.
-    model.set('settings.margins.value', MarginsType.CUSTOM);
+    model.setSetting('margins', MarginsType.CUSTOM);
     await microtasksFinished();
 
     // Validate control positions are initialized based on the default
@@ -550,7 +544,7 @@ suite('CustomMarginsTest', function() {
   test('LayoutClearsCustomMargins', async function() {
     await validateMarginsClearedForSetting('layout', true);
     // Simulate setting custom margins again
-    model.set('settings.margins.value', MarginsType.CUSTOM);
+    model.setSetting('margins', MarginsType.CUSTOM);
     await microtasksFinished();
 
     // Validate control positions are initialized based on the default
@@ -568,7 +562,7 @@ suite('CustomMarginsTest', function() {
   // custom margins state.
   test(
       'IgnoreDocumentMarginsFromPDF', function() {
-        model.set('settings.margins.available', false);
+        model.setSettingAvailableForTesting('margins', false);
         return finishSetup().then(() => {
           assertEquals(
               '{}', JSON.stringify(container.getSettingValue('customMargins')));
@@ -578,7 +572,7 @@ suite('CustomMarginsTest', function() {
   // Test that if margins are not available but the user changes the media
   // size, the custom margins are cleared.
   test('MediaSizeClearsCustomMarginsPDF', function() {
-    model.set('settings.margins.available', false);
+    model.setSettingAvailableForTesting('margins', false);
     return validateMarginsClearedForSetting(
         'mediaSize', {height_microns: 200000, width_microns: 200000});
   });
@@ -648,7 +642,7 @@ suite('CustomMarginsTest', function() {
     await finishSetup();
 
     // Simulate setting custom margins.
-    model.set('settings.margins.value', MarginsType.CUSTOM);
+    model.setSetting('margins', MarginsType.CUSTOM);
     await microtasksFinished();
 
     const controls = getControls();

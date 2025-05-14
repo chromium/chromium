@@ -18,9 +18,9 @@ suite('DuplexSettingsTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     model = document.createElement('print-preview-model');
     document.body.appendChild(model);
-    model.set('settings.duplex.available', true);
-    model.set('settings.duplex.value', false);
-    model.set('settings.duplexShortEdge.available', true);
+    model.setSettingAvailableForTesting('duplex', true);
+    model.setSetting('duplex', false, /*noSticky=*/ true);
+    model.setSettingAvailableForTesting('duplexShortEdge', true);
 
     duplexSection = document.createElement('print-preview-duplex-settings');
     duplexSection.disabled = false;
@@ -36,7 +36,7 @@ suite('DuplexSettingsTest', function() {
     assertTrue(collapse.opened);
 
     for (const value of [false, true]) {
-      model.set('settings.duplexShortEdge.available', value);
+      model.setSettingAvailableForTesting('duplexShortEdge', value);
       await microtasksFinished();
       assertEquals(value, collapse.opened);
     }

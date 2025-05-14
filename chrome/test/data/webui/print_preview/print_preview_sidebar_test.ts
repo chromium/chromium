@@ -63,7 +63,7 @@ suite('PrintPreviewSidebarTest', function() {
           `print-preview-${camelToKebab(setting)}-settings`)!;
       // Show, hide and reset.
       for (const value of [true, false, true]) {
-        model.set(`settings.${setting}.available`, value);
+        model.setSettingAvailableForTesting(setting, value);
         await microtasksFinished();
         // Element expected to be visible when available.
         assertEquals(!value, element.hidden);

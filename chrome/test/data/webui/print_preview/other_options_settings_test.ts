@@ -20,14 +20,14 @@ suite('OtherOptionsSettingsTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     model = document.createElement('print-preview-model');
     document.body.appendChild(model);
-    model.set('settings.headerFooter.available', true);
-    model.set('settings.headerFooter.value', true);
-    model.set('settings.cssBackground.available', true);
-    model.set('settings.cssBackground.value', true);
-    model.set('settings.selectionOnly.available', true);
-    model.set('settings.selectionOnly.value', true);
-    model.set('settings.rasterize.available', true);
-    model.set('settings.rasterize.value', true);
+    model.setSettingAvailableForTesting('headerFooter', true);
+    model.setSetting('headerFooter', true, /*noSticky=*/ true);
+    model.setSettingAvailableForTesting('cssBackground', true);
+    model.setSetting('cssBackground', true, /*noSticky=*/ true);
+    model.setSettingAvailableForTesting('selectionOnly', true);
+    model.setSetting('selectionOnly', true, /*noSticky=*/ true);
+    model.setSettingAvailableForTesting('rasterize', true);
+    model.setSetting('rasterize', true, /*noSticky=*/ true);
 
     otherOptionsSection =
         document.createElement('print-preview-other-options-settings');
@@ -52,7 +52,7 @@ suite('OtherOptionsSettingsTest', function() {
               `#${setting}`)!;
       // Show, hide and reset.
       for (const value of [true, false, true]) {
-        model.set(`settings.${setting}.available`, value);
+        model.setSettingAvailableForTesting(setting, value);
         await microtasksFinished();
         // Element expected to be visible when available.
         assertEquals(!value, isSectionHidden(checkbox));

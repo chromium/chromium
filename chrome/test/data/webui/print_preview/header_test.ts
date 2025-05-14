@@ -28,8 +28,8 @@ suite('HeaderTest', function() {
     document.body.appendChild(model);
 
     header = document.createElement('print-preview-header');
-    model.set('settings.duplex.available', true);
-    model.set('settings.duplex.value', false);
+    model.setSettingAvailableForTesting('duplex', true);
+    model.setSetting('duplex', false);
 
     header.destination = new Destination(
         'FooDevice', DestinationOrigin.EXTENSION, 'FooName',

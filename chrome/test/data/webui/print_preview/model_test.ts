@@ -217,15 +217,15 @@ suite('ModelTest', function() {
     model.pageSize = new Size(612, 792);
 
     // Update pages accordingly.
-    model.set('settings.pages.value', [1, 2, 3]);
+    model.setSetting('pages', [1, 2, 3]);
 
     // Initialize some settings that don't have defaults to the destination
     // defaults.
-    model.set('settings.dpi.value', {horizontal_dpi: 200, vertical_dpi: 200});
-    model.set('settings.vendorItems.value', {paperType: 0, printArea: 4});
+    model.setSetting('dpi', {horizontal_dpi: 200, vertical_dpi: 200});
+    model.setSetting('vendorItems', {paperType: 0, printArea: 4});
 
     // Set rasterize available so that it can be tested.
-    model.set('settings.rasterize.available', true);
+    model.setSettingAvailableForTesting('rasterize', true);
   }
 
   /**

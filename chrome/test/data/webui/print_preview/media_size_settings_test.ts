@@ -24,7 +24,7 @@ suite('MediaSizeSettingsTest', function() {
         document.createElement('print-preview-media-size-settings');
     mediaSizeSection.capability = mediaSizeCapability;
     mediaSizeSection.disabled = false;
-    model.set('settings.mediaSize.available', true);
+    model.setSettingAvailableForTesting('mediaSize', true);
     document.body.appendChild(mediaSizeSection);
   });
 

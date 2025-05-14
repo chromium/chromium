@@ -18,7 +18,7 @@ suite('CopiesSettingsTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     model = document.createElement('print-preview-model');
     document.body.appendChild(model);
-    model.set('settings.collate.available', true);
+    model.setSettingAvailableForTesting('collate', true);
 
     copiesSection = document.createElement('print-preview-copies-settings');
     copiesSection.disabled = false;
@@ -70,11 +70,11 @@ suite('CopiesSettingsTest', function() {
     await microtasksFinished();
     assertFalse(collateSection.hidden);
 
-    model.set('settings.collate.available', false);
+    model.setSettingAvailableForTesting('collate', false);
     await microtasksFinished();
     assertTrue(collateSection.hidden);
 
-    model.set('settings.collate.available', true);
+    model.setSettingAvailableForTesting('collate', true);
     await microtasksFinished();
     assertFalse(collateSection.hidden);
 

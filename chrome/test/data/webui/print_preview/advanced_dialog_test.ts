@@ -26,7 +26,7 @@ suite('AdvancedDialogTest', function() {
     const model: PrintPreviewModelElement =
         document.createElement('print-preview-model');
     document.body.appendChild(model);
-    model.set('settings.vendorItems.available', true);
+    model.setSettingAvailableForTesting('vendorItems', true);
     dialog = document.createElement('print-preview-advanced-settings-dialog');
   });
 

@@ -21,7 +21,7 @@ suite('ScalingSettingsInteractiveTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     model = document.createElement('print-preview-model');
     document.body.appendChild(model);
-    model.set('settings.scalingTypePdf.available', false);
+    model.setSettingAvailableForTesting('scalingTypePdf', false);
 
     scalingSection = document.createElement('print-preview-scaling-settings');
     scalingSection.disabled = false;
