@@ -16,6 +16,7 @@
 #import "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/browser/favicon/ui_bundled/favicon_attributes_provider.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/widget_kit/model/features.h"
@@ -142,26 +143,26 @@ void ClearOutdatedIcons(const ntp_tiles::NTPTilesVector& most_visited_data,
                         NSURL* favicons_directory) {
   NSMutableSet<NSString*>* allowed_files_name = [[NSMutableSet alloc] init];
 
-#if BUILDFLAG(ENABLE_WIDGET_KIT_EXTENSION)
-  // Add in `allowed_files_name` information about all profiles.
-  NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
-  NSDictionary* suggested_items =
-      [shared_defaults objectForKey:app_group::kSuggestedItemsForMultiprofile];
-  NSArray<NSData*>* all_data = [suggested_items allValues];
-  for (NSData* data_for_account in all_data) {
-    NSArray<NTPTile*>* tiles = [DecodeData(data_for_account) allValues];
-    // Add urls to the set of allowed_files_name.
-    for (NTPTile* tile in tiles) {
-      [allowed_files_name addObject:tile.faviconFileName];
+  if (IsWidgetsForMultiprofileEnabled()) {
+    // Add in `allowed_files_name` information about all profiles.
+    NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
+    NSDictionary* suggested_items = [shared_defaults
+        objectForKey:app_group::kSuggestedItemsForMultiprofile];
+    NSArray<NSData*>* all_data = [suggested_items allValues];
+    for (NSData* data_for_account in all_data) {
+      NSArray<NTPTile*>* tiles = [DecodeData(data_for_account) allValues];
+      // Add urls to the set of allowed_files_name.
+      for (NTPTile* tile in tiles) {
+        [allowed_files_name addObject:tile.faviconFileName];
+      }
+    }
+  } else {
+    for (size_t i = 0; i < most_visited_data.size(); i++) {
+      const ntp_tiles::NTPTile& ntp_tile = most_visited_data[i];
+      NSString* favicon_file_name = GetFaviconFileName(ntp_tile.url);
+      [allowed_files_name addObject:favicon_file_name];
     }
   }
-#else
-  for (size_t i = 0; i < most_visited_data.size(); i++) {
-    const ntp_tiles::NTPTile& ntp_tile = most_visited_data[i];
-    NSString* favicon_file_name = GetFaviconFileName(ntp_tile.url);
-    [allowed_files_name addObject:favicon_file_name];
-  }
-#endif
 
   [[NSFileManager defaultManager] createDirectoryAtURL:favicons_directory
                            withIntermediateDirectories:YES
@@ -234,8 +235,8 @@ void WriteSavedMostVisited(
 
   NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
 
-  // TODO(crbug.com/387971524): To be removed once ios_enable_widgets_for_mim is
-  // enabled by default.
+  // TODO(crbug.com/387971524): To be removed once
+  // IsWidgetsForMultiprofileEnabled() is enabled by default.
   [sharedDefaults setObject:data forKey:app_group::kSuggestedItems];
   [sharedDefaults setObject:last_modification_date
                      forKey:app_group::kSuggestedItemsLastModificationDate];

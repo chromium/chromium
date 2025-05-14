@@ -143,6 +143,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
@@ -195,7 +196,6 @@
 #import "ios/chrome/browser/web_state_list/model/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/whats_new/coordinator/promo/whats_new_scene_agent.h"
-#import "ios/chrome/browser/widget_kit/model/features.h"
 #import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 #import "ios/chrome/browser/youtube_incognito/coordinator/youtube_incognito_coordinator.h"
 #import "ios/chrome/browser/youtube_incognito/coordinator/youtube_incognito_coordinator_delegate.h"
@@ -217,10 +217,6 @@
 #import "net/base/url_util.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
-#import "ios/chrome/browser/widget_kit/model/model_swift.h"  // nogncheck
-#endif
 
 namespace {
 
@@ -846,43 +842,43 @@ void OnListFamilyMembersResponse(
   NSSet<UIOpenURLContext*>* contexts = self.sceneState.URLContextsToOpen;
   self.sceneState.URLContextsToOpen = nil;
 
-#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
-  // Find the first context that requires an account change.
-  WidgetContext* context = [self findContextRequiringAccountChange:contexts];
-  if (context) {
-    // Perform profile switching if needed.
-    id<ChangeProfileCommands> changeProfileHandler = HandlerForProtocol(
-        self.sceneState.profileState.appState.appCommandDispatcher,
-        ChangeProfileCommands);
+  if (IsWidgetsForMultiprofileEnabled()) {
+    // Find the first context that requires an account change.
+    WidgetContext* context = [self findContextRequiringAccountChange:contexts];
+    if (context) {
+      // Perform profile switching if needed.
+      id<ChangeProfileCommands> changeProfileHandler = HandlerForProtocol(
+          self.sceneState.profileState.appState.appCommandDispatcher,
+          ChangeProfileCommands);
 
-    std::optional<std::string> profileName;
+      std::optional<std::string> profileName;
 
-    if ([context.gaiaID isEqualToString:@"Default"]) {
-      // Use the personal profile name if there is no GaiaID (this happens in
-      // the sign-out scenario).
-      profileName = GetApplicationContext()
-                        ->GetProfileManager()
-                        ->GetProfileAttributesStorage()
-                        ->GetPersonalProfileName();
-    } else {
-      profileName = GetApplicationContext()
-                        ->GetAccountProfileMapper()
-                        ->FindProfileNameForGaiaID(GaiaId(context.gaiaID));
-    }
-    // TODO(crbug.com/388520520): Make sure that ENABLE_WIDGETS_FOR_MIM is
-    // enabled only when AreSeparateProfilesForManagedAccountsEnabled() is true.
-    // If not, add implementation.
-    if (profileName.has_value()) {
-      [changeProfileHandler
-          changeProfile:*profileName
-               forScene:self.sceneState
-                 reason:ChangeProfileReason::kSwitchAccountsFromWidget
-           continuation:CreateChangeProfileAuthenticationContinuation(
-                            context, contexts)];
-      return;
+      if ([context.gaiaID isEqualToString:@"Default"]) {
+        // Use the personal profile name if there is no GaiaID (this happens in
+        // the sign-out scenario).
+        profileName = GetApplicationContext()
+                          ->GetProfileManager()
+                          ->GetProfileAttributesStorage()
+                          ->GetPersonalProfileName();
+      } else {
+        profileName = GetApplicationContext()
+                          ->GetAccountProfileMapper()
+                          ->FindProfileNameForGaiaID(GaiaId(context.gaiaID));
+      }
+      // TODO(crbug.com/388520520): Make sure that ENABLE_WIDGETS_FOR_MIM is
+      // enabled only when AreSeparateProfilesForManagedAccountsEnabled() is
+      // true. If not, add implementation.
+      if (profileName.has_value()) {
+        [changeProfileHandler
+            changeProfile:*profileName
+                 forScene:self.sceneState
+                   reason:ChangeProfileReason::kSwitchAccountsFromWidget
+             continuation:CreateChangeProfileAuthenticationContinuation(
+                              context, contexts)];
+        return;
+      }
     }
   }
-#endif
 
   [self openURLContexts:contexts];
 }

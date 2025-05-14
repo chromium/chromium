@@ -109,10 +109,10 @@ source_set("model") {
     "//net",
     "//url",
   ]
-
-  if (ios_enable_widget_kit_extension && ios_enable_widgets_for_mim) {
+  if (ios_enable_widget_kit_extension) {
     deps += [ "//ios/chrome/browser/widget_kit/model:model_swift" ]
   }
+
   public_deps = [
     ":constants",
     ":signin_util",
@@ -155,12 +155,8 @@ source_set("authentication_service") {
     "//ios/chrome/browser/shared/model/profile:features",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
-    "//ios/chrome/browser/widget_kit/model:features",
     "//ios/chrome/common/app_group",
   ]
-  if (ios_enable_widget_kit_extension && ios_enable_widgets_for_mim) {
-    deps += [ "//ios/chrome/browser/widget_kit/model:model_swift" ]
-  }
 }
 
 source_set("authentication_service_factory") {
@@ -501,7 +497,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
     "//ios/chrome/browser/web/model",
-    "//ios/chrome/browser/widget_kit/model:features",
     "//ios/chrome/common/app_group",
     "//ios/chrome/test:test_support",
     "//ios/net",
