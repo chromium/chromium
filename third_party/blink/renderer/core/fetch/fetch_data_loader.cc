@@ -28,9 +28,26 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
+#include "base/record_replay.h"
+#include "base/json/json_writer.h"
+
 namespace blink {
 
 namespace {
+
+static void ReportFetchFailed(const char* reason) {
+  if (!recordreplay::IsRecordingOrReplaying() || !v8::IsMainThread()) {
+    return;
+  }
+
+  std::string annotationContents;
+  if (recordreplay::IsReplaying()) {
+    base::Value::Dict info;
+    info.Set("reason", reason);
+    base::JSONWriter::Write(info, &annotationContents);
+  }
+  recordreplay::OnAnnotation("FetchFailed", annotationContents.c_str());
+}
 
 class FetchDataLoaderAsBlobHandle final : public FetchDataLoader,
                                           public FetchDataLoader::Client {
@@ -113,6 +130,7 @@ class FetchDataLoaderAsBlobHandle final : public FetchDataLoader,
     if (load_canceled_)
       return;
     if (!blob_handle) {
+      ReportFetchFailed("MissingBlobHandle");
       DidFetchDataLoadFailed();
       return;
     }
@@ -164,6 +182,7 @@ class FetchDataLoaderAsArrayBuffer final : public FetchDataLoader,
           if (!ok) {
             [[maybe_unused]] auto unused = consumer_->EndRead(0);
             consumer_->Cancel();
+            ReportFetchFailed("BufferAppendFailed");
             client_->DidFetchDataLoadFailed();
             return;
           }
@@ -179,6 +198,7 @@ class FetchDataLoaderAsArrayBuffer final : public FetchDataLoader,
         case BytesConsumer::Result::kDone: {
           DOMArrayBuffer* array_buffer = BuildArrayBuffer();
           if (!array_buffer) {
+            ReportFetchFailed("MissingArrayBuffer");
             client_->DidFetchDataLoadFailed();
             return;
           }
@@ -186,6 +206,7 @@ class FetchDataLoaderAsArrayBuffer final : public FetchDataLoader,
           return;
         }
         case BytesConsumer::Result::kError:
+          ReportFetchFailed("ArrayBufferBytesConsumerError");
           client_->DidFetchDataLoadFailed();
           return;
       }
@@ -266,6 +287,7 @@ class FetchDataLoaderAsFailure final : public FetchDataLoader,
           return;
         case BytesConsumer::Result::kDone:
         case BytesConsumer::Result::kError:
+          ReportFetchFailed("FailureBytesConsumerDoneOrError");
           client_->DidFetchDataLoadFailed();
           return;
       }
@@ -343,10 +365,12 @@ class FetchDataLoaderAsFormData final : public FetchDataLoader,
             DCHECK(!multipart_parser_->IsCancelled());
             client_->DidFetchDataLoadedFormData(form_data_);
           } else {
+            ReportFetchFailed("FormDataParserError");
             client_->DidFetchDataLoadFailed();
           }
           return;
         case BytesConsumer::Result::kError:
+          ReportFetchFailed("FormDataBytesConsumerError");
           client_->DidFetchDataLoadFailed();
           return;
       }
@@ -503,6 +527,7 @@ class FetchDataLoaderAsString final : public FetchDataLoader,
           client_->DidFetchDataLoadedString(builder_.ToString());
           return;
         case BytesConsumer::Result::kError:
+          ReportFetchFailed("StringBytesConsumerError");
           client_->DidFetchDataLoadFailed();
           return;
       }
@@ -573,6 +598,7 @@ class FetchDataLoaderAsDataPipe final : public FetchDataLoader,
           mojo::CreateDataPipe(&options, out_data_pipe_, pipe_consumer);
       if (rv != MOJO_RESULT_OK) {
         StopInternal();
+        ReportFetchFailed("CreateDataPipeFailed");
         client_->DidFetchDataLoadFailed();
         return;
       }
@@ -606,6 +632,7 @@ class FetchDataLoaderAsDataPipe final : public FetchDataLoader,
 
   void OnPeerClosed(MojoResult result, const mojo::HandleSignalsState& state) {
     StopInternal();
+    ReportFetchFailed("DataPipePeerClosed");
     client_->DidFetchDataLoadFailed();
   }
 
@@ -636,6 +663,7 @@ class FetchDataLoaderAsDataPipe final : public FetchDataLoader,
           } else {
             result = consumer_->EndRead(0);
             StopInternal();
+            ReportFetchFailed("DataPipeWriteFailed");
             client_->DidFetchDataLoadFailed();
             return;
           }
@@ -653,6 +681,7 @@ class FetchDataLoaderAsDataPipe final : public FetchDataLoader,
           return;
         case BytesConsumer::Result::kError:
           StopInternal();
+          ReportFetchFailed("DataPipeBytesConsumerError");
           client_->DidFetchDataLoadFailed();
           return;
       }
