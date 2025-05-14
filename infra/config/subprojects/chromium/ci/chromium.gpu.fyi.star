@@ -1734,7 +1734,7 @@ ci.thin_tester(
         # should have the same test_suites as 'Mac FYI Release (Apple M1)'.
         targets = [
             "gpu_fyi_mac_release_gtests",
-            "gpu_fyi_only_mac_release_telemetry_tests",
+            "gpu_fyi_only_mac_release_graphite_telemetry_tests",
         ],
         mixins = [
             "mac_arm64_apple_m1_gpu_experimental",
@@ -1971,7 +1971,7 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_fyi_mac_release_gtests",
-            "gpu_fyi_only_mac_release_telemetry_tests",
+            "gpu_fyi_only_mac_release_graphite_telemetry_tests",
         ],
         mixins = [
             "mac_arm64_apple_m1_gpu_stable",
@@ -2011,7 +2011,7 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_fyi_mac_release_gtests",
-            "gpu_fyi_only_mac_release_telemetry_tests",
+            "gpu_fyi_only_mac_release_graphite_telemetry_tests",
         ],
         mixins = [
             "mac_arm64_apple_m2_retina_gpu_stable",
@@ -2051,7 +2051,7 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_fyi_mac_release_gtests",
-            "gpu_fyi_only_mac_release_telemetry_tests",
+            "gpu_fyi_only_mac_release_graphite_telemetry_tests",
         ],
         mixins = [
             "mac_arm64_apple_m3_retina_gpu_stable",
