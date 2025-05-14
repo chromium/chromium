@@ -26,9 +26,9 @@ FloatingWorkspaceServiceFactory::GetInstance() {
 
 // static
 FloatingWorkspaceService* FloatingWorkspaceServiceFactory::GetForProfile(
-    Profile* profile) {
+    content::BrowserContext* browser_context) {
   return static_cast<FloatingWorkspaceService*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true));
+      GetInstance()->GetServiceForBrowserContext(browser_context, true));
 }
 
 FloatingWorkspaceServiceFactory::FloatingWorkspaceServiceFactory()

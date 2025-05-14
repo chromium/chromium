@@ -829,6 +829,7 @@ chromium-metrics-reviews@google.com.
       label="chrome://shopping-insights-side-panel.top-chrome/"/>
   <int value="977219287" label="chrome://memory/"/>
   <int value="985294599" label="chrome://webrtc-logs/"/>
+  <int value="1002389801" label="chrome://floating-workspace/"/>
   <int value="1007720460" label="chrome://tab-group-home/"/>
   <int value="1010453084" label="chrome-untrusted://data-sharing/"/>
   <int value="1015167335" label="chrome://lens/"/>

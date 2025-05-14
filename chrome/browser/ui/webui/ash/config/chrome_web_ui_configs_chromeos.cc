@@ -89,6 +89,7 @@
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
 #include "chrome/browser/ui/webui/ash/enterprise_reporting/enterprise_reporting_ui.h"
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_ui.h"
+#include "chrome/browser/ui/webui/ash/floating_workspace/floating_workspace_ui.h"
 #include "chrome/browser/ui/webui/ash/healthd_internals/healthd_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_ui.h"
 #include "chrome/browser/ui/webui/ash/internet/internet_config_dialog.h"
@@ -361,6 +362,7 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<vc_background_ui::VcBackgroundUIConfig>(
       base::BindRepeating(vc_background_ui::CreateVcBackgroundUI)));
   map.AddWebUIConfig(std::make_unique<GrowthInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<FloatingWorkspaceUIConfig>());
 #if !defined(OFFICIAL_BUILD)
   map.AddWebUIConfig(std::make_unique<SampleSystemWebAppUIConfig>());
   map.AddWebUIConfig(std::make_unique<StatusAreaInternalsUIConfig>());

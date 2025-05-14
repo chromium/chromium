@@ -125,6 +125,10 @@ inline constexpr char kChromeUIFileiconURL[] = "chrome://fileicon/";
 inline constexpr char kChromeUIFlagsHost[] = "flags";
 inline constexpr char kChromeUIFlagsURL[] = "chrome://flags/";
 inline constexpr char16_t kChromeUIFlagsURL16[] = u"chrome://flags/";
+inline constexpr char kChromeUIFloatingWorkspaceDialogHost[] =
+    "floating-workspace";
+inline constexpr char kChromeUIFloatingWorkspaceDialogURL[] =
+    "chrome://floating-workspace";
 inline constexpr char kChromeUIGCMInternalsHost[] = "gcm-internals";
 inline constexpr char kChromeUIGlicHost[] = "glic";
 inline constexpr char kChromeUIGlicURL[] = "chrome://glic/";
