@@ -172,7 +172,7 @@ source_set("constants") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/util",
-    "//ui/base:base",
+    "//ui/base",
   ]
 }
 
