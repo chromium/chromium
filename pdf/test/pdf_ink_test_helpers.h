@@ -21,6 +21,10 @@
 
 using SkColor = uint32_t;
 
+namespace base::test {
+class TaskEnvironment;
+}  // namespace base::test
+
 namespace chrome_pdf {
 
 // A possible configuration of Ink feature parameters.
@@ -87,6 +91,14 @@ base::span<const InkTestVariation> GetAllInkTestVariations();
 
 // Returns all variations of Ink tests that have text highlighting enabled.
 base::span<const InkTestVariation> GetInkTestVariationsWithTextHighlighting();
+
+// Sets the global PDF test task environment.
+void SetPdfTestTaskEnvironment(base::test::TaskEnvironment* task_environment);
+
+// Returns the global PDF test task environment. Should always exist for any
+// tests in the PDF test suite, otherwise crashes if no task environment was
+// set.
+base::test::TaskEnvironment& GetPdfTestTaskEnvironment();
 
 }  // namespace chrome_pdf
 

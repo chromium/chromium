@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/notreached.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "pdf/pdf_ink_conversions.h"
 
@@ -39,6 +40,8 @@ constexpr auto kInkTestVariationsWithTextHighlighting =
         kInkTestVariationTextHighlighting,
         kInkTestVariationTextHighlightingAndAnnotations,
     });
+
+base::test::TaskEnvironment* g_task_environment = nullptr;
 
 }  // namespace
 
@@ -102,6 +105,15 @@ base::span<const InkTestVariation> GetAllInkTestVariations() {
 
 base::span<const InkTestVariation> GetInkTestVariationsWithTextHighlighting() {
   return kInkTestVariationsWithTextHighlighting;
+}
+
+void SetPdfTestTaskEnvironment(base::test::TaskEnvironment* task_environment) {
+  g_task_environment = task_environment;
+}
+
+base::test::TaskEnvironment& GetPdfTestTaskEnvironment() {
+  CHECK(g_task_environment);
+  return *g_task_environment;
 }
 
 }  // namespace chrome_pdf

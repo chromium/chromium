@@ -9,13 +9,13 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -188,8 +188,16 @@ class PDFiumOnDemandSearchifierTest : public PDFiumTestBase {
   }
 
   void WaitUntilPerformedOcrCount(int expected_performed_ocrs) {
-    EXPECT_TRUE(base::test::RunUntil(
-        [&]() { return performed_ocrs() == expected_performed_ocrs; }));
+    if (performed_ocrs() == expected_performed_ocrs) {
+      return;
+    }
+
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &PDFiumOnDemandSearchifierTest::WaitUntilPerformedOcrCount,
+            base::Unretained(this), expected_performed_ocrs),
+        kOcrDelay);
   }
 
   // Returns all characters in the page.
