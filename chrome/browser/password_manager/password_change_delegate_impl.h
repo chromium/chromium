@@ -24,7 +24,7 @@ namespace password_manager {
 class PasswordFormManager;
 }  // namespace password_manager
 
-class ChangeFormSubmissionVerifier;
+class ChangePasswordFormFillingSubmissionHelper;
 class ChangePasswordFormFinder;
 class ModelQualityLogsUploader;
 class Profile;
@@ -114,7 +114,8 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   std::unique_ptr<ChangePasswordFormFinder> form_finder_;
 
   // Helper class which submits a form and verifies submission.
-  std::unique_ptr<ChangeFormSubmissionVerifier> submission_verifier_;
+  std::unique_ptr<ChangePasswordFormFillingSubmissionHelper>
+      submission_verifier_;
 
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
 

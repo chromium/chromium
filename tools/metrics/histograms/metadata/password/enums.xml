@@ -1775,7 +1775,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Could not parse response"/>
 </enum>
 
-<!-- LINT.ThenChange(/chrome/browser/password_manager/password_change/change_form_submission_verifier.h:SubmissionOutcome)-->
+<!-- LINT.ThenChange(/chrome/browser/password_manager/password_change/password_change_submission_verifier.h:SubmissionOutcome)-->
 
 <enum name="SubmittedPasswordFormFrame">
   <int value="0" label="Main frame"/>

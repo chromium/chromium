@@ -15,7 +15,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
-#include "chrome/browser/password_manager/password_change/change_form_submission_verifier.h"
+#include "chrome/browser/password_manager/password_change/password_change_submission_verifier.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/password_manager/password_change_delegate_impl.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
@@ -68,7 +68,7 @@ using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::WithArg;
-using SubmissionOutcome = ChangeFormSubmissionVerifier::SubmissionOutcome;
+using SubmissionOutcome = PasswordChangeSubmissionVerifier::SubmissionOutcome;
 using optimization_guide::TestModelQualityLogsUploaderService;
 using FinalModelStatus = optimization_guide::proto::FinalModelStatus;
 
@@ -659,7 +659,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       PasswordChangeDelegate::State::kPasswordChangeFailed, 1);
   histogram_tester.ExpectUniqueSample(
       kPasswordChangeSubmissionOutcomeHistogram,
-      ChangeFormSubmissionVerifier::SubmissionOutcome::kPageError, 1);
+      PasswordChangeSubmissionVerifier::SubmissionOutcome::kPageError, 1);
   ukm::TestUkmRecorder::ExpectEntryMetric(
       GetMetricEntry(
           test_ukm_recorder,

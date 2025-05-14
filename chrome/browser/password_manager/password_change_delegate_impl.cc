@@ -10,7 +10,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
-#include "chrome/browser/password_manager/password_change/change_form_submission_verifier.h"
+#include "chrome/browser/password_manager/password_change/change_password_form_filling_submission_helper.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_finder.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
@@ -206,12 +206,12 @@ void PasswordChangeDelegateImpl::OnPasswordChangeFormFound(
       *form_manager->GetParsedObservedForm(),
       form_manager->GetDriver()->GetPasswordGenerationHelper());
 
-  submission_verifier_ = std::make_unique<ChangeFormSubmissionVerifier>(
-      executor_.get(),
-      base::BindOnce(
-          &PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified,
-          weak_ptr_factory_.GetWeakPtr()),
-      logs_uploader_.get());
+  submission_verifier_ =
+      std::make_unique<ChangePasswordFormFillingSubmissionHelper>(
+          executor_.get(), logs_uploader_.get(),
+          base::BindOnce(
+              &PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified,
+              weak_ptr_factory_.GetWeakPtr()));
   submission_verifier_->FillChangePasswordForm(form_manager, original_password_,
                                                generated_password_);
   UpdateState(PasswordChangeDelegate::State::kChangingPassword);
