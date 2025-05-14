@@ -2979,6 +2979,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCESSIBILITY_TAB_SWITCHER_TOOLBAR_BTN_MENU" desc="Content description for the settings menu button in the Tab Switcher Toolbar.">
         Manage open tabs
       </message>
+      <message name="IDS_ACCESSIBILITY_TAB_SWITCHER_TITLE" desc="Accessibility label of the current window when Grid Tab Switcher is shown.">
+        All tabs
+      </message>
       <message name="IDS_TAB_LOADING_DEFAULT_TITLE" desc="The title of a tab when we are still waiting for either the URL or the real title. This generally shows when the page is first loading.">
         Loading…
       </message>
@@ -5128,6 +5131,10 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_ACCESSIBILITY_COLLAPSE_SECTION_HEADER" desc="Content description for the suggested section header collapse button.">
         Tap to collapse
+      </message>
+
+      <message name="IDS_ACCESSIBILITY_DEFAULT_APP_LABEL" desc="Accessibility label of the current window when app name is empty.">
+        Application
       </message>
 
       <message name="IDS_TAB_SWITCHER_BUTTON_LABEL" desc="Label for tab switcher button">

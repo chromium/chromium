@@ -38,6 +38,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -46,6 +47,7 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridgeJni;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -178,7 +180,7 @@ public class TabbedRootUiCoordinatorTest {
     @Test
     @MediumTest
     public void testActivityTitle() {
-        final var activity = mActivityTestRule.getActivity();
+        final ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
 
         Tab tab1 =
@@ -200,5 +202,12 @@ public class TabbedRootUiCoordinatorTest {
         assertTrue(
                 "Activity title should contain tab title.",
                 activity.getTitle().toString().contains("Three"));
+
+        String tabSwitcherLabel =
+                activity.getResources().getString(R.string.accessibility_tab_switcher_title);
+        TabUiTestHelper.enterTabSwitcher(activity);
+        assertTrue(
+                "Activity title should contain GTS label.",
+                activity.getTitle().toString().contains(tabSwitcherLabel));
     }
 }
