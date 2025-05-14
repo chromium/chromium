@@ -1837,6 +1837,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebviewAccelerateSmallCanvases);
 // Kill switch for https://crbug.com/415810136.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNoReferrerForPreloadFromSubresource);
 
+// Kill switch for crbug.com/407785197
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kWebRtcAllowDataChannelRecordingInWebrtcInternals);
+
 // When adding new features or constants for features, please keep the features
 // sorted by identifier name (e.g. `kAwesomeFeature`), and the constants for
 // that feature grouped with the associated feature.

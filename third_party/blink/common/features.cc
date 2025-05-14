@@ -2808,6 +2808,11 @@ BASE_FEATURE(kWebRtcUseMinMaxVEADimensions,
 #endif
 );
 
+// Kill switch for crbug.com/407785197.
+BASE_FEATURE(kWebRtcAllowDataChannelRecordingInWebrtcInternals,
+             "WebRtcAllowDataChannelRecordingInWebrtcInternals",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Kill switch for https://crbug.com/338955051.
 BASE_FEATURE(kWebUSBTransferSizeLimit,
              "WebUSBTransferSizeLimit",

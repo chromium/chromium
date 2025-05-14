@@ -14,6 +14,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/url_constants.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -132,6 +133,10 @@ void WebRTCInternalsMessageHandler::OnSetEventLogRecordingsEnabled(
 void WebRTCInternalsMessageHandler::OnSetDataChannelRecordingsEnabled(
     bool enable,
     const base::Value::List& /* unused_list */) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kWebRtcAllowDataChannelRecordingInWebrtcInternals)) {
+    return;
+  }
   if (enable) {
     webrtc_internals_->EnableDataChannelRecordings(web_ui()->GetWebContents());
   } else {
