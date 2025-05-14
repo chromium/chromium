@@ -1,4 +1,8 @@
-// META: script=resources/utils.js
+// META: title=Rewriter
+// META: script=../resources/util.js
+// META: timeout=long
+
+'use strict';
 
 promise_test(async () => {
   assert_true(!!Rewriter);
@@ -123,6 +127,27 @@ promise_test(async () => {
   const result = await rewriter.measureInputUsage(kTestPrompt);
   assert_greater_than(result, 0);
 }, 'Rewriter.measureInputUsage() returns non-empty result');
+
+promise_test(async () => {
+  const rewriter = await Rewriter.create();
+  const result =
+      await rewriter.rewrite(kTestPrompt, {context: kTestContext});
+  assert_equals(typeof result, 'string');
+}, 'Simple Rewriter.rewrite() call');
+
+promise_test(async () => {
+  const rewriter = await Rewriter.create();
+  const streamingResponse = rewriter.rewriteStreaming(
+      kTestPrompt, {context: kTestContext});
+  assert_equals(
+      Object.prototype.toString.call(streamingResponse),
+      '[object ReadableStream]');
+  let result = '';
+  for await (const chunk of streamingResponse) {
+    result += chunk;
+  }
+  assert_greater_than(result.length, 0);
+}, 'Simple Rewriter.rewriteStreaming() call');
 
 promise_test(async () => {
   const rewriter = await Rewriter.create();

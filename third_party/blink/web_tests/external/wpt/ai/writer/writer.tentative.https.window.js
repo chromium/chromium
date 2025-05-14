@@ -1,4 +1,8 @@
-// META: script=resources/utils.js
+// META: title=Writer Detached Iframe
+// META: script=../resources/util.js
+// META: timeout=long
+
+'use strict';
 
 promise_test(async () => {
   assert_true(!!Writer);
@@ -132,6 +136,27 @@ promise_test(async () => {
   const result = await writer.measureInputUsage(kTestPrompt);
   assert_greater_than(result, 0);
 }, 'Writer.measureInputUsage() returns non-empty result');
+
+promise_test(async () => {
+  const writer = await Writer.create();
+  const result =
+      await writer.write(kTestPrompt, {context: kTestContext});
+  assert_equals(typeof result, 'string');
+}, 'Simple Writer.write() call');
+
+promise_test(async () => {
+  const writer = await Writer.create();
+  const streamingResponse =
+      writer.writeStreaming(kTestPrompt, {context: kTestContext});
+  assert_equals(
+      Object.prototype.toString.call(streamingResponse),
+      '[object ReadableStream]');
+  let result = '';
+  for await (const chunk of streamingResponse) {
+    result += chunk;
+  }
+  assert_greater_than(result.length, 0);
+}, 'Simple Writer.writeStreaming() call');
 
 promise_test(async () => {
   const writer = await Writer.create();

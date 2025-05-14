@@ -3,6 +3,7 @@ const kValidAvailabilities =
 const kAvailableAvailabilities = ['downloadable', 'downloading', 'available'];
 
 const kTestPrompt = 'Please write a sentence in English.';
+const kTestContext = 'This is a test; this is only a test.';
 
 // Takes an array of dictionaries mapping keys to value arrays, e.g.:
 //   [ {Shape: ["Square", "Circle", undefined]}, {Count: [1, 2]} ]

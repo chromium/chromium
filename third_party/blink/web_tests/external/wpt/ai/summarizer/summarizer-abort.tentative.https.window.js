@@ -1,5 +1,4 @@
 // META: title=Summarizer Abort
-// META: global=window,worker
 // META: script=../resources/util.js
 
 'use strict';
