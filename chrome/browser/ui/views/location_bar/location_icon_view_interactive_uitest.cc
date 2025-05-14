@@ -3,12 +3,18 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -80,15 +86,25 @@ IN_PROC_BROWSER_TEST_F(LocationIconViewTest,
       web_contents, translate::TRANSLATE_STEP_AFTER_TRANSLATE, "en", "fr",
       translate::TranslateErrors::NONE, true);
 
-  PageActionIconView* icon_view =
-      browser_view->toolbar_button_provider()->GetPageActionIconView(
-          PageActionIconType::kTranslate);
+  views::View* icon_view;
+  if (IsPageActionMigrated(PageActionIconType::kTranslate)) {
+    icon_view = browser_view->toolbar_button_provider()->GetPageActionView(
+        kActionShowTranslate);
+  } else {
+    icon_view = browser_view->toolbar_button_provider()->GetPageActionIconView(
+        PageActionIconType::kTranslate);
+  }
+
   ASSERT_TRUE(icon_view);
   EXPECT_TRUE(icon_view->GetVisible());
 
   // Ensure the bubble's widget is visible, but inactive. Active widgets are
   // focused by accessibility, so not of concern.
-  views::Widget* widget = icon_view->GetBubble()->GetWidget();
+  views::Widget* widget = browser()
+                              ->GetFeatures()
+                              .translate_bubble_controller()
+                              ->GetTranslateBubble()
+                              ->GetWidget();
   widget->Deactivate();
   widget->ShowInactive();
   EXPECT_TRUE(widget->IsVisible());
