@@ -696,10 +696,13 @@ BreakStatus FinishFragmentation(BoxFragmentBuilder* builder) {
     was_broken_by_child = builder->GetExclusionSpace().HasFragmentainerBreak();
 
   if (space_left == kIndefiniteSize) {
-    // We don't know how space is available (initial column balancing pass), so
-    // we won't break.
-    if (!was_broken_by_child)
+    // We don't know how much space is available (initial column balancing
+    // pass), so we won't break. Mark that we're at the block end unless there's
+    // a (forced) break inside, or if we were already at the block end before
+    // laying out this fragment.
+    if (!was_broken_by_child || is_past_end) {
       builder->SetIsAtBlockEnd();
+    }
     return BreakStatus::kContinue;
   }
 
