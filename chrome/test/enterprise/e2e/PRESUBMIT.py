@@ -8,6 +8,7 @@ for more details on the presubmit API built into depot_tools.
 """
 
 PRESUBMIT_VERSION = '2.0.0'
+_OTA_DOC_LINK = 'https://g3doc.corp.google.com/googleclient/chrome/enterprise/g3doc/celab/write_enterprise_test.md?cl=head#testing-cloud-user-policies'
 
 
 def CheckPylint(input_api, output_api):
@@ -30,3 +31,37 @@ def CheckPylint(input_api, output_api):
   check = input_api.canned_checks.GetPylint(
       input_api, output_api, disabled_warnings=disabled_warnings)
   return input_api.RunTests(check)
+
+
+def CheckAccountsBelongToPool(input_api, output_api):
+  account_pattern = input_api.re.compile(r'[\w\-]+@chromepizzatest.com')
+  user_pattern = input_api.re.compile(r'account\d+')
+  bad_accounts, locations = [], []
+  for affected_file in input_api.AffectedTestableFiles():
+    for (line_num, text) in affected_file.ChangedContents():
+      account_match = account_pattern.search(text)
+      if not account_match:
+        continue
+      if not user_pattern.match(account_match.group()):
+        bad_accounts.append(account_match.group())
+        start_col, end_col = account_match.span()
+        location = output_api.PresubmitResultLocation(
+            file_path=affected_file.LocalPath(),
+            start_line=line_num,
+            end_line=line_num,
+            start_col=start_col,
+            end_col=end_col)
+        locations.append(location)
+
+  if not bad_accounts:
+    return []
+  return [
+      output_api.PresubmitPromptWarning(
+          message=(
+              "This CL appears to use accounts that aren't OTAs from the shared "
+              'pool. Please consider doing so to avoid blocked logins.'),
+          items=bad_accounts,
+          long_text=_OTA_DOC_LINK,
+          locations=locations,
+      )
+  ]
