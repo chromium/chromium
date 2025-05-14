@@ -251,10 +251,12 @@ namespace developerPrivate {
     DisableReasons disableReasons;
     AccessModifier errorCollection;
     AccessModifier fileAccess;
+    boolean fileAccessPendingChange;
     HomePage homePage;
     DOMString iconUrl;
     DOMString id;
     AccessModifier incognitoAccess;
+    boolean incognitoAccessPendingChange;
     DOMString[] installWarnings;
     DOMString? launchUrl;
     Location location;

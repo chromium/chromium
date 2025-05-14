@@ -4327,6 +4327,7 @@ if (!is_android) {
           "../browser/extensions/api/virtual_keyboard_private/virtual_keyboard_private_apitest.cc",
           "../browser/extensions/api/vpn_provider/vpn_provider_apitest.cc",
           "../browser/extensions/clipboard_extension_apitest_chromeos.cc",
+          "../browser/extensions/delayed_setting_change_browsertest.cc",
         ]
 
         deps += [

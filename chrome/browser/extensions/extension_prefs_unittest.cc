@@ -1195,6 +1195,48 @@ class ExtensionPrefsIsExternalExtensionUninstalled : public ExtensionPrefsTest {
 TEST_F(ExtensionPrefsIsExternalExtensionUninstalled,
        ExtensionPrefsIsExternalExtensionUninstalled) {}
 
+#if BUILDFLAG(IS_CHROMEOS)
+class ExtensionPrefsApplyPendingUpdates
+    : public ExtensionPrefsTest,
+      public testing::WithParamInterface<std::tuple<std::string, bool>> {
+ public:
+  void Initialize() override {
+    auto [pref, value] = GetParam();
+    extension_ = prefs_.AddExtension("apply_pending_updates");
+    prefs()->UpdateExtensionPref(extension_->id(), pref + "-pending",
+                                 base::Value(value));
+  }
+
+  void Verify() override {}
+
+ protected:
+  scoped_refptr<Extension> extension_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    PendingUpdates,
+    ExtensionPrefsApplyPendingUpdates,
+    ::testing::Combine(::testing::Values("newAllowFileAccess", "incognito"),
+                       ::testing::Bool()));
+
+TEST_P(ExtensionPrefsApplyPendingUpdates, ExtensionPrefsApplyPendingUpdates) {
+  auto id = extension_->id();
+  bool actual = false;
+  auto [pref, value] = GetParam();
+
+  ASSERT_TRUE(prefs()->HasPrefForExtension(id));
+  ASSERT_TRUE(prefs()->ReadPrefAsBoolean(id, pref + "-pending", &actual));
+  ASSERT_EQ(actual, value);
+  ASSERT_FALSE(prefs()->ReadPrefAsBoolean(id, pref, &actual));
+
+  prefs()->ApplyPendingUpdates();
+
+  ASSERT_FALSE(prefs()->ReadPrefAsBoolean(id, pref + "-pending", &actual));
+  ASSERT_TRUE(prefs()->ReadPrefAsBoolean(id, pref, &actual));
+  ASSERT_EQ(actual, value);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 ////////////////////////////////////////////////////////////////////////////////
 // The following are ExtensionPrefs tests that don't use the same
 // Initialize(), Verify(), <recreate>, Verify() flow that the others do, and
