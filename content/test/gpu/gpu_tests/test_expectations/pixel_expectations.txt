@@ -488,6 +488,9 @@ crbug.com/370694819 [ angle-opengl asan graphite-disabled mac ] Pixel_WebGPUDest
 # Flaky on Win10 Intel with bad image
 crbug.com/413062240 [ win10 intel-0x4680 passthrough ] Pixel_WebGPUDestroyed_OnscreenCanvas_CopyExternalImageToTexture [ RetryOnFailure ]
 
+# GTX 1660 Win10 -> Win11 upgrade
+crbug.com/402429382 [ win11 nvidia-0x2184 ] Pixel_ReflectedDiv [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
