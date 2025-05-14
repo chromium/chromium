@@ -32,6 +32,10 @@ struct ExpectedUkmMetricsPair : public std::pair<std::string, int64_t> {
   }
 };
 
+FormSignature Collapse(FormSignature sig);
+
+FieldSignature Collapse(FieldSignature sig);
+
 void VerifyUkm(
     const ukm::TestUkmRecorder* ukm_recorder,
     const FormData& form,

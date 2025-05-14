@@ -124,14 +124,6 @@ using UkmFieldInfoType = ukm::builders::Autofill2_FieldInfo;
 using ExpectedUkmMetricsRecord = std::vector<ExpectedUkmMetricsPair>;
 using ExpectedUkmMetrics = std::vector<ExpectedUkmMetricsRecord>;
 
-FormSignature Collapse(FormSignature sig) {
-  return FormSignature(sig.value() % 1021);
-}
-
-FieldSignature Collapse(FieldSignature sig) {
-  return FieldSignature(sig.value() % 1021);
-}
-
 void CreateSimpleForm(const GURL& origin, FormData& form) {
   form.set_host_frame(test::MakeLocalFrameToken());
   form.set_renderer_id(test::MakeFormRendererId());

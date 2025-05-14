@@ -29,14 +29,6 @@ using UkmEditedAutofilledFieldAtSubmission =
 using UkmAutofillKeyMetricsType = ukm::builders::Autofill_KeyMetrics;
 using UkmFieldInfoType = ukm::builders::Autofill2_FieldInfo;
 
-FormSignature Collapse(FormSignature sig) {
-  return FormSignature(sig.value() % 1021);
-}
-
-FieldSignature Collapse(FieldSignature sig) {
-  return FieldSignature(sig.value() % 1021);
-}
-
 MATCHER(CompareMetricsIgnoringMillisecondsSinceFormParsed, "") {
   const auto& lhs = ::testing::get<0>(arg);
   const std::pair<std::string, int64_t>& rhs = ::testing::get<1>(arg);
@@ -48,6 +40,14 @@ MATCHER(CompareMetricsIgnoringMillisecondsSinceFormParsed, "") {
 }
 
 }  // namespace
+
+FormSignature Collapse(FormSignature sig) {
+  return FormSignature(sig.value() % 1021);
+}
+
+FieldSignature Collapse(FieldSignature sig) {
+  return FieldSignature(sig.value() % 1021);
+}
 
 void VerifyUkm(
     const ukm::TestUkmRecorder* ukm_recorder,

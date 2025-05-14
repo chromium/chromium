@@ -55,14 +55,6 @@ using UkmSubmittedFormWithExperimentalFieldsType =
 using ExpectedUkmMetricsRecord = std::vector<ExpectedUkmMetricsPair>;
 using ExpectedUkmMetrics = std::vector<ExpectedUkmMetricsRecord>;
 
-FormSignature Collapse(FormSignature sig) {
-  return FormSignature(sig.value() % 1021);
-}
-
-FieldSignature Collapse(FieldSignature sig) {
-  return FieldSignature(sig.value() % 1021);
-}
-
 std::string SerializeAndEncode(const AutofillQueryResponse& response) {
   std::string unencoded_response_string;
   if (!response.SerializeToString(&unencoded_response_string)) {
