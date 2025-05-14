@@ -24,9 +24,6 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
-#endif
-
-#if BUILDFLAG(IS_APPLE)
 #include "services/webnn/coreml/context_impl_coreml.h"
 #endif
 
@@ -190,18 +187,15 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_APPLE)
-  if (__builtin_available(macOS 14, *)) {
-    if (base::FeatureList::IsEnabled(mojom::features::kWebNNCoreML)
 #if BUILDFLAG(IS_MAC)
-        && base::mac::GetCPUType() == base::mac::CPUType::kArm
-#endif  // BUILDFLAG(IS_MAC)
-    ) {
+  if (__builtin_available(macOS 14, *)) {
+    if (base::FeatureList::IsEnabled(mojom::features::kWebNNCoreML) &&
+        base::mac::GetCPUType() == base::mac::CPUType::kArm) {
       context_impl = std::make_unique<coreml::ContextImplCoreml>(
           std::move(receiver), this, std::move(options));
     }
   }
-#endif  // BUILDFLAG(IS_APPLE)
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(WEBNN_USE_TFLITE)
   if (!context_impl) {
