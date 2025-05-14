@@ -86,6 +86,9 @@ enum class TabGridPageConfiguration {
 - (void)tabGridDidDismissSwipeToIncognitoIPHWithReason:
     (IPHDismissalReasonType)reason;
 
+// Closes the current active tab.
+- (void)closeCurrentTab;
+
 @end
 
 // View controller representing a tab switcher. The tab switcher has an
