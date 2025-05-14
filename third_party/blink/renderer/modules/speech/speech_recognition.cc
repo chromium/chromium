@@ -499,9 +499,8 @@ SpeechRecognition::SpeechRecognition(LocalDOMWindow* window)
       ExecutionContextLifecycleObserver(window),
       PageVisibilityObserver(window->GetFrame() ? window->GetFrame()->GetPage()
                                                 : nullptr),
-      grammars_(SpeechGrammarList::Create()),  // FIXME: The spec is not clear
-                                               // on the default value for the
-                                               // grammars attribute.
+      grammars_(SpeechGrammarList::Create()),
+      phrases_(SpeechRecognitionPhraseList::Create({})),
       controller_(SpeechRecognitionController::From(*window)),
       receiver_(this, window),
       session_(window) {}

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<title>SpeechRecognition RecognitionContext</title>
+<title>SpeechRecognition Phrases</title>
 
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -29,41 +29,40 @@ promise_test(async (t) => {
         "Audio track should be a valid MediaStreamTrack"
     );
 
-    // Create the recognition context.
-    var list = new SpeechRecognitionPhraseList();
-    list.addItem(new SpeechRecognitionPhrase("ASIC", 1.0));
-    list.addItem(new SpeechRecognitionPhrase("FPGA", 1.0));
-    var context = new SpeechRecognitionContext(list);
-
-    // Create the first speech recognition with a mode that does not support
-    // recognition context. Note that this may vary between browsers in the future.
+    // Create the first speech recognition with a mode that does not support contextual biasing.
+    // Note that this may vary between browsers in the future.
     window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition1 = new SpeechRecognition();
     recognition1.mode = "cloud-only";
     recognition1.lang = "en-US";
-    recognition1.context = context;
 
     recognition1.onerror = function(event) {
         assert_equals(
             event.error,
-            "recognition-context-not-supported",
-            "First speech recognition should throw a recognition-context-not-supported error"
+            "phrases-not-supported",
+            "First speech recognition should throw a phrases-not-supported error"
         );
     };
 
-    recognition1.start(audioTrack);
+    recognition1.phrases = new SpeechRecognitionPhraseList([
+        new SpeechRecognitionPhrase("test", 1.0)
+    ]);
 
-    // Create the second speech recognition with a mode that supports recognition context.
+    // Create the second speech recognition with a mode that supports contextual biasing.
     const recognition2 = new SpeechRecognition();
     recognition2.mode = "ondevice-only";
     recognition2.lang = "en-US";
-    recognition2.context = context;
 
     recognition2.onerror = function(event) {
         // Currently WPT may not be able to detect that SODA is available and
         // will throw a "language-not-supported" error here.
-        assert_unreached();
+        assert_unreached("Caught an error: " + event.error);
     };
+
+    recognition2.phrases = new SpeechRecognitionPhraseList([
+        new SpeechRecognitionPhrase("ASIC", 1.0),
+        new SpeechRecognitionPhrase("FPGA", 1.0)
+    ]);
 
     const recognitionPromise = new Promise((resolve) => {
         recognition2.onresult = (event) => {
@@ -80,6 +79,6 @@ promise_test(async (t) => {
         "the fpga's latency were both below expectations",
         "Second speech recognition should correctly recognize the phrases"
     );
-}, "SpeechRecognition should recognize speech with the given recognition context.");
+}, "SpeechRecognition should recognize speech with the given contextual information.");
 </script>
 </html>
