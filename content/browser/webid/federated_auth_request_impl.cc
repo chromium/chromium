@@ -653,8 +653,8 @@ void FederatedAuthRequestImpl::RequestToken(
         return;
       }
 
-      any_idp_has_custom_scopes =
-          any_idp_has_custom_scopes || GetDisclosureFields(*idp_ptr).empty();
+      any_idp_has_custom_scopes = any_idp_has_custom_scopes ||
+                                  GetDisclosureFields(idp_ptr->fields).empty();
       any_idp_has_parameters = any_idp_has_parameters || idp_ptr->params_json;
 
       blink::mojom::RpContext rp_context = idp_get_params_ptr->context;
@@ -1071,45 +1071,6 @@ void FederatedAuthRequestImpl::OnClientMetadataResponseReceived(
                      std::move(client_metadata)));
 }
 
-std::vector<IdentityRequestDialogDisclosureField>
-FederatedAuthRequestImpl::GetDisclosureFields(
-    const blink::mojom::IdentityProviderRequestOptions& provider) {
-  const std::vector<IdentityRequestDialogDisclosureField> kDefaultPermissions =
-      {IdentityRequestDialogDisclosureField::kName,
-       IdentityRequestDialogDisclosureField::kEmail,
-       IdentityRequestDialogDisclosureField::kPicture};
-
-  const auto& fields = provider.fields;
-  if (!fields) {
-    // If "fields" is not passed, defaults the parameter to
-    // ["name", "email" and "picture"].
-    return kDefaultPermissions;
-  }
-
-  // If fields is explicitly empty, we should not mediate.
-  if (fields->empty()) {
-    return {};
-  }
-
-  std::vector<IdentityRequestDialogDisclosureField> list;
-  for (const auto& field : *fields) {
-    if (field == kFedCmDefaultFieldName) {
-      list.push_back(IdentityRequestDialogDisclosureField::kName);
-    } else if (field == kFedCmDefaultFieldEmail) {
-      list.push_back(IdentityRequestDialogDisclosureField::kEmail);
-    } else if (field == kFedCmDefaultFieldPicture) {
-      list.push_back(IdentityRequestDialogDisclosureField::kPicture);
-    } else if (IsFedCmAlternativeIdentifiersEnabled()) {
-      if (field == kFedCmFieldPhoneNumber) {
-        list.push_back(IdentityRequestDialogDisclosureField::kPhoneNumber);
-      } else if (field == kFedCmFieldUsername) {
-        list.push_back(IdentityRequestDialogDisclosureField::kUsername);
-      }
-    }
-  }
-  return list;
-}
-
 bool FederatedAuthRequestImpl::CanShowContinueOnPopup() const {
   if (mediation_requirement_ == MediationRequirement::kConditional) {
     // Because conditional mediation always requires a user gesture to sign in,
@@ -1160,7 +1121,7 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
   const GURL& idp_config_url = idp_info->provider->config->config_url;
 
   std::vector<IdentityRequestDialogDisclosureField> disclosure_fields =
-      GetDisclosureFields(*idp_info->provider);
+      GetDisclosureFields(idp_info->provider->fields);
 
   const std::string idp_for_display =
       webid::FormatUrlForDisplay(idp_config_url);
@@ -1643,7 +1604,7 @@ void FederatedAuthRequestImpl::OnIdpMismatch(
       idp_for_display, idp_info->metadata,
       ClientMetadata{GURL(), GURL(), GURL(), gfx::Image()},
       idp_info->rp_context, idp_info->format,
-      GetDisclosureFields(*idp_info->provider),
+      GetDisclosureFields(idp_info->provider->fields),
       /*has_login_status_mismatch=*/true);
   idp_infos_[idp_config_url] = std::move(idp_info);
 
@@ -1842,7 +1803,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
   bool need_client_metadata = false;
 
   if (!idp_info->provider->config->from_idp_registration_api &&
-      !GetDisclosureFields(*idp_info->provider).empty()) {
+      !GetDisclosureFields(idp_info->provider->fields).empty()) {
     for (const auto& account : accounts) {
       // ComputeLoginStates() should have populated
       // IdentityRequestAccount::login_state.

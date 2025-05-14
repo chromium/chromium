@@ -9,6 +9,7 @@
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/fedcm_metrics.h"
+#include "content/browser/webid/flags.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
@@ -290,6 +291,43 @@ IdAssertionFetchStatusToRequestResultAndTokenStatus(
     case IdpNetworkRequestManager::ParseStatus::kSuccess:
       NOTREACHED() << "Should not be invoked with success";
   }
+}
+
+std::vector<IdentityRequestDialogDisclosureField> GetDisclosureFields(
+    const std::optional<std::vector<std::string>>& fields) {
+  const std::vector<IdentityRequestDialogDisclosureField> kDefaultPermissions =
+      {IdentityRequestDialogDisclosureField::kName,
+       IdentityRequestDialogDisclosureField::kEmail,
+       IdentityRequestDialogDisclosureField::kPicture};
+
+  if (!fields) {
+    // If "fields" is not passed, defaults the parameter to
+    // ["name", "email" and "picture"].
+    return kDefaultPermissions;
+  }
+
+  // If fields is explicitly empty, we should not mediate.
+  if (fields->empty()) {
+    return {};
+  }
+
+  std::vector<IdentityRequestDialogDisclosureField> list;
+  for (const auto& field : *fields) {
+    if (field == kFedCmDefaultFieldName) {
+      list.push_back(IdentityRequestDialogDisclosureField::kName);
+    } else if (field == kFedCmDefaultFieldEmail) {
+      list.push_back(IdentityRequestDialogDisclosureField::kEmail);
+    } else if (field == kFedCmDefaultFieldPicture) {
+      list.push_back(IdentityRequestDialogDisclosureField::kPicture);
+    } else if (IsFedCmAlternativeIdentifiersEnabled()) {
+      if (field == kFedCmFieldPhoneNumber) {
+        list.push_back(IdentityRequestDialogDisclosureField::kPhoneNumber);
+      } else if (field == kFedCmFieldUsername) {
+        list.push_back(IdentityRequestDialogDisclosureField::kUsername);
+      }
+    }
+  }
+  return list;
 }
 
 }  // namespace content

@@ -1759,13 +1759,6 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     return options;
   }
 
-  // Helper to call GetDisclosureFields with the desired fields.
-  std::vector<Field> GetDisclosureFields(
-      const std::vector<std::string>& fields) {
-    return federated_auth_request_impl_->GetDisclosureFields(
-        *NewIDPWithFields(fields));
-  }
-
   void SimulateLoginToIdP(std::string login_url = kIdpLoginUrl) {
     federated_auth_request_impl_->LoginToIdP(/*can_append_hints=*/true,
                                              GURL(kIdpUrl), GURL(login_url));
@@ -6360,53 +6353,6 @@ TEST_F(FederatedAuthRequestImplTest, CloseModalDialogView) {
   EXPECT_FALSE(test_identity_registry_->notified_);
   federated_auth_request_impl_->CloseModalDialogView();
   EXPECT_TRUE(test_identity_registry_->notified_);
-}
-
-TEST_F(FederatedAuthRequestImplTest, GetDisclosureFieldsEmpty) {
-  // An unknown field is being requested.
-  EXPECT_THAT(GetDisclosureFields({"address"}), ElementsAre());
-  // Nothing is requested.
-  EXPECT_THAT(GetDisclosureFields({}), ElementsAre());
-}
-
-TEST_F(FederatedAuthRequestImplTest, GetDisclosureFields) {
-  // When no fields are passed, we use the default.
-  EXPECT_THAT(federated_auth_request_impl_->GetDisclosureFields(
-                  *NewIDPWithFields(std::nullopt)),
-              ElementsAre(Field::kName, Field::kEmail, Field::kPicture));
-  // When the default fields are explicitly passed, we should mediate them.
-  EXPECT_THAT(GetDisclosureFields({"name", "email", "picture"}),
-              ElementsAre(Field::kName, Field::kEmail, Field::kPicture));
-  // When a superset of the supported fields is passed, we should mediate the
-  // supported fields.
-  EXPECT_THAT(
-      GetDisclosureFields({"name", "email", "picture", "locale", "tel"}),
-      ElementsAre(Field::kName, Field::kEmail, Field::kPicture));
-}
-
-TEST_F(FederatedAuthRequestImplTest,
-       GetDisclosureFieldsWithAlternativeIdentifiers) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAlternativeIdentifiers);
-  // When a superset of the supported fields is passed, we should mediate the
-  // supported fields.
-  EXPECT_THAT(
-      GetDisclosureFields({"name", "email", "picture", "locale", "tel"}),
-      ElementsAre(Field::kName, Field::kEmail, Field::kPicture,
-                  Field::kPhoneNumber));
-}
-
-TEST_F(FederatedAuthRequestImplTest,
-       GetDisclosureFieldsWithAlternativeIdentifiersDisabled) {
-  base::test::ScopedFeatureList list;
-  list.InitAndDisableFeature(features::kFedCmAlternativeIdentifiers);
-  // We should only support the new identifiers if the flag is enabled
-  EXPECT_THAT(GetDisclosureFields({"username", "tel"}), ElementsAre());
-}
-TEST_F(FederatedAuthRequestImplTest, GetDisclosureFieldsSubsetOfDefault) {
-  // Subsets of the default fields should work.
-  EXPECT_THAT(GetDisclosureFields({"name", "locale"}),
-              ElementsAre(Field::kName));
 }
 
 class FederatedAuthRequestImplNewTabTest : public FederatedAuthRequestImplTest {

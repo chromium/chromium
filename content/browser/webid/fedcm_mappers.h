@@ -11,6 +11,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/idp_network_request_manager.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
@@ -97,6 +98,11 @@ FedCmErrorDialogResult DismissReasonToErrorDialogResult(
 std::pair<blink::mojom::FederatedAuthRequestResult, FedCmRequestIdTokenStatus>
 IdAssertionFetchStatusToRequestResultAndTokenStatus(
     IdpNetworkRequestManager::FetchStatus status);
+
+// Returns a list of fields that we should mediate authorization for. If
+// empty, we should not show a permission request dialog.
+CONTENT_EXPORT std::vector<IdentityRequestDialogDisclosureField>
+GetDisclosureFields(const std::optional<std::vector<std::string>>& fields);
 
 }  // namespace content
 

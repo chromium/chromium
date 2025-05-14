@@ -225,11 +225,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void ClickErrorDialogMoreDetailsForDevtools();
   void DismissErrorDialogForDevtools();
 
-  // Returns a list of fields that we should mediate authorization for. If
-  // empty, we should not show a permission request dialog.
-  std::vector<IdentityRequestDialogDisclosureField> GetDisclosureFields(
-      const blink::mojom::IdentityProviderRequestOptions& provider);
-
   // Whether we can show the continue_on popup (not using mediation: silent,
   // etc.)
   bool CanShowContinueOnPopup() const;
