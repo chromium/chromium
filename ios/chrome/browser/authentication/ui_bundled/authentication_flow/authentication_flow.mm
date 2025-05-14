@@ -17,6 +17,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
 #import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/base/gaia_id_hash.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/base/account_pref_utils.h"

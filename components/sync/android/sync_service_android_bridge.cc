@@ -448,16 +448,15 @@ jlong SyncServiceAndroidBridge::GetLastSyncedTimeForDebugging(JNIEnv* env) {
 
 void SyncServiceAndroidBridge::KeepAccountSettingsPrefsOnlyForUsers(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobjectArray>& gaia_ids) {
+    const base::android::JavaParamRef<jobjectArray>& gaia_ids_array) {
   std::vector<std::string> gaia_id_strings;
-  AppendJavaStringArrayToStringVector(env, gaia_ids, &gaia_id_strings);
-  std::vector<signin::GaiaIdHash> gaia_id_hashes;
+  AppendJavaStringArrayToStringVector(env, gaia_ids_array, &gaia_id_strings);
+  std::vector<GaiaId> gaia_ids;
   for (const std::string& gaia_id_string : gaia_id_strings) {
-    gaia_id_hashes.push_back(
-        signin::GaiaIdHash::FromGaiaId(GaiaId(gaia_id_string)));
+    gaia_ids.emplace_back(gaia_id_string);
   }
   native_sync_service_->GetUserSettings()->KeepAccountSettingsPrefsOnlyForUsers(
-      gaia_id_hashes);
+      gaia_ids);
 }
 
 }  // namespace syncer

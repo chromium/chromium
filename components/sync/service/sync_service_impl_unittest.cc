@@ -24,6 +24,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -1484,13 +1485,13 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClientClearsPassphrasePrefForAccount) {
 
   // Set the passphrase.
   SyncPrefs sync_prefs(prefs());
-  signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
+
+  const GaiaId gaia_id =
       identity_manager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .gaia);
-  sync_prefs.SetEncryptionBootstrapTokenForAccount("token", gaia_id_hash);
-  ASSERT_EQ("token",
-            sync_prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash));
+          .gaia;
+  sync_prefs.SetEncryptionBootstrapTokenForAccount("token", gaia_id);
+  ASSERT_EQ("token", sync_prefs.GetEncryptionBootstrapTokenForAccount(gaia_id));
 
   // Clear sync from the dashboard.
   SyncProtocolError client_cmd;
@@ -1501,7 +1502,7 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClientClearsPassphrasePrefForAccount) {
   // The passphrase for account pref cleared when sync is cleared from
   // dashboard.
   EXPECT_TRUE(
-      sync_prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash).empty());
+      sync_prefs.GetEncryptionBootstrapTokenForAccount(gaia_id).empty());
 }
 
 TEST_F(SyncServiceImplTest,
@@ -1522,13 +1523,12 @@ TEST_F(SyncServiceImplTest,
 
   // Set the passphrase.
   SyncPrefs sync_prefs(prefs());
-  signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
+  const GaiaId gaia_id =
       identity_manager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .gaia);
-  sync_prefs.SetEncryptionBootstrapTokenForAccount("token", gaia_id_hash);
-  ASSERT_EQ("token",
-            sync_prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash));
+          .gaia;
+  sync_prefs.SetEncryptionBootstrapTokenForAccount("token", gaia_id);
+  ASSERT_EQ("token", sync_prefs.GetEncryptionBootstrapTokenForAccount(gaia_id));
 
   // Clear sync from the dashboard.
   SyncProtocolError client_cmd;
@@ -1539,7 +1539,7 @@ TEST_F(SyncServiceImplTest,
   // The passphrase for account pref cleared when sync is cleared from
   // dashboard.
   EXPECT_TRUE(
-      sync_prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash).empty());
+      sync_prefs.GetEncryptionBootstrapTokenForAccount(gaia_id).empty());
 }
 
 TEST_F(SyncServiceImplTest, EncryptionObsoleteClearsPassphrasePrefForAccount) {
@@ -1558,13 +1558,12 @@ TEST_F(SyncServiceImplTest, EncryptionObsoleteClearsPassphrasePrefForAccount) {
 
   // Set the passphrase.
   SyncPrefs sync_prefs(prefs());
-  signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
+  const GaiaId gaia_id =
       identity_manager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .gaia);
-  sync_prefs.SetEncryptionBootstrapTokenForAccount("token", gaia_id_hash);
-  ASSERT_EQ("token",
-            sync_prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash));
+          .gaia;
+  sync_prefs.SetEncryptionBootstrapTokenForAccount("token", gaia_id);
+  ASSERT_EQ("token", sync_prefs.GetEncryptionBootstrapTokenForAccount(gaia_id));
 
   SyncProtocolError client_cmd;
   client_cmd.action = DISABLE_SYNC_ON_CLIENT;
@@ -1573,7 +1572,7 @@ TEST_F(SyncServiceImplTest, EncryptionObsoleteClearsPassphrasePrefForAccount) {
 
   // The passphrase for account pref should be cleared.
   EXPECT_TRUE(
-      sync_prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash).empty());
+      sync_prefs.GetEncryptionBootstrapTokenForAccount(gaia_id).empty());
 }
 
 // Verify a that local sync mode isn't impacted by sync being disabled.

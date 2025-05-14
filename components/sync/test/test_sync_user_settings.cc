@@ -89,7 +89,7 @@ void TestSyncUserSettings::ResetSelectedType(UserSelectableType type) {
 }
 
 void TestSyncUserSettings::KeepAccountSettingsPrefsOnlyForUsers(
-    const std::vector<signin::GaiaIdHash>& available_gaia_ids) {}
+    const std::vector<GaiaId>& available_gaia_ids) {}
 
 UserSelectableTypeSet TestSyncUserSettings::GetSelectedTypes() const {
   if (service_->GetAccountInfo().IsEmpty()) {

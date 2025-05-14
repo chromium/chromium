@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "components/signin/public/base/gaia_id_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace syncer {
 
@@ -96,7 +96,7 @@ class SyncUserSettings {
   // Clears per account prefs for all users *except* the ones in the passed-in
   // `available_gaia_ids`.
   virtual void KeepAccountSettingsPrefsOnlyForUsers(
-      const std::vector<signin::GaiaIdHash>& available_gaia_ids) = 0;
+      const std::vector<GaiaId>& available_gaia_ids) = 0;
 
   // Registered user selectable types are derived from registered data types.
   // A UserSelectableType is registered if any of its DataTypes is registered.

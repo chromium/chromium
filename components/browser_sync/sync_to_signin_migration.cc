@@ -406,9 +406,7 @@ void MaybeMigrateSyncingUserToSignedInInternal(
 
   // Migrate the global data type prefs (used for Sync-the-feature) over to the
   // account-specific ones.
-  signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(gaia_id);
-  syncer::SyncPrefs::MigrateGlobalDataTypePrefsToAccount(pref_service,
-                                                         gaia_id_hash);
+  syncer::SyncPrefs::MigrateGlobalDataTypePrefsToAccount(pref_service, gaia_id);
 
   // Ensure the prefs changes are persisted as soon as possible. (They get
   // persisted on shutdown anyway, but better make sure.)

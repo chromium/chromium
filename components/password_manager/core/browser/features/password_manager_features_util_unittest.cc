@@ -196,9 +196,9 @@ TEST_F(PasswordManagerFeaturesUtilTest, MigrateDefaultProfileStorePref) {
       signin::GaiaIdHash::FromGaiaId(account_store_user_gaia);
   syncer::SyncPrefs sync_prefs(&pref_service_);
   sync_prefs.SetSelectedTypeForAccount(syncer::UserSelectableType::kPasswords,
-                                       true, profile_store_user_hash);
+                                       true, profile_store_user_gaia);
   sync_prefs.SetSelectedTypeForAccount(syncer::UserSelectableType::kPasswords,
-                                       true, account_store_user_hash);
+                                       true, account_store_user_gaia);
   pref_service_.SetDict(
       prefs::kObsoleteAccountStoragePerAccountSettings,
       base::Value::Dict()

@@ -1608,7 +1608,7 @@ void ChromeBrowsingDataRemoverDelegate::OnTaskComplete(
             SyncServiceFactory::GetForProfile(profile_);
         sync_service) {
       sync_service->GetUserSettings()->KeepAccountSettingsPrefsOnlyForUsers(
-          base::ToVector(gaia_ids, &signin::GaiaIdHash::FromGaiaId));
+          base::ToVector(gaia_ids));
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -49,7 +49,7 @@ class SyncUserSettingsMock : public SyncUserSettings {
   MOCK_METHOD(void, ResetSelectedType, (UserSelectableType), (override));
   MOCK_METHOD(void,
               KeepAccountSettingsPrefsOnlyForUsers,
-              (const std::vector<signin::GaiaIdHash>&),
+              (const std::vector<GaiaId>&),
               (override));
   MOCK_METHOD(UserSelectableTypeSet,
               GetRegisteredSelectableTypes,

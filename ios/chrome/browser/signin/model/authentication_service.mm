@@ -6,6 +6,7 @@
 
 #import "base/auto_reset.h"
 #import "base/check_is_test.h"
+#import "base/containers/to_vector.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/location.h"
@@ -793,18 +794,16 @@ void AuthenticationService::FireServiceStatusNotification() {
 }
 
 void AuthenticationService::ClearAccountSettingsPrefsOfRemovedAccounts() {
-  std::vector<signin::GaiaIdHash> available_gaia_ids;
+  std::vector<GaiaId> available_gaia_ids;
   for (id<SystemIdentity> identity in account_manager_service_
            ->GetAllIdentities()) {
-    signin::GaiaIdHash gaia_id_hash =
-        signin::GaiaIdHash::FromGaiaId(GaiaId(identity.gaiaID));
-    available_gaia_ids.push_back(gaia_id_hash);
+    available_gaia_ids.emplace_back(identity.gaiaID);
   }
   sync_service_->GetUserSettings()->KeepAccountSettingsPrefsOnlyForUsers(
       available_gaia_ids);
   syncer::KeepAccountKeyedPrefValuesOnlyForUsers(
       pref_service_, prefs::kSigninHasAcceptedManagementDialog,
-      available_gaia_ids);
+      base::ToVector(available_gaia_ids, &signin::GaiaIdHash::FromGaiaId));
 }
 
 NSArray<id<SystemIdentity>>* AuthenticationService::ActiveIdentities() {

@@ -209,11 +209,10 @@ void MaybeClearAccountKeyedPreferences(
   if (accounts_in_cookie_jar_info.AreAccountsFresh()) {
     // Clear settings for accounts no longer in the cookie jar. On Android
     // and iOS this is done when the account is removed from the OS instead.
-    std::vector<signin::GaiaIdHash> hashes =
+    std::vector<GaiaId> gaia_ids =
         base::ToVector(signin::GetAllGaiaIdsForKeyedPreferences(
-                           identity_manager, accounts_in_cookie_jar_info),
-                       &signin::GaiaIdHash::FromGaiaId);
-    user_settings.KeepAccountSettingsPrefsOnlyForUsers(hashes);
+            identity_manager, accounts_in_cookie_jar_info));
+    user_settings.KeepAccountSettingsPrefsOnlyForUsers(gaia_ids);
   }
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
@@ -348,10 +347,8 @@ void SyncServiceImpl::Initialize(DataTypeController::TypeVector controllers) {
   // *After* setting up `auth_manager_`, run pref migrations that depend on
   // the account state.
   sync_prefs_.MaybeMigratePrefsForSyncToSigninPart1(
-      GetSyncAccountStateForPrefs(),
-      signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia));
-  sync_prefs_.MaybeMigrateCustomPassphrasePref(
-      signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia));
+      GetSyncAccountStateForPrefs(), GetAccountInfo().gaia);
+  sync_prefs_.MaybeMigrateCustomPassphrasePref(GetAccountInfo().gaia);
 
   // Update selected types prefs if a policy is applied.
   sync_prefs_policy_handler_ = std::make_unique<SyncPrefsPolicyHandler>(this);
@@ -1000,8 +997,7 @@ void SyncServiceImpl::OnEngineInitialized(bool success,
   crypto_.SetSyncEngine(GetAccountInfo(), engine_.get());
 
   sync_prefs_.MaybeMigratePrefsForSyncToSigninPart2(
-      signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia),
-      user_settings_->IsUsingExplicitPassphrase());
+      GetAccountInfo().gaia, user_settings_->IsUsingExplicitPassphrase());
 
   // Cache trusted vault debug info into prefs, to make it synchronously
   // available upon future profile startups.
@@ -1090,7 +1086,7 @@ void SyncServiceImpl::OnActionableProtocolError(
         // dashboard because then the cached passphrase wouldn't be useful
         // anymore.
         sync_prefs_.ClearEncryptionBootstrapTokenForAccount(
-            signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia));
+            GetAccountInfo().gaia);
       }
 
       // Security domain state might be reset, reset local state as well.
@@ -1357,8 +1353,7 @@ void SyncServiceImpl::PassphraseTypeChanged(PassphraseType passphrase_type) {
       GetSyncAccountStateForPrefs() ==
           SyncPrefs::SyncAccountState::kSignedInNotSyncing &&
       sync_prefs_.DoesTypeHaveDefaultValueForAccount(
-          UserSelectableType::kAutofill,
-          signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia)) &&
+          UserSelectableType::kAutofill, GetAccountInfo().gaia) &&
       base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos)) {
     GetUserSettings()->SetSelectedType(UserSelectableType::kAutofill, false);
   }

@@ -870,8 +870,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   SignIn("first@gmail.com", /*explicit_signin=*/false);
   GetSyncService(0)->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, true);
-  auto first_gaia_id_hash =
-      signin::GaiaIdHash::FromGaiaId(GetSyncService(0)->GetAccountInfo().gaia);
+  const GaiaId first_gaia_id = GetSyncService(0)->GetAccountInfo().gaia;
   SignOut();
   SignIn("second@gmail.com", /*explicit_signin=*/false);
   GetSyncService(0)->GetUserSettings()->SetSelectedType(
@@ -879,7 +878,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   SignOut();
 
   GetSyncService(0)->GetUserSettings()->KeepAccountSettingsPrefsOnlyForUsers(
-      {first_gaia_id_hash});
+      {first_gaia_id});
 
   SignIn("first@gmail.com", /*explicit_signin=*/false);
   EXPECT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
@@ -896,8 +895,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   SignIn("first@gmail.com");
   GetSyncService(0)->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, false);
-  auto first_gaia_id_hash =
-      signin::GaiaIdHash::FromGaiaId(GetSyncService(0)->GetAccountInfo().gaia);
+  const GaiaId first_gaia_id = GetSyncService(0)->GetAccountInfo().gaia;
   SignOut();
   SignIn("second@gmail.com");
   GetSyncService(0)->GetUserSettings()->SetSelectedType(
@@ -905,7 +903,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   SignOut();
 
   GetSyncService(0)->GetUserSettings()->KeepAccountSettingsPrefsOnlyForUsers(
-      {first_gaia_id_hash});
+      {first_gaia_id});
 
   SignIn("first@gmail.com");
   EXPECT_FALSE(password_manager::features_util::IsAccountStorageEnabled(

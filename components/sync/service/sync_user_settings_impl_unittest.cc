@@ -579,11 +579,11 @@ TEST_F(SyncUserSettingsImplTest, EncryptionBootstrapTokenForSyncingUser) {
   ASSERT_TRUE(sync_user_settings->GetEncryptionBootstrapToken().empty());
   sync_user_settings->SetEncryptionBootstrapToken("token");
   EXPECT_EQ("token", sync_user_settings->GetEncryptionBootstrapToken());
-  signin::GaiaIdHash gaia_id_hash =
-      signin::GaiaIdHash::FromGaiaId(GetSyncAccountInfoForPrefs().gaia);
   EXPECT_EQ(sync_user_settings->GetEncryptionBootstrapToken(),
-            sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash));
-  sync_prefs_->ClearEncryptionBootstrapTokenForAccount(gaia_id_hash);
+            sync_prefs_->GetEncryptionBootstrapTokenForAccount(
+                GetSyncAccountInfoForPrefs().gaia));
+  sync_prefs_->ClearEncryptionBootstrapTokenForAccount(
+      GetSyncAccountInfoForPrefs().gaia);
   EXPECT_TRUE(sync_user_settings->GetEncryptionBootstrapToken().empty());
 }
 
@@ -601,10 +601,9 @@ TEST_F(SyncUserSettingsImplTest, EncryptionBootstrapTokenPerAccount) {
   ASSERT_TRUE(sync_user_settings->GetEncryptionBootstrapToken().empty());
   sync_user_settings->SetEncryptionBootstrapToken("token");
   EXPECT_EQ("token", sync_user_settings->GetEncryptionBootstrapToken());
-  signin::GaiaIdHash gaia_id_hash =
-      signin::GaiaIdHash::FromGaiaId(GetSyncAccountInfoForPrefs().gaia);
   EXPECT_EQ(sync_user_settings->GetEncryptionBootstrapToken(),
-            sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash));
+            sync_prefs_->GetEncryptionBootstrapTokenForAccount(
+                GetSyncAccountInfoForPrefs().gaia));
 }
 
 TEST_F(SyncUserSettingsImplTest, ClearEncryptionBootstrapTokenPerAccount) {
@@ -613,9 +612,8 @@ TEST_F(SyncUserSettingsImplTest, ClearEncryptionBootstrapTokenPerAccount) {
       MakeSyncUserSettings(GetUserTypes());
   ASSERT_TRUE(sync_user_settings->GetEncryptionBootstrapToken().empty());
   sync_user_settings->SetEncryptionBootstrapToken("token");
-  signin::GaiaIdHash gaia_id_hash =
-      signin::GaiaIdHash::FromGaiaId(GetSyncAccountInfoForPrefs().gaia);
-  sync_user_settings->KeepAccountSettingsPrefsOnlyForUsers({gaia_id_hash});
+  sync_user_settings->KeepAccountSettingsPrefsOnlyForUsers(
+      {GetSyncAccountInfoForPrefs().gaia});
   EXPECT_EQ("token", sync_user_settings->GetEncryptionBootstrapToken());
   sync_user_settings->KeepAccountSettingsPrefsOnlyForUsers({});
   EXPECT_TRUE(sync_user_settings->GetEncryptionBootstrapToken().empty());

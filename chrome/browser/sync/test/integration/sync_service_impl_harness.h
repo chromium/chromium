@@ -22,6 +22,10 @@
 
 class Profile;
 
+namespace signin {
+class GaiaIdHash;
+}  // namespace signin
+
 namespace syncer {
 class SyncSetupInProgressHandle;
 class SyncUserSettings;

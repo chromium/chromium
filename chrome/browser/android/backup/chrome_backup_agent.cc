@@ -36,6 +36,5 @@ void JNI_ChromeBackupAgentImpl_MigrateGlobalDataTypePrefsToAccount(
     const base::android::JavaParamRef<jobject>& j_gaia_id) {
   syncer::SyncPrefs sync_prefs(pref_service);
   sync_prefs.MigrateGlobalDataTypePrefsToAccount(
-      pref_service,
-      signin::GaiaIdHash::FromGaiaId(ConvertFromJavaGaiaId(env, j_gaia_id)));
+      pref_service, ConvertFromJavaGaiaId(env, j_gaia_id));
 }

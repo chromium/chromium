@@ -45,7 +45,7 @@ class TestSyncUserSettings : public SyncUserSettings {
   void SetSelectedType(UserSelectableType type, bool is_type_on) override;
   void ResetSelectedType(UserSelectableType type) override;
   void KeepAccountSettingsPrefsOnlyForUsers(
-      const std::vector<signin::GaiaIdHash>& available_gaia_ids) override;
+      const std::vector<GaiaId>& available_gaia_ids) override;
   DataTypeSet GetPreferredDataTypes() const;
   UserSelectableTypeSet GetRegisteredSelectableTypes() const override;
 
