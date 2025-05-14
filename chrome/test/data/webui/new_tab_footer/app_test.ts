@@ -8,7 +8,7 @@ import type {NewTabFooterAppElement} from 'chrome://newtab-footer/app.js';
 import {NewTabFooterDocumentProxy} from 'chrome://newtab-footer/browser_proxy.js';
 import type {ManagementNotice, NewTabFooterDocumentRemote} from 'chrome://newtab-footer/new_tab_footer.mojom-webui.js';
 import {NewTabFooterDocumentCallbackRouter, NewTabFooterHandlerRemote} from 'chrome://newtab-footer/new_tab_footer.mojom-webui.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -36,20 +36,32 @@ suite('NewTabFooterAppTest', () => {
   suite('Extension', () => {
     test('Get extension name on initialization', async () => {
       // Arrange.
-      handler.setResultFor('getNtpExtensionName', {name: 'foo'});
       await initializeElement();
 
+      // Act.
+      const fooName = 'foo';
+      callbackRouter.setNtpExtensionName(fooName);
+      await callbackRouter.$.flushForTesting();
+
       // Assert.
-      const name = $$(element, '#extensionName');
+      let name = $$(element, '#extensionName');
       assertTrue(!!name);
       const link = name.querySelector<HTMLElement>('[role="link"]');
       assertTrue(!!link);
-      assertEquals(link.innerText, 'foo');
+      assertEquals(link.innerText, fooName);
+
+      // Act.
+      callbackRouter.setNtpExtensionName('');
+      await callbackRouter.$.flushForTesting();
+
+      // Assert.
+      name = $$(element, '#extensionName');
+      assertFalse(!!name);
     });
 
     test('Click extension name link', async () => {
       // Arrange.
-      handler.setResultFor('getNtpExtensionName', {name: 'foo'});
+      callbackRouter.setNtpExtensionName('foo');
       await initializeElement();
 
       // Act.
@@ -64,7 +76,7 @@ suite('NewTabFooterAppTest', () => {
   });
 
   suite('Managed', () => {
-    test('Get management notice on initialization', async () => {
+    test('Get management notice', async () => {
       // Arrange.
       await initializeElement();
       const managementNotice:
@@ -75,10 +87,18 @@ suite('NewTabFooterAppTest', () => {
       await callbackRouter.$.flushForTesting();
 
       // Assert.
-      const managementNoticeText = $$(element, '#managementNoticeText');
+      let managementNoticeText = $$(element, '#managementNoticeText');
       assertTrue(!!managementNoticeText);
       assertEquals(
           managementNoticeText.textContent, 'Managed by your organization');
+
+      // Act.
+      callbackRouter.setManagementNotice(null);
+      await callbackRouter.$.flushForTesting();
+
+      // Assert.
+      managementNoticeText = $$(element, '#managementNoticeText');
+      assertFalse(!!managementNoticeText);
     });
   });
 });

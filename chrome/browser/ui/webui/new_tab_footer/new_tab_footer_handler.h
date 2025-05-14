@@ -6,15 +6,19 @@
 #define CHROME_BROWSER_UI_WEBUI_NEW_TAB_FOOTER_NEW_TAB_FOOTER_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
 
-class NewTabFooterHandler : public new_tab_footer::mojom::NewTabFooterHandler {
+class NewTabFooterHandler : public new_tab_footer::mojom::NewTabFooterHandler,
+                            public extensions::ExtensionRegistryObserver {
  public:
   NewTabFooterHandler(
       mojo::PendingReceiver<new_tab_footer::mojom::NewTabFooterHandler>
@@ -29,7 +33,7 @@ class NewTabFooterHandler : public new_tab_footer::mojom::NewTabFooterHandler {
   ~NewTabFooterHandler() override;
 
   // new_tab_footer::mojom::NewTabFooterHandler:
-  void GetNtpExtensionName(GetNtpExtensionNameCallback callback) override;
+  void UpdateNtpExtensionName() override;
   void UpdateManagementNotice() override;
   void OpenExtensionOptionsPageWithFallback() override;
 
@@ -37,9 +41,20 @@ class NewTabFooterHandler : public new_tab_footer::mojom::NewTabFooterHandler {
   void OpenUrlInCurrentTab(const GURL& url);
   std::string GetManagementNoticeText();
 
+  // extensions::ExtensionRegistryObserver.
+  void OnExtensionUnloaded(content::BrowserContext* browser_context,
+                           const extensions::Extension* extension,
+                           extensions::UnloadedExtensionReason reason) override;
+  void OnExtensionReady(content::BrowserContext* browser_context,
+                        const extensions::Extension* extension) override;
+
   std::string curr_ntp_extension_id_;
   const raw_ptr<Profile> profile_;
   const raw_ptr<content::WebContents> web_contents_;
+
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   mojo::Remote<new_tab_footer::mojom::NewTabFooterDocument> document_;
   mojo::Receiver<new_tab_footer::mojom::NewTabFooterHandler> handler_;

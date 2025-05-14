@@ -6,11 +6,11 @@
 
 #include <memory>
 
-#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/webui/new_tab_footer/mock_new_tab_footer_document.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/search/ntp_features.h"
@@ -35,8 +35,7 @@ class NewTabFooterHandlerBrowserTest : public extensions::ExtensionBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     handler_ = std::make_unique<NewTabFooterHandler>(
         mojo::PendingReceiver<new_tab_footer::mojom::NewTabFooterHandler>(),
-        mojo::PendingRemote<new_tab_footer::mojom::NewTabFooterDocument>(),
-        web_contents());
+        document_.BindAndGetRemote(), web_contents());
   }
 
   void TearDownOnMainThread() override {
@@ -50,8 +49,9 @@ class NewTabFooterHandlerBrowserTest : public extensions::ExtensionBrowserTest {
   }
 
  private:
-  std::unique_ptr<NewTabFooterHandler> handler_;
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<NewTabFooterHandler> handler_;
+  testing::NiceMock<MockNewTabFooterDocument> document_;
 };
 
 IN_PROC_BROWSER_TEST_F(NewTabFooterHandlerBrowserTest,
@@ -73,11 +73,9 @@ IN_PROC_BROWSER_TEST_F(NewTabFooterHandlerBrowserTest,
   scoped_refptr<const extensions::Extension> extension =
       LoadExtension(extension_dir.Pack());
   ASSERT_TRUE(extension);
-  base::MockCallback<NewTabFooterHandler::GetNtpExtensionNameCallback> callback;
-  EXPECT_CALL(callback, Run).Times(1);
-  // Invoke GetNtpExtensionName, triggering the handler to set its New Tab Page
-  // extension ID.
-  handler().GetNtpExtensionName(callback.Get());
+  // Invoke UpdateNtpExtensionName, triggering the handler to set its New Tab
+  // Page extension ID.
+  handler().UpdateNtpExtensionName();
 
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   handler().OpenExtensionOptionsPageWithFallback();

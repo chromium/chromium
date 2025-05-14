@@ -38,22 +38,24 @@ NewTabFooterHandler::NewTabFooterHandler(
     : profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       web_contents_(web_contents),
       document_(std::move(pending_document)),
-      handler_{this, std::move(pending_handler)} {}
+      handler_{this, std::move(pending_handler)} {
+  extension_registry_observation_.Observe(
+      extensions::ExtensionRegistry::Get(profile_));
+}
 
 NewTabFooterHandler::~NewTabFooterHandler() = default;
 
-void NewTabFooterHandler::GetNtpExtensionName(
-    GetNtpExtensionNameCallback callback) {
+void NewTabFooterHandler::UpdateNtpExtensionName() {
   const extensions::Extension* ntp_extension =
       extensions::GetExtensionOverridingNewTabPage(profile_);
   if (!ntp_extension) {
     curr_ntp_extension_id_ = std::string();
-    std::move(callback).Run(std::nullopt);
+    document_->SetNtpExtensionName(std::string());
     return;
   }
 
   curr_ntp_extension_id_ = ntp_extension->id();
-  std::move(callback).Run(std::move(ntp_extension->name()));
+  document_->SetNtpExtensionName(std::move(ntp_extension->name()));
 }
 
 void NewTabFooterHandler::OpenExtensionOptionsPageWithFallback() {
@@ -106,4 +108,17 @@ std::string NewTabFooterHandler::GetManagementNoticeText() {
              ? l10n_util::GetStringFUTF8(
                    IDS_MANAGED_BY, base::UTF8ToUTF16(*cloud_policy_manager))
              : l10n_util::GetStringUTF8(IDS_MANAGED);
+}
+
+void NewTabFooterHandler::OnExtensionReady(
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension) {
+  UpdateNtpExtensionName();
+}
+
+void NewTabFooterHandler::OnExtensionUnloaded(
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension,
+    extensions::UnloadedExtensionReason reason) {
+  UpdateNtpExtensionName();
 }

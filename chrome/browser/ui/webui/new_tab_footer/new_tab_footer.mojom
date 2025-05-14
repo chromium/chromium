@@ -24,10 +24,11 @@ interface NewTabFooterHandlerFactory {
 
 // Browser-side handler for requests from WebUI document.
 interface NewTabFooterHandler {
-  // Gets name of extension overriding the new tab page, if there is one.
-  GetNtpExtensionName() => (string? name);
-  // Requests an update to the enterprise management notice for a managed
-  // browser.
+  // Updates name of the extension overriding the new tab page.
+  // Triggers a call to |SetExtensionName|.
+  UpdateNtpExtensionName();
+  // Updates the enterprise management notice for a managed
+  // browser. Triggers a call to |SetManagementNotice|.
   UpdateManagementNotice();
   // Opens the options page for the extension identified by the last call
   // to |GetNtpExtensionName|. If that call did not determine a valid ID,
@@ -37,6 +38,8 @@ interface NewTabFooterHandler {
 
 // WebUI-side handler for requests from the browser.
 interface NewTabFooterDocument {
+  // Sets the name of the extension overriding the new tab page.
+  SetNtpExtensionName(string name);
   // Sets the enterprise management notice for a managed browser.
   SetManagementNotice(ManagementNotice? notice);
 };

@@ -11,10 +11,12 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
+#include "chrome/browser/ui/webui/new_tab_footer/mock_new_tab_footer_document.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/test/test_web_ui.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,25 +35,9 @@
 
 using testing::_;
 
-class MockNewTabFooterDocument
-    : public new_tab_footer::mojom::NewTabFooterDocument {
- public:
-  MockNewTabFooterDocument() = default;
-  ~MockNewTabFooterDocument() override = default;
-
-  mojo::PendingRemote<new_tab_footer::mojom::NewTabFooterDocument>
-  BindAndGetRemote() {
-    DCHECK(!receiver_.is_bound());
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
-  void FlushForTesting() { receiver_.FlushForTesting(); }
-
-  MOCK_METHOD(void,
-              SetManagementNotice,
-              (new_tab_footer::mojom::ManagementNoticePtr));
-  mojo::Receiver<new_tab_footer::mojom::NewTabFooterDocument> receiver_{this};
-};
+namespace {
+const char kExtensionNtpName[] = "Extension-overridden NTP";
+}
 
 class NewTabFooterHandlerExtensionTest
     : public extensions::ExtensionServiceTestBase {
@@ -64,8 +50,35 @@ class NewTabFooterHandlerExtensionTest
         content::WebContents::CreateParams(profile()));
     handler_ = std::make_unique<NewTabFooterHandler>(
         mojo::PendingReceiver<new_tab_footer::mojom::NewTabFooterHandler>(),
-        mojo::PendingRemote<new_tab_footer::mojom::NewTabFooterDocument>(),
-        web_contents_.get());
+        document_.BindAndGetRemote(), web_contents_.get());
+    testing::Mock::VerifyAndClearExpectations(&document_);
+  }
+
+  scoped_refptr<const extensions::Extension> LoadNtpExtension() {
+    extensions::TestExtensionDir extension_dir;
+    const std::string kManifest = R"(
+      {
+        "chrome_url_overrides": {
+            "newtab": "ext.html"
+        },
+        "name": ")" + std::string(kExtensionNtpName) +
+                                  R"(",
+          "manifest_version": 3,
+          "version": "0.1"
+      })";
+    extension_dir.WriteManifest(kManifest);
+    extension_dir.WriteFile(
+        FILE_PATH_LITERAL("ext.html"),
+        std::string("<body>") + kExtensionNtpName + "</body>");
+    extensions::ChromeTestExtensionLoader extension_loader(profile());
+    scoped_refptr<const extensions::Extension> extension =
+        extension_loader.LoadExtension(extension_dir.Pack());
+    return extension;
+  }
+
+  void UnloadExtension(std::string extension_id) {
+    extensions::ExtensionRegistrar::Get(profile())->RemoveExtension(
+        extension_id, extensions::UnloadedExtensionReason::DISABLE);
   }
 
   NewTabFooterHandler& handler() { return *handler_; }
@@ -73,52 +86,80 @@ class NewTabFooterHandlerExtensionTest
  protected:
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<NewTabFooterHandler> handler_;
+  testing::NiceMock<MockNewTabFooterDocument> document_;
 };
 
-TEST_F(NewTabFooterHandlerExtensionTest, GetNtpExtensionName_NoExtension) {
-  std::optional<std::string> extension_name;
-  base::MockCallback<NewTabFooterHandler::GetNtpExtensionNameCallback> callback;
-  EXPECT_CALL(callback, Run).WillOnce(MoveArg<0>(&extension_name));
+TEST_F(NewTabFooterHandlerExtensionTest, SetNtpExtensionName_NoExtension) {
+  EXPECT_CALL(document_, SetNtpExtensionName)
+      .WillOnce(
+          [](const std::string& name) { EXPECT_EQ(name, std::string()); });
+  handler().UpdateNtpExtensionName();
 
-  handler().GetNtpExtensionName(callback.Get());
-
-  EXPECT_FALSE(extension_name.has_value());
+  document_.FlushForTesting();
 }
 
-TEST_F(NewTabFooterHandlerExtensionTest, GetNtpExtensionName_HasExtension) {
-  // Load NTP extension.
-  extensions::TestExtensionDir extension_dir;
-  constexpr char kManifest[] = R"(
-      {
-        "chrome_url_overrides": {
-            "newtab": "ext.html"
-        },
-        "name": "Extension-overridden NTP",
-        "manifest_version": 3,
-        "version": "0.1"
-      })";
-  extension_dir.WriteManifest(kManifest);
-  extension_dir.WriteFile(FILE_PATH_LITERAL("ext.html"),
-                          "<body>Extension-overridden NTP</body>");
-  extensions::ChromeTestExtensionLoader extension_loader(profile());
-  scoped_refptr<const extensions::Extension> extension =
-      extension_loader.LoadExtension(extension_dir.Pack());
+TEST_F(NewTabFooterHandlerExtensionTest, SetNtpExtensionName_ManualUpdate) {
+  auto extension = LoadNtpExtension();
   ASSERT_TRUE(extension);
   ASSERT_TRUE(registrar()->IsExtensionEnabled(extension->id()));
-  // Force activation of the URL override because the usual observer for
+  // Force activation of the URL override. The usual observer for
   // extension load isn't created in the unit test.
   ExtensionWebUI::RegisterOrActivateChromeURLOverrides(
       profile(),
       extensions::URLOverrides::GetChromeURLOverrides(extension.get()));
 
-  std::optional<std::string> extension_name;
-  base::MockCallback<NewTabFooterHandler::GetNtpExtensionNameCallback> callback;
-  EXPECT_CALL(callback, Run).WillOnce(MoveArg<0>(&extension_name));
+  EXPECT_CALL(document_, SetNtpExtensionName)
+      .WillOnce(
+          [](const std::string& name) { EXPECT_EQ(name, kExtensionNtpName); });
+  handler().UpdateNtpExtensionName();
 
-  handler().GetNtpExtensionName(callback.Get());
+  document_.FlushForTesting();
+}
 
-  ASSERT_TRUE(extension_name.has_value());
-  EXPECT_EQ(extension_name.value(), extension->name());
+TEST_F(NewTabFooterHandlerExtensionTest, SetNtpExtensionName_ReadyExtension) {
+  std::string name = "will change";
+  EXPECT_CALL(document_, SetNtpExtensionName)
+      .Times(2)
+      .WillRepeatedly(testing::Invoke(
+          [&name](const std::string& name_arg) { name = name_arg; }));
+
+  // Load the NTP extension and verify it's enabled.
+  auto extension = LoadNtpExtension();
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(registrar()->IsExtensionEnabled(extension->id()));
+  document_.FlushForTesting();
+
+  // Although OnExtensionReady was triggered, the footer isn't aware of the
+  // extension until the URL override is activated.
+  EXPECT_EQ(name, std::string());
+
+  // Force activation of the URL override. The usual observer for
+  // extension load isn't created in the unit test.
+  ExtensionWebUI::RegisterOrActivateChromeURLOverrides(
+      profile(),
+      extensions::URLOverrides::GetChromeURLOverrides(extension.get()));
+
+  registry()->TriggerOnReady(extension.get());
+  document_.FlushForTesting();
+
+  EXPECT_EQ(name, kExtensionNtpName);
+}
+
+TEST_F(NewTabFooterHandlerExtensionTest, SetNtpExtensionName_UnloadExtension) {
+  auto extension = LoadNtpExtension();
+  ASSERT_TRUE(extension);
+  const std::string extension_id = extension->id();
+  ASSERT_TRUE(registrar()->IsExtensionEnabled(extension_id));
+
+  EXPECT_CALL(document_, SetNtpExtensionName)
+      .WillOnce(
+          [](const std::string& name) { EXPECT_EQ(name, std::string()); });
+
+  extensions::TestExtensionRegistryObserver observer(registry(), extension_id);
+  UnloadExtension(extension_id);
+  observer.WaitForExtensionUnloaded();
+
+  document_.FlushForTesting();
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -136,6 +177,7 @@ class NewTabFooterHandlerEnterpriseTest : public testing::Test {
     handler_ = std::make_unique<NewTabFooterHandler>(
         mojo::PendingReceiver<new_tab_footer::mojom::NewTabFooterHandler>(),
         document_.BindAndGetRemote(), web_contents_.get());
+    testing::Mock::VerifyAndClearExpectations(&document_);
   }
 
   void TearDown() override {
@@ -160,7 +202,23 @@ class NewTabFooterHandlerEnterpriseTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(NewTabFooterHandlerEnterpriseTest, SetManagementNoticeWithDefaultText) {
+TEST_F(NewTabFooterHandlerEnterpriseTest, SetManagementNotice_None) {
+  // Simulate browser management.
+  policy::ScopedManagementServiceOverrideForTesting
+      profile_supervised_management(
+          policy::ManagementServiceFactory::GetForProfile(profile()),
+          policy::EnterpriseManagementAuthority::NONE);
+
+  EXPECT_CALL(document_, SetManagementNotice)
+      .WillOnce([](new_tab_footer::mojom::ManagementNoticePtr notice) {
+        EXPECT_FALSE(notice);
+      });
+  handler().UpdateManagementNotice();
+
+  document_.FlushForTesting();
+}
+
+TEST_F(NewTabFooterHandlerEnterpriseTest, SetManagementNotice_DefaultText) {
   // Simulate browser management.
   policy::ScopedManagementServiceOverrideForTesting
       profile_supervised_management(
@@ -176,10 +234,9 @@ TEST_F(NewTabFooterHandlerEnterpriseTest, SetManagementNoticeWithDefaultText) {
   handler().UpdateManagementNotice();
 
   document_.FlushForTesting();
-  testing::Mock::VerifyAndClearExpectations(&document_);
 }
 
-TEST_F(NewTabFooterHandlerEnterpriseTest, SetManagementNoticeWithCustomtext) {
+TEST_F(NewTabFooterHandlerEnterpriseTest, SetManagementNotice_CustomText) {
   // Simulate browser management.
   policy::ScopedManagementServiceOverrideForTesting
       profile_supervised_management(
@@ -197,10 +254,9 @@ TEST_F(NewTabFooterHandlerEnterpriseTest, SetManagementNoticeWithCustomtext) {
   handler().UpdateManagementNotice();
 
   document_.FlushForTesting();
-  testing::Mock::VerifyAndClearExpectations(&document_);
 }
 
-TEST_F(NewTabFooterHandlerEnterpriseTest, SetManagementNoticeWithDomainText) {
+TEST_F(NewTabFooterHandlerEnterpriseTest, SetManagementNotice_DomainText) {
   // Simulate browser management.
   const std::string managing_domain = "example.com";
 
@@ -218,6 +274,5 @@ TEST_F(NewTabFooterHandlerEnterpriseTest, SetManagementNoticeWithDomainText) {
   handler().UpdateManagementNotice();
 
   document_.FlushForTesting();
-  testing::Mock::VerifyAndClearExpectations(&document_);
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

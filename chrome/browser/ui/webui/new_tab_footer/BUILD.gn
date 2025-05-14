@@ -15,6 +15,7 @@ source_set("new_tab_footer") {
   public_deps = [
     ":mojo_bindings",
     "//chrome/browser/ui/webui/top_chrome",
+    "//extensions/browser:browser",
     "//ui/webui",
   ]
 }
@@ -25,9 +26,7 @@ source_set("impl") {
     "new_tab_footer_helper.cc",
     "new_tab_footer_ui.cc",
   ]
-
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     ":new_tab_footer",
     "//chrome/browser:browser_process",
@@ -45,6 +44,10 @@ source_set("impl") {
 
 source_set("test_support") {
   testonly = true
+  sources = [
+    "mock_new_tab_footer_document.cc",
+    "mock_new_tab_footer_document.h",
+  ]
   public_deps = [
     ":new_tab_footer",
     "//base/test:test_support",

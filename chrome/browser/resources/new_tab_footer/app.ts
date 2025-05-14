@@ -36,18 +36,17 @@ export class NewTabFooterAppElement extends CrLitElement {
 
   protected accessor extensionName_: string|null = null;
   protected accessor managementNotice_: ManagementNotice|null = null;
-  private setManagementNoticeListener_: number|null = null;
 
   private callbackRouter_: NewTabFooterDocumentCallbackRouter;
   private handler_: NewTabFooterHandlerInterface;
+  private setNtpExtensionNameListenerId_: number|null = null;
+  private setManagementNoticeListener_: number|null = null;
 
   constructor() {
     super();
     this.callbackRouter_ =
         NewTabFooterDocumentProxy.getInstance().callbackRouter;
     this.handler_ = NewTabFooterDocumentProxy.getInstance().handler;
-
-    this.getNtpExtensionName_();
   }
 
   override firstUpdated() {
@@ -56,24 +55,25 @@ export class NewTabFooterAppElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
+    this.setNtpExtensionNameListenerId_ =
+        this.callbackRouter_.setNtpExtensionName.addListener((name: string) => {
+          this.extensionName_ = name;
+        });
+    this.handler_.updateNtpExtensionName();
     this.setManagementNoticeListener_ =
         this.callbackRouter_.setManagementNotice.addListener(
             (notice: ManagementNotice) => {
-              if (notice) {
                 this.managementNotice_ = notice;
-              }
             });
-    NewTabFooterDocumentProxy.getInstance().handler.updateManagementNotice();
+    this.handler_.updateManagementNotice();
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    assert(this.setNtpExtensionNameListenerId_);
+    this.callbackRouter_.removeListener(this.setNtpExtensionNameListenerId_);
     assert(this.setManagementNoticeListener_);
     this.callbackRouter_.removeListener(this.setManagementNoticeListener_);
-  }
-
-  private async getNtpExtensionName_() {
-    this.extensionName_ = (await this.handler_.getNtpExtensionName()).name;
   }
 
   protected onExtensionNameClick_(e: Event) {
