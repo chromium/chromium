@@ -10,6 +10,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -30,6 +31,13 @@ bool FullRestoreServiceFactory::IsFullRestoreAvailableForProfile(
   if (!profile || profile->IsSystemProfile() ||
       !ProfileHelper::IsUserProfile(profile) ||
       ProfileHelper::IsEphemeralUserProfile(profile)) {
+    return false;
+  }
+
+  // Floating Workspace is an enterprise feature which restores user's desks
+  // across devices. If it's enabled, it provides an alternative restore
+  // behavior independent of Full Restore.
+  if (floating_workspace_util::IsFloatingWorkspaceEnabled(profile)) {
     return false;
   }
 

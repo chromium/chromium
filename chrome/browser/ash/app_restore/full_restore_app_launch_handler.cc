@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/app_restore/arc_app_queue_restore_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
-#include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/reboot_notifications_scheduler.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -107,14 +106,8 @@ FullRestoreAppLaunchHandler::FullRestoreAppLaunchHandler(
 
 FullRestoreAppLaunchHandler::~FullRestoreAppLaunchHandler() = default;
 
-// TODO: b/325616600 - Move early returns for floating workspace service checks
-// logic out.
 void FullRestoreAppLaunchHandler::LaunchBrowserWhenReady(
     bool first_run_full_restore) {
-  if (floating_workspace_util::ShouldHandleRestartRestore()) {
-    return;
-  }
-
   if (g_launch_browser_for_testing ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceLaunchBrowser)) {
@@ -545,9 +538,7 @@ bool FullRestoreAppLaunchHandler::ShouldRestore() const {
   // Returns true only when
   //   - `should_restore_` is true (restore should be performed)
   //   - restore data is loaded (there is something to restore)
-  //   - floating workspace should not handle the restore.
-  return should_restore_ && restore_data() &&
-         !floating_workspace_util::ShouldHandleRestartRestore();
+  return should_restore_ && restore_data();
 }
 
 ScopedLaunchBrowserForTesting::ScopedLaunchBrowserForTesting() {

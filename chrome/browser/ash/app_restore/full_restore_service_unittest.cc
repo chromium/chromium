@@ -19,6 +19,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/first_run/first_run.h"
@@ -479,6 +480,17 @@ TEST_F(FullRestoreServiceTest, Upgrading) {
   // The OS restore setting should not change.
   EXPECT_EQ(RestoreOption::kDoNotRestore, GetRestoreOption());
   EXPECT_FALSE(CanPerformRestore(account_id()));
+}
+
+// Full restore is disabled if Floating Workspace is enabled.
+TEST_F(FullRestoreServiceTest, NoServiceWithFloatingWorkspace) {
+  profile()->GetTestingPrefService()->SetManagedPref(
+      ash::prefs::kFloatingWorkspaceV2Enabled,
+      std::make_unique<base::Value>(true));
+  ASSERT_TRUE(ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled());
+  FullRestoreService* service =
+      FullRestoreServiceFactory::GetForProfile(profile());
+  EXPECT_EQ(nullptr, service);
 }
 
 class FullRestoreServiceTestHavingFullRestoreFile

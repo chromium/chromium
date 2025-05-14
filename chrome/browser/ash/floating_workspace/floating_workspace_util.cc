@@ -23,37 +23,33 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 
-namespace ash {
-
-namespace {
-
-PrefService* GetActiveUserPrefService() {
-  auto* active_user = user_manager::UserManager::Get()->GetActiveUser();
-  if (active_user) {
-    auto* browser_context =
-        ash::BrowserContextHelper::Get()->GetBrowserContextByUser(active_user);
-    if (browser_context) {
-      return Profile::FromBrowserContext(browser_context)->GetPrefs();
-    }
-  }
-  return nullptr;
-}
-
-}  // namespace
-
-namespace floating_workspace_util {
+namespace ash::floating_workspace_util {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kFloatingWorkspaceV2Enabled, false);
 }
 
-// TODO(crbug.com/297795546): Clean up V1 code path and feature flag check.
 bool IsFloatingWorkspaceV1Enabled() {
   return features::IsFloatingWorkspaceEnabled();
 }
 
 bool IsFloatingWorkspaceV2Enabled() {
-  PrefService* pref_service = GetActiveUserPrefService();
+  auto* active_user = user_manager::UserManager::Get()->GetActiveUser();
+  if (!active_user) {
+    return false;
+  }
+  auto* browser_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(active_user);
+  if (!browser_context) {
+    return false;
+  }
+
+  return IsFloatingWorkspaceEnabled(
+      Profile::FromBrowserContext(browser_context));
+}
+
+bool IsFloatingWorkspaceEnabled(const Profile* profile) {
+  const PrefService* pref_service = profile->GetPrefs();
   if (!pref_service) {
     return false;
   }
@@ -101,5 +97,4 @@ bool ShouldHandleRestartRestore() {
   return IsFloatingWorkspaceV2Enabled() && !IsSafeMode();
 }
 
-}  // namespace floating_workspace_util
-}  // namespace ash
+}  // namespace ash::floating_workspace_util

@@ -265,6 +265,7 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/arc/window_predictor",
+    "//chrome/browser/ash/floating_workspace:utils",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/prefs",
     "//chrome/common:constants",
