@@ -39,10 +39,11 @@ public class SoftKeyboardFacility extends Facility<Station<?>> {
             // If this fails, the keyboard was closed before, but not by this facility.
             recheckActiveConditions();
             Transition.TransitionOptions.Builder options = Transition.newOptions();
-            for (ViewElement viewElement : viewElementsToSettle) {
+            options.withRetry();
+            for (ViewElement<?> viewElement : viewElementsToSettle) {
                 options.withCondition(viewElement.createSettleCondition());
             }
-            mHostStation.exitFacilitySync(this, options.build(), Espresso::pressBack);
+            mHostStation.exitFacilitySync(this, options.build(), Espresso::closeSoftKeyboard);
         } else {
             // Keyboard was not expected to be shown
             mHostStation.exitFacilitySync(this, /* trigger= */ null);
