@@ -1034,12 +1034,16 @@ TEST_P(CreditCardOtpAuthenticatorCardMetadataTest, MetadataSignal) {
 // 1. Function reference to call which creates the appropriate credit card
 // benefit for the unittest.
 // 2. Whether the flag to render benefits is enabled.
-// 3. Issuer ID which is set for the credit card with benefits.
+// 3. Whether the flag to sync benefits source is enabled.
+// 4. Issuer ID which is set for the credit card with benefits.
+// 5. Benefit source which is set for the credit card with benefits.
 class CreditCardOtpAuthenticatorCardBenefitsTest
     : public CreditCardOtpAuthenticatorTestBase,
       public ::testing::WithParamInterface<
           std::tuple<base::FunctionRef<CreditCardBenefit()>,
                      bool,
+                     bool,
+                     std::string,
                      std::string>> {
  public:
   void SetUp() override {
@@ -1048,21 +1052,48 @@ class CreditCardOtpAuthenticatorCardBenefitsTest
         {{features::kAutofillEnableCardBenefitsForAmericanExpress,
           IsCreditCardBenefitsEnabled()},
          {features::kAutofillEnableCardBenefitsForBmo,
-          IsCreditCardBenefitsEnabled()}});
+          IsCreditCardBenefitsEnabled()},
+         {features::kAutofillEnableFlatRateCardBenefitsFromCurinos,
+          IsCreditCardBenefitsEnabled()},
+         {features::kAutofillEnableCardBenefitsSourceSync,
+          IsCreditCardBenefitsSourceSyncEnabled()}});
     CreateSelectedOtpChallengeOption(CardUnmaskChallengeOptionType::kSmsOtp);
     card_ = test::GetVirtualCard();
     autofill_client().set_last_committed_primary_main_frame_url(
         test::GetOriginsForMerchantBenefit().begin()->GetURL());
-    test::SetUpCreditCardAndBenefitData(
-        card_, GetBenefit(), GetIssuerId(), personal_data(),
-        autofill_client().GetAutofillOptimizationGuide());
+    if (IsCreditCardBenefitsSourceSyncEnabled()) {
+      test::SetUpCreditCardAndBenefitData(
+          card_, /*issuer_id=*/"", GetBenefit(), GetBenefitSource(),
+          personal_data(), autofill_client().GetAutofillOptimizationGuide());
+    } else {
+      test::SetUpCreditCardAndBenefitData(
+          card_, GetIssuerId(), GetBenefit(), /*benefit_source=*/"",
+          personal_data(), autofill_client().GetAutofillOptimizationGuide());
+    }
   }
 
   CreditCardBenefit GetBenefit() const { return std::get<0>(GetParam())(); }
 
   bool IsCreditCardBenefitsEnabled() const { return std::get<1>(GetParam()); }
 
-  const std::string& GetIssuerId() const { return std::get<2>(GetParam()); }
+  bool IsCreditCardBenefitsSourceSyncEnabled() const {
+    return std::get<2>(GetParam());
+  }
+
+  const std::string& GetIssuerId() const { return std::get<3>(GetParam()); }
+
+  const std::string& GetBenefitSource() const {
+    return std::get<4>(GetParam());
+  }
+
+  bool ShouldShowCardBenefits() const {
+    if (IsCreditCardBenefitsSourceSyncEnabled() &&
+        GetBenefitSource() == "curinos") {
+      return IsCreditCardBenefitsEnabled() &&
+             std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit());
+    }
+    return IsCreditCardBenefitsEnabled();
+  }
 
   const CreditCard& card() { return card_; }
 
@@ -1079,7 +1110,9 @@ INSTANTIATE_TEST_SUITE_P(
                           &test::GetActiveCreditCardCategoryBenefit,
                           &test::GetActiveCreditCardMerchantBenefit),
         ::testing::Bool(),
-        ::testing::Values("amex", "bmo")));
+        ::testing::Bool(),
+        ::testing::Values("amex", "bmo"),
+        ::testing::Values("amex", "bmo", "curinos")));
 
 // Checks that ClientBehaviorConstants::kShowingCardBenefits is populated as a
 // signal if a card benefit was shown when unmasking a credit card suggestion
@@ -1091,13 +1124,12 @@ TEST_P(CreditCardOtpAuthenticatorCardBenefitsTest,
       /*context_token=*/"context_token_from_previous_unmask_response",
       /*billing_customer_number=*/kTestBillingCustomerNumber);
   authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"111111");
-
   std::vector<ClientBehaviorConstants> signals =
       payments_network_interface().unmask_request()->client_behavior_signals;
   EXPECT_EQ(std::ranges::find(signals,
                               ClientBehaviorConstants::kShowingCardBenefits) !=
                 signals.end(),
-            IsCreditCardBenefitsEnabled());
+            ShouldShowCardBenefits());
 }
 
 }  // namespace

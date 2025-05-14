@@ -321,21 +321,28 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
 // Params:
 // 1. Function reference to call which creates the appropriate credit card
 // benefit for the unittest.
-// 2. Issuer ID which is set for the credit card with benefits.
+// 2. Whether the flag to sync benefits source is enabled.
+// 3. Issuer ID which is set for the credit card with benefits.
+// 4. Benefit source which is set for the credit card with benefits.
 class AutofillCreditCardBenefitsLabelTest
     : public PaymentsSuggestionGeneratorTest,
       public ::testing::WithParamInterface<
-          std::tuple<base::FunctionRef<CreditCardBenefit()>, std::string>> {
+          std::tuple<base::FunctionRef<CreditCardBenefit()>,
+                     bool,
+                     std::string,
+                     std::string>> {
  public:
   void SetUp() override {
     PaymentsSuggestionGeneratorTest::SetUp();
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {features::kAutofillEnableCardBenefitsForAmericanExpress,
-         features::kAutofillEnableCardBenefitsForBmo,
-         features::kAutofillEnableCardBenefitsIph,
-         features::kAutofillEnableNewFopDisplayDesktop},
-        /*disabled_features=*/{});
+
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kAutofillEnableCardBenefitsForAmericanExpress, true},
+         {features::kAutofillEnableCardBenefitsForBmo, true},
+         {features::kAutofillEnableFlatRateCardBenefitsFromCurinos, true},
+         {features::kAutofillEnableCardBenefitsIph, true},
+         {features::kAutofillEnableNewFopDisplayDesktop, true},
+         {features::kAutofillEnableCardBenefitsSourceSync,
+          IsCreditCardBenefitsSourceSyncEnabled()}});
 
     std::u16string benefit_description;
     int64_t instrument_id;
@@ -384,11 +391,25 @@ class AutofillCreditCardBenefitsLabelTest
         /*guid=*/"00000000-0000-0000-0000-000000000001",
         /*server_id=*/"server_id1",
         /*instrument_id=*/instrument_id);
-    card_.set_issuer_id(std::get<1>(GetParam()));
+    if (IsCreditCardBenefitsSourceSyncEnabled()) {
+      card_.set_benefit_source(GetBenefitSource());
+    } else {
+      card_.set_issuer_id(GetIssuerId());
+    }
     payments_data().AddServerCreditCard(card_);
   }
 
   CreditCardBenefit GetBenefit() const { return std::get<0>(GetParam())(); }
+
+  bool IsCreditCardBenefitsSourceSyncEnabled() const {
+    return std::get<1>(GetParam());
+  }
+
+  const std::string& GetIssuerId() const { return std::get<2>(GetParam()); }
+
+  const std::string& GetBenefitSource() const {
+    return std::get<3>(GetParam());
+  }
 
   const CreditCard& card() { return card_; }
 
@@ -425,30 +446,44 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::Values(&test::GetActiveCreditCardFlatRateBenefit,
                                      &test::GetActiveCreditCardCategoryBenefit,
                                      &test::GetActiveCreditCardMerchantBenefit),
-                     ::testing::Values("amex", "bmo")));
+                     ::testing::Bool(),
+                     ::testing::Values("amex", "bmo"),
+                     ::testing::Values("amex", "bmo", "curinos")));
 
 #if !BUILDFLAG(IS_ANDROID)
 // Checks that for FPAN suggestions that the benefit description is displayed.
 TEST_P(AutofillCreditCardBenefitsLabelTest, BenefitSuggestionLabel_Fpan) {
-  EXPECT_THAT(CreateCreditCardSuggestionForTest(
-                  card(), *autofill_client(), CREDIT_CARD_NUMBER,
-                  /*virtual_card_option=*/false,
-                  /*card_linked_offer_available=*/false)
-                  .labels,
-              ElementsAre(std::vector<Suggestion::Text>{
-                  Suggestion::Text(expected_benefit_text())}));
+  Suggestion suggestion = CreateCreditCardSuggestionForTest(
+      card(), *autofill_client(), CREDIT_CARD_NUMBER,
+      /*virtual_card_option=*/false,
+      /*card_linked_offer_available=*/false);
+  if (IsCreditCardBenefitsSourceSyncEnabled() &&
+      GetBenefitSource() == "curinos" &&
+      !std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
+    EXPECT_TRUE(suggestion.labels.empty());
+  } else {
+    EXPECT_THAT(suggestion.labels,
+                ElementsAre(std::vector<Suggestion::Text>{
+                    Suggestion::Text(expected_benefit_text())}));
+  }
 }
 
 // Checks that feature is set to display the credit card benefit IPH for
 // FPAN suggestions with benefits labels.
 TEST_P(AutofillCreditCardBenefitsLabelTest,
        BenefitSuggestionFeatureForIph_Fpan) {
-  EXPECT_EQ(CreateCreditCardSuggestionForTest(
-                card(), *autofill_client(), CREDIT_CARD_NUMBER,
-                /*virtual_card_option=*/false,
-                /*card_linked_offer_available=*/false)
-                .iph_metadata.feature,
-            &feature_engagement::kIPHAutofillCreditCardBenefitFeature);
+  Suggestion suggestion = CreateCreditCardSuggestionForTest(
+      card(), *autofill_client(), CREDIT_CARD_NUMBER,
+      /*virtual_card_option=*/false,
+      /*card_linked_offer_available=*/false);
+  if (IsCreditCardBenefitsSourceSyncEnabled() &&
+      GetBenefitSource() == "curinos" &&
+      !std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
+    EXPECT_EQ(suggestion.iph_metadata.feature, nullptr);
+  } else {
+    EXPECT_EQ(suggestion.iph_metadata.feature,
+              &feature_engagement::kIPHAutofillCreditCardBenefitFeature);
+  }
 }
 
 // Checks that feature is set to display the virtual card IPH for
@@ -499,13 +534,19 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
 // as a label.
 TEST_P(AutofillCreditCardBenefitsLabelTest,
        BenefitSuggestionLabel_VirtualCard) {
-  EXPECT_THAT(CreateCreditCardSuggestionForTest(
-                  card(), *autofill_client(), CREDIT_CARD_NUMBER,
-                  /*virtual_card_option=*/true,
-                  /*card_linked_offer_available=*/false)
-                  .labels,
-              ElementsAre(std::vector<Suggestion::Text>{
-                  Suggestion::Text(expected_benefit_text())}));
+  Suggestion suggestion = CreateCreditCardSuggestionForTest(
+      card(), *autofill_client(), CREDIT_CARD_NUMBER,
+      /*virtual_card_option=*/true,
+      /*card_linked_offer_available=*/false);
+  if (IsCreditCardBenefitsSourceSyncEnabled() &&
+      GetBenefitSource() == "curinos" &&
+      !std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
+    EXPECT_TRUE(suggestion.labels.empty());
+  } else {
+    EXPECT_THAT(suggestion.labels,
+                ElementsAre(std::vector<Suggestion::Text>{
+                    Suggestion::Text(expected_benefit_text())}));
+  }
 }
 
 // Checks that for merchant opt-out virtual cards suggestion the benefit
@@ -544,7 +585,8 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
   disable_benefits.InitWithFeatures(
       /*enabled_features=*/{}, /*disabled_features=*/{
           features::kAutofillEnableCardBenefitsForAmericanExpress,
-          features::kAutofillEnableCardBenefitsForBmo});
+          features::kAutofillEnableCardBenefitsForBmo,
+          features::kAutofillEnableFlatRateCardBenefitsFromCurinos});
   DoBenefitSuggestionLabel_MetadataLoggingContextTest();
 }
 
@@ -612,17 +654,26 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kAutofillEnableNewFopDisplayDesktop);
-  EXPECT_THAT(
-      CreateCreditCardSuggestionForTest(card(), *autofill_client(),
-                                        CREDIT_CARD_NUMBER,
-                                        /*virtual_card_option=*/false,
-                                        /*card_linked_offer_available=*/false)
-          .labels,
-      ElementsAre(
-          std::vector<Suggestion::Text>{
-              Suggestion::Text(expected_benefit_text())},
-          std::vector<Suggestion::Text>{Suggestion::Text(card().GetInfo(
-              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, /*app_locale=*/"en-US"))}));
+  Suggestion suggestion = CreateCreditCardSuggestionForTest(
+      card(), *autofill_client(), CREDIT_CARD_NUMBER,
+      /*virtual_card_option=*/false,
+      /*card_linked_offer_available=*/false);
+  if (IsCreditCardBenefitsSourceSyncEnabled() &&
+      GetBenefitSource() == "curinos" &&
+      !std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
+    EXPECT_THAT(suggestion.labels,
+                ElementsAre(std::vector<Suggestion::Text>{Suggestion::Text(
+                    card().GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+                                   /*app_locale=*/"en-US"))}));
+  } else {
+    EXPECT_THAT(
+        suggestion.labels,
+        ElementsAre(
+            std::vector<Suggestion::Text>{
+                Suggestion::Text(expected_benefit_text())},
+            std::vector<Suggestion::Text>{Suggestion::Text(card().GetInfo(
+                CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, /*app_locale=*/"en-US"))}));
+  }
 }
 
 // Checks that for virtual cards suggestion the benefit description is shown
@@ -632,19 +683,27 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kAutofillEnableNewFopDisplayDesktop);
-
-  EXPECT_THAT(
-      CreateCreditCardSuggestionForTest(card(), *autofill_client(),
-                                        CREDIT_CARD_NUMBER,
-                                        /*virtual_card_option=*/true,
-                                        /*card_linked_offer_available=*/false)
-          .labels,
-      ElementsAre(
-          std::vector<Suggestion::Text>{
-              Suggestion::Text(expected_benefit_text())},
-          std::vector<Suggestion::Text>{
-              Suggestion::Text(l10n_util::GetStringUTF16(
-                  IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE))}));
+  Suggestion suggestion = CreateCreditCardSuggestionForTest(
+      card(), *autofill_client(), CREDIT_CARD_NUMBER,
+      /*virtual_card_option=*/true,
+      /*card_linked_offer_available=*/false);
+  if (IsCreditCardBenefitsSourceSyncEnabled() &&
+      GetBenefitSource() == "curinos" &&
+      !std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
+    EXPECT_THAT(suggestion.labels,
+                ElementsAre(std::vector<Suggestion::Text>{
+                    Suggestion::Text(l10n_util::GetStringUTF16(
+                        IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE))}));
+  } else {
+    EXPECT_THAT(
+        suggestion.labels,
+        ElementsAre(
+            std::vector<Suggestion::Text>{
+                Suggestion::Text(expected_benefit_text())},
+            std::vector<Suggestion::Text>{
+                Suggestion::Text(l10n_util::GetStringUTF16(
+                    IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE))}));
+  }
 }
 
 // Checks that for merchant opt-out virtual cards suggestion the benefit
@@ -659,18 +718,28 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
               autofill_client()->GetAutofillOptimizationGuide()),
           ShouldBlockFormFieldSuggestion)
       .WillByDefault(testing::Return(true));
-  EXPECT_THAT(
-      CreateCreditCardSuggestionForTest(virtual_card, *autofill_client(),
-                                        CREDIT_CARD_NUMBER,
-                                        /*virtual_card_option=*/true,
-                                        /*card_linked_offer_available=*/false)
-          .labels,
-      ElementsAre(
-          std::vector<Suggestion::Text>{
-              Suggestion::Text(expected_benefit_text())},
-          std::vector<
-              Suggestion::Text>{Suggestion::Text(l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE))}));
+  Suggestion suggestion = CreateCreditCardSuggestionForTest(
+      virtual_card, *autofill_client(), CREDIT_CARD_NUMBER,
+      /*virtual_card_option=*/true,
+      /*card_linked_offer_available=*/false);
+  if (IsCreditCardBenefitsSourceSyncEnabled() &&
+      GetBenefitSource() == "curinos" &&
+      !std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
+    EXPECT_THAT(
+        suggestion.labels,
+        ElementsAre(std::vector<Suggestion::Text>{
+            Suggestion::Text(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE))}));
+  } else {
+    EXPECT_THAT(
+        suggestion.labels,
+        ElementsAre(
+            std::vector<Suggestion::Text>{
+                Suggestion::Text(expected_benefit_text())},
+            std::vector<
+                Suggestion::Text>{Suggestion::Text(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE))}));
+  }
 }
 
 // Checks that the merchant benefit description is not displayed for suggestions
@@ -770,13 +839,24 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
       cards, *autofill_client(), *credit_card_form_event_logger_);
 
   EXPECT_EQ(suggestions[0].type, SuggestionType::kCreditCardEntry);
-  EXPECT_THAT(suggestions[0],
-              EqualLabels({{expected_benefit_text()},
-                           {card().GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
-                                           app_locale())}}));
-  EXPECT_TRUE(suggestions[0]
-                  .GetPayload<Suggestion::PaymentsPayload>()
-                  .should_display_terms_available);
+  if (IsCreditCardBenefitsSourceSyncEnabled() &&
+      GetBenefitSource() == "curinos" &&
+      !std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
+    EXPECT_THAT(suggestions[0],
+                EqualLabels({{card().GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+                                             app_locale())}}));
+    EXPECT_FALSE(suggestions[0]
+                     .GetPayload<Suggestion::PaymentsPayload>()
+                     .should_display_terms_available);
+  } else {
+    EXPECT_THAT(suggestions[0],
+                EqualLabels({{expected_benefit_text()},
+                             {card().GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+                                             app_locale())}}));
+    EXPECT_TRUE(suggestions[0]
+                    .GetPayload<Suggestion::PaymentsPayload>()
+                    .should_display_terms_available);
+  }
 }
 
 TEST_P(AutofillCreditCardBenefitsLabelTest,
@@ -798,14 +878,25 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
       cards, *autofill_client(), *credit_card_form_event_logger_);
 
   EXPECT_EQ(suggestions[0].type, SuggestionType::kVirtualCreditCardEntry);
-  EXPECT_THAT(
-      suggestions[0],
-      EqualLabels({{expected_benefit_text()},
-                   {l10n_util::GetStringUTF16(
-                       IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE)}}));
-  EXPECT_TRUE(suggestions[0]
-                  .GetPayload<Suggestion::PaymentsPayload>()
-                  .should_display_terms_available);
+  if (IsCreditCardBenefitsSourceSyncEnabled() &&
+      GetBenefitSource() == "curinos" &&
+      !std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
+    EXPECT_THAT(suggestions[0],
+                EqualLabels({{l10n_util::GetStringUTF16(
+                    IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE)}}));
+    EXPECT_FALSE(suggestions[0]
+                     .GetPayload<Suggestion::PaymentsPayload>()
+                     .should_display_terms_available);
+  } else {
+    EXPECT_THAT(
+        suggestions[0],
+        EqualLabels({{expected_benefit_text()},
+                     {l10n_util::GetStringUTF16(
+                         IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE)}}));
+    EXPECT_TRUE(suggestions[0]
+                    .GetPayload<Suggestion::PaymentsPayload>()
+                    .should_display_terms_available);
+  }
 }
 
 // Checks that the merchant benefit description is not displayed for suggestions

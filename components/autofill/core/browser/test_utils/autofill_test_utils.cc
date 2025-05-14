@@ -689,8 +689,9 @@ base::flat_set<url::Origin> GetOriginsForMerchantBenefit() {
 
 void SetUpCreditCardAndBenefitData(
     CreditCard& card,
-    const CreditCardBenefit& benefit,
     const std::string& issuer_id,
+    const CreditCardBenefit& benefit,
+    const std::string& benefit_source,
     TestPersonalDataManager& personal_data,
     AutofillOptimizationGuide* optimization_guide) {
   std::visit(
@@ -716,6 +717,7 @@ void SetUpCreditCardAndBenefitData(
       benefit);
   personal_data.payments_data_manager().AddCreditCardBenefitForTest(benefit);
   card.set_issuer_id(issuer_id);
+  card.set_benefit_source(benefit_source);
   personal_data.test_payments_data_manager().AddServerCreditCard(card);
 }
 

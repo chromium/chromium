@@ -34,6 +34,12 @@ inline constexpr std::string_view kBnplAffirmIssuerId = "affirm";
 inline constexpr std::string_view kBnplZipIssuerId = "zip";
 inline constexpr std::string_view kBnplAfterpayIssuerId = "afterpay";
 
+// Credit card benefit sources. These are server-generated values that must be
+// consistent between server and client.
+inline constexpr std::string_view kAmexCardBenefitSource = "amex";
+inline constexpr std::string_view kBmoCardBenefitSource = "bmo";
+inline constexpr std::string_view kCurinosCardBenefitSource = "curinos";
+
 // The urls to the static card art images used by Capital One cards.
 inline constexpr std::string_view kCapitalOneCardArtUrl =
     "https://www.gstatic.com/autofill/virtualcard/icon/capitalone.png";

@@ -996,12 +996,18 @@ void PaymentsDataManager::NotifyObservers() {
 
 bool PaymentsDataManager::IsCardEligibleForBenefits(
     const CreditCard& card) const {
-  return (card.issuer_id() == kAmexCardIssuerId &&
+  return (card.benefit_source() == kAmexCardBenefitSource &&
           base::FeatureList::IsEnabled(
               features::kAutofillEnableCardBenefitsForAmericanExpress)) ||
-         (card.issuer_id() == kBmoCardIssuerId &&
+         (card.benefit_source() == kBmoCardBenefitSource &&
           base::FeatureList::IsEnabled(
-              features::kAutofillEnableCardBenefitsForBmo));
+              features::kAutofillEnableCardBenefitsForBmo)) ||
+         (card.benefit_source() == kCurinosCardBenefitSource &&
+          GetFlatRateBenefitByInstrumentId(
+              CreditCardBenefitBase::LinkedCardInstrumentId(
+                  card.instrument_id())) &&
+          base::FeatureList::IsEnabled(
+              features::kAutofillEnableFlatRateCardBenefitsFromCurinos));
 }
 
 bool PaymentsDataManager::IsCardBenefitsFeatureEnabled() {
