@@ -3475,12 +3475,12 @@ void AXNodeObject::SerializeMarkerAttributes(ui::AXNodeData* node_data) const {
 
     marker_types.push_back(ToAXMarkerType(marker->GetType()));
     highlight_types.push_back(static_cast<int32_t>(highlight_type));
-    auto start_pos =
-        AXPosition::FromPosition(start_position, TextAffinity::kDownstream,
-                                 AXPositionAdjustmentBehavior::kMoveLeft);
-    auto end_pos =
-        AXPosition::FromPosition(end_position, TextAffinity::kDownstream,
-                                 AXPositionAdjustmentBehavior::kMoveRight);
+    auto start_pos = AXPosition::FromPosition(
+        start_position, AXObjectCache(), TextAffinity::kDownstream,
+        AXPositionAdjustmentBehavior::kMoveLeft);
+    auto end_pos = AXPosition::FromPosition(
+        end_position, AXObjectCache(), TextAffinity::kDownstream,
+        AXPositionAdjustmentBehavior::kMoveRight);
     marker_starts.push_back(start_pos.TextOffset());
     marker_ends.push_back(end_pos.TextOffset());
   }

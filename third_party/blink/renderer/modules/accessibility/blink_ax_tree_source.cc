@@ -65,8 +65,11 @@ void BlinkAXTreeSource::Selection(
 
   const auto ax_selection =
       focus->IsAtomicTextField()
-          ? AXSelection::FromCurrentSelection(ToTextControl(*focus->GetNode()))
-          : AXSelection::FromCurrentSelection(*focus->GetDocument());
+          ? AXSelection::FromCurrentSelection(ToTextControl(*focus->GetNode()),
+                                              *ax_object_cache_)
+          : AXSelection::FromCurrentSelection(
+                *focus->GetDocument(), *ax_object_cache_,
+                AXSelectionBehavior::kExtendToValidRange);
   if (!ax_selection)
     return;
 
@@ -110,8 +113,9 @@ bool BlinkAXTreeSource::GetTreeData(ui::AXTreeData* tree_data) const {
   tree_data->title = document.title().Utf8();
   tree_data->url = document.Url().GetString().Utf8();
 
-  if (const AXObject* focus = GetFocusedObject())
+  if (const AXObject* focus = GetFocusedObject()) {
     tree_data->focus_id = focus->AXObjectID();
+  }
 
   bool is_selection_backward = false;
   const AXObject *anchor_object, *focus_object;

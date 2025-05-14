@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 
 namespace blink {
 
@@ -53,7 +52,7 @@ AXSelection::Builder& AXSelection::Builder::SetAnchor(
 }
 
 AXSelection::Builder& AXSelection::Builder::SetAnchor(const Position& anchor) {
-  const auto ax_anchor = AXPosition::FromPosition(anchor);
+  const auto ax_anchor = AXPosition::FromPosition(anchor, ax_object_cache_);
   DCHECK(ax_anchor.IsValid());
   selection_.anchor_ = ax_anchor;
   return *this;
@@ -66,7 +65,7 @@ AXSelection::Builder& AXSelection::Builder::SetFocus(const AXPosition& focus) {
 }
 
 AXSelection::Builder& AXSelection::Builder::SetFocus(const Position& focus) {
-  const auto ax_focus = AXPosition::FromPosition(focus);
+  const auto ax_focus = AXPosition::FromPosition(focus, ax_object_cache_);
   DCHECK(ax_focus.IsValid());
   selection_.focus_ = ax_focus;
   return *this;
@@ -77,8 +76,10 @@ AXSelection::Builder& AXSelection::Builder::SetSelection(
   if (selection.IsNone())
     return *this;
 
-  selection_.anchor_ = AXPosition::FromPosition(selection.Anchor());
-  selection_.focus_ = AXPosition::FromPosition(selection.Focus());
+  selection_.anchor_ =
+      AXPosition::FromPosition(selection.Anchor(), ax_object_cache_);
+  selection_.focus_ =
+      AXPosition::FromPosition(selection.Focus(), ax_object_cache_);
   return *this;
 }
 
@@ -124,6 +125,7 @@ void AXSelection::ClearCurrentSelection(Document& document) {
 // static
 AXSelection AXSelection::FromCurrentSelection(
     const Document& document,
+    const AXObjectCacheImpl& ax_object_cache,
     const AXSelectionBehavior selection_behavior) {
   const LocalFrame* frame = document.GetFrame();
   if (!frame)
@@ -133,20 +135,15 @@ AXSelection AXSelection::FromCurrentSelection(
   if (!frame_selection.IsAvailable())
     return {};
 
-  return FromSelection(frame_selection.GetSelectionInDOMTree(),
+  return FromSelection(frame_selection.GetSelectionInDOMTree(), ax_object_cache,
                        selection_behavior);
 }
 
 // static
 AXSelection AXSelection::FromCurrentSelection(
-    const TextControlElement& text_control) {
-  const Document& document = text_control.GetDocument();
-  AXObjectCache* ax_object_cache = document.ExistingAXObjectCache();
-  if (!ax_object_cache)
-    return {};
-
-  auto* ax_object_cache_impl = static_cast<AXObjectCacheImpl*>(ax_object_cache);
-  const AXObject* ax_text_control = ax_object_cache_impl->Get(&text_control);
+    const TextControlElement& text_control,
+    const AXObjectCacheImpl& ax_object_cache) {
+  const AXObject* ax_text_control = ax_object_cache.Get(&text_control);
   DCHECK(ax_text_control);
 
   // We can't directly use "text_control.Selection()" because the selection it
@@ -174,7 +171,7 @@ AXSelection AXSelection::FromCurrentSelection(
     return {};
   }
 
-  AXSelection::Builder selection_builder;
+  AXSelection::Builder selection_builder(ax_object_cache);
   selection_builder.SetAnchor(ax_anchor).SetFocus(ax_focus);
   return selection_builder.Build();
 }
@@ -182,6 +179,7 @@ AXSelection AXSelection::FromCurrentSelection(
 // static
 AXSelection AXSelection::FromSelection(
     const SelectionInDOMTree& selection,
+    const AXObjectCacheImpl& ax_object_cache,
     const AXSelectionBehavior selection_behavior) {
   if (selection.IsNone())
     return {};
@@ -227,16 +225,16 @@ AXSelection AXSelection::FromSelection(
     }
   }
 
-  const auto ax_anchor =
-      AXPosition::FromPosition(dom_anchor, anchor_affinity, anchor_adjustment);
-  const auto ax_focus =
-      AXPosition::FromPosition(dom_focus, focus_affinity, focus_adjustment);
+  const auto ax_anchor = AXPosition::FromPosition(
+      dom_anchor, ax_object_cache, anchor_affinity, anchor_adjustment);
+  const auto ax_focus = AXPosition::FromPosition(
+      dom_focus, ax_object_cache, focus_affinity, focus_adjustment);
 
   if (!ax_anchor.IsValid() || !ax_focus.IsValid()) {
     return {};
   }
 
-  AXSelection::Builder selection_builder;
+  AXSelection::Builder selection_builder(ax_object_cache);
   selection_builder.SetAnchor(ax_anchor).SetFocus(ax_focus);
   return selection_builder.Build();
 }

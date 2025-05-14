@@ -398,10 +398,12 @@ void AXInlineTextBox::SerializeMarkerAttributes(
     // offsets.
     const auto start_position = AXPosition::FromPosition(
         Position(*ParentObject()->GetNode(), marker->StartOffset()),
-        TextAffinity::kDownstream, AXPositionAdjustmentBehavior::kMoveLeft);
+        AXObjectCache(), TextAffinity::kDownstream,
+        AXPositionAdjustmentBehavior::kMoveLeft);
     const auto end_position = AXPosition::FromPosition(
         Position(*ParentObject()->GetNode(), marker->EndOffset()),
-        TextAffinity::kDownstream, AXPositionAdjustmentBehavior::kMoveRight);
+        AXObjectCache(), TextAffinity::kDownstream,
+        AXPositionAdjustmentBehavior::kMoveRight);
     if (!start_position.IsValid() || !end_position.IsValid())
       continue;
 

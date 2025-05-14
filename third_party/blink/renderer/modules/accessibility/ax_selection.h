@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_position.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -42,12 +43,16 @@ class MODULES_EXPORT AXSelection final {
 
   static AXSelection FromCurrentSelection(
       const Document&,
+      const AXObjectCacheImpl& ax_object_cache,
       const AXSelectionBehavior = AXSelectionBehavior::kExtendToValidRange);
 
-  static AXSelection FromCurrentSelection(const TextControlElement&);
+  static AXSelection FromCurrentSelection(
+      const TextControlElement&,
+      const AXObjectCacheImpl& ax_object_cache);
 
   static AXSelection FromSelection(
       const SelectionInDOMTree&,
+      const AXObjectCacheImpl& ax_object_cache,
       const AXSelectionBehavior = AXSelectionBehavior::kExtendToValidRange);
 
   AXSelection(const AXSelection&) = default;
@@ -123,7 +128,8 @@ class MODULES_EXPORT AXSelection::Builder final {
   STACK_ALLOCATED();
 
  public:
-  Builder() = default;
+  Builder(const AXObjectCacheImpl& ax_object_cache)
+      : ax_object_cache_(ax_object_cache) {}
   ~Builder() = default;
   Builder& SetAnchor(const AXPosition&);
   Builder& SetAnchor(const Position&);
@@ -134,6 +140,7 @@ class MODULES_EXPORT AXSelection::Builder final {
 
  private:
   AXSelection selection_;
+  const AXObjectCacheImpl& ax_object_cache_;
 };
 
 MODULES_EXPORT bool operator==(const AXSelection&, const AXSelection&);

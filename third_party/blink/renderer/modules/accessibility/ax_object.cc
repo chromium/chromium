@@ -2582,8 +2582,8 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
       // contenteditables, use AXTreeData.
       //
       // TODO(nektar): Remove kTextSelStart and kTextSelEnd from the renderer.
-      const auto ax_selection =
-          AXSelection::FromCurrentSelection(ToTextControl(*element));
+      const auto ax_selection = AXSelection::FromCurrentSelection(
+          ToTextControl(*element), AXObjectCache());
       int start = ax_selection.Anchor().IsTextPosition()
                       ? ax_selection.Anchor().TextOffset()
                       : ax_selection.Anchor().ChildIndex();

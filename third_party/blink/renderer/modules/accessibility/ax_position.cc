@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/core/layout/list/list_marker.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -174,6 +173,7 @@ const AXPosition AXPosition::CreatePositionInTextObject(
 // static
 const AXPosition AXPosition::FromPosition(
     const Position& position,
+    const AXObjectCacheImpl& ax_object_cache,
     const TextAffinity affinity,
     const AXPositionAdjustmentBehavior adjustment_behavior) {
   if (position.IsNull() || position.IsOrphan())
@@ -183,15 +183,10 @@ const AXPosition AXPosition::FromPosition(
   // Non orphan positions always have a document.
   DCHECK(document);
 
-  AXObjectCache* ax_object_cache = document->ExistingAXObjectCache();
-  if (!ax_object_cache)
-    return {};
-
-  auto* ax_object_cache_impl = static_cast<AXObjectCacheImpl*>(ax_object_cache);
   const Position& parent_anchored_position = position.ToOffsetInAnchor();
   const Node* container_node = parent_anchored_position.AnchorNode();
   DCHECK(container_node);
-  const AXObject* container = ax_object_cache_impl->Get(container_node);
+  const AXObject* container = ax_object_cache.Get(container_node);
   if (!container)
     return {};
 
@@ -203,7 +198,7 @@ const AXPosition AXPosition::FromPosition(
         case AXPositionAdjustmentBehavior::kMoveRight: {
           const AXObject* next_container = FindNeighboringUnignoredObject(
               *document, *container_node, container_node->parentNode(),
-              adjustment_behavior);
+              adjustment_behavior, ax_object_cache);
           if (next_container) {
             return CreatePositionBeforeObject(*next_container,
                                               adjustment_behavior);
@@ -220,7 +215,7 @@ const AXPosition AXPosition::FromPosition(
         case AXPositionAdjustmentBehavior::kMoveLeft: {
           const AXObject* previous_container = FindNeighboringUnignoredObject(
               *document, *container_node, container_node->parentNode(),
-              adjustment_behavior);
+              adjustment_behavior, ax_object_cache);
           if (previous_container) {
             return CreatePositionAfterObject(*previous_container,
                                              adjustment_behavior);
@@ -311,7 +306,7 @@ const AXPosition AXPosition::FromPosition(
         container->ChildCountIncludingIgnored();
 
     } else {
-      const AXObject* ax_child = ax_object_cache_impl->Get(node_after_position);
+      const AXObject* ax_child = ax_object_cache.Get(node_after_position);
       // |ax_child| might be nullptr because not all DOM nodes can have AX
       // objects. For example, the "head" element has no corresponding AX
       // object.
@@ -322,7 +317,8 @@ const AXPosition AXPosition::FromPosition(
           case AXPositionAdjustmentBehavior::kMoveRight: {
             const AXObject* next_child = FindNeighboringUnignoredObject(
                 *document, *node_after_position,
-                DynamicTo<ContainerNode>(container_node), adjustment_behavior);
+                DynamicTo<ContainerNode>(container_node), adjustment_behavior,
+                ax_object_cache);
             if (next_child) {
               return CreatePositionBeforeObject(*next_child,
                                                 adjustment_behavior);
@@ -334,7 +330,8 @@ const AXPosition AXPosition::FromPosition(
           case AXPositionAdjustmentBehavior::kMoveLeft: {
             const AXObject* previous_child = FindNeighboringUnignoredObject(
                 *document, *node_after_position,
-                DynamicTo<ContainerNode>(container_node), adjustment_behavior);
+                DynamicTo<ContainerNode>(container_node), adjustment_behavior,
+                ax_object_cache);
             if (previous_child) {
               // |CreatePositionAfterObject| cannot be used here because it will
               // try to create a position before the object that comes after
@@ -372,8 +369,9 @@ const AXPosition AXPosition::FromPosition(
 // static
 const AXPosition AXPosition::FromPosition(
     const PositionWithAffinity& position_with_affinity,
+    const AXObjectCacheImpl& ax_object_cache,
     const AXPositionAdjustmentBehavior adjustment_behavior) {
-  return FromPosition(position_with_affinity.GetPosition(),
+  return FromPosition(position_with_affinity.GetPosition(), ax_object_cache,
                       position_with_affinity.Affinity(), adjustment_behavior);
 }
 
@@ -805,8 +803,8 @@ const AXPosition AXPosition::AsValidDOMPosition(
   if (!container_node || container->IsDetached())
     return {};
 
-  auto& ax_object_cache_impl = container->AXObjectCache();
-  const AXObject* new_container = ax_object_cache_impl.Get(container_node);
+  const AXObjectCacheImpl& ax_object_cache = container->AXObjectCache();
+  const AXObject* new_container = ax_object_cache.Get(container_node);
   DCHECK(new_container);
   if (!new_container)
     return {};
@@ -1053,18 +1051,14 @@ const AXObject* AXPosition::FindNeighboringUnignoredObject(
     const Document& document,
     const Node& child_node,
     const ContainerNode* container_node,
-    const AXPositionAdjustmentBehavior adjustment_behavior) {
-  AXObjectCache* ax_object_cache = document.ExistingAXObjectCache();
-  if (!ax_object_cache)
-    return nullptr;
-
-  auto* ax_object_cache_impl = static_cast<AXObjectCacheImpl*>(ax_object_cache);
+    const AXPositionAdjustmentBehavior adjustment_behavior,
+    const AXObjectCacheImpl& ax_object_cache) {
   switch (adjustment_behavior) {
     case AXPositionAdjustmentBehavior::kMoveRight: {
       const Node* next_node = &child_node;
       while ((next_node = NodeTraversal::NextIncludingPseudo(*next_node,
                                                              container_node))) {
-        const AXObject* next_object = ax_object_cache_impl->Get(next_node);
+        const AXObject* next_object = ax_object_cache.Get(next_node);
         if (next_object && next_object->IsIncludedInTree())
           return next_object;
       }
@@ -1081,8 +1075,7 @@ const AXObject* AXPosition::FindNeighboringUnignoredObject(
       while ((previous_node = NodeTraversal::PreviousIncludingPseudo(
                   *previous_node, container_node)) &&
              previous_node != container_node) {
-        const AXObject* previous_object =
-            ax_object_cache_impl->Get(previous_node);
+        const AXObject* previous_object = ax_object_cache.Get(previous_node);
         if (previous_object && previous_object->IsIncludedInTree())
           return previous_object;
       }

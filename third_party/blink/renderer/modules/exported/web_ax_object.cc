@@ -519,11 +519,14 @@ void WebAXObject::Selection(bool& is_selection_backward,
   if (focus.IsDetached())
     return;
 
+  const Document* document = GetDocument().ConstUnwrap<Document>();
+  auto* cache = To<AXObjectCacheImpl>(document->ExistingAXObjectCache());
   const auto ax_selection =
       focus.private_->IsAtomicTextField()
           ? AXSelection::FromCurrentSelection(
-                ToTextControl(*focus.private_->GetNode()))
-          : AXSelection::FromCurrentSelection(*focus.private_->GetDocument());
+                ToTextControl(*focus.private_->GetNode()), *cache)
+          : AXSelection::FromCurrentSelection(*focus.private_->GetDocument(),
+                                              *cache);
   if (!ax_selection)
     return;
 
@@ -601,7 +604,9 @@ bool WebAXObject::SetSelection(const WebAXObject& anchor_object,
         *focus_object.ChildAt(static_cast<unsigned int>(focus_offset)));
   }
 
-  AXSelection::Builder builder;
+  const Document* document = GetDocument().ConstUnwrap<Document>();
+  auto* cache = To<AXObjectCacheImpl>(document->ExistingAXObjectCache());
+  AXSelection::Builder builder(*cache);
   AXSelection ax_selection =
       builder.SetAnchor(ax_anchor).SetFocus(ax_focus).Build();
   return ax_selection.Select();
