@@ -475,6 +475,222 @@ const subgraphTests = [
     }
   },
   {
+    'name': 'quantized element-wise binary max',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            -2.549168109893799, -4.794857501983643,
+            8.413617134094238, 6.108623504638672
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'float32'},
+          'constant': false
+        },
+        'inputAScale': {
+          'data': [0.343092918395996],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'inputAZeroPoint': {
+          'data': [-128],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+        'inputB': {
+          'data': [
+            12, 24, 35, 11,
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'int8'},
+          'constant': true
+        },
+        'inputBScale': {
+          'data': [0.343092918395996],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'inputBZeroPoint': {
+          'data': [-128],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+        'outputScale': {
+          'data': [0.343092918395996],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'outputZeroPoint': {
+          'data': [-128],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+      },
+      'operators': [
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'inputA'},
+            {'scale': 'inputAScale', 'zeroPoint': 'inputAZeroPoint'}
+          ],
+          'outputs': 'quantizedInputA'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedInputA'},
+            {'scale': 'inputAScale', 'zeroPoint': 'inputAZeroPoint'}
+          ],
+          'outputs': 'dequantizedInputA'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'inputB'},
+            {'scale': 'inputBScale', 'zeroPoint': 'inputBZeroPoint'}
+          ],
+          'outputs': 'dequantizedInputB'
+        },
+        {
+          'name': 'max',
+          'arguments': [{'inputA': 'dequantizedInputA'},  {'inputB': 'dequantizedInputB'}],
+          'outputs': 'maxOutput'
+        },
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'maxOutput'},
+            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
+          ],
+          'outputs': 'quantizedMaxOutput'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedMaxOutput'},
+            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
+          ],
+          'outputs': 'output'
+        }
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            48.03300857543945, 52.150123596191406,
+            55.92414474487305, 47.68991470336914,
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'quantized element-wise binary min',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            3.549168109893799, 4.794857501983643,
+            8.413617134094238, 6.108623504638672
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'float32'},
+          'constant': false
+        },
+        'inputAScale': {
+          'data': [0.343092918395996],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'inputAZeroPoint': {
+          'data': [-128],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+        'inputB': {
+          'data': [
+            12, 24, 35, 11,
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'int8'},
+          'constant': true
+        },
+        'inputBScale': {
+          'data': [0.343092918395996],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'inputBZeroPoint': {
+          'data': [-128],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+        'outputScale': {
+          'data': [0.343092918395996],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'outputZeroPoint': {
+          'data': [-128],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+      },
+      'operators': [
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'inputA'},
+            {'scale': 'inputAScale', 'zeroPoint': 'inputAZeroPoint'}
+          ],
+          'outputs': 'quantizedInputA'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedInputA'},
+            {'scale': 'inputAScale', 'zeroPoint': 'inputAZeroPoint'}
+          ],
+          'outputs': 'dequantizedInputA'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'inputB'},
+            {'scale': 'inputBScale', 'zeroPoint': 'inputBZeroPoint'}
+          ],
+          'outputs': 'dequantizedInputB'
+        },
+        {
+          'name': 'min',
+          'arguments': [{'inputA': 'dequantizedInputA'},  {'inputB': 'dequantizedInputB'}],
+          'outputs': 'minOutput'
+        },
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'minOutput'},
+            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
+          ],
+          'outputs': 'quantizedMinOutput'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedMinOutput'},
+            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
+          ],
+          'outputs': 'output'
+        }
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            3.430929183959961, 4.803300857543945,
+            8.577322959899902, 6.17567253112793,
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
     'name': 'quantized transpose',
     'graph': {
       'inputs': {
