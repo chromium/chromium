@@ -79,6 +79,7 @@ class WebUI;
 }  // namespace content
 
 namespace lens {
+class LensSessionMetricsLogger;
 class LensOverlayQueryController;
 class LensOverlaySidePanelCoordinator;
 class LensPermissionBubbleController;
@@ -983,30 +984,12 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
       bool is_zero_prefix_suggestion,
       std::map<std::string, std::string> additional_query_params);
 
-  // Records UMA and UKM metrics for time to first interaction. Not recorded
-  // when invocation source is an image's content area menu because in this
-  // case the time to first interaction is essentially zero.
-  void RecordTimeToFirstInteraction(
-      lens::LensOverlayFirstInteractionType interaction_type);
-
-  // Records the UMA for the first time the contextual searchbox is focused
-  // after the page has been navigated.
-  void RecordContextualSearchboxTimeToFocusAfterNavigation();
-
-  // Records the UMA for the first time the user interacts with the contextual
-  // searchbox after the page has been navigated.
-  void RecordContextualSearchboxTimeToInteractionAfterNavigation();
-
-  // Records UMA and UKM metrics for dismissal and end of session metrics.
-  // This includes dismissal source, session length, and whether a search was
-  // recorded in the session.
-  void RecordEndOfSessionMetrics(
-      lens::LensOverlayDismissalSource dismissal_source);
-
   // Records the UMA for the metrics relating to the document where the
   // contextual search box was shown. If this is a webpage, records the size of
   // the innerHtml and the innerText. If this is a PDF, records the byte size of
   // the PDF and the number of pages. `pdf_page_count` is only used for PDFs.
+  // TODO(crbug.com/404941800): Move the document metrics to where the page
+  // content bytes are stored.
   void RecordDocumentMetrics(std::optional<uint32_t> pdf_page_count);
 
   // Posts a task to the background thread to calculate the OCR DOM similarity
@@ -1053,6 +1036,9 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Shorthand to grab the LensSearchContextualizationController for this
   // instance of Lens.
   lens::LensSearchContextualizationController* GetContextualizationController();
+
+  // Shorthand to grab the LensSessionMetricsLogger for this instance of Lens.
+  lens::LensSessionMetricsLogger* GetLensSessionMetricsLogger();
 
   // Owns the LensSearchController which owns this class
   raw_ptr<tabs::TabInterface> tab_;
@@ -1149,49 +1135,14 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Prevents other features from showing tab-modal UI.
   std::unique_ptr<tabs::ScopedTabModalUI> scoped_tab_modal_ui_;
 
-  // Indicates whether a search has been performed in the current session. Used
-  // to record success/abandonment rate, as defined by whether or not a search
-  // was performed.
-  bool search_performed_in_session_ = false;
-
   // Whether the OCR DOM similarity has been recorded in the current session.
   bool ocr_dom_similarity_recorded_in_session_ = false;
-
-  // Metrics for the contextual searchbox that will be recorded at the end of a
-  // session.
-  lens::ContextualSearchboxSessionEndMetrics csb_session_end_metrics_;
-
-  // The type of the page content extracted from the page when the lens overlay
-  // was initialized. This is used when recording contextual searchbox metrics
-  // at the end of sessions, since the initialization data can change on page
-  // contextualization updates and these metrics only want to record the initial
-  // invocation page content type.
-  lens::MimeType initial_page_content_type_ = lens::MimeType::kUnknown;
-
-  // The type of the document that the lens overlay was initialized on as
-  // determined by the mime type reported by the tab web contents. This differs
-  // from initial_page_content_type_ in that the document type is the type of
-  // the top level document, while the intial_page_content_type_ is the type of
-  // the content extracted from the page that we are contextualizing to. This is
-  // used when recording invocation document metrics, since the document type
-  // can change on page contextualization updates.
-  lens::MimeType initial_document_type_ = lens::MimeType::kUnknown;
-
   // The time at which the overlay was invoked. Used to compute timing metrics.
   base::TimeTicks invocation_time_;
 
   // The time at which the overlay was invoked, since epoch. Used to calculate
   // timeToWebUIReady on the WebUI side.
   base::Time invocation_time_since_epoch_;
-
-  // The time at which the live page navigated while in the contextual searchbox
-  // flow. Used to compute timing metrics. Is empty if the user is not in the
-  // contextual searchbox flow, or this navigation has already been recorded.
-  std::optional<base::TimeTicks> last_navigation_time_;
-
-  // Whether the contextual searchbox has been focused since the last page
-  // navigation.
-  bool contextual_searchbox_focused_after_navigation_ = false;
 
   // Indicates whether a trigger for the HaTS survey has occurred in the current
   // session. Note that a trigger does not mean the survey will actually be

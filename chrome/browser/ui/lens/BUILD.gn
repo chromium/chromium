@@ -45,6 +45,7 @@ source_set("lens") {
     "lens_permission_bubble_controller.h",
     "lens_preselection_bubble.h",
     "lens_search_contextualization_controller.h",
+    "lens_session_metrics_logger.h",
     "page_content_type_conversions.h",
     "ref_counted_lens_overlay_client_logs.h",
   ]
@@ -105,6 +106,7 @@ source_set("impl") {
     "lens_search_contextualization_controller.cc",
     "lens_search_controller.cc",
     "lens_searchbox_controller.cc",
+    "lens_session_metrics_logger.cc",
     "lens_side_panel_untrusted_ui.cc",
     "page_content_type_conversions.cc",
   ]

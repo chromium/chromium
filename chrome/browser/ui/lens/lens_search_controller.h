@@ -24,6 +24,7 @@ class LensOverlayController;
 class GURL;
 
 namespace lens {
+class LensSessionMetricsLogger;
 class LensOverlayEventHandler;
 class LensOverlayGen204Controller;
 class LensOverlaySidePanelCoordinator;
@@ -167,6 +168,9 @@ class LensSearchController {
   lens::LensSearchContextualizationController*
   lens_search_contextualization_controller();
 
+  // Returns the LensSessionMetricsLogger.
+  lens::LensSessionMetricsLogger* lens_session_metrics_logger();
+
   // Testing function for setting the page context eligibility API for this
   // controller.
   void set_page_context_eligibility_for_testing(
@@ -285,6 +289,10 @@ class LensSearchController {
   std::unique_ptr<lens::LensOverlayQueryController> CreateLensQueryController(
       lens::LensOverlayInvocationSource invocation_source);
 
+  // Creates all state necessary to start a Lens session. This method contains
+  // shared state that is used no matter the entrypoint.
+  void StartLensSession(lens::LensOverlayInvocationSource invocation_source);
+
   // Runs the eligibility checks necessary for Lens to open on this tab. If the
   // user has not granted permission to use Lens on this tab, the permission
   // request will be shown and callback will be called after the user accepts.
@@ -380,6 +388,8 @@ class LensSearchController {
   // The contextualization controller for the Lens Search feature on this tab.
   std::unique_ptr<lens::LensSearchContextualizationController>
       lens_contextualization_controller_;
+
+  std::unique_ptr<lens::LensSessionMetricsLogger> lens_session_metrics_logger_;
 
   // Class for handling key events from the renderer that were not handled. This
   // is used by both the overlay and the WebUI to share common event handling

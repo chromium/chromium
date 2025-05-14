@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/lens/lens_search_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/lens_searchbox_controller.h"
+#include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
 #include "chrome/browser/ui/lens/page_content_type_conversions.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -441,7 +442,6 @@ void LensOverlayController::CloseUI(
   fullscreen_observation_.Reset();
   immersive_mode_observer_.Reset();
   lens_overlay_blur_layer_delegate_.reset();
-  last_navigation_time_.reset();
 #if BUILDFLAG(IS_MAC)
   pref_change_registrar_.Reset();
 #endif  // BUILDFLAG(IS_MAC)
@@ -470,8 +470,6 @@ void LensOverlayController::CloseUI(
 
   // Update the entrypoints now that the controller is closed.
   UpdateEntryPointsState();
-
-  RecordEndOfSessionMetrics(dismissal_source);
 }
 
 // static
@@ -990,7 +988,6 @@ void LensOverlayController::ShowUI(
   NotifyUserEducationAboutOverlayUsed();
 
   // Establish data required for session metrics.
-  search_performed_in_session_ = false;
   invocation_time_ = base::TimeTicks::Now();
   invocation_time_since_epoch_ = base::Time::Now();
   hats_triggered_in_session_ = false;
@@ -1070,7 +1067,7 @@ void LensOverlayController::ShowUIWithPendingRegion(
   ShowUI(invocation_source, lens_overlay_query_controller);
   // Overrides value set in ShowUI since invoking lens overlay with a pending
   // region is considered a search.
-  search_performed_in_session_ = true;
+  GetLensSessionMetricsLogger()->OnSearchPerformed();
 }
 
 std::string LensOverlayController::GetVsridForNewTab() {
@@ -1117,7 +1114,7 @@ void LensOverlayController::SetAdditionalSearchQueryParams(
 }
 
 void LensOverlayController::ClearTextSelection() {
-  if(!IsOverlayShowing()) {
+  if (!IsOverlayShowing()) {
     return;
   }
   if (initialization_data_->selected_text_.has_value()) {
@@ -1127,7 +1124,7 @@ void LensOverlayController::ClearTextSelection() {
 }
 
 void LensOverlayController::ClearRegionSelection() {
-  if(!IsOverlayShowing()) {
+  if (!IsOverlayShowing()) {
     return;
   }
   GetLensSearchboxController()->SetSearchboxThumbnail("");
@@ -1153,17 +1150,7 @@ void LensOverlayController::OnSearchboxFocusChanged(bool focused) {
   }
 
   if (IsContextualSearchbox()) {
-    if (!csb_session_end_metrics_.searchbox_focused_) {
-      // This is the first time the searchbox is focused in this session.
-      // Record the time between the overlay being invoked and the searchbox
-      // being focused.
-      lens::RecordContextualSearchboxTimeToFirstFocus(
-          base::TimeTicks::Now() - invocation_time_,
-          initialization_data_->primary_content_type_);
-    } else {
-      RecordContextualSearchboxTimeToFocusAfterNavigation();
-    }
-    csb_session_end_metrics_.searchbox_focused_ = true;
+    GetLensSessionMetricsLogger()->OnSearchboxFocused();
 
     if (state() == State::kLivePageAndResults) {
       // If the live page is showing and the searchbox becomes focused, showing
@@ -1191,11 +1178,8 @@ void LensOverlayController::OnZeroSuggestShown() {
     return;
   }
 
-  if (state() == State::kOverlay) {
-    csb_session_end_metrics_.zps_shown_on_initial_query_ = true;
-  } else {
-    csb_session_end_metrics_.zps_shown_on_follow_up_query_ = true;
-  }
+  GetLensSessionMetricsLogger()->OnZeroSuggestShown(
+      /*is_initial_query=*/state() == State::kOverlay);
 }
 
 void LensOverlayController::IssueLensRequest(
@@ -1221,7 +1205,7 @@ void LensOverlayController::IssueLensRequest(
         initialization_data_->additional_search_query_params_, region_bytes);
   }
   MaybeOpenSidePanel();
-  RecordTimeToFirstInteraction(
+  GetLensSessionMetricsLogger()->RecordTimeToFirstInteraction(
       lens::LensOverlayFirstInteractionType::kRegionSelect);
   state_ = State::kOverlayAndResults;
   MaybeLaunchSurvey();
@@ -1246,8 +1230,9 @@ void LensOverlayController::IssueSearchBoxRequest(
     std::map<std::string, std::string> additional_query_params) {
   // Log the interaction time here so the time to fetch new page bytes is not
   // intcluded.
-  RecordContextualSearchboxTimeToInteractionAfterNavigation();
-  RecordTimeToFirstInteraction(
+  GetLensSessionMetricsLogger()
+      ->RecordContextualSearchboxTimeToInteractionAfterNavigation();
+  GetLensSessionMetricsLogger()->RecordTimeToFirstInteraction(
       lens::LensOverlayFirstInteractionType::kSearchbox);
 
   // Do not attempt to contextualize if CSB is disabled, if recontextualization
@@ -1818,6 +1803,8 @@ void LensOverlayController::UpdatePageContextualizationPart3(
       initialization_data_->last_retrieved_most_visible_page_,
       sending_bitmap ? bitmap : SkBitmap());
 
+  GetLensSessionMetricsLogger()->OnFollowUpPageContentRetrieved(
+      primary_content_type);
   RecordDocumentMetrics(page_count);
 }
 
@@ -2093,20 +2080,18 @@ void LensOverlayController::InitializeOverlayUI(
   // data to the overlay web UI in a single message.
   page_->ThemeReceived(CreateTheme(init_data.color_palette_));
 
+  auto* lens_session_metrics_logger = GetLensSessionMetricsLogger();
+
   bool should_show_csb = !init_data.page_contents_.empty() &&
                          !init_data.page_contents_.front().bytes_.empty();
   if (should_show_csb) {
-    // Reset metric booleans in case they were set to true previously and the
-    // overlay was reopened.
-    csb_session_end_metrics_ = lens::ContextualSearchboxSessionEndMetrics();
-    csb_session_end_metrics_.searchbox_shown_ = true;
+    lens_session_metrics_logger->OnContextualSearchboxShown();
   }
-  initial_page_content_type_ =
-      init_data.page_contents_.empty()
+  lens_session_metrics_logger->OnInitialPageContentRetrieved(
+      /*page_content_type=*/init_data.page_contents_.empty()
           ? lens::MimeType::kUnknown
-          : init_data.page_contents_.front().content_type_;
-  initial_document_type_ = lens::StringMimeTypeToDocumentType(
-      tab_->GetContents()->GetContentsMimeType());
+          : init_data.page_contents_.front().content_type_);
+
   page_->ShouldShowContextualSearchBox(should_show_csb);
 
   // Send the initial document type to the overlay web UI.
@@ -2126,9 +2111,6 @@ void LensOverlayController::InitializeOverlayUI(
     // Notify the overlay that it is safe to query autocomplete.
     page_->NotifyHandshakeComplete();
   }
-
-  // Record the UMA for lens overlay invocation.
-  lens::RecordInvocation(invocation_source_, initial_document_type_);
 }
 
 bool LensOverlayController::IsContextualSearchbox() {
@@ -2659,7 +2641,7 @@ void LensOverlayController::IssueTextSelectionRequestInner(
       query, lens_selection_type_,
       initialization_data_->additional_search_query_params_);
   MaybeOpenSidePanel();
-  RecordTimeToFirstInteraction(
+  GetLensSessionMetricsLogger()->RecordTimeToFirstInteraction(
       lens::LensOverlayFirstInteractionType::kTextSelect);
   state_ = State::kOverlayAndResults;
   MaybeLaunchSurvey();
@@ -2807,24 +2789,9 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
     lens_overlay_query_controller_->SendContextualTextQuery(
         search_box_text, lens_selection_type_,
         initialization_data_->additional_search_query_params_);
-    csb_session_end_metrics_.zps_used_ =
-        csb_session_end_metrics_.zps_used_ || is_zero_prefix_suggestion;
-    csb_session_end_metrics_.query_issued_ = true;
-    if (state() == State::kLivePageAndResults) {
-      csb_session_end_metrics_.follow_up_query_issued_ = true;
-    }
-    if (state() == State::kOverlay &&
-        !csb_session_end_metrics_.zps_shown_on_initial_query_) {
-      // If the query was made in the initial state, and the ZPS has not been
-      // shown, mark the query as issued before ZPS shown.
-      csb_session_end_metrics_.initial_query_issued_before_zps_shown_ = true;
-    } else if (state() == State::kLivePageAndResults &&
-               !csb_session_end_metrics_.zps_shown_on_follow_up_query_) {
-      // If a follow up query was made, and the ZPS has not been
-      // shown for the follow up query, mark the query as issued before ZPS
-      // shown.
-      csb_session_end_metrics_.follow_up_query_issued_before_zps_shown_ = true;
-    }
+    GetLensSessionMetricsLogger()->OnContextualSearchboxQueryIssued(
+        is_zero_prefix_suggestion,
+        /*is_initial_query=*/state_ == State::kOverlay);
   } else if (initialization_data_->selected_region_.is_null()) {
     lens_overlay_query_controller_->SendTextOnlyQuery(
         search_box_text, lens_selection_type_,
@@ -2865,10 +2832,6 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
   results_side_panel_coordinator_->SetSidePanelIsLoadingResults(
       is_page_context_eligible_);
   MaybeLaunchSurvey();
-
-  // After the searchbox request is sent, mark the follow up zps as not shown so
-  // it is false for the next follow up query.
-  csb_session_end_metrics_.zps_shown_on_follow_up_query_ = false;
 }
 
 void LensOverlayController::HandleStartQueryResponse(
@@ -2980,78 +2943,6 @@ void LensOverlayController::HandlePageContentUploadProgress(uint64_t position,
 
   results_side_panel_coordinator_->SetPageContentUploadProgress(
       total > 0 ? static_cast<float>(position) / total : 1.0f);
-}
-
-void LensOverlayController::RecordTimeToFirstInteraction(
-    lens::LensOverlayFirstInteractionType interaction_type) {
-  if (search_performed_in_session_) {
-    return;
-  }
-  DCHECK(!invocation_time_.is_null());
-  base::TimeDelta time_to_first_interaction =
-      base::TimeTicks::Now() - invocation_time_;
-  ukm::SourceId source_id =
-      tab_->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
-  // UMA and UKM TimeToFirstInteraction.
-  lens::RecordTimeToFirstInteraction(invocation_source_,
-                                     time_to_first_interaction,
-                                     interaction_type, source_id);
-  search_performed_in_session_ = true;
-}
-
-void LensOverlayController::
-    RecordContextualSearchboxTimeToFocusAfterNavigation() {
-  if (!last_navigation_time_.has_value() ||
-      contextual_searchbox_focused_after_navigation_) {
-    return;
-  }
-  base::TimeDelta time_to_focus =
-      base::TimeTicks::Now() - last_navigation_time_.value();
-  lens::RecordContextualSearchboxTimeToFocusAfterNavigation(
-      time_to_focus, initialization_data_->primary_content_type_);
-  contextual_searchbox_focused_after_navigation_ = true;
-}
-
-void LensOverlayController::
-    RecordContextualSearchboxTimeToInteractionAfterNavigation() {
-  if (!last_navigation_time_.has_value()) {
-    return;
-  }
-  base::TimeDelta time_to_interaction =
-      base::TimeTicks::Now() - last_navigation_time_.value();
-  lens::RecordContextualSearchboxTimeToInteractionAfterNavigation(
-      time_to_interaction, initialization_data_->primary_content_type_);
-  last_navigation_time_.reset();
-}
-
-void LensOverlayController::RecordEndOfSessionMetrics(
-    lens::LensOverlayDismissalSource dismissal_source) {
-  // UMA unsliced Dismissed.
-  lens::RecordDismissal(dismissal_source);
-
-  // UMA InvocationResultedInSearch.
-  lens::RecordInvocationResultedInSearch(invocation_source_,
-                                         search_performed_in_session_);
-
-  // UMA session duration.
-  DCHECK(!invocation_time_.is_null());
-  base::TimeDelta session_duration = base::TimeTicks::Now() - invocation_time_;
-  lens::RecordSessionDuration(invocation_source_, session_duration);
-
-  // UKM session end metrics. Includes invocation source, whether the
-  // session resulted in a search, invocation document type and session
-  // duration.
-  ukm::SourceId source_id =
-      tab_->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
-  lens::RecordUKMSessionEndMetrics(source_id, invocation_source_,
-                                   search_performed_in_session_,
-                                   session_duration, initial_document_type_);
-
-  // UMA and UKM end of session metrics for the CSB. Only recorded if CSB is
-  // shown in session.
-  lens::RecordContextualSearchboxSessionEndMetrics(
-      source_id, csb_session_end_metrics_, initial_page_content_type_,
-      initial_document_type_);
 }
 
 void LensOverlayController::RecordDocumentMetrics(
@@ -3266,8 +3157,7 @@ void LensOverlayController::MaybeShowDelayedTutorialIPH(const GURL& url) {
 }
 
 void LensOverlayController::UpdateNavigationMetrics() {
-  last_navigation_time_ = base::TimeTicks::Now();
-  contextual_searchbox_focused_after_navigation_ = false;
+  GetLensSessionMetricsLogger()->OnPageNavigation();
 }
 
 bool LensOverlayController::IsHandshakeComplete() {
@@ -3378,4 +3268,9 @@ LensOverlayController::GetLensSearchboxController() {
 lens::LensSearchContextualizationController*
 LensOverlayController::GetContextualizationController() {
   return lens_search_controller_->lens_search_contextualization_controller();
+}
+
+lens::LensSessionMetricsLogger*
+LensOverlayController::GetLensSessionMetricsLogger() {
+  return lens_search_controller_->lens_session_metrics_logger();
 }
