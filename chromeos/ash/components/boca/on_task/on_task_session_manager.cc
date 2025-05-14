@@ -300,6 +300,15 @@ void OnTaskSessionManager::OnAppReloaded() {
 void OnTaskSessionManager::LockOrUnlockWindow(bool lock_window) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (lock_in_progress_ && lock_window) {
+    // Enter pause mode and remove countdown notification if pause mode is
+    // triggered while in locked mode countdown.
+    if (enter_pause_mode_) {
+      notifications_manager_->StopProcessingNotification(
+          kOnTaskEnterLockedModeNotificationId);
+      notifications_manager_->ClearNotification(
+          kOnTaskEnterLockedModeNotificationId);
+      EnterLockedMode();
+    }
     return;
   }
   lock_in_progress_ = lock_window;
