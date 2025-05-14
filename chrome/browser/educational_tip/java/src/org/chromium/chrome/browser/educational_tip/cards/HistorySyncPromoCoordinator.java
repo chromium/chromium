@@ -67,7 +67,7 @@ public class HistorySyncPromoCoordinator
                             onModuleClickedCallback.run();
                         });
 
-        Profile profile = mActionDelegate.getProfileSupplier().get();
+        Profile profile = mActionDelegate.getProfileSupplier().get().getOriginalProfile();
         assert profile != null;
 
         mIdentityManager = IdentityServicesProvider.get().getIdentityManager(profile);

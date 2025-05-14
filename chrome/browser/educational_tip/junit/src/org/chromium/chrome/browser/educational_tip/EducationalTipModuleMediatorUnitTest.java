@@ -82,6 +82,7 @@ public class EducationalTipModuleMediatorUnitTest {
         // Setup for History sync promo
         mProfileSupplier = new ObservableSupplierImpl<>();
         mProfileSupplier.set(mProfile);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mActionDelegate.getProfileSupplier()).thenReturn(mProfileSupplier);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);

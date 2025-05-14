@@ -51,6 +51,7 @@ public class HistorySyncPromoCoordinatorUnitTest {
     public void setUp() {
         mProfileSupplier = new ObservableSupplierImpl<>();
         mProfileSupplier.set(mProfile);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mActionDelegate.getProfileSupplier()).thenReturn(mProfileSupplier);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
