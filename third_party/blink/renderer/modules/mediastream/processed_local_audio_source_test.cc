@@ -523,4 +523,103 @@ INSTANTIATE_TEST_SUITE_P(
 
 #endif
 
+// Matches media::AudioParameters effects.
+MATCHER_P(ExactParamProcessingEffects, expected, "") {
+  if (expected.effects() ==
+      (arg.effects() & (media::AudioParameters::ECHO_CANCELLER |
+                        media::AudioParameters::NOISE_SUPPRESSION |
+                        media::AudioParameters::AUTOMATIC_GAIN_CONTROL))) {
+    return true;
+  }
+  LOG(ERROR) << "\n expected: " << expected.AsHumanReadableString()
+             << "\n      arg: " << arg.AsHumanReadableString();
+  return false;
+}
+
+class ProcessedLocalAudioSourcePlatformEffectsTest
+    : public ProcessedLocalAudioSourceBase,
+      public testing::WithParamInterface<
+          testing::tuple<AudioProcessingProperties::EchoCancellationType,
+                         bool,
+                         bool>> {};
+
+TEST_P(ProcessedLocalAudioSourcePlatformEffectsTest,
+       PlatformAecNsAgcCorrectWhenIfAvailale) {
+  AudioProcessingProperties properties;
+  properties.echo_cancellation_type = std::get<0>(GetParam());
+  properties.noise_suppression = std::get<1>(GetParam());
+  properties.auto_gain_control = std::get<2>(GetParam());
+
+  CreateProcessedLocalAudioSource(properties, 1 /* num_requested_channels */);
+
+  // Enable platform AEC, HS and AGC effects for the device.
+  blink::MediaStreamDevice modified_device(audio_source()->device());
+  modified_device.input.set_effects(
+      media::AudioParameters::ECHO_CANCELLER |
+      media::AudioParameters::NOISE_SUPPRESSION |
+      media::AudioParameters::AUTOMATIC_GAIN_CONTROL);
+
+  audio_source()->SetDevice(modified_device);
+
+  media::AudioParameters expected_params = modified_device.input;
+  int expected_effects = expected_params.effects();
+
+  if (media::IsChromeWideEchoCancellationEnabled()) {
+    // As of now, when Chrome-wide echo cancellation is enabled, all effects are
+    // cleared out. While it's inconsistent, it works, because as of now in
+    // production we never have Chrome-wide echo cancellation and platform AEC
+    // available at the same time.
+    expected_effects = 0;
+  } else if (properties.echo_cancellation_type !=
+             AudioProcessingProperties::EchoCancellationType::
+                 kEchoCancellationSystem) {
+    // No platform processing if platform AEC is not requested.
+    expected_effects &= ~media::AudioParameters::ECHO_CANCELLER;
+    expected_effects &= ~media::AudioParameters::AUTOMATIC_GAIN_CONTROL;
+    if (!IsIndependentSystemNsAllowed()) {
+      // Special case for NS.
+      expected_effects &= ~media::AudioParameters::NOISE_SUPPRESSION;
+    }
+  } else {  // kEchoCancellationSystem
+    // Disable AGC and NS if not requested.
+    if (!properties.auto_gain_control) {
+      expected_effects &= ~media::AudioParameters::AUTOMATIC_GAIN_CONTROL;
+    }
+    if (!properties.noise_suppression && !IsIndependentSystemNsAllowed()) {
+      // TODO(crbug.com/417413190): It's weird that we keep NS enabled in this
+      // case if IsIndependentSystemNsAllowed() returns true, but this is how
+      // the code works now.
+      expected_effects &= ~media::AudioParameters::NOISE_SUPPRESSION;
+    }
+  }
+
+  expected_params.set_effects(expected_effects);
+
+  // Connect the track, and expect the MockAudioCapturerSource to be
+  // initialized and started by ProcessedLocalAudioSource.
+  EXPECT_CALL(*mock_audio_capturer_source(),
+              Initialize(ExactParamProcessingEffects(expected_params),
+                         capture_source_callback()));
+  EXPECT_CALL(*mock_audio_capturer_source(), Start())
+      .WillOnce(Invoke(
+          capture_source_callback(),
+          &media::AudioCapturerSource::CaptureCallback::OnCaptureStarted));
+
+  ASSERT_TRUE(audio_source()->ConnectToInitializedTrack(audio_track()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ProcessedLocalAudioSourcePlatformEffectsTest,
+    ::testing::Combine(
+        ::testing::ValuesIn({AudioProcessingProperties::EchoCancellationType::
+                                 kEchoCancellationDisabled,
+                             AudioProcessingProperties::EchoCancellationType::
+                                 kEchoCancellationSystem,
+                             AudioProcessingProperties::EchoCancellationType::
+                                 kEchoCancellationAec3}),
+        // ACG and NS on/off.
+        ::testing::Bool(),
+        ::testing::Bool()));
+
 }  // namespace blink

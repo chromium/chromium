@@ -12,6 +12,21 @@
 
 namespace blink {
 
+// Returns whether system noise suppression is allowed to be used regardless of
+// whether the noise suppression constraint is set, or whether a browser-based
+// AEC is active. This is currently the default on at least MacOS but is not
+// allowed for ChromeOS or Windows setups. On Windows, the system effects AEC,
+// NS and AGC always come as a "package" and it it not possible to enable or
+// disable the system NS independently. TODO(crbug.com/417413190): delete if not
+// relevant any more.
+constexpr bool IsIndependentSystemNsAllowed() {
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+  return false;
+#else
+  return true;
+#endif
+}
+
 // Simple struct with audio-processing properties.
 struct PLATFORM_EXPORT AudioProcessingProperties {
   enum class EchoCancellationType {

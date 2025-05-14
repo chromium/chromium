@@ -101,20 +101,6 @@ std::string GetAudioProcesingPropertiesLogString(
   return str;
 }
 
-// Returns whether system noise suppression is allowed to be used regardless of
-// whether the noise suppression constraint is set, or whether a browser-based
-// AEC is active. This is currently the default on at least MacOS but is not
-// allowed for ChromeOS or Windows setups. On Windows. the system effects AEC,
-// NS and AGC always come as a "package" and it it not possible to enable or
-// disable the system NS independently.
-constexpr bool IsIndependentSystemNsAllowed() {
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-  return false;
-#else
-  return true;
-#endif
-}
-
 void LogInputDeviceParametersToUma(
     const media::AudioParameters& input_device_params) {
   UMA_HISTOGRAM_ENUMERATION("WebRTC.AudioInputChannelLayout",
