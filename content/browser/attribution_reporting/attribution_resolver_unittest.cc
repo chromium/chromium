@@ -108,7 +108,6 @@ using ::attribution_reporting::FilterPair;
 using ::attribution_reporting::kDefaultFilteringId;
 using ::attribution_reporting::MaxEventLevelReports;
 using ::attribution_reporting::SuitableOrigin;
-using ::attribution_reporting::TriggerSpec;
 using ::attribution_reporting::TriggerSpecs;
 using ::attribution_reporting::mojom::SourceType;
 using ::attribution_reporting::mojom::TriggerDataMatching;
@@ -4130,19 +4129,6 @@ TEST_F(AttributionResolverTest,
       ElementsAre(AllOf(NullAggregatableDataIs(
                             TriggerContextIdIs(Optional(std::string("123")))),
                         ReportTimeIs(report_time))));
-}
-
-// TODO(crbug.com/40941848): Support multiple trigger specs instead of just 1.
-TEST_F(AttributionResolverTest, RejectsMultipleTriggerSpecs) {
-  auto source = SourceBuilder().Build();
-  source.registration().trigger_specs = *TriggerSpecs::Create(
-      /*trigger_data_indices=*/{{0, 0}},
-      /*specs=*/{TriggerSpec(), TriggerSpec()}, MaxEventLevelReports::Max());
-
-  EXPECT_EQ(storage()->StoreSource(source).status(),
-            StorableSource::Result::kInternalError);
-
-  EXPECT_THAT(storage()->GetActiveSources(), IsEmpty());
 }
 
 // Regression test for https://crbug.com/331100922.

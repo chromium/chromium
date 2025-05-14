@@ -85,7 +85,6 @@ using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
-using ::testing::Key;
 using ::testing::Pair;
 using ::testing::Property;
 using ::testing::SizeIs;
@@ -1530,15 +1529,19 @@ TEST_F(AttributionStorageSqlTest,
 
   OpenDatabase();
 
-  EXPECT_THAT(storage()->GetActiveSources(),
-              UnorderedElementsAre(
-                  AllOf(Property(&StoredSource::source_event_id, 1u),
-                        Property(&StoredSource::trigger_specs,
-                                 ElementsAre(Key(0), Key(1), Key(2), Key(3),
-                                             Key(4), Key(5), Key(6), Key(7)))),
-                  AllOf(Property(&StoredSource::source_event_id, 2u),
-                        Property(&StoredSource::trigger_specs,
-                                 ElementsAre(Key(0), Key(1))))));
+  EXPECT_THAT(
+      storage()->GetActiveSources(),
+      UnorderedElementsAre(
+          AllOf(Property(&StoredSource::source_event_id, 1u),
+                Property(
+                    &StoredSource::trigger_specs,
+                    Property(&attribution_reporting::TriggerSpecs::trigger_data,
+                             ElementsAre(0, 1, 2, 3, 4, 5, 6, 7)))),
+          AllOf(Property(&StoredSource::source_event_id, 2u),
+                Property(
+                    &StoredSource::trigger_specs,
+                    Property(&attribution_reporting::TriggerSpecs::trigger_data,
+                             ElementsAre(0, 1))))));
 }
 
 // Having the missing field default to the correct value allows us to avoid a

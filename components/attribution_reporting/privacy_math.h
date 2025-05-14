@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <compare>
-#include <map>
 #include <optional>
 #include <utility>
 #include <vector>
@@ -193,37 +192,11 @@ double ComputeChannelCapacityScopes(
 // 2. For all other stars, count the number of bars that precede them. Each
 //    star represents a report where the reporting window and trigger data is
 //    uniquely determined by that number.
-//
-// `CHECK()`s `TriggerSpecs::SingleSharedSpec()`.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::expected<std::vector<FakeEventLevelReport>, RandomizedResponseError>
 GetFakeReportsForSequenceIndex(
     const TriggerSpecs&,
     base::StrictNumeric<uint32_t> random_stars_and_bars_sequence_index);
-
-// Note: this method for sampling is not 1:1 with the above function for the
-// same sequence index, even for equivalent API configs.
-//
-// Takes a `StateMap`, to optimize with the cache from previous calls that
-// pre-compute the number of states (`GetNumStatesRecursive()`).
-using StateMap = std::map<uint32_t, uint32_t>;
-COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::expected<std::vector<FakeEventLevelReport>, RandomizedResponseError>
-GetFakeReportsForSequenceIndex(const TriggerSpecs& specs,
-                               base::StrictNumeric<uint32_t> index,
-                               StateMap& map);
-
-// Exposed to speed up tests which perform randomized response many times in a
-// row.
-COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::expected<RandomizedResponseData, RandomizedResponseError>
-DoRandomizedResponseWithCache(
-    const TriggerSpecs& specs,
-    double epsilon,
-    StateMap& map,
-    mojom::SourceType,
-    const std::optional<AttributionScopesData>& scopes_data,
-    const PrivacyMathConfig&);
 
 }  // namespace internal
 

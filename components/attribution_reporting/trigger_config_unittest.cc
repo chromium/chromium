@@ -35,11 +35,6 @@ using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
-using ::testing::IsNull;
-using ::testing::IsTrue;
-using ::testing::Key;
-using ::testing::Optional;
-using ::testing::Pair;
 using ::testing::Property;
 using ::testing::SizeIs;
 
@@ -118,23 +113,18 @@ TEST(TriggerSpecsTest, Default) {
       /*start_time=*/base::Hours(2),
       /*end_times=*/{base::Hours(9)});
 
-  EXPECT_THAT(TriggerSpecs(SourceType::kEvent, kReportWindows,
-                           MaxEventLevelReports(SourceType::kEvent)),
-              AllOf(Property(&TriggerSpecs::SingleSharedSpec, IsTrue()),
-                    ElementsAre(Pair(0, TriggerSpec(kReportWindows)),
-                                Pair(1, TriggerSpec(kReportWindows)))));
+  EXPECT_THAT(
+      TriggerSpecs(SourceType::kEvent, kReportWindows,
+                   MaxEventLevelReports(SourceType::kEvent)),
+      AllOf(Property(&TriggerSpecs::trigger_data, ElementsAre(0, 1)),
+            Property(&TriggerSpecs::event_report_windows, kReportWindows)));
 
-  EXPECT_THAT(TriggerSpecs(SourceType::kNavigation, kReportWindows,
-                           MaxEventLevelReports(SourceType::kNavigation)),
-              AllOf(Property(&TriggerSpecs::SingleSharedSpec, IsTrue()),
-                    ElementsAre(Pair(0, TriggerSpec(kReportWindows)),
-                                Pair(1, TriggerSpec(kReportWindows)),
-                                Pair(2, TriggerSpec(kReportWindows)),
-                                Pair(3, TriggerSpec(kReportWindows)),
-                                Pair(4, TriggerSpec(kReportWindows)),
-                                Pair(5, TriggerSpec(kReportWindows)),
-                                Pair(6, TriggerSpec(kReportWindows)),
-                                Pair(7, TriggerSpec(kReportWindows)))));
+  EXPECT_THAT(
+      TriggerSpecs(SourceType::kNavigation, kReportWindows,
+                   MaxEventLevelReports(SourceType::kNavigation)),
+      AllOf(Property(&TriggerSpecs::trigger_data,
+                     ElementsAre(0, 1, 2, 3, 4, 5, 6, 7)),
+            Property(&TriggerSpecs::event_report_windows, kReportWindows)));
 }
 
 TEST(TriggerSpecsTest, Parse) {
@@ -174,11 +164,8 @@ TEST(TriggerSpecsTest, Parse) {
       {
           .desc = "trigger_data_empty",
           .json = R"json({"trigger_data": []})json",
-          .matches_top_level_trigger_data = ValueIs(
-              AllOf(Property(&TriggerSpecs::empty, true),
-                    Property(&TriggerSpecs::size, 0u),
-                    Property(&TriggerSpecs::SingleSharedSpec, IsNull()),  //
-                    IsEmpty())),
+          .matches_top_level_trigger_data =
+              ValueIs(Property(&TriggerSpecs::trigger_data, IsEmpty())),
       },
       {
           .desc = "trigger_data_too_long",
@@ -220,21 +207,19 @@ TEST(TriggerSpecsTest, Parse) {
           .desc = "trigger_data_value_minimal",
           .json = R"json({"trigger_data": [0]})json",
           .matches_top_level_trigger_data =
-              ValueIs(AllOf(Property(&TriggerSpecs::empty, false),
-                            Property(&TriggerSpecs::size, 1u),
-                            Property(&TriggerSpecs::SingleSharedSpec, IsTrue()),
-                            ElementsAre(Key(0)))),
+              ValueIs(Property(&TriggerSpecs::trigger_data, ElementsAre(0))),
       },
       {
           .desc = "trigger_data_value_maximal",
           .json = R"json({"trigger_data": [4294967295]})json",
-          .matches_top_level_trigger_data =
-              ValueIs(ElementsAre(Key(4294967295))),
+          .matches_top_level_trigger_data = ValueIs(
+              Property(&TriggerSpecs::trigger_data, ElementsAre(4294967295))),
       },
       {
           .desc = "trigger_data_value_trailing_zero",
           .json = R"json({"trigger_data": [2.0]})json",
-          .matches_top_level_trigger_data = ValueIs(ElementsAre(Key(2))),
+          .matches_top_level_trigger_data =
+              ValueIs(Property(&TriggerSpecs::trigger_data, ElementsAre(2))),
       },
       {
           .desc = "trigger_data_value_duplicate",
@@ -250,7 +235,8 @@ TEST(TriggerSpecsTest, Parse) {
             16, 17, 18, 19, 20, 21, 22, 23,
             24, 25, 26, 27, 28, 29, 30, 31
           ]})json",
-          .matches_top_level_trigger_data = ValueIs(SizeIs(32)),
+          .matches_top_level_trigger_data =
+              ValueIs(Property(&TriggerSpecs::trigger_data, SizeIs(32))),
       },
       {
           .desc = "trigger_data_invalid_for_modulus_non_contiguous",
@@ -301,95 +287,21 @@ TEST(TriggerSpecsTest, Parse) {
 }
 
 TEST(TriggerSpecsTest, ToJson) {
-  const std::vector<TriggerSpec> kSpecList = {
-      TriggerSpec(*EventReportWindows::Create(
-          /*start_time=*/base::Seconds(5),
-          /*end_times=*/{base::Seconds(3601)})),
-      TriggerSpec(*EventReportWindows::Create(
-          /*start_time=*/base::Seconds(2),
-          /*end_times=*/{base::Seconds(4601)})),
-  };
-
   const auto kSpecs = *TriggerSpecs::Create(
-      /*trigger_data_indices=*/
-      {
-          {/*trigger_data=*/1, /*index=*/0},
-          {/*trigger_data=*/5, /*index=*/0},
-          {/*trigger_data=*/3, /*index=*/1},
-          {/*trigger_data=*/4294967295, /*index=*/1},
-      },
-      kSpecList, MaxEventLevelReports(7));
+      /*trigger_data=*/{1, 5, 3, 4294967295},
+      *EventReportWindows::Create(
+          /*start_time=*/base::Seconds(5),
+          /*end_times=*/{base::Seconds(3601)}),
+      MaxEventLevelReports(7));
 
   base::Value::Dict dict;
   kSpecs.Serialize(dict);
 
   EXPECT_THAT(dict, base::test::IsJson(R"json({
     "max_event_level_reports": 7,
-    "trigger_specs": [
-      {
-        "trigger_data": [1, 5],
-        "event_report_windows": { "start_time": 5, "end_times": [3601] }
-      },
-      {
-        "trigger_data": [3, 4294967295],
-        "event_report_windows": { "start_time": 2, "end_times": [4601] }
-      }
-    ]
+    "event_report_windows": { "start_time": 5, "end_times": [3601] },
+    "trigger_data": [1, 3, 5, 4294967295]
   })json"));
-}
-
-TEST(TriggerSpecsTest, Iterator) {
-  {
-    const TriggerSpecs specs;
-    EXPECT_TRUE(specs.empty());
-    EXPECT_EQ(specs.size(), 0u);
-    EXPECT_TRUE(specs.begin() == specs.end());
-  }
-
-  const std::vector<TriggerSpec> kSpecList = {
-      TriggerSpec(*EventReportWindows::Create(
-          /*start_time=*/base::Seconds(0),
-          /*end_times=*/{base::Seconds(3601)})),
-      TriggerSpec(*EventReportWindows::Create(
-          /*start_time=*/base::Seconds(0),
-          /*end_times=*/{base::Seconds(4601)})),
-  };
-
-  const auto kSpecs = *TriggerSpecs::Create(
-      /*trigger_data_indices=*/
-      {
-          {/*trigger_data=*/1, /*index=*/0},
-          {/*trigger_data=*/5, /*index=*/0},
-          {/*trigger_data=*/3, /*index=*/1},
-          {/*trigger_data=*/4294967295, /*index=*/1},
-      },
-      kSpecList, MaxEventLevelReports());
-
-  EXPECT_FALSE(kSpecs.empty());
-  EXPECT_EQ(kSpecs.size(), 4u);
-
-  auto it = kSpecs.begin();
-  ASSERT_TRUE(it != kSpecs.end());
-
-  EXPECT_EQ(it.index(), 0u);
-  EXPECT_THAT(*it, Pair(1, kSpecList[0]));
-
-  it++;
-
-  EXPECT_EQ(it.index(), 1u);
-  EXPECT_THAT(*it, Pair(3, kSpecList[1]));
-
-  it++;
-
-  EXPECT_EQ(it.index(), 2u);
-  EXPECT_THAT(*it, Pair(5, kSpecList[0]));
-
-  it++;
-
-  EXPECT_EQ(it.index(), 3u);
-  EXPECT_THAT(*it, Pair(4294967295, kSpecList[1]));
-
-  EXPECT_TRUE(++it == kSpecs.end());
 }
 
 TEST(TriggerSpecsTest, Find) {
@@ -401,59 +313,46 @@ TEST(TriggerSpecsTest, Find) {
         kSpecs.find(/*trigger_data=*/1, TriggerDataMatching::kModulus));
   }
 
-  const std::vector<TriggerSpec> kSpecList = {
-      TriggerSpec(*EventReportWindows::Create(
-          /*start_time=*/base::Seconds(0),
-          /*end_times=*/{base::Seconds(3601)})),
-      TriggerSpec(*EventReportWindows::Create(
-          /*start_time=*/base::Seconds(1),
-          /*end_times=*/{base::Seconds(4601)})),
-  };
-
   const auto kSpecs = *TriggerSpecs::Create(
-      /*trigger_data_indices=*/
-      {
-          {/*trigger_data=*/1, /*index=*/0},
-          {/*trigger_data=*/3, /*index=*/1},
-          {/*trigger_data=*/4, /*index=*/1},
-          {/*trigger_data=*/5, /*index=*/0},
-      },
-      kSpecList, MaxEventLevelReports());
+      /*trigger_data=*/{1, 3, 4, 5},
+      *EventReportWindows::Create(
+          /*start_time=*/base::Seconds(0),
+          /*end_times=*/{base::Seconds(3601)}),
+      MaxEventLevelReports());
 
   const struct {
     TriggerDataMatching trigger_data_matching;
     uint64_t trigger_data;
-    ::testing::Matcher<TriggerSpecs::const_iterator> matches;
+    std::optional<uint32_t> expected;
   } kTestCases[] = {
-      {TriggerDataMatching::kExact, 0, kSpecs.end()},
-      {TriggerDataMatching::kExact, 1, Optional(Pair(1, kSpecList[0]))},
-      {TriggerDataMatching::kExact, 2, kSpecs.end()},
-      {TriggerDataMatching::kExact, 3, Optional(Pair(3, kSpecList[1]))},
-      {TriggerDataMatching::kExact, 4, Optional(Pair(4, kSpecList[1]))},
-      {TriggerDataMatching::kExact, 5, Optional(Pair(5, kSpecList[0]))},
-      {TriggerDataMatching::kExact, 6, kSpecs.end()},
+      {TriggerDataMatching::kExact, 0, std::nullopt},
+      {TriggerDataMatching::kExact, 1, 1},
+      {TriggerDataMatching::kExact, 2, std::nullopt},
+      {TriggerDataMatching::kExact, 3, 3},
+      {TriggerDataMatching::kExact, 4, 4},
+      {TriggerDataMatching::kExact, 5, 5},
+      {TriggerDataMatching::kExact, 6, std::nullopt},
       {TriggerDataMatching::kExact, std::numeric_limits<uint64_t>::max(),
-       kSpecs.end()},
+       std::nullopt},
 
-      {TriggerDataMatching::kModulus, 0, Optional(Pair(1, kSpecList[0]))},
-      {TriggerDataMatching::kModulus, 1, Optional(Pair(3, kSpecList[1]))},
-      {TriggerDataMatching::kModulus, 2, Optional(Pair(4, kSpecList[1]))},
-      {TriggerDataMatching::kModulus, 3, Optional(Pair(5, kSpecList[0]))},
-      {TriggerDataMatching::kModulus, 4, Optional(Pair(1, kSpecList[0]))},
-      {TriggerDataMatching::kModulus, 5, Optional(Pair(3, kSpecList[1]))},
-      {TriggerDataMatching::kModulus, 6, Optional(Pair(4, kSpecList[1]))},
+      {TriggerDataMatching::kModulus, 0, 1},
+      {TriggerDataMatching::kModulus, 1, 3},
+      {TriggerDataMatching::kModulus, 2, 4},
+      {TriggerDataMatching::kModulus, 3, 5},
+      {TriggerDataMatching::kModulus, 4, 1},
+      {TriggerDataMatching::kModulus, 5, 3},
+      {TriggerDataMatching::kModulus, 6, 4},
       // uint64 max % 4 == 3; trigger data 5 is at index 3
-      {TriggerDataMatching::kModulus, std::numeric_limits<uint64_t>::max(),
-       Optional(Pair(5, kSpecList[0]))},
+      {TriggerDataMatching::kModulus, std::numeric_limits<uint64_t>::max(), 5},
   };
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.trigger_data_matching);
     SCOPED_TRACE(test_case.trigger_data);
 
-    EXPECT_THAT(
+    EXPECT_EQ(
         kSpecs.find(test_case.trigger_data, test_case.trigger_data_matching),
-        test_case.matches);
+        test_case.expected);
   }
 }
 
@@ -461,42 +360,26 @@ TEST(TriggerSpecsTest, Find) {
 // demonstrate the expected behavior for real-world trigger specs, of which
 // `TriggerSpecs()` can return a subset.
 TEST(TriggerSpecsTest, Find_ModulusContiguous) {
-  const std::vector<TriggerSpec> kSpecList = {
-      TriggerSpec(*EventReportWindows::Create(
-          /*start_time=*/base::Seconds(0),
-          /*end_times=*/{base::Seconds(3601)})),
-      TriggerSpec(*EventReportWindows::Create(
-          /*start_time=*/base::Seconds(1),
-          /*end_times=*/{base::Seconds(4601)})),
-  };
-
   const auto kSpecs = *TriggerSpecs::Create(
-      /*trigger_data_indices=*/
-      {
-          {/*trigger_data=*/0, /*index=*/1},
-          {/*trigger_data=*/1, /*index=*/0},
-          {/*trigger_data=*/2, /*index=*/1},
-      },
-      kSpecList, MaxEventLevelReports());
+      /*trigger_data=*/{0, 1, 2},
+      *EventReportWindows::Create(
+          /*start_time=*/base::Seconds(0),
+          /*end_times=*/{base::Seconds(3601)}),
+      MaxEventLevelReports());
 
   const struct {
     uint64_t trigger_data;
-    ::testing::Matcher<TriggerSpecs::const_iterator> matches;
+    std::optional<uint32_t> expected;
   } kTestCases[] = {
-      {0, Optional(Pair(0, kSpecList[1]))},
-      {1, Optional(Pair(1, kSpecList[0]))},
-      {2, Optional(Pair(2, kSpecList[1]))},
-      {3, Optional(Pair(0, kSpecList[1]))},
-      {4, Optional(Pair(1, kSpecList[0]))},
-      {5, Optional(Pair(2, kSpecList[1]))},
+      {0, 0}, {1, 1}, {2, 2}, {3, 0}, {4, 1}, {5, 2},
   };
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.trigger_data);
 
-    EXPECT_THAT(
+    EXPECT_EQ(
         kSpecs.find(test_case.trigger_data, TriggerDataMatching::kModulus),
-        test_case.matches);
+        test_case.expected);
   }
 }
 

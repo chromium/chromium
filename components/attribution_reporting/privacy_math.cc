@@ -9,9 +9,7 @@
 #include <algorithm>
 #include <cmath>
 #include <functional>
-#include <iterator>
 #include <limits>
-#include <map>
 #include <optional>
 #include <utility>
 #include <vector>
@@ -19,7 +17,6 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/numerics/byte_conversions.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -32,7 +29,6 @@
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/trigger_config.h"
-#include "components/attribution_reporting/trigger_data_matching.mojom.h"
 
 namespace attribution_reporting {
 
@@ -51,167 +47,22 @@ namespace {
 // registration.
 uint32_t g_max_trigger_state_cardinality = std::numeric_limits<uint32_t>::max();
 
-// Let B be the trigger data cardinality.
-// For every trigger data i, there are wi windows and ci maximum reports.
-// Let A[C, w1, ..., wB, c1, ..., cB] be the function which counts the number
-// of output states.
-//
-// The following helper function memoizes the recurrence relation which computes
-// this:
-//
-// 1. A[C,w1,...,wB,c1,...,cB] = 1 if B = 0
-// If there are no trigger data types to consider, there is only one possible
-// output, the null output.
-//
-// 2. A[C,w1,...,wB,c1,...,cB] = A[C,w1,...,w{B-1},c1,...,c{B-1}] if wB = 0
-// If there are no windows to consider for a particular trigger data type, then
-// consider only the remaining trigger data types.
-//
-// 3. A[C,w1,...,wB,c1,...,cB] = sum(A[C - j,w1,...,wB - 1,c1,...,cB - j],
-//                                   for j from 0 to min(c_B, C))
-// Otherwise, we look at the number of possible outputs assuming we emit some
-// number of reports (up to the max) for the current trigger data type under
-// consideration. Given that each choice produces a distinct output, we sum
-// these up.
-base::CheckedNumeric<uint32_t> GetNumStatesRecursive(TriggerSpecs::Iterator it,
-                                                     int max_reports,
-                                                     int window_val,
-                                                     int max_reports_per_type,
-                                                     internal::StateMap& map) {
-  // Case 1: "B = 0" there is nothing left to assign for the last data index.
-  // Also consider the trivial Case 2 -> Case 1 case without touching the cache
-  // or recursive calls.
-  auto cur = it++;
-  if (!cur || (window_val == 0 && !it)) {
-    return 1;
-  }
+}  // namespace
 
-  // Store these as 8 bit to optimize storage.
-  const uint8_t key[4] = {
-      base::checked_cast<uint8_t>(max_reports),           //
-      it.index(),                                         //
-      base::checked_cast<uint8_t>(window_val),            //
-      base::checked_cast<uint8_t>(max_reports_per_type),  //
-  };
-
-  uint32_t& cached = map[base::U32FromNativeEndian(key)];
-  if (cached != 0) {
-    return cached;
-  }
-
-  // Case 2: wB = 0.
-  if (window_val == 0) {
-    base::CheckedNumeric<uint32_t> result = GetNumStatesRecursive(
-        it, max_reports, (*it).second.event_report_windows().end_times().size(),
-        max_reports, map);
-    std::ignore = result.AssignIfValid(&cached);
-    return result;
-  }
-
-  // Case 3.
-  base::CheckedNumeric<uint32_t> result = 0;
-  for (int i = 0;
-       result.IsValid() && i <= std::min(max_reports_per_type, max_reports);
-       i++) {
-    result += GetNumStatesRecursive(cur, max_reports - i, window_val - 1,
-                                    max_reports_per_type - i, map);
-  }
-  std::ignore = result.AssignIfValid(&cached);
-  return result;
-}
-
-// A variant of the above algorithm which samples a report given an index.
-// This follows a similarly structured algorithm.
-base::expected<void, RandomizedResponseError> GetReportsFromIndexRecursive(
-    TriggerSpecs::Iterator it,
-    int max_reports,
-    int window_val,
-    int max_reports_per_type,
-    uint32_t index,
-    std::vector<FakeEventLevelReport>& reports,
-    internal::StateMap& map) {
-  // Case 1 and Case 2 -> 1. There are no more valid trigger data values, so
-  // generate nothing.
-  auto cur = it++;
-  if (!cur || (window_val == 0 && !it)) {
-    return base::ok();
-  }
-
-  // Case 2: there are no more windows to consider for the current trigger data,
-  // so generate based on the remaining trigger data types.
-  if (window_val == 0) {
-    return GetReportsFromIndexRecursive(
-        it, max_reports, (*it).second.event_report_windows().end_times().size(),
-        max_reports, index, reports, map);
-  }
-
-  // Case 3: For the current window and trigger data under consideration, we
-  // need to choose how many reports we emit. Think of the index as pointing to
-  // a particular output, where outputs are partitioned by the # of reports to
-  // emit. E.g. think of each dash below as a possible output.
-  //
-  //       0 report              1 reports          2 reports
-  // |----------------------|---------------------|-----------|
-  //                        ^             ^
-  //                     prev_sum       index
-  //
-  // The first thing we need to do is figure out how many reports to emit, this
-  // is as simple as just computing the # of states with 0 reports, 1 report,
-  // and so on until we find where the index slots in.
-  //
-  // Next, we "zoom in" to that partition of outputs in the recursive step to
-  // figure out what other reports we need to emit (if any). We consider a new
-  // index which just looks at the "dashes" before `index`, i.e. index' = index
-  // - prev_sum.
-  uint32_t prev_sum = 0;
-  for (int i = 0; i <= std::min(max_reports_per_type, max_reports); i++) {
-    base::CheckedNumeric<uint32_t> num_states = GetNumStatesRecursive(
-        cur, max_reports - i, window_val - 1, max_reports_per_type - i, map);
-
-    uint32_t current_sum;
-    if (!base::CheckAdd(prev_sum, num_states).AssignIfValid(&current_sum)) {
-      return base::unexpected(
-          RandomizedResponseError::kExceedsTriggerStateCardinalityLimit);
-    }
-
-    // The index is associated with emitting `i` reports
-    if (current_sum > index) {
-      DCHECK_GE(index, prev_sum);
-
-      for (int k = 0; k < i; k++) {
-        reports.push_back(FakeEventLevelReport{.trigger_data = (*cur).first,
-                                               .window_index = window_val - 1});
-      }
-
-      // Zoom into all other outputs that are associated with picking `i`
-      // reports for this config.
-      return GetReportsFromIndexRecursive(cur, max_reports - i, window_val - 1,
-                                          max_reports_per_type - i,
-                                          index - prev_sum, reports, map);
-    }
-    prev_sum = current_sum;
-  }
-  NOTREACHED();
-}
-
-base::expected<uint32_t, RandomizedResponseError> GetNumStatesCached(
-    const TriggerSpecs& specs,
-    internal::StateMap& map) {
+base::expected<uint32_t, RandomizedResponseError> GetNumStates(
+    const TriggerSpecs& specs) {
   const int max_reports = specs.max_event_level_reports();
-  if (specs.empty() || max_reports == 0) {
+  if (specs.trigger_data().empty() || max_reports == 0) {
     return 1;
   }
 
-  auto it = specs.begin();
-  size_t num_windows = (*it).second.event_report_windows().end_times().size();
+  size_t num_windows = specs.event_report_windows().end_times().size();
 
   base::CheckedNumeric<uint32_t> num_states =
-      specs.SingleSharedSpec()
-          ? internal::GetNumberOfStarsAndBarsSequences(  // Optimized fast path
-                /*num_stars=*/static_cast<uint32_t>(max_reports),
-                /*num_bars=*/static_cast<uint32_t>(specs.size() * num_windows))
-          : GetNumStatesRecursive(it, max_reports, num_windows, max_reports,
-                                  map);
+      internal::GetNumberOfStarsAndBarsSequences(
+          /*num_stars=*/static_cast<uint32_t>(max_reports),
+          /*num_bars=*/static_cast<uint32_t>(specs.trigger_data().size() *
+                                             num_windows));
 
   if (!num_states.IsValid() ||
       num_states.ValueOrDie() > g_max_trigger_state_cardinality) {
@@ -220,8 +71,6 @@ base::expected<uint32_t, RandomizedResponseError> GetNumStatesCached(
   }
   return num_states.ValueOrDie();
 }
-
-}  // namespace
 
 RandomizedResponseData::RandomizedResponseData(double rate,
                                                RandomizedResponse response)
@@ -282,23 +131,6 @@ double GetRandomizedResponseRate(uint32_t num_states, double epsilon) {
   return num_states / (num_states - 1.0 + std::exp(epsilon));
 }
 
-base::expected<uint32_t, RandomizedResponseError> GetNumStates(
-    const TriggerSpecs& specs) {
-  internal::StateMap map;
-  return GetNumStatesCached(specs, map);
-}
-
-base::expected<RandomizedResponseData, RandomizedResponseError>
-DoRandomizedResponse(const TriggerSpecs& specs,
-                     double epsilon,
-                     mojom::SourceType source_type,
-                     const std::optional<AttributionScopesData>& scopes_data,
-                     const PrivacyMathConfig& config) {
-  internal::StateMap map;
-  return internal::DoRandomizedResponseWithCache(
-      specs, epsilon, map, source_type, scopes_data, config);
-}
-
 bool IsValid(const RandomizedResponse& response, const TriggerSpecs& specs) {
   if (!response.has_value()) {
     return true;
@@ -306,14 +138,15 @@ bool IsValid(const RandomizedResponse& response, const TriggerSpecs& specs) {
 
   return base::MakeStrictNum(response->size()) <=
              static_cast<int>(specs.max_event_level_reports()) &&
-         std::ranges::all_of(*response, [&](const FakeEventLevelReport&
-                                                report) {
-           const auto spec = specs.find(report.trigger_data,
-                                        mojom::TriggerDataMatching::kExact);
-           return spec != specs.end() && report.window_index >= 0 &&
-                  base::MakeStrictNum(report.window_index) <
-                      (*spec).second.event_report_windows().end_times().size();
-         });
+         std::ranges::all_of(
+             *response, [&](const FakeEventLevelReport& report) {
+               const bool has_trigger_data =
+                   specs.trigger_data().contains(report.trigger_data);
+
+               return has_trigger_data && report.window_index >= 0 &&
+                      base::MakeStrictNum(report.window_index) <
+                          specs.event_report_windows().end_times().size();
+             });
 }
 
 namespace internal {
@@ -463,24 +296,6 @@ std::vector<uint32_t> GetKCombinationAtIndex(
   }
 }
 
-base::expected<std::vector<FakeEventLevelReport>, RandomizedResponseError>
-GetFakeReportsForSequenceIndex(const TriggerSpecs& specs,
-                               base::StrictNumeric<uint32_t> index,
-                               StateMap& map) {
-  std::vector<FakeEventLevelReport> reports;
-
-  const int max_reports = specs.max_event_level_reports();
-  if (specs.empty() || max_reports == 0) {
-    return reports;
-  }
-
-  auto it = specs.begin();
-  RETURN_IF_ERROR(GetReportsFromIndexRecursive(
-      it, max_reports, (*it).second.event_report_windows().end_times().size(),
-      max_reports, index, reports, map));
-  return reports;
-}
-
 base::CheckedNumeric<uint32_t> GetNumberOfStarsAndBarsSequences(
     base::StrictNumeric<uint32_t> num_stars,
     base::StrictNumeric<uint32_t> num_bars) {
@@ -566,10 +381,7 @@ base::expected<std::vector<FakeEventLevelReport>, RandomizedResponseError>
 GetFakeReportsForSequenceIndex(
     const TriggerSpecs& specs,
     base::StrictNumeric<uint32_t> random_stars_and_bars_sequence_index) {
-  const TriggerSpec* single_spec = specs.SingleSharedSpec();
-  CHECK(single_spec);
-
-  const int trigger_data_cardinality = specs.size();
+  const int trigger_data_cardinality = specs.trigger_data().size();
   const int max_reports = specs.max_event_level_reports();
 
   ASSIGN_OR_RETURN(
@@ -579,7 +391,7 @@ GetFakeReportsForSequenceIndex(
           /*num_bars=*/
           static_cast<uint32_t>(
               trigger_data_cardinality *
-              single_spec->event_report_windows().end_times().size()),
+              specs.event_report_windows().end_times().size()),
           /*sequence_index=*/random_stars_and_bars_sequence_index),
       [](std::monostate) {
         return RandomizedResponseError::kExceedsTriggerStateCardinalityLimit;
@@ -607,8 +419,7 @@ GetFakeReportsForSequenceIndex(
 
     fake_reports.push_back({
         .trigger_data =
-            std::next(specs.trigger_data_indices().begin(), trigger_data_index)
-                ->first,
+            *std::next(specs.trigger_data().begin(), trigger_data_index),
         .window_index = result.quot,
     });
   }
@@ -616,15 +427,15 @@ GetFakeReportsForSequenceIndex(
   return fake_reports;
 }
 
+}  // namespace internal
+
 base::expected<RandomizedResponseData, RandomizedResponseError>
-DoRandomizedResponseWithCache(
-    const TriggerSpecs& specs,
-    double epsilon,
-    StateMap& map,
-    mojom::SourceType source_type,
-    const std::optional<AttributionScopesData>& scopes_data,
-    const PrivacyMathConfig& config) {
-  ASSIGN_OR_RETURN(const uint32_t num_states, GetNumStatesCached(specs, map));
+DoRandomizedResponse(const TriggerSpecs& specs,
+                     double epsilon,
+                     mojom::SourceType source_type,
+                     const std::optional<AttributionScopesData>& scopes_data,
+                     const PrivacyMathConfig& config) {
+  ASSIGN_OR_RETURN(const uint32_t num_states, GetNumStates(specs));
   base::UmaHistogramCounts100000("Conversions.NumTriggerStates",
                                  base::ClampedNumeric(num_states));
 
@@ -654,26 +465,12 @@ DoRandomizedResponseWithCache(
 
   std::optional<std::vector<FakeEventLevelReport>> fake_reports;
   if (GenerateWithRate(rate)) {
-    // TODO(csharrison): Justify the fast path with `single_spec` with
-    // profiling.
-    //
-    // Note: we can implement the fast path in more cases than a single shared
-    // spec if all of the specs have the same # of windows and reports. We can
-    // consider further optimizing if it's useful. The existing code will cover
-    // the default specs for navigation / event sources.
     uint32_t sequence_index = base::RandGenerator(num_states);
-    if (specs.SingleSharedSpec()) {
-      ASSIGN_OR_RETURN(fake_reports, internal::GetFakeReportsForSequenceIndex(
-                                         specs, sequence_index));
-    } else {
-      ASSIGN_OR_RETURN(fake_reports, internal::GetFakeReportsForSequenceIndex(
-                                         specs, sequence_index, map));
-    }
+    ASSIGN_OR_RETURN(fake_reports, internal::GetFakeReportsForSequenceIndex(
+                                       specs, sequence_index));
   }
   return RandomizedResponseData(rate, std::move(fake_reports));
 }
-
-}  // namespace internal
 
 ScopedMaxTriggerStateCardinalityForTesting::
     ScopedMaxTriggerStateCardinalityForTesting(

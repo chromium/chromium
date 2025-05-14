@@ -7,11 +7,9 @@
 
 #include <iosfwd>
 #include <optional>
-#include <vector>
 
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
-#include "components/attribution_reporting/trigger_config.h"
 
 namespace base {
 class TimeDelta;
@@ -34,6 +32,7 @@ class MaxEventLevelReports;
 class RandomizedResponseData;
 class SourceAggregatableDebugReportingConfig;
 class SuitableOrigin;
+class TriggerSpecs;
 
 struct AggregatableDebugReportingConfig;
 struct AggregatableDedupKey;
@@ -48,13 +47,9 @@ FiltersDisjunction FiltersForSourceType(
     mojom::SourceType,
     std::optional<base::TimeDelta> lookback_window = std::nullopt);
 
-// Creates test data where each spec has daily windows (starting from 1 day).
-// `collapse_into_single_spec` will collapse the vector into a single spec,
-// assuming it is possible (i.e. `windows_per_type` contains a single distinct
-// value).
-TriggerSpecs SpecsFromWindowList(const std::vector<int>& windows_per_type,
-                                 bool collapse_into_single_spec,
-                                 MaxEventLevelReports);
+TriggerSpecs SpecsFromDescription(int num_report_windows,
+                                  int trigger_data_cardinality,
+                                  MaxEventLevelReports);
 
 std::ostream& operator<<(std::ostream&, const AggregationKeys&);
 
@@ -91,11 +86,7 @@ std::ostream& operator<<(std::ostream&, const AggregatableDedupKey&);
 
 std::ostream& operator<<(std::ostream&, const OsRegistrationItem&);
 
-std::ostream& operator<<(std::ostream&, const TriggerSpec&);
-
 std::ostream& operator<<(std::ostream&, const TriggerSpecs&);
-
-std::ostream& operator<<(std::ostream&, const TriggerSpecs::const_iterator&);
 
 std::ostream& operator<<(std::ostream&, const AggregatableTriggerConfig&);
 

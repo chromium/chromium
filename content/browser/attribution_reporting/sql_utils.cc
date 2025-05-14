@@ -17,7 +17,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -56,7 +55,6 @@ using ::attribution_reporting::AggregatableNamedBudgetDefs;
 using ::attribution_reporting::AggregatableTriggerConfig;
 using ::attribution_reporting::EventReportWindows;
 using ::attribution_reporting::SuitableOrigin;
-using ::attribution_reporting::TriggerSpec;
 using ::attribution_reporting::TriggerSpecs;
 using ::attribution_reporting::mojom::SourceRegistrationTimeConfig;
 using ::attribution_reporting::mojom::SourceType;
@@ -203,17 +201,14 @@ std::string SerializeReadOnlySourceData(
       // corresponding to the field being absent, as opposed to its inner list
       // being empty.
       auto* mutable_trigger_data = msg.mutable_trigger_data();
-      const TriggerSpec* trigger_spec = trigger_specs.SingleSharedSpec()) {
-    SetReadOnlySourceData(&trigger_spec->event_report_windows(),
+      !trigger_specs.trigger_data().empty()) {
+    SetReadOnlySourceData(&trigger_specs.event_report_windows(),
                           trigger_specs.max_event_level_reports(), msg);
 
-    for (auto [trigger_data, _] : trigger_specs.trigger_data_indices()) {
+    for (uint32_t trigger_data : trigger_specs.trigger_data()) {
       mutable_trigger_data->add_trigger_data(trigger_data);
     }
   } else {
-    // TODO(crbug.com/40287976): Support multiple specs.
-    DCHECK(trigger_specs.empty());
-
     SetReadOnlySourceData(/*event_report_windows=*/nullptr,
                           trigger_specs.max_event_level_reports(), msg);
   }
@@ -500,17 +495,10 @@ std::optional<TriggerSpecs> DeserializeTriggerSpecs(
                         max_event_level_reports);
   }
 
-  std::vector<TriggerSpec> specs;
-  specs.emplace_back(*std::move(event_report_windows));
-
   return TriggerSpecs::Create(
-      base::MakeFlatMap<uint32_t, uint8_t>(msg.trigger_data().trigger_data(),
-                                           /*comp=*/{},
-                                           [](uint32_t trigger_data) {
-                                             return std::make_pair(trigger_data,
-                                                                   uint8_t{0});
-                                           }),
-      std::move(specs), max_event_level_reports);
+      TriggerSpecs::TriggerData(msg.trigger_data().trigger_data().begin(),
+                                msg.trigger_data().trigger_data().end()),
+      *std::move(event_report_windows), max_event_level_reports);
 }
 
 std::string SerializeAttributionScopesData(

@@ -40,25 +40,22 @@ struct ScopesConfig {
   uint32_t max_event_states;
 };
 
-using ScopedCollapsibleTriggerConfig =
-    std::tuple</*collapse=*/bool, TriggerConfig, std::optional<ScopesConfig>>;
+using ScopedTriggerConfig =
+    std::tuple<TriggerConfig, std::optional<ScopesConfig>>;
 
-std::string StoryName(const ScopedCollapsibleTriggerConfig& p) {
+std::string StoryName(const ScopedTriggerConfig& p) {
   std::stringstream name;
 
-  const TriggerConfig& tc = std::get<1>(p);
+  const TriggerConfig& tc = std::get<0>(p);
   name << tc.max_reports << "r_"  //
        << tc.num_windows << "w_"  //
        << tc.trigger_data_cardinality << "t";
 
-  if (const std::optional<ScopesConfig>& scopes = std::get<2>(p)) {
+  if (const std::optional<ScopesConfig>& scopes = std::get<1>(p)) {
     name << "_" << scopes->attribution_scope_limit << "s_"  //
          << scopes->max_event_states << "m_scoped";
   }
 
-  if (std::get<0>(p)) {
-    name << "_collapsed";
-  }
   return std::move(name).str();
 }
 
@@ -111,15 +108,14 @@ constexpr std::optional<ScopesConfig> kScopeConfigs[] = {
 
 class PrivacyMathPerfTest
     : public testing::Test,
-      public testing::WithParamInterface<ScopedCollapsibleTriggerConfig> {
+      public testing::WithParamInterface<ScopedTriggerConfig> {
  protected:
   template <typename Func>
   void Run(const std::string& metric_basename, Func&& func) const {
-    const auto& [collapse, tc, sc] = GetParam();
-    const TriggerSpecs specs = SpecsFromWindowList(
-        std::vector<int>(/*count=*/tc.trigger_data_cardinality,
-                         /*value=*/tc.num_windows),
-        collapse, MaxEventLevelReports(tc.max_reports));
+    const auto& [tc, sc] = GetParam();
+    const TriggerSpecs specs =
+        SpecsFromDescription(tc.num_windows, tc.trigger_data_cardinality,
+                             MaxEventLevelReports(tc.max_reports));
     std::optional<AttributionScopesData> scopes;
     if (sc.has_value()) {
       scopes = AttributionScopesData::Create(AttributionScopesSet({"1"}),
@@ -143,7 +139,7 @@ class PrivacyMathPerfTest
 };
 
 TEST_P(PrivacyMathPerfTest, NumStates) {
-  if (std::get<2>(GetParam())) {
+  if (std::get<1>(GetParam())) {
     GTEST_SKIP();
   }
   Run("AttributionReporting.NumStates",
@@ -173,10 +169,9 @@ TEST_P(PrivacyMathPerfTest, RandomizedResponse) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     PrivacyMathPerfTest,
-    testing::Combine(/*collapse=*/testing::Bool(),
-                     testing::ValuesIn(kTriggerConfigs),
+    testing::Combine(testing::ValuesIn(kTriggerConfigs),
                      testing::ValuesIn(kScopeConfigs)),
-    [](const testing::TestParamInfo<ScopedCollapsibleTriggerConfig>& info) {
+    [](const testing::TestParamInfo<ScopedTriggerConfig>& info) {
       return StoryName(info.param);
     });
 

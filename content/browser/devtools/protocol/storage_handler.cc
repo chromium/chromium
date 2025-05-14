@@ -2047,24 +2047,10 @@ ToEventReportWindows(const attribution_reporting::EventReportWindows& windows) {
       .Build();
 }
 
-std::unique_ptr<Array<Storage::AttributionReportingTriggerSpec>> ToTriggerSpecs(
-    const attribution_reporting::TriggerSpecs& specs) {
-  auto array =
-      std::make_unique<Array<Storage::AttributionReportingTriggerSpec>>();
-
-  for (const auto& spec : specs.specs()) {
-    array->emplace_back(Storage::AttributionReportingTriggerSpec::Create()
-                            .SetTriggerData(std::make_unique<Array<double>>())
-                            .SetEventReportWindows(ToEventReportWindows(
-                                spec.event_report_windows()))
-                            .Build());
-  }
-
-  for (const auto& [trigger_data, spec_index] : specs.trigger_data_indices()) {
-    array->at(spec_index)->GetTriggerData()->push_back(trigger_data);
-  }
-
-  return array;
+std::unique_ptr<Array<double>> ToTriggerData(
+    const attribution_reporting::TriggerSpecs::TriggerData& trigger_data) {
+  return std::make_unique<Array<double>>(trigger_data.begin(),
+                                         trigger_data.end());
 }
 
 Storage::AttributionReportingTriggerDataMatching ToTriggerDataMatching(
@@ -2300,7 +2286,10 @@ void StorageHandler::OnSourceHandled(
           .SetAggregationKeys(
               ToAggregationKeysEntries(registration.aggregation_keys))
           .SetExpiry(registration.expiry.InSeconds())
-          .SetTriggerSpecs(ToTriggerSpecs(registration.trigger_specs))
+          .SetTriggerData(
+              ToTriggerData(registration.trigger_specs.trigger_data()))
+          .SetEventReportWindows(ToEventReportWindows(
+              registration.trigger_specs.event_report_windows()))
           .SetAggregatableReportWindow(
               registration.aggregatable_report_window.InSeconds())
           .SetTriggerDataMatching(

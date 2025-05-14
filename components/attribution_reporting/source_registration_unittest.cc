@@ -421,7 +421,11 @@ TEST(SourceRegistrationTest, ToJson) {
             "priority": "0",
             "source_event_id": "0",
             "trigger_data_matching": "modulus",
-            "trigger_specs": [],
+            "trigger_data": [],
+            "event_report_windows": {
+              "start_time": 0,
+              "end_times": [2592000]
+            },
             "destination_limit_priority": "0"
           })json",
       },
@@ -460,13 +464,11 @@ TEST(SourceRegistrationTest, ToJson) {
             "debug_key": "3",
             "debug_reporting": true,
             "destination":"https://d.example",
-            "trigger_specs": [{
-              "trigger_data": [0, 1, 2, 3, 4, 5, 6, 7],
-              "event_report_windows": {
-                "start_time": 0,
-                "end_times": [2592000]
-              }
-            }],
+            "trigger_data": [0, 1, 2, 3, 4, 5, 6, 7],
+            "event_report_windows": {
+              "start_time": 0,
+              "end_times": [2592000]
+            },
             "expiry": 5,
             "filter_data": {"b": []},
             "priority": "-6",
@@ -571,7 +573,11 @@ TEST(SourceRegistrationTest, SerializeDestinationLimit) {
               "priority": "0",
               "source_event_id": "0",
               "trigger_data_matching": "modulus",
-              "trigger_specs": [],
+              "trigger_data": [],
+              "event_report_windows": {
+                "start_time": 0,
+                "end_times": [2592000]
+              },
               "destination_limit_priority": "0"
           })json",
       },
@@ -590,7 +596,11 @@ TEST(SourceRegistrationTest, SerializeDestinationLimit) {
               "priority": "0",
               "source_event_id": "0",
               "trigger_data_matching": "modulus",
-              "trigger_specs": [],
+              "trigger_data": [],
+              "event_report_windows": {
+                "start_time": 0,
+                "end_times": [2592000]
+              },
               "destination_limit_priority": "123"
           })json",
       },
@@ -870,7 +880,11 @@ TEST(SourceRegistrationTest, SerializeAggregatableNamedBudgetDefs) {
             "priority": "0",
             "source_event_id": "0",
             "trigger_data_matching": "modulus",
-            "trigger_specs": [],
+            "trigger_data": [],
+            "event_report_windows": {
+              "start_time": 0,
+              "end_times": [2592000]
+            },
             "destination_limit_priority": "0"
           })json",
       },
@@ -891,7 +905,11 @@ TEST(SourceRegistrationTest, SerializeAggregatableNamedBudgetDefs) {
             "priority": "0",
             "source_event_id": "0",
             "trigger_data_matching": "modulus",
-            "trigger_specs": [],
+            "trigger_data": [],
+            "event_report_windows": {
+              "start_time": 0,
+              "end_times": [2592000]
+            },
             "destination_limit_priority": "0",
             "named_budgets": {
               "a": 65536

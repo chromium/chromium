@@ -338,12 +338,6 @@ mojom("registration_mojom") {
               "namespace attribution_reporting { class EventReportWindows; }"
         },
         {
-          mojom = "attribution_reporting.mojom.TriggerSpec"
-          cpp = "::attribution_reporting::TriggerSpec"
-          forward_declaration =
-              "namespace attribution_reporting { class TriggerSpec; }"
-        },
-        {
           mojom = "attribution_reporting.mojom.TriggerSpecs"
           cpp = "::attribution_reporting::TriggerSpecs"
           forward_declaration =
@@ -514,14 +508,10 @@ mojom("data_host_mojom") {
 test("privacy_math_fuzztest") {
   sources = [ "privacy_math_fuzztest.cc" ]
 
-  fuzztests = [
-    "PrivacyMathTest.GetKCombinationAtIndex",
-    "PrivacyMathTest.SingleSpecNumStatesMatchesRecursive",
-  ]
+  fuzztests = [ "PrivacyMathTest.GetKCombinationAtIndex" ]
 
   deps = [
     ":attribution_reporting",
-    ":fuzzer_support",
     ":test_support",
     "//third_party/fuzztest:fuzztest_gtest_main",
   ]

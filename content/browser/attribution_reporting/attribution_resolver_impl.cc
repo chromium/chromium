@@ -217,11 +217,6 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
                              destination_limit, std::move(result));
   };
 
-  // TODO(crbug.com/40287976): Support multiple specs.
-  if (source.registration().trigger_specs.specs().size() > 1u) {
-    return make_result(StoreSourceResult::InternalError());
-  }
-
   const CommonSourceInfo& common_info = source.common_info();
   const attribution_reporting::SourceRegistration& reg = source.registration();
 
@@ -462,11 +457,8 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
 
   if (attribution_logic == StoredSource::AttributionLogic::kFalsely) {
     for (const auto& fake_report : *randomized_response_data.response()) {
-      auto trigger_spec_it = stored_source->trigger_specs().find(
-          fake_report.trigger_data, TriggerDataMatching::kExact);
-
       const attribution_reporting::EventReportWindows& windows =
-          (*trigger_spec_it).second.event_report_windows();
+          stored_source->trigger_specs().event_report_windows();
 
       base::Time report_time =
           windows.ReportTimeAtWindow(source_time, fake_report.window_index);
@@ -881,15 +873,13 @@ AttributionResolverImpl::MaybeCreateEventLevelReport(
     return CreateReportResult::Deduplicated();
   }
 
-  auto trigger_spec_it = source.trigger_specs().find(
+  std::optional<uint32_t> trigger_data = source.trigger_specs().find(
       event_trigger->data, source.trigger_data_matching());
-  if (!trigger_spec_it) {
+  if (!trigger_data.has_value()) {
     return CreateReportResult::NoMatchingTriggerData();
   }
 
-  auto [trigger_data, trigger_spec] = *trigger_spec_it;
-
-  switch (trigger_spec.event_report_windows().FallsWithin(
+  switch (source.trigger_specs().event_report_windows().FallsWithin(
       attribution_info.time - source.source_time())) {
     case EventReportWindows::WindowResult::kFallsWithin:
       break;
@@ -900,7 +890,7 @@ AttributionResolverImpl::MaybeCreateEventLevelReport(
   }
 
   const base::Time report_time = delegate_->GetEventLevelReportTime(
-      trigger_spec.event_report_windows(), source.source_time(),
+      source.trigger_specs().event_report_windows(), source.source_time(),
       attribution_info.time);
 
   dedup_key = event_trigger->dedup_key;
@@ -910,7 +900,7 @@ AttributionResolverImpl::MaybeCreateEventLevelReport(
           attribution_info, AttributionReport::Id(kUnsetRecordId), report_time,
           /*initial_report_time=*/report_time, delegate_->NewReportID(),
           /*failed_send_attempts=*/0,
-          AttributionReport::EventLevelData(trigger_data,
+          AttributionReport::EventLevelData(*trigger_data,
                                             event_trigger->priority, source),
           common_info.reporting_origin(), source.debug_key()),
       /*replaced_report=*/std::nullopt);
@@ -1324,12 +1314,6 @@ AttributionResolverImpl::MaybeReplaceLowerPriorityEventLevelReport(
   const auto* data =
       std::get_if<AttributionReport::EventLevelData>(&report.data());
   DCHECK(data);
-
-  // TODO(crbug.com/40287976): The logic in this method doesn't properly handle
-  // the case in which there are different report windows for different trigger
-  // data. Prior to enabling `attribution_reporting::features::kTriggerConfig`,
-  // this must be fixed.
-  DCHECK(source.trigger_specs().SingleSharedSpec());
 
   // If there's already capacity for the new report, there's nothing to do.
   if (num_attributions < source.trigger_specs().max_event_level_reports()) {

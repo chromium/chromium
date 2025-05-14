@@ -77,7 +77,6 @@ inline constexpr char kSourceEventId[] = "source_event_id";
 inline constexpr char kStartTime[] = "start_time";
 inline constexpr char kTriggerData[] = "trigger_data";
 inline constexpr char kTriggerDataMatching[] = "trigger_data_matching";
-inline constexpr char kTriggerSpecs[] = "trigger_specs";
 
 inline constexpr char kAggregatableDeduplicationKeys[] =
     "aggregatable_deduplication_keys";
