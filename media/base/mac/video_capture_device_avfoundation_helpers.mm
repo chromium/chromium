@@ -12,9 +12,6 @@
 namespace media {
 
 #if BUILDFLAG(IS_MAC)
-BASE_FEATURE(kUseAVCaptureDeviceTypeExternal,
-             "UseAVCaptureDeviceTypeExternal",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kUseAVCaptureDeviceTypeContinuity,
              "UseAVCaptureDeviceTypeContinuity",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -29,15 +26,8 @@ NSArray<AVCaptureDevice*>* GetVideoCaptureDevices() {
   // AVCaptureDeviceTypeExternal since 14.0, AVCaptureDeviceTypeExternalUnknown
   // before. See crbug.com/1484830.
   if (@available(macOS 14.0, *)) {
-    if (base::FeatureList::IsEnabled(kUseAVCaptureDeviceTypeExternal)) {
-      captureDeviceTypes =
-          [captureDeviceTypes arrayByAddingObject:AVCaptureDeviceTypeExternal];
-    } else {
-      // @available needs to be alone in an if statement, so we need to
-      // duplicate the else case here.
-      captureDeviceTypes = [captureDeviceTypes
-          arrayByAddingObject:AVCaptureDeviceTypeExternalUnknown];
-    }
+    captureDeviceTypes =
+        [captureDeviceTypes arrayByAddingObject:AVCaptureDeviceTypeExternal];
     // Continuity cameras are available from MacOS 14.0 and also have to
     // be queried.
     if (base::FeatureList::IsEnabled(kUseAVCaptureDeviceTypeContinuity)) {
