@@ -68,6 +68,7 @@ chromium-metrics-reviews@google.com.
     <variant name="AttachPanel"/>
     <variant name="CaptureScreenshot"/>
     <variant name="ClosePanel"/>
+    <variant name="ClosePanelAndShutdown"/>
     <variant name="CreateTab"/>
     <variant name="DetachPanel"/>
     <variant name="EnableDragResize"/>

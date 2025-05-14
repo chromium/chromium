@@ -218,6 +218,12 @@ class GlicBorderViewUiTest : public test::InteractiveGlicTest {
                                 kCloseWindowButton, kClickFn));
   }
 
+  void ShutdownGlicWindow() {
+    const DeepQuery kShutdownWindowButton{{"#shutdownbn"}};
+    RunTestSequence(ExecuteJsAt(test::kGlicContentsElementId,
+                                kShutdownWindowButton, kClickFn));
+  }
+
   void ClickGlicButtonInBrowser(Browser* browser) {
     RunTestSequence(InContext(browser->window()->GetElementContext(),
                               PressButton(kGlicButtonElementId)),
@@ -389,6 +395,36 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, AnimationStateReset) {
   EXPECT_FALSE(border->opacity_for_testing());
   EXPECT_FALSE(border->emphasis_for_testing());
   EXPECT_FALSE(border->GetVisible());
+}
+
+// Ensures that the border animation state is reset after canceling the
+// animation via closePanelAndShutdown.
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, AnimationStateResetOnShutdown) {
+  auto* border = browser()->window()->AsBrowserView()->glic_border();
+  ASSERT_TRUE(border);
+
+  TesterImpl* tester = static_cast<TesterImpl*>(border->tester());
+  StartBorderAnimation();
+  tester->WaitForAnimationStart();
+  EXPECT_TRUE(border->IsShowing());
+  // Initializes some timestamps.
+  tester->AdvanceTimeAndTickAnimation(base::TimeDelta());
+
+  tester->AdvanceTimeAndTickAnimation(base::Seconds(0.3));
+  // We should be showing something on the screen at 0.3s.
+  EXPECT_GT(border->opacity_for_testing(), 0.f);
+
+  ShutdownGlicWindow();
+  tester->WaitForRampDownStarted();
+  tester->FinishRampDown();
+
+  EXPECT_FALSE(border->IsShowing());
+  EXPECT_FALSE(border->opacity_for_testing());
+  EXPECT_FALSE(border->emphasis_for_testing());
+  EXPECT_FALSE(border->GetVisible());
+
+  // Also check that the web client is gone.
+  EXPECT_FALSE(glic_service()->window_controller().IsWarmed());
 }
 
 // Ensures that the emphasis animation is restarted when tab focus changes.

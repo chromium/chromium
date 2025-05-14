@@ -61,6 +61,7 @@ export declare interface HostRequestTypes {
     request: {options?: OpenSettingsOptions},
   };
   glicBrowserClosePanel: {};
+  glicBrowserClosePanelAndShutdown: {};
   glicBrowserShowProfilePicker: {};
   glicBrowserGetContextFromFocusedTab: {
     request: {
@@ -275,6 +276,7 @@ type HostRequestEnumNamesType = {
     CreateTab: 0,
     OpenGlicSettingsPage: 0,
     ClosePanel: 0,
+    ClosePanelAndShutdown: 0,
     ShowProfilePicker: 0,
     GetContextFromFocusedTab: 0,
     ActInFocusedTab: 0,

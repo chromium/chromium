@@ -113,6 +113,9 @@ $.contextAccessIndicatorV2.addEventListener('click', () => {
 $.closebn.addEventListener('click', () => {
   getBrowser()!.closePanel!();
 });
+$.shutdownbn.addEventListener('click', () => {
+  getBrowser()!.closePanelAndShutdown!();
+});
 $.attachpanelbn.addEventListener('click', () => {
   getBrowser()!.attachPanel!();
 });
