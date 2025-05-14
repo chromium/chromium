@@ -321,6 +321,8 @@ source_set("test_support") {
         [ "//chrome/browser/password_manager/android/access_loss:public" ]
   } else {
     sources += [
+      "autofill_ai/mock_save_or_update_ai_data_controller.cc",
+      "autofill_ai/mock_save_or_update_ai_data_controller.h",
       "autofill_popup_controller_impl_test_api.h",
       "mock_autofill_popup_controller.cc",
       "mock_autofill_popup_controller.h",
