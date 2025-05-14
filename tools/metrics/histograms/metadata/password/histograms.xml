@@ -4601,7 +4601,7 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.UPM.OldGmsNoPasswordsDialogDismisalReason"
+<histogram name="PasswordManager.UPM.OldGmsNoPasswordsDialogDismissalReason"
     enum="BooleanAccepted" expires_after="2025-07-01">
   <owner>ioanap@chromium.org</owner>
   <owner>atsvirchkova@google.com</owner>
