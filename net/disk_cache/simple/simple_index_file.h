@@ -67,18 +67,13 @@ class NET_EXPORT_PRIVATE SimpleIndexFile {
 
     SimpleIndex::IndexWriteToDiskReason reason() const { return reason_; }
     uint64_t entry_count() const { return entry_count_; }
-    bool has_entry_in_memory_data() const { return version_ >= 8; }
     bool app_cache_has_trailer_prefetch_size() const { return version_ >= 9; }
 
    private:
     FRIEND_TEST_ALL_PREFIXES(IndexMetadataTest, Basics);
     FRIEND_TEST_ALL_PREFIXES(IndexMetadataTest, Serialize);
-    FRIEND_TEST_ALL_PREFIXES(IndexMetadataTest, ReadV6Format);
-    FRIEND_TEST_ALL_PREFIXES(SimpleIndexFileTest, ReadV7Format);
     FRIEND_TEST_ALL_PREFIXES(SimpleIndexFileTest, ReadV8Format);
     FRIEND_TEST_ALL_PREFIXES(SimpleIndexFileTest, ReadV8FormatAppCache);
-    friend class V6IndexMetadataForTest;
-    friend class V7IndexMetadataForTest;
     friend class V8IndexMetadataForTest;
 
     uint64_t magic_number_ = kSimpleIndexMagicNumber;

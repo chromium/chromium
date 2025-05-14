@@ -275,17 +275,19 @@ void SimpleIndexFile::SerializeFinalData(base::Time cache_modified,
 bool SimpleIndexFile::IndexMetadata::Deserialize(base::PickleIterator* it) {
   DCHECK(it);
 
-  bool v6_format_index_read_results =
+  bool index_read_results =
       it->ReadUInt64(&magic_number_) && it->ReadUInt32(&version_) &&
       it->ReadUInt64(&entry_count_) && it->ReadUInt64(&cache_size_);
-  if (!v6_format_index_read_results)
+  if (!index_read_results) {
     return false;
-  if (version_ >= 7) {
-    uint32_t tmp_reason;
-    if (!it->ReadUInt32(&tmp_reason))
-      return false;
-    reason_ = static_cast<SimpleIndex::IndexWriteToDiskReason>(tmp_reason);
   }
+
+  uint32_t tmp_reason;
+  if (!it->ReadUInt32(&tmp_reason)) {
+    return false;
+  }
+  reason_ = static_cast<SimpleIndex::IndexWriteToDiskReason>(tmp_reason);
+
   return true;
 }
 
@@ -340,10 +342,11 @@ bool SimpleIndexFile::IndexMetadata::CheckIndexMetadata() {
 
   static_assert(kSimpleIndexFileVersion == 9,
                 "index metadata reader out of date");
-  // No |reason_| is saved in the version 6 file format.
-  if (version_ == 6)
-    return reason_ == SimpleIndex::INDEX_WRITE_REASON_MAX;
-  return (version_ == 7 || version_ == 8 || version_ == 9) &&
+
+  // `version_` must be between the min version to upgrade and the newest
+  // version.
+  return version_ >= kMinSimpleIndexFileVersionSupported &&
+         version_ <= kSimpleVersion &&
          reason_ < SimpleIndex::INDEX_WRITE_REASON_MAX;
 }
 
@@ -569,7 +572,7 @@ void SimpleIndexFile::Deserialize(net::CacheType cache_type,
     EntryMetadata entry_metadata;
     if (!pickle_it.ReadUInt64(&hash_key) ||
         !entry_metadata.Deserialize(
-            cache_type, &pickle_it, index_metadata.has_entry_in_memory_data(),
+            cache_type, &pickle_it,
             index_metadata.app_cache_has_trailer_prefetch_size())) {
       LOG(WARNING) << "Invalid EntryMetadata in Simple Index file.";
       entries->clear();

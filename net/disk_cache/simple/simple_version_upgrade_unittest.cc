@@ -15,7 +15,6 @@
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/simple/simple_backend_version.h"
-#include "net/disk_cache/simple/simple_entry_format_history.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -33,9 +32,9 @@ const char kIndexDirName[] = "index-dir";
 // Same as |SimpleIndexFile::kIndexFileName|.
 const char kIndexFileName[] = "the-real-index";
 
-bool WriteFakeIndexFileV5(const base::FilePath& cache_path) {
+bool WriteFakeIndexFileV8(const base::FilePath& cache_path) {
   disk_cache::FakeIndexData data;
-  data.version = 5;
+  data.version = 8;
   data.initial_magic_number = kSimpleInitialMagicNumber;
   data.zero = 0;
   data.zero2 = 0;
@@ -87,7 +86,8 @@ TEST(SimpleVersionUpgradeTest, FakeIndexVersionGetsUpdated) {
   ASSERT_TRUE(cache_dir.CreateUniqueTempDir());
   const base::FilePath cache_path = cache_dir.GetPath();
 
-  WriteFakeIndexFileV5(cache_path);
+  ASSERT_TRUE(WriteFakeIndexFileV8(cache_path));
+
   const std::string file_contents("incorrectly serialized data");
   const base::FilePath index_file = cache_path.AppendASCII(kIndexFileName);
   ASSERT_TRUE(base::WriteFile(index_file, file_contents));
@@ -107,51 +107,6 @@ TEST(SimpleVersionUpgradeTest, FakeIndexVersionGetsUpdated) {
       new_fake_index_contents.data());
   EXPECT_EQ(disk_cache::kSimpleVersion, fake_index_header->version);
   EXPECT_EQ(kSimpleInitialMagicNumber, fake_index_header->initial_magic_number);
-}
-
-TEST(SimpleVersionUpgradeTest, UpgradeV5V6IndexMustDisappear) {
-  base::ScopedTempDir cache_dir;
-  ASSERT_TRUE(cache_dir.CreateUniqueTempDir());
-  const base::FilePath cache_path = cache_dir.GetPath();
-
-  WriteFakeIndexFileV5(cache_path);
-  const std::string file_contents("incorrectly serialized data");
-  const base::FilePath index_file = cache_path.AppendASCII(kIndexFileName);
-  ASSERT_TRUE(base::WriteFile(index_file, file_contents));
-
-  // Create a few entry-like files.
-  const uint64_t kEntries = 5;
-  for (uint64_t entry_hash = 0; entry_hash < kEntries; ++entry_hash) {
-    for (int index = 0; index < 3; ++index) {
-      std::string file_name =
-          base::StringPrintf("%016" PRIx64 "_%1d", entry_hash, index);
-      std::string entry_contents =
-          file_contents +
-          base::StringPrintf(" %" PRIx64, static_cast<uint64_t>(entry_hash));
-      ASSERT_TRUE(
-          base::WriteFile(cache_path.AppendASCII(file_name), entry_contents));
-    }
-  }
-
-  disk_cache::TrivialFileOperations file_operations;
-  // Upgrade.
-  ASSERT_TRUE(disk_cache::UpgradeIndexV5V6(&file_operations, cache_path));
-
-  // Check that the old index disappeared but the files remain unchanged.
-  EXPECT_FALSE(base::PathExists(index_file));
-  for (uint64_t entry_hash = 0; entry_hash < kEntries; ++entry_hash) {
-    for (int index = 0; index < 3; ++index) {
-      std::string file_name =
-          base::StringPrintf("%016" PRIx64 "_%1d", entry_hash, index);
-      std::string expected_contents =
-          file_contents +
-          base::StringPrintf(" %" PRIx64, static_cast<uint64_t>(entry_hash));
-      std::string real_contents;
-      EXPECT_TRUE(base::ReadFileToString(cache_path.AppendASCII(file_name),
-                                         &real_contents));
-      EXPECT_EQ(expected_contents, real_contents);
-    }
-  }
 }
 
 TEST(SimpleVersionUpgradeTest, DeleteAllIndexFilesWhenCacheIsEmpty) {

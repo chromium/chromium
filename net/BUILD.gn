@@ -513,7 +513,6 @@ component("net") {
     "disk_cache/simple/simple_backend_version.h",
     "disk_cache/simple/simple_entry_format.cc",
     "disk_cache/simple/simple_entry_format.h",
-    "disk_cache/simple/simple_entry_format_history.h",
     "disk_cache/simple/simple_entry_impl.cc",
     "disk_cache/simple/simple_entry_impl.h",
     "disk_cache/simple/simple_entry_operation.cc",

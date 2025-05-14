@@ -144,7 +144,6 @@ void EntryMetadata::Serialize(net::CacheType cache_type,
 
 bool EntryMetadata::Deserialize(net::CacheType cache_type,
                                 base::PickleIterator* it,
-                                bool has_entry_in_memory_data,
                                 bool app_cache_has_trailer_prefetch_size) {
   DCHECK(it);
   int64_t tmp_time_or_prefetch_size;
@@ -164,15 +163,11 @@ bool EntryMetadata::Deserialize(net::CacheType cache_type,
   } else {
     SetLastUsedTime(base::Time::FromInternalValue(tmp_time_or_prefetch_size));
   }
-  if (has_entry_in_memory_data) {
-    // tmp_entry_size actually packs entry_size_256b_chunks_ and
-    // in_memory_data_.
-    SetEntrySize(static_cast<uint32_t>(tmp_entry_size & 0xFFFFFF00));
-    SetInMemoryData(static_cast<uint8_t>(tmp_entry_size & 0xFF));
-  } else {
-    SetEntrySize(static_cast<uint32_t>(tmp_entry_size));
-    SetInMemoryData(0);
-  }
+
+  // tmp_entry_size actually packs entry_size_256b_chunks_ and
+  // in_memory_data_.
+  SetEntrySize(static_cast<uint32_t>(tmp_entry_size & 0xFFFFFF00));
+  SetInMemoryData(static_cast<uint8_t>(tmp_entry_size & 0xFF));
   return true;
 }
 

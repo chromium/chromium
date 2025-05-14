@@ -60,7 +60,7 @@ NET_EXPORT_PRIVATE bool DeleteIndexFilesIfCacheIsEmpty(
 struct NET_EXPORT_PRIVATE FakeIndexData {
   FakeIndexData();
 
-  // Must be equal to simplecache_v4::kSimpleInitialMagicNumber.
+  // Must be equal to kSimpleInitialMagicNumber.
   uint64_t initial_magic_number;
 
   // Must be equal kSimpleVersion when the cache backend is instantiated.

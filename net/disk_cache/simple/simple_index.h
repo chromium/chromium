@@ -74,7 +74,6 @@ class NET_EXPORT_PRIVATE EntryMetadata {
   void Serialize(net::CacheType cache_type, base::Pickle* pickle) const;
   bool Deserialize(net::CacheType cache_type,
                    base::PickleIterator* it,
-                   bool has_entry_in_memory_data,
                    bool app_cache_has_trailer_prefetch_size);
 
   static base::TimeDelta GetLowerEpsilonForTimeComparisons() {

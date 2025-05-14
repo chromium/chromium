@@ -21,18 +21,18 @@
 #include "base/pickle.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/simple/simple_backend_version.h"
-#include "net/disk_cache/simple/simple_entry_format_history.h"
+#include "net/disk_cache/simple/simple_entry_format.h"
 #include "third_party/zlib/zlib.h"
 
 namespace {
 
 // It is not possible to upgrade cache structures on disk that are of version
 // below this, the entire cache should be dropped for them.
-const uint32_t kMinVersionAbleToUpgrade = 5;
+const uint32_t kMinVersionAbleToUpgrade = 8;
 
-const char kFakeIndexFileName[] = "index";
-const char kIndexDirName[] = "index-dir";
-const char kIndexFileName[] = "the-real-index";
+constexpr char kFakeIndexFileName[] = "index";
+constexpr char kIndexDirName[] = "index-dir";
+constexpr char kIndexFileName[] = "the-real-index";
 
 void LogMessageFailedUpgradeFromVersion(int version) {
   LOG(ERROR) << "Failed to upgrade Simple Cache from version: " << version;
@@ -46,8 +46,7 @@ bool WriteFakeIndexFile(disk_cache::BackendFileOperations* file_operations,
     return false;
 
   disk_cache::FakeIndexData file_contents;
-  file_contents.initial_magic_number =
-      disk_cache::simplecache_v5::kSimpleInitialMagicNumber;
+  file_contents.initial_magic_number = disk_cache::kSimpleInitialMagicNumber;
   file_contents.version = disk_cache::kSimpleVersion;
   file_contents.zero = 0;
   file_contents.zero2 = 0;
@@ -69,55 +68,6 @@ FakeIndexData::FakeIndexData() {
   std::memset(this, 0, sizeof(*this));
 }
 
-// Migrates the cache directory from version 4 to version 5.
-// Returns true iff it succeeds.
-//
-// The V5 and V6 caches differ in the name of the index file (it moved to a
-// subdirectory) and in the file format (directory last-modified time observed
-// by the index writer has gotten appended to the pickled format).
-//
-// To keep complexity small this specific upgrade code *deletes* the old index
-// file. The directory for the new index file has to be created lazily anyway,
-// so it is not done in the upgrader.
-//
-// Below is the detailed description of index file format differences. It is for
-// reference purposes. This documentation would be useful to move closer to the
-// next index upgrader when the latter gets introduced.
-//
-// Path:
-//   V5: $cachedir/the-real-index
-//   V6: $cachedir/index-dir/the-real-index
-//
-// Pickled file format:
-//   Both formats extend Pickle::Header by 32bit value of the CRC-32 of the
-//   pickled data.
-//   <v5-index> ::= <v5-index-metadata> <entry-info>*
-//   <v5-index-metadata> ::= UInt64(kSimpleIndexMagicNumber)
-//                           UInt32(4)
-//                           UInt64(<number-of-entries>)
-//                           UInt64(<cache-size-in-bytes>)
-//   <entry-info> ::= UInt64(<hash-of-the-key>)
-//                    Int64(<entry-last-used-time>)
-//                    UInt64(<entry-size-in-bytes>)
-//   <v6-index> ::= <v6-index-metadata>
-//                  <entry-info>*
-//                  Int64(<cache-dir-mtime>)
-//   <v6-index-metadata> ::= UInt64(kSimpleIndexMagicNumber)
-//                           UInt32(5)
-//                           UInt64(<number-of-entries>)
-//                           UInt64(<cache-size-in-bytes>)
-//   Where:
-//     <entry-size-in-bytes> is equal the sum of all file sizes of the entry.
-//     <cache-dir-mtime> is the last modification time with nanosecond precision
-//       of the directory, where all files for entries are stored.
-//     <hash-of-the-key> represent the first 64 bits of a SHA-1 of the key.
-bool UpgradeIndexV5V6(BackendFileOperations* file_operations,
-                      const base::FilePath& cache_directory) {
-  const base::FilePath old_index_file =
-      cache_directory.AppendASCII(kIndexFileName);
-  return file_operations->DeleteFile(old_index_file);
-}
-
 // Some points about the Upgrade process are still not clear:
 // 1. if the upgrade path requires dropping cache it would be faster to just
 //    return an initialization error here and proceed with asynchronous cache
@@ -133,6 +83,8 @@ bool UpgradeIndexV5V6(BackendFileOperations* file_operations,
 //    upgrade steps. Atomicity of this is an interesting research topic. The
 //    intermediate fake index flushing must be added as soon as we add more
 //    upgrade steps.
+// 3. This upgrade logic only upgrades the fake index file and not other files
+//    (entry cache file nor sparse entry file) on Version 9.
 SimpleCacheConsistencyResult UpgradeSimpleCacheOnDisk(
     BackendFileOperations* file_operations,
     const base::FilePath& path) {
@@ -166,8 +118,7 @@ SimpleCacheConsistencyResult UpgradeSimpleCacheOnDisk(
     LOG(ERROR) << "Disk cache backend fake index file has wrong size.";
     return SimpleCacheConsistencyResult::kBadFakeIndexReadSize;
   }
-  if (file_header.initial_magic_number !=
-      disk_cache::simplecache_v5::kSimpleInitialMagicNumber) {
+  if (file_header.initial_magic_number != kSimpleInitialMagicNumber) {
     LOG(ERROR) << "Disk cache backend fake index file has wrong magic number.";
     return SimpleCacheConsistencyResult::kBadInitialMagicNumber;
   }
@@ -193,34 +144,14 @@ SimpleCacheConsistencyResult UpgradeSimpleCacheOnDisk(
 
   // There should be one upgrade routine here for each incremental upgrade
   // starting at kMinVersionAbleToUpgrade.
-  static_assert(kMinVersionAbleToUpgrade == 5, "upgrade routines don't match");
-  DCHECK_LE(5U, version_from);
-  if (version_from == 5) {
-    // Upgrade only the index for V5 -> V6 move.
-    if (!UpgradeIndexV5V6(file_operations, path)) {
-      LogMessageFailedUpgradeFromVersion(file_header.version);
-      return SimpleCacheConsistencyResult::kUpgradeIndexV5V6Failed;
-    }
-    version_from++;
-  }
-  DCHECK_LE(6U, version_from);
-  if (version_from == 6) {
-    // No upgrade from V6 -> V7, because the entry format has not changed and
-    // the V7 index reader is backwards compatible.
-    version_from++;
-  }
-
-  if (version_from == 7) {
-    // Likewise, V7 -> V8 is handled entirely by the index reader.
-    version_from++;
-  }
-
+  static_assert(kMinVersionAbleToUpgrade == 8, "upgrade routines don't match");
+  DCHECK_LE(8U, version_from);
   if (version_from == 8) {
     // Likewise, V8 -> V9 is handled entirely by the index reader.
     version_from++;
   }
 
-  DCHECK_EQ(kSimpleVersion, version_from);
+  DCHECK_EQ(kSimpleIndexFileVersion, version_from);
 
   if (!new_fake_index_needed)
     return SimpleCacheConsistencyResult::kOK;

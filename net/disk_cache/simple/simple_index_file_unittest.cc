@@ -42,14 +42,6 @@ using disk_cache::SimpleIndex;
 
 namespace disk_cache {
 
-namespace {
-
-uint32_t RoundSize(uint32_t in) {
-  return (in + 0xFFu) & 0xFFFFFF00u;
-}
-
-}  // namespace
-
 TEST(IndexMetadataTest, Basics) {
   SimpleIndexFile::IndexMetadata index_metadata;
 
@@ -81,61 +73,6 @@ TEST(IndexMetadataTest, Serialize) {
 
   EXPECT_TRUE(new_index_metadata.CheckIndexMetadata());
 }
-
-// This derived index metadata class allows us to serialize the older V6 format
-// of the index metadata, thus allowing us to test deserializing the old format.
-class V6IndexMetadataForTest : public SimpleIndexFile::IndexMetadata {
- public:
-  // Do not default to |SimpleIndex::INDEX_WRITE_REASON_MAX|, because we want to
-  // ensure we don't serialize that value and then deserialize it and have a
-  // false positive result.
-  V6IndexMetadataForTest(uint64_t entry_count, uint64_t cache_size)
-      : SimpleIndexFile::IndexMetadata(SimpleIndex::INDEX_WRITE_REASON_SHUTDOWN,
-                                       entry_count,
-                                       cache_size) {
-    version_ = 6;
-  }
-
-  // Copied and pasted from the V6 implementation of
-  // |SimpleIndexFile::IndexMetadata()| (removing DCHECKs).
-  void Serialize(base::Pickle* pickle) const override {
-    pickle->WriteUInt64(magic_number_);
-    pickle->WriteUInt32(version_);
-    pickle->WriteUInt64(entry_count_);
-    pickle->WriteUInt64(cache_size_);
-  }
-};
-
-TEST(IndexMetadataTest, ReadV6Format) {
-  V6IndexMetadataForTest v6_index_metadata(123, 456);
-  EXPECT_EQ(6U, v6_index_metadata.version_);
-  base::Pickle pickle;
-  v6_index_metadata.Serialize(&pickle);
-  base::PickleIterator it(pickle);
-  SimpleIndexFile::IndexMetadata new_index_metadata;
-  new_index_metadata.Deserialize(&it);
-
-  EXPECT_EQ(new_index_metadata.magic_number_, v6_index_metadata.magic_number_);
-  EXPECT_EQ(new_index_metadata.version_, v6_index_metadata.version_);
-
-  EXPECT_EQ(new_index_metadata.reason_, SimpleIndex::INDEX_WRITE_REASON_MAX);
-  EXPECT_EQ(new_index_metadata.entry_count(), v6_index_metadata.entry_count());
-  EXPECT_EQ(new_index_metadata.cache_size_, v6_index_metadata.cache_size_);
-
-  EXPECT_TRUE(new_index_metadata.CheckIndexMetadata());
-}
-
-// This derived index metadata class allows us to serialize the older V7 format
-// of the index metadata, thus allowing us to test deserializing the old format.
-class V7IndexMetadataForTest : public SimpleIndexFile::IndexMetadata {
- public:
-  V7IndexMetadataForTest(uint64_t entry_count, uint64_t cache_size)
-      : SimpleIndexFile::IndexMetadata(SimpleIndex::INDEX_WRITE_REASON_SHUTDOWN,
-                                       entry_count,
-                                       cache_size) {
-    version_ = 7;
-  }
-};
 
 class V8IndexMetadataForTest : public SimpleIndexFile::IndexMetadata {
  public:
@@ -277,47 +214,6 @@ TEST_F(SimpleIndexFileTest, SerializeAppCache) {
     EXPECT_TRUE(new_entries.end() != it);
     EXPECT_TRUE(
         CompareTwoAppCacheEntryMetadata(it->second, metadata_entries[i]));
-  }
-}
-
-TEST_F(SimpleIndexFileTest, ReadV7Format) {
-  static const size_t kNumHashes = 3u;
-  const std::array<uint64_t, kNumHashes> kHashes = {11, 22, 33};
-  const std::array<uint32_t, kNumHashes> kSizes = {394, 594, 495940};
-
-  V7IndexMetadataForTest v7_metadata(kNumHashes, 100 * 1024 * 1024);
-
-  // We don't have a convenient way of serializing the actual entries in the
-  // V7 format, but we can cheat a bit by using the implementation details: if
-  // we set the 8 lower bits of size as the memory data, and upper bits
-  // as the size, the new serialization will produce what we want.
-  SimpleIndex::EntrySet entries;
-  for (size_t i = 0; i < kNumHashes; ++i) {
-    EntryMetadata entry(Time(), kSizes[i] & 0xFFFFFF00u);
-    entry.SetInMemoryData(static_cast<uint8_t>(kSizes[i] & 0xFFu));
-    SimpleIndex::InsertInEntrySet(kHashes[i], entry, &entries);
-  }
-  std::unique_ptr<base::Pickle> pickle =
-      WrappedSimpleIndexFile::Serialize(net::DISK_CACHE, v7_metadata, entries);
-  ASSERT_TRUE(pickle.get() != nullptr);
-  base::Time now = base::Time::Now();
-  WrappedSimpleIndexFile::SerializeFinalData(now, pickle.get());
-
-  // Now read it back. We should get the sizes rounded, and 0 for mem entries.
-  base::Time when_index_last_saw_cache;
-  SimpleIndexLoadResult deserialize_result;
-  WrappedSimpleIndexFile::Deserialize(net::DISK_CACHE, *pickle,
-                                      &when_index_last_saw_cache,
-                                      &deserialize_result);
-  EXPECT_TRUE(deserialize_result.did_load);
-  EXPECT_EQ(now, when_index_last_saw_cache);
-  const SimpleIndex::EntrySet& new_entries = deserialize_result.entries;
-  ASSERT_EQ(entries.size(), new_entries.size());
-  for (size_t i = 0; i < kNumHashes; ++i) {
-    auto it = new_entries.find(kHashes[i]);
-    ASSERT_TRUE(new_entries.end() != it);
-    EXPECT_EQ(RoundSize(kSizes[i]), it->second.GetEntrySize());
-    EXPECT_EQ(0u, it->second.GetInMemoryData());
   }
 }
 
@@ -554,13 +450,13 @@ TEST_F(SimpleIndexFileTest, SimpleCacheUpgrade) {
   ASSERT_TRUE(file.IsValid());
   disk_cache::FakeIndexData file_contents;
   file_contents.initial_magic_number = disk_cache::kSimpleInitialMagicNumber;
-  file_contents.version = 5;
+  file_contents.version = 8;
   auto bytes_written = file.Write(0, base::byte_span_from_ref(file_contents));
   ASSERT_EQ(sizeof(file_contents), bytes_written);
   file.Close();
 
   // Write the index file. The format is incorrect, but for transitioning from
-  // v5 it does not matter.
+  // the old version it does not matter.
   const std::string index_file_contents("incorrectly serialized data");
   const base::FilePath old_index_file =
       cache_path.AppendASCII("the-real-index");

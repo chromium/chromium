@@ -20,10 +20,15 @@ namespace disk_cache {
 //     `kSimpleVersion - 1` then the whole cache directory will be cleared.
 //   * Dropping cache data on disk or some of its parts can be a valid way to
 //     Upgrade.
+//
+// Use `kSimpleVersion` for the fake index file.
 const uint32_t kSimpleVersion = 9;
 
 // The version of the index file. Must be updated iff the index format changes.
 const uint32_t kSimpleIndexFileVersion = 9;
+
+// Minimum version to support upgrade for the index file.
+const uint32_t kMinSimpleIndexFileVersionSupported = 8;
 
 // The version of the sparse entry file. Must be updated iff the sparse file
 // format changes.

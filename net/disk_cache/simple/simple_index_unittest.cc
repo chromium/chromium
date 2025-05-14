@@ -258,19 +258,21 @@ TEST_F(EntryMetadataTest, Serialize) {
 
   base::PickleIterator it(pickle);
   EntryMetadata new_entry_metadata;
-  new_entry_metadata.Deserialize(net::DISK_CACHE, &it, true, true);
+  new_entry_metadata.Deserialize(net::DISK_CACHE, &it,
+                                 /*app_cache_has_trailer_prefetch_size=*/true);
   CheckEntryMetadataValues(new_entry_metadata);
 
   // Test reading of old format --- the modern serialization of above entry
-  // corresponds, in older format, to an entry with size =
-  //   RoundSize(kTestEntrySize) | kTestEntryMemoryData, which then gets
-  // rounded again when stored by EntryMetadata.
+  // corresponds, in older format, to an entry with
+  // size =  RoundSize(kTestEntrySize), which then gets rounded again when
+  // stored by EntryMetadata.
   base::PickleIterator it2(pickle);
   EntryMetadata new_entry_metadata2;
-  new_entry_metadata2.Deserialize(net::DISK_CACHE, &it2, false, false);
-  EXPECT_EQ(RoundSize(RoundSize(kTestEntrySize) | kTestEntryMemoryData),
-            new_entry_metadata2.GetEntrySize());
-  EXPECT_EQ(0, new_entry_metadata2.GetInMemoryData());
+  new_entry_metadata2.Deserialize(
+      net::DISK_CACHE, &it2,
+      /*app_cache_has_trailer_prefetch_size=*/false);
+  EXPECT_EQ(RoundSize(kTestEntrySize), new_entry_metadata2.GetEntrySize());
+  EXPECT_EQ(kTestEntryMemoryData, new_entry_metadata2.GetInMemoryData());
 }
 
 TEST_F(SimpleIndexTest, IndexSizeCorrectOnMerge) {
