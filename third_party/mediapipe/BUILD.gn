@@ -336,6 +336,7 @@ tflite_source_set("mediapipe_core_always_link") {
   sources = [
     "src/mediapipe/calculators/core/begin_item_loop_calculator.cc",
     "src/mediapipe/calculators/core/end_item_loop_calculator.cc",
+    "src/mediapipe/calculators/core/immediate_mux_calculator.cc",
     "src/mediapipe/calculators/core/pass_through_calculator.cc",
     "src/mediapipe/calculators/util/resource_provider_calculator.cc",
     "src/mediapipe/calculators/util/resource_provider_calculator.h",
