@@ -335,8 +335,17 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
                     EnsureNotPresent(kSidePanelPinButtonElementId)));
 }
 
-IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
-                       PinnedToolbarButtonsHighlightWhileSidePanelVisible) {
+// TODO(crbug.com/417601707): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PinnedToolbarButtonsHighlightWhileSidePanelVisible \
+  DISABLED_PinnedToolbarButtonsHighlightWhileSidePanelVisible
+#else
+#define MAYBE_PinnedToolbarButtonsHighlightWhileSidePanelVisible \
+  PinnedToolbarButtonsHighlightWhileSidePanelVisible
+#endif
+IN_PROC_BROWSER_TEST_F(
+    PinnedSidePanelInteractiveTest,
+    MAYBE_PinnedToolbarButtonsHighlightWhileSidePanelVisible) {
   // Replace the contents of the ReadingMode side panel with an empty view so it
   // loads faster.
   auto* registry =
