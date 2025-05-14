@@ -26,6 +26,7 @@
 #include "cc/layers/nine_patch_thumb_scrollbar_layer_impl.h"
 #include "cc/layers/painted_scrollbar_layer_impl.h"
 #include "cc/layers/solid_color_layer_impl.h"
+#include "cc/layers/solid_color_scrollbar_layer_impl.h"
 #include "cc/layers/surface_layer_impl.h"
 #include "cc/layers/texture_layer_impl.h"
 #include "cc/layers/tile_display_layer_impl.h"
@@ -96,6 +97,17 @@ std::unique_ptr<cc::LayerImpl> CreateLayer(cc::LayerTreeHostImpl& host_impl,
 
     case cc::mojom::LayerType::kPicture:
       return std::make_unique<cc::TileDisplayLayerImpl>(tree, id);
+
+    case cc::mojom::LayerType::kSolidColorScrollbar: {
+      auto& extra = wire.layer_extra->get_solid_color_scrollbar_layer_extra();
+      cc::ScrollbarOrientation orientation =
+          extra->scrollbar_base_extra->is_horizontal_orientation
+              ? cc::ScrollbarOrientation::kHorizontal
+              : cc::ScrollbarOrientation::kVertical;
+      return cc::SolidColorScrollbarLayerImpl::Create(
+          &tree, id, orientation, extra->thumb_thickness, extra->track_start,
+          extra->scrollbar_base_extra->is_left_side_vertical_scrollbar);
+    }
 
     case cc::mojom::LayerType::kSurface:
       // The callback is triggered in the renderer side during WillDraw(),
@@ -513,6 +525,14 @@ void UpdatePaintedScrollbarLayerExtra(
   layer.SetTrackAndButtonsAperture(extra->track_and_buttons_aperture);
 }
 
+void UpdateSolidColorScrollbarLayerExtra(
+    const mojom::SolidColorScrollbarLayerExtraPtr& extra,
+    cc::SolidColorScrollbarLayerImpl& layer) {
+  UpdateScrollbarLayerBaseExtra(
+      extra->scrollbar_base_extra,
+      static_cast<cc::ScrollbarLayerImplBase&>(layer));
+}
+
 void UpdateSurfaceLayerExtra(const mojom::SurfaceLayerExtraPtr& extra,
                              cc::SurfaceLayerImpl& layer) {
   layer.SetRange(extra->surface_range, extra->deadline_in_frames);
@@ -607,6 +627,11 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
       UpdatePaintedScrollbarLayerExtra(
           wire.layer_extra->get_painted_scrollbar_layer_extra(),
           static_cast<cc::PaintedScrollbarLayerImpl&>(layer));
+      break;
+    case cc::mojom::LayerType::kSolidColorScrollbar:
+      UpdateSolidColorScrollbarLayerExtra(
+          wire.layer_extra->get_solid_color_scrollbar_layer_extra(),
+          static_cast<cc::SolidColorScrollbarLayerImpl&>(layer));
       break;
     case cc::mojom::LayerType::kSurface:
       UpdateSurfaceLayerExtra(wire.layer_extra->get_surface_layer_extra(),

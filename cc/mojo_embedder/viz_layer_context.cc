@@ -27,6 +27,7 @@
 #include "cc/layers/nine_patch_thumb_scrollbar_layer_impl.h"
 #include "cc/layers/painted_scrollbar_layer_impl.h"
 #include "cc/layers/picture_layer_impl.h"
+#include "cc/layers/solid_color_scrollbar_layer_impl.h"
 #include "cc/layers/surface_layer_impl.h"
 #include "cc/layers/texture_layer_impl.h"
 #include "cc/tiles/picture_layer_tiling.h"
@@ -626,6 +627,16 @@ void SerializePaintedScrollbarLayerExtra(
   extra->track_and_buttons_aperture = layer.track_and_buttons_aperture();
 }
 
+void SerializeSolidColorScrollbarLayerExtra(
+    SolidColorScrollbarLayerImpl& layer,
+    viz::mojom::SolidColorScrollbarLayerExtraPtr& extra) {
+  SerializeScrollbarLayerBaseExtra(static_cast<ScrollbarLayerImplBase&>(layer),
+                                   extra->scrollbar_base_extra);
+  extra->thumb_thickness = layer.thumb_thickness();
+  extra->track_start = layer.track_start();
+  extra->color = layer.color();
+}
+
 void SerializeSurfaceLayerExtra(SurfaceLayerImpl& layer,
                                 viz::mojom::SurfaceLayerExtraPtr& extra) {
   extra->surface_range = layer.range();
@@ -707,6 +718,17 @@ void SerializeLayer(LayerImpl& layer,
           painted_scrollbar_layer_extra);
       wire.layer_extra = viz::mojom::LayerExtra::NewPaintedScrollbarLayerExtra(
           std::move(painted_scrollbar_layer_extra));
+      break;
+    }
+    case mojom::LayerType::kSolidColorScrollbar: {
+      auto solid_color_scrollbar_layer_extra =
+          viz::mojom::SolidColorScrollbarLayerExtra::New();
+      SerializeSolidColorScrollbarLayerExtra(
+          static_cast<SolidColorScrollbarLayerImpl&>(layer),
+          solid_color_scrollbar_layer_extra);
+      wire.layer_extra =
+          viz::mojom::LayerExtra::NewSolidColorScrollbarLayerExtra(
+              std::move(solid_color_scrollbar_layer_extra));
       break;
     }
     case mojom::LayerType::kSurface: {

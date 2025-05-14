@@ -124,6 +124,8 @@ struct NinePatchThumbScrollbarLayerExtra {
   cc.mojom.UIResourceId track_and_buttons_ui_resource_id;
 };
 
+// Extra fields in a cc::PaintedScrollbarLayerImpl that has been added
+// to a tree or modified in some interesting way since a prior tree update.
 struct PaintedScrollbarLayerExtra {
   ScrollbarLayerBaseExtra scrollbar_base_extra;
 
@@ -145,6 +147,16 @@ struct PaintedScrollbarLayerExtra {
   cc.mojom.UIResourceId thumb_ui_resource_id;
 };
 
+// Extra fields in a cc::SolidColorScrollbarLayerImpl that has been added
+// to a tree or modified in some interesting way since a prior tree update.
+struct SolidColorScrollbarLayerExtra {
+  ScrollbarLayerBaseExtra scrollbar_base_extra;
+
+  int32 thumb_thickness;
+  int32 track_start;
+  skia.mojom.SkColor4f color;
+};
+
 // Extra properties that are specific to a LayerImpl type.
 union LayerExtra {
   // Extra properties that are specific to MirrorLayerImpl.
@@ -153,6 +165,8 @@ union LayerExtra {
   NinePatchThumbScrollbarLayerExtra nine_patch_thumb_scrollbar_layer_extra;
   // Extra properties that are specific to PaintedScrollbarLayerImpl.
   PaintedScrollbarLayerExtra painted_scrollbar_layer_extra;
+  // Extra properties that are specific to SolidColorScrollbarLayerImpl.
+  SolidColorScrollbarLayerExtra solid_color_scrollbar_layer_extra;
   // Extra properties that are specific to SurfaceLayerImpl.
   SurfaceLayerExtra surface_layer_extra;
   // Extra properties that are specific to TextureLayerImpl.
