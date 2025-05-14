@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -77,6 +78,11 @@ class PrivacySandboxDialogDelegate : public views::DialogDelegate {
   }
 
   void OnWindowClosing() {
+    // Notice Framework doesn't have a browser to widget mapping.
+    if (base::FeatureList::IsEnabled(
+            privacy_sandbox::kPrivacySandboxNoticeFramework)) {
+      return;
+    }
     // TODO(crbug.com/408016824): To be deprecated once V2 is migrated to.
     if (auto* privacy_sandbox_service =
             PrivacySandboxServiceFactory::GetForProfile(
@@ -116,9 +122,21 @@ void PrivacySandboxDialog::Show(Browser* browser,
 // static
 void PrivacySandboxDialog::Show(BrowserWindowInterface* browser,
                                 PrivacySandboxNotice notice) {
-  // TODO(crbug.com/408016824): SetContentsView once PsDialogView ctor is
-  // refactored.
-  // TODO(crbug.com/408016824): Add VM observer once a PSDialogView is created.
+  auto delegate = std::make_unique<PrivacySandboxDialogDelegate>(browser);
+  delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  delegate->SetModalType(ui::mojom::ModalType::kWindow);
+  delegate->SetShowCloseButton(false);
+  delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
+
+  auto dialog_view =
+      PrivacySandboxDialogView::CreateDialogViewForPrivacySandboxNotice(browser,
+                                                                        notice);
+  delegate->SetContentsView(std::move(dialog_view));
+
+  constrained_window::CreateBrowserModalDialogViews(
+      std::move(delegate), browser->GetTabStripModel()
+                               ->GetActiveWebContents()
+                               ->GetTopLevelNativeWindow());
 }
 
 PrivacySandboxDialogView::PrivacySandboxDialogView(
@@ -162,6 +180,18 @@ PrivacySandboxDialogView::CreateDialogViewForPromptType(
   return dialog_view;
 }
 
+// static
+std::unique_ptr<PrivacySandboxDialogView>
+PrivacySandboxDialogView::CreateDialogViewForPrivacySandboxNotice(
+    BrowserWindowInterface* browser,
+    PrivacySandboxNotice notice) {
+  // Sets content view
+  // Using `new` to access a non-public constructor.
+  auto dialog_view = base::WrapUnique(new PrivacySandboxDialogView(browser));
+  dialog_view->InitializeDialogUIForPrivacySandboxNotice(notice);
+  return dialog_view;
+}
+
 void PrivacySandboxDialogView::InitializeDialogUIForPromptType(
     PrivacySandboxService::PromptType prompt_type) {
   web_view_->LoadInitialURL(GetDialogURL(prompt_type));
@@ -180,6 +210,13 @@ void PrivacySandboxDialogView::InitializeDialogUIForPromptType(
 
       prompt_type);
 
+  SetUseDefaultFillLayout(true);
+}
+
+void PrivacySandboxDialogView::InitializeDialogUIForPrivacySandboxNotice(
+    PrivacySandboxNotice notice) {
+  notice_ = notice;
+  web_view_->LoadInitialURL(GURL(chrome::kChromeUIPrivacySandboxBaseDialogURL));
   SetUseDefaultFillLayout(true);
 }
 
@@ -214,6 +251,10 @@ void PrivacySandboxDialogView::ResizeNativeView(int height) {
       gfx::Size(web_view_->GetPreferredSize().width(), target_height));
   constrained_window::UpdateWebContentsModalDialogPosition(
       GetWidget(), browser_->GetWebContentsModalDialogHostForWindow());
+}
+
+PrivacySandboxNotice PrivacySandboxDialogView::GetPrivacySandboxNotice() {
+  return notice_;
 }
 
 void PrivacySandboxDialogView::ShowNativeView() {

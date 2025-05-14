@@ -2310,6 +2310,8 @@ if (!is_android) {
 
       # TODO(413315837): Remove this dependency when
       # c/b/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_browsertest.cc gets modularized.
+      "//chrome/browser/privacy_sandbox/notice:factory",
+      "//chrome/browser/privacy_sandbox/notice:test_support",
       "//chrome/browser/ui/privacy_sandbox",
       "//chrome/browser/ui/privacy_sandbox:browser_tests",
       "//chrome/browser/ui/promos:utils",

@@ -38,6 +38,7 @@ if (!is_android) {
       "//chrome/app:generated_resources",
       "//chrome/browser/privacy_sandbox/notice:desktop_view_manager",
       "//chrome/browser/privacy_sandbox/notice:factory",
+      "//chrome/browser/privacy_sandbox/notice:notice_mojom",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/resources/privacy_sandbox:resources",
       "//chrome/browser/ui/views/privacy_sandbox",

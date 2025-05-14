@@ -12,6 +12,8 @@
 namespace privacy_sandbox {
 namespace {
 
+using notice::mojom::PrivacySandboxNotice;
+
 // Mock implementation for the BaseDialogUIDelegate interface.
 class MockBaseDialogUIDelegate : public BaseDialogUIDelegate {
  public:
@@ -20,6 +22,7 @@ class MockBaseDialogUIDelegate : public BaseDialogUIDelegate {
   MOCK_METHOD(void, ResizeNativeView, (int height), (override));
   MOCK_METHOD(void, ShowNativeView, (), (override));
   MOCK_METHOD(void, CloseNativeView, (), (override));
+  MOCK_METHOD(PrivacySandboxNotice, GetPrivacySandboxNotice, (), (override));
 };
 
 class PrivacySandboxBaseDialogHandlerTest : public testing::Test {

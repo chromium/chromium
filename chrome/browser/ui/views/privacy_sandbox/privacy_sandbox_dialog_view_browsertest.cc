@@ -9,6 +9,9 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
+#include "chrome/browser/privacy_sandbox/notice/mocks/mock_notice_service.h"
+#include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,6 +35,11 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
+using privacy_sandbox::MockPrivacySandboxNoticeService;
+using privacy_sandbox::notice::mojom::PrivacySandboxNotice;
+using enum privacy_sandbox::notice::mojom::PrivacySandboxNotice;
+using testing::_;
+
 constexpr int kAverageBrowserWidth = 800;
 constexpr int kAverageBrowserHeight = 700;
 constexpr base::TimeDelta kMaxWaitTime = base::Seconds(30);
@@ -143,8 +151,109 @@ std::string ClickLearnMoreButton3TimesScript() {
   )";
 }
 
+PrivacySandboxNotice GetNoticeName(const std::string& name) {
+  PrivacySandboxNotice notice;
+  if (name == "Consent") {
+    notice = kTopicsConsentNotice;
+  }
+  if (name == "PAMeasurement") {
+    notice = kProtectedAudienceMeasurementNotice;
+  }
+  if (name == "ThreeAdsApis") {
+    notice = kThreeAdsApisNotice;
+  }
+  if (name == "Measurement") {
+    notice = kMeasurementNotice;
+  }
+  return notice;
+}
+
 }  // namespace
 
+//-----------------------------------------------------------------------------
+// First Time Notice V2 Dialog View Browser Tests.
+//-----------------------------------------------------------------------------
+class PrivacySandboxPSNoticeDialogViewBrowserTest : public DialogBrowserTest {
+ public:
+  PrivacySandboxPSNoticeDialogViewBrowserTest() {
+    set_baseline("crrev.com/c/6540376");
+    scoped_feature_list_.InitWithFeatures(
+        // Enabled Features
+        {privacy_sandbox::kPrivacySandboxNoticeFramework},
+        /*disabled_features=*/{});
+  }
+
+  void SetUpOnMainThread() override {
+    mock_notice_service_ = static_cast<MockPrivacySandboxNoticeService*>(
+        PrivacySandboxNoticeServiceFactory::GetInstance()
+            ->SetTestingFactoryAndUse(
+                browser()->profile(),
+                base::BindRepeating(
+                    &privacy_sandbox::BuildMockPrivacySandboxNoticeService)));
+  }
+
+  // DialogBrowserTest:
+  void ShowUi(const std::string& name) override {
+    // Resize the browser window to guarantee enough space for the dialog.
+    BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()->SetBounds(
+        {0, 0, kAverageBrowserWidth, kAverageBrowserHeight});
+
+    views::NamedWidgetShownWaiter waiter(
+        views::test::AnyWidgetTestPasskey{},
+        PrivacySandboxDialogView::kViewClassName);
+
+    PrivacySandboxDialog::Show(browser(), GetNoticeName(name));
+    views::Widget* dialog_widget = waiter.WaitIfNeededAndGet();
+    dialog_view_ = static_cast<PrivacySandboxDialogView*>(
+        dialog_widget->widget_delegate()->GetContentsView());
+    EXPECT_THAT(dialog_view_->GetPrivacySandboxNotice(), GetNoticeName(name));
+    // Verify that the DialogViewContext is present from the WebContents.
+    ASSERT_NE(privacy_sandbox::DialogViewContext::FromWebContents(
+                  dialog_view_->GetWebContentsForTesting()),
+              nullptr);
+  }
+
+  void DismissUi() override {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&PrivacySandboxDialogView::CloseNativeView,
+                                  base::Unretained(dialog_view_)));
+    dialog_view_ = nullptr;
+    mock_notice_service_ = nullptr;
+  }
+
+  MockPrivacySandboxNoticeService* mock_notice_service() {
+    return mock_notice_service_;
+  }
+
+ private:
+  raw_ptr<MockPrivacySandboxNoticeService> mock_notice_service_;
+  raw_ptr<PrivacySandboxDialogView> dialog_view_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxPSNoticeDialogViewBrowserTest,
+                       InvokeUi_Consent) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxPSNoticeDialogViewBrowserTest,
+                       InvokeUi_PAMeasurement) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxPSNoticeDialogViewBrowserTest,
+                       InvokeUi_ThreeAdsApis) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxPSNoticeDialogViewBrowserTest,
+                       InvokeUi_Measurement) {
+  ShowAndVerifyUi();
+}
+
+//-----------------------------------------------------------------------------
+// Pre-migration Privacy Sandbox Dialog View Browser Tests.
+//-----------------------------------------------------------------------------
 class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
  public:
   PrivacySandboxDialogViewBrowserTest() {

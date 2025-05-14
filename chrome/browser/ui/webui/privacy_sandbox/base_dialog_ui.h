@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_PRIVACY_SANDBOX_BASE_DIALOG_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_PRIVACY_SANDBOX_BASE_DIALOG_UI_H_
 
+#include "chrome/browser/privacy_sandbox/notice/notice.mojom-forward.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/base_dialog.mojom.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/base_dialog_handler.h"
 #include "chrome/common/webui_url_constants.h"
@@ -24,6 +25,7 @@ class BaseDialogUIDelegate {
   virtual void ResizeNativeView(int height) = 0;
   virtual void ShowNativeView() = 0;
   virtual void CloseNativeView() = 0;
+  virtual notice::mojom::PrivacySandboxNotice GetPrivacySandboxNotice() = 0;
 };
 
 // MojoWebUIController for Privacy Sandbox Base Dialog

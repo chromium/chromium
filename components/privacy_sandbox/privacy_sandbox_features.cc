@@ -271,7 +271,7 @@ BASE_FEATURE(kPrivacySandboxMigratePrefsToSchemaV2,
              "PrivacySandboxMigratePrefsToSchemaV2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrivacySandboxFirstTimeNoticeV2,
-             "PrivacySandboxFirstTimeNoticeV2",
+BASE_FEATURE(kPrivacySandboxNoticeFramework,
+             "PrivacySandboxNoticeFramework",
              base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace privacy_sandbox
