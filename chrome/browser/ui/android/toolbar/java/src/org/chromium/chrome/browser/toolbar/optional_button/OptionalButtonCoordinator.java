@@ -108,6 +108,15 @@ public class OptionalButtonCoordinator {
         mMediator.setPaddingStart(paddingStart);
     }
 
+    /**
+     * Sets the collapsed state width of the button, overriding the default value.
+     *
+     * @param width The new collapsed state width.
+     */
+    public void setCollapsedStateWidth(int width) {
+        mMediator.setCollapsedStateWidth(width);
+    }
+
     public void setOnBeforeHideTransitionCallback(Runnable onBeforeHideTransitionCallback) {
         mMediator.setOnBeforeHideTransitionCallback(onBeforeHideTransitionCallback);
     }

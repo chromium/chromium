@@ -40,6 +40,7 @@ class OptionalButtonProperties {
     public static final WritableIntPropertyKey ICON_BACKGROUND_COLOR = new WritableIntPropertyKey();
     public static final WritableIntPropertyKey ICON_BACKGROUND_ALPHA = new WritableIntPropertyKey();
     public static final WritableIntPropertyKey PADDING_START = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey COLLAPSED_STATE_WIDTH = new WritableIntPropertyKey();
     public static final WritableBooleanPropertyKey TRANSITION_CANCELLATION_REQUESTED =
             new WritableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<BooleanSupplier> IS_ANIMATION_ALLOWED_PREDICATE =
@@ -57,6 +58,7 @@ class OptionalButtonProperties {
         ICON_BACKGROUND_COLOR,
         ICON_BACKGROUND_ALPHA,
         PADDING_START,
+        COLLAPSED_STATE_WIDTH,
         TRANSITION_CANCELLATION_REQUESTED,
         IS_ANIMATION_ALLOWED_PREDICATE
     };

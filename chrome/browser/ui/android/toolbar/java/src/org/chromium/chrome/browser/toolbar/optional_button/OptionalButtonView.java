@@ -65,9 +65,9 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     private static final int SWAP_TRANSITION_DURATION_MS = 300;
     private static final int HIDE_TRANSITION_DURATION_MS = 225;
 
-    private final int mCollapsedStateWidthPx;
     private final int mExpandedStatePaddingPx;
 
+    private int mCollapsedStateWidthPx;
     private TextView mActionChipLabel;
     private ImageView mBackground;
     private ListMenuButton mButton;
@@ -188,6 +188,10 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
             backgroundDrawableRes = R.drawable.optional_button_background_baseline;
         }
         mButton.setBackgroundResource(backgroundDrawableRes);
+    }
+
+    void setCollapsedStateWidth(int width) {
+        mCollapsedStateWidthPx = width;
     }
 
     public void cancelTransition() {

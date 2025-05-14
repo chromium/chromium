@@ -58,6 +58,10 @@ class OptionalButtonMediator {
         mModel.set(OptionalButtonProperties.PADDING_START, paddingStart);
     }
 
+    public void setCollapsedStateWidth(int width) {
+        mModel.set(OptionalButtonProperties.COLLAPSED_STATE_WIDTH, width);
+    }
+
     public void cancelTransition() {
         mModel.set(OptionalButtonProperties.TRANSITION_CANCELLATION_REQUESTED, true);
     }
