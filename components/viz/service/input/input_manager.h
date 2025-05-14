@@ -51,6 +51,7 @@ struct FrameSinkMetadata {
   base::UnguessableToken grouping_id;
   std::unique_ptr<RenderInputRouterSupportBase> rir_support;
   std::unique_ptr<RenderInputRouterDelegateImpl> rir_delegate;
+  bool is_mobile_optimized = false;
 };
 
 class VIZ_SERVICE_EXPORT InputManager
