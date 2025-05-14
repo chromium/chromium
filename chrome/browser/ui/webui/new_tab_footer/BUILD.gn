@@ -34,20 +34,37 @@ source_set("impl") {
     "//chrome/browser/extensions",
     "//chrome/browser/profiles",
     "//chrome/browser/resources/new_tab_footer:resources_grit",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
     "//components/search:search",
     "//content/public/browser",
+    "//ui/base",
   ]
+}
+
+source_set("test_support") {
+  testonly = true
+  public_deps = [
+    ":new_tab_footer",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "new_tab_footer_handler_browsertest.cc" ]
+  deps = [ ":test_support" ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [ "new_tab_footer_handler_unittest.cc" ]
   deps = [
-    ":new_tab_footer",
-    "//base/test:test_support",
+    ":test_support",
     "//chrome/browser/ui:ui_features",
-    "//chrome/test:test_support",
   ]
 }
 

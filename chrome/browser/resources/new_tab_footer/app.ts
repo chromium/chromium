@@ -4,14 +4,15 @@
 
 import '/strings.m.js';
 
-import {assert} from '//resources/js/assert.js';
-import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {NewTabFooterDocumentProxy} from './browser_proxy.js';
-import type {ExtensionAttribution, ManagementNotice, NewTabFooterDocumentCallbackRouter} from './new_tab_footer.mojom-webui.js';
+import type {ManagementNotice, NewTabFooterDocumentCallbackRouter, NewTabFooterHandlerInterface} from './new_tab_footer.mojom-webui.js';
+
 
 export class NewTabFooterAppElement extends CrLitElement {
   static get is() {
@@ -28,22 +29,25 @@ export class NewTabFooterAppElement extends CrLitElement {
 
   static override get properties() {
     return {
-      extensionAttribution_: {type: Object},
+      extensionName_: {type: String},
       managementNotice_: {type: Object},
     };
   }
 
-
-  protected accessor extensionAttribution_: ExtensionAttribution|null = null;
+  protected accessor extensionName_: string|null = null;
   protected accessor managementNotice_: ManagementNotice|null = null;
-  private callbackRouter_: NewTabFooterDocumentCallbackRouter;
   private setManagementNoticeListener_: number|null = null;
+
+  private callbackRouter_: NewTabFooterDocumentCallbackRouter;
+  private handler_: NewTabFooterHandlerInterface;
 
   constructor() {
     super();
     this.callbackRouter_ =
         NewTabFooterDocumentProxy.getInstance().callbackRouter;
-    this.getNtpExtensionAttribution_();
+    this.handler_ = NewTabFooterDocumentProxy.getInstance().handler;
+
+    this.getNtpExtensionName_();
   }
 
   override firstUpdated() {
@@ -68,10 +72,13 @@ export class NewTabFooterAppElement extends CrLitElement {
     this.callbackRouter_.removeListener(this.setManagementNoticeListener_);
   }
 
-  private async getNtpExtensionAttribution_() {
-    this.extensionAttribution_ = (await NewTabFooterDocumentProxy.getInstance()
-                                      .handler.getNtpExtensionAttribution())
-                                     .attribution;
+  private async getNtpExtensionName_() {
+    this.extensionName_ = (await this.handler_.getNtpExtensionName()).name;
+  }
+
+  protected onExtensionNameClick_(e: Event) {
+    e.preventDefault();
+    this.handler_.openExtensionOptionsPageWithFallback();
   }
 }
 

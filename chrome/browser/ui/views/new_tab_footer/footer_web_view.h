@@ -10,6 +10,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/webview.h"
 
+class BrowserWindowInterface;
 class WebUIContentsWrapper;
 
 namespace new_tab_footer {
@@ -20,7 +21,7 @@ class NewTabFooterWebView : public views::WebView,
   METADATA_HEADER(NewTabFooterWebView, views::WebView)
 
  public:
-  explicit NewTabFooterWebView(content::BrowserContext* browser_context);
+  explicit NewTabFooterWebView(BrowserWindowInterface* browser_window);
   NewTabFooterWebView(const NewTabFooterWebView&) = delete;
   NewTabFooterWebView& operator=(const NewTabFooterWebView&) = delete;
   ~NewTabFooterWebView() override;

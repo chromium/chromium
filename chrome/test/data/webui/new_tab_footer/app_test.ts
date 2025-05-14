@@ -10,7 +10,7 @@ import type {ManagementNotice, NewTabFooterDocumentRemote} from 'chrome://newtab
 import {NewTabFooterDocumentCallbackRouter, NewTabFooterHandlerRemote} from 'chrome://newtab-footer/new_tab_footer.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('NewTabFooterAppTest', () => {
   let element: NewTabFooterAppElement;
@@ -33,39 +33,52 @@ suite('NewTabFooterAppTest', () => {
     await handler.whenCalled('updateManagementNotice');
   }
 
-  test('Get extension attibution on initialization', async () => {
-    // Arrange.
-    handler.setResultFor(
-        'getNtpExtensionAttribution',
-        {attribution: {name: 'foo', url: 'chrome://extensions/?id=1234'}});
-    await initializeElement();
+  suite('Extension', () => {
+    test('Get extension name on initialization', async () => {
+      // Arrange.
+      handler.setResultFor('getNtpExtensionName', {name: 'foo'});
+      await initializeElement();
 
-    // Assert.
-    const attribution =
-        element.shadowRoot.querySelector('#extensionAttribution');
-    assertTrue(!!attribution);
-    const attributionLink = attribution.querySelector('a');
-    assertEquals(attributionLink!.href, 'chrome://extensions/?id=1234');
-    assertEquals(attributionLink!.innerText, 'foo');
+      // Assert.
+      const name = $$(element, '#extensionName');
+      assertTrue(!!name);
+      const link = name.querySelector<HTMLElement>('[role="link"]');
+      assertTrue(!!link);
+      assertEquals(link.innerText, 'foo');
+    });
+
+    test('Click extension name link', async () => {
+      // Arrange.
+      handler.setResultFor('getNtpExtensionName', {name: 'foo'});
+      await initializeElement();
+
+      // Act.
+      const link = $$(element, '#extensionName [role="link"]');
+      assertTrue(!!link);
+      link.click();
+
+      // Assert.
+      assertEquals(
+          1, handler.getCallCount('openExtensionOptionsPageWithFallback'));
+    });
   });
 
-  test('Get management notice on initialization', async () => {
-    // Arrange.
-    await initializeElement();
-    const managementNotice:
-        ManagementNotice = {text: 'Managed by your organization'};
-    callbackRouter.setManagementNotice(managementNotice);
-    await callbackRouter.$.flushForTesting();
+  suite('Managed', () => {
+    test('Get management notice on initialization', async () => {
+      // Arrange.
+      await initializeElement();
+      const managementNotice:
+          ManagementNotice = {text: 'Managed by your organization'};
 
-    // Assert.
-    // const managementNoticeContainer =
-    //     element.shadowRoot.querySelector('#managementNoticeContainer');
-    // assertTrue(!!managementNoticeContainer);
-    const managementNoticeText =
-        element.shadowRoot.querySelector('#managementNoticeText');
-    assertTrue(!!managementNoticeText);
+      // Act.
+      callbackRouter.setManagementNotice(managementNotice);
+      await callbackRouter.$.flushForTesting();
 
-    assertEquals(
-        managementNoticeText.textContent, 'Managed by your organization');
+      // Assert.
+      const managementNoticeText = $$(element, '#managementNoticeText');
+      assertTrue(!!managementNoticeText);
+      assertEquals(
+          managementNoticeText.textContent, 'Managed by your organization');
+    });
   });
 });

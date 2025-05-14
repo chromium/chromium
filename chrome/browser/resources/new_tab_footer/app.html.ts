@@ -8,7 +8,7 @@ import type {NewTabFooterAppElement} from './app.js';
 
 export function getHtml(this: NewTabFooterAppElement) {
   // clang-format off
-  return html`
+  return html`<!--_html_template_start_-->
 <!--
 Container for housing the items in the center of the footer that are
 separated from each other by a divider.
@@ -16,11 +16,14 @@ separated from each other by a divider.
 <div id="centerContainer">
   ${this.managementNotice_ ?
       html`<div id="managementNoticeText"><p>${this.managementNotice_.text}</p></div>` : ''}
-  ${this.extensionAttribution_ ?
-      html`<div id="extensionAttribution">
-        <a href="${this.extensionAttribution_.url}">
-            ${this.extensionAttribution_.name}
-        </a>
+  ${this.extensionName_ ?
+      html`<div id="extensionName">
+        <button @click="${this.onExtensionNameClick_}" role="link"
+            aria-roledescription="$i18n{currentTabLinkRoleDesc}"
+            aria-label="$i18n{currentTabLinkLabel}">
+            ${this.extensionName_}
+        </button>
       </div>` : ''}
-</div>`;
+</div>
+<!--_html_template_end_-->`;
 }

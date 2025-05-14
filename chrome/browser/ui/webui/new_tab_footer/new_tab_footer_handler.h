@@ -29,15 +29,18 @@ class NewTabFooterHandler : public new_tab_footer::mojom::NewTabFooterHandler {
   ~NewTabFooterHandler() override;
 
   // new_tab_footer::mojom::NewTabFooterHandler:
-  void GetNtpExtensionAttribution(
-      GetNtpExtensionAttributionCallback callback) override;
+  void GetNtpExtensionName(GetNtpExtensionNameCallback callback) override;
   void UpdateManagementNotice() override;
+  void OpenExtensionOptionsPageWithFallback() override;
 
  private:
+  void OpenUrlInCurrentTab(const GURL& url);
   std::string GetManagementNoticeText();
 
+  std::string curr_ntp_extension_id_;
   const raw_ptr<Profile> profile_;
-  raw_ptr<content::WebContents> web_contents_;
+  const raw_ptr<content::WebContents> web_contents_;
+
   mojo::Remote<new_tab_footer::mojom::NewTabFooterDocument> document_;
   mojo::Receiver<new_tab_footer::mojom::NewTabFooterHandler> handler_;
 };

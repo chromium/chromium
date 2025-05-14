@@ -1024,8 +1024,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   std::unique_ptr<new_tab_footer::NewTabFooterWebView> new_tab_footer_web_view;
   if (features::IsNtpFooterEnabledWithoutSideBySide()) {
     new_tab_footer_web_view =
-        std::make_unique<new_tab_footer::NewTabFooterWebView>(
-            browser_->profile());
+        std::make_unique<new_tab_footer::NewTabFooterWebView>(browser_.get());
     new_tab_footer_web_view->SetVisible(false);
   }
 

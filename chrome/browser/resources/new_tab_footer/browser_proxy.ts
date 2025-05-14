@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {NewTabFooterHandlerInterface} from './new_tab_footer.mojom-webui.js';
 import {NewTabFooterDocumentCallbackRouter, NewTabFooterHandlerFactory, NewTabFooterHandlerRemote} from './new_tab_footer.mojom-webui.js';
 
 let instance: NewTabFooterDocumentProxy|null = null;
@@ -21,16 +22,16 @@ export class NewTabFooterDocumentProxy {
   }
 
   static setInstance(
-      handler: NewTabFooterHandlerRemote,
+      handler: NewTabFooterHandlerInterface,
       callbackRouter: NewTabFooterDocumentCallbackRouter) {
     instance = new NewTabFooterDocumentProxy(handler, callbackRouter);
   }
 
-  handler: NewTabFooterHandlerRemote;
+  handler: NewTabFooterHandlerInterface;
   callbackRouter: NewTabFooterDocumentCallbackRouter;
 
   private constructor(
-      handler: NewTabFooterHandlerRemote,
+      handler: NewTabFooterHandlerInterface,
       callbackRouter: NewTabFooterDocumentCallbackRouter) {
     this.handler = handler;
     this.callbackRouter = callbackRouter;

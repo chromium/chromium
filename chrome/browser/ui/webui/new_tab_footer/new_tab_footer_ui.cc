@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/new_tab_footer_resources.h"
 #include "chrome/grit/new_tab_footer_resources_map.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -44,11 +45,11 @@ NewTabFooterUI::NewTabFooterUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(source, kNewTabFooterResources,
                               IDR_NEW_TAB_FOOTER_NEW_TAB_FOOTER_HTML);
 
-  // As a demonstration of passing a variable for JS to use we pass in some
-  // a simple message.
-  // TODO(crbug.com/409056431): Remove "Hello World!" once relevant strings are
-  // added. This is used as a placeholder.
-  source->AddString("message", "Hello World!");
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"currentTabLinkLabel", IDS_OPENS_IN_CURRENT_TAB},
+      {"currentTabLinkRoleDesc", IDS_OPENS_NTP_EXTENSION_OPTIONS_PAGE},
+  };
+  source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 NewTabFooterUI::~NewTabFooterUI() = default;

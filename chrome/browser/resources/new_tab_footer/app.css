@@ -19,8 +19,7 @@
 }
 
 #centerContainer > div > p,
-#centerContainer > div > a,
-#managementNoticeText > p {
+#centerContainer > div > button {
   color: var(--color-new-tab-footer-text);
   display: inline-block;
   font-size: 13px;
@@ -29,10 +28,19 @@
   padding: 6px 0;
 }
 
-/*
-Add a vertical divider after each centerContainer item in the footer
-except the last one.
-*/
+[role="link"] {
+  border:none;
+  background: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+[role="link"]:hover {
+  background: var(--color-new-tab-page-button-background-hovered);
+}
+
+/* Add a vertical divider after each centerContainer item in the footer
+ * except the last one. */
 #centerContainer > div:not(:last-child):after {
   background-color: var(--color-new-tab-footer-text);
   content: "";
