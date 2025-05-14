@@ -73,4 +73,7 @@ BASE_DECLARE_FEATURE(kLensFetchSrpApiEnabled);
 // Whether to enable the QR parsing code fix.
 BASE_DECLARE_FEATURE(kLensQRCodeParsingFix);
 
+// Whether to enable exact matches.
+BASE_DECLARE_FEATURE(kLensExactMatchesEnabled);
+
 #endif  // IOS_CHROME_BROWSER_LENS_UI_BUNDLED_FEATURES_H_

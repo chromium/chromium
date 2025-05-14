@@ -761,6 +761,10 @@ const char kLensClearcutLoggerFastQosEnabledName[] =
     "Lens clearcut logger fast QOS";
 const char kLensClearcutLoggerFastQosEnabledDescription[] = "Enables fast QOS.";
 
+const char kLensExactMatchesEnabledName[] = "Lens exact matches enabled";
+const char kLensExactMatchesEnabledDescription[] =
+    "Enables exact matches in the Lens results.";
+
 const char kLensFetchSrpApiEnabledName[] = "Lens fetch SRP API enabled";
 const char kLensFetchSrpApiEnabledDescription[] = "Enables the fetch SRP API.";
 
