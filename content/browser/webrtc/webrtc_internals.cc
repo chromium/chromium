@@ -524,17 +524,7 @@ void WebRTCInternals::EnableAudioDebugRecordings(
 #if BUILDFLAG(IS_ANDROID)
   EnableAudioDebugRecordingsOnAllRenderProcessHosts();
 #else
-  if (select_file_dialog_) {
-    return;
-  }
-  selection_type_ = SelectionType::kAudioDebugRecordings;
-  select_file_dialog_ = ui::SelectFileDialog::Create(
-      this,
-      GetContentClient()->browser()->CreateSelectFilePolicy(web_contents));
-  select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
-      audio_debug_recordings_file_path_, nullptr, 0,
-      base::FilePath::StringType(), web_contents->GetTopLevelNativeWindow());
+  MaybeShowSelectFileDialog(web_contents, SelectionType::kAudioDebugRecordings);
 #endif
 }
 
@@ -577,18 +567,7 @@ void WebRTCInternals::EnableLocalEventLogRecordings(
     logger->EnableLocalLogging(event_log_recordings_file_path_);
   }
 #else
-  if (select_file_dialog_) {
-    return;
-  }
-
-  selection_type_ = SelectionType::kRtcEventLogs;
-  select_file_dialog_ = ui::SelectFileDialog::Create(
-      this,
-      GetContentClient()->browser()->CreateSelectFilePolicy(web_contents));
-  select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
-      event_log_recordings_file_path_, nullptr, 0, FILE_PATH_LITERAL(""),
-      web_contents->GetTopLevelNativeWindow());
+  MaybeShowSelectFileDialog(web_contents, SelectionType::kRtcEventLogs);
 #endif
 }
 
@@ -614,17 +593,8 @@ void WebRTCInternals::EnableDataChannelRecordings(
     logger->EnableDataChannelLogging(data_channel_recordings_file_path_);
   }
 #else
-  if (select_file_dialog_) {
-    return;
-  }
-  selection_type_ = SelectionType::kDataChannelRecordings;
-  select_file_dialog_ = ui::SelectFileDialog::Create(
-      this,
-      GetContentClient()->browser()->CreateSelectFilePolicy(web_contents));
-  select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
-      data_channel_recordings_file_path_, nullptr, 0,
-      base::FilePath::StringType(), web_contents->GetTopLevelNativeWindow());
+  MaybeShowSelectFileDialog(web_contents,
+                            SelectionType::kDataChannelRecordings);
 #endif
 }
 
@@ -684,6 +654,42 @@ void WebRTCInternals::RenderProcessExited(
   OnRendererExit(host->GetDeprecatedID());
   render_process_id_set_.erase(host->GetDeprecatedID());
   host->RemoveObserver(this);
+}
+
+void WebRTCInternals::MaybeShowSelectFileDialog(
+    content::WebContents* web_contents,
+    SelectionType log_type) {
+  if (select_file_dialog_) {
+    return;
+  }
+
+  base::FilePath* file_path = nullptr;
+  switch (log_type) {
+    case (SelectionType::kRtcEventLogs): {
+      file_path = &event_log_recordings_file_path_;
+      break;
+    }
+    case (SelectionType::kAudioDebugRecordings): {
+      file_path = &audio_debug_recordings_file_path_;
+      break;
+    }
+    case (SelectionType::kDataChannelRecordings): {
+      file_path = &data_channel_recordings_file_path_;
+      break;
+    }
+  }
+  CHECK(file_path);
+
+  selection_type_ = log_type;
+  select_file_dialog_ = ui::SelectFileDialog::Create(
+      this,
+      GetContentClient()->browser()->CreateSelectFilePolicy(web_contents));
+  select_file_dialog_->SelectFile(
+      ui::SelectFileDialog::SELECT_SAVEAS_FILE,
+      /*title=*/std::u16string(), *file_path, /*file_types=*/nullptr,
+      /*file_type_index=*/0,
+      /*default_extension=*/base::FilePath::StringType(),
+      web_contents->GetTopLevelNativeWindow());
 }
 
 void WebRTCInternals::FileSelected(const ui::SelectedFileInfo& file,

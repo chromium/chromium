@@ -166,6 +166,12 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
 
   static WebRTCInternals* g_webrtc_internals;
 
+  enum class SelectionType {
+    kRtcEventLogs,
+    kAudioDebugRecordings,
+    kDataChannelRecordings,
+  };
+
   void SendUpdate(const std::string& event_name, base::Value event_data);
   void SendUpdate(const std::string& event_name, base::Value::Dict event_data);
 
@@ -173,6 +179,8 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
   void RenderProcessExited(RenderProcessHost* host,
                            const ChildProcessTerminationInfo& info) override;
 
+  void MaybeShowSelectFileDialog(content::WebContents* web_contents,
+                                 SelectionType log_type);
   // ui::SelectFileDialog::Listener implementation.
   void FileSelected(const ui::SelectedFileInfo& file, int index) override;
   void FileSelectionCanceled() override;
@@ -255,11 +263,7 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
 
   // For managing select file dialog.
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
-  enum class SelectionType {
-    kRtcEventLogs,
-    kAudioDebugRecordings,
-    kDataChannelRecordings,
-  } selection_type_;
+  SelectionType selection_type_;
 
   // Diagnostic audio recording state.
   base::FilePath audio_debug_recordings_file_path_;
