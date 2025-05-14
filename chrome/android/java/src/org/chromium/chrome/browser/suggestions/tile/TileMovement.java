@@ -26,6 +26,7 @@ public class TileMovement {
     private final List<Float> mOriginalX;
     private final List<@Nullable ViewPropertyAnimator> mAnimators;
     private boolean mIsActive;
+    private int mAnimateBarrier;
 
     /**
      * @param tileViews A non-empty row of tiles to manage. The X-coordinates are assumed to ascend
@@ -68,7 +69,7 @@ public class TileMovement {
         int n = mTileViews.size();
         int bestIndex = 0;
         float bestDist = Math.abs(mOriginalX.get(0) - x);
-        for (int i = 1; i < n; ++i) {
+        for (int i = 1; i < n; i++) {
             float dist = Math.abs(mOriginalX.get(i) - x);
             if (bestDist > dist) {
                 bestDist = dist;
@@ -129,27 +130,19 @@ public class TileMovement {
     public void shiftBackgroundTile(int fromIndex, int toIndex) {
         int n = mTileViews.size();
         // Shift affected tiles if {@link #toIndex} < {@link #fromIndex}.
-        for (int i = toIndex; i < fromIndex; ++i) {
+        for (int i = toIndex; i < fromIndex; i++) {
             moveTile(i, i + 1, /* isAnimated= */ true, /* onEnd= */ null);
         }
         // Shift affected tiles if {@link #toIndex} > {@link #fromIndex}.
-        for (int i = toIndex; i > fromIndex; --i) {
+        for (int i = toIndex; i > fromIndex; i--) {
             moveTile(i, i - 1, /* isAnimated= */ true, /* onEnd= */ null);
         }
         // Reset tiles that are unaffected / no longer affected.
-        for (int i = Math.min(fromIndex, toIndex) - 1; i >= 0; --i) {
+        for (int i = Math.min(fromIndex, toIndex) - 1; i >= 0; i--) {
             moveTile(i, i, /* isAnimated= */ true, /* onEnd= */ null);
         }
-        for (int i = Math.max(fromIndex, toIndex) + 1; i < n; ++i) {
+        for (int i = Math.max(fromIndex, toIndex) + 1; i < n; i++) {
             moveTile(i, i, /* isAnimated= */ true, /* onEnd= */ null);
-        }
-    }
-
-    /** Stops all pending animations and restores original tile locations without animation. */
-    public void cancelIfActive() {
-        if (mIsActive) {
-            restoreTiles(/* isAnimated= */ false);
-            mIsActive = false;
         }
     }
 
@@ -165,31 +158,55 @@ public class TileMovement {
                 toIndex,
                 /* isAnimated= */ true,
                 () -> {
-                    // Animation completes: Disable cancelIfActive(), restore all tile positions,
-                    // then run {@param onAccept}. Note that restore is done regardless of whether
-                    // the run fails or succeeds. That's because {@link TileVIew} visual changes
-                    // are transient, and need to be undone, especially that they may be reused.
+                    // Animation completes: Reset all tile positions, and run {@param onAccept}.
+                    // Note that reset is needed even on accept, since {@link TileVIew} changes are
+                    // "for show", and the actual movement is done on reload, which in turn can
+                    // reuse TileView instances (so it's important to clean up).
                     // Next, would restore cause "glitch", i.e., tiles temporarily jump back, before
                     // being re-rendered into the desired state? We assume this won't happen
                     // (perhaps since @{param onAccept} is eager), or that any effect is negligible
                     // and not worth fixing for now.
-                    mIsActive = false;
-                    restoreTiles(/* isAnimated= */ false);
+                    cancelIfActive();
                     onAccept.run();
                 });
     }
 
-    /** Restores original tile locations, with animation. */
+    /**
+     * Reject tile movement, so move tiles back to original locations, with animation. This can
+     * hastened by calling {@link cancelIfActive}.
+     */
     public void animatedReject() {
-        // Restore tiles with animation. This can get cancelled via cancelIfActive(). And if the
-        // animation completes, cancelIfActive() can still be called -- but this is no-op anyway.
-        restoreTiles(/* isAnimated= */ true);
+        // While animation is running, {@link cancelIfActive()} can be called to skip to end. Once
+        // animation finishes then we deactivate it by clearing {@link #mIsActive}.
+        mAnimateBarrier = mTileViews.size();
+        Runnable onEnd =
+                () -> {
+                    if (--mAnimateBarrier == 0) {
+                        mIsActive = false;
+                    }
+                };
+        for (int i = 0; i < mTileViews.size(); i++) {
+            moveTile(i, i, true, onEnd);
+        }
     }
 
-    /** Restores original tile locations, with {@param isAnimated} specified. */
-    private void restoreTiles(boolean isAnimated) {
-        for (int i = 0; i < mTileViews.size(); ++i) {
-            moveTile(i, i, isAnimated, null);
+    /** Stops all pending animations and restores original tile locations without animation. */
+    public void cancelIfActive() {
+        if (mIsActive) {
+            resetTiles();
+            mIsActive = false;
+        }
+    }
+
+    /** Restores original tile locations, without animation. */
+    private void resetTiles() {
+        for (int i = 0; i < mTileViews.size(); i++) {
+            ViewPropertyAnimator oldAnimator = mAnimators.get(i);
+            if (oldAnimator != null) {
+                oldAnimator.cancel();
+                mAnimators.set(i, null);
+            }
+            mTileViews.get(i).setTranslationX(0f);
         }
     }
 }
