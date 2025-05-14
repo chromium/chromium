@@ -861,9 +861,6 @@ void OnListFamilyMembersResponse(
                           ->GetAccountProfileMapper()
                           ->FindProfileNameForGaiaID(GaiaId(context.gaiaID));
       }
-      // TODO(crbug.com/388520520): Make sure that ENABLE_WIDGETS_FOR_MIM is
-      // enabled only when AreSeparateProfilesForManagedAccountsEnabled() is
-      // true. If not, add implementation.
       if (profileName.has_value()) {
         [changeProfileHandler
             changeProfile:*profileName
