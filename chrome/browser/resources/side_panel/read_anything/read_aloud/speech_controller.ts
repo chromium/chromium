@@ -125,12 +125,14 @@ export class SpeechController {
     return this.model_.isSpeechTreeInitialized();
   }
 
-  getPauseSource(): PauseActionSource {
-    return this.model_.getPauseSource();
-  }
-
   isPausedFromButton(): boolean {
     return this.model_.getPauseSource() === PauseActionSource.BUTTON_CLICK;
+  }
+
+  isTemporaryPause(): boolean {
+    const source = this.model_.getPauseSource();
+    return (source === PauseActionSource.VOICE_PREVIEW) ||
+        (source === PauseActionSource.VOICE_SETTINGS_CHANGE);
   }
 
   reset() {
@@ -572,9 +574,12 @@ export class SpeechController {
   }
 
   private stopSpeech_(pauseSource: PauseActionSource) {
+    // Pause source needs to be set before updating isSpeechActive so that
+    // listeners get the correct source when listening for isSpeechActive
+    // changes.
+    this.model_.setPauseSource(pauseSource);
     this.setIsSpeechActive_(false);
     this.setIsAudioCurrentlyPlaying(false);
-    this.model_.setPauseSource(pauseSource);
 
     // Voice and speed changes take effect on the next call of synth.play(),
     // but not on .resume(). In order to be responsive to the user's settings

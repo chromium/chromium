@@ -25,7 +25,6 @@ import {NodeStore} from './node_store.js';
 import {ReadAloudHighlighter} from './read_aloud/highlighter.js';
 import {SpeechController} from './read_aloud/speech_controller.js';
 import type {SpeechListener} from './read_aloud/speech_controller.js';
-import {PauseActionSource} from './read_aloud/speech_model.js';
 import {VoicePackController} from './read_aloud/voice_pack_controller.js';
 import type {VoiceLanguageListener} from './read_aloud/voice_pack_controller.js';
 import {WordBoundaries} from './read_aloud/word_boundaries.js';
@@ -788,15 +787,8 @@ export class AppElement extends AppElementBase implements
 
   onIsSpeechActiveChange(): void {
     this.isSpeechActive_ = this.speechController_.isSpeechActive();
-    if (!chrome.readingMode.linksEnabled) {
-      return;
-    }
-
-    // Restore links if they're enabled when speech pauses via button click or
-    // when it finishes the page.
-    const pauseSource = this.speechController_.getPauseSource();
-    if ((pauseSource === PauseActionSource.BUTTON_CLICK) ||
-        pauseSource === PauseActionSource.SPEECH_FINISHED) {
+    if (chrome.readingMode.linksEnabled &&
+        !this.speechController_.isTemporaryPause()) {
       this.updateLinks_();
     }
   }

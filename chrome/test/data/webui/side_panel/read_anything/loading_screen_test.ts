@@ -54,7 +54,7 @@ suite('LoadingScreen', () => {
 
     assertFalse(speechController.isSpeechActive());
     assertFalse(speechController.isSpeechTreeInitialized());
-    assertEquals(PauseActionSource.DEFAULT, speechController.getPauseSource());
+    assertFalse(speechController.isPausedFromButton());
     assertFalse(speechController.isAudioCurrentlyPlaying());
     assertFalse(speechController.hasSpeechBeenTriggered());
     assertFalse(speechController.isSpeechBeingRepositioned());

@@ -70,7 +70,7 @@ suite('SpeechController', () => {
   });
 
   test('setState', () => {
-    const pauseSource = PauseActionSource.ENGINE_INTERRUPT;
+    const pauseSource = PauseActionSource.BUTTON_CLICK;
     const state = {
       isSpeechActive: true,
       isSpeechTreeInitialized: true,
@@ -87,14 +87,14 @@ suite('SpeechController', () => {
     assertNotEquals(state, speechController.getState());
     assertTrue(speechController.isSpeechActive());
     assertTrue(speechController.isSpeechTreeInitialized());
-    assertEquals(pauseSource, speechController.getPauseSource());
+    assertTrue(speechController.isPausedFromButton());
     assertTrue(speechController.isAudioCurrentlyPlaying());
     assertTrue(speechController.hasSpeechBeenTriggered());
     assertTrue(speechController.isSpeechBeingRepositioned());
   });
 
   test('reset', () => {
-    const pauseSource = PauseActionSource.ENGINE_INTERRUPT;
+    const pauseSource = PauseActionSource.BUTTON_CLICK;
     const state = {
       isSpeechActive: true,
       isSpeechTreeInitialized: true,
@@ -111,7 +111,7 @@ suite('SpeechController', () => {
     assertTrue(isAudioCurrentlyPlayingChanged);
     assertFalse(speechController.isSpeechActive());
     assertFalse(speechController.isSpeechTreeInitialized());
-    assertEquals(PauseActionSource.DEFAULT, speechController.getPauseSource());
+    assertFalse(speechController.isPausedFromButton());
     assertFalse(speechController.isAudioCurrentlyPlaying());
     assertFalse(speechController.hasSpeechBeenTriggered());
     assertFalse(speechController.isSpeechBeingRepositioned());
@@ -136,8 +136,8 @@ suite('SpeechController', () => {
     assertFalse(onPreviewVoicePlaying);
     assertFalse(speechController.isSpeechActive());
     assertFalse(speechController.isAudioCurrentlyPlaying());
-    assertEquals(
-        PauseActionSource.VOICE_PREVIEW, speechController.getPauseSource());
+    assertFalse(speechController.isPausedFromButton());
+    assertTrue(speechController.isTemporaryPause());
   });
 
   test('previewVoice plays preview with voice', () => {
@@ -216,9 +216,8 @@ suite('SpeechController', () => {
     speechController.onSpeechSettingsChange();
 
     assertTrue(isSpeechActiveChanged);
-    assertEquals(
-        PauseActionSource.VOICE_SETTINGS_CHANGE,
-        speechController.getPauseSource());
+    assertFalse(speechController.isPausedFromButton());
+    assertTrue(speechController.isTemporaryPause());
     assertEquals(0, speech.getCallCount('pause'));
     assertEquals(2, speech.getCallCount('cancel'));
     assertEquals(1, speech.getCallCount('speak'));
@@ -234,9 +233,9 @@ suite('SpeechController', () => {
 
     assertFalse(isSpeechActiveChanged);
     assertFalse(speechController.isSpeechActive());
-    assertEquals(
-        PauseActionSource.VOICE_SETTINGS_CHANGE,
-        speechController.getPauseSource());
+    assertFalse(speechController.isAudioCurrentlyPlaying());
+    assertFalse(speechController.isPausedFromButton());
+    assertTrue(speechController.isTemporaryPause());
     assertEquals(0, speech.getCallCount('pause'));
     assertEquals(1, speech.getCallCount('cancel'));
     assertEquals(0, speech.getCallCount('speak'));
@@ -292,15 +291,14 @@ suite('SpeechController', () => {
   });
 
   test('onPlayPauseToggle pauses with button click', () => {
-    const source = PauseActionSource.BUTTON_CLICK;
-
     speechController.onPlayPauseToggle(null, 'A story that you think');
     speechController.onPlayPauseToggle(null, 'A story that you think');
 
     assertTrue(isSpeechActiveChanged);
     assertFalse(speechController.isSpeechActive());
     assertFalse(speechController.isAudioCurrentlyPlaying());
-    assertEquals(source, speechController.getPauseSource());
+    assertTrue(speechController.isPausedFromButton());
+    assertFalse(speechController.isTemporaryPause());
     assertEquals(1, speech.getCallCount('pause'));
     assertEquals(0, speech.getCallCount('cancel'));
   });
@@ -534,8 +532,8 @@ suite('SpeechController', () => {
     utterance.onerror(createSpeechErrorEvent(utterance, 'interrupted'));
 
     assertTrue(onEngineStateChange);
-    assertEquals(
-        PauseActionSource.ENGINE_INTERRUPT, speechController.getPauseSource());
+    assertFalse(speechController.isPausedFromButton());
+    assertFalse(speechController.isTemporaryPause());
     assertFalse(speechController.isAudioCurrentlyPlaying());
     assertFalse(speechController.isSpeechActive());
     assertFalse(speechController.isSpeechBeingRepositioned());
