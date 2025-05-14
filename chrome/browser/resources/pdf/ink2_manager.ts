@@ -125,6 +125,7 @@ export class Ink2Manager extends EventTarget {
   private existingAnnotationAttributes_: TextAttributes|null = null;
   private pageNumber_: number = -1;
   private pluginController_: PluginController = PluginController.getInstance();
+  private textResolver_: PromiseResolver<void>|null = null;
   private viewport_: Viewport|null = null;
   private viewportParams_: ViewportParams = {
     clockwiseRotations: 0,
@@ -140,6 +141,7 @@ export class Ink2Manager extends EventTarget {
   // Initialize a text annotation at `location` in screen coordinates.
   // No-op if there is no PDF page at `location`.
   initializeTextAnnotation(location: Point) {
+    assert(this.isTextInitializationComplete());
     assert(this.viewport_);
     // First check if the click was on a scrollbar. If so, ignore it to avoid
     // interfering with scroll.
@@ -255,6 +257,10 @@ export class Ink2Manager extends EventTarget {
     return this.brushResolver_ !== null;
   }
 
+  isTextInitializationComplete(): boolean {
+    return this.textResolver_ !== null && this.textResolver_.isFulfilled;
+  }
+
   isInitializationComplete(): boolean {
     return this.isInitializationStarted() && this.brushResolver_!.isFulfilled;
   }
@@ -279,6 +285,29 @@ export class Ink2Manager extends EventTarget {
       this.brushResolver_.resolve();
     });
     return this.brushResolver_.promise;
+  }
+
+  initializeTextAnnotations(): Promise<void> {
+    if (this.textResolver_) {
+      return this.textResolver_.promise;
+    }
+
+    this.textResolver_ = new PromiseResolver();
+    this.pluginController_.getAllTextAnnotations().then(message => {
+      message.annotations.forEach(annotation => {
+        let pageMap = this.annotations_.get(annotation.pageNumber);
+        if (!pageMap) {
+          pageMap = new Map();
+          this.annotations_.set(annotation.pageNumber, pageMap);
+        }
+        pageMap.set(annotation.id, annotation);
+        if (annotation.id > this.nextAnnotationId_) {
+          this.nextAnnotationId_ = annotation.id + 1;
+        }
+      });
+      this.textResolver_!.resolve();
+    });
+    return this.textResolver_.promise;
   }
 
   setBrushColor(color: Color) {

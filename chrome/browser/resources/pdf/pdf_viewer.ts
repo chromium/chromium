@@ -614,6 +614,10 @@ export class PdfViewerElement extends PdfViewerBaseElement {
           !Ink2Manager.getInstance().isInitializationStarted()) {
         await Ink2Manager.getInstance().initializeBrush();
       }
+      if (newAnnotationMode === AnnotationMode.TEXT &&
+          !Ink2Manager.getInstance().isTextInitializationComplete()) {
+        await Ink2Manager.getInstance().initializeTextAnnotations();
+      }
       this.annotationMode_ = newAnnotationMode;
       return;
     }

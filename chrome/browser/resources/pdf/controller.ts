@@ -54,6 +54,11 @@ interface AnnotationBrushMessage {
   data: AnnotationBrush;
 }
 
+interface AllTextAnnotationsMessage {
+  type: string;
+  annotations: TextAnnotation[];
+}
+
 interface StartTextAnnotationMessage {
   type: 'startTextAnnotation';
   data: number;
@@ -233,6 +238,12 @@ export class PluginController implements ContentController {
     };
 
     this.postMessage_(message);
+  }
+
+  getAllTextAnnotations(): Promise<AllTextAnnotationsMessage> {
+    return this.postMessageWithReply_({
+      type: 'getAllTextAnnotations',
+    });
   }
 
   startTextAnnotation(id: number) {

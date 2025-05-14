@@ -31,6 +31,7 @@ chrome.test.runTests([
     await microtasksFinished();
 
     viewer.$.toolbar.setAnnotationMode(AnnotationMode.TEXT);
+    await Ink2Manager.getInstance().initializeTextAnnotations();
     await microtasksFinished();
 
     chrome.test.assertEq(AnnotationMode.TEXT, viewer.$.toolbar.annotationMode);

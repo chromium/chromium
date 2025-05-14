@@ -348,6 +348,8 @@ bool PdfInkModule::OnMessage(const base::Value::Dict& message) {
           {"annotationUndo", &PdfInkModule::HandleAnnotationUndoMessage},
           {"finishTextAnnotation",
            &PdfInkModule::HandleFinishTextAnnotationMessage},
+          {"getAllTextAnnotations",
+           &PdfInkModule::HandleGetAllTextAnnotationsMessage},
           {"getAnnotationBrush",
            &PdfInkModule::HandleGetAnnotationBrushMessage},
           {"setAnnotationBrush",
@@ -1216,6 +1218,14 @@ void PdfInkModule::HandleAnnotationRedoMessage(
 void PdfInkModule::HandleAnnotationUndoMessage(
     const base::Value::Dict& message) {
   ApplyUndoRedoCommands(undo_redo_model_.Undo());
+}
+
+void PdfInkModule::HandleGetAllTextAnnotationsMessage(
+    const base::Value::Dict& message) {
+  // TODO(crbug.com/408926609): Fill in this method. For now, just return an
+  // empty set of annotations.
+  client_->PostMessage(
+      PrepareReplyMessage(message).Set("annotations", base::Value::List()));
 }
 
 void PdfInkModule::HandleGetAnnotationBrushMessage(

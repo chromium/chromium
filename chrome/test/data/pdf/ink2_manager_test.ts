@@ -39,14 +39,14 @@ function getTestAnnotation(id: number): TextAnnotation {
 
 // Verifies that the plugin received a startTextAnnotation message for
 // annotation with id 0.
-function verifyStartTextAnnotationMessage(expected: boolean) {
+function verifyStartTextAnnotationMessage(expected: boolean, id: number = 0) {
   const startTextAnnotationMessage =
       mockPlugin.findMessage('startTextAnnotation');
   chrome.test.assertEq(expected, startTextAnnotationMessage !== undefined);
   if (expected) {
     chrome.test.assertEq(
         'startTextAnnotation', startTextAnnotationMessage.type);
-    chrome.test.assertEq(0, startTextAnnotationMessage.data);
+    chrome.test.assertEq(id, startTextAnnotationMessage.data);
   }
 }
 
@@ -151,6 +151,97 @@ chrome.test.runTests([
     assertAnnotationBrush(mockPlugin, expectedBrush);
     assertBrushUpdate(2, expectedBrush);
 
+    chrome.test.succeed();
+  },
+
+  async function testInitializeText() {
+    chrome.test.assertFalse(manager.isTextInitializationComplete());
+
+    // Initialize text annotation mode.
+    const textPromise = manager.initializeTextAnnotations();
+    await textPromise;
+    chrome.test.assertTrue(manager.isTextInitializationComplete());
+
+    // Check that the manager requested all the text annotations.
+    const getAllTextAnnotationsMessage =
+        mockPlugin.findMessage('getAllTextAnnotations');
+    chrome.test.assertTrue(getAllTextAnnotationsMessage !== undefined);
+    chrome.test.assertEq(
+        'getAllTextAnnotations', getAllTextAnnotationsMessage.type);
+
+    chrome.test.succeed();
+  },
+
+  async function testInitializeTextNonEmpty() {
+    // Create a new Ink2Manager so that the state is separate from the rest of
+    // the tests.
+    const testManager = new Ink2Manager();
+    testManager.setViewport(viewport);
+    testManager.viewportChanged();
+
+    // Set the reply to getAllTextAnnotations to return non-empty.
+    const testAnnotation1 = getTestAnnotation(0);
+    const testAnnotation2 = getTestAnnotation(1);
+    testAnnotation2.text = 'Goodbye Moon';
+    testAnnotation2.textBoxRect = {
+      height: 25,
+      locationX: 10,
+      locationY: 65,
+      width: 50,
+    };
+    mockPlugin.clearMessages();
+    mockPlugin.setMessageReply('getAllTextAnnotations', {
+      annotations: [testAnnotation1, testAnnotation2],
+    });
+
+    chrome.test.assertFalse(testManager.isTextInitializationComplete());
+    await testManager.initializeTextAnnotations();
+    chrome.test.assertTrue(testManager.isTextInitializationComplete());
+
+    // Check that the manager requested all the text annotations.
+    const getAllTextAnnotationsMessage =
+        mockPlugin.findMessage('getAllTextAnnotations');
+    chrome.test.assertTrue(getAllTextAnnotationsMessage !== undefined);
+    chrome.test.assertEq(
+        'getAllTextAnnotations', getAllTextAnnotationsMessage.type);
+
+    // Check that initializing a new annotation in a different location sets
+    // a different id.
+    let whenInitEvent = eventToPromise('initialize-text-box', testManager);
+    testManager.initializeTextAnnotation({x: 75, y: 20});
+    let initEvent = await whenInitEvent;
+    chrome.test.assertEq(2, initEvent.detail.annotation.id);
+    chrome.test.assertEq('', initEvent.detail.annotation.text);
+    verifyStartTextAnnotationMessage(false);
+
+    // Check that the two existing annotations can be activated.
+    mockPlugin.clearMessages();
+    whenInitEvent = eventToPromise('initialize-text-box', testManager);
+    testManager.initializeTextAnnotation({x: 30, y: 30});
+    initEvent = await whenInitEvent;
+    const testAnnotation1ScreenCoords = structuredClone(testAnnotation1);
+    // Add page offsets. These are the defaults for the test viewport setup
+    // of a 90x90 page in a 100x100 window.
+    testAnnotation1ScreenCoords.textBoxRect.locationX =
+        testAnnotation1.textBoxRect.locationX + 10;
+    testAnnotation1ScreenCoords.textBoxRect.locationY =
+        testAnnotation1.textBoxRect.locationY + 3;
+    assertDeepEquals(testAnnotation1ScreenCoords, initEvent.detail.annotation);
+    verifyStartTextAnnotationMessage(true, testAnnotation1.id);
+
+    mockPlugin.clearMessages();
+    whenInitEvent = eventToPromise('initialize-text-box', testManager);
+    testManager.initializeTextAnnotation({x: 30, y: 70});
+    initEvent = await whenInitEvent;
+    const testAnnotation2ScreenCoords = structuredClone(testAnnotation2);
+    testAnnotation2ScreenCoords.textBoxRect.locationX =
+        testAnnotation2.textBoxRect.locationX + 10;
+    testAnnotation2ScreenCoords.textBoxRect.locationY =
+        testAnnotation2.textBoxRect.locationY + 3;
+    assertDeepEquals(testAnnotation2ScreenCoords, initEvent.detail.annotation);
+    verifyStartTextAnnotationMessage(true, testAnnotation2.id);
+
+    mockPlugin.clearMessages();
     chrome.test.succeed();
   },
 
