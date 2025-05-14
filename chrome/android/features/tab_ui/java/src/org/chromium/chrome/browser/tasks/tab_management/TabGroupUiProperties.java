@@ -8,12 +8,14 @@ import android.content.res.ColorStateList;
 import android.view.View.OnClickListener;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** {@link PropertyKey} list for the TabGroupUi. */
+@NullMarked
 class TabGroupUiProperties {
     public static final WritableObjectPropertyKey<OnClickListener>
             SHOW_GROUP_DIALOG_ON_CLICK_LISTENER = new WritableObjectPropertyKey<>();

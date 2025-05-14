@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 
 /** List of properties used by the archived_tab_message_card_view layout. */
+@NullMarked
 public class ArchivedTabsCardViewProperties {
     public static final WritableIntPropertyKey NUMBER_OF_ARCHIVED_TABS =
             new WritableIntPropertyKey();

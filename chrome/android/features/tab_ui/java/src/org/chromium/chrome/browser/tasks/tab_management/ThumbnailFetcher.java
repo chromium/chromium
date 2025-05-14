@@ -7,16 +7,17 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.graphics.drawable.Drawable;
 import android.util.Size;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 
 /**
  * The object to set to {@link TabProperties#THUMBNAIL_FETCHER} for the TabGridViewBinder to obtain
  * the thumbnail asynchronously.
  */
+@NullMarked
 public class ThumbnailFetcher {
     private final ThumbnailProvider mThumbnailProvider;
     private final int mTabId;
@@ -38,7 +39,7 @@ public class ThumbnailFetcher {
      * @param isSelected Whether the tab is currently selected.
      * @param callback The callback to invoke with the resultant drawable.
      */
-    void fetch(Size thumbnailSize, boolean isSelected, Callback<Drawable> callback) {
+    void fetch(Size thumbnailSize, boolean isSelected, Callback<@Nullable Drawable> callback) {
         mThumbnailProvider.getTabThumbnailWithCallback(
                 mTabId, thumbnailSize, isSelected, createCancelableCallback(callback));
     }
@@ -51,7 +52,9 @@ public class ThumbnailFetcher {
         }
     }
 
-    private Callback<Drawable> createCancelableCallback(Callback<Drawable> callback) {
+    @SuppressWarnings("NullAway")
+    private Callback<@Nullable Drawable> createCancelableCallback(
+            Callback<@Nullable Drawable> callback) {
         cancel();
         mCurrentCallbackController = new CallbackController();
         return mCurrentCallbackController.makeCancelable(callback);

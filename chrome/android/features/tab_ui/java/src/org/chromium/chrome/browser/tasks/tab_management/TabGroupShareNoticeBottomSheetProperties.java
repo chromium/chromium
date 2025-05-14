@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 
 /** Properties for the Tab Group Share Notice Bottom Sheet. */
+@NullMarked
 public class TabGroupShareNoticeBottomSheetProperties {
     public static final ReadableObjectPropertyKey<Runnable> COMPLETION_HANDLER =
             new ReadableObjectPropertyKey<>();

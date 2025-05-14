@@ -6,15 +6,16 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Resolver of dynamic text. */
 @FunctionalInterface
+@NullMarked
 public interface TextResolver {
     /**
      * @param context The context to use for resolving the text.
      * @return the character sequence to show.
      */
-    @Nullable
-    CharSequence resolve(Context context);
+    @Nullable CharSequence resolve(Context context);
 }

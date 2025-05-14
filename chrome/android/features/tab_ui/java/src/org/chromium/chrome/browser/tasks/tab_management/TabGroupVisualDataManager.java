@@ -4,13 +4,14 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -26,14 +27,15 @@ import java.util.Set;
 /**
  * Manages observers that monitor for updates to tab group visual aspects such as colors and titles.
  */
+@NullMarked
 public class TabGroupVisualDataManager {
     private static final int DELETE_DATA_GROUP_SIZE_THRESHOLD = 1;
 
     private final TabModelSelector mTabModelSelector;
-    private TabModelObserver mTabModelObserver;
-    private TabGroupModelFilterObserver mFilterObserver;
+    private final TabModelObserver mTabModelObserver;
+    private final TabGroupModelFilterObserver mFilterObserver;
 
-    public TabGroupVisualDataManager(@NonNull TabModelSelector tabModelSelector) {
+    public TabGroupVisualDataManager(TabModelSelector tabModelSelector) {
         assert tabModelSelector.isTabStateInitialized();
         mTabModelSelector = tabModelSelector;
 
@@ -60,7 +62,9 @@ public class TabGroupVisualDataManager {
 
                             // If any related tab still exist keep the data as size 1 groups are
                             // valid.
-                            if (remainingTabGroupIds.get().contains(tabGroupId)) continue;
+                            if (assumeNonNull(remainingTabGroupIds.get()).contains(tabGroupId)) {
+                                continue;
+                            }
 
                             int rootId = tab.getRootId();
                             Runnable deleteTask =
@@ -85,7 +89,8 @@ public class TabGroupVisualDataManager {
         mFilterObserver =
                 new TabGroupModelFilterObserver() {
                     @Override
-                    public void willMergeTabToGroup(Tab movedTab, int newRootId, Token tabGroupId) {
+                    public void willMergeTabToGroup(
+                            Tab movedTab, int newRootId, @Nullable Token tabGroupId) {
                         TabGroupModelFilter filter = filterFromTab(movedTab);
                         int rootId = movedTab.getRootId();
                         String sourceGroupTitle = filter.getTabGroupTitle(rootId);
@@ -134,25 +139,25 @@ public class TabGroupVisualDataManager {
                     @Override
                     public void didChangeGroupRootId(int oldRootId, int newRootId) {
                         TabGroupModelFilter filter =
-                                filterFromTab(mTabModelSelector.getTabById(newRootId));
+                                filterFromTab(
+                                        assumeNonNull(mTabModelSelector.getTabById(newRootId)));
                         moveTabGroupMetadata(filter, oldRootId, newRootId);
                     }
                 };
 
         tabGroupModelFilterProvider.addTabGroupModelFilterObserver(mTabModelObserver);
 
-        tabGroupModelFilterProvider
-                .getTabGroupModelFilter(false)
+        assumeNonNull(tabGroupModelFilterProvider.getTabGroupModelFilter(false))
                 .addTabGroupObserver(mFilterObserver);
-        tabGroupModelFilterProvider
-                .getTabGroupModelFilter(true)
+        assumeNonNull(tabGroupModelFilterProvider.getTabGroupModelFilter(true))
                 .addTabGroupObserver(mFilterObserver);
     }
 
     private TabGroupModelFilter filterFromTab(Tab tab) {
-        return mTabModelSelector
-                .getTabGroupModelFilterProvider()
-                .getTabGroupModelFilter(tab.isIncognito());
+        return assumeNonNull(
+                mTabModelSelector
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(tab.isIncognito()));
     }
 
     /** Overwrites the tab group metadata at the new id with the data from the old id. */
@@ -179,20 +184,10 @@ public class TabGroupVisualDataManager {
     public void destroy() {
         TabGroupModelFilterProvider tabGroupModelFilterProvider =
                 mTabModelSelector.getTabGroupModelFilterProvider();
-
-        if (mTabModelObserver != null) {
-            tabGroupModelFilterProvider.removeTabGroupModelFilterObserver(mTabModelObserver);
-            mTabModelObserver = null;
-        }
-
-        if (mFilterObserver != null) {
-            tabGroupModelFilterProvider
-                    .getTabGroupModelFilter(false)
-                    .removeTabGroupObserver(mFilterObserver);
-            tabGroupModelFilterProvider
-                    .getTabGroupModelFilter(true)
-                    .removeTabGroupObserver(mFilterObserver);
-            mFilterObserver = null;
-        }
+        tabGroupModelFilterProvider.removeTabGroupModelFilterObserver(mTabModelObserver);
+        assumeNonNull(tabGroupModelFilterProvider.getTabGroupModelFilter(false))
+                .removeTabGroupObserver(mFilterObserver);
+        assumeNonNull(tabGroupModelFilterProvider.getTabGroupModelFilter(true))
+                .removeTabGroupObserver(mFilterObserver);
     }
 }

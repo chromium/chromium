@@ -8,10 +8,12 @@ import android.content.res.Resources;
 
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
 /** Helper class to handle color picker related utilities. */
+@NullMarked
 public class ColorPickerUtils {
     /**
      * Get the accessibility string corresponding to the respective color item. This function should

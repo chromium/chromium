@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
@@ -12,6 +13,7 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
 /** Model for a color entry in the color picker UI. */
+@NullMarked
 public class ColorPickerItemProperties {
     /** The {@link TabGroupColorId} represented by this entry. */
     public static final ReadableIntPropertyKey COLOR_ID = new ReadableIntPropertyKey();

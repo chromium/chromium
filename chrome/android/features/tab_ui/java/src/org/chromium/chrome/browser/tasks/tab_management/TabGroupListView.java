@@ -14,8 +14,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.util.Consumer;
@@ -23,11 +21,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 
 /** Conditionally displays empty state for the tab group pane. */
+@NullMarked
 public class TabGroupListView extends FrameLayout {
     private RecyclerView mRecyclerView;
     private View mEmptyStateContainer;
@@ -78,7 +79,7 @@ public class TabGroupListView extends FrameLayout {
         mRecyclerView.addOnScrollListener(
                 new OnScrollListener() {
                     @Override
-                    public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                         onIsScrolledMaybeChanged.accept(
                                 mRecyclerView.computeVerticalScrollOffset() != 0);
                     }

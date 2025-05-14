@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.TabId;
 
 /** Returns key event data relevant to the current tab with Android's View focus. */
+@NullMarked
 public class TabKeyEventData {
     public final @TabId int tabId;
     public final int keyCode;

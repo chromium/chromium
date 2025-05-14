@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Constants for tab switcher. */
+@NullMarked
 public class TabSwitcherConstants {
     /** Time to wait before soft cleanup. Soft cleanup will clear tab thumbnails. */
     public static final long SOFT_CLEANUP_DELAY_MS = 3_000L;
