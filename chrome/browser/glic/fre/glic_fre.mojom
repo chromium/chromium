@@ -34,6 +34,7 @@ interface FrePageHandler {
   WebUiStateChanged(FreWebUiState new_state);
 };
 
+// LINT.IfChange(FreWebUiState)
 enum FreWebUiState {
   // Glic fre app controller not started.
   kUninitialized,
@@ -55,3 +56,4 @@ enum FreWebUiState {
   // Web view is displayed.
   kReady,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:FreWebUiState)

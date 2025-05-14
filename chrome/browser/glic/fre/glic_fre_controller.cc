@@ -52,21 +52,23 @@ GlicFreController::GlicFreController(Profile* profile,
 GlicFreController::~GlicFreController() = default;
 
 void GlicFreController::WebUiStateChanged(mojom::FreWebUiState new_state) {
-  if (webui_state_ != new_state) {
-    // UI State has changed
-    webui_state_ = new_state;
-    webui_state_callback_list_.Notify(webui_state_);
-
-    // It is possible for the FRE to open directly in an error state. In this
-    // case, we should not record the FRE load time metric if the content is
-    // loaded at a later point.
-    if (new_state == mojom::FreWebUiState::kError ||
-        new_state == mojom::FreWebUiState::kOffline) {
-      show_start_time_ = base::TimeTicks();
-    }
-
-    RecordMetricsIfDialogIsShowingAndReady();
+  if (webui_state_ == new_state) {
+    return;
   }
+
+  // UI State has changed
+  webui_state_ = new_state;
+  webui_state_callback_list_.Notify(webui_state_);
+
+  // It is possible for the FRE to open directly in an error state. In this
+  // case, we should not record the FRE load time metric if the content is
+  // loaded at a later point.
+  if (new_state == mojom::FreWebUiState::kError ||
+      new_state == mojom::FreWebUiState::kOffline) {
+    show_start_time_ = base::TimeTicks();
+  }
+
+  RecordMetricsIfDialogIsShowingAndReady();
 }
 
 base::CallbackListSubscription GlicFreController::AddWebUiStateChangedCallback(
@@ -216,6 +218,8 @@ void GlicFreController::CloseWithReason(views::Widget::ClosedReason reason) {
 }
 
 void GlicFreController::DismissFre() {
+  base::UmaHistogramEnumeration("Glic.FreModalWebUiState.FinishState",
+                                webui_state_);
   web_contents_ = nullptr;
   source_browser_ = nullptr;
   if (fre_view_ || fre_widget_) {
