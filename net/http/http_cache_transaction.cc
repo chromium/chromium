@@ -3839,7 +3839,9 @@ void HttpCache::Transaction::UpdateCacheEntryStatus(
     return;
   }
   DCHECK(cache_entry_status_ == CacheEntryStatus::ENTRY_UNDEFINED ||
-         new_cache_entry_status == CacheEntryStatus::ENTRY_OTHER);
+         new_cache_entry_status == CacheEntryStatus::ENTRY_OTHER)
+      << "cache_entry_status_: " << cache_entry_status_
+      << "new_cache_entry_status: " << new_cache_entry_status;
   cache_entry_status_ = new_cache_entry_status;
   SyncCacheEntryStatusToResponse();
 }
