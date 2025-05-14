@@ -52,7 +52,7 @@ struct SearchPasswordsWidgetEntryView: View {
 
   var body: some View {
     // The account to display was deleted (entry.deleted can only be true if
-    // IsWidgetsForMultiprofileEnabled() is true).
+    // WidgetForMIMAvailable is true).
     if entry.deleted && !entry.isPreview {
       SmallWidgetDeletedAccountView()
     } else {

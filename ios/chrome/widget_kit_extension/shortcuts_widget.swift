@@ -207,7 +207,7 @@ func loadMostVisitedSitesEntry(
   guard let sharedDefaults = AppGroupHelper.groupUserDefaults() else { return emptyEntry }
   var lastModificationDate: Date?
 
-  if ChromeWidgetsMain.WidgetsForMultiprofile() {
+  if ChromeWidgetsMain.WidgetForMIMAvailable {
     guard
       let lastModificationDates = sharedDefaults.object(
         forKey: "SuggestedItemsLastModificationDateForMIM")
@@ -254,7 +254,7 @@ func loadMostVisitedSitesEntry(
     return expiredEntry
   }
   var unarchiver: NSKeyedUnarchiver?
-  if ChromeWidgetsMain.WidgetsForMultiprofile() {
+  if ChromeWidgetsMain.WidgetForMIMAvailable {
     guard let data = sharedDefaults.object(forKey: "SuggestedItemsForMIM") as? [String: Data]
     else { return emptyEntry }
     for (key, value) in data {
@@ -373,7 +373,7 @@ struct ShortcutsWidgetEntryView: View {
             .font(.subheadline)
             .foregroundColor(Colors.widgetTextColor)
           Spacer()
-          if ChromeWidgetsMain.WidgetsForMultiprofile() {
+          if ChromeWidgetsMain.WidgetForMIMAvailable {
             AvatarForShortcuts(entry: entry)
           }
         }
@@ -453,7 +453,7 @@ struct ShortcutsWidgetEntryView: View {
 
   var body: some View {
     // The account to display was deleted (entry.deleted can only be true if
-    // IsWidgetsForMultiprofileEnabled() is true).
+    // WidgetForMIMAvailable is true).
     if entry.deleted && !entry.isPreview {
       MediumWidgetDeletedAccountView()
     } else {

@@ -8,10 +8,15 @@ import WidgetKit
 
 @main
 struct ChromeWidgetsMain {
+
+  // Bool telling if widgets for multiprofile is enabled.
+  static var WidgetForMIMAvailable: Bool = false
+
   static func main() {
     CrashHelper.configure()
 
     if WidgetsForMultiprofile() {
+      WidgetForMIMAvailable = true
       if #available(iOS 17.0, *) {
         return ChromeWidgetsForMIM.main()
       } else {
@@ -23,7 +28,9 @@ struct ChromeWidgetsMain {
   }
 
   // Checks if widgets for multiprofile feature is enabled.
-  static func WidgetsForMultiprofile() -> Bool {
+  // Marked as private because it's meant to be run only once at startup, in this way
+  // if there is a change in "WidgetsForMultiprofileKey" we wont have an hybrid result.
+  private static func WidgetsForMultiprofile() -> Bool {
     guard let appGroup = AppGroupHelper.groupUserDefaults() else { return false }
 
     guard let extensionsPrefs = appGroup.object(forKey: "Extension.FieldTrial") as? NSDictionary

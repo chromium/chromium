@@ -54,7 +54,7 @@ struct DinoGameWidgetEntryView: View {
   @Environment(\.redactionReasons) var redactionReasons
   var body: some View {
     // The account to display was deleted (entry.deleted can only be true if
-    // IsWidgetsForMultiprofileEnabled() is enabled).
+    // WidgetForMIMAvailable is enabled).
     if entry.deleted && !entry.isPreview {
       SmallWidgetDeletedAccountView()
     } else {
@@ -76,7 +76,7 @@ struct DinoGameWidgetEntryView: View {
                 .font(.subheadline)
                 .lineLimit(1)
               Spacer()
-              if ChromeWidgetsMain.WidgetsForMultiprofile() {
+              if ChromeWidgetsMain.WidgetForMIMAvailable {
                 AvatarForDinoGame(entry: entry)
               }
             }
