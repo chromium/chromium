@@ -70,11 +70,10 @@ bool ToastController::IsShowingToast() const {
 }
 
 bool ToastController::CanShowToast(ToastId toast_id) const {
-  if (base::FeatureList::IsEnabled(toast_features::kToastRefinements) &&
-      static_cast<toasts::ToastAlertLevel>(
+  if (static_cast<toasts::ToastAlertLevel>(
           g_browser_process->local_state()->GetInteger(
               prefs::kToastAlertLevel)) ==
-          toasts::ToastAlertLevel::kActionable) {
+      toasts::ToastAlertLevel::kActionable) {
     const ToastSpecification* toast_spec =
         toast_registry_->GetToastSpecification(toast_id);
     return toast_spec->has_close_button() || toast_spec->has_menu();

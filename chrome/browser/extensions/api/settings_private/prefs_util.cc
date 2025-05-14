@@ -572,9 +572,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
 #endif
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(toast_features::kToastRefinements)) {
-    (*s_allowlist)[::prefs::kToastAlertLevel] = settings_api::PrefType::kNumber;
-  }
+  (*s_allowlist)[::prefs::kToastAlertLevel] = settings_api::PrefType::kNumber;
 #endif
 
   (*s_allowlist)[::prefs::kCaretBrowsingEnabled] =

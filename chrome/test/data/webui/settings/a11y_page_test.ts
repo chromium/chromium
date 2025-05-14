@@ -63,7 +63,6 @@ suite('A11yPage', () => {
     loadTimeData.overrideValues({
       axTreeFixingEnabled: true,
       mainNodeAnnotationsEnabled: true,
-      enableToastRefinements: true,
     });
 
     metrics = fakeMetricsPrivate();
@@ -170,58 +169,3 @@ suite('A11yPage', () => {
 
   // TODO(crbug.com/40940496): Add more test cases to improve code coverage.
 });
-
-// <if expr="is_win or is_linux or is_macosx">
-suite('A11yPage without toast refinements', () => {
-  let a11yPage: SettingsA11yPageElement;
-  let settingsPrefs: SettingsPrefsElement;
-  let browserProxy: TestAccessibilityBrowserProxy;
-  let languageHelper: LanguageHelper;
-
-  setup(async () => {
-    loadTimeData.overrideValues({
-      mainNodeAnnotationsEnabled: true,
-      enableToastRefinements: false,
-    });
-
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    settingsPrefs = document.createElement('settings-prefs');
-    const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs());
-    settingsPrefs.initialize(settingsPrivate);
-    document.body.appendChild(settingsPrefs);
-
-    await CrSettingsPrefs.initialized;
-
-    // Set up test browser proxy.
-    browserProxy = new TestAccessibilityBrowserProxy();
-    AccessibilityBrowserProxyImpl.setInstance(browserProxy);
-
-    // Set up languages helper.
-    const settingsLanguages = document.createElement('settings-languages');
-    settingsLanguages.prefs = settingsPrefs.prefs;
-    fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
-    document.body.appendChild(settingsLanguages);
-
-    a11yPage = document.createElement('settings-a11y-page');
-    a11yPage.prefs = settingsPrefs.prefs;
-    fakeDataBind(settingsPrefs, a11yPage, 'prefs');
-
-    a11yPage.languageHelper = settingsLanguages.languageHelper;
-    fakeDataBind(settingsLanguages, a11yPage, 'language-helper');
-
-    document.body.appendChild(a11yPage);
-    flush();
-
-    languageHelper = a11yPage.languageHelper;
-    await languageHelper.whenReady();
-  });
-
-
-  test('toast refinements toggle hidden', () => {
-    const toastToggle =
-        a11yPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#toastToggle');
-    assertFalse(!!toastToggle);
-  });
-});
-// </if>

@@ -11,12 +11,6 @@
 
 namespace toast_features {
 
-BASE_DECLARE_FEATURE(kToastRefinements);
-
-// Enables all toast features queried through `toast_features::IsEnabled` which
-// is used for demo mode.
-extern const base::FeatureParam<bool> kToastDemoMode;
-
 // Individual toasts
 BASE_DECLARE_FEATURE(kLinkCopiedToast);
 BASE_DECLARE_FEATURE(kImageCopiedToast);

@@ -23560,24 +23560,6 @@
             ]
         }
     ],
-    "ToastRefinementsStudy": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithRefinements",
-                    "enable_features": [
-                        "ToastRefinements"
-                    ]
-                }
-            ]
-        }
-    ],
     "ToolbarPinning": [
         {
             "platforms": [

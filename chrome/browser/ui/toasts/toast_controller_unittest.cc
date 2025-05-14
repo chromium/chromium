@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
@@ -14,7 +13,10 @@
 #include "chrome/browser/ui/toasts/api/toast_specification.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -44,19 +46,23 @@ class TestToastController : public ToastController {
 class ToastControllerUnitTest : public testing::Test {
  public:
   void SetUp() override {
+    testing_profile_manager = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(testing_profile_manager->SetUp());
+
     toast_registry_ = std::make_unique<ToastRegistry>();
   }
 
-  base::test::SingleThreadTaskEnvironment& task_environment() {
+  content::BrowserTaskEnvironment& task_environment() {
     return task_environment_;
   }
 
   ToastRegistry* toast_registry() { return toast_registry_.get(); }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
-  base::test::SingleThreadTaskEnvironment task_environment_{
+  content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<TestingProfileManager> testing_profile_manager;
   std::unique_ptr<ToastRegistry> toast_registry_;
 };
 

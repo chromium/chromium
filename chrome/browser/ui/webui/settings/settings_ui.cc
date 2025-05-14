@@ -707,13 +707,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableDeleteBrowsingDataRevamp",
       base::FeatureList::IsEnabled(features::kDbdRevampDesktop));
 
-#if !BUILDFLAG(IS_CHROMEOS)
-  // A11y page
-  html_source->AddBoolean(
-      "enableToastRefinements",
-      base::FeatureList::IsEnabled(toast_features::kToastRefinements));
-#endif
-
   TryShowHatsSurveyWithTimeout();
 }
 

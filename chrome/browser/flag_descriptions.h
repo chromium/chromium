@@ -2307,9 +2307,6 @@ extern const char kTintCompositedContentDescription[];
 extern const char kTopChromeToastsName[];
 extern const char kTopChromeToastsDescription[];
 
-extern const char kTopChromeToastRefinementsName[];
-extern const char kTopChromeToastRefinementsDescription[];
-
 extern const char kPinnedTabToastOnCloseName[];
 extern const char kPinnedTabToastOnCloseDescription[];
 #endif

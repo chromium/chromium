@@ -179,14 +179,6 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
 
       // <if expr="not is_chromeos">
 
-      /** Whether the toast refinements feature is enabled. */
-      isToastRefinementsEnabled_: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean('enableToastRefinements');
-        },
-      },
-
       /** Valid toast alert level option. */
       toastAlertLevelEnum_: {
         type: Object,
@@ -212,7 +204,6 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
 
   declare private enableLiveCaption_: boolean;
   declare private numericUncheckedToastAlertValues_: ToastAlertLevel[];
-  declare private isToastRefinementsEnabled_: boolean;
   // </if>
 
   declare private focusConfig_: FocusConfig;

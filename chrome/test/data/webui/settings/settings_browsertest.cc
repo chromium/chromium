@@ -44,9 +44,6 @@ class SettingsBrowserTest : public WebUIMochaBrowserTest {
 #if BUILDFLAG(ENABLE_GLIC)
             features::kGlic, features::kTabstripComboButton,
 #endif
-#if !BUILDFLAG(IS_CHROMEOS)
-            toast_features::kToastRefinements,
-#endif
             privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi,
             privacy_sandbox::kFingerprintingProtectionUx},
         /*disabled_features=*/{});

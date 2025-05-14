@@ -4849,13 +4849,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTopChromeTouchUiDescription, kOsDesktop,
      MULTI_VALUE_TYPE(kTopChromeTouchUiChoices)},
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"top-chrome-toast-refinements",
-     flag_descriptions::kTopChromeToastRefinementsName,
-     flag_descriptions::kTopChromeToastRefinementsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(toast_features::kToastRefinements)},
-#endif
-
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
     {flag_descriptions::kWebUITabStripFlagId,
      flag_descriptions::kWebUITabStripName,
