@@ -616,16 +616,9 @@ UserMediaRequest::UserMediaRequest(ExecutionContext* context,
       video_(video),
       capture_controller_(capture_controller),
       should_prefer_current_tab_(should_prefer_current_tab),
-      should_disable_hardware_noise_suppression_(
-          RuntimeEnabledFeatures::DisableHardwareNoiseSuppressionEnabled(
-              context)),
       client_(client),
       callbacks_(callbacks),
       surface_(surface) {
-  if (should_disable_hardware_noise_suppression_) {
-    UseCounter::Count(context,
-                      WebFeature::kUserMediaDisableHardwareNoiseSuppression);
-  }
 }
 
 UserMediaRequest::~UserMediaRequest() = default;
@@ -715,10 +708,6 @@ MediaStreamType UserMediaRequest::VideoMediaStreamType() const {
   }
 
   return MediaStreamType::DEVICE_VIDEO_CAPTURE;
-}
-
-bool UserMediaRequest::ShouldDisableHardwareNoiseSuppression() const {
-  return should_disable_hardware_noise_suppression_;
 }
 
 bool UserMediaRequest::IsSecureContextUse(String& error_message) {

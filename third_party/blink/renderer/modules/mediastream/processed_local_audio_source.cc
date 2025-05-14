@@ -87,13 +87,11 @@ std::string GetAudioProcesingPropertiesLogString(
       };
   auto str = base::StringPrintf(
       "echo_cancellation_type: %s, "
-      "disable_hw_ns: %s, "
       "auto_gain_control: %s, "
       "noise_suppression: %s, "
       "system_gain_control: %s, "
       "system_noise_suppression: %s",
       aec_to_string(properties.echo_cancellation_type),
-      base::ToString(properties.disable_hw_noise_suppression).c_str(),
       base::ToString(properties.auto_gain_control).c_str(),
       base::ToString(properties.noise_suppression).c_str(),
       base::ToString(properties.system_gain_control_activated).c_str(),
@@ -195,12 +193,6 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
   SendLogMessage(GetEnsureSourceIsStartedLogString(device()));
 
   int device_effects = device().input.effects();
-
-  // Disable platform NS effect if the properties explicitly
-  // specify to do so.
-  if (audio_processing_properties_.disable_hw_noise_suppression) {
-    device_effects &= ~media::AudioParameters::NOISE_SUPPRESSION;
-  }
 
   if (audio_processing_properties_.echo_cancellation_type ==
       EchoCancellationType::kEchoCancellationSystem) {

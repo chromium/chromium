@@ -845,7 +845,6 @@ class ProcessingBasedContainer {
              std::optional<int> /* requested_buffer_size */,
              int /* num_channels */>
   SelectSettingsAndScore(const ConstraintSet& constraint_set,
-                         bool should_disable_hardware_noise_suppression,
                          const media::AudioParameters& parameters) const {
     DCHECK(!IsEmpty());
 
@@ -1156,7 +1155,6 @@ class DeviceContainer {
   std::tuple<Score, AudioCaptureSettings> SelectSettingsAndScore(
       const ConstraintSet& constraint_set,
       bool is_destkop_source,
-      bool should_disable_hardware_noise_suppression,
       std::string default_device_id) const {
     DCHECK(!IsEmpty());
     Score score(0.0);
@@ -1197,9 +1195,7 @@ class DeviceContainer {
 
       auto [container_score, container_properties, requested_buffer_size,
             num_channels] =
-          container.SelectSettingsAndScore(
-              constraint_set, should_disable_hardware_noise_suppression,
-              device_parameters_);
+          container.SelectSettingsAndScore(constraint_set, device_parameters_);
       if (container_score > best_score) {
         best_score = container_score;
         best_properties = container_properties;
@@ -1211,13 +1207,6 @@ class DeviceContainer {
 
     DCHECK_NE(best_container, nullptr);
     score += best_score;
-
-    // Update |properties.disable_hw_noise_suppression| depending on a related
-    // experiment that can force-disable HW noise suppression.
-    best_properties.disable_hw_noise_suppression =
-        should_disable_hardware_noise_suppression &&
-        best_properties.echo_cancellation_type ==
-            EchoCancellationType::kEchoCancellationDisabled;
 
     // The score at this point can be considered complete only when the settings
     // are compared against the default device id, which is used as arbitrator
@@ -1316,8 +1305,7 @@ class CandidatesContainer {
 
   std::tuple<Score, AudioCaptureSettings> SelectSettingsAndScore(
       const ConstraintSet& constraint_set,
-      bool is_desktop_source,
-      bool should_disable_hardware_noise_suppression) const {
+      bool is_desktop_source) const {
     DCHECK(!IsEmpty());
     // Make a copy of the settings initially provided, to track the default
     // settings.
@@ -1325,8 +1313,7 @@ class CandidatesContainer {
     Score best_score(-1.0);
     for (const auto& candidate : devices_) {
       auto [score, settings] = candidate.SelectSettingsAndScore(
-          constraint_set, is_desktop_source,
-          should_disable_hardware_noise_suppression, default_device_id_);
+          constraint_set, is_desktop_source, default_device_id_);
 
       score += default_device_id_ == settings.device_id();
       if (score > best_score) {
@@ -1401,7 +1388,6 @@ AudioCaptureSettings SelectSettingsAudioCapture(
     const AudioDeviceCaptureCapabilities& capabilities,
     const MediaConstraints& constraints,
     mojom::blink::MediaStreamType stream_type,
-    bool should_disable_hardware_noise_suppression,
     bool is_reconfiguration_allowed) {
   if (capabilities.empty())
     return AudioCaptureSettings();
@@ -1433,8 +1419,7 @@ AudioCaptureSettings SelectSettingsAudioCapture(
   AudioCaptureSettings settings;
   std::tie(std::ignore, settings) = candidates.SelectSettingsAndScore(
       constraints.Basic(),
-      media_stream_source == blink::kMediaStreamSourceDesktop,
-      should_disable_hardware_noise_suppression);
+      media_stream_source == blink::kMediaStreamSourceDesktop);
 
   return settings;
 }
@@ -1478,13 +1463,10 @@ AudioCaptureSettings SelectSettingsAudioCapture(
 
   AudioDeviceCaptureCapabilities capabilities = {
       AudioDeviceCaptureCapability(source)};
-  bool should_disable_hardware_noise_suppression =
-      !(source->device().input.effects() &
-        media::AudioParameters::NOISE_SUPPRESSION);
 
   return SelectSettingsAudioCapture(capabilities, constraints,
                                     source->device().type,
-                                    should_disable_hardware_noise_suppression);
+                                    /*is_reconfiguration_allowed=*/false);
 }
 
 MODULES_EXPORT base::expected<Vector<blink::AudioCaptureSettings>, std::string>
@@ -1492,14 +1474,12 @@ SelectEligibleSettingsAudioCapture(
     const AudioDeviceCaptureCapabilities& capabilities,
     const MediaConstraints& constraints,
     mojom::blink::MediaStreamType stream_type,
-    bool should_disable_hardware_noise_suppression,
     bool is_reconfiguration_allowed) {
   Vector<AudioCaptureSettings> settings;
   std::string failed_constraint_name;
   for (const auto& device : capabilities) {
     const auto device_settings = SelectSettingsAudioCapture(
-        {device}, constraints, stream_type,
-        should_disable_hardware_noise_suppression, is_reconfiguration_allowed);
+        {device}, constraints, stream_type, is_reconfiguration_allowed);
     if (device_settings.HasValue()) {
       settings.push_back(device_settings);
     } else {

@@ -31,8 +31,7 @@ bool AudioProcessingProperties::HasSameReconfigurableSettings(
 
 bool AudioProcessingProperties::HasSameNonReconfigurableSettings(
     const AudioProcessingProperties& other) const {
-  return disable_hw_noise_suppression == other.disable_hw_noise_suppression &&
-         auto_gain_control == other.auto_gain_control &&
+  return auto_gain_control == other.auto_gain_control &&
          noise_suppression == other.noise_suppression &&
          voice_isolation == other.voice_isolation;
 }

@@ -1666,12 +1666,6 @@
       origin_trial_allows_insecure: true,
     },
     {
-      name: "DisableHardwareNoiseSuppression",
-      origin_trial_feature_name: "DisableHardwareNoiseSuppression",
-      status: "experimental",
-      base_feature: "none",
-    },
-    {
       name: "DisableReduceAcceptLanguage",
       origin_trial_feature_name: "DisableReduceAcceptLanguage",
       origin_trial_type: "deprecation",

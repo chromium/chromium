@@ -154,7 +154,6 @@ TEST(AudioProcessingPropertiesTest, VerifyDefaultProcessingState) {
   EXPECT_EQ(kDefaultProperties.echo_cancellation_type,
             EchoCancellationType::kEchoCancellationAec3);
   EXPECT_FALSE(kDefaultProperties.system_gain_control_activated);
-  EXPECT_FALSE(kDefaultProperties.disable_hw_noise_suppression);
   EXPECT_TRUE(kDefaultProperties.auto_gain_control);
   EXPECT_TRUE(kDefaultProperties.noise_suppression);
   EXPECT_EQ(kDefaultProperties.voice_isolation,

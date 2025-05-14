@@ -78,15 +78,6 @@ struct PLATFORM_EXPORT AudioProcessingProperties {
   bool system_gain_control_activated = false;
   bool system_noise_suppression_activated = false;
 
-  // Used for an experiment for forcing certain system-level
-  // noise suppression functionalities to be off. In contrast to
-  // `system_noise_suppression_activated` the system-level noise suppression
-  // referred to does not correspond to something that can replace the browser
-  // counterpart. I.e., the browser counterpart should be on, even if
-  // `disable_hw_noise_suppression` is false.
-  // TODO(crbug.com/405165917): can this member now be removed?
-  bool disable_hw_noise_suppression = false;
-
   bool auto_gain_control = true;
   bool noise_suppression = true;
   VoiceIsolationType voice_isolation =

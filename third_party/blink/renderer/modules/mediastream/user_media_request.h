@@ -136,10 +136,6 @@ class MODULES_EXPORT UserMediaRequest final
   // NO_SERVICE for requests where Video() == false.
   mojom::blink::MediaStreamType VideoMediaStreamType() const;
 
-  // Flag tied to whether or not the similarly named Origin Trial is
-  // enabled. Will be removed at end of trial. See: http://crbug.com/789152.
-  bool ShouldDisableHardwareNoiseSuppression() const;
-
   // errorMessage is only set if requestIsPrivilegedContext() returns |false|.
   // Caller is responsible for properly setting errors and canceling request.
   bool IsSecureContextUse(String& error_message);
@@ -238,7 +234,6 @@ class MODULES_EXPORT UserMediaRequest final
   bool exclude_monitor_type_surfaces_ = false;
   bool suppress_local_audio_playback_ = false;
   const bool auto_select_all_screens_ = false;
-  bool should_disable_hardware_noise_suppression_;
   bool has_transient_user_activation_ = false;
   int32_t request_id_ = -1;
 
