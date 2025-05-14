@@ -699,6 +699,13 @@ RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
         std::make_unique<InputTransferHandlerAndroid>(this);
     host()->AddInputEventObserver(&input_transfer_handler_->GetInputObserver());
   }
+
+  if (!using_browser_compositor_) {
+    // crbug.com/40057499: Input suppression in `widget_host` is not applicable
+    // for Android WebViews because this is directly related to the website URL
+    // visible to the user.
+    widget_host->input_router()->MakeActive();
+  }
 }
 
 RenderWidgetHostViewAndroid::~RenderWidgetHostViewAndroid() {
