@@ -2348,6 +2348,15 @@ void MaybeAssignResourceRequestId(FrameTreeNode* ftn,
   }
 }
 
+void MaybeAssignResourceRequestId(FrameTreeNodeId frame_tree_node_id,
+                                  const std::string& id,
+                                  network::ResourceRequest& request) {
+  auto* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+  if (frame_tree_node) {
+    MaybeAssignResourceRequestId(frame_tree_node, id, request);
+  }
+}
+
 void OnServiceWorkerMainScriptRequestWillBeSent(
     const GlobalRenderFrameHostId& requesting_frame_id,
     const ServiceWorkerContextWrapper* context_wrapper,
@@ -2600,6 +2609,86 @@ void DidCloseFedCmDialog(RenderFrameHost& render_frame_host) {
     return;
   }
   DispatchToAgents(ftn, &protocol::FedCmHandler::DidCloseDialog);
+}
+
+void WillSendFedCmNetworkRequest(FrameTreeNodeId frame_tree_node_id,
+                                 const network::ResourceRequest& request) {
+  FrameTreeNode* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+  if (!ftn) {
+    return;
+  }
+
+  // Get the DevTools navigation token from the current frame host
+  const std::optional<base::UnguessableToken>& loader_id =
+      ftn->current_frame_host()->GetDevToolsNavigationToken();
+
+  if (!loader_id.has_value()) {
+    return;
+  }
+
+  std::optional<base::UnguessableToken> frame_token =
+      ftn->current_frame_host()->devtools_frame_token();
+
+  GURL initiator_url;
+  if (request.request_initiator.has_value()) {
+    initiator_url = request.request_initiator->GetURL();
+  }
+
+  network::mojom::URLRequestDevToolsInfoPtr request_info =
+      network::ExtractDevToolsInfo(request);
+
+  DispatchToAgents(frame_tree_node_id, &protocol::NetworkHandler::RequestSent,
+                   request.devtools_request_id.value(),
+                   loader_id.value().ToString(), request.headers, *request_info,
+                   protocol::Network::ResourceTypeEnum::Other, initiator_url,
+                   /*initiator_devtools_request_id=*/"", frame_token,
+                   base::TimeTicks::Now());
+}
+
+void DidReceiveFedCmNetworkResponse(
+    FrameTreeNodeId frame_tree_node_id,
+    const std::string& devtools_request_id,
+    const GURL& url,
+    const network::mojom::URLResponseHead* response_head,
+    const std::string& response_body,
+    const network::URLLoaderCompletionStatus& status) {
+  FrameTreeNode* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+  if (!ftn) {
+    return;
+  }
+
+  // Get the DevTools navigation token from the current frame host
+  const std::optional<base::UnguessableToken>& loader_id =
+      ftn->current_frame_host()->GetDevToolsNavigationToken();
+
+  if (!loader_id.has_value()) {
+    return;
+  }
+
+  if (response_head) {
+    network::mojom::URLResponseHeadDevToolsInfoPtr head_info =
+        network::ExtractDevToolsInfo(*response_head);
+
+    std::optional<base::UnguessableToken> frame_token =
+        ftn->current_frame_host()->devtools_frame_token();
+
+    DispatchToAgents(frame_tree_node_id,
+                     &protocol::NetworkHandler::ResponseReceived,
+                     devtools_request_id, loader_id.value().ToString(), url,
+                     protocol::Network::ResourceTypeEnum::Other, *head_info,
+                     frame_token.value().ToString());
+  }
+
+  if (status.error_code == net::OK) {
+    DispatchToAgents(frame_tree_node_id,
+                     &protocol::NetworkHandler::BodyDataReceived,
+                     devtools_request_id, response_body,
+                     /*is_base64_encoded=*/false);
+  }
+
+  DispatchToAgents(
+      frame_tree_node_id, &protocol::NetworkHandler::LoadingComplete,
+      devtools_request_id, protocol::Network::ResourceTypeEnum::Other, status);
 }
 
 void OnFencedFrameReportRequestSent(

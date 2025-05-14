@@ -162,6 +162,9 @@ void OnResetNavigationRequest(NavigationRequest* navigation_request);
 void MaybeAssignResourceRequestId(FrameTreeNode* ftn,
                                   const std::string& id,
                                   network::ResourceRequest& request);
+void MaybeAssignResourceRequestId(FrameTreeNodeId frame_node_id,
+                                  const std::string& id,
+                                  network::ResourceRequest& request);
 void OnNavigationRequestWillBeSent(const NavigationRequest& navigation_request);
 void OnNavigationResponseReceived(
     const NavigationRequest& nav_request,
@@ -471,6 +474,17 @@ void WillSendFedCmRequest(RenderFrameHost& render_frame_host,
 void WillShowFedCmDialog(RenderFrameHost& render_frame_host, bool* intercept);
 void DidShowFedCmDialog(RenderFrameHost& render_frame_host);
 void DidCloseFedCmDialog(RenderFrameHost& render_frame_host);
+
+// Fires Network Handler to capture FedCM request and response events.
+void WillSendFedCmNetworkRequest(FrameTreeNodeId frame_tree_node_id,
+                                 const network::ResourceRequest& request);
+void DidReceiveFedCmNetworkResponse(
+    FrameTreeNodeId frame_tree_node_id,
+    const std::string& devtools_request_id,
+    const GURL& url,
+    const network::mojom::URLResponseHead* response_head,
+    const std::string& response_body,
+    const network::URLLoaderCompletionStatus& status);
 
 // Handles dev tools integration for fenced frame reporting beacons. Used in
 // `FencedFrameReporter`.

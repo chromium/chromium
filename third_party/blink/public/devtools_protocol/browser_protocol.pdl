@@ -5971,6 +5971,7 @@ domain Network
       Ping
       CSPViolationReport
       Preflight
+      FedCM
       Other
 
   # Unique loader identifier.

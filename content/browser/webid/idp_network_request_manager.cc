@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/fedcm_mappers.h"
 #include "content/browser/webid/fedcm_metrics.h"
@@ -1050,7 +1051,7 @@ std::unique_ptr<IdpNetworkRequestManager> IdpNetworkRequestManager::Create(
       host->GetMainFrame()->GetLastCommittedOrigin(),
       host->GetStoragePartition()->GetURLLoaderFactoryForBrowserProcess(),
       host->GetBrowserContext()->GetFederatedIdentityPermissionContext(),
-      host->BuildClientSecurityState());
+      host->BuildClientSecurityState(), host->GetFrameTreeNodeId());
 }
 
 IdpNetworkRequestManager::IdpNetworkRequestManager(
@@ -1058,12 +1059,14 @@ IdpNetworkRequestManager::IdpNetworkRequestManager(
     const url::Origin& rp_embedding_origin,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     FederatedIdentityPermissionContextDelegate* permission_delegate,
-    network::mojom::ClientSecurityStatePtr client_security_state)
+    network::mojom::ClientSecurityStatePtr client_security_state,
+    content::FrameTreeNodeId frame_tree_node_id)
     : relying_party_origin_(relying_party_origin),
       rp_embedding_origin_(rp_embedding_origin),
       loader_factory_(loader_factory),
       permission_delegate_(permission_delegate),
-      client_security_state_(std::move(client_security_state)) {
+      client_security_state_(std::move(client_security_state)),
+      frame_tree_node_id_(frame_tree_node_id) {
   DCHECK(client_security_state_);
   // If COEP:credentialless was used, this would break FedCM credentialled
   // requests. We clear the Cross-Origin-Embedder-Policy because FedCM responses
@@ -1343,9 +1346,26 @@ void IdpNetworkRequestManager::DownloadUrl(
     resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
                                         kUrlEncodedContentType);
   }
+
+  network::ResourceRequest* resource_request_ptr = resource_request.get();
+
   std::unique_ptr<network::SimpleURLLoader> url_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        CreateTrafficAnnotation());
+
+  network::SimpleURLLoader* url_loader_ptr = url_loader.get();
+  // Notify DevTools about the request
+  auto request_id = base::UnguessableToken::Create();
+  devtools_instrumentation::MaybeAssignResourceRequestId(
+      frame_tree_node_id_, request_id.ToString(), *resource_request_ptr);
+
+  if (resource_request_ptr->devtools_request_id.has_value()) {
+    urlloader_devtools_request_id_map_[url_loader_ptr] = request_id;
+
+    devtools_instrumentation::WillSendFedCmNetworkRequest(
+        frame_tree_node_id_, *resource_request_ptr);
+  }
+
   if (url_encoded_post_data) {
     url_loader->AttachStringForUpload(*url_encoded_post_data,
                                       kUrlEncodedContentType);
@@ -1354,7 +1374,6 @@ void IdpNetworkRequestManager::DownloadUrl(
     }
   }
 
-  network::SimpleURLLoader* url_loader_ptr = url_loader.get();
   // Callback is a member of IdpNetworkRequestManager in order to cancel
   // callback if IdpNetworkRequestManager object is destroyed prior to callback
   // being run.
@@ -1370,10 +1389,6 @@ void IdpNetworkRequestManager::OnDownloadedUrl(
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     IdpNetworkRequestManager::DownloadCallback callback,
     std::unique_ptr<std::string> response_body) {
-  if (!callback) {
-    // For the metrics endpoint, we do not care about the result.
-    return;
-  }
   auto* response_info = url_loader->ResponseInfo();
   // Use the HTTP response code, if available. If it is not available, use the
   // NetError(). Note that it is acceptable to put these in the same int because
@@ -1381,20 +1396,43 @@ void IdpNetworkRequestManager::OnDownloadedUrl(
   int response_code = response_info && response_info->headers
                           ? response_info->headers->response_code()
                           : url_loader->NetError();
+
+  std::optional<network::URLLoaderCompletionStatus> status =
+      url_loader->CompletionStatus();
+
+  // Notify DevTools about the response
+  auto it = urlloader_devtools_request_id_map_.find(url_loader.get());
+  if (it != urlloader_devtools_request_id_map_.end()) {
+    auto request_id = it->second;
+    const std::string& response_body_str =
+        response_body ? *response_body : std::string();
+    auto completion_status = status.value_or(
+        network::URLLoaderCompletionStatus(url_loader->NetError()));
+
+    devtools_instrumentation::DidReceiveFedCmNetworkResponse(
+        frame_tree_node_id_, request_id.ToString(), url_loader->GetFinalURL(),
+        response_info, response_body_str, completion_status);
+
+    // Remove the entry from the map
+    urlloader_devtools_request_id_map_.erase(it);
+  }
+
+  if (!callback) {
+    // For the metrics endpoint, we do not care about the result.
+    return;
+  }
+
   std::string mime_type;
   if (response_info && response_info->headers) {
     response_info->headers->GetMimeType(&mime_type);
   }
 
   // Check for CORS error
-  std::optional<network::URLLoaderCompletionStatus> status =
-      url_loader->CompletionStatus();
   bool cors_error = false;
   if (status && status.value().cors_error_status.has_value()) {
     cors_error = true;
   }
 
-  url_loader.reset();
   std::move(callback).Run(std::move(response_body), response_code,
                           std::move(mime_type), cors_error);
 }

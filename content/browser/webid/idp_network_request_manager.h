@@ -12,6 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/identity_request_account.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -243,7 +244,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
       const url::Origin& rp_embedding_origin,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       FederatedIdentityPermissionContextDelegate* permission_delegate,
-      network::mojom::ClientSecurityStatePtr client_security_state);
+      network::mojom::ClientSecurityStatePtr client_security_state,
+      content::FrameTreeNodeId frame_tree_node_id);
 
   virtual ~IdpNetworkRequestManager();
 
@@ -375,6 +377,14 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
       nullptr;
 
   network::mojom::ClientSecurityStatePtr client_security_state_;
+
+  const content::FrameTreeNodeId frame_tree_node_id_;
+
+  // Maps each SimpleURLLoader instance to a unique, unguessable token
+  // (request_id) used for tracking and associating network requests
+  // with DevTools instrumentation.
+  base::flat_map<network::SimpleURLLoader*, base::UnguessableToken>
+      urlloader_devtools_request_id_map_;
 
   base::WeakPtrFactory<IdpNetworkRequestManager> weak_ptr_factory_{this};
 };

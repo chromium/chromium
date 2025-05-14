@@ -13,7 +13,8 @@ MockIdpNetworkRequestManager::MockIdpNetworkRequestManager()
                                url::Origin(),
                                nullptr,
                                nullptr,
-                               network::mojom::ClientSecurityState::New()) {}
+                               network::mojom::ClientSecurityState::New(),
+                               content::FrameTreeNodeId()) {}
 
 MockIdpNetworkRequestManager::~MockIdpNetworkRequestManager() = default;
 

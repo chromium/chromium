@@ -23,6 +23,7 @@
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
@@ -137,7 +138,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
         test_permission_delegate_.get(),
-        network::mojom::ClientSecurityState::New());
+        network::mojom::ClientSecurityState::New(), content::FrameTreeNodeId());
   }
 
   void AddResponse(const GURL& url,
@@ -355,7 +356,8 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
   std::optional<ErrorUrlType> error_url_type() { return error_url_type_; }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      content::BrowserTaskEnvironment::MainThreadType::UI};
   network::TestURLLoaderFactory test_url_loader_factory_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester_;
@@ -929,7 +931,7 @@ TEST_F(IdpNetworkRequestManagerTest, FetchWellKnownIllegalDomainFails) {
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory),
       test_permission_delegate_.get(),
-      network::mojom::ClientSecurityState::New());
+      network::mojom::ClientSecurityState::New(), content::FrameTreeNodeId());
 
   base::RunLoop run_loop;
   auto callback = base::BindLambdaForTesting(
