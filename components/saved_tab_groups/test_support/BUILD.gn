@@ -9,11 +9,10 @@ proto_library("test_support_proto") {
   testonly = true
   proto_in_dir = "//"
   sources = [
+    "extended_shared_tab_group_account_data_specifics.proto",
     "extended_shared_tab_group_data_specifics.proto",
   ]
-  deps = [
-    "//components/sync/protocol",
-  ]
+  deps = [ "//components/sync/protocol" ]
 }
 
 source_set("test_support") {

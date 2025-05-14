@@ -7,15 +7,11 @@
 
 syntax = "proto2";
 
-option java_multiple_files = true;
-option java_package = "org.chromium.components.sync.protocol";
-
 option optimize_for = LITE_RUNTIME;
 
-package sync_pb;
+package sync_pb.test_utils;
 
 // Account-local metadata for shared tab groups.
-// LINT.IfChange(SharedTabGroupAccountDataSpecifics)
 message SharedTabGroupAccountDataSpecifics {
   // The guid of this entity.
   // This could be the SharedTab guid (see SharedTabGroupDataSpecifics)
@@ -33,6 +29,7 @@ message SharedTabGroupAccountDataSpecifics {
 
   // Timestamp when the message is updated.
   optional int64 update_time_windows_epoch_micros = 5;
+  optional string extra_field_for_testing = 10000;
 }
 
 // Stores account-specific metadata about a shared tab.
@@ -43,6 +40,7 @@ message SharedTabDetails {
 
   // Last time this tab was focused.
   optional int64 last_seen_timestamp_windows_epoch = 2;
+  optional string extra_field_for_testing = 10000;
 }
 
 message SharedTabGroupDetails {
@@ -50,5 +48,5 @@ message SharedTabGroupDetails {
   // This is equivalent to and compared against the pinned_position
   // of message SavedTabGroup in saved_tab_group_specifics.proto.
   optional int64 pinned_position = 1;
+  optional string extra_field_for_testing = 10000;
 }
-// LINT.ThenChange(//components/saved_tab_groups/internal/shared_tab_group_account_data_sync_bridge.cc:TrimSpecifics)

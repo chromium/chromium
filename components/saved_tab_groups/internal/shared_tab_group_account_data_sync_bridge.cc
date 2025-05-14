@@ -54,21 +54,39 @@ std::string GetClientTagFromSpecifics(
 }
 
 // Trim specifics for use in TrimAllSupportedFieldsFromRemoteSpecifics.
+// LINT.IfChange(TrimSpecifics)
 sync_pb::SharedTabGroupAccountDataSpecifics TrimSpecifics(
     const sync_pb::SharedTabGroupAccountDataSpecifics& account_specifics) {
   sync_pb::SharedTabGroupAccountDataSpecifics trimmed_account_specifics =
       sync_pb::SharedTabGroupAccountDataSpecifics(account_specifics);
   trimmed_account_specifics.clear_guid();
   trimmed_account_specifics.clear_collaboration_id();
-  trimmed_account_specifics.mutable_shared_tab_details()
-      ->clear_shared_tab_group_guid();
-  trimmed_account_specifics.mutable_shared_tab_details()
-      ->clear_last_seen_timestamp_windows_epoch();
-  trimmed_account_specifics.mutable_shared_tab_group_details()
-      ->clear_pinned_position();
   trimmed_account_specifics.clear_update_time_windows_epoch_micros();
+
+  if (trimmed_account_specifics.has_shared_tab_details()) {
+    sync_pb::SharedTabDetails* tab =
+        trimmed_account_specifics.mutable_shared_tab_details();
+    tab->clear_shared_tab_group_guid();
+    tab->clear_last_seen_timestamp_windows_epoch();
+
+    if (tab->ByteSizeLong() == 0) {
+      trimmed_account_specifics.clear_shared_tab_details();
+    }
+  }
+
+  if (trimmed_account_specifics.has_shared_tab_group_details()) {
+    sync_pb::SharedTabGroupDetails* tab_group =
+        trimmed_account_specifics.mutable_shared_tab_group_details();
+    tab_group->clear_pinned_position();
+
+    if (tab_group->ByteSizeLong() == 0) {
+      trimmed_account_specifics.clear_shared_tab_group_details();
+    }
+  }
+
   return trimmed_account_specifics;
 }
+// LINT.ThenChange(//components/sync/protocol/shared_tab_group_account_data_specifics.proto:SharedTabGroupAccountDataSpecifics)
 
 // Create new EntityData object to contain specifics for writing changes.
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromSpecifics(
