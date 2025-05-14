@@ -6841,12 +6841,6 @@ const char kEcheSWACheckAndroidNetworkInfoDescription[] =
     "Allows CrOS to analyze Android network information to provide more "
     "context on connection errors";
 
-const char kEcheSWAProcessAndroidAccessibilityTreeName[] =
-    "Process Android Application Accessibility Tree";
-const char kEcheSWAProcessAndroidAccessibilityTreeDescription[] =
-    "Allows CrOS to process the Android accessibility tree information of the "
-    "currently streaming app.";
-
 const char kEnableOAuthIppName[] =
     "Enable OAuth when printing via the IPP protocol";
 const char kEnableOAuthIppDescription[] =

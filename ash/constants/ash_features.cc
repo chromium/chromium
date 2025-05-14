@@ -739,12 +739,6 @@ BASE_FEATURE(kEcheSWACheckAndroidNetworkInfo,
              "EcheSWACheckAndroidNetworkInfo",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Allows CrOS to process Android
-// accessibility tree information.
-BASE_FEATURE(kEcheSWAProcessAndroidAccessibilityTree,
-             "EcheSWAProcessAndroidAccessibilityTree",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables background blur for the app list, shelf, unified system tray,
 // autoclick menu, etc. Also enables the AppsGridView mask layer, slower devices
 // may have choppier app list animations while in this mode. crbug.com/765292.
