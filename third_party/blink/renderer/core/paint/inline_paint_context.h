@@ -100,9 +100,8 @@ class CORE_EXPORT InlinePaintContext {
   };
 
  private:
-  wtf_size_t SyncDecoratingBox(
-      const FragmentItem& item,
-      DecoratingBoxList* saved_decorating_boxes = nullptr);
+  wtf_size_t SyncDecoratingBox(const FragmentItem& item,
+                               DecoratingBoxList& saved_decorating_boxes);
 
   DecoratingBoxList decorating_boxes_;
   // The last |AppliedTextDecorations| |this| was synchronized with.

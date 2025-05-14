@@ -26,7 +26,7 @@ InlinePaintContext::ScopedInlineItem::ScopedInlineItem(
   inline_context_ = inline_context;
   last_decorations_ = inline_context->last_decorations_;
   push_count_ =
-      inline_context->SyncDecoratingBox(item, &saved_decorating_boxes_);
+      inline_context->SyncDecoratingBox(item, saved_decorating_boxes_);
   DCHECK_EQ(inline_context->decorating_boxes_.size(),
             item.Style().AppliedTextDecorations().size());
 }
@@ -38,8 +38,8 @@ InlinePaintContext::ScopedInlineItem::ScopedInlineItem(
 // was stopped. See |StopPropagateTextDecorations|.
 wtf_size_t InlinePaintContext::SyncDecoratingBox(
     const FragmentItem& item,
-    DecoratingBoxList* saved_decorating_boxes) {
-  DCHECK(!saved_decorating_boxes || saved_decorating_boxes->empty());
+    DecoratingBoxList& saved_decorating_boxes) {
+  DCHECK(saved_decorating_boxes.empty());
 
   // Compare the instance addresses of |AppliedTextDecorations| because it is
   // shared across |ComputedStyle|s when it is propagated without changes.
@@ -58,7 +58,7 @@ wtf_size_t InlinePaintContext::SyncDecoratingBox(
     DecorationBoxSynchronizer(InlinePaintContext* inline_context,
                               const FragmentItem& item,
                               const Vector<AppliedTextDecoration, 1>* stop_at,
-                              DecoratingBoxList* saved_decorating_boxes)
+                              DecoratingBoxList& saved_decorating_boxes)
         : inline_context_(inline_context),
           stop_at_(stop_at),
           saved_decorating_boxes_(saved_decorating_boxes),
@@ -119,12 +119,12 @@ wtf_size_t InlinePaintContext::SyncDecoratingBox(
           // the parent's, this node stopped the propagation. Reset the
           // decorating boxes. In this case, this node has 0 or 1 decorations.
           if (decorations->empty()) {
-            inline_context_->ClearDecoratingBoxes(saved_decorating_boxes_);
+            inline_context_->ClearDecoratingBoxes(&saved_decorating_boxes_);
             return 0;
           }
           if (decorations->size() == 1 &&
               decorations->front().Lines() == style->GetTextDecorationLine()) {
-            inline_context_->ClearDecoratingBoxes(saved_decorating_boxes_);
+            inline_context_->ClearDecoratingBoxes(&saved_decorating_boxes_);
             PushDecoratingBox(item, *layout_object, *style, *decorations);
             return 1;
           }
@@ -136,11 +136,11 @@ wtf_size_t InlinePaintContext::SyncDecoratingBox(
           const Vector<AppliedTextDecoration, 1>* base_decorations =
               style->BaseAppliedTextDecorations();
           if (base_decorations != &parent_decorations) {
-            inline_context_->ClearDecoratingBoxes(saved_decorating_boxes_);
+            inline_context_->ClearDecoratingBoxes(&saved_decorating_boxes_);
             const wtf_size_t size =
-                std::min(saved_decorating_boxes_->size(), decorations->size());
+                std::min(saved_decorating_boxes_.size(), decorations->size());
             inline_context_->PushDecoratingBoxes(
-                base::span(*saved_decorating_boxes_).first(size));
+                base::span(saved_decorating_boxes_).first(size));
             return size;
           }
 
@@ -255,7 +255,7 @@ wtf_size_t InlinePaintContext::SyncDecoratingBox(
     InlinePaintContext* inline_context_;
     const Vector<AppliedTextDecoration, 1>* stop_at_;
     std::optional<InlineCursor> line_cursor_;
-    DecoratingBoxList* saved_decorating_boxes_;
+    DecoratingBoxList& saved_decorating_boxes_;
     StyleVariant style_variant_;
   };
 
@@ -289,8 +289,9 @@ void InlinePaintContext::PushDecoratingBoxAncestors(
 
     if (current.IsLineBox()) {
       SetLineBox(cursor);
+      DecoratingBoxList saved_decorating_boxes;
       for (const FragmentItem* item : base::Reversed(ancestor_items)) {
-        SyncDecoratingBox(*item);
+        SyncDecoratingBox(*item, saved_decorating_boxes);
       }
       return;
     }
