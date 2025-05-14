@@ -534,10 +534,6 @@ void WebRTCInternals::DisableAudioDebugRecordings() {
     return;
   audio_debug_recording_session_.reset();
 
-  // Tear down the dialog since the user has unchecked the audio debug
-  // recordings box.
-  select_file_dialog_ = nullptr;
-
   for (RenderProcessHost::iterator i(
            content::RenderProcessHost::AllHostsIterator());
        !i.IsAtEnd(); i.Advance()) {
@@ -575,8 +571,6 @@ void WebRTCInternals::DisableLocalEventLogRecordings() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   event_log_recordings_ = false;
-  // Tear down the dialog since the user has unchecked the event log checkbox.
-  select_file_dialog_ = nullptr;
   DCHECK(CanToggleEventLogRecordings());
   WebRtcEventLogger* const logger = WebRtcEventLogger::Get();
   if (logger) {
@@ -602,8 +596,6 @@ void WebRTCInternals::DisableDataChannelRecordings() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   data_channel_recording_active_ = false;
-  // Tear down the dialog since the user has unchecked the event log checkbox.
-  select_file_dialog_ = nullptr;
   WebRtcEventLogger* const logger = WebRtcEventLogger::Get();
   if (logger) {
     logger->DisableDataChannelLogging();
@@ -723,6 +715,7 @@ void WebRTCInternals::FileSelected(const ui::SelectedFileInfo& file,
       NOTREACHED();
     }
   }
+  select_file_dialog_.reset();
 }
 
 void WebRTCInternals::FileSelectionCanceled() {
@@ -743,7 +736,7 @@ void WebRTCInternals::FileSelectionCanceled() {
     default:
       NOTREACHED();
   }
-  select_file_dialog_ = nullptr;
+  select_file_dialog_.reset();
 }
 
 void WebRTCInternals::OnRendererExit(int render_process_id) {
