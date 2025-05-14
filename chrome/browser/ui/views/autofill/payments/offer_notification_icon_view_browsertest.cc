@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -111,16 +112,25 @@ class OfferNotificationIconViewBrowserTest
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  OfferNotificationIconView* GetIcon() {
+  IconLabelBubbleView* GetIcon() {
     const ui::ElementContext context =
         views::ElementTrackerViews::GetContextForView(GetLocationBarView());
-    views::View* matched_view =
-        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+    views::ElementTrackerViews::ViewList matched_views =
+        views::ElementTrackerViews::GetInstance()->GetAllMatchingViews(
             kOfferNotificationChipElementId, context);
 
-    return matched_view
-               ? views::AsViewClass<OfferNotificationIconView>(matched_view)
-               : nullptr;
+    for (auto* matched_view : matched_views) {
+      // During the migration, there will be two views with the same element
+      // id. If the migration is enabled, we want the view that is a
+      // PageActionView.
+      if (IsPageActionMigrated(
+              PageActionIconType::kPaymentsOfferNotification) ==
+          views::IsViewClass<page_actions::PageActionView>(matched_view)) {
+        return views::AsViewClass<IconLabelBubbleView>(matched_view);
+      }
+    }
+
+    return nullptr;
   }
 
   void WaitForIconToFinishAnimating(OfferNotificationIconView* icon_view) {

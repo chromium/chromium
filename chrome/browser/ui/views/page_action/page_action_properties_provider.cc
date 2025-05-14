@@ -66,6 +66,7 @@ const PageActionProperties& PageActionPropertiesProvider::GetProperties(
                   .histogram_name = "PaymentsOfferNotification",
                   .is_ephemeral = true,
                   .type = PageActionIconType::kPaymentsOfferNotification,
+                  .element_identifier = kOfferNotificationChipElementId,
               },
           },
           {
