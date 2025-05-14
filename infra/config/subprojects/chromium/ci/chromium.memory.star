@@ -317,7 +317,7 @@ linux_memory_builder(
             "browser_tests": targets.mixin(
                 swarming = targets.swarming(
                     # https://crbug.com/1361973
-                    shards = 20,
+                    shards = 30,
                 ),
             ),
             "crashpad_tests": targets.remove(
