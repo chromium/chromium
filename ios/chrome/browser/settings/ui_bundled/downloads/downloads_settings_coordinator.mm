@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_coordinator.h"
 
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/auto_deletion/auto_deletion_settings_mediator.h"
 #import "ios/chrome/browser/photos/model/photos_service.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
@@ -47,6 +49,8 @@
 
   // Auto deletion settings mediator.
   AutoDeletionSettingsMediator* _autoDeletionSettingsMediator;
+  // The signin coordinator, if it is opened.
+  SigninCoordinator* _signinCoordinator;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -103,6 +107,7 @@
 }
 
 - (void)stop {
+  [self stopSigninCoordinator];
   [_saveToPhotosSettingsMediator disconnect];
   _saveToPhotosSettingsMediator = nil;
 
@@ -159,26 +164,39 @@
 #pragma mark - SaveToPhotosSettingsAccountSelectionViewControllerActionDelegate
 
 - (void)saveToPhotosSettingsAccountSelectionViewControllerAddAccount {
-  id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  SigninContextStyle contextStyle = SigninContextStyle::kDefault;
+  signin_metrics::AccessPoint accessPoint =
+      signin_metrics::AccessPoint::kSaveToPhotosIos;
+
   __weak __typeof(self) weakSelf = self;
-  ShowSigninCommand* addAccountCommand = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperation::kAddAccount
-               identity:nil
-            accessPoint:signin_metrics::AccessPoint::kSaveToPhotosIos
-            promoAction:signin_metrics::PromoAction::
-                            PROMO_ACTION_NO_SIGNIN_PROMO
-             completion:^(SigninCoordinatorResult result,
-                          id<SystemIdentity> signinIdentity) {
-               __strong __typeof(weakSelf) strongSelf = weakSelf;
-               if (strongSelf && result == SigninCoordinatorResultSuccess &&
-                   signinIdentity) {
-                 [strongSelf->_saveToPhotosSettingsMediator
-                     setSelectedIdentityGaiaID:signinIdentity.gaiaID];
-               }
-             }];
-  [applicationCommandsHandler showSignin:addAccountCommand
-                      baseViewController:self.baseViewController];
+  _signinCoordinator = [SigninCoordinator
+      addAccountCoordinatorWithBaseViewController:self.baseViewController
+                                          browser:self.browser
+                                     contextStyle:contextStyle
+                                      accessPoint:accessPoint
+                             continuationProvider:
+                                 DoNothingContinuationProvider()];
+  _signinCoordinator.signinCompletion = ^(SigninCoordinatorResult result,
+                                          id<SystemIdentity> signinIdentity) {
+    [weakSelf signinCoordinatorCompletion:result signinIdentity:signinIdentity];
+  };
+  [_signinCoordinator start];
+}
+
+#pragma mark - Private
+
+- (void)stopSigninCoordinator {
+  [_signinCoordinator stop];
+  _signinCoordinator = nil;
+}
+
+- (void)signinCoordinatorCompletion:(SigninCoordinatorResult)result
+                     signinIdentity:(id<SystemIdentity>)signinIdentity {
+  [self stopSigninCoordinator];
+  if (result == SigninCoordinatorResultSuccess && signinIdentity) {
+    [_saveToPhotosSettingsMediator
+        setSelectedIdentityGaiaID:signinIdentity.gaiaID];
+  }
 }
 
 @end

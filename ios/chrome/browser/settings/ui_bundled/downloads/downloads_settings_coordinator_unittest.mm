@@ -6,7 +6,10 @@
 
 #import "base/apple/foundation_util.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller_action_delegate.h"
@@ -52,11 +55,6 @@ class DownloadsSettingsCoordinatorTest : public PlatformTest {
 
     base_navigation_controller_ = [[FakeUINavigationController alloc] init];
 
-    mock_application_commands_handler_ =
-        OCMStrictProtocolMock(@protocol(ApplicationCommands));
-    [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_application_commands_handler_
-                     forProtocol:@protocol(ApplicationCommands)];
     mock_settings_commands_handler_ =
         OCMStrictProtocolMock(@protocol(SettingsCommands));
     [browser_->GetCommandDispatcher()
@@ -143,7 +141,6 @@ class DownloadsSettingsCoordinatorTest : public PlatformTest {
   id mock_save_to_photos_settings_mediator_;
   id mock_downloads_settings_table_view_controller_;
   id mock_save_to_photos_settings_account_selection_view_controller_;
-  id mock_application_commands_handler_;
   id mock_settings_commands_handler_;
 };
 
@@ -311,27 +308,33 @@ TEST_F(DownloadsSettingsCoordinatorTest,
   CreateMockDownloadsSettingsTableViewControllerStubbed(true);
   CreateMockSaveToPhotosSettingsAccountSelectionViewControllerStubbed(true);
   [coordinator start];
+  AddAccountSigninCoordinator* signin_coordinator_mock =
+      OCMClassMock([AddAccountSigninCoordinator class]);
+  OCMExpect([(id)signin_coordinator_mock alloc])
+      .andReturn(signin_coordinator_mock);
+  OCMExpect([signin_coordinator_mock
+                initWithBaseViewController:[OCMArg any]
+                                   browser:browser_.get()
+                              contextStyle:SigninContextStyle::kDefault
+                               accessPoint:signin_metrics::AccessPoint::
+                                               kSaveToPhotosIos
+                               promoAction:signin_metrics::PromoAction::
+                                               PROMO_ACTION_NO_SIGNIN_PROMO
+                              signinIntent:AddAccountSigninIntent::kAddAccount
+                      continuationProvider:DoNothingContinuationProvider()])
+      .ignoringNonObjectArgs()
+      .andReturn(signin_coordinator_mock);
 
   // Expect that a ShowSigninCommand is dispatched to show the Add account view
   // when -saveToPhotosSettingsAccountSelectionViewControllerAddAccount is
   // called.
   __block SigninCoordinatorCompletionCallback show_signin_callback = nil;
-  OCMExpect([mock_application_commands_handler_
-              showSignin:[OCMArg checkWithBlock:^BOOL(
-                                     ShowSigninCommand* command) {
-                EXPECT_TRUE(command.completion);
-                show_signin_callback = command.completion;
-                EXPECT_EQ(AuthenticationOperation::kAddAccount,
-                          command.operation);
-                EXPECT_FALSE(command.identity);
-                EXPECT_EQ(signin_metrics::AccessPoint::kSaveToPhotosIos,
-                          command.accessPoint);
-                EXPECT_EQ(
-                    signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-                    command.promoAction);
-                return YES;
-              }]
-      baseViewController:base_navigation_controller_]);
+
+  OCMExpect([signin_coordinator_mock
+      setSigninCompletion:[OCMArg checkWithBlock:^BOOL(id value) {
+        show_signin_callback = value;
+        return YES;
+      }]]);
 
   // Call the coordinator through the action delegate protocol and verify the
   // ShowSigninCommand was dispatched.
@@ -343,7 +346,6 @@ TEST_F(DownloadsSettingsCoordinatorTest,
       id<SaveToPhotosSettingsAccountSelectionViewControllerActionDelegate>>(
       coordinator)
       saveToPhotosSettingsAccountSelectionViewControllerAddAccount];
-  EXPECT_OCMOCK_VERIFY(mock_application_commands_handler_);
 
   // Expect that the selected identity Gaia ID is set to the Gaia ID of the
   // identity that was just added.
