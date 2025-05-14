@@ -674,82 +674,41 @@ void LocationBarView::Layout(PassKey) {
 
   selected_keyword_view_->SetVisible(false);
 
-  const int trailing_decoration_inner_padding =
-      GetLayoutConstant(LOCATION_BAR_TRAILING_DECORATION_INNER_PADDING);
-
-  // The text should be indented only if these are all true:
-  //  - The popup is open.
-  //  - The location icon view does *not* have a label.
-  //  - The selected keyword view is *not* shown.
-  //
-  // In most cases, we only care that the popup is open, in which case we
-  // indent to align with the text in the popup. But there's two edge cases:
-  //  - If there is text in the location icon view (which can happen with zero
-  //    suggest, which continues to show security or EV cert text at the same
-  //    time as the popup is open), the text in the omnibox can't align with
-  //    the text of the suggestions, so the indent just moves the text for no
-  //    apparent reason.
-  //  - If there is a selected keyword label (i.e. "Search Google") shown, we
-  //    already indent this label to align with the suggestions text, so
-  //    further indenting the textfield just moves the text for no apparent
-  //    reason.
-  //
-  // TODO(jdonnelly): The better solution may be to remove the location icon
-  // text when zero suggest triggers.
-  const bool should_indent = GetOmniboxPopupView()->IsOpen() &&
-                             !location_icon_view_->ShouldShowLabel() &&
-                             !ShouldShowKeywordBubble();
-
-  const bool show_overriding_permission_chip =
-      base::FeatureList::IsEnabled(
-          content_settings::features::kLeftHandSideActivityIndicators)
-          ? permission_dashboard_view_->GetVisible() &&
-                !ShouldShowKeywordBubble()
-          : chip_controller_->chip()->GetVisible() &&
-                !ShouldShowKeywordBubble();
-
-  // There are 2 CR23 features that impact location bar layout. Make sure layout
-  // is correct when neither, either, or both are enabled. Touch UI, whether the
-  // popup is open (see `should_indent` comment above), whether a keyword is
-  // selected, and whether the permission chip is shown also affect layout.
-  // TODO(manukh): The permutation space is pretty large, and we don't have
-  //   mocks for every single case. So we do something that looks right for now,
-  //   and can iron out the details post CR23. E.g. this probably shifts some
-  //   touch UI layout even when the CR23 features are disabled.
-  // TODO(manukh): Once we decide what to launch, we can keep just one of these,
-  //   and move it to layout_constants.cc.
-  // The padding between the left edges of the location bar and the LHS icon
-  // (e.g. the page info icon, the google G icon, the selected suggestion icon,
-  // etc)
+  // TODO(manukh): Move constants to layout_constants.cc.
+  // The padding between the left edges of the location bar and the LHS icon,
+  // e.g. the page info icon, the google G icon, the selected suggestion icon.
   int icon_left = 5;
   // The padding between the LHS icon and the text.
   int text_left = 8;
-  // Indentation to match the suggestion icons & texts.
-  int icon_indent = 7;
-  int text_indent = 6;
-  // Indentation to match the suggestion icons & texts when in keyword mode.
-  int icon_keyword_indent = 9;
-  int text_keyword_indent = -9;
-  // Indentation add padding when the permission chip is visible and replacing
-  // the LHS icon.
-  int text_overriding_permission_chip_indent = 0;
+
+  // Apply indentation to align the omnibox input icon and the text with those
+  // of the suggestions in the popup. However, there are two exceptions where
+  // aligning the omnibox icon and text with the suggestions is not possible:
+  //  - If the location icon view displays text, e.g., SSL certificate error on
+  //    https://expired.badssl.com.
+  //  - If a selected keyword label is visible, e.g., "Search History".
+  // Indent the icon and the text when all of the following conditions are met:
+  //  - The popup is open.
+  //  - The location icon view does *not* display a label.
+  //  - The selected keyword view is *not* visible.
+  const bool should_indent = GetOmniboxPopupView()->IsOpen() &&
+                             !location_icon_view_->ShouldShowLabel() &&
+                             !ShouldShowKeywordBubble();
   if (should_indent) {
-    icon_left += icon_indent;
-    text_left += text_indent;
-  }
-  if (ShouldShowKeywordBubble()) {
-    icon_left += icon_keyword_indent;
-    text_left += text_keyword_indent;
-  }
-  if (show_overriding_permission_chip) {
-    text_left += text_overriding_permission_chip_indent;
+    icon_left += 7 /*icon_indent*/;
+    text_left += 6 /*text_indent*/;
+  } else if (ShouldShowKeywordBubble()) {
+    // Otherwise, if in keyword mode, adjust indentation to align the icon and
+    // the text with the suggestion icons & texts.
+    icon_left += 9;  /*icon_indent_keyword_mode*/
+    text_left += -9; /*text_indent_keyword_mode*/
   }
 
   LocationBarLayout leading_decorations(LocationBarLayout::Position::kLeftEdge,
                                         text_left);
   LocationBarLayout trailing_decorations(
       LocationBarLayout::Position::kRightEdge,
-      trailing_decoration_inner_padding);
+      GetLayoutConstant(LOCATION_BAR_TRAILING_DECORATION_INNER_PADDING));
 
   const std::u16string keyword(omnibox_view_->model()->keyword());
   // In some cases (e.g. fullscreen mode) we may have 0 height.  We still want
@@ -766,6 +725,13 @@ void LocationBarView::Layout(PassKey) {
   // label/chip.
   const double kLeadingDecorationMaxFraction = 0.5;
 
+  const bool show_overriding_permission_chip =
+      base::FeatureList::IsEnabled(
+          content_settings::features::kLeftHandSideActivityIndicators)
+          ? permission_dashboard_view_->GetVisible() &&
+                !ShouldShowKeywordBubble()
+          : chip_controller_->chip()->GetVisible() &&
+                !ShouldShowKeywordBubble();
   if (show_overriding_permission_chip) {
     if (base::FeatureList::IsEnabled(
             content_settings::features::kLeftHandSideActivityIndicators)) {
