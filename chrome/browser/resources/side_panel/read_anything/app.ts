@@ -245,7 +245,9 @@ export class AppElement extends AppElementBase implements
     this.$.containerParent.onscroll = () => {
       chrome.readingMode.onScroll(this.scrollingOnSelection_);
       this.scrollingOnSelection_ = false;
-      this.speechController_.onScroll();
+      if (this.isReadAloudEnabled_) {
+        this.speechController_.onScroll();
+      }
     };
 
     // Pass copy commands to main page. Copy commands will not work if they are
@@ -413,7 +415,9 @@ export class AppElement extends AppElementBase implements
     // node id to call InitAXPosition in playSpeech. If it's not saved here,
     // we have to retrieve it through a DOM search such as createTreeWalker,
     // which can be computationally expensive.
-    this.speechController_.initializeSpeechTree(nodeId);
+    if (this.isReadAloudEnabled_) {
+      this.speechController_.initializeSpeechTree(nodeId);
+    }
 
     const textContent = chrome.readingMode.getTextContent(nodeId);
     const textNode = document.createTextNode(textContent);
@@ -481,8 +485,10 @@ export class AppElement extends AppElementBase implements
           chrome.readingMode.unexpectedUpdateContentStopSource);
     }
 
-    this.speechController_.saveReadAloudState();
-    this.speechController_.clearReadAloudState();
+    if (this.isReadAloudEnabled_) {
+      this.speechController_.saveReadAloudState();
+      this.speechController_.clearReadAloudState();
+    }
     const container = this.$.container;
 
     // Remove all children from container. Use `replaceChildren` rather than
@@ -550,7 +556,9 @@ export class AppElement extends AppElementBase implements
 
     // If the previous reading position still exists and we haven't reached the
     // end of speech, keep that spot.
-    this.speechController_.setPreviousReadingPositionIfExists();
+    if (this.isReadAloudEnabled_) {
+      this.speechController_.setPreviousReadingPositionIfExists();
+    }
   }
 
   async onImageDownloaded(nodeId: number) {
@@ -680,7 +688,9 @@ export class AppElement extends AppElementBase implements
       this.nodeStore_.replaceDomNode(elem, replacement);
     }
 
-    this.speechController_.onLinksToggled();
+    if (this.isReadAloudEnabled_) {
+      this.speechController_.onLinksToggled();
+    }
     this.loadImages_();
   }
 
@@ -931,7 +941,9 @@ export class AppElement extends AppElementBase implements
 
   languageChanged() {
     this.$.toolbar.updateFonts();
-    this.voicePackController_.onPageLanguageChanged();
+    if (this.isReadAloudEnabled_) {
+      this.voicePackController_.onPageLanguageChanged();
+    }
   }
 
   protected computeIsReadAloudPlayable(): boolean {

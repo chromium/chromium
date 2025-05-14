@@ -37,7 +37,9 @@ export class VoicePackController {
 
   constructor() {
     this.model_.setCurrentLanguage(chrome.readingMode.baseLanguageForSpeech);
-    this.speech_.setOnVoicesChanged(this.onVoicesChanged.bind(this));
+    if (chrome.readingMode.isReadAloudEnabled) {
+      this.speech_.setOnVoicesChanged(this.onVoicesChanged.bind(this));
+    }
   }
 
   addListener(listener: VoiceLanguageListener) {
@@ -425,15 +427,17 @@ export class VoicePackController {
     const langOfDefaultVoice = this.getDefaultVoice_()?.lang;
 
     // We need to restore enabled languages prior to selecting the preferred
-    // voice to ensure we have the right voices available.
+    // voice to ensure we have the right voices available, and prior to updating
+    // the preferences so we can check against what's available and enabled.
     const langs = createInitialListOfEnabledLanguages(
         chrome.readingMode.baseLanguageForSpeech, storedLanguagesPref,
         this.getAvailableLangs(), langOfDefaultVoice);
-    this.alignPreferencesWithEnabledLangs_(storedLanguagesPref);
     langs.forEach((l: string) => this.enableLang(l));
+
     this.installEnabledLangs_(/* onlyInstallExactGoogleLocaleMatch=*/ true,
                               /* retryIfPreviousInstallFailed= */ false);
     this.setUserPreferredVoiceFromPrefs_();
+    this.alignPreferencesWithEnabledLangs_(storedLanguagesPref);
   }
 
   private refreshAvailableVoices_(forceRefresh: boolean = false): void {
