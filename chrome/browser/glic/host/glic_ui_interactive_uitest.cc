@@ -15,7 +15,6 @@
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/common/chrome_features.h"
-#include "components/variations/active_field_trials.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -253,11 +252,6 @@ IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest, DisconnectedPanelHidden) {
       OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly),
       WaitForState(kGlicUiStateHistory, IsNotCurrently(WebUiState::kOffline)),
       CheckElementVisible(kOfflinePanel, false));
-
-  // Window opened - make sure tier state finch group logged.
-  // Tiered rollout not enabled for this test.
-  EXPECT_TRUE(variations::IsInSyntheticTrialGroup("SyntheticGlicTieredRollout",
-                                                  "Disabled"));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest,

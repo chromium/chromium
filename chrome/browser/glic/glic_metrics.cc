@@ -12,9 +12,7 @@
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
-#include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
-#include "chrome/browser/global_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -226,15 +224,6 @@ void GlicMetrics::OnGlicWindowOpen(bool attached,
   invocation_source_ = source;
   base::UmaHistogramBoolean("Glic.Session.Open.Attached", attached);
   base::UmaHistogramEnumeration("Glic.Session.Open.InvocationSource", source);
-
-  auto* synthetic_trial_manager =
-      g_browser_process->GetFeatures()->glic_synthetic_trial_manager();
-  if (synthetic_trial_manager) {
-    synthetic_trial_manager->SetSyntheticExperimentState(
-        "SyntheticGlicTieredRollout",
-        GlicEnabling::IsEligibleForGlicTieredRollout(profile_) ? "Enabled"
-                                                               : "Disabled");
-  }
 
   ukm::builders::Glic_WindowOpen(source_id_)
       .SetAttached(attached)

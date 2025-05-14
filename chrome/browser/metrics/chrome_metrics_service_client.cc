@@ -149,6 +149,10 @@
 #include "extensions/common/extension.h"
 #endif
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_metrics_provider.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
@@ -978,6 +982,11 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   metrics_service_->RegisterMetricsProvider(
       metrics::CreateDesktopSessionMetricsProvider());
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(ENABLE_GLIC)
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<glic::GlicMetricsProvider>());
+#endif
 }
 
 void ChromeMetricsServiceClient::RegisterUKMProviders() {
