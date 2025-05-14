@@ -623,7 +623,6 @@ inline constexpr char kGlicSettingsSubpage[] = "ai/gemini";
 inline constexpr char kHandlerSettingsSubPage[] = "handlers";
 inline constexpr char kHistorySearchSubpage[] = "historySearch";
 inline constexpr char kImportDataSubPage[] = "importData";
-inline constexpr char kIncognitoSettingsSubPage[] = "incognito";
 inline constexpr char kLanguageOptionsSubPage[] = "languages";
 inline constexpr char kLanguagesSubPage[] = "languages/details";
 inline constexpr char kManageProfileSubPage[] = "manageProfile";

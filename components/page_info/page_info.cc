@@ -814,15 +814,6 @@ void PageInfo::OpenCookiesSettingsView() {
 #endif
 }
 
-void PageInfo::OpenIncognitoSettingsView() {
-#if BUILDFLAG(IS_ANDROID)
-  NOTREACHED();
-#else
-  // TODO(crbug.com/388294499): Add metrics for recording settings clicks.
-  delegate_->ShowIncognitoSettings();
-#endif
-}
-
 void PageInfo::OpenAllSitesViewFilteredToRws() {
 #if BUILDFLAG(IS_ANDROID)
   NOTREACHED();

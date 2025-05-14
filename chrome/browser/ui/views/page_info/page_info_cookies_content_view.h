@@ -40,8 +40,6 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
   void CookiesSettingsLinkClicked(const ui::Event& event);
 
-  void IncognitoTrackingProtectionSettingsLinkClicked(const ui::Event& event);
-
   void SyncSettingsLinkClicked(const ui::Event& event);
 
   void RwsSettingsButtonClicked(const ui::Event& event);
@@ -102,6 +100,7 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // `blocking_status`: label for the status of the protection (e.g. allowed,
   // limited, blocked)
   // `expiration`: duration of site exception
+  // `feature: list of tracking protection features
   void SetThirdPartyCookiesInfo(CookieControlsState controls_state,
                                 CookieControlsEnforcement enforcement,
                                 CookieBlocking3pcdStatus blocking_status,
@@ -117,8 +116,6 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // Ensures the related website sets information UI is present, with
   // placeholder information if necessary.
   void InitRwsButton(bool is_managed);
-
-  void InitIncognitoTrackingProtectionSettingsButton();
 
   // Initializes the new third-party cookies section. The section starts out
   // hidden and is only shown when third-party cookies are blocked or there is
@@ -166,9 +163,6 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // RWS info histogram. Needed to not record the histogram each time page info
   // status changed.
   bool rws_histogram_recorded_ = false;
-
-  // The button that links to the Incognito tracking protection settings page.
-  raw_ptr<RichHoverButton> tp_settings_button_ = nullptr;
 
   // Third-party cookies section which contains a title, a description and a
   // toggle row view.
