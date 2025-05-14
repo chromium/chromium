@@ -130,6 +130,34 @@ export class SpeechController {
         (source === PauseActionSource.VOICE_SETTINGS_CHANGE);
   }
 
+  getSelectionAdjustedForHighlights(
+      anchorNode: Node, anchorOffset: number, focusNode: Node,
+      focusOffset: number): {
+    anchorNodeId: number|undefined,
+    anchorOffset: number,
+    focusNodeId: number|undefined,
+    focusOffset: number,
+  } {
+    let anchorNodeId = this.nodeStore_.getAxId(anchorNode);
+    let focusNodeId = this.nodeStore_.getAxId(focusNode);
+    let adjustedAnchorOffset = anchorOffset;
+    let adjustedFocusOffset = focusOffset;
+    if (!anchorNodeId) {
+      anchorNodeId = this.highlighter_.getAncestorId(anchorNode);
+      adjustedAnchorOffset += this.highlighter_.getOffsetInAncestor(anchorNode);
+    }
+    if (!focusNodeId) {
+      focusNodeId = this.highlighter_.getAncestorId(focusNode);
+      adjustedFocusOffset += this.highlighter_.getOffsetInAncestor(focusNode);
+    }
+    return {
+      anchorNodeId: anchorNodeId,
+      anchorOffset: adjustedAnchorOffset,
+      focusNodeId: focusNodeId,
+      focusOffset: adjustedFocusOffset,
+    };
+  }
+
   initializeSpeechTree(startingNodeId?: number) {
     if (startingNodeId && !this.model_.getFirstTextNode()) {
       this.model_.setFirstTextNode(startingNodeId);
@@ -145,6 +173,13 @@ export class SpeechController {
     chrome.readingMode.initAxPositionWithNode(firstTextNode);
     this.model_.setIsSpeechTreeInitialized(true);
     chrome.readingMode.preprocessTextForSpeech();
+  }
+
+  onSelectionChange() {
+    // If speech is resumed, this won't be restored.
+    // TODO: crbug.com/40927698 - Restore the previous highlight after
+    // speech is resumed after a selection.
+    this.highlighter_.clearHighlightFormatting();
   }
 
   // If the screen is locked during speech, we should stop speaking.

@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {BrowserProxy, currentReadHighlightClass, previousReadHighlightClass, ReadAloudHighlighter} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, currentReadHighlightClass, previousReadHighlightClass, ReadAloudHighlighter, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -43,8 +43,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
+    chrome.readingMode.isReadAloudEnabled = true;
     highlighter = new ReadAloudHighlighter();
     ReadAloudHighlighter.setInstance(highlighter);
+    SpeechController.setInstance(new SpeechController());
 
     // Don't use await createApp() when using a FakeTree, as it seems to cause
     // flakiness.

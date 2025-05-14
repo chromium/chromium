@@ -22,7 +22,6 @@ import type {SettingsPrefs} from './common.js';
 import {minOverflowLengthToScroll} from './common.js';
 import type {LanguageToastElement} from './language_toast.js';
 import {NodeStore} from './node_store.js';
-import {ReadAloudHighlighter} from './read_aloud/highlighter.js';
 import {SpeechController} from './read_aloud/speech_controller.js';
 import type {SpeechListener} from './read_aloud/speech_controller.js';
 import {VoicePackController} from './read_aloud/voice_pack_controller.js';
@@ -124,8 +123,6 @@ export class AppElement extends AppElementBase implements
   private notificationManager_ = VoiceNotificationManager.getInstance();
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
   private styleUpdater_: AppStyleUpdater;
-  private highlighter_: ReadAloudHighlighter =
-      ReadAloudHighlighter.getInstance();
   private nodeStore_: NodeStore = NodeStore.getInstance();
   private voicePackController_: VoicePackController =
       VoicePackController.getInstance();
@@ -214,7 +211,11 @@ export class AppElement extends AppElementBase implements
       }
 
       const {anchorNodeId, anchorOffset, focusNodeId, focusOffset} =
-          this.getSelectedIds();
+          this.isReadAloudEnabled_ ?
+          this.speechController_.getSelectionAdjustedForHighlights(
+              selection.anchorNode, selection.anchorOffset, selection.focusNode,
+              selection.focusOffset) :
+          this.getSelection();
       if (!anchorNodeId || !focusNodeId) {
         return;
       }
@@ -233,12 +234,8 @@ export class AppElement extends AppElementBase implements
             anchorNodeId, anchorOffset, focusNodeId, focusOffset);
       }
 
-      // If there's been a selection, clear the current Read Aloud highlight.
-      if (anchorNodeId && focusNodeId) {
-        // If speech is resumed, this won't be restored.
-        // TODO: crbug.com/40927698 - Restore the previous highlight after
-        // speech is resumed after a selection.
-        this.highlighter_.clearHighlightFormatting();
+      if (this.isReadAloudEnabled_) {
+        this.speechController_.onSelectionChange();
       }
     };
 
@@ -824,34 +821,6 @@ export class AppElement extends AppElementBase implements
 
   protected onPreviousGranularityClick_() {
     this.speechController_.onPreviousGranularityClick();
-  }
-
-  private getSelectedIds(): {
-    anchorNodeId: number|undefined,
-    anchorOffset: number,
-    focusNodeId: number|undefined,
-    focusOffset: number,
-  } {
-    const {anchorNode, anchorOffset, focusNode, focusOffset} =
-        this.getSelection();
-    let anchorNodeId = this.nodeStore_.getAxId(anchorNode);
-    let focusNodeId = this.nodeStore_.getAxId(focusNode);
-    let adjustedAnchorOffset = anchorOffset;
-    let adjustedFocusOffset = focusOffset;
-    if (!anchorNodeId) {
-      anchorNodeId = this.highlighter_.getAncestorId(anchorNode);
-      adjustedAnchorOffset += this.highlighter_.getOffsetInAncestor(anchorNode);
-    }
-    if (!focusNodeId) {
-      focusNodeId = this.highlighter_.getAncestorId(focusNode);
-      adjustedFocusOffset += this.highlighter_.getOffsetInAncestor(focusNode);
-    }
-    return {
-      anchorNodeId: anchorNodeId,
-      anchorOffset: adjustedAnchorOffset,
-      focusNodeId: focusNodeId,
-      focusOffset: adjustedFocusOffset,
-    };
   }
 
   protected onSelectVoice_(
