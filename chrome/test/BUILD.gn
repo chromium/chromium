@@ -2302,6 +2302,7 @@ if (!is_android) {
       "//chrome/browser/ui/login",
       "//chrome/browser/ui/login:browser_tests",
       "//chrome/browser/ui/omnibox",
+      "//chrome/browser/ui/omnibox:browser_tests",
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/page_info",
       "//chrome/browser/ui/permission_bubble:browser_tests",
@@ -2729,7 +2730,11 @@ if (!is_android) {
       "//v8",
     ]
 
-    allow_circular_includes_from = []
+    allow_circular_includes_from = [
+      # `alternate_nav_infobar_delegate_browsertest.cc` includes test_infobar.h, which is
+      # built as part of //chrome/test:browser_tests, hence the circular dep.
+      "//chrome/browser/ui/omnibox:browser_tests",
+    ]
 
     if (is_chromeos) {
       deps += [
@@ -3398,8 +3403,6 @@ if (!is_android) {
       "../browser/ui/extensions/settings_overridden_params_providers_browsertest.cc",
       "../browser/ui/managed_ui_browsertest.cc",
       "../browser/ui/native_window_tracker_browsertest.cc",
-      "../browser/ui/omnibox/alternate_nav_infobar_delegate_browsertest.cc",
-      "../browser/ui/omnibox/omnibox_search_aggregator_browsertest.cc",
       "../browser/ui/passwords/password_generation_popup_view_browsertest.cc",
       "../browser/ui/passwords/well_known_change_password_navigation_throttle_browsertest.cc",
       "../browser/ui/performance_controls/tab_resource_usage_collector_browsertest.cc",
@@ -7858,10 +7861,6 @@ test("unit_tests") {
       "../browser/ui/extensions/settings_api_bubble_helpers_unittest.cc",
       "../browser/ui/extensions/settings_overridden_params_providers_unittest.cc",
       "../browser/ui/intent_picker_tab_helper_unittest.cc",
-      "../browser/ui/omnibox/chrome_omnibox_navigation_observer_unittest.cc",
-      "../browser/ui/omnibox/clipboard_utils_unittest.cc",
-      "../browser/ui/omnibox/omnibox_pedal_implementations_unittest.cc",
-      "../browser/ui/omnibox/omnibox_pedals_unittest.cc",
       "../browser/ui/passwords/bubble_controllers/add_username_bubble_controller_unittest.cc",
       "../browser/ui/passwords/bubble_controllers/auto_sign_in_bubble_controller_unittest.cc",
       "../browser/ui/passwords/bubble_controllers/common_saved_account_manager_bubble_controller_unittest.cc",
@@ -8239,6 +8238,8 @@ test("unit_tests") {
     ]
 
     # Non-android deps for "unit_tests" target.
+    #
+    # TODO(crbug.com/417513088): Maybe merge with the non-android `deps` declaration above?
     deps += [
       "../browser/screen_ai:screen_ai_install_state",
       "//chrome:packed_resources_integrity_header",
@@ -8306,6 +8307,7 @@ test("unit_tests") {
       "//chrome/browser/ui/lens:unit_tests",
       "//chrome/browser/ui/media_router:unit_tests",
       "//chrome/browser/ui/omnibox",
+      "//chrome/browser/ui/omnibox:unit_tests",
       "//chrome/browser/ui/qrcode_generator:unit_tests",
       "//chrome/browser/ui/safety_hub:unit_tests",
       "//chrome/browser/ui/signin",
@@ -10910,8 +10912,6 @@ if (!is_android && !is_chromeos_device) {
       "../browser/ui/fullscreen_keyboard_browsertest_base.cc",
       "../browser/ui/fullscreen_keyboard_browsertest_base.h",
       "../browser/ui/keyboard_lock_interactive_browsertest.cc",
-      "../browser/ui/omnibox/omnibox_metrics_browsertest.cc",
-      "../browser/ui/omnibox/omnibox_view_browsertest.cc",
       "../browser/ui/search/instant_extended_interactive_uitest.cc",
       "../browser/ui/search/instant_test_base.cc",
       "../browser/ui/search/instant_test_base.h",
@@ -11072,6 +11072,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/hung_renderer:interactive_ui_tests",
       "//chrome/browser/ui/lens:interactive_ui_tests",
       "//chrome/browser/ui/omnibox",
+      "//chrome/browser/ui/omnibox:interactive_ui_tests",
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/plus_addresses:interactive_ui_tests",
       "//chrome/browser/ui/privacy_sandbox",
@@ -11706,11 +11707,6 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/frame/immersive_mode_controller_mac_interactive_uitest.mm",
         "../browser/webauthn/chrome_webauthn_autofill_mac_interactive_uitest.mm",
         "//ui/display/mac/test/virtual_display_util_mac_interactive_uitest.mm",
-      ]
-
-      sources -= [
-        # TODO(crbug.com/40659953): Re-enable this test when history backend failures are addressed.
-        "../browser/ui/omnibox/omnibox_view_browsertest.cc",
       ]
 
       data_deps += [
