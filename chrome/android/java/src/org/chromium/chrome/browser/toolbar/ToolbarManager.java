@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.gesturenav.TabOnBackGestureHandler;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
+import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -1664,6 +1665,9 @@ public class ToolbarManager
                 mLayoutStateProvider != null
                         ? mLayoutStateProvider.getActiveLayoutType() == LayoutType.TAB_SWITCHER
                         : false);
+        ObservableSupplier<Integer> keyboardAccessoryHeightSupplier =
+                new KeyboardAccessoryHeightSupplier(
+                        ManualFillingComponentSupplier.from(mWindowAndroid));
         new ToolbarPositionController(
                 mBrowserControlsSizer,
                 ContextUtils.getAppSharedPreferences(),
@@ -1672,6 +1676,7 @@ public class ToolbarManager
                 mOmniboxFocusStateSupplier,
                 mFormFieldFocusedSupplier,
                 mFindInPageShowingSupplier,
+                keyboardAccessoryHeightSupplier,
                 mWindowAndroid.getKeyboardDelegate(),
                 mControlContainer,
                 mBottomControlsStacker,

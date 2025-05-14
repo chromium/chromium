@@ -64,6 +64,11 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         int ANIMATE_TO_BOTTOM = 4;
     }
 
+    /** Bottom controls layer that remembers its most recent offset */
+    interface BottomControlsLayerWithOffset extends BottomControlsLayer {
+        int getLayerOffsetPx();
+    }
+
     // User-configured, or, otherwise, default Toolbar placement; may be null, if target placement
     // has not been determined yet. Prefer `isToolbarConfiguredToShowOnTop()` call when querying
     // intended placement.
@@ -81,9 +86,10 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final View mToolbarProgressBarContainer;
     private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private final Context mContext;
+    private final ObservableSupplier<Integer> mKeyboardAccessoryHeightSupplier;
     @LayerVisibility private int mLayerVisibility;
-    private final BottomControlsLayer mBottomToolbarLayer;
-    private final BottomControlsLayer mProgressBarLayer;
+    private final BottomControlsLayerWithOffset mBottomToolbarLayer;
+    private final BottomControlsLayerWithOffset mProgressBarLayer;
 
     @ControlsPosition private int mCurrentPosition;
     private final int mHairlineHeight;
@@ -102,6 +108,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
      * @param isFormFieldFocusedSupplier Supplier of the current form field focus state for the
      *     active WebContents. Must have a non-null value immediately available.
      * @param isFindInPageShowingSupplier Supplier telling us if the "find in page" UI is showing.
+     * @param keyboardAccessoryHeightSupplier Supplier of the height of the keyboard accessory,
+     *     which stacks on top of the soft keyboard.
      * @param controlContainer The control container for the current context.
      * @param bottomControlsStacker {@link BottomControlsStacker} used to harmonize the position of
      *     the bottom toolbar with other bottom-anchored UI.
@@ -114,6 +122,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             ObservableSupplier<Boolean> isOmniboxFocusedSupplier,
             ObservableSupplier<Boolean> isFormFieldFocusedSupplier,
             ObservableSupplier<Boolean> isFindInPageShowingSupplier,
+            ObservableSupplier<Integer> keyboardAccessoryHeightSupplier,
             KeyboardVisibilityDelegate keyboardVisibilityDelegate,
             ControlContainer controlContainer,
             BottomControlsStacker bottomControlsStacker,
@@ -126,6 +135,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mIsOmniboxFocusedSupplier = isOmniboxFocusedSupplier;
         mIsFormFieldFocusedSupplier = isFormFieldFocusedSupplier;
         mIsFindInPageShowingSupplier = isFindInPageShowingSupplier;
+        mKeyboardAccessoryHeightSupplier = keyboardAccessoryHeightSupplier;
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
         mControlContainer = controlContainer;
         mBottomControlsStacker = bottomControlsStacker;
@@ -149,7 +159,14 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
 
         mLayerVisibility = LayerVisibility.HIDDEN;
         mBottomToolbarLayer =
-                new BottomControlsLayer() {
+                new BottomControlsLayerWithOffset() {
+                    private int mLayerOffset;
+
+                    @Override
+                    public int getLayerOffsetPx() {
+                        return mLayerOffset;
+                    }
+
                     @Override
                     public int getType() {
                         return LayerType.BOTTOM_TOOLBAR;
@@ -173,13 +190,21 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                     @Override
                     public void onBrowserControlsOffsetUpdate(int layerYOffset) {
                         if (mLayerVisibility == LayerVisibility.VISIBLE) {
+                            mLayerOffset = layerYOffset;
                             mBrowserControlsOffsetSupplier.set(layerYOffset);
-                            mControlContainer.getView().setTranslationY(layerYOffset);
+                            updateViewOffset(this, mControlContainer.getView());
                         }
                     }
                 };
         mProgressBarLayer =
-                new BottomControlsLayer() {
+                new BottomControlsLayerWithOffset() {
+                    private int mLayerOffset;
+
+                    @Override
+                    public int getLayerOffsetPx() {
+                        return mLayerOffset;
+                    }
+
                     @Override
                     public int getType() {
                         return LayerType.PROGRESS_BAR;
@@ -202,12 +227,23 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
 
                     @Override
                     public void onBrowserControlsOffsetUpdate(int layerYOffset) {
-                        mToolbarProgressBarContainer.setTranslationY(layerYOffset);
+                        if (mLayerVisibility == LayerVisibility.VISIBLE) {
+                            mLayerOffset = layerYOffset;
+                            updateViewOffset(this, mToolbarProgressBarContainer);
+                        }
                     }
                 };
 
         mBottomControlsStacker.addLayer(mBottomToolbarLayer);
         mBottomControlsStacker.addLayer(mProgressBarLayer);
+        mKeyboardAccessoryHeightSupplier.addObserver(
+                (height) -> updateViewOffset(mBottomToolbarLayer, mControlContainer.getView()));
+        mKeyboardAccessoryHeightSupplier.addObserver(
+                (height) -> updateViewOffset(mProgressBarLayer, mToolbarProgressBarContainer));
+        mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(
+                (showing) -> updateViewOffset(mBottomToolbarLayer, mControlContainer.getView()));
+        mIsFormFieldFocusedSupplier.addObserver(
+                (focused) -> updateViewOffset(mProgressBarLayer, mToolbarProgressBarContainer));
         updateCurrentPosition();
     }
 
@@ -409,6 +445,13 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
 
         // For all other state transitions, just snap to the correct position immediately.
         return switchingToBottom ? StateTransition.SNAP_TO_BOTTOM : StateTransition.SNAP_TO_TOP;
+    }
+
+    private void updateViewOffset(BottomControlsLayerWithOffset layer, View viewForLayer) {
+        if (mLayerVisibility != LayerVisibility.VISIBLE) return;
+
+        int layerYOffset = layer.getLayerOffsetPx() - mKeyboardAccessoryHeightSupplier.get();
+        viewForLayer.setTranslationY(layerYOffset);
     }
 
     /** Returns whether the toolbar will be shown on top for the supplied tab. */
