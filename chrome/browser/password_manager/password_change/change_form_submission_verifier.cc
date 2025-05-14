@@ -105,6 +105,15 @@ void RecordOutcomeMetrics(
   }
 }
 
+blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
+  auto options = blink::mojom::AIPageContentOptions::New();
+  // WebContents where password change is happening is hidden, and renderer
+  // won't capture a snapshot unless it becomes visible again or
+  // on_critical_path is set to true.
+  options->on_critical_path = true;
+  return options;
+}
+
 }  // namespace
 
 ChangeFormSubmissionVerifier::ChangeFormSubmissionVerifier(
@@ -115,7 +124,7 @@ ChangeFormSubmissionVerifier::ChangeFormSubmissionVerifier(
       capture_annotated_page_content_(
           base::BindOnce(&optimization_guide::GetAIPageContent,
                          web_contents,
-                         optimization_guide::DefaultAIPageContentOptions())),
+                         GetAIPageContentOptions())),
       callback_(std::move(callback)),
       logs_uploader_(logs_uploader) {}
 
