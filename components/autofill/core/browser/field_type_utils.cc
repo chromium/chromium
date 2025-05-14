@@ -212,6 +212,7 @@ bool IsTagType(FieldType type) {
     case DRIVERS_LICENSE_ISSUE_DATE:
     case VEHICLE_YEAR:
     case VEHICLE_PLATE_STATE:
+    case EMAIL_OR_LOYALTY_MEMBERSHIP_ID:
     case MAX_VALID_FIELD_TYPE:
       return false;
   }

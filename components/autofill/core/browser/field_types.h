@@ -515,6 +515,16 @@ enum FieldType {
   VEHICLE_YEAR = 185,
   VEHICLE_PLATE_STATE = 186,
 
+  // Types 187 and 188 are not used yet on the client, but will likely be added
+  // in the future.
+
+  // For fields that can contain either email or loyalty membership ID. This
+  // type is neither voted for by the client nor emitted by the server. The
+  // client will vote for either EMAIL_ADDRESS or LOYALTY_MEMBERSHIP_ID and the
+  // server will emit both types in the response. The joined type is built by
+  // the client.
+  EMAIL_OR_LOYALTY_MEMBERSHIP_ID = 189,
+
   // No new types can be added without a corresponding change to the Autofill
   // server.
   // This enum must be kept in sync with FieldType from
@@ -525,7 +535,7 @@ enum FieldType {
   // If the newly added type is a storable type of AutofillProfile, update
   // AutofillProfile.StorableTypes in
   // tools/metrics/histograms/metadata/autofill/histograms.xml.
-  MAX_VALID_FIELD_TYPE = 187,
+  MAX_VALID_FIELD_TYPE = 190,
 };
 // LINT.ThenChange(//chrome/common/extensions/api/autofill_private.idl)
 
@@ -619,7 +629,10 @@ constexpr FieldType ToSafeFieldType(std::underlying_type_t<FieldType> raw_value,
            // Reserved for server-side only use.
            !(111 <= t && t <= 113) && t != 117 && t != 127 &&
            !(130 <= t && t <= 132) && t != 134 && !(137 <= t && t <= 139) &&
-           !(147 <= t && t <= 149) && t != 155 && t != 159 && t != 161;
+           !(147 <= t && t <= 149) && t != 155 && t != 159 && t != 161 &&
+           // Types for the country for driver's license and vehicle are not
+           // used yet, but will likely be added in the future.
+           !(187 <= t && t <= 188);
   };
   return IsValid(raw_value) ? static_cast<FieldType>(raw_value)
                             : fallback_value;

@@ -122,6 +122,7 @@ declare global {
         ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
         SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES,
         IMPROVED_PREDICTION,
+        EMAIL_OR_LOYALTY_MEMBERSHIP_ID,
       }
 
       export enum AddressRecordType {

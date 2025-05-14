@@ -414,6 +414,7 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
         case DRIVERS_LICENSE_NUMBER:
         case DRIVERS_LICENSE_EXPIRATION_DATE:
         case DRIVERS_LICENSE_ISSUE_DATE:
+        case EMAIL_OR_LOYALTY_MEMBERSHIP_ID:
           NOTREACHED() << field_type << " type is not in that group.";
       }
       break;

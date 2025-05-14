@@ -462,6 +462,7 @@ AddressUIComponentIconType GetAddressUIComponentIconTypeForFieldType(
     case ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY:
     case ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK:
     case ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
+    case EMAIL_OR_LOYALTY_MEMBERSHIP_ID:
       return AddressUIComponentIconType::kNoIcon;
   }
 }

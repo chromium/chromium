@@ -144,6 +144,7 @@ TEST(FieldTypesTest, IsValidFieldType) {
       DRIVERS_LICENSE_ISSUE_DATE,
       VEHICLE_YEAR,
       VEHICLE_PLATE_STATE,
+      EMAIL_OR_LOYALTY_MEMBERSHIP_ID,
   };
   FieldType kInvalidValue = static_cast<FieldType>(123456);
   ASSERT_FALSE(kValidFieldTypes.count(kInvalidValue));
