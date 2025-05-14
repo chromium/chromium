@@ -35,6 +35,7 @@ static_library("floating_workspace") {
     "//chrome/browser/sync",
     "//chrome/browser/ui/ash/desks",
     "//chrome/browser/ui/ash/multi_user",
+    "//chromeos/ash/components/browser_context_helper:browser_context_helper",
     "//chromeos/ash/components/network",
     "//chromeos/ash/services/device_sync/public/cpp/",
     "//chromeos/dbus/power",

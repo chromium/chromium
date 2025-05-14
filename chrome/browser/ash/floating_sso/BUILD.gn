@@ -28,11 +28,13 @@ static_library("floating_sso") {
     "//chrome/browser/sync:factories",
     "//chrome/common",
     "//chrome/common:channel_info",
+    "//chromeos/ash/components/browser_context_helper:browser_context_helper",
     "//components/google/core/common",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/sync/service",
     "//components/url_matcher",
+    "//components/user_manager:user_manager",
     "//content/public/browser",
     "//net",
   ]

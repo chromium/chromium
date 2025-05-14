@@ -645,12 +645,6 @@ class ManagementUIHandlerTests :
     if (profile_) {
       return false;
     }
-    profile_ =
-        profile_manager_->CreateTestingProfile(GetTestConfig().profile_name);
-    if (GetTestConfig().override_policy_connector_is_managed) {
-      profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
-    }
-
 #if BUILDFLAG(IS_CHROMEOS)
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId(GetTestConfig().profile_name, kGaiaId);
@@ -658,7 +652,15 @@ class ManagementUIHandlerTests :
         account_id,
         user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
     fake_user_manager_->SwitchActiveUser(account_id);
-    fake_user_manager_->OnUserProfileCreated(account_id, profile_->GetPrefs());
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+    profile_ =
+        profile_manager_->CreateTestingProfile(GetTestConfig().profile_name);
+    if (GetTestConfig().override_policy_connector_is_managed) {
+      profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
+    }
+
+#if BUILDFLAG(IS_CHROMEOS)
     // Set Floating Workspace (responsible for syncing windows) pref.
     profile_->GetTestingPrefService()->SetManagedPref(
         ash::prefs::kFloatingWorkspaceV2Enabled,
@@ -667,6 +669,7 @@ class ManagementUIHandlerTests :
     profile_->GetTestingPrefService()->SetManagedPref(
         prefs::kFloatingSsoEnabled,
         std::make_unique<base::Value>(GetTestConfig().sync_cookies));
+    fake_user_manager_->OnUserProfileCreated(account_id, profile_->GetPrefs());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     web_contents_ = content::WebContents::Create(

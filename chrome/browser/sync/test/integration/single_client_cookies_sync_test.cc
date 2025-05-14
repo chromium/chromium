@@ -90,6 +90,9 @@ class SingleClientCookiesSyncTest : public SyncTest {
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
         &policy_provider_);
     SetFloatingSsoEnabledPolicy(true);
+    // Cookie sync is only enabled for the primary profile, but for these tests
+    // there is no real benefit in setting up a fully logged in ChromeOS user.
+    FloatingSsoServiceFactory::GetInstance()->AllowNonPrimaryProfileForTests();
     SyncTest::SetUpInProcessBrowserTestFixture();
   }
 
