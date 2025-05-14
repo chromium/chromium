@@ -112,8 +112,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         /** Start tab selection process. */
         void startTabSelection();
 
-        /** Restore the given list of tabs. */
-        void restoreArchivedTabs(List<Tab> tabs);
+        /** Restore the given list of tabs and tab groups. */
+        void restoreArchivedTabs(List<Tab> tabs, List<String> tabGroupSyncIds);
 
         /** Close the given list of tabs and tab groups. */
         void closeArchivedTabs(List<Tab> tabs, List<String> tabGroupSyncIds);
@@ -125,7 +125,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 public void restoreAllArchivedTabs() {
                     List<Tab> tabs = TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel);
                     int tabCount = tabs.size();
-                    ArchivedTabsDialogCoordinator.this.restoreArchivedTabs(tabs);
+                    ArchivedTabsDialogCoordinator.this.restoreArchivedTabs(
+                            tabs, getArchivedTabGroupSyncIds());
                     RecordHistogram.recordCount1000Histogram(
                             "Tabs.RestoreAllArchivedTabsMenuItem.TabCount", tabCount);
                     RecordUserAction.record("Tabs.RestoreAllArchivedTabsMenuItem");
@@ -145,9 +146,9 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 }
 
                 @Override
-                public void restoreArchivedTabs(List<Tab> tabs) {
+                public void restoreArchivedTabs(List<Tab> tabs, List<String> tabGroupSyncIds) {
                     int tabCount = tabs.size();
-                    ArchivedTabsDialogCoordinator.this.restoreArchivedTabs(tabs);
+                    ArchivedTabsDialogCoordinator.this.restoreArchivedTabs(tabs, tabGroupSyncIds);
                     moveToState(TabActionState.CLOSABLE);
                     RecordHistogram.recordCount1000Histogram(
                             "Tabs.RestoreArchivedTabsMenuItem.TabCount", tabCount);
@@ -288,7 +289,9 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
             new TabGroupSyncService.Observer() {
                 @Override
                 public void onTabGroupUpdated(SavedTabGroup group, @TriggerSource int source) {
-                    refreshArchivedTabList();
+                    if (group.archivalTimeMs != null) {
+                        refreshArchivedTabList();
+                    }
                 }
 
                 @Override
@@ -807,7 +810,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         return mArchivedTabModelOrchestrator.getTabCountSupplier().get();
     }
 
-    private void restoreArchivedTabs(List<Tab> tabs) {
+    private void restoreArchivedTabs(List<Tab> tabs, List<String> tabGroupSyncIds) {
         mArchivedTabModelOrchestrator
                 .getTabArchiver()
                 .unarchiveAndRestoreTabs(
@@ -815,6 +818,11 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         tabs,
                         /* updateTimestamp= */ true,
                         /* areTabsBeingOpened= */ false);
+        for (String syncId : tabGroupSyncIds) {
+            mTabGroupUiActionHandlerSupplier.get().openTabGroup(syncId);
+            mTabListEditorCoordinator.removeListItem(
+                    UiType.TAB_GROUP, TabListEditorItemSelectionId.createTabGroupSyncId(syncId));
+        }
     }
 
     private void onIphReviewClicked() {

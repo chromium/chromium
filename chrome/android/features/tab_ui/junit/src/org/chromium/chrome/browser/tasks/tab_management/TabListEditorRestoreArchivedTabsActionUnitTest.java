@@ -77,6 +77,6 @@ public class TabListEditorRestoreArchivedTabsActionUnitTest {
         List<Tab> tabs = Collections.emptyList();
         List<String> tabGroupSyncIds = Collections.emptyList();
         mAction.performAction(tabs, tabGroupSyncIds);
-        verify(mArchiveDelegate).restoreArchivedTabs(tabs);
+        verify(mArchiveDelegate).restoreArchivedTabs(tabs, tabGroupSyncIds);
     }
 }

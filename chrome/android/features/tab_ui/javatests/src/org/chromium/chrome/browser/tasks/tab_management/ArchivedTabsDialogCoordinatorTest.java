@@ -111,6 +111,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     private static final String SYNC_GROUP_ID1 = "test_sync_group_id1";
     private static final String GROUP_TITLE1 = "My Group";
     private static final @TabGroupColorId int SYNC_GROUP_COLOR1 = TabGroupColorId.BLUE;
+    private static final GURL TAB_URL_1 = new GURL("https://url1.com");
 
     @Rule
     public FreshCtaTransitTestRule mCtaTestRule =
@@ -973,6 +974,108 @@ public class ArchivedTabsDialogCoordinatorTest {
         assertEquals(1, mUserActionTester.getActionCount("Tabs.CloseArchivedTabsMenuItem"));
     }
 
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS})
+    @DisabledTest(message = "crbug.com/417674987")
+    public void testRestoreAllInactiveTabs_WithSyncedTabGroups() throws Exception {
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
+        SavedTabGroup savedTabGroup =
+                createSavedTabGroup(SYNC_GROUP_ID1, GROUP_TITLE1, SYNC_GROUP_COLOR1, 1, true);
+        addArchivedTab(new GURL("https://google.com"), "test 1");
+
+        RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
+        tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
+
+        onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
+
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.RestoreAllArchivedTabsMenuItem.TabCount", 1);
+        assertEquals(1, mRegularTabModel.getCount());
+
+        // Mock the sync backend being initialized so the tab group is restored via
+        // createNewTabGroup and LocalTabGroupMutationHelper, reflected in the regular tab model.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupSyncServiceObserverCaptor.getAllValues().get(0).onInitialized();
+                });
+
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Restore all");
+
+        // Assert that the group was unarchived and emit an event with the new archive status.
+        verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID1, false);
+        savedTabGroup.archivalTimeMs = null;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupSyncServiceObserverCaptor
+                            .getAllValues()
+                            .get(1)
+                            .onTabGroupUpdated(savedTabGroup, TriggerSource.REMOTE);
+                });
+
+        mRobot.resultRobot.verifyTabListEditorIsHidden();
+        // This count includes the restored tab group.
+        assertEquals(3, mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
+        histogramExpectation.assertExpected();
+        assertEquals(1, mUserActionTester.getActionCount("Tabs.RestoreAllArchivedTabsMenuItem"));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS})
+    @DisabledTest(message = "crbug.com/417674987")
+    public void testSelectionModeMenuItem_RestoreTabGroups() {
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
+        SavedTabGroup savedTabGroup =
+                createSavedTabGroup(SYNC_GROUP_ID1, GROUP_TITLE1, SYNC_GROUP_COLOR1, 1, true);
+        addArchivedTab(new GURL("https://google.com"), "test 1");
+        addArchivedTab(new GURL("https://google.com"), "test 2");
+
+        RegularTabSwitcherStation tabSwitcherStation = mInitialPage.openRegularTabSwitcher();
+        tabSwitcherStation.expectArchiveMessageCard().openArchivedTabsDialog();
+
+        assertEquals(1, mRegularTabModel.getCount());
+        assertEquals(2, mArchivedTabModel.getCount());
+
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
+
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.RestoreArchivedTabsMenuItem.TabCount", 1);
+        mRobot.actionRobot.clickItemAtAdapterPosition(0);
+        mRobot.actionRobot.clickItemAtAdapterPosition(1);
+        mRobot.resultRobot.verifyToolbarSelectionText("2 tabs");
+
+        // Mock the sync backend being initialized so the tab group is restored via
+        // createNewTabGroup and LocalTabGroupMutationHelper, reflected in the regular tab model.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupSyncServiceObserverCaptor.getAllValues().get(0).onInitialized();
+                });
+
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Restore tabs");
+
+        // Assert that the group was unarchived and emit an event with the new archive status.
+        verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID1, false);
+        savedTabGroup.archivalTimeMs = null;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupSyncServiceObserverCaptor
+                            .getAllValues()
+                            .get(1)
+                            .onTabGroupUpdated(savedTabGroup, TriggerSource.REMOTE);
+                });
+
+        mRobot.resultRobot.verifyAdapterHasItemCount(1);
+        // This count includes the restored tab group.
+        assertEquals(3, mRegularTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
+        histogramExpectation.assertExpected();
+        assertEquals(1, mUserActionTester.getActionCount("Tabs.RestoreArchivedTabsMenuItem"));
+    }
+
     private Tab addArchivedTab(GURL url, String title) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -993,6 +1096,8 @@ public class ArchivedTabsDialogCoordinatorTest {
             int tabCount,
             boolean isArchived) {
         SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        savedTab.url = TAB_URL_1;
+        savedTab.syncId = syncId;
         List<SavedTabGroupTab> savedTabs = new ArrayList<>(Collections.nCopies(tabCount, savedTab));
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         savedTabGroup.syncId = syncId;
