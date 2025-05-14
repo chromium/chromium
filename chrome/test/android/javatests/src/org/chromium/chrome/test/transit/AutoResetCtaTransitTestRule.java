@@ -84,4 +84,14 @@ public class AutoResetCtaTransitTestRule extends BaseCtaTransitTestRule implemen
         return blankPage.loadPageProgrammatically(
                 UrlConstants.NTP_URL, RegularNewTabPageStation.newBuilder());
     }
+
+    /**
+     * Start the batched test in a URL.
+     *
+     * <p>From the second test onwards, state was reset by {@link BlankCTATabInitialStateRule}.
+     */
+    public WebPageStation startOnWebPage(String url) {
+        WebPageStation blankPage = startOnBlankPage();
+        return blankPage.loadWebPageProgrammatically(url);
+    }
 }
