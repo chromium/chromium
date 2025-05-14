@@ -3,6 +3,9 @@
     display: flex;
     flex-direction: column;
   }
+  .add-dict-row {
+    margin-top: 16px;
+  }
 </style>
 <h2 class="cr-row subsection-header">$i18n{japaneseDictionary}</h2>
 <template is="dom-repeat" items="[[dictionaries_]]">
@@ -11,11 +14,11 @@
   </os-japanese-dictionary-expand>
 </template>
 <div class="cr-row">
-  <cr-button on-click="addDictionary_" class="add-button">
+  <cr-button on-click="addDictionary_" class="add-button add-dict-row">
+    <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
     <span>
       $i18n{japaneseDictionaryAddDictionary}
     </span>
-    <iron-icon icon="cr:add" slot="suffix-icon"></iron-icon>
   </cr-button>
 </div>
 
