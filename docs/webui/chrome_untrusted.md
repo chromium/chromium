@@ -32,7 +32,7 @@ Semantic because it indicates to chromium developers and security reviewers that
 
 Historically, `chrome://` pages have been built with the assumption that they are an extension to the browser process, so `chrome://` web pages are granted special capabilities not granted to ordinary web pages. For example, all `chrome://` pages can use Web APIs like camera and mic without requesting permission.
 
-Some WebUIs would like to be able to process untrustworthy content, but granting these capabilities to a `chrome://` page would violate the [rule of 2](security/rule-of-2.md):
+Some WebUIs would like to be able to process untrustworthy content, but granting these capabilities to a `chrome://` page would violate the [rule of 2](../security/rule-of-2.md):
 
  * a `chrome://` page is considered an extension to the browser process
  * the renderer is written in an unsafe programming language (C++).
