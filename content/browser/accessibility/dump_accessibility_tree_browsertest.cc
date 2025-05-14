@@ -4126,7 +4126,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityTextIndent) {
   RunHtmlTest(FILE_PATH_LITERAL("text-indent.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityTextarea) {
+// TODO(crbug.com/417568026): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_AccessibilityTextarea DISABLED_AccessibilityTextarea
+#else
+#define MAYBE_AccessibilityTextarea AccessibilityTextarea
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MAYBE_AccessibilityTextarea) {
   RunHtmlTest(FILE_PATH_LITERAL("textarea.html"));
 }
 
@@ -4135,13 +4141,28 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("textarea-changes.html"));
 }
 
+// TODO(crbug.com/417568026): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_AccessibilityTextareaReadOnly \
+  DISABLED_AccessibilityTextareaReadOnly
+#else
+#define MAYBE_AccessibilityTextareaReadOnly AccessibilityTextareaReadOnly
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityTextareaReadOnly) {
+                       MAYBE_AccessibilityTextareaReadOnly) {
   RunHtmlTest(FILE_PATH_LITERAL("textarea-read-only.html"));
 }
 
+// TODO(crbug.com/417568026): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_AccessibilityTextareaWithSelection \
+  DISABLED_AccessibilityTextareaWithSelection
+#else
+#define MAYBE_AccessibilityTextareaWithSelection \
+  AccessibilityTextareaWithSelection
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityTextareaWithSelection) {
+                       MAYBE_AccessibilityTextareaWithSelection) {
   RunHtmlTest(FILE_PATH_LITERAL("textarea-with-selection.html"));
 }
 
