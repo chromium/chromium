@@ -444,9 +444,10 @@ std::unique_ptr<PopupRowContentView> CreateComposePopupRowContentView(
   return view;
 }
 
-// Creates the content view for virtual card (VCN) suggestions.
-// This method (currently) is only for VCNs.
-std::unique_ptr<PopupRowContentView> CreateVcnPopupRowContentView(
+// Creates the content view for virtual card (VCN) and IBAN suggestions.
+// This method (currently) is only for VCNs and IBANs.
+std::unique_ptr<PopupRowContentView>
+CreateAlternativePaymentMethodPopupRowContentView(
     base::WeakPtr<AutofillPopupController> controller,
     const Suggestion& suggestion,
     std::optional<user_education::DisplayNewBadge> show_new_badge,
@@ -465,16 +466,27 @@ std::unique_ptr<PopupRowContentView> CreateVcnPopupRowContentView(
               kAutofillSuggestionMaxWidth);
   std::vector<std::unique_ptr<views::View>> minor_labels =
       CreateMinorTextLabels(suggestion);
-  // If this is a virtual card suggestion with a non-empty minor_text,
-  // it means that the minor_text represents expiration date and should be
-  // replaced with a badge label.
+
   std::unique_ptr<views::BoxLayoutView> badge_view =
       GetBadgeView(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE));
+          suggestion.type == SuggestionType::kVirtualCreditCardEntry
+              ? IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE
+              : IDS_AUTOFILL_IBAN_SUGGESTION_OPTION_VALUE));
 
   std::vector<std::unique_ptr<views::View>> subtext_views =
       CreateSubtextViews(*view, suggestion, main_filling_product);
-  if (!minor_labels.empty()) {
+  if (suggestion.type == SuggestionType::kVirtualCreditCardEntry &&
+      !minor_labels.empty()) {
+    // If this is a virtual card suggestion with non-empty minor_labels,
+    // it means that the minor_text represents expiration date and should be
+    // replaced with a badge label.
+    minor_labels.clear();
+    minor_labels.push_back(std::move(badge_view));
+  } else if (suggestion.type == SuggestionType::kIbanEntry &&
+             subtext_views.empty()) {
+    // If this is an IBAN suggestion with an empty subtext_views,
+    // it means that the main_text represents IBAN's masked value and a
+    // badge label should be put as the minor_text.
     minor_labels.clear();
     minor_labels.push_back(std::move(badge_view));
   } else if (!subtext_views.empty()) {
@@ -689,12 +701,13 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
           controller, a11y_selection_delegate, selection_delegate, line_number,
           show_new_badge);
     }
+    case SuggestionType::kIbanEntry:
     case SuggestionType::kVirtualCreditCardEntry: {
       return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,
           base::FeatureList::IsEnabled(
               features::kAutofillEnableNewFopDisplayDesktop)
-              ? CreateVcnPopupRowContentView(
+              ? CreateAlternativePaymentMethodPopupRowContentView(
                     controller, suggestion, show_new_badge,
                     main_filling_product, std::move(filter_match))
               : CreatePopupRowContentView(suggestion, show_new_badge,

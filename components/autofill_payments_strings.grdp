@@ -802,6 +802,9 @@
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE" desc="The text shown in the virtual card option in the credit card suggestion list. It is shown as the value of the suggestion.">
     Virtual card
   </message>
+  <message name="IDS_AUTOFILL_IBAN_SUGGESTION_OPTION_VALUE" desc="The text shown in the IBAN option in the IBAN suggestion list. It is shown as the value of the suggestion." translateable="false">
+    IBAN
+  </message>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_NUMBER_SWITCH_LABEL" desc="The text shown as the label for virtual card enrollment switch in the server card edit page." formatter_data="android_java">
     Virtual card
   </message>
