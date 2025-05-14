@@ -4130,7 +4130,11 @@ TEST_F(DeskSaveAndRecallTest, SaveDeskForLaterWithSingleDesk) {
 
 // Tests that all desk window is not closed nor saved by clicking save desk for
 // later button.
-// TODO(crbug.com/388283264): Re-enable this test once the bug is fixed.
+//
+// TODO(crbug.com/388283264): Also see the last two EXPECT_FALSE() statements at
+// the bottom of this test. This test exposes an underlying conflict between the
+// "save desk" feature and the "all desk window" feature and a fix requires code
+// changes that are non-trivial.
 TEST_F(DeskSaveAndRecallTest, DISABLED_SaveDeskForLaterWithAllDeskWindow) {
   DesksController* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
@@ -4169,6 +4173,10 @@ TEST_F(DeskSaveAndRecallTest, DISABLED_SaveDeskForLaterWithAllDeskWindow) {
   // it's still in the library view.
   auto* all_desk_window_overview_item =
       GetOverviewItemForWindow(tracker.windows().front());
+
+  // TODO(crbug.com/388283264): The following two statements are consistently
+  // failing, i.e., both item_widget() and GetWindow() has IsVisible() returning
+  // true after the saving desk operation.
   EXPECT_FALSE(all_desk_window_overview_item->item_widget()->IsVisible());
   EXPECT_FALSE(all_desk_window_overview_item->GetWindow()->IsVisible());
 }
