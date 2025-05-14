@@ -595,13 +595,6 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
   }
 }
 
-ViewTransitionStyleTracker::~ViewTransitionStyleTracker() {
-  if (!RuntimeEnabledFeatures::SerializeViewTransitionStateInSPAEnabled()) {
-    CHECK(state_ == State::kIdle || state_ == State::kFinished)
-        << static_cast<int>(state_);
-  }
-}
-
 void ViewTransitionStyleTracker::AddConsoleError(
     String message,
     Vector<DOMNodeId> related_nodes) {

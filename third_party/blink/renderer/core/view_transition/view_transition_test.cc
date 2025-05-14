@@ -566,6 +566,52 @@ TEST_P(ViewTransitionTest, Abandon) {
   EXPECT_TRUE(finished_tester.IsFulfilled());
 }
 
+TEST_P(ViewTransitionTest, ScopedElementRemoved) {
+  // TODO: Implement me.
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      ::view-transition-group(*) { animation-duration: 100s; }
+      #scope { width: 200px; height: 300px; contain: strict;
+        position: relative; z-index: 0; background: white; }
+    </style>
+    <div id=scope>
+    </div>
+  )HTML");
+
+  auto* document = &GetDocument();
+  Element* scope_element = document->getElementById(AtomicString("scope"));
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  auto lambda = [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
+  auto* callback = V8ViewTransitionCallback::Create(
+      v8::Function::New(script_state->GetContext(), lambda,
+                        v8::External::New(script_state->GetIsolate(), document))
+          .ToLocalChecked());
+
+  auto* transition = ScopedViewTransition::startViewTransition(
+      script_state, *scope_element, callback, IGNORE_EXCEPTION_FOR_TESTING);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  test::RunPendingTasks();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(GetState(transition), State::kAnimating);
+  // Removal of the element forcefully halts the view transition, as the
+  // pseudo elements are removed and the view transition was only being kept
+  // alive by a weak reference to the associated element.
+  scope_element->remove();
+  // Forcing garbage collection, triggers a call to ~ViewTransitionStyleTracker
+  // while the state is not idle or finished. This chain of events triggered
+  // a CHECK failure (see: crbug.com/415376109). The check is no longer
+  // relevant since the style engine no longer keeps a persistent list of
+  // active view transition names. These names are now stored directly in
+  // ViewTransitionStyleTracker. This test ensures that we don't regress this
+  // edge case by reintroducing an assumption about the style tracker's state.
+  ThreadState::Current()->CollectAllGarbageForTesting();
+}
+
 // Checks that the pseudo element tree is correctly build for ::transition*
 // pseudo elements.
 TEST_P(ViewTransitionTest, ViewTransitionPseudoTree) {

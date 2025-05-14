@@ -89,7 +89,6 @@ class ViewTransitionStyleTracker
   ViewTransitionStyleTracker(
       Element& element,
       const blink::ViewTransitionToken& transition_token);
-  ~ViewTransitionStyleTracker();
 
   void AddTransitionElementsFromCSS();
 
