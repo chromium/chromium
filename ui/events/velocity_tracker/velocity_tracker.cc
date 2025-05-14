@@ -370,12 +370,14 @@ void VelocityTracker::AddMovement(const MotionEvent& event) {
     AddMovement(event.GetHistoricalEventTime(h), id_bits, positions);
   }
 
-  for (size_t i = 0; i < pointer_count; i++) {
-    uint32_t index = pointer_index[i];
-    positions[index].x = event.GetX(i);
-    positions[index].y = event.GetY(i);
+  if (!event.IsLatestEventTimeResampled()) {
+    for (size_t i = 0; i < pointer_count; i++) {
+      uint32_t index = pointer_index[i];
+      positions[index].x = event.GetX(i);
+      positions[index].y = event.GetY(i);
+    }
+    AddMovement(event.GetLatestEventTime(), id_bits, positions);
   }
-  AddMovement(event.GetLatestEventTime(), id_bits, positions);
 }
 
 bool VelocityTracker::GetVelocity(uint32_t id,

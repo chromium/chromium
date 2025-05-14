@@ -81,7 +81,8 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
                                       jint android_gesture_classification,
                                       jint android_button_state,
                                       jint android_meta_state,
-                                      jboolean for_touch_handle) {
+                                      jboolean for_touch_handle,
+                                      jboolean is_latest_event_resampled) {
   TRACE_EVENT(
       "input", "EventForwarder::OnTouchEvent", [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
@@ -133,7 +134,7 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
       0 /* action_button */, android_gesture_classification,
       android_button_state, android_meta_state, 0 /* source */,
       raw_pos_x - pos_x_0, raw_pos_y - pos_y_0, for_touch_handle, &pointer0,
-      &pointer1);
+      &pointer1, is_latest_event_resampled);
 
   if (send_touch_moves_to_observers ||
       android_action !=
@@ -244,7 +245,7 @@ jboolean EventForwarder::OnGenericMotionEvent(
       env, motion_event.obj(), 1.f / view_->GetDipScale(), 0.f, 0.f, 0.f,
       base::TimeTicks::FromJavaNanoTime(event_time_ns),
       base::TimeTicks::FromJavaNanoTime(event_time_ns), down_time, 0, 1, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, false, &pointer0, nullptr);
+      0, 0, 0, 0, 0, 0, 0, false, &pointer0, nullptr, false);
 
   observers_.Notify(&Observer::OnGenericMotionEvent, event);
 

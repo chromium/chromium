@@ -814,7 +814,7 @@ ui::MotionEventAndroidJava GetMotionEventAndroid(
   return ui::MotionEventAndroidJava(
       nullptr, nullptr, pix_to_dip, 0.f, 0.f, 0.f, event_time, event_time,
       down_time, ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, false, &pointer, nullptr);
+      0, 0, 0, 0, 0, 0, false, &pointer, nullptr, false);
 }
 #endif
 }  // namespace

@@ -68,6 +68,10 @@ int MotionEvent::GetSourceDeviceId(size_t pointer_index) const {
   return 0;
 }
 
+bool MotionEvent::IsLatestEventTimeResampled() const {
+  return false;
+}
+
 std::unique_ptr<MotionEvent> MotionEvent::Clone() const {
   return MotionEventGeneric::CloneEvent(*this);
 }

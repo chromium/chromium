@@ -266,15 +266,40 @@ class MockEvent : public MockMotionEvent {
   MockEvent(Action action, base::TimeTicks time, float x, float y)
       : MockMotionEvent(action, time, x, y) {}
 
+  MOCK_METHOD(base::TimeTicks,
+              GetHistoricalEventTime,
+              (size_t),
+              (const, override));
   MOCK_METHOD(base::TimeTicks, GetLatestEventTime, (), (const, override));
 };
-
-TEST_F(VelocityTrackerTest, UsesLatestEventTime) {
+TEST_F(VelocityTrackerTest, UsesLatestEventTimeWhenNotResampled) {
   VelocityTrackerState state(VelocityTracker::LSQ2);
 
-  MockEvent m1(MotionEvent::Action::MOVE, base::TimeTicks::Now(),
-               /* x= */ 0, /* y= */ 0);
+  base::TimeTicks now = base::TimeTicks::Now();
+  MockEvent m1(MotionEvent::Action::MOVE, now, /* x= */ 0, /* y= */ 0);
+  m1.PushHistoricalEvent(std::make_unique<MockEvent>(
+      MotionEvent::Action::MOVE, base::TimeTicks::Now() - base::Milliseconds(4),
+      /* x= */ -1, /* y= */ -1));
+  m1.SetIsLatestEventTimeResampled(false);
+
+  EXPECT_CALL(m1, GetHistoricalEventTime(0)).Times(1);
   EXPECT_CALL(m1, GetLatestEventTime()).Times(1);
+
+  state.AddMovement(m1);
+}
+
+TEST_F(VelocityTrackerTest, DoesNotUseLatestEventTimeWhenResampled) {
+  VelocityTrackerState state(VelocityTracker::LSQ2);
+
+  base::TimeTicks now = base::TimeTicks::Now();
+  MockEvent m1(MotionEvent::Action::MOVE, now, /* x= */ 0, /* y= */ 0);
+  m1.PushHistoricalEvent(std::make_unique<MockEvent>(
+      MotionEvent::Action::MOVE, base::TimeTicks::Now() - base::Milliseconds(4),
+      /* x= */ -1, /* y= */ -1));
+  m1.SetIsLatestEventTimeResampled(true);
+
+  EXPECT_CALL(m1, GetHistoricalEventTime(0)).Times(1);
+  EXPECT_CALL(m1, GetLatestEventTime()).Times(0);
 
   state.AddMovement(m1);
 }

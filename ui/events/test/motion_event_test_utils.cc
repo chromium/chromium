@@ -217,6 +217,10 @@ MotionEvent::Classification MockMotionEvent::GetClassification() const {
   return gesture_classification_;
 }
 
+bool MockMotionEvent::IsLatestEventTimeResampled() const {
+  return is_latest_event_time_resampled_;
+}
+
 std::string ToString(const MotionEvent& event) {
   std::stringstream ss;
   ss << "MotionEvent {"

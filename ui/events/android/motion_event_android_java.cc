@@ -53,7 +53,8 @@ MotionEventAndroidJava::MotionEventAndroidJava(
     jfloat raw_offset_y_pixels,
     jboolean for_touch_handle,
     const Pointer* const pointer0,
-    const Pointer* const pointer1)
+    const Pointer* const pointer1,
+    bool is_latest_event_time_resampled)
     : MotionEventAndroid(pix_to_dip,
                          ticks_x,
                          ticks_y,
@@ -74,7 +75,8 @@ MotionEventAndroidJava::MotionEventAndroidJava(
                          raw_offset_y_pixels,
                          for_touch_handle,
                          pointer0,
-                         pointer1) {
+                         pointer1),
+      is_latest_event_time_resampled_(is_latest_event_time_resampled) {
   event_.Reset(env, event);
   if (GetPointerCount() > MAX_POINTERS_TO_CACHE || GetHistorySize() > 0) {
     DCHECK(event_.obj());
@@ -125,7 +127,8 @@ MotionEventAndroidJava::MotionEventAndroidJava(
                              raw_offset_y_pixels,
                              for_touch_handle,
                              pointer0,
-                             pointer1) {
+                             pointer1,
+                             false) {
   DCHECK_EQ(history_size, 0);
 }
 
@@ -309,6 +312,10 @@ ui::MotionEvent::ToolType MotionEventAndroidJava::GetToolType(
   return MotionEventAndroid::FromAndroidToolType(
       JNI_MotionEvent::Java_MotionEvent_getToolType(AttachCurrentThread(),
                                                     event_, pointer_index));
+}
+
+bool MotionEventAndroidJava::IsLatestEventTimeResampled() const {
+  return is_latest_event_time_resampled_;
 }
 
 }  // namespace ui

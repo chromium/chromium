@@ -7,7 +7,10 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
-  sources = [ "java/src/org/chromium/components/input/InputUtils.java" ]
+  sources = [
+    "java/src/org/chromium/components/input/InputFeatureMap.java",
+    "java/src/org/chromium/components/input/InputUtils.java",
+  ]
   deps = [
     "//base:base_java",
     "//third_party/jni_zero:jni_zero_java",
@@ -16,5 +19,8 @@ android_library("java") {
 }
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/components/input/InputUtils.java" ]
+  sources = [
+    "java/src/org/chromium/components/input/InputFeatureMap.java",
+    "java/src/org/chromium/components/input/InputUtils.java",
+  ]
 }

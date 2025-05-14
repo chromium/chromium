@@ -91,7 +91,7 @@ TEST(MotionEventAndroidTest, Constructor) {
       oldest_event_time, latest_event_time, down_time_ms, kAndroidActionDown,
       pointer_count, history_size, action_index, kAndroidActionButton, 0,
       kAndroidButtonPrimary, kAndroidAltKeyDown, 0, raw_offset, -raw_offset,
-      false, &p0, &p1);
+      false, &p0, &p1, false);
 
   EXPECT_EQ(MotionEvent::Action::DOWN, event.GetAction());
   EXPECT_EQ(oldest_event_time, event.GetEventTime());
@@ -193,11 +193,11 @@ TEST(MotionEventAndroidTest, NonEmptyHistoryForNonMoveEventsSanitized) {
   int pointer_count = 1;
   size_t history_size = 5;
   MotionEventAndroid::Pointer p0(0, 0, 0, 0, 0, 0, 0, 0);
-  MotionEventAndroidJava event(base::android::AttachCurrentThread(), nullptr,
-                               kPixToDip, 0, 0, 0, base::TimeTicks(),
-                               base::TimeTicks(), base::TimeTicks(),
-                               kAndroidActionDown, pointer_count, history_size,
-                               0, 0, 0, 0, 0, 0, 0, 0, false, &p0, nullptr);
+  MotionEventAndroidJava event(
+      base::android::AttachCurrentThread(), nullptr, kPixToDip, 0, 0, 0,
+      base::TimeTicks(), base::TimeTicks(), base::TimeTicks(),
+      kAndroidActionDown, pointer_count, history_size, 0, 0, 0, 0, 0, 0, 0, 0,
+      false, &p0, nullptr, false);
 
   EXPECT_EQ(0U, event.GetHistorySize());
 }

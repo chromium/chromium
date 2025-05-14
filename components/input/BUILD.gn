@@ -109,6 +109,7 @@ component("input") {
     sources += [
       "android/android_input_callback.cc",
       "android/android_input_callback.h",
+      "android/input_feature_map.cc",
       "android/input_receiver_data.cc",
       "android/input_receiver_data.h",
       "android/input_token_forwarder.cc",

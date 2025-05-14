@@ -106,6 +106,8 @@ class COMPONENT_EXPORT(VELOCITY_TRACKER) MotionEvent {
   // Get the id of the device which created the event. Currently Aura only.
   virtual int GetSourceDeviceId(size_t pointer_index) const;
 
+  virtual bool IsLatestEventTimeResampled() const;
+
   // Utility accessor methods for convenience.
   int GetPointerId() const { return GetPointerId(0); }
   float GetX() const { return GetX(0); }

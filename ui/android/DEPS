@@ -10,6 +10,7 @@ include_rules = [
   "+cc/test/stub_layer_tree_host_client.h",
   "+cc/test/test_task_graph_runner.h",
   "+components/cached_flags",
+  "+components/input/android/java/src/org/chromium/components/input/InputFeatureMap.java",
   "+components/url_formatter",
   "+components/viz/client",
   "+components/viz/common",
