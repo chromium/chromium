@@ -54,8 +54,12 @@ TEST_P(ByConversionReason, ToFormDataProto) {
       ToFormDataProto(form, /*conversion_reason=*/GetParam());
   ASSERT_EQ(form_data_proto.fields_size(), 3);
 
+  EXPECT_EQ(form_data_proto.form_signature(), *CalculateFormSignature(form));
+
   optimization_guide::proto::FormFieldData field_data1 =
       form_data_proto.fields(0);
+  EXPECT_EQ(field_data1.field_signature(),
+            *CalculateFieldSignatureForField(form.fields()[0]));
   EXPECT_EQ(field_data1.field_label(), "label");
   EXPECT_EQ(field_data1.field_value(), "");
   EXPECT_EQ(field_data1.field_name(), "name");
@@ -65,6 +69,8 @@ TEST_P(ByConversionReason, ToFormDataProto) {
 
   optimization_guide::proto::FormFieldData field_data2 =
       form_data_proto.fields(1);
+  EXPECT_EQ(field_data2.field_signature(),
+            *CalculateFieldSignatureForField(form.fields()[1]));
   EXPECT_EQ(field_data2.field_label(), "label2");
   EXPECT_EQ(field_data2.field_value(), "");
   EXPECT_EQ(field_data2.field_name(), "name2");
@@ -75,6 +81,8 @@ TEST_P(ByConversionReason, ToFormDataProto) {
   // Check that the options are corectly extracted from the select element.
   optimization_guide::proto::FormFieldData field_data3 =
       form_data_proto.fields(2);
+  EXPECT_EQ(field_data3.field_signature(),
+            *CalculateFieldSignatureForField(form.fields()[2]));
   EXPECT_EQ(field_data3.field_label(), "select");
   EXPECT_TRUE(field_data3.field_value().empty());
   EXPECT_TRUE(field_data3.field_name().empty());
@@ -89,8 +97,7 @@ TEST_P(ByConversionReason, ToFormDataProto) {
   EXPECT_EQ("text2", select_option2.text());
 }
 
-// Tests that the "ForExtensionAPI" flavor additionally populates signatures and
-// global IDs.
+// Tests that the "ForExtensionAPI" flavor additionally populates global IDs.
 TEST_F(AutofillOptimizationGuideProtoUtilTest, ToFormDataProtoForExtensionAPI) {
   const FormGlobalId form_id = test::MakeFormGlobalId();
   const FieldGlobalId field_id = test::MakeFieldGlobalId();
@@ -108,7 +115,6 @@ TEST_F(AutofillOptimizationGuideProtoUtilTest, ToFormDataProtoForExtensionAPI) {
   EXPECT_EQ(form_proto.global_id().frame_token(),
             form_id.frame_token->ToString());
   EXPECT_EQ(form_proto.global_id().renderer_id(), *form_id.renderer_id);
-  EXPECT_EQ(form_proto.form_signature(), *CalculateFormSignature(form));
 
   // Field-level metadata.
   ASSERT_EQ(form_proto.fields_size(), 1);
@@ -117,8 +123,6 @@ TEST_F(AutofillOptimizationGuideProtoUtilTest, ToFormDataProtoForExtensionAPI) {
   EXPECT_EQ(field_proto.global_id().frame_token(),
             field_id.frame_token->ToString());
   EXPECT_EQ(field_proto.global_id().renderer_id(), *field_id.renderer_id);
-  EXPECT_EQ(field_proto.field_signature(),
-            *CalculateFieldSignatureForField(form.fields()[0]));
 }
 
 }  // namespace
