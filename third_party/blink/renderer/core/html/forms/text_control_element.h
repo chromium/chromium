@@ -147,6 +147,14 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   virtual void SetInnerEditorValue(const String&);
   static void AppendTextOrBr(const String& value, ContainerNode& container);
   String InnerEditorValue() const;
+  // Returns the length of the value, and is_8bit flag.
+  // `offset_map` can be nullptr.
+  std::pair<wtf_size_t, bool> ComputeValueLengthAndUpdateOffsetMap(
+      HeapHashMap<Member<const Text>, unsigned>* offset_map) const;
+  // Returns the value string. `length` and `is_8bit` must be computed by
+  // ComputeValueLengthAndUpdateOffsetMap().
+  String ComputeValue(wtf_size_t length, bool is_8bit) const;
+
   Node* CreatePlaceholderBreakElement() const;
   // Returns true if the specified node was created by
   // CreatePlaceholderBreakElement().

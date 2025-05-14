@@ -131,6 +131,17 @@ void CachedTextInputInfo::EnsureCached(const ContainerNode& container) const {
     DCHECK(layout_object_) << container;
   }
 
+  if (RuntimeEnabledFeatures::FastSelectionSyncEnabled()) {
+    if (const auto* text_control = EnclosingTextControl(&container)) {
+      auto [length, is_8bit] =
+          text_control->ComputeValueLengthAndUpdateOffsetMap(&offset_map_);
+      if (IsEditable(*container_)) {
+        text_ = text_control->ComputeValue(length, is_8bit);
+      }
+      return;
+    }
+  }
+
   TextIteratorAlgorithm<EditingStrategy> it(ComputeWholeContentRange(container),
                                             Behavior());
   if (it.AtEnd())
