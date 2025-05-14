@@ -1198,7 +1198,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetPopupWithInvalidPath) {
   auto get_script = [](int tab_id, const char* popup_input) {
     constexpr char kSetPopup[] = R"(setPopup({tabId: %d, popup: '%s'}, "%s");)";
     return base::StringPrintf(kSetPopup, tab_id, popup_input,
-                              manifest_errors::kInvalidExtensionOriginPopup);
+                              manifest_errors::kInvalidExtensionPopupPath);
   };
 
   content::RenderFrameHost* navigated_host = ui_test_utils::NavigateToURL(

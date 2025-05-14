@@ -169,13 +169,10 @@ bool WebviewHandler::Parse(Extension* extension, std::u16string* error) {
         return false;
       }
 
-      GURL pattern_url =
-          Extension::GetResourceURL(extension->url(), item.GetString());
+      GURL pattern_url = extension->GetResourceURL(item.GetString());
       // If passed a non-relative URL (like http://example.com),
-      // Extension::GetResourceURL() will return that URL directly. (See
-      // https://crbug.com/1135236). Check if this happened by comparing the
-      // host.
-      if (pattern_url.host_piece() != extension->id()) {
+      // Extension::GetResourceURL() will return an invalid URL.
+      if (!pattern_url.is_valid()) {
         // NOTE: Warning instead of error because there are existing apps that
         // have this bug, and we don't want to hard-error on them.
         // https://crbug.com/856948.

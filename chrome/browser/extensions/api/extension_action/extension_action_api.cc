@@ -356,12 +356,8 @@ ExtensionActionSetPopupFunction::RunExtensionAction() {
   // in the manifest.
   if (!popup_string->empty()) {
     popup_url = extension()->GetResourceURL(*popup_string);
-    // Validate popup is same-origin (only for this extension). We do not
-    // validate the file exists (like we do in manifest validation) because an
-    // extension could potentially intercept the request with a service worker
-    // and dynamically provide content.
-    if (!extension()->origin().IsSameOriginWith(popup_url)) {
-      return RespondNow(Error(manifest_errors::kInvalidExtensionOriginPopup));
+    if (!popup_url.is_valid()) {
+      return RespondNow(Error(manifest_errors::kInvalidExtensionPopupPath));
     }
   }
 

@@ -163,22 +163,13 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(
     }
 
     if (!url_str->empty()) {
-      GURL popup_url = Extension::GetResourceURL(extension->url(), *url_str);
-
+      GURL popup_url = extension->GetResourceURL(*url_str);
       if (!popup_url.is_valid()) {
         *error = errors::kInvalidActionDefaultPopup;
         return nullptr;
       }
 
-      // Check popup is only for this extension.
-      if (extension->origin().IsSameOriginWith(popup_url)) {
-        result->default_popup_url = popup_url;
-      } else {
-        install_warnings->emplace_back(
-            extensions::manifest_errors::kInvalidExtensionOriginPopup,
-            GetManifestKeyForActionType(type),
-            extensions::manifest_keys::kActionDefaultPopup);
-      }
+      result->default_popup_url = popup_url;
     } else {
       // An empty string is treated as having no popup.
       DCHECK(result->default_popup_url.is_empty());

@@ -160,13 +160,21 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // See Type definition in Manifest.
   Manifest::Type GetType() const;
 
-  // Returns an absolute url to a resource inside of an extension. The
+  // Returns an absolute URL to a resource inside of an extension. The
   // `extension_url` argument should be the url() from an Extension object. The
-  // `relative_path` can be untrusted user input. The returned URL will either
-  // be invalid() or a child of `extension_url`.
+  // `relative_url` can be untrusted user input. The returned URL will either be
+  // invalid() or a child of `extension_url`.
+  //
+  // Note that `relative_url` is treated as a URL-encoded string, e.g. "%21.txt"
+  // will refer to the "!.txt" file. Any query or fragment components in
+  // `relative_url` are included in the returned URL.
+  //
+  // `relative_url` may be an absolute URL as long as it is a child of
+  // `extension_url`.
+  //
   // NOTE: Static so that it can be used from multiple threads.
   static GURL GetResourceURL(const GURL& extension_url,
-                             std::string_view relative_path);
+                             std::string_view relative_url);
   GURL GetResourceURL(std::string_view relative_path) const {
     return GetResourceURL(url(), relative_path);
   }

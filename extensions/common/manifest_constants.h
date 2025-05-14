@@ -368,9 +368,9 @@ inline constexpr char kInvalidExportAllowlistEmpty[] =
     "Empty 'export.allowlist' implies any extension can import this module.";
 inline constexpr char kInvalidExportAllowlistString[] =
     "Invalid value for 'export.allowlist[*]'.";
-inline constexpr char kInvalidExtensionOriginPopup[] =
-    "The default_popup path specified in the manifest is invalid. Ensure it is "
-    "a path to a file in this extension.";
+inline constexpr char kInvalidExtensionPopupPath[] =
+    "The specified popup path is invalid. Ensure it is a path to a file in "
+    "this extension.";
 inline constexpr char16_t kInvalidFileAccessList[] =
     u"Invalid value for 'file_access'.";
 inline constexpr char kInvalidFileAccessValue[] =
@@ -426,7 +426,7 @@ inline constexpr char kInvalidImportId[] = "Invalid value for 'import[*].id'.";
 inline constexpr char kInvalidImportVersion[] =
     "Invalid value for 'import[*].minimum_version'.";
 inline constexpr char kInvalidImportRepeatedImport[] =
-    "There are multiple occurences of the same extension ID in 'import'. Only "
+    "There are multiple occurrences of the same extension ID in 'import'. Only "
     "one version will be installed.";
 inline constexpr char kInvalidInputComponents[] =
     "Invalid value for 'input_components'";
@@ -436,7 +436,8 @@ inline constexpr char kInvalidInputComponentLayoutName[] =
     "Invalid value for 'input_components[*].layouts[*]";
 inline constexpr char kInvalidInputComponentName[] =
     "Invalid value for 'input_components[*].name";
-inline constexpr char kInvalidInputView[] = "Invalid value for 'input_view'.";
+inline constexpr char kInvalidInputView[] =
+    "Invalid value for 'input_components[*].input_view'.";
 inline constexpr char16_t kInvalidIsolation[] =
     u"Invalid value for 'app.isolation'.";
 inline constexpr char kInvalidIsolationValue[] =
@@ -532,7 +533,8 @@ inline constexpr char16_t kInvalidOAuth2ClientId[] =
     u"Invalid value for 'oauth2.client_id'.";
 inline constexpr char16_t kInvalidOfflineEnabled[] =
     u"Invalid value for 'offline_enabled'.";
-inline constexpr char kInvalidOptionsPage[] = "Invalid value for '*'.";
+inline constexpr char kInvalidOptionsPage[] =
+    "Invalid value for 'input_components[*].options_page'.";
 inline constexpr char16_t kInvalidOptionsPageExpectUrlInPackage[] =
     u"Invalid value for 'options_page'.  Value must be a relative path.";
 inline constexpr char16_t kInvalidOptionsPageInHostedApp[] =

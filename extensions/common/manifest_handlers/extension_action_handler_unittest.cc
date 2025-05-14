@@ -197,7 +197,8 @@ class ExtensionActionManifestTest
   scoped_refptr<Extension> LoadExtensionWithDefaultPopup(
       const char* popup_file_name,
       int manifest_version,
-      TestExtensionDir* test_extension_dir) {
+      TestExtensionDir* test_extension_dir,
+      std::string* error) {
     const char* action_key =
         ActionInfo::GetManifestKeyForActionType(GetParam());
 
@@ -211,11 +212,9 @@ class ExtensionActionManifestTest
         manifest_version, action_key, popup_file_name));
     test_extension_dir->WriteFile(FILE_PATH_LITERAL("popup.html"), "");
 
-    std::string error;
     scoped_refptr<Extension> extension(file_util::LoadExtension(
         test_extension_dir->UnpackedPath(), mojom::ManifestLocation::kUnpacked,
-        Extension::NO_FLAGS, &error));
-    EXPECT_EQ(error, "");
+        Extension::NO_FLAGS, error));
     return extension;
   }
 };
@@ -334,11 +333,25 @@ TEST_P(ExtensionActionManifestTest, ValidDefaultPopup) {
   constexpr char valid_popup_file_name[] = "popup.html";
   TestExtensionDir test_extension_dir = TestExtensionDir();
   int manifest_version = GetManifestVersionForActionType(GetParam());
+  std::string error;
   scoped_refptr<Extension> test_extension = LoadExtensionWithDefaultPopup(
-      valid_popup_file_name, manifest_version, &test_extension_dir);
-  ASSERT_TRUE(test_extension);
-  EXPECT_FALSE(warnings_test_util::HasInstallWarning(
-      test_extension, manifest_errors::kInvalidExtensionOriginPopup));
+      valid_popup_file_name, manifest_version, &test_extension_dir, &error);
+  ASSERT_TRUE(test_extension) << error;
+
+  std::vector<InstallWarning> warnings;
+  if (GetParam() == ActionInfo::Type::kBrowser) {
+    warnings.emplace_back("Unrecognized manifest key 'browser_action'.");
+  }
+  if (manifest_version == 2) {
+    warnings.emplace_back(manifest_errors::kManifestV2IsDeprecatedWarning);
+  }
+  EXPECT_EQ(warnings, test_extension->install_warnings());
+
+  const ActionInfo* action_info =
+      GetActionInfoOfType(*test_extension, GetParam());
+  ASSERT_TRUE(action_info);
+  EXPECT_EQ(test_extension->GetResourceURL("popup.html"),
+            action_info->default_popup_url);
 }
 
 // Tests success when default_popup is empty.
@@ -346,11 +359,24 @@ TEST_P(ExtensionActionManifestTest, EmptyDefaultPopup) {
   constexpr char empty_popup_file_name[] = "";
   TestExtensionDir test_extension_dir = TestExtensionDir();
   int manifest_version = GetManifestVersionForActionType(GetParam());
+  std::string error;
   scoped_refptr<Extension> test_extension = LoadExtensionWithDefaultPopup(
-      empty_popup_file_name, manifest_version, &test_extension_dir);
-  ASSERT_TRUE(test_extension);
-  EXPECT_FALSE(warnings_test_util::HasInstallWarning(
-      test_extension, manifest_errors::kInvalidExtensionOriginPopup));
+      empty_popup_file_name, manifest_version, &test_extension_dir, &error);
+  ASSERT_TRUE(test_extension) << error;
+
+  std::vector<InstallWarning> warnings;
+  if (GetParam() == ActionInfo::Type::kBrowser) {
+    warnings.emplace_back("Unrecognized manifest key 'browser_action'.");
+  }
+  if (manifest_version == 2) {
+    warnings.emplace_back(manifest_errors::kManifestV2IsDeprecatedWarning);
+  }
+  EXPECT_EQ(warnings, test_extension->install_warnings());
+
+  const ActionInfo* action_info =
+      GetActionInfoOfType(*test_extension, GetParam());
+  ASSERT_TRUE(action_info);
+  EXPECT_TRUE(action_info->default_popup_url.is_empty());
 }
 
 // Tests warning when the default_popup seems to be for another extension.
@@ -359,12 +385,13 @@ TEST_P(ExtensionActionManifestTest, OtherExtensionSpecifiedDefaultPopup) {
       "chrome-extension://abcdefghijklmnopqrstuvwxyzabcdef/popup.html";
   TestExtensionDir test_extension_dir = TestExtensionDir();
   int manifest_version = GetManifestVersionForActionType(GetParam());
-  scoped_refptr<Extension> test_extension =
-      LoadExtensionWithDefaultPopup(other_extension_specified_popup_file_name,
-                                    manifest_version, &test_extension_dir);
-  ASSERT_TRUE(test_extension);
-  EXPECT_TRUE(warnings_test_util::HasInstallWarning(
-      test_extension, manifest_errors::kInvalidExtensionOriginPopup));
+  std::string error;
+  scoped_refptr<Extension> test_extension = LoadExtensionWithDefaultPopup(
+      other_extension_specified_popup_file_name, manifest_version,
+      &test_extension_dir, &error);
+  ASSERT_FALSE(test_extension);
+  ASSERT_EQ(base::UTF16ToUTF8(manifest_errors::kInvalidActionDefaultPopup),
+            error);
 }
 
 // Tests warning when the default_popup doesn't exist on file system.
@@ -372,11 +399,27 @@ TEST_P(ExtensionActionManifestTest, NonexistentDefaultPopup) {
   constexpr char nonexistent_popup_file_name[] = "nonexistent_popup.html";
   TestExtensionDir test_extension_dir = TestExtensionDir();
   int manifest_version = GetManifestVersionForActionType(GetParam());
+  std::string error;
   scoped_refptr<Extension> test_extension = LoadExtensionWithDefaultPopup(
-      nonexistent_popup_file_name, manifest_version, &test_extension_dir);
-  ASSERT_TRUE(test_extension);
-  EXPECT_TRUE(warnings_test_util::HasInstallWarning(
-      test_extension, manifest_errors::kNonexistentDefaultPopup));
+      nonexistent_popup_file_name, manifest_version, &test_extension_dir,
+      &error);
+  ASSERT_TRUE(test_extension) << error;
+
+  std::vector<InstallWarning> warnings;
+  if (GetParam() == ActionInfo::Type::kBrowser) {
+    warnings.emplace_back("Unrecognized manifest key 'browser_action'.");
+  }
+  if (manifest_version == 2) {
+    warnings.emplace_back(manifest_errors::kManifestV2IsDeprecatedWarning);
+  }
+  warnings.emplace_back(manifest_errors::kNonexistentDefaultPopup);
+  EXPECT_EQ(warnings, test_extension->install_warnings());
+
+  const ActionInfo* action_info =
+      GetActionInfoOfType(*test_extension, GetParam());
+  ASSERT_TRUE(action_info);
+  EXPECT_EQ(test_extension->GetResourceURL("nonexistent_popup.html"),
+            action_info->default_popup_url);
 }
 
 // Test the handling of the default_state key.
