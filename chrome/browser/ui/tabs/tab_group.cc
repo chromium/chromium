@@ -48,7 +48,7 @@ void TabGroup::SetVisualData(tab_groups::TabGroupVisualData visual_data,
   is_customized_ |= is_customized;
 
   // Notify the controller of the visual change
-  controller_->ChangeTabGroupVisuals(id_, visuals);
+  controller_->OnTabGroupVisualsChanged(id_, visuals);
 }
 
 void TabGroup::SetGroupIsClosing(bool is_closing) {
@@ -69,18 +69,12 @@ std::u16string TabGroup::GetContentString() const {
 }
 
 void TabGroup::AddTab() {
-  if (tab_count_ == 0) {
-    controller_->CreateTabGroup(id_);
-  }
   ++tab_count_;
 }
 
 void TabGroup::RemoveTab() {
   DCHECK_GT(tab_count_, 0);
   --tab_count_;
-  if (tab_count_ == 0) {
-    controller_->CloseTabGroup(id_);
-  }
 }
 
 bool TabGroup::IsEmpty() const {

@@ -16,13 +16,13 @@ class TabGroupId;
 
 class TabGroupController {
  public:
-  virtual void CreateTabGroup(const tab_groups::TabGroupId& group) = 0;
   virtual void OpenTabGroupEditor(const tab_groups::TabGroupId& group) = 0;
-  virtual void ChangeTabGroupVisuals(
+
+  // Called whenever a tab group's visuals are updated by the tab group object.
+  virtual void OnTabGroupVisualsChanged(
       const tab_groups::TabGroupId& group,
       const TabGroupChange::VisualsChange& visuals) = 0;
   virtual void MoveTabGroup(const tab_groups::TabGroupId& group) = 0;
-  virtual void CloseTabGroup(const tab_groups::TabGroupId& group) = 0;
   virtual std::u16string GetTitleAt(int index) const = 0;
 
   // Methods from TabStripModel that are exposed to TabGroup.

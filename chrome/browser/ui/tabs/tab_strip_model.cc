@@ -534,7 +534,7 @@ std::unique_ptr<DetachedTabGroup> TabStripModel::DetachTabGroupImpl(
   }
 
   // Send group detach notification.
-  OnTabGroupDetached(group_collection.get());
+  NotifyTabGroupDetached(group_collection.get());
   group_model_->RemoveTabGroup(group_id, base::PassKey<TabStripModel>());
 
   // Send possible split detach notification.
@@ -644,7 +644,7 @@ gfx::Range TabStripModel::InsertDetachedTabGroupImpl(
   OnChange(change, selection);
 
   // Send group attach notification.
-  OnTabGroupAttached(group_collection);
+  NotifyTabGroupAttached(group_collection);
 
   // Send split attach notification
   for (const split_tabs::SplitTabId& split_id : splits_in_group) {
@@ -1832,11 +1832,30 @@ void TabStripModel::AddToReadLater(const std::vector<int>& indices) {
   AddToReadLaterImpl(indices);
 }
 
-void TabStripModel::CreateTabGroup(const tab_groups::TabGroupId& group) {
-  if (!group_model_) {
-    return;
+void TabStripModel::OpenTabGroupEditor(const tab_groups::TabGroupId& group) {
+  TabGroupChange change(this, group, TabGroupChange::kEditorOpened);
+  for (auto& observer : observers_) {
+    observer.OnTabGroupChanged(change);
   }
+}
 
+void TabStripModel::OnTabGroupVisualsChanged(
+    const tab_groups::TabGroupId& group,
+    const TabGroupChange::VisualsChange& visuals) {
+  TabGroupChange change(this, group, visuals);
+  for (auto& observer : observers_) {
+    observer.OnTabGroupChanged(change);
+  }
+}
+
+void TabStripModel::MoveTabGroup(const tab_groups::TabGroupId& group) {
+  TabGroupChange change(this, group, TabGroupChange::kMoved);
+  for (auto& observer : observers_) {
+    observer.OnTabGroupChanged(change);
+  }
+}
+
+void TabStripModel::NotifyTabGroupCreated(const tab_groups::TabGroupId& group) {
   TabGroupChange change(
       this, group,
       TabGroupChange::CreateChange(
@@ -1846,46 +1865,7 @@ void TabStripModel::CreateTabGroup(const tab_groups::TabGroupId& group) {
   }
 }
 
-void TabStripModel::OpenTabGroupEditor(const tab_groups::TabGroupId& group) {
-  if (!group_model_) {
-    return;
-  }
-
-  TabGroupChange change(this, group, TabGroupChange::kEditorOpened);
-  for (auto& observer : observers_) {
-    observer.OnTabGroupChanged(change);
-  }
-}
-
-void TabStripModel::ChangeTabGroupVisuals(
-    const tab_groups::TabGroupId& group,
-    const TabGroupChange::VisualsChange& visuals) {
-  if (!group_model_) {
-    return;
-  }
-
-  TabGroupChange change(this, group, visuals);
-  for (auto& observer : observers_) {
-    observer.OnTabGroupChanged(change);
-  }
-}
-
-void TabStripModel::MoveTabGroup(const tab_groups::TabGroupId& group) {
-  if (!group_model_) {
-    return;
-  }
-
-  TabGroupChange change(this, group, TabGroupChange::kMoved);
-  for (auto& observer : observers_) {
-    observer.OnTabGroupChanged(change);
-  }
-}
-
-void TabStripModel::CloseTabGroup(const tab_groups::TabGroupId& group) {
-  if (!group_model_) {
-    return;
-  }
-
+void TabStripModel::NotifyTabGroupClosed(const tab_groups::TabGroupId& group) {
   TabGroupChange change(
       this, group,
       TabGroupChange::CloseChange(
@@ -1895,12 +1875,8 @@ void TabStripModel::CloseTabGroup(const tab_groups::TabGroupId& group) {
   }
 }
 
-void TabStripModel::OnTabGroupDetached(
+void TabStripModel::NotifyTabGroupDetached(
     tabs::TabGroupTabCollection* group_collection) {
-  if (!group_model_) {
-    return;
-  }
-
   TabGroupChange change(
       this, group_collection->GetTabGroupId(),
       TabGroupChange::CloseChange(
@@ -1911,12 +1887,8 @@ void TabStripModel::OnTabGroupDetached(
   }
 }
 
-void TabStripModel::OnTabGroupAttached(
+void TabStripModel::NotifyTabGroupAttached(
     tabs::TabGroupTabCollection* group_collection) {
-  if (!group_model_) {
-    return;
-  }
-
   TabGroupChange change(
       this, group_collection->GetTabGroupId(),
       TabGroupChange::CreateChange(
@@ -3829,7 +3801,7 @@ void TabStripModel::TabGroupStateChanged(
     // TabGroupChange::kCreated.
     if (is_group_empty) {
       TabGroupChange::VisualsChange visuals;
-      ChangeTabGroupVisuals(new_group.value(), visuals);
+      OnTabGroupVisualsChanged(new_group.value(), visuals);
     }
   }
 }
@@ -3842,6 +3814,9 @@ void TabStripModel::RemoveTabFromGroupModel(
 
   TabGroup* tab_group = group_model_->GetTabGroup(group);
   tab_group->RemoveTab();
+  if (tab_group->IsEmpty()) {
+    NotifyTabGroupClosed(group);
+  }
 
   if (tab_group->IsEmpty()) {
     group_model_->RemoveTabGroup(group, base::PassKey<TabStripModel>());
@@ -3854,6 +3829,9 @@ void TabStripModel::AddTabToGroupModel(const tab_groups::TabGroupId& group) {
     return;
   }
   TabGroup* tab_group = group_model_->GetTabGroup(group);
+  if (tab_group->IsEmpty()) {
+    NotifyTabGroupCreated(group);
+  }
   tab_group->AddTab();
 }
 

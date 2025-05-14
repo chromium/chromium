@@ -627,13 +627,11 @@ class TabStripModel : public TabGroupController {
   void AddToReadLater(const std::vector<int>& indices);
 
   // TabGroupController:
-  void CreateTabGroup(const tab_groups::TabGroupId& group) override;
   void OpenTabGroupEditor(const tab_groups::TabGroupId& group) override;
-  void ChangeTabGroupVisuals(
+  void OnTabGroupVisualsChanged(
       const tab_groups::TabGroupId& group,
       const TabGroupChange::VisualsChange& visuals) override;
   void MoveTabGroup(const tab_groups::TabGroupId& group) override;
-  void CloseTabGroup(const tab_groups::TabGroupId& group) override;
   std::u16string GetTitleAt(int index) const override;
   // The same as count(), but overridden for TabGroup to access.
   int GetTabCount() const override;
@@ -816,11 +814,17 @@ class TabStripModel : public TabGroupController {
   void OnChange(const TabStripModelChange& change,
                 const TabStripSelectionChange& selection);
 
+  // Notify observers that a `group` was created.
+  void NotifyTabGroupCreated(const tab_groups::TabGroupId& group);
+
+  // Notify observers that a `group` was closed.
+  void NotifyTabGroupClosed(const tab_groups::TabGroupId& group);
+
   // Notify observers that `group` is detached from the model.
-  void OnTabGroupDetached(tabs::TabGroupTabCollection* group_collection);
+  void NotifyTabGroupDetached(tabs::TabGroupTabCollection* group_collection);
 
   // Notify observers that `group` is attached to the model.
-  void OnTabGroupAttached(tabs::TabGroupTabCollection* group_collection);
+  void NotifyTabGroupAttached(tabs::TabGroupTabCollection* group_collection);
 
   // Notify observers that split with `split_id` has been created.
   void OnSplitTabCreated(
