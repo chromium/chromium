@@ -243,9 +243,6 @@ class SupervisedUserURLFilter {
   bool IsHostInBlocklist(const std::string& host) const;
 
  private:
-  friend class SupervisedUserURLFilterTest;
-  friend class SupervisedUserURLFilteringWithConflictsTest;
-
   bool IsExemptedFromGuardianApproval(const GURL& effective_url);
 
   virtual bool RunAsyncChecker(const GURL& url, ResultCallback callback) const;
