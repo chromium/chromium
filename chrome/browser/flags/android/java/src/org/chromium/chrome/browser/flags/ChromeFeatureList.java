@@ -153,6 +153,8 @@ public abstract class ChromeFeatureList {
 
     // Feature names.
     /* Alphabetical: */
+    public static final String ACCESSIBILITY_ANDROID_EVENT_INVESTIGATIONS =
+            "AccessibilityAndroidEventInvestigations";
     public static final String ACT_USER_BYPASS_UX = "ActUserBypassUx";
     public static final String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2 =
             "AdaptiveButtonInTopToolbarCustomizationV2";
@@ -991,6 +993,8 @@ public abstract class ChromeFeatureList {
 
     // MutableFlagWithSafeDefault instances.
     /* Alphabetical: */
+    public static final MutableFlagWithSafeDefault sAccessibilityAndroidEventInvestigations =
+            newMutableFlagWithSafeDefault(ACCESSIBILITY_ANDROID_EVENT_INVESTIGATIONS, false);
     public static final MutableFlagWithSafeDefault sAndroidAppearanceSettings =
             newMutableFlagWithSafeDefault(ANDROID_APPEARANCE_SETTINGS, false);
     public static final MutableFlagWithSafeDefault sAndroidBookmarkBar =
