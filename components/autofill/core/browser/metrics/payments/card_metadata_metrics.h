@@ -11,15 +11,18 @@
 
 namespace autofill::autofill_metrics {
 
-// The below issuer and network names are used for logging purposes. The issuer
-// names must be consistent with the Autofill.CreditCardIssuerId in the
-// autofill/histograms.xml file.
+// The below issuer, network, and benefit source names are used for logging
+// purposes. The issuers, networks, and benefit sources must be consistent with
+// the Autofill.CreditCardIssuerId, Autofill.CreditCardNetwork, and
+// Autofill.CreditCardBenefitSource respectively, in the
+// tools/metrics/histograms/metadata/autofill/histograms.xml file.
 constexpr std::string_view kAmericanExpress = "Amex";
 constexpr std::string_view kAnz = "Anz";
 constexpr std::string_view kBmo = "Bmo";
 constexpr std::string_view kCapitalOne = "CapitalOne";
 constexpr std::string_view kChase = "Chase";
 constexpr std::string_view kCiti = "Citi";
+constexpr std::string_view kCurinos = "Curinos";
 constexpr std::string_view kDiscover = "Discover";
 constexpr std::string_view kLloyds = "Lloyds";
 constexpr std::string_view kMarqeta = "Marqeta";
@@ -117,9 +120,13 @@ struct CardMetadataLoggingContext {
   int64_t selected_card_instrument_id;
 };
 
-// Get histogram suffix based on given card issuer id or network.
+// Get histogram suffix based on a given card issuer id or network.
 std::string_view GetCardIssuerIdOrNetworkSuffix(
     const std::string& card_issuer_id_or_network);
+
+// Get histogram suffix based on a given card benefit source.
+std::string_view GetCardBenefitSourceSuffix(
+    const std::string& card_benefit_source);
 
 // Get the CardMetadataLoggingContext for the given credit cards.
 CardMetadataLoggingContext GetMetadataLoggingContext(

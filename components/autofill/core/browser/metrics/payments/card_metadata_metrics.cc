@@ -102,6 +102,19 @@ std::string_view GetCardIssuerIdOrNetworkSuffix(
   }
 }
 
+std::string_view GetCardBenefitSourceSuffix(
+    const std::string& card_benefit_source) {
+  if (card_benefit_source == kAmexCardBenefitSource) {
+    return kAmericanExpress;
+  } else if (card_benefit_source == kBmoCardBenefitSource) {
+    return kBmo;
+  } else if (card_benefit_source == kCurinosCardBenefitSource) {
+    return kCurinos;
+  } else {
+    return "";
+  }
+}
+
 CardMetadataLoggingContext GetMetadataLoggingContext(
     base::span<const CreditCard> cards) {
   constexpr auto kLoggedNetworks =

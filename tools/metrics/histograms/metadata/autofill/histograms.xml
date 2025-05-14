@@ -70,6 +70,12 @@ chromium-metrics-reviews@google.com.
       summary="Only product description was visible"/>
 </variants>
 
+<variants name="Autofill.CreditCardBenefitSource">
+  <variant name="Amex" summary="American Express"/>
+  <variant name="Bmo" summary="BMO"/>
+  <variant name="Curinos" summary="Curinos"/>
+</variants>
+
 <variants name="Autofill.CreditCardIssuerId">
   <variant name="Amex" summary="card issued by American Express"/>
   <variant name="Anz" summary="card issued by ANZ"/>
@@ -82,11 +88,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Marqeta" summary="card issued by Marqeta"/>
   <variant name="Nab" summary="card issued by National Australia Bank"/>
   <variant name="Natwest" summary="card issued by Natwest"/>
-</variants>
-
-<variants name="Autofill.CreditCardIssuerId.WithBenefits">
-  <variant name="Amex" summary="card issued by American Express"/>
-  <variant name="Bmo" summary="card issued by BMO"/>
 </variants>
 
 <variants name="Autofill.CreditCardNetwork">
@@ -3079,19 +3080,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.FormEvents.CreditCard.WithBenefits.{CardIssuerId}"
+<histogram
+    name="Autofill.FormEvents.CreditCard.WithBenefits.{CardBenefitSource}"
     enum="AutofillFormEvent" expires_after="2025-11-09">
-  <owner>alexandertekle@google.com</owner>
   <owner>yishuil@google.com</owner>
   <summary>
     Autofill form events for credit card forms that contain at least one
     suggestion where a card benefit is available. This includes logging for when
     card suggestions with benefits are shown, selected, filled, and submitted,
-    and logs at each of those times. Log emission pertains to the credit card
-    issuer, {CardIssuerId}.
+    and logs at each of those times. Log emission pertains to credit cards where
+    the benefit source is {CardBenefitSource}.
   </summary>
-  <token key="CardIssuerId"
-      variants="Autofill.CreditCardIssuerId.WithBenefits"/>
+  <token key="CardBenefitSource" variants="Autofill.CreditCardBenefitSource"/>
 </histogram>
 
 <histogram name="Autofill.FormEvents.CreditCard.WithOffer"
