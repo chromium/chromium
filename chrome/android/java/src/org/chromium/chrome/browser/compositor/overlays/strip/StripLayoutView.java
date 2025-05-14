@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.MathUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 
@@ -23,6 +24,7 @@ import java.util.List;
  * a particular item on the tab strip (e.g. tab, group indicator, etc.) so it can draw itself onto
  * the GL canvas.
  */
+@NullMarked
 public abstract class StripLayoutView implements VirtualView {
 
     /** Handler for click actions on VirtualViews. */
