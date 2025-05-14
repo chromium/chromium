@@ -29,7 +29,7 @@ template <typename Range, typename Proj = std::identity>
            std::indirectly_unary_invocable<Proj, std::ranges::iterator_t<Range>>
 auto ToVector(Range&& range, Proj proj = {}) {
   using ProjectedType =
-      std::projected<std::ranges::iterator_t<Range>, Proj>::value_type;
+      std::indirectly_readable_traits<std::projected<std::ranges::iterator_t<Range>, Proj> >::value_type;
   std::vector<ProjectedType> container;
   container.reserve(std::ranges::size(range));
   std::ranges::transform(std::forward<Range>(range),
