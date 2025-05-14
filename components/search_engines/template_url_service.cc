@@ -609,63 +609,18 @@ bool TemplateURLService::ShowInActivesList(const TemplateURL* t_url) const {
 
 bool TemplateURLService::HiddenFromLists(const TemplateURL* t_url) const {
   switch (t_url->policy_origin()) {
-    case TemplateURLData::PolicyOrigin::kNoPolicy:
-      // Hide if another engine (e.g., one set by policy) takes precedence for
-      // the same keyword. `GetTemplateURLForKeyword` already ensures
-      // prioritization of search engines, so there is no need to replicate the
-      // logic here.
-      return t_url != GetTemplateURLForKeyword(t_url->keyword());
-
     case TemplateURLData::PolicyOrigin::kDefaultSearchProvider:
       return false;
 
+    case TemplateURLData::PolicyOrigin::kNoPolicy:
     case TemplateURLData::PolicyOrigin::kSiteSearch:
-    case TemplateURLData::PolicyOrigin::kSearchAggregator: {
-      // Hide if another engine (e.g., one set by the user) takes precedence for
-      // the same keyword. `GetTemplateURLForKeyword` already ensures
+    case TemplateURLData::PolicyOrigin::kSearchAggregator:
+      // Hide if another engine (e.g., one set by user/policy) takes precedence
+      // for the same keyword. `GetTemplateURLForKeyword` already ensures
       // prioritization of search engines, so there is no need to replicate the
       // logic here.
-      if (t_url != GetTemplateURLForKeyword(t_url->keyword())) {
-        return true;
-      }
-
-      // A featured site search engine with keyword "work" is represented by two
-      // TemplateURLs in the service:
-      // - One with `featured_by_policy = true` and keyword "@work"
-      // - One with `featured_by_policy = false` and keyword "work"
-      //
-      // In the settings page, we want to show only one entry with both keywords
-      // separated by a comma ("@work, work"). The logic below hides the one
-      // that doesn't start with the "@" symbol.
-      const TemplateURL* t_url_with_at =
-          GetTemplateURLForKeyword(u"@" + t_url->keyword());
-      return t_url_with_at &&
-             t_url_with_at->CreatedByNonDefaultSearchProviderPolicy() &&
-             t_url_with_at->featured_by_policy();
-    }
+      return t_url != GetTemplateURLForKeyword(t_url->keyword());
   }
-}
-
-bool TemplateURLService::BothPolicySetKeywordsNotOverriden(
-    const TemplateURL* template_url) const {
-  CHECK(template_url);
-
-  // Check 'template_url` is a featured site or featured aggregator search.
-  if (!template_url->featured_by_policy() ||
-      !template_url->CreatedByNonDefaultSearchProviderPolicy()) {
-    return false;
-  }
-
-  const std::u16string& keyword = template_url->keyword();
-  CHECK(!keyword.empty());
-  CHECK_EQ(keyword[0], u'@');
-
-  const TemplateURL* turl_without_at =
-      GetTemplateURLForKeyword(std::u16string(keyword, 1));
-
-  CHECK(turl_without_at);
-  return turl_without_at->CreatedByNonDefaultSearchProviderPolicy() &&
-         !turl_without_at->featured_by_policy();
 }
 
 void TemplateURLService::AddMatchingKeywords(const std::u16string& prefix,

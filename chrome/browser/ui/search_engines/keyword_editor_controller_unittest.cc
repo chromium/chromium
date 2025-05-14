@@ -14,6 +14,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/browser/ui/search_engines/template_url_table_model.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/choice_made_location.h"
@@ -535,8 +536,9 @@ void CheckKeywordsToDisplay(
     const TemplateURL* template_url = table_model->GetTemplateURL(row);
     ASSERT_TRUE(template_url);
     EXPECT_EQ(template_url->short_name(), kExpectedShortNamesOrder[i]);
-    EXPECT_EQ(table_model->GetKeywordToDisplay(row),
-              kExpectedKeywordsToDisplay[i]);
+    EXPECT_EQ(
+        table_model->GetText(row, IDS_SEARCH_ENGINES_EDITOR_KEYWORD_COLUMN),
+        kExpectedKeywordsToDisplay[i]);
   }
 }
 
@@ -588,12 +590,14 @@ TEST_F(KeywordEditorControllerTest, FeaturedEnterpriseSiteSearch) {
 
   const auto kExpectedShortNamesOrder = std::vector<std::u16string>({
       u"Featured 1",
+      u"Featured 1",
       u"Featured 2",
       u"Non-featured",
       u"User-defined engine",
   });
   const auto kExpectedKeywordsToDisplay = std::vector<std::u16string>({
-      u"@kw1, kw1",
+      u"@kw1",
+      u"kw1",
       u"@kw2",
       u"kw3",
       u"kw2",
@@ -678,11 +682,13 @@ TEST_F(KeywordEditorControllerTest,
   const auto kExpectedShortNamesOrder = std::vector<std::u16string>({
       u"Featured 1",
       u"Featured 2",
+      u"Featured 2",
       u"User-defined engine",
   });
   const auto kExpectedKeywordsToDisplay = std::vector<std::u16string>({
       u"@kw1",
-      u"@kw2, kw2",
+      u"@kw2",
+      u"kw2",
       u"kw1",
   });
 
@@ -724,10 +730,10 @@ TEST_F(KeywordEditorControllerTest, EnterpriseSearchAggregator) {
     VerifyChanged();
   }
 
-  const auto kExpectedShortNamesOrder =
-      std::vector<std::u16string>({u"Featured 1", u"Non-featured"});
+  const auto kExpectedShortNamesOrder = std::vector<std::u16string>(
+      {u"Featured 1", u"Featured 1", u"Non-featured"});
   const auto kExpectedKeywordsToDisplay =
-      std::vector<std::u16string>({u"@kw1, kw1", u"kw2"});
+      std::vector<std::u16string>({u"@kw1", u"kw1", u"kw2"});
 
   size_t numExpectedKeywords = kExpectedShortNamesOrder.size();
   CheckKeywordsToDisplay(kExpectedShortNamesOrder, kExpectedKeywordsToDisplay,
@@ -849,10 +855,11 @@ TEST_F(KeywordEditorControllerTest, EnterpriseSiteSearchAndSearchAggregator) {
     VerifyChanged();
   }
 
-  const auto kExpectedShortNamesOrder = std::vector<std::u16string>(
-      {u"Featured 1", u"Featured 3", u"Non-featured"});
+  const auto kExpectedShortNamesOrder =
+      std::vector<std::u16string>({u"Featured 1", u"Featured 1", u"Featured 3",
+                                   u"Featured 3", u"Non-featured"});
   const auto kExpectedKeywordsToDisplay =
-      std::vector<std::u16string>({u"@kw1, kw1", u"@kw3, kw3", u"kw2"});
+      std::vector<std::u16string>({u"@kw1", u"kw1", u"@kw3", u"kw3", u"kw2"});
 
   size_t numExpectedKeywords = kExpectedShortNamesOrder.size();
   CheckKeywordsToDisplay(kExpectedShortNamesOrder, kExpectedKeywordsToDisplay,

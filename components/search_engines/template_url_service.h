@@ -205,11 +205,6 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // Returns whether |template_url| should be hidden from all lists of engines.
   bool HiddenFromLists(const TemplateURL* template_url) const;
 
-  // Returns true if `template_url` corresponds to a featured Enterprise site
-  // search engine (e.g. with keyword "@work") that hides the corresponding
-  // non-featured engine (e.g. with keyword "work") in the Settings page.
-  bool BothPolicySetKeywordsNotOverriden(const TemplateURL* template_url) const;
-
   // Adds to |matches| all TemplateURLs whose keywords begin with |prefix|,
   // sorted shortest-keyword-first. If |supports_replacement_only| is true, only
   // TemplateURLs that support replacement are returned. This method must be

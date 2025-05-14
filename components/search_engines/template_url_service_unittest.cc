@@ -253,9 +253,9 @@ TEST_F(TemplateURLServiceUnitTest, HiddenFromLists) {
     ASSERT_FALSE(
         template_url_service().HiddenFromLists(turl_search_aggregator));
   }
-  // User-defined engine and a policy engine exists with the same keyword not
-  // beginning with "@". User-defined engine should be hidden. Policy engine
-  // should not be hidden.
+  // User-defined engine and a nonfeatured policy engine exists with the same
+  // keyword. User-defined engine should be hidden. Policy engine should not be
+  // hidden.
   {
     TemplateURL* turl = template_url_service().Add(
         std::make_unique<TemplateURL>(create_template_url_data(
@@ -269,9 +269,9 @@ TEST_F(TemplateURLServiceUnitTest, HiddenFromLists) {
     ASSERT_TRUE(template_url_service().HiddenFromLists(turl_policy));
   }
 
-  // User-defined engine and a policy engine exists with the same keyword
-  // beginning with "@". User-defined engine should be hidden. Policy engine
-  // should not be hidden.
+  // User-defined engine and a featured policy engine exists with the same
+  // keyword. User-defined engine should be hidden. Policy engine should not be
+  // hidden.
   {
     TemplateURL* turl = template_url_service().Add(
         std::make_unique<TemplateURL>(create_template_url_data(
@@ -282,21 +282,6 @@ TEST_F(TemplateURLServiceUnitTest, HiddenFromLists) {
             u"@conflict", TemplateURLData::PolicyOrigin::kSiteSearch,
             /*featured_by_policy=*/true)));
     ASSERT_TRUE(template_url_service().HiddenFromLists(turl));
-    ASSERT_FALSE(template_url_service().HiddenFromLists(turl_featured_policy));
-  }
-
-  // Policy engine with featured and unfeatured TemplateURLs. Unfeatured policy
-  // engine should be hidden and featured policy engine should not be hidden.
-  {
-    TemplateURL* turl_policy = template_url_service().Add(
-        std::make_unique<TemplateURL>(create_template_url_data(
-            u"site_search_turl", TemplateURLData::PolicyOrigin::kSiteSearch,
-            /*featured_by_policy=*/false)));
-    TemplateURL* turl_featured_policy = template_url_service().Add(
-        std::make_unique<TemplateURL>(create_template_url_data(
-            u"@site_search_turl", TemplateURLData::PolicyOrigin::kSiteSearch,
-            /*featured_by_policy=*/true)));
-    ASSERT_TRUE(template_url_service().HiddenFromLists(turl_policy));
     ASSERT_FALSE(template_url_service().HiddenFromLists(turl_featured_policy));
   }
 }
