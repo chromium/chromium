@@ -340,9 +340,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // This enum describes the outcome of the account chooser and is used for
   // histograms. Do not remove or modify existing values, but you may add new
   // values at the end. This enum should be kept in sync with
-  // AccountChooserResult in
-  // chrome/browser/ui/android/webid/AccountSelectionMediator.java as well as
   // FedCmAccountChooserResult in tools/metrics/histograms/enums.xml.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.android.webid
+  // GENERATED_JAVA_PREFIX_TO_STRIP: k
   enum class AccountChooserResult {
     kAccountRow = 0,
     kCancelButton = 1,
@@ -361,9 +361,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // This enum describes the outcome of the loading dialog and is used for
   // histograms. Do not remove or modify existing values, but you may add new
   // values at the end. This enum should be kept in sync with
-  // LoadingDialogResult in
-  // chrome/browser/ui/android/webid/AccountSelectionMediator.java as well as
   // FedCmLoadingDialogResult in tools/metrics/histograms/enums.xml.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.android.webid
+  // GENERATED_JAVA_PREFIX_TO_STRIP: k
   enum class LoadingDialogResult {
     kProceed = 0,
     kCancel = 1,
@@ -382,9 +382,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // This enum describes the outcome of the disclosure dialog and is used for
   // histograms. Do not remove or modify existing values, but you may add new
   // values at the end. This enum should be kept in sync with
-  // DisclosureDialogResult in
-  // chrome/browser/ui/android/webid/AccountSelectionMediator.java as well as
   // FedCmDisclosureDialogResult in tools/metrics/histograms/enums.xml.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.android.webid
+  // GENERATED_JAVA_PREFIX_TO_STRIP: k
   enum class DisclosureDialogResult {
     kContinue = 0,
     kCancel = 1,

@@ -10,7 +10,6 @@ import android.os.SystemClock;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
@@ -60,8 +59,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -73,126 +70,6 @@ import java.util.Set;
  * to events like clicks.
  */
 class AccountSelectionMediator {
-    /**
-     * The following integers are used for histograms. Do not remove or modify existing values, but
-     * you may add new values at the end and increase NUM_ENTRIES. This enum should be kept in sync
-     * with SheetType in chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h as
-     * well as with FedCmSheetType in tools/metrics/histograms/enums.xml.
-     */
-    @IntDef({
-        SheetType.ACCOUNT_SELECTION,
-        SheetType.VERIFYING,
-        SheetType.AUTO_REAUTHN,
-        SheetType.SIGN_IN_TO_IDP_STATIC,
-        SheetType.SIGN_IN_ERROR,
-        SheetType.LOADING,
-        SheetType.NUM_ENTRIES
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface SheetType {
-        int ACCOUNT_SELECTION = 0;
-        int VERIFYING = 1;
-        int AUTO_REAUTHN = 2;
-        int SIGN_IN_TO_IDP_STATIC = 3;
-        int SIGN_IN_ERROR = 4;
-        int LOADING = 5;
-
-        int NUM_ENTRIES = 6;
-    }
-
-    /**
-     * The following integers are used for histograms. Do not remove or modify existing values, but
-     * you may add new values at the end and increase NUM_ENTRIES. This enum should be kept in sync
-     * with AccountChooserResult in
-     * chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h as well as with
-     * FedCmAccountChooserResult in tools/metrics/histograms/enums.xml.
-     */
-    @IntDef({
-        AccountChooserResult.ACCOUNT_ROW,
-        AccountChooserResult.CANCEL_BUTTON,
-        AccountChooserResult.USE_OTHER_ACCOUNT_BUTTON,
-        AccountChooserResult.TAB_CLOSED,
-        AccountChooserResult.SWIPE,
-        AccountChooserResult.BACK_PRESS,
-        AccountChooserResult.TAP_SCRIM,
-        AccountChooserResult.NUM_ENTRIES
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    @VisibleForTesting
-    @interface AccountChooserResult {
-        int ACCOUNT_ROW = 0;
-        int CANCEL_BUTTON = 1;
-        int USE_OTHER_ACCOUNT_BUTTON = 2;
-        int TAB_CLOSED = 3;
-        int SWIPE = 4;
-        int BACK_PRESS = 5;
-        int TAP_SCRIM = 6;
-
-        int NUM_ENTRIES = 7;
-    }
-
-    /**
-     * The following integers are used for histograms. Do not remove or modify existing values, but
-     * you may add new values at the end and increase NUM_ENTRIES. This enum should be kept in sync
-     * with LoadingDialogResult in
-     * chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h as well as with
-     * FedCmLoadingDialogResult in tools/metrics/histograms/enums.xml.
-     */
-    @IntDef({
-        LoadingDialogResult.PROCEED,
-        LoadingDialogResult.CANCEL,
-        LoadingDialogResult.PROCEED_THROUGH_POPUP,
-        LoadingDialogResult.DESTROY,
-        LoadingDialogResult.SWIPE,
-        LoadingDialogResult.BACK_PRESS,
-        LoadingDialogResult.TAP_SCRIM,
-        LoadingDialogResult.NUM_ENTRIES
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    @VisibleForTesting
-    @interface LoadingDialogResult {
-        int PROCEED = 0;
-        int CANCEL = 1;
-        int PROCEED_THROUGH_POPUP = 2;
-        int DESTROY = 3;
-        int SWIPE = 4;
-        int BACK_PRESS = 5;
-        int TAP_SCRIM = 6;
-
-        int NUM_ENTRIES = 7;
-    }
-
-    /**
-     * The following integers are used for histograms. Do not remove or modify existing values, but
-     * you may add new values at the end and increase NUM_ENTRIES. This enum should be kept in sync
-     * with DisclosureDialogResult in
-     * chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h as well as with
-     * FedCmDisclosureDialogResult in tools/metrics/histograms/enums.xml.
-     */
-    @IntDef({
-        DisclosureDialogResult.CONTINUE,
-        DisclosureDialogResult.CANCEL,
-        DisclosureDialogResult.BACK,
-        DisclosureDialogResult.DESTROY,
-        DisclosureDialogResult.SWIPE,
-        DisclosureDialogResult.BACK_PRESS,
-        DisclosureDialogResult.TAP_SCRIM,
-        DisclosureDialogResult.NUM_ENTRIES
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    @VisibleForTesting
-    @interface DisclosureDialogResult {
-        int CONTINUE = 0;
-        int CANCEL = 1;
-        int BACK = 2;
-        int DESTROY = 3;
-        int SWIPE = 4;
-        int BACK_PRESS = 5;
-        int TAP_SCRIM = 6;
-
-        int NUM_ENTRIES = 7;
-    }
-
     private boolean mRegisteredObservers;
     private boolean mWasDismissed;
     // Keeps track of the last bottom sheet seen by the BottomSheetObserver. Used to know whether a
@@ -509,9 +386,7 @@ class AccountSelectionMediator {
                             "Blink.FedCm.CloseVerifySheet.Android",
                             mHeaderType == HeaderType.VERIFY);
                     RecordHistogram.recordEnumeratedHistogram(
-                            "Blink.FedCm.ClosedSheetType.Android",
-                            getSheetType(),
-                            SheetType.NUM_ENTRIES);
+                            "Blink.FedCm.ClosedSheetType.Android", getSheetType(), SheetType.COUNT);
                 };
 
         return new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
@@ -622,7 +497,7 @@ class AccountSelectionMediator {
         if (mAccountChooserState == null) return;
 
         RecordHistogram.recordEnumeratedHistogram(
-                "Blink.FedCm.Button.AccountChooserResult", result, SheetType.NUM_ENTRIES);
+                "Blink.FedCm.Button.AccountChooserResult", result, SheetType.COUNT);
         if (mUkmRecorder != null) {
             mUkmRecorder.addMetric("Button.AccountChooserResult", result).record();
         }
@@ -644,9 +519,7 @@ class AccountSelectionMediator {
         if (mLoadingDialogState == null) return;
 
         RecordHistogram.recordEnumeratedHistogram(
-                "Blink.FedCm.Button.LoadingDialogResult",
-                mLoadingDialogState,
-                SheetType.NUM_ENTRIES);
+                "Blink.FedCm.Button.LoadingDialogResult", mLoadingDialogState, SheetType.COUNT);
         if (mUkmRecorder != null) {
             mUkmRecorder.addMetric("Button.LoadingDialogResult", mLoadingDialogState).record();
         }
@@ -669,7 +542,7 @@ class AccountSelectionMediator {
         RecordHistogram.recordEnumeratedHistogram(
                 "Blink.FedCm.Button.DisclosureDialogResult",
                 mDisclosureDialogState,
-                SheetType.NUM_ENTRIES);
+                SheetType.COUNT);
         if (mUkmRecorder != null) {
             mUkmRecorder
                     .addMetric("Button.DisclosureDialogResult", mDisclosureDialogState)
