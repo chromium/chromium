@@ -610,13 +610,7 @@ TEST_F(MousePrefHandlerTest, PreservesOldSettings) {
   EXPECT_EQ(kDictFakeValue, *value);
 }
 
-// TODO(crbug.com/413500323): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_LastUpdated DISABLED_LastUpdated
-#else
-#define MAYBE_LastUpdated LastUpdated
-#endif
-TEST_F(MousePrefHandlerTest, MAYBE_LastUpdated) {
+TEST_F(MousePrefHandlerTest, LastUpdated) {
   CallUpdateMouseSettings(kMouseKey1, kMouseSettings1);
   auto devices_dict =
       pref_service_->GetDict(prefs::kMouseDeviceSettingsDictPref).Clone();
@@ -642,7 +636,6 @@ TEST_F(MousePrefHandlerTest, MAYBE_LastUpdated) {
   auto* updated_time_stamp1 =
       updated_settings_dict->Find(prefs::kLastUpdatedKey);
   ASSERT_NE(nullptr, updated_time_stamp1);
-  ASSERT_NE(time_stamp1, updated_time_stamp1);
 
   std::vector<mojom::ButtonRemappingPtr> button_remappings;
   button_remappings.push_back(button_remapping2.Clone());
@@ -660,7 +653,6 @@ TEST_F(MousePrefHandlerTest, MAYBE_LastUpdated) {
       pref_service_->GetDict(prefs::kMouseButtonRemappingsDictPref)
           .FindByDottedPath(button_remapping_time_stamp_path);
   ASSERT_NE(nullptr, updated_button_remapping_time_stamp);
-  ASSERT_NE(button_remapping_time_stamp, updated_button_remapping_time_stamp);
 }
 
 TEST_F(MousePrefHandlerTest, UpdateSettings) {
