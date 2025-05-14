@@ -147,9 +147,7 @@ TEST_F(SimpleIndexFileTest, Serialize) {
       static_cast<uint64_t>(kNumHashes), 456);
   for (size_t i = 0; i < kNumHashes; ++i) {
     uint64_t hash = kHashes[i];
-    // TODO(eroman): Should restructure the test so no casting here (and same
-    //               elsewhere where a hash is cast to an entry size).
-    metadata_entries[i] = EntryMetadata(Time(), static_cast<uint32_t>(hash));
+    metadata_entries[i] = EntryMetadata(Time(), hash);
     metadata_entries[i].SetInMemoryData(static_cast<uint8_t>(i));
     SimpleIndex::InsertInEntrySet(hash, metadata_entries[i], &entries);
   }
@@ -189,8 +187,7 @@ TEST_F(SimpleIndexFileTest, SerializeAppCache) {
       static_cast<uint64_t>(kNumHashes), 456);
   for (size_t i = 0; i < kNumHashes; ++i) {
     uint64_t hash = kHashes[i];
-    metadata_entries[i] =
-        EntryMetadata(kTrailerPrefetches[i], static_cast<uint32_t>(hash));
+    metadata_entries[i] = EntryMetadata(kTrailerPrefetches[i], hash);
     metadata_entries[i].SetInMemoryData(static_cast<uint8_t>(i));
     SimpleIndex::InsertInEntrySet(hash, metadata_entries[i], &entries);
   }
@@ -228,8 +225,7 @@ TEST_F(SimpleIndexFileTest, ReadV8Format) {
 
   SimpleIndex::EntrySet entries;
   for (size_t i = 0; i < kNumHashes; ++i) {
-    metadata_entries[i] =
-        EntryMetadata(base::Time::Now(), static_cast<uint32_t>(kHashes[i]));
+    metadata_entries[i] = EntryMetadata(base::Time::Now(), kHashes[i]);
     metadata_entries[i].SetInMemoryData(static_cast<uint8_t>(i));
     SimpleIndex::InsertInEntrySet(kHashes[i], metadata_entries[i], &entries);
   }
@@ -268,8 +264,7 @@ TEST_F(SimpleIndexFileTest, ReadV8FormatAppCache) {
 
   SimpleIndex::EntrySet entries;
   for (size_t i = 0; i < kNumHashes; ++i) {
-    metadata_entries[i] =
-        EntryMetadata(base::Time::Now(), static_cast<uint32_t>(kHashes[i]));
+    metadata_entries[i] = EntryMetadata(base::Time::Now(), kHashes[i]);
     metadata_entries[i].SetInMemoryData(static_cast<uint8_t>(i));
     SimpleIndex::InsertInEntrySet(kHashes[i], metadata_entries[i], &entries);
   }

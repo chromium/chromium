@@ -219,8 +219,12 @@ void ProcessEntryFile(BackendFileOperations* file_operations,
   } else {
     // Summing up the total size of the entry through all the *_[0-1] files
     total_entry_size += it->second.GetEntrySize();
-    it->second.SetEntrySize(
-        total_entry_size.ValueOrDefault(kPlaceHolderSizeWhenInvalid));
+    auto tmp_entry_size =
+        total_entry_size.ValueOrDefault(kPlaceHolderSizeWhenInvalid);
+    if (!it->second.SetEntrySize(tmp_entry_size)) {
+      LOG(ERROR) << "Could not set the given entry size as it is too large: "
+                 << static_cast<uint64_t>(tmp_entry_size);
+    }
   }
 }
 

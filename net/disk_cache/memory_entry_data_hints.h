@@ -18,8 +18,8 @@ enum MemoryEntryDataHints : uint8_t {
   // eviction policy will less likely evict the entry.
   HINT_HIGH_PRIORITY = (1 << 1),
 
-  // Note: This hint flags are converted into a 8 bit field. So we can't have
-  // more than 8 hints. This restriction comes from the fact that there are tens
+  // Note: This hint flags are converted into a 2 bit field. So we can't have
+  // more than 2 hints. This restriction comes from the fact that there are tens
   // of thousands of entries, and we need to keep the hint field size small.
 };
 

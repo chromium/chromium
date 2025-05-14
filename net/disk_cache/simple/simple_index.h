@@ -50,9 +50,9 @@ class NET_EXPORT_PRIVATE EntryMetadata {
  public:
   EntryMetadata();
   EntryMetadata(base::Time last_used_time,
-                base::StrictNumeric<uint32_t> entry_size);
+                base::StrictNumeric<uint64_t> entry_size);
   EntryMetadata(int32_t trailer_prefetch_size,
-                base::StrictNumeric<uint32_t> entry_size);
+                base::StrictNumeric<uint64_t> entry_size);
 
   base::Time GetLastUsedTime() const;
   void SetLastUsedTime(const base::Time& last_used_time);
@@ -64,11 +64,12 @@ class NET_EXPORT_PRIVATE EntryMetadata {
     return last_used_time_seconds_since_epoch_;
   }
 
-  uint32_t GetEntrySize() const;
-  void SetEntrySize(base::StrictNumeric<uint32_t> entry_size);
+  uint64_t GetEntrySize() const;
+  // Return false if `entry_size` is too large.
+  bool SetEntrySize(base::StrictNumeric<uint64_t> entry_size);
 
-  uint8_t GetInMemoryData() const { return in_memory_data_; }
-  void SetInMemoryData(uint8_t val) { in_memory_data_ = val; }
+  uint8_t GetInMemoryData() const;
+  void SetInMemoryData(uint8_t val);
 
   // Serialize the data into the provided pickle.
   void Serialize(net::CacheType cache_type, base::Pickle* pickle) const;
@@ -90,10 +91,11 @@ class NET_EXPORT_PRIVATE EntryMetadata {
   FRIEND_TEST_ALL_PREFIXES(SimpleIndexFileTest, ReadV8Format);
   FRIEND_TEST_ALL_PREFIXES(SimpleIndexFileTest, ReadV8FormatAppCache);
 
-  // There are tens of thousands of instances of EntryMetadata in memory, so the
-  // size of each entry matters.  Even when the values used to set these members
-  // are originally calculated as >32-bit types, the actual necessary size for
-  // each shouldn't exceed 32 bits, so we use 32-bit types here.
+  // The size of each entry matters. Even when the values used to set these
+  // members are originally calculated as >38-bit types, the actual necessary
+  // size of each shouldn't exceed 38 bits (256GB - 256 B) for entry size and
+  // not exceed 32 bits for prefetch size, so we use 38-bit and 32-bit types for
+  // each.
 
   // In most modes we track the last access time in order to support automatic
   // eviction. In APP_CACHE mode, however, eviction is disabled. Instead of
@@ -104,9 +106,17 @@ class NET_EXPORT_PRIVATE EntryMetadata {
     int32_t trailer_prefetch_size_;  // in bytes
   };
 
-  uint32_t entry_size_256b_chunks_ : 24;  // in 256-byte blocks, rounded up.
-  uint32_t in_memory_data_ : 8;
+  uint32_t entry_size_256b_chunks_ : 30;  // in 256-byte blocks, rounded up.
+
+  // `in_memory_data_` only uses 2 bits enough to describe
+  // `MemoryEntryDataHints`.
+  uint32_t in_memory_data_ : 2;
+
+  // Note: `entry_size_256b_chunks_` and `in_memory_data_` will be written to
+  // the disk but the format is different from EntryMetadata. See the comment in
+  // EntryMetadata::Serialize for the details.
 };
+
 static_assert(sizeof(EntryMetadata) == 8, "incorrect metadata size");
 
 // This class is not Thread-safe.

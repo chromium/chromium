@@ -300,8 +300,8 @@ class NET_EXPORT Backend {
   // referred to by |key|.
   virtual void OnExternalCacheHit(const std::string& key) = 0;
 
-  // Backends can optionally permit one to store, probabilistically, up to a
-  // byte associated with a key of an existing entry in memory.
+  // Backends can optionally permit one to store, probabilistically, up to 2
+  // bits associated with a key of an existing entry in memory.
 
   // GetEntryInMemoryData has the following behavior:
   // - If the data is not available at this time for any reason, returns 0.
