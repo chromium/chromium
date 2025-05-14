@@ -9,6 +9,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -331,8 +332,11 @@ void ContentVerifyJob::DispatchFailureCallback(FailureReason reason) {
   DCHECK(!failed_);
   failed_ = true;
   if (!failure_callback_.is_null()) {
-    VLOG(1) << "job failed for " << extension_id_ << " "
-            << relative_path_.MaybeAsASCII() << " reason:" << reason;
+    // TODO(crbug.com/416484593): Reduce back to VLOG once the cause and fix has
+    // been determined.
+    LOG(ERROR) << "Content verify job failed for extension: " << extension_id_
+               << " at path: " << relative_path_.MaybeAsASCII()
+               << " and for reason:" << reason;
     std::move(failure_callback_).Run(reason);
   }
 
