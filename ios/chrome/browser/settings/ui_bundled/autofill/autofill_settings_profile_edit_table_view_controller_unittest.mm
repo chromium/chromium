@@ -87,14 +87,13 @@ class AutofillSettingsProfileEditTableViewControllerTest
 };
 
 // Default test case of no addresses or credit cards.
-// TODO(crbug.com/416030990): Adapt test to
-// AutofillDynamicallyLoadsFieldsForAddressInput and re-enable the test.
-TEST_F(AutofillSettingsProfileEditTableViewControllerTest,
-       DISABLED_TestInitialization) {
+TEST_F(AutofillSettingsProfileEditTableViewControllerTest, TestInitialization) {
   TableViewModel* model = [controller() tableViewModel];
 
-  EXPECT_EQ(1, [model numberOfSections]);
-  EXPECT_EQ(10, [model numberOfItemsInSection:0]);
+  EXPECT_EQ(3, [model numberOfSections]);
+  EXPECT_EQ(2, [model numberOfItemsInSection:0]);
+  EXPECT_EQ(5, [model numberOfItemsInSection:1]);
+  EXPECT_EQ(2, [model numberOfItemsInSection:2]);
 }
 
 // TODO(crbug.com/40233297): Merge into main test fixture.
