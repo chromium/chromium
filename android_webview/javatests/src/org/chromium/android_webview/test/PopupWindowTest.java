@@ -33,7 +33,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
@@ -349,7 +348,6 @@ public class PopupWindowTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "crbug.com/409705637")
     public void testPopupWindowTextHandle() throws Throwable {
         final String popupPath = "/popup.html";
         final String parentPageHtml =
@@ -365,8 +363,7 @@ public class PopupWindowTest extends AwParameterizedTest {
         final String popupPageHtml =
                 CommonResources.makeHtmlPageFrom(
                         "<title>" + POPUP_TITLE + "</title>",
-                        "<span id=\"plain_text\" class=\"full_view\">This is a popup"
-                                + " window.</span>");
+                        "<span id=\"plain_text\">This is a popup window.</span>");
 
         mActivityTestRule.triggerPopup(
                 mParentContents,
