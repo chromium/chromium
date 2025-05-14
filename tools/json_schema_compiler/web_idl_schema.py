@@ -301,6 +301,11 @@ class Type():
       # with 'parameters' list that has a single element for the type.
       properties['parameters'] = self._ExtractParametersFromPromiseType(
           type_details)
+    elif type_details.IsA('Sequence'):
+      properties['type'] = 'array'
+      # Sequences are used to represent array types, which have an associated
+      # 'items' key that detail what type the array holds.
+      properties['items'] = ArrayType(type_details).Process()
     else:
       raise SchemaCompilerError('Unsupported type class when processing type.',
                                 type_details)
@@ -419,6 +424,13 @@ class PromiseType(TypedProperty):
   def Process(self) -> dict:
     if self.type_node.GetProperty('NULLABLE'):
       self.properties['optional'] = True
+    return self.properties
+
+
+class ArrayType(TypedProperty):
+  """Handles processing for the type an array (IDL Sequence) consists of."""
+
+  def Process(self) -> dict:
     return self.properties
 
 

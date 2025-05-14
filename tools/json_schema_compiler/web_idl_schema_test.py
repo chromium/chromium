@@ -165,6 +165,22 @@ class WebIdlSchemaTest(unittest.TestCase):
         'name': 'returnsCustomType',
         '$ref': 'ExampleType'
     }, getFunctionReturn(schema, 'returnsCustomType'))
+    self.assertEqual(
+        {
+            'name': 'returnsDOMStringSequence',
+            'type': 'array',
+            'items': {
+                'type': 'string'
+            }
+        }, getFunctionReturn(schema, 'returnsDOMStringSequence'))
+    self.assertEqual(
+        {
+            'name': 'returnsCustomTypeSequence',
+            'type': 'array',
+            'items': {
+                '$ref': 'ExampleType'
+            }
+        }, getFunctionReturn(schema, 'returnsCustomTypeSequence'))
 
   def testPromiseBasedReturn(self):
     schema = self.idl_basics
@@ -198,6 +214,28 @@ class WebIdlSchemaTest(unittest.TestCase):
         'parameters': [],
         'type': 'promise'
     }, getFunctionAsyncReturn(schema, 'undefinedPromiseReturn'))
+    self.assertEqual(
+        {
+            'name': 'callback',
+            'parameters': [{
+                'type': 'array',
+                'items': {
+                    'type': 'integer'
+                }
+            }],
+            'type': 'promise'
+        }, getFunctionAsyncReturn(schema, 'longSequencePromiseReturn'))
+    self.assertEqual(
+        {
+            'name': 'callback',
+            'parameters': [{
+                'type': 'array',
+                'items': {
+                    '$ref': 'ExampleType'
+                }
+            }],
+            'type': 'promise'
+        }, getFunctionAsyncReturn(schema, 'customTypeSequencePromiseReturn'))
 
   # Tests function parameters are processed as expected.
   def testFunctionParameters(self):
@@ -233,6 +271,21 @@ class WebIdlSchemaTest(unittest.TestCase):
         'name': 'last',
         'type': 'string'
     }], getFunctionParameters(schema, 'takesOptionalInnerArgument'))
+    self.assertEqual([{
+        'name': 'sequenceArgument',
+        'type': 'array',
+        'items': {
+            'type': 'boolean'
+        }
+    }], getFunctionParameters(schema, 'takesSequenceArgument'))
+    self.assertEqual([{
+        'name': 'optionalSequenceArgument',
+        'type': 'array',
+        'optional': True,
+        'items': {
+            'type': 'boolean'
+        }
+    }], getFunctionParameters(schema, 'takesOptionalSequenceArgument'))
     self.assertEqual([{
         'name': 'customTypeArgument',
         '$ref': 'ExampleType'
@@ -325,47 +378,47 @@ class WebIdlSchemaTest(unittest.TestCase):
   # processed into types on the resulting namespace.
   def testApiTypesOnNamespace(self):
     schema = self.idl_basics
+    custom_type = getType(schema, 'ExampleType')
+    self.assertEqual('ExampleType', custom_type['id'])
+    self.assertEqual('object', custom_type['type'])
     self.assertEqual(
         {
-            'id': 'ExampleType',
-            'properties': {
-                'someString': {
-                    'name':
-                    'someString',
-                    'type':
-                    'string',
-                    'description':
-                    ('Attribute comment attached to ExampleType.someString.'),
-                },
-                'someNumber': {
-                    'name':
-                    'someNumber',
-                    'type':
-                    'number',
-                    'description':
-                    ('Comment where <var>someNumber</var> has some markup.'),
-                },
-                # TODO(crbug.com/379052294): using HTML comments like this is a
-                # bit of a hack to allow us to add comments in IDL files (e.g.
-                # for TODOs) and to not have them end up on the documentation
-                # site. We should probably just filter them out during
-                # compilation.
-                'optionalBoolean': {
-                    'name':
-                    'optionalBoolean',
-                    'type':
-                    'boolean',
-                    'optional':
-                    True,
-                    'description':
-                    ('Comment with HTML comment. <!-- Which should get'
-                     ' through -->'),
-                },
+            'name': 'someString',
+            'type': 'string',
+            'description':
+            'Attribute comment attached to ExampleType.someString.'
+        }, custom_type['properties']['someString'])
+    self.assertEqual(
+        {
+            'name': 'someNumber',
+            'type': 'number',
+            'description':
+            'Comment where <var>someNumber</var> has some markup.'
+        }, custom_type['properties']['someNumber'])
+    # TODO(crbug.com/379052294): using HTML comments like this is a bit of a
+    # hack to allow us to add comments in IDL files (e.g. for TODOs) and to not
+    # have them end up on the documentation site. We should probably just filter
+    # them out during compilation.
+    self.assertEqual(
+        {
+            'name':
+            'optionalBoolean',
+            'type':
+            'boolean',
+            'optional':
+            True,
+            'description':
+            'Comment with HTML comment. <!-- Which should get through -->'
+        }, custom_type['properties']['optionalBoolean'])
+    self.assertEqual(
+        {
+            'name': 'booleanSequence',
+            'type': 'array',
+            'items': {
+                'type': 'boolean'
             },
-            'type': 'object',
-        },
-        getType(schema, 'ExampleType'),
-    )
+            'description': 'Comment on sequence type.',
+        }, custom_type['properties']['booleanSequence'])
 
   # Tests that a top level API comment is processed into a description
   # attribute, with HTML paragraph nodes added due to the blank commented line.

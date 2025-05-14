@@ -17,6 +17,8 @@ interface TestWebIdl {
   static double returnsDouble();
   static long returnsLong();
   static DOMString returnsDOMString();
+  static sequence<DOMString> returnsDOMStringSequence();
+  static sequence<ExampleType> returnsCustomTypeSequence();
 
   static undefined takesNoArguments();
   static undefined takesDOMString(DOMString stringArgument);
@@ -25,6 +27,9 @@ interface TestWebIdl {
       DOMString argument1, optional double argument2);
   static undefined takesOptionalInnerArgument(
       DOMString first, optional DOMString optionalInner, DOMString last);
+  static undefined takesSequenceArgument(sequence<boolean> sequenceArgument);
+  static undefined takesOptionalSequenceArgument(
+      optional sequence<boolean> optionalSequenceArgument);
 
   static ExampleType returnsCustomType();
   static undefined takesCustomType(ExampleType customTypeArgument);
@@ -35,8 +40,10 @@ interface TestWebIdl {
   static Promise<DOMString?> nullablePromiseReturn();
   static Promise<ExampleType> customTypePromiseReturn();
   static Promise<undefined> undefinedPromiseReturn();
+  static Promise<sequence<long>> longSequencePromiseReturn();
+  static Promise<sequence<ExampleType>> customTypeSequencePromiseReturn();
 
-  // Test items for comment to description processing:
+  // Items for testing the processing of IDL comments to schema descriptions:
 
   static undefined noDescription();
   // One line description.
@@ -94,6 +101,8 @@ dictionary ExampleType {
   double someNumber;
   // Comment with HTML comment. <!-- Which should get through -->
   boolean? optionalBoolean;
+  // Comment on sequence type.
+  sequence<boolean> booleanSequence;
 };
 
 partial interface Browser {
