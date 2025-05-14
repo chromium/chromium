@@ -186,6 +186,9 @@ public class CreatorActivity extends SnackbarActivity {
 
     @Override
     protected void onDestroy() {
+        if (mLifecycleDispatcher != null) {
+            mLifecycleDispatcher.onDestroyStarted();
+        }
         if (mWindowAndroid != null) {
             mWindowAndroid.destroy();
             mWindowAndroid = null;
@@ -199,6 +202,9 @@ public class CreatorActivity extends SnackbarActivity {
             mShareDelegateSupplier = null;
         }
         super.onDestroy();
+        if (mLifecycleDispatcher != null) {
+            mLifecycleDispatcher.dispatchOnDestroy();
+        }
     }
 
     // This implements the CreatorWebContents interface.

@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
-import androidx.annotation.VisibleForTesting;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -55,7 +55,7 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
     private final ObserverList<TopResumedActivityChangedObserver>
             mTopResumedActivityChangedObservers = new ObserverList<>();
 
-    private final Activity mActivity;
+    private @Nullable Activity mActivity;
 
     private @ActivityState int mActivityState = ActivityState.DESTROYED;
     private boolean mIsNativeInitialized;
@@ -67,6 +67,10 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
 
     @Override
     public void register(LifecycleObserver observer) {
+        assert mActivity != null;
+        if (mActivity == null) {
+            return;
+        }
         if (observer instanceof InflationObserver) {
             mInflationObservers.addObserver((InflationObserver) observer);
         }
@@ -161,7 +165,7 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
 
     @Override
     public boolean isActivityFinishingOrDestroyed() {
-        return mDestroyed || mActivity.isFinishing();
+        return mDestroyed || mActivity == null || mActivity.isFinishing();
     }
 
     void dispatchPreInflationStartup() {
@@ -222,21 +226,21 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
         }
     }
 
-    void onDestroyStarted() {
+    public void onDestroyStarted() {
         mDestroyed = true;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    protected void dispatchOnDestroy() {
+    public void dispatchOnDestroy() {
         mActivityState = ActivityState.DESTROYED;
+
+        // Clear mActivity to prevent future calls to register().
+        mActivity = null;
 
         for (DestroyObserver destroyable : mDestroyables) {
             destroyable.onDestroy();
         }
 
         // Drain observers to prevent possible memory leaks.
-        // TODO(twellington): Add some state to this class to prevent observers from being
-        //                    registered after the activity has been destroyed.
         mInflationObservers.clear();
         mPauseResumeObservers.clear();
         mStartStopObservers.clear();

@@ -35,13 +35,13 @@ public class ActivityProfileProviderTest {
     @Mock private Profile mOriginalProfile;
     @Mock private Activity mActivity;
 
-    private TestActivityLifecycleDispatcherImpl mLifecycleDispatcher;
+    private ActivityLifecycleDispatcherImpl mLifecycleDispatcher;
 
     @Before
     public void setUp() {
 
         ProfileManager.setLastUsedProfileForTesting(mOriginalProfile);
-        mLifecycleDispatcher = new TestActivityLifecycleDispatcherImpl(mActivity);
+        mLifecycleDispatcher = new ActivityLifecycleDispatcherImpl(mActivity);
     }
 
     @After
@@ -137,17 +137,5 @@ public class ActivityProfileProviderTest {
         provider.getOffTheRecordProfile(true);
         verify(mOriginalProfile).getOffTheRecordProfile(eq(otrProfileId), eq(true));
         Assert.assertEquals(1, otrProfileIdHelper.getCallCount());
-    }
-
-    private static class TestActivityLifecycleDispatcherImpl
-            extends ActivityLifecycleDispatcherImpl {
-        public TestActivityLifecycleDispatcherImpl(Activity activity) {
-            super(activity);
-        }
-
-        @Override
-        public void dispatchOnDestroy() {
-            super.dispatchOnDestroy();
-        }
     }
 }
