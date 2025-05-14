@@ -136,6 +136,8 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kANGLEPerContextBlobCache);
 GPU_EXPORT BASE_DECLARE_FEATURE(kIOSurfaceMultiThreading);
 #endif
 
+GPU_EXPORT BASE_DECLARE_FEATURE(kWebGPUCompatibilityMode);
+
 GPU_EXPORT bool IsGraphiteContextThreadSafe();
 }  // namespace features
 

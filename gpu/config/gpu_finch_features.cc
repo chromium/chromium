@@ -879,4 +879,8 @@ bool IsGraphiteContextThreadSafe() {
          features::IsDrDcEnabled();
 }
 
+BASE_FEATURE(kWebGPUCompatibilityMode,
+             "WebGPUCompatibilityMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
