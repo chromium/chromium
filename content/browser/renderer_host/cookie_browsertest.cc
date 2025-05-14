@@ -422,6 +422,36 @@ IN_PROC_BROWSER_TEST_P(CookieBrowserTest, PrefixedCookies_Write_Insecure) {
       IsEmpty());
 }
 
+// embedded_test_server() uses http, which is insecure, but localhost is
+// allowed to set prefixed cookies anyway.
+IN_PROC_BROWSER_TEST_P(CookieBrowserTest, PrefixedCookies_Write_Localhost) {
+  if (GetCookiesOnSetEnabled() && AsyncSetCookieEnabled()) {
+    GTEST_SKIP()
+        << "Skipping known-flaky configuration, see crbug.com/417674996";
+  }
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("localhost", "/empty.html")));
+
+  EXPECT_TRUE(ExecJs(shell(), R"js(
+    document.cookie = "__Host-cookie=1;Secure;Path=/";
+    document.cookie = "__Secure-cookie=1;Secure";
+    document.cookie = "__Secure-http-cookie=1;Secure;HttpOnly";
+    document.cookie = "__Secure-missing-attr=1";
+    document.cookie = "__Host-wrong-path=1;Secure;";
+    document.cookie = "__Host-wrong-domain=1;Secure;Domain=a.test";
+    document.cookie = "__Host-wrong-secure=1;Path=/";
+    )js"));
+
+  EXPECT_THAT(
+      GetCanonicalCookies(shell()->web_contents()->GetBrowserContext(),
+                          embedded_test_server()->GetURL("localhost", "/")),
+      UnorderedElementsAre(
+          net::MatchesCookieNameValue("__Host-cookie", "1"),
+          net::MatchesCookieNameValue("__Secure-cookie", "1")));
+}
+
 IN_PROC_BROWSER_TEST_P(CookieBrowserTest,
                        CookieJarInvalidatesCacheWithNewDevtoolsControls) {
   // Must use HTTPS because SameSite=None cookies must be Secure.

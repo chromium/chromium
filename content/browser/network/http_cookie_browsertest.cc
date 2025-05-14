@@ -137,13 +137,17 @@ class HttpCookieBrowserTest : public ContentBrowserTest,
   }
 
   // Sets some (valid) prefixed cookies.
-  void SetPrefixedCookies(std::string_view host) {
+  void SetPrefixedCookies(std::string_view host,
+                          net::EmbeddedTestServer* test_server = nullptr) {
+    if (!test_server) {
+      test_server = https_server();
+    }
     BrowserContext* context = shell()->web_contents()->GetBrowserContext();
     ASSERT_TRUE(
-        SetCookie(context, https_server()->GetURL(host, "/"),
+        SetCookie(context, test_server->GetURL(host, "/"),
                   base::StrCat({kHostPrefixCookieName, "=1; Secure; Path=/"})));
     ASSERT_TRUE(
-        SetCookie(context, https_server()->GetURL(host, "/"),
+        SetCookie(context, test_server->GetURL(host, "/"),
                   base::StrCat({kSecurePrefixCookieName, "=1; Secure"})));
   }
 
@@ -521,6 +525,19 @@ IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest,
                             EchoCookiesUrl(embedded_test_server(), kHostA)));
   EXPECT_THAT(ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
               net::CookieStringIs(IsEmpty()));
+}
+
+// embedded_test_server() uses http, which is insecure, but localhost is
+// allowed to set prefixed cookies anyway.
+IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest, SendPrefixedCookiesLocalhost) {
+  SetPrefixedCookies("localhost", embedded_test_server());
+
+  // Main frame browser-initiated navigation sends all prefixed cookies.
+  ASSERT_TRUE(NavigateToURL(
+      web_contents(), EchoCookiesUrl(embedded_test_server(), "localhost")));
+  EXPECT_THAT(ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
+              net::CookieStringIs(UnorderedElementsAre(
+                  Key(kSecurePrefixCookieName), Key(kHostPrefixCookieName))));
 }
 
 IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest, SetPrefixedCookies) {

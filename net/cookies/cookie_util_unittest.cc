@@ -600,6 +600,52 @@ TEST(CookieUtilTest, SimulatedCookieSource) {
   }
 }
 
+TEST(CookieUtilTest, PrefixedCookies) {
+  GURL secure_url("https://b.a.com");
+  GURL insecure_url("http://b.a.com");
+  GURL trusted_url("http://localhost");
+
+  struct {
+    CookiePrefix prefix;
+    GURL url;
+    bool expect_success;
+    std::string description;
+    bool secure = true;
+    std::string domain = "";
+    std::string path = "/";
+  } kTests[]{
+      {COOKIE_PREFIX_HOST, secure_url, true, "__Host- on secure URL"},
+      {COOKIE_PREFIX_HOST, insecure_url, false, "__Host- on insecure URL"},
+      {COOKIE_PREFIX_HOST, trusted_url, true, "__Host- on trusted URL"},
+      {COOKIE_PREFIX_SECURE, secure_url, true, "__Secure- on secure URL"},
+      {COOKIE_PREFIX_SECURE, insecure_url, false, "__Secure- on insecure URL"},
+      {COOKIE_PREFIX_SECURE, trusted_url, true, "__Secure- on trusted URL"},
+      {COOKIE_PREFIX_HOST, secure_url, false,
+       "__Host- on secure URL, non-secure cookie", false},
+      {COOKIE_PREFIX_HOST, trusted_url, false,
+       "__Host- on trusted URL, non-secure cookie", false},
+      {COOKIE_PREFIX_SECURE, secure_url, false,
+       "__Secure- on secure URL, non-secure cookie", false},
+      {COOKIE_PREFIX_SECURE, trusted_url, false,
+       "__Secure- on trusted URL, non-secure cookie", false},
+      {COOKIE_PREFIX_HOST, secure_url, false,
+       "__Host- on secure URL, with domain", true, "foo.com"},
+      {COOKIE_PREFIX_HOST, trusted_url, false,
+       "__Host- on trusted URL, with domain", true, "foo.com"},
+      {COOKIE_PREFIX_HOST, secure_url, false,
+       "__Host- on secure URL, with path", true, "", "/path"},
+      {COOKIE_PREFIX_HOST, trusted_url, false,
+       "__Host- on trusted URL, with path", true, "", "/path"},
+  };
+
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(test.description);
+    EXPECT_EQ(cookie_util::IsCookiePrefixValid(
+                  test.prefix, test.url, test.secure, test.domain, test.path),
+              test.expect_success);
+  }
+}
+
 TEST(CookieUtilTest, TestGetEffectiveDomain) {
   // Note: registry_controlled_domains::GetDomainAndRegistry is tested in its
   // own unittests.

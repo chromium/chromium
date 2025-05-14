@@ -108,7 +108,9 @@ bool HasValidHostPrefixAttributes(const GURL& url,
                                   bool secure,
                                   const std::string& domain,
                                   const std::string& path) {
-  if (!secure || !url.SchemeIsCryptographic() || path != "/") {
+  if (!secure ||
+      ProvisionalAccessScheme(url) == CookieAccessScheme::kNonCryptographic ||
+      path != "/") {
     return false;
   }
   return domain.empty() || (url.HostIsIPAddress() && url.host() == domain);
@@ -762,7 +764,8 @@ bool IsCookiePrefixValid(CookiePrefix prefix,
                          const std::string& domain,
                          const std::string& path) {
   if (prefix == COOKIE_PREFIX_SECURE) {
-    return secure && url.SchemeIsCryptographic();
+    return secure && ProvisionalAccessScheme(url) !=
+                         CookieAccessScheme::kNonCryptographic;
   }
   if (prefix == COOKIE_PREFIX_HOST) {
     return HasValidHostPrefixAttributes(url, secure, domain, path);
