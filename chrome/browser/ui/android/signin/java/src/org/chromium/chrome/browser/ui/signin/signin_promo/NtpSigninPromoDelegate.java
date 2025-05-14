@@ -14,7 +14,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -179,9 +178,6 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
         assumeNonNull(signinManager);
         if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
                 || !signinManager.isSigninAllowed()) {
-            return PromoState.NONE;
-        }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS)) {
             return PromoState.NONE;
         }
 

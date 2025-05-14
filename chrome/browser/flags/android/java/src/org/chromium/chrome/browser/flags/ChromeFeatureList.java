@@ -381,8 +381,6 @@ public abstract class ChromeFeatureList {
     public static final String FLOATING_SNACKBAR = "FloatingSnackbar";
     public static final String FORCE_BROWSER_CONTROLS_UPON_EXITING_FULLSCREEN =
             "ForceBrowserControlsUponExitingFullscreen";
-    public static final String FORCE_DISABLE_EXTENDED_SYNC_PROMOS =
-            "ForceDisableExtendedSyncPromos";
     public static final String FORCE_LIST_TAB_SWITCHER = "ForceListTabSwitcher";
     public static final String FORCE_STARTUP_SIGNIN_PROMO = "ForceStartupSigninPromo";
     public static final String FORCE_TRANSLUCENT_NOTIFICATION_TRAMPOLINE =

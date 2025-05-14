@@ -104,10 +104,6 @@ public final class FullscreenSigninPromoLauncher {
             return false;
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS)) {
-            return false;
-        }
-
         final List<String> currentAccountEmails = AccountUtils.toAccountEmails(accounts);
         final Set<String> previousAccountEmails = prefManager.getSigninPromoLastAccountEmails();
         // Don't show if no new accounts have been added after the last time promo was shown.

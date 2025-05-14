@@ -48,10 +48,7 @@ import java.util.Set;
 
 /** Tests for {@link FullscreenSigninPromoLauncher}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({
-    ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS,
-    ChromeFeatureList.FORCE_STARTUP_SIGNIN_PROMO
-})
+@DisableFeatures({ChromeFeatureList.FORCE_STARTUP_SIGNIN_PROMO})
 public class FullscreenSigninPromoLauncherTest {
     private static final int CURRENT_MAJOR_VERSION = 42;
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

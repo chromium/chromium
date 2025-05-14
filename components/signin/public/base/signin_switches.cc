@@ -167,11 +167,6 @@ BASE_FEATURE(kEnablePreferencesAccountStorage,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 );
 
-// This feature disables all extended sync promos.
-BASE_FEATURE(kForceDisableExtendedSyncPromos,
-             "ForceDisableExtendedSyncPromos",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 // Features to trigger the startup sign-in promo at boot.
 BASE_FEATURE(kForceStartupSigninPromo,
