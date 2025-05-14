@@ -1193,7 +1193,7 @@ if (is_win || is_mac || is_linux) {
 
     if (is_posix) {
       sources += [
-        "app/server/posix/ipc_unittests.cc",
+        "app/server/posix/ipc_unittest.cc",
         "util/posix_util_unittest.cc",
       ]
 

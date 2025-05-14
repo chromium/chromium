@@ -207,7 +207,7 @@ source_set("unit_tests") {
     "crowd_deny_safe_browsing_request_unittest.cc",
     "notifications_engagement_service_unittest.cc",
     "permission_context_base_permissions_policy_unittest.cc",
-    "permission_revocation_request_unittests.cc",
+    "permission_revocation_request_unittest.cc",
     "permission_subscription_unittest.cc",
     "permissions_aiv1_handler_unittest.cc",
     "prediction_based_permission_ui_selector_unittest.cc",
