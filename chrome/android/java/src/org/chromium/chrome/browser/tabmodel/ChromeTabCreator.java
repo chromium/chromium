@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingDelegateFact
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -60,7 +59,6 @@ public class ChromeTabCreator extends TabCreator
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
-    private final @Nullable DseNewTabUrlManager mDseNewTabUrlManager;
 
     private TabModel mTabModel;
     private TabModelOrderController mOrderController;
@@ -73,8 +71,7 @@ public class ChromeTabCreator extends TabCreator
             boolean incognito,
             AsyncTabParamsManager asyncTabParamsManager,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
-            Supplier<CompositorViewHolder> compositorViewHolderSupplier,
-            @Nullable DseNewTabUrlManager dseNewTabUrlManager) {
+            Supplier<CompositorViewHolder> compositorViewHolderSupplier) {
         mActivity = activity;
         mNativeWindow = nativeWindow;
         mTabDelegateFactorySupplier = tabDelegateFactory;
@@ -83,7 +80,6 @@ public class ChromeTabCreator extends TabCreator
         mAsyncTabParamsManager = asyncTabParamsManager;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
-        mDseNewTabUrlManager = dseNewTabUrlManager;
     }
 
     /**
@@ -293,9 +289,6 @@ public class ChromeTabCreator extends TabCreator
             int parentId = parent != null ? parent.getId() : Tab.INVALID_TAB_ID;
 
             GURL url = UrlFormatter.fixupUrl(loadUrlParams.getUrl());
-            if (mDseNewTabUrlManager != null) {
-                url = mDseNewTabUrlManager.maybeGetOverrideUrl(url);
-            }
 
             // Sanitize the url.
             loadUrlParams.setUrl(url.getValidSpecOrEmpty());

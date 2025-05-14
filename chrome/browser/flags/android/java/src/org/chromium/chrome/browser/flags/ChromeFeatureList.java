@@ -434,7 +434,6 @@ public abstract class ChromeFeatureList {
     public static final String NEW_TAB_PAGE_ANDROID_TRIGGER_FOR_PRERENDER2 =
             "NewTabPageAndroidTriggerForPrerender2";
     public static final String NEW_TAB_PAGE_CUSTOMIZATION = "NewTabPageCustomization";
-    public static final String NEW_TAB_SEARCH_ENGINE_URL_ANDROID = "NewTabSearchEngineUrlAndroid";
     public static final String NOTIFICATION_ONE_TAP_UNSUBSCRIBE = "NotificationOneTapUnsubscribe";
     public static final String NOTIFICATION_PERMISSION_BOTTOM_SHEET =
             "NotificationPermissionBottomSheet";
@@ -1354,8 +1353,6 @@ public abstract class ChromeFeatureList {
             sNavBarColorMatchesTabBackgroundColorAnimationDisabled =
                     newBooleanCachedFeatureParam(
                             NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND, "color_animation_disabled", true);
-    public static final BooleanCachedFeatureParam sNewTabSearchEngineUrlAndroidSwapOutNtp =
-            newBooleanCachedFeatureParam(NEW_TAB_SEARCH_ENGINE_URL_ANDROID, "swap_out_ntp", false);
     public static final IntCachedFeatureParam sNotificationTrampolineLongJobDurationMs =
             newIntCachedFeatureParam(NOTIFICATION_TRAMPOLINE, "long_job_duration_millis", 8 * 1000);
     public static final IntCachedFeatureParam sNotificationTrampolineNormalJobDurationMs =
@@ -1476,7 +1473,6 @@ public abstract class ChromeFeatureList {
                     sNavBarColorAnimationDisableBottomChinColorAnimation,
                     sNavBarColorAnimationDisableEdgeToEdgeLayoutColorAnimation,
                     sNavBarColorMatchesTabBackgroundColorAnimationDisabled,
-                    sNewTabSearchEngineUrlAndroidSwapOutNtp,
                     sNotificationTrampolineImmediateJobDurationMs,
                     sNotificationTrampolineLongJobDurationMs,
                     sNotificationTrampolineNormalJobDurationMs,

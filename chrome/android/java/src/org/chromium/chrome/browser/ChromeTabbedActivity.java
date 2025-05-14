@@ -2988,10 +2988,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         false,
                         AsyncTabParamsManagerSingleton.getInstance(),
                         getTabModelSelectorSupplier(),
-                        getCompositorViewHolderSupplier(),
-                        DseNewTabUrlManager.isSwapOutNtpFlagEnabled()
-                                ? mDseNewTabUrlManager
-                                : null),
+                        getCompositorViewHolderSupplier()),
                 new ChromeTabCreator(
                         this,
                         getWindowAndroid(),
@@ -3000,8 +2997,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         true,
                         AsyncTabParamsManagerSingleton.getInstance(),
                         getTabModelSelectorSupplier(),
-                        getCompositorViewHolderSupplier(),
-                        null));
+                        getCompositorViewHolderSupplier()));
     }
 
     @Override

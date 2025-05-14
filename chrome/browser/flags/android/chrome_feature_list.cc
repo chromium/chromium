@@ -312,7 +312,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kNativePageTransitionHardwareCapture,
     &kNavBarColorAnimation,
     &kNavBarColorMatchesTabBackground,
-    &kNewTabSearchEngineUrlAndroid,
     &kNewTabPageAndroidTriggerForPrerender2,
     &kNotificationPermissionVariant,
     &kNotificationPermissionBottomSheet,
@@ -1011,10 +1010,6 @@ BASE_FEATURE(kNavBarColorAnimation,
 
 BASE_FEATURE(kNavBarColorMatchesTabBackground,
              "NavBarColorMatchesTabBackground",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kNewTabSearchEngineUrlAndroid,
-             "NewTabSearchEngineUrlAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNewTabPageAndroidTriggerForPrerender2,
