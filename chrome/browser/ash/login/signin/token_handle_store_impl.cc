@@ -4,9 +4,15 @@
 
 #include "chrome/browser/ash/login/signin/token_handle_store_impl.h"
 
+#include <algorithm>
+
+#include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/json/values_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
@@ -128,6 +134,62 @@ void TokenHandleStoreImpl::StoreTokenHandle(const AccountId& account_id,
                        base::TimeToValue(base::Time::Now()));
 }
 
+void TokenHandleStoreImpl::MaybeFetchTokenHandle(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const AccountId& account_id,
+    const std::string& access_token,
+    const std::string& refresh_token_hash) {
+  // If the user doesn't have a token handle (new user), or the existing token
+  // handle is stale, fetch a new token.
+  if (!HasToken(account_id) || IsTokenHandleStale(account_id)) {
+    FetchTokenHandle(url_loader_factory, account_id, access_token,
+                     refresh_token_hash);
+  }
+}
+
+void TokenHandleStoreImpl::FetchTokenHandle(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const AccountId& account_id,
+    const std::string& access_token,
+    const std::string& refresh_token_hash) {
+  CHECK_NE(access_token, std::string());
+  // Overwriting the `TokenHandleFetcher` for `account_id` while the fetch is
+  // pending will effectively cancel the previous check, and issue a newer
+  // one. Destroying the previous instance of `TokenHandleFetcher` will also
+  // destroy the owned `GaiaOAuthClient`, therefore invalidating the weak_ptrs
+  // referencing it.
+  pending_fetches_[account_id] =
+      std::make_unique<TokenHandleFetcher>(url_loader_factory, account_id);
+  pending_fetches_[account_id]->Fetch(
+      access_token, refresh_token_hash,
+      base::BindOnce(&TokenHandleStoreImpl::OnFetchToken,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void TokenHandleStoreImpl::OnFetchToken(const AccountId& account_id,
+                                        bool success,
+                                        const std::string& token) {
+  if (!success) {
+    LOG(ERROR) << "OAuth2 token handle fetch failed.";
+    return;
+  }
+
+  known_user_->SetStringPref(account_id, kTokenHandleStatusPref,
+                             kTokenHandleStatusValid);
+  StoreTokenHandle(account_id, token);
+
+  // Reply to pending checks that were waiting on a new token handle to be
+  // fetched, if any.
+  if (pending_checks_.find(account_id) != pending_checks_.end()) {
+    OnCheckToken(account_id, token,
+                 /*status=*/TokenHandleChecker::Status::kValid);
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&TokenHandleStoreImpl::ScheduleFetcherDelete,
+                                weak_factory_.GetWeakPtr(), account_id));
+}
+
 void TokenHandleStoreImpl::OnCheckToken(
     const AccountId& account_id,
     const std::string& token,
@@ -192,12 +254,22 @@ void TokenHandleStoreImpl::ScheduleCheckerDelete(const AccountId& account_id) {
   pending_checks_.erase(account_id);
 }
 
+void TokenHandleStoreImpl::ScheduleFetcherDelete(const AccountId& account_id) {
+  pending_fetches_.erase(account_id);
+}
+
 bool TokenHandleStoreImpl::HasTokenStatusInvalid(
     const AccountId& account_id) const {
   const std::string* status =
       known_user_->FindStringPath(account_id, kTokenHandleStatusPref);
 
   return status && *status == kTokenHandleStatusInvalid;
+}
+
+bool TokenHandleStoreImpl::IsTokenHandleStale(
+    const AccountId& account_id) const {
+  return *known_user_->FindStringPath(account_id, kTokenHandleStatusPref) ==
+         kTokenHandleStatusStale;
 }
 
 void TokenHandleStoreImpl::SetInvalidTokenForTesting(const char* token) {

@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/signin/token_handle_store_impl.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -35,12 +36,17 @@ constexpr char kFakeEmail[] = "fake-email@example.com";
 constexpr char kFakeOtherEmail[] = "fake-other-email@example.com";
 constexpr GaiaId::Literal kFakeGaiaId("fake-gaia-id");
 constexpr GaiaId::Literal kFakeOtherGaiaId("fake-other-gaia-id");
+constexpr char kFakeAccessToken[] = "fake-access-token";
+constexpr char kFakeRefreshTokenHash[] = "fake-refresh-token-hash";
 
 constexpr char kTokenHandlePref[] = "PasswordTokenHandle";
 constexpr char kTokenHandleStatusPref[] = "TokenHandleStatus";
 constexpr char kTokenHandleLastCheckedPref[] = "TokenHandleLastChecked";
 constexpr char kTokenHandleStatusInvalid[] = "invalid";
 constexpr char kTokenHandleStatusValid[] = "valid";
+constexpr char kTokenHandleStatusStale[] = "stale";
+
+constexpr char kKnownUsersPref[] = "KnownUsers";
 
 constexpr char kValidTokenInfoResponse[] =
     R"(
@@ -49,12 +55,24 @@ constexpr char kValidTokenInfoResponse[] =
         "expires_in": %d
       }
    )";
+constexpr char kTokenFetchResponse[] =
+    R"(
+      { "email": "%s",
+        "user_id": "1234567890",
+        "token_handle": "%s"
+      }
+   )";
 
 constexpr base::TimeDelta kCacheStatusTime = base::Hours(1);
 
 std::string GetValidTokenInfoResponse(const std::string& email,
                                       int expires_in) {
   return base::StringPrintf(kValidTokenInfoResponse, email, expires_in);
+}
+
+std::string GetTokenInfoFetchResponse(const std::string& email,
+                                      const std::string& token) {
+  return base::StringPrintf(kTokenFetchResponse, email, token);
 }
 
 void AssertLastCheckedTimestampWithinTolerance(
@@ -288,7 +306,7 @@ class TokenHandleStoreIsReauthRequiredTest : public TokenHandleStoreTest {
     return url_loader_factory_.GetSafeWeakWrapper();
   }
 
-  void AddFakeResponseForStatus(TokenHandleChecker::Status status) {
+  void AddFakeCheckResponseForStatus(TokenHandleChecker::Status status) {
     switch (status) {
       case TokenHandleChecker::Status::kValid:
         AddFakeResponse(
@@ -346,7 +364,7 @@ TEST_F(TokenHandleStoreIsReauthRequiredTest,
        IsReauthRequiredReturnsTrueIfTokenExistsAndInvalid) {
   auto known_user = std::make_unique<user_manager::KnownUser>(&local_state_);
   known_user->SetStringPref(account_id_, kTokenHandlePref, kFakeToken);
-  AddFakeResponseForStatus(TokenHandleChecker::Status::kInvalid);
+  AddFakeCheckResponseForStatus(TokenHandleChecker::Status::kInvalid);
   std::unique_ptr<TokenHandleStore> token_handle_store =
       CreateTokenHandleStore(std::move(known_user));
   TokenValidationFuture future;
@@ -365,7 +383,7 @@ TEST_F(TokenHandleStoreIsReauthRequiredTest,
   known_user->SetStringPref(account_id_, kTokenHandlePref, kFakeToken);
   known_user->SetStringPref(account_id_, kTokenHandleStatusPref,
                             kTokenHandleStatusValid);
-  AddFakeResponseForStatus(TokenHandleChecker::Status::kValid);
+  AddFakeCheckResponseForStatus(TokenHandleChecker::Status::kValid);
   std::unique_ptr<TokenHandleStore> token_handle_store =
       CreateTokenHandleStore(std::move(known_user));
   TokenValidationFuture future;
@@ -384,7 +402,7 @@ TEST_F(TokenHandleStoreIsReauthRequiredTest,
   known_user->SetStringPref(account_id_, kTokenHandlePref, kFakeToken);
   known_user->SetStringPref(account_id_, kTokenHandleStatusPref,
                             kTokenHandleStatusValid);
-  AddFakeResponseForStatus(TokenHandleChecker::Status::kUnknown);
+  AddFakeCheckResponseForStatus(TokenHandleChecker::Status::kUnknown);
   std::unique_ptr<TokenHandleStore> token_handle_store =
       CreateTokenHandleStore(std::move(known_user));
   TokenValidationFuture future;
@@ -404,7 +422,7 @@ TEST_F(
   known_user->SetStringPref(account_id_, kTokenHandlePref, kFakeToken);
   known_user->SetStringPref(account_id_, kTokenHandleStatusPref,
                             kTokenHandleStatusValid);
-  AddFakeResponseForStatus(TokenHandleChecker::Status::kExpired);
+  AddFakeCheckResponseForStatus(TokenHandleChecker::Status::kExpired);
   std::unique_ptr<TokenHandleStore> token_handle_store =
       CreateTokenHandleStore(std::move(known_user));
   TokenValidationFuture future;
@@ -424,7 +442,7 @@ TEST_F(
   known_user->SetStringPref(account_id_, kTokenHandlePref, kFakeToken);
   known_user->SetStringPref(account_id_, kTokenHandleStatusPref,
                             kTokenHandleStatusValid);
-  AddFakeResponseForStatus(TokenHandleChecker::Status::kExpired);
+  AddFakeCheckResponseForStatus(TokenHandleChecker::Status::kExpired);
   std::unique_ptr<TokenHandleStore> token_handle_store =
       CreateTokenHandleStore(std::move(known_user),
                              /*user_has_gaia_password=*/false);
@@ -445,7 +463,7 @@ TEST_F(TokenHandleStoreIsReauthRequiredTest,
   injected_known_user->SetStringPref(account_id_, kTokenHandlePref, kFakeToken);
   injected_known_user->SetStringPref(account_id_, kTokenHandleStatusPref,
                                      kTokenHandleStatusValid);
-  AddFakeResponseForStatus(TokenHandleChecker::Status::kInvalid);
+  AddFakeCheckResponseForStatus(TokenHandleChecker::Status::kInvalid);
   std::unique_ptr<TokenHandleStore> token_handle_store =
       CreateTokenHandleStore(std::move(injected_known_user));
   TokenValidationFuture future;
@@ -467,7 +485,7 @@ TEST_F(
   injected_known_user->SetStringPref(account_id_, kTokenHandlePref, kFakeToken);
   injected_known_user->SetStringPref(account_id_, kTokenHandleStatusPref,
                                      kTokenHandleStatusValid);
-  AddFakeResponseForStatus(TokenHandleChecker::Status::kExpired);
+  AddFakeCheckResponseForStatus(TokenHandleChecker::Status::kExpired);
   std::unique_ptr<TokenHandleStore> token_handle_store =
       CreateTokenHandleStore(std::move(injected_known_user));
   TokenValidationFuture future;
@@ -492,7 +510,7 @@ TEST_F(TokenHandleStoreIsReauthRequiredTest,
   injected_known_user->SetStringPref(account_id_, kTokenHandlePref, kFakeToken);
   injected_known_user->SetStringPref(account_id_, kTokenHandleStatusPref,
                                      kTokenHandleStatusValid);
-  AddFakeResponseForStatus(TokenHandleChecker::Status::kValid);
+  AddFakeCheckResponseForStatus(TokenHandleChecker::Status::kValid);
   std::unique_ptr<TokenHandleStore> token_handle_store =
       CreateTokenHandleStore(std::move(injected_known_user));
   TokenValidationFuture future;
@@ -574,6 +592,58 @@ TEST_F(TokenHandleStoreIsReauthRequiredTest,
   // As we only replied to the check for `account_id_`, the check for
   // `other_account_id_` should still be pending.
   EXPECT_FALSE(future1.IsReady());
+}
+
+class TokenHandleStoreMaybeFetchTokenHandleTest
+    : public TokenHandleStoreIsReauthRequiredTest {
+ public:
+  TokenHandleStoreMaybeFetchTokenHandleTest() = default;
+  ~TokenHandleStoreMaybeFetchTokenHandleTest() override = default;
+};
+
+TEST_F(TokenHandleStoreMaybeFetchTokenHandleTest,
+       MaybeFetchTokenHandleExecutesFetchForUserIfTokenHandleDoesNotExist) {
+  auto injected_known_user =
+      std::make_unique<user_manager::KnownUser>(&local_state_);
+  std::unique_ptr<TokenHandleStore> token_handle_store =
+      CreateTokenHandleStore(std::move(injected_known_user));
+  AddFakeResponse(GetTokenInfoFetchResponse(kFakeEmail, kFakeOtherToken),
+                  net::HTTP_OK);
+
+  token_handle_store->MaybeFetchTokenHandle(GetSharedURLLoaderFactory(),
+                                            account_id_, kFakeAccessToken,
+                                            kFakeRefreshTokenHash);
+  local_state_.user_prefs_store()->WaitUntilValueChanges(kKnownUsersPref);
+
+  auto known_user = std::make_unique<user_manager::KnownUser>(&local_state_);
+  EXPECT_EQ(kFakeOtherToken,
+            *known_user->FindStringPath(account_id_, kTokenHandlePref));
+  EXPECT_EQ(kTokenHandleStatusValid,
+            *known_user->FindStringPath(account_id_, kTokenHandleStatusPref));
+}
+
+TEST_F(TokenHandleStoreMaybeFetchTokenHandleTest,
+       MaybeFetchTokenHandleExecutesFetchForUserIfTokenHandleIsStale) {
+  auto injected_known_user =
+      std::make_unique<user_manager::KnownUser>(&local_state_);
+  injected_known_user->SetStringPref(account_id_, kTokenHandlePref, kFakeToken);
+  injected_known_user->SetStringPref(account_id_, kTokenHandleStatusPref,
+                                     kTokenHandleStatusStale);
+  std::unique_ptr<TokenHandleStore> token_handle_store =
+      CreateTokenHandleStore(std::move(injected_known_user));
+  AddFakeResponse(GetTokenInfoFetchResponse(kFakeEmail, kFakeOtherToken),
+                  net::HTTP_OK);
+
+  token_handle_store->MaybeFetchTokenHandle(GetSharedURLLoaderFactory(),
+                                            account_id_, kFakeAccessToken,
+                                            kFakeRefreshTokenHash);
+  local_state_.user_prefs_store()->WaitUntilValueChanges(kKnownUsersPref);
+
+  auto known_user = std::make_unique<user_manager::KnownUser>(&local_state_);
+  EXPECT_EQ(kFakeOtherToken,
+            *known_user->FindStringPath(account_id_, kTokenHandlePref));
+  EXPECT_EQ(kTokenHandleStatusValid,
+            *known_user->FindStringPath(account_id_, kTokenHandleStatusPref));
 }
 
 }  // namespace ash

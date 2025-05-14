@@ -11,6 +11,8 @@
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/login/signin/token_handle_checker.h"
+#include "chrome/browser/ash/login/signin/token_handle_fetcher.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -52,13 +54,26 @@ class TokenHandleStoreImpl : public TokenHandleStore {
   void SetInvalidTokenForTesting(const char* token) override;
   void SetLastCheckedPrefForTesting(const AccountId& account_id,
                                     base::Time time) override;
-
-  void MaybeFetchTokenHandle(const AccountId& account_id);
+  void MaybeFetchTokenHandle(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const AccountId& account_id,
+      const std::string& access_token,
+      const std::string& refresh_token_hash) override;
 
  private:
   void OnCheckToken(const AccountId& account_id,
                     const std::string& token,
                     const TokenHandleChecker::Status& status);
+
+  void FetchTokenHandle(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const AccountId& account_id,
+      const std::string& access_token,
+      const std::string& refresh_token_hash);
+
+  void OnFetchToken(const AccountId& account_id,
+                    bool success,
+                    const std::string& token);
 
   // Replies to all pending token handle checks for `account_id`.
   // `user_has_gaia_password` is used to determine whether reauth is required in
@@ -69,13 +84,20 @@ class TokenHandleStoreImpl : public TokenHandleStore {
                                const TokenHandleChecker::Status& status,
                                std::optional<bool> user_has_gaia_password);
 
-  // We schedule the delete for `account_id`'s checker to give a chance for
-  // the stack to unwind. Otherwise we might return to invalid memory, causing
-  // a use-after-free.
+  // We schedule the delete for `account_id`'s token handle checker and fetcher
+  // to give a chance for the stack to unwind. Otherwise we might return to
+  // invalid memory, causing a use-after-free.
   void ScheduleCheckerDelete(const AccountId& account_id);
+  void ScheduleFetcherDelete(const AccountId& account_id);
 
   // Checks if token handle is explicitly marked as valid for `account_id`.
   bool HasTokenStatusInvalid(const AccountId& account_id) const;
+
+  bool IsTokenHandleStale(const AccountId& account_id) const;
+
+  // Associates a request_id with a pending token handle fetch.
+  base::flat_map<AccountId, std::unique_ptr<TokenHandleFetcher>>
+      pending_fetches_;
 
   // Associates an `AccountId` with a pending token handle check.
   base::flat_map<AccountId, std::unique_ptr<TokenHandleChecker>>
