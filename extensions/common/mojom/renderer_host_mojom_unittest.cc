@@ -59,13 +59,13 @@ class RendererHostMojomExtensionIdTest : public testing::Test {
         renderer_host_remote_.BindNewPipeAndPassReceiver());
   }
 
-  void AddAPIActionToActivityLog(const ExtensionId& extension_id) {
+  void AddAPIActionToActivityLog(std::optional<ExtensionId> extension_id) {
     renderer_host_remote_->AddAPIActionToActivityLog(
         extension_id, "test_call_name", base::Value::List(), "test_extra");
     renderer_host_remote_.FlushForTesting();
   }
 
-  void AddEventToActivityLog(const ExtensionId& extension_id) {
+  void AddEventToActivityLog(std::optional<ExtensionId> extension_id) {
     renderer_host_remote_->AddEventToActivityLog(
         extension_id, "test_call_name", base::Value::List(), "test_extra");
     renderer_host_remote_.FlushForTesting();
@@ -117,6 +117,17 @@ TEST_F(RendererHostMojomExtensionIdTest, ValidExtensionId) {
   ASSERT_TRUE(PipeConnected());
 }
 
+// Tests that passing null extension IDs to mojom::RendererHost implementations
+// that accept optional mojom::ExtensionIds will pass message validation and
+// keep the mojom pipe connected.
+TEST_F(RendererHostMojomExtensionIdTest, NullExtensionId) {
+  AddAPIActionToActivityLog(std::nullopt);
+  ASSERT_TRUE(PipeConnected());
+
+  AddEventToActivityLog(std::nullopt);
+  ASSERT_TRUE(PipeConnected());
+}
+
 // Tests that passing invalid extension IDs to mojom::RendererHost
 // implementations fail message validation and close the mojom pipe.
 TEST_F(RendererHostMojomExtensionIdTest, InvalidExtensionId) {
@@ -139,6 +150,30 @@ TEST_F(RendererHostMojomExtensionIdTest, InvalidExtensionId) {
   RebindReceiver();
 
   GetMessageBundle(invalid_extension_id);
+  ASSERT_FALSE(PipeConnected());
+}
+
+// Tests that passing empty extension IDs to mojom::RendererHost
+// implementations fail message validation and close the mojom pipe.
+TEST_F(RendererHostMojomExtensionIdTest, EmptyExtensionId) {
+  ExtensionId empty_extension_id;
+
+  AddAPIActionToActivityLog(empty_extension_id);
+  ASSERT_FALSE(PipeConnected());
+
+  RebindReceiver();
+
+  AddEventToActivityLog(empty_extension_id);
+  ASSERT_FALSE(PipeConnected());
+
+  RebindReceiver();
+
+  AddDOMActionToActivityLog(empty_extension_id);
+  ASSERT_FALSE(PipeConnected());
+
+  RebindReceiver();
+
+  GetMessageBundle(empty_extension_id);
   ASSERT_FALSE(PipeConnected());
 }
 

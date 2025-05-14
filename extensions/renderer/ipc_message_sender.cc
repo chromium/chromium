@@ -248,14 +248,18 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
                           const std::string& call_name,
                           base::Value::List args,
                           const std::string& extra) override {
+    std::optional<ExtensionId> optional_extension_id;
+    if (!extension_id.empty()) {
+      optional_extension_id = extension_id;
+    }
     switch (call_type) {
       case ActivityLogCallType::APICALL:
         GetRendererHost(context)->AddAPIActionToActivityLog(
-            extension_id, call_name, std::move(args), extra);
+            optional_extension_id, call_name, std::move(args), extra);
         break;
       case ActivityLogCallType::EVENT:
-        GetRendererHost(context)->AddEventToActivityLog(extension_id, call_name,
-                                                        std::move(args), extra);
+        GetRendererHost(context)->AddEventToActivityLog(
+            optional_extension_id, call_name, std::move(args), extra);
         break;
     }
   }
@@ -532,14 +536,18 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
                           const std::string& call_name,
                           base::Value::List args,
                           const std::string& extra) override {
+    std::optional<ExtensionId> optional_extension_id;
+    if (!extension_id.empty()) {
+      optional_extension_id = extension_id;
+    }
     switch (call_type) {
       case ActivityLogCallType::APICALL:
-        GetRendererHost()->AddAPIActionToActivityLog(extension_id, call_name,
-                                                     std::move(args), extra);
+        GetRendererHost()->AddAPIActionToActivityLog(
+            optional_extension_id, call_name, std::move(args), extra);
         break;
       case ActivityLogCallType::EVENT:
-        GetRendererHost()->AddEventToActivityLog(extension_id, call_name,
-                                                 std::move(args), extra);
+        GetRendererHost()->AddEventToActivityLog(
+            optional_extension_id, call_name, std::move(args), extra);
         break;
     }
   }
