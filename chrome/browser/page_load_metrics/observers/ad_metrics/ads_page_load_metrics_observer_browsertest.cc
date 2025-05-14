@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/page_load_metrics/browser/ads_page_load_metrics_test_waiter.h"
@@ -150,6 +151,8 @@ class AdsPageLoadMetricsObserverBrowserTest
          subresource_filter::testing::CreateSuffixRule(
              "expensive_animation_frame.html*"),
          subresource_filter::testing::CreateSuffixRule("ad.html")});
+    // Ensure browser is active so that the expected dimensions are correct.
+    ui_test_utils::BrowserActivationWaiter(browser()).WaitForActivation();
   }
 
  private:

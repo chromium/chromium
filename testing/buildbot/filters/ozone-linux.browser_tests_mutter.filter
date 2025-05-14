@@ -2,9 +2,6 @@
 # Very flaky/failing on mutter (more stable/passing on other builders)
 ######################################################################
 
--AdsPageLoadMetricsObserverBrowserTest.PageAdDensityMultipleFrames
--AdsPageLoadMetricsObserverBrowserTest.PageAdDensityRecordsPageMax
-
 # TODO(crbug.com/348590032) Failing as test relies on window.devicePixelRatio
 # which doesn't work with per-window scaling.
 -All/GetDisplayMediaHiDpiBrowserTest.Capture/1
