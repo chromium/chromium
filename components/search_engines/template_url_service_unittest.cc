@@ -141,7 +141,7 @@ TEST_F(
   sitesearch_turl_data.SetURL("https://www.sitesearch.com?q={searchTerms}");
   sitesearch_turl_data.policy_origin =
       TemplateURLData::PolicyOrigin::kSiteSearch;
-  sitesearch_turl_data.enforced_by_policy = false;
+  sitesearch_turl_data.enforced_by_policy = true;
   sitesearch_turl_data.featured_by_policy = false;
   sitesearch_turl_data.safe_for_autoreplace = false;
   template_url_service().Add(
@@ -154,7 +154,7 @@ TEST_F(
       "https://www.searchaggregator.com?q={searchTerms}");
   searchaggregator_turl_data.policy_origin =
       TemplateURLData::PolicyOrigin::kSearchAggregator;
-  searchaggregator_turl_data.enforced_by_policy = false;
+  searchaggregator_turl_data.enforced_by_policy = true;
   searchaggregator_turl_data.featured_by_policy = false;
   searchaggregator_turl_data.safe_for_autoreplace = false;
   template_url_service().Add(
@@ -173,7 +173,7 @@ TEST_F(
   sitesearch_turl_data.SetURL("https://www.sitesearch.com?q={searchTerms}");
   sitesearch_turl_data.policy_origin =
       TemplateURLData::PolicyOrigin::kSiteSearch;
-  sitesearch_turl_data.enforced_by_policy = false;
+  sitesearch_turl_data.enforced_by_policy = true;
   sitesearch_turl_data.featured_by_policy = true;
   sitesearch_turl_data.safe_for_autoreplace = false;
   template_url_service().Add(
@@ -186,7 +186,7 @@ TEST_F(
       "https://www.searchaggregator.com?q={searchTerms}");
   searchaggregator_turl_data.policy_origin =
       TemplateURLData::PolicyOrigin::kSearchAggregator;
-  searchaggregator_turl_data.enforced_by_policy = false;
+  searchaggregator_turl_data.enforced_by_policy = true;
   searchaggregator_turl_data.featured_by_policy = true;
   searchaggregator_turl_data.safe_for_autoreplace = false;
   template_url_service().Add(

@@ -188,7 +188,8 @@ bool ShouldMergeEnterpriseSearchEngines(const TemplateURL& existing_turl,
              new_values.featured_by_policy() ||
          (existing_turl.policy_origin() ==
               TemplateURLData::PolicyOrigin::kSearchAggregator &&
-          existing_turl.favicon_url() != new_values.favicon_url());
+          existing_turl.favicon_url() != new_values.favicon_url()) ||
+         existing_turl.enforced_by_policy() != new_values.enforced_by_policy();
 }
 
 // Creates a new `TemplateURL` that copies updates fields from `new_values` into
@@ -207,6 +208,7 @@ TemplateURLData MergeEnterpriseSearchEngines(TemplateURLData existing_data,
       TemplateURLData::PolicyOrigin::kSearchAggregator) {
     merged_data.favicon_url = new_values.favicon_url();
   }
+  merged_data.enforced_by_policy = new_values.enforced_by_policy();
   return merged_data;
 }
 

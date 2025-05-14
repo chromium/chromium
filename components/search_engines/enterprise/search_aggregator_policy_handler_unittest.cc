@@ -246,7 +246,7 @@ testing::Matcher<const base::Value&> IsSearchAggregatorEntry(
       HasIntegerField(
           DefaultSearchManager::kPolicyOrigin,
           static_cast<int>(TemplateURLData::PolicyOrigin::kSearchAggregator)),
-      HasBooleanField(DefaultSearchManager::kEnforcedByPolicy, false),
+      HasBooleanField(DefaultSearchManager::kEnforcedByPolicy, true),
       HasBooleanField(DefaultSearchManager::kFeaturedByPolicy, featured),
       HasIntegerField(DefaultSearchManager::kIsActive,
                       static_cast<int>(TemplateURLData::ActiveStatus::kTrue)),

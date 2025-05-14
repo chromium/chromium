@@ -1706,7 +1706,7 @@ IN_PROC_BROWSER_TEST_F(SearchAggregatorPolicyOmniboxViewTest, NonFeatured) {
   EXPECT_EQ(turl->url(), kSearchAggregatorPolicySearchUrl);
   EXPECT_EQ(turl->suggestions_url(), kSearchAggregatorPolicySuggestUrl);
   EXPECT_EQ(turl->favicon_url(), kSearchAggregatorPolicyIconUrl);
-  EXPECT_FALSE(turl->enforced_by_policy());
+  EXPECT_TRUE(turl->enforced_by_policy());
   EXPECT_FALSE(turl->safe_for_autoreplace());
   EXPECT_FALSE(turl->featured_by_policy());
 
@@ -1759,7 +1759,7 @@ IN_PROC_BROWSER_TEST_F(SearchAggregatorPolicyOmniboxViewTest, Featured) {
   EXPECT_EQ(turl->url(), kSearchAggregatorPolicySearchUrl);
   EXPECT_EQ(turl->suggestions_url(), kSearchAggregatorPolicySuggestUrl);
   EXPECT_EQ(turl->favicon_url(), kSearchAggregatorPolicyIconUrl);
-  EXPECT_FALSE(turl->enforced_by_policy());
+  EXPECT_TRUE(turl->enforced_by_policy());
   EXPECT_FALSE(turl->safe_for_autoreplace());
   EXPECT_TRUE(turl->featured_by_policy());
 
@@ -1816,7 +1816,7 @@ IN_PROC_BROWSER_TEST_F(SearchAggregatorPolicyOmniboxViewTest,
   EXPECT_EQ(turl->url(), kSearchAggregatorPolicySearchUrl);
   EXPECT_EQ(turl->suggestions_url(), kSearchAggregatorPolicySuggestUrl);
   EXPECT_EQ(turl->favicon_url(), kSearchAggregatorPolicyIconUrl);
-  EXPECT_FALSE(turl->enforced_by_policy());
+  EXPECT_TRUE(turl->enforced_by_policy());
   EXPECT_FALSE(turl->safe_for_autoreplace());
   EXPECT_TRUE(turl->featured_by_policy());
 

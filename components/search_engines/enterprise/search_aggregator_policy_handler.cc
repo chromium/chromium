@@ -81,7 +81,7 @@ base::Value SearchAggregatorDictFromPolicyValue(
 
   dict.Set(DefaultSearchManager::kPolicyOrigin,
            static_cast<int>(TemplateURLData::PolicyOrigin::kSearchAggregator));
-  dict.Set(DefaultSearchManager::kEnforcedByPolicy, false);
+  dict.Set(DefaultSearchManager::kEnforcedByPolicy, true);
   dict.Set(DefaultSearchManager::kFeaturedByPolicy, featured);
   dict.Set(DefaultSearchManager::kIsActive,
            static_cast<int>(TemplateURLData::ActiveStatus::kTrue));

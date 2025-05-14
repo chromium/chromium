@@ -2767,7 +2767,7 @@ class TemplateURLServiceEnterpriseSearchTest
     if (policy_origin_ == TemplateURLData::PolicyOrigin::kSearchAggregator) {
       data->suggestions_url = "https://" + keyword + ".com/suggest";
     }
-    data->enforced_by_policy = false;
+    data->enforced_by_policy = true;
     data->featured_by_policy = featured_by_policy;
     data->is_active = TemplateURLData::ActiveStatus::kTrue;
     data->favicon_url =

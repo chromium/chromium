@@ -329,7 +329,7 @@ testing::Matcher<const base::Value&> IsSiteSearchEntry(TestProvider test_case,
       HasIntegerField(
           DefaultSearchManager::kPolicyOrigin,
           static_cast<int>(TemplateURLData::PolicyOrigin::kSiteSearch)),
-      HasBooleanField(DefaultSearchManager::kEnforcedByPolicy, false),
+      HasBooleanField(DefaultSearchManager::kEnforcedByPolicy, true),
       HasIntegerField(DefaultSearchManager::kIsActive,
                       static_cast<int>(TemplateURLData::ActiveStatus::kTrue)),
       HasStringField(DefaultSearchManager::kFaviconURL,

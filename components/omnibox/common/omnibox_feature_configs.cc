@@ -334,7 +334,7 @@ base::Value::Dict SearchAggregatorProvider::CreateMockSearchAggregator(
 
   result.Set("policy_origin",
              3 /*TemplateURLData::PolicyOrigin::kSearchAggregator*/);
-  result.Set("enforced_by_policy", false);
+  result.Set("enforced_by_policy", true);
   result.Set("featured_by_policy", featured_by_policy);
   result.Set("is_active", 1 /*TemplateURLData::ActiveStatus::kTrue*/);
   result.Set("safe_for_autoreplace", false);

@@ -194,11 +194,14 @@ struct TemplateURLData {
   // group policy.
   PolicyOrigin policy_origin;
 
-  // True if this TemplateURL is forced to be the default search engine via
-  // policy. This prevents the user from setting another search engine as
-  // default.
-  // False if this TemplateURL is recommended or not set via policy. This allows
-  // the user to set another search engine as default.
+  // True if this TemplateURL is forced to be the default search engine or a
+  // site search engine via policy. This prevents the user from setting another
+  // search engine as default (for default search engines) or modifying/deleting
+  // this engine (for site search engines).
+  // False if this TemplateURL is recommended (allowing user override) or not
+  // set via policy. This allows the user to set another search engine as
+  // default (for default search engines) or to modify/delete the this engine
+  // (for site search engines).
   bool enforced_by_policy;
 
   // The Regulatory program supplying this definition.

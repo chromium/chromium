@@ -95,9 +95,7 @@ bool KeywordEditorController::ShouldConfirmDeletion(
 }
 
 bool KeywordEditorController::IsManaged(const TemplateURL* url) const {
-  return (url->CreatedByDefaultSearchProviderPolicy() &&
-          url->enforced_by_policy()) ||
-         url->CreatedByNonDefaultSearchProviderPolicy();
+  return url->CreatedByPolicy() && url->enforced_by_policy();
 }
 
 void KeywordEditorController::RemoveTemplateURL(int index) {

@@ -165,7 +165,7 @@ class FeaturedSearchProviderTest : public testing::Test {
     template_url_data.SetShortName(keyword + u" Name");
     template_url_data.SetURL(url);
     template_url_data.policy_origin = policy_origin;
-    template_url_data.enforced_by_policy = false;
+    template_url_data.enforced_by_policy = true;
     template_url_data.featured_by_policy = true;
     template_url_data.safe_for_autoreplace = false;
 
