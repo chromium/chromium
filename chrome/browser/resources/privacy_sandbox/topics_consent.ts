@@ -8,6 +8,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {BaseDialogPageHandlerInterface} from './base_dialog.mojom-webui.js';
 import {BaseDialogBrowserProxy} from './base_dialog_browser_proxy.js';
+import {PrivacySandboxNotice, PrivacySandboxNoticeEvent} from './notice.mojom-webui.js';
 import {getHtml} from './topics_consent.html.js';
 
 export class TopicsConsent extends CrLitElement {
@@ -26,6 +27,9 @@ export class TopicsConsent extends CrLitElement {
   }
 
   protected onConsentButton_() {
+    this.handler_.eventOccurred(
+        PrivacySandboxNotice.kTopicsConsentNotice,
+        PrivacySandboxNoticeEvent.kOptIn);
     this.handler_.closeDialog();
   }
 }

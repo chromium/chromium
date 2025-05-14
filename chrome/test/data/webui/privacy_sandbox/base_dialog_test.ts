@@ -7,7 +7,7 @@ import 'chrome://privacy-sandbox-base-dialog/topics_consent.js';
 
 import type {BaseDialogApp} from 'chrome://privacy-sandbox-base-dialog/base_dialog_app.js';
 import {BaseDialogBrowserProxy} from 'chrome://privacy-sandbox-base-dialog/base_dialog_browser_proxy.js';
-import {PrivacySandboxNotice} from 'chrome://privacy-sandbox-base-dialog/notice.mojom-webui.js';
+import {PrivacySandboxNotice, PrivacySandboxNoticeEvent} from 'chrome://privacy-sandbox-base-dialog/notice.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -59,6 +59,9 @@ suite('BaseDialogTest', function() {
         topicsConsent.shadowRoot.querySelector<HTMLElement>('#consentButton');
     assertTrue(!!consentButton);
     consentButton.click();
+    await testHandler.eventOccurred(
+        PrivacySandboxNotice.kTopicsConsentNotice,
+        PrivacySandboxNoticeEvent.kOptIn);
     await testHandler.whenCalled('closeDialog');
   });
 });

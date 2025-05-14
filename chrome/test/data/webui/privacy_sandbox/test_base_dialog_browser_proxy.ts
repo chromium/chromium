@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import type {BaseDialogPageHandlerInterface} from 'chrome://privacy-sandbox-base-dialog/base_dialog.mojom-webui.js';
+import type {PrivacySandboxNotice, PrivacySandboxNoticeEvent} from 'chrome://privacy-sandbox-base-dialog/notice.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestBaseDialogBrowserProxy {
@@ -20,6 +21,7 @@ export class TestBaseDialogPageHandler extends TestBrowserProxy implements
       'resizeDialog',
       'showDialog',
       'closeDialog',
+      'eventOccurred',
     ]);
   }
 
@@ -33,5 +35,10 @@ export class TestBaseDialogPageHandler extends TestBrowserProxy implements
 
   closeDialog() {
     this.methodCalled('closeDialog');
+  }
+
+  eventOccurred(
+      notice: PrivacySandboxNotice, event: PrivacySandboxNoticeEvent) {
+    this.methodCalled('eventOccurred', notice, event);
   }
 }

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/privacy_sandbox/base_dialog_handler.h"
 
 #include "chrome/browser/privacy_sandbox/notice/mocks/mock_desktop_view_manager.h"
+#include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/base_dialog_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -13,6 +14,13 @@ namespace privacy_sandbox {
 namespace {
 
 using notice::mojom::PrivacySandboxNotice;
+using notice::mojom::PrivacySandboxNoticeEvent;
+
+// These constants represent arbitrary notice and event types for testing.
+constexpr PrivacySandboxNotice kTestNotice =
+    PrivacySandboxNotice::kTopicsConsentNotice;
+constexpr PrivacySandboxNoticeEvent kTestEvent =
+    PrivacySandboxNoticeEvent::kAck;
 
 // Mock implementation for the BaseDialogUIDelegate interface.
 class MockBaseDialogUIDelegate : public BaseDialogUIDelegate {
@@ -53,6 +61,11 @@ TEST_F(PrivacySandboxBaseDialogHandlerTest, ShowThenCloseDialog) {
   handler_.CloseDialog();
 }
 
+TEST_F(PrivacySandboxBaseDialogHandlerTest, EventOccurred) {
+  EXPECT_CALL(view_manager_, OnEventOccurred(kTestNotice, kTestEvent));
+  handler_.EventOccurred(kTestNotice, kTestEvent);
+}
+
 TEST_F(PrivacySandboxBaseDialogHandlerTest, ResizeDialog) {
   const int kTestHeight = 500;
   const int kTestHeight2 = 400;
@@ -83,6 +96,14 @@ TEST_F(PrivacySandboxBaseDialogHandlerNullDelegateTest, CloseDialog) {
 TEST_F(PrivacySandboxBaseDialogHandlerNullDelegateTest, ResizeDialog) {
   const int kTestHeight = 500;
   EXPECT_NO_FATAL_FAILURE(handler_.ResizeDialog(kTestHeight));
+}
+
+TEST_F(PrivacySandboxBaseDialogHandlerNullDelegateTest, EventOccurred) {
+  EXPECT_CALL(view_manager_,
+              OnEventOccurred(PrivacySandboxNotice::kTopicsConsentNotice,
+                              PrivacySandboxNoticeEvent::kOptIn));
+  handler_.EventOccurred(PrivacySandboxNotice::kTopicsConsentNotice,
+                         PrivacySandboxNoticeEvent::kOptIn);
 }
 
 }  // namespace

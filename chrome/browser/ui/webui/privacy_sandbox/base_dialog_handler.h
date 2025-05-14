@@ -7,6 +7,7 @@
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/privacy_sandbox/notice/desktop_view_manager.h"
+#include "chrome/browser/privacy_sandbox/notice/notice.mojom-forward.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/base_dialog.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -37,6 +38,8 @@ class BaseDialogHandler
   void ResizeDialog(uint32_t height) override;
   void ShowDialog() override;
   void CloseDialog() override;
+  void EventOccurred(notice::mojom::PrivacySandboxNotice notice,
+                     notice::mojom::PrivacySandboxNoticeEvent event) override;
 
  private:
   base::ScopedObservation<DesktopViewManagerInterface,
@@ -44,6 +47,7 @@ class BaseDialogHandler
       desktop_view_manager_observation_{this};
   mojo::Receiver<dialog::mojom::BaseDialogPageHandler> receiver_;
   raw_ptr<BaseDialogUIDelegate> delegate_;
+  raw_ptr<DesktopViewManagerInterface> view_manager_;
   bool has_resized = false;
 };
 
