@@ -4,6 +4,7 @@
 
 #include "content/browser/webid/idp_network_request_manager.h"
 
+#include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/containers/flat_set.h"
 #include "base/json/json_writer.h"
@@ -18,6 +19,7 @@
 #include "content/browser/webid/fedcm_mappers.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/flags.h"
+#include "content/browser/webid/identity_provider_info.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/federated_identity_permission_context_delegate.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
@@ -1322,6 +1324,98 @@ void IdpNetworkRequestManager::DownloadAndDecodeImage(const GURL& url,
       base::BindOnce(&IdpNetworkRequestManager::OnDownloadedImage,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       maxResponseSizeInKiB * 1024);
+}
+
+void IdpNetworkRequestManager::FetchAccountPicturesAndBrandIcons(
+    const std::vector<IdentityRequestAccountPtr>& accounts,
+    std::unique_ptr<IdentityProviderInfo> idp_info,
+    const GURL& rp_brand_icon_url,
+    FetchAccountPicturesAndBrandIconsCallback callback) {
+  GURL idp_brand_icon_url = idp_info->metadata.brand_icon_url;
+
+  auto barrier_callback = base::BarrierClosure(
+      // Wait for all accounts plus the brand icon URLs.
+      accounts.size() + 2,
+      base::BindOnce(&IdpNetworkRequestManager::
+                         OnAllAccountPicturesAndBrandIconUrlReceived,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(idp_info), accounts, rp_brand_icon_url));
+
+  for (const auto& account : accounts) {
+    FetchImage(account->picture, barrier_callback);
+  }
+  FetchImage(idp_brand_icon_url, barrier_callback);
+  FetchImage(rp_brand_icon_url, barrier_callback);
+}
+
+void IdpNetworkRequestManager::FetchIdpBrandIcon(
+    std::unique_ptr<IdentityProviderInfo> idp_info,
+    FetchIdpBrandIconCallback callback) {
+  GURL idp_brand_icon_url = idp_info->metadata.brand_icon_url;
+  FetchImage(idp_brand_icon_url,
+             base::BindOnce(&IdpNetworkRequestManager::OnIdpBrandIconReceived,
+                            weak_ptr_factory_.GetWeakPtr(), std::move(idp_info),
+                            std::move(callback)));
+}
+
+void IdpNetworkRequestManager::FetchImage(const GURL& url,
+                                          base::OnceClosure callback) {
+  if (url.is_valid()) {
+    DownloadAndDecodeImage(
+        url, base::BindOnce(&IdpNetworkRequestManager::OnImageReceived,
+                            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                            url));
+  } else {
+    // We have to still call the callback to make sure the barrier
+    // callback gets the right number of calls.
+    std::move(callback).Run();
+  }
+}
+
+void IdpNetworkRequestManager::OnImageReceived(base::OnceClosure callback,
+                                               GURL url,
+                                               const gfx::Image& image) {
+  downloaded_images_[url] = image;
+  std::move(callback).Run();
+}
+
+void IdpNetworkRequestManager::OnAllAccountPicturesAndBrandIconUrlReceived(
+    FetchAccountPicturesAndBrandIconsCallback callback,
+    std::unique_ptr<IdentityProviderInfo> idp_info,
+    std::vector<IdentityRequestAccountPtr>&& accounts,
+    const GURL& rp_brand_icon_url) {
+  for (auto& account : accounts) {
+    auto it = downloaded_images_.find(account->picture);
+    if (it != downloaded_images_.end()) {
+      // We do not use std::move here in case multiple accounts use the same
+      // picture URL, and the underlying gfx::Image data is refcounted anyway.
+      account->decoded_picture = it->second;
+    }
+  }
+
+  gfx::Image rp_brand_icon;
+  auto it = downloaded_images_.find(rp_brand_icon_url);
+  if (it != downloaded_images_.end()) {
+    rp_brand_icon = it->second;
+  }
+
+  gfx::Image idp_brand_icon;
+  it = downloaded_images_.find(idp_info->metadata.brand_icon_url);
+  if (it != downloaded_images_.end()) {
+    idp_info->metadata.brand_decoded_icon = it->second;
+  }
+  std::move(callback).Run(std::move(accounts), std::move(idp_info),
+                          rp_brand_icon);
+}
+
+void IdpNetworkRequestManager::OnIdpBrandIconReceived(
+    std::unique_ptr<IdentityProviderInfo> idp_info,
+    FetchIdpBrandIconCallback callback) {
+  auto it = downloaded_images_.find(idp_info->metadata.brand_icon_url);
+  if (it != downloaded_images_.end()) {
+    idp_info->metadata.brand_decoded_icon = it->second;
+  }
+  std::move(callback).Run(std::move(idp_info));
 }
 
 void IdpNetworkRequestManager::DownloadJsonAndParse(

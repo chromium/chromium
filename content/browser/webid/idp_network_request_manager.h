@@ -38,6 +38,7 @@ namespace content {
 
 using IdentityProviderDataPtr = scoped_refptr<IdentityProviderData>;
 using IdentityRequestAccountPtr = scoped_refptr<IdentityRequestAccount>;
+class IdentityProviderInfo;
 class FederatedIdentityPermissionContextDelegate;
 class RenderFrameHostImpl;
 enum class MetricsEndpointErrorCode;
@@ -215,6 +216,12 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
                               int response_code,
                               const std::string& mime_type,
                               bool cors_error)>;
+  using FetchAccountPicturesAndBrandIconsCallback =
+      base::OnceCallback<void(std::vector<IdentityRequestAccountPtr>,
+                              std::unique_ptr<IdentityProviderInfo>,
+                              const gfx::Image&)>;
+  using FetchIdpBrandIconCallback =
+      base::OnceCallback<void(std::unique_ptr<IdentityProviderInfo>)>;
   using FetchWellKnownCallback =
       base::OnceCallback<void(FetchStatus, const WellKnown&)>;
   using FetchConfigCallback = base::OnceCallback<
@@ -320,7 +327,27 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   // Download and decode an image. The request is made uncredentialed.
   virtual void DownloadAndDecodeImage(const GURL& url, ImageCallback callback);
 
+  void FetchAccountPicturesAndBrandIcons(
+      const std::vector<IdentityRequestAccountPtr>& accounts,
+      std::unique_ptr<IdentityProviderInfo> idp_info,
+      const GURL& rp_brand_icon_url,
+      FetchAccountPicturesAndBrandIconsCallback callback);
+  void FetchIdpBrandIcon(std::unique_ptr<IdentityProviderInfo> idp_info,
+                         FetchIdpBrandIconCallback callback);
+
  private:
+  void FetchImage(const GURL& url, base::OnceClosure callback);
+  void OnImageReceived(base::OnceClosure callback,
+                       GURL url,
+                       const gfx::Image& image);
+  void OnAllAccountPicturesAndBrandIconUrlReceived(
+      FetchAccountPicturesAndBrandIconsCallback callback,
+      std::unique_ptr<IdentityProviderInfo> idp_info,
+      std::vector<IdentityRequestAccountPtr>&& accounts,
+      const GURL& rp_brand_icon_url);
+  void OnIdpBrandIconReceived(std::unique_ptr<IdentityProviderInfo> idp_info,
+                              FetchIdpBrandIconCallback callback);
+
   bool IsCrossSiteIframe() const;
 
   // Starts download request using `url_loader`. Calls `parse_json_callback`
@@ -385,6 +412,9 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   // with DevTools instrumentation.
   base::flat_map<network::SimpleURLLoader*, base::UnguessableToken>
       urlloader_devtools_request_id_map_;
+
+  // The downloaded image data.
+  std::map<GURL, gfx::Image> downloaded_images_;
 
   base::WeakPtrFactory<IdpNetworkRequestManager> weak_ptr_factory_{this};
 };

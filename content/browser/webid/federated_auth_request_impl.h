@@ -17,6 +17,7 @@
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/fedcm_url_computations.h"
 #include "content/browser/webid/federated_provider_fetcher.h"
+#include "content/browser/webid/identity_provider_info.h"
 #include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/identity_registry_delegate.h"
 #include "content/browser/webid/idp_network_request_manager.h"
@@ -172,30 +173,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     std::optional<blink::mojom::Format> format;
   };
 
-  struct IdentityProviderInfo {
-    IdentityProviderInfo(const blink::mojom::IdentityProviderRequestOptionsPtr&,
-                         IdpNetworkRequestManager::Endpoints,
-                         IdentityProviderMetadata,
-                         blink::mojom::RpContext rp_context,
-                         blink::mojom::RpMode rp_mode,
-                         std::optional<blink::mojom::Format> format);
-    ~IdentityProviderInfo();
-    IdentityProviderInfo(const IdentityProviderInfo&);
-
-    blink::mojom::IdentityProviderRequestOptionsPtr provider;
-    IdpNetworkRequestManager::Endpoints endpoints;
-    IdentityProviderMetadata metadata;
-    bool has_failing_idp_signin_status{false};
-    blink::mojom::RpContext rp_context{blink::mojom::RpContext::kSignIn};
-    blink::mojom::RpMode rp_mode{blink::mojom::RpMode::kPassive};
-    std::optional<blink::mojom::Format> format;
-    IdentityProviderDataPtr data;
-    gfx::Image decoded_idp_brand_icon;
-    // nullopt if the server did not send a value or if the FedCmIframeOrigin
-    // flag is not enabled.
-    std::optional<bool> client_matches_top_frame_origin;
-  };
-
   // For use by the devtools protocol for browser automation.
   IdentityRequestDialogController* GetDialogController() {
     return request_dialog_controller_.get();
@@ -302,11 +279,12 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       IdpNetworkRequestManager::ClientMetadata client_metadata);
 
   // Called when all of the data needed to display the FedCM prompt has been
-  // fetched for `idp_info`.
+  // fetched for `idp_info`. Accounts should be moved instead of copied to this
+  // function.
   void OnFetchDataForIdpSucceeded(
-      std::unique_ptr<IdentityProviderInfo> idp_info,
-      std::vector<IdentityRequestAccountPtr>&& accounts,
       const IdpNetworkRequestManager::ClientMetadata& client_metadata,
+      std::vector<IdentityRequestAccountPtr> accounts,
+      std::unique_ptr<IdentityProviderInfo> idp_info,
       const gfx::Image& rp_brand_icon);
 
   // Called when there is an error in fetching information to show the prompt
@@ -351,23 +329,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       std::unique_ptr<IdentityProviderInfo> idp_info,
       IdpNetworkRequestManager::FetchStatus status,
       std::vector<IdentityRequestAccountPtr> accounts);
-  // Fetches the account pictures for |accounts| and calls
-  // OnFetchDataForIdpSucceeded when done.
-  void FetchAccountPicturesAndBrandIcons(
-      std::unique_ptr<IdentityProviderInfo> idp_info,
-      const std::vector<IdentityRequestAccountPtr>& accounts,
-      IdpNetworkRequestManager::ClientMetadata&& client_metadata);
-  // Fetches the given `url` and stores the result in `downloaded_images_`. Runs
-  // the `callback` exactly once regardless of whether the GURL is valid or the
-  // fetch result.
-  void FetchImage(const GURL& url, base::OnceClosure callback);
-  void OnImageReceived(base::OnceClosure callback,
-                       GURL url,
-                       const gfx::Image& image);
-  void OnAllAccountPicturesAndBrandIconUrlReceived(
-      std::unique_ptr<IdentityProviderInfo> idp_info,
-      std::vector<IdentityRequestAccountPtr>&& accounts,
-      const IdpNetworkRequestManager::ClientMetadata& client_metadata);
 
   void OnAccountSelected(const GURL& idp_config_url,
                          const std::string& account_id,
@@ -559,9 +520,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Maps the login URL to the info that may be added as query parameters to
   // that URL. Populated by OnAllConfigAndWellKnownFetched().
   base::flat_map<GURL, IdentityProviderLoginUrlInfo> idp_login_infos_;
-
-  // The downloaded image data.
-  std::map<GURL, gfx::Image> downloaded_images_;
 
   raw_ptr<FederatedIdentityApiPermissionContextDelegate>
       api_permission_delegate_ = nullptr;

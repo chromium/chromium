@@ -2420,6 +2420,8 @@ source_set("browser") {
     "webid/federated_provider_fetcher.h",
     "webid/flags.cc",
     "webid/flags.h",
+    "webid/identity_provider_info.cc",
+    "webid/identity_provider_info.h",
     "webid/identity_registry.cc",
     "webid/identity_registry.h",
     "webid/identity_registry_delegate.h",
