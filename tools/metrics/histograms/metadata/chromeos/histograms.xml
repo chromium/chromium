@@ -390,30 +390,27 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram
-    name="ChromeOS.Camera.ConfigureStreams.Output.Resolution{ChromeOS_Camera_StreamFormat}"
+    name="ChromeOS.Camera.ConfigureStreams.Output.Resolution.{StreamFormat}"
     units="pixels" expires_after="2026-02-10">
-<!-- Name completed by histogram_suffixes
-     name="ChromeOS.Camera.StreamFormat" -->
-
   <owner>beckerh@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
     Records the resolution of output stream that is configured by Chrome OS
-    camera service. {ChromeOS_Camera_StreamFormat}
+    camera service. {StreamFormat}
   </summary>
-  <token key="ChromeOS_Camera_StreamFormat">
-    <variant name=".BGRA_8888" summary="Format HAL_PIXEL_FORMAT_BGRA_8888"/>
-    <variant name=".BLOB" summary="Format HAL_PIXEL_FORMAT_BLOB"/>
-    <variant name=".IMPLEMENTATION_DEFINED"
+  <token key="StreamFormat">
+    <variant name="BGRA_8888" summary="Format HAL_PIXEL_FORMAT_BGRA_8888"/>
+    <variant name="BLOB" summary="Format HAL_PIXEL_FORMAT_BLOB"/>
+    <variant name="IMPLEMENTATION_DEFINED"
         summary="Format HAL_PIXEL_FORMAT_IMPLEMENTATION_DEFINED"/>
-    <variant name=".RGBA_8888" summary="Format HAL_PIXEL_FORMAT_RGBA_8888"/>
-    <variant name=".RGBX_8888" summary="Format HAL_PIXEL_FORMAT_RGBX_8888"/>
-    <variant name=".YCbCr_420_888"
+    <variant name="RGBA_8888" summary="Format HAL_PIXEL_FORMAT_RGBA_8888"/>
+    <variant name="RGBX_8888" summary="Format HAL_PIXEL_FORMAT_RGBX_8888"/>
+    <variant name="YCbCr_420_888"
         summary="Format HAL_PIXEL_FORMAT_YCbCr_420_888"/>
-    <variant name=".YCbCr_422_I" summary="Format HAL_PIXEL_FORMAT_YCbCr_422_I"/>
-    <variant name=".YCrCb_420_SP"
+    <variant name="YCbCr_422_I" summary="Format HAL_PIXEL_FORMAT_YCbCr_422_I"/>
+    <variant name="YCrCb_420_SP"
         summary="Format HAL_PIXEL_FORMAT_YCrCb_420_SP"/>
-    <variant name=".YV12" summary="Format HAL_PIXEL_FORMAT_YV12"/>
+    <variant name="YV12" summary="Format HAL_PIXEL_FORMAT_YV12"/>
   </token>
 </histogram>
 

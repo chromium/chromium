@@ -198,9 +198,6 @@ This collects each top-level device metric type. For example,
 
 <histogram name="Cras.Busyloop{Cras_TimePeriod}" units="units"
     expires_after="2025-06-22">
-<!-- Name completed by histogram_suffixes
-     name="Cras.TimePeriod" -->
-
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>

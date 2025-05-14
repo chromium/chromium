@@ -318,8 +318,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Download.Counts.{ParallelizableDownload}"
     enum="DownloadCountType" expires_after="2025-09-14">
-<!-- Name completed by histogram_suffixes name="DownloadSource" -->
-
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>

@@ -298,23 +298,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Mobile.DefaultBrowser.SystemBrowserCount{Mobile_DefaultBrowser_SystemDefaultBrowser_Type}"
+    name="Mobile.DefaultBrowser.SystemBrowserCount.{SystemDefaultBrowserType}"
     units="units" expires_after="never">
-<!-- Name completed by histogram_suffixes
-    name="Mobile.DefaultBrowser.SystemDefaultBrowser.Type" -->
-
 <!-- expires-never: Used to keep track of Android browser ecosystem. -->
 
   <owner>dtrainor@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <summary>
     Android: The number of system installed browsers. Logged when a new session
-    is started. {Mobile_DefaultBrowser_SystemDefaultBrowser_Type}
+    is started. {SystemDefaultBrowserType}
   </summary>
-  <token key="Mobile_DefaultBrowser_SystemDefaultBrowser_Type">
-    <variant name=".ChromeNotSystem"
+  <token key="SystemDefaultBrowserType">
+    <variant name="ChromeNotSystem"
         summary="Chrome is not a system installed browser."/>
-    <variant name=".ChromeSystem"
+    <variant name="ChromeSystem"
         summary="Chrome is a system installed browser."/>
   </token>
 </histogram>
