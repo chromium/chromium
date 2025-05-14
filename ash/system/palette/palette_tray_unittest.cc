@@ -386,9 +386,12 @@ TEST_F(PaletteTrayTestWithInternalStylus, WelcomeBubbleShownOnEject) {
 
 // Verify if the pref which tracks if the welcome bubble has been shown before
 // is true, the welcome bubble is not shown when the stylus is removed.
-// TODO(crbug.com/1423035): Disabled due to flakiness.
-TEST_F(PaletteTrayTestWithInternalStylus,
-       DISABLED_WelcomeBubbleNotShownIfShownBefore) {
+//
+// This test used to be disabled due to flakiness (crbug.com/1423035). It was
+// then re-enabled in crbug.com/281717553 after local verification. Please feel
+// free to disable it again and leave a comment in crbug.com/281717553 if the
+// flake reappears.
+TEST_F(PaletteTrayTestWithInternalStylus, WelcomeBubbleNotShownIfShownBefore) {
   active_user_pref_service()->SetBoolean(prefs::kLaunchPaletteOnEjectEvent,
                                          false);
   active_user_pref_service()->SetBoolean(prefs::kShownPaletteWelcomeBubble,
