@@ -424,6 +424,7 @@
   // Exit preedit state and append the match. Refocus if necessary.
   [textField exitPreEditState];
   _omniboxViewIOS->SetUserText(text);
+  _omniboxViewIOS->OnBeforePossibleChange();
   // Calling setText: does not trigger UIControlEventEditingChanged, so
   // trigger that manually.
   [textField sendActionsForControlEvents:UIControlEventEditingChanged];
