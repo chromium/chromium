@@ -6,6 +6,7 @@
 
 #include <android/trace.h>
 #include <jni.h>
+#include <sys/system_properties.h>
 
 #include <memory>
 #include <string>
@@ -31,6 +32,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/time/time_delta_from_string.h"
 #include "base/trace_event/trace_event.h"
 #include "base/tracing/perfetto_platform.h"
 #include "build/build_config.h"
@@ -114,16 +116,45 @@ void InitializePerfetto() {
   tracing_init_args.backends = perfetto::kSystemBackend;
   tracing_init_args.platform = perfetto_platform.get();
   tracing_init_args.enable_system_consumer = false;
-  // Note: Perfetto initializes asynchronously in a background thread.
-  // Unfortunately, trace events logged while Perfetto is still initializing are
-  // just dropped on the floor. This means that events logged within a brief
-  // window (typically about 3 milliseconds) after initialization are lost. See
-  // https://crbug.com/324031921. For this reason, it is probably a good idea
-  // to prefer Android ATrace APIs to Perfetto APIs for events that are likely
-  // to get lost in this way.
   perfetto::Tracing::Initialize(tracing_init_args);
 
   base::TrackEvent::Register();
+
+  // Perfetto initializes asynchronously in a background thread.  Unfortunately,
+  // trace events logged while Perfetto is still initializing are just dropped
+  // on the floor. This means that events logged within a brief window
+  // (typically about 3 milliseconds) after initialization are lost. See
+  // https://crbug.com/324031921. For this reason, it is probably a good idea to
+  // prefer Android ATrace APIs to Perfetto APIs for events that are likely to
+  // get lost in this way. Nevertheless, we provide a workaround in the form
+  // of this system property in case the user is willing to pay an init latency
+  // penalty in return for a higher likelihood of seeing early events, which can
+  // be useful when e.g. tracing unit tests.
+  //
+  // Example usage:
+  //   adb shell setprop debug.cronet.init_trace_sleep 10ms
+  constexpr char trace_delay_system_property_name[] =
+      "debug.cronet.init_trace_sleep";
+  if (const prop_info* const trace_delay_prop_info =
+          __system_property_find(trace_delay_system_property_name);
+      trace_delay_prop_info != nullptr) {
+    std::array<char, PROP_VALUE_MAX> trace_delay_buffer;
+    const std::string_view trace_delay_str(
+        trace_delay_buffer.data(),
+        __system_property_read(trace_delay_prop_info, nullptr,
+                               trace_delay_buffer.data()));
+    const auto trace_delay = base::TimeDeltaFromString(trace_delay_str);
+    if (!trace_delay.has_value()) {
+      LOG(WARNING) << "Invalid value for system property "
+                   << trace_delay_system_property_name;
+    } else {
+      ATrace_beginSection(absl::StrFormat("Sleeping %s for Perfetto",
+                                          absl::FormatStreamed(*trace_delay))
+                              .c_str());
+      base::PlatformThread::Sleep(*trace_delay);
+      ATrace_endSection();
+    }
+  }
 }
 
 }  // namespace
