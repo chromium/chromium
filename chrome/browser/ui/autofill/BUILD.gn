@@ -152,10 +152,6 @@ source_set("impl") {
     "//components/password_manager/core/browser:metrics_util",
     "//components/password_manager/core/browser:password_form",
     "//components/password_manager/core/browser/form_parsing",
-    "//components/plus_addresses:features",
-    "//components/plus_addresses:hats_utils",
-    "//components/plus_addresses:types",
-    "//components/plus_addresses/resources/strings",
     "//components/profile_metrics",
     "//components/security_state/content",
     "//components/strings:components_strings_grit",
@@ -207,7 +203,7 @@ source_set("impl") {
       "//chrome/browser/ui/webui/signin:login",
       "//components/autofill_ai/core/browser",
       "//components/password_manager/core/browser/features:password_features",
-      "//components/plus_addresses",
+      "//components/plus_addresses/resources/strings",
       "//extensions/browser",
     ]
 
@@ -471,7 +467,6 @@ if (!is_android) {
       "//components/password_manager/core/browser/password_store:test_support",
       "//components/password_manager/core/common",
       "//components/plus_addresses:blocklist_data",
-      "//components/plus_addresses:plus_address_blocklist_proto",
       "//components/plus_addresses:test_support",
       "//components/plus_addresses/resources/strings",
       "//components/signin/public/base",
