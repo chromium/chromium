@@ -217,4 +217,27 @@ public class PriceTrackingButtonControllerUnitTest {
         // We should have notified of changes twice (when disabled and when enabled again).
         verify(buttonDataObserver, times(2)).buttonDataChanged(true);
     }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.CPA_SPEC_UPDATE})
+    public void testPriceTrackingButton_testIsCheckedState() {
+        PriceTrackingButtonController priceTrackingButtonController = createButtonController();
+        // Initialize to false.
+        mPriceTrackingStateSupplier.set(false);
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        ButtonData buttonData = priceTrackingButtonController.get(mMockTab);
+        Assert.assertFalse(buttonData.getButtonSpec().isChecked());
+
+        // Setting this value to true will trigger PriceTrackingButtonController#updateButtonIcon ->
+        // AdaptiveToolbarButtonController#buttonDataChanged  ->
+        // OptionalBrowsingModeButtonController#updateCurrentOptionalButton ->
+        // AdaptiveToolbarButtonController#get.
+
+        mPriceTrackingStateSupplier.set(true);
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        ButtonData buttonDataNew = priceTrackingButtonController.get(mMockTab);
+        Assert.assertTrue(buttonDataNew.getButtonSpec().isChecked());
+    }
 }

@@ -46,6 +46,7 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.theme.ThemeModuleUtils;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
@@ -78,6 +79,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     private @Nullable String mContentDescription;
     private @Nullable String mActionChipLabelString;
     private boolean mCurrentButtonSupportsTinting;
+    private boolean mIsIncognitoBranded;
     private @Nullable ColorStateList mForegroundColorTint;
     private int mBackgroundColorFilter;
     private @Nullable Runnable mOnBeforeHideTransitionCallback;
@@ -161,8 +163,28 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     }
 
     public void setIsIncognitoBranded(boolean isIncognitoBranded) {
+        mIsIncognitoBranded = isIncognitoBranded;
+        if (isCpaSpecUpdateEnabled()) {
+            // When isCpaSpecUpdateEnabled, logic for setting the background resource is in
+            // #updateButtonWithAnimation.
+            return;
+        }
         @DrawableRes int backgroundDrawableRes = R.drawable.optional_button_background;
         if (isIncognitoBranded) {
+            backgroundDrawableRes = R.drawable.optional_button_background_baseline;
+        }
+        mButton.setBackgroundResource(backgroundDrawableRes);
+    }
+
+    private void setBackgroundResourceHelper(boolean isCpaCheckedState) {
+        @DrawableRes
+        int backgroundDrawableRes =
+                isCpaCheckedState
+                        ? R.drawable.optional_button_background_square
+                        : R.drawable.optional_button_background;
+
+        // Currently incognito mode doesn't support CPA, so we always set the baseline drawable.
+        if (mIsIncognitoBranded) {
             backgroundDrawableRes = R.drawable.optional_button_background_baseline;
         }
         mButton.setBackgroundResource(backgroundDrawableRes);
@@ -179,8 +201,9 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
      * animation. The animation that runs depends on the current state of this view (Whether is
      * hidden or showing another icon) and the attributes of the new icon (Whether it contains an
      * action chip description).
+     *
      * @param buttonData object containing the new button's icon, handlers, description and other
-     *         attributes. If null then this view starts a hide transition.
+     *     attributes. If null then this view starts a hide transition.
      */
     void updateButtonWithAnimation(@Nullable ButtonData buttonData) {
         // If we receive the same button with the same visibility then there's no need to update.
@@ -234,6 +257,23 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mCurrentButtonSupportsTinting = buttonSpec.getSupportsTinting();
 
         mIconDrawable = buttonSpec.getDrawable();
+
+        boolean isCpaCheckedState = buttonData.getButtonSpec().isChecked();
+
+        if (isCpaSpecUpdateEnabled()) {
+            // Change the CPA background to a square if the button data instance is owned by
+            // PriceTrackingButtonController and is a "checked" state.
+            @DrawableRes
+            int resId =
+                    isCpaCheckedState
+                            ? R.drawable
+                                    .modern_toolbar_text_box_background_with_primary_color_square
+                            : R.drawable.modern_toolbar_text_box_background_with_primary_color;
+
+            mBackground.setImageDrawable(AppCompatResources.getDrawable(getContext(), resId));
+            setBackgroundResourceHelper(isCpaCheckedState);
+        }
+
         mNextButtonType = buttonSpec.isDynamicAction() ? ButtonType.DYNAMIC : ButtonType.STATIC;
         if (buttonSpec.getActionChipLabelResId() == Resources.ID_NULL) {
             mActionChipLabelString = null;
@@ -400,6 +440,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mAnimationImage = findViewById(R.id.swappable_icon_animation_image);
         mActionChipLabel = findViewById(R.id.action_chip_label);
 
+        // If isCpaSpecUpdateEnabled, overriding the background in #updateButtonWithAnimation.
         mBackground.setImageDrawable(
                 AppCompatResources.getDrawable(
                         getContext(),
@@ -849,6 +890,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     // Flags
     // ============================================================================================
     public static boolean isCpaSpecUpdateEnabled() {
-        return ChromeFeatureList.sCpaSpecUpdate.isEnabled();
+        return ChromeFeatureList.sCpaSpecUpdate.isEnabled()
+                || ThemeModuleUtils.isForceEnableDependencies();
     }
 }

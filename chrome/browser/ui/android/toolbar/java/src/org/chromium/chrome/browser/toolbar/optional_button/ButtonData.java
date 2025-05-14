@@ -52,6 +52,7 @@ public interface ButtonData {
         @StringRes private final int mActionChipLabelResId;
         @StringRes private final int mTooltipTextResId;
         private final boolean mHasErrorBadge;
+        private final boolean mIsChecked;
 
         public ButtonSpec(
                 Drawable drawable,
@@ -64,6 +65,32 @@ public interface ButtonData {
                 int actionChipLabelResId,
                 int tooltipTextResId,
                 boolean hasErrorBadge) {
+            this(
+                    drawable,
+                    onClickListener,
+                    onLongClickListener,
+                    contentDescription,
+                    supportsTinting,
+                    iphCommandBuilder,
+                    buttonVariant,
+                    actionChipLabelResId,
+                    tooltipTextResId,
+                    hasErrorBadge,
+                    /* isChecked= */ false);
+        }
+
+        public ButtonSpec(
+                Drawable drawable,
+                View.OnClickListener onClickListener,
+                View.@Nullable OnLongClickListener onLongClickListener,
+                String contentDescription,
+                boolean supportsTinting,
+                @Nullable IphCommandBuilder iphCommandBuilder,
+                @AdaptiveToolbarButtonVariant int buttonVariant,
+                int actionChipLabelResId,
+                int tooltipTextResId,
+                boolean hasErrorBadge,
+                boolean isChecked) {
             mDrawable = drawable;
             mOnClickListener = onClickListener;
             mOnLongClickListener = onLongClickListener;
@@ -75,6 +102,7 @@ public interface ButtonData {
             mActionChipLabelResId = actionChipLabelResId;
             mTooltipTextResId = tooltipTextResId;
             mHasErrorBadge = hasErrorBadge;
+            mIsChecked = isChecked;
         }
 
         /** Returns the {@link Drawable} for the button icon. */
@@ -142,6 +170,15 @@ public interface ButtonData {
             return mHasErrorBadge;
         }
 
+        /**
+         * Returns true if the button is a "checked" state. Currently, price tracking is the only
+         * action with a "checked" state. For price tracking, returns true if the price is being
+         * tracked and false otherwise.
+         */
+        public boolean isChecked() {
+            return mIsChecked;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) {
@@ -155,6 +192,7 @@ public interface ButtonData {
                     && mButtonVariant == that.mButtonVariant
                     && mIsDynamicAction == that.mIsDynamicAction
                     && mActionChipLabelResId == that.mActionChipLabelResId
+                    && mIsChecked == that.mIsChecked
                     && Objects.equals(mDrawable, that.mDrawable)
                     && Objects.equals(mOnClickListener, that.mOnClickListener)
                     && Objects.equals(mOnLongClickListener, that.mOnLongClickListener)
