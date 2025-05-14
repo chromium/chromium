@@ -1848,6 +1848,9 @@ void StyleResolver::ApplyBaseStyleNoCache(
   if (match_result.DependsOnScrollStateContainerQueries()) {
     builder.SetDependsOnScrollStateContainerQueries(true);
   }
+  if (match_result.DependsOnAnchoredContainerQueries()) {
+    builder.SetDependsOnAnchoredContainerQueries(true);
+  }
   if (match_result.FirstLineDependsOnSizeContainerQueries()) {
     builder.SetFirstLineDependsOnSizeContainerQueries(true);
   }

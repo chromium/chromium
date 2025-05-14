@@ -57,7 +57,8 @@ std::optional<double> FindSizeForContainerAxis(
   const TreeScope* tree_scope = nullptr;
   if (container_name) {
     selector = ContainerSelector(container_name->GetName(), requested_axis,
-                                 kLogicalAxesNone, /* scroll_state */ false);
+                                 kLogicalAxesNone, /*scroll_state=*/false,
+                                 /*anchored_query=*/false);
     tree_scope = container_name->GetTreeScope();
   } else {
     selector = ContainerSelector(requested_axis);

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<title>CSS Conditional Test: Computed values of container-type with 'anchored'</title>
+<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#container-type">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/8171">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/computed-testcommon.js"></script>
+<script src="/css/css-conditional/container-queries/support/cq-testcommon.js"></script>
+<div id="target"></div>
+<script>
+  test_computed_value('container-type', 'anchored');
+  test_computed_value('container-type', 'anchored size', 'size anchored');
+  test_computed_value('container-type', 'inline-size anchored');
+</script>

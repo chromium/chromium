@@ -1838,8 +1838,8 @@ protocol::Response InspectorDOMAgent::getContainerForNode(
   Element* container = style_resolver.FindContainerForElement(
       element,
       ContainerSelector(AtomicString(container_name.value_or(g_null_atom)),
-                        physical, logical,
-                        queries_scroll_state.value_or(false)),
+                        physical, logical, queries_scroll_state.value_or(false),
+                        /* anchored_query */ false),
       nullptr /* selector_tree_scope */);
   if (container)
     *container_node_id = PushNodePathToFrontend(container);

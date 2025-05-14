@@ -220,6 +220,9 @@ void ContainerQueryEvaluator::SetDependencyFlags(const ContainerQuery& query,
   if (selector.SelectsScrollStateContainers()) {
     match_result.SetDependsOnScrollStateContainerQueries();
   }
+  if (selector.SelectsAnchoredContainers()) {
+    match_result.SetDependsOnAnchoredContainerQueries();
+  }
 }
 
 std::optional<double> ContainerQueryEvaluator::Width() const {

@@ -306,7 +306,8 @@ static inline bool FeatureExpectingInteger(const String& media_feature,
       media_feature == media_feature_names::kMinColorIndexMediaFeature ||
       media_feature == media_feature_names::kMonochromeMediaFeature ||
       media_feature == media_feature_names::kMaxMonochromeMediaFeature ||
-      media_feature == media_feature_names::kMinMonochromeMediaFeature) {
+      media_feature == media_feature_names::kMinMonochromeMediaFeature ||
+      media_feature == media_feature_names::kFallbackMediaFeature) {
     return true;
   }
 
@@ -796,6 +797,9 @@ MediaQueryExpNode::FeatureFlags MediaQueryFeatureExpNode::CollectFeatureFlags()
   } else if (exp_.MediaFeature() ==
              media_feature_names::kScrollDirectionMediaFeature) {
     return kFeatureScrollDirection;
+  } else if (exp_.MediaFeature() ==
+             media_feature_names::kFallbackMediaFeature) {
+    return kFeatureAnchored;
   } else if (exp_.IsInlineSizeDependent()) {
     return kFeatureInlineSize;
   } else if (exp_.IsBlockSizeDependent()) {

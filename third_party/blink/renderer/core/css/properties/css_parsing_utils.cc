@@ -8363,13 +8363,15 @@ CSSValue* ConsumeContainerName(CSSParserTokenStream& stream,
 
 CSSValue* ConsumeContainerType(CSSParserTokenStream& stream,
                                const CSSParserContext& context) {
-  // container-type: normal | [ [ size | inline-size ] || scroll-state ]
+  // container-type: normal | [ [ size | inline-size ] || scroll-state ||
+  // anchored ]
   if (CSSValue* value = ConsumeIdent<CSSValueID::kNormal>(stream)) {
     return value;
   }
 
   CSSValue* size_value = nullptr;
   CSSValue* scroll_state_value = nullptr;
+  CSSValue* anchored_value = nullptr;
 
   do {
     if (!size_value) {
@@ -8386,6 +8388,14 @@ CSSValue* ConsumeContainerType(CSSParserTokenStream& stream,
         continue;
       }
     }
+    if (!anchored_value &&
+        RuntimeEnabledFeatures::CSSFallbackContainerQueriesEnabled()) {
+      anchored_value = ConsumeIdent<CSSValueID::kAnchored>(stream);
+      if (anchored_value) {
+        // TODO(https://crbug.com/417621241): Add use counter.
+        continue;
+      }
+    }
     break;
   } while (!stream.AtEnd());
 
@@ -8395,6 +8405,9 @@ CSSValue* ConsumeContainerType(CSSParserTokenStream& stream,
   }
   if (scroll_state_value) {
     list->Append(*scroll_state_value);
+  }
+  if (anchored_value) {
+    list->Append(*anchored_value);
   }
   if (list->length() == 0) {
     return nullptr;

@@ -2841,6 +2841,9 @@ const CSSValue* ContainerType::CSSValueFromComputedStyleInternal(
   if (style.ContainerType() & kContainerTypeScrollState) {
     values->Append(*CSSIdentifierValue::Create(CSSValueID::kScrollState));
   }
+  if (style.ContainerType() & kContainerTypeAnchored) {
+    values->Append(*CSSIdentifierValue::Create(CSSValueID::kAnchored));
+  }
   return values;
 }
 

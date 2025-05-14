@@ -109,6 +109,24 @@ class StateFeatureSet : public MediaQueryParser::FeatureSet {
   bool SupportsElementDependent() const override { return true; }
 };
 
+class AnchoredFeatureSet : public MediaQueryParser::FeatureSet {
+  STACK_ALLOCATED();
+
+ public:
+  bool IsAllowed(const AtomicString& feature) const override {
+    return feature == media_feature_names::kFallbackMediaFeature;
+  }
+  bool IsAllowedWithoutValue(const AtomicString& feature,
+                             const ExecutionContext*) const override {
+    return true;
+  }
+  bool IsCaseSensitive(const AtomicString& feature) const override {
+    return false;
+  }
+  bool SupportsRange() const override { return true; }
+  bool SupportsElementDependent() const override { return true; }
+};
+
 }  // namespace
 
 ContainerQueryParser::ContainerQueryParser(const CSSParserContext& context)
@@ -136,6 +154,8 @@ const MediaQueryExpNode* ContainerQueryParser::ParseCondition(
 // <query-in-parens> = ( <container-condition> )
 //                   | ( <size-feature> )
 //                   | style( <style-query> )
+//                   | scroll-state( <scroll-state-query> )
+//                   | anchored( <anchored-state-query> )
 //                   | <general-enclosed>
 const MediaQueryExpNode* ContainerQueryParser::ConsumeQueryInParens(
     CSSParserTokenStream& stream) {
@@ -198,6 +218,19 @@ const MediaQueryExpNode* ContainerQueryParser::ConsumeQueryInParens(
       guard.Release();
       stream.ConsumeWhitespace();
       return MediaQueryExpNode::Function(query, AtomicString("scroll-state"));
+    }
+  } else if (RuntimeEnabledFeatures::CSSFallbackContainerQueriesEnabled() &&
+             stream.Peek().GetType() == kFunctionToken &&
+             stream.Peek().FunctionId() == CSSValueID::kAnchored) {
+    // anchored(fallback: <integer>)
+    CSSParserTokenStream::RestoringBlockGuard guard(stream);
+    stream.ConsumeWhitespace();
+
+    if (const MediaQueryExpNode* query =
+            ConsumeFeatureQuery(stream, AnchoredFeatureSet())) {
+      guard.Release();
+      stream.ConsumeWhitespace();
+      return MediaQueryExpNode::Function(query, AtomicString("anchored"));
     }
   }
   stream.Restore(savepoint);

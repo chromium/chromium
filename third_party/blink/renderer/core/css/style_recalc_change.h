@@ -42,19 +42,25 @@ class CORE_EXPORT StyleRecalcChange {
     // Recalc scroll-state container query dependent elements within this
     // container, and also in nested containers.
     kRecalcDescendantScrollStateContainers = 1 << 5,
+    // Recalc anchored container query dependent elements within this container,
+    // but not in nested containers.
+    kRecalcAnchoredContainer = 1 << 6,
+    // Recalc anchored container query dependent elements within this container,
+    // and also in nested containers.
+    kRecalcDescendantAnchoredContainers = 1 << 7,
     // Recalc descendant content-visibility elements within a changed
     // scroll-marker-group property elements.
-    kRecalcDescendantContentVisibility = 1 << 6,
+    kRecalcDescendantContentVisibility = 1 << 8,
     // If set, need to reattach layout tree.
-    kReattach = 1 << 7,
+    kReattach = 1 << 9,
     // If set, will prevent style recalc for the node passed to
     // ShouldRecalcStyleFor. This flag is lost when ForChildren is called.
-    kSuppressRecalc = 1 << 8,
+    kSuppressRecalc = 1 << 10,
     // If set, and kReattach is also set, the element should be explicitly
     // marked for re-attachment even if its style doesn't change. Used for query
     // container children to resume re-attachment that was blocked when style
     // recalc for container children was skipped.
-    kMarkReattach = 1 << 9,
+    kMarkReattach = 1 << 11,
   };
   using Flags = uint16_t;
 
@@ -67,9 +73,12 @@ class CORE_EXPORT StyleRecalcChange {
   static const Flags kRecalcScrollStateContainerFlags =
       kRecalcScrollStateContainer | kRecalcDescendantScrollStateContainers;
 
-  static const Flags kRecalcContainerFlags = kRecalcSizeContainerFlags |
-                                             kRecalcStyleContainerFlags |
-                                             kRecalcScrollStateContainerFlags;
+  static const Flags kRecalcAnchoredContainerFlags =
+      kRecalcAnchoredContainer | kRecalcDescendantAnchoredContainers;
+
+  static const Flags kRecalcContainerFlags =
+      kRecalcSizeContainerFlags | kRecalcStyleContainerFlags |
+      kRecalcScrollStateContainerFlags | kRecalcAnchoredContainerFlags;
 
  public:
   enum Propagate {
@@ -145,6 +154,13 @@ class CORE_EXPORT StyleRecalcChange {
     return {propagate_, static_cast<Flags>(
                             flags_ | kRecalcDescendantScrollStateContainers)};
   }
+  StyleRecalcChange ForceRecalcAnchoredContainer() const {
+    return {propagate_, static_cast<Flags>(flags_ | kRecalcAnchoredContainer)};
+  }
+  StyleRecalcChange ForceRecalcDescendantAnchoredContainers() const {
+    return {propagate_,
+            static_cast<Flags>(flags_ | kRecalcDescendantAnchoredContainers)};
+  }
   StyleRecalcChange ForceRecalcDescendantContentVisibility() const {
     return {propagate_,
             static_cast<Flags>(flags_ | kRecalcDescendantContentVisibility)};
@@ -212,6 +228,9 @@ class CORE_EXPORT StyleRecalcChange {
     return flags_ & kRecalcStyleContainerFlags;
   }
   bool RecalcScrollStateContainerQueryDependent() const {
+    return flags_ & kRecalcScrollStateContainerFlags;
+  }
+  bool RecalcAnchoredContainerQueryDependent() const {
     return flags_ & kRecalcScrollStateContainerFlags;
   }
   bool RecalcContainerQueryDependent() const {

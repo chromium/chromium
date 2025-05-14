@@ -1648,6 +1648,7 @@
     "block-end",
     // inline-start,
     // inline-end,
+    "anchored",
 
     // grid auto-repeat
     "auto-fill",
@@ -1869,6 +1870,7 @@
     // normal,
     // size,
     // scroll-state,
+    // anchored,
 
     // (scripting:) media feature
     "enabled",

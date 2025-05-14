@@ -1184,6 +1184,10 @@
       status: "stable",
     },
     {
+      name: "CSSFallbackContainerQueries",
+      status: "experimental",
+    },
+    {
       name: "CSSFontSizeAdjust",
       status: "stable",
     },

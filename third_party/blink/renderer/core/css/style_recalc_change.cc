@@ -47,7 +47,9 @@ bool StyleRecalcChange::RecalcContainerQueryDependent(const Node& node) const {
          (RecalcStyleContainerQueryDependent() &&
           old_style->DependsOnStyleContainerQueries()) ||
          (RecalcScrollStateContainerQueryDependent() &&
-          old_style->DependsOnScrollStateContainerQueries());
+          old_style->DependsOnScrollStateContainerQueries()) ||
+         (RecalcAnchoredContainerQueryDependent() &&
+          old_style->DependsOnAnchoredContainerQueries());
 }
 
 bool StyleRecalcChange::ShouldRecalcStyleFor(const Node& node) const {

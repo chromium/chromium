@@ -1660,6 +1660,19 @@ static bool ScriptingMediaFeatureEval(const MediaQueryExpValue& value,
   }
 }
 
+static bool FallbackMediaFeatureEval(const MediaQueryExpValue& value,
+                                     MediaQueryOperator op,
+                                     const MediaValues& media_values) {
+  const int fallback = media_values.PositionTryFallback();
+  if (!value.IsValid()) {
+    return fallback == 0;
+  }
+
+  float number;
+  return NumberValue(value, number, media_values) &&
+         CompareValue(fallback, ClampTo<int>(number), op);
+}
+
 static MediaQueryOperator ReverseOperator(MediaQueryOperator op) {
   switch (op) {
     case MediaQueryOperator::kNone:

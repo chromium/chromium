@@ -83,6 +83,8 @@ class CORE_EXPORT CSSContainerValues : public MediaValuesDynamic {
   ContainerScrollDirection ScrollDirectionInline() const override;
   ContainerScrollDirection ScrollDirectionBlock() const override;
 
+  int PositionTryFallback() const override { return position_try_fallback_; }
+
  private:
   // The current computed style for the container.
   Member<Element> element_;
@@ -111,6 +113,9 @@ class CORE_EXPORT CSSContainerValues : public MediaValuesDynamic {
       ContainerScrollDirection::kNone;
   ContainerScrollDirection scroll_direction_vertical_ =
       ContainerScrollDirection::kNone;
+  // A 1-based index into the position-try-fallback applied to an anchored()
+  // container. 0 if no position-try-fallbacks are applied.
+  int position_try_fallback_ = 0;
   // Container font sizes for resolving relative lengths.
   CSSToLengthConversionData::FontSizes font_sizes_;
   // LineHeightSize of the container element.

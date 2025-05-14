@@ -159,6 +159,12 @@ class CORE_EXPORT MatchResult {
   bool DependsOnScrollStateContainerQueries() const {
     return depends_on_scroll_state_container_queries_;
   }
+  void SetDependsOnAnchoredContainerQueries() {
+    depends_on_anchored_container_queries_ = true;
+  }
+  bool DependsOnAnchoredContainerQueries() const {
+    return depends_on_anchored_container_queries_;
+  }
   void SetFirstLineDependsOnSizeContainerQueries() {
     first_line_depends_on_size_container_queries_ = true;
   }
@@ -254,6 +260,7 @@ class CORE_EXPORT MatchResult {
   bool depends_on_size_container_queries_{false};
   bool depends_on_style_container_queries_{false};
   bool depends_on_scroll_state_container_queries_{false};
+  bool depends_on_anchored_container_queries_{false};
   bool first_line_depends_on_size_container_queries_{false};
   bool depends_on_static_viewport_units_{false};
   bool depends_on_dynamic_viewport_units_{false};

@@ -1663,6 +1663,8 @@ inline EContainerType CSSIdentifierValue::ConvertTo() const {
       return kContainerTypeSize;
     case CSSValueID::kScrollState:
       return kContainerTypeScrollState;
+    case CSSValueID::kAnchored:
+      return kContainerTypeAnchored;
     default:
       break;
   }

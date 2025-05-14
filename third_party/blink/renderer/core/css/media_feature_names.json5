@@ -27,6 +27,7 @@
     "device-width",
     "display-mode",
     "display-state",
+    "fallback",
     "inline-size",
     "max-color",
     "max-color-index",
