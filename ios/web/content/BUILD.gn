@@ -47,7 +47,7 @@ source_set("content") {
     "//ios/web/annotations",
     "//ios/web/common",
     "//ios/web/common:user_agent",
-    "//ios/web/find_in_page:find_in_page",
+    "//ios/web/find_in_page",
     "//ios/web/js_features/context_menu",
     "//ios/web/js_features/error_page",
     "//ios/web/js_messaging",
@@ -55,8 +55,8 @@ source_set("content") {
     "//ios/web/public",
     "//ios/web/public/favicon",
     "//ios/web/public/js_messaging",
-    "//ios/web/public/security:security",
-    "//ios/web/public/session:session",
+    "//ios/web/public/security",
+    "//ios/web/public/session",
     "//ios/web/public/session/proto",
     "//ios/web/util",
     "//ios/web/webui",
@@ -90,8 +90,8 @@ source_set("ui") {
     "//base",
     "//components/javascript_dialogs",
     "//content/public/browser",
-    "//ios/web/public:public",
-    "//ios/web/public/ui:ui",
+    "//ios/web/public",
+    "//ios/web/public/ui",
   ]
 }
 

@@ -23,7 +23,7 @@ source_set("fakes") {
     "//ios/web/test:test_constants",
     "//ios/web/web_state:policy_decision_state_tracker",
     "//ios/web/web_state/ui:crw_web_view_navigation_proxy",
-    "//ios/web/webui:webui",
+    "//ios/web/webui",
     "//net",
     "//net:test_support",
     "//testing/gtest",

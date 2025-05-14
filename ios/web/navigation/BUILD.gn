@@ -76,7 +76,7 @@ source_set("core") {
   deps = [
     ":proto_util",
     "//base",
-    "//components/url_formatter:url_formatter",
+    "//components/url_formatter",
     "//ios/web/common:features",
     "//ios/web/common:user_agent",
     "//ios/web/navigation:wk_navigation_util",
