@@ -363,6 +363,10 @@ gpu_mac_builder(
         "ci/Mac FYI Retina ASAN (AMD)",
     ],
     gn_args = "ci/GPU FYI Mac Builder (asan)",
+    # //tools/grit:brotli_mac_asan_workaround doesn't create bundle
+    # `obj/tools/grit/brotli_mac_asan_workaround/` when cross compiling
+    # from ARM host.
+    cpu = cpu.X86_64,
 )
 
 gpu_mac_builder(
@@ -445,6 +449,10 @@ gpu_mac_builder(
         "ci/Mac FYI ASAN (Intel)",
     ],
     gn_args = "ci/GPU FYI Mac Builder (asan)",
+    # //tools/grit:brotli_mac_asan_workaround doesn't create bundle
+    # `obj/tools/grit/brotli_mac_asan_workaround/` when cross compiling
+    # from ARM host.
+    cpu = cpu.X86_64,
 )
 
 gpu_mac_builder(
