@@ -196,4 +196,21 @@ GetReportSessionDisconnectedRequest(
   return std::make_unique<ReportSessionDisconnectedRequest>();
 }
 
+// ============================
+// RemoteSupportService helpers
+// ============================
+
+std::string_view GetCreateRemoteSupportHostRequestPath() {
+  return {};
+}
+
+std::unique_ptr<CreateRemoteSupportHostRequest>
+GetCreateRemoteSupportHostRequest(const RemoteSupportHostStruct&) {
+  return std::make_unique<CreateRemoteSupportHostRequest>();
+}
+
+std::string_view GetSupportId(const RemoteSupportHost&) {
+  return {};
+}
+
 }  // namespace remoting::internal
