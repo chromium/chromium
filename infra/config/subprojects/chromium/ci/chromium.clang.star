@@ -24,9 +24,9 @@ ci.defaults.set(
     os = os.LINUX_DEFAULT,
     gardener_rotations = gardener_rotations.CHROMIUM_CLANG,
     # Because these run ToT Clang, reclient is not used.
-    # Naturally the runtime will be ~4-8h on average, depending on config.
-    # CFI builds will take even longer - around 11h.
-    execution_timeout = 14 * time.hour,
+    # Naturally the runtime will be ~4-8h on average for basic builds.
+    # Complex (e.g. sanitizer), CFI builds can take much longer.
+    execution_timeout = 16 * time.hour,
     health_spec = health_spec.modified_default({
         "Unhealthy": health_spec.unhealthy_thresholds(
             fail_rate = struct(),
