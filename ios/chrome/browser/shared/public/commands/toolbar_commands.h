@@ -10,6 +10,10 @@
 
 // Triggers a slide-in animation for the toolbar(s).
 - (void)triggerToolbarSlideInAnimation;
+
+// Visually indicates a Lens Overlay visibility change.
+- (void)indicateLensOverlayVisible:(BOOL)lensOverlayVisible;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_TOOLBAR_COMMANDS_H_

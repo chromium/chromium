@@ -64,6 +64,9 @@
 - (void)setFakeboxButtonsSnapshotProvider:
     (id<FakeboxButtonsSnapshotProvider>)provider;
 
+// Sets whether Lens overlay is currently visible.
+- (void)setLensOverlayVisible:(BOOL)lensOverlayVisible;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_COORDINATOR_H_

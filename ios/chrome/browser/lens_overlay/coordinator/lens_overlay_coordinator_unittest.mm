@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
+#import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -133,6 +134,12 @@ class LensOverlayCoordinatorTest : public PlatformTest {
         startDispatchingToTarget:browser_coordinator_commands_handler_
                      forProtocol:@protocol(BrowserCoordinatorCommands)];
 
+    toolbar_commands_handler_ = OCMProtocolMock(@protocol(ToolbarCommands));
+
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:toolbar_commands_handler_
+                     forProtocol:@protocol(ToolbarCommands)];
+
     // Tab helper
     std::unique_ptr<web::FakeWebState> web_state =
         std::make_unique<web::FakeWebState>();
@@ -224,6 +231,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
   id<LoadQueryCommands> load_query_handler_;
   id<LensCommands> lens_commands_handler_;
   id<BrowserCoordinatorCommands> browser_coordinator_commands_handler_;
+  id<ToolbarCommands> toolbar_commands_handler_;
 
   void DeliverMemoryWarningNotification() {
     [[NSNotificationCenter defaultCenter]

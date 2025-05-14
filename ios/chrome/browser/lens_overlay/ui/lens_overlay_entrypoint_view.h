@@ -18,6 +18,10 @@ class PrefService;
 
 - (instancetype)initWithProfilePrefs:(const PrefService*)profilePrefs;
 
+// Marks the button as active to indicate the Lens Overlay is currently
+// displayed.
+- (void)setLensOverlayActive:(BOOL)active;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_UI_LENS_OVERLAY_ENTRYPOINT_VIEW_H_

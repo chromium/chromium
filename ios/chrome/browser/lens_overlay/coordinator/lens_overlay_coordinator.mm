@@ -68,6 +68,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
@@ -666,6 +667,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     (LensOverlayContainerPresenter*)containerPresenter {
   [self setInfobarBannerOverlaysEnabled:YES];
   [self.presentationEnvironment lensOverlayWillDisappear];
+  [self indicateLensOverlayVisible:NO];
 }
 
 - (void)lensOverlayContainerPresenterDidCompletePresentation:
@@ -680,6 +682,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     }
     return;
   }
+
+  [self indicateLensOverlayVisible:YES];
 
   if (self.shouldShowConsentFlow) {
     if (self.isResultsBottomSheetCreated) {
@@ -1477,6 +1481,11 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
   CGFloat guidanceRestHeight = _resultsPagePresenter.presentedResultsPageHeight;
   [_selectionViewController setGuidanceRestHeight:guidanceRestHeight];
+}
+
+- (void)indicateLensOverlayVisible:(BOOL)lensOverlayVisible {
+  [HandlerForProtocol(self.browser->GetCommandDispatcher(), ToolbarCommands)
+      indicateLensOverlayVisible:lensOverlayVisible];
 }
 
 @end

@@ -372,6 +372,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   self.viewController.fakeboxButtonsSnapshotProvider = provider;
 }
 
+- (void)setLensOverlayVisible:(BOOL)lensOverlayVisible {
+  [self.viewController setLensOverlayVisible:lensOverlayVisible];
+}
+
 #pragma mark - LoadQueryCommands
 
 - (void)loadQuery:(NSString*)query immediately:(BOOL)immediately {

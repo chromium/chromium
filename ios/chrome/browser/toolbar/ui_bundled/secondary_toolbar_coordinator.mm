@@ -83,4 +83,8 @@
   [self.viewController triggerToolbarSlideInAnimationFromBelow:YES];
 }
 
+- (void)indicateLensOverlayVisible:(BOOL)lensOverlayVisible {
+  // NO-OP
+}
+
 @end

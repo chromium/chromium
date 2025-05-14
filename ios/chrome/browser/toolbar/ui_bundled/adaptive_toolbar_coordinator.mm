@@ -170,6 +170,10 @@
   // Implemented in primary and secondary toolbars directly.
 }
 
+- (void)indicateLensOverlayVisible:(BOOL)lensOverlayVisible {
+  // NO-OP
+}
+
 #pragma mark - ToolbarCoordinatee
 
 - (id<PopupMenuUIUpdating>)popupMenuUIUpdater {

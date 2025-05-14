@@ -570,6 +570,14 @@
   }
 }
 
+- (void)indicateLensOverlayVisible:(BOOL)lensOverlayVisible {
+  [self.locationBarCoordinator setLensOverlayVisible:lensOverlayVisible];
+
+  for (id<ToolbarCommands> coordinator in self.coordinators) {
+    [coordinator indicateLensOverlayVisible:lensOverlayVisible];
+  }
+}
+
 #pragma mark - ToolbarMediatorDelegate
 
 - (void)transitionOmniboxToToolbarType:(ToolbarType)toolbarType {

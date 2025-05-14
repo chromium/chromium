@@ -19,10 +19,16 @@ namespace {
 const CGFloat kLensCameraSymbolPointSize = 18.0;
 const CGFloat kMinimumWidth = 44;
 
+// The size of the visibility indicator in points.
+const CGFloat kVisibilityIndicatorSize = 30.0;
+
 }  // namespace
 
 @implementation LensOverlayEntrypointButton {
   raw_ptr<const PrefService> _profilePrefs;
+
+  // Indicates whether the feature is currently active and visible.
+  UIView* _visibilityIndicatorView;
 }
 
 - (instancetype)initWithProfilePrefs:(const PrefService*)profilePrefs {
@@ -76,6 +82,27 @@ const CGFloat kMinimumWidth = 44;
   [self setEnabledOnTraitChange:previousTraitCollection];
 }
 #endif
+
+- (void)setLensOverlayActive:(BOOL)active {
+  if (active) {
+    if ([_visibilityIndicatorView isDescendantOfView:self]) {
+      return;
+    }
+    _visibilityIndicatorView = [[UIView alloc] init];
+    _visibilityIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
+    _visibilityIndicatorView.backgroundColor =
+        [UIColor colorNamed:kGrey300Color];
+    [self insertSubview:_visibilityIndicatorView belowSubview:self.imageView];
+    _visibilityIndicatorView.layer.cornerRadius = kVisibilityIndicatorSize / 2;
+    AddSameCenterConstraints(self, _visibilityIndicatorView);
+    AddSizeConstraints(
+        _visibilityIndicatorView,
+        CGSizeMake(kVisibilityIndicatorSize, kVisibilityIndicatorSize));
+  } else {
+    [_visibilityIndicatorView removeFromSuperview];
+    _visibilityIndicatorView = nil;
+  }
+}
 
 #pragma mark - private
 

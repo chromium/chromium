@@ -172,6 +172,10 @@
   [self.viewController triggerToolbarSlideInAnimationFromBelow:NO];
 }
 
+- (void)indicateLensOverlayVisible:(BOOL)lensOverlayVisible {
+  // NO-OP
+}
+
 #pragma mark - PrimaryToolbarViewControllerDelegate
 
 - (void)viewControllerTraitCollectionDidChange:
