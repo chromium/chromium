@@ -61,34 +61,6 @@ bool HasCannotFreezeReasonForType(
               .empty();
 }
 
-struct PageFreezingState
-    : public ExternalNodeAttachedDataImpl<PageFreezingState> {
-  explicit PageFreezingState(const PageNodeImpl*) {}
-  ~PageFreezingState() override = default;
-
-  PageFreezingState(const PageFreezingState&) = delete;
-  PageFreezingState& operator=(const PageFreezingState&) = delete;
-
-  static PageFreezingState& FromPage(const PageNode* page_node) {
-    return *PageFreezingState::GetOrCreate(PageNodeImpl::FromNode(page_node));
-  }
-
-  // Whether this page is frozen.
-  bool frozen = false;
-
-  // Number of votes to freeze the page.
-  int num_freeze_votes = 0;
-
-  // Reasons not to freeze the page.
-  CannotFreezeReasonSet cannot_freeze_reasons;
-
-  // Timer to remove `CannotFreezeReason::kRecentlyVisible`.
-  base::OneShotTimer recently_visible_timer;
-
-  // Timer to remove `CannotFreezeReason::kRecentlyAudible`.
-  base::OneShotTimer recently_audible_timer;
-};
-
 bool IsPageConnectedToUSBDevice(const PageNode* page_node) {
   return PageLiveStateDecorator::Data::FromPageNode(page_node)
       ->IsConnectedToUSBDevice();
@@ -135,6 +107,30 @@ bool IsPageCapturingDisplay(const PageNode* page_node) {
 }
 
 }  // namespace
+
+struct FreezingPolicy::PageFreezingState
+    : public ExternalNodeAttachedDataImpl<PageFreezingState> {
+  explicit PageFreezingState(const PageNodeImpl*) {}
+  ~PageFreezingState() override = default;
+
+  PageFreezingState(const PageFreezingState&) = delete;
+  PageFreezingState& operator=(const PageFreezingState&) = delete;
+
+  // Whether this page is frozen.
+  bool frozen = false;
+
+  // Number of votes to freeze the page.
+  int num_freeze_votes = 0;
+
+  // Reasons not to freeze the page.
+  CannotFreezeReasonSet cannot_freeze_reasons;
+
+  // Timer to remove `CannotFreezeReason::kRecentlyVisible`.
+  base::OneShotTimer recently_visible_timer;
+
+  // Timer to remove `CannotFreezeReason::kRecentlyAudible`.
+  base::OneShotTimer recently_audible_timer;
+};
 
 class FreezingPolicy::CanFreezePerTypeTracker {
  public:
@@ -218,8 +214,7 @@ void FreezingPolicy::ToggleFreezingOnBatterySaverMode(bool is_enabled) {
 }
 
 void FreezingPolicy::AddFreezeVote(PageNode* page_node) {
-  int prev_num_freeze_votes =
-      PageFreezingState::FromPage(page_node).num_freeze_votes++;
+  int prev_num_freeze_votes = GetFreezingState(page_node).num_freeze_votes++;
   // A browsing instance may be frozen if there is at least one freeze vote.
   // Therefore, it's only necessary to update the frozen state when adding the
   // first freeze vote.
@@ -229,8 +224,7 @@ void FreezingPolicy::AddFreezeVote(PageNode* page_node) {
 }
 
 void FreezingPolicy::RemoveFreezeVote(PageNode* page_node) {
-  int num_freeze_votes =
-      --PageFreezingState::FromPage(page_node).num_freeze_votes;
+  int num_freeze_votes = --GetFreezingState(page_node).num_freeze_votes;
   // A browsing instance may be frozen if there is at least one freeze vote.
   // Therefore, it's only necessary to update the frozen state when removing the
   // last freeze vote.
@@ -245,8 +239,7 @@ freezing::CanFreezeDetails FreezingPolicy::GetCanFreezeDetails(
   CanFreezePerTypeTracker can_freeze_per_type_tracker;
 
   for (const PageNode* connected_page_node : GetConnectedPages(page_node)) {
-    const auto& page_freezing_state =
-        PageFreezingState::FromPage(connected_page_node);
+    const auto& page_freezing_state = GetFreezingState(connected_page_node);
     can_freeze_per_type_tracker.PopulateWithPageFreezingState(
         page_freezing_state);
     if (connected_page_node == page_node) {
@@ -319,6 +312,11 @@ FreezingPolicy::GetBrowsingInstances(const PageNode* page) const {
   return browsing_instances;
 }
 
+FreezingPolicy::PageFreezingState& FreezingPolicy::GetFreezingState(
+    const PageNode* page_node) const {
+  return *PageFreezingState::GetOrCreate(PageNodeImpl::FromNode(page_node));
+}
+
 void FreezingPolicy::UpdateFrozenState(
     const PageNode* page,
     base::flat_set<raw_ptr<const PageNode>>* connected_pages_out) {
@@ -338,7 +336,7 @@ void FreezingPolicy::UpdateFrozenState(
   const double high_cpu_proportion = features::kFreezingHighCPUProportion.Get();
 
   for (const PageNode* visited_page : connected_pages) {
-    auto& page_freezing_state = PageFreezingState::FromPage(visited_page);
+    auto& page_freezing_state = GetFreezingState(visited_page);
 
     can_freeze_per_type_tracker.PopulateWithPageFreezingState(
         page_freezing_state);
@@ -380,7 +378,7 @@ void FreezingPolicy::UpdateFrozenState(
 
   // Freeze/unfreeze connected pages as needed.
   for (const PageNode* connected_page : connected_pages) {
-    auto& page_freezing_state = PageFreezingState::FromPage(connected_page);
+    auto& page_freezing_state = GetFreezingState(connected_page);
     if (page_freezing_state.frozen == should_be_frozen) {
       continue;
     }
@@ -400,7 +398,7 @@ void FreezingPolicy::UpdateFrozenState(
 void FreezingPolicy::OnCannotFreezeReasonChange(const PageNode* page_node,
                                                 bool add,
                                                 CannotFreezeReason reason) {
-  auto& page_freezing_state = PageFreezingState::FromPage(page_node);
+  auto& page_freezing_state = GetFreezingState(page_node);
   if (add) {
     DCHECK(!page_freezing_state.cannot_freeze_reasons.Has(reason));
     const bool was_empty = page_freezing_state.cannot_freeze_reasons.empty();
@@ -427,12 +425,11 @@ void FreezingPolicy::OnCannotFreezeReasonChange(const PageNode* page_node,
   }
 }
 
-//  static
 CannotFreezeReasonSet FreezingPolicy::GetCannotFreezeReasons(
     const BrowsingInstanceState& browsing_instance_state) {
   CannotFreezeReasonSet reasons;
   for (const PageNode* page : browsing_instance_state.pages) {
-    const auto& page_freezing_state = PageFreezingState::FromPage(page);
+    const auto& page_freezing_state = GetFreezingState(page);
     reasons.PutAll(page_freezing_state.cannot_freeze_reasons);
   }
   return reasons;
@@ -455,7 +452,7 @@ void FreezingPolicy::OnTakenFromGraph(Graph* graph) {
 }
 
 void FreezingPolicy::OnPageNodeAdded(const PageNode* page_node) {
-  auto& page_freezing_state = PageFreezingState::FromPage(page_node);
+  auto& page_freezing_state = GetFreezingState(page_node);
 
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)->AddObserver(
       this);
@@ -502,7 +499,7 @@ void FreezingPolicy::OnBeforePageNodeRemoved(const PageNode* page_node) {
 }
 
 void FreezingPolicy::OnIsVisibleChanged(const PageNode* page_node) {
-  auto& page_freezing_state = PageFreezingState::FromPage(page_node);
+  auto& page_freezing_state = GetFreezingState(page_node);
   if (page_node->IsVisible()) {
     OnCannotFreezeReasonChange(page_node, /*add=*/true,
                                CannotFreezeReason::kVisible);
@@ -529,7 +526,7 @@ void FreezingPolicy::OnIsVisibleChanged(const PageNode* page_node) {
 }
 
 void FreezingPolicy::OnIsAudibleChanged(const PageNode* page_node) {
-  auto& page_freezing_state = PageFreezingState::FromPage(page_node);
+  auto& page_freezing_state = GetFreezingState(page_node);
   if (page_node->IsAudible()) {
     OnCannotFreezeReasonChange(page_node, /*add=*/true,
                                CannotFreezeReason::kAudible);
@@ -605,7 +602,7 @@ void FreezingPolicy::OnPageIsHoldingWebLockChanged(const PageNode* page_node) {
 
 void FreezingPolicy::OnMainFrameUrlChanged(const PageNode* page_node) {
   const bool was_opted_out =
-      PageFreezingState::FromPage(page_node).cannot_freeze_reasons.Has(
+      GetFreezingState(page_node).cannot_freeze_reasons.Has(
           CannotFreezeReason::kOptedOut);
   const bool is_opted_out =
       opt_out_checker_ &&
@@ -785,7 +782,7 @@ base::Value::Dict FreezingPolicy::DescribePageNodeData(
     const PageNode* node) const {
   base::Value::Dict ret;
 
-  const auto& page_freezing_state = PageFreezingState::FromPage(node);
+  const auto& page_freezing_state = GetFreezingState(node);
 
   // Present number of freeze votes for this page.
   ret.Set("num_freeze_votes", page_freezing_state.num_freeze_votes);
@@ -822,8 +819,7 @@ base::Value::Dict FreezingPolicy::DescribePageNodeData(
            browsing_instance_it->second.pages) {
         if (other_page_node != node) {
           cannot_freeze_reasons_other_pages.PutAll(
-              PageFreezingState::FromPage(other_page_node)
-                  .cannot_freeze_reasons);
+              GetFreezingState(other_page_node).cannot_freeze_reasons);
         }
       }
     }
@@ -1018,7 +1014,7 @@ void FreezingPolicy::OnOptOutPolicyChanged(
       continue;
     }
     const bool was_opted_out =
-        PageFreezingState::FromPage(page_node).cannot_freeze_reasons.Has(
+        GetFreezingState(page_node).cannot_freeze_reasons.Has(
             CannotFreezeReason::kOptedOut);
     const bool is_opted_out = opt_out_checker_->IsPageOptedOutOfFreezing(
         browser_context_id, page_node->GetMainFrameUrl());

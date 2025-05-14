@@ -97,7 +97,10 @@ class FreezingPolicy : public PageNodeObserver,
 
   class CanFreezePerTypeTracker;
 
-  // State of a browsing instance.
+  // Freezing related state for a page.
+  struct PageFreezingState;
+
+  // Freezing related state for a browsing instance.
   struct BrowsingInstanceState {
     BrowsingInstanceState();
     ~BrowsingInstanceState();
@@ -137,6 +140,9 @@ class FreezingPolicy : public PageNodeObserver,
   base::flat_set<content::BrowsingInstanceId> GetBrowsingInstances(
       const PageNode* page) const;
 
+  // Returns the `PageFreezingState` for `page`, creating it if necessary.
+  PageFreezingState& GetFreezingState(const PageNode* page_node) const;
+
   // Update frozen state for all pages connected to `page`. Connected pages
   // (including `page_node`) are added to `connected_pages_out` if not nullptr.
   void UpdateFrozenState(
@@ -150,7 +156,7 @@ class FreezingPolicy : public PageNodeObserver,
 
   // Returns the union of `CannotFreezeReason`s applicable to pages associated
   // with `browsing_instance_state`.
-  static freezing::CannotFreezeReasonSet GetCannotFreezeReasons(
+  freezing::CannotFreezeReasonSet GetCannotFreezeReasons(
       const BrowsingInstanceState& browsing_instance_state);
 
   // GraphOwned implementation:
