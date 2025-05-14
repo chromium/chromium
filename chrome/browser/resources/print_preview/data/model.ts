@@ -1318,15 +1318,15 @@ export class PrintPreviewModelElement extends PolymerElement {
     if (this.settings.mediaSize.available) {
       const cddDefault = this.getResetValue_(caps['media_size']!);
       if (cddDefault) {
-        this.set('settings.mediaSize.value', cddDefault);
+        this.setSettingPath_('mediaSize.value', cddDefault);
       }
     }
 
     if (this.settings.color.available) {
       const cddDefault = this.getResetValue_(caps['color']!) as ColorOption;
       if (cddDefault) {
-        this.set(
-            'settings.color.value',
+        this.setSettingPath_(
+            'color.value',
             !['STANDARD_MONOCHROME', 'CUSTOM_MONOCHROME'].includes(
                 cddDefault.type!));
       }
@@ -1335,13 +1335,13 @@ export class PrintPreviewModelElement extends PolymerElement {
     if (this.settings.duplex.available) {
       const cddDefault = this.getResetValue_(caps['duplex']!) as DuplexOption;
       if (cddDefault) {
-        this.set(
-            'settings.duplex.value',
+        this.setSettingPath_(
+            'duplex.value',
             cddDefault.type === DuplexType.LONG_EDGE ||
                 cddDefault.type === DuplexType.SHORT_EDGE);
         if (!this.settings.duplexShortEdge.available) {
-          this.set(
-              'settings.duplexShortEdge.value',
+          this.setSettingPath_(
+              'duplexShortEdge.value',
               cddDefault.type === DuplexType.SHORT_EDGE);
         }
       }
@@ -1350,7 +1350,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     if (this.settings.dpi.available) {
       const cddDefault = this.getResetValue_(caps['dpi']!);
       if (cddDefault) {
-        this.set('settings.dpi.value', cddDefault);
+        this.setSettingPath_('dpi.value', cddDefault);
       }
     }
   }
@@ -1371,7 +1371,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     const matchingOption = this.destination.getMediaSize(
         mediaSizePolicy.width, mediaSizePolicy.height);
     if (matchingOption !== undefined) {
-      this.set('settings.mediaSize.value', matchingOption);
+      this.setSettingPath_('mediaSize.value', matchingOption);
     }
   }
 
