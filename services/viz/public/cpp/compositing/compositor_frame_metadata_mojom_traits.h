@@ -144,6 +144,11 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.display_transform_hint;
   }
 
+  static bool is_mobile_optimized(
+      const viz::CompositorFrameMetadata& metadata) {
+    return metadata.is_mobile_optimized;
+  }
+
   static const std::unique_ptr<gfx::DelegatedInkMetadata>&
   delegated_ink_metadata(const viz::CompositorFrameMetadata& metadata) {
     return metadata.delegated_ink_metadata;

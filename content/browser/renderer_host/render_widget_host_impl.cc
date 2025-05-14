@@ -3792,14 +3792,6 @@ void RenderWidgetHostImpl::OnRenderFrameMetadataChangedAfterActivation(
 
   if (mobile_optimized_state_changed) {
     input_router()->NotifySiteIsMobileOptimized(is_mobile_optimized_);
-    // Notifies Viz only if the page's mobile optimized state has changed, since
-    // this is only used to set touch ack timeout delay for mobile sites in
-    // PassthroughTouchEventQueue.
-    if (auto* delegate_remote =
-            delegate()->GetRenderInputRouterDelegateRemote()) {
-      delegate_remote->NotifySiteIsMobileOptimized(is_mobile_optimized_,
-                                                   frame_sink_id_);
-    }
     if (auto* touch_emulator =
             GetTouchEmulator(/*create_if_necessary=*/false)) {
       touch_emulator->SetDoubleTapSupportForPageEnabled(!is_mobile_optimized_);

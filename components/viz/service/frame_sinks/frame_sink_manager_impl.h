@@ -298,6 +298,9 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   void OnFrameSinkDeviceScaleFactorChanged(const FrameSinkId& frame_sink_id,
                                            float device_scale_factor);
 
+  void OnFrameSinkMobileOptimizedChanged(const FrameSinkId& frame_sink_id,
+                                         bool is_mobile_optimized);
+
   void AddObserver(FrameSinkObserver* obs);
   void RemoveObserver(FrameSinkObserver* obs);
 

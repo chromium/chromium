@@ -43,6 +43,7 @@ CompositorFrameMetadata::CompositorFrameMetadata(
       min_page_scale_factor(other.min_page_scale_factor),
       top_controls_visible_height(other.top_controls_visible_height),
       display_transform_hint(other.display_transform_hint),
+      is_mobile_optimized(other.is_mobile_optimized),
       transition_directives(other.transition_directives),
       has_shared_element_resources(other.has_shared_element_resources),
       screenshot_destination(other.screenshot_destination),

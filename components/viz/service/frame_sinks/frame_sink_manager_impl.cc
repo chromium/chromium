@@ -838,6 +838,15 @@ void FrameSinkManagerImpl::OnFrameSinkDeviceScaleFactorChanged(
   }
 }
 
+void FrameSinkManagerImpl::OnFrameSinkMobileOptimizedChanged(
+    const FrameSinkId& frame_sink_id,
+    bool is_mobile_optimized) {
+  for (auto& observer : observer_list_) {
+    observer.OnFrameSinkMobileOptimizedChanged(frame_sink_id,
+                                               is_mobile_optimized);
+  }
+}
+
 void FrameSinkManagerImpl::AddObserver(FrameSinkObserver* obs) {
   observer_list_.AddObserver(obs);
 }

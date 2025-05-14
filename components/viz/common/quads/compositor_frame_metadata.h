@@ -178,6 +178,9 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // applicable to frames of the root surface.
   gfx::OverlayTransform display_transform_hint = gfx::OVERLAY_TRANSFORM_NONE;
 
+  // Please refer RenderFrameMetadata::is_mobile_optimized for detailed comment.
+  bool is_mobile_optimized = false;
+
   // Contains the metadata required for drawing a delegated ink trail onto the
   // end of a rendered ink stroke. This should only be present when two
   // conditions are met:

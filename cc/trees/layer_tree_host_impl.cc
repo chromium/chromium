@@ -2656,6 +2656,8 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
 
   metadata.display_transform_hint = active_tree_->display_transform_hint();
 
+  metadata.is_mobile_optimized = IsMobileOptimized(active_tree_.get());
+
   if (const gfx::DelegatedInkMetadata* delegated_ink_metadata_ptr =
           active_tree_->delegated_ink_metadata()) {
     std::unique_ptr<gfx::DelegatedInkMetadata> delegated_ink_metadata =

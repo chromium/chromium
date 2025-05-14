@@ -89,6 +89,8 @@ class VIZ_SERVICE_EXPORT InputManager
       const FrameSinkId& child_frame_sink_id) override;
   void OnFrameSinkDeviceScaleFactorChanged(const FrameSinkId& frame_sink_id,
                                            float device_scale_factor) override;
+  void OnFrameSinkMobileOptimizedChanged(const FrameSinkId& frame_sink_id,
+                                         bool is_mobile_optimized) override;
 
   // RenderWidgetHostInputEventRouter::Delegate implementation.
   input::TouchEmulator* GetTouchEmulator(bool create_if_necessary) override;
@@ -136,8 +138,6 @@ class VIZ_SERVICE_EXPORT InputManager
 
   // input::mojom::RenderInputRouterDelegate implementation.
   void StateOnTouchTransfer(input::mojom::TouchTransferStatePtr state) override;
-  void NotifySiteIsMobileOptimized(bool is_mobile_optimized,
-                                   const FrameSinkId& frame_sink_id) override;
   void ForceEnableZoomStateChanged(
       bool force_enable_zoom,
       const std::vector<FrameSinkId>& frame_sink_ids) override;
