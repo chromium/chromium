@@ -11,6 +11,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/android/scoped_input_event.h"
 #include "base/android/scoped_java_ref.h"
@@ -57,10 +58,15 @@ class EVENTS_EXPORT MotionEventAndroidNative : public MotionEventAndroid {
   float GetYPix(size_t pointer_index) const override;
   // End MotionEventAndroid overrides
 
+  struct EventTimes {
+    base::TimeTicks oldest;
+    base::TimeTicks latest;
+  };
   static std::unique_ptr<MotionEventAndroid> Create(
       base::android::ScopedInputEvent input_event,
       float pix_to_dip,
-      float y_offset_pix);
+      float y_offset_pix,
+      std::optional<EventTimes> event_times);
 
  private:
   MotionEventAndroidNative(base::android::ScopedInputEvent input_event,

@@ -82,7 +82,8 @@ MotionEventAndroidNative::MotionEventAndroidNative(
 std::unique_ptr<MotionEventAndroid> MotionEventAndroidNative::Create(
     base::android::ScopedInputEvent input_event,
     float pix_to_dip,
-    float y_offset_pix) {
+    float y_offset_pix,
+    std::optional<EventTimes> event_times) {
   const AInputEvent* event = input_event.a_input_event();
 
   CHECK(event != nullptr);
@@ -91,8 +92,16 @@ std::unique_ptr<MotionEventAndroid> MotionEventAndroidNative::Create(
   const size_t history_size = AMotionEvent_getHistorySize(event);
   // AMotionEvent_getEventTime and AMotionEvent_getHistoricalEventTime returns
   // the time with nanoseconds precision.
-  const base::TimeTicks latest_event_time =
-      base::TimeTicks::FromJavaNanoTime(AMotionEvent_getEventTime(event));
+  if (!event_times) {
+    event_times = EventTimes();
+    event_times->latest =
+        base::TimeTicks::FromJavaNanoTime(AMotionEvent_getEventTime(event));
+    event_times->oldest = (history_size == 0)
+                              ? event_times->latest
+                              : base::TimeTicks::FromJavaNanoTime(
+                                    AMotionEvent_getHistoricalEventTime(
+                                        event, /* history_index= */ 0));
+  }
   const jlong down_time_ms =
       base::TimeTicks::FromJavaNanoTime(AMotionEvent_getDownTime(event))
           .ToUptimeMillis();
@@ -102,11 +111,6 @@ std::unique_ptr<MotionEventAndroid> MotionEventAndroidNative::Create(
   const int masked_action = action & AMOTION_EVENT_ACTION_MASK;
   const int action_index = (action & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK) >>
                            AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT;
-  const base::TimeTicks oldest_event_time =
-      (history_size == 0) ? latest_event_time
-                          : base::TimeTicks::FromJavaNanoTime(
-                                AMotionEvent_getHistoricalEventTime(
-                                    event, /* history_index= */ 0));
 
   const size_t pointer_count = AMotionEvent_getPointerCount(event);
 
@@ -148,7 +152,7 @@ std::unique_ptr<MotionEventAndroid> MotionEventAndroidNative::Create(
       std::move(input_event), pix_to_dip,
       /* ticks_x= */ 0.f,
       /* ticks_y= */ 0.f,
-      /* tick_multiplier= */ 0.f, oldest_event_time, latest_event_time,
+      /* tick_multiplier= */ 0.f, event_times->oldest, event_times->latest,
       base::TimeTicks::FromUptimeMillis(down_time_ms), masked_action,
       pointer_count, history_size, action_index,
       /* android_action_button= */ 0, gesture_classification,
