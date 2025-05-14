@@ -508,6 +508,13 @@ export class SettingsInputMethodOptionsPageElement extends
   }
 
   /**
+   * @return true if |item| needs label to be shown.
+   */
+  private shouldShowLabel_(item: UiType) {
+    return !this.isSubmenuButton_(item) && !this.isLink_(item);
+  }
+
+  /**
    * @return true if |item| is a toggle button.
    */
   private isToggleButton_(item: UiType): item is UiType.TOGGLE_BUTTON {
