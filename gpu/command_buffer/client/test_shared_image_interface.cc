@@ -421,6 +421,35 @@ void TestSharedImageInterface::WaitSyncToken(const SyncToken& sync_token) {
   NOTREACHED();
 }
 
+scoped_refptr<ClientSharedImage>
+TestSharedImageInterface::CreateSharedImageWithMapCallbackController(
+    const SharedImageInfo& si_info,
+    gfx::BufferUsage buffer_usage,
+    bool premapped,
+    FakeGpuMemoryBuffer::MapCallbackController* controller) {
+  CHECK(controller);
+
+  // Create a FakeGpuMemoryBuffer.
+  auto buffer_format =
+      viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
+          si_info.meta.format);
+  auto fake_gmb = std::make_unique<FakeGpuMemoryBuffer>(
+      si_info.meta.size, buffer_format, premapped, controller);
+
+  Mailbox mailbox;
+  // Create a ClientSharedImage with a FakeGpuMemoryBuffer.
+  {
+    base::AutoLock locked(lock_);
+    mailbox = Mailbox::Generate();
+    shared_images_.insert(mailbox);
+  }
+
+  auto image = ClientSharedImage::CreateForTesting(
+      mailbox, si_info.meta, GenUnverifiedSyncToken(), std::move(fake_gmb),
+      buffer_usage, holder_);
+  return image;
+}
+
 bool TestSharedImageInterface::CheckSharedImageExists(
     const Mailbox& mailbox) const {
   base::AutoLock locked(lock_);
