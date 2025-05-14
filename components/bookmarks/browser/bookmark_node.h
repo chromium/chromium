@@ -120,8 +120,6 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
   // This method only considers the visibility of the node based on itself and
   // its children. Callers should prefer `BookmarkModel::IsVisible()`, which
   // considers the full tree.
-  // TODO(crbug.com/395071423): migrate callers and remove (or restrict
-  // visibility of) this method.
   virtual bool IsVisible() const;
 
   // Gets/sets/deletes value of `key` in the meta info represented by
@@ -252,13 +250,14 @@ class BookmarkPermanentNode : public BookmarkNode {
   // when it is empty (i.e. no children).
   static bool IsTypeVisibleWhenEmpty(Type type);
 
+  bool IsVisible() const override;
+
+  void set_visibility(bool is_visible) { is_visible_ = is_visible; }
+
   BookmarkPermanentNode(const BookmarkPermanentNode&) = delete;
   BookmarkPermanentNode& operator=(const BookmarkPermanentNode&) = delete;
 
   ~BookmarkPermanentNode() override;
-
-  // BookmarkNode overrides:
-  bool IsVisible() const override;
 
  private:
   // Constructor is private to disallow the construction of permanent nodes
@@ -268,7 +267,7 @@ class BookmarkPermanentNode : public BookmarkNode {
                         const base::Uuid& uuid,
                         const std::u16string& title);
 
-  const bool visible_when_empty_;
+  bool is_visible_ = true;
 };
 
 // If you are looking for gMock printing via PrintTo(), please check

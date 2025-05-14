@@ -17,6 +17,7 @@ class GURL;
 namespace bookmarks {
 
 class BookmarkNode;
+class BookmarkPermanentNode;
 
 // Observer for the BookmarkModel.
 class BookmarkModelObserver : public base::CheckedObserver {
@@ -49,6 +50,10 @@ class BookmarkModelObserver : public base::CheckedObserver {
   //
   // `added_by_user` is true when a new bookmark was added by the user and false
   // when a node is added by sync or duplicated.
+  //
+  // In general the added node has IsVisible() true when this method is invoked,
+  // with the exception of account permanent folders which might be invisible
+  // when created.
   virtual void BookmarkNodeAdded(const BookmarkNode* parent,
                                  size_t index,
                                  bool added_by_user) = 0;
@@ -109,6 +114,13 @@ class BookmarkModelObserver : public base::CheckedObserver {
   // Invoked when the children (just direct children, not descendants) of
   // `node` have been reordered in some way, such as sorted.
   virtual void BookmarkNodeChildrenReordered(const BookmarkNode* node) = 0;
+
+  // Invoked after a permanent node's visibility has changed. This node is
+  // guaranteed to have no children at the point this observer is triggered
+  // (although this observer may be triggered as part of an update which adds a
+  // child to this node).
+  virtual void BookmarkPermanentNodeVisibilityChanged(
+      const BookmarkPermanentNode* node) {}
 
   // Invoked before an extensive set of model changes is about to begin.
   // This tells UI intensive observers to wait until the updates finish to

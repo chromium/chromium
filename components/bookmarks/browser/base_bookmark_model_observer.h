@@ -42,6 +42,11 @@ class BaseBookmarkModelObserver : public BookmarkModelObserver {
   void BookmarkNodeFaviconChanged(const BookmarkNode* node) override;
   void BookmarkNodeChildrenReordered(const BookmarkNode* node) override;
 
+  // The `BookmarkPermanentNodeVisibilityChanged` callback implies that one of
+  // the other callbacks above has already been called, or is about to be
+  // called. It is therefore not overridden here, to avoid a duplicate call to
+  // `BookmarkModelChanged()`:
+
  protected:
   ~BaseBookmarkModelObserver() override {}
 };

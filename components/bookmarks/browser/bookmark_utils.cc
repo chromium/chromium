@@ -352,6 +352,7 @@ BookmarkNodesSplitByAccountAndLocal GetPermanentNodesForDisplay(
 
   return permanent_nodes;
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 bool HasLocalOrSyncableBookmarks(const BookmarkModel* model) {
   return std::ranges::any_of(
@@ -359,8 +360,6 @@ bool HasLocalOrSyncableBookmarks(const BookmarkModel* model) {
                  model->mobile_node()},
       [](const BookmarkNode* node) { return !node->children().empty(); });
 }
-
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void GetMostRecentlyAddedEntries(BookmarkModel* model,
                                  size_t count,

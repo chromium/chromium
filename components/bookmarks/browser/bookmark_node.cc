@@ -180,10 +180,6 @@ bool BookmarkPermanentNode::IsTypeVisibleWhenEmpty(Type type) {
 
 BookmarkPermanentNode::~BookmarkPermanentNode() = default;
 
-bool BookmarkPermanentNode::IsVisible() const {
-  return visible_when_empty_ || !children().empty();
-}
-
 // static
 std::unique_ptr<BookmarkPermanentNode> BookmarkPermanentNode::CreateBookmarkBar(
     int64_t id) {
@@ -215,10 +211,13 @@ BookmarkPermanentNode::BookmarkPermanentNode(int64_t id,
                                              Type type,
                                              const base::Uuid& uuid,
                                              const std::u16string& title)
-    : BookmarkNode(id, uuid, GURL(), type, /*is_permanent_node=*/true),
-      visible_when_empty_(IsTypeVisibleWhenEmpty(type)) {
+    : BookmarkNode(id, uuid, GURL(), type, /*is_permanent_node=*/true) {
   CHECK(type != URL);
   SetTitle(title);
+}
+
+bool BookmarkPermanentNode::IsVisible() const {
+  return is_visible_;
 }
 
 }  // namespace bookmarks

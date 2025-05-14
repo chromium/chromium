@@ -131,11 +131,10 @@ BookmarkNodesSplitByAccountAndLocal GetMostRecentlyUsedFoldersForDisplay(
 // nodes).
 BookmarkNodesSplitByAccountAndLocal GetPermanentNodesForDisplay(
     const BookmarkModel* model);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Returns true if any local permanent nodes contain bookmarks.
 bool HasLocalOrSyncableBookmarks(const BookmarkModel* model);
-
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Returns the most recently added bookmarks. This does not return folders,
 // only nodes of type url.

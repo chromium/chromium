@@ -164,6 +164,8 @@ class BookmarkModel : public BookmarkUndoProvider,
   }
 
   // Returns true if the given `node` should be visible in UI surfaces.
+  // TODO(crbug.com/395071423): Migrate callers to BookmarkNode::IsVisible() and
+  // remove.
   bool IsNodeVisible(const BookmarkNode& node) const;
 
   // Returns true if `node` represents a bookmark that is stored on the local
@@ -586,6 +588,23 @@ class BookmarkModel : public BookmarkUndoProvider,
   // suffixed with for the purpose of metric breakdowns.
   metrics::StorageStateForUma GetStorageStateForUma(
       const BookmarkNode* node) const;
+
+  // Returns true if the given `node` should be visible in UI surfaces.
+  // This method is used during transient states (eg. just before or just after
+  // making model updates), therefore explicit parameters are passed in for
+  // properties of the node/model that shouldn't be read directly.
+  bool DetermineIfNodeShouldBeVisible(const BookmarkNode& node,
+                                      bool account_folders_exist,
+                                      bool local_bookmarks_exist) const;
+
+  // Updates the visibility of all local permanent folders.
+  void RefreshPermanentFolderVisibility(bool notify_observers);
+
+  // Updates the visibility of `node` and notifies observers if the visibility
+  // changed and `notify_observers` is true.
+  void UpdateNodeVisibilityIfNeeded(BookmarkNode& node,
+                                    bool new_visibility,
+                                    bool notify_observers);
 
   // Whether the initial set of data has been loaded.
   bool loaded_ = false;
