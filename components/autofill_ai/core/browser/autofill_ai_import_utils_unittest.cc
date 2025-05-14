@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -81,13 +82,17 @@ void AddPrediction(AutofillField& field, FieldType field_type) {
 std::unique_ptr<AutofillField> CreateInput(
     FormControlType form_control_type,
     FieldType field_type,
-    std::string value,
-    std::string_view format_string = "") {
+    std::string_view value,
+    std::string_view format_string = "",
+    std::string_view initial_value = "") {
   auto field =
       std::make_unique<AutofillField>(autofill::test::CreateTestFormField(
           /*label=*/"",
           /*name=*/"",
-          /*value=*/value, form_control_type));
+          /*value=*/initial_value, form_control_type));
+  // Explicitly set the value here to ensure that it differs from the initial
+  // value.
+  field->set_value(base::UTF8ToUTF16(value));
   if (!format_string.empty()) {
     field->set_format_string_unless_overruled(
         base::UTF8ToUTF16(format_string),
@@ -129,6 +134,11 @@ TEST_F(AutofillAiImportUtilsTest, ImportFromInput) {
   fields.push_back(CreateInput(FormControlType::kInputText,
                                FieldType::PASSPORT_NAME_TAG,
                                "Karlsson on the Roof"));
+  // Input fields for which the initial value is the same as the current value
+  // are ignored during import.
+  fields.push_back(CreateInput(FormControlType::kInputText,
+                               FieldType::PASSPORT_ISSUING_COUNTRY, "Sweden",
+                               /*format_string=*/"", "Sweden"));
   fields.push_back(CreateInput(FormControlType::kInputText,
                                FieldType::PASSPORT_ISSUE_DATE, "24", "DD"));
   fields.push_back(CreateInput(FormControlType::kInputText,
@@ -146,7 +156,7 @@ TEST_F(AutofillAiImportUtilsTest, ImportFromInput) {
 }
 
 // Tests import that includes a date distributed over three <select> elements.
-TEST_F(AutofillAiImportUtilsTest, ImportFromSelect) {
+TEST_F(AutofillAiImportUtilsTest, ImportFromDateSelect) {
   std::vector<std::unique_ptr<AutofillField>> fields;
   fields.push_back(CreateInput(FormControlType::kInputText,
                                FieldType::PASSPORT_NUMBER, "123"));
@@ -163,6 +173,24 @@ TEST_F(AutofillAiImportUtilsTest, ImportFromSelect) {
                   UnorderedElementsAre(
                       CreateAttribute(kPassportNumber, "123"),
                       CreateAttribute(kPassportIssueDate, "2025-12-24")))));
+}
+
+// Tests that importing from a non-date <select> element uses the `text` of the
+// select option and not its `value`.
+TEST_F(AutofillAiImportUtilsTest, ImportFromNonDateSelect) {
+  std::vector<std::unique_ptr<AutofillField>> fields;
+  fields.push_back(CreateInput(FormControlType::kInputText,
+                               FieldType::PASSPORT_NUMBER, "123"));
+  fields.push_back(CreateSelect(Range(1, 3), {"Germany", "USA", "Vietnam"},
+                                FieldType::PASSPORT_ISSUING_COUNTRY, "2"));
+
+  // `CreateAttribute` requires that we use the country code.
+  EXPECT_THAT(
+      GetPossibleEntitiesFromSubmittedForm(fields, "en-US"),
+      ElementsAre(Property(
+          &EntityInstance::attributes,
+          UnorderedElementsAre(CreateAttribute(kPassportNumber, "123"),
+                               CreateAttribute(kPassportCountry, "US")))));
 }
 
 TEST_F(AutofillAiImportUtilsTest, MaybeGetLocalizedDate) {
