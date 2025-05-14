@@ -191,12 +191,6 @@ BASE_FEATURE(kDocumentProviderNoSyncRequirement,
 // domains.
 BASE_FEATURE(kDomainSuggestions, "OmniboxDomainSuggestions", DISABLED);
 
-// If enabled, clipboard suggestion will not show the clipboard content until
-// the user clicks the reveal button.
-BASE_FEATURE(kClipboardSuggestionContentHidden,
-             "ClipboardSuggestionContentHidden",
-             enable_if(IS_ANDROID));
-
 // If enabled, makes Most Visited Tiles a Horizontal render group.
 // Horizontal render group decomposes aggregate suggestions (such as old Most
 // Visited Tiles), expecting individual AutocompleteMatch entry for every
