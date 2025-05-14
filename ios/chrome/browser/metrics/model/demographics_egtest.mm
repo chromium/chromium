@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "components/metrics/demographics/demographic_metrics_provider.h"
 #import "components/ukm/ukm_service.h"
@@ -155,7 +156,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
                      @"Client ID should be non-zero.");
 }
 
-// Adds dummy data,  stores it in the UKM service's UnsentLogStore, and verifies
+// Adds dummy data, stores it in the UKM service's UnsentLogStore, and verifies
 // that the UnsentLogStore has an unsent log.
 - (void)buildAndStoreUKMLog {
   // Record a source in the UKM service so that there is data with which to
@@ -233,13 +234,20 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 
   const int success =
       static_cast<int>(metrics::UserDemographicsStatus::kSuccess);
+
   // Expect 2 counts because in the iOS First Run, the MetricsService is started
   // quicker, which causes two metrics log uploads to happen by this point.
-  GREYAssertNil([MetricsAppInterface
-                    expectUniqueSampleWithCount:2
-                                      forBucket:success
-                                   forHistogram:@"UMA.UserDemographics.Status"],
-                @"Unexpected histogram contents");
+  ConditionBlock condition = ^{
+    NSError* error = [MetricsAppInterface
+        expectUniqueSampleWithCount:2
+                          forBucket:success
+                       forHistogram:@"UMA.UserDemographics.Status"];
+    return error == nil;
+  };
+
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForActionTimeout, condition),
+             @"Unexpected histogram contents");
 }
 // LINT.ThenChange(/chrome/browser/metrics/metrics_service_user_demographics_browsertest.cc:AddSyncedUserBirthYearAndGenderToProtoData)
 
