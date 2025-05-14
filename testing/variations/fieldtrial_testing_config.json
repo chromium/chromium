@@ -7721,6 +7721,21 @@
             ]
         }
     ],
+    "DirtyWritebackMaxBytes": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "DirtyWritebackMaxBytes",
+                    "enable_features": [
+                        "CrOSLateBootDirtyWritebackMaxBytes"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableBlackHoleOnNoNewNetwork": [
         {
             "platforms": [
