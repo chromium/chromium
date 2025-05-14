@@ -1971,6 +1971,11 @@ chromium-metrics-reviews@google.com.
       <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
+    <variant name=".UploadFmRegistrationToken"
+        summary="Upload FM Registration Token.">
+      <owner>asumaneev@google.com</owner>
+      <owner>chromeos-commercial-remote-management@google.com</owner>
+    </variant>
     <variant name=".UploadPolicyValidationReport"
         summary="Upload Policy Validation Report.">
       <owner>rbock@google.com</owner>
