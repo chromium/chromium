@@ -1043,6 +1043,7 @@ TEST_F(FloatingWorkspaceServiceV2Test, CanRecordTemplateLoadMetric) {
 }
 
 TEST_F(FloatingWorkspaceServiceV2Test, CaptureFloatingWorkspaceTemplate) {
+  SkipOnFirstSyncCallback();
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
@@ -1057,6 +1058,23 @@ TEST_F(FloatingWorkspaceServiceV2Test, CaptureFloatingWorkspaceTemplate) {
       MakeTestFloatingWorkspaceDeskTemplate(template_name, creation_time);
   mock_desks_client()->SetCapturedDeskTemplate(
       std::move(floating_workspace_template));
+
+  // Check that we don't upload a desk until restore happens.
+  task_environment().FastForwardBy(
+      ash::features::kFloatingWorkspaceV2PeriodicJobIntervalInSeconds.Get() +
+      base::Seconds(1));
+  user_activity_detector()->set_last_activity_time_for_test(
+      base::TimeTicks::Now());
+  // No upload from waiting.
+  ASSERT_FALSE(
+      floating_workspace_service->GetLatestFloatingWorkspaceTemplate());
+  ash::Shell::Get()->system_tray_notifier()->NotifySystemTrayBubbleShown();
+  // No upload from clicking on the tray.
+  ASSERT_FALSE(
+      floating_workspace_service->GetLatestFloatingWorkspaceTemplate());
+
+  // Once we get the signal which triggers restore, capture and upload will
+  // start happening.
   test_sync_service()->SetDownloadStatusFor(
       {syncer::DataType::WORKSPACE_DESK},
       syncer::SyncService::DataTypeDownloadStatus::kUpToDate);

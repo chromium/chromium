@@ -659,6 +659,11 @@ FloatingWorkspaceService::GetFloatingWorkspaceTemplateEntries() {
 }
 
 void FloatingWorkspaceService::CaptureAndUploadActiveDesk() {
+  if (should_run_restore_) {
+    // A safeguard in case the capture was triggered while we are waiting to
+    // restore the session.
+    return;
+  }
   GetDesksClient()->CaptureActiveDesk(
       base::BindOnce(&FloatingWorkspaceService::OnTemplateCaptured,
                      weak_pointer_factory_.GetWeakPtr()),
