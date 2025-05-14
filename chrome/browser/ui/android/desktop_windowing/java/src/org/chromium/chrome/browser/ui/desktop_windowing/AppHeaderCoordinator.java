@@ -204,7 +204,7 @@ public class AppHeaderCoordinator
     private void onInsetsRectsUpdated(Rect widestUnoccludedRect) {
         // mActivity is only set to null in destroy().
         boolean isOnExternalDisplay =
-                DisplayUtil.isContextInDefaultDisplay(assumeNonNull(mActivity));
+                !DisplayUtil.isContextInDefaultDisplay(assumeNonNull(mActivity));
         mHeuristicResult =
                 checkIsInDesktopWindow(
                         mCaptionBarRectProvider, mHeuristicResult, isOnExternalDisplay);

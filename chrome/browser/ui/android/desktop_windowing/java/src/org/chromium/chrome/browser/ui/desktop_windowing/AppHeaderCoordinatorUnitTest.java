@@ -73,15 +73,15 @@ import java.util.List;
 public class AppHeaderCoordinatorUnitTest {
     @Implements(DisplayUtil.class)
     static class ShadowDisplayUtil {
-        private static boolean sIsOnExternalDisplay;
+        private static boolean sIsOnDefaultDisplay;
 
-        private static void setOnExternalDisplay(boolean isOnExternalDisplay) {
-            sIsOnExternalDisplay = isOnExternalDisplay;
+        private static void setOnDefaultDisplay(boolean isOnDefaultDisplay) {
+            sIsOnDefaultDisplay = isOnDefaultDisplay;
         }
 
         @Implementation
         public static boolean isContextInDefaultDisplay(Context context) {
-            return sIsOnExternalDisplay;
+            return sIsOnDefaultDisplay;
         }
     }
 
@@ -120,7 +120,7 @@ public class AppHeaderCoordinatorUnitTest {
 
     @Before
     public void setup() {
-        ShadowDisplayUtil.setOnExternalDisplay(false);
+        ShadowDisplayUtil.setOnDefaultDisplay(true);
         mActivityScenarioRule.getScenario().onActivity(activity -> mSpyActivity = spy(activity));
         mEdgeToEdgeStateProvider = new EdgeToEdgeStateProvider(mSpyActivity.getWindow());
         mSpyRootView = spy(mSpyActivity.getWindow().getDecorView());
@@ -203,7 +203,7 @@ public class AppHeaderCoordinatorUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.DesktopWindowHeuristicResult3",
                         DesktopWindowHeuristicResult.DISALLOWED_ON_EXTERNAL_DISPLAY);
-        ShadowDisplayUtil.setOnExternalDisplay(true);
+        ShadowDisplayUtil.setOnDefaultDisplay(false);
         updateFeatureParams(/* enableOnExternalDisplay= */ false);
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectObserver();
@@ -216,7 +216,7 @@ public class AppHeaderCoordinatorUnitTest {
 
     @Test
     public void enabledOnExternalDisplayWhenAllowed() {
-        ShadowDisplayUtil.setOnExternalDisplay(true);
+        ShadowDisplayUtil.setOnDefaultDisplay(false);
         updateFeatureParams(/* enableOnExternalDisplay= */ true);
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectObserver();
