@@ -236,7 +236,10 @@ void FillAndSubmitXframeCreditCardForm() {
   if ([self isRunningTest:@selector(testStickySavePromptJourney)]) {
     config.features_enabled.push_back(kAutofillStickyInfobarIos);
   }
-  if ([self isRunningTest:@selector
+  if ([self
+          isRunningTest:@selector
+          (testOfferUpstream_FullData_PaymentsAccepts_Xframe_WithBottomSheetDisabled)] ||
+      [self isRunningTest:@selector
             (testOfferUpstream_FullData_PaymentsAccepts_Xframe)] ||
       [self
           isRunningTest:@selector(testUserData_LocalSave_UserAccepts_Xframe)]) {
@@ -245,12 +248,15 @@ void FillAndSubmitXframeCreditCardForm() {
   }
   // testUserData_LocalSave_UserAccepts_Xframe
 
-  if (![self
+  if ([self
           isRunningTest:@selector
-          (testOfferUpstream_FullData_PaymentsAccepts_WithBottomSheetDisabled)] &&
-      ![self
+          (testOfferUpstream_FullData_PaymentsAccepts_WithBottomSheetDisabled)] ||
+      [self
           isRunningTest:@selector
           (testOfferUpstream_FullData_PaymentsAccepts_Xframe_WithBottomSheetDisabled)]) {
+    config.features_disabled.push_back(
+        autofill::features::kAutofillSaveCardBottomSheet);
+  } else {
     config.features_enabled.push_back(
         autofill::features::kAutofillSaveCardBottomSheet);
   }
