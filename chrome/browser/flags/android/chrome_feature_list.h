@@ -60,6 +60,7 @@ BASE_DECLARE_FEATURE(kBatchTabRestore);
 BASE_DECLARE_FEATURE(kBlockIntentsWhileLocked);
 BASE_DECLARE_FEATURE(kBookmarkPaneAndroid);
 BASE_DECLARE_FEATURE(kBottomBrowserControlsRefactor);
+BASE_DECLARE_FEATURE(kBrowserControlsDebugging);
 BASE_DECLARE_FEATURE(kBrowserControlsEarlyResize);
 BASE_DECLARE_FEATURE(kCacheActivityTaskID);
 BASE_DECLARE_FEATURE(kCacheIsMultiInstanceApi31Enabled);

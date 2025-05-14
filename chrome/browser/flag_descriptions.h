@@ -2714,6 +2714,9 @@ extern const char kBoardingPassDetectorDescription[];
 extern const char kBookmarkPaneAndroidName[];
 extern const char kBookmarkPaneAndroidDescription[];
 
+extern const char kBrowserControlsDebuggingName[];
+extern const char kBrowserControlsDebuggingDescription[];
+
 extern const char kCCTAuthTabName[];
 extern const char kCCTAuthTabDescription[];
 

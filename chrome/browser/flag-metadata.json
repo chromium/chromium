@@ -1237,6 +1237,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "browser-controls-debugging",
+    "owners": [
+      "wenyufu@chromium.org",
+      "clank-app-team@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "browser-initiated-automatic-picture-in-picture",
     "owners": [ "bkeen@google.com", "media-dev@chromium.org" ],
     "expiry_milestone": 150

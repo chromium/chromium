@@ -8405,6 +8405,7 @@ from previous Chrome versions.
   <int value="-2128535212" label="GuestOsFiles:enabled"/>
   <int value="-2128201506" label="PlusAddressFullFormFill:enabled"/>
   <int value="-2127806304" label="Enable16Desks:disabled"/>
+  <int value="-2127574740" label="BrowserControlsDebugging:disabled"/>
   <int value="-2127452488" label="OmniboxNumNtpZpsTrendingSearches:enabled"/>
   <int value="-2127319228" label="enable-media-internals:disabled"/>
   <int value="-2126697213" label="EnablePalmSuppression:disabled"/>
@@ -18387,6 +18388,7 @@ from previous Chrome versions.
   <int value="1650453540" label="ChipLocationIconOverride:disabled"/>
   <int value="1651030066" label="WebAppEnableProtocolHandlers:enabled"/>
   <int value="1651141490" label="SaveEditedPDFForm:enabled"/>
+  <int value="1651143136" label="BrowserControlsDebugging:enabled"/>
   <int value="1651829920" label="CrOSEnforceMonoAudioCapture:enabled"/>
   <int value="1652700594" label="PlatformKeysAesEncryption:disabled"/>
   <int value="1652798696"

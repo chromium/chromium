@@ -261,6 +261,7 @@ public abstract class ChromeFeatureList {
     public static final String BOARDING_PASS_DETECTOR = "BoardingPassDetector";
     public static final String BOOKMARK_PANE_ANDROID = "BookmarkPaneAndroid";
     public static final String BOTTOM_BROWSER_CONTROLS_REFACTOR = "BottomBrowserControlsRefactor";
+    public static final String BROWSER_CONTROLS_DEBUGGING = "BrowserControlsDebugging";
     public static final String BROWSER_CONTROLS_EARLY_RESIZE = "BrowserControlsEarlyResize";
     public static final String BROWSER_CONTROLS_IN_VIZ = "AndroidBrowserControlsInViz";
     public static final String BROWSING_DATA_MODEL = "BrowsingDataModel";
@@ -662,6 +663,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(BLOCK_INTENTS_WHILE_LOCKED, false);
     public static final CachedFlag sBookmarkPaneAndroid =
             newCachedFlag(BOOKMARK_PANE_ANDROID, false);
+    public static final CachedFlag sBrowserControlsDebugging =
+            newCachedFlag(BROWSER_CONTROLS_DEBUGGING, false);
     public static final CachedFlag sCacheIsMultiInstanceApi31Enabled =
             newCachedFlag(CACHE_IS_MULTI_INSTANCE_API_31_ENABLED, true);
     public static final CachedFlag sCctAdaptiveButton = newCachedFlag(CCT_ADAPTIVE_BUTTON, false);
@@ -891,6 +894,7 @@ public abstract class ChromeFeatureList {
                     sBatchTabRestore,
                     sBlockIntentsWhileLocked,
                     sBookmarkPaneAndroid,
+                    sBrowserControlsDebugging,
                     sCacheIsMultiInstanceApi31Enabled,
                     sCctAdaptiveButton,
                     sCctAuthTab,

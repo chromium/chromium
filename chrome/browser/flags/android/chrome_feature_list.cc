@@ -224,6 +224,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBookmarkPaneAndroid,
     &kBottomBrowserControlsRefactor,
     &kTabClosureMethodRefactor,
+    &kBrowserControlsDebugging,
     &kBrowserControlsEarlyResize,
     &kCacheActivityTaskID,
     &kCacheIsMultiInstanceApi31Enabled,
@@ -653,6 +654,10 @@ BASE_FEATURE(kBookmarkPaneAndroid,
 BASE_FEATURE(kBottomBrowserControlsRefactor,
              "BottomBrowserControlsRefactor",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBrowserControlsDebugging,
+             "BrowserControlsDebugging",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBrowserControlsEarlyResize,
              "BrowserControlsEarlyResize",

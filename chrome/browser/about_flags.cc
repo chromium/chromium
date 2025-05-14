@@ -12359,6 +12359,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidWindowManagementWebApiName,
      flag_descriptions::kAndroidWindowManagementWebApiDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(ui::kAndroidWindowManagementWebApi)},
+
+    {"browser-controls-debugging",
+     flag_descriptions::kBrowserControlsDebuggingName,
+     flag_descriptions::kBrowserControlsDebuggingDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kBrowserControlsDebugging)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -12,6 +12,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.device.DeviceClassManager;
@@ -39,6 +40,7 @@ import java.util.Set;
  */
 public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVisibilityDelegate
         implements ImeEventObserver {
+    private static final String TAG = "BrowserControls";
     protected static final int MSG_ID_ENABLE_FULLSCREEN_AFTER_LOAD = 1;
 
     /** The maximum amount of time to wait for a page to load before entering fullscreen. */
@@ -273,44 +275,57 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
 
         @NonNull GURL url = mTab.getUrl();
         boolean enableHidingBrowserControls = true;
+        int flags = 0;
         if (url.getScheme().equals(UrlConstants.CHROME_SCHEME)
                 || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME)) {
             enableHidingBrowserControls = false;
             recordBrowserControlsLockReason(LockReason.CHROME_URL);
+            flags |= (1 << (int) LockReason.CHROME_URL);
         }
         if (SecurityStateModel.isContentDangerous(mTab.getWebContents())) {
             enableHidingBrowserControls = false;
             recordBrowserControlsLockReason(LockReason.TAB_CONTENT_DANGEROUS);
+            flags |= (1 << (int) LockReason.TAB_CONTENT_DANGEROUS);
         }
         if (mIsFocusedNodeEditable) {
             enableHidingBrowserControls = false;
             recordBrowserControlsLockReason(LockReason.EDITABLE_NODE_FOCUS);
+            flags |= (1 << (int) LockReason.EDITABLE_NODE_FOCUS);
         }
         if (mTab.isShowingErrorPage() || mTab.isRendererUnresponsive()) {
             enableHidingBrowserControls = false;
             recordBrowserControlsLockReason(LockReason.TAB_ERROR);
+            flags |= (1 << (int) LockReason.TAB_ERROR);
         }
         if (mTab.isHidden()) {
             enableHidingBrowserControls = false;
             recordBrowserControlsLockReason(LockReason.TAB_HIDDEN);
+            flags |= (1 << (int) LockReason.TAB_HIDDEN);
         }
         if (mIsFullscreenWaitingForLoad) {
             enableHidingBrowserControls = false;
             recordBrowserControlsLockReason(LockReason.FULLSCREEN_LOADING);
+            flags |= (1 << (int) LockReason.FULLSCREEN_LOADING);
         }
         // TODO(tedchoc): AccessibilityUtil and DeviceClassManager checks do not belong in Tab
         //                logic.  They should be moved to application level checks.
         if (ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
             enableHidingBrowserControls = false;
             recordBrowserControlsLockReason(LockReason.A11Y_ENABLED);
+            flags |= (1 << (int) LockReason.A11Y_ENABLED);
         }
         if (!DeviceClassManager.enableFullscreen()) {
             enableHidingBrowserControls = false;
             recordBrowserControlsLockReason(LockReason.FULLSCREEN_DISABLED);
+            flags |= (1 << (int) LockReason.FULLSCREEN_DISABLED);
         }
 
         RecordHistogram.recordBooleanHistogram(
                 "Android.BrowserControls.LockedByTabState", !enableHidingBrowserControls);
+
+        if (ChromeFeatureList.sBrowserControlsDebugging.isEnabled()) {
+            Log.i(TAG, "Browser controls hiding reason flags: " + Integer.toBinaryString(flags));
+        }
 
         return enableHidingBrowserControls;
     }
