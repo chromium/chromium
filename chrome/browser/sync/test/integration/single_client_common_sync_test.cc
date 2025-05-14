@@ -41,6 +41,7 @@
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
+#include "components/sync/service/sync_service_utils.h"
 #include "components/sync/test/fake_server.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "content/public/test/browser_test.h"
@@ -629,5 +630,35 @@ IN_PROC_BROWSER_TEST_F(SingleClientPolicySyncTest,
   EXPECT_FALSE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::DataType::BOOKMARKS));
 }
+
+// Regression test for crbug.com/415728693.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(SingleClientPolicySyncTest,
+                       ApplySyncDisabledPolicyWhileSyncPaused) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
+  ASSERT_EQ(GetSyncService(0)->GetTransportState(),
+            syncer::SyncService::TransportState::PAUSED);
+  ASSERT_EQ(syncer::GetUploadToGoogleState(GetSyncService(0),
+                                           syncer::PRIORITY_PREFERENCES),
+            syncer::UploadState::NOT_ACTIVE);
+
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kSyncDisabled, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(true), nullptr);
+  policy_provider()->UpdateChromePolicy(policies);
+
+  // Once the policy is applied, sync should be disabled.
+  ASSERT_EQ(GetSyncService(0)->GetTransportState(),
+            syncer::SyncService::TransportState::DISABLED);
+
+  // Should not crash.
+  ASSERT_EQ(syncer::GetUploadToGoogleState(GetSyncService(0),
+                                           syncer::PRIORITY_PREFERENCES),
+            syncer::UploadState::NOT_ACTIVE);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
