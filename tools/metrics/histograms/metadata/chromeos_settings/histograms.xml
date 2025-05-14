@@ -648,8 +648,8 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="ChromeOS.Settings.MagicBoost.Lobster" enum="BooleanToggled"
-    expires_after="2025-10-25">
+<histogram name="ChromeOS.Settings.MagicBoost.LobsterEnabled"
+    enum="BooleanToggled" expires_after="2025-10-25">
   <owner>curtismcmullan@google.com</owner>
   <owner>hdchuong@google.com</owner>
   <summary>
