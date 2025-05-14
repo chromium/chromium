@@ -170,6 +170,8 @@ _BROWSER_SPECIFIC_FILTER['chrome-headless-shell'] = [
     'ChromeDriverTest.testSetRPHResgistrationMode',
     # The test is only intended for the headless mode of Chrome.
     'ChromeDriverTest.testBrowserNameHeadlessMode',
+    # chrome-headless-shell does not support Browser.executeBrowserCommand
+    'ChromeDriverTest.testWebviewDetactedDuringClick',
 ]
 
 _BROWSER_AND_PLATFORM_SPECIFIC_FILTER = {
@@ -4254,6 +4256,40 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     """ Regression test for crbug.com/367752739 """
     self._driver.Load(self.GetHttpUrlForFile(
         '/chromedriver/log_long_unicode_string.html'))
+
+  def testWebviewDetactedDuringClick(self):
+    # Regression test for https://crbug.com/410599467
+    self._http_server.SetDataForPath('/fre.html',
+      bytes('''<html>
+            <a href="#continue">continue</a>
+            <script>
+              document.querySelector('a').addEventListener('mousedown', () => {
+                location.href = "#continue";
+              });
+            </script></html>''', 'utf-8'))
+    driver = self.CreateDriver(
+          chrome_switches=[
+            'glic-dev',
+            'glic-automation',
+            'glic-always-open-fre',
+            'enable-features=Glic,TabstripComboButton,ContextualCueing',
+            'glic-fre-url=' + self.GetHttpUrlForFile('/fre.html'),
+            ])
+    driver.SendCommandAndGetResult('Browser.executeBrowserCommand', {
+      'commandId': 'openGlic',
+    })
+    def waitForFRE():
+      for handle in driver.GetWindowHandles():
+        driver.SwitchToWindow(handle)
+        if 'fre.html' in driver.GetCurrentUrl():
+          return True
+      else:
+        return False
+    self.WaitForCondition(waitForFRE)
+    driver.FindElement('css selector', 'a').Click()
+    self.assertTrue(
+        self.WaitForCondition(
+            lambda: len(self._driver.GetWindowHandles()) == 1))
 
 class ChromeDriverPdfTest(ChromeDriverBaseTestWithWebServer):
   """ Regression test for crbug.com/396611138 """

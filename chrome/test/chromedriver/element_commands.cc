@@ -341,15 +341,10 @@ Status ExecuteClickElement(Session* session,
                       session->sticky_modifiers, 1, 1);
   status = containing_web_view->DispatchMouseEvents(
       events, session->GetCurrentFrameId(), false);
-  if (status.code() == kTargetDetached) {
-    // Potential causes:
-    // * navigation detaches the OOPIF
-    // * window or frame is destroyed
-    // We assume that this is a side effect of the click.
-    status = Status{kOk};
-  }
-  if (status.IsOk())
+  // kTargetDetached could be a side effect of the click.
+  if (status.IsOk() || status.code() == kTargetDetached) {
     session->mouse_position = absolute_location;
+  }
   return status;
 }
 
