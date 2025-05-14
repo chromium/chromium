@@ -10,10 +10,12 @@
 
 namespace webnn {
 
-// Key in `GraphInfo.id_to_operand_map`.
-using OperandId = uint64_t;
+// Index into `GraphInfo.operands`.
+// Use uint32_t here because Mojo requires an explicitly sized type and
+// this is big enough.
+using OperandId = uint32_t;
 
-// Index to `GraphInfo.operations`.
+// Index into `GraphInfo.operations`.
 using OperationId = size_t;
 
 }  // namespace webnn

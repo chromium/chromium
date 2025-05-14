@@ -131,8 +131,7 @@ BuildAndCompute(
   named_input_remotes_and_handles.reserve(graph_info->input_operands.size());
 
   for (OperandId operand_id : graph_info->input_operands) {
-    const mojom::Operand& operand =
-        *graph_info->id_to_operand_map.at(operand_id);
+    const mojom::Operand& operand = *graph_info->operands.at(operand_id);
     EXPECT_TRUE(operand.name.has_value());
 
     auto it = named_inputs.find(*operand.name);
@@ -159,8 +158,7 @@ BuildAndCompute(
   named_output_remotes_and_handles.reserve(graph_info->output_operands.size());
 
   for (OperandId operand_id : graph_info->output_operands) {
-    const mojom::Operand& operand =
-        *graph_info->id_to_operand_map.at(operand_id);
+    const mojom::Operand& operand = *graph_info->operands.at(operand_id);
     EXPECT_TRUE(operand.name.has_value());
 
     auto tensor_info = mojom::TensorInfo::New(

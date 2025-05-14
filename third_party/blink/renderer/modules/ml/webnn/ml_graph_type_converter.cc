@@ -226,14 +226,11 @@ webnn::OperandId GetOperatorOutputId(const MLOperator* op,
 webnn::OperandId InsertTemporaryOperand(const OperandToIdMap& operand_to_id_map,
                                         webnn::OperandDescriptor descriptor,
                                         blink_mojom::GraphInfo* graph_info) {
-  webnn::OperandId operand_id = NextOperandId(*graph_info);
 
   auto mojo_operand = blink_mojom::Operand::New();
   mojo_operand->kind = blink_mojom::Operand::Kind::kOutput;
   mojo_operand->descriptor = std::move(descriptor);
-
-  graph_info->id_to_operand_map.insert(operand_id, std::move(mojo_operand));
-  return operand_id;
+  return AddOperand(*graph_info, std::move(mojo_operand));
 }
 
 Vector<uint32_t> PermuteShape(base::span<const uint32_t> shape,
@@ -1794,11 +1791,11 @@ OperationPtr CreateWhereOperation(const OperandToIdMap& operand_to_id_map,
 
 }  // namespace
 
-webnn::OperandId NextOperandId(
-    const webnn::mojom::blink::GraphInfo& graph_info) {
-  // This count must start at 1 because 0 is a reserved element in a
-  // WTF::HashMap (yes, really).
-  return graph_info.id_to_operand_map.size() + 1;
+// Add operand to `graph_info` and return its operand id.
+webnn::OperandId AddOperand(webnn::mojom::blink::GraphInfo& graph_info,
+                            webnn::mojom::blink::OperandPtr operand) {
+  graph_info.operands.push_back(std::move(operand));
+  return graph_info.operands.size() - 1;
 }
 
 // TODO(crbug.com/1504405): Use a lookup table to simplifie the switch logic.

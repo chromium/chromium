@@ -210,8 +210,8 @@ class GraphImplDml final : public WebNNGraphImpl {
   // that the compiled_operator might be nullptr if the graph compilation fails.
   //
   // The `constant_id_to_input_index_map` is used to bind constant buffers
-  // for the graph initialization in order. The constant id is the key for
-  // `id_to_operand_map` of `mojom::GraphInfo` interface, the input index is the
+  // for the graph initialization in order. The constant id is the index for
+  // `operands` of `mojom::GraphInfo` interface, the input index is the
   // DML_INPUT_GRAPH_EDGE_DESC::GraphInputIndex when creating the
   // DML_GRAPH_DESC. DirectML graph treats both input tensors and constant
   // tensors to be graph inputs. The difference is the data of the constant

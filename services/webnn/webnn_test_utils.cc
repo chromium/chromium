@@ -34,10 +34,8 @@ OperandId GraphInfoBuilder::BuildOperand(
       OperandDescriptor::UnsafeCreateForTesting(type, dimensions);
   operand->kind = kind;
 
-  CHECK(graph_info_->id_to_operand_map
-            .insert({next_operand_id_, std::move(operand)})
-            .second);
-  return next_operand_id_++;
+  graph_info_->operands.push_back(std::move(operand));
+  return graph_info_->operands.size() - 1;
 }
 
 OperandId GraphInfoBuilder::BuildIntermediateOperand(
@@ -51,7 +49,7 @@ OperandId GraphInfoBuilder::BuildInput(const std::string& name,
                                        OperandDataType type) {
   OperandId operand_id =
       BuildOperand(dimensions, type, mojom::Operand::Kind::kInput);
-  graph_info_->id_to_operand_map[operand_id]->name = name;
+  graph_info_->operands[operand_id]->name = name;
   graph_info_->input_operands.push_back(operand_id);
   return operand_id;
 }
@@ -72,7 +70,7 @@ OperandId GraphInfoBuilder::BuildConstant(
 
 void GraphInfoBuilder::AddOutput(const std::string& name,
                                  OperandId operand_id) {
-  graph_info_->id_to_operand_map[operand_id]->name = name;
+  graph_info_->operands[operand_id]->name = name;
   graph_info_->output_operands.push_back(operand_id);
 }
 
@@ -558,8 +556,9 @@ mojom::GraphInfoPtr GraphInfoBuilder::TakeGraphInfo() {
 mojom::GraphInfoPtr CloneGraphInfoForTesting(
     const mojom::GraphInfo& graph_info) {
   mojom::GraphInfoPtr cloned_graph_info = mojom::GraphInfo::New();
-  for (auto& [operand_id, operand_info] : graph_info.id_to_operand_map) {
-    cloned_graph_info->id_to_operand_map[operand_id] = operand_info.Clone();
+  cloned_graph_info->operands.reserve(graph_info.operands.size());
+  for (auto& operand_info : graph_info.operands) {
+    cloned_graph_info->operands.push_back(operand_info.Clone());
   }
   cloned_graph_info->input_operands = graph_info.input_operands;
   cloned_graph_info->output_operands = graph_info.output_operands;

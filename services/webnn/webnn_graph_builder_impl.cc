@@ -37,9 +37,6 @@ namespace webnn {
 
 namespace {
 
-// Maps the id to its `mojo::Operand`.
-using IdToOperandMap = base::flat_map<OperandId, mojom::OperandPtr>;
-
 using DependentOperationsMap =
     base::flat_map<OperandId, base::flat_set<OperationId>>;
 
@@ -139,30 +136,28 @@ bool ValidateLinearAttributes(const mojom::Linear& linear) {
   return true;
 }
 
-const mojom::Operand* GetMojoOperand(const IdToOperandMap& id_to_operand_map,
-                                     OperandId operand_id) {
-  const auto operand_iterator = id_to_operand_map.find(operand_id);
-  if (operand_iterator == id_to_operand_map.end()) {
-    // There is no operand for the id.
+const mojom::Operand* GetMojoOperand(
+    base::span<const mojom::OperandPtr> operands,
+    OperandId operand_id) {
+  if (operand_id >= operands.size()) {
     return nullptr;
   }
-  return operand_iterator->second.get();
+  return operands.at(operand_id).get();
 }
 
 webnn::BatchNormalizationAttributes ConvertToBatchNormalizationAttributes(
-    const IdToOperandMap& id_to_operand_map,
+    base::span<const mojom::OperandPtr> operands,
     const mojom::BatchNormalization& batch_normalization) {
   webnn::BatchNormalizationAttributes component_attributes;
   const auto& scale_operand_id = batch_normalization.scale_operand_id;
   if (scale_operand_id) {
     const mojom::Operand& scale_operand =
-        *id_to_operand_map.at(scale_operand_id.value());
+        *operands.at(scale_operand_id.value());
     component_attributes.scale = scale_operand.descriptor;
   }
   const auto& bias_operand_id = batch_normalization.bias_operand_id;
   if (bias_operand_id) {
-    const mojom::Operand& bias_operand =
-        *id_to_operand_map.at(bias_operand_id.value());
+    const mojom::Operand& bias_operand = *operands.at(bias_operand_id.value());
     component_attributes.bias = bias_operand.descriptor;
   }
   component_attributes.axis = batch_normalization.axis;
@@ -174,7 +169,7 @@ webnn::BatchNormalizationAttributes ConvertToBatchNormalizationAttributes(
 template <typename Conv2dAttributesType>
 Conv2dAttributesType ConvertToConv2dAttributes(
     const webnn::ContextProperties& context_properties,
-    const IdToOperandMap& id_to_operand_map,
+    base::span<const mojom::OperandPtr> operands,
     const webnn::mojom::Conv2d& conv2d,
     std::optional<OperandDescriptor> bias_operand) {
   Conv2dAttributesType attributes_base;
@@ -203,13 +198,12 @@ Conv2dAttributesType ConvertToConv2dAttributes(
 
 webnn::Conv2dAttributes ConvertToConv2dAttributes(
     const webnn::ContextProperties& context_properties,
-    const IdToOperandMap& id_to_operand_map,
+    base::span<const mojom::OperandPtr> operands,
     const webnn::mojom::Conv2d& conv2d,
     std::optional<OperandDescriptor> bias_operand) {
   auto component_attributes =
       ConvertToConv2dAttributes<webnn::Conv2dAttributes>(
-          context_properties, id_to_operand_map, conv2d,
-          std::move(bias_operand));
+          context_properties, operands, conv2d, std::move(bias_operand));
   switch (context_properties.input_operand_layout) {
     case webnn::InputOperandLayout::kNchw:
       // "channelsFirst": [batches, input_channels, height, width]
@@ -220,12 +214,12 @@ webnn::Conv2dAttributes ConvertToConv2dAttributes(
       // For regular conv2d, ohwi filter layout is expected by default.
       // For depthwise conv2d, ihwo filter layout is expected by default.
       const auto* const input =
-          GetMojoOperand(id_to_operand_map, conv2d.input_operand_id);
+          GetMojoOperand(operands, conv2d.input_operand_id);
       CHECK(input);
       CHECK_EQ(input->descriptor.Rank(), 4u);
       const uint32_t input_channels = input->descriptor.shape()[3];
       const auto* const output =
-          GetMojoOperand(id_to_operand_map, conv2d.output_operand_id);
+          GetMojoOperand(operands, conv2d.output_operand_id);
       CHECK(output);
       CHECK_EQ(output->descriptor.Rank(), 4u);
       const uint32_t output_channels = output->descriptor.shape()[3];
@@ -242,7 +236,7 @@ webnn::Conv2dAttributes ConvertToConv2dAttributes(
 }
 
 webnn::LstmAttributes ConvertToLstmAttributes(
-    const IdToOperandMap& id_to_operand_map,
+    base::span<const mojom::OperandPtr> operands,
     const webnn::mojom::Lstm& lstm) {
   webnn::LstmAttributes attributes;
   attributes.return_sequence = lstm.return_sequence;
@@ -251,28 +245,27 @@ webnn::LstmAttributes ConvertToLstmAttributes(
   attributes.activation_count = lstm.activations.size();
 
   if (lstm.bias_operand_id.has_value()) {
-    const auto* bias =
-        GetMojoOperand(id_to_operand_map, lstm.bias_operand_id.value());
+    const auto* bias = GetMojoOperand(operands, lstm.bias_operand_id.value());
     attributes.bias = bias->descriptor;
   }
   if (lstm.recurrent_bias_operand_id.has_value()) {
-    const auto* recurrent_bias = GetMojoOperand(
-        id_to_operand_map, lstm.recurrent_bias_operand_id.value());
+    const auto* recurrent_bias =
+        GetMojoOperand(operands, lstm.recurrent_bias_operand_id.value());
     attributes.recurrent_bias = recurrent_bias->descriptor;
   }
   if (lstm.peephole_weight_operand_id.has_value()) {
-    const auto* peephole_weight = GetMojoOperand(
-        id_to_operand_map, lstm.peephole_weight_operand_id.value());
+    const auto* peephole_weight =
+        GetMojoOperand(operands, lstm.peephole_weight_operand_id.value());
     attributes.peephole_weight = peephole_weight->descriptor;
   }
   if (lstm.initial_hidden_state_operand_id.has_value()) {
-    const auto* initial_hidden_state = GetMojoOperand(
-        id_to_operand_map, lstm.initial_hidden_state_operand_id.value());
+    const auto* initial_hidden_state =
+        GetMojoOperand(operands, lstm.initial_hidden_state_operand_id.value());
     attributes.initial_hidden_state = initial_hidden_state->descriptor;
   }
   if (lstm.initial_cell_state_operand_id.has_value()) {
-    const auto* initial_cell_state = GetMojoOperand(
-        id_to_operand_map, lstm.initial_cell_state_operand_id.value());
+    const auto* initial_cell_state =
+        GetMojoOperand(operands, lstm.initial_cell_state_operand_id.value());
     attributes.initial_cell_state = initial_cell_state->descriptor;
   }
   attributes.label = lstm.label;
@@ -281,24 +274,24 @@ webnn::LstmAttributes ConvertToLstmAttributes(
 }
 
 webnn::LstmCellAttributes ConvertToLstmCellAttributes(
-    const IdToOperandMap& id_to_operand_map,
+    base::span<const mojom::OperandPtr> operands,
     const webnn::mojom::LstmCell& lstm_cell) {
   webnn::LstmCellAttributes attributes;
   attributes.activation_count = lstm_cell.activations.size();
 
   if (lstm_cell.bias_operand_id.has_value()) {
     const auto* bias =
-        GetMojoOperand(id_to_operand_map, lstm_cell.bias_operand_id.value());
+        GetMojoOperand(operands, lstm_cell.bias_operand_id.value());
     attributes.bias = bias->descriptor;
   }
   if (lstm_cell.recurrent_bias_operand_id.has_value()) {
-    const auto* recurrent_bias = GetMojoOperand(
-        id_to_operand_map, lstm_cell.recurrent_bias_operand_id.value());
+    const auto* recurrent_bias =
+        GetMojoOperand(operands, lstm_cell.recurrent_bias_operand_id.value());
     attributes.recurrent_bias = recurrent_bias->descriptor;
   }
   if (lstm_cell.peephole_weight_operand_id.has_value()) {
-    const auto* peephole_weight = GetMojoOperand(
-        id_to_operand_map, lstm_cell.peephole_weight_operand_id.value());
+    const auto* peephole_weight =
+        GetMojoOperand(operands, lstm_cell.peephole_weight_operand_id.value());
     attributes.peephole_weight = peephole_weight->descriptor;
   }
   attributes.label = lstm_cell.label;
@@ -308,16 +301,15 @@ webnn::LstmCellAttributes ConvertToLstmCellAttributes(
 
 webnn::ConvTranspose2dAttributes ConvertToConvTranspose2dAttributes(
     const webnn::ContextProperties& context_properties,
-    const IdToOperandMap& id_to_operand_map,
+    base::span<const mojom::OperandPtr> operands,
     const webnn::mojom::Conv2d& conv2d,
     std::optional<OperandDescriptor> bias_operand) {
   auto component_attributes =
       ConvertToConv2dAttributes<webnn::ConvTranspose2dAttributes>(
-          context_properties, id_to_operand_map, conv2d,
-          std::move(bias_operand));
+          context_properties, operands, conv2d, std::move(bias_operand));
 
   // Convert the output sizes that fetched from dimensions of output operand.
-  auto* output = GetMojoOperand(id_to_operand_map, conv2d.output_operand_id);
+  auto* output = GetMojoOperand(operands, conv2d.output_operand_id);
   CHECK_EQ(output->descriptor.Rank(), 4u);
   webnn::Size2d<uint32_t> output_sizes;
   switch (context_properties.input_operand_layout) {
@@ -342,20 +334,19 @@ webnn::ConvTranspose2dAttributes ConvertToConvTranspose2dAttributes(
 }
 
 webnn::LayerNormalizationAttributes ConvertToLayerNormalizationAttributes(
-    const IdToOperandMap& id_to_operand_map,
+    base::span<const mojom::OperandPtr> operands,
     const mojom::LayerNormalization& layer_normalization) {
   webnn::LayerNormalizationAttributes component_attributes;
   const auto& scale_operand_id = layer_normalization.scale_operand_id;
   if (scale_operand_id.has_value()) {
     const mojom::Operand& scale_operand =
-        *id_to_operand_map.at(scale_operand_id.value());
+        *operands.at(scale_operand_id.value());
     component_attributes.scale = scale_operand.descriptor;
   }
 
   const auto& bias_operand_id = layer_normalization.bias_operand_id;
   if (bias_operand_id.has_value()) {
-    const mojom::Operand& bias_operand =
-        *id_to_operand_map.at(bias_operand_id.value());
+    const mojom::Operand& bias_operand = *operands.at(bias_operand_id.value());
     component_attributes.bias = bias_operand.descriptor;
   }
   component_attributes.label = layer_normalization.label;
@@ -402,13 +393,12 @@ webnn::Pool2dAttributes ConvertToPool2dAttributes(
 }
 
 webnn::GemmAttributes ConvertToGemmAttributes(
-    const IdToOperandMap& id_to_operand_map,
+    base::span<const mojom::OperandPtr> operands,
     const mojom::Gemm& gemm) {
   webnn::GemmAttributes component_attributes;
   auto& c_operand_id = gemm.c_operand_id;
   if (c_operand_id) {
-    const mojom::Operand& c_operand =
-        *id_to_operand_map.at(c_operand_id.value());
+    const mojom::Operand& c_operand = *operands.at(c_operand_id.value());
     component_attributes.c_operand = c_operand.descriptor;
   }
   component_attributes.alpha = gemm.alpha;
@@ -421,22 +411,21 @@ webnn::GemmAttributes ConvertToGemmAttributes(
 }
 
 webnn::GruAttributes ConvertToGruAttributes(
-    const IdToOperandMap& id_to_operand_map,
+    base::span<const mojom::OperandPtr> operands,
     const webnn::mojom::Gru& gru) {
   webnn::GruAttributes component_attributes;
   if (gru.bias_operand_id.has_value()) {
-    const auto* bias =
-        GetMojoOperand(id_to_operand_map, gru.bias_operand_id.value());
+    const auto* bias = GetMojoOperand(operands, gru.bias_operand_id.value());
     component_attributes.bias = bias->descriptor;
   }
   if (gru.recurrent_bias_operand_id.has_value()) {
-    const auto* recurrent_bias = GetMojoOperand(
-        id_to_operand_map, gru.recurrent_bias_operand_id.value());
+    const auto* recurrent_bias =
+        GetMojoOperand(operands, gru.recurrent_bias_operand_id.value());
     component_attributes.recurrent_bias = recurrent_bias->descriptor;
   }
   if (gru.initial_hidden_state_operand_id.has_value()) {
-    const auto* initial_hidden_state = GetMojoOperand(
-        id_to_operand_map, gru.initial_hidden_state_operand_id.value());
+    const auto* initial_hidden_state =
+        GetMojoOperand(operands, gru.initial_hidden_state_operand_id.value());
     component_attributes.initial_hidden_state =
         initial_hidden_state->descriptor;
   }
@@ -451,17 +440,17 @@ webnn::GruAttributes ConvertToGruAttributes(
 }
 
 webnn::GruCellAttributes ConvertToGruCellAttributes(
-    const IdToOperandMap& id_to_operand_map,
+    base::span<const mojom::OperandPtr> operands,
     const webnn::mojom::GruCell& gru_cell) {
   webnn::GruCellAttributes component_attributes;
   if (gru_cell.bias_operand_id.has_value()) {
     const auto* bias =
-        GetMojoOperand(id_to_operand_map, gru_cell.bias_operand_id.value());
+        GetMojoOperand(operands, gru_cell.bias_operand_id.value());
     component_attributes.bias = bias->descriptor;
   }
   if (gru_cell.recurrent_bias_operand_id.has_value()) {
-    const auto* recurrent_bias = GetMojoOperand(
-        id_to_operand_map, gru_cell.recurrent_bias_operand_id.value());
+    const auto* recurrent_bias =
+        GetMojoOperand(operands, gru_cell.recurrent_bias_operand_id.value());
     component_attributes.recurrent_bias = recurrent_bias->descriptor;
   }
   component_attributes.activation_count = gru_cell.activations.size();
@@ -472,19 +461,18 @@ webnn::GruCellAttributes ConvertToGruCellAttributes(
 
 webnn::InstanceNormalizationAttributes ConvertToInstanceNormalizationAttributes(
     const webnn::ContextProperties& context_properties,
-    const IdToOperandMap& id_to_operand_map,
+    base::span<const mojom::OperandPtr> operands,
     const mojom::InstanceNormalization& instance_normalization) {
   webnn::InstanceNormalizationAttributes component_attributes;
   const auto& scale_operand_id = instance_normalization.scale_operand_id;
   if (scale_operand_id) {
     const mojom::Operand& scale_operand =
-        *id_to_operand_map.at(scale_operand_id.value());
+        *operands.at(scale_operand_id.value());
     component_attributes.scale = scale_operand.descriptor;
   }
   const auto& bias_operand_id = instance_normalization.bias_operand_id;
   if (bias_operand_id) {
-    const mojom::Operand& bias_operand =
-        *id_to_operand_map.at(bias_operand_id.value());
+    const mojom::Operand& bias_operand = *operands.at(bias_operand_id.value());
     component_attributes.bias = bias_operand.descriptor;
   }
   component_attributes.layout = context_properties.input_operand_layout;
@@ -629,18 +617,18 @@ class OperationValidationContext {
   static std::optional<ValidationResult> ValidateOperationsAndGetDependencies(
       const std::vector<mojom::OperationPtr>& operations,
       const ContextProperties& context_properties,
-      const IdToOperandMap& id_to_operand_map,
+      base::span<const mojom::OperandPtr> operands,
       base::flat_set<OperandId> processed_operands);
 
  private:
   OperationValidationContext(const ContextProperties& context_properties,
-                             const IdToOperandMap& id_to_operand_map,
+                             base::span<const mojom::OperandPtr> operands,
                              base::flat_set<OperandId> processed_operands)
       : context_properties_(context_properties),
-        id_to_operand_map_(id_to_operand_map),
+        operands_(operands),
         processed_operands_(std::move(processed_operands)) {
-    operand_to_dependent_operations_.reserve(id_to_operand_map.size());
-    operand_to_producing_operation_.reserve(id_to_operand_map.size());
+    operand_to_dependent_operations_.reserve(operands.size());
+    operand_to_producing_operation_.reserve(operands.size());
   }
 
   const mojom::Operand* GetMojoOperand(OperandId operand_id);
@@ -734,7 +722,7 @@ class OperationValidationContext {
                          OperationId operation_id);
 
   const base::raw_ref<const ContextProperties> context_properties_;
-  const base::raw_ref<const IdToOperandMap> id_to_operand_map_;
+  base::span<const mojom::OperandPtr> operands_;
 
   base::flat_set<OperandId> processed_operands_;
 
@@ -744,7 +732,7 @@ class OperationValidationContext {
 
 const mojom::Operand* OperationValidationContext::GetMojoOperand(
     OperandId operand_id) {
-  return ::webnn::GetMojoOperand(*id_to_operand_map_, operand_id);
+  return ::webnn::GetMojoOperand(operands_, operand_id);
 }
 
 void OperationValidationContext::NoteInputDependency(OperandId operand_id,
@@ -775,9 +763,9 @@ std::optional<OperationValidationContext::ValidationResult>
 OperationValidationContext::ValidateOperationsAndGetDependencies(
     const std::vector<mojom::OperationPtr>& operations,
     const ContextProperties& context_properties,
-    const IdToOperandMap& id_to_operand_map,
+    base::span<const mojom::OperandPtr> operands,
     base::flat_set<OperandId> processed_operands) {
-  OperationValidationContext context(context_properties, id_to_operand_map,
+  OperationValidationContext context(context_properties, operands,
                                      std::move(processed_operands));
 
   for (size_t i = 0; i < operations.size(); i++) {
@@ -900,7 +888,7 @@ bool OperationValidationContext::ValidateBatchNormalization(
       ValidateBatchNormalizationAndInferOutput(
           *context_properties_, input->descriptor, mean->descriptor,
           variance->descriptor,
-          ConvertToBatchNormalizationAttributes(*id_to_operand_map_,
+          ConvertToBatchNormalizationAttributes(operands_,
                                                 batch_normalization));
   if (!validated_output.has_value()) {
     return false;
@@ -1038,17 +1026,16 @@ bool OperationValidationContext::ValidateConv2d(const mojom::Conv2d& conv2d,
     case mojom::Conv2d::Kind::kDirect: {
       validated_output = ValidateConv2dAndInferOutput(
           *context_properties_, input->descriptor, filter->descriptor,
-          ConvertToConv2dAttributes(*context_properties_, *id_to_operand_map_,
-                                    conv2d, std::move(bias_operand)));
+          ConvertToConv2dAttributes(*context_properties_, operands_, conv2d,
+                                    std::move(bias_operand)));
       break;
     }
 
     case mojom::Conv2d::Kind::kTransposed: {
       validated_output = ValidateConvTranspose2dAndInferOutput(
           *context_properties_, input->descriptor, filter->descriptor,
-          ConvertToConvTranspose2dAttributes(*context_properties_,
-                                             *id_to_operand_map_, conv2d,
-                                             std::move(bias_operand)));
+          ConvertToConvTranspose2dAttributes(*context_properties_, operands_,
+                                             conv2d, std::move(bias_operand)));
       break;
     }
   }
@@ -1472,9 +1459,9 @@ bool OperationValidationContext::ValidateGemm(const mojom::Gemm& gemm,
   }
 
   const base::expected<OperandDescriptor, std::string> validated_output =
-      ValidateGemmAndInferOutput(
-          *context_properties_, a->descriptor, b->descriptor,
-          ConvertToGemmAttributes(*id_to_operand_map_, gemm));
+      ValidateGemmAndInferOutput(*context_properties_, a->descriptor,
+                                 b->descriptor,
+                                 ConvertToGemmAttributes(operands_, gemm));
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1506,7 +1493,7 @@ bool OperationValidationContext::ValidateGru(const mojom::Gru& gru,
 
   const auto& bias_operand_id = gru.bias_operand_id;
   if (bias_operand_id.has_value()) {
-    if (!id_to_operand_map_->contains(bias_operand_id.value()) ||
+    if (bias_operand_id.value() >= operands_.size() ||
         !processed_operands_.contains(gru.bias_operand_id)) {
       return false;
     }
@@ -1514,7 +1501,7 @@ bool OperationValidationContext::ValidateGru(const mojom::Gru& gru,
   }
   const auto& recurrent_bias_operand_id = gru.recurrent_bias_operand_id;
   if (recurrent_bias_operand_id.has_value()) {
-    if (!id_to_operand_map_->contains(recurrent_bias_operand_id.value()) ||
+    if (recurrent_bias_operand_id.value() >= operands_.size() ||
         !processed_operands_.contains(gru.recurrent_bias_operand_id)) {
       return false;
     }
@@ -1523,8 +1510,7 @@ bool OperationValidationContext::ValidateGru(const mojom::Gru& gru,
   const auto& initial_hidden_state_operand_id =
       gru.initial_hidden_state_operand_id;
   if (initial_hidden_state_operand_id.has_value()) {
-    if (!id_to_operand_map_->contains(
-            initial_hidden_state_operand_id.value()) ||
+    if (initial_hidden_state_operand_id.value() >= operands_.size() ||
         !processed_operands_.contains(gru.initial_hidden_state_operand_id)) {
       return false;
     }
@@ -1548,7 +1534,7 @@ bool OperationValidationContext::ValidateGru(const mojom::Gru& gru,
       validated_outputs = ValidateGruAndInferOutput(
           *context_properties_, input->descriptor, weight->descriptor,
           recurrent_weight->descriptor, gru.steps, gru.hidden_size,
-          ConvertToGruAttributes(*id_to_operand_map_, gru));
+          ConvertToGruAttributes(operands_, gru));
   if (!validated_outputs.has_value()) {
     return false;
   }
@@ -1593,7 +1579,7 @@ bool OperationValidationContext::ValidateGruCell(const mojom::GruCell& gru_cell,
 
   const std::optional<OperandId>& bias_operand_id = gru_cell.bias_operand_id;
   if (bias_operand_id.has_value()) {
-    if (!id_to_operand_map_->contains(bias_operand_id.value()) ||
+    if (bias_operand_id.value() >= operands_.size() ||
         !processed_operands_.contains(gru_cell.bias_operand_id)) {
       return false;
     }
@@ -1602,7 +1588,7 @@ bool OperationValidationContext::ValidateGruCell(const mojom::GruCell& gru_cell,
   const std::optional<OperandId>& recurrent_bias_operand_id =
       gru_cell.recurrent_bias_operand_id;
   if (recurrent_bias_operand_id.has_value()) {
-    if (!id_to_operand_map_->contains(recurrent_bias_operand_id.value()) ||
+    if (recurrent_bias_operand_id.value() >= operands_.size() ||
         !processed_operands_.contains(gru_cell.recurrent_bias_operand_id)) {
       return false;
     }
@@ -1623,7 +1609,7 @@ bool OperationValidationContext::ValidateGruCell(const mojom::GruCell& gru_cell,
           *context_properties_, input->descriptor, weight->descriptor,
           recurrent_weight->descriptor, hidden_state->descriptor,
           gru_cell.hidden_size,
-          ConvertToGruCellAttributes(*id_to_operand_map_, gru_cell));
+          ConvertToGruCellAttributes(operands_, gru_cell));
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1672,7 +1658,7 @@ bool OperationValidationContext::ValidateLayerNormalization(
 
   const auto& scale_operand_id = layer_normalization.scale_operand_id;
   if (scale_operand_id) {
-    if (!id_to_operand_map_->contains(scale_operand_id.value()) ||
+    if (scale_operand_id.value() >= operands_.size() ||
         !processed_operands_.contains(scale_operand_id.value()) ||
         scale_operand_id.value() == layer_normalization.output_operand_id) {
       // The scale operand is invalid.
@@ -1682,7 +1668,7 @@ bool OperationValidationContext::ValidateLayerNormalization(
   }
   const auto& bias_operand_id = layer_normalization.bias_operand_id;
   if (bias_operand_id) {
-    if (!id_to_operand_map_->contains(bias_operand_id.value()) ||
+    if (bias_operand_id.value() >= operands_.size() ||
         !processed_operands_.contains(bias_operand_id.value()) ||
         bias_operand_id.value() == layer_normalization.output_operand_id) {
       // The bias operand is invalid.
@@ -1694,7 +1680,7 @@ bool OperationValidationContext::ValidateLayerNormalization(
   const base::expected<OperandDescriptor, std::string> validated_output =
       ValidateLayerNormalizationAndInferOutput(
           *context_properties_, input->descriptor, layer_normalization.axes,
-          ConvertToLayerNormalizationAttributes(*id_to_operand_map_,
+          ConvertToLayerNormalizationAttributes(operands_,
                                                 layer_normalization));
   if (!validated_output.has_value()) {
     return false;
@@ -1756,7 +1742,7 @@ bool OperationValidationContext::ValidateLstm(const mojom::Lstm& lstm,
 
   const auto& bias_operand_id = lstm.bias_operand_id;
   if (bias_operand_id.has_value()) {
-    if (!id_to_operand_map_->contains(bias_operand_id.value()) ||
+    if (bias_operand_id.value() >= operands_.size() ||
         !processed_operands_.contains(lstm.bias_operand_id)) {
       return false;
     }
@@ -1764,7 +1750,7 @@ bool OperationValidationContext::ValidateLstm(const mojom::Lstm& lstm,
   }
   const auto& recurrent_bias_operand_id = lstm.recurrent_bias_operand_id;
   if (recurrent_bias_operand_id.has_value()) {
-    if (!id_to_operand_map_->contains(recurrent_bias_operand_id.value()) ||
+    if (recurrent_bias_operand_id.value() >= operands_.size() ||
         !processed_operands_.contains(lstm.recurrent_bias_operand_id)) {
       return false;
     }
@@ -1772,7 +1758,7 @@ bool OperationValidationContext::ValidateLstm(const mojom::Lstm& lstm,
   }
   const auto& peephole_weight_operand_id = lstm.peephole_weight_operand_id;
   if (peephole_weight_operand_id.has_value()) {
-    if (!id_to_operand_map_->contains(peephole_weight_operand_id.value()) ||
+    if (peephole_weight_operand_id.value() >= operands_.size() ||
         !processed_operands_.contains(lstm.peephole_weight_operand_id)) {
       return false;
     }
@@ -1781,8 +1767,7 @@ bool OperationValidationContext::ValidateLstm(const mojom::Lstm& lstm,
   const auto& initial_hidden_state_operand_id =
       lstm.initial_hidden_state_operand_id;
   if (initial_hidden_state_operand_id.has_value()) {
-    if (!id_to_operand_map_->contains(
-            initial_hidden_state_operand_id.value()) ||
+    if (initial_hidden_state_operand_id.value() >= operands_.size() ||
         !processed_operands_.contains(lstm.initial_hidden_state_operand_id)) {
       return false;
     }
@@ -1791,7 +1776,7 @@ bool OperationValidationContext::ValidateLstm(const mojom::Lstm& lstm,
   const auto& initial_cell_state_operand_id =
       lstm.initial_cell_state_operand_id;
   if (initial_cell_state_operand_id.has_value()) {
-    if (!id_to_operand_map_->contains(initial_cell_state_operand_id.value()) ||
+    if (initial_cell_state_operand_id.value() >= operands_.size() ||
         !processed_operands_.contains(lstm.initial_cell_state_operand_id)) {
       return false;
     }
@@ -1815,7 +1800,7 @@ bool OperationValidationContext::ValidateLstm(const mojom::Lstm& lstm,
       validated_outputs = ValidateLstmAndInferOutput(
           *context_properties_, input->descriptor, weight->descriptor,
           recurrent_weight->descriptor, lstm.steps, lstm.hidden_size,
-          ConvertToLstmAttributes(*id_to_operand_map_, lstm));
+          ConvertToLstmAttributes(operands_, lstm));
   if (!validated_outputs.has_value()) {
     return false;
   }
@@ -1865,7 +1850,7 @@ bool OperationValidationContext::ValidateLstmCell(
 
   const std::optional<OperandId> bias_operand_id = lstm_cell.bias_operand_id;
   if (bias_operand_id.has_value()) {
-    if (!id_to_operand_map_->contains(bias_operand_id.value()) ||
+    if (bias_operand_id.value() >= operands_.size() ||
         !processed_operands_.contains(bias_operand_id.value())) {
       return false;
     }
@@ -1874,7 +1859,7 @@ bool OperationValidationContext::ValidateLstmCell(
   const std::optional<OperandId> recurrent_bias_operand_id =
       lstm_cell.recurrent_bias_operand_id;
   if (recurrent_bias_operand_id.has_value()) {
-    if (!id_to_operand_map_->contains(recurrent_bias_operand_id.value()) ||
+    if (recurrent_bias_operand_id.value() >= operands_.size() ||
         !processed_operands_.contains(recurrent_bias_operand_id.value())) {
       return false;
     }
@@ -1883,7 +1868,7 @@ bool OperationValidationContext::ValidateLstmCell(
   const std::optional<OperandId> peephole_weight_operand_id =
       lstm_cell.peephole_weight_operand_id;
   if (peephole_weight_operand_id.has_value()) {
-    if (!id_to_operand_map_->contains(peephole_weight_operand_id.value()) ||
+    if (peephole_weight_operand_id.value() >= operands_.size() ||
         !processed_operands_.contains(peephole_weight_operand_id.value())) {
       return false;
     }
@@ -1908,7 +1893,7 @@ bool OperationValidationContext::ValidateLstmCell(
           *context_properties_, input->descriptor, weight->descriptor,
           recurrent_weight->descriptor, hidden_state->descriptor,
           cell_state->descriptor, lstm_cell.hidden_size,
-          ConvertToLstmCellAttributes(*id_to_operand_map_, lstm_cell));
+          ConvertToLstmCellAttributes(operands_, lstm_cell));
   if (!validated_outputs.has_value()) {
     return false;
   }
@@ -1945,7 +1930,7 @@ bool OperationValidationContext::ValidateInstanceNormalization(
   }
   const auto& scale_operand_id = instance_normalization.scale_operand_id;
   if (scale_operand_id) {
-    if (!id_to_operand_map_->contains(scale_operand_id.value()) ||
+    if (scale_operand_id.value() >= operands_.size() ||
         !processed_operands_.contains(scale_operand_id.value()) ||
         scale_operand_id.value() == instance_normalization.output_operand_id) {
       // The scale operand is invalid.
@@ -1955,7 +1940,7 @@ bool OperationValidationContext::ValidateInstanceNormalization(
   }
   const auto& bias_operand_id = instance_normalization.bias_operand_id;
   if (bias_operand_id) {
-    if (!id_to_operand_map_->contains(bias_operand_id.value()) ||
+    if (bias_operand_id.value() >= operands_.size() ||
         !processed_operands_.contains(bias_operand_id.value()) ||
         bias_operand_id.value() == instance_normalization.output_operand_id) {
       // The bias operand is invalid.
@@ -1967,9 +1952,8 @@ bool OperationValidationContext::ValidateInstanceNormalization(
   const base::expected<OperandDescriptor, std::string> validated_output =
       ValidateInstanceNormalizationAndInferOutput(
           *context_properties_, input->descriptor,
-          ConvertToInstanceNormalizationAttributes(*context_properties_,
-                                                   *id_to_operand_map_,
-                                                   instance_normalization));
+          ConvertToInstanceNormalizationAttributes(
+              *context_properties_, operands_, instance_normalization));
   if (!validated_output.has_value()) {
     return false;
   }
@@ -2852,8 +2836,13 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
   }
 
   // The input operands of graph can be empty.
-  if (graph_info.id_to_operand_map.empty() || graph_info.operations.empty() ||
+  if (graph_info.operands.empty() || graph_info.operations.empty() ||
       graph_info.output_operands.empty()) {
+    return std::nullopt;
+  }
+
+  // Can't exceed limit of OperandId type limit.
+  if (graph_info.operands.size() >= UINT32_MAX) {
     return std::nullopt;
   }
 
@@ -2879,7 +2868,8 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
       graph_constants;
   graph_constants.reserve(graph_info.constant_operand_ids_to_handles.size());
 
-  for (auto& [id, operand] : graph_info.id_to_operand_map) {
+  for (size_t id = 0; id < graph_info.operands.size(); ++id) {
+    const mojom::OperandPtr& operand = graph_info.operands[id];
     const size_t byte_length = operand->descriptor.PackedByteLength();
     if (byte_length > context_properties.tensor_byte_length_limit) {
       return std::nullopt;
@@ -2987,10 +2977,9 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
     }
   }
 
-  // The `id_to_operand_map` is an ordered map, so the `graph_inputs` and
-  // `graph_outputs` are also an ordered array for the value id, the
-  // `input_operands` and `graph_outputs` are also an ordered array configured
-  // in blink side.
+  // The `graph_inputs` and `graph_outputs` are ordered arrays, the
+  // `input_operands` and `graph_outputs` are also ordered arrays configured in
+  // blink side.
   if (graph_info.input_operands != graph_inputs ||
       graph_info.output_operands != graph_outputs) {
     return std::nullopt;
@@ -3014,8 +3003,8 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
   // Validate the operations which are sorted in the topological order.
   std::optional<OperationValidationContext::ValidationResult> result =
       OperationValidationContext::ValidateOperationsAndGetDependencies(
-          graph_info.operations, context_properties,
-          graph_info.id_to_operand_map, processed_operands);
+          graph_info.operations, context_properties, graph_info.operands,
+          processed_operands);
   if (!result.has_value()) {
     return std::nullopt;
   }
@@ -3023,10 +3012,13 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
 
   // Now that all the operations have been processed we can check that all the
   // operands are connected to the graph inputs and outputs.
-  for (auto& [id, operand] : graph_info.id_to_operand_map) {
-    if (operand->kind == mojom::Operand::Kind::kOutput && operand->name) {
+  for (size_t id = 0; id < graph_info.operands.size(); ++id) {
+    const mojom::OperandPtr& operand = graph_info.operands[id];
+    if (operand->kind == mojom::Operand::Kind::kOutput) {
       // Graph outputs must be the output of some operator.
-      if (!result->processed_operands.contains(id)) {
+      // Intermediate outputs can be eliminated by constant folding logic so
+      // they don't need to be the input of some operators.
+      if (operand->name && !result->processed_operands.contains(id)) {
         return std::nullopt;
       }
     } else {

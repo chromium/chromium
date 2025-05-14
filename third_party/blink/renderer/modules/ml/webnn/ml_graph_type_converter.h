@@ -19,10 +19,9 @@ namespace blink {
 class MLOperand;
 class MLOperator;
 
-// Returns the next operand ID to use when adding entries to graph_info's
-// id_to_operand_map.
-webnn::OperandId NextOperandId(
-    const webnn::mojom::blink::GraphInfo& graph_info);
+// Add operand to `graph_info` and return its operand id.
+webnn::OperandId AddOperand(webnn::mojom::blink::GraphInfo& graph_info,
+                            webnn::mojom::blink::OperandPtr operand);
 
 void SerializeMojoOperation(
     const HeapHashMap<Member<const MLOperand>, webnn::OperandId>&

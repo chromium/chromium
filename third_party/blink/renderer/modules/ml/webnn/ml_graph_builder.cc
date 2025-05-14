@@ -1435,8 +1435,8 @@ blink_mojom::GraphInfoPtr BuildWebNNGraphInfo(
     auto output_operand =
         mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get());
     output_operand->name = name;
-    webnn::OperandId operand_id = NextOperandId(*graph_info);
-    graph_info->id_to_operand_map.insert(operand_id, std::move(output_operand));
+    webnn::OperandId operand_id =
+        AddOperand(*graph_info, std::move(output_operand));
     graph_info->output_operands.push_back(operand_id);
     operand_to_id_map.insert(operand, operand_id);
   }
@@ -1456,22 +1456,19 @@ blink_mojom::GraphInfoPtr BuildWebNNGraphInfo(
       switch (operand->Kind()) {
         case blink_mojom::Operand::Kind::kInput: {
           // Create `mojo::Operand` for the input MLOperand.
-          webnn::OperandId operand_id = NextOperandId(*graph_info);
-          graph_info->id_to_operand_map.insert(
-              operand_id,
-              mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get()));
           //  Build the array of input operands for this graph with the id.
+          webnn::OperandId operand_id = AddOperand(
+              *graph_info,
+              mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get()));
           graph_info->input_operands.push_back(operand_id);
           operand_to_id_map.insert(operand, operand_id);
           break;
         }
         case blink_mojom::Operand::Kind::kConstant: {
           // Convert `mojo::Operand` for constant operand.
-          webnn::OperandId operand_id = NextOperandId(*graph_info);
-          graph_info->id_to_operand_map.insert(
-              operand_id,
-              mojo::ConvertTo<webnn::mojom::blink::OperandPtr>(operand.Get()));
-          // Build the map of constant operands for this graph with the id.
+          webnn::OperandId operand_id = AddOperand(
+              *graph_info,
+              mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get()));
           graph_info->constant_operand_ids_to_handles.insert(
               operand_id, operand->AsConstantOperand()->handle());
           operand_to_id_map.insert(operand, operand_id);
@@ -1493,9 +1490,8 @@ blink_mojom::GraphInfoPtr BuildWebNNGraphInfo(
       // Because the graph's output operands are already converted before, this
       // operand should be an intermediate operand that connects with two
       // operators. Create `mojo::Operand` for this operand.
-      webnn::OperandId operand_id = NextOperandId(*graph_info);
-      graph_info->id_to_operand_map.insert(
-          operand_id, mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get()));
+      webnn::OperandId operand_id = AddOperand(
+          *graph_info, mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get()));
       operand_to_id_map.insert(operand, operand_id);
     }
     // Create `mojo::Operation` with the id of the input and output operands.
@@ -1555,13 +1551,11 @@ void FoldReshapableConstants(blink_mojom::GraphInfo& graph_info) {
       // folding and update the graph accordingly.
 
       // Remove the constant and reshape operators, respectively.
-      auto constant_operand =
-          graph_info.id_to_operand_map.Take(constant_operand_id);
+      auto& constant_operand = graph_info.operands.at(constant_operand_id);
 
       webnn::OperandId reshape_output_id =
           (*reshape_operation_it)->get_reshape()->output_operand_id;
-      auto reshape_operand =
-          graph_info.id_to_operand_map.Take(reshape_output_id);
+      auto& reshape_operand = graph_info.operands.at(reshape_output_id);
 
       // Manually reshape the constant and let the list of operations reflect
       // this.
@@ -1570,11 +1564,10 @@ void FoldReshapableConstants(blink_mojom::GraphInfo& graph_info) {
       constant_operand->descriptor = reshape_operand->descriptor;
 
       graph_info.operations.erase(reshape_operation_it);
-
-      // Update the constant's ID to effectively point all operations which
-      // depend on the output of the reshape operator to the constant instead.
-      graph_info.id_to_operand_map.insert(reshape_output_id,
-                                          std::move(constant_operand));
+      // Update graph_info operands to make constant_operand have the reshaped
+      // operand id. The reshape operand becomes an dangling operand.
+      std::swap(graph_info.operands[constant_operand_id],
+                graph_info.operands[reshape_output_id]);
       constant_id_remappings.Set(initial_constant_id, reshape_output_id);
 
       // Prepare for the next iteration of this loop.

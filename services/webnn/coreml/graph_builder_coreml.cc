@@ -1413,12 +1413,7 @@ GraphBuilderCoreml::GraphBuilderCoreml(
       constant_operands_(constant_operands),
       context_properties_(std::move(context_properties)),
       device_(device),
-      internal_operand_id_(
-          std::ranges::max_element(
-              graph_info_->id_to_operand_map,
-              {},
-              [](const auto& id_operand) { return id_operand.first; })
-              ->first),
+      internal_operand_id_(graph_info.operands.size() - 1),
       weights_file_handle_(std::move(weights_file_handle)),
       result_(std::make_unique<Result>(std::move(ml_package_dir))) {}
 
@@ -1458,7 +1453,8 @@ GraphBuilderCoreml::BuildCoreMLModel() {
   auto& block =
       (*main_function.mutable_block_specializations())[coreml_version];
 
-  for (const auto& [operand_id, _] : graph_info_->id_to_operand_map) {
+  for (size_t operand_id = 0; operand_id < graph_info_->operands.size();
+       ++operand_id) {
     UpdateCoreMLInputInfoMap(operand_id);
   }
 
@@ -5661,7 +5657,7 @@ GraphBuilderCoreml::AddOperationForTriangular(
 
 const mojom::Operand& GraphBuilderCoreml::GetOperand(
     OperandId operand_id) const {
-  return *graph_info_->id_to_operand_map.at(operand_id);
+  return *graph_info_->operands.at(operand_id);
 }
 
 [[nodiscard]] const GraphBuilderCoreml::OperandInfo&

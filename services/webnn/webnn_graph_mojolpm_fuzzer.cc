@@ -142,8 +142,7 @@ void BuildGraph(const mojolpm::webnn::mojom::GraphInfo& graph_info_proto,
 
   for (auto [operand_id, remote] :
        base::zip(graph_info->input_operands, input_remotes)) {
-    const webnn::mojom::Operand& operand =
-        *graph_info->id_to_operand_map.at(operand_id);
+    const webnn::mojom::Operand& operand = *graph_info->operands.at(operand_id);
     EXPECT_TRUE(operand.name.has_value());
 
     auto tensor_info = webnn::mojom::TensorInfo::New(
@@ -177,8 +176,7 @@ void BuildGraph(const mojolpm::webnn::mojom::GraphInfo& graph_info_proto,
 
   for (auto&& [operand_id, remote] :
        base::zip(graph_info->output_operands, output_remotes)) {
-    const webnn::mojom::Operand& operand =
-        *graph_info->id_to_operand_map.at(operand_id);
+    const webnn::mojom::Operand& operand = *graph_info->operands.at(operand_id);
     EXPECT_TRUE(operand.name.has_value());
 
     auto tensor_info = webnn::mojom::TensorInfo::New(

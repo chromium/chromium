@@ -582,7 +582,6 @@ class GraphInfoBuilder final {
       mojom::Operand::Kind kind = mojom::Operand::Kind::kOutput);
 
   mojom::GraphInfoPtr graph_info_;
-  OperandId next_operand_id_ = 1;
 
   base::raw_ref<mojo::AssociatedRemote<mojom::WebNNGraphBuilder>>
       graph_builder_remote_;
