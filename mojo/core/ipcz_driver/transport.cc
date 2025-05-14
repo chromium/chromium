@@ -122,14 +122,17 @@ struct IPCZ_ALIGN(8) TransportHeader {
   Transport::EndpointType destination_type;
 
   // Indicates whether the remote process on the other end of this transport
-  // is the same process sending this object.
-  bool is_same_remote_process;
+  // is the same process sending this object. Encodes a `bool`.
+  uint8_t is_same_remote_process;
 
   // See notes on equivalent fields defined on Transport. Note that serialized
   // transports endpoints with `is_peer_trusted` set to true can only be
-  // accepted from transports which are themselves trusted.
-  bool is_peer_trusted;
-  bool is_trusted_by_peer;
+  // accepted from transports which are themselves trusted. Encodes a `bool`.
+  uint8_t is_peer_trusted;
+  uint8_t is_trusted_by_peer;
+
+  // Padding for 8-byte size alignment.
+  uint8_t reserved[1];
 };
 
 #if BUILDFLAG(IS_WIN)
