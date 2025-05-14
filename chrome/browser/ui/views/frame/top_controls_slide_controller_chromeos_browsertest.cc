@@ -1406,9 +1406,8 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
 
   // Fire a geolocation permission request, which should show a permission
   // request bubble resulting in top chrome unhiding.
-  auto decided =
-      [](ContentSetting, bool, bool,
-         const std::unique_ptr<permissions::PermissionRequestData>&) {};
+  auto decided = [](ContentSetting, bool, bool,
+                    const permissions::PermissionRequestData&) {};
   permissions::PermissionRequest permission_request(
       std::make_unique<permissions::PermissionRequestData>(
           std::make_unique<permissions::ContentSettingPermissionResolver>(

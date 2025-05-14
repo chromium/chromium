@@ -248,9 +248,8 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUseCpssV1) {
             prediction_selector.GetPredictionTypeToUse(
                 permissions::RequestType::kNotifications));
 
-  auto decided =
-      [](ContentSetting, bool, bool,
-         const std::unique_ptr<permissions::PermissionRequestData>&) {};
+  auto decided = [](ContentSetting, bool, bool,
+                    const permissions::PermissionRequestData&) {};
   permissions::PermissionRequest permission_request(
       std::make_unique<permissions::PermissionRequestData>(
           std::make_unique<permissions::ContentSettingPermissionResolver>(

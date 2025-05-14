@@ -82,13 +82,12 @@ class GeolocationPermissionContextAndroid
                                   const GURL& requesting_origin,
                                   const GURL& embedding_origin,
                                   ContentSetting content_setting) override;
-  void NotifyPermissionSet(
-      const std::unique_ptr<PermissionRequestData>& request_data,
-      BrowserPermissionCallback callback,
-      bool persist,
-      ContentSetting content_setting,
-      bool is_one_time,
-      bool is_final_decision) override;
+  void NotifyPermissionSet(const PermissionRequestData& request_data,
+                           BrowserPermissionCallback callback,
+                           bool persist,
+                           ContentSetting content_setting,
+                           bool is_one_time,
+                           bool is_final_decision) override;
   content::PermissionResult UpdatePermissionStatusWithDeviceStatus(
       content::WebContents* web_contents,
       content::PermissionResult result,

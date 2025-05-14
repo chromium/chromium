@@ -47,7 +47,7 @@ class RegisterProtocolHandlerPermissionRequest
       ContentSetting result,
       bool is_one_time,
       bool is_final_decision,
-      const std::unique_ptr<permissions::PermissionRequestData>& request_data);
+      const permissions::PermissionRequestData& request_data);
   void DeleteRequest();
 
   raw_ptr<custom_handlers::ProtocolHandlerRegistry> registry_;

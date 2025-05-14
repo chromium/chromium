@@ -20,7 +20,7 @@ CapturedSurfaceControlPermissionContext::
           network::mojom::PermissionsPolicyFeature::kCapturedSurfaceControl) {}
 
 void CapturedSurfaceControlPermissionContext::UpdateContentSetting(
-    const std::unique_ptr<PermissionRequestData>& request_data,
+    const PermissionRequestData& request_data,
     ContentSetting content_setting,
     bool is_one_time) {
   permissions::PermissionContextBase::UpdateContentSetting(

@@ -43,7 +43,7 @@ class TestIdleDetectionPermissionContext
  private:
   // IdleDetectionPermissionContext:
   void NotifyPermissionSet(
-      const std::unique_ptr<permissions::PermissionRequestData>& request_data,
+      const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback callback,
       bool persist,
       ContentSetting content_setting,

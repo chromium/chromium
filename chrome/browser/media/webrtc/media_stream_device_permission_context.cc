@@ -112,7 +112,7 @@ ContentSetting MediaStreamDevicePermissionContext::GetPermissionStatusInternal(
 // site permission is "Block"). WebXR permissions are following the approach
 // found here.
 void MediaStreamDevicePermissionContext::NotifyPermissionSet(
-    const std::unique_ptr<permissions::PermissionRequestData>& request_data,
+    const permissions::PermissionRequestData& request_data,
     permissions::BrowserPermissionCallback callback,
     bool persist,
     ContentSetting content_setting,
@@ -168,14 +168,14 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(
           content::RenderFrameHost::FromID(
-              request_data->id.global_render_frame_host_id()));
+              request_data.id.global_render_frame_host_id()));
   if (!web_contents) {
     // If we can't get the web contents, we don't know the state of the OS
     // permission, so assume we don't have it.
-    OnAndroidPermissionDecided(
-        request_data->id, request_data->requesting_origin,
-        request_data->embedding_origin, std::move(callback),
-        false /*permission_granted*/);
+    OnAndroidPermissionDecided(request_data.id, request_data.requesting_origin,
+                               request_data.embedding_origin,
+                               std::move(callback),
+                               false /*permission_granted*/);
     return;
   }
 
@@ -185,7 +185,7 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
 
   // For PEPC-initiated permission requests we never need to handle android
   // permissions, so we can shortcut to calling NotifyPermissionSet directly.
-  const auto* request = FindPermissionRequest(request_data->id);
+  const auto* request = FindPermissionRequest(request_data.id);
   if (request && request->IsEmbeddedPermissionElementInitiated()) {
     PermissionContextBase::NotifyPermissionSet(
         request_data, std::move(callback), persist, content_setting,
@@ -201,8 +201,8 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
       // We would have already returned if permission was denied by the user,
       // and this result indicates that we have all the OS permissions we need.
       OnAndroidPermissionDecided(
-          request_data->id, request_data->requesting_origin,
-          request_data->embedding_origin, std::move(callback),
+          request_data.id, request_data.requesting_origin,
+          request_data.embedding_origin, std::move(callback),
           true /*permission_granted*/);
       return;
 
@@ -210,8 +210,8 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
       // If we cannot show the info bar, then we have to assume we don't have
       // the permissions we need.
       OnAndroidPermissionDecided(
-          request_data->id, request_data->requesting_origin,
-          request_data->embedding_origin, std::move(callback),
+          request_data.id, request_data.requesting_origin,
+          request_data.embedding_origin, std::move(callback),
           false /*permission_granted*/);
       return;
 
@@ -225,9 +225,9 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
               permission_type, content_settings_type_,
               base::BindOnce(&MediaStreamDevicePermissionContext::
                                  OnAndroidPermissionDecided,
-                             weak_ptr_factory_.GetWeakPtr(), request_data->id,
-                             request_data->requesting_origin,
-                             request_data->embedding_origin,
+                             weak_ptr_factory_.GetWeakPtr(), request_data.id,
+                             request_data.requesting_origin,
+                             request_data.embedding_origin,
                              std::move(callback)));
       return;
   }
@@ -250,7 +250,7 @@ void MediaStreamDevicePermissionContext::OnAndroidPermissionDecided(
   // already persisted, and `is_one_time=false` because it is only relevant when
   // persisting permission.
   PermissionContextBase::NotifyPermissionSet(
-      std::make_unique<permissions::PermissionRequestData>(
+      permissions::PermissionRequestData(
           this, id,
           content::PermissionRequestDescription(
               content::PermissionDescriptorUtil::

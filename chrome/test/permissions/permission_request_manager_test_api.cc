@@ -28,9 +28,8 @@ class TestPermissionRequestOwner {
   explicit TestPermissionRequestOwner(permissions::RequestType type,
                                       GURL& origin) {
     const bool user_gesture = true;
-    auto decided =
-        [](ContentSetting, bool, bool,
-           const std::unique_ptr<permissions::PermissionRequestData>&) {};
+    auto decided = [](ContentSetting, bool, bool,
+                      const permissions::PermissionRequestData&) {};
     request_ = std::make_unique<permissions::PermissionRequest>(
         std::make_unique<permissions::PermissionRequestData>(
             std::make_unique<permissions::ContentSettingPermissionResolver>(

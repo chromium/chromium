@@ -24,14 +24,14 @@ ContentSetting DisplayCapturePermissionContext::GetPermissionStatusInternal(
 void DisplayCapturePermissionContext::DecidePermission(
     std::unique_ptr<permissions::PermissionRequestData> request_data,
     permissions::BrowserPermissionCallback callback) {
-  NotifyPermissionSet(request_data, std::move(callback),
+  NotifyPermissionSet(*request_data, std::move(callback),
                       /*persist=*/false, CONTENT_SETTING_DEFAULT,
                       /*is_one_time=*/false,
                       /*is_final_decision=*/true);
 }
 
 void DisplayCapturePermissionContext::UpdateContentSetting(
-    const std::unique_ptr<permissions::PermissionRequestData>& request_data,
+    const permissions::PermissionRequestData& request_data,
     ContentSetting content_setting,
     bool is_one_time) {
   NOTREACHED();

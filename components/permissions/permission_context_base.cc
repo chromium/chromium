@@ -123,7 +123,7 @@ void PermissionContextBase::RequestPermission(
              << " from an invalid URL: " << request_data->requesting_origin
              << "," << request_data->embedding_origin << " (" << type_name
              << " is not supported in popups)";
-    NotifyPermissionSet(request_data, std::move(callback),
+    NotifyPermissionSet(*request_data, std::move(callback),
                         /*persist=*/false, CONTENT_SETTING_BLOCK,
                         /*is_one_time=*/false,
                         /*is_final_decision=*/true);
@@ -134,7 +134,7 @@ void PermissionContextBase::RequestPermission(
   // or if the origin is under embargo. If so, respect that decision.
   DCHECK(rfh);
   content::PermissionResult result = GetPermissionStatus(
-      request_data->resolver, rfh, request_data->requesting_origin,
+      *request_data->resolver, rfh, request_data->requesting_origin,
       request_data->embedding_origin);
 
   bool status_ignorable = PermissionUtil::CanPermissionRequestIgnoreStatus(
@@ -212,7 +212,7 @@ void PermissionContextBase::RequestPermission(
     // suppressed the prompt.
     PermissionUmaUtil::RecordEmbargoPromptSuppressionFromSource(result.source);
     NotifyPermissionSet(
-        request_data, std::move(callback),
+        *request_data, std::move(callback),
         /*persist=*/false,
         PermissionUtil::PermissionStatusToContentSetting(result.status),
         /*is_one_time=*/false,
@@ -273,7 +273,7 @@ GURL PermissionContextBase::GetEffectiveEmbedderOrigin(
 }
 
 content::PermissionResult PermissionContextBase::GetPermissionStatus(
-    const std::unique_ptr<PermissionResolver>& resolver,
+    const PermissionResolver& resolver,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
@@ -382,7 +382,7 @@ content::PermissionResult PermissionContextBase::GetPermissionStatus(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
-  return GetPermissionStatus(CreatePermissionResolver(permission_descriptor),
+  return GetPermissionStatus(*CreatePermissionResolver(permission_descriptor),
                              render_frame_host, requesting_origin,
                              embedding_origin);
 }
@@ -540,16 +540,16 @@ void PermissionContextBase::PermissionDecided(
     ContentSetting content_setting,
     bool is_one_time,
     bool is_final_decision,
-    const std::unique_ptr<PermissionRequestData>& request_data) {
+    const PermissionRequestData& request_data) {
   DCHECK(content_setting == CONTENT_SETTING_ALLOW ||
          content_setting == CONTENT_SETTING_BLOCK ||
          content_setting == CONTENT_SETTING_DEFAULT);
-  UserMadePermissionDecision(request_data->id, request_data->requesting_origin,
-                             request_data->embedding_origin, content_setting);
+  UserMadePermissionDecision(request_data.id, request_data.requesting_origin,
+                             request_data.embedding_origin, content_setting);
 
   bool persist = content_setting != CONTENT_SETTING_DEFAULT;
 
-  auto request = pending_requests_.find(request_data->id.ToString());
+  auto request = pending_requests_.find(request_data.id.ToString());
   CHECK(request != pending_requests_.end(), base::NotFatalUntil::M130);
   // Check if `request` has `BrowserPermissionCallback`. The call back might be
   // missing if a permission prompt was preignored and we already notified an
@@ -645,7 +645,7 @@ void PermissionContextBase::MaybeUpdateCachedHasDevicePermission(
 }
 
 void PermissionContextBase::NotifyPermissionSet(
-    const std::unique_ptr<PermissionRequestData>& request_data,
+    const PermissionRequestData& request_data,
     BrowserPermissionCallback callback,
     bool persist,
     ContentSetting content_setting,
@@ -658,11 +658,11 @@ void PermissionContextBase::NotifyPermissionSet(
   }
 
   if (is_final_decision) {
-    UpdateTabContext(request_data->id, request_data->requesting_origin,
+    UpdateTabContext(request_data.id, request_data.requesting_origin,
                      content_setting == CONTENT_SETTING_ALLOW);
     if (content_setting == CONTENT_SETTING_ALLOW) {
       if (auto* rfh = content::RenderFrameHost::FromID(
-              request_data->id.global_render_frame_host_id())) {
+              request_data.id.global_render_frame_host_id())) {
         PermissionUmaUtil::RecordPermissionsUsageSourceAndPolicyConfiguration(
             content_settings_type_, rfh);
       }
@@ -692,13 +692,13 @@ void PermissionContextBase::CleanUpRequest(
 }
 
 void PermissionContextBase::UpdateContentSetting(
-    const std::unique_ptr<PermissionRequestData>& request_data,
+    const PermissionRequestData& request_data,
     ContentSetting content_setting,
     bool is_one_time) {
-  DCHECK_EQ(request_data->requesting_origin,
-            request_data->requesting_origin.DeprecatedGetOriginAsURL());
-  DCHECK_EQ(request_data->embedding_origin,
-            request_data->embedding_origin.DeprecatedGetOriginAsURL());
+  DCHECK_EQ(request_data.requesting_origin,
+            request_data.requesting_origin.DeprecatedGetOriginAsURL());
+  DCHECK_EQ(request_data.embedding_origin,
+            request_data.embedding_origin.DeprecatedGetOriginAsURL());
   DCHECK(content_setting == CONTENT_SETTING_ALLOW ||
          content_setting == CONTENT_SETTING_BLOCK);
 
@@ -727,7 +727,7 @@ void PermissionContextBase::UpdateContentSetting(
   PermissionsClient::Get()
       ->GetSettingsMap(browser_context_)
       ->SetContentSettingDefaultScope(
-          request_data->requesting_origin, request_data->embedding_origin,
+          request_data.requesting_origin, request_data.embedding_origin,
           content_settings_type_, content_setting, constraints);
 }
 

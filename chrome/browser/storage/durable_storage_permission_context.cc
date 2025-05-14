@@ -48,19 +48,19 @@ void DurableStoragePermissionContext::DecidePermission(
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   DCHECK_NE(PermissionStatus::GRANTED,
             GetPermissionStatus(
-                request_data->resolver, nullptr /* render_frame_host */,
+                *request_data->resolver, nullptr /* render_frame_host */,
                 request_data->requesting_origin, request_data->embedding_origin)
                 .status);
   DCHECK_NE(PermissionStatus::DENIED,
             GetPermissionStatus(
-                request_data->resolver, nullptr /* render_frame_host */,
+                *request_data->resolver, nullptr /* render_frame_host */,
                 request_data->requesting_origin, request_data->embedding_origin)
                 .status);
 
   // Durable is only allowed to be granted to the top-level origin. Embedding
   // origin is the last committed navigation origin to the web contents.
   if (request_data->requesting_origin != request_data->embedding_origin) {
-    NotifyPermissionSet(request_data, std::move(callback),
+    NotifyPermissionSet(*request_data, std::move(callback),
                         /*persist=*/false, CONTENT_SETTING_DEFAULT,
                         /*is_one_time=*/false,
                         /*is_final_decision=*/true);
@@ -83,7 +83,7 @@ void DurableStoragePermissionContext::DecidePermission(
           url::Origin::Create(request_data->requesting_origin),
           net::CookieSettingOverrides(),
           rfh->GetStorageKey().ToCookiePartitionKey())) {
-    NotifyPermissionSet(request_data, std::move(callback),
+    NotifyPermissionSet(*request_data, std::move(callback),
                         /*persist=*/false, CONTENT_SETTING_DEFAULT,
                         /*is_one_time=*/false,
                         /*is_final_decision=*/true);
@@ -103,7 +103,7 @@ void DurableStoragePermissionContext::DecidePermission(
       site_engagement::ImportantSitesUtil::GetInstalledRegisterableDomains(
           Profile::FromBrowserContext(browser_context()));
   if (base::Contains(installed_registerable_domains, registerable_domain)) {
-    NotifyPermissionSet(request_data, std::move(callback),
+    NotifyPermissionSet(*request_data, std::move(callback),
                         /*persist=*/true, CONTENT_SETTING_ALLOW,
                         /*is_one_time=*/false,
                         /*is_final_decision=*/true);
@@ -119,7 +119,7 @@ void DurableStoragePermissionContext::DecidePermission(
 
   for (const auto& important_site : important_sites) {
     if (important_site.registerable_domain == registerable_domain) {
-      NotifyPermissionSet(request_data, std::move(callback),
+      NotifyPermissionSet(*request_data, std::move(callback),
                           /*persist=*/true, CONTENT_SETTING_ALLOW,
                           /*is_one_time=*/false,
                           /*is_final_decision=*/true);
@@ -127,26 +127,26 @@ void DurableStoragePermissionContext::DecidePermission(
     }
   }
 
-  NotifyPermissionSet(request_data, std::move(callback),
+  NotifyPermissionSet(*request_data, std::move(callback),
                       /*persist=*/false, CONTENT_SETTING_DEFAULT,
                       /*is_one_time=*/false,
                       /*is_final_decision=*/true);
 }
 
 void DurableStoragePermissionContext::UpdateContentSetting(
-    const std::unique_ptr<permissions::PermissionRequestData>& request_data,
+    const permissions::PermissionRequestData& request_data,
     ContentSetting content_setting,
     bool is_one_time) {
   DCHECK(!is_one_time);
-  DCHECK_EQ(request_data->requesting_origin,
-            request_data->requesting_origin.DeprecatedGetOriginAsURL());
-  DCHECK_EQ(request_data->embedding_origin,
-            request_data->embedding_origin.DeprecatedGetOriginAsURL());
+  DCHECK_EQ(request_data.requesting_origin,
+            request_data.requesting_origin.DeprecatedGetOriginAsURL());
+  DCHECK_EQ(request_data.embedding_origin,
+            request_data.embedding_origin.DeprecatedGetOriginAsURL());
   DCHECK(content_setting == CONTENT_SETTING_ALLOW ||
          content_setting == CONTENT_SETTING_BLOCK);
 
   HostContentSettingsMapFactory::GetForProfile(browser_context())
-      ->SetContentSettingDefaultScope(request_data->requesting_origin, GURL(),
+      ->SetContentSettingDefaultScope(request_data.requesting_origin, GURL(),
                                       ContentSettingsType::DURABLE_STORAGE,
                                       content_setting);
 }

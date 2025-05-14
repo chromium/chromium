@@ -111,7 +111,7 @@ class PermissionContextBase : public content_settings::Observer {
   // PermissionResolver. |render_frame_host| may be nullptr if the call is
   // coming from a context other than a specific frame.
   content::PermissionResult GetPermissionStatus(
-      const std::unique_ptr<PermissionResolver>& resolver,
+      const PermissionResolver& resolver,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const;
@@ -188,13 +188,12 @@ class PermissionContextBase : public content_settings::Observer {
 
   // Updates stored content setting if persist is set, updates tab indicators
   // and runs the callback to finish the request.
-  virtual void NotifyPermissionSet(
-      const std::unique_ptr<PermissionRequestData>& request_data,
-      BrowserPermissionCallback callback,
-      bool persist,
-      ContentSetting content_setting,
-      bool is_one_time,
-      bool is_final_decision);
+  virtual void NotifyPermissionSet(const PermissionRequestData& request_data,
+                                   BrowserPermissionCallback callback,
+                                   bool persist,
+                                   ContentSetting content_setting,
+                                   bool is_one_time,
+                                   bool is_final_decision);
 
   // Implementors can override this method to update the icons on the
   // url bar with the result of the new permission.
@@ -208,10 +207,9 @@ class PermissionContextBase : public content_settings::Observer {
   // Store the decided permission as a content setting.
   // virtual since the permission might be stored with different restrictions
   // (for example for desktop notifications).
-  virtual void UpdateContentSetting(
-      const std::unique_ptr<PermissionRequestData>& request_data,
-      ContentSetting content_setting,
-      bool is_one_time);
+  virtual void UpdateContentSetting(const PermissionRequestData& request_data,
+                                    ContentSetting content_setting,
+                                    bool is_one_time);
 
   // Whether the permission should be restricted to secure origins.
   virtual bool IsRestrictedToSecureOrigins() const;
@@ -269,11 +267,10 @@ class PermissionContextBase : public content_settings::Observer {
 
   // This is the callback for PermissionRequest and is called once the user
   // allows/blocks/dismisses a permission prompt.
-  void PermissionDecided(
-      ContentSetting content_setting,
-      bool is_one_time,
-      bool is_final_decision,
-      const std::unique_ptr<PermissionRequestData>& request_data);
+  void PermissionDecided(ContentSetting content_setting,
+                         bool is_one_time,
+                         bool is_final_decision,
+                         const PermissionRequestData& request_data);
 
   void NotifyObservers(const ContentSettingsPattern& primary_pattern,
                        const ContentSettingsPattern& secondary_pattern,

@@ -179,7 +179,7 @@ TopLevelStorageAccessPermissionContext::GetPermissionStatusInternal(
 }
 
 void TopLevelStorageAccessPermissionContext::NotifyPermissionSet(
-    const std::unique_ptr<permissions::PermissionRequestData>& request_data,
+    const permissions::PermissionRequestData& request_data,
     permissions::BrowserPermissionCallback callback,
     bool persist,
     ContentSetting content_setting,
@@ -194,8 +194,8 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSet(
   }
 
   NotifyPermissionSetInternal(
-      request_data->id, request_data->requesting_origin,
-      request_data->embedding_origin, std::move(callback), persist,
+      request_data.id, request_data.requesting_origin,
+      request_data.embedding_origin, std::move(callback), persist,
       content_setting,
       content_setting == CONTENT_SETTING_ALLOW
           ? TopLevelStorageAccessRequestOutcome::kGrantedByFirstPartySet
@@ -277,7 +277,7 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
 }
 
 void TopLevelStorageAccessPermissionContext::UpdateContentSetting(
-    const std::unique_ptr<permissions::PermissionRequestData>& request_data,
+    const permissions::PermissionRequestData& request_data,
     ContentSetting content_setting,
     bool is_one_time) {
   CHECK(!is_one_time);

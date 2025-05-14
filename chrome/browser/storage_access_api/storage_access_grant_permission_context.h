@@ -103,14 +103,14 @@ class StorageAccessGrantPermissionContext
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;
   void NotifyPermissionSet(
-      const std::unique_ptr<permissions::PermissionRequestData>& request_data,
+      const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback callback,
       bool persist,
       ContentSetting content_setting,
       bool is_one_time,
       bool is_final_decision) override;
   void UpdateContentSetting(
-      const std::unique_ptr<permissions::PermissionRequestData>& request_data,
+      const permissions::PermissionRequestData& request_data,
       ContentSetting content_setting,
       bool is_one_time) override;
 
@@ -121,7 +121,7 @@ class StorageAccessGrantPermissionContext
 
   // Internal implementation for NotifyPermissionSet.
   void NotifyPermissionSetInternal(
-      const std::unique_ptr<permissions::PermissionRequestData>& request_data,
+      const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback callback,
       bool persist,
       ContentSetting content_setting,

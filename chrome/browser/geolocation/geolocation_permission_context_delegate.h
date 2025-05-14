@@ -30,7 +30,7 @@ class GeolocationPermissionContextDelegate
   // checks that it is only code from valid iframes.
   // It also adds special logic when called through an extension.
   bool DecidePermission(
-      const std::unique_ptr<permissions::PermissionRequestData>& request_data,
+      const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback* callback,
       permissions::GeolocationPermissionContext* context) override;
 

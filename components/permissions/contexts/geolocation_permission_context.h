@@ -34,10 +34,9 @@ class GeolocationPermissionContext : public PermissionContextBase {
     // Allows the delegate to override the context's DecidePermission() logic.
     // If this returns true, the base context's DecidePermission() will not be
     // called.
-    virtual bool DecidePermission(
-        const std::unique_ptr<PermissionRequestData>& request_data,
-        BrowserPermissionCallback* callback,
-        GeolocationPermissionContext* context) = 0;
+    virtual bool DecidePermission(const PermissionRequestData& request_data,
+                                  BrowserPermissionCallback* callback,
+                                  GeolocationPermissionContext* context) = 0;
 
 #if BUILDFLAG(IS_ANDROID)
     // Returns whether or not this |web_contents| is interactable.

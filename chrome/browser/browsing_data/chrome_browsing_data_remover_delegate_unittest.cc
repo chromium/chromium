@@ -3227,13 +3227,13 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDurablePermission) {
 
   DurableStoragePermissionContext durable_permission(GetProfile());
   durable_permission.UpdateContentSetting(
-      std::make_unique<permissions::PermissionRequestData>(
+      permissions::PermissionRequestData(
           std::make_unique<permissions::ContentSettingPermissionResolver>(
               ContentSettingsType::DURABLE_STORAGE),
           /*user_gesture=*/true, kOrigin1, GURL()),
       CONTENT_SETTING_ALLOW, /*is_one_time=*/false);
   durable_permission.UpdateContentSetting(
-      std::make_unique<permissions::PermissionRequestData>(
+      permissions::PermissionRequestData(
           std::make_unique<permissions::ContentSettingPermissionResolver>(
               ContentSettingsType::DURABLE_STORAGE),
           /*user_gesture=*/true, kOrigin2, GURL()),
@@ -3278,7 +3278,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
       HostContentSettingsMapFactory::GetForProfile(GetProfile());
   DurableStoragePermissionContext durable_permission(GetProfile());
   durable_permission.UpdateContentSetting(
-      std::make_unique<permissions::PermissionRequestData>(
+      permissions::PermissionRequestData(
           std::make_unique<permissions::ContentSettingPermissionResolver>(
               ContentSettingsType::DURABLE_STORAGE),
           /*user_gesture=*/true, GURL("http://host1.com:1"), GURL()),

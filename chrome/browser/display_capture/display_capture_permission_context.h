@@ -30,7 +30,7 @@ class DisplayCapturePermissionContext
       permissions::BrowserPermissionCallback callback) override;
 
   void UpdateContentSetting(
-      const std::unique_ptr<permissions::PermissionRequestData>& request_data,
+      const permissions::PermissionRequestData& request_data,
       ContentSetting content_setting,
       bool is_one_time) override;
 };

@@ -44,7 +44,7 @@ class PermissionRequest {
       ContentSetting /*result*/,
       bool /*is_one_time*/,
       bool /*is_final_decision*/,
-      const std::unique_ptr<PermissionRequestData>& /*request_data*/)>;
+      const PermissionRequestData& /*request_data*/)>;
 
   // `permission_decided_callback` is called when the permission request is
   // resolved by the user (see comment on PermissionDecidedCallback above).

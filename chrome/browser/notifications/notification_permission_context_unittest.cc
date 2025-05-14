@@ -88,7 +88,7 @@ class TestNotificationPermissionContext : public NotificationPermissionContext {
  private:
   // NotificationPermissionContext:
   void NotifyPermissionSet(
-      const std::unique_ptr<permissions::PermissionRequestData>& request_data,
+      const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback callback,
       bool persist,
       ContentSetting content_setting,
@@ -130,7 +130,7 @@ class NotificationPermissionContextTest
                             const GURL& embedding_origin,
                             ContentSetting setting) {
     context->UpdateContentSetting(
-        std::make_unique<permissions::PermissionRequestData>(
+        permissions::PermissionRequestData(
             std::make_unique<permissions::ContentSettingPermissionResolver>(
                 ContentSettingsType::NOTIFICATIONS),
             /*user_gesture=*/true, requesting_origin, embedding_origin),

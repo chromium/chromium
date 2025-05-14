@@ -62,11 +62,20 @@ void IdleDetectionPermissionContext::DecidePermission(
     VisibilityTimerTabHelper::FromWebContents(web_contents)
         ->PostTaskAfterVisibleDelay(
             FROM_HERE,
-            base::BindOnce(&IdleDetectionPermissionContext::NotifyPermissionSet,
-                           weak_factory_.GetWeakPtr(), std::move(request_data),
-                           std::move(callback),
-                           /*persist=*/true, CONTENT_SETTING_BLOCK,
-                           /*is_one_time=*/false, /*is_final_decision=*/true),
+            base::BindOnce(
+                [](base::WeakPtr<IdleDetectionPermissionContext> context,
+                   std::unique_ptr<permissions::PermissionRequestData>
+                       request_data,
+                   permissions::BrowserPermissionCallback callback) {
+                  if (context) {
+                    context->NotifyPermissionSet(
+                        *request_data, std::move(callback),
+                        /*persist=*/true, CONTENT_SETTING_BLOCK,
+                        /*is_one_time=*/false, /*is_final_decision=*/true);
+                  }
+                },
+                weak_factory_.GetWeakPtr(), std::move(request_data),
+                std::move(callback)),
             base::Seconds(delay_seconds));
     return;
   }

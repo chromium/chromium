@@ -60,7 +60,7 @@ void SmartCardPermissionRequest::OnPermissionDecided(
     ContentSetting content_setting_result,
     bool is_one_time,
     bool is_final_decision,
-    const std::unique_ptr<permissions::PermissionRequestData>& request_data) {
+    const permissions::PermissionRequestData& request_data) {
   if (!is_final_decision) {
     return;
   }

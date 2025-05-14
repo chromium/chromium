@@ -23,10 +23,9 @@ class CapturedSurfaceControlPermissionContext
       const CapturedSurfaceControlPermissionContext&) = delete;
 
  protected:
-  void UpdateContentSetting(
-      const std::unique_ptr<PermissionRequestData>& request_data,
-      ContentSetting content_setting,
-      bool is_one_time) override;
+  void UpdateContentSetting(const PermissionRequestData& request_data,
+                            ContentSetting content_setting,
+                            bool is_one_time) override;
 };
 
 }  // namespace permissions

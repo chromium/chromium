@@ -18,7 +18,7 @@ PointerLockPermissionContext::PointerLockPermissionContext(
           network::mojom::PermissionsPolicyFeature::kNotFound) {}
 
 void PointerLockPermissionContext::NotifyPermissionSet(
-    const std::unique_ptr<PermissionRequestData>& request_data,
+    const PermissionRequestData& request_data,
     BrowserPermissionCallback callback,
     bool persist,
     ContentSetting content_setting,

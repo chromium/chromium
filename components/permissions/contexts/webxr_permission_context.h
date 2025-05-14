@@ -31,22 +31,20 @@ class WebXrPermissionContext : public PermissionContextBase {
   // https://immersive-web.github.io/webxr/#dom-xrsystem-requestsession
   // When implementing navigator.xr.permission methods, we should ensure that
   // GetPermissionStatus is also updated to check these permissions.
-  void NotifyPermissionSet(
-      const std::unique_ptr<PermissionRequestData>& request_data,
-      BrowserPermissionCallback callback,
-      bool persist,
-      ContentSetting content_setting,
-      bool is_one_time,
-      bool is_final_decision) override;
+  void NotifyPermissionSet(const PermissionRequestData& request_data,
+                           BrowserPermissionCallback callback,
+                           bool persist,
+                           ContentSetting content_setting,
+                           bool is_one_time,
+                           bool is_final_decision) override;
 
   void UpdateTabContext(const permissions::PermissionRequestID& id,
                         const GURL& requesting_origin,
                         bool allowed) override;
 
-  void OnAndroidPermissionDecided(
-      const std::unique_ptr<PermissionRequestData>& request_data,
-      BrowserPermissionCallback callback,
-      bool permission_granted);
+  void OnAndroidPermissionDecided(const PermissionRequestData& request_data,
+                                  BrowserPermissionCallback callback,
+                                  bool permission_granted);
 #endif
 
   ContentSettingsType content_settings_type_;

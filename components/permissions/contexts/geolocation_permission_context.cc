@@ -32,7 +32,7 @@ void GeolocationPermissionContext::DecidePermission(
     BrowserPermissionCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!delegate_->DecidePermission(request_data, &callback, this)) {
+  if (!delegate_->DecidePermission(*request_data, &callback, this)) {
     DCHECK(callback);
     PermissionContextBase::DecidePermission(std::move(request_data),
                                             std::move(callback));

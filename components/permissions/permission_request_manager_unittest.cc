@@ -595,9 +595,7 @@ class QuicklyDeletedRequest : public PermissionRequest {
                 [](ContentSetting result,
                    bool is_one_time,
                    bool is_final_decision,
-                   const std::unique_ptr<PermissionRequestData>&) {
-                  NOTREACHED();
-                }),
+                   const PermissionRequestData&) { NOTREACHED(); }),
             base::NullCallback()) {}
 
   static std::unique_ptr<QuicklyDeletedRequest> CreateRequest(

@@ -46,7 +46,7 @@ WebXrPermissionContext::~WebXrPermissionContext() = default;
 // site permission is "Block"). The media permissions are now following the
 // approach found here.
 void WebXrPermissionContext::NotifyPermissionSet(
-    const std::unique_ptr<PermissionRequestData>& request_data,
+    const PermissionRequestData& request_data,
     BrowserPermissionCallback callback,
     bool persist,
     ContentSetting content_setting,
@@ -94,7 +94,7 @@ void WebXrPermissionContext::NotifyPermissionSet(
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(
           content::RenderFrameHost::FromID(
-              request_data->id.global_render_frame_host_id()));
+              request_data.id.global_render_frame_host_id()));
   if (!web_contents) {
     // If we can't get the web contents, we don't know the state of the OS
     // permission, so assume we don't have it.
@@ -134,17 +134,17 @@ void WebXrPermissionContext::NotifyPermissionSet(
               base::BindOnce(
                   &WebXrPermissionContext::OnAndroidPermissionDecided,
                   weak_ptr_factory_.GetWeakPtr(),
-                  std::make_unique<PermissionRequestData>(
-                      this, request_data->id, request_data->user_gesture,
-                      request_data->requesting_origin,
-                      request_data->embedding_origin),
+                  PermissionRequestData(this, request_data.id,
+                                        request_data.user_gesture,
+                                        request_data.requesting_origin,
+                                        request_data.embedding_origin),
                   std::move(callback)));
       return;
   }
 }
 
 void WebXrPermissionContext::OnAndroidPermissionDecided(
-    const std::unique_ptr<PermissionRequestData>& request_data,
+    const PermissionRequestData& request_data,
     BrowserPermissionCallback callback,
     bool permission_granted) {
   // If we were supposed to persist the setting we've already done so in the

@@ -25,7 +25,7 @@ NfcPermissionContextAndroid::NfcPermissionContextAndroid(
 NfcPermissionContextAndroid::~NfcPermissionContextAndroid() = default;
 
 void NfcPermissionContextAndroid::NotifyPermissionSet(
-    const std::unique_ptr<PermissionRequestData>& request_data,
+    const PermissionRequestData& request_data,
     BrowserPermissionCallback callback,
     bool persist,
     ContentSetting content_setting,
@@ -46,7 +46,7 @@ void NfcPermissionContextAndroid::NotifyPermissionSet(
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(
           content::RenderFrameHost::FromID(
-              request_data->id.global_render_frame_host_id()));
+              request_data.id.global_render_frame_host_id()));
 
   // Ignore when the associated RenderFrameHost has already been destroyed.
   if (!web_contents)
@@ -66,8 +66,8 @@ void NfcPermissionContextAndroid::NotifyPermissionSet(
       web_contents,
       base::BindOnce(
           &NfcPermissionContextAndroid::OnNfcSystemLevelSettingPromptClosed,
-          weak_factory_.GetWeakPtr(), request_data->id,
-          request_data->requesting_origin, request_data->embedding_origin,
+          weak_factory_.GetWeakPtr(), request_data.id,
+          request_data.requesting_origin, request_data.embedding_origin,
           std::move(callback), persist, content_setting));
 }
 
@@ -79,13 +79,12 @@ void NfcPermissionContextAndroid::OnNfcSystemLevelSettingPromptClosed(
     bool persist,
     ContentSetting content_setting) {
   NfcPermissionContext::NotifyPermissionSet(
-      std::make_unique<PermissionRequestData>(
-          this, id,
-          content::PermissionRequestDescription(
-              content::PermissionDescriptorUtil::
-                  CreatePermissionDescriptorForPermissionType(
-                      blink::PermissionType::NFC)),
-          requesting_origin, embedding_origin),
+      PermissionRequestData(this, id,
+                            content::PermissionRequestDescription(
+                                content::PermissionDescriptorUtil::
+                                    CreatePermissionDescriptorForPermissionType(
+                                        blink::PermissionType::NFC)),
+                            requesting_origin, embedding_origin),
       std::move(callback), persist, content_setting, /*is_one_time=*/false,
       /*is_final_decision=*/true);
 }

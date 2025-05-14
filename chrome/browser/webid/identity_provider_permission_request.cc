@@ -30,7 +30,7 @@ void IdentityProviderPermissionRequest::PermissionDecided(
     ContentSetting result,
     bool is_one_time,
     bool is_final_decision,
-    const std::unique_ptr<permissions::PermissionRequestData>& request_data) {
+    const permissions::PermissionRequestData& request_data) {
   DCHECK(!is_one_time);
   DCHECK(is_final_decision);
 

@@ -21,13 +21,12 @@ class PointerLockPermissionContext : public permissions::PermissionContextBase {
   PointerLockPermissionContext& operator=(const PointerLockPermissionContext&) =
       delete;
 
-  void NotifyPermissionSet(
-      const std::unique_ptr<PermissionRequestData>& request_data,
-      BrowserPermissionCallback callback,
-      bool persist,
-      ContentSetting content_setting,
-      bool is_one_time,
-      bool is_final_decision) override;
+  void NotifyPermissionSet(const PermissionRequestData& request_data,
+                           BrowserPermissionCallback callback,
+                           bool persist,
+                           ContentSetting content_setting,
+                           bool is_one_time,
+                           bool is_final_decision) override;
 
 #if !BUILDFLAG(IS_ANDROID)
  private:

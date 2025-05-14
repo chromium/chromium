@@ -420,7 +420,7 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     // this point.
     CHECK_NE(existing_setting, CONTENT_SETTING_ALLOW);
     if (existing_setting == CONTENT_SETTING_BLOCK) {
-      NotifyPermissionSetInternal(request_data, std::move(callback),
+      NotifyPermissionSetInternal(*request_data, std::move(callback),
                                   /*persist=*/false, existing_setting,
                                   RequestOutcome::kReusedPreviousDecision);
       return;
@@ -471,7 +471,7 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
       case net::SiteType::kAssociated:
         // Since the sites are in the same First-Party Set, risk of abuse due
         // to allowing access is considered to be low.
-        NotifyPermissionSetInternal(request_data, std::move(callback),
+        NotifyPermissionSetInternal(*request_data, std::move(callback),
                                     /*persist=*/true, CONTENT_SETTING_ALLOW,
                                     RequestOutcome::kGrantedByFirstPartySet);
         return;
@@ -499,7 +499,7 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
     // If we have fewer grants than our limit, we can just set an implicit grant
     // now and skip prompting the user.
     if (existing_implicit_grants < implicit_grant_limit) {
-      NotifyPermissionSetInternal(request_data, std::move(callback),
+      NotifyPermissionSetInternal(*request_data, std::move(callback),
                                   /*persist=*/true, CONTENT_SETTING_ALLOW,
                                   RequestOutcome::kGrantedByAllowance);
       return;
@@ -551,7 +551,7 @@ void StorageAccessGrantPermissionContext::OnCheckedUserInteractionHeuristic(
         "requestStorageAccess: Request denied because the embedded site has "
         "never been interacted with as a top-level context");
     NotifyPermissionSetInternal(
-        request_data, std::move(callback),
+        *request_data, std::move(callback),
         /*persist=*/false, CONTENT_SETTING_BLOCK,
         RequestOutcome::kDeniedByTopLevelInteractionHeuristic);
     return;
@@ -590,7 +590,7 @@ ContentSetting StorageAccessGrantPermissionContext::GetPermissionStatusInternal(
 }
 
 void StorageAccessGrantPermissionContext::NotifyPermissionSet(
-    const std::unique_ptr<permissions::PermissionRequestData>& request_data,
+    const permissions::PermissionRequestData& request_data,
     permissions::BrowserPermissionCallback callback,
     bool persist,
     ContentSetting content_setting,
@@ -605,8 +605,8 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSet(
     // if the exception has an ephemeral session model.
     content_settings::SettingInfo info;
     HostContentSettingsMapFactory::GetForProfile(browser_context())
-        ->GetContentSetting(request_data->requesting_origin,
-                            request_data->embedding_origin,
+        ->GetContentSetting(request_data.requesting_origin,
+                            request_data.embedding_origin,
                             ContentSettingsType::STORAGE_ACCESS, &info);
 
     if (info.metadata.decided_by_related_website_sets()) {
@@ -630,7 +630,7 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSet(
 }
 
 void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
-    const std::unique_ptr<permissions::PermissionRequestData>& request_data,
+    const permissions::PermissionRequestData& request_data,
     permissions::BrowserPermissionCallback callback,
     bool persist,
     ContentSetting content_setting,
@@ -638,20 +638,20 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   RecordOutcomeSample(outcome,
-                      net::SchemefulSite(request_data->requesting_origin));
+                      net::SchemefulSite(request_data.requesting_origin));
 
   const bool permission_allowed = (content_setting == CONTENT_SETTING_ALLOW);
-  UpdateTabContext(request_data->id, request_data->requesting_origin,
+  UpdateTabContext(request_data.id, request_data.requesting_origin,
                    permission_allowed);
 
   if (ShouldDisplayOutcomeInOmnibox(outcome)) {
     auto* content_settings =
         content_settings::PageSpecificContentSettings::GetForFrame(
-            request_data->id.global_render_frame_host_id());
+            request_data.id.global_render_frame_host_id());
     if (content_settings) {
       content_settings->OnTwoSitePermissionChanged(
           ContentSettingsType::STORAGE_ACCESS,
-          net::SchemefulSite(request_data->requesting_origin), content_setting);
+          net::SchemefulSite(request_data.requesting_origin), content_setting);
     }
   }
 
@@ -679,7 +679,7 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
   CHECK(persist);
 
   settings_map->SetContentSettingDefaultScope(
-      request_data->requesting_origin, request_data->embedding_origin,
+      request_data.requesting_origin, request_data.embedding_origin,
       ContentSettingsType::STORAGE_ACCESS, content_setting,
       ComputeConstraints(outcome, settings_map->Now()));
 
@@ -703,7 +703,7 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
 }
 
 void StorageAccessGrantPermissionContext::UpdateContentSetting(
-    const std::unique_ptr<permissions::PermissionRequestData>& request_data,
+    const permissions::PermissionRequestData& request_data,
     ContentSetting content_setting,
     bool is_one_time) {
   CHECK(!is_one_time);

@@ -107,7 +107,7 @@ class PermissionRequestWrapper {
                                     const char* url) {
     const bool user_gesture = true;
     auto decided = [](ContentSetting, bool, bool,
-                      const std::unique_ptr<PermissionRequestData>&) {};
+                      const PermissionRequestData&) {};
     request_ = std::make_unique<permissions::PermissionRequest>(
         std::make_unique<PermissionRequestData>(
             std::make_unique<ContentSettingPermissionResolver>(

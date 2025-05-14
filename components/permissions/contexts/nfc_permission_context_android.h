@@ -22,13 +22,12 @@ class NfcPermissionContextAndroid : public NfcPermissionContext {
   friend class NfcPermissionContextTests;
 
   // NfcPermissionContext:
-  void NotifyPermissionSet(
-      const std::unique_ptr<PermissionRequestData>& request_data,
-      BrowserPermissionCallback callback,
-      bool persist,
-      ContentSetting content_setting,
-      bool is_one_time,
-      bool is_final_decision) override;
+  void NotifyPermissionSet(const PermissionRequestData& request_data,
+                           BrowserPermissionCallback callback,
+                           bool persist,
+                           ContentSetting content_setting,
+                           bool is_one_time,
+                           bool is_final_decision) override;
 
   void OnNfcSystemLevelSettingPromptClosed(const PermissionRequestID& id,
                                            const GURL& requesting_origin,

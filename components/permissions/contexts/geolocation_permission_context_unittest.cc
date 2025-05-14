@@ -94,10 +94,9 @@ class TestGeolocationPermissionContextDelegate
 #endif
   }
 
-  bool DecidePermission(
-      const std::unique_ptr<PermissionRequestData>& request_data,
-      BrowserPermissionCallback* callback,
-      GeolocationPermissionContext* context) override {
+  bool DecidePermission(const PermissionRequestData& request_data,
+                        BrowserPermissionCallback* callback,
+                        GeolocationPermissionContext* context) override {
     return false;
   }
 

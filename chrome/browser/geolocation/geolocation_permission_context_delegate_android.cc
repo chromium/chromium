@@ -32,11 +32,11 @@ GeolocationPermissionContextDelegateAndroid::
     ~GeolocationPermissionContextDelegateAndroid() = default;
 
 bool GeolocationPermissionContextDelegateAndroid::DecidePermission(
-    const std::unique_ptr<permissions::PermissionRequestData>& request_data,
+    const permissions::PermissionRequestData& request_data,
     permissions::BrowserPermissionCallback* callback,
     permissions::GeolocationPermissionContext* context) {
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
-      request_data->id.global_render_frame_host_id());
+      request_data.id.global_render_frame_host_id());
   DCHECK(rfh);
 
   content::WebContents* web_contents =
@@ -49,18 +49,18 @@ bool GeolocationPermissionContextDelegateAndroid::DecidePermission(
         base::BindOnce(
             &permissions::GeolocationPermissionContext::NotifyPermissionSet,
             context->GetWeakPtr(),
-            std::make_unique<permissions::PermissionRequestData>(
-                context, request_data->id,
+            permissions::PermissionRequestData(
+                context, request_data.id,
                 content::PermissionRequestDescription(
                     content::PermissionDescriptorUtil::
                         CreatePermissionDescriptorForPermissionType(
                             blink::PermissionType::GEOLOCATION)),
-                request_data->requesting_origin,
+                request_data.requesting_origin,
                 permissions::PermissionUtil::GetLastCommittedOriginAsURL(
                     rfh->GetMainFrame())),
             std::move(*callback), false /* persist */);
     InstalledWebappBridge::DecidePermission(
-        ContentSettingsType::GEOLOCATION, request_data->requesting_origin,
+        ContentSettingsType::GEOLOCATION, request_data.requesting_origin,
         web_contents->GetLastCommittedURL(), std::move(permission_callback));
     return true;
   }

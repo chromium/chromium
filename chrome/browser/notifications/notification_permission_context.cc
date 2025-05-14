@@ -167,12 +167,21 @@ void NotificationPermissionContext::DecidePermission(
     VisibilityTimerTabHelper::FromWebContents(web_contents)
         ->PostTaskAfterVisibleDelay(
             FROM_HERE,
-            base::BindOnce(&NotificationPermissionContext::NotifyPermissionSet,
-                           weak_factory_ui_thread_.GetWeakPtr(),
-                           std::move(request_data), std::move(callback),
-                           /*persist=*/true, CONTENT_SETTING_BLOCK,
-                           /*is_one_time=*/false,
-                           /*is_final_decision=*/true),
+            base::BindOnce(
+                [](base::WeakPtr<NotificationPermissionContext> context,
+                   std::unique_ptr<permissions::PermissionRequestData>
+                       request_data,
+                   permissions::BrowserPermissionCallback callback) {
+                  if (context) {
+                    context->NotifyPermissionSet(
+                        *request_data, std::move(callback),
+                        /*persist=*/true, CONTENT_SETTING_BLOCK,
+                        /*is_one_time=*/false,
+                        /*is_final_decision=*/true);
+                  }
+                },
+                weak_factory_ui_thread_.GetWeakPtr(), std::move(request_data),
+                std::move(callback)),
             base::Seconds(delay_seconds));
     return;
   }
@@ -195,7 +204,7 @@ void NotificationPermissionContext::DecidePermission(
         web_contents->GetLastCommittedURL(),
         base::BindOnce(&NotificationPermissionContext::NotifyPermissionSet,
                        weak_factory_ui_thread_.GetWeakPtr(),
-                       std::make_unique<permissions::PermissionRequestData>(
+                       permissions::PermissionRequestData(
                            this, request_data->id,
                            content::PermissionRequestDescription(
                                content::PermissionDescriptorUtil::

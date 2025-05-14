@@ -86,7 +86,7 @@ void MockPermissionRequest::PermissionDecided(
     ContentSetting result,
     bool is_one_time,
     bool is_final_decision,
-    const std::unique_ptr<permissions::PermissionRequestData>& request_data) {
+    const permissions::PermissionRequestData& request_data) {
   granted_ = result == CONTENT_SETTING_ALLOW;
   if (result == CONTENT_SETTING_DEFAULT) {
     cancelled_ = true;

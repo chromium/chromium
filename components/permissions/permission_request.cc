@@ -415,20 +415,20 @@ bool PermissionRequest::ShouldUseTwoOriginPrompt() const {
 void PermissionRequest::PermissionGranted(bool is_one_time) {
   std::move(permission_decided_callback_)
       .Run(CONTENT_SETTING_ALLOW, is_one_time,
-           /*is_final_decision=*/true, /*request_data=*/data_);
+           /*is_final_decision=*/true, /*request_data=*/*data_);
 }
 
 void PermissionRequest::PermissionDenied() {
   std::move(permission_decided_callback_)
       .Run(CONTENT_SETTING_BLOCK, /*is_one_time=*/false,
-           /*is_final_decision=*/true, /*request_data=*/data_);
+           /*is_final_decision=*/true, /*request_data=*/*data_);
 }
 
 void PermissionRequest::Cancelled(bool is_final_decision) {
   if (permission_decided_callback_) {
     permission_decided_callback_.Run(CONTENT_SETTING_DEFAULT,
                                      /*is_one_time=*/false, is_final_decision,
-                                     /*request_data=*/data_);
+                                     /*request_data=*/*data_);
   }
 }
 
