@@ -22,7 +22,6 @@ class TabGroupController {
   virtual void OnTabGroupVisualsChanged(
       const tab_groups::TabGroupId& group,
       const TabGroupChange::VisualsChange& visuals) = 0;
-  virtual void MoveTabGroup(const tab_groups::TabGroupId& group) = 0;
   virtual std::u16string GetTitleAt(int index) const = 0;
 
   // Methods from TabStripModel that are exposed to TabGroup.

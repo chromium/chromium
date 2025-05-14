@@ -631,7 +631,6 @@ class TabStripModel : public TabGroupController {
   void OnTabGroupVisualsChanged(
       const tab_groups::TabGroupId& group,
       const TabGroupChange::VisualsChange& visuals) override;
-  void MoveTabGroup(const tab_groups::TabGroupId& group) override;
   std::u16string GetTitleAt(int index) const override;
   // The same as count(), but overridden for TabGroup to access.
   int GetTabCount() const override;
@@ -819,6 +818,9 @@ class TabStripModel : public TabGroupController {
 
   // Notify observers that a `group` was closed.
   void NotifyTabGroupClosed(const tab_groups::TabGroupId& group);
+
+  // Notify observers that `group` is moved.
+  void NotifyTabGroupMoved(const tab_groups::TabGroupId& group);
 
   // Notify observers that `group` is detached from the model.
   void NotifyTabGroupDetached(tabs::TabGroupTabCollection* group_collection);

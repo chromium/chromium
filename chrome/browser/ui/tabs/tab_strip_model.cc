@@ -910,7 +910,7 @@ void TabStripModel::MoveGroupToImpl(const tab_groups::TabGroupId& group,
       base::BindOnce(&tabs::TabStripCollection::MoveTabGroupTo,
                      base::Unretained(contents_data_.get()), group, to_index));
 
-  MoveTabGroup(group);
+  NotifyTabGroupMoved(group);
 }
 
 WebContents* TabStripModel::GetActiveWebContents() const {
@@ -1848,7 +1848,7 @@ void TabStripModel::OnTabGroupVisualsChanged(
   }
 }
 
-void TabStripModel::MoveTabGroup(const tab_groups::TabGroupId& group) {
+void TabStripModel::NotifyTabGroupMoved(const tab_groups::TabGroupId& group) {
   TabGroupChange change(this, group, TabGroupChange::kMoved);
   for (auto& observer : observers_) {
     observer.OnTabGroupChanged(change);
