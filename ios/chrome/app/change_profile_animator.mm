@@ -98,6 +98,11 @@ void InvokeChangeProfileContinuation(ChangeProfileContinuation continuation,
   _effectView = [[UIVisualEffectView alloc] initWithEffect:nil];
   _snapshotView = [view snapshotViewAfterScreenUpdates:NO];
 
+  if (!_snapshotView) {
+    _snapshotView = [[UIView alloc] initWithFrame:view.frame];
+    _snapshotView.backgroundColor = [UIColor whiteColor];
+  }
+
   // Install the snapshot and the effect view as overlays above the UIWindow.
   // The effect initially does nothing, but it is possible to animate it by
   // setting the -effect property in an animation block.
