@@ -71,8 +71,6 @@ class OmniboxPopupViewViews : public views::View,
   void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) const override;
   std::u16string_view GetAccessibleButtonTextForResult(
       size_t line) const override;
-  void SetSuggestionGroupVisibility(size_t match_index,
-                                    bool suggestion_group_hidden) override;
 
   // views::View:
   bool OnMouseDragged(const ui::MouseEvent& event) override;

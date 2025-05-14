@@ -330,15 +330,6 @@ void RealboxHandler::DeleteAutocompleteMatch(uint8_t line, const GURL& url) {
   autocomplete_controller()->DeleteMatch(*match);
 }
 
-void RealboxHandler::ToggleSuggestionGroupIdVisibility(
-    int32_t suggestion_group_id) {
-  const auto& group_id = omnibox::GroupIdForNumber(suggestion_group_id);
-  DCHECK_NE(omnibox::GROUP_INVALID, group_id);
-  const bool current_visibility =
-      omnibox_controller()->IsSuggestionGroupHidden(group_id);
-  omnibox_controller()->SetSuggestionGroupHidden(group_id, !current_visibility);
-}
-
 void RealboxHandler::ExecuteAction(uint8_t line,
                                    uint8_t action_index,
                                    const GURL& url,
@@ -370,8 +361,6 @@ void RealboxHandler::ExecuteAction(uint8_t line,
 searchbox::mojom::SelectionLineState ConvertLineState(
     OmniboxPopupSelection::LineState state) {
   switch (state) {
-    case OmniboxPopupSelection::LineState::FOCUSED_BUTTON_HEADER:
-      return searchbox::mojom::SelectionLineState::kFocusedButtonHeader;
     case OmniboxPopupSelection::LineState::NORMAL:
       return searchbox::mojom::SelectionLineState::kNormal;
     case OmniboxPopupSelection::LineState::KEYWORD_MODE:

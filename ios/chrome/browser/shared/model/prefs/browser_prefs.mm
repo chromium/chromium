@@ -191,6 +191,10 @@ inline constexpr char kMixedContentAutoupgradeEnabled[] =
 // Deprecated 04/2025.
 inline constexpr char kAutologinEnabled[] = "autologin.enabled";
 
+// Deprecated 04/2025.
+inline constexpr char kSuggestionGroupVisibility[] =
+    "omnibox.suggestionGroupVisibility";
+
 // Migrates a boolean pref from source to target PrefService.
 void MigrateBooleanPref(std::string_view pref_name,
                         PrefService* target_pref_service,
@@ -1051,6 +1055,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Deprecated 04/2025.
   registry->RegisterBooleanPref(kAutologinEnabled, false);
+
+  // Deprecated 04/2025.
+  registry->RegisterDictionaryPref(kSuggestionGroupVisibility);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1249,6 +1256,9 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Added 04/2025.
   prefs->ClearPref(kAutologinEnabled);
+
+  // Added 04/2025.
+  prefs->ClearPref(kSuggestionGroupVisibility);
 }
 
 void MigrateObsoleteUserDefault() {

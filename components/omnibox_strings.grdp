@@ -279,27 +279,6 @@
   <message name="IDS_ACC_REMOVE_SUGGESTION_BUTTON" desc="Announcement when remove suggestion button is focused.">
     Remove Suggestion button, press Enter to remove this suggestion
   </message>
-  <!-- Tooltip labels for the omnibox popup header show/hide toggle button. -->
-  <message name="IDS_TOOLTIP_HEADER_SHOW_SUGGESTIONS_BUTTON" desc="Tooltip for the Show Suggestions button on section headers.">
-    Show suggestions
-  </message>
-  <message name="IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON" desc="Tooltip for the Hide Suggestions button on section headers.">
-    Hide suggestions
-  </message>
-  <!-- Accessibility labels for the omnibox popup header show/hide toggle button. -->
-  <message name="IDS_ACC_HEADER_SHOW_SUGGESTIONS_BUTTON" desc="Announcement for the Show Suggestions button on section headers.">
-    Show the &quot;<ph name="SECTION">$1<ex>related to recent searches</ex></ph>&quot; section
-  </message>
-  <message name="IDS_ACC_HEADER_HIDE_SUGGESTIONS_BUTTON" desc="Announcement for the Hide Suggestions button on section headers.">
-    Hide the &quot;<ph name="SECTION">$1<ex>related to recent searches</ex></ph>&quot; section
-  </message>
-  <!-- Accessibility announcements made when suggestion sections are shown or hidden. -->
-  <message name="IDS_ACC_HEADER_SECTION_SHOWN" desc="Announcement that lets the user know the suggestions section has been Shown.">
-    &quot;<ph name="SECTION">$1<ex>Related to recent searches</ex></ph>&quot; section shown
-  </message>
-  <message name="IDS_ACC_HEADER_SECTION_HIDDEN" desc="Announcement that lets the user know the suggestions section has been Hidden.">
-    &quot;<ph name="SECTION">$1<ex>Related to recent searches</ex></ph>&quot; section hidden
-  </message>
 
   <!-- Accessibility announcements made for the Chrome tip IPH suggestions sometimes shown at the bottom of the Omnibox -->
   <message name="IDS_ACC_CHROME_TIP" desc="Announcement that is read after the last suggestion when the IPH row is present in the Omnibox.">

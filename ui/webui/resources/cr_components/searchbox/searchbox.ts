@@ -425,13 +425,6 @@ export class SearchboxElement extends SearchboxElementBase {
   // Event handlers
   //============================================================================
 
-  private onHeaderFocusin_() {
-    // The header got focus. Unselect the selected match and clear the input.
-    assert(this.lastQueriedInput_ === '');
-    this.$.matches.unselect();
-    this.updateInput_({text: '', inline: ''});
-  }
-
   private onInputCutCopy_(e: ClipboardEvent) {
     // Only handle cut/copy when input has content and it's all selected.
     if (!this.$.input.value || this.$.input.selectionStart !== 0 ||

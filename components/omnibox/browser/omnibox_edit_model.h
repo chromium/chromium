@@ -396,6 +396,16 @@ class OmniboxEditModel {
   gfx::Image GetMatchIconIfExtension(const AutocompleteMatch& match) const;
 #endif
 
+  // Gets the suggestion group header text associated with the given suggestion
+  // group ID.
+  // In addition to calling `AutocompleteResult::GetHeaderForSuggestionGroup()`,
+  // this function takes into account certain header visibility criteria (e.g.
+  // experiment flags) to determine the proper header text, which will then be
+  // used by the relevant code to conditionally show suggestion group headers
+  // in the Omnibox/Realbox popup.
+  std::u16string GetSuggestionGroupHeaderText(
+      const std::optional<omnibox::GroupId>& suggestion_group_id) const;
+
   // Returns true if the popup exists and is open. Virtual for testing.
   virtual bool PopupIsOpen() const;
 
@@ -476,10 +486,6 @@ class OmniboxEditModel {
 
   // Stores the icon in a local data member and schedules a repaint.
   void SetIconBitmap(const GURL& icon_url, const SkBitmap& bitmap);
-
-  // Updates the popup view when the visibility of a group changes.
-  void SetPopupSuggestionGroupVisibility(size_t match_index,
-                                         bool suggestion_group_hidden);
 
   void SetAutocompleteInput(AutocompleteInput input);
 

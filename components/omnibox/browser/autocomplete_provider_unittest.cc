@@ -930,16 +930,6 @@ TEST_F(AutocompleteProviderTest, SuggestionGroups) {
     // for unknown suggestion group IDs.
     EXPECT_EQ(u"", result_.GetHeaderForSuggestionGroup(kBadGroupId));
 
-    // AutocompleteResult::IsSuggestionGroupHidden() returns false for unknown
-    // suggestion group IDs.
-    EXPECT_FALSE(result_.IsSuggestionGroupHidden(GetPrefs(), kBadGroupId));
-
-    // AutocompleteResult::SetSuggestionGroupHidden() does nothing for unknown
-    // suggestion group IDs.
-    result_.SetSuggestionGroupHidden(GetPrefs(), kBadGroupId,
-                                     /*hidden=*/true);
-    EXPECT_FALSE(result_.IsSuggestionGroupHidden(GetPrefs(), kBadGroupId));
-
     // AutocompleteResult::GetSectionForSuggestionGroup() returns
     // omnibox::SECTION_DEFAULT for unknown suggestion group IDs.
     EXPECT_EQ(omnibox::SECTION_DEFAULT,

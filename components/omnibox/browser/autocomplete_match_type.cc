@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
@@ -252,6 +253,7 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
 // static
 std::u16string AutocompleteMatchType::ToAccessibilityLabel(
     const AutocompleteMatch& match,
+    const std::u16string& header_text,
     const std::u16string& match_text,
     size_t match_index,
     size_t total_matches,
@@ -263,6 +265,11 @@ std::u16string AutocompleteMatchType::ToAccessibilityLabel(
   // Start with getting the base label.
   std::u16string result =
       GetAccessibilityBaseLabel(match, match_text, label_prefix_length);
+
+  // Add the suggestion group header text, if applicable.
+  if (!header_text.empty()) {
+    result = base::StrCat({result, u", ", header_text});
+  }
 
   // Add the additional message, if applicable.
   if (!additional_message_format.empty()) {

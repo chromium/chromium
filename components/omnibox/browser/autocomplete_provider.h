@@ -341,6 +341,8 @@ class AutocompleteProvider
   FRIEND_TEST_ALL_PREFIXES(BookmarkProviderTest, InlineAutocompletion);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest,
                            DemoteOnDeviceSearchSuggestions);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupSuggestionGroupHeadersTest,
+                           ShowSuggestionGroupHeadersByPageContext);
 
   virtual ~AutocompleteProvider();
 

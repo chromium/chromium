@@ -302,39 +302,6 @@ TEST_F(OmniboxResultViewTest, AccessibleProperties) {
       popup_node_data.HasIntAttribute(ax::mojom::IntAttribute::kPopupForId));
 }
 
-TEST_F(OmniboxResultViewTest, ExpandedCollapsedAccessibilityState) {
-  std::unique_ptr<OmniboxRowView> row =
-      std::make_unique<OmniboxRowView>(0, popup_view());
-  row->ShowHeader(u"Omnibox Header", false);
-  OmniboxHeaderView* header = row->header_view();
-
-  ui::AXNodeData node_data;
-  // Initially, it shouldn't be set.
-  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kExpanded));
-  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
-  header->GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
-  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
-
-  header->SetSuggestionGroupVisibility(true);
-  node_data = ui::AXNodeData();
-  // Initially, it shouldn't be set.
-  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kExpanded));
-  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
-  header->GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kExpanded));
-  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kCollapsed));
-
-  header->SetSuggestionGroupVisibility(false);
-  node_data = ui::AXNodeData();
-  // Initially, it shouldn't be set.
-  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kExpanded));
-  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
-  header->GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
-  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
-}
-
 TEST_F(OmniboxResultViewTest, StarterPackMatch) {
   AutocompleteMatch match(nullptr, 1350, false,
                           AutocompleteMatchType::STARTER_PACK);

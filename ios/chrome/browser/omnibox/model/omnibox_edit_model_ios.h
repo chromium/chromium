@@ -287,6 +287,16 @@ class OmniboxEditModelIOS {
   // Returns true if the destination URL of the match is bookmarked.
   bool IsStarredMatch(const AutocompleteMatch& match) const;
 
+  // Gets the suggestion group header text associated with the given suggestion
+  // group ID.
+  // In addition to calling `AutocompleteResult::GetHeaderForSuggestionGroup()`,
+  // this function takes into account certain header visibility criteria (e.g.
+  // experiment flags) to determine the proper header text, which will then be
+  // used by the relevant code to conditionally show suggestion group headers
+  // in the Omnibox/Realbox popup.
+  std::u16string GetSuggestionGroupHeaderText(
+      const std::optional<omnibox::GroupId>& suggestion_group_id) const;
+
   // Returns true if the popup exists and is open. Virtual for testing.
   virtual bool PopupIsOpen() const;
 
@@ -341,10 +351,6 @@ class OmniboxEditModelIOS {
   // This method seems like a good candidate for removal; it is
   // preserved here only to prevent possible behavior change while refactoring.
   void OnPopupResultChanged();
-
-  // Updates the popup view when the visibility of a group changes.
-  void SetPopupSuggestionGroupVisibility(size_t match_index,
-                                         bool suggestion_group_hidden);
 
   void SetAutocompleteInput(AutocompleteInput input);
 

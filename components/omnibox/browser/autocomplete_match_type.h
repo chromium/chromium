@@ -131,6 +131,7 @@ struct AutocompleteMatchType {
   // like it could replace |match_text|. Investigate this.
   static std::u16string ToAccessibilityLabel(
       const AutocompleteMatch& match,
+      const std::u16string& header_text,
       const std::u16string& match_text,
       size_t match_index = 0,
       size_t total_matches = 0,

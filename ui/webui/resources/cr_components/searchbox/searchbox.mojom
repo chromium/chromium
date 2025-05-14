@@ -90,9 +90,6 @@ enum RenderType {
 
 struct SuggestionGroup {
   mojo_base.mojom.String16 header;  // Header for suggestion group.
-  mojo_base.mojom.String16 hide_group_a11y_label;
-  mojo_base.mojom.String16 show_group_a11y_label;
-  bool hidden;  // Whether suggestion group should be initially hidden.
   RenderType render_type = RenderType.kDefaultVertical;
   SideType side_type = SideType.kDefaultPrimary;
 };
@@ -105,7 +102,6 @@ struct AutocompleteResult {
 };
 
 enum SelectionLineState {
-  kFocusedButtonHeader = 0,
   kNormal = 1,
   kKeywordMode = 2,
   kFocusedButtonAction = 3,
@@ -156,10 +152,6 @@ interface PageHandler {
   // Deletes the AutocompleteMatch in the current results by |line| number if
   // it is deletable. |url| is used to confirm the match |line| selection.
   DeleteAutocompleteMatch(uint8 line, url.mojom.Url url);
-  // Tells the browser to allow suggestions with the given suggestion group ID
-  // to appear in the results if they currently are not allowed to or to prevent
-  // them from appearing in the results if they are currently permitted to.
-  ToggleSuggestionGroupIdVisibility(int32 suggestion_group_id);
   // Executes the Pedal Action. match_selection_timestamp is the number of
   // microseconds since Jan. 1, 1970 (ECMAScript epoch).
   // |url| is only used to confirm the match |line| selection.

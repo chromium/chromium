@@ -32,8 +32,6 @@ class LensSearchboxHandler : public SearchboxHandler {
   void QueryAutocomplete(const std::u16string& input,
                          bool prevent_inline_autocomplete) override;
   void DeleteAutocompleteMatch(uint8_t line, const GURL& url) override {}
-  void ToggleSuggestionGroupIdVisibility(int32_t suggestion_group_id) override {
-  }
   void ExecuteAction(uint8_t line,
                      uint8_t action_index,
                      const GURL& url,

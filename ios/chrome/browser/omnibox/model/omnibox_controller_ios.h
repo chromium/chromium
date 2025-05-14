@@ -10,7 +10,6 @@
 #import "base/compiler_specific.h"
 #import "components/omnibox/browser/autocomplete_controller.h"
 #import "components/omnibox/browser/autocomplete_match.h"
-#import "components/prefs/pref_change_registrar.h"
 #import "components/search_engines/template_url_starter_pack_data.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_edit_model_ios.h"
 
@@ -72,22 +71,12 @@ class OmniboxControllerIOS : public AutocompleteController::Observer {
   std::u16string GetHeaderForSuggestionGroup(
       omnibox::GroupId suggestion_group_id) const;
 
-  // Returns whether or not `suggestion_group_id` should be collapsed in the UI.
-  // This method takes into account both the user's stored prefs as well as
-  // the server-provided visibility hint. Returns false if `suggestion_group_id`
-  // is not found in the results.
-  bool IsSuggestionGroupHidden(omnibox::GroupId suggestion_group_id) const;
-
-  // Sets the UI collapsed/expanded state of the `suggestion_group_id` in the
-  // user's stored prefs based on the value of `hidden`. Does nothing if
-  // `suggestion_group_id` is not found in the results.
-  void SetSuggestionGroupHidden(omnibox::GroupId suggestion_group_id,
-                                bool hidden) const;
+  // Returns whether or not the row for a particular match should be hidden in
+  // the UI. This is currently used to hide suggestions in the 'Gemini' scope
+  // when the starter pack expansion feature is enabled.
+  bool IsSuggestionHidden(const AutocompleteMatch& match) const;
 
  private:
-
-  // Called when the prefs for the visibility of groups changes.
-  void OnSuggestionGroupVisibilityPrefChanged();
 
   std::unique_ptr<OmniboxClient> client_;
 
@@ -99,9 +88,6 @@ class OmniboxControllerIOS : public AutocompleteController::Observer {
   // docs/dangling_ptr_guide.md) the `edit_model_` field needs to be declared
   // *after* the `autocomplete_controller_` field.
   std::unique_ptr<OmniboxEditModelIOS> edit_model_;
-
-  // Observes changes to the prefs for the visibility of groups.
-  PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtrFactory<OmniboxControllerIOS> weak_ptr_factory_{this};
 };

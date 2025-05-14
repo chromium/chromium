@@ -1396,48 +1396,6 @@ std::u16string AutocompleteResult::GetHeaderForSuggestionGroup(
   return base::UTF8ToUTF16(it->second.header_text());
 }
 
-bool AutocompleteResult::IsSuggestionGroupHidden(
-    const PrefService* prefs,
-    omnibox::GroupId suggestion_group_id) const {
-  auto it = suggestion_groups_map().find(suggestion_group_id);
-  if (it == suggestion_groups_map().end()) {
-    return false;
-  }
-
-  // Always show the suggestion group if there's no associated group header (and
-  // thus no user-visible control for toggling the visiblity of the group).
-  if (GetHeaderForSuggestionGroup(suggestion_group_id).empty()) {
-    return false;
-  }
-
-  omnibox::SuggestionGroupVisibility user_preference =
-      omnibox::GetUserPreferenceForSuggestionGroupVisibility(
-          prefs, suggestion_group_id);
-
-  if (user_preference == omnibox::SuggestionGroupVisibility::HIDDEN)
-    return true;
-  if (user_preference == omnibox::SuggestionGroupVisibility::SHOWN)
-    return false;
-
-  DCHECK_EQ(user_preference, omnibox::SuggestionGroupVisibility::DEFAULT);
-  return it->second.visibility() == omnibox::GroupConfig_Visibility_HIDDEN;
-}
-
-void AutocompleteResult::SetSuggestionGroupHidden(
-    PrefService* prefs,
-    omnibox::GroupId suggestion_group_id,
-    bool hidden) const {
-  auto it = suggestion_groups_map().find(suggestion_group_id);
-  if (it == suggestion_groups_map().end()) {
-    return;
-  }
-
-  omnibox::SetUserPreferenceForSuggestionGroupVisibility(
-      prefs, suggestion_group_id,
-      hidden ? omnibox::SuggestionGroupVisibility::HIDDEN
-             : omnibox::SuggestionGroupVisibility::SHOWN);
-}
-
 omnibox::GroupSection AutocompleteResult::GetSectionForSuggestionGroup(
     omnibox::GroupId suggestion_group_id) const {
   auto it = suggestion_groups_map().find(suggestion_group_id);

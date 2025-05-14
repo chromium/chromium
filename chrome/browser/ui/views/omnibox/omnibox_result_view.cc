@@ -520,8 +520,7 @@ void OmniboxResultView::OnSelectionStateChanged() {
     // events. Specifically, OmniboxPopupViewViews::ProvideButtonFocusHint()
     // already fires the correct events when the user tabs to an attached button
     // in the current row.
-    if (selection_state == OmniboxPopupSelection::FOCUSED_BUTTON_HEADER ||
-        selection_state == OmniboxPopupSelection::NORMAL) {
+    if (selection_state == OmniboxPopupSelection::NORMAL) {
       popup_view_->FireAXEventsForNewActiveDescendant(this);
     }
   }
@@ -530,10 +529,8 @@ void OmniboxResultView::OnSelectionStateChanged() {
 }
 
 bool OmniboxResultView::GetMatchSelected() const {
-  // The header button being focused means the match itself is NOT focused.
   const auto selection = popup_view_->GetSelection();
-  return selection.line == model_index_ &&
-         selection.state != OmniboxPopupSelection::FOCUSED_BUTTON_HEADER;
+  return selection.line == model_index_;
 }
 
 views::Button* OmniboxResultView::GetActiveAuxiliaryButtonForAccessibility() {
@@ -774,8 +771,11 @@ void OmniboxResultView::UpdateAccessibleName() {
       label += popup_view_->model()
                    ->MaybeGetPopupAccessibilityLabelForIPHSuggestion();
     } else {
-      label = AutocompleteMatchType::ToAccessibilityLabel(raw_match,
-                                                          raw_match.contents);
+      label = AutocompleteMatchType::ToAccessibilityLabel(
+          raw_match,
+          popup_view_->model()->GetSuggestionGroupHeaderText(
+              raw_match.suggestion_group_id),
+          raw_match.contents);
     }
     GetViewAccessibility().SetName(label);
   }

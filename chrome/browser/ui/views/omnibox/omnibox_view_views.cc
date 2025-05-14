@@ -926,7 +926,8 @@ void OmniboxViewViews::SetAccessibilityLabel(const std::u16string& display_text,
     // case, and |match| is a synthetically generated match. In that case,
     // bypass OmniboxPopupModel and get the label from our synthetic |match|.
     friendly_suggestion_text_ = AutocompleteMatchType::ToAccessibilityLabel(
-        match, display_text, OmniboxPopupSelection::kNoMatch,
+        match, /*header_text=*/u"", display_text,
+        OmniboxPopupSelection::kNoMatch,
         controller()->autocomplete_controller()->result().size(),
         std::u16string(), &friendly_suggestion_text_prefix_length_);
   } else {

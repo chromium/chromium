@@ -46,6 +46,9 @@ class OmniboxPopupViewViewsTest : public InProcessBrowserTest {
 
   views::Widget* CreatePopupForTestQuery();
   views::Widget* GetPopupWidget() { return popup_view()->GetWidget(); }
+  OmniboxHeaderView* GetHeaderViewAt(int index) {
+    return popup_view()->header_view_at(index);
+  }
   OmniboxResultView* GetResultViewAt(int index) {
     return popup_view()->result_view_at(index);
   }
@@ -107,9 +110,6 @@ class OmniboxPopupSuggestionGroupHeadersTest
     : public OmniboxPopupViewViewsTest {
  public:
   OmniboxPopupSuggestionGroupHeadersTest() = default;
-
-  void SetUpOnMainThread() override;
-  void TearDownOnMainThread() override;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{

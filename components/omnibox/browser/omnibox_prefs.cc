@@ -18,34 +18,8 @@
 #include "third_party/omnibox_proto/groups.pb.h"
 
 namespace omnibox {
-namespace {
-
-// Returns an equivalent omnibox::UMAGroupId value for omnibox::GroupId.
-constexpr UMAGroupId ToUMAGroupId(GroupId group_id) {
-  switch (group_id) {
-    case GROUP_INVALID:
-      return UMAGroupId::kInvalid;
-    case GROUP_PREVIOUS_SEARCH_RELATED:
-      return UMAGroupId::kPreviousSearchRelated;
-    case GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS:
-      return UMAGroupId::kPreviousSearchRelatedEntityChips;
-    case GROUP_TRENDS:
-      return UMAGroupId::kTrends;
-    case GROUP_TRENDS_ENTITY_CHIPS:
-      return UMAGroupId::kTrendsEntityChips;
-    case GROUP_RELATED_QUERIES:
-      return UMAGroupId::kRelatedQueries;
-    case GROUP_VISITED_DOC_RELATED:
-      return UMAGroupId::kVisitedDocRelated;
-    default:
-      return UMAGroupId::kUnknown;
-  }
-}
-
-}  // namespace
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(kSuggestionGroupVisibility);
   registry->RegisterBooleanPref(
       kKeywordSpaceTriggeringEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -68,41 +42,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kShownCountHistoryScopePromo, 0);
   registry->RegisterIntegerPref(kShownCountHistoryEmbeddingsScopePromo, 0);
   registry->RegisterIntegerPref(kFocusedSrpWebCount, 0);
-}
-
-SuggestionGroupVisibility GetUserPreferenceForSuggestionGroupVisibility(
-    const PrefService* prefs,
-    int suggestion_group_id) {
-  DCHECK(prefs);
-
-  const base::Value::Dict& dictionary =
-      prefs->GetDict(kSuggestionGroupVisibility);
-
-  std::optional<int> value =
-      dictionary.FindInt(base::NumberToString(suggestion_group_id));
-
-  if (value == SuggestionGroupVisibility::HIDDEN ||
-      value == SuggestionGroupVisibility::SHOWN) {
-    return static_cast<SuggestionGroupVisibility>(*value);
-  }
-
-  return SuggestionGroupVisibility::DEFAULT;
-}
-
-void SetUserPreferenceForSuggestionGroupVisibility(
-    PrefService* prefs,
-    int suggestion_group_id,
-    SuggestionGroupVisibility visibility) {
-  DCHECK(prefs);
-
-  ScopedDictPrefUpdate update(prefs, kSuggestionGroupVisibility);
-  update->Set(base::NumberToString(suggestion_group_id), visibility);
-
-  base::UmaHistogramEnumeration(
-      visibility == SuggestionGroupVisibility::SHOWN
-          ? kGroupIdToggledOnHistogram
-          : kGroupIdToggledOffHistogram,
-      ToUMAGroupId(GroupIdForNumber(suggestion_group_id)));
 }
 
 void SetUserPreferenceForZeroSuggestCachedResponse(

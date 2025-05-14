@@ -36,10 +36,6 @@ struct OmniboxPopupSelection {
   // selected first when tabbing through the popup. They are not persisted
   // anywhere and can be freely changed.
   enum LineState {
-    // This means the Header above this row is highlighted, and the
-    // header collapse/expand button is focused.
-    FOCUSED_BUTTON_HEADER,
-
     // NORMAL means the row is focused, and Enter key navigates to the match.
     NORMAL,
 

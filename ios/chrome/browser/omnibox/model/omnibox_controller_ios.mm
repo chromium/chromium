@@ -18,7 +18,6 @@
 #import "components/omnibox/browser/omnibox_field_trial.h"
 #import "components/omnibox/browser/omnibox_popup_selection.h"
 #import "components/omnibox/browser/omnibox_popup_view.h"
-#import "components/omnibox/browser/omnibox_prefs.h"
 #import "components/omnibox/browser/page_classification_functions.h"
 #import "components/omnibox/common/omnibox_feature_configs.h"
 #import "components/search_engines/template_url_starter_pack_data.h"
@@ -49,15 +48,6 @@ OmniboxControllerIOS::OmniboxControllerIOS(
   // Register the `AutocompleteController` with `AutocompleteControllerEmitter`.
   if (auto* emitter = client_->GetAutocompleteControllerEmitter()) {
     autocomplete_controller_->AddObserver(emitter);
-  }
-
-  if (PrefService* prefs = client_->GetPrefs()) {
-    pref_change_registrar_.Init(prefs);
-    pref_change_registrar_.Add(
-        omnibox::kSuggestionGroupVisibility,
-        base::BindRepeating(
-            &OmniboxControllerIOS::OnSuggestionGroupVisibilityPrefChanged,
-            base::Unretained(this)));
   }
 }
 
@@ -156,29 +146,16 @@ std::u16string OmniboxControllerIOS::GetHeaderForSuggestionGroup(
       suggestion_group_id);
 }
 
-bool OmniboxControllerIOS::IsSuggestionGroupHidden(
-    omnibox::GroupId suggestion_group_id) const {
-  const PrefService* prefs = client_->GetPrefs();
-  return prefs && autocomplete_controller_->result().IsSuggestionGroupHidden(
-                      prefs, suggestion_group_id);
-}
-
-void OmniboxControllerIOS::SetSuggestionGroupHidden(
-    omnibox::GroupId suggestion_group_id,
-    bool hidden) const {
-  if (PrefService* prefs = client_->GetPrefs()) {
-    autocomplete_controller_->result().SetSuggestionGroupHidden(
-        prefs, suggestion_group_id, hidden);
+bool OmniboxControllerIOS::IsSuggestionHidden(
+    const AutocompleteMatch& match) const {
+  if (OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
+      match.from_keyword) {
+    const TemplateURL* turl =
+        match.GetTemplateURL(client_->GetTemplateURLService(), false);
+    if (turl &&
+        turl->starter_pack_id() == TemplateURLStarterPackData::kGemini) {
+      return true;
+    }
   }
-}
-
-void OmniboxControllerIOS::OnSuggestionGroupVisibilityPrefChanged() {
-  for (size_t i = 0; i < autocomplete_controller_->result().size(); ++i) {
-    const AutocompleteMatch& match =
-        autocomplete_controller_->result().match_at(i);
-    bool suggestion_group_hidden =
-        match.suggestion_group_id.has_value() &&
-        IsSuggestionGroupHidden(match.suggestion_group_id.value());
-    edit_model_->SetPopupSuggestionGroupVisibility(i, suggestion_group_hidden);
-  }
+  return false;
 }

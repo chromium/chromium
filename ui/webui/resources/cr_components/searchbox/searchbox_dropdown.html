@@ -57,15 +57,6 @@
     white-space: nowrap;
   }
 
-  .header cr-icon-button {
-    top: 1px;
-  }
-
-  .header:focus-within:not(:focus) cr-icon-button {
-      --cr-icon-button-fill-color:
-          var(--color-searchbox-results-icon-selected);
-  }
-
   @media (forced-colors: active) {
     cr-searchbox-match:-webkit-any(:hover, :focus-within, [selected]) {
       background-color: Highlight;
@@ -122,18 +113,13 @@
           <!-- Header cannot be tabbed into but gets focus when clicked. This stops
               the dropdown from losing focus and closing as a result. -->
           <h3 class="header" data-id$="[[groupId]]" tabindex="-1"
-              on-focusin="onHeaderFocusin_" on-click="onHeaderClick_"
               on-mousedown="onHeaderMousedown_" aria-hidden="true">
             <span class="text">[[headerForGroup_(groupId)]]</span>
-            <cr-icon-button class$="action-icon [[toggleButtonIconForGroup_(groupId, hiddenGroupIds_.*)]]"
-                title="[[toggleButtonTitleForGroup_(groupId, hiddenGroupIds_.*)]]"
-                aria-label$="[[toggleButtonA11yLabelForGroup_(groupId, hiddenGroupIds_.*)]]">
-            </cr-icon-button>
           </h3>
         </template>
         <div class$="matches [[renderTypeClassForGroup_(groupId)]]">
           <template is="dom-repeat"
-              items="[[matchesForGroup_(groupId, result.matches.*, hiddenGroupIds_.*)]]"
+              items="[[matchesForGroup_(groupId, result.matches.*)]]"
               as="match" on-dom-change="onResultRepaint_">
             <cr-searchbox-match tabindex="0" role="option" match="[[match]]"
                 match-index="[[matchIndex_(match)]]" side-type="[[sideType]]"

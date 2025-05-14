@@ -2173,104 +2173,6 @@ suite('NewTabPageRealboxTest', () => {
   // Test suggestion groups
   //============================================================================
 
-  test('matches in a suggestion group can be made hidden/visible', async () => {
-    realbox.$.input.value = 'hello';
-    realbox.$.input.dispatchEvent(new InputEvent('input'));
-
-    const matches =
-        [createSearchMatch(), createUrlMatch({suggestionGroupId: 100})];
-    const suggestionGroupsMap = {
-      100: {
-        header: stringToMojoString16('Recommended for you'),
-        hideGroupA11yLabel: stringToMojoString16(''),
-        showGroupA11yLabel: stringToMojoString16(''),
-        hidden: true,
-        renderType: RenderType.kDefaultVertical,
-        sideType: SideType.kDefaultPrimary,
-      },
-      101: {
-        header: stringToMojoString16('Not recommended for you'),
-        hideGroupA11yLabel: stringToMojoString16(''),
-        showGroupA11yLabel: stringToMojoString16(''),
-        hidden: false,
-        renderType: RenderType.kDefaultVertical,
-        sideType: SideType.kDefaultPrimary,
-      },
-    };
-    testProxy.callbackRouterRemote.autocompleteResultChanged({
-      input: stringToMojoString16(realbox.$.input.value.trimStart()),
-      matches,
-      suggestionGroupsMap,
-    });
-    assertTrue(await areMatchesShowing());
-
-    // The first match is showing. The second match is initially hidden.
-    let matchEls = realbox.$.matches.selectableMatchElements;
-    assertEquals(1, matchEls.length);
-
-    // The suggestion group header and the toggle button are visible.
-    const headerEl =
-        realbox.$.matches.shadowRoot!.querySelectorAll<HTMLElement>(
-            '.header')[0]!;
-    assertTrue(window.getComputedStyle(headerEl).display !== 'none');
-    assertEquals('Recommended for you', headerEl.textContent!.trim());
-    const toggleButtonEl =
-        realbox.$.matches.shadowRoot!.querySelectorAll('cr-icon-button')[0]!;
-    assertTrue(window.getComputedStyle(toggleButtonEl).display !== 'none');
-
-    // Make the second match visible by pressing 'Space' on the toggle button.
-    toggleButtonEl.dispatchEvent(new KeyboardEvent('keydown', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-      key: ' ',
-    }));
-    toggleButtonEl.dispatchEvent(new KeyboardEvent('keyup', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-      key: ' ',
-    }));
-
-    let args =
-        await testProxy.handler.whenCalled('toggleSuggestionGroupIdVisibility');
-    assertEquals(100, args.suggestionGroupId);
-    assertEquals(
-        1, testProxy.handler.getCallCount('toggleSuggestionGroupIdVisibility'));
-
-    testProxy.handler.reset();
-
-    // Second match is visible.
-    matchEls = realbox.$.matches.selectableMatchElements;
-    assertEquals(2, matchEls.length);
-
-    // Hide the second match by clicking the toggle button.
-    toggleButtonEl.click();
-
-    args =
-        await testProxy.handler.whenCalled('toggleSuggestionGroupIdVisibility');
-    assertEquals(100, args.suggestionGroupId);
-    assertEquals(
-        1, testProxy.handler.getCallCount('toggleSuggestionGroupIdVisibility'));
-
-    // Second match is hidden.
-    matchEls = realbox.$.matches.selectableMatchElements;
-    assertEquals(1, matchEls.length);
-
-    testProxy.handler.reset();
-
-    // Show the second match by clicking the header.
-    headerEl.click();
-    args =
-        await testProxy.handler.whenCalled('toggleSuggestionGroupIdVisibility');
-    assertEquals(100, args.suggestionGroupId);
-    assertEquals(
-        1, testProxy.handler.getCallCount('toggleSuggestionGroupIdVisibility'));
-    // Second match is visible again.
-    matchEls = realbox.$.matches.selectableMatchElements;
-    assertEquals(2, matchEls.length);
-  });
-
   test('HidesDropdownIfNoPrimaryMatches', async () => {
     realbox.$.input.value = '';
     realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
@@ -2279,9 +2181,6 @@ suite('NewTabPageRealboxTest', () => {
     const suggestionGroupsMap = {
       100: {
         header: stringToMojoString16('People also search for'),
-        hideGroupA11yLabel: stringToMojoString16(''),
-        showGroupA11yLabel: stringToMojoString16(''),
-        hidden: false,
         renderType: RenderType.kDefaultVertical,
         sideType: SideType.kSecondary,
       },
@@ -2303,63 +2202,6 @@ suite('NewTabPageRealboxTest', () => {
     });
     assertTrue(await areMatchesShowing());
   });
-
-  test(
-      'focusing suggestion group header resets selection and input text',
-      async () => {
-        realbox.$.input.value = '';
-        realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
-
-        const matches =
-            [createSearchMatch(), createUrlMatch({suggestionGroupId: 100})];
-        const suggestionGroupsMap = {
-          100: {
-            header: stringToMojoString16('Recommended for you'),
-            hideGroupA11yLabel: stringToMojoString16(''),
-            showGroupA11yLabel: stringToMojoString16(''),
-            hidden: false,
-            renderType: RenderType.kDefaultVertical,
-            sideType: SideType.kDefaultPrimary,
-          },
-        };
-        testProxy.callbackRouterRemote.autocompleteResultChanged({
-          input: stringToMojoString16(realbox.$.input.value.trimStart()),
-          matches,
-          suggestionGroupsMap,
-        });
-        assertTrue(await areMatchesShowing());
-
-        const matchEls =
-            realbox.$.matches.shadowRoot!.querySelectorAll('cr-searchbox-match');
-        assertEquals(2, matchEls.length);
-
-        // Select the first match.
-        matchEls[0]!.dispatchEvent(new Event('focusin', {
-          bubbles: true,
-          cancelable: true,
-          composed: true,  // So it propagates across shadow DOM boundary.
-        }));
-
-        // First match is selected.
-        assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
-        // Input is updated.
-        assertEquals('hello world', realbox.$.input.value);
-
-        // Focus the suggestion group header.
-        const headerEl =
-            realbox.$.matches.shadowRoot!.querySelectorAll<HTMLElement>(
-                '.header')[0]!;
-        headerEl.dispatchEvent(new Event('focusin', {
-          bubbles: true,
-          cancelable: true,
-          composed: true,  // So it propagates across shadow DOM boundary.
-        }));
-
-        // First match is no longer selected.
-        assertFalse(matchEls[0]!.hasAttribute(Attributes.SELECTED));
-        // Input is cleared.
-        assertEquals('', realbox.$.input.value);
-      });
 
   //============================================================================
   // Test calculator answer type

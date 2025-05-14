@@ -35,39 +35,10 @@ bool OmniboxPopupSelection::IsControlPresentOnMatch(
   if (line >= result.size()) {
     return false;
   }
+
   const auto& match = result.match_at(line);
-  // Skip rows that are hidden because their header is collapsed, unless the
-  // user is trying to focus the header itself (which is still shown).
-  if (state != FOCUSED_BUTTON_HEADER && match.suggestion_group_id.has_value() &&
-      pref_service &&
-      result.IsSuggestionGroupHidden(pref_service,
-                                     match.suggestion_group_id.value())) {
-    return false;
-  }
 
   switch (state) {
-    case FOCUSED_BUTTON_HEADER: {
-      // Trivial case where there's no header at all.
-      if (!match.suggestion_group_id.has_value()) {
-        return false;
-      }
-      // Empty string headers are not rendered and should not be traversed.
-      if (result.GetHeaderForSuggestionGroup(match.suggestion_group_id.value())
-              .empty()) {
-        return false;
-      }
-
-      // Now we know there's an existing header. First line header is always
-      // distinct from the previous match (because there is no previous match).
-      if (line == 0) {
-        return true;
-      }
-
-      // Otherwise, we verify that this header is distinct from the previous
-      // match's header.
-      const auto& previous_match = result.match_at(line - 1);
-      return match.suggestion_group_id != previous_match.suggestion_group_id;
-    }
     case NORMAL:
       // `NULL_RESULT_MESSAGE` cannot be focused.
       return match.type != AutocompleteMatchType::NULL_RESULT_MESSAGE;
@@ -178,12 +149,6 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
     // Whole line stepping can go straight into keyword mode.
     all_states.push_back(KEYWORD_MODE);
   } else {
-    // Arrow keys should never reach the header controls.
-    // If header is hidden, header controls are neither visible nor reachable.
-    if (step == kStateOrLine && !force_hide_row_header) {
-      all_states.push_back(FOCUSED_BUTTON_HEADER);
-    }
-
     all_states.push_back(NORMAL);
     all_states.push_back(KEYWORD_MODE);
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

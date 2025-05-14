@@ -65,6 +65,16 @@
 
 namespace {
 
+std::string result_a11y_text(OmniboxResultView* result_view) {
+  if (!result_view) {
+    return "";
+  }
+
+  ui::AXNodeData result_node_data;
+  result_view->GetViewAccessibility().GetAccessibleNodeData(&result_node_data);
+  return result_node_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
+}
+
 bool contains(std::string str, std::string substr) {
   return str.find(substr) != std::string::npos;
 }
@@ -978,118 +988,110 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupSuggestionGroupHeadersTest,
     match.keyword = u"foo2";
     matches.push_back(match);
   }
+  provider->matches_ = matches;
 
   omnibox::GroupConfigMap suggestion_groups_map;
   // Non-contextual suggestion group header.
+  const std::string kNonContextualSuggestionGroupHeaderText =
+      "Related to this page";
   suggestion_groups_map[group1];
-  suggestion_groups_map[group1].set_header_text("Related to this page");
+  suggestion_groups_map[group1].set_header_text(
+      kNonContextualSuggestionGroupHeaderText);
   // Contextual suggestion group header.
+  const std::string kContextualSuggestionGroupHeaderText =
+      "Suggested questions about this page";
   suggestion_groups_map[group2];
   suggestion_groups_map[group2].set_header_text(
-      "Suggested questions about this page");
+      kContextualSuggestionGroupHeaderText);
+  provider->suggestion_groups_map_ = suggestion_groups_map;
 
   // NTP page context.
   {
-    GURL ntp_url = GURL(chrome::kChromeUINewTabURL);
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ntp_url));
-    ASSERT_TRUE(content::WaitForLoadStop(
-        browser()->tab_strip_model()->GetActiveWebContents()));
+    edit_model()->SetUserText(u"foo");
+    AutocompleteInput input(
+        u"foo",
+        metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
+        ChromeAutocompleteSchemeClassifier(browser()->profile()));
+    input.set_omit_asynchronous_matches(true);
+    controller()->autocomplete_controller()->Start(input);
+    ASSERT_TRUE(popup_view()->IsOpen());
 
-    provider->matches_ = matches;
-    controller()->autocomplete_controller()->internal_result_.ClearMatches();
-    controller()->autocomplete_controller()->internal_result_.AppendMatches(
-        matches);
-
-    controller()
-        ->autocomplete_controller()
-        ->internal_result_.MergeSuggestionGroupsMap(suggestion_groups_map);
-
-    controller()->autocomplete_controller()->NotifyChanged();
-    popup_view()->UpdatePopupAppearance();
-    EXPECT_TRUE(popup_view()->IsOpen());
+    // Skip over implicit SEARCH_WHAT_YOU_TYPED suggestion at index 0.
 
     // Non-contextual suggestion group header should be SHOWN.
-    EXPECT_TRUE(popup_view()->header_view_at(0)->GetVisible());
-    EXPECT_TRUE(popup_view()->result_view_at(0)->GetVisible());
+    EXPECT_TRUE(GetHeaderViewAt(1)->GetVisible());
+    EXPECT_TRUE(GetResultViewAt(1)->GetVisible());
+
+    // Header text should be INCLUDED in the suggestion a11y text.
+    edit_model()->SetPopupSelection(OmniboxPopupSelection(1));
+    EXPECT_TRUE(contains(result_a11y_text(GetResultViewAt(1)),
+                         kNonContextualSuggestionGroupHeaderText));
 
     // Contextual suggestion group header should be SHOWN.
-    EXPECT_TRUE(popup_view()->header_view_at(1)->GetVisible());
-    EXPECT_TRUE(popup_view()->result_view_at(1)->GetVisible());
+    EXPECT_TRUE(GetHeaderViewAt(2)->GetVisible());
+    EXPECT_TRUE(GetResultViewAt(2)->GetVisible());
+
+    // Header text should be INCLUDED in the suggestion a11y text.
+    edit_model()->SetPopupSelection(OmniboxPopupSelection(2));
+    EXPECT_TRUE(contains(result_a11y_text(GetResultViewAt(2)),
+                         kContextualSuggestionGroupHeaderText));
   }
 
   // SRP page context.
   {
-    TemplateURLService* template_url_service =
-        TemplateURLServiceFactory::GetForProfile(browser()->profile());
-    search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
+    edit_model()->SetUserText(u"foo");
+    AutocompleteInput input(
+        u"foo",
+        metrics::OmniboxEventProto::
+            SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+        ChromeAutocompleteSchemeClassifier(browser()->profile()));
+    input.set_omit_asynchronous_matches(true);
+    controller()->autocomplete_controller()->Start(input);
+    ASSERT_TRUE(popup_view()->IsOpen());
 
-    TemplateURLData data;
-    data.SetShortName(u"TestSearch");
-    data.SetKeyword(u"test_search_keyword");
-    GURL search_url_pattern =
-        embedded_test_server()->GetURL("/search?q={searchTerms}");
-    data.SetURL(search_url_pattern.spec());
-
-    TemplateURL* turl =
-        template_url_service->Add(std::make_unique<TemplateURL>(data));
-    ASSERT_TRUE(turl);
-    template_url_service->SetUserSelectedDefaultSearchProvider(turl);
-
-    GURL srp_url = embedded_test_server()->GetURL("/search?q=foo");
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), srp_url));
-    ASSERT_TRUE(content::WaitForLoadStop(
-        browser()->tab_strip_model()->GetActiveWebContents()));
-
-    provider->matches_ = matches;
-    controller()->autocomplete_controller()->internal_result_.ClearMatches();
-    controller()->autocomplete_controller()->internal_result_.AppendMatches(
-        matches);
-
-    controller()
-        ->autocomplete_controller()
-        ->internal_result_.MergeSuggestionGroupsMap(suggestion_groups_map);
-
-    controller()->autocomplete_controller()->NotifyChanged();
-    popup_view()->UpdatePopupAppearance();
-    EXPECT_TRUE(popup_view()->IsOpen());
+    // Skip over implicit SEARCH_WHAT_YOU_TYPED suggestion at index 0.
 
     // Non-contextual suggestion group header should be HIDDEN for SRP page
     // context.
-    EXPECT_FALSE(popup_view()->header_view_at(0)->GetVisible());
-    EXPECT_TRUE(popup_view()->result_view_at(0)->GetVisible());
-
-    // Contextual suggestion group header should be HIDDEN for SRP page context.
     EXPECT_FALSE(popup_view()->header_view_at(1)->GetVisible());
     EXPECT_TRUE(popup_view()->result_view_at(1)->GetVisible());
+
+    // Header text should be EXCLUDED from the suggestion a11y text.
+    edit_model()->SetPopupSelection(OmniboxPopupSelection(1));
+    EXPECT_FALSE(contains(result_a11y_text(GetResultViewAt(1)),
+                          kNonContextualSuggestionGroupHeaderText));
+
+    // Contextual suggestion group header should be HIDDEN for SRP page
+    // context.
+    EXPECT_FALSE(popup_view()->header_view_at(2)->GetVisible());
+    EXPECT_TRUE(popup_view()->result_view_at(2)->GetVisible());
   }
 
   // Web page context.
   {
-    GURL other_url = embedded_test_server()->GetURL("/empty.html");
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), other_url));
-    ASSERT_TRUE(content::WaitForLoadStop(
-        browser()->tab_strip_model()->GetActiveWebContents()));
+    edit_model()->SetUserText(u"foo");
+    AutocompleteInput input(
+        u"foo", metrics::OmniboxEventProto::OTHER,
+        ChromeAutocompleteSchemeClassifier(browser()->profile()));
+    input.set_omit_asynchronous_matches(true);
+    controller()->autocomplete_controller()->Start(input);
+    ASSERT_TRUE(popup_view()->IsOpen());
 
-    provider->matches_ = matches;
-    controller()->autocomplete_controller()->internal_result_.ClearMatches();
-    controller()->autocomplete_controller()->internal_result_.AppendMatches(
-        matches);
-
-    controller()
-        ->autocomplete_controller()
-        ->internal_result_.MergeSuggestionGroupsMap(suggestion_groups_map);
-
-    controller()->autocomplete_controller()->NotifyChanged();
-    popup_view()->UpdatePopupAppearance();
-    EXPECT_TRUE(popup_view()->IsOpen());
+    // Skip over implicit SEARCH_WHAT_YOU_TYPED suggestion at index 0.
 
     // Non-contextual suggestion group header should be HIDDEN for Web page
     // context.
-    EXPECT_FALSE(popup_view()->header_view_at(0)->GetVisible());
-    EXPECT_TRUE(popup_view()->result_view_at(0)->GetVisible());
-
-    // Contextual suggestion group header should be HIDDEN for Web page context.
     EXPECT_FALSE(popup_view()->header_view_at(1)->GetVisible());
     EXPECT_TRUE(popup_view()->result_view_at(1)->GetVisible());
+
+    // Header text should be EXCLUDED from the suggestion a11y text.
+    edit_model()->SetPopupSelection(OmniboxPopupSelection(1));
+    EXPECT_FALSE(contains(result_a11y_text(GetResultViewAt(1)),
+                          kNonContextualSuggestionGroupHeaderText));
+
+    // Contextual suggestion group header should be SHOWN for Web page
+    // context.
+    EXPECT_FALSE(popup_view()->header_view_at(2)->GetVisible());
+    EXPECT_TRUE(popup_view()->result_view_at(2)->GetVisible());
   }
 }

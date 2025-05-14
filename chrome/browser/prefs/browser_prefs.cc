@@ -1096,6 +1096,10 @@ constexpr char kObsoleteLocalPasswordMigrationWarningPrefsVersion[] =
     "local_passwords_migration_warning_reset_count";
 #endif
 
+// Deprecated 04/2025.
+inline constexpr char kSuggestionGroupVisibility[] =
+    "omnibox.suggestionGroupVisibility";
+
 // Deprecated 05/2025
 inline constexpr char kManagedPrivateNetworkAccessRestrictionsEnabled[] =
     "managed_private_network_access_restrictions_enabled";
@@ -1551,6 +1555,9 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterIntegerPref(
       kObsoleteLocalPasswordMigrationWarningPrefsVersion, 0);
 #endif
+
+  // Deprecated 04/2025.
+  registry->RegisterDictionaryPref(kSuggestionGroupVisibility);
 
   // Deprecated 05/2025
   registry->RegisterBooleanPref(kManagedPrivateNetworkAccessRestrictionsEnabled,
@@ -2849,6 +2856,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 04/2025.
   profile_prefs->ClearPref(kObsoleteLocalPasswordMigrationWarningPrefsVersion);
 #endif
+
+  // Added 04/2025.
+  profile_prefs->ClearPref(kSuggestionGroupVisibility);
 
   // Added 05/2025
   profile_prefs->ClearPref(kManagedPrivateNetworkAccessRestrictionsEnabled);

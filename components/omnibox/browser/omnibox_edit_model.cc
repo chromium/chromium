@@ -944,15 +944,7 @@ void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
   const AutocompleteMatch& match =
       autocomplete_controller()->result().match_at(selection.line);
 
-  if (selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_HEADER) {
-    DCHECK(match.suggestion_group_id.has_value());
-
-    const bool current_visibility =
-        controller_->IsSuggestionGroupHidden(match.suggestion_group_id.value());
-    controller_->SetSuggestionGroupHidden(match.suggestion_group_id.value(),
-                                          !current_visibility);
-  } else if (selection.state ==
-             OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_UP) {
+  if (selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_UP) {
     UpdateFeedbackOnMatch(selection.line, FeedbackType::kThumbsUp);
   } else if (selection.state ==
              OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_DOWN) {
@@ -1898,6 +1890,18 @@ gfx::Image OmniboxEditModel::GetMatchIconIfExtension(
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+std::u16string OmniboxEditModel::GetSuggestionGroupHeaderText(
+    const std::optional<omnibox::GroupId>& suggestion_group_id) const {
+  bool force_hide_row_header =
+      OmniboxFieldTrial::IsHideSuggestionGroupHeadersEnabledInContext(
+          autocomplete_controller()->input().current_page_classification());
+
+  return suggestion_group_id.has_value() && !force_hide_row_header
+             ? autocomplete_controller()->result().GetHeaderForSuggestionGroup(
+                   suggestion_group_id.value())
+             : u"";
+}
+
 bool OmniboxEditModel::PopupIsOpen() const {
   return popup_view_ && popup_view_->IsOpen();
 }
@@ -1973,15 +1977,9 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
                           controller_->client()->IsHistoryEmbeddingsEnabled(),
                           &keyword, &keyword_placeholder, &is_keyword_hint);
 
-  if (popup_selection_.state == OmniboxPopupSelection::FOCUSED_BUTTON_HEADER) {
-    // If the new selection is a Header, the temporary text is an empty string.
-    OnPopupDataChanged(std::u16string(),
-                       /*is_temporary_text=*/true, std::u16string(), keyword,
-                       keyword_placeholder, is_keyword_hint, std::u16string(),
-                       AutocompleteMatch());
-  } else if (old_selection.line != popup_selection_.line ||
-             (old_selection.state != OmniboxPopupSelection::KEYWORD_MODE &&
-              new_selection.state != OmniboxPopupSelection::KEYWORD_MODE)) {
+  if (old_selection.line != popup_selection_.line ||
+      (old_selection.state != OmniboxPopupSelection::KEYWORD_MODE &&
+       new_selection.state != OmniboxPopupSelection::KEYWORD_MODE)) {
     // Don't update the edit model if entering or leaving keyword mode; doing so
     // breaks keyword mode. Updating when there is no line change is necessary
     // because omnibox text changes when:
@@ -2083,7 +2081,7 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
     // screen reader with the header ("Summary") and then the answer in
     // `description`, and finally the URL details in `contents` (includes date).
     return AutocompleteMatchType::ToAccessibilityLabel(
-        match,
+        match, GetSuggestionGroupHeaderText(match.suggestion_group_id),
         base::StrCat({
             match.history_embeddings_answer_header_text,
             match.description,
@@ -2096,17 +2094,8 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
   int additional_message_id = 0;
   std::u16string additional_message;
   // This switch statement should be updated when new selection types are added.
-  static_assert(OmniboxPopupSelection::LINE_STATE_MAX_VALUE == 8);
+  static_assert(OmniboxPopupSelection::LINE_STATE_MAX_VALUE == 7);
   switch (popup_selection_.state) {
-    case OmniboxPopupSelection::FOCUSED_BUTTON_HEADER: {
-      bool group_hidden = controller_->IsSuggestionGroupHidden(
-          match.suggestion_group_id.value());
-      int message_id = group_hidden ? IDS_ACC_HEADER_SHOW_SUGGESTIONS_BUTTON
-                                    : IDS_ACC_HEADER_HIDE_SUGGESTIONS_BUTTON;
-      return l10n_util::GetStringFUTF16(
-          message_id, controller_->GetHeaderForSuggestionGroup(
-                          match.suggestion_group_id.value()));
-    }
     case OmniboxPopupSelection::NORMAL: {
       int available_actions_count = 0;
       if (OmniboxPopupSelection(line, OmniboxPopupSelection::KEYWORD_MODE)
@@ -2197,7 +2186,8 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
       return base::StrCat(
           {match_text, u" ",
            AutocompleteMatchType::ToAccessibilityLabel(
-               match, match.iph_link_text, line, 0,
+               match, GetSuggestionGroupHeaderText(match.suggestion_group_id),
+               match.iph_link_text, line, 0,
                l10n_util::GetStringUTF16(IDS_ACC_OMNIBOX_IPH_LINK_SELECTED),
                label_prefix_length)});
     default:
@@ -2216,8 +2206,8 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
 
   // If there's a button focused, we don't want the "n of m" message announced.
   return AutocompleteMatchType::ToAccessibilityLabel(
-      match, match_text, line, total_matches, additional_message,
-      label_prefix_length);
+      match, GetSuggestionGroupHeaderText(match.suggestion_group_id),
+      match_text, line, total_matches, additional_message, label_prefix_length);
 }
 
 std::u16string
@@ -2350,15 +2340,6 @@ void OmniboxEditModel::SetIconBitmap(const GURL& icon_url,
   DCHECK(popup_view_ && !icon_url.is_empty());
   icon_bitmaps_[icon_url] = bitmap;
   popup_view_->UpdatePopupAppearance();
-}
-
-void OmniboxEditModel::SetPopupSuggestionGroupVisibility(
-    size_t match_index,
-    bool suggestion_group_hidden) {
-  if (PopupIsOpen()) {
-    popup_view_->SetSuggestionGroupVisibility(match_index,
-                                              suggestion_group_hidden);
-  }
 }
 
 void OmniboxEditModel::SetAutocompleteInput(AutocompleteInput input) {

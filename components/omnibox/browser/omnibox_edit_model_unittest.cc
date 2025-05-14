@@ -936,7 +936,6 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
            Selection(3, Selection::NORMAL),
            Selection(3, Selection::KEYWORD_MODE),
            Selection(3, Selection::FOCUSED_BUTTON_REMOVE_SUGGESTION),
-           Selection(4, Selection::FOCUSED_BUTTON_HEADER),
            Selection(4, Selection::NORMAL),
            Selection(5, Selection::NORMAL),
            Selection(0, Selection::NORMAL),
@@ -949,7 +948,6 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
   for (auto selection : {
            Selection(5, Selection::NORMAL),
            Selection(4, Selection::NORMAL),
-           Selection(4, Selection::FOCUSED_BUTTON_HEADER),
            Selection(3, Selection::FOCUSED_BUTTON_REMOVE_SUGGESTION),
            Selection(3, Selection::KEYWORD_MODE),
            Selection(3, Selection::NORMAL),
@@ -962,7 +960,6 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
            Selection(0, Selection::NORMAL),
            Selection(5, Selection::NORMAL),
            Selection(4, Selection::NORMAL),
-           Selection(4, Selection::FOCUSED_BUTTON_HEADER),
            Selection(3, Selection::FOCUSED_BUTTON_REMOVE_SUGGESTION),
        }) {
     model()->OnTabPressed(true);
@@ -976,82 +973,6 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
   EXPECT_EQ(Selection(5, Selection::NORMAL), model()->GetPopupSelection());
 }
 #endif  // !(BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))
-
-TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithHiddenGroupIds) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(omnibox::kGroupingFrameworkForNonZPS);
-
-  ACMatches matches;
-  for (size_t i = 0; i < 4; ++i) {
-    AutocompleteMatch match(nullptr, 1000, false,
-                            AutocompleteMatchType::URL_WHAT_YOU_TYPED);
-    match.keyword = u"match";
-    match.allowed_to_be_default_match = true;
-    matches.push_back(match);
-  }
-
-  // Hide the second two matches.
-  const auto kNewGroupId = omnibox::GROUP_PREVIOUS_SEARCH_RELATED;
-  matches[2].suggestion_group_id = kNewGroupId;
-  matches[3].suggestion_group_id = kNewGroupId;
-
-  auto* result = &controller()->autocomplete_controller()->published_result_;
-  result->AppendMatches(matches);
-
-  omnibox::GroupConfigMap suggestion_groups_map;
-  suggestion_groups_map[kNewGroupId].set_header_text("header");
-  // Setting the original_group_id allows the default visibility to be set via
-  // OmniboxController::SetSuggestionGroupHidden().
-  result->MergeSuggestionGroupsMap(suggestion_groups_map);
-  controller()->SetSuggestionGroupHidden(kNewGroupId, /*hidden=*/true);
-  EXPECT_TRUE(controller()->IsSuggestionGroupHidden(kNewGroupId));
-
-  AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
-                          TestSchemeClassifier());
-  result->SortAndCull(input, /*template_url_service=*/nullptr,
-                      triggered_feature_service());
-  model()->OnPopupResultChanged();
-  EXPECT_EQ(0u, model()->GetPopupSelection().line);
-
-  // Test the simple `kAllLines` case.
-  model()->OnUpOrDownPressed(true, true);
-  EXPECT_EQ(1u, model()->GetPopupSelection().line);
-  model()->OnUpOrDownPressed(false, true);
-  EXPECT_EQ(0u, model()->GetPopupSelection().line);
-
-  // Test the `kStateOrLine` case, forwards and backwards.
-  for (auto selection : {
-           Selection(1, Selection::NORMAL),
-           Selection(2, Selection::FOCUSED_BUTTON_HEADER),
-           Selection(0, Selection::NORMAL),
-       }) {
-    model()->OnTabPressed(false);
-    EXPECT_EQ(selection, model()->GetPopupSelection());
-  }
-  for (auto selection : {
-           Selection(2, Selection::FOCUSED_BUTTON_HEADER),
-           Selection(1, Selection::NORMAL),
-       }) {
-    model()->OnTabPressed(true);
-    EXPECT_EQ(selection, model()->GetPopupSelection());
-  }
-
-  // Test the `kWholeLine` case, forwards and backwards.
-  for (auto selection : {
-           Selection(0, Selection::NORMAL),
-           Selection(1, Selection::NORMAL),
-       }) {
-    model()->OnUpOrDownPressed(true, false);
-    EXPECT_EQ(selection, model()->GetPopupSelection());
-  }
-  for (auto selection : {
-           Selection(0, Selection::NORMAL),
-           Selection(1, Selection::NORMAL),
-       }) {
-    model()->OnUpOrDownPressed(false, false);
-    EXPECT_EQ(selection, model()->GetPopupSelection());
-  }
-}
 
 // Actions are not part of the selection stepping in Android and iOS at all.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -1173,27 +1094,11 @@ TEST_F(OmniboxEditModelPopupTest, PopupInlineAutocompleteAndTemporaryText) {
   EXPECT_EQ(u"a2", model()->text());
   EXPECT_TRUE(model()->is_temporary_text());
 
-  // Tab down to header above the third match, expect that we have an empty
-  // string for our temporary text.
-  model()->OnTabPressed(false);
-  EXPECT_EQ(Selection(2, Selection::FOCUSED_BUTTON_HEADER),
-            model()->GetPopupSelection());
-  EXPECT_EQ(std::u16string(), model()->text());
-  EXPECT_TRUE(model()->is_temporary_text());
-
   // Now tab down to the third match, and expect that we update the temporary
   // text to the third match.
   model()->OnTabPressed(false);
   EXPECT_EQ(Selection(2, Selection::NORMAL), model()->GetPopupSelection());
   EXPECT_EQ(u"a3", model()->text());
-  EXPECT_TRUE(model()->is_temporary_text());
-
-  // Now tab backwards to the header again, expect that we have an empty string
-  // for our temporary text.
-  model()->OnTabPressed(true);
-  EXPECT_EQ(Selection(2, Selection::FOCUSED_BUTTON_HEADER),
-            model()->GetPopupSelection());
-  EXPECT_EQ(std::u16string(), model()->text());
   EXPECT_TRUE(model()->is_temporary_text());
 
   // Now tab backwards to the second match, expect we update the temporary text
