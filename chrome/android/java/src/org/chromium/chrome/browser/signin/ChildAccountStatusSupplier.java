@@ -49,7 +49,7 @@ public class ChildAccountStatusSupplier implements OneshotSupplier<Boolean> {
                 .getAccounts()
                 .then(
                         accounts -> {
-                            AccountUtils.checkChildAccountStatus(
+                            AccountUtils.checkIsSubjectToParentalControls(
                                     accountManagerFacade,
                                     accounts,
                                     (isChild, account) -> onChildAccountStatusReady(isChild));

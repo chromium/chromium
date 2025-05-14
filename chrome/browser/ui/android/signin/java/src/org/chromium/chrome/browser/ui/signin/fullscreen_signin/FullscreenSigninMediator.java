@@ -564,7 +564,7 @@ public class FullscreenSigninMediator
             }
         }
 
-        AccountUtils.checkChildAccountStatus(
+        AccountUtils.checkIsSubjectToParentalControls(
                 mAccountManagerFacade, accounts, this::onChildAccountStatusReady);
     }
 

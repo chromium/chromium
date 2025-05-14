@@ -742,7 +742,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                                 signinManager.isAccountManaged(accountInfo, accountManagedCallback);
                             };
 
-                    AccountUtils.checkChildAccountStatus(
+                    AccountUtils.checkIsSubjectToParentalControls(
                             accountManagerFacade, getAccounts(), listener);
                 });
     }
