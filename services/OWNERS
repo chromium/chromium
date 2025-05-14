@@ -1,5 +1,9 @@
 set noparent
+# For high-level changes, e.g. adding new services
 blundell@chromium.org
+
+# For trivial cleanup/code health reviews
+dcheng@chromium.org
 
 # For adding or removing languages.
 per-file *.grd=claudiomagni@chromium.org
