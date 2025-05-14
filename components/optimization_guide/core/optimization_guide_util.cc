@@ -108,6 +108,9 @@ std::string_view GetStringNameForModelExecutionFeature(
     case proto::ModelExecutionFeature::
         MODEL_EXECUTION_FEATURE_ZERO_STATE_SUGGESTIONS:
       return "ZeroStateSuggestions";
+    case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_PROOFREADER_API:
+      return "ProofreaderApi";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       return "Unknown";
       // Must be in sync with the ModelExecutionFeature variant in

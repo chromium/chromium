@@ -38,6 +38,7 @@ proto_library("optimization_guide_proto") {
     "features/permissions_ai.proto",
     "features/product_specifications.proto",
     "features/prompt_api.proto",
+    "features/proofreader_api.proto",
     "features/scam_detection.proto",
     "features/summarize.proto",
     "features/tab_organization.proto",

@@ -41,6 +41,8 @@ enum class ModelBasedCapabilityKey {
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION,
   kPermissionsAi =
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PERMISSIONS_AI,
+  kProofreaderApi =
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PROOFREADER_API,
   kWritingAssistanceApi = proto::ModelExecutionFeature::
       MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API,
   kEnhancedCalendar =
@@ -80,6 +82,8 @@ inline std::ostream& operator<<(std::ostream& out,
       return out << "ScamDetection";
     case ModelBasedCapabilityKey::kPermissionsAi:
       return out << "PermissionsAi";
+    case ModelBasedCapabilityKey::kProofreaderApi:
+      return out << "ProofreaderApi";
     case ModelBasedCapabilityKey::kWritingAssistanceApi:
       return out << "WritingAssistanceApi";
     case ModelBasedCapabilityKey::kEnhancedCalendar:
@@ -106,6 +110,7 @@ inline constexpr auto kAllModelBasedCapabilityKeys =
         ModelBasedCapabilityKey::kPasswordChangeSubmission,
         ModelBasedCapabilityKey::kScamDetection,
         ModelBasedCapabilityKey::kPermissionsAi,
+        ModelBasedCapabilityKey::kProofreaderApi,
         ModelBasedCapabilityKey::kWritingAssistanceApi,
         ModelBasedCapabilityKey::kEnhancedCalendar,
         ModelBasedCapabilityKey::kZeroStateSuggestions,
@@ -224,6 +229,8 @@ inline ModelBasedCapabilityKey ToModelBasedCapabilityKey(
       return ModelBasedCapabilityKey::kScamDetection;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PERMISSIONS_AI:
       return ModelBasedCapabilityKey::kPermissionsAi;
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PROOFREADER_API:
+      return ModelBasedCapabilityKey::kProofreaderApi;
     case proto::ModelExecutionFeature::
         MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API:
       return ModelBasedCapabilityKey::kWritingAssistanceApi;
@@ -278,6 +285,9 @@ inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
     case ModelBasedCapabilityKey::kPermissionsAi:
       return proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_PERMISSIONS_AI;
+    case ModelBasedCapabilityKey::kProofreaderApi:
+      return proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_PROOFREADER_API;
     case ModelBasedCapabilityKey::kWritingAssistanceApi:
       return proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API;

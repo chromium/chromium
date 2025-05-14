@@ -151,6 +151,8 @@ std::string GetStringNameForOptimizationTarget(
       return "GeolocationPermissionsV3";
     case proto::OPTIMIZATION_TARGET_NOTIFICATION_IMAGE_PERMISSION_RELEVANCE:
       return "NotificationPermissionsV3";
+    case proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PROOFREADER_API:
+      return "ModelExecutionFeatureProofreaderApi";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.

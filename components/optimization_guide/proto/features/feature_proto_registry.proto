@@ -17,6 +17,7 @@ import public "components/optimization_guide/proto/features/history_answer.proto
 import public "components/optimization_guide/proto/features/history_query_intent.proto";
 import public "components/optimization_guide/proto/features/permissions_ai.proto";
 import public "components/optimization_guide/proto/features/prompt_api.proto";
+import public "components/optimization_guide/proto/features/proofreader_api.proto";
 import public "components/optimization_guide/proto/string_value.proto";
 import public "components/optimization_guide/proto/features/scam_detection.proto";
 import public "components/optimization_guide/proto/features/summarize.proto";
@@ -49,4 +50,5 @@ message OnDeviceFeatureProtoRegistry {
   optimization_guide.proto.WritingAssistanceApiLoggingData i = 9;
   ExampleForTestingData j = 10;
   optimization_guide.proto.PermissionsAILoggingData k = 11;
+  optimization_guide.proto.ProofreaderApiLoggingData l = 12;
 }

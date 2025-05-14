@@ -71,6 +71,7 @@ chromium-metrics-reviews@google.com.
       summary="Password Change Submission"/>
   <variant name="PermissionsAi" summary="Permissions AI"/>
   <variant name="PromptApi" summary="Prompt API"/>
+  <variant name="ProofreaderApi" summary="Proofreader API"/>
   <variant name="ScamDetection" summary="Scam Detection"/>
   <variant name="Summarize" summary="Summarize"/>
   <variant name="TabOrganization" summary="Tab Organization"/>
@@ -110,6 +111,8 @@ chromium-metrics-reviews@google.com.
       summary="Model Execution Feature: Permissions AI"/>
   <variant name="ModelExecutionFeaturePromptAPI"
       summary="Model Execution Feature: Prompt API"/>
+  <variant name="ModelExecutionFeatureProofreaderApi"
+      summary="Model Execution Feature: Proofreader API"/>
   <variant name="ModelExecutionFeatureScamDetection"
       summary="Model Execution Feature: Scam Detection"/>
   <variant name="ModelExecutionFeatureSummarize"
