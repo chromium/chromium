@@ -920,12 +920,13 @@ chromium-metrics-reviews@google.com.
              of the setWebContentsDebuggingEnabled value."/>
 </enum>
 
-<enum name="DesktopWindowHeuristicResult2">
+<enum name="DesktopWindowHeuristicResult3">
   <int value="0" label="Invalid result."/>
   <int value="1" label="The app is in a desktop window."/>
   <int value="2" label="Caption bar top insets are not present."/>
   <int value="3" label="Caption bar bounding rect has an invalid height."/>
   <int value="4" label="Caption bar customizable space unavailable."/>
+  <int value="5" label="The app is open on an external display."/>
 </enum>
 
 <enum name="DesktopWindowModeState">

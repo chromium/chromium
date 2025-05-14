@@ -280,7 +280,7 @@ public class AppHeaderCoordinator
             InsetsRectProvider insetsRectProvider,
             @DesktopWindowHeuristicResult int currentResult,
             boolean isOnExternalDisplay) {
-        @DesktopWindowHeuristicResult int newResult = DesktopWindowHeuristicResult.UNKNOWN;
+        @DesktopWindowHeuristicResult int newResult;
 
         Insets captionBarInset = insetsRectProvider.getCachedInset();
         boolean allowHeaderCustomization =
@@ -293,13 +293,11 @@ public class AppHeaderCoordinator
         } else if (insetsRectProvider.getWidestUnoccludedRect().bottom != captionBarInset.top) {
             newResult = DesktopWindowHeuristicResult.CAPTION_BAR_BOUNDING_RECT_INVALID_HEIGHT;
         } else if (!allowHeaderCustomization) {
-            Log.d(
-                    TAG,
-                    "Not logging heuristic result because app header customization is disallowed.");
+            newResult = DesktopWindowHeuristicResult.DISALLOWED_ON_EXTERNAL_DISPLAY;
         } else {
             newResult = DesktopWindowHeuristicResult.IN_DESKTOP_WINDOW;
         }
-        if (newResult != currentResult && newResult != DesktopWindowHeuristicResult.UNKNOWN) {
+        if (newResult != currentResult) {
             Log.i(TAG, "Recording desktop windowing heuristic result: " + newResult);
             // Only record histogram when heuristics result has changed.
             AppHeaderUtils.recordDesktopWindowHeuristicResult(newResult);

@@ -135,7 +135,7 @@ public class AppHeaderCoordinatorUnitTest {
     public void notEnabledWithNoTopInsets() {
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Android.DesktopWindowHeuristicResult2",
+                        "Android.DesktopWindowHeuristicResult3",
                         DesktopWindowHeuristicResult.CAPTION_BAR_TOP_INSETS_ABSENT);
         // Bottom insets with height = 30
         Insets bottomInsets = Insets.of(0, 0, 0, 30);
@@ -162,7 +162,7 @@ public class AppHeaderCoordinatorUnitTest {
     public void notEnabledWithBoundingRectsWithPartialHeight() {
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Android.DesktopWindowHeuristicResult2",
+                        "Android.DesktopWindowHeuristicResult3",
                         DesktopWindowHeuristicResult.CAPTION_BAR_BOUNDING_RECT_INVALID_HEIGHT);
         // Bottom insets with height = 30
         Insets insets = Insets.of(0, 30, 0, 0);
@@ -186,7 +186,7 @@ public class AppHeaderCoordinatorUnitTest {
     public void notEnabledWhenWidestUnoccludedRectIsEmpty() {
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Android.DesktopWindowHeuristicResult2",
+                        "Android.DesktopWindowHeuristicResult3",
                         DesktopWindowHeuristicResult.WIDEST_UNOCCLUDED_RECT_EMPTY);
         setupInsetsRectProvider(Insets.NONE, List.of(), new Rect(), WINDOW_RECT);
         notifyInsetsRectObserver();
@@ -199,6 +199,10 @@ public class AppHeaderCoordinatorUnitTest {
 
     @Test
     public void notEnabledOnExternalDisplayWhenDisallowed() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.DesktopWindowHeuristicResult3",
+                        DesktopWindowHeuristicResult.DISALLOWED_ON_EXTERNAL_DISPLAY);
         ShadowDisplayUtil.setOnExternalDisplay(true);
         updateFeatureParams(/* enableOnExternalDisplay= */ false);
         setupWithLeftAndRightBoundingRect();
@@ -207,6 +211,7 @@ public class AppHeaderCoordinatorUnitTest {
         verifyDesktopWindowingDisabled(
                 /* error= */ "Desktop windowing should not be enabled on an external display when"
                         + " it is disallowed.");
+        watcher.assertExpected();
     }
 
     @Test
@@ -224,7 +229,7 @@ public class AppHeaderCoordinatorUnitTest {
         var watcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecordTimes(
-                                "Android.DesktopWindowHeuristicResult2",
+                                "Android.DesktopWindowHeuristicResult3",
                                 DesktopWindowHeuristicResult.IN_DESKTOP_WINDOW,
                                 1)
                         .expectIntRecordTimes(
@@ -250,7 +255,7 @@ public class AppHeaderCoordinatorUnitTest {
     public void desktopWindowHeuristicResultHistogramNotRecordedWithSameValues() {
         var watcher =
                 HistogramWatcher.newBuilder()
-                        .expectAnyRecordTimes("Android.DesktopWindowHeuristicResult2", 1)
+                        .expectAnyRecordTimes("Android.DesktopWindowHeuristicResult3", 1)
                         .build();
         setupWithLeftAndRightBoundingRect();
         // Override the last seen raw insets so there's a bottom nav bar insets.
