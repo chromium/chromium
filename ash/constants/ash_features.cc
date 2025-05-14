@@ -2095,7 +2095,7 @@ BASE_FEATURE(kOneDriveUploadImmediateReauth,
 // go/ongoing-ui
 BASE_FEATURE(kOngoingProcesses,
              "OngoingProcesses",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, enrollment screen will allow for automatically adding the
 // authenticated user to the device.
