@@ -265,6 +265,9 @@ struct SearchAggregatorProvider : Config<SearchAggregatorProvider> {
   //   "server": Use server-provided scores in both scoped and unscoped mode.
   //   "client": Use client-calculated scores in both scoped and unscoped mode.
   std::string relevance_scoring_mode;
+  // If true, show unscoped `EnterpriseSearchAggregatorProvider` suggestions in
+  // the NTP realbox.
+  bool realbox_unscoped_suggestions;
 
   // See comments in enterprise_search_aggregator_provider.cc
   size_t scoring_max_matches_created_per_type;

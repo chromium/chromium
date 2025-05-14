@@ -216,6 +216,11 @@ SearchAggregatorProvider::SearchAggregatorProvider() {
                                       "relevance_scoring_mode", "mixed")
           .Get();
 
+  realbox_unscoped_suggestions =
+      base::FeatureParam<bool>(&kSearchAggregatorProvider,
+                               "realbox_unscoped_suggestions", false)
+          .Get();
+
   scoring_max_matches_created_per_type =
       base::FeatureParam<size_t>(&kSearchAggregatorProvider,
                                  "scoring_max_matches_created_per_type", 40)
