@@ -31,6 +31,7 @@
 #include "components/sync/engine/traffic_logger.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
+#include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_internals_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
@@ -608,6 +609,32 @@ SyncServiceImplHarness::GetTypesWithUnsyncedData(
   base::test::TestFuture<absl::flat_hash_map<syncer::DataType, size_t>> future;
   service()->GetTypesWithUnsyncedData(requested_types, future.GetCallback());
   return future;
+}
+
+syncer::LocalDataDescription
+SyncServiceImplHarness::GetLocalDataDescriptionAndWait(
+    syncer::DataType data_type) {
+  base::test::TestFuture<
+      std::map<syncer::DataType, syncer::LocalDataDescription>>
+      descriptions;
+  service()->GetLocalDataDescriptions({data_type}, descriptions.GetCallback());
+
+  if (descriptions.Get().size() != 1u) {
+    ADD_FAILURE()
+        << "The expected size of local data description map is 1. Found "
+        << descriptions.Get().size() << '.';
+    return syncer::LocalDataDescription();
+  }
+
+  if (descriptions.Get().begin()->first != data_type) {
+    ADD_FAILURE()
+        << DataTypeToDebugString(data_type)
+        << " is the only expected key in the local data description map. Found "
+        << DataTypeToDebugString(descriptions.Get().begin()->first) << '.';
+    return syncer::LocalDataDescription();
+  }
+
+  return descriptions.Get().begin()->second;
 }
 
 std::string SyncServiceImplHarness::GetServiceStatus() {

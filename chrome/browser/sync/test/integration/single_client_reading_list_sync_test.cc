@@ -761,17 +761,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
   ASSERT_THAT(GetReadingListURLsFromFakeServer(SyncTest::GetFakeServer()),
               IsEmpty());
 
-  base::test::TestFuture<
-      std::map<syncer::DataType, syncer::LocalDataDescription>>
-      descriptions;
-  GetSyncService(0)->GetLocalDataDescriptions({syncer::READING_LIST},
-                                              descriptions.GetCallback());
-
-  ASSERT_THAT(descriptions.Get().size(), 1u);
-  EXPECT_EQ(descriptions.Get().begin()->first, syncer::READING_LIST);
-
   EXPECT_THAT(
-      descriptions.Get().begin()->second,
+      GetClient(0)->GetLocalDataDescriptionAndWait(syncer::READING_LIST),
       // Items should be sorted by syncer::LocalDataItemModel::DataId.
       MatchesLocalDataDescription(
           syncer::DataType::READING_LIST,

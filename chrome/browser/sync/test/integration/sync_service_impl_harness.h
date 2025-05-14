@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
+#include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -196,6 +197,13 @@ class SyncServiceImplHarness {
   // have unsynced data.
   base::test::TestFuture<absl::flat_hash_map<syncer::DataType, size_t>>
   GetTypesWithUnsyncedData(syncer::DataTypeSet requested_types) const;
+
+  // Retrieves the LocalDataDescription for the specified |data_type|.
+  // it assumes the service will provide a unique description for this specific
+  // type. Returns this description, or default value (empty value) if the
+  // service misbehaves and returns a response that cannot be interpreted.
+  syncer::LocalDataDescription GetLocalDataDescriptionAndWait(
+      syncer::DataType data_type);
 
  private:
   SyncServiceImplHarness(Profile* profile,
