@@ -76,10 +76,10 @@ int TabStyle::GetMinimumActiveWidth(const bool is_split) const {
   }
 
   if (is_split) {
-    // Split tabs take over half of the overlap space between them so they can
-    // appear larger.
-    return min_active_width / 2 + GetTabOverlap() / 2;
+    // Only have one set of horizontal padding between tabs in an active split.
+    return min_active_width - kChromeRefreshTabHorizontalPadding / 2;
   }
+
   return min_active_width;
 }
 

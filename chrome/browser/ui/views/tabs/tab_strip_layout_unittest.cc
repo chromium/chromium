@@ -58,7 +58,7 @@ constexpr int kStandardWidth = 256;
 constexpr int kStandardSplitWidth = 137;
 constexpr int kTabHeight = 41;
 constexpr int kMinActiveWidth = 56;
-constexpr int kMinActiveSplitWidth = 37;
+constexpr int kMinActiveSplitWidth = 52;
 constexpr int kMinInactiveWidth = 32;
 constexpr int kPinnedWidth = 64;
 constexpr int kPinnedSplitWidth = 55;
@@ -228,7 +228,7 @@ TEST(TabStripLayoutTest, MiddleWidthRoundedAndSplitTab) {
   test_case.split_tabs = {0, 1};
 
   auto bounds = CalculateTabBounds(test_case);
-  EXPECT_EQ("115 115 213 213", TabWidthsAsString(bounds));
+  EXPECT_EQ("117 117 211 211", TabWidthsAsString(bounds));
   ExpectTabsFillTabStrip(bounds, test_case.tabstrip_width);
 }
 
@@ -240,7 +240,7 @@ TEST(TabStripLayoutTest, MiddleWidthAndMinWidthSplitTab) {
   test_case.active_index = 2;
 
   auto bounds = CalculateTabBounds(test_case);
-  EXPECT_EQ("38 38 58 58", TabWidthsAsString(bounds));
+  EXPECT_EQ("44 44 56 48", TabWidthsAsString(bounds));
   ExpectTabsFillTabStrip(bounds, test_case.tabstrip_width);
 }
 
@@ -311,7 +311,7 @@ TEST(TabStripLayoutTest, BelowMinActiveWidthSplitTab) {
   // Can't avoid rounding with split tabs unless there is a large number of tabs
   // because regular tabs grow faster.
   auto bounds = CalculateTabBounds(test_case);
-  EXPECT_EQ("36 36 56 54 54 54", TabWidthsAsString(bounds));
+  EXPECT_EQ("45 45 56 48 48 48", TabWidthsAsString(bounds));
   ExpectTabsFillTabStrip(bounds, test_case.tabstrip_width);
 }
 
