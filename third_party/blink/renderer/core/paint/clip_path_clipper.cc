@@ -255,6 +255,37 @@ gfx::RectF CalcLocalReferenceBox(
   return gfx::RectF(reference_box);
 }
 
+bool ClipPathAnimationShouldFallback(const LayoutObject& layout_object,
+                                     bool is_in_block_fragmentation) {
+  // If not all the fragments of this layout object have been populated yet, it
+  // will be impossible to tell if a composited clip path animation is possible
+  // or not based only on the layout object. Exclude the possibility if we're
+  // fragmented.
+  if (is_in_block_fragmentation) {
+    return true;
+  }
+
+  // We also shouldn't composite in the case of will-change: contents.
+  if (layout_object.StyleRef().SubtreeWillChangeContents()) {
+    return true;
+  }
+
+  // Clip Path animations require paint properties to work. Text objects, or
+  // objects without a box model are not given paint properties.
+  if (layout_object.IsText() ||
+      !(layout_object.IsBoxModelObject() || layout_object.IsSVG())) {
+    return true;
+  }
+
+  // Reference clip paths are not supported.
+  if (layout_object.StyleRef().HasClipPath() &&
+      IsA<ReferenceClipPathOperation>(layout_object.StyleRef().ClipPath())) {
+    return true;
+  }
+
+  return false;
+}
+
 }  // namespace
 
 ContouredRect ClipPathClipper::RoundedReferenceBox(GeometryBox geometry_box,
@@ -374,15 +405,8 @@ void ClipPathClipper::FallbackClipPathAnimationIfNecessary(
     base::debug::DumpWithoutCrashing();
   }
 
-  // If not all the fragments of this layout object have been populated yet, it
-  // will be impossible to tell if a composited clip path animation is possible
-  // or not based only on the layout object. Exclude the possibility if we're
-  // fragmented. We also shouldn't composite in the case of will-change:
-  // contents.
-  if (is_in_block_fragmentation ||
-      layout_object.StyleRef().SubtreeWillChangeContents() ||
-      (layout_object.StyleRef().HasClipPath() &&
-       IsA<ReferenceClipPathOperation>(layout_object.StyleRef().ClipPath()))) {
+  if (ClipPathAnimationShouldFallback(layout_object,
+                                      is_in_block_fragmentation)) {
     SetCompositeClipPathStatus(layout_object.GetNode(),
                                CompositedPaintStatus::kNotComposited);
   }

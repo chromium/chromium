@@ -336,6 +336,51 @@ TEST_F(ClipPathPaintDefinitionTest, SimpleClipPathAnimationFallback) {
       element, animation);
 }
 
+// Cannot animate a <br>
+TEST_F(ClipPathPaintDefinitionTest, SimpleClipPathAnimationFallbackOnBR) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+          @keyframes clippath {
+              0% {
+                  clip-path: initial;
+              }
+              100% {
+                  clip-path: circle(30% at 30% 30%);
+              }
+          }
+          .animation br {
+              animation: clippath 30s;
+          }
+      </style>
+      <div id="container">
+        <br id="target">
+      </div>
+    )HTML");
+
+  Element* container = GetElementById("container");
+  Element* element = GetElementById("target");
+  container->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+
+  EnsureCCClipPathInvariantsHoldStyleAndLayout(
+      /* needs_repaint= */ true, CompositedPaintStatus::kNotComposited,
+      element);
+
+  Animation* animation = GetFirstAnimation(element);
+
+  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
+                                               base::Milliseconds(0));
+  animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
+
+  EnsureCCClipPathInvariantsHoldThroughoutPainting(
+      /* needs_repaint= */ true, CompositedPaintStatus::kNotComposited, element,
+      animation);
+
+  // Run lifecycle once more to ensure invariants hold post initial paint.
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      /* needs_repaint= */ false, CompositedPaintStatus::kNotComposited,
+      element, animation);
+}
+
 TEST_F(ClipPathPaintDefinitionTest, ClipPathAnimationCancel) {
   SetBodyInnerHTML(R"HTML(
     <style>
