@@ -33,6 +33,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-data-view.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -137,6 +138,99 @@ bool IsAppCapturingSettingForcedOff(const webapps::AppId& app_id) {
     }
   }
   return false;
+}
+
+// Note: This can never return kBrowser. This is because the user has
+// specified that the web app should be displayed in a window, and thus
+// the lowest fallback that we can go to is kMinimalUi.
+DisplayMode ResolveAppDisplayModeForStandaloneLaunchContainer(
+    DisplayMode app_display_mode) {
+  switch (app_display_mode) {
+    case DisplayMode::kBrowser:
+    case DisplayMode::kMinimalUi:
+      return DisplayMode::kMinimalUi;
+    case DisplayMode::kUndefined:
+    case DisplayMode::kPictureInPicture:
+      NOTREACHED();
+    case DisplayMode::kStandalone:
+    case DisplayMode::kFullscreen:
+      return DisplayMode::kStandalone;
+    case DisplayMode::kWindowControlsOverlay:
+      return DisplayMode::kWindowControlsOverlay;
+    case DisplayMode::kTabbed:
+      if (base::FeatureList::IsEnabled(blink::features::kDesktopPWAsTabStrip)) {
+        return DisplayMode::kTabbed;
+      } else {
+        return DisplayMode::kStandalone;
+      }
+    case DisplayMode::kBorderless:
+      return DisplayMode::kBorderless;
+  }
+}
+
+// Resolve the final display mode based on the user display mode first, then the
+// DisplayMode overrides if any. If that doesn't end up happening, fallback to
+// using the manifest provided value to resolve the final display mode.
+DisplayMode ResolveNonIsolatedEffectiveDisplayMode(
+    DisplayMode app_display_mode,
+    const std::vector<DisplayMode>& display_mode_overrides,
+    mojom::UserDisplayMode user_display_mode) {
+  // First, try to resolve the DisplayMode based on the user choice of opening
+  // in a tab. Fall through to the next logic if that does not work. At that
+  // point, it is guaranteed to open in a standalone container.
+  if (user_display_mode == mojom::UserDisplayMode::kBrowser) {
+    return DisplayMode::kBrowser;
+  }
+
+  if (user_display_mode == mojom::UserDisplayMode::kTabbed &&
+      base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripSettings)) {
+    return DisplayMode::kTabbed;
+  }
+
+  // Second, try to resolve the DisplayMode based on the `DisplayMode`
+  // overrides.
+  for (DisplayMode override_display_mode : display_mode_overrides) {
+    DisplayMode resolved_display_mode =
+        ResolveAppDisplayModeForStandaloneLaunchContainer(
+            override_display_mode);
+    if (override_display_mode == resolved_display_mode) {
+      return resolved_display_mode;
+    }
+  }
+
+  // If the `DisplayMode` has still not been resolved, fallback to using the
+  // manifest provided display mode, except for certain use-cases. Please look
+  // at the comment above `ResolveAppDisplayModeForStandaloneLaunchContainer()`
+  // to understand more about it.
+  return ResolveAppDisplayModeForStandaloneLaunchContainer(app_display_mode);
+}
+
+// When user_display_mode indicates a user preference for opening in
+// a browser tab, we open in a browser tab. If the developer has specified
+// the app should utilize more advanced display modes and/or fallback chain,
+// attempt honor those preferences. Otherwise, we open in a standalone
+// window (for app_display_mode 'standalone' or 'fullscreen'), or a minimal-ui
+// window (for app_display_mode 'browser' or 'minimal-ui').
+//
+// |is_isolated| overrides browser display mode for Isolated Web Apps because
+// they can't be open as a tab.
+DisplayMode ResolveEffectiveDisplayMode(
+    DisplayMode app_display_mode,
+    const std::vector<DisplayMode>& app_display_mode_overrides,
+    mojom::UserDisplayMode user_display_mode,
+    bool is_isolated) {
+  const DisplayMode resolved_display_mode =
+      ResolveNonIsolatedEffectiveDisplayMode(
+          app_display_mode, app_display_mode_overrides, user_display_mode);
+  // TODO(https://crbug.com/389919693): Remove this if display mode restrictions
+  // are added to the WebAppProvider system.
+  if (is_isolated && (resolved_display_mode == DisplayMode::kMinimalUi ||
+                      resolved_display_mode == DisplayMode::kTabbed)) {
+    return DisplayMode::kStandalone;
+  }
+  CHECK(!(is_isolated && resolved_display_mode == DisplayMode::kBrowser));
+
+  return resolved_display_mode;
 }
 
 }  // namespace

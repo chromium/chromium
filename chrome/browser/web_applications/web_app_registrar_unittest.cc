@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-data-view.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
@@ -1096,6 +1097,7 @@ TEST_F(WebAppRegistrarTest, NotLocallyInstalledAppGetsDisplayModeBrowser) {
 
 TEST_F(WebAppRegistrarTest,
        NotLocallyInstalledAppGetsDisplayModeBrowserEvenForIsolatedWebApps) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kIsolatedWebApps);
   StartWebAppProvider();
 
   auto web_app = test::CreateWebApp();
@@ -1103,6 +1105,11 @@ TEST_F(WebAppRegistrarTest,
   web_app->SetDisplayMode(DisplayMode::kStandalone);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
   web_app->SetInstallState(proto::SUGGESTED_FROM_ANOTHER_DEVICE);
+  web_app->SetIsolationData(
+      IsolationData::Builder(
+          IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
+          base::Version("1.0.0"))
+          .Build());
 
   RegisterAppUnsafe(std::move(web_app));
 
@@ -1598,7 +1605,202 @@ TEST_F(WebAppRegistrarAshTest, SourceSupported) {
   EXPECT_FALSE(base::Contains(registrar.GetAppIds(), uninstalling_id));
 }
 
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+class WebAppRegistrarDisplayModeTest
+    : public WebAppRegistrarTest,
+      public testing::WithParamInterface<DisplayMode> {
+ public:
+  const webapps::AppId CreateAppInRegistryWithUserDisplayModeAndOverrides(
+      mojom::UserDisplayMode user_display_mode,
+      std::vector<DisplayMode> display_mode_overrides,
+      bool is_isolated = false) {
+    auto web_app = test::CreateWebApp();
+    const webapps::AppId app_id = web_app->app_id();
+
+    // Get the display mode from the parameterized inputs.
+    web_app->SetDisplayMode(GetParam());
+    web_app->SetUserDisplayMode(user_display_mode);
+    web_app->SetInstallState(proto::INSTALLED_WITH_OS_INTEGRATION);
+    web_app->SetDisplayModeOverride(std::move(display_mode_overrides));
+
+    if (is_isolated) {
+      web_app->SetIsolationData(
+          IsolationData::Builder(
+              IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
+              base::Version("1.0.0"))
+              .Build());
+    }
+
+    RegisterAppUnsafe(std::move(web_app));
+    return app_id;
+  }
+
+  // When user_display_mode indicates a user preference for opening in
+  // a standalone window, we open in a minimal-ui window (for app_display_mode
+  // 'browser' or 'minimal-ui') or a standalone window (for app_display_mode
+  // 'standalone' or 'fullscreen'). For all other display modes, keep the
+  // display modes as they're specified.
+  DisplayMode GetResolvedDisplayModeForStandaloneUDM() {
+    switch (GetParam()) {
+      case DisplayMode::kBrowser:
+      case DisplayMode::kMinimalUi:
+        return DisplayMode::kMinimalUi;
+      case DisplayMode::kStandalone:
+      case DisplayMode::kFullscreen:
+        return DisplayMode::kStandalone;
+      case DisplayMode::kBorderless:
+        return DisplayMode::kBorderless;
+      case DisplayMode::kWindowControlsOverlay:
+        return DisplayMode::kWindowControlsOverlay;
+      case DisplayMode::kTabbed:
+        return DisplayMode::kTabbed;
+      case DisplayMode::kUndefined:
+      case DisplayMode::kPictureInPicture:
+        NOTREACHED();
+    }
+  }
+
+  // Same as `GetResolvedDisplayModeForStandaloneUDM()`, except minimal-ui does
+  // not exist for IWAs.
+  DisplayMode GetResolvedDisplayModeForStandaloneUDMIsolated() {
+    switch (GetParam()) {
+      case DisplayMode::kBrowser:
+      case DisplayMode::kMinimalUi:
+      case DisplayMode::kStandalone:
+      case DisplayMode::kFullscreen:
+      case DisplayMode::kTabbed:
+        return DisplayMode::kStandalone;
+      case DisplayMode::kBorderless:
+        return DisplayMode::kBorderless;
+      case DisplayMode::kWindowControlsOverlay:
+        return DisplayMode::kWindowControlsOverlay;
+      case DisplayMode::kUndefined:
+      case DisplayMode::kPictureInPicture:
+        NOTREACHED();
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{features::kIsolatedWebApps};
+};
+
+// When user_display_mode indicates a user preference for opening in a browser
+// tab, we open in a browser tab.
+TEST_P(WebAppRegistrarDisplayModeTest, UserWantsBrowser) {
+  StartWebAppProvider();
+  const webapps::AppId app_id =
+      CreateAppInRegistryWithUserDisplayModeAndOverrides(
+          mojom::UserDisplayMode::kBrowser, {});
+  EXPECT_EQ(DisplayMode::kBrowser,
+            registrar().GetAppEffectiveDisplayMode(app_id));
+}
+
+TEST_P(WebAppRegistrarDisplayModeTest, UserWantsStandalone) {
+  if (GetParam() == DisplayMode::kPictureInPicture) {
+    GTEST_SKIP()
+        << "PictureInPicture not supported for standalone display modes";
+  }
+  StartWebAppProvider();
+  const webapps::AppId app_id =
+      CreateAppInRegistryWithUserDisplayModeAndOverrides(
+          mojom::UserDisplayMode::kStandalone, {});
+  EXPECT_EQ(GetResolvedDisplayModeForStandaloneUDM(),
+            registrar().GetAppEffectiveDisplayMode(app_id));
+}
+
+// When user_display_mode indicates a user preference for opening in a browser
+// tab, we open in a browser tab, even if display_overrides are specified.
+TEST_P(WebAppRegistrarDisplayModeTest, UserWantsBrowserStandaloneOverride) {
+  StartWebAppProvider();
+  const webapps::AppId app_id =
+      CreateAppInRegistryWithUserDisplayModeAndOverrides(
+          mojom::UserDisplayMode::kBrowser, {DisplayMode::kStandalone});
+  EXPECT_EQ(DisplayMode::kBrowser,
+            registrar().GetAppEffectiveDisplayMode(app_id));
+}
+
+// When user_display_mode indicates a user preference for opening in
+// a standalone window, and the only display modes provided for
+// display_overrides contain only 'fullscreen' or 'browser',  open in a
+// minimal-ui window (for app_display_mode 'browser' or 'minimal-ui') or a
+// standalone window (for app_display_mode 'standalone' or 'fullscreen').
+TEST_P(WebAppRegistrarDisplayModeTest, UserWantsStandaloneFullScreenOverride) {
+  if (GetParam() == DisplayMode::kPictureInPicture) {
+    GTEST_SKIP()
+        << "PictureInPicture not supported for standalone display modes";
+  }
+  StartWebAppProvider();
+  const webapps::AppId app_id =
+      CreateAppInRegistryWithUserDisplayModeAndOverrides(
+          mojom::UserDisplayMode::kStandalone, {DisplayMode::kFullscreen});
+  EXPECT_EQ(GetResolvedDisplayModeForStandaloneUDM(),
+            registrar().GetAppEffectiveDisplayMode(app_id));
+}
+
+// When user_display_mode indicates a user preference for opening in
+// a standalone window, and return the first entry that is either
+// 'standalone' or 'minimal-ui' in display_override.
+TEST_P(WebAppRegistrarDisplayModeTest, UserWantsStandaloneMultipleOverrides) {
+  if (GetParam() == DisplayMode::kPictureInPicture) {
+    GTEST_SKIP()
+        << "PictureInPicture not supported for standalone display modes";
+  }
+  StartWebAppProvider();
+  const webapps::AppId app_id =
+      CreateAppInRegistryWithUserDisplayModeAndOverrides(
+          mojom::UserDisplayMode::kStandalone,
+          {DisplayMode::kFullscreen, DisplayMode::kBrowser,
+           DisplayMode::kStandalone});
+  EXPECT_EQ(DisplayMode::kStandalone,
+            registrar().GetAppEffectiveDisplayMode(app_id));
+}
+
+TEST_P(WebAppRegistrarDisplayModeTest, UserStandaloneNoOverrideIsolated) {
+  if (GetParam() == DisplayMode::kPictureInPicture) {
+    GTEST_SKIP()
+        << "PictureInPicture not supported for standalone display modes";
+  }
+  StartWebAppProvider();
+  const webapps::AppId app_id =
+      CreateAppInRegistryWithUserDisplayModeAndOverrides(
+          mojom::UserDisplayMode::kStandalone, {}, /*is_isolated=*/true);
+  EXPECT_EQ(GetResolvedDisplayModeForStandaloneUDMIsolated(),
+            registrar().GetAppEffectiveDisplayMode(app_id));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebAppRegistrarDisplayModeTest,
+                         testing::Values(DisplayMode::kBrowser,
+                                         DisplayMode::kMinimalUi,
+                                         DisplayMode::kStandalone,
+                                         DisplayMode::kFullscreen,
+                                         DisplayMode::kBorderless,
+                                         DisplayMode::kPictureInPicture,
+                                         DisplayMode::kWindowControlsOverlay,
+                                         DisplayMode::kTabbed),
+                         [](const testing::TestParamInfo<DisplayMode>& info) {
+                           switch (info.param) {
+                             case DisplayMode::kBrowser:
+                               return "Browser";
+                             case DisplayMode::kMinimalUi:
+                               return "MinimalUi";
+                             case DisplayMode::kStandalone:
+                               return "Standalone";
+                             case DisplayMode::kFullscreen:
+                               return "Fullscreen";
+                             case DisplayMode::kBorderless:
+                               return "Borderless";
+                             case DisplayMode::kPictureInPicture:
+                               return "PictureInPicture";
+                             case DisplayMode::kWindowControlsOverlay:
+                               return "WindowControlsOverlay";
+                             case DisplayMode::kTabbed:
+                               return "Tabbed";
+                             case DisplayMode::kUndefined:
+                               NOTREACHED();
+                           }
+                         });
 
 class WebAppRegistrarParameterizedTest
     : public WebAppRegistrarTest,
