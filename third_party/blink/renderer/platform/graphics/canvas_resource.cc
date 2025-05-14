@@ -73,25 +73,6 @@ CanvasResource::CanvasResource(base::WeakPtr<CanvasResourceProvider> provider,
 
 CanvasResource::~CanvasResource() {}
 
-void CanvasResource::Release() {
-  if (last_unref_callback_ && HasOneRef()) {
-    // "this" will not be destroyed if last_unref_callback_ retains the
-    // reference.
-#if DCHECK_IS_ON()
-    auto last_ref = base::WrapRefCounted(this);
-    WTF::ThreadSafeRefCounted<CanvasResource>::Release();  // does not destroy.
-#else
-    // In a DCHECK build, AdoptRef would fail because it is only supposed to be
-    // used on new objects.  Nonetheless, we prefer to use AdoptRef "illegally"
-    // in non-DCHECK builds to avoid unnecessary atomic operations.
-    auto last_ref = base::AdoptRef(this);
-#endif
-    std::move(last_unref_callback_).Run(std::move(last_ref));
-  } else {
-    WTF::ThreadSafeRefCounted<CanvasResource>::Release();
-  }
-}
-
 gpu::InterfaceBase* CanvasResource::InterfaceBase() const {
   if (!ContextProviderWrapper())
     return nullptr;
@@ -130,15 +111,6 @@ static void ReleaseFrameResources(
     bool lost_resource) {
   CHECK(resource);
 
-  // If there is a LastUnrefCallback, we need to abort because recycling the
-  // resource now will prevent the LastUnrefCallback from ever being called.
-  // In such cases, ReleaseFrameResources will be called again when
-  // CanvasResourceDispatcher destroys the corresponding FrameResource object,
-  // at which time this resource will be safely recycled.
-  if (resource->HasLastUnrefCallback()) {
-    return;
-  }
-
   resource->WaitSyncToken(sync_token);
 
   if (resource_provider)
@@ -155,6 +127,29 @@ static void ReleaseFrameResources(
     auto* raw_resource = resource.get();
     raw_resource->OnReturnedFromCompositor(std::move(resource));
   }
+}
+
+// static
+void CanvasResource::OnPlaceholderReleasedResource(
+    scoped_refptr<CanvasResource> resource) {
+  if (!resource) {
+    return;
+  }
+
+  auto& owning_thread_task_runner = resource->owning_thread_task_runner_;
+  owning_thread_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(&OnPlaceholderReleasedResourceOnOwningThread,
+                                std::move(resource)));
+}
+
+// static
+void CanvasResource::OnPlaceholderReleasedResourceOnOwningThread(
+    scoped_refptr<CanvasResource> resource) {
+  DCHECK(!resource->is_cross_thread());
+
+  auto weak_provider = resource->WeakProvider();
+  ReleaseFrameResources(std::move(weak_provider), std::move(resource),
+                        gpu::SyncToken(), /*is_lost=*/false);
 }
 
 bool CanvasResource::PrepareTransferableResource(

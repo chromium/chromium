@@ -39,15 +39,12 @@ class MockCanvasResourceDispatcher : public CanvasResourceDispatcher {
             placeholder_id,
             /*canvas_size=*/{kWidth, kHeight}) {}
 
-  void OnPlaceholderReleasedResource(
-      viz::ResourceId resource_id,
-      scoped_refptr<CanvasResource>&& canvas_resource) override {
-    PlaceholderReleasedResource(resource_id);
-    CanvasResourceDispatcher::OnPlaceholderReleasedResource(
-        resource_id, std::move(canvas_resource));
+  void OnPlaceholderReleasedResource() override {
+    PlaceholderReleasedResource();
+    CanvasResourceDispatcher::OnPlaceholderReleasedResource();
   }
 
-  MOCK_METHOD1(PlaceholderReleasedResource, void(viz::ResourceId));
+  MOCK_METHOD0(PlaceholderReleasedResource, void());
 };
 
 unsigned GenPlaceholderId() {
@@ -130,50 +127,47 @@ CanvasResource* OffscreenCanvasPlaceholderTest::DispatchOneFrame() {
 
 namespace {
 
-TEST_F(OffscreenCanvasPlaceholderTest, OldFrameSentBack) {
-  // This test verifies that OffscreenCanvasPlaceholder send back
+TEST_F(OffscreenCanvasPlaceholderTest, OldFrameCleared) {
+  // This test verifies that OffscreenCanvasPlaceholder clears
   // the previous frame when it receives a new one.
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
   CreateDispatcher();
 
-  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource(_)).Times(0);
   DrawSomething();
-  viz::ResourceId frame1_id = PeekNextResourceId();
   CanvasResource* frame1_raw_ptr = DispatchOneFrame();
 
-  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource(_)).Times(0);
+  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource()).Times(1);
   // Run task that propagates the frame to the placeholder canvas.
   EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), nullptr);
   platform->RunUntilIdle();
   EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), frame1_raw_ptr);
   Mock::VerifyAndClearExpectations(dispatcher());
 
-  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource(_)).Times(0);
+  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource()).Times(0);
   DrawSomething();
   CanvasResource* frame2_raw_ptr = DispatchOneFrame();
   Mock::VerifyAndClearExpectations(dispatcher());
 
-  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource(frame1_id)).Times(1);
+  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource()).Times(1);
   // Propagate second frame to the placeholder, causing frame 1 to be
-  // reclaimed.
+  // cleared.
   EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), frame1_raw_ptr);
   platform->RunUntilIdle();
   EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), frame2_raw_ptr);
   Mock::VerifyAndClearExpectations(dispatcher());
 }
 
-TEST_F(OffscreenCanvasPlaceholderTest, OldFrameNotReclaimedUntilUnref) {
-  // This test verifies that OffscreenCanvasPlaceholder send back
-  // the previous frame when it receives a new one.
+TEST_F(OffscreenCanvasPlaceholderTest, OldFrameClearedWithExtraRef) {
+  // This test verifies that OffscreenCanvasPlaceholder clears
+  // the previous frame when it receives a new one regardless of whether there
+  // is another ref on that previous frame.
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
   CreateDispatcher();
 
-  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource(_)).Times(0);
   DrawSomething();
-  viz::ResourceId frame1_id = PeekNextResourceId();
   CanvasResource* frame1_raw_ptr = DispatchOneFrame();
 
-  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource(_)).Times(0);
+  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource()).Times(1);
   // Run task that propagates the frame to the placeholder canvas.
   EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), nullptr);
   platform->RunUntilIdle();
@@ -182,25 +176,23 @@ TEST_F(OffscreenCanvasPlaceholderTest, OldFrameNotReclaimedUntilUnref) {
       placeholder()->OffscreenCanvasFrame();
   Mock::VerifyAndClearExpectations(dispatcher());
 
-  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource(_)).Times(0);
+  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource()).Times(0);
   DrawSomething();
   CanvasResource* frame2_raw_ptr = DispatchOneFrame();
   Mock::VerifyAndClearExpectations(dispatcher());
 
-  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource(_)).Times(0);
-  // Propagate second frame to the placeholder.  First frame will not be
-  // reclaimed due to extra_ref.
+  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource()).Times(1);
+  // Propagate second frame to the placeholder. First frame will be cleared.
   EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), frame1_raw_ptr);
   platform->RunUntilIdle();
   EXPECT_EQ(placeholder()->OffscreenCanvasFrame(), frame2_raw_ptr);
   Mock::VerifyAndClearExpectations(dispatcher());
 
-  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource(_)).Times(0);
-  extra_ref = nullptr;  // Deref cause resource to be reclaimed asynchronously.
+  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource()).Times(0);
+  extra_ref = nullptr;
   Mock::VerifyAndClearExpectations(dispatcher());
 
-  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource(frame1_id)).Times(1);
-  // Run pending task to complete the reclaim.
+  EXPECT_CALL(*(dispatcher()), PlaceholderReleasedResource()).Times(0);
   platform->RunUntilIdle();
   Mock::VerifyAndClearExpectations(dispatcher());
 }

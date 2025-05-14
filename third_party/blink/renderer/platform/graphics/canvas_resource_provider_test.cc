@@ -508,45 +508,6 @@ TEST_F(CanvasResourceProviderTest,
             provider->Snapshot(FlushReason::kTesting)->GetSharedImage());
 }
 
-TEST_F(CanvasResourceProviderTest, NoRecycleIfLastRefCallback) {
-  const gpu::SharedImageUsageSet shared_image_usage_flags =
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
-
-  auto provider = CanvasResourceProvider::CreateSharedImageProvider(
-      gfx::Size(10, 10), GetN32FormatForCanvas(), kPremul_SkAlphaType,
-      gfx::ColorSpace::CreateSRGB(),
-      CanvasResourceProvider::ShouldInitialize::kCallClear,
-      context_provider_wrapper_, RasterMode::kGPU, shared_image_usage_flags);
-
-  ASSERT_TRUE(provider->IsValid());
-
-  scoped_refptr<StaticBitmapImage> snapshot1 =
-      provider->Snapshot(FlushReason::kTesting);
-  ASSERT_TRUE(snapshot1);
-
-  // Set up a LastUnrefCallback that recycles the resource asynchronously,
-  // similarly to what OffscreenCanvasPlaceholder would do.
-  provider->ProduceCanvasResource(FlushReason::kTesting)
-      ->SetLastUnrefCallback(
-          base::BindOnce([](scoped_refptr<CanvasResource> resource) {}));
-
-  // Resource updated after draw.
-  provider->Canvas().clear(SkColors::kWhite);
-  provider->FlushCanvas(FlushReason::kTesting);
-  scoped_refptr<StaticBitmapImage> snapshot2 =
-      provider->Snapshot(FlushReason::kTesting);
-  EXPECT_NE(snapshot2->GetSharedImage(), snapshot1->GetSharedImage());
-
-  auto snapshot1_shared_image = snapshot1->GetSharedImage();
-  snapshot1.reset();  // resource not recycled due to LastUnrefCallback
-  provider->Canvas().clear(SkColors::kBlack);
-  provider->FlushCanvas(FlushReason::kTesting);
-  scoped_refptr<StaticBitmapImage> snapshot3 =
-      provider->Snapshot(FlushReason::kTesting);
-  // confirm resource is not recycled.
-  EXPECT_NE(snapshot3->GetSharedImage(), snapshot1_shared_image);
-}
-
 TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderSharedImageCopyOnWriteDisabled) {
   auto& fake_context = static_cast<FakeWebGraphicsContext3DProvider&>(

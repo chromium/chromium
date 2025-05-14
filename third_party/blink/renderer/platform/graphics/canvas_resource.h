@@ -71,19 +71,8 @@ class PLATFORM_EXPORT CanvasResource
 
   virtual ~CanvasResource();
 
-  // Non-virtual override of ThreadSafeRefCounted::Release
-  void Release();
-
-  // Set a callback that will be invoked as the last outstanding reference to
-  // this CanvasResource goes out of scope.  This provides a last chance hook
-  // to intercept a canvas before it get destroyed. For resources that need to
-  // be destroyed on their thread of origin, this hook can be used to return
-  // resources to their creators.
-  void SetLastUnrefCallback(LastUnrefCallback callback) {
-    last_unref_callback_ = std::move(callback);
-  }
-
-  bool HasLastUnrefCallback() { return !!last_unref_callback_; }
+  static void OnPlaceholderReleasedResource(
+      scoped_refptr<CanvasResource> resource);
 
   // Returns true if this instance creates TransferableResources for usage with
   // GPU compositing.
@@ -183,6 +172,9 @@ class PLATFORM_EXPORT CanvasResource
   const scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner_;
 
  private:
+  static void OnPlaceholderReleasedResourceOnOwningThread(
+      scoped_refptr<CanvasResource> resource);
+
   // Returns true if the resource is rastered via the GPU.
   virtual bool UsesAcceleratedRaster() const = 0;
 
@@ -201,7 +193,6 @@ class PLATFORM_EXPORT CanvasResource
   viz::SharedImageFormat format_;
   SkAlphaType alpha_type_;
   gfx::ColorSpace color_space_;
-  LastUnrefCallback last_unref_callback_;
   bool is_origin_clean_ = true;
 };
 

@@ -95,8 +95,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
                      const SkIRect& damage_rect,
                      bool is_opaque);
   // virtual for mocking
-  virtual void OnPlaceholderReleasedResource(viz::ResourceId,
-                                             scoped_refptr<CanvasResource>&&);
+  virtual void OnPlaceholderReleasedResource();
   void DispatchFrameSync(scoped_refptr<CanvasResource>&&,
                          base::TimeTicks commit_start_time,
                          const SkIRect& damage_rect,
@@ -162,8 +161,6 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   virtual void PostImageToPlaceholder(scoped_refptr<CanvasResource>&&,
                                       viz::ResourceId resource_id);
 
-  void ReclaimPlaceholderResource(viz::ResourceId resource_id,
-                                  scoped_refptr<CanvasResource>&&);
   void ReclaimResourceInternal(const ResourceMap::iterator&);
 
   mojo::Remote<viz::mojom::blink::CompositorFrameSink> sink_;
