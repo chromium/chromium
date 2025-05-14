@@ -188,16 +188,14 @@ TEST_F(AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled,
 
 // Tests the footer text of the view controller for the address profiles with
 // source kAccount.
-// TODO(crbug.com/416030990): Adapt test to
-// AutofillDynamicallyLoadsFieldsForAddressInput and re-enable the test.
 TEST_F(AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled,
-       DISABLED_TestFooterTextWithEmail) {
+       TestFooterTextWithEmail) {
   CreateAccountProfile();
   TableViewModel* model = [controller() tableViewModel];
 
   NSString* expected_footer_text = l10n_util::GetNSStringF(
       IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT, kTestSyncingEmail);
-  TableViewLinkHeaderFooterItem* footer = [model footerForSectionIndex:1];
+  TableViewLinkHeaderFooterItem* footer = [model footerForSectionIndex:3];
   EXPECT_NSEQ(expected_footer_text, footer.text);
 }
 
