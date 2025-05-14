@@ -13,6 +13,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/federated_auth_autofill_source.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
@@ -143,6 +144,17 @@ ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
 
   std::vector<Suggestion> suggestions;
   for (IdentityRequestAccountPtr account : *accounts) {
+    bool delegated =
+        account->identity_provider->format &&
+        *account->identity_provider->format == blink::mojom::Format::kSdJwt;
+    bool is_returning_credential =
+        account->login_state &&
+        *account->login_state ==
+            content::IdentityRequestAccount::LoginState::kSignIn;
+    if (!delegated && !is_returning_credential) {
+      continue;
+    }
+
     switch (field_type) {
       case EMAIL_ADDRESS: {
         if (std::optional<Suggestion> suggestion =
