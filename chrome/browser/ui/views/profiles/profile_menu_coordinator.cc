@@ -23,13 +23,7 @@
 #include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-ProfileMenuCoordinator::~ProfileMenuCoordinator() {
-  // Forcefully close the Widget if it hasn't been closed by the time the
-  // browser is torn down to avoid dangling references.
-  if (IsShowing()) {
-    bubble_tracker_.view()->GetWidget()->CloseNow();
-  }
-}
+ProfileMenuCoordinator::~ProfileMenuCoordinator() = default;
 
 void ProfileMenuCoordinator::Show(
     bool is_source_accelerator,

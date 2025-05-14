@@ -374,19 +374,6 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
   EXPECT_FALSE(ProfileMenuCoordinator::FromBrowser(browser())->IsShowing());
 }
 
-// Used to test that the bubble widget is destroyed before the browser.
-class BubbleWidgetDestroyedObserver : public views::WidgetObserver {
- public:
-  explicit BubbleWidgetDestroyedObserver(views::Widget* bubble_widget) {
-    bubble_widget->AddObserver(this);
-  }
-
-  // views::WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget) override {
-    ASSERT_EQ(BrowserList::GetInstance()->size(), 1UL);
-  }
-};
-
 // Profile chooser view should close when the last tab is closed.
 // Regression test for http://crbug.com/792845
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
@@ -396,10 +383,12 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
   ASSERT_EQ(0, tab_strip->active_index());
 
   ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
-  auto widget_destroyed_observer =
-      BubbleWidgetDestroyedObserver(profile_menu_view()->GetWidget());
+
+  // Wait for browser widget destruction. Below will crash due to raw_ptr
+  // detection if the profile bubble outlives the browser.
   tab_strip->CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE);
-  base::RunLoop().RunUntilIdle();
+  views::test::WidgetDestroyedWaiter(browser()->GetBrowserView().GetWidget())
+      .Wait();
 }
 
 // Opening the profile menu dismisses any existing IPH.
