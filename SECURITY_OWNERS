@@ -1,0 +1,10 @@
+# The root SECURITY_OWNERS file contains members of the security ownership
+# council, who decide membership in SECURITY_OWNERS files in subdirectories. For
+# more information about this, see //docs/security/security-owners.md.
+#
+# If you want to join this group, contact awhalley.
+
+awhalley@chromium.org
+creis@chromium.org
+estark@chromium.org
+rbyers@chromium.org

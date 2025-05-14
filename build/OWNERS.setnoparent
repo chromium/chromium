@@ -8,6 +8,7 @@ file://ATL_OWNERS
 file://third_party/OWNERS
 
 # Security reviews
+file://SECURITY_OWNERS
 file://build/fuchsia/SECURITY_OWNERS
 file://chromeos/SECURITY_OWNERS
 file://content/browser/CHILD_PROCESS_SECURITY_POLICY_OWNERS
