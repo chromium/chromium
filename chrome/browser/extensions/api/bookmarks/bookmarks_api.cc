@@ -41,6 +41,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function_dispatcher.h"
+#include "extensions/buildflags/buildflags.h"
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
@@ -489,9 +490,21 @@ const BookmarkNode* BookmarksCreateFunction::CreateBookmarkNode(
   int64_t parent_id;
 
   if (!details.parent_id) {
-    // Optional, default to "other bookmarks".
+    // Optional, default to "other bookmarks" as a parent ID on desktop, "mobile
+    // bookmarks" on desktop Android.
+    // TODO(crbug.com/414844449): Currently, desktop Android still saves
+    // bookmarks to the mobile bookmarks folder and the bookmarks bar/other
+    // bookmarks folder are not visible if they are empty. This behavior is
+    // subject to change.
+#if BUILDFLAG(IS_ANDROID)
+    parent_id = model->account_mobile_node()
+                    ? model->account_mobile_node()->id()
+                    : model->mobile_node()->id();
+#else
     parent_id = model->account_other_node() ? model->account_other_node()->id()
                                             : model->other_node()->id();
+#endif  // BUILDFLAG(IS_ANDROID)
+
   } else if (!base::StringToInt64(*details.parent_id, &parent_id)) {
     *error = bookmarks_errors::kInvalidIdError;
     return nullptr;
