@@ -31,7 +31,26 @@
   border-radius: 50%;
   height: 64px;
   width: 64px;
+  /* To place the avatar at the center of the background image,
+     place it at top left point of its parent,
+     then shift it back by half its width and height. */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.dialog-illustration {
+  content: url(./images/avatar_surrounding_illustration_light.svg);
+  width: 100%;
+}
+
+#imageContainer {
   align-self: center;
+  display: flex;
+  justify-content: center;
+  /* Establishes a positioning context for absolute children. */
+  position: relative;
 }
 
 #buttonRow {
@@ -54,4 +73,11 @@
 h1 {
   font-size: 16px;
   font-weight: 500;
+}
+
+
+@media (prefers-color-scheme: dark) {
+  .dialog-illustration {
+   content: url(./images/avatar_surrounding_illustration_dark.svg);
+  }
 }

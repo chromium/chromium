@@ -4,6 +4,12 @@
 
 module history_sync_optin.mojom;
 
+import "url/mojom/url.mojom";
+
+struct AccountInfo {
+  url.mojom.Url account_image_src;
+};
+
 // Factory ensures that the Page and Handler interfaces
 // are always created together without requiring an initialization call from the
 // WebUI to the handler.
@@ -21,7 +27,12 @@ interface PageHandler {
   Accept();
   // The user rejects the history sync optin by clicking the `No thanks` button.
   Reject();
+  // Requests the signed in user's account info.
+  RequestAccountInfo();
 };
 
 // Called from C++ side of chrome://history-sync-optin (Browser -> Renderer)
-interface Page {};
+interface Page {
+  // Sends account info updates to the UI.
+  SendAccountInfo(AccountInfo account_info);
+};

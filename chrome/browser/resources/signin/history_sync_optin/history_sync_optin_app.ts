@@ -6,11 +6,13 @@ import '/strings.m.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
-import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {HistorySyncOptInBrowserProxyImpl} from './browser_proxy.js';
 import type {HistorySyncOptInBrowserProxy} from './browser_proxy.js';
+import type {AccountInfo} from './history_sync_optin.mojom-webui.js';
 import {getCss} from './history_sync_optin_app.css.js';
 import {getHtml} from './history_sync_optin_app.html.js';
 
@@ -39,6 +41,26 @@ export class HistorySyncOptinAppElement extends HistorySyncOptinAppElementBase {
       loadTimeData.getString('accountPictureUrl');
   private historySyncOptInBrowserProxy_: HistorySyncOptInBrowserProxy =
       HistorySyncOptInBrowserProxyImpl.getInstance();
+  private onAccountInfoDataReceivedListenerId_: number|null = null;
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.onAccountInfoDataReceivedListenerId_ =
+        this.historySyncOptInBrowserProxy_.callbackRouter.sendAccountInfo
+            .addListener(this.handleAccountInfoChanged_.bind(this));
+
+    this.historySyncOptInBrowserProxy_.handler.requestAccountInfo();
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+
+    assert(this.onAccountInfoDataReceivedListenerId_);
+    this.historySyncOptInBrowserProxy_.callbackRouter.removeListener(
+        this.onAccountInfoDataReceivedListenerId_);
+    this.onAccountInfoDataReceivedListenerId_ = null;
+  }
 
   protected onReject_() {
     this.historySyncOptInBrowserProxy_.handler.reject();
@@ -46,6 +68,10 @@ export class HistorySyncOptinAppElement extends HistorySyncOptinAppElementBase {
 
   protected onAccept_() {
     this.historySyncOptInBrowserProxy_.handler.accept();
+  }
+
+  private handleAccountInfoChanged_(accountInfo: AccountInfo) {
+    this.accountImageSrc_ = accountInfo.accountImageSrc.url;
   }
 }
 

@@ -10,7 +10,10 @@ export function getHtml(this: HistorySyncOptinAppElement) {
   return html`
   <!--_html_template_start_-->
   <div id="contentContainer">
-    <img id="avatar" alt="" src="${this.accountImageSrc_}">
+    <div id="imageContainer">
+      <img class="dialog-illustration" alt="">
+      <img id="avatar" alt="" src="${this.accountImageSrc_}">
+    </div>
     <div id="textContainer">
       <h1 class="title">$i18n{historySyncOptInTitle}</h1>
       <div id="subtitle">$i18n{historySyncOptInSubtitle}</div>
