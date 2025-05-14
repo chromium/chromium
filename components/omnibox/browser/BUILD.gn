@@ -442,17 +442,18 @@ static_library("browser") {
     deps += [ "//content/public/common" ]
   }
 
-  if (enable_extensions) {
-    deps += [
-      "//extensions/common:common_constants",
-      "//extensions/common:extension_features",
-    ]
-    sources += [
-      "omnibox_input_watcher.cc",
-      "omnibox_input_watcher.h",
-      "omnibox_suggestions_watcher.cc",
-      "omnibox_suggestions_watcher.h",
-    ]
+  if (enable_extensions_core) {
+    deps += [ "//extensions/common:common_constants" ]
+
+    if (enable_extensions) {
+      deps += [ "//extensions/common:extension_features" ]
+      sources += [
+        "omnibox_input_watcher.cc",
+        "omnibox_input_watcher.h",
+        "omnibox_suggestions_watcher.cc",
+        "omnibox_suggestions_watcher.h",
+      ]
+    }
   }
 
   if (build_with_tflite_lib) {
