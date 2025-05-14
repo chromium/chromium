@@ -10037,6 +10037,22 @@
             ]
         }
     ],
+    "GlicContextualCueingDogfood": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ContextualCueing"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicDogfood": [
         {
             "platforms": [
@@ -10045,24 +10061,15 @@
             ],
             "experiments": [
                 {
-                    "name": "GlicEnabled",
-                    "params": {
-                        "BackoffMultiplierBase": "2.0",
-                        "MinPageCountBetweenNudges": "3",
-                        "NudgeCapCount": "10",
-                        "NudgeCapCountPerDomain": "3",
-                        "NudgeCapTime": "8h",
-                        "NudgeCapTimePerDomain": "8h"
-                    },
+                    "name": "Enabled",
                     "enable_features": [
-                        "ContextualCueing",
                         "Glic"
                     ]
                 }
             ]
         }
     ],
-    "GlicDogfoodSettings": [
+    "GlicRolloutDogfood": [
         {
             "platforms": [
                 "mac",
@@ -10070,15 +10077,40 @@
             ],
             "experiments": [
                 {
-                    "name": "GlicSettingsEnabled",
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicRollout"
+                    ]
+                }
+            ]
+        }
+    ],
+    "GlicSettingsDogfood": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
                     "params": {
-                        "has_background": "false"
+                        "glic-allowed-origins-override": "https://www.google.com",
+                        "glic-client-responsiveness-check-interval-ms": "5000",
+                        "glic-fre-url": "https://www.google.com/?",
+                        "glic-guest-url": "https://www.google.com/",
+                        "glic-shortcuts-launcher-toggle-learn-more-url": "https://support.google.com/",
+                        "glic-shortcuts-learn-more-url": "https://support.google.com/",
+                        "glic-shortcuts-location-toggle-learn-more-url": "https://support.google.com/",
+                        "glic-shortcuts-tab-access-toggle-learn-more-url": "https://support.google.com/"
                     },
                     "enable_features": [
-                        "GlicDevelopmentCookies",
+                        "GlicAppMenuNewBadge",
+                        "GlicCSPConfig",
+                        "GlicClientResponsivenessCheck",
                         "GlicFreURLConfig",
                         "GlicKeyboardShortcutNewBadge",
-                        "GlicLearnMoreURLConfig",
+                        "GlicPageContextEligibility",
                         "GlicURLConfig",
                         "IPH_GlicPromo"
                     ]
@@ -10097,6 +10129,43 @@
                     "name": "Enabled",
                     "enable_features": [
                         "GlicTieredRollout"
+                    ]
+                }
+            ]
+        }
+    ],
+    "GlicUserStatusCheckDogfood": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "glic-user-status-oauth2-scope": "https://www.googleapis.com/auth/gemini",
+                        "glic-user-status-request-delay": "23h",
+                        "glic-user-status-url": "https://www.example.com/"
+                    },
+                    "enable_features": [
+                        "GlicUserStatusCheck"
+                    ]
+                }
+            ]
+        }
+    ],
+    "GlicZeroStateSuggestionsDogfood": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicZeroStateSuggestions"
                     ]
                 }
             ]
