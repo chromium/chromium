@@ -46,7 +46,7 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
             ArgumentCaptor.forClass(InstantMessage.class);
     private final ArgumentCaptor<Callback> mInstantMessageCallbackCaptor =
             ArgumentCaptor.forClass(Callback.class);
-    private ArgumentCaptor<Set<String>> mHideInstantMessageIdsCaptor =
+    private final ArgumentCaptor<Set<String>> mHideInstantMessageIdsCaptor =
             ArgumentCaptor.forClass(Set.class);
 
     @CalledByNative

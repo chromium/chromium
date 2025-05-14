@@ -32,13 +32,13 @@ import java.util.Set;
 
 /** Implements CustomTab-specific behavior of adaptive toolbar button. */
 public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
-    private Context mContext;
-    private ActivityTabProvider mActivityTabProvider;
-    private BrowserServicesIntentDataProvider mIntentDataProvider;
-    private Drawable mOpenInBrowserButton;
-    private Runnable mOpenInBrowserRunnable;
-    private Runnable mRegisterVoiceSearchRunnable;
-    private List<CustomButtonParams> mToolbarCustomButtons;
+    private final Context mContext;
+    private final ActivityTabProvider mActivityTabProvider;
+    private final BrowserServicesIntentDataProvider mIntentDataProvider;
+    private final Drawable mOpenInBrowserButton;
+    private final Runnable mOpenInBrowserRunnable;
+    private final Runnable mRegisterVoiceSearchRunnable;
+    private final List<CustomButtonParams> mToolbarCustomButtons;
     private final Set<Integer> mValidButtons;
 
     @ExperimentalOpenInBrowser
