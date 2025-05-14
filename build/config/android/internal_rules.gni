@@ -1640,7 +1640,8 @@ if (enable_java_templates) {
             args += [
               # Pass the full classpath to find new dependencies that are not in
               # the .desugardeps file.
-              "--classpath=@FileArg($_rebased_build_config:javac_full_interface_classpath)",
+              # R8 cannot use interface classpath (crbug.com/417451320)
+              "--classpath=@FileArg($_rebased_build_config:javac_full_classpath)",
             ]
           }
 
@@ -4158,7 +4159,7 @@ if (enable_java_templates) {
           if (enable_desugar && default_min_sdk_version < 24) {
             # Desugaring with D8 requires classpath for default method desugaring (required until API 24).
             build_config = _build_config
-            deps += _header_classpath_deps
+            deps += _javac_classpath_deps
           }
 
           is_library = true
