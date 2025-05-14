@@ -121,18 +121,6 @@ bool TestProfileManagerIOS::CreateProfileAsync(
   return true;
 }
 
-ProfileIOS* TestProfileManagerIOS::LoadProfile(std::string_view name) {
-  // TestProfileManagerIOS cannot create nor load a Profile, so the
-  // implementation is equivalent to GetProfileWithName(...).
-  return GetProfileWithName(name);
-}
-
-ProfileIOS* TestProfileManagerIOS::CreateProfile(std::string_view name) {
-  // TestProfileManagerIOS cannot create nor load a Profile, so the
-  // implementation is equivalent to GetProfileWithName(...).
-  return GetProfileWithName(name);
-}
-
 void TestProfileManagerIOS::UnloadProfile(std::string_view name) {
   auto iter = profiles_map_.find(name);
   DCHECK(iter != profiles_map_.end());

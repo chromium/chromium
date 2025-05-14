@@ -52,13 +52,13 @@ class ProfileManagerIOS {
   // After this call, passing the returned value to HasProfileWithName(...)
   // will return true, but passing it to GetProfileWithName(...) will still
   // return a null pointer as the profile has not been created. Loading the
-  // profile with LoadProfileAsync() or LoadProfile() will also fail.
+  // profile with LoadProfileAsync() will also fail.
   virtual std::string ReserveNewProfileName() = 0;
 
   // Returns whether a profile with `name` can be deleted.
   virtual bool CanDeleteProfileWithName(std::string_view name) const = 0;
 
-  // Asynchronously loads a Profile known by `name` if it exists. The
+  // Asynchronously loads a Profile known by `name` if it exists. The callback
   // `created_callback` will be called with the Profile when it has been created
   // (but not yet initialised) and `initialised_callback` will be called once
   // the Profile is fully initialised. Returns true if the Profile exists, false
@@ -87,18 +87,6 @@ class ProfileManagerIOS {
       std::string_view name,
       ProfileLoadedCallback initialized_callback,
       ProfileLoadedCallback created_callback = {}) = 0;
-
-  // Loads the Profile known by `name` and returns it. As this method is
-  // synchronous, it may block the application so it should only be used during
-  // the initialisation when blocking is possible or for tests. Returns null if
-  // loading the Profile failed.
-  virtual ProfileIOS* LoadProfile(std::string_view name) = 0;
-
-  // Creates or loads the Profile known by `name` and returns it. As this method
-  // is synchronous, it may block the application so it should only be used
-  // during the initialisation when blocking is possible or for tests. Returns
-  // null if loading or creating the Profile failed.
-  virtual ProfileIOS* CreateProfile(std::string_view name) = 0;
 
   // Unloads the given loaded Profile objects, if loaded.
   virtual void UnloadProfile(std::string_view name) = 0;

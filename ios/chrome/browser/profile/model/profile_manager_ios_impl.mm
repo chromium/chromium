@@ -252,10 +252,9 @@ bool ProfileManagerIOSImpl::LoadProfileAsync(
     ProfileLoadedCallback initialized_callback,
     ProfileLoadedCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return CreateProfileWithMode(name, CreationMode::kAsynchronous,
-                               /* load_only_do_not_create */ true,
-                               std::move(initialized_callback),
-                               std::move(created_callback));
+  return CreateOrLoadProfile(name, LoadOrCreatePolicy::kLoadOnly,
+                             std::move(initialized_callback),
+                             std::move(created_callback));
 }
 
 bool ProfileManagerIOSImpl::CreateProfileAsync(
@@ -263,42 +262,9 @@ bool ProfileManagerIOSImpl::CreateProfileAsync(
     ProfileLoadedCallback initialized_callback,
     ProfileLoadedCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return CreateProfileWithMode(name, CreationMode::kAsynchronous,
-                               /* load_only_do_not_create */ false,
-                               std::move(initialized_callback),
-                               std::move(created_callback));
-}
-
-ProfileIOS* ProfileManagerIOSImpl::LoadProfile(std::string_view name) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!CreateProfileWithMode(name, CreationMode::kSynchronous,
-                             /* load_only_do_not_create */ true,
-                             /* initialized_callback */ {},
-                             /* created_callback */ {})) {
-    return nullptr;
-  }
-
-  auto iter = profiles_map_.find(name);
-  DCHECK(iter != profiles_map_.end());
-
-  DCHECK(iter->second.is_loaded());
-  return iter->second.profile();
-}
-
-ProfileIOS* ProfileManagerIOSImpl::CreateProfile(std::string_view name) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!CreateProfileWithMode(name, CreationMode::kSynchronous,
-                             /* load_only_do_not_create */ false,
-                             /* initialized_callback */ {},
-                             /* created_callback */ {})) {
-    return nullptr;
-  }
-
-  auto iter = profiles_map_.find(name);
-  DCHECK(iter != profiles_map_.end());
-
-  DCHECK(iter->second.is_loaded());
-  return iter->second.profile();
+  return CreateOrLoadProfile(name, LoadOrCreatePolicy::kCreateIfNecessary,
+                             std::move(initialized_callback),
+                             std::move(created_callback));
 }
 
 void ProfileManagerIOSImpl::UnloadProfile(std::string_view name) {
@@ -427,6 +393,7 @@ void ProfileManagerIOSImpl::OnProfileCreationStarted(
     ProfileIOS* profile,
     CreationMode creation_mode) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(creation_mode, CreationMode::kAsynchronous);
   DCHECK(profile);
 
   for (auto& observer : observers_) {
@@ -440,18 +407,11 @@ void ProfileManagerIOSImpl::OnProfileCreationFinished(
     bool is_new_profile,
     bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(creation_mode, CreationMode::kAsynchronous);
   DCHECK(profile);
   DCHECK(!profile->IsOffTheRecord());
 
-  // If the Profile is loaded synchronously the method is called as part of the
-  // constructor and before the ProfileInfo insertion in the map. The method
-  // will be called again after the insertion.
   auto iter = profiles_map_.find(profile->GetProfileName());
-  if (iter == profiles_map_.end()) {
-    DCHECK(creation_mode == CreationMode::kSynchronous);
-    return;
-  }
-
   DCHECK(iter != profiles_map_.end());
   auto callbacks = iter->second.TakeCallbacks();
 
@@ -506,10 +466,9 @@ void ProfileManagerIOSImpl::OnProfileCreationFinished(
   }
 }
 
-bool ProfileManagerIOSImpl::CreateProfileWithMode(
+bool ProfileManagerIOSImpl::CreateOrLoadProfile(
     std::string_view name,
-    CreationMode creation_mode,
-    bool load_only_do_not_create,
+    LoadOrCreatePolicy policy,
     ProfileLoadedCallback initialized_callback,
     ProfileLoadedCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -537,20 +496,22 @@ bool ProfileManagerIOSImpl::CreateProfileWithMode(
     is_new_profile = attrs.IsNewProfile();
   }
 
-  // Profile creation is forbidden either via `load_only_do_not_create` or
-  // if CanCreateProfileWithName(...) return false.
-  bool can_create = !load_only_do_not_create;
-  if (!existing) {
-    can_create &= CanCreateProfileWithName(name);
-  }
-
   auto iter = profiles_map_.find(name);
   if (iter == profiles_map_.end()) {
-    if (is_new_profile && !can_create) {
-      if (!initialized_callback.is_null()) {
-        std::move(initialized_callback).Run(nullptr);
+    if (is_new_profile) {
+      // The profile has never be loaded and needs to be created. Check
+      // whether creating the profile is allowed. This is controlled by
+      // `policy` and `CanCreateProfileWithName(...)`.
+      const bool creation_allowed =
+          (policy == LoadOrCreatePolicy::kCreateIfNecessary) &&
+          (existing || CanCreateProfileWithName(name));
+
+      if (!creation_allowed) {
+        if (!initialized_callback.is_null()) {
+          std::move(initialized_callback).Run(nullptr);
+        }
+        return false;
       }
-      return false;
     }
 
     if (!existing) {
@@ -559,9 +520,9 @@ bool ProfileManagerIOSImpl::CreateProfileWithMode(
     }
 
     std::tie(iter, inserted) = profiles_map_.insert(std::make_pair(
-        std::string(name),
-        ProfileInfo(ProfileIOS::CreateProfile(profile_data_dir_.Append(name),
-                                              name, creation_mode, this))));
+        std::string(name), ProfileInfo(ProfileIOS::CreateProfile(
+                               profile_data_dir_.Append(name), name,
+                               CreationMode::kAsynchronous, this))));
 
     DCHECK(inserted);
   }
@@ -580,24 +541,6 @@ bool ProfileManagerIOSImpl::CreateProfileWithMode(
     } else {
       std::move(initialized_callback).Run(profile_info.profile());
     }
-  }
-
-  // If asked to load synchronously but an asynchronous load was already in
-  // progress, pretend the load failed, as we cannot return an uninitialized
-  // Profile, nor can we wait for the asynchronous initialisation to complete.
-  if (creation_mode == CreationMode::kSynchronous) {
-    if (!inserted && !profile_info.is_loaded()) {
-      return false;
-    }
-  }
-
-  // If the Profile was just created, and the creation mode is synchronous then
-  // OnProfileCreationFinished() will have been called during the construction
-  // of the ProfileInfo. Thus it is necessary to call the method again here.
-  if (inserted && creation_mode == CreationMode::kSynchronous) {
-    OnProfileCreationFinished(profile_info.profile(),
-                              CreationMode::kAsynchronous, is_new_profile,
-                              /* success */ true);
   }
 
   return true;

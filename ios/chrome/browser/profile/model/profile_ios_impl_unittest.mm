@@ -18,7 +18,7 @@ TEST_F(ProfileIOSImplTest, GetWebKitStorageID) {
   const base::Uuid uuid = base::Uuid::GenerateRandomV4();
   const std::string name = uuid.AsLowercaseString();
 
-  ProfileIOS* profile = profile_manager().CreateProfile(name);
+  ProfileIOS* profile = CreateProfile(name);
   ASSERT_TRUE(profile);
 
   // The profile storage identifier should be equal to its name as an UUID.
@@ -36,7 +36,7 @@ TEST_F(ProfileIOSImplTest, GetWebKitStorageID_PreM133) {
   const base::FilePath path = profile_data_dir().Append(name);
   ASSERT_FALSE(base::DirectoryExists(path));
 
-  ProfileIOS* profile = profile_manager().CreateProfile(name);
+  ProfileIOS* profile = CreateProfile(name);
   ASSERT_TRUE(profile);
 
   // The profile storage identifier should be an invalid base::Uuid.
@@ -59,7 +59,7 @@ TEST_F(ProfileIOSImplTest, GetWebKitStorageID_PreM128) {
   const base::FilePath path = profile_data_dir().Append(name);
   ASSERT_TRUE(base::CreateDirectory(path));
 
-  ProfileIOS* profile = profile_manager().CreateProfile(name);
+  ProfileIOS* profile = CreateProfile(name);
   ASSERT_TRUE(profile);
 
   // The profile storage identifier should be an invalid base::Uuid.

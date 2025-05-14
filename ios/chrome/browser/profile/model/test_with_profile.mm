@@ -6,6 +6,8 @@
 
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback.h"
+#import "base/run_loop.h"
 #import "base/test/test_file_util.h"
 #import "ios/chrome/browser/optimization_guide/model/ios_chrome_prediction_model_store.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
@@ -16,6 +18,18 @@
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
+
+namespace {
+
+// Returns a callback that accept a single arguments and store it to `output`.
+// The callback must not outlive the `output` parameter.
+template <typename T>
+base::OnceCallback<void(T)> CaptureArg(T& output) {
+  return base::BindOnce([](T& output, T param) { output = std::move(param); },
+                        std::ref(output));
+}
+
+}  // namespace
 
 TestWithProfile::InitializedFeatureList::InitializedFeatureList(
     const std::vector<base::test::FeatureRef>& enabled_features,
@@ -93,4 +107,26 @@ TestWithProfile::~TestWithProfile() {
   application_context->SetProfileManagerAndAccountProfileMapper(nullptr,
                                                                 nullptr);
   application_context->SetIOSChromeIOThread(nullptr);
+}
+
+ProfileIOS* TestWithProfile::LoadProfile(std::string_view profile_name) {
+  ProfileIOS* profile = nullptr;
+
+  base::RunLoop run_loop;
+  profile_manager_.LoadProfileAsync(
+      profile_name, CaptureArg(profile).Then(run_loop.QuitClosure()), {});
+  run_loop.Run();
+
+  return profile;
+}
+
+ProfileIOS* TestWithProfile::CreateProfile(std::string_view profile_name) {
+  ProfileIOS* profile = nullptr;
+
+  base::RunLoop run_loop;
+  profile_manager_.CreateProfileAsync(
+      profile_name, CaptureArg(profile).Then(run_loop.QuitClosure()), {});
+  run_loop.Run();
+
+  return profile;
 }

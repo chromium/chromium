@@ -308,8 +308,8 @@ TEST_F(ProfileManagerIOSImplTest, CreateProfileAsync) {
 // Tests that Profile marked for deletion does not create a new profile.
 TEST_F(ProfileManagerIOSImplTest, CreateProfile_MarkedForDeletion) {
   // Create a few profiles synchronously.
-  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName1));
-  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName2));
+  ASSERT_TRUE(CreateProfile(kProfileName1));
+  ASSERT_TRUE(CreateProfile(kProfileName2));
   // Check that the profiles are accessible.
   EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));
   EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName2));
@@ -322,7 +322,7 @@ TEST_F(ProfileManagerIOSImplTest, CreateProfile_MarkedForDeletion) {
 
   // Ensures that the profile cannot be created and has been removed from
   // the profile attributes storage.
-  ASSERT_FALSE(profile_manager().CreateProfile(kProfileName2));
+  ASSERT_FALSE(CreateProfile(kProfileName2));
   ASSERT_FALSE(attributes_storage().HasProfileWithName(kProfileName2));
 }
 
@@ -410,14 +410,14 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfile) {
       }));
 
   // Load the Profile synchronously.
-  ProfileIOS* profile = profile_manager().LoadProfile(profile_name);
+  ProfileIOS* profile = LoadProfile(profile_name);
 
   // The Profile should have been successfully loaded and initialized.
   EXPECT_TRUE(profile);
 
   // Calling LoadProfile(...) a second time should return the same
   // object.
-  EXPECT_EQ(profile, profile_manager().LoadProfile(profile_name));
+  EXPECT_EQ(profile, LoadProfile(profile_name));
 }
 
 // Tests that LoadProfile(...) fails to load an unknown Profile.
@@ -427,7 +427,7 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfile_Missing) {
   ASSERT_FALSE(attributes_storage().HasProfileWithName(kProfileName1));
 
   // Load the Profile synchronously.
-  ProfileIOS* profile = profile_manager().LoadProfile(kProfileName1);
+  ProfileIOS* profile = LoadProfile(kProfileName1);
 
   // The Profile was not loaded nor created.
   EXPECT_FALSE(profile);
@@ -441,14 +441,14 @@ TEST_F(ProfileManagerIOSImplTest, CreateProfile) {
   ASSERT_FALSE(attributes_storage().HasProfileWithName(kProfileName1));
 
   // Create the Profile synchronously.
-  ProfileIOS* profile = profile_manager().CreateProfile(kProfileName1);
+  ProfileIOS* profile = CreateProfile(kProfileName1);
 
   // The Profile should have been successfully loaded and initialized.
   EXPECT_TRUE(profile);
 
   // Calling CreateProfile(...) a second time should return the same
   // object.
-  EXPECT_EQ(profile, profile_manager().CreateProfile(kProfileName1));
+  EXPECT_EQ(profile, CreateProfile(kProfileName1));
 }
 
 // Check that if there are not profile marked as the personal profile, then
@@ -469,7 +469,7 @@ TEST_F(ProfileManagerIOSImplTest, CreatingProfileDontOverwritePersonalProfile) {
 
   // Create another profile, this should not change the personal profile.
   const std::string profile_name2 = profile_manager().ReserveNewProfileName();
-  EXPECT_TRUE(profile_manager().CreateProfile(profile_name2));
+  EXPECT_TRUE(CreateProfile(profile_name2));
 
   // The personal profile should not have been changed.
   EXPECT_EQ(attributes_storage().GetPersonalProfileName(), profile_name1);
@@ -479,8 +479,8 @@ TEST_F(ProfileManagerIOSImplTest, CreatingProfileDontOverwritePersonalProfile) {
 // observers.
 TEST_F(ProfileManagerIOSImplTest, UnloadProfile) {
   // Create a few profiles synchronously.
-  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName1));
-  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName2));
+  ASSERT_TRUE(CreateProfile(kProfileName1));
+  ASSERT_TRUE(CreateProfile(kProfileName2));
 
   ScopedTestProfileManagerObserverIOS observer(profile_manager());
   EXPECT_FALSE(observer.on_profile_unloaded_called());
@@ -502,8 +502,8 @@ TEST_F(ProfileManagerIOSImplTest, UnloadProfile) {
 // observers.
 TEST_F(ProfileManagerIOSImplTest, UnloadAllProfiles) {
   // Create a few profiles synchronously.
-  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName1));
-  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName2));
+  ASSERT_TRUE(CreateProfile(kProfileName1));
+  ASSERT_TRUE(CreateProfile(kProfileName2));
 
   ScopedTestProfileManagerObserverIOS observer(profile_manager());
   EXPECT_FALSE(observer.on_profile_unloaded_called());
@@ -571,8 +571,8 @@ TEST_F(ProfileManagerIOSImplTest, ReserveNewProfileName) {
 // OnProfileMarkedForPermanentDeletion(...) on the observers.
 TEST_F(ProfileManagerIOSImplTest, MarkProfileForDeletion) {
   // Create a few profiles synchronously.
-  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName1));
-  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName2));
+  ASSERT_TRUE(CreateProfile(kProfileName1));
+  ASSERT_TRUE(CreateProfile(kProfileName2));
 
   ScopedTestProfileManagerObserverIOS observer(profile_manager());
   EXPECT_FALSE(observer.on_profile_marked_for_permanent_deletion_called());
@@ -597,8 +597,8 @@ TEST_F(ProfileManagerIOSImplTest, MarkProfileForDeletion) {
 TEST_F(ProfileManagerIOSImplTest,
        MarkProfileForDeletion_UnloadedProfileShouldNotCallObserver) {
   // Create a few profiles synchronously.
-  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName1));
-  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName2));
+  ASSERT_TRUE(CreateProfile(kProfileName1));
+  ASSERT_TRUE(CreateProfile(kProfileName2));
 
   ScopedTestProfileManagerObserverIOS observer(profile_manager());
   EXPECT_FALSE(observer.on_profile_marked_for_permanent_deletion_called());
@@ -630,8 +630,8 @@ TEST_F(ProfileManagerIOSImplTest,
 TEST_F(ProfileManagerIOSImplTest,
        MarkProfileForDeletion_CantCreateProfileWithProfileMarkedForDeletion) {
   // Create a few profiles synchronously.
-  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName1));
-  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName2));
+  ASSERT_TRUE(CreateProfile(kProfileName1));
+  ASSERT_TRUE(CreateProfile(kProfileName2));
 
   // Check that the profiles are accessible.
   EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));

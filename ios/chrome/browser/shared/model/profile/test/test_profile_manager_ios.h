@@ -45,8 +45,6 @@ class TestProfileManagerIOS : public ProfileManagerIOS {
   bool CreateProfileAsync(std::string_view name,
                           ProfileLoadedCallback initialized_callback,
                           ProfileLoadedCallback created_callback) override;
-  ProfileIOS* LoadProfile(std::string_view name) override;
-  ProfileIOS* CreateProfile(std::string_view name) override;
   void UnloadProfile(std::string_view name) override;
   void UnloadAllProfiles() override;
   void MarkProfileForDeletion(std::string_view name) override;
