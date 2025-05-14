@@ -158,6 +158,12 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, BirthdayErrorTest) {
   GetFakeServer()->ClearServerData();
 
   ASSERT_TRUE(SyncDisabledChecker(GetSyncService(0)).Wait());
+
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_TRUE(GetSyncService(0)
+                  ->GetUserSettings()
+                  ->IsSyncFeatureDisabledViaDashboard());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 IN_PROC_BROWSER_TEST_F(SyncErrorTest, UpgradeClientErrorDuringIncrementalSync) {

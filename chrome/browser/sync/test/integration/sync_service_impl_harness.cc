@@ -352,9 +352,6 @@ bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion(
     return false;
   }
 
-  // Now that auth is completed, request that sync actually start.
-  service()->SetSyncFeatureRequested();
-
   if (!AwaitEngineInitialization()) {
     return false;
   }

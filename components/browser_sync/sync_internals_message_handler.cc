@@ -258,7 +258,6 @@ void SyncInternalsMessageHandler::HandleRequestStart(
   identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
       signin::ConsentLevel::kSync, signin_metrics::AccessPoint::kUnknown);
-  sync_service_->SetSyncFeatureRequested();
   sync_service_->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 #endif  // !BUILDFLAG(IS_CHROMEOS)

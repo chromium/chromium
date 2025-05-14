@@ -196,12 +196,6 @@ base::android::ScopedJavaLocalRef<jobject> TestSyncService::GetJavaObject() {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-void TestSyncService::SetSyncFeatureRequested() {
-#if BUILDFLAG(IS_CHROMEOS)
-  user_settings_.ClearSyncFeatureDisabledViaDashboard();
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
 TestSyncUserSettings* TestSyncService::GetUserSettings() {
   return &user_settings_;
 }

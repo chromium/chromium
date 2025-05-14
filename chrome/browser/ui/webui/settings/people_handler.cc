@@ -742,13 +742,12 @@ void PeopleHandler::HandleShowSyncSetupUI(const base::Value::List& args) {
     sync_blocker_ = service->GetSetupInProgressHandle();
   }
 
-  // Mark Sync as requested by the user. It might already be requested, but
-  // it's not if this is either the first time the user is setting up Sync, or
-  // Sync was set up but then was reset via the dashboard. This also pokes the
-  // SyncService to start up immediately, i.e. bypass deferred startup.
+#if BUILDFLAG(IS_CHROMEOS)
+  // Mark Sync as requested by the user, in case it was reset via dashboard.
   if (service) {
-    service->SetSyncFeatureRequested();
+    service->GetUserSettings()->ClearSyncFeatureDisabledViaDashboard();
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   GetLoginUIService()->SetLoginUI(this);
 
@@ -1291,17 +1290,11 @@ void PeopleHandler::MarkFirstSetupComplete() {
     return;
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
   // Sync is usually already requested at this point, but it might not be if
-  // Sync was reset from the dashboard while this page was open. (In most
-  // situations, resetting Sync also signs the user out of Chrome so this
-  // doesn't come up, but on ChromeOS or for managed (enterprise) accounts
-  // signout isn't possible.)
-  // Note that this has to happen *before* checking if first-time setup is
-  // already marked complete, because on some platforms (e.g. ChromeOS) that
-  // gets set automatically.
-  service->SetSyncFeatureRequested();
-
-#if !BUILDFLAG(IS_CHROMEOS)
+  // Sync was reset from the dashboard while this page was open.
+  service->GetUserSettings()->ClearSyncFeatureDisabledViaDashboard();
+#else   // BUILDFLAG(IS_CHROMEOS)
   // If the first-time setup is already complete, there's nothing else to do.
   if (service->GetUserSettings()->IsInitialSyncFeatureSetupComplete()) {
     return;
@@ -1315,7 +1308,7 @@ void PeopleHandler::MarkFirstSetupComplete() {
   service->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM);
   FireWebUIListener("sync-settings-saved");
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void PeopleHandler::MaybeMarkSyncConfiguring() {

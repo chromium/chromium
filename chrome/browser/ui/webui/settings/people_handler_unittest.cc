@@ -1037,7 +1037,6 @@ TEST_F(PeopleHandlerTest, OngoingSetupCustomPassphraseRequired) {
 
   const auto passphrase_time = base::Time::Now();
 
-  sync_service_->SetSyncFeatureRequested();
   sync_user_settings()->SetPassphraseRequired();
   sync_user_settings()->SetPassphraseType(
       syncer::PassphraseType::kCustomPassphrase);

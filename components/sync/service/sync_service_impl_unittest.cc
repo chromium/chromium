@@ -471,17 +471,16 @@ TEST_F(SyncServiceImplTest, DisabledByPolicyBeforeInitThenPolicyRemoved) {
   // On ChromeOS Ash, sync-the-feature stays disabled even after the policy is
   // removed, for historic reasons. It is unclear if this behavior is optional,
   // because it is indistinguishable from the sync-reset-via-dashboard case.
-  // It can be resolved by invoking SetSyncFeatureRequested().
+  // It can be resolved by invoking ClearSyncFeatureDisabledViaDashboard().
   EXPECT_TRUE(
       service()->GetUserSettings()->IsSyncFeatureDisabledViaDashboard());
-  service()->SetSyncFeatureRequested();
+  service()->GetUserSettings()->ClearSyncFeatureDisabledViaDashboard();
 
 #else
   // For any platform except ChromeOS Ash, the user needs to turn sync on
   // manually.
   ASSERT_FALSE(
       service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
-  service()->SetSyncFeatureRequested();
   service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
   base::RunLoop().RunUntilIdle();
@@ -1772,7 +1771,6 @@ TEST_F(SyncServiceImplTest,
   InitializeService();
   SignInWithSyncConsent();
 
-  service()->SetSyncFeatureRequested();
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS Ash, the first setup is marked as complete automatically.
   ASSERT_TRUE(

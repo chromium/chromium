@@ -365,7 +365,7 @@ void SyncServiceImpl::Initialize(DataTypeController::TypeVector controllers) {
     // removed, for historic reasons. It is unclear if this behavior is
     // optional, because it is indistinguishable from the
     // sync-reset-via-dashboard case. It can be resolved by invoking
-    // SetSyncFeatureRequested().
+    // ClearSyncFeatureDisabledViaDashboard().
     sync_prefs_.SetSyncFeatureDisabledViaDashboard();
 #endif  // BUILDFLAG(IS_CHROMEOS)
   } else if (HasDisableReason(DISABLE_REASON_NOT_SIGNED_IN)) {
@@ -776,14 +776,6 @@ base::android::ScopedJavaLocalRef<jobject> SyncServiceImpl::GetJavaObject() {
   return sync_service_android_->GetJavaObject();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
-
-void SyncServiceImpl::SetSyncFeatureRequested() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  user_settings_->ClearSyncFeatureDisabledViaDashboard();
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
 
 SyncUserSettings* SyncServiceImpl::GetUserSettings() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1831,7 +1823,7 @@ void SyncServiceImpl::OnSyncManagedPrefChange(bool is_sync_managed) {
     // removed, for historic reasons. It is unclear if this behavior is
     // optional, because it is indistinguishable from the
     // sync-reset-via-dashboard case. It can be resolved by invoking
-    // SetSyncFeatureRequested().
+    // ClearSyncFeatureDisabledViaDashboard().
     sync_prefs_.SetSyncFeatureDisabledViaDashboard();
 #endif  // BUILDFLAG(IS_CHROMEOS)
   } else {

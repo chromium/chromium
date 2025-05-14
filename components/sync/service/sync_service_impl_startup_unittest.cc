@@ -210,7 +210,6 @@ TEST_F(SyncServiceImplStartupTest, StartFirstTime) {
 
   // Sign in and turn sync on, without marking the first setup as complete.
   SignInWithSyncConsent();
-  sync_service()->SetSyncFeatureRequested();
   std::unique_ptr<SyncSetupInProgressHandle> sync_blocker =
       sync_service()->GetSetupInProgressHandle();
 
@@ -485,7 +484,7 @@ TEST_F(SyncServiceImplStartupTest, ResetSyncViaDashboard) {
 
   // On ChromeOS, test clearing the dashboard error, which should start
   // sync-the-feature and start BOOKMARKS.
-  sync_service()->SetSyncFeatureRequested();
+  sync_service()->GetUserSettings()->ClearSyncFeatureDisabledViaDashboard();
   FastForwardUntilNoTasksRemain();
   EXPECT_TRUE(sync_service()->IsSyncFeatureActive());
   EXPECT_TRUE(sync_service()->GetActiveDataTypes().Has(BOOKMARKS));
@@ -505,7 +504,6 @@ TEST_F(SyncServiceImplStartupTest, HonorsExistingDatatypePrefs) {
 
   CreateSyncService();
   SignInWithSyncConsent();
-  sync_service()->SetSyncFeatureRequested();
   sync_service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 
@@ -582,7 +580,7 @@ TEST_F(SyncServiceImplStartupTest, SwitchManaged) {
   // On ChromeOS Ash, sync-the-feature stays disabled even after the policy is
   // removed, for historic reasons. It is unclear if this behavior is optional,
   // because it is indistinguishable from the sync-reset-via-dashboard case.
-  // It can be resolved by invoking SetSyncFeatureRequested().
+  // It can be resolved by invoking ClearSyncFeatureDisabledViaDashboard().
   EXPECT_TRUE(
       sync_service()->GetUserSettings()->IsSyncFeatureDisabledViaDashboard());
 #else
@@ -656,7 +654,6 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
   // Initiate Sync (the feature) setup before the engine initializes itself in
   // transport mode.
   SignInWithSyncConsent();
-  sync_service()->SetSyncFeatureRequested();
   std::unique_ptr<SyncSetupInProgressHandle> setup_in_progress_handle =
       sync_service()->GetSetupInProgressHandle();
 
@@ -797,7 +794,6 @@ TEST_F(SyncServiceImplStartupTest, UserTriggeredStartIsNotDeferredStart) {
   // Sign-in quickly, before the usual delay of a deferred startup. This can
   // happen during FRE.
   SignInWithSyncConsent();
-  sync_service()->SetSyncFeatureRequested();
   sync_service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
   FastForwardUntilNoTasksRemain();

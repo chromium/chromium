@@ -190,10 +190,6 @@ void SyncServiceAndroidBridge::OnSyncShutdown(SyncService* sync) {
   // destroy it shortly.
 }
 
-void SyncServiceAndroidBridge::SetSyncRequested(JNIEnv* env) {
-  native_sync_service_->SetSyncFeatureRequested();
-}
-
 jboolean SyncServiceAndroidBridge::IsSyncFeatureEnabled(JNIEnv* env) {
   return native_sync_service_->IsSyncFeatureEnabled();
 }

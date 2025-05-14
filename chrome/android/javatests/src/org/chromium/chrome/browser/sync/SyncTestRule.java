@@ -243,7 +243,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
         // to enable the legacy Sync-the-feature.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mSyncService.setSyncRequested();
                     mSyncService.setInitialSyncFeatureSetupComplete(
                             SyncFirstSetupCompleteSource.BASIC_FLOW);
                 });

@@ -151,12 +151,10 @@ public interface SyncService {
 
     public boolean isInitialSyncFeatureSetupComplete();
 
-    public void setSyncRequested();
-
     /**
-     * Instances of this class keep sync paused until {@link #close} is called. Use
-     * {@link SyncService#getSetupInProgressHandle} to create. Please note that
-     * {@link #close} should be called on every instance of this class.
+     * Instances of this class keep sync paused until {@link #close} is called. Use {@link
+     * SyncService#getSetupInProgressHandle} to create. Please note that {@link #close} should be
+     * called on every instance of this class.
      */
     public interface SyncSetupInProgressHandle {
         public void close();

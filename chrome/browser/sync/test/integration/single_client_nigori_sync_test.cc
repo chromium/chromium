@@ -2226,7 +2226,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
 
   // Make sure that client is able to follow key rotation with fresh security
   // domain state.
+#if BUILDFLAG(IS_CHROMEOS)
+  ASSERT_TRUE(GetSyncService(0)
+                  ->GetUserSettings()
+                  ->IsSyncFeatureDisabledViaDashboard());
+  GetSyncService(0)->GetUserSettings()->ClearSyncFeatureDisabledViaDashboard();
+#else   // BUILDFLAG(IS_CHROMEOS)
   ASSERT_TRUE(SetupSync());
+#endif  // BUILDFLAG(IS_CHROMEOS)
   ASSERT_TRUE(FakeSecurityDomainsServerMemberStatusChecker(
                   /*expected_member_count=*/1,
                   /*expected_trusted_vault_key=*/

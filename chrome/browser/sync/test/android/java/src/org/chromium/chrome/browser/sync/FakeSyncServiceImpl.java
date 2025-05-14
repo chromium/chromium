@@ -281,11 +281,6 @@ public class FakeSyncServiceImpl implements SyncService {
     }
 
     @Override
-    public void setSyncRequested() {
-        mDelegate.setSyncRequested();
-    }
-
-    @Override
     public SyncSetupInProgressHandle getSetupInProgressHandle() {
         return mDelegate.getSetupInProgressHandle();
     }
