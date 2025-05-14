@@ -6,7 +6,7 @@ import("//build/config/ui.gni")
 
 assert(toolkit_views || is_android)
 
-# TODO(crbug.com/413572035): Pull in android and views impl and test code.
+# TODO(crbug.com/413572035): Pull in android impl and test sources.
 
 source_set("plus_addresses") {
   public = [
@@ -30,19 +30,51 @@ source_set("plus_addresses") {
       "//base",
       "//components/autofill/core/browser",
       "//components/autofill/core/common",
+      "//components/plus_addresses:prefs",
       "//components/plus_addresses/metrics",
       "//components/plus_addresses/settings",
       "//ui/menus",
     ]
+  }
+}
 
+if (toolkit_views) {
+  source_set("impl") {
     sources = [
       "plus_address_error_dialog.cc",
       "plus_address_menu_model.cc",
+      "views/plus_address_creation_controller_desktop.cc",
+      "views/plus_address_creation_dialog_delegate.cc",
+      "views/plus_address_creation_dialog_delegate.h",
     ]
     deps = [
+      ":plus_addresses",
+      "//build:branding_buildflags",
+      "//chrome/app/theme:theme_resources",
+      "//chrome/browser/plus_addresses",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/user_education",
+      "//components/autofill/content/browser",
       "//components/constrained_window",
+      "//components/feature_engagement/public",
+      "//components/plus_addresses",
+      "//components/plus_addresses:features",
       "//components/plus_addresses/resources/strings",
+      "//components/url_formatter",
+      "//components/vector_icons",
+      "//components/web_modal",
+      "//content/public/common",
+      "//ui/base",
+      "//ui/base/metadata",
+      "//ui/color",
+      "//ui/events",
+      "//ui/gfx",
+      "//ui/views",
     ]
+
+    if (is_chrome_branded) {
+      deps += [ "//components/plus_addresses/resources:vector_icons" ]
+    }
   }
 }
 

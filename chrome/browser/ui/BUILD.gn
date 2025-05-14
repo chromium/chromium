@@ -692,6 +692,8 @@ static_library("ui") {
     "//v8:v8_version",
   ]
 
+  # TODO(crbug.com/413572035): Move into build files of the actual
+  # modules depending on this. eg: autofill, user_education.
   if (is_chrome_branded) {
     deps += [ "//components/plus_addresses/resources:vector_icons" ]
   }
@@ -3674,9 +3676,6 @@ static_library("ui") {
   if (toolkit_views) {
     sources += [
       "bubble_anchor_util.h",
-      "plus_addresses/views/plus_address_creation_controller_desktop.cc",
-      "plus_addresses/views/plus_address_creation_dialog_delegate.cc",
-      "plus_addresses/views/plus_address_creation_dialog_delegate.h",
       "sharing_hub/screenshot/screenshot_captured_bubble_controller.cc",
       "sharing_hub/screenshot/screenshot_captured_bubble_controller.h",
       "sharing_hub/sharing_hub_bubble_controller.h",
@@ -5006,6 +5005,7 @@ static_library("ui") {
       "//chrome/browser/ui/commerce:impl",
       "//chrome/browser/ui/dialogs",
       "//chrome/browser/ui/dialogs:impl",
+      "//chrome/browser/ui/plus_addresses:impl",
       "//chrome/browser/ui/promos:utils",
       "//chrome/browser/ui/qrcode_generator",
       "//chrome/browser/ui/qrcode_generator:impl",
@@ -5046,7 +5046,6 @@ static_library("ui") {
       "//components/payments/content:utils",
       "//components/payments/core",
       "//components/payments/core:currency_formatter",
-      "//components/plus_addresses:prefs",
       "//components/power_bookmarks/common",
       "//components/power_bookmarks/core:core",
       "//components/power_bookmarks/storage",
@@ -5075,6 +5074,10 @@ static_library("ui") {
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/commerce:impl",
+
+      # TODO(crbug.com/413572035): Remove circular dependency once/if
+      # chrome_{typography,layout_provider} get modularized.
+      "//chrome/browser/ui/plus_addresses:impl",
     ]
 
     if (is_linux) {
