@@ -116,23 +116,15 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param;
     });
 
-// TODO(crbug.com/40931297): Re-enable this test on Mac.
-// TODO(crbug.com/410651366): Re-enable this test on Fuchsia.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_MultipleRedirectsRequestWithIframeRemoval \
-  DISABLED_MultipleRedirectsRequestWithIframeRemoval
-#else
-#define MAYBE_MultipleRedirectsRequestWithIframeRemoval \
-  MultipleRedirectsRequestWithIframeRemoval
-#endif
 // Tests navigator.sendBeacon() with a cross-origin & CORS-safelisted request
 // that causes a redirect chain of 4 URLs.
 //
 // The JS call happens in an iframe that is removed right after the sendBeacon()
 // call, so the chain of redirects & response handling must survive the iframe
 // unload.
+// TODO(crbug.com/412499381): Re-enable this test.
 IN_PROC_BROWSER_TEST_P(SendBeaconBrowserTest,
-                       MAYBE_MultipleRedirectsRequestWithIframeRemoval) {
+                       DISABLED_MultipleRedirectsRequestWithIframeRemoval) {
   const auto beacon_endpoint =
       base::StringPrintf("%s?id=%s", kKeepAliveEndpoint, kBeaconId);
   auto request_handler =
@@ -170,16 +162,10 @@ IN_PROC_BROWSER_TEST_P(SendBeaconBrowserTest,
 //
 // Without delaying iframe removal, renderer disconnection may happen in between
 // (2) and (3).
-// TODO(crbug.com/332142891): Re-enable this test
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_MultipleRedirectsRequestWithDelayedIframeRemoval \
-  DISABLED_MultipleRedirectsRequestWithDelayedIframeRemoval
-#else
-#define MAYBE_MultipleRedirectsRequestWithDelayedIframeRemoval \
-  MultipleRedirectsRequestWithDelayedIframeRemoval
-#endif
-IN_PROC_BROWSER_TEST_P(SendBeaconBrowserTest,
-                       MAYBE_MultipleRedirectsRequestWithDelayedIframeRemoval) {
+// TODO(crbug.com/412499381): Re-enable this test.
+IN_PROC_BROWSER_TEST_P(
+    SendBeaconBrowserTest,
+    DISABLED_MultipleRedirectsRequestWithDelayedIframeRemoval) {
   const auto beacon_endpoint =
       base::StringPrintf("%s?id=%s", kKeepAliveEndpoint, kBeaconId);
   auto request_handler =
@@ -202,17 +188,9 @@ IN_PROC_BROWSER_TEST_P(SendBeaconBrowserTest,
 // endpoint (/no-cors-server-redirect-307) which does not support CORS.
 // As navigator.sendBeacon() marks its request with `no-cors`, the redirect
 // should succeed.
-// TODO(crbug.com/40282448): Flaky on Android and Mac.
-// TODO(crbug.com/410651366): Flaky on Fuchsia.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_CrossOriginAndCORSSafelistedRedirectRequest \
-  DISABLED_CrossOriginAndCORSSafelistedRedirectRequest
-#else
-#define MAYBE_CrossOriginAndCORSSafelistedRedirectRequest \
-  CrossOriginAndCORSSafelistedRedirectRequest
-#endif
+// TODO(crbug.com/412499381): Re-enable this test.
 IN_PROC_BROWSER_TEST_P(SendBeaconBrowserTest,
-                       MAYBE_CrossOriginAndCORSSafelistedRedirectRequest) {
+                       DISABLED_CrossOriginAndCORSSafelistedRedirectRequest) {
   const auto beacon_endpoint =
       base::StringPrintf("%s?id=%s", kKeepAliveEndpoint, kBeaconId);
   auto request_handler =
