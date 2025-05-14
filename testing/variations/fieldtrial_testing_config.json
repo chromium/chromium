@@ -4998,6 +4998,24 @@
             ]
         }
     ],
+    "ChromnientNewFeedback": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "NewFeedbackEnabled",
+                    "enable_features": [
+                        "LensSearchSidePanelNewFeedback"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromnientPostLaunchTranslate": [
         {
             "platforms": [
