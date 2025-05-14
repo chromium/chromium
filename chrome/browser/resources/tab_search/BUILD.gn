@@ -17,6 +17,8 @@ build_webui("build") {
     "alert_indicators/tab_audio_rounded.svg",
     "alert_indicators/tab_media_recording.svg",
     "split_new_tab_page.html",
+    "split_view/images/empty_dark.svg",
+    "split_view/images/empty.svg",
     "tab_search.html",
   ]
 

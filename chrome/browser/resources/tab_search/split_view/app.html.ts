@@ -13,6 +13,15 @@ export function getHtml(this: SplitNewTabPageAppElement) {
       iron-icon="tab-search:close"
       @click="${this.onClose_}">
   </cr-icon-button>
+  ${
+      this.allInvisibleTabs_.length === 0 ? html`
+        <picture>
+          <source media="(prefers-color-scheme: dark)"
+              srcset="./split_view/images/empty_dark.svg">
+          <img id="product-logo" srcset="./split_view/images/empty.svg" alt="">
+        </picture>
+      ` :
+                                            html``}
   <div class="title">${this.title_}</div>
   ${
       this.allInvisibleTabs_.length === 0 ?
