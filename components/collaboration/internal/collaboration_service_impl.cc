@@ -18,6 +18,7 @@
 #include "components/data_sharing/public/group_data.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/collaboration_id.h"
@@ -99,6 +100,7 @@ void CollaborationServiceImpl::StartJoinFlow(
   const ParseUrlResult parse_result =
       data_sharing::DataSharingUtils::ParseDataSharingUrl(url);
 
+  // Note: Invalid url parsing will start a new join flow with empty GroupToken.
   GroupToken token;
   if (parse_result.has_value() && parse_result.value().IsValid()) {
     token = parse_result.value();
@@ -160,7 +162,7 @@ void CollaborationServiceImpl::CancelAllFlows(
     base::OnceCallback<void()> finish_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (join_controllers_.empty() && collaboration_controllers_.empty()) {
-    // Don't post task if we can already start the flow.
+    // Don't post task if we can already execute `finish_callback`.
     std::move(finish_callback).Run();
     return;
   }
@@ -172,8 +174,7 @@ void CollaborationServiceImpl::CancelAllFlows(
     controller->Cancel();
   }
 
-  // Post task to start new flow after all flows finishes.
-  // Note: Invalid url parsing will start a new join flow with empty GroupToken.
+  // Post task to execute `finish_callback` after all flows have been cancelled.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, std::move(finish_callback));
 }
@@ -229,6 +230,19 @@ void CollaborationServiceImpl::OnPrimaryAccountChanged(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   account_managed_status_finder_.reset();
   RefreshServiceStatus();
+  switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      // Cancel only if the previous account was not empty.
+      if (!event_details.GetPreviousState().primary_account.IsEmpty()) {
+        CancelAllFlows(base::DoNothing());
+      }
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      CancelAllFlows(base::DoNothing());
+      break;
+  }
 }
 
 void CollaborationServiceImpl::OnRefreshTokenUpdatedForAccount(
