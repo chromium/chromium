@@ -5933,6 +5933,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_LEAVE_TITLE" desc="Title of the confirmation to leave a shared tab group in the action sheet.">
         Leave group?
       </message>
+      <message name="IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_STOP_SHARING_MESSAGE" desc="Message of the confirmation to delete a shared tab group in the action sheet.">
+        Everyone will immediately lose access to the “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>" tab group, and all invitation links will be turned off.
+      </message>
       <message name="IDS_IOS_SHARE_BUTTON_LABEL" desc="Label of a button which will initiate a share flow. [iOS only]">
         Share…
       </message>
