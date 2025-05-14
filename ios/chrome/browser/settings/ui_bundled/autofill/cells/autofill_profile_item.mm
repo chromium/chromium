@@ -38,8 +38,8 @@
     cell.imageView.hidden = YES;
   }
 
-  cell.textLabel.text = self.title;
-  cell.detailTextLabel.text = self.detailText;
+  [cell setText:self.title];
+  [cell setDetailText:self.detailText];
   [cell setTrailingDetailText:_trailingDetailText];
   cell.localProfileIconShown = self.localProfileIconShown;
 }
@@ -47,7 +47,11 @@
 @end
 
 @implementation AutofillProfileCell {
-  // The cell trailing detail text
+  // The cell text.
+  UILabel* _textLabel;
+  // The cell detail text.
+  UILabel* _detailTextLabel;
+  // The cell trailing detail text.
   UILabel* _trailingDetailTextLabel;
 }
 
@@ -138,6 +142,24 @@
   return self;
 }
 
+- (void)setText:(NSString*)text {
+  _textLabel.text = text;
+
+  if (_textLabel.text.length == 0) {
+    _detailTextLabel.font =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    _detailTextLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  } else {
+    _detailTextLabel.font =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+    _detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  }
+}
+
+- (void)setDetailText:(NSString*)detailText {
+  _detailTextLabel.text = detailText;
+}
+
 - (void)setTrailingDetailText:(NSString*)trailingText {
   _trailingDetailTextLabel.text = trailingText;
   _trailingDetailTextLabel.hidden = (trailingText.length == 0);
@@ -147,8 +169,8 @@
 
 - (void)prepareForReuse {
   [super prepareForReuse];
-  self.textLabel.text = nil;
-  self.detailTextLabel.text = nil;
+  [self setText:nil];
+  [self setDetailText:nil];
   [self setTrailingDetailText:nil];
   self.localProfileIconShown = NO;
 }
@@ -156,10 +178,9 @@
 #pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
-  NSString* label = self.textLabel.text;
-  if (self.detailTextLabel.text) {
-    label =
-        [NSString stringWithFormat:@"%@, %@", label, self.detailTextLabel.text];
+  NSString* label = _textLabel.text;
+  if (_detailTextLabel.text.length > 0) {
+    label = [NSString stringWithFormat:@"%@, %@", label, _detailTextLabel.text];
   }
 
   if (_trailingDetailTextLabel.text.length > 0) {

@@ -49,13 +49,15 @@
 
 // The cell imageView.
 @property(nonatomic, readonly, strong) UIImageView* imageView;
-// The cell text.
-@property(nonatomic, readonly, strong) UILabel* textLabel;
-// The cell detail text.
-@property(nonatomic, readonly, strong) UILabel* detailTextLabel;
 
 // YES, if the cloud off icon representing local profile is shown.
 @property(nonatomic, assign) BOOL localProfileIconShown;
+
+// Sets the textLabel.
+- (void)setText:(NSString*)text;
+
+// Sets the detailTextLabel.
+- (void)setDetailText:(NSString*)detailText;
 
 // Sets the visibility of trailingDetailTextLabel.
 - (void)setTrailingDetailText:(NSString*)trailingText;
