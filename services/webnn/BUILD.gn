@@ -106,7 +106,7 @@ component("webnn_service") {
     libs = [ "dxgi.lib" ]
   }
 
-  if (is_mac) {
+  if (is_apple) {
     sources += [
       "coreml/buffer_content_coreml.h",
       "coreml/buffer_content_coreml.mm",
