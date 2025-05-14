@@ -1,4 +1,8 @@
-// META: script=resources/workaround-for-382640509.js
+// META: title=Language Model Prompt Monitor Callback Exception
+// META: script=resources/utils.js
+// META: timeout=long
+
+'use strict';
 
 // Test that the exception from the callback will be re-thrown by the session
 // creation, and the session won't be created.

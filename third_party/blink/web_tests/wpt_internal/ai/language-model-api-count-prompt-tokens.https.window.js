@@ -1,5 +1,8 @@
+// META: title=Language Model Measure Input Usage
 // META: script=resources/utils.js
-// META: script=resources/workaround-for-382640509.js
+// META: timeout=long
+
+'use strict';
 
 promise_test(async t => {
   await ensureLanguageModel();

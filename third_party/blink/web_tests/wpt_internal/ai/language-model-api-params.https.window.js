@@ -1,4 +1,8 @@
+// META: title=Language Model Params
 // META: script=resources/utils.js
+// META: timeout=long
+
+'use strict';
 
 promise_test(async () => {
   await ensureLanguageModel();

@@ -1,3 +1,9 @@
+// META: title=Language Model Availability
+// META: script=resources/utils.js
+// META: timeout=long
+
+'use strict';
+
 promise_test(async t => {
   assert_true(!!LanguageModel);
   assert_not_equals(

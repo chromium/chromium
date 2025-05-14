@@ -1,5 +1,9 @@
+// META: title=Language Model Abort
 // META: script=resources/utils.js
-// META: script=resources/workaround-for-382640509.js
+// META: timeout=long
+
+'use strict';
+
 promise_test(async t => {
   await testAbortPromise(t, signal => {
     return LanguageModel.create({

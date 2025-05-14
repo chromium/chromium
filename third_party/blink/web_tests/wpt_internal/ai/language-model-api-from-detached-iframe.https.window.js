@@ -1,4 +1,8 @@
-// META: script=resources/workaround-for-382640509.js
+// META: title=Language Model From Detached Iframe
+// META: script=resources/utils.js
+// META: timeout=long
+
+'use strict';
 
 promise_test(async t => {
   assert_true(!!LanguageModel);

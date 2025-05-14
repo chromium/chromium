@@ -1,6 +1,8 @@
+// META: title=Language Model Prompt Multimodal
 // META: script=resources/utils.js
-// META: script=resources/workaround-for-382640509.js
 // META: timeout=long
+
+'use strict';
 
 /*****************************************
  * Image tests
