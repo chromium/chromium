@@ -134,7 +134,7 @@
 <translation id="1509486075633541495">Acceder al sitio web</translation>
 <translation id="1509960214886564027">Es posible que las características de muchos sitios no funcionen de forma correcta</translation>
 <translation id="1513858653616922153">Borrar contraseña</translation>
-<translation id="1517166097004694782">Ocultar la opción "Continuar con esta pestaña"</translation>
+<translation id="1517166097004694782">Ocultar la opción "Continuar en esta pestaña"</translation>
 <translation id="1520027731907768768">Recibe alertas de reducción de precio para los productos que sigues.</translation>
 <translation id="1521366073263497277">Ve a la cuadrícula de pestañas.</translation>
 <translation id="1521774566618522728">Activo hoy</translation>
@@ -356,7 +356,7 @@ Tampoco pueden usar cookies para ver la actividad de navegación en diferentes s
 <translation id="2403129868389095715">No se puede entregar el paquete</translation>
 <translation id="2410754283952462441">Elegir una cuenta</translation>
 <translation id="2422174748424038845">Si lo borras, todos los usuarios perderán de inmediato el acceso al grupo de pestañas "<ph name="GROUP_NAME" />", y se borrará de todos los dispositivos.</translation>
-<translation id="2424805048070062787">Continúa con esta pestaña</translation>
+<translation id="2424805048070062787">Continúa en esta pestaña</translation>
 <translation id="2426805022920575512">Seleccionar otra cuenta</translation>
 <translation id="243275146591958220">Cancelar descarga</translation>
 <translation id="2434405374328098816">Ya guardaste una contraseña para "<ph name="USERNAME" />" en <ph name="WEBSITE" /></translation>
@@ -1127,7 +1127,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5740123193752401435">Buscar pestañas…</translation>
 <translation id="5744274077973758795">Se activaron las notificaciones de <ph name="FEATURE_NAME" /></translation>
 <translation id="574762237186762643">Eventos</translation>
-<translation id="5749158352074143502">Continuar con esta pestaña</translation>
+<translation id="5749158352074143502">Continuar en esta pestaña</translation>
 <translation id="5753021559215751319">Guardar contraseña</translation>
 <translation id="5756525336488841345">Ocultar la opción Favoritos</translation>
 <translation id="5758631781033351321">Aquí encontrarás tu lista de lectura</translation>

@@ -519,7 +519,7 @@
 <translation id="7759147511335618829">Управление/программирование MIDI</translation>
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7791543448312431591">Добавить</translation>
-<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Продолжите просмотр этой вкладки}one{Продолжите просмотр этих вкладок}few{Продолжите просмотр этих вкладок}many{Продолжите просмотр этих вкладок}other{Продолжите просмотр этих вкладок}}</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Продолжить просмотр}one{Продолжить просмотр}few{Продолжить просмотр}many{Продолжить просмотр}other{Продолжить просмотр}}</translation>
 <translation id="780301667611848630">Нет, спасибо</translation>
 <translation id="7804248752222191302">Сайт использует вашу камеру</translation>
 <translation id="7807060072011926525">Данные от Google</translation>
