@@ -217,6 +217,12 @@ found in the LICENSE file.
       <message name="IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT_SUBLABEL" translateable="false" desc="Sublabel describing the keyboard shortcut navigate between Chrome and Glic.">
         To leave or return to Glic, use keyboard shortcut
       </message>
+      <message name="IDS_SETTINGS_GLIC_CLOSED_CAPTIONING" translateable="false" desc="Name of the closed captioning setting.">
+        Closed Captioning
+      </message>
+      <message name="IDS_SETTINGS_GLIC_CLOSED_CAPTIONING_SUBLABEL" translateable="false" desc="Sublabel describing that this setting will enable closed captions for Glic.">
+        Show closed captions when using Glic
+      </message>
       <message name="IDS_SETTINGS_GLIC_DATA_LOCATION_TOGGLE" translateable="false" desc="Name of the 'enable location sharing' setting.">
         Location
       </message>
