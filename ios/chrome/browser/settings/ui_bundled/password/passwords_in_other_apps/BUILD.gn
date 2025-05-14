@@ -78,7 +78,7 @@ source_set("unit_tests") {
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/app:test_support",
     "//ios/web/public/test",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
 }
 

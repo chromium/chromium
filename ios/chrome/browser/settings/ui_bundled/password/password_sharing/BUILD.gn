@@ -63,7 +63,7 @@ source_set("password_sharing") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
-    "//ios/chrome/common:common",
+    "//ios/chrome/common",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/favicon:favicon_constants",
     "//ui/base",
@@ -205,7 +205,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/shared/ui/table_view:utils",
-    "//ios/chrome/browser/shared/ui/table_view/cells:cells",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
@@ -216,7 +216,7 @@ source_set("unit_tests") {
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/fakes",
     "//ios/web/public/test",
-    "//third_party/ocmock:ocmock",
+    "//third_party/ocmock",
     "//ui/base",
   ]
 }
