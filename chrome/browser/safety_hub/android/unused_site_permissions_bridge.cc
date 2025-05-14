@@ -118,10 +118,7 @@ void RestoreRevokedPermissionsReviewList(
   RevokedPermissionsService* service =
       RevokedPermissionsServiceFactory::GetForProfile(profile);
   CHECK(service);
-
-  for (const auto& permissions_data : permissions_data_list) {
-    service->StorePermissionInRevokedPermissionSetting(permissions_data);
-  }
+  service->RestoreDeletedRevokedPermissionsList(permissions_data_list);
 }
 
 std::vector<std::u16string> ContentSettingsTypeToString(

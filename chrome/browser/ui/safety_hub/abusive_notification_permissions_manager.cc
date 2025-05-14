@@ -134,6 +134,14 @@ void AbusiveNotificationPermissionsManager::
       ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS, {});
 }
 
+void AbusiveNotificationPermissionsManager::RestoreDeletedRevokedPermission(
+    const ContentSettingsPattern& primary_pattern,
+    content_settings::ContentSettingConstraints constraints) {
+  safety_hub_util::SetRevokedAbusiveNotificationPermission(
+      hcsm_.get(), primary_pattern.ToRepresentativeUrl(), /*is_ignored=*/false,
+      constraints);
+}
+
 const base::Clock* AbusiveNotificationPermissionsManager::GetClock() {
   if (clock_for_testing_) {
     return clock_for_testing_;

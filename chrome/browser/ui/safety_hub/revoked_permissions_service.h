@@ -199,9 +199,10 @@ class RevokedPermissionsService final : public SafetyHubService,
   // the user. Does not change permissions themselves.
   void ClearRevokedPermissionsList();
 
-  // Stores revoked permissions data on HCSM.
-  void StorePermissionInRevokedPermissionSetting(
-      const PermissionsData& permission_data);
+  // Restores the list of revoked permissions after it was deleted after user
+  // has accepted the revocation (via `ClearRevokedPermissionsList()`).
+  void RestoreDeletedRevokedPermissionsList(
+      const std::vector<PermissionsData>& permissions_data_list);
 
   // Returns the list of all permissions that have been revoked.
   std::unique_ptr<RevokedPermissionsResult> GetRevokedPermissions();
@@ -272,7 +273,7 @@ class RevokedPermissionsService final : public SafetyHubService,
   void RevokeUnusedPermissions();
 
   // Stores revoked permissions data on HCSM.
-  void StorePermissionInRevokedPermissionSetting(
+  void StorePermissionInUnusedSitePermissionSetting(
       const std::set<ContentSettingsType>& permissions,
       const base::Value::Dict& chooser_permissions_data,
       const std::optional<content_settings::ContentSettingConstraints>

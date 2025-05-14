@@ -71,6 +71,13 @@ class AbusiveNotificationPermissionsManager {
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern);
 
+  // Restores REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS entry for the
+  // primary_pattern after it was deleted after user
+  // has accepted the revocation (via `ClearRevokedPermissionsList()`).
+  void RestoreDeletedRevokedPermission(
+      const ContentSettingsPattern& primary_pattern,
+      content_settings::ContentSettingConstraints constraints);
+
   // If there's a clock for testing, return that. Otherwise, return an instance
   // of a default clock.
   const base::Clock* GetClock();

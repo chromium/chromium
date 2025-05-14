@@ -46,6 +46,8 @@ class NotificationsEngagementService : public KeyedService {
   static std::map<std::pair<ContentSettingsPattern, ContentSettingsPattern>,
                   int>
   GetNotificationCountMapPerPatternPair(const HostContentSettingsMap* hcsm);
+  static int GetDailyAverageNotificationCount(
+      const base::Value::Dict& engagement);
 
   static std::string GetBucketLabel(base::Time time);
   static std::optional<base::Time> ParsePeriodBeginFromBucketLabel(
@@ -58,8 +60,6 @@ class NotificationsEngagementService : public KeyedService {
 
   static int GetDailyAverageNotificationCount(
       const ContentSettingPatternSource& setting);
-  static int GetDailyAverageNotificationCount(
-      const base::Value::Dict& engagement);
 
   raw_ptr<PrefService> pref_service_;
   raw_ptr<content::BrowserContext> browser_context_;

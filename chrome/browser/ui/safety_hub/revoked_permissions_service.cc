@@ -168,6 +168,30 @@ content_settings::ContentSettingConstraints GetConstraintFromInfo(
   return constraint;
 }
 
+bool IsUnusedPermissionRevocation(PermissionsRevocationType revocation_type) {
+  return revocation_type == PermissionsRevocationType::kUnusedPermissions ||
+         revocation_type == PermissionsRevocationType::
+                                kUnusedPermissionsAndAbusiveNotifications ||
+         revocation_type == PermissionsRevocationType::
+                                kUnusedPermissionsAndDisruptiveNotifications;
+}
+
+bool IsAbusiveNotificationPermissionRevocation(
+    PermissionsRevocationType revocation_type) {
+  return revocation_type ==
+             PermissionsRevocationType::kAbusiveNotificationPermissions ||
+         revocation_type == PermissionsRevocationType::
+                                kUnusedPermissionsAndAbusiveNotifications;
+}
+
+bool IsDisruptiveNotificationPermissionRevocation(
+    PermissionsRevocationType revocation_type) {
+  return revocation_type ==
+             PermissionsRevocationType::kDisruptiveNotificationPermissions ||
+         revocation_type == PermissionsRevocationType::
+                                kUnusedPermissionsAndDisruptiveNotifications;
+}
+
 }  // namespace
 
 // static
@@ -667,7 +691,7 @@ void RevokedPermissionsService::UndoRegrantPermissionsForOrigin(
   // revoked settings if necessary.
   is_unused_site_revocation_running = false;
 
-  StorePermissionInRevokedPermissionSetting(
+  StorePermissionInUnusedSitePermissionSetting(
       unused_site_permission_types, permissions_data.chooser_permissions_data,
       permissions_data.constraints.Clone(), permissions_data.primary_pattern,
       ContentSettingsPattern::Wildcard());
@@ -1045,7 +1069,7 @@ void RevokedPermissionsService::RevokeUnusedPermissions() {
 
     // Store revoked permissions on HCSM.
     if (!revoked_permissions.empty()) {
-      StorePermissionInRevokedPermissionSetting(
+      StorePermissionInUnusedSitePermissionSetting(
           revoked_permissions, chooser_permissions_data, std::nullopt,
           primary_pattern, secondary_pattern);
     }
@@ -1071,18 +1095,36 @@ void RevokedPermissionsService::RevokeUnusedPermissions() {
   is_unused_site_revocation_running = false;
 }
 
-void RevokedPermissionsService::StorePermissionInRevokedPermissionSetting(
-    const PermissionsData& permissions_data) {
-  // The |secondary_pattern| for
-  // |ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS| is always wildcard.
-  StorePermissionInRevokedPermissionSetting(
-      permissions_data.permission_types,
-      permissions_data.chooser_permissions_data,
-      permissions_data.constraints.Clone(), permissions_data.primary_pattern,
-      ContentSettingsPattern::Wildcard());
+void RevokedPermissionsService::RestoreDeletedRevokedPermissionsList(
+    const std::vector<PermissionsData>& permissions_data_list) {
+  for (const auto& permissions_data : permissions_data_list) {
+    if (IsUnusedPermissionRevocation(permissions_data.revocation_type)) {
+      StorePermissionInUnusedSitePermissionSetting(
+          permissions_data.permission_types,
+          permissions_data.chooser_permissions_data,
+          permissions_data.constraints.Clone(),
+          permissions_data.primary_pattern, ContentSettingsPattern::Wildcard());
+    }
+
+    if (IsAbusiveNotificationAutoRevocationEnabled() &&
+        IsAbusiveNotificationPermissionRevocation(
+            permissions_data.revocation_type)) {
+      abusive_notification_manager_->RestoreDeletedRevokedPermission(
+          permissions_data.primary_pattern,
+          permissions_data.constraints.Clone());
+    }
+
+    if (disruptive_notification_manager_ &&
+        IsDisruptiveNotificationPermissionRevocation(
+            permissions_data.revocation_type)) {
+      disruptive_notification_manager_->RestoreDeletedRevokedPermission(
+          permissions_data.primary_pattern,
+          permissions_data.constraints.Clone());
+    }
+  }
 }
 
-void RevokedPermissionsService::StorePermissionInRevokedPermissionSetting(
+void RevokedPermissionsService::StorePermissionInUnusedSitePermissionSetting(
     const std::set<ContentSettingsType>& permissions,
     const base::Value::Dict& chooser_permissions_data,
     const std::optional<content_settings::ContentSettingConstraints> constraint,

@@ -483,6 +483,30 @@ void DisruptiveNotificationPermissionsManager::
       ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS, {});
 }
 
+void DisruptiveNotificationPermissionsManager::RestoreDeletedRevokedPermission(
+    const ContentSettingsPattern& primary_pattern,
+    content_settings::ContentSettingConstraints constraints) {
+  GURL url = primary_pattern.ToRepresentativeUrl();
+  base::Value engagement_as_value = hcsm_->GetWebsiteSetting(
+      url, GURL(), ContentSettingsType::NOTIFICATION_INTERACTIONS);
+  if (engagement_as_value.is_none() || !engagement_as_value.is_dict()) {
+    return;
+  }
+
+  ContentSettingHelper(*hcsm_).PersistRevocationEntry(
+      url,
+      RevocationEntry{
+          .revocation_state = RevocationState::kRevoked,
+          .site_engagement = site_engagement_service_->GetScore(url),
+          .daily_notification_count = permissions::
+              NotificationsEngagementService::GetDailyAverageNotificationCount(
+                  engagement_as_value.GetDict()),
+          .timestamp = clock_->Now(),
+          .created_at = constraints.expiration() - constraints.lifetime(),
+          .lifetime = constraints.lifetime(),
+      });
+}
+
 bool DisruptiveNotificationPermissionsManager::IsNotificationDisruptive(
     const GURL& url,
     int daily_notification_count) {

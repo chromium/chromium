@@ -810,6 +810,28 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
+       RestoreDeletedRevokedPermission) {
+  GURL url("https://www.example1.com");
+
+  SetDailyAverageNotificationCount(url, 3);
+  site_engagement_service()->ResetBaseScoreForURL(url, 1.0);
+
+  content_settings::ContentSettingConstraints constraints;
+  manager()->RestoreDeletedRevokedPermission(
+      ContentSettingsPattern::FromURLNoWildcard(url), constraints.Clone());
+
+  std::optional<RevocationEntry> revocation_entry =
+      ContentSettingHelper(*hcsm()).GetRevocationEntry(url);
+
+  EXPECT_THAT(revocation_entry,
+              Optional(Field(&RevocationEntry::has_reported_proposal, false)));
+  EXPECT_THAT(revocation_entry,
+              Optional(Field(&RevocationEntry::site_engagement, 1.0)));
+  EXPECT_THAT(revocation_entry,
+              Optional(Field(&RevocationEntry::daily_notification_count, 3)));
+}
+
+TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
        UpdateNotificationContentSettingsChanged) {
   GURL url("https://chrome.test/");
   ContentSettingHelper(*hcsm()).PersistRevocationEntry(

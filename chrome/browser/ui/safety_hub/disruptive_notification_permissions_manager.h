@@ -146,6 +146,14 @@ class DisruptiveNotificationPermissionsManager
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern);
 
+  // Restores REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS entry for the
+  // primary_pattern after it was deleted after user has accepted the revocation
+  // (via `ClearRevokedPermissionsList()`). Only restores the value if there is
+  // a matching notification engagement entry.
+  void RestoreDeletedRevokedPermission(
+      const ContentSettingsPattern& primary_pattern,
+      content_settings::ContentSettingConstraints constraints);
+
   // If the URL is in the revoke or proposed revoke list, report a false
   // positive and record metrics.
   static void MaybeReportFalsePositive(Profile* profile,

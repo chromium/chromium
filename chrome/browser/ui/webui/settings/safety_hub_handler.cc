@@ -68,6 +68,8 @@ using safety_hub::SafetyHubCardState;
 
 namespace {
 
+const char kRevocationTypeKey[] = "revocation_type";
+
 // Get values from |UnusedSitePermission| object in
 // safety_hub_browser_proxy.ts.
 PermissionsData GetUnusedSitePermissionsFromDict(
@@ -114,6 +116,9 @@ PermissionsData GetUnusedSitePermissionsFromDict(
   permissions_data.constraints =
       content_settings::ContentSettingConstraints(expiration - lifetime);
   permissions_data.constraints.set_lifetime(lifetime);
+
+  permissions_data.revocation_type = static_cast<PermissionsRevocationType>(
+      unused_site_permissions.FindInt(kRevocationTypeKey).value_or(0));
 
   return permissions_data;
 }
@@ -239,42 +244,13 @@ void SafetyHubHandler::HandleUndoAcknowledgeRevokedUnusedSitePermissionsList(
       RevokedPermissionsServiceFactory::GetForProfile(profile_);
   CHECK(service);
 
+  std::vector<PermissionsData> permissions_data_list;
   for (const auto& unused_site_permissions_js : unused_site_permissions_list) {
     CHECK(unused_site_permissions_js.is_dict());
-    PermissionsData permissions_data =
-        GetUnusedSitePermissionsFromDict(unused_site_permissions_js.GetDict());
-    if (base::FeatureList::IsEnabled(
-            safe_browsing::kSafetyHubAbusiveNotificationRevocation)) {
-      HostContentSettingsMap* map =
-          HostContentSettingsMapFactory::GetForProfile(profile_);
-      // This pattern is origin-scoped, so this conversion is safe.
-      GURL permission_url =
-          permissions_data.primary_pattern.ToRepresentativeUrl();
-      DCHECK(permission_url.is_valid());
-      // If the permission_types includes `NOTIFICATIONS`, then the revocation
-      // is for a site that should have a
-      // `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` setting.
-      if (permissions_data.permission_types.contains(
-              ContentSettingsType::NOTIFICATIONS)) {
-        safety_hub_util::SetRevokedAbusiveNotificationPermission(
-            map, permission_url, /*is_ignored=*/false,
-            permissions_data.constraints);
-        // Remove `NOTIFICATIONS` from permission type list for handling unused
-        // permission revocation below.
-        permissions_data.permission_types.erase(
-            ContentSettingsType::NOTIFICATIONS);
-      }
-
-      // If the permission_types include any permission type that is not
-      // `NOTIFICATIONS`, then the revocation is for an unused site that should
-      // have a `REVOKED_UNUSED_SITE_PERMISSIONS` setting.
-      if (!permissions_data.permission_types.empty()) {
-        service->StorePermissionInRevokedPermissionSetting(permissions_data);
-      }
-    } else {
-      service->StorePermissionInRevokedPermissionSetting(permissions_data);
-    }
+    permissions_data_list.push_back(
+        GetUnusedSitePermissionsFromDict(unused_site_permissions_js.GetDict()));
   }
+  service->RestoreDeletedRevokedPermissionsList(permissions_data_list);
 
   SendUnusedSitePermissionsReviewList();
 }
@@ -324,6 +300,9 @@ base::Value::List SafetyHubHandler::PopulateUnusedSitePermissionsData() {
     revoked_permission_value.Set(
         safety_hub::kSafetyHubChooserPermissionsData,
         base::Value(permissions_data.chooser_permissions_data.Clone()));
+
+    revoked_permission_value.Set(
+        kRevocationTypeKey, static_cast<int>(permissions_data.revocation_type));
 
     result.Append(std::move(revoked_permission_value));
   }

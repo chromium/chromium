@@ -372,6 +372,27 @@ TEST_F(AbusiveNotificationPermissionsManagerTest, ClearRevokedPermissionsList) {
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,
+       RestoreDeletedRevokedPermissionsList) {
+  auto manager =
+      AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
+  RunUntilSafeBrowsingChecksComplete(&manager);
+
+  content_settings::ContentSettingConstraints constraints;
+  manager.RestoreDeletedRevokedPermission(
+      ContentSettingsPattern::FromURLNoWildcard(GURL(url1)),
+      constraints.Clone());
+  manager.RestoreDeletedRevokedPermission(
+      ContentSettingsPattern::FromURLNoWildcard(GURL(url2)),
+      constraints.Clone());
+
+  ContentSettingsForOneType content_settings =
+      safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm());
+  EXPECT_EQ(content_settings.size(), 2u);
+  EXPECT_TRUE(IsUrlInContentSettings(content_settings, url1));
+  EXPECT_TRUE(IsUrlInContentSettings(content_settings, url2));
+}
+
+TEST_F(AbusiveNotificationPermissionsManagerTest,
        SetRevokedAbusiveNotificationPermission) {
   AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW);
   AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW);

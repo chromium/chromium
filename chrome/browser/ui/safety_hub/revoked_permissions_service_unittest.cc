@@ -23,6 +23,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h"
 #include "chrome/browser/ui/safety_hub/mock_safe_browsing_database_manager.h"
@@ -1278,6 +1279,58 @@ TEST_P(RevokedPermissionsServiceTest, ClearRevokedPermissionsList) {
   EXPECT_EQ(0U, GetRevokedUnusedPermissions(hcsm()).size());
   ExpectRevokedAbusiveNotificationPermissionSize(0U);
   ExpectRevokedDisruptiveNotificationPermissionSize(0U);
+}
+
+TEST_P(RevokedPermissionsServiceTest, RestoreClearedRevokedPermissionsList) {
+  if (ShouldSetupAbusiveNotificationSites()) {
+    SetupAbusiveNotificationSite(url2, ContentSetting::CONTENT_SETTING_ASK);
+    SetupAbusiveNotificationSite(url3, ContentSetting::CONTENT_SETTING_ASK);
+    SetupRevokedAbusiveNotificationSite(url2);
+    SetupRevokedAbusiveNotificationSite(url3);
+    ExpectRevokedAbusiveNotificationPermissionSize(2U);
+  }
+  if (ShouldSetupUnusedSites()) {
+    SetupRevokedUnusedPermissionSite(url1);
+    SetupRevokedUnusedPermissionSite(url2);
+    EXPECT_EQ(2U, GetRevokedUnusedPermissions(hcsm()).size());
+  }
+  if (ShouldSetupDisruptiveSites()) {
+    auto* notifications_engagement_service =
+        NotificationsEngagementServiceFactory::GetForProfile(profile());
+    notifications_engagement_service->RecordNotificationDisplayed(GURL(url4),
+                                                                  21);
+    SetupRevokedDisruptiveNotificationSite(url4);
+  }
+
+  auto new_service = std::make_unique<RevokedPermissionsService>(
+      profile(), profile()->GetPrefs());
+  auto opt_result = new_service->GetCachedResult();
+  EXPECT_TRUE(opt_result.has_value());
+  auto* result =
+      static_cast<RevokedPermissionsService::RevokedPermissionsResult*>(
+          opt_result.value().get());
+  auto revoked_permissions_list = result->GetRevokedPermissions();
+  std::vector<PermissionsData> revoked_permissions_vector{
+      std::begin(revoked_permissions_list), std::end(revoked_permissions_list)};
+
+  // Revoked permissions list should be empty after clearing the revoked
+  // permissions list.
+  service()->ClearRevokedPermissionsList();
+  EXPECT_EQ(0U, GetRevokedUnusedPermissions(hcsm()).size());
+  ExpectRevokedAbusiveNotificationPermissionSize(0U);
+  ExpectRevokedDisruptiveNotificationPermissionSize(0U);
+
+  service()->RestoreDeletedRevokedPermissionsList(revoked_permissions_vector);
+
+  if (ShouldSetupUnusedSites()) {
+    EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 2u);
+  }
+  if (ShouldSetupAbusiveNotificationSites()) {
+    ExpectRevokedAbusiveNotificationPermissionSize(2U);
+  }
+  if (ShouldSetupDisruptiveSites()) {
+    ExpectRevokedDisruptiveNotificationPermissionSize(1U);
+  }
 }
 
 TEST_P(RevokedPermissionsServiceTest, RecordRegrantMetricForAllowAgain) {
