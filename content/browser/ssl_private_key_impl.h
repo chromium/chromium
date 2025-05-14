@@ -31,9 +31,9 @@ class SSLPrivateKeyImpl : public network::mojom::SSLPrivateKey {
             network::mojom::SSLPrivateKey::SignCallback callback) override;
 
  private:
-  void Callback(network::mojom::SSLPrivateKey::SignCallback callback,
-                net::Error net_error,
-                const std::vector<uint8_t>& signature);
+  static void Callback(network::mojom::SSLPrivateKey::SignCallback callback,
+                       net::Error net_error,
+                       const std::vector<uint8_t>& signature);
 
   scoped_refptr<net::SSLPrivateKey> ssl_private_key_;
 };
