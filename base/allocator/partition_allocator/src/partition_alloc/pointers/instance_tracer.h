@@ -5,33 +5,25 @@
 #ifndef PARTITION_ALLOC_POINTERS_INSTANCE_TRACER_H_
 #define PARTITION_ALLOC_POINTERS_INSTANCE_TRACER_H_
 
+#include <stdint.h>
+
+#include "partition_alloc/buildflags.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
 #include <array>
 #include <atomic>
 #include <cstdint>
 #include <utility>
 #include <vector>
 
-#include "partition_alloc/buildflags.h"
-#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_base/cxx20_is_constant_evaluated.h"
+#endif
 
 namespace base::internal {
 
-#if !PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
-
-// When the buildflag is disabled, use a minimal no-state implementation so
-// sizeof(raw_ptr<T>) == sizeof(T*).
-class InstanceTracer {
- public:
-  constexpr uint64_t owner_id() const { return 0; }
-
-  constexpr static void Trace([[maybe_unused]] uint64_t owner_id,
-                              [[maybe_unused]] uintptr_t address) {}
-  constexpr static void Untrace([[maybe_unused]] uint64_t owner_id) {}
-};
-
-#else
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
 
 class PA_TRIVIAL_ABI InstanceTracer {
  public:
@@ -93,7 +85,20 @@ class PA_TRIVIAL_ABI InstanceTracer {
   uint64_t owner_id_ = 0;
 };
 
-#endif
+#else
+
+// When the buildflag is disabled, use a minimal no-state implementation so
+// sizeof(raw_ptr<T>) == sizeof(T*).
+class InstanceTracer {
+ public:
+  constexpr uint64_t owner_id() const { return 0; }
+
+  constexpr static void Trace([[maybe_unused]] uint64_t owner_id,
+                              [[maybe_unused]] uintptr_t address) {}
+  constexpr static void Untrace([[maybe_unused]] uint64_t owner_id) {}
+};
+
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
 
 }  // namespace base::internal
 
