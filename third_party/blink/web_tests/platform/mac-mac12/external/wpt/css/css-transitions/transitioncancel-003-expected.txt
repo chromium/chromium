@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Mid-transition transition changes affect subsequent transitions
+  assert_not_equals: Width should not reach 100px yet got disallowed value "100px"
+Harness: the test ran to completion.
+
