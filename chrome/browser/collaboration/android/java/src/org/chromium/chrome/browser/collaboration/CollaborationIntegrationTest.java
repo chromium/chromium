@@ -208,7 +208,11 @@ public class CollaborationIntegrationTest {
         mActivityTestRule.loadUrlInNewTab(mUrl);
 
         final AtomicBoolean joinCalled = new AtomicBoolean();
-        mDataSharingUIDelegate.setShowJoinFlowRunnable(() -> joinCalled.set(true));
+        Callback<Boolean> callback =
+                (success) -> {
+                    joinCalled.set(true);
+                };
+        mDataSharingUIDelegate.setShowJoinFlowCallback(callback);
         setFakePreviewData();
 
         // Verify that the fullscreen sign-in promo is shown and accept.

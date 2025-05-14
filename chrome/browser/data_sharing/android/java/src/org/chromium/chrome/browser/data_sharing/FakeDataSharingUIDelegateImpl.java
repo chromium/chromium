@@ -20,10 +20,12 @@ import org.chromium.url.GURL;
 @NullMarked
 public class FakeDataSharingUIDelegateImpl implements DataSharingUIDelegate {
 
-    private @Nullable Runnable mShowJoinFlowRunnable;
     private @Nullable Callback<Boolean> mShowCreateFlowCallback;
-    private @Nullable Runnable mShowManageFlowRunnable;
+    private @Nullable Callback<Boolean> mShowJoinFlowCallback;
+    private @Nullable Callback<Boolean> mShowManageFlowCallback;
     private @Nullable DataSharingCreateUiConfig mCreateUiConfig;
+    private @Nullable DataSharingJoinUiConfig mJoinUiConfig;
+    private @Nullable DataSharingManageUiConfig mManageUiConfig;
 
     public FakeDataSharingUIDelegateImpl() {}
 
@@ -45,13 +47,21 @@ public class FakeDataSharingUIDelegateImpl implements DataSharingUIDelegate {
 
     @Override
     public String showJoinFlow(DataSharingJoinUiConfig joinUiConfig) {
-        if (mShowJoinFlowRunnable != null) mShowJoinFlowRunnable.run();
+        assert this.mJoinUiConfig == null;
+        this.mJoinUiConfig = joinUiConfig;
+        if (mShowJoinFlowCallback != null) {
+            mShowJoinFlowCallback.onResult(true);
+        }
         return "";
     }
 
     @Override
     public String showManageFlow(DataSharingManageUiConfig manageUiConfig) {
-        if (mShowManageFlowRunnable != null) mShowManageFlowRunnable.run();
+        assert this.mManageUiConfig == null;
+        this.mManageUiConfig = manageUiConfig;
+        if (mShowManageFlowCallback != null) {
+            mShowManageFlowCallback.onResult(true);
+        }
         return "";
     }
 
@@ -62,19 +72,19 @@ public class FakeDataSharingUIDelegateImpl implements DataSharingUIDelegate {
     @Override
     public void destroyFlow(String sessionId) {}
 
-    /* Set a runnable to be called when showJoinFlow() is called. */
-    public void setShowJoinFlowRunnable(Runnable runnable) {
-        mShowJoinFlowRunnable = runnable;
-    }
-
     /* Set a callback to be called when showCreateFlow() is called. */
     public void setShowCreateFlowCallback(Callback<Boolean> callback) {
         mShowCreateFlowCallback = callback;
     }
 
-    /* Set a runnable to be called when showManageFlow() is called. */
-    public void setShowManageFlowRunnable(Runnable runnable) {
-        mShowManageFlowRunnable = runnable;
+    /* Set a callback to be called when showJoinFlow() is called. */
+    public void setShowJoinFlowCallback(Callback<Boolean> callback) {
+        mShowJoinFlowCallback = callback;
+    }
+
+    /* Set a callback to be called when showManageFlow() is called. */
+    public void setShowManageFlowCallback(Callback<Boolean> callback) {
+        mShowManageFlowCallback = callback;
     }
 
     /* Creates group data and calls onGroupCreatedWithWait when showCreateFlow() is called. */
