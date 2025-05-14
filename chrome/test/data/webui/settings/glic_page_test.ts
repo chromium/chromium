@@ -4,6 +4,7 @@
 
 import 'chrome://settings/settings.js';
 
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {AiPageActions, type CrCollapseElement} from 'chrome://settings/lazy_load.js';
 import type {SettingsGlicPageElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, GlicBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, resetRouterForTesting, Router, routes, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
@@ -14,9 +15,6 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestGlicBrowserProxy} from './test_glic_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-
-const POLICY_ENABLED_VALUE = 0;
-const POLICY_DISABLED_VALUE = 1;
 
 // Note - if adding tests related to the shortcut control, use
 // glic_page_focus_test.ts instead. That test suite is an interactive_ui_test
@@ -46,7 +44,6 @@ suite('GlicPage', function() {
     Router.getInstance().navigateTo(routes.GEMINI);
     document.body.appendChild(page);
 
-    page.setPrefValue(PrefName.SETTINGS_POLICY, POLICY_ENABLED_VALUE);
     await flushTasks();
     disableAnimationForCrCollapseElements();
   }
@@ -80,11 +77,19 @@ suite('GlicPage', function() {
     launcherToggle.click();
   }
 
+  function setDisallowedByAdminAndSimulateUpdate(disallowed: boolean) {
+    glicBrowserProxy.setDisallowedByAdmin(disallowed);
+    // Simulate the update we would get if the browser detected a change.
+    webUIListenerCallback('glic-disallowed-by-admin-changed', disallowed);
+    return flushTasks();
+  }
+
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
     loadTimeData.overrideValues({
       showAdvancedFeaturesMainControl: true,
       showGlicSettings: true,
+      glicDisallowedByAdmin: false,
     });
     resetRouterForTesting();
     return CrSettingsPrefs.initialized;
@@ -318,8 +323,7 @@ suite('GlicPage', function() {
           'settings-toggle-button[checked]:not([disabled])');
       assertEquals(4, toggles.length);
 
-      page.setPrefValue(PrefName.SETTINGS_POLICY, POLICY_DISABLED_VALUE);
-      await flushTasks();
+      await setDisallowedByAdminAndSimulateUpdate(true);
 
       // Now that the policy is disabled, the shortcut edit, info card expand,
       // and activity button should be removed. Toggles should all show "off"
@@ -334,8 +338,7 @@ suite('GlicPage', function() {
       assertEquals(4, toggles.length);
 
       // Re-enable the policy, the page should go back to the initial state.
-      page.setPrefValue(PrefName.SETTINGS_POLICY, POLICY_ENABLED_VALUE);
-      await flushTasks();
+      await setDisallowedByAdminAndSimulateUpdate(false);
 
       assertTrue(isVisible($(shortcutInputSelector)));
       assertTrue(!!$('activityButton'));
@@ -474,6 +477,7 @@ suite('GlicPage', function() {
   suite('LearnMoreEnabled', () => {
     test('keyboardShortcutLearnMoreShown', async () => {
       page.setPrefValue(PrefName.LAUNCHER_ENABLED, true);
+      await setDisallowedByAdminAndSimulateUpdate(false);
       assertTrue($<SettingsToggleButtonElement>('launcherToggle')!.checked);
 
       const learnMoreElement = $<HTMLAnchorElement>('shortcutsLearnMoreLabel');

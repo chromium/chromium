@@ -13,6 +13,9 @@
 #include "base/values.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/widget/local_hotkey_manager.h"
 #include "chrome/browser/user_education/user_education_service.h"
@@ -53,6 +56,28 @@ void GlicHandler::RegisterMessages() {
       "setShortcutSuspensionState",
       base::BindRepeating(&GlicHandler::HandleSetShortcutSuspensionState,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getGlicDisallowedByAdmin",
+      base::BindRepeating(&GlicHandler::HandleGetGlicDisallowedByAdmin,
+                          base::Unretained(this)));
+}
+
+void GlicHandler::OnJavascriptAllowed() {
+  Profile* profile = Profile::FromWebUI(web_ui());
+  if (auto* service =
+          glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile)) {
+    // Unretained is safe here since our subscription will expire upon our
+    // destruction.
+    glic_enabling_subscription_ =
+        std::make_unique<base::CallbackListSubscription>(
+            service->enabling().RegisterAllowedChanged(base::BindRepeating(
+                &GlicHandler::FireOnGlicDisallowedByAdminChanged,
+                base::Unretained(this))));
+  }
+}
+
+void GlicHandler::OnJavascriptDisallowed() {
+  glic_enabling_subscription_.reset();
 }
 
 void GlicHandler::SetWebUIForTesting(content::WebUI* web_ui) {
@@ -127,4 +152,26 @@ void GlicHandler::HandleSetShortcutSuspensionState(
     global_accelerator_listener->SetShortcutHandlingSuspended(should_suspend);
   }
 }
+
+void GlicHandler::HandleGetGlicDisallowedByAdmin(
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+  AllowJavascript();
+
+  Profile* profile = Profile::FromWebUI(web_ui());
+  const bool disallowed =
+      glic::GlicEnabling::EnablementForProfile(profile).DisallowedByAdmin();
+
+  ResolveJavascriptCallback(callback_id, base::Value(disallowed));
+}
+
+void GlicHandler::FireOnGlicDisallowedByAdminChanged() {
+  Profile* profile = Profile::FromWebUI(web_ui());
+  const bool disallowed =
+      glic::GlicEnabling::EnablementForProfile(profile).DisallowedByAdmin();
+  FireWebUIListener("glic-disallowed-by-admin-changed",
+                    base::Value(disallowed));
+}
+
 }  // namespace settings

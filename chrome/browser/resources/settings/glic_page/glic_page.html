@@ -58,9 +58,7 @@
   <template is="dom-if" route-path="/ai/gemini">
     <settings-subpage page-title="$i18n{glicPageTitle}"
         associated-control="[[$$('#glicLinkRow')]]">
-      <template is="dom-if"
-          if="[[!isEnabledByPolicy_(prefs.browser.gemini_settings.value)]]"
-          restamp>
+      <template is="dom-if" if="[[disallowedByAdmin_]]" restamp>
         <div class="section">
           <cr-icon icon="cr:domain"></cr-icon>
           $i18n{glicPolicyDisabledMessage}
@@ -69,9 +67,7 @@
       <div class="section">
         <h2 class="cr-title-text">$i18n{glicPreferencesSection}</h2>
         <!-- Glic Policy Disabled - show disabled controls -->
-        <template is="dom-if"
-            if="[[!isEnabledByPolicy_(prefs.browser.gemini_settings.value)]]"
-            restamp>
+        <template is="dom-if" if="[[disallowedByAdmin_]]" restamp>
           <settings-toggle-button id="launcherToggle" pref="[[fakePref_]]"
               disabled label="$i18n{glicOsWidgetToggle}">
           </settings-toggle-button>
@@ -80,7 +76,7 @@
         <!-- Glic Policy Enabled -->
         <template is="dom-if"
             on-dom-change="onEnabledTemplateDomChange_"
-            if="[[isEnabledByPolicy_(prefs.browser.gemini_settings.value)]]"
+            if="[[!disallowedByAdmin_]]"
             restamp>
           <settings-toggle-button
               id="launcherToggle" pref="{{prefs.glic.launcher_enabled}}"
@@ -148,9 +144,7 @@
       <div class="section">
         <h2 class="cr-title-text">$i18n{glicDataSection}</h2>
         <!-- Glic Policy Disabled - show disabled controls -->
-        <template is="dom-if"
-            if="[[!isEnabledByPolicy_(prefs.browser.gemini_settings.value)]]"
-            restamp>
+        <template is="dom-if" if="[[disallowedByAdmin_]]" restamp>
           <settings-toggle-button
               id="geolocationToggle" pref="[[fakePref_]]" disabled
               label="$i18n{glicLocationToggle}"
@@ -169,9 +163,7 @@
         </template>
 
         <!-- Glic Policy Enabled -->
-        <template is="dom-if"
-            if="[[isEnabledByPolicy_(prefs.browser.gemini_settings.value)]]"
-            restamp>
+        <template is="dom-if" if="[[!disallowedByAdmin_]]" restamp>
           <settings-toggle-button
               id="geolocationToggle" pref="{{prefs.glic.geolocation_enabled}}"
               label="$i18n{glicLocationToggle}"
