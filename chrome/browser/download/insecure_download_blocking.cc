@@ -412,6 +412,10 @@ void PrintConsoleMessage(const InsecureDownloadData& data) {
     return;
   }
 
+  // The user can right-click and save a HTTP link from a chrome:// WebUI
+  // (e.g. NTP or history). This is arguably a valid use case unless we
+  // completely ban users from visiting HTTP sites, so don't warn. Otherwise,
+  // an error will be generated and uploaded to the crash server.
   if (data.is_user_initiated_on_webui_) {
     return;
   }
