@@ -6,8 +6,12 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 #import "components/strings/grit/components_strings.h"
@@ -17,15 +21,20 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ui/base/l10n/l10n_util.h"
 
+namespace {
 // The delay between showing the confirmation and dismissing the progress
 // dialog.
-constexpr base::TimeDelta kConfirmationDismissDelayInSeconds = base::Seconds(1);
+constexpr base::TimeDelta kConfirmationDismissDelay = base::Seconds(1);
+}  // namespace
 
 AutofillProgressDialogMediator::AutofillProgressDialogMediator(
-    base::WeakPtr<autofill::AutofillProgressDialogControllerImpl>
-        model_controller,
+    autofill::AutofillProgressDialogControllerImpl* model_controller,
     id<AutofillProgressDialogMediatorDelegate> delegate)
-    : model_controller_(model_controller), delegate_(delegate) {}
+    : delegate_(delegate) {
+  if (model_controller) {
+    model_controller_ = model_controller->GetImplWeakPtr();
+  }
+}
 
 AutofillProgressDialogMediator::~AutofillProgressDialogMediator() {
   // If the closure is not initiated from the backend side (via Dismiss()), it
@@ -40,20 +49,22 @@ void AutofillProgressDialogMediator::Dismiss(
     bool show_confirmation_before_closing,
     bool is_canceled_by_user) {
   is_canceled_by_user_ = is_canceled_by_user;
-  if (show_confirmation_before_closing) {
-    [consumer_ setProgressState:ProgressIndicatorStateSuccess];
-    [consumer_ setActions:@[]];
-    consumer_.confirmationAccessibilityLabel = l10n_util::GetNSString(
-        IDS_IOS_AUTOFILL_PROGRESS_DIALOG_CONFIRMATION_ACCESSIBILITY_ANNOUNCEMENT);
-    dispatch_after(
-        dispatch_time(DISPATCH_TIME_NOW,
-                      kConfirmationDismissDelayInSeconds.InNanoseconds()),
-        dispatch_get_main_queue(), ^{
-          [delegate_ dismissDialog];
-        });
-  } else {
-    [delegate_ dismissDialog];
+  if (!show_confirmation_before_closing) {
+    DismissDialog();
+    return;
   }
+
+  [consumer_ setProgressState:ProgressIndicatorStateSuccess];
+  [consumer_ setActions:@[]];
+  consumer_.confirmationAccessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_AUTOFILL_PROGRESS_DIALOG_CONFIRMATION_ACCESSIBILITY_ANNOUNCEMENT);
+
+  base::OnceClosure closure =
+      base::BindOnce(&AutofillProgressDialogMediator::DismissDialog,
+                     weak_ptr_factory_.GetWeakPtr());
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, std::move(closure), kConfirmationDismissDelay);
 }
 
 void AutofillProgressDialogMediator::InvalidateControllerForCallbacks() {
@@ -71,23 +82,26 @@ void AutofillProgressDialogMediator::SetConsumer(id<AlertConsumer> consumer) {
       setTitle:base::SysUTF16ToNSString(model_controller_->GetLoadingTitle())];
   [consumer_ setMessage:base::SysUTF16ToNSString(
                             model_controller_->GetLoadingMessage())];
-  base::WeakPtr<AutofillProgressDialogMediator> weak_ptr =
-      weak_ptr_factory_.GetWeakPtr();
+
+  base::OnceCallback<void(AlertAction*)> handler =
+      base::IgnoreArgs<AlertAction*>(
+          base::BindOnce(&AutofillProgressDialogMediator::OnCancelButtonTapped,
+                         weak_ptr_factory_.GetWeakPtr()));
+
   AlertAction* buttonAction = [AlertAction
       actionWithTitle:base::SysUTF16ToNSString(
                           model_controller_->GetCancelButtonLabel())
                 style:UIAlertActionStyleCancel
-              handler:^(AlertAction* action) {
-                if (weak_ptr) {
-                  // When the handler is invoked, `this` will for sure exist.
-                  weak_ptr->OnCancelButtonTapped();
-                }
-              }];
+              handler:base::CallbackToBlock(std::move(handler))];
   [consumer_ setActions:@[ @[ buttonAction ] ]];
   [consumer_ setShouldShowActivityIndicator:YES];
 }
 
 void AutofillProgressDialogMediator::OnCancelButtonTapped() {
   is_canceled_by_user_ = true;
+  DismissDialog();
+}
+
+void AutofillProgressDialogMediator::DismissDialog() {
   [delegate_ dismissDialog];
 }

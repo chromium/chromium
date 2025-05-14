@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/progress_dialog/autofill_progress_dialog_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/task_environment.h"
 #import "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 #import "components/strings/grit/components_strings.h"
@@ -29,9 +30,10 @@ class AutofillProgressDialogMediatorTest : public PlatformTest {
         autofill::AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog,
         base::DoNothing());
     mediator_ = std::make_unique<AutofillProgressDialogMediator>(
-        model_controller_->GetImplWeakPtr(), delegate_);
+        model_controller_.get(), delegate_);
   }
 
+  base::test::TaskEnvironment task_environment_;
   id<AlertConsumer> consumer_;
   id<AutofillProgressDialogMediatorDelegate> delegate_;
   std::unique_ptr<autofill::AutofillProgressDialogControllerImpl>

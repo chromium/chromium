@@ -49,7 +49,7 @@
     CHECK(paymentsClient);
     _modelController = paymentsClient->GetProgressDialogModel();
     _mediator = std::make_unique<AutofillProgressDialogMediator>(
-        _modelController->GetImplWeakPtr(), self);
+        _modelController.get(), self);
   }
   return self;
 }

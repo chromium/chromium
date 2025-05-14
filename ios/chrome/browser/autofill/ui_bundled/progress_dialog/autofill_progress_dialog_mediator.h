@@ -23,8 +23,7 @@ class AutofillProgressDialogMediator
     : public autofill::AutofillProgressDialogView {
  public:
   AutofillProgressDialogMediator(
-      base::WeakPtr<autofill::AutofillProgressDialogControllerImpl>
-          model_controller,
+      autofill::AutofillProgressDialogControllerImpl* model_controller,
       id<AutofillProgressDialogMediatorDelegate> delegate);
   AutofillProgressDialogMediator(const AutofillProgressDialogMediator&) =
       delete;
@@ -42,6 +41,9 @@ class AutofillProgressDialogMediator
 
  private:
   void OnCancelButtonTapped();
+
+  // Invoke -dismissDialog on the delegate.
+  void DismissDialog();
 
   // The model to provide data to be shown in the IOS view implementation.
   base::WeakPtr<autofill::AutofillProgressDialogControllerImpl>
