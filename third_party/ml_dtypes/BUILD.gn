@@ -1,0 +1,29 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/sanitizers/sanitizers.gni")
+
+config("ml_dtypes-includes") {
+  include_dirs = [
+    "src",
+    "src/ml_dtypes",
+  ]
+}
+
+static_library("ml_dtypes") {
+  sources = [
+    "src/ml_dtypes/include/float8.h",
+    "src/ml_dtypes/include/intn.h",
+    "src/ml_dtypes/include/mxfloat.h",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    ":ml_dtypes-includes",
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/eigen3:eigen_includes",
+  ]
+
+  public_configs = [ ":ml_dtypes-includes" ]
+}
