@@ -25,12 +25,6 @@ namespace data_sharing {
 
 DataSharingUIDelegateIOS::DataSharingUIDelegateIOS(
     ShareKitService* share_kit_service,
-    collaboration::CollaborationService* collaboration_service,
-    TabGroupService* tab_group_service)
-    : DataSharingUIDelegateIOS(share_kit_service, collaboration_service) {}
-
-DataSharingUIDelegateIOS::DataSharingUIDelegateIOS(
-    ShareKitService* share_kit_service,
     collaboration::CollaborationService* collaboration_service)
     : share_kit_service_(share_kit_service),
       collaboration_service_(collaboration_service) {}

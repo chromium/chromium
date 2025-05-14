@@ -15,17 +15,11 @@ class CollaborationService;
 
 class Browser;
 class ShareKitService;
-class TabGroupService;
 namespace data_sharing {
 
 // IOS implementation of DataSharingUIDelegate.
 class DataSharingUIDelegateIOS : public DataSharingUIDelegate {
  public:
-  // TODO(crbug.com/417416648): Remove when downstream is updated.
-  explicit DataSharingUIDelegateIOS(
-      ShareKitService* share_kit_service,
-      collaboration::CollaborationService* collaboration_service,
-      TabGroupService* tab_group_service);
   explicit DataSharingUIDelegateIOS(
       ShareKitService* share_kit_service,
       collaboration::CollaborationService* collaboration_service);
