@@ -719,9 +719,7 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
   auto params = std::make_unique<
       cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams>();
   params->io_thread_id = Platform::Current()->GetIOThreadId();
-  if (base::FeatureList::IsEnabled(::features::kEnableADPFRendererMain)) {
-    params->main_thread_id = main_thread_id_;
-  }
+  params->main_thread_id = main_thread_id_;
 
   params->compositor_task_runner =
       Platform::Current()->CompositorThreadTaskRunner();
