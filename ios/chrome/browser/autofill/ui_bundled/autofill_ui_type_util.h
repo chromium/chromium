@@ -50,10 +50,6 @@ static const AutofillProfileFieldDisplayInfo kProfileFieldsToDisplay[] = {
     {autofill::EMAIL_ADDRESS, IDS_IOS_AUTOFILL_EMAIL, UIReturnKeyDone,
      UIKeyboardTypeEmailAddress, UITextAutocapitalizationTypeNone}};
 
-// Returns the `AutofillCreditCardUIType` equivalent to `type`.
-AutofillCreditCardUIType AutofillUITypeFromAutofillTypeForCard(
-    autofill::FieldType type);
-
 // Returns the autofill::FieldType equivalent to `type`.
 autofill::FieldType AutofillTypeFromAutofillUITypeForCard(
     AutofillCreditCardUIType type);

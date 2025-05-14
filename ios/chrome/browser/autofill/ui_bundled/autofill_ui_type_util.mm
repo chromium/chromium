@@ -7,24 +7,6 @@
 #import "base/notreached.h"
 #import "components/autofill/core/common/autofill_features.h"
 
-AutofillCreditCardUIType AutofillUITypeFromAutofillTypeForCard(
-    autofill::FieldType type) {
-  switch (type) {
-    case autofill::UNKNOWN_TYPE:
-      return AutofillCreditCardUIType::kUnknown;
-    case autofill::CREDIT_CARD_NUMBER:
-      return AutofillCreditCardUIType::kNumber;
-    case autofill::CREDIT_CARD_NAME_FULL:
-      return AutofillCreditCardUIType::kFullName;
-    case autofill::CREDIT_CARD_EXP_MONTH:
-      return AutofillCreditCardUIType::kExpMonth;
-    case autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR:
-      return AutofillCreditCardUIType::kExpYear;
-    default:
-      NOTREACHED();
-  }
-}
-
 autofill::FieldType AutofillTypeFromAutofillUITypeForCard(
     AutofillCreditCardUIType type) {
   switch (type) {
