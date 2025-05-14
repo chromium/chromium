@@ -134,7 +134,6 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
       // Simulate press of the menu button and ensure the button activates and
       // the menu appears.
       PressButton(kToolbarAppMenuButtonElementId),
-      WaitForActivate(kToolbarAppMenuButtonElementId),
       WaitForShow(AppMenuModel::kMoreToolsMenuItem),
       // Move the mouse to the button and click it. This will hide the menu.
       MoveMouseTo(kToolbarAppMenuButtonElementId, std::move(pos)), ClickMouse(),

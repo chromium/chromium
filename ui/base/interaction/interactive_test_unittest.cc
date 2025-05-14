@@ -159,7 +159,6 @@ class TestSimulator : public InteractionTestUtil::Simulator {
                 InputType input_type) {
     records_.emplace_back(action_type, element->identifier(),
                           element->context(), input_type);
-    element->AsA<TestElement>()->Activate();
   }
 
   ActionResult result_ = ActionResult::kSucceeded;
@@ -274,14 +273,13 @@ TEST_F(InteractiveTestTest, WaitInAnyContext) {
   TestElement e1(kTestId1, kTestContext2);
   TestElement e2(kTestId2, kTestContext2);
 
-  QueueActions(
-      [&]() { e1.Show(); }, [&]() { e2.Show(); }, [&]() { e1.Activate(); },
-      [&]() { e2.SendCustomEvent(kTestEvent1); }, [&]() { e1.Hide(); });
+  QueueActions([&]() { e1.Show(); }, [&]() { e2.Show(); },
+               [&]() { e2.SendCustomEvent(kTestEvent1); },
+               [&]() { e1.Hide(); });
 
   RunTestSequenceInContext(
       kTestContext1,
       InAnyContext(WaitForShow(kTestId1), WaitForShow(kTestId2),
-                   WaitForActivate(kTestId1),
                    WaitForEvent(kTestId2, kTestEvent1), WaitForHide(kTestId1)));
 }
 
@@ -661,24 +659,20 @@ TEST_F(InteractiveTestTest, After) {
   UNCALLED_MOCK_CALLBACK(base::OnceClosure, cb1);
   UNCALLED_MOCK_CALLBACK(base::OnceClosure, cb2);
   UNCALLED_MOCK_CALLBACK(base::OnceClosure, cb3);
-  UNCALLED_MOCK_CALLBACK(base::OnceClosure, cb4);
   TestElement el(kTestId1, kTestContext1);
 
   testing::InSequence in_sequence;
   EXPECT_CALL(cb1, Run);
   EXPECT_CALL(cb2, Run);
   EXPECT_CALL(cb3, Run);
-  EXPECT_CALL(cb4, Run);
 
-  QueueActions([&]() { el.Show(); }, [&]() { el.Activate(); },
-               [&]() { el.SendCustomEvent(kTestEvent1); },
+  QueueActions([&]() { el.Show(); }, [&]() { el.SendCustomEvent(kTestEvent1); },
                [&]() { el.SendCustomEvent(kTestEvent2); },
                [&]() { el.Hide(); });
 
   RunTestSequenceInContext(kTestContext1, AfterShow(kTestId1, cb1.Get()),
-                           AfterActivate(kTestId1, cb2.Get()),
-                           AfterEvent(kTestId1, kTestEvent2, cb3.Get()),
-                           AfterHide(kTestId1, cb4.Get()));
+                           AfterEvent(kTestId1, kTestEvent2, cb2.Get()),
+                           AfterHide(kTestId1, cb3.Get()));
 }
 
 TEST_F(InteractiveTestTest, WaitFor) {
@@ -688,13 +682,11 @@ TEST_F(InteractiveTestTest, WaitFor) {
   QueueActions(
       // Already in step 1, this triggers step 2.
       [&]() { e2.Show(); },
-      // Transition to step 3.
-      [&]() { e1.Activate(); },
-      // Hide before moving to step 4.
+      // Hide before moving to step 3.
       [&]() { e1.Hide(); },
-      // This should transition both 4 and 5.
+      // This should transition both 3 and 4.
       [&]() { e2.SendCustomEvent(kTestEvent1); },
-      // This should transition step 6.
+      // This should transition step 5.
       [&]() { e2.Hide(); });
 
   e1.Show();
@@ -702,8 +694,7 @@ TEST_F(InteractiveTestTest, WaitFor) {
   RunTestSequenceInContext(
       kTestContext1, WaitForShow(kTestId1),
       WaitForShow(kTestId2, /* transition_only_on_event =*/true),
-      WaitForActivate(kTestId1), WaitForEvent(kTestId2, kTestEvent1),
-      WaitForHide(kTestId1),
+      WaitForEvent(kTestId2, kTestEvent1), WaitForHide(kTestId1),
       WaitForHide(kTestId2, /* transition_only_on_event =*/true));
 }
 

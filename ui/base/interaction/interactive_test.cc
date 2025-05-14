@@ -286,16 +286,6 @@ InteractionSequence::StepBuilder InteractiveTestApi::WaitForHide(
 }
 
 // static
-InteractionSequence::StepBuilder InteractiveTestApi::WaitForActivate(
-    ElementSpecifier element) {
-  StepBuilder step;
-  step.SetDescription("WaitForActivate()");
-  internal::SpecifyElement(step, element);
-  step.SetType(InteractionSequence::StepType::kActivated);
-  return step;
-}
-
-// static
 InteractionSequence::StepBuilder InteractiveTestApi::WaitForEvent(
     ElementSpecifier element,
     CustomElementEventType event) {

@@ -499,7 +499,6 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest, MenuMatchesOverflowedElements) {
       Do([this]() { SetBrowserWidth(overflow_threshold_width() - 1); }),
       WaitForShow(kToolbarOverflowButtonElementId),
       PressButton(kToolbarOverflowButtonElementId),
-      WaitForActivate(kToolbarOverflowButtonElementId),
       CheckMenuMatchesOverflowedElements());
 }
 

@@ -93,6 +93,8 @@ class TabGroupHeader : public TabSlotView,
   // Returns the title text for testing.
   std::u16string_view GetTitleTextForTesting() const;
 
+  bool is_collapsed_for_testing() const { return is_collapsed_; }
+
  private:
   friend class TabGroupEditorBubbleViewDialogBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(TabStripSaveBrowsertest, AttentionIndicatorIsShown);

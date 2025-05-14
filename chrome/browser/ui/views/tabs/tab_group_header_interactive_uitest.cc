@@ -27,9 +27,11 @@
 #include "net/test/embedded_test_server/http_connection.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/state_observer.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/interaction/polling_view_observer.h"
 
 // The Param value sets tab_groups::kLeftClickOpensTabGroupBubble.
 class TabGroupHeaderInteractiveUiTest
@@ -79,6 +81,10 @@ class TabGroupHeaderInteractiveUiTest
 #else
 #define MAYBE_Collapse Collapse
 #endif
+using TabGroupCollapsedObserver =
+    views::test::PollingViewPropertyObserver<bool, TabGroupHeader>;
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(TabGroupCollapsedObserver,
+                                    kTabGroupCollapsedState);
 IN_PROC_BROWSER_TEST_P(TabGroupHeaderInteractiveUiTest, MAYBE_Collapse) {
   CreateTabGroup({CreateTab()});
 
@@ -87,10 +93,12 @@ IN_PROC_BROWSER_TEST_P(TabGroupHeaderInteractiveUiTest, MAYBE_Collapse) {
           ? ui_controls::MouseButton::RIGHT
           : ui_controls::MouseButton::LEFT;
 
-  RunTestSequence(WaitForShow(kTabGroupHeaderElementId),
-                  FinishTabstripAnimations(),
-                  MoveMouseTo(kTabGroupHeaderElementId), ClickMouse(action),
-                  WaitForActivate(kTabGroupHeaderElementId));
+  RunTestSequence(
+      WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
+      PollViewProperty(kTabGroupCollapsedState, kTabGroupHeaderElementId,
+                       &TabGroupHeader::is_collapsed_for_testing),
+      MoveMouseTo(kTabGroupHeaderElementId), ClickMouse(action),
+      WaitForState(kTabGroupCollapsedState, true));
 }
 
 IN_PROC_BROWSER_TEST_P(TabGroupHeaderInteractiveUiTest, OpenEditorBubble) {

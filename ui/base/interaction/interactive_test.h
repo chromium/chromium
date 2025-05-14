@@ -266,10 +266,6 @@ class InteractiveTestApi {
   [[nodiscard]] static StepBuilder AfterShow(ElementSpecifier element,
                                              T&& step_callback);
   template <typename T>
-    requires internal::HasCompatibleSignature<T, void(InteractionSequence*)>
-  [[nodiscard]] static StepBuilder AfterActivate(ElementSpecifier element,
-                                                 T&& step_callback);
-  template <typename T>
     requires internal::IsStepCallback<T>
   [[nodiscard]] static StepBuilder AfterEvent(ElementSpecifier element,
                                               CustomElementEventType event_type,
@@ -287,7 +283,6 @@ class InteractiveTestApi {
   [[nodiscard]] static StepBuilder WaitForHide(
       ElementSpecifier element,
       bool transition_only_on_event = false);
-  [[nodiscard]] static StepBuilder WaitForActivate(ElementSpecifier element);
   [[nodiscard]] static StepBuilder WaitForEvent(ElementSpecifier element,
                                                 CustomElementEventType event);
 
@@ -766,25 +761,6 @@ InteractionSequence::StepBuilder InteractiveTestApi::AfterShow(
   builder.SetStartCallback(
       base::RectifyCallback<InteractionSequence::StepStartCallback>(
           internal::MaybeBind(std::forward<T>(step_callback))));
-  return builder;
-}
-
-// static
-template <typename T>
-  requires internal::HasCompatibleSignature<T, void(InteractionSequence*)>
-InteractionSequence::StepBuilder InteractiveTestApi::AfterActivate(
-    ElementSpecifier element,
-    T&& step_callback) {
-  StepBuilder builder;
-  builder.SetDescription("AfterActivate()");
-  internal::SpecifyElement(builder, element);
-  builder.SetType(InteractionSequence::StepType::kActivated);
-  using Callback = base::OnceCallback<void(InteractionSequence*)>;
-  builder.SetStartCallback(
-      base::BindOnce([](Callback callback, InteractionSequence* seq,
-                        TrackedElement*) { std::move(callback).Run(seq); },
-                     base::RectifyCallback<Callback>(
-                         internal::MaybeBind(std::forward<T>(step_callback)))));
   return builder;
 }
 
