@@ -1186,7 +1186,8 @@ ShelfBackgroundType ShelfLayoutManager::ComputeShelfBackgroundType() const {
   const bool has_visible_snap_group =
       snap_group_controller &&
       snap_group_controller->GetTopmostVisibleSnapGroup(
-          shelf_native_window->GetRootWindow());
+          shelf_native_window->GetRootWindow(),
+          /*topwindow_only=*/false);
   const bool maximized =
       in_split_view_mode || has_visible_snap_group ||
       state_.window_state == WorkspaceWindowState::kFullscreen ||

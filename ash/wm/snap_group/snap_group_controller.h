@@ -89,7 +89,10 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   SnapGroup* GetSnapGroupForGivenWindow(const aura::Window* window) const;
 
   // Returns the topmost fully visible non-occluded snap group on `target_root`.
-  SnapGroup* GetTopmostVisibleSnapGroup(const aura::Window* target_root) const;
+  // If `topwindow_only` is true, it return null if the top window isn't in a
+  // snap group. If false, it will search until it finds a snap group.
+  SnapGroup* GetTopmostVisibleSnapGroup(const aura::Window* target_root,
+                                        bool topwindow_only) const;
 
   // Returns the topmost snap group in unminimized state.
   SnapGroup* GetTopmostSnapGroup() const;

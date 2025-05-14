@@ -655,9 +655,9 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
       SplitViewController::Get(root_window_)->InSplitViewMode();
   SnapGroupController* snap_group_controller = SnapGroupController::Get();
   const bool should_report_split_view_metrics =
-      in_split_view ||
-      (snap_group_controller &&
-       snap_group_controller->GetTopmostVisibleSnapGroup(root_window_));
+      in_split_view || (snap_group_controller &&
+                        snap_group_controller->GetTopmostVisibleSnapGroup(
+                            root_window_, /*topwindow_only=*/true));
   // OverviewGrid in splitscreen does not include the window to be activated.
   if (!item_list_.empty() || should_report_split_view_metrics) {
     const bool minimized_in_tablet =
@@ -2663,7 +2663,8 @@ void OverviewGrid::OnSplitViewStateChanged(
   const bool both_snapped_windows =
       state == SplitViewController::State::kBothSnapped ||
       (snap_group_controller &&
-       snap_group_controller->GetTopmostVisibleSnapGroup(root_window_));
+       snap_group_controller->GetTopmostVisibleSnapGroup(
+           root_window_, /*topwindow_only=*/true));
   if (both_snapped_windows || unsnappable_window_activated ||
       (split_view_controller->InClamshellSplitViewMode() &&
        overview_session_->IsEmpty())) {

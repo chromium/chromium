@@ -2375,6 +2375,22 @@ TEST_F(SnapGroupTest, ShelfRoundedCornersInFasterSplitScreenEntryPoint) {
   EXPECT_EQ(ShelfBackgroundType::kMaximized,
             shelf_layout_manager->shelf_background_type());
 
+  // Creating a window on top shouldn't affect the shelf background type.
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
+  EXPECT_EQ(ShelfBackgroundType::kMaximized,
+            shelf_layout_manager->shelf_background_type());
+
+  // Enter & exit overview the background type should still be kMaximized.
+  ToggleOverview();
+  ToggleOverview();
+  EXPECT_EQ(ShelfBackgroundType::kMaximized,
+            shelf_layout_manager->shelf_background_type());
+
+  // The background type should still be kMaximized after closing it.
+  w3.reset();
+  EXPECT_EQ(ShelfBackgroundType::kMaximized,
+            shelf_layout_manager->shelf_background_type());
+
   // Drag `w1` out to break the group.
   event_generator->MoveMouseTo(w1->GetBoundsInScreen().top_center());
   aura::test::TestWindowDelegate().set_window_component(HTCAPTION);
@@ -10490,8 +10506,8 @@ TEST_F(SnapGroupMetricsTest, SnapGroupsCount) {
   // At this point `w4` is active but a single snapped window. Recall the group
   // for `w1` and `w2` so we can start snap to replace.
   wm::ActivateWindow(w1.get());
-  ASSERT_TRUE(
-      snap_group_controller->GetTopmostVisibleSnapGroup(w1->GetRootWindow()));
+  ASSERT_TRUE(snap_group_controller->GetTopmostVisibleSnapGroup(
+      w1->GetRootWindow(), /*topwindow_only=*/true));
 
   // Snap to replace `w5` in the 1st snap group. Test we don't record.
   std::unique_ptr<aura::Window> w5(CreateAppWindow());

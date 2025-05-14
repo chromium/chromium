@@ -287,7 +287,8 @@ SnapGroup* SnapGroupController::GetSnapGroupForGivenWindow(
 }
 
 SnapGroup* SnapGroupController::GetTopmostVisibleSnapGroup(
-    const aura::Window* target_root) const {
+    const aura::Window* target_root,
+    bool topwindow_only) const {
   for (const aura::Window* top_window : GetActiveDeskAppWindowsInZOrder(
            const_cast<aura::Window*>(target_root))) {
     // Skip to the topmost window on `target_root`, ignoring occlusion-exempt
@@ -302,7 +303,9 @@ SnapGroup* SnapGroupController::GetTopmostVisibleSnapGroup(
       return snap_group;
     }
     // Else if `top_window` does not belong to a snap group, we are done.
-    break;
+    if (topwindow_only) {
+      break;
+    }
   }
   return nullptr;
 }
