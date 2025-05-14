@@ -17,6 +17,7 @@
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/media/glic_media_integration.h"
+#include "chrome/common/chrome_features.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/pdf/browser/pdf_document_helper.h"
@@ -208,6 +209,12 @@ void GlicPageContextFetcher::FetchStart(
     ai_page_content_options->on_critical_path = true;
     ai_page_content_options->include_hidden_searchable_content = true;
     ai_page_content_options->max_meta_elements = options.max_meta_tags;
+    // TODO(crbug.com/409564704): Move actor page content extraction to the
+    // actor coordinator.
+    if (base::FeatureList::IsEnabled(features::kGlicActor)) {
+      ai_page_content_options->include_geometry = true;
+      ai_page_content_options->enable_experimental_actionable_data = true;
+    }
     optimization_guide::GetAIPageContent(
         web_contents(), std::move(ai_page_content_options),
         base::BindOnce(&GlicPageContextFetcher::ReceivedAnnotatedPageContent,

@@ -11675,6 +11675,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlicZOrderChangesDescription,
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(features::kGlicZOrderChanges)},
+    {"glic-actor", flag_descriptions::kGlicActorName,
+     flag_descriptions::kGlicActorDescription, kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(features::kGlicActor)},
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(IS_ANDROID)

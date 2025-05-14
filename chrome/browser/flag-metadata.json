@@ -5258,6 +5258,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "glic-actor",
+    "owners": [
+      "mfoltz@chromium.org",
+      "//chrome/browser/actor/OWNERS"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "glic-user-resize",
     "owners": [
       "iwells@chromium.org",

@@ -1224,7 +1224,8 @@ const char kContextualCueingDescription[] =
 const char kGlicZeroStateSuggestionsName[] = "Glic zero state suggestions";
 const char kGlicZeroStateSuggestionsDescription[] =
     "Enables zero state suggestions in Glic.";
-
+const char kGlicActorName[] = "Glic actor";
+const char kGlicActorDescription[] = "Enables the Glic actor.";
 #endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
