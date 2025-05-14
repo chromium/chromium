@@ -39,6 +39,10 @@ size_t DetermineExpirationYearLength(FieldType assumed_field_type);
 // Returns true if `type` is alternative name related.
 bool IsAlternativeNameType(FieldType type);
 
+// A tag type is a type that doesn't provide complete information about a field
+// on its own, and that instead needs a second type to complement its meaning.
+bool IsTagType(FieldType type);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_TYPE_UTILS_H_

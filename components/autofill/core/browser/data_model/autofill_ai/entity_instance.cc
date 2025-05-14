@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
+#include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/country_names.h"
@@ -225,9 +226,12 @@ FieldType AttributeInstance::GetNormalizedType(FieldType info_type) const {
         info_);
   }
   // In case the field classification is totally unrelated to the
-  // attribute type classification, we return UKNOWN_TYPE to inform callers of
-  // that.
-  return UNKNOWN_TYPE;
+  // attribute type classification, we return UKNOWN_TYPE if the attribute is
+  // structured because we don't have information on how to break down the
+  // attribute with the given type. If the type is not structured we just return
+  // the corresponding field type of the attribute, just like we would do
+  // regardless of the type passed.
+  return IsTagType(type().field_type()) ? UNKNOWN_TYPE : type().field_type();
 }
 
 void AttributeInstance::FinalizeInfo() {
