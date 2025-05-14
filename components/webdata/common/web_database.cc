@@ -162,6 +162,7 @@ sql::InitStatus WebDatabase::Init(const base::FilePath& db_name,
     LogInitResult(WebDatabaseInitResult::kCouldNotOpen);
     return sql::INIT_FAILURE;
   }
+  DCHECK(db_.is_open());
 
   // Dummy transaction to check whether the database is writeable and bail
   // early if that's not the case.
@@ -230,7 +231,9 @@ sql::InitStatus WebDatabase::Init(const base::FilePath& db_name,
     LogInitResult(WebDatabaseInitResult::kFailedToCommitInitTransaction);
     return sql::INIT_FAILURE;
   }
+
   LogInitResult(WebDatabaseInitResult::kSuccess);
+  DCHECK(db_.is_open());
   return sql::INIT_OK;
 }
 

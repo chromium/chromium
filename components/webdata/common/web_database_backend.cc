@@ -159,6 +159,9 @@ void WebDatabaseBackend::LoadDatabaseIfNecessary() {
     CHECK_EQ(memory_init_status, sql::INIT_OK);
   }
 
+  DCHECK(db_->GetSQLConnection());
+  DCHECK(db_->GetSQLConnection()->is_open());
+
   // A catastrophic error might have happened and recovered.
   if (catastrophic_error_occurred_) {
     init_status_ = sql::INIT_OK_WITH_DATA_LOSS;
