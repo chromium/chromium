@@ -1995,6 +1995,33 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
+       ReleaseLostTransferableResourceWithLostContext) {
+  CreateContext(kNonOpaque);
+
+  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider());
+
+  // Invoking PrepareTransferableResource() has a precondition that a CC layer
+  // is present.
+  ASSERT_TRUE(CanvasElement().GetOrCreateCcLayerIfNeeded());
+
+  EXPECT_TRUE(CanvasElement().GetRasterMode() == RasterMode::kGPU);
+
+  viz::TransferableResource resource;
+  viz::ReleaseCallback release_callback;
+  EXPECT_TRUE(CanvasElement().PrepareTransferableResource(&resource,
+                                                          &release_callback));
+
+  test_context_provider_->GetTestRasterInterface()->set_context_lost(true);
+
+  // Get a new context provider so that the WeakPtr to the old one is null.
+  // This verifies that ReleaseFrameResources() handles null
+  // context_provider_wrapper properly.
+  SharedGpuContext::ContextProviderWrapper();
+  std::move(release_callback).Run(gpu::SyncToken(), /*lost_resource=*/true);
+  SharedGpuContext::Reset();
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated,
        FallbackToSoftwareIfContextLost) {
   // Configure context provider to stay lost after context losses.
   CreateContextProvider(SetIsContextLost::kNotModifyValue);
