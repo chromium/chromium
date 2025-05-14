@@ -135,14 +135,10 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
     auto promise = resolver->Promise();
     ExecutionContext* execution_context = ExecutionContext::From(script_state);
 
-    // Return unavailable for cross-origin iframe access with no permission
-    // policy.
-    if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
-      if (window->IsCrossSiteSubframeIncludingScheme() &&
-          !window->IsFeatureEnabled(GetPermissionsPolicy())) {
-        resolver->Resolve(AvailabilityToV8(Availability::kUnavailable));
-        return promise;
-      }
+    // Return unavailable if the Permission Policy is not enabled.
+    if (!execution_context->IsFeatureEnabled(GetPermissionsPolicy())) {
+      resolver->Resolve(AvailabilityToV8(Availability::kUnavailable));
+      return promise;
     }
 
     HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
@@ -191,20 +187,17 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
       return promise;
     }
 
-    // Block cross-origin iframe access with no permission policy.
-    auto* context = ExecutionContext::From(script_state);
-    if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
-      if (window->GetFrame() &&
-          window->GetFrame()->IsCrossOriginToOutermostMainFrame() &&
-          !window->IsFeatureEnabled(GetPermissionsPolicy())) {
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kNotAllowedError,
-            kExceptionMessageCrossOriginAccess));
-        return promise;
-      }
-    }
 
     ExecutionContext* execution_context = ExecutionContext::From(script_state);
+
+    // Block access if the Permission Policy is not enabled.
+    if (!execution_context->IsFeatureEnabled(GetPermissionsPolicy())) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError,
+          kExceptionMessagePermissionPolicy));
+      return promise;
+    }
+
     HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
         AIInterfaceProxy::GetAIManagerRemote(execution_context);
 

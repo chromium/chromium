@@ -28,7 +28,6 @@ extern const char kExceptionMessageSystemPromptIsDefinedMultipleTimes[];
 extern const char kExceptionMessageSystemPromptIsNotTheFirst[];
 extern const char kExceptionMessageUnsupportedLanguages[];
 extern const char kExceptionMessageInvalidResponseJsonSchema[];
-extern const char kExceptionMessageCrossOriginAccess[];
 extern const char kExceptionMessagePermissionPolicy[];
 
 void ThrowInvalidContextException(ExceptionState& exception_state);

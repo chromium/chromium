@@ -73,15 +73,11 @@ ScriptPromise<V8Availability> Translator::availability(
       MakeGarbageCollected<ScriptPromiseResolver<V8Availability>>(script_state);
   ScriptPromise<V8Availability> promise = resolver->Promise();
 
-  // Return `unavailable` for cross-origin iframe access with no permission
-  // policy.
-  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
-    if (window->IsCrossSiteSubframeIncludingScheme() &&
-        !window->IsFeatureEnabled(
-            network::mojom::PermissionsPolicyFeature::kTranslator)) {
-      resolver->Resolve(AvailabilityToV8(Availability::kUnavailable));
-      return promise;
-    }
+  // Return unavailable if the Permission Policy is not enabled.
+  if (!context->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kTranslator)) {
+    resolver->Resolve(AvailabilityToV8(Availability::kUnavailable));
+    return promise;
   }
 
   AIInterfaceProxy::GetTranslationManagerRemote(context)->TranslationAvailable(
@@ -120,17 +116,12 @@ ScriptPromise<Translator> Translator::create(ScriptState* script_state,
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<Translator>>(script_state);
 
-  // Block cross-origin iframe access with no permission policy.
-  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
-    if (window->GetFrame() &&
-        window->GetFrame()->IsCrossOriginToOutermostMainFrame() &&
-        !window->IsFeatureEnabled(
-            network::mojom::PermissionsPolicyFeature::kTranslator)) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotAllowedError,
-          kExceptionMessageCrossOriginAccess));
-      return resolver->Promise();
-    }
+  // Block access if the Permission Policy is not enabled.
+  if (!context->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kTranslator)) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotAllowedError, kExceptionMessagePermissionPolicy));
+    return resolver->Promise();
   }
 
   AbortSignal* signal = options->getSignalOr(nullptr);
