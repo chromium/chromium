@@ -15,15 +15,6 @@ void AudioProcessingProperties::DisableDefaultProperties() {
   voice_isolation = VoiceIsolationType::kVoiceIsolationDefault;
 }
 
-bool AudioProcessingProperties::EchoCancellationEnabled() const {
-  return echo_cancellation_type !=
-         EchoCancellationType::kEchoCancellationDisabled;
-}
-
-bool AudioProcessingProperties::EchoCancellationIsWebRtcProvided() const {
-  return echo_cancellation_type == EchoCancellationType::kEchoCancellationAec3;
-}
-
 bool AudioProcessingProperties::HasSameReconfigurableSettings(
     const AudioProcessingProperties& other) const {
   return echo_cancellation_type == other.echo_cancellation_type;

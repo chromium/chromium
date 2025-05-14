@@ -51,12 +51,6 @@ struct PLATFORM_EXPORT AudioProcessingProperties {
   // Disables properties that are enabled by default.
   void DisableDefaultProperties();
 
-  // Returns whether echo cancellation is enabled.
-  bool EchoCancellationEnabled() const;
-
-  // Returns whether WebRTC-provided echo cancellation is enabled.
-  bool EchoCancellationIsWebRtcProvided() const;
-
   bool HasSameReconfigurableSettings(
       const AudioProcessingProperties& other) const;
 
