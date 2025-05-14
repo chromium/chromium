@@ -31,10 +31,12 @@ namespace {
 //   `query`: Current omnibox query text, passed as an argument.
 //   `suggestion_types`: Types of suggestions requested. Ex. [1,2] indicates
 //   Query and Person Suggestions respectively.
+//   `experiment_id`: Hardcoded experiment ID expected by the server.
 // The format of the request is:
 //     {
 //       query: "`query`",
-//       suggestionTypes: `suggestion_types`
+//       suggestionTypes: `suggestion_types`,
+//       experimentIds: ["`experiment_id`"]
 //     }
 std::string BuildRequestBody(std::u16string query,
                              std::vector<int>& suggestion_types) {
@@ -45,8 +47,12 @@ std::string BuildRequestBody(std::u16string query,
   for (const auto& item : suggestion_types) {
     suggestion_types_list.Append(item);
   }
-
   root.Set("suggestionTypes", std::move(suggestion_types_list));
+
+  base::Value::List experiment_ids_list;
+  experiment_ids_list.Append(kEnterpriseSearchAggregatorExperimentId);
+  root.Set("experimentIds", std::move(experiment_ids_list));
+
   std::string result;
   base::JSONWriter::Write(root, &result);
   return result;

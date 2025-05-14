@@ -123,6 +123,10 @@ TEST_F(EnterpriseSearchAggregatorSuggestionsServiceTest,
   }
   root.Set("suggestionTypes", std::move(suggestion_types_list));
 
+  base::Value::List experiment_ids_list;
+  experiment_ids_list.Append(kEnterpriseSearchAggregatorExperimentId);
+  root.Set("experimentIds", std::move(experiment_ids_list));
+
   std::string test_request_body;
   base::JSONWriter::Write(root, &test_request_body);
   const std::u16string query = u"test";
@@ -183,6 +187,10 @@ TEST_F(EnterpriseSearchAggregatorSuggestionsServiceTest,
     suggestion_types_list.Append(item);
   }
   root.Set("suggestionTypes", std::move(suggestion_types_list));
+
+  base::Value::List experiment_ids_list;
+  experiment_ids_list.Append(kEnterpriseSearchAggregatorExperimentId);
+  root.Set("experimentIds", std::move(experiment_ids_list));
 
   std::string test_request_body;
   base::JSONWriter::Write(root, &test_request_body);
