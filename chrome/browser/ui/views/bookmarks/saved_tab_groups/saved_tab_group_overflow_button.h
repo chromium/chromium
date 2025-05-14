@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_OVERFLOW_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_OVERFLOW_BUTTON_H_
 
+#include "build/buildflag.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/menu_button.h"
 
@@ -25,6 +26,11 @@ class SavedTabGroupOverflowButton : public views::MenuButton {
   std::unique_ptr<views::LabelButtonBorder> CreateDefaultBorder()
       const override;
   void OnThemeChanged() override;
+#if BUILDFLAG(IS_WIN)
+  void AddLayerToRegion(ui::Layer* new_layer,
+                        views::LayerRegion region) override;
+  void RemoveLayerFromRegions(ui::Layer* old_layer) override;
+#endif
 };
 
 }  // namespace tab_groups
