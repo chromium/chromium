@@ -511,16 +511,25 @@ TEST_F(BookmarkMenuBridgeTest, TestChangeTitle) {
   const BookmarkNode* root = model->account_bookmark_bar_node();
   const BookmarkNode* node =
       model->AddURL(root, 0, u"Test Item", GURL("http://title-test"));
+  const BookmarkNode* folder_node = model->AddFolder(root, 1, u"Test Folder");
   UpdateRootMenu();
+
   NSMenuItem* item = [menu_ itemWithTitle:@"Test Item"];
   EXPECT_TRUE([item image]);
-
   model->SetTitle(node, u"New Title",
                   bookmarks::metrics::BookmarkEditSource::kOther);
-
   item = [menu_ itemWithTitle:@"Test Item"];
   EXPECT_FALSE(item);
   item = [menu_ itemWithTitle:@"New Title"];
+  EXPECT_TRUE(item);
+
+  item = [menu_ itemWithTitle:@"Test Folder"];
+  EXPECT_TRUE([item image]);
+  model->SetTitle(folder_node, u"New Folder Title",
+                  bookmarks::metrics::BookmarkEditSource::kOther);
+  item = [menu_ itemWithTitle:@"Test Folder"];
+  EXPECT_FALSE(item);
+  item = [menu_ itemWithTitle:@"New Folder Title"];
   EXPECT_TRUE(item);
 }
 
