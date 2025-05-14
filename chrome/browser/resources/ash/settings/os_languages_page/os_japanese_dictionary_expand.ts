@@ -133,8 +133,6 @@ class OsJapaneseDictionaryExpandElement extends I18nMixin
     const fileDataView = new Uint8Array(await fileData.arrayBuffer());
     const fileMojomBigBuffer: BigBuffer = {
       bytes: Array.from(fileDataView),
-      sharedMemory: undefined,
-      invalidBuffer: undefined,
     };
     const fileMojomBigString: BigString = {data: fileMojomBigBuffer};
 
