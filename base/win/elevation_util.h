@@ -37,10 +37,11 @@ BASE_EXPORT HRESULT RunDeElevatedNoWait(const CommandLine& command_line);
 // Runs `path` de-elevated using `IShellDispatch2::ShellExecute`. `path`
 // specifies the file or object on which to execute the default verb (typically
 // "open"). If `path` specifies an executable file, `parameters` specifies the
-// parameters to be passed to the executable. The current directory is
-// recommended, as the default is system32. `start_hidden` will influence the
-// show command. The function does not wait for the spawned process. N.B. this
-// function requires COM to be initialized.
+// parameters to be passed to the executable. If `current_directory` is not
+// specified, the current directory of the current process is used as the
+// default. `start_hidden` will influence the show command. The function does
+// not wait for the spawned process. N.B. this function requires COM to be
+// initialized.
 BASE_EXPORT HRESULT RunDeElevatedNoWait(
     const std::wstring& path,
     const std::wstring& parameters,

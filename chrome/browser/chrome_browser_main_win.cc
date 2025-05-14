@@ -970,12 +970,9 @@ std::optional<int> ChromeBrowserMainPartsWin::MaybeAutoDeElevate() {
     }
     new_command_line.AppendSwitch(switches::kDoNotDeElevateOnLaunch);
 
-    base::FilePath current_dir;
-    CHECK(base::PathService::Get(base::DIR_CURRENT, &current_dir));
-
-    HRESULT hr = base::win::RunDeElevatedNoWait(
-        new_command_line.GetProgram().value(),
-        new_command_line.GetArgumentsString(), current_dir.value());
+    const HRESULT hr =
+        base::win::RunDeElevatedNoWait(new_command_line.GetProgram().value(),
+                                       new_command_line.GetArgumentsString());
     base::UmaHistogramSparse("Windows.AutoDeElevateResult", hr);
     // If it fails, it doesn't matter why, just proceed with the normal launch.
     if (SUCCEEDED(hr)) {
