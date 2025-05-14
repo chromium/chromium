@@ -3615,6 +3615,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3514681096978190000">Ce fichier d'archive comprend d'autres fichiers qui pourraient cacher des logiciels malveillants</translation>
 <translation id="3515983984924808886">Touchez votre clé de sécurité à nouveau pour confirmer la réinitialisation. Toutes les données stockées sur la clé de sécurité, y compris son NIP, seront supprimées.</translation>
 <translation id="3518866566087677312">Ajouter aux favoris les éléments sur lesquels vous souhaitez revenir plus tard</translation>
+<translation id="3519014757432845220">Aidez à améliorer la protection contre les pourriels en envoyant le contenu des notifications et l'URL du site à Google. Le contenu peut être révisé par des humains.</translation>
 <translation id="3519382402703204668">Choisir un onglet</translation>
 <translation id="3519564332031442870">Service dorsal d'impression</translation>
 <translation id="3519938335881974273">Enregistrer la page sous…</translation>
@@ -6621,6 +6622,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="563371367637259496">Cellulaire</translation>
 <translation id="5635312199252507107">Autoriser sur des sites particuliers</translation>
 <translation id="5636012309446422">Retirer <ph name="DEVICE" /> de <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="56360247219959198">Le dictionnaire <ph name="DICTIONARY" /> sera définitivement supprimé. Cette action est irréversible.</translation>
 <translation id="5636140764387862062">Plus d'actions pour le NIP</translation>
 <translation id="5636996382092289526">Pour utiliser <ph name="NETWORK_ID" />, vous devez d'abord <ph name="LINK_START" />accéder à la page de connexion du réseau<ph name="LINK_END" />, qui s'ouvrira automatiquement dans quelques secondes. Dans le cas contraire, ce réseau ne pourra pas être utilisé pour la connexion Internet.</translation>
 <translation id="5637476008227280525">Données mobiles activées</translation>
@@ -7738,6 +7740,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6459799433792303855">Fenêtre active déplacée sur un autre écran</translation>
 <translation id="6460601847208524483">Rechercher le suivant</translation>
 <translation id="6461170143930046705">Recherche de réseaux en cours…</translation>
+<translation id="6463488491707167747">Supprimer ce dictionnaire</translation>
 <translation id="6463596731306859179">Vous recevez des fenêtres contextuelles indésirables ou observez tout autre comportement inattendu? Parfois, les applications et les extensions que vous installez peuvent modifier les paramètres de ChromeOS sans que vous le sachiez.</translation>
 <translation id="6463668944631062248">Acceptez la demande de diffusion sur votre <ph name="DEVICE_NAME" /></translation>
 <translation id="6463795194797719782">&amp;Modifier</translation>

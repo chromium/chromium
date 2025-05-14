@@ -183,6 +183,7 @@
 <translation id="1807709131360304325">Открыть новое окно</translation>
 <translation id="1810845389119482123">Синхронизация не настроена</translation>
 <translation id="1812027881030482584">Нельзя выполнить вход в аккаунт на сайте <ph name="SITE_ETLD_PLUS_ONE" /> с помощью сервиса "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
+<translation id="1820408774134375111">Нижний экран входа в аккаунт</translation>
 <translation id="1825772852827001597">Способы оплаты и адреса из Google Pay не будут шифроваться, а история браузера Chrome – синхронизироваться.
 Прочесть ваши зашифрованные данные сможет только тот, кто знает кодовую фразу. Она не отправляется компании Google и не хранится на ее серверах. Если вы забыли кодовую фразу или хотите ее изменить, <ph name="BEGIN_LINK" />удалите данные Chrome из аккаунта<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Найти на странице</translation>
@@ -191,6 +192,7 @@
 <translation id="1871098866036088250">Открывать в браузере Chrome</translation>
 <translation id="1877026089748256423">Версия Chrome устарела</translation>
 <translation id="1877073879466606884">Вы используете управляемый профиль. Администратор может удаленно изменять настройки профиля, анализировать отчеты с информацией о браузере и выполнять другие задачи.</translation>
+<translation id="1879904908408734349">Нижний экран входа в аккаунт закрыт</translation>
 <translation id="1883903952484604915">Скачанные</translation>
 <translation id="189358972401248634">Другие языки</translation>
 <translation id="1899175549411605574">Нижний экран с информацией о ценах</translation>
@@ -539,6 +541,7 @@
 <translation id="3516053221628030540">Перейти в Google Play</translation>
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Разрешения на уведомления отозваны у 1 сайта, который вы давно не посещали.}one{Разрешения на уведомления отозваны у # сайта, который вы давно не посещали.}few{Разрешения на уведомления отозваны у # сайтов, которые вы давно не посещали.}many{Разрешения на уведомления отозваны у # сайтов, которые вы давно не посещали.}other{Разрешения на уведомления отозваны у # сайта, которые вы давно не посещали.}}</translation>
 <translation id="3518985090088779359">Продолжить</translation>
+<translation id="3519014757432845220">Отправляйте контент уведомлений и URL сайтов в Google. Это поможет нам улучшать защиту от спама. Контент могут проверять специалисты.</translation>
 <translation id="351952459507671940">Добавить в новую группу</translation>
 <translation id="3521388823983121502">Не удалось войти через <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Доступно обновление. Другие параметры…</translation>
@@ -854,6 +857,7 @@
 <translation id="4943703118917034429">Виртуальная реальность</translation>
 <translation id="4943872375798546930">Нет результатов</translation>
 <translation id="4957722034734105353">Подробнее…</translation>
+<translation id="4959115606310463263">Нижний экран входа в аккаунт открыт наполовину</translation>
 <translation id="4961107849584082341">Эту страницу можно перевести на любой язык</translation>
 <translation id="4964614743143953889">Chrome предупреждает о небезопасных сайтах и файлах в интернете</translation>
 <translation id="496607651705915226">Чтобы сохранять и использовать новые пароли в аккаунте Google, обновите сервисы Google Play.</translation>
@@ -1146,6 +1150,7 @@
 <translation id="6277522088822131679">Не удалось распечатать страницу. Повторите попытку.</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6284472661216707937">Экран "Пароли на всех ваших устройствах" закрыт</translation>
+<translation id="6291294824436685757">Удалить данные о работе в браузере; выбрать, какие данные удалить</translation>
 <translation id="6295158916970320988">Все сайты</translation>
 <translation id="6296366034485697675">Экспортировать и удалить</translation>
 <translation id="629730747756840877">Аккаунт</translation>
@@ -1613,6 +1618,7 @@
 <translation id="8179976553408161302">ВВОД</translation>
 <translation id="8186512483418048923">Осталось файлов: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Остался 1 день</translation>
+<translation id="8192765420340770300">Нижний экран входа в аккаунт открыт полностью</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ваши устройства<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="820568752112382238">Часто посещаемые сайты</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и ещё <ph name="NUMBER_OF_OTHER_MEMBERS" /> пользователь}one{Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и ещё <ph name="NUMBER_OF_OTHER_MEMBERS" /> пользователь}few{Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и ещё <ph name="NUMBER_OF_OTHER_MEMBERS" /> пользователя}many{Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и ещё <ph name="NUMBER_OF_OTHER_MEMBERS" /> пользователей}other{Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и ещё <ph name="NUMBER_OF_OTHER_MEMBERS" /> пользователя}}</translation>
@@ -1809,6 +1815,7 @@
 <translation id="9050666287014529139">Кодовая фраза</translation>
 <translation id="9055497320631373736">Этот сайт снова может рекомендовать рекламу</translation>
 <translation id="9057030985451135243">Узнайте о группах вкладок с общим доступом</translation>
+<translation id="9063400323119781058">Подписка на уведомления отменена</translation>
 <translation id="9063523880881406963">Выключить полную версию сайта</translation>
 <translation id="9065203028668620118">Изменить</translation>
 <translation id="9065383040763568503">Маловажные данные, например относящиеся к сайтам, которые вы редко посещаете или на которых не сохранили настройки.</translation>

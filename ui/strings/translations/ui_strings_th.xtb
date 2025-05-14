@@ -162,6 +162,7 @@
 <translation id="6264365405983206840">เลือก&amp;ทั้งหมด</translation>
 <translation id="6346952829206698721">วางจากคลิปบอร์ด</translation>
 <translation id="6364916375976753737">เลื่อนทางซ้าย</translation>
+<translation id="63712816010840859">หากหน้าจอปัจจุบันไม่ใช่หน้าจอสัมผัส ให้กด Esc</translation>
 <translation id="6394627529324717982">จุลภาค</translation>
 <translation id="6397363302884558537">หยุดพูด</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{1 วินาทีที่ผ่านมา}other{# วินาทีที่ผ่านมา}}</translation>
@@ -173,6 +174,7 @@
 <translation id="6612467943526193239">หากต้องการออกจากการปรับเทียบ ให้กด Esc</translation>
 <translation id="6620110761915583480">บันทึกไฟล์</translation>
 <translation id="6699343763173986273">แทร็กถัดไปของสื่อ</translation>
+<translation id="6738856801552481343">หากหน้าจอนี้ไม่ใช่หน้าจอสัมผัส ให้กด Esc</translation>
 <translation id="6807086321996342431">คอลัมน์ <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">หยุดสื่อ</translation>
 <translation id="6845383723252244143">เลือกโฟลเดอร์</translation>
