@@ -102,8 +102,16 @@ LoadKeyDistributionDataImpl(const base::FilePath& file_path) {
     }
   }
 
+  IwaKeyDistributionInfoProvider::ManagedAllowlist managed_allowlist;
+  if (key_distribution.has_iwa_access_control()) {
+    managed_allowlist = base::MakeFlatSet<std::string>(
+        key_distribution.iwa_access_control().managed_allowlist(), /*comp=*/{},
+        /*proj=*/[](const auto& pair) { return pair.first; });
+  }
+
   return std::make_tuple(std::move(key_rotations),
-                         std::move(special_app_permissions));
+                         std::move(special_app_permissions),
+                         std::move(managed_allowlist));
 }
 
 std::unique_ptr<IwaKeyDistributionInfoProvider>&
@@ -258,15 +266,16 @@ void IwaKeyDistributionInfoProvider::OnKeyDistributionDataLoaded(
     return;
   }
 
-  ASSIGN_OR_RETURN((auto [key_rotations, special_app_permissions]),
-                   std::move(result), [&](IwaComponentUpdateError error) {
-                     DispatchComponentUpdateError(component_version, error);
-                   });
+  ASSIGN_OR_RETURN(
+      (auto [key_rotations, special_app_permissions, managed_allowlist]),
+      std::move(result), [&](IwaComponentUpdateError error) {
+        DispatchComponentUpdateError(component_version, error);
+      });
 
   // TODO(crbug.com/410532804): Add allowlist to the proto file.
   data_ = ComponentData(component_version, std::move(key_rotations),
                         std::move(special_app_permissions),
-                        /*managed_allowlist=*/{}, is_preloaded);
+                        std::move(managed_allowlist), is_preloaded);
   SignalOnDataReady(is_preloaded);
   DispatchComponentUpdateSuccess(component_version, is_preloaded);
 }

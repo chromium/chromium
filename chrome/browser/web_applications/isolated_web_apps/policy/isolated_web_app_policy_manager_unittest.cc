@@ -431,15 +431,9 @@ class IsolatedWebAppManagedAllowlistTest
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kIsolatedWebAppManagedAllowlist};
 };
+using base::test::HasValue;
 
-// TODO(crbug.com/410532804): Flaky on Mac OS, Windows. It will be fixed
-// in the next CL by reading component directly from the proto file.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_AllowedAppInstalled DISABLED_AllowedAppInstalled
-#else
-#define MAYBE_AllowedAppInstalled AllowedAppInstalled
-#endif
-TEST_F(IsolatedWebAppManagedAllowlistTest, MAYBE_AllowedAppInstalled) {
+TEST_F(IsolatedWebAppManagedAllowlistTest, AllowedAppInstalled) {
   const auto url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_1());
 
@@ -451,13 +445,11 @@ TEST_F(IsolatedWebAppManagedAllowlistTest, MAYBE_AllowedAppInstalled) {
   IsolatedWebAppPolicyManager::SetOnInstallTaskCompletedCallbackForTesting(
       future.GetRepeatingCallback());
 
-  CHECK_DEREF(IwaKeyDistributionInfoProvider::GetInstance())
-      .SetComponentDataForTesting(IwaKeyDistributionInfoProvider::ComponentData(
-          /*version=*/base::Version("1.0.0"),
-          /*key_rotations=*/{},
-          /*special_app_permissions=*/{},
-          /*managed_allowlist=*/{web_bundle_id_1().id()},
-          /*is_preloaded=*/false));
+  // Update allowlist
+  EXPECT_THAT(test::UpdateKeyDistributionInfoWithAllowlist(
+                  base::Version("1.0.1"),
+                  /*managed_allowlist=*/{web_bundle_id_1().id()}),
+              HasValue());
 
   EXPECT_TRUE(
       IwaKeyDistributionInfoProvider::GetInstance()->IsManagedInstallPermitted(
@@ -489,6 +481,12 @@ TEST_F(IsolatedWebAppManagedAllowlistTest, NotAllowedAppInstallationRefused) {
       future;
   IsolatedWebAppPolicyManager::SetOnInstallTaskCompletedCallbackForTesting(
       future.GetRepeatingCallback());
+
+  // Ensure allowlist is empty
+  EXPECT_THAT(
+      test::UpdateKeyDistributionInfoWithAllowlist(base::Version("1.0.1"),
+                                                   /*managed_allowlist=*/{}),
+      HasValue());
 
   EXPECT_FALSE(
       IwaKeyDistributionInfoProvider::GetInstance()->IsManagedInstallPermitted(

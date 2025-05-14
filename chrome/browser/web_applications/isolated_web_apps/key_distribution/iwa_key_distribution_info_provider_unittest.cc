@@ -70,11 +70,15 @@ IwaKeyDistribution CreateValidData() {
 
   IwaKeyRotations key_rotations;
   IwaKeyRotations::KeyRotationInfo kr_info;
+  IwaAccessControl access_control;
 
   kr_info.set_expected_key(base::Base64Encode(kExpectedKey));
   key_rotations.mutable_key_rotations()->emplace(kWebBundleId,
                                                  std::move(kr_info));
   *key_distribution.mutable_key_rotation_data() = std::move(key_rotations);
+  key_distribution.mutable_iwa_access_control()
+      ->mutable_managed_allowlist()
+      ->emplace(kWebBundleId, IwaAccessControl_ManagedAllowlistItemData());
 
   return key_distribution;
 }

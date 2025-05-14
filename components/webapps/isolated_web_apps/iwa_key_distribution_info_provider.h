@@ -57,11 +57,13 @@ class IwaKeyDistributionInfoProvider {
 
   using KeyRotations = base::flat_map<std::string, KeyRotationInfo>;
   using ManagedAllowlist = base::flat_set<std::string>;
-  using QueueOnDemandUpdateCallback = base::RepeatingCallback<bool(
-      base::PassKey<IwaKeyDistributionInfoProvider>)>;
   using SpecialAppPermissions =
       base::flat_map<std::string, SpecialAppPermissionsInfo>;
-  using KeyDistributionData = std::tuple<KeyRotations, SpecialAppPermissions>;
+  using KeyDistributionData =
+      std::tuple<KeyRotations, SpecialAppPermissions, ManagedAllowlist>;
+
+  using QueueOnDemandUpdateCallback = base::RepeatingCallback<bool(
+      base::PassKey<IwaKeyDistributionInfoProvider>)>;
 
   class Observer : public base::CheckedObserver {
    public:

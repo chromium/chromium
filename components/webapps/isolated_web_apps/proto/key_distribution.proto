@@ -14,6 +14,9 @@ message IwaKeyDistribution {
   // Data about special app permissions. These permissions provide certain
   // trusted and allowlisted apps additional and more powerful permissions.
   optional IwaSpecialAppPermissions special_app_permissions_data = 2;
+
+  // Data about allowlisted/blocklisted apps.
+  optional IwaAccessControl iwa_access_control = 3;
 }
 
 message IwaKeyRotations {
@@ -40,4 +43,13 @@ message IwaSpecialAppPermissions {
   // A list of special app permissions mapping web bundle IDs to additional
   // capabilities.
   map<string, SpecialAppPermissions> special_app_permissions = 1;
+}
+
+message IwaAccessControl {
+  // Types introduced for the future extensibility.
+  message ManagedAllowlistItemData {}
+
+  // Keys represent web bundle ids of allowed apps.
+  // Only allowed apps can be installed and updated.
+  map<string, ManagedAllowlistItemData> managed_allowlist = 1;
 }

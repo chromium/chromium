@@ -41,6 +41,13 @@ base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
     const std::string& web_bundle_id,
     std::optional<base::span<const uint8_t>> expected_key);
 
+// Synchronously updates the key distribution info provider with a protobuf
+// that only contains bundle ids in the managed allowlist
+base::expected<void, IwaComponentUpdateError>
+UpdateKeyDistributionInfoWithAllowlist(
+    const base::Version& version,
+    const std::vector<std::string>& managed_allowlist);
+
 // Writes `kd_proto` into `DIR_COMPONENT_USER/IwaKeyDistribution/{version}` and
 // triggers the registration process with the component updater. The directory
 // is deleted once IwaKeyDistributionInfoProvider has processed the update

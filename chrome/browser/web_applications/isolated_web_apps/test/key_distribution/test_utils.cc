@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 
+#include <optional>
+
 #include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -34,14 +36,23 @@ class ComponentUpdateWaiter : public IwaKeyDistributionInfoProvider::Observer {
  public:
   using UpdateCallback = base::OnceCallback<void(ComponentMetadataOrError)>;
 
-  explicit ComponentUpdateWaiter(UpdateCallback on_update)
-      : on_update_(std::move(on_update)) {
+  // The waiter invokes the `on_update` callback when the updated
+  // component's version matches the provided `version`, or on the first
+  // update if no `version` is specified.
+  explicit ComponentUpdateWaiter(
+      UpdateCallback on_update,
+      std::optional<base::Version> wait_until_version = std::nullopt)
+      : on_update_(std::move(on_update)),
+        version_(std::move(wait_until_version)) {
     obs_.Observe(IwaKeyDistributionInfoProvider::GetInstance());
   }
 
   // IwaKeyRotationInfoProvider::Observer:
   void OnComponentUpdateSuccess(const base::Version& version,
                                 bool is_preloaded) override {
+    if (version_ && version_ != version) {
+      return;
+    }
     std::move(on_update_)
         .Run(IwaComponentMetadata{.version = version,
                                   .is_preloaded = is_preloaded});
@@ -50,12 +61,16 @@ class ComponentUpdateWaiter : public IwaKeyDistributionInfoProvider::Observer {
 
   void OnComponentUpdateError(const base::Version& version,
                               IwaComponentUpdateError error) override {
+    if (version_ && version_ != version) {
+      return;
+    }
     std::move(on_update_).Run(base::unexpected(error));
     obs_.Reset();
   }
 
  private:
   UpdateCallback on_update_;
+  std::optional<base::Version> version_;
   base::ScopedObservation<IwaKeyDistributionInfoProvider,
                           IwaKeyDistributionInfoProvider::Observer>
       obs_{this};
@@ -67,13 +82,11 @@ base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
     const base::Version& version,
     const base::FilePath& path) {
   ComponentUpdateFuture future;
-  auto waiter = std::make_unique<ComponentUpdateWaiter>(future.GetCallback());
+  auto waiter = ComponentUpdateWaiter(future.GetCallback(), version);
   IwaKeyDistributionInfoProvider::GetInstance()->LoadKeyDistributionData(
       version, path, /*is_preloaded=*/false);
   ASSIGN_OR_RETURN((auto [loaded_version, is_preloaded]), future.Take());
-  if (version != loaded_version || is_preloaded) {
-    return base::unexpected(IwaComponentUpdateError::kStaleVersion);
-  }
+  CHECK(version == loaded_version && !is_preloaded);
   return base::ok();
 }
 
@@ -100,6 +113,20 @@ base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
   key_rotations.mutable_key_rotations()->emplace(web_bundle_id,
                                                  std::move(kr_info));
   *key_distribution.mutable_key_rotation_data() = std::move(key_rotations);
+  return UpdateKeyDistributionInfo(version, key_distribution);
+}
+
+base::expected<void, IwaComponentUpdateError>
+UpdateKeyDistributionInfoWithAllowlist(
+    const base::Version& version,
+    const std::vector<std::string>& managed_allowlist) {
+  IwaKeyDistribution key_distribution;
+  for (const auto& bundle_id : managed_allowlist) {
+    auto& managed_allowlist_proto =
+        *key_distribution.mutable_iwa_access_control()
+             ->mutable_managed_allowlist();
+    managed_allowlist_proto[bundle_id] = {};
+  }
   return UpdateKeyDistributionInfo(version, key_distribution);
 }
 
