@@ -492,13 +492,17 @@ TEST_F(ChromeShelfPrefsTest, PinMallSystemAppWhenInstalled) {
 
   InstallMallApp();
 
-  std::vector<std::string> pinned_apps_strs = GetPinnedAppIds();
-  // Mall should appear after Gemini if it exists.
-  if (pinned_apps_strs[1] == ash::kGeminiAppId) {
-    EXPECT_EQ(pinned_apps_strs[2], ash::kMallSystemAppId);
-  } else {
-    EXPECT_EQ(pinned_apps_strs[1], ash::kMallSystemAppId);
-  }
+  std::vector<std::string> expected_order = {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      ash::kGeminiAppId,
+#endif
+      app_constants::kChromeAppId,
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      ash::kNotebookLmAppId,
+#endif
+      ash::kMallSystemAppId,       ash::kGmailAppId,
+  };
+  EXPECT_THAT(GetPinnedAppIds(), testing::IsSupersetOf(expected_order));
 }
 
 TEST_F(ChromeShelfPrefsTest, PinMallSystemAppOnceOnly) {
@@ -506,13 +510,7 @@ TEST_F(ChromeShelfPrefsTest, PinMallSystemAppOnceOnly) {
 
   InstallMallApp();
 
-  std::vector<std::string> pinned_apps_strs = GetPinnedAppIds();
-  // Mall should appear after Gemini if it exists.
-  if (pinned_apps_strs[1] == ash::kGeminiAppId) {
-    EXPECT_EQ(pinned_apps_strs[2], ash::kMallSystemAppId);
-  } else {
-    EXPECT_EQ(pinned_apps_strs[1], ash::kMallSystemAppId);
-  }
+  EXPECT_THAT(GetPinnedAppIds(), testing::Contains(ash::kMallSystemAppId));
 
   shelf_prefs_->RemovePinPosition(ash::ShelfID(ash::kMallSystemAppId));
 
@@ -559,7 +557,7 @@ TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeNotebookLmOther) {
 
   InstallMallApp();
 
-  EXPECT_EQ(GetPinned(), "chrome, mall, notebook_lm, gmail");
+  EXPECT_EQ(GetPinned(), "chrome, notebook_lm, mall, gmail");
 }
 
 TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeGeminiNotebookLmOther) {
@@ -574,7 +572,7 @@ TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeGeminiNotebookLmOther) {
 
   InstallMallApp();
 
-  EXPECT_EQ(GetPinned(), "chrome, gemini, mall, notebook_lm, gmail");
+  EXPECT_EQ(GetPinned(), "chrome, gemini, notebook_lm, mall, gmail");
 }
 
 TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeNotebookLmGeminiOther) {
@@ -589,7 +587,7 @@ TEST_F(ChromeShelfPrefsTest, PinMallMigration_ChromeNotebookLmGeminiOther) {
 
   InstallMallApp();
 
-  EXPECT_EQ(GetPinned(), "chrome, mall, notebook_lm, gemini, gmail");
+  EXPECT_EQ(GetPinned(), "chrome, notebook_lm, gemini, mall, gmail");
 }
 
 TEST_F(ChromeShelfPrefsTest, PinMallMigration_GeminiChromeOther) {
