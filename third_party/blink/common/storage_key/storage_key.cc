@@ -420,7 +420,7 @@ std::optional<StorageKey> StorageKey::Deserialize(std::string_view in) {
       const GURL url_precursor(url_precursor_substr);
       const url::SchemeHostPort tuple_precursor(url_precursor);
 
-      // The precursor must be empry or valid, and the serialization should be
+      // The precursor must be empty or valid, and the serialization should be
       // reversible.
       if ((!url_precursor.is_empty() && !tuple_precursor.IsValid()) ||
           tuple_precursor.Serialize() != url_precursor_substr) {
