@@ -645,6 +645,14 @@ export class CdpTarget {
       );
     }
 
+    if (this.#userContextConfig.acceptInsecureCerts !== undefined) {
+      promises.push(
+        this.cdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
+          ignore: this.#userContextConfig.acceptInsecureCerts,
+        }),
+      );
+    }
+
     await Promise.all(promises);
   }
 

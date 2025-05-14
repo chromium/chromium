@@ -17,7 +17,7 @@
 
 import type {CdpClient} from '../cdp/CdpClient';
 import type {CdpConnection} from '../cdp/CdpConnection.js';
-import type {Browser, ChromiumBidi, Session} from '../protocol/protocol.js';
+import type {Browser, ChromiumBidi} from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import {type LoggerFn, LogType} from '../utils/log.js';
 import {ProcessingQueue} from '../utils/ProcessingQueue.js';
@@ -26,6 +26,7 @@ import type {Result} from '../utils/result.js';
 import type {BidiCommandParameterParser} from './BidiParser.js';
 import type {BidiTransport} from './BidiTransport.js';
 import {CommandProcessor, CommandProcessorEvents} from './CommandProcessor.js';
+import {type MapperOptions, MapperOptionsStorage} from './MapperOptions.js';
 import {BluetoothProcessor} from './modules/bluetooth/BluetoothProcessor.js';
 import {UserContextStorage} from './modules/browser/UserContextStorage.js';
 import {CdpTargetManager} from './modules/cdp/CdpTargetManager.js';
@@ -41,12 +42,6 @@ import type {OutgoingMessage} from './OutgoingMessage.js';
 
 interface BidiServerEvent extends Record<string | symbol, unknown> {
   message: ChromiumBidi.Command;
-}
-
-export interface MapperOptions {
-  acceptInsecureCerts?: boolean;
-  unhandledPromptBehavior?: Session.UserPromptHandler;
-  'goog:prerenderingDisabled'?: boolean;
 }
 
 export class BidiServer extends EventEmitter<BidiServerEvent> {
@@ -106,6 +101,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       browserCdpClient,
       logger,
     );
+    const mapperOptionsStorage = new MapperOptionsStorage();
     this.#bluetoothProcessor = new BluetoothProcessor(
       this.#eventManager,
       this.#browsingContextStorage,
@@ -118,10 +114,12 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       this.#realmStorage,
       this.#preloadScriptStorage,
       networkStorage,
+      mapperOptionsStorage,
       this.#bluetoothProcessor,
       userContextStorage,
       parser,
       async (options: MapperOptions) => {
+        mapperOptionsStorage.mapperOptions = options;
         // This is required to ignore certificate errors when service worker is fetched.
         await browserCdpClient.sendCommand(
           'Security.setIgnoreCertificateErrors',

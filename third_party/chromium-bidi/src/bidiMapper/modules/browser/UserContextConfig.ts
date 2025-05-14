@@ -26,6 +26,7 @@ export class UserContextConfig {
    * The ID of the user context.
    */
   readonly userContextId: string;
+  acceptInsecureCerts?: boolean;
   viewport?: BrowsingContext.Viewport | null;
   devicePixelRatio?: number | null;
   geolocation?:

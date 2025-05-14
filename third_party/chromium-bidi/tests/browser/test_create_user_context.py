@@ -105,7 +105,8 @@ async def test_browser_create_user_context_proxy_server(
 async def test_browser_create_user_context_accept_insecure_certs_isolated(
         websocket, context_id, url_bad_ssl, capabilities,
         accept_insecure_certs):
-    pytest.xfail(reason="acceptInsecureCerts is not implemented")
+    if capabilities.get('acceptInsecureCerts') and not accept_insecure_certs:
+        pytest.xfail("TODO: 3398")
     user_context = await execute_command(
         websocket, {
             "method": "browser.createUserContext",
@@ -163,7 +164,9 @@ async def test_browser_create_user_context_accept_insecure_certs_isolated(
 async def test_browser_create_user_context_accept_insecure_certs_respected(
         websocket, context_id, url_bad_ssl, capabilities,
         accept_insecure_certs):
-    pytest.xfail(reason="acceptInsecureCerts is not implemented")
+    if capabilities.get('acceptInsecureCerts') and not accept_insecure_certs:
+        pytest.xfail("TODO: 3398")
+
     user_context = await execute_command(
         websocket, {
             "method": "browser.createUserContext",

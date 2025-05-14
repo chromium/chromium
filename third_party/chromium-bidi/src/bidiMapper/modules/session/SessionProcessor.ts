@@ -23,7 +23,7 @@ import {
   InvalidArgumentException,
   Session,
 } from '../../../protocol/protocol.js';
-import type {MapperOptions} from '../../BidiServer.js';
+import type {MapperOptions} from '../../MapperOptions.js';
 
 import type {EventManager} from './EventManager.js';
 

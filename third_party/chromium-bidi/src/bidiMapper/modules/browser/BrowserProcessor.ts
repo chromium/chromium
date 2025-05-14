@@ -25,6 +25,7 @@ import {
   UnknownErrorException,
 } from '../../../protocol/protocol.js';
 import type {CdpClient} from '../../BidiMapper.js';
+import type {MapperOptionsStorage} from '../../MapperOptions.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 import type {UserContextStorage} from './UserContextStorage.js';
@@ -33,14 +34,17 @@ export class BrowserProcessor {
   readonly #browserCdpClient: CdpClient;
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #userContextStorage: UserContextStorage;
+  readonly #mapperOptionsStorage: MapperOptionsStorage;
 
   constructor(
     browserCdpClient: CdpClient,
     browsingContextStorage: BrowsingContextStorage,
+    mapperOptionsStorage: MapperOptionsStorage,
     userContextStorage: UserContextStorage,
   ) {
     this.#browserCdpClient = browserCdpClient;
     this.#browsingContextStorage = browsingContextStorage;
+    this.#mapperOptionsStorage = mapperOptionsStorage;
     this.#userContextStorage = userContextStorage;
   }
 
@@ -56,11 +60,15 @@ export class BrowserProcessor {
     params: Record<string, any>,
   ): Promise<Browser.CreateUserContextResult> {
     if (params['acceptInsecureCerts'] !== undefined) {
-      throw new UnknownErrorException(
-        `Parameter "acceptInsecureCerts" is not implemented.`,
-      );
+      if (
+        params['acceptInsecureCerts'] === false &&
+        this.#mapperOptionsStorage.mapperOptions?.acceptInsecureCerts === true
+      )
+        // TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/3398
+        throw new UnknownErrorException(
+          `Cannot set user context's "acceptInsecureCerts" to false, when a capability "acceptInsecureCerts" is set to true`,
+        );
     }
-
     const request: Protocol.Target.CreateBrowserContextRequest = {
       proxyServer: params['goog:proxyServer'] ?? undefined,
     };
@@ -73,6 +81,11 @@ export class BrowserProcessor {
       'Target.createBrowserContext',
       request,
     );
+
+    this.#userContextStorage.getConfig(
+      context.browserContextId,
+    ).acceptInsecureCerts = params['acceptInsecureCerts'];
+
     return {
       userContext: context.browserContextId,
     };
