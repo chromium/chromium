@@ -1076,7 +1076,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   self.regularTabsMediator.gridConsumer = self.baseViewController;
   self.remoteTabsMediator.gridConsumer = self.baseViewController;
 
-  // Set the `baseViewController` current page.
+  // Set the `baseViewController` active and current page.
   TabGridPage page = profile->IsOffTheRecord() ? TabGridPageIncognitoTabs
                                                : TabGridPageRegularTabs;
   [_mediator setActivePage:page];
