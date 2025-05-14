@@ -23,6 +23,7 @@ build_webui("build") {
     "alert_indicators/tab_usb_connected.svg",
     "alert_indicators/vr_headset.svg",
     "tab_strip.html",
+    "tab_strip_playground.html",
   ]
 
   # Files holding a Polymer element definition and have an equivalent .html file.
@@ -40,6 +41,7 @@ build_webui("build") {
     "tab_swiper.ts",
     "tabs_api_proxy.ts",
     "tab_strip_api.ts",
+    "tab_list_playground.ts",
   ]
 
   mojo_files_deps = [
