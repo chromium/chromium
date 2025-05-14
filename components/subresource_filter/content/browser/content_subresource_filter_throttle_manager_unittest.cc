@@ -379,15 +379,9 @@ class ContentSubresourceFilterThrottleManagerTest
         *navigation_handle)
         ->MaybeAppendNavigationThrottles(registry);
 
-    created_safe_browsing_throttle_for_last_navigation_ = false;
-    for (auto& it : registry.throttles()) {
-      if (strcmp(it->GetNameForLogging(),
-                 "SafeBrowsingPageActivationThrottle") == 0) {
-        created_safe_browsing_throttle_for_last_navigation_ = true;
-      }
-
-      navigation_handle->RegisterThrottleForTesting(std::move(it));
-    }
+    created_safe_browsing_throttle_for_last_navigation_ =
+        registry.ContainsHeldThrottle("SafeBrowsingPageActivationThrottle");
+    registry.RegisterHeldThrottles();
   }
 
   void CreateAgentForHost(content::RenderFrameHost* host) {

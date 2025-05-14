@@ -42,4 +42,25 @@ void MockNavigationThrottleRegistry::MaybeAddThrottle(
   }
 }
 
+bool MockNavigationThrottleRegistry::ContainsHeldThrottle(
+    const std::string& name) {
+  CHECK_EQ(registration_mode_, RegistrationMode::kHold);
+
+  for (auto& it : throttles_) {
+    if (it->GetNameForLogging() == name) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void MockNavigationThrottleRegistry::RegisterHeldThrottles() {
+  CHECK_EQ(registration_mode_, RegistrationMode::kHold);
+
+  for (auto& it : throttles_) {
+    navigation_handle_->RegisterThrottleForTesting(std::move(it));
+  }
+  throttles_.clear();
+}
+
 }  // namespace content

@@ -403,9 +403,8 @@ class ThrottleManagerTest
         i--;
         continue;
       }
-      navigation_handle->RegisterThrottleForTesting(
-          std::move(registry.throttles()[i]));
     }
+    registry.RegisterHeldThrottles();
   }
 
   void CreateAgentForHost(content::RenderFrameHost* host) {

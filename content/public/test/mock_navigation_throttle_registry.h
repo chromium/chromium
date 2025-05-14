@@ -17,6 +17,8 @@ namespace content {
 //   NavigationThrottles so that the throttle can run after them all.
 // - Pass it instead of the real implementation to check if a module
 //   under testing registers a target throttle.
+// If you want to register your testing throttle to the real registry, consider
+// using content::TestNavigationThrottleInserter instead.
 class MockNavigationThrottleRegistry : public NavigationThrottleRegistry {
  public:
   enum class RegistrationMode {
@@ -26,8 +28,9 @@ class MockNavigationThrottleRegistry : public NavigationThrottleRegistry {
 
     // AddThrottle() and MaybeAddThrottle() don't register the passed throttle
     // actually, but hold it in the mock. Users can query the hold throttles by
-    // throttles(), and can check if AddThrottle() or MaybeAddThrottle() was
-    // called with a specific throttle.
+    // throttles(), or call ContainsHeldThrottle() to check if AddThrottle() or
+    // MaybeAddThrottle() was called with a specific throttle. The held
+    // throttles can be registered manually via RegisterHeldThrottles().
     kHold,
   };
   explicit MockNavigationThrottleRegistry(
@@ -41,12 +44,18 @@ class MockNavigationThrottleRegistry : public NavigationThrottleRegistry {
   void AddThrottle(std::unique_ptr<NavigationThrottle> throttle) override;
   void MaybeAddThrottle(std::unique_ptr<NavigationThrottle> throttle) override;
 
+  // Checks if the registry running with `kHold` mode contains a throttle with
+  // the given name.
+  bool ContainsHeldThrottle(const std::string& name);
+
+  // Registers the held `throttles_` that are added in the registry running with
+  /// `kHold` mode. The throttles are removed from `throttles_` and will run for
+  // the underlying navigation.
+  void RegisterHeldThrottles();
+
   std::vector<std::unique_ptr<NavigationThrottle>>& throttles() {
     return throttles_;
   }
-
-  // TODO(https://crbug.com/412524375): Implement Flush() to register the hold
-  // throttles at the specified timing.
 
  private:
   const raw_ref<NavigationHandle> navigation_handle_;
