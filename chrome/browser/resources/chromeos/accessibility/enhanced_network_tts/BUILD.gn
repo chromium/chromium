@@ -9,11 +9,16 @@ import(
 import("//chrome/common/features.gni")
 import("//chrome/test/base/ash/js2gtest.gni")
 import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/bundle_js.gni")
+import("//ui/webui/resources/tools/minify_js.gni")
 
 assert(is_chromeos)
 
 group("build") {
-  deps = [ ":copied_files" ]
+  deps = [
+    ":copy_background",
+    ":minify_js",
+  ]
 }
 
 enhanced_network_tts_dir =
@@ -32,9 +37,6 @@ ts_modules = [
   "background.ts",
   "enhanced_network_tts.ts",
 ]
-
-# JS files needed by the TS compiler.
-js_deps = []
 
 # Root dir must be parent directory to access common/.
 ts_library("ts_build") {
@@ -60,28 +62,37 @@ ts_library("ts_build") {
     "//tools/typescript/definitions/chrome_event.d.ts",
   ]
 
-  in_files = ts_modules + js_deps
+  in_files = ts_modules
 
   tsconfig_base = "../tsconfig.base.json"
 }
 
-# Instead of setting up one copy target for each subdirectory, use a script
-# to copy all files.
-run_jsbundler("copied_files") {
-  mode = "copy"
+bundle_js("bundle_js") {
+  visibility = [ ":minify_js" ]
+
+  host = "_ignored_"
+  input = rebase_path("$tsc_out_dir", root_build_dir)
+  js_module_in_files = [ "background.js" ]
+  out_folder = "$target_gen_dir/bundle"
+
   deps = [
     ":ts_build",
     "../common:copied_files",
   ]
-  dest_dir = enhanced_network_tts_dir
-  sources = [ "background.html" ]
-  sources += filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
+}
 
-  rewrite_rules = [
-    rebase_path("$tsc_out_dir", root_build_dir) + ":",
-    rebase_path(".", root_build_dir) + ":",
-    rebase_path(closure_library_dir, root_build_dir) + ":closure",
-  ]
+minify_js("minify_js") {
+  visibility = [ ":build" ]
+
+  deps = [ ":bundle_js" ]
+  in_folder = "$target_gen_dir/bundle"
+  in_files = [ "background.rollup.js" ]
+  out_folder = "$enhanced_network_tts_dir"
+}
+
+copy("copy_background") {
+  sources = [ "background.html" ]
+  outputs = [ "$enhanced_network_tts_dir/background.html" ]
 }
 
 # Copy all JS and TS sources to a staging folder. All generated TS/JS files
