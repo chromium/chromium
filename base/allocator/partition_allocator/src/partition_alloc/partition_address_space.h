@@ -148,7 +148,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
                                 kThreadIsolatedPoolBaseMask);
 #endif  // PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
       case kConfigurablePoolHandle:
-        return PoolOffsetLookup(setup_.configurable_pool_base_mask_,
+        return PoolOffsetLookup(setup_.configurable_pool_base_address_,
                                 setup_.configurable_pool_base_mask_);
       default:
         PA_NOTREACHED();
