@@ -94,7 +94,7 @@
 #include "third_party/blink/renderer/modules/storage/storage_namespace.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/inspector_web_audio_agent.h"
-#include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_context_factory.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_canvas_context.h"
 #include "third_party/blink/renderer/modules/worklet/animation_and_paint_worklet_thread.h"
@@ -207,9 +207,9 @@ void ModulesInitializer::Initialize() {
   HTMLCanvasElement::RegisterRenderingContextFactory(
       std::make_unique<CanvasRenderingContext2D::Factory>());
   HTMLCanvasElement::RegisterRenderingContextFactory(
-      std::make_unique<WebGLRenderingContext::Factory>());
+      WebGLContextFactory::MakeWebGL1());
   HTMLCanvasElement::RegisterRenderingContextFactory(
-      std::make_unique<WebGL2RenderingContext::Factory>());
+      WebGLContextFactory::MakeWebGL2());
   HTMLCanvasElement::RegisterRenderingContextFactory(
       std::make_unique<ImageBitmapRenderingContext::Factory>());
   HTMLCanvasElement::RegisterRenderingContextFactory(
@@ -219,9 +219,9 @@ void ModulesInitializer::Initialize() {
   OffscreenCanvas::RegisterRenderingContextFactory(
       std::make_unique<OffscreenCanvasRenderingContext2D::Factory>());
   OffscreenCanvas::RegisterRenderingContextFactory(
-      std::make_unique<WebGLRenderingContext::Factory>());
+      WebGLContextFactory::MakeWebGL1());
   OffscreenCanvas::RegisterRenderingContextFactory(
-      std::make_unique<WebGL2RenderingContext::Factory>());
+      WebGLContextFactory::MakeWebGL2());
   OffscreenCanvas::RegisterRenderingContextFactory(
       std::make_unique<ImageBitmapRenderingContext::Factory>());
   OffscreenCanvas::RegisterRenderingContextFactory(

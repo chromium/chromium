@@ -27,15 +27,7 @@
 
 #include <memory>
 
-#include "base/numerics/checked_math.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/local_frame_client.h"
-#include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
-#include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/modules/canvas/htmlcanvas/v8_rendering_context.h"
 #include "third_party/blink/renderer/modules/canvas/offscreencanvas/v8_offscreen_rendering_context.h"
 #include "third_party/blink/renderer/modules/webgl/angle_instanced_arrays.h"
@@ -79,80 +71,8 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_multi_draw.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_multi_draw_instanced_base_vertex_base_instance.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_polygon_mode.h"
-#include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 
 namespace blink {
-
-class ExceptionState;
-
-// An helper function for the two create() methods. The return value is an
-// indicate of whether the create() should return nullptr or not.
-static bool ShouldCreateContext(
-    WebGraphicsContext3DProvider* context_provider) {
-  if (!context_provider)
-    return false;
-  gpu::gles2::GLES2Interface* gl = context_provider->ContextGL();
-  std::unique_ptr<Extensions3DUtil> extensions_util =
-      Extensions3DUtil::Create(gl);
-  if (!extensions_util)
-    return false;
-  if (extensions_util->SupportsExtension("GL_EXT_debug_marker")) {
-    String context_label(
-        String::Format("WebGLRenderingContext-%p", context_provider));
-    gl->PushGroupMarkerEXT(0, context_label.Ascii().c_str());
-  }
-  return true;
-}
-
-CanvasRenderingContext* WebGLRenderingContext::Factory::Create(
-    CanvasRenderingContextHost* host,
-    const CanvasContextCreationAttributesCore& attrs) {
-  // Create a copy of attrs so flags can be modified if needed before passing
-  // into the WebGLRenderingContext constructor.
-  CanvasContextCreationAttributesCore attribs = attrs;
-
-  // The xr_compatible attribute needs to be handled before creating the context
-  // because the GPU process may potentially be restarted in order to be XR
-  // compatible. This scenario occurs if the GPU process is not using the GPU
-  // that the VR headset is plugged into. If the GPU process is restarted, the
-  // WebGraphicsContext3DProvider must be created using the new one.
-  if (attribs.xr_compatible &&
-      !WebGLRenderingContextBase::MakeXrCompatibleSync(host)) {
-    // If xr compatibility is requested and we can't be xr compatible, return a
-    // context with the flag set to false.
-    attribs.xr_compatible = false;
-  }
-
-  Platform::GraphicsInfo graphics_info;
-  std::unique_ptr<WebGraphicsContext3DProvider> context_provider(
-      CreateWebGraphicsContext3DProvider(
-          host, attribs, Platform::kWebGL1ContextType, &graphics_info));
-  if (!ShouldCreateContext(context_provider.get()))
-    return nullptr;
-
-  WebGLRenderingContext* rendering_context =
-      MakeGarbageCollected<WebGLRenderingContext>(
-          host, std::move(context_provider), graphics_info, attribs);
-  if (!rendering_context->GetDrawingBuffer()) {
-    host->HostDispatchEvent(
-        WebGLContextEvent::Create(event_type_names::kWebglcontextcreationerror,
-                                  "Could not create a WebGL context."));
-    // We must dispose immediately so that when rendering_context is
-    // garbage-collected, it will not interfere with a subsequently created
-    // rendering context.
-    rendering_context->Dispose();
-    return nullptr;
-  }
-  rendering_context->InitializeNewContext();
-  rendering_context->RegisterContextExtensions();
-  return rendering_context;
-}
-
-void WebGLRenderingContext::Factory::OnError(HTMLCanvasElement* canvas,
-                                             const String& error) {
-  canvas->DispatchEvent(*WebGLContextEvent::Create(
-      event_type_names::kWebglcontextcreationerror, error));
-}
 
 WebGLRenderingContext::WebGLRenderingContext(
     CanvasRenderingContextHost* host,

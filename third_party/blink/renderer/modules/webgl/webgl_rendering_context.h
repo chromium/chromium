@@ -29,7 +29,6 @@
 #include <memory>
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
-#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_factory.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 
 namespace blink {
@@ -41,26 +40,6 @@ class WebGLRenderingContext final : public WebGLRenderingContextBase {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  class Factory : public CanvasRenderingContextFactory {
-   public:
-    Factory() = default;
-
-    Factory(const Factory&) = delete;
-    Factory& operator=(const Factory&) = delete;
-
-    ~Factory() override = default;
-
-    CanvasRenderingContext* Create(
-        CanvasRenderingContextHost*,
-        const CanvasContextCreationAttributesCore&) override;
-
-    CanvasRenderingContext::CanvasRenderingAPI GetRenderingAPI()
-        const override {
-      return CanvasRenderingContext::CanvasRenderingAPI::kWebgl;
-    }
-    void OnError(HTMLCanvasElement*, const String& error) override;
-  };
-
   WebGLRenderingContext(CanvasRenderingContextHost*,
                         std::unique_ptr<WebGraphicsContext3DProvider>,
                         const Platform::GraphicsInfo&,

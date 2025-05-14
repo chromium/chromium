@@ -672,6 +672,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
   friend class WebGLCompressedTexturePVRTC;
   friend class WebGLCompressedTextureS3TC;
   friend class WebGLCompressedTextureS3TCsRGB;
+  friend class WebGLContextFactory;
   friend class WebGLDebugShaders;
   friend class WebGLDrawBuffers;
   friend class WebGLDrawInstancedBaseVertexBaseInstance;
