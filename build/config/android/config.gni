@@ -209,19 +209,11 @@ if (is_android) {
     android_ndk_root = default_android_ndk_root
     android_ndk_version = default_android_ndk_version
 
-    # Android API level for 32 bits platforms
-    android32_ndk_api_level = default_min_sdk_version
+    android_ndk_api_level = default_min_sdk_version
 
-    # Android API level for 64 bits platforms
-    android64_ndk_api_level = default_min_sdk_version
-
-    if (default_min_sdk_version < 21) {
-      # Android did not support 64 bit before API 21.
-      android64_ndk_api_level = 21
-    }
     if (current_cpu == "riscv64" && default_min_sdk_version < 35) {
       # Android did not support RISC-V64 before API 35.
-      android64_ndk_api_level = 35
+      android_ndk_api_level = 35
     }
 
     android_sdk_root = default_android_sdk_root
@@ -320,6 +312,14 @@ if (is_android) {
     # Disable lint since increasing min_sdk_version can cause ObsoleteSdkInt warnings.
     disable_android_lint = true
   }
+
+  assert(
+      android_ndk_api_level >= min_supported_sdk_version,
+      "android_ndk_api_level ($android_ndk_api_level) must be >= min_supported_sdk_version ($min_supported_sdk_version)")
+
+  # These only exist until subrepos have removed usages of these.
+  android32_ndk_api_level = android_ndk_api_level
+  android64_ndk_api_level = android_ndk_api_level
 
   # We need a second declare_args block to make sure we are using the overridden
   # value of the arguments set above.
@@ -473,5 +473,5 @@ if (is_android) {
     "//third_party/kotlinc/current/lib/kotlinx-coroutines-core-jvm.jar",
   ]
 
-  android_logs = [ "android64_ndk_api_level=${android64_ndk_api_level}" ]
+  android_logs = [ "android_ndk_api_level=${android_ndk_api_level}" ]
 }

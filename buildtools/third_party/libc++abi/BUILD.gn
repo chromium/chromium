@@ -63,9 +63,7 @@ target(libcxxabi_target_type, "libc++abi") {
 
     # Android's bionic libc added support for '__cxa_thread_atexit_impl' as of
     # API level 23.
-    if (is_android &&
-        ((!android_64bit_target_cpu && android32_ndk_api_level >= 23) ||
-         (android_64bit_target_cpu && android64_ndk_api_level >= 23))) {
+    if (is_android && android_ndk_api_level >= 23) {
       defines += [ "HAVE___CXA_THREAD_ATEXIT_IMPL" ]
     }
   }

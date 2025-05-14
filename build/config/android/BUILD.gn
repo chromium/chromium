@@ -71,16 +71,8 @@ config("compiler") {
     cflags += [ "-mtls-dialect=trad" ]
   }
 
-  # $compile_api_level corresponds to the API level used for the sysroot path
-  # calculation in //build/config/android/config.gni
-  if (android_64bit_target_cpu) {
-    compile_api_level = android64_ndk_api_level
-  } else {
-    compile_api_level = android32_ndk_api_level
-  }
-
-  cflags += [ "--target=$android_abi_target$compile_api_level" ]
-  ldflags += [ "--target=$android_abi_target$compile_api_level" ]
+  cflags += [ "--target=$android_abi_target$android_ndk_api_level" ]
+  ldflags += [ "--target=$android_abi_target$android_ndk_api_level" ]
 
   # Assign any flags set for the C compiler to asmflags so that they are sent
   # to the assembler.

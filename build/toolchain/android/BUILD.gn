@@ -84,7 +84,7 @@ android_clang_toolchain("android_clang_arm64_hwasan") {
   toolchain_args = {
     current_cpu = "arm64"
     is_hwasan = true
-    android64_ndk_api_level = 29
+    android_ndk_api_level = 29
   }
 }
 

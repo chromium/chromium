@@ -30,7 +30,7 @@ def __enabled(ctx):
 def __filegroups(ctx):
     fg = {}
     for arch in __archs:
-        api_level = gn_logs.read(ctx).get("android64_ndk_api_level")
+        api_level = gn_logs.read(ctx).get("android_ndk_api_level")
         if api_level:
             group = "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/%s/%s:link" % (arch, api_level)
             fg[group] = {
