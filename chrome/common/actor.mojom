@@ -155,7 +155,8 @@ enum ActionResultCode {
   kToolUnknown = 16,
 
   ///////////////////////////////////////////////////////////////////////
-  // Codes 100-199: Errors for navigation.  (Not part of the ToolAction union.)
+  // Codes 100-199: Errors for navigation. (Not part of the ToolAction union
+  // as it's a browser-side tool.)
 
   // The requested URL was not valid.
   kNavigateInvalidUrl = 100,
@@ -195,6 +196,17 @@ enum ActionResultCode {
 
   // Arguments passed to the type tool were invalid.
   kTypeInvalidArguments = 700,
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 800-899: Errors for history tool. (Not part of the ToolAction union
+  // as it's a browser-side tool.)
+
+  // Calling GoBack/GoForward resulted in no navigations being created.
+  kHistoryNoNavigationsCreated = 800,
+
+  // Navigations were created but asynchronously cancelled before being started.
+  kHistoryCancelledBeforeStart = 801,
+
 };
 
 // All information required to invoke a tool in the renderer.

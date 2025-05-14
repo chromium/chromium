@@ -1180,15 +1180,17 @@ bool NavigationControllerImpl::CanGoToOffsetWithSkipping(int offset) {
 }
 #endif
 
-void NavigationControllerImpl::GoBack() {
+NavigationController::WeakNavigationHandleVector
+NavigationControllerImpl::GoBack() {
   const std::optional<int> target_index = GetIndexForGoBack();
 
   CHECK(target_index.has_value());
 
-  GoToIndex(*target_index);
+  return GoToIndex(*target_index);
 }
 
-void NavigationControllerImpl::GoForward() {
+NavigationController::WeakNavigationHandleVector
+NavigationControllerImpl::GoForward() {
   // Note that at least one entry (the last one) will be non-skippable since
   // entries are marked skippable only when they add another entry because of
   // redirect or pushState.
@@ -1196,13 +1198,18 @@ void NavigationControllerImpl::GoForward() {
 
   CHECK(target_index.has_value());
 
-  GoToIndex(*target_index);
+  return GoToIndex(*target_index);
 }
 
-void NavigationControllerImpl::GoToIndex(int index) {
-  GoToIndex(index, /*initiator_rfh=*/nullptr,
-            /*soft_navigation_heuristics_task_id=*/std::nullopt,
-            /*navigation_api_key=*/nullptr);
+NavigationController::WeakNavigationHandleVector
+NavigationControllerImpl::GoToIndex(int index) {
+  std::vector<base::WeakPtr<NavigationRequest>> requests =
+      GoToIndex(index, /*initiator_rfh=*/nullptr,
+                /*soft_navigation_heuristics_task_id=*/std::nullopt,
+                /*navigation_api_key=*/nullptr);
+  std::vector<base::WeakPtr<NavigationHandle>> handles;
+  std::ranges::move(requests, std::back_inserter(handles));
+  return handles;
 }
 
 std::vector<base::WeakPtr<NavigationRequest>>

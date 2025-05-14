@@ -132,9 +132,9 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   bool CanGoBack() override;
   bool CanGoForward() override;
   bool CanGoToOffset(int offset) override;
-  void GoBack() override;
-  void GoForward() override;
-  void GoToIndex(int index) override;
+  WeakNavigationHandleVector GoBack() override;
+  WeakNavigationHandleVector GoForward() override;
+  WeakNavigationHandleVector GoToIndex(int index) override;
   void GoToOffset(int offset) override;
   bool RemoveEntryAtIndex(int index) override;
   void PruneForwardEntries() override;

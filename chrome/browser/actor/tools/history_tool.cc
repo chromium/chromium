@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/tools/history_tool.h"
 
+#include "base/time/time.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/tabs/public/tab_interface.h"
@@ -12,6 +13,14 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
+
+namespace {
+
+// The polling interval used to update the pending_navigations_ list.
+constexpr base::TimeDelta kPendingNavigationPollingInterval =
+    base::Milliseconds(100);
+
+}  // namespace
 
 namespace actor {
 
@@ -27,6 +36,7 @@ HistoryTool::HistoryTool(TabInterface& tab, Direction direction)
 HistoryTool::~HistoryTool() = default;
 
 void HistoryTool::Validate(ValidateCallback callback) {
+  // TODO(crbug.com/409558980): Add distinct error codes.
   NavigationController& controller = web_contents()->GetController();
   if ((direction_ == kBack && !controller.CanGoBack()) ||
       (direction_ == kForward && !controller.CanGoForward())) {
@@ -42,35 +52,37 @@ void HistoryTool::Validate(ValidateCallback callback) {
 
 void HistoryTool::Invoke(InvokeCallback callback) {
   CHECK(web_contents());
-  CHECK(!is_collecting_new_navigations_);
+  CHECK(!IsInvokeInProgress());
+  CHECK(pending_navigations_.empty());
 
   invoke_callback_ = std::move(callback);
 
-  // TODO(crbug.com/406545255): A navigation resulting in BeforeUnload being
-  // executed isn't started until it is asynchronously resolved resulting in a
-  // navigation. It's not clear yet what to do in these cases.
-  {
-    // Track any new navigations started as a result of GoBack/GoForward.
-    is_collecting_new_navigations_ = true;
-    if (direction_ == kBack) {
-      web_contents()->GetController().GoBack();
-    } else {
-      CHECK_EQ(direction_, kForward);
-      web_contents()->GetController().GoForward();
-    }
+  CHECK(IsInvokeInProgress());
+
+  // TODO(crbug.com/417521502): A navigation may need to send a BeforeUnload
+  // event which could result in a modal dialog being presented the the user and
+  // the navigation is deferred until this dialog is confirmed (navigation
+  // proceeds) or canceled. The current approach here will wait until the dialog
+  // is manually dismissed by the user but we may want to provide automatic
+  // resolution here.
+
+  if (direction_ == kBack) {
+    pending_navigations_ = web_contents()->GetController().GoBack();
+  } else {
+    CHECK_EQ(direction_, kForward);
+    pending_navigations_ = web_contents()->GetController().GoForward();
   }
 
-  // Despite the above TODO about not handling BeforeUnload, navigation code has
-  // an async browser-based before unload step even if there is no beforeunload
-  // handler (this is the `is_legacy` case in SendBeforeUnload). Post a task
-  // to the same queue that uses to ensure that a navigation will have started
-  // by then.
-  content::GetUIThreadTaskRunner(
-      {content::BrowserTaskType::kBeforeUnloadBrowserResponse})
-      ->PostTask(FROM_HERE,
-                 base::BindOnce(
-                     &HistoryTool::LegacyBrowserBasedBeforeUnloadReplyComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
+  if (pending_navigations_.empty()) {
+    PostResponseTask(
+        std::move(invoke_callback_),
+        MakeResult(mojom::ActionResultCode::kHistoryNoNavigationsCreated));
+    return;
+  }
+
+  // Ensure navigations that were started synchronously are moved to the
+  // in-flight list and start polling for navigation cancellation.
+  PurgePendingNavigations();
 }
 
 std::string HistoryTool::DebugString() const {
@@ -79,15 +91,37 @@ std::string HistoryTool::DebugString() const {
 }
 
 void HistoryTool::DidStartNavigation(NavigationHandle* navigation_handle) {
-  if (!is_collecting_new_navigations_ || !navigation_handle->IsHistory()) {
+  if (!IsInvokeInProgress() || !navigation_handle->IsHistory()) {
     return;
   }
 
-  navigation_handle_ids_.insert(navigation_handle->GetNavigationId());
+  size_t matching_navigations = std::erase_if(
+      pending_navigations_,
+      [navigation_handle](const base::WeakPtr<NavigationHandle>& other) {
+        return other &&
+               navigation_handle->GetNavigationId() == other->GetNavigationId();
+      });
+  CHECK_LE(matching_navigations, 1ul);
+
+  // Navigations can sometimes be started synchronously from GoBack/GoForward
+  // which means this point will be reached before pending_navigations_ is
+  // written (since it's written when GoBack/GoForward return) so add them
+  // unconditionally in that case. Invoke calls PurgePendingNavigations which
+  // will clear these entries from `pending_navigations_`. This only catches
+  // synchronously started navigations since Invoke will return failure
+  // immediately if no navigations were created.
+  if (pending_navigations_.empty() || matching_navigations > 0) {
+    in_flight_navigation_ids_.insert(navigation_handle->GetNavigationId());
+  }
 }
 
 void HistoryTool::DidFinishNavigation(NavigationHandle* navigation_handle) {
-  if (navigation_handle_ids_.erase(navigation_handle->GetNavigationId())) {
+  if (!IsInvokeInProgress()) {
+    return;
+  }
+
+  // TODO(crbug.com/409558980): Add distinct error codes.
+  if (in_flight_navigation_ids_.erase(navigation_handle->GetNavigationId())) {
     auto result =
         (navigation_handle->HasCommitted() && !navigation_handle->IsErrorPage())
             ? MakeOkResult()
@@ -97,21 +131,49 @@ void HistoryTool::DidFinishNavigation(NavigationHandle* navigation_handle) {
 }
 
 void HistoryTool::FinishToolInvocationIfNeeded(mojom::ActionResultPtr result) {
-  CHECK(invoke_callback_);
+  CHECK(IsInvokeInProgress());
+
   // This responds with failure if any navigations fails.
-  if (navigation_handle_ids_.empty() || !IsOk(*result)) {
+  if ((in_flight_navigation_ids_.empty() && pending_navigations_.empty()) ||
+      !IsOk(*result)) {
     PostResponseTask(std::move(invoke_callback_), std::move(result));
   }
 }
 
-void HistoryTool::LegacyBrowserBasedBeforeUnloadReplyComplete() {
-  is_collecting_new_navigations_ = false;
-
-  // If no navigations were started, we should complete now. Respond with
-  // failure since nothing changed.
-  if (navigation_handle_ids_.empty()) {
-    FinishToolInvocationIfNeeded(MakeErrorResult());
+void HistoryTool::PurgePendingNavigations() {
+  if (!IsInvokeInProgress()) {
+    return;
   }
+
+  std::erase_if(
+      pending_navigations_, [this](base::WeakPtr<NavigationHandle>& handle) {
+        // Also remove navigations that have been started. This typically
+        // happens in DidStartNavigation but navigations started synchronously
+        // will happen before this list is populated.
+        return !handle ||
+               in_flight_navigation_ids_.contains(handle->GetNavigationId());
+      });
+
+  if (pending_navigations_.empty() && in_flight_navigation_ids_.empty()) {
+    // If no navigations were started and all handles were destroyed, the tool
+    // has completed without navigating.
+    FinishToolInvocationIfNeeded(
+        MakeResult(mojom::ActionResultCode::kHistoryCancelledBeforeStart));
+  } else if (!pending_navigations_.empty()) {
+    // If there are still unstarted navigations, poll this method again.
+    // TODO(crbug.com/417756996): Ideally the content API would have a signal
+    // for when a navigation was canceled before starting so we wouldn't have to
+    // poll.
+    content::GetUIThreadTaskRunner()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&HistoryTool::PurgePendingNavigations,
+                       weak_ptr_factory_.GetWeakPtr()),
+        kPendingNavigationPollingInterval);
+  }
+}
+
+bool HistoryTool::IsInvokeInProgress() const {
+  return !invoke_callback_.is_null();
 }
 
 }  // namespace actor

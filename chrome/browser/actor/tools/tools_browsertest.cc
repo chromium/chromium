@@ -1051,6 +1051,9 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, NavigateTool) {
 // History Tool
 // ===============================================
 
+// TODO(crbug.com/415385900): Add a test for navigation API canceling a
+// same-document navigation.
+
 // Basic test of the HistoryTool going back.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_Back) {
   const GURL url_first =
@@ -1278,8 +1281,32 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_ConcurrentNavigations) {
   EXPECT_EQ(web_contents()->GetURL(), main_frame_url);
 }
 
+// Ensure the history tool works correctly when a before unload handler is
+// present (but doesn't cause a prompt to show).
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_HasBeforeUnload) {
+  const GURL url_first =
+      embedded_test_server()->GetURL("/actor/blank.html?start");
+  const GURL url_second =
+      embedded_test_server()->GetURL("/actor/blank.html?target");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
+
+  // Add a no-op beforeunload handler. This won't show the prompt but may force
+  // the browser to send an event to the renderer to confirm which can change
+  // the async path taken by the navigation.
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     R"JS(
+                      addEventListener('beforeunload', () => {});
+                      )JS"));
+
+  TestFuture<mojom::ActionResultPtr> result_success;
+  actor_coordinator().Act(MakeHistoryBack(), result_success.GetCallback());
+  ExpectOkResult(result_success);
+  EXPECT_EQ(web_contents()->GetURL(), url_first);
+}
+
 // ===============================================
-// History Tool
+// Select Tool
 // ===============================================
 
 // Test that the SelectTool can select an ordinary <option> in a <select>
