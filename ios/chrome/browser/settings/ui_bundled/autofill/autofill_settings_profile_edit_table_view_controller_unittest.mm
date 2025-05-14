@@ -133,56 +133,65 @@ class AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled
   void TestViewData() {
     TableViewModel* model = [controller() tableViewModel];
 
-    NSString* countryCode = base::SysUTF16ToNSString(
-        profile_->GetRawInfo(autofill::FieldType::ADDRESS_HOME_COUNTRY));
+    constexpr auto fieldTypes = std::to_array<autofill::FieldType>(
+        {autofill::NAME_FULL, autofill::COMPANY_NAME,
+         autofill::ADDRESS_HOME_STREET_ADDRESS, autofill::ADDRESS_HOME_CITY,
+         autofill::ADDRESS_HOME_STATE, autofill::ADDRESS_HOME_ZIP,
+         autofill::ADDRESS_HOME_COUNTRY, autofill::PHONE_HOME_WHOLE_NUMBER,
+         autofill::EMAIL_ADDRESS});
 
     std::vector<std::pair<autofill::FieldType, std::u16string>> expected_values;
-    for (size_t i = 0; i < std::size(kProfileFieldsToDisplay); ++i) {
-      const AutofillProfileFieldDisplayInfo& field = kProfileFieldsToDisplay[i];
-      if (!FieldIsUsedInAddress(field.autofillType, countryCode)) {
-        continue;
-      }
-
+    for (const auto& type : fieldTypes) {
       expected_values.push_back(
-          {field.autofillType,
-           profile_->GetInfo(field.autofillType,
-                             GetApplicationContext()->GetApplicationLocale())});
+          {type, profile_->GetInfo(
+                     type, GetApplicationContext()->GetApplicationLocale())});
     }
 
-    EXPECT_EQ(expected_values.size(), (size_t)[model numberOfItemsInSection:0]);
-    for (size_t row = 0; row < expected_values.size(); row++) {
-      if (expected_values[row].first == autofill::ADDRESS_HOME_COUNTRY) {
+    size_t totalItems = (size_t)[model numberOfItemsInSection:0] +
+                        (size_t)[model numberOfItemsInSection:1] +
+                        (size_t)[model numberOfItemsInSection:2];
+
+    EXPECT_EQ(expected_values.size(), totalItems);
+    size_t section = 0;
+    size_t indexOfItemInSection = 0;
+    for (size_t i = 0; i < expected_values.size(); i++) {
+      if (indexOfItemInSection ==
+          (size_t)[model numberOfItemsInSection:section]) {
+        section++;
+        indexOfItemInSection = 0;
+      }
+
+      if (expected_values[i].first == autofill::ADDRESS_HOME_COUNTRY) {
         TableViewMultiDetailTextItem* countryCell =
             static_cast<TableViewMultiDetailTextItem*>(
-                GetTableViewItem(0, row));
-        EXPECT_NSEQ(base::SysUTF16ToNSString(expected_values[row].second),
+                GetTableViewItem(section, indexOfItemInSection));
+        EXPECT_NSEQ(base::SysUTF16ToNSString(expected_values[i].second),
                     countryCell.trailingDetailText);
+        indexOfItemInSection++;
         continue;
       }
-      TableViewTextEditItem* cell =
-          static_cast<TableViewTextEditItem*>(GetTableViewItem(0, row));
-      EXPECT_NSEQ(base::SysUTF16ToNSString(expected_values[row].second),
+
+      TableViewTextEditItem* cell = static_cast<TableViewTextEditItem*>(
+          GetTableViewItem(section, indexOfItemInSection));
+      EXPECT_NSEQ(base::SysUTF16ToNSString(expected_values[i].second),
                   cell.textFieldValue);
+      indexOfItemInSection++;
     }
   }
 };
 
 // Adding an account address results in an address section.
-// TODO(crbug.com/416030990): Adapt test to
-// AutofillDynamicallyLoadsFieldsForAddressInput and re-enable the test.
 TEST_F(AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled,
-       DISABLED_TestAccountProfileView) {
+       TestAccountProfileView) {
   CreateAccountProfile();
-  EXPECT_EQ(2, [[controller() tableViewModel] numberOfSections]);
+  EXPECT_EQ(4, [[controller() tableViewModel] numberOfSections]);
   TestViewData();
 }
 
 // Adding an address results in an address section.
-// TODO(crbug.com/416030990): Adapt test to
-// AutofillDynamicallyLoadsFieldsForAddressInput and re-enable the test.
 TEST_F(AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled,
-       DISABLED_TestProfileView) {
-  EXPECT_EQ(1, [[controller() tableViewModel] numberOfSections]);
+       TestProfileView) {
+  EXPECT_EQ(3, [[controller() tableViewModel] numberOfSections]);
   TestViewData();
 }
 
