@@ -130,6 +130,12 @@ std::vector<std::string> AccessibilityState::GetAccessibilityServiceIds() {
 }
 
 // static
+bool AccessibilityState::PrefersReducedMotion() {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_AccessibilityState_prefersReducedMotion(env);
+}
+
+// static
 bool AccessibilityState::ShouldRespectDisplayedPasswordText() {
   JNIEnv* env = AttachCurrentThread();
   return Java_AccessibilityAutofillHelper_shouldRespectDisplayedPasswordText(

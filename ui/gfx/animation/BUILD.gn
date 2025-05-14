@@ -78,7 +78,7 @@ component("animation") {
   ]
 
   if (is_android) {
-    deps += [ "//ui/gfx:gfx_jni_headers" ]
+    deps += [ "//ui/accessibility:ax_base_android" ]
   }
 
   if (is_linux) {

@@ -494,6 +494,7 @@ public class AccessibilityState {
     }
 
     /** Returns whether the user settings specify preferred reduced motion. */
+    @CalledByNative
     public static boolean prefersReducedMotion() {
         // We default to assuming that animations are enabled, to avoid impacting the experience for
         // users that don't have ANIMATOR_DURATION_SCALE defined.
@@ -1065,6 +1066,7 @@ public class AccessibilityState {
 
     private static void processExtraStateChange() {
         updateExtraState();
+        AccessibilityStateJni.get().onAnimatorDurationScaleChanged();
         AccessibilityStateJni.get().onDisplayInversionEnabledChanged(isDisplayInversionEnabled());
         AccessibilityStateJni.get().onContrastLevelChanged(isHighContrastEnabled());
     }
