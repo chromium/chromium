@@ -141,9 +141,7 @@ class BoxDecorationData {
            style_.BoxShadow();
   }
 
-  bool ComputeShouldPaintGapDecorations() const {
-    return style_.HasColumnRule() || style_.HasRowRule();
-  }
+  bool ComputeShouldPaintGapDecorations() const { return style_.HasGapRule(); }
 
   bool BorderObscuresBackgroundEdge() const;
   BackgroundBleedAvoidance ComputeBleedAvoidance() const;

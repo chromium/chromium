@@ -122,6 +122,9 @@ struct CORE_EXPORT PaintInfo {
   bool ShouldSkipBackground() const { return skips_background_; }
   void SetSkipsBackground(bool b) { skips_background_ = b; }
 
+  bool ShouldSkipGapDecorations() const { return skips_gap_decorations_; }
+  void SetSkipsGapDecorations(bool skip) { skips_gap_decorations_ = skip; }
+
   bool ShouldAddUrlMetadata() const {
     return paint_flags_ & PaintFlag::kAddUrlMetadata;
   }
@@ -197,6 +200,7 @@ struct CORE_EXPORT PaintInfo {
 
   bool is_painting_background_in_contents_space = false;
   bool skips_background_ = false;
+  bool skips_gap_decorations_ = false;
   bool descendant_painting_blocked_ = false;
 };
 
