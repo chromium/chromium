@@ -643,6 +643,7 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @SmallTest
+    @DisableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_JAVA_NODE_CACHE)
     public void testUMAHistograms_Cache() throws Throwable {
         // Build a simple web page with a few nodes to traverse.
         setupTestWithHTML(

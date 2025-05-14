@@ -18,6 +18,9 @@ public class ContentFeatureList {
     // Features files, then remove the constants below.
 
     // Alphabetical:
+    public static final String ACCESSIBILITY_DEPRECATE_JAVA_NODE_CACHE =
+            "AccessibilityDeprecateJavaNodeCache";
+
     public static final String ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE =
             "AccessibilityDeprecateTypeAnnounce";
 

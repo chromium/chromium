@@ -107,6 +107,21 @@
             ]
         }
     ],
+    "AccessibilityDeprecateJavaNodeCache": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AccessibilityDeprecateJavaNodeCache"
+                    ]
+                }
+            ]
+        }
+    ],
     "AccessibilityDeprecateTypeAnnounce": [
         {
             "platforms": [
