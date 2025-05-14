@@ -109,6 +109,7 @@ public class TabGroupSyncRemoteToLocalTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
+    @DisabledTest(message = "Flaky - crbug.com/417757592")
     public void testRemoteToLocalCreateNewTabGroup() {
         GroupInfo[] groups =
                 TabGroupSyncIntegrationTestHelper.createGroupInfos(
