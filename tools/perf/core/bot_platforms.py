@@ -470,7 +470,7 @@ def _crossbench_jetstream2_2(estimated_runtime=180):
 def _crossbench_jetstream2(estimated_runtime=180, arguments=None):
   """Alias of the latest JetStream 2.X version."""
   return CrossbenchConfig('jetstream2.crossbench',
-                          'jetstream_2.2',
+                          'jetstream_2',
                           estimated_runtime=estimated_runtime,
                           arguments=arguments)
 
