@@ -48395,6 +48395,8 @@ should be able to be added at any place in this file.
   <suffix name="GeminiSiteSearchShortcut" label="Gemini Site Search Shortcut"/>
   <suffix name="GenerativeThemes" label="Generative Themes"/>
   <suffix name="GenerativeTheming" label="Generative Theming"/>
+  <suffix name="GlicIntro" label="Glic Intro"/>
+  <suffix name="GlicLearnMore" label="Glic Learn More"/>
   <suffix name="GoogleLens" label="Google Lens"/>
   <suffix name="Googlepayreauth" label="Google Pay Re-auth"/>
   <suffix name="HelpMeWrite" label="Help Me Write"/>

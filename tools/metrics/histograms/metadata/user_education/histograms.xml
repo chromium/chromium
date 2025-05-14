@@ -82,6 +82,8 @@ chromium-metrics-reviews@google.com.
   <variant name="GenerativeThemes" summary="the module for Generative Themes"/>
   <variant name="GenerativeTheming"
       summary="the module for Generative Theming"/>
+  <variant name="GlicIntro" summary="the module for Glic Intro"/>
+  <variant name="GlicLearnMore" summary="the module for Glic Learn More"/>
   <variant name="GoogleLens" summary="the module for Google Lens"/>
   <variant name="Googlepayreauth" summary="the module for Google Pay Re-auth"/>
   <variant name="HelpMeWrite" summary="the module for Help Me Write"/>
