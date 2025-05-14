@@ -73,7 +73,6 @@ namespace {
 
 // Default value for adding a buffer to the attachment zone.
 constexpr static int kAttachmentBuffer = 20;
-constexpr static int kDetachYDistance = 36;
 constexpr static int kInitialPositionBuffer = 4;
 constexpr static int kMaxWidgetSize = 16'384;
 
@@ -882,19 +881,12 @@ void GlicWindowControllerImpl::Detach() {
   if (state_ != State::kOpen || !attached_browser_) {
     return;
   }
-  SetWindowState(State::kDetaching);
+
   if (!AlwaysDetached()) {
     // TODO(crbug.com/410629338): Reimplement attachment.
   }
 
-  // Move down a little bit when detaching.
-  gfx::Point new_position = glic_widget_->GetWindowBoundsInScreen().origin();
-  new_position.set_y(new_position.y() + kDetachYDistance);
-
-  glic_window_animator_->AnimatePosition(
-      new_position, kAnimationDuration,
-      base::BindOnce(&GlicWindowControllerImpl::DetachFinished,
-                     weak_ptr_factory_.GetWeakPtr()));
+  NOTIMPLEMENTED();
 }
 
 void GlicWindowControllerImpl::DetachFinished() {
@@ -935,9 +927,8 @@ void GlicWindowControllerImpl::Resize(const gfx::Size& size,
   glic_size_ = size;
   glic_service_->metrics()->OnGlicWindowResize();
 
-  const bool in_resizable_state = state_ == State::kOpen ||
-                                  state_ == State::kWaitingForGlicToLoad ||
-                                  state_ == State::kDetaching;
+  const bool in_resizable_state =
+      state_ == State::kOpen || state_ == State::kWaitingForGlicToLoad;
 
   // TODO(https://crbug.com/379164689): Drive resize animations for error states
   // from the browser. For now, we allow animations during the waiting state.
@@ -1414,8 +1405,7 @@ gfx::Size GlicWindowControllerImpl::GetLastRequestedSizeClamped() const {
 }
 
 void GlicWindowControllerImpl::MaybeAdjustSizeForDisplay(bool animate) {
-  if (state_ == State::kOpen || state_ == State::kWaitingForGlicToLoad ||
-      state_ == State::kDetaching) {
+  if (state_ == State::kOpen || state_ == State::kWaitingForGlicToLoad) {
     const auto target_size = GetLastRequestedSizeClamped();
     if (target_size != glic_window_animator_->GetCurrentTargetBounds().size()) {
       glic_window_animator_->AnimateSize(
