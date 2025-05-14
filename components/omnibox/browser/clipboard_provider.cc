@@ -27,6 +27,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/verbatim_match.h"
@@ -653,6 +654,13 @@ void ClipboardProvider::UpdateClipboardURLContent(const GURL& url,
   DCHECK(url.is_valid());
   DCHECK(match);
 
+  std::u16string text_plain = base::ASCIIToUTF16(url.spec());
+  std::u16string text_sanitized = OmniboxView::SanitizeTextForPaste(text_plain);
+  if (text_plain != text_sanitized) {
+    UpdateClipboardTextContent(text_sanitized, match);
+    return;
+  }
+
   match->destination_url = url;
 
   // Because the user did not type a related input to get this clipboard
@@ -666,11 +674,18 @@ void ClipboardProvider::UpdateClipboardURLContent(const GURL& url,
   match->fill_into_edit =
       AutocompleteInput::FormattedStringWithEquivalentMeaning(
           url, match->contents, client_->GetSchemeClassifier(), nullptr);
+
+  // Update the match type in the event the Clipboard metadata told us this is a
+  // text, but we resolve it as a URL (e.g. "chrome://" URLs on Android).
+  match->type = AutocompleteMatchType::CLIPBOARD_URL;
 }
 
-bool ClipboardProvider::UpdateClipboardTextContent(const std::u16string& text,
-                                                   AutocompleteMatch* match) {
+bool ClipboardProvider::UpdateClipboardTextContent(
+    const std::u16string& raw_text,
+    AutocompleteMatch* match) {
   DCHECK(match);
+
+  std::u16string text = OmniboxView::SanitizeTextForPaste(raw_text);
 
   // The text in the clipboard is a url. We don't want to prompt the user to
   // search for a url.
@@ -711,6 +726,11 @@ bool ClipboardProvider::UpdateClipboardTextContent(const std::u16string& text,
     match->contents_class.push_back({0, ACMatchClassification::NONE});
 
   match->keyword = default_url->keyword();
+
+  // Update the match type in the event the Clipboard metadata told us this is a
+  // URL, but we couldn't open it as such (either bad metadata, or javascript
+  // url).
+  match->type = AutocompleteMatchType::CLIPBOARD_TEXT;
 
   return true;
 }

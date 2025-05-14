@@ -321,30 +321,98 @@ TEST_F(ClipboardProviderTest, SkipImageMatchGivenWantAsynchronousMatchesFalse) {
 }
 
 TEST_F(ClipboardProviderTest, CreateURLMatchWithContent) {
-  SetClipboardUrl(GURL(kClipboardURL));
-  EXPECT_CALL(*client_.get(), GetSchemeClassifier())
-      .WillOnce(testing::ReturnRef(classifier_));
   client_->set_template_url_service(
       search_engines_test_environment_.template_url_service());
-  AutocompleteMatch match = provider_->NewBlankURLMatch();
-  CreateMatchWithContentCallbackWaiter waiter(provider_, &match);
-  waiter.WaitForMatchUpdated();
 
-  EXPECT_EQ(GURL(kClipboardURL), match.destination_url);
-  EXPECT_EQ(AutocompleteMatchType::CLIPBOARD_URL, match.type);
+  {
+    SCOPED_TRACE(kClipboardURL);
+    SetClipboardUrl(GURL(kClipboardURL));
+    EXPECT_CALL(*client_.get(), GetSchemeClassifier())
+        .WillOnce(testing::ReturnRef(classifier_));
+    AutocompleteMatch match = provider_->NewBlankURLMatch();
+    CreateMatchWithContentCallbackWaiter waiter(provider_, &match);
+    waiter.WaitForMatchUpdated();
+
+    EXPECT_EQ(GURL(kClipboardURL), match.destination_url);
+    EXPECT_EQ(AutocompleteMatchType::CLIPBOARD_URL, match.type);
+  }
+
+  {
+    SCOPED_TRACE("`javascript:` sanitization");
+    SetClipboardUrl(GURL("javascript:alert()"));
+    AutocompleteMatch match = provider_->NewBlankURLMatch();
+    CreateMatchWithContentCallbackWaiter waiter(provider_, &match);
+    waiter.WaitForMatchUpdated();
+
+    EXPECT_EQ(u"alert()", match.contents);
+    EXPECT_EQ(u"alert()", match.fill_into_edit);
+    EXPECT_EQ(AutocompleteMatchType::CLIPBOARD_TEXT, match.type);
+  }
+
+  {
+    SCOPED_TRACE("`JavaScript:` sanitization");
+    SetClipboardUrl(GURL("JavaScript:alert()"));
+    AutocompleteMatch match = provider_->NewBlankURLMatch();
+    CreateMatchWithContentCallbackWaiter waiter(provider_, &match);
+    waiter.WaitForMatchUpdated();
+
+    EXPECT_EQ(u"alert()", match.contents);
+    EXPECT_EQ(u"alert()", match.fill_into_edit);
+    EXPECT_EQ(AutocompleteMatchType::CLIPBOARD_TEXT, match.type);
+  }
 }
 
 TEST_F(ClipboardProviderTest, CreateTextMatchWithContent) {
-  SetClipboardText(kClipboardText);
   client_->set_template_url_service(
       search_engines_test_environment_.template_url_service());
-  AutocompleteMatch match = provider_->NewBlankTextMatch();
-  CreateMatchWithContentCallbackWaiter waiter(provider_, &match);
-  waiter.WaitForMatchUpdated();
 
-  EXPECT_EQ(kClipboardText, match.contents);
-  EXPECT_EQ(kClipboardText, match.fill_into_edit);
-  EXPECT_EQ(AutocompleteMatchType::CLIPBOARD_TEXT, match.type);
+  {
+    SCOPED_TRACE(kClipboardText);
+    SetClipboardText(kClipboardText);
+    AutocompleteMatch match = provider_->NewBlankTextMatch();
+    CreateMatchWithContentCallbackWaiter waiter(provider_, &match);
+    waiter.WaitForMatchUpdated();
+
+    EXPECT_EQ(kClipboardText, match.contents);
+    EXPECT_EQ(kClipboardText, match.fill_into_edit);
+    EXPECT_EQ(AutocompleteMatchType::CLIPBOARD_TEXT, match.type);
+  }
+
+  {
+    SCOPED_TRACE("`javascript:` sanitization");
+    SetClipboardText(u"javascript:alert()");
+    AutocompleteMatch match = provider_->NewBlankTextMatch();
+    CreateMatchWithContentCallbackWaiter waiter(provider_, &match);
+    waiter.WaitForMatchUpdated();
+
+    EXPECT_EQ(u"alert()", match.contents);
+    EXPECT_EQ(u"alert()", match.fill_into_edit);
+    EXPECT_EQ(AutocompleteMatchType::CLIPBOARD_TEXT, match.type);
+  }
+
+  {
+    SCOPED_TRACE("`JavaScript:` sanitization");
+    SetClipboardText(u"JavaScript:alert()");
+    AutocompleteMatch match = provider_->NewBlankTextMatch();
+    CreateMatchWithContentCallbackWaiter waiter(provider_, &match);
+    waiter.WaitForMatchUpdated();
+
+    EXPECT_EQ(u"alert()", match.contents);
+    EXPECT_EQ(u"alert()", match.fill_into_edit);
+    EXPECT_EQ(AutocompleteMatchType::CLIPBOARD_TEXT, match.type);
+  }
+
+  {
+    SCOPED_TRACE("`javascript:javascript:` sanitization");
+    SetClipboardText(u"javascript:\n javascript:alert()");
+    AutocompleteMatch match = provider_->NewBlankTextMatch();
+    CreateMatchWithContentCallbackWaiter waiter(provider_, &match);
+    waiter.WaitForMatchUpdated();
+
+    EXPECT_EQ(u"alert()", match.contents);
+    EXPECT_EQ(u"alert()", match.fill_into_edit);
+    EXPECT_EQ(AutocompleteMatchType::CLIPBOARD_TEXT, match.type);
+  }
 }
 
 TEST_F(ClipboardProviderTest, CreateImageMatchWithContent) {
