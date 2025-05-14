@@ -113,43 +113,38 @@ EventScopeTypeFromEvent(const Event& event) {
 
 }  // namespace
 
-// static
-const char SoftNavigationHeuristics::kSupplementName[] =
-    "SoftNavigationHeuristics";
-
-SoftNavigationHeuristics::SoftNavigationHeuristics(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window) {
-  LocalFrame* frame = window.GetFrame();
+SoftNavigationHeuristics::SoftNavigationHeuristics(LocalDOMWindow* window)
+    : window_(window),
+      task_attribution_tracker_(
+          scheduler::TaskAttributionTracker::From(window->GetIsolate())) {
+  LocalFrame* frame = window->GetFrame();
   CHECK(frame && frame->View());
 }
 
-SoftNavigationHeuristics* SoftNavigationHeuristics::From(
-    LocalDOMWindow& window) {
+SoftNavigationHeuristics* SoftNavigationHeuristics::CreateIfNeeded(
+    LocalDOMWindow* window) {
+  CHECK(window);
   if (!base::FeatureList::IsEnabled(features::kSoftNavigationDetection)) {
     return nullptr;
   }
-  if (!window.GetFrame()->IsMainFrame()) {
+  if (!window->GetFrame()->IsMainFrame()) {
     return nullptr;
   }
-  SoftNavigationHeuristics* heuristics =
-      Supplement<LocalDOMWindow>::From<SoftNavigationHeuristics>(window);
-  if (!heuristics) {
-    if (Document* document = window.document()) {
-      // Don't measure soft navigations in devtools.
-      if (document->Url().ProtocolIs("devtools")) {
-        return nullptr;
-      }
+  if (Document* document = window->document()) {
+    // Don't measure soft navigations in devtools.
+    if (document->Url().ProtocolIs("devtools")) {
+      return nullptr;
     }
-    heuristics = MakeGarbageCollected<SoftNavigationHeuristics>(window);
-    ProvideTo(window, heuristics);
   }
-  return heuristics;
+  return MakeGarbageCollected<SoftNavigationHeuristics>(window);
 }
 
-void SoftNavigationHeuristics::Dispose() {
+void SoftNavigationHeuristics::Shutdown() {
+  task_attribution_tracker_ = nullptr;
   for (const auto& context : potential_soft_navigations_) {
     RecordUmaForNonSoftNavigationInteraction(*context.Get());
   }
+  potential_soft_navigations_.clear();
 }
 
 void SoftNavigationHeuristics::RecordUmaForNonSoftNavigationInteraction(
@@ -176,11 +171,7 @@ void SoftNavigationHeuristics::RecordUmaForNonSoftNavigationInteraction(
 
 void SoftNavigationHeuristics::SetIsTrackingSoftNavigationHeuristicsOnDocument(
     bool value) const {
-  LocalDOMWindow* window = GetSupplementable();
-  if (!window) {
-    return;
-  }
-  if (Document* document = window->document()) {
+  if (Document* document = window_->document()) {
     document->SetIsTrackingSoftNavigationHeuristics(value);
   }
 }
@@ -201,43 +192,38 @@ SoftNavigationHeuristics::GetSoftNavigationContextForCurrentTask() {
   if (potential_soft_navigations_.empty()) {
     return nullptr;
   }
-  auto* tracker = scheduler::TaskAttributionTracker::From(
-      GetSupplementable()->GetIsolate());
-  // The `tracker` must exist if `potential_soft_navigations_` is non-empty.
-  CHECK(tracker);
-  auto* task_state = tracker->RunningTask();
-  if (!task_state) {
-    return nullptr;
+  // The `task_attribution_tracker_` must exist if `potential_soft_navigations_`
+  // is non-empty. `task_state` can have null `context` in tests. `context` can
+  // be non-null but not in `potential_soft_navigations_` if the heuristic was
+  // reset, e.g.  if `context` was already considered a soft navigation. In that
+  // case, return null.
+  CHECK(task_attribution_tracker_);
+  if (auto* task_state = task_attribution_tracker_->RunningTask()) {
+    if (auto* context = task_state->GetSoftNavigationContext()) {
+      if (context && potential_soft_navigations_.Contains(context)) {
+        return context;
+      }
+    }
   }
-  SoftNavigationContext* context =
-      task_state ? task_state->GetSoftNavigationContext() : nullptr;
-  // `task_state` can have null `context` in tests. `context` can be non-null
-  // but not in `potential_soft_navigations_` if the heuristic was reset, e.g.
-  // if `context` was already considered a soft navigation. In that case, return
-  // null.
-  if (!context || !potential_soft_navigations_.Contains(context)) {
-    return nullptr;
-  }
-  return context;
+  return nullptr;
 }
 
 std::optional<scheduler::TaskAttributionId>
 SoftNavigationHeuristics::AsyncSameDocumentNavigationStarted() {
-  auto* tracker = scheduler::TaskAttributionTracker::From(
-      GetSupplementable()->GetIsolate());
-  // `tracker` will be null if TaskAttributionInfrastructureDisabledForTesting
-  // is enabled.
-  if (!tracker) {
+  // `task_attribution_tracker_` will be null if
+  // TaskAttributionInfrastructureDisabledForTesting is enabled.
+  if (!task_attribution_tracker_) {
     return std::nullopt;
   }
-  scheduler::TaskAttributionInfo* task_state = tracker->RunningTask();
+  scheduler::TaskAttributionInfo* task_state =
+      task_attribution_tracker_->RunningTask();
   SoftNavigationContext* context =
       task_state ? task_state->GetSoftNavigationContext() : nullptr;
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("loading"),
                "SoftNavigationHeuristics::AsyncSameDocumentNavigationStarted",
                "has_context", !!context);
   if (context) {
-    tracker->AddSameDocumentNavigationTask(task_state);
+    task_attribution_tracker_->AddSameDocumentNavigationTask(task_state);
   }
   return context ? std::optional<scheduler::TaskAttributionId>(task_state->Id())
                  : std::nullopt;
@@ -291,16 +277,15 @@ void SoftNavigationHeuristics::EmitSoftNavigationEntryIfAllConditionsMet(
   }
   last_detected_soft_navigation_ = context;
 
-  LocalDOMWindow* window = GetSupplementable();
   ++soft_navigation_count_;
-  window->GenerateNewNavigationId();
-  auto* performance = DOMWindowPerformance::performance(*window);
+  window_->GenerateNewNavigationId();
+  auto* performance = DOMWindowPerformance::performance(*window_.Get());
   performance->AddSoftNavigationEntry(AtomicString(context->Url()),
                                       context->UserInteractionTimestamp());
 
   CommitPreviousPaints(frame);
 
-  LogAndTraceDetectedSoftNavigation(frame, window, *context);
+  LogAndTraceDetectedSoftNavigation(frame, window_.Get(), *context);
   ReportSoftNavigationToMetrics(frame, context);
   ResetHeuristic();
 }
@@ -364,11 +349,9 @@ void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
       loader->GetTiming().MonotonicTimeToPseudoWallTime(
           context->UserInteractionTimestamp());
 
-  LocalDOMWindow* window = GetSupplementable();
-
   blink::SoftNavigationMetrics metrics = {soft_navigation_count_,
                                           soft_navigation_start_time,
-                                          window->GetNavigationId().Utf8()};
+                                          window_->GetNavigationId().Utf8()};
 
   if (LocalFrameClient* frame_client = frame->Client()) {
     // This notifies UKM about this soft navigation.
@@ -387,12 +370,11 @@ void SoftNavigationHeuristics::ResetPaintsIfNeeded() {
   }
   LocalFrameView* local_frame_view = frame->View();
   CHECK(local_frame_view);
-  LocalDOMWindow* window = GetSupplementable();
-  if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window)) {
-    if (Document* document = window->document();
+  if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window_)) {
+    if (Document* document = window_->document();
         document &&
         RuntimeEnabledFeatures::SoftNavigationHeuristicsExposeFPAndFCPEnabled(
-            window)) {
+            window_.Get())) {
       PaintTiming::From(*document).ResetFirstPaintAndFCP();
     }
     local_frame_view->GetPaintTimingDetector().RestartRecordingLCP();
@@ -407,16 +389,16 @@ void SoftNavigationHeuristics::ResetPaintsIfNeeded() {
 // fired.
 void SoftNavigationHeuristics::CommitPreviousPaints(LocalFrame* frame) {
   CHECK(frame && frame->IsOutermostMainFrame());
-  LocalDOMWindow* window = GetSupplementable();
   if (!did_commit_previous_paints_) {
     LocalFrameView* local_frame_view = frame->View();
 
     CHECK(local_frame_view);
 
-    local_frame_view->GetPaintTimingDetector().SoftNavigationDetected(window);
+    local_frame_view->GetPaintTimingDetector().SoftNavigationDetected(
+        window_.Get());
     if (RuntimeEnabledFeatures::SoftNavigationHeuristicsExposeFPAndFCPEnabled(
-            window)) {
-      PaintTiming::From(*window->document()).SoftNavigationDetected();
+            window_.Get())) {
+      PaintTiming::From(*window_->document()).SoftNavigationDetected();
     }
 
     did_commit_previous_paints_ = true;
@@ -424,7 +406,6 @@ void SoftNavigationHeuristics::CommitPreviousPaints(LocalFrame* frame) {
 }
 
 void SoftNavigationHeuristics::Trace(Visitor* visitor) const {
-  Supplement<LocalDOMWindow>::Trace(visitor);
   visitor->Trace(last_detected_soft_navigation_);
   visitor->Trace(active_interaction_context_);
   // Register a custom weak callback, which runs after processing weakness for
@@ -433,6 +414,7 @@ void SoftNavigationHeuristics::Trace(Visitor* visitor) const {
   visitor->RegisterWeakCallbackMethod<
       SoftNavigationHeuristics,
       &SoftNavigationHeuristics::ProcessCustomWeakness>(this);
+  visitor->Trace(window_);
 }
 
 void SoftNavigationHeuristics::OnCreateTaskScope(
@@ -488,8 +470,7 @@ void SoftNavigationHeuristics::ProcessCustomWeakness(
 }
 
 LocalFrame* SoftNavigationHeuristics::GetLocalFrameIfNotDetached() const {
-  LocalDOMWindow* window = GetSupplementable();
-  return window->IsCurrentlyDisplayedInFrame() ? window->GetFrame() : nullptr;
+  return window_->IsCurrentlyDisplayedInFrame() ? window_->GetFrame() : nullptr;
 }
 
 SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(
@@ -515,8 +496,8 @@ SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(
   }
   CHECK(active_interaction_context_.Get());
 
-  auto* tracker = scheduler::TaskAttributionTracker::From(
-      GetSupplementable()->GetIsolate());
+  auto* tracker =
+      scheduler::TaskAttributionTracker::From(window_->GetIsolate());
   bool is_nested = std::exchange(has_active_event_scope_, true);
   // `tracker` will be null if TaskAttributionInfrastructureDisabledForTesting
   // is enabled.
@@ -538,7 +519,7 @@ SoftNavigationHeuristics::MaybeCreateEventScopeForEvent(const Event& event) {
   if (!type) {
     return std::nullopt;
   }
-  auto* script_state = ToScriptStateForMainWorld(GetSupplementable());
+  auto* script_state = ToScriptStateForMainWorld(window_.Get());
   if (!script_state) {
     return std::nullopt;
   }
@@ -573,9 +554,7 @@ void SoftNavigationHeuristics::OnSoftNavigationEventScopeDestroyed(
 }
 
 uint64_t SoftNavigationHeuristics::CalculateRequiredPaintArea() const {
-  LocalDOMWindow* window = GetSupplementable();
-  CHECK(window);
-  LocalFrame* frame = window->GetFrame();
+  LocalFrame* frame = window_->GetFrame();
   CHECK(frame);
   LocalFrameView* local_frame_view = frame->View();
   CHECK(local_frame_view);

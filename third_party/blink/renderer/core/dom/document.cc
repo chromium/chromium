@@ -2008,7 +2008,7 @@ uint32_t Document::softNavigations() const {
     return 0;
   }
   if (SoftNavigationHeuristics* heuristics =
-          SoftNavigationHeuristics::From(*window)) {
+          window->GetSoftNavigationHeuristics()) {
     return heuristics->SoftNavigationCount();
   }
   return 0;

@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
@@ -29,10 +28,7 @@ class SoftNavigationContext;
 // heuristics. See https://github.com/WICG/soft-navigations
 class CORE_EXPORT SoftNavigationHeuristics
     : public GarbageCollected<SoftNavigationHeuristics>,
-      public Supplement<LocalDOMWindow>,
       public scheduler::TaskAttributionTracker::Observer {
-  USING_PRE_FINALIZER(SoftNavigationHeuristics, Dispose);
-
  public:
   FRIEND_TEST_ALL_PREFIXES(SoftNavigationHeuristicsTest,
                            EarlyReturnOnInvalidPendingInteractionTimestamp);
@@ -77,16 +73,15 @@ class CORE_EXPORT SoftNavigationHeuristics
     bool is_nested_;
   };
 
-  // Supplement boilerplate.
-  static const char kSupplementName[];
-  explicit SoftNavigationHeuristics(LocalDOMWindow& window);
+  explicit SoftNavigationHeuristics(LocalDOMWindow* window);
   virtual ~SoftNavigationHeuristics() = default;
-  static SoftNavigationHeuristics* From(LocalDOMWindow&);
+
+  static SoftNavigationHeuristics* CreateIfNeeded(LocalDOMWindow*);
 
   // GarbageCollected boilerplate.
   void Trace(Visitor*) const override;
 
-  void Dispose();
+  void Shutdown();
 
   // The class's API.
 
@@ -143,6 +138,8 @@ class CORE_EXPORT SoftNavigationHeuristics
   EventScope CreateEventScope(EventScope::Type type, ScriptState*);
   uint64_t CalculateRequiredPaintArea() const;
 
+  Member<LocalDOMWindow> window_;
+
   // The set of ongoing potential soft navigations. `SoftNavigationContext`
   // objects are added when they are the active context during an event handler
   // running in an `EventScope`. Entries are stored as untraced members to do
@@ -184,6 +181,10 @@ class CORE_EXPORT SoftNavigationHeuristics
   bool paint_conditions_met_ = false;
   bool initial_interaction_encountered_ = false;
   bool has_active_event_scope_ = false;
+  // `task_attribution_tracker_` is cleared during `Shutdown()` (frame detach),
+  // which should happen before the tracker is destroyed, since its lifetime is
+  // tied to the lifetime of the isolate/main thread.
+  scheduler::TaskAttributionTracker* task_attribution_tracker_;
 };
 
 }  // namespace blink

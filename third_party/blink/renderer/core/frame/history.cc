@@ -250,7 +250,7 @@ void History::go(ScriptState* script_state,
     // Set up propagating the current task state to the navigation commit.
     std::optional<scheduler::TaskAttributionId> soft_navigation_task_id;
     if (script_state->World().IsMainWorld() && frame->IsOutermostMainFrame()) {
-      if (auto* heuristics = SoftNavigationHeuristics::From(*window)) {
+      if (auto* heuristics = window->GetSoftNavigationHeuristics()) {
         soft_navigation_task_id =
             heuristics->AsyncSameDocumentNavigationStarted();
       }

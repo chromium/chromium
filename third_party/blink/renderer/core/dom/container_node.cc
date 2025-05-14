@@ -1964,13 +1964,8 @@ void ContainerNode::CheckSoftNavigationHeuristicsTracking(
   if (!window) {
     return;
   }
-  LocalFrame* frame = window->GetFrame();
-  if (!frame || !frame->IsMainFrame()) {
-    return;
-  }
-
   if (SoftNavigationHeuristics* heuristics =
-          SoftNavigationHeuristics::From(*window)) {
+          window->GetSoftNavigationHeuristics()) {
     // TODO(crbug.com/1521100): This does not filter out updates from isolated
     // worlds. Should it?
     if (heuristics->ModifiedDOM()) {

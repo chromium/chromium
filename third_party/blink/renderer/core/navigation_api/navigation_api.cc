@@ -624,7 +624,7 @@ NavigationResult* NavigationApi::traverseTo(ScriptState* script_state,
   std::optional<scheduler::TaskAttributionId> soft_navigation_task_id;
   if (script_state->World().IsMainWorld() && frame->IsOutermostMainFrame()) {
     if (SoftNavigationHeuristics* heuristics =
-            SoftNavigationHeuristics::From(*window_)) {
+            window_->GetSoftNavigationHeuristics()) {
       soft_navigation_task_id =
           heuristics->AsyncSameDocumentNavigationStarted();
     }
@@ -843,7 +843,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   if (params->frame_load_type != WebFrameLoadType::kReplaceCurrentItem &&
       init->userInitiated() && !init->downloadRequest() &&
       init->canIntercept()) {
-    if (auto* heuristics = SoftNavigationHeuristics::From(*window_)) {
+    if (auto* heuristics = window_->GetSoftNavigationHeuristics()) {
       // If these conditions are met, create a SoftNavigationEventScope to
       // consider this a "user initiated click", and the dispatched event
       // handlers as potential soft navigation tasks.

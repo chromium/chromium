@@ -91,6 +91,7 @@ class ScriptState;
 class ScrollToOptions;
 class SecurityOrigin;
 class SerializedScriptValue;
+class SoftNavigationHeuristics;
 class SourceLocation;
 class StyleMedia;
 class TrustedTypePolicyFactory;
@@ -548,6 +549,10 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   bool HasBeenRevealed() const { return has_been_revealed_; }
   void SetHasBeenRevealed(bool revealed);
 
+  SoftNavigationHeuristics* GetSoftNavigationHeuristics() {
+    return soft_navigation_heuristics_.Get();
+  }
+
  protected:
   // EventTarget overrides.
   void AddedEventListener(const AtomicString& event_type,
@@ -673,6 +678,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   Member<Fence> fence_;
 
   Member<CloseWatcher::WatcherStack> closewatcher_stack_;
+
+  Member<SoftNavigationHeuristics> soft_navigation_heuristics_;
 
   // If set, this window is a Document Picture in Picture window.
   // https://wicg.github.io/document-picture-in-picture/

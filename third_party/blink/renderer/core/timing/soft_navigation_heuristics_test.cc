@@ -44,7 +44,7 @@ class SoftNavigationHeuristicsTest : public testing::Test {
     LocalDOMWindow* window = LocalDOMWindow::From(script_state);
 
     SoftNavigationHeuristics* heuristics =
-        SoftNavigationHeuristics::From(*window);
+        window->GetSoftNavigationHeuristics();
 
     return heuristics;
   }

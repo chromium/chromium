@@ -281,6 +281,10 @@ void LocalDOMWindow::ClearForReuse() {
         });
   }
   document_ = nullptr;
+  if (soft_navigation_heuristics_) {
+    soft_navigation_heuristics_->Shutdown();
+    soft_navigation_heuristics_ = nullptr;
+  }
 }
 
 void LocalDOMWindow::ResetWindowAgent(WindowAgent* agent) {
@@ -880,6 +884,9 @@ Document* LocalDOMWindow::InstallNewDocument(const DocumentInit& init) {
 
   UpdateEventListenerCountsToDocumentForReuseIfNeeded();
 
+  CHECK(!soft_navigation_heuristics_);
+  soft_navigation_heuristics_ = SoftNavigationHeuristics::CreateIfNeeded(this);
+
   return document_.Get();
 }
 
@@ -1059,6 +1066,10 @@ void LocalDOMWindow::FrameDestroyed() {
   // is not being destroyed.
   document()->Shutdown();
   document()->RemoveAllEventListenersRecursively();
+  if (soft_navigation_heuristics_) {
+    soft_navigation_heuristics_->Shutdown();
+    soft_navigation_heuristics_ = nullptr;
+  }
   GetAgent()->DetachContext(this);
   NotifyContextDestroyed();
   RemoveAllEventListeners();
@@ -2508,6 +2519,7 @@ void LocalDOMWindow::Trace(Visitor* visitor) const {
   visitor->Trace(network_state_observer_);
   visitor->Trace(fence_);
   visitor->Trace(closewatcher_stack_);
+  visitor->Trace(soft_navigation_heuristics_);
   UniversalGlobalScope::Trace(visitor);
   DOMWindow::Trace(visitor);
   ExecutionContext::Trace(visitor);
