@@ -457,9 +457,10 @@ class AuthenticatingState : public ControllerState,
  private:
   void FinishAndTransition() {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    RecordLatency(GetLogger(),
-                  metrics::CollaborationServiceStep::kAuthenticationSuccess,
-                  base::Time::Now() - start_time_);
+    RecordLatency(
+        GetLogger(),
+        metrics::CollaborationServiceStep::kAuthenticationInitToSuccess,
+        base::Time::Now() - start_time_);
     controller_->delegate()->NotifySignInAndSyncStatusChange();
     controller_->TransitionTo(StateId::kWaitingForServicesToInitialize);
   }
@@ -513,9 +514,10 @@ class WaitingForServicesToInitialize
 
   void OnProcessingFinishedWithSuccess() override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    RecordLatency(GetLogger(),
-                  metrics::CollaborationServiceStep::kServicesInitialized,
-                  base::Time::Now() - start_time_);
+    RecordLatency(
+        GetLogger(),
+        metrics::CollaborationServiceStep::kWaitingForServicesInitialization,
+        base::Time::Now() - start_time_);
     controller_->TransitionTo(StateId::kCheckingFlowRequirements);
   }
 

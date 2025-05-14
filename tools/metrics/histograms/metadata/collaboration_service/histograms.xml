@@ -22,6 +22,18 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="CollaborationServiceStep">
+  <variant name="AuthenticationInitToSuccess"
+      summary="Authentication initiated to successful completion"/>
+  <variant name="LinkReadyAfterGroupCreation"
+      summary="Link ready after group creation"/>
+  <variant name="TabGroupFetchedAfterPeopleGroupJoined"
+      summary="Tab group fetched after group creation"/>
+  <variant name="Unknown" summary="Unknown"/>
+  <variant name="WaitingForServicesInitialization"
+      summary="Waiting time for service initialization"/>
+</variants>
+
 <histogram name="CollaborationService.JoinFlow"
     enum="CollaborationServiceJoinEvent" expires_after="2025-10-11">
   <owner>dljames@chromium.org</owner>
@@ -45,17 +57,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CollaborationService.Latency" enum="CollaborationServiceStep"
-    expires_after="2025-10-11">
+<histogram name="CollaborationService.Latency2.{CollaborationServiceStep}"
+    units="ms" expires_after="2025-10-11">
   <owner>haileywang@google.com</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
     [ All platforms ] Tracks the time in milliseconds between when a flow step
     is started and finished.
 
-    Recorded by the CollaborationService for each step in a collaboration flow
-    that has user wait time.
+    Recorded by the CollaborationService for each {CollaborationServiceStep} in
+    a collaboration flow that has user wait time.
   </summary>
+  <token key="CollaborationServiceStep" variants="CollaborationServiceStep"/>
 </histogram>
 
 <histogram name="CollaborationService.ShareOrManageFlow"

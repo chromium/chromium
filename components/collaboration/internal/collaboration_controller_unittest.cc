@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/collaboration/internal/metrics.h"
 #include "components/collaboration/public/collaboration_controller_delegate.h"
 #include "components/collaboration/public/collaboration_flow_type.h"
@@ -133,6 +134,9 @@ class CollaborationControllerTest : public testing::Test {
 
 TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
   base::HistogramTester histogram_tester;
+  base::TimeDelta authentication_time = base::Milliseconds(10);
+  base::TimeDelta service_initialization_time = base::Milliseconds(11);
+  base::TimeDelta tab_group_fetch_time = base::Milliseconds(12);
 
   RunLoop run_loop;
 
@@ -176,6 +180,7 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
       .WillOnce(SaveArg<0>(&sync_observer));
 
   // 3. Authenticating -> WaitingForServicesToInitialize state.
+  task_environment_.FastForwardBy(authentication_time);
   std::move(authentication_ui_calback).Run(Outcome::kSuccess);
   EXPECT_EQ(controller_->GetStateForTesting(),
             StateId::kWaitingForServicesToInitialize);
@@ -189,6 +194,7 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
 
   // 4. WaitingForServicesToInitialize -> CheckingFlowRequirementsState ->
   // AddingUserToGroup state.
+  task_environment_.FastForwardBy(service_initialization_time);
   sync_observer->OnInitialized();
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kAddingUserToGroup);
 
@@ -234,6 +240,7 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
             StateId::kWaitingForSyncAndDataSharingGroup);
 
   // Simulate added in both tab group and data_sharing group.
+  task_environment_.FastForwardBy(tab_group_fetch_time);
   base::OnceCallback<void(Outcome)> promote_ui_callback;
   EXPECT_CALL(*collaboration_service_, GetCurrentUserRoleForGroup(kGroupId))
       .WillOnce(Return(data_sharing::MemberRole::kMember));
@@ -262,6 +269,15 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
   histogram_tester.ExpectBucketCount(
       "CollaborationService.JoinFlow",
       metrics::CollaborationServiceJoinEvent::kOpenedNewGroup, 1);
+  histogram_tester.ExpectTimeBucketCount(
+      "CollaborationService.Latency.AuthenticationInitToSuccess",
+      authentication_time, 1);
+  histogram_tester.ExpectTimeBucketCount(
+      "CollaborationService.Latency.WaitingForServicesInitialization",
+      service_initialization_time, 1);
+  histogram_tester.ExpectTimeBucketCount(
+      "CollaborationService.Latency.TabGroupFetchedAfterPeopleGroupJoined",
+      tab_group_fetch_time, 1);
 }
 
 TEST_F(CollaborationControllerTest, JoinFlowManagedDevice) {
@@ -677,6 +693,7 @@ TEST_F(CollaborationControllerTest, AuthenticationSuccessObserved) {
 
 TEST_F(CollaborationControllerTest, FullShareFlowAllStates) {
   base::HistogramTester histogram_tester;
+  base::TimeDelta url_ready_time = base::Milliseconds(10);
 
   // Start Share flow.
   tab_groups::LocalTabGroupID local_id =
@@ -730,6 +747,7 @@ TEST_F(CollaborationControllerTest, FullShareFlowAllStates) {
       GroupData(kGroupId, /*display_name=*/"",
                 /*members=*/{}, /*former_members=*/{}, kAccessToken);
   std::move(group_data_callback).Run(group_data);
+  task_environment_.FastForwardBy(url_ready_time);
   std::move(tab_group_sharing_callback)
       .Run(tab_groups::TabGroupSyncService::TabGroupSharingResult::kSuccess);
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kSharingTabGroupUrl);
@@ -752,6 +770,9 @@ TEST_F(CollaborationControllerTest, FullShareFlowAllStates) {
   histogram_tester.ExpectBucketCount(
       "CollaborationService.ShareOrManageFlow",
       metrics::CollaborationServiceShareOrManageEvent::kUrlReadyToShare, 1);
+  histogram_tester.ExpectTimeBucketCount(
+      "CollaborationService.Latency.LinkReadyAfterGroupCreation",
+      url_ready_time, 1);
 }
 
 TEST_F(CollaborationControllerTest, CheckingFlowRequirementsManageFlow) {

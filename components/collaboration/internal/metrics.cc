@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "components/collaboration/public/collaboration_flow_entry_point.h"
 #include "components/data_sharing/public/logger.h"
@@ -269,10 +270,10 @@ std::string_view CollaborationServiceStepToString(
   switch (step) {
     case CollaborationServiceStep::kUnknown:
       return "Unknown";
-    case CollaborationServiceStep::kAuthenticationSuccess:
-      return "AuthenticationSuccess";
-    case CollaborationServiceStep::kServicesInitialized:
-      return "ServicesInitialized";
+    case CollaborationServiceStep::kAuthenticationInitToSuccess:
+      return "AuthenticationInitToSuccess";
+    case CollaborationServiceStep::kWaitingForServicesInitialization:
+      return "WaitingForServicesInitialization";
     case CollaborationServiceStep::kLinkReadyAfterGroupCreation:
       return "LinkReadyAfterGroupCreation";
     case CollaborationServiceStep::kTabGroupFetchedAfterPeopleGroupJoined:
@@ -379,7 +380,11 @@ void RecordLeaveOrDeleteEntryPoint(
 void RecordLatency(data_sharing::Logger* logger,
                    CollaborationServiceStep step,
                    base::TimeDelta duration) {
-  base::UmaHistogramMediumTimes("CollaborationService.Latency", duration);
+  std::string histogram_name =
+      base::StrCat({"CollaborationService.Latency.",
+                    CollaborationServiceStepToString(step)});
+
+  base::UmaHistogramMediumTimes(histogram_name, duration);
   DATA_SHARING_LOG(logger_common::mojom::LogSource::CollaborationService,
                    logger, CreateLatencyLogToString(step, duration));
 }
