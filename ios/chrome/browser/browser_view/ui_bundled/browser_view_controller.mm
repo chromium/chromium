@@ -1075,33 +1075,6 @@ enum HeaderBehaviour {
 
 - (void)dismissViewControllerAnimated:(BOOL)flag
                            completion:(void (^)())completion {
-  if (!self.presentedViewController) {
-    // TODO(crbug.com/41364311): On iOS10, UIDocumentMenuViewController and
-    // WKFileUploadPanel somehow combine to call dismiss twice instead of once.
-    // The second call would dismiss the BVC itself, so look for that case and
-    // return early.
-    //
-    // TODO(crbug.com/41370278): A similar bug exists on all iOS versions with
-    // WKFileUploadPanel and UIDocumentPickerViewController.
-    //
-    // To make M65 as safe as possible, return early whenever this method is
-    // invoked but no VC appears to be presented.  These cases will always end
-    // up dismissing the BVC itself, which would put the app into an
-    // unresponsive state.
-    return;
-  }
-
-  // Some calling code invokes `dismissViewControllerAnimated:completion:`
-  // multiple times. Because the BVC is presented, subsequent calls end up
-  // dismissing the BVC itself. This is never what should happen, so check for
-  // this case and return early.  It is not enough to check
-  // `self.dismissingModal` because some dismissals do not go through
-  // -[BrowserViewController dismissViewControllerAnimated:completion:`.
-  // TODO(crbug.com/40548564): Fix callers and remove this early return.
-  if (self.dismissingModal || self.presentedViewController.isBeingDismissed) {
-    return;
-  }
-
   self.dismissingModal = YES;
   self.visibilityState = BrowserViewVisibilityState::kVisible;
   __weak BrowserViewController* weakSelf = self;

@@ -372,7 +372,6 @@ enum class PresentedState {
 
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock completion = ^{
-    [weakSelf bookmarkBrowserDismissed];
     if (!openUrlsAfterDismissal) {
       return;
     }
