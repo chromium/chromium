@@ -183,10 +183,12 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
                                       0);
     // TODO(mxlg): Move the tests related to the ReportingEventRouter to its own
     // unit tests file.
+    google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
+        referrer_chain;
     enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
         profile_)
         ->OnSecurityInterstitialShown(GURL("https://phishing.com/"), "PHISHING",
-                                      0, false);
+                                      0, false, referrer_chain);
   }
 
   void TriggerOnSecurityInterstitialProceededEvent() {
@@ -194,10 +196,12 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
         ->OnSecurityInterstitialProceeded(GURL("https://phishing.com/"),
                                           "PHISHING", -201);
     // TODO(mxlg): Move the ReportingEventRouter test code to its own unit test.
+    google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
+        referrer_chain;
     enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
         profile_)
         ->OnSecurityInterstitialProceeded(GURL("https://phishing.com/"),
-                                          "PHISHING", -201);
+                                          "PHISHING", -201, referrer_chain);
   }
 
   void TriggerOnDangerousDownloadEvent() {

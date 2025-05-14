@@ -291,7 +291,6 @@ TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
   expected_event.set_profile_identifier(GetProfileIdentifier());
   *expected_event.add_triggered_rule_info() = MakeTriggeredRuleInfo(
       /*action=*/TriggeredRuleInfo::BLOCK, /*has_watermark=*/false);
-  // Referrer chain is empty for blocked URL filtering events.
   *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
 
   test::EventReportValidatorBase validator(client_.get());
@@ -330,7 +329,6 @@ TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
   expected_event.set_profile_identifier(GetProfileIdentifier());
   *expected_event.add_triggered_rule_info() = MakeTriggeredRuleInfo(
       /*action=*/TriggeredRuleInfo::WARN, /*has_watermark=*/false);
-  // Referrer chain is empty for warned URL filtering events.
   *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
 
   test::EventReportValidatorBase validator(client_.get());
@@ -369,7 +367,6 @@ TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
   expected_event.set_profile_identifier(GetProfileIdentifier());
   *expected_event.add_triggered_rule_info() = MakeTriggeredRuleInfo(
       /*action=*/TriggeredRuleInfo::WARN, /*has_watermark=*/false);
-  // Referrer chain is empty for bypassed URL filtering events.
   *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
 
   test::EventReportValidatorBase validator(client_.get());
@@ -440,8 +437,10 @@ TEST_F(IOSReportingEventRouterTest, TestInterstitialShownWarned) {
   validator.ExpectSecurityInterstitialEvent(
       "https://phishing.com/", "PHISHING", profile_->GetProfileName(),
       GetProfileIdentifier(), "EVENT_RESULT_WARNED", false, 0);
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnSecurityInterstitialShown(
-      GURL("https://phishing.com/"), "PHISHING", 0, false);
+      GURL("https://phishing.com/"), "PHISHING", 0, false, referrer_chain);
 }
 
 // Tests that interstitial reporting events blocked as expected.
@@ -455,8 +454,10 @@ TEST_F(IOSReportingEventRouterTest, TestInterstitialShownBlocked) {
   validator.ExpectSecurityInterstitialEvent(
       "https://phishing.com/", "PHISHING", profile_->GetProfileName(),
       GetProfileIdentifier(), "EVENT_RESULT_BLOCKED", false, 0);
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnSecurityInterstitialShown(
-      GURL("https://phishing.com/"), "PHISHING", 0, true);
+      GURL("https://phishing.com/"), "PHISHING", 0, true, referrer_chain);
 }
 
 // Tests that interstitial reporting events bypassed as expected.
@@ -470,8 +471,10 @@ TEST_F(IOSReportingEventRouterTest, TestInterstitialProceeded) {
   validator.ExpectSecurityInterstitialEvent(
       "https://phishing.com/", "PHISHING", profile_->GetProfileName(),
       GetProfileIdentifier(), "EVENT_RESULT_BYPASSED", true, 0);
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnSecurityInterstitialProceeded(
-      GURL("https://phishing.com/"), "PHISHING", 0);
+      GURL("https://phishing.com/"), "PHISHING", 0, referrer_chain);
 }
 
 // Tests that password reuse reporting events warned as expected.

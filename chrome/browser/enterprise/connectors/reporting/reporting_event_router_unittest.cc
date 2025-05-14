@@ -260,11 +260,10 @@ TEST_F(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
   expected_event.set_profile_identifier(GetProfileIdentifier());
   *expected_event.add_triggered_rule_info() = test::MakeTriggeredRuleInfo(
       /*action=*/TriggeredRuleInfo::BLOCK, /*has_watermark=*/false);
-  // Referrer chain is empty for blocked URL filtering events.
-  *expected_event.add_referrers() = UrlInfo();
+  *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
 
   test::EventReportValidatorBase validator(client_.get());
-  validator.ExpectURLFilteringInterstitialEvent(expected_event);
+  validator.ExpectURLFilteringInterstitialEventWithReferrers(expected_event);
 
   safe_browsing::RTLookupResponse response;
   auto* threat_info = response.add_threat_info();
@@ -297,8 +296,7 @@ TEST_F(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
   expected_event.set_profile_identifier(GetProfileIdentifier());
   *expected_event.add_triggered_rule_info() = test::MakeTriggeredRuleInfo(
       /*action=*/TriggeredRuleInfo::WARN, /*has_watermark=*/true);
-  // Referrer chain is empty for warned URL filtering events.
-  *expected_event.add_referrers() = UrlInfo();
+  *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
 
   test::EventReportValidatorBase validator(client_.get());
   validator.ExpectURLFilteringInterstitialEventWithReferrers(expected_event);
@@ -336,8 +334,7 @@ TEST_F(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
   expected_event.set_profile_identifier(GetProfileIdentifier());
   *expected_event.add_triggered_rule_info() = test::MakeTriggeredRuleInfo(
       /*action=*/TriggeredRuleInfo::WARN, /*has_watermark=*/true);
-  // Referrer chain is empty for bypassed URL filtering events.
-  *expected_event.add_referrers() = UrlInfo();
+  *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
 
   test::EventReportValidatorBase validator(client_.get());
   validator.ExpectURLFilteringInterstitialEventWithReferrers(expected_event);
@@ -398,45 +395,57 @@ TEST_F(ReportingEventRouterTest,
 }
 
 TEST_F(ReportingEventRouterTest, TestInterstitialShownWarned) {
+  EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyInterstitialEvent},
       /*enabled_opt_in_events=*/{});
 
   test::EventReportValidatorBase validator(client_.get());
-  validator.ExpectSecurityInterstitialEvent(
+  validator.ExpectSecurityInterstitialEventWithReferrers(
       "https://phishing.com/", "PHISHING", profile_->GetProfileUserName(),
-      GetProfileIdentifier(), "EVENT_RESULT_WARNED", false, 0);
+      GetProfileIdentifier(), "EVENT_RESULT_WARNED", false, 0,
+      test::MakeUrlInfoReferrer());
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnSecurityInterstitialShown(
-      GURL("https://phishing.com/"), "PHISHING", 0, false);
+      GURL("https://phishing.com/"), "PHISHING", 0, false, referrer_chain);
 }
 
 TEST_F(ReportingEventRouterTest, TestInterstitialShownBlocked) {
+  EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyInterstitialEvent},
       /*enabled_opt_in_events=*/{});
 
   test::EventReportValidatorBase validator(client_.get());
-  validator.ExpectSecurityInterstitialEvent(
+  validator.ExpectSecurityInterstitialEventWithReferrers(
       "https://phishing.com/", "PHISHING", profile_->GetProfileUserName(),
-      GetProfileIdentifier(), "EVENT_RESULT_BLOCKED", false, 0);
+      GetProfileIdentifier(), "EVENT_RESULT_BLOCKED", false, 0,
+      test::MakeUrlInfoReferrer());
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnSecurityInterstitialShown(
-      GURL("https://phishing.com/"), "PHISHING", 0, true);
+      GURL("https://phishing.com/"), "PHISHING", 0, true, referrer_chain);
 }
 
 TEST_F(ReportingEventRouterTest, TestInterstitialProceeded) {
+  EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyInterstitialEvent},
       /*enabled_opt_in_events=*/{});
 
   test::EventReportValidatorBase validator(client_.get());
-  validator.ExpectSecurityInterstitialEvent(
+  validator.ExpectSecurityInterstitialEventWithReferrers(
       "https://phishing.com/", "PHISHING", profile_->GetProfileUserName(),
-      GetProfileIdentifier(), "EVENT_RESULT_BYPASSED", true, 0);
+      GetProfileIdentifier(), "EVENT_RESULT_BYPASSED", true, 0,
+      test::MakeUrlInfoReferrer());
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnSecurityInterstitialProceeded(
-      GURL("https://phishing.com/"), "PHISHING", 0);
+      GURL("https://phishing.com/"), "PHISHING", 0, referrer_chain);
 }
 
 TEST_F(ReportingEventRouterTest, TestPasswordReuseWarned) {

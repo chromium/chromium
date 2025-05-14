@@ -93,9 +93,11 @@ void ReportOnSecurityInterstitialProceeded(
     if (!router) {
       return;
     }
+    google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
+        referrer_chain;
     router->OnSecurityInterstitialProceeded(
         url, safe_browsing::GetThreatTypeStringForInterstitial(threat_type),
-        /*net_error_code=*/0);
+        /*net_error_code=*/0, referrer_chain);
   }
 }
 
