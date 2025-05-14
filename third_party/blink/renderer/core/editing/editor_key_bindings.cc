@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
 
@@ -123,6 +124,7 @@ bool Editor::HandleEditingKeyboardEvent(KeyboardEvent* evt) {
 }
 
 void Editor::HandleKeyboardEvent(KeyboardEvent* evt) {
+  TRACE_EVENT0("blink", "Editor::HandleKeyboardEvent");
   // Give the embedder a chance to handle the keyboard event.
   if (frame_->Client()->HandleCurrentKeyboardEvent() ||
       HandleEditingKeyboardEvent(evt)) {

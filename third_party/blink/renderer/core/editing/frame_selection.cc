@@ -215,6 +215,7 @@ void FrameSelection::MoveCaretSelection(const gfx::Point& point) {
 
 void FrameSelection::SetSelection(const SelectionInDOMTree& selection,
                                   const SetSelectionOptions& data) {
+  TRACE_EVENT0("blink", "FrameSelection::SetSelection");
   if (SetSelectionDeprecated(selection, data))
     DidSetSelectionDeprecated(selection, data);
 }
