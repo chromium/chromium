@@ -32,7 +32,8 @@ bool IsLensOverlayAvailable(const PrefService* prefs) {
 }
 
 bool IsLensOverlaySameTabNavigationEnabled(const PrefService* prefs) {
-  return IsLensOverlayAvailable(prefs) &&
+  bool isIPhone = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
+  return isIPhone && IsLensOverlayAvailable(prefs) &&
          base::FeatureList::IsEnabled(kLensOverlayEnableSameTabNavigation);
 }
 
