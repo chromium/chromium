@@ -897,6 +897,30 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
       assertWithMatcher:grey_nil()];
 }
 
+// Ensures that closing the last tab in an incognito group works.
+- (void)testCloseLastTabInIncognito {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
+
+  [ChromeEarlGreyUI openNewIncognitoTab];
+  [ChromeEarlGreyUI openTabGrid];
+  CreateTabGroupAtIndex(0, kGroup1Name, /*first_group=*/true);
+
+  // Leave the TabGrid to be able to long press on the tab.
+  [[EarlGrey selectElementWithMatcher:TabGridDoneButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_TOOLS_MENU_CLOSE_TAB)] performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForIncognitoTabCount:0];
+}
+
 // Ensures new tab is added when moving the last tab of a shared group.
 - (void)testMoveLastTabInSharedGroup {
   if (@available(iOS 17, *)) {

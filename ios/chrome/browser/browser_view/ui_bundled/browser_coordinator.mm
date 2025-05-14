@@ -2308,7 +2308,7 @@ enum class ToolbarKind {
   TabGroupService* groupService =
       TabGroupServiceFactory::GetForProfile(self.profile);
   const TabGroup* group = webStateList->GetGroupOfWebStateAt(active_index);
-  if (groupService->ShouldDisplayLastTabCloseAlert(group)) {
+  if (groupService && groupService->ShouldDisplayLastTabCloseAlert(group)) {
     web::WebState* webState = webStateList->GetWebStateAt(active_index);
     BOOL isTablet = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
     SharedTabGroupLastTabAlertCommand* command =
