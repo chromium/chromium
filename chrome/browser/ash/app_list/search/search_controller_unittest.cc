@@ -19,6 +19,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"

@@ -17,6 +17,7 @@
 #include "base/containers/flat_set.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "printing/backend/print_backend.h"

@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/barrier_closure.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"

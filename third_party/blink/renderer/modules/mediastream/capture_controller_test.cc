@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"

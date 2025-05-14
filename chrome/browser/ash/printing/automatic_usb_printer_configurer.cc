@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/printing/printer_installation_manager.h"
 #include "chrome/browser/ash/printing/usb_printer_notification_controller.h"
 #include "chromeos/printing/ppd_provider.h"

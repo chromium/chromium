@@ -13,6 +13,7 @@
 #include "ash/system/notification_center/message_view_factory.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/growth/metrics.h"

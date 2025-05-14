@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/search/essential_search/essential_search_manager.h"
 
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"

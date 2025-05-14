@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/webui/ash/borealis_motd/borealis_motd_dialog.h"
 
+#include "base/strings/stringprintf.h"
 #include "base/version.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/common/chrome_features.h"

@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/test_ax_tree_update.h"
 
+#include "base/strings/stringprintf.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

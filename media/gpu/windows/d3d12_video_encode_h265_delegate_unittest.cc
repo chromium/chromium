@@ -4,6 +4,7 @@
 
 #include "media/gpu/windows/d3d12_video_encode_h265_delegate.h"
 
+#include "base/strings/stringprintf.h"
 #include "media/base/win/d3d12_mocks.h"
 #include "media/base/win/d3d12_video_mocks.h"
 #include "media/gpu/windows/d3d12_video_encode_delegate_unittest.h"

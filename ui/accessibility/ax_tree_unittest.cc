@@ -4,6 +4,8 @@
 
 #include "ui/accessibility/ax_tree.h"
 
+#include "base/strings/stringprintf.h"
+
 #if BUILDFLAG(IS_LINUX)
 #include <atk/atk.h>
 #endif  // BUILDFLAG(IS_LINUX)

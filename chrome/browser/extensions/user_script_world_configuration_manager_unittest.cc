@@ -4,6 +4,7 @@
 
 #include "extensions/browser/user_script_world_configuration_manager.h"
 
+#include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/profiles/profile.h"

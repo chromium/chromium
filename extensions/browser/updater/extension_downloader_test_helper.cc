@@ -5,6 +5,7 @@
 #include "extensions/browser/updater/extension_downloader_test_helper.h"
 
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "extensions/common/verifier_formats.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 

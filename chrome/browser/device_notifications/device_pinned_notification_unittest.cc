@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/device_notifications/device_pinned_notification_renderer.h"
 #include "chrome/browser/device_notifications/device_system_tray_icon.h"

@@ -19,6 +19,7 @@
 #include <ostream>
 
 #include "base/numerics/angle_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/axis_transform2d.h"

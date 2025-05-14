@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/device_notifications/device_pinned_notification_unittest.h"
 #include "chrome/browser/usb/usb_connection_tracker.h"

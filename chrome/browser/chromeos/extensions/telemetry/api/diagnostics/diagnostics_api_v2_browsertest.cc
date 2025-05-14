@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_deref.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_browser_test.h"

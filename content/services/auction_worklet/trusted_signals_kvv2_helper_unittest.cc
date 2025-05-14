@@ -4,15 +4,8 @@
 
 #include "content/services/auction_worklet/trusted_signals_kvv2_helper.h"
 
-#include <array>
-
-#if BUILDFLAG(IS_WIN)
-#include <winsock2.h>
-#else
-#include <netinet/in.h>
-#endif
-
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <functional>
@@ -23,6 +16,7 @@
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -40,7 +34,13 @@
 #include "third_party/zlib/google/compression_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-#include "v8-context.h"
+#include "v8/include/v8-context.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <winsock2.h>
+#else
+#include <netinet/in.h>
+#endif
 
 namespace auction_worklet {
 

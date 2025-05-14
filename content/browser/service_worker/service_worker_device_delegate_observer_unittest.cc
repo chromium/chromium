@@ -7,6 +7,7 @@
 #include <cstdint>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/test_future.h"
 #include "components/services/storage/public/mojom/service_worker_database.mojom-shared.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"

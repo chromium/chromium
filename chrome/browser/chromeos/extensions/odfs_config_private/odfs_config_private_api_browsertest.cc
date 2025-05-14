@@ -9,6 +9,7 @@
 
 #include "ash/constants/web_app_id_constants.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/extensions/extension_apitest.h"

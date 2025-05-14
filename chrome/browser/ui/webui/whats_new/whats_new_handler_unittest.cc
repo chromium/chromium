@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/whats_new/whats_new_handler.h"
 
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"

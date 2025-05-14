@@ -4,6 +4,8 @@
 
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
 
+#include "base/strings/stringprintf.h"
+
 namespace ash::settings {
 
 WebContentsInteractionTestUtil::DeepQuery InternetPage() {

@@ -20,6 +20,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/display_switches.h"

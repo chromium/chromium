@@ -8,6 +8,7 @@
 
 #include "base/bits.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/strings/stringprintf.h"
 #include "media/gpu/h265_builder.h"
 #include "media/gpu/windows/d3d12_video_helpers.h"
 #include "media/gpu/windows/format_utils.h"
