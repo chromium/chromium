@@ -3737,11 +3737,6 @@ const char kServiceWorkerAutoPreloadDescription[] =
     "worker. See "
     "https://github.com/explainers-by-googlers/service-worker-auto-preload";
 
-const char kSharedZstdName[] = "Shared Zstd";
-const char kSharedZstdDescription[] =
-    "Enables compression dictionary transport with Zstandard (aka Shared "
-    "Zstd).";
-
 const char kSharingDesktopScreenshotsName[] = "Desktop Screenshots";
 const char kSharingDesktopScreenshotsDescription[] =
     "Enables taking"

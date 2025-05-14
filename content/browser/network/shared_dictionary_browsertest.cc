@@ -365,11 +365,7 @@ bool HasSharedDictionaryAcceptEncoding(
   if (it == headers.end()) {
     return false;
   }
-  if (base::FeatureList::IsEnabled(network::features::kSharedZstd)) {
     return it->second == "dcb, dcz" || base::EndsWith(it->second, ", dcb, dcz");
-  } else {
-    return it->second == "dcb" || base::EndsWith(it->second, ", dcb");
-  }
 }
 
 // A dummy ContentBrowserClient for testing HTTP Auth.
@@ -711,17 +707,10 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
     if (dict_hash) {
       if (*dict_hash == kExpectedDictionaryHashBase64) {
         if (HasSharedDictionaryAcceptEncoding(request.headers)) {
-          if (base::FeatureList::IsEnabled(network::features::kSharedZstd)) {
             response->AddCustomHeader(
                 "content-encoding",
                 net::shared_dictionary::kSharedZstdContentEncodingName);
             response->set_content(kZstdCompressedDataString);
-          } else {
-            response->AddCustomHeader(
-                "content-encoding",
-                net::shared_dictionary::kSharedBrotliContentEncodingName);
-            response->set_content(kBrotliCompressedDataString);
-          }
         } else {
           response->set_content(kErrorNoSharedDictionaryAcceptEncodingString);
         }
@@ -746,8 +735,7 @@ class SharedDictionaryBrowserTest
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {network::features::kCompressionDictionaryTransportBackend,
-         network::features::kCompressionDictionaryTransport,
-         network::features::kSharedZstd},
+         network::features::kCompressionDictionaryTransport},
         /*disabled_features=*/{});
   }
   SharedDictionaryBrowserTest(const SharedDictionaryBrowserTest&) = delete;

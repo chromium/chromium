@@ -127,7 +127,6 @@
 #include "services/network/proxy_resolving_socket_factory_mojo.h"
 #include "services/network/public/cpp/cert_verifier/mojo_cert_verifier.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -2921,8 +2920,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
 
   if (params_->shared_dictionary_enabled) {
     builder.set_enable_shared_dictionary(true);
-    builder.set_enable_shared_zstd(
-        base::FeatureList::IsEnabled(network::features::kSharedZstd));
+    builder.set_enable_shared_zstd(true);
   }
 
   builder.SetWrapHttpNetworkLayerCallback(

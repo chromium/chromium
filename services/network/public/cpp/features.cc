@@ -287,8 +287,6 @@ BASE_FEATURE(kVisibilityAwareResourceScheduler,
              "VisibilityAwareResourceScheduler",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSharedZstd, "SharedZstd", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // This feature will reduce TransferSizeUpdated IPC from the network service.
 // When enabled, the network service will send the IPC only when DevTools is
 // attached or the request is for an ad request.

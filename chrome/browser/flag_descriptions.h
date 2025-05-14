@@ -2139,9 +2139,6 @@ extern const char kSegmentationSurveyPageDescription[];
 extern const char kServiceWorkerAutoPreloadName[];
 extern const char kServiceWorkerAutoPreloadDescription[];
 
-extern const char kSharedZstdName[];
-extern const char kSharedZstdDescription[];
-
 extern const char kSharingDesktopScreenshotsName[];
 extern const char kSharingDesktopScreenshotsDescription[];
 

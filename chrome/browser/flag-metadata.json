@@ -4132,11 +4132,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "enable-shared-zstd",
-    "owners": [ "nidhijaju@chromium.org", "net-dev@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-shortcut-customization",
     "owners": [
       "jimmyxgong@chromium.org",

@@ -10097,10 +10097,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(features::kComputePressureBreakCalibrationMitigation)},
 
-    {"enable-shared-zstd", flag_descriptions::kSharedZstdName,
-     flag_descriptions::kSharedZstdDescription, kOsAll,
-     FEATURE_VALUE_TYPE(network::features::kSharedZstd)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"android-extended-keyboard-shortcuts",
      flag_descriptions::kAndroidExtendedKeyboardShortcutsName,

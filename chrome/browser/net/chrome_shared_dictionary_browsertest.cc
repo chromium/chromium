@@ -206,8 +206,7 @@ class ChromeSharedDictionaryBrowserTest : public InProcessBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {network::features::kCompressionDictionaryTransportBackend,
-         network::features::kCompressionDictionaryTransport,
-         network::features::kSharedZstd},
+         network::features::kCompressionDictionaryTransport},
         /*disabled_features=*/{});
 
     embedded_test_server()->RegisterRequestHandler(
