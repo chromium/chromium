@@ -86255,6 +86255,35 @@
          }
         ]
        ],
+       "corner-shape-overflow-clip-margin.html": [
+        "97371aa6c3f3891004a6da02548101ae9adf29d3",
+        [
+         null,
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-overflow-clip-margin-ref.html",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              64
+             ],
+             [
+              0,
+              180
+             ]
+            ]
+           ]
+          ]
+         }
+        ]
+       ],
        "corner-shape-render-fuzzy.html": [
         "590e960830f595c7bc6f730d12d69e19c2ba0453",
         [
@@ -335340,6 +335369,10 @@
         "8963c0ca2939c4036d9505461c9772b803b586f2",
         []
        ],
+       "corner-shape-overflow-clip-margin-ref.html": [
+        "2c1ccf86cc6ae5ec138b741d83dfb31347de61c8",
+        []
+       ],
        "corner-shape-square-ref.html": [
         "4576240ef3288a954c9a627cbafd640eacd95444",
         []
@@ -397759,7 +397792,7 @@
       []
      ],
      "reflection-metadata-expected.txt": [
-      "4231764eff1c40c4adb9ea72d01711f32439f2e2",
+      "714e75895fd06047ecad1465f996a6abed42fa56",
       []
      ],
      "reflection-original.html": [
@@ -397771,7 +397804,7 @@
       []
      ],
      "reflection.js": [
-      "b2c3b30aae36b390a60c05b39901826ba71e0b1a",
+      "eeecd450fca8139e924affb298e7feb1a1fb46fb",
       []
      ],
      "render-blocking": {
@@ -425661,7 +425694,7 @@
       []
      ],
      "soft-navigation-helper.js": [
-      "a29978c8760495ffccbd6fc56d62f4625d89334d",
+      "c9f2b41b552855d6cbd049008c314fe4c953464b",
       []
      ]
     },
@@ -504581,7 +504614,7 @@
        ]
       ],
       "font-weight-matching.html": [
-       "5eb9a99f8742e7b2d549acb9010ab2ee49981f78",
+       "2788039a2d4ca8bef3c34ead1516786624c060e4",
        [
         null,
         {}
@@ -729095,16 +729128,16 @@
     ],
     "tentative": {
      "integrity-policy": {
-      "parsing.https.html": [
+      "parsing.html": [
        "205854419a7d58871e39a5cfb3a86ccd38cd5492",
        [
-        "subresource-integrity/tentative/integrity-policy/parsing.https.html?type=enforce",
+        "subresource-integrity/tentative/integrity-policy/parsing.html?type=enforce",
         {
          "timeout": "long"
         }
        ],
        [
-        "subresource-integrity/tentative/integrity-policy/parsing.https.html?type=report",
+        "subresource-integrity/tentative/integrity-policy/parsing.html?type=report",
         {
          "timeout": "long"
         }
@@ -773869,7 +773902,7 @@
       ]
      ],
      "qdq_subgraph.https.any.js": [
-      "aa816cce7fb2cd3d0a3f81d0453c8c199bf052fe",
+      "80a53edf6c8b92c9f89da47b085fe017dc22c357",
       [
        "webnn/conformance_tests/qdq_subgraph.https.any.html?cpu",
        {
