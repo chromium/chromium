@@ -395,17 +395,6 @@ bool CookieSettingsBase::IsFullCookieAccessAllowed(
   return IsAllowed(setting.cookie_setting());
 }
 
-bool CookieSettingsBase::IsFullCookieAccessAllowed(
-    const GURL& url,
-    const net::SiteForCookies& site_for_cookies,
-    base::optional_ref<const url::Origin> top_frame_origin,
-    net::CookieSettingOverrides overrides,
-    CookieSettingWithMetadata* cookie_settings) const {
-  return IsFullCookieAccessAllowed(
-      url, site_for_cookies, top_frame_origin, overrides,
-      /*cookie_partition_key=*/std::nullopt, cookie_settings);
-}
-
 bool CookieSettingsBase::IsCookieSessionOnly(const GURL& origin) const {
   // Pass GURL() as first_party_url since we don't know the context and
   // don't want to match against (*, exception) pattern.

@@ -284,15 +284,6 @@ class CookieSettingsBase {
       base::optional_ref<const net::CookiePartitionKey> cookie_partition_key,
       CookieSettingWithMetadata* cookie_settings = nullptr) const;
 
-  // TODO(https://crbug.com/399826579): Remove this overload and migrate all
-  // callsites to signature above
-  bool IsFullCookieAccessAllowed(
-      const GURL& url,
-      const net::SiteForCookies& site_for_cookies,
-      base::optional_ref<const url::Origin> top_frame_origin,
-      net::CookieSettingOverrides overrides,
-      CookieSettingWithMetadata* cookie_settings = nullptr) const;
-
   // Returns true if the cookie set by a page identified by |url| should be
   // session only. Querying this only makes sense if |IsFullCookieAccessAllowed|
   // has returned true.
