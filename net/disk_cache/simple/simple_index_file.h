@@ -82,7 +82,7 @@ class NET_EXPORT_PRIVATE SimpleIndexFile {
     friend class V8IndexMetadataForTest;
 
     uint64_t magic_number_ = kSimpleIndexMagicNumber;
-    uint32_t version_ = kSimpleVersion;
+    uint32_t version_ = kSimpleIndexFileVersion;
     SimpleIndex::IndexWriteToDiskReason reason_;
     uint64_t entry_count_;
     uint64_t cache_size_;  // Total cache storage size in bytes.

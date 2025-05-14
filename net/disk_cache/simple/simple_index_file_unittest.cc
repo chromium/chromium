@@ -54,7 +54,7 @@ TEST(IndexMetadataTest, Basics) {
   SimpleIndexFile::IndexMetadata index_metadata;
 
   EXPECT_EQ(disk_cache::kSimpleIndexMagicNumber, index_metadata.magic_number_);
-  EXPECT_EQ(disk_cache::kSimpleVersion, index_metadata.version_);
+  EXPECT_EQ(disk_cache::kSimpleIndexFileVersion, index_metadata.version_);
   EXPECT_EQ(0U, index_metadata.entry_count());
   EXPECT_EQ(0U, index_metadata.cache_size_);
 

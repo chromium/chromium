@@ -1920,7 +1920,7 @@ bool SimpleSynchronousEntry::TruncateSparseFile(base::File* sparse_file) {
 bool SimpleSynchronousEntry::InitializeSparseFile(base::File* sparse_file) {
   SimpleFileHeader header;
   header.initial_magic_number = kSimpleInitialMagicNumber;
-  header.version = kSimpleVersion;
+  header.version = kSimpleSparseEntryVersion;
   const std::string& key = *key_;
   header.key_length = key.size();
   header.key_hash = base::PersistentHash(key);
@@ -1956,8 +1956,7 @@ bool SimpleSynchronousEntry::ScanSparseFile(base::File* sparse_file,
     return false;
   }
 
-  if (header.version < kLastCompatSparseVersion ||
-      header.version > kSimpleVersion) {
+  if (header.version != kSimpleSparseEntryVersion) {
     DLOG(WARNING) << "Sparse file unreadable version.";
     return false;
   }
