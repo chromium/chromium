@@ -329,6 +329,7 @@ void OSMetrics::SetProcSmapsForTesting(FILE* f) {
 
 // static
 bool OSMetrics::FillOSMemoryDump(base::ProcessHandle handle,
+                                 const MemDumpFlagSet& flags,
                                  mojom::RawOSMemDump* dump) {
   auto info = GetMemoryInfo(handle);
   if (!info.has_value()) {
@@ -341,8 +342,12 @@ bool OSMetrics::FillOSMemoryDump(base::ProcessHandle handle,
       base::saturated_cast<uint32_t>(info->resident_set_bytes / 1024);
   dump->peak_resident_set_kb = GetPeakResidentSetSize(handle);
   dump->is_peak_rss_resettable = ResetPeakRSSIfPossible(handle);
-  dump->mappings_count = CountMappings(handle);
-  GetSmapsRollup(&dump->pss_kb, &dump->swap_pss_kb);
+  if (flags.Has(mojom::MemDumpFlags::MEM_DUMP_COUNT_MAPPINGS)) {
+    dump->mappings_count = CountMappings(handle);
+  }
+  if (flags.Has(mojom::MemDumpFlags::MEM_DUMP_PSS)) {
+    GetSmapsRollup(&dump->pss_kb, &dump->swap_pss_kb);
+  }
 
 #if BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(SUPPORTS_CODE_ORDERING)

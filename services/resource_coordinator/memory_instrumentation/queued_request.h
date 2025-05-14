@@ -93,6 +93,8 @@ struct QueuedRequest {
                : mojom::MemoryMapOption::NONE;
   }
 
+  std::vector<mojom::MemDumpFlags> memory_dump_flags() const;
+
   bool should_return_summaries() const {
     return args.dump_type == base::trace_event::MemoryDumpType::kSummaryOnly;
   }

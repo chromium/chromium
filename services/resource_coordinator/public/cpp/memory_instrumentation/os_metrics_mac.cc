@@ -227,16 +227,18 @@ void AddRegionByteStats(VMRegion* dest, const VMRegion& source) {
 
 // static
 bool OSMetrics::FillOSMemoryDump(base::ProcessHandle handle,
+                                 const MemDumpFlagSet& flags,
                                  mojom::RawOSMemDump* dump) {
   auto current_handle = base::GetCurrentProcessHandle();
   if (handle != base::kNullProcessId && handle != current_handle) {
     return false;
   }
-  return FillOSMemoryDump(current_handle, nullptr, dump);
+  return FillOSMemoryDump(current_handle, flags, nullptr, dump);
 }
 
 // static
 bool OSMetrics::FillOSMemoryDump(base::ProcessHandle handle,
+                                 const MemDumpFlagSet& flags,
                                  base::PortProvider* port_provider,
                                  mojom::RawOSMemDump* dump) {
   auto process_metrics =

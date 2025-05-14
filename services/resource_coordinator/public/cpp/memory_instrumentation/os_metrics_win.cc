@@ -41,6 +41,7 @@ std::string MakeDebugID(const GUID& guid, DWORD age) {
 
 // static
 bool OSMetrics::FillOSMemoryDump(base::ProcessHandle handle,
+                                 const MemDumpFlagSet& flags,
                                  mojom::RawOSMemDump* dump) {
   auto info = GetMemoryInfo(handle);
   if (!info.has_value()) {

@@ -19,6 +19,7 @@ namespace memory_instrumentation {
 
 // static
 bool OSMetrics::FillOSMemoryDump(base::ProcessHandle handle,
+                                 const MemDumpFlagSet& flags,
                                  mojom::RawOSMemDump* dump) {
   auto info = GetMemoryInfo(handle);
   if (!info.has_value()) {

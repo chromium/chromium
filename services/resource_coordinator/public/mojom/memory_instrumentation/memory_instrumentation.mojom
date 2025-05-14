@@ -51,6 +51,14 @@ enum MemoryMapOption {
   FULL,
 };
 
+enum MemDumpFlags {
+  // On Linux platforms, populate the mappings_count field of RawOSMemDump.
+  MEM_DUMP_COUNT_MAPPINGS = 0,
+  // On Linux platforms, populate the pss_kb and swap_pss_kb fields of
+  // RawOSMemDump.
+  MEM_DUMP_PSS = 1,
+};
+
 // These structs are internal only (only for the communication between
 // the service and the ClientProcess library).
 // See corresponding types in //base/trace_event for comments.
@@ -295,7 +303,9 @@ interface ClientProcess {
   // the pids for all processes.
   // See crbug.com/461788
   RequestOSMemoryDump(
-      MemoryMapOption option, array<mojo_base.mojom.ProcessId> pids)
+      MemoryMapOption option,
+      array<MemDumpFlags> flags,
+      array<mojo_base.mojom.ProcessId> pids)
       => (bool success, map<mojo_base.mojom.ProcessId, RawOSMemDump> dumps);
 };
 

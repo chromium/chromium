@@ -178,8 +178,9 @@ class MockClientProcess : public mojom::ClientProcess {
           std::move(callback).Run(true, args.dump_guid, std::move(pmd));
         }));
 
-    ON_CALL(*this, RequestOSMemoryDumpMock(_, _, _))
+    ON_CALL(*this, RequestOSMemoryDumpMock(_, _, _, _))
         .WillByDefault(Invoke([](mojom::MemoryMapOption,
+                                 const std::vector<mojom::MemDumpFlags>& flags,
                                  const std::vector<base::ProcessId> pids,
                                  RequestOSMemoryDumpCallback& callback) {
           base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
@@ -194,8 +195,9 @@ class MockClientProcess : public mojom::ClientProcess {
   MOCK_METHOD2(RequestChromeMemoryDumpMock,
                void(const MemoryDumpRequestArgs& args,
                     RequestChromeMemoryDumpCallback& callback));
-  MOCK_METHOD3(RequestOSMemoryDumpMock,
+  MOCK_METHOD4(RequestOSMemoryDumpMock,
                void(mojom::MemoryMapOption option,
+                    const std::vector<mojom::MemDumpFlags>& flags,
                     const std::vector<base::ProcessId>& args,
                     RequestOSMemoryDumpCallback& callback));
 
@@ -205,9 +207,10 @@ class MockClientProcess : public mojom::ClientProcess {
     RequestChromeMemoryDumpMock(args, callback);
   }
   void RequestOSMemoryDump(mojom::MemoryMapOption option,
+                           const std::vector<mojom::MemDumpFlags>& flags,
                            const std::vector<base::ProcessId>& args,
                            RequestOSMemoryDumpCallback callback) override {
-    RequestOSMemoryDumpMock(option, args, callback);
+    RequestOSMemoryDumpMock(option, flags, args, callback);
   }
 
  private:
@@ -389,10 +392,12 @@ TEST_F(CoordinatorImplTest, MissingOsDump) {
   NiceMock<MockClientProcess> client_process(this, 1,
                                              mojom::ProcessType::BROWSER);
 
-  EXPECT_CALL(client_process, RequestOSMemoryDumpMock(_, _, _))
-      .WillOnce(Invoke(
-          [](mojom::MemoryMapOption, const std::vector<base::ProcessId>& pids,
-             MockClientProcess::RequestOSMemoryDumpCallback& callback) {
+  EXPECT_CALL(client_process, RequestOSMemoryDumpMock(_, _, _, _))
+      .WillOnce(
+          Invoke([](mojom::MemoryMapOption,
+                    const std::vector<mojom::MemDumpFlags>& flags,
+                    const std::vector<base::ProcessId>& pids,
+                    MockClientProcess::RequestOSMemoryDumpCallback& callback) {
             base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
             std::move(callback).Run(true, std::move(results));
           }));
@@ -455,31 +460,38 @@ TEST_F(CoordinatorImplTest, TimeOutStuckChildMultiProcess) {
 // On Linux, all memory dumps come from the browser client. On all other
 // platforms, they are expected to come from each individual client.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  EXPECT_CALL(browser_client,
-              RequestOSMemoryDumpMock(
-                  _, AllOf(Contains(kBrowserPid), Contains(kRendererPid)), _))
-      .WillOnce(Invoke(
-          [](mojom::MemoryMapOption, const std::vector<base::ProcessId>& pids,
-             MockClientProcess::RequestOSMemoryDumpCallback& callback) {
+  EXPECT_CALL(
+      browser_client,
+      RequestOSMemoryDumpMock(
+          _, _, AllOf(Contains(kBrowserPid), Contains(kRendererPid)), _))
+      .WillOnce(
+          Invoke([](mojom::MemoryMapOption,
+                    const std::vector<mojom::MemDumpFlags>& flags,
+                    const std::vector<base::ProcessId>& pids,
+                    MockClientProcess::RequestOSMemoryDumpCallback& callback) {
             base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
             results[kBrowserPid] = FillRawOSDump(kBrowserPid);
             results[kRendererPid] = FillRawOSDump(kRendererPid);
             std::move(callback).Run(true, std::move(results));
           }));
-  EXPECT_CALL(renderer_client, RequestOSMemoryDumpMock(_, _, _)).Times(0);
+  EXPECT_CALL(renderer_client, RequestOSMemoryDumpMock(_, _, _, _)).Times(0);
 #else
-  EXPECT_CALL(browser_client, RequestOSMemoryDumpMock(_, Contains(0), _))
-      .WillOnce(Invoke(
-          [](mojom::MemoryMapOption, const std::vector<base::ProcessId>& pids,
-             MockClientProcess::RequestOSMemoryDumpCallback& callback) {
+  EXPECT_CALL(browser_client, RequestOSMemoryDumpMock(_, _, Contains(0), _))
+      .WillOnce(
+          Invoke([](mojom::MemoryMapOption,
+                    const std::vector<mojom::MemDumpFlags>& flags,
+                    const std::vector<base::ProcessId>& pids,
+                    MockClientProcess::RequestOSMemoryDumpCallback& callback) {
             base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
             results[0] = FillRawOSDump(kBrowserPid);
             std::move(callback).Run(true, std::move(results));
           }));
-  EXPECT_CALL(renderer_client, RequestOSMemoryDumpMock(_, Contains(0), _))
-      .WillOnce(Invoke(
-          [](mojom::MemoryMapOption, const std::vector<base::ProcessId>& pids,
-             MockClientProcess::RequestOSMemoryDumpCallback& callback) {
+  EXPECT_CALL(renderer_client, RequestOSMemoryDumpMock(_, _, Contains(0), _))
+      .WillOnce(
+          Invoke([](mojom::MemoryMapOption,
+                    const std::vector<mojom::MemDumpFlags>& flags,
+                    const std::vector<base::ProcessId>& pids,
+                    MockClientProcess::RequestOSMemoryDumpCallback& callback) {
             base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
             results[0] = FillRawOSDump(kRendererPid);
             std::move(callback).Run(true, std::move(results));
@@ -633,10 +645,12 @@ TEST_F(CoordinatorImplTest, GlobalMemoryDumpStruct) {
           }));
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   EXPECT_CALL(browser_client,
-              RequestOSMemoryDumpMock(_, AllOf(Contains(1), Contains(2)), _))
-      .WillOnce(Invoke(
-          [](mojom::MemoryMapOption, const std::vector<base::ProcessId>& pids,
-             MockClientProcess::RequestOSMemoryDumpCallback& callback) {
+              RequestOSMemoryDumpMock(_, _, AllOf(Contains(1), Contains(2)), _))
+      .WillOnce(
+          Invoke([](mojom::MemoryMapOption,
+                    const std::vector<mojom::MemDumpFlags>& flags,
+                    const std::vector<base::ProcessId>& pids,
+                    MockClientProcess::RequestOSMemoryDumpCallback& callback) {
             base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
             results[1] = mojom::RawOSMemDump::New();
             results[1]->resident_set_kb = 1;
@@ -648,12 +662,14 @@ TEST_F(CoordinatorImplTest, GlobalMemoryDumpStruct) {
             results[2]->resident_set_kb = 2;
             std::move(callback).Run(true, std::move(results));
           }));
-  EXPECT_CALL(renderer_client, RequestOSMemoryDumpMock(_, _, _)).Times(0);
+  EXPECT_CALL(renderer_client, RequestOSMemoryDumpMock(_, _, _, _)).Times(0);
 #else
-  EXPECT_CALL(browser_client, RequestOSMemoryDumpMock(_, Contains(0), _))
-      .WillOnce(Invoke(
-          [](mojom::MemoryMapOption, const std::vector<base::ProcessId>& pids,
-             MockClientProcess::RequestOSMemoryDumpCallback& callback) {
+  EXPECT_CALL(browser_client, RequestOSMemoryDumpMock(_, _, Contains(0), _))
+      .WillOnce(
+          Invoke([](mojom::MemoryMapOption,
+                    const std::vector<mojom::MemDumpFlags>& flags,
+                    const std::vector<base::ProcessId>& pids,
+                    MockClientProcess::RequestOSMemoryDumpCallback& callback) {
             base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
             results[0] = mojom::RawOSMemDump::New();
             results[0]->platform_private_footprint =
@@ -661,10 +677,12 @@ TEST_F(CoordinatorImplTest, GlobalMemoryDumpStruct) {
             results[0]->resident_set_kb = 1;
             std::move(callback).Run(true, std::move(results));
           }));
-  EXPECT_CALL(renderer_client, RequestOSMemoryDumpMock(_, Contains(0), _))
-      .WillOnce(Invoke(
-          [](mojom::MemoryMapOption, const std::vector<base::ProcessId>& pids,
-             MockClientProcess::RequestOSMemoryDumpCallback& callback) {
+  EXPECT_CALL(renderer_client, RequestOSMemoryDumpMock(_, _, Contains(0), _))
+      .WillOnce(
+          Invoke([](mojom::MemoryMapOption,
+                    const std::vector<mojom::MemDumpFlags>& flags,
+                    const std::vector<base::ProcessId>& pids,
+                    MockClientProcess::RequestOSMemoryDumpCallback& callback) {
             base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
             results[0] = mojom::RawOSMemDump::New();
             results[0]->platform_private_footprint =
@@ -717,31 +735,38 @@ TEST_F(CoordinatorImplTest, VmRegionsForHeapProfiler) {
 // On Linux, all memory dumps come from the browser client. On all other
 // platforms, they are expected to come from each individual client.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  EXPECT_CALL(browser_client,
-              RequestOSMemoryDumpMock(
-                  _, AllOf(Contains(kBrowserPid), Contains(kRendererPid)), _))
-      .WillOnce(Invoke(
-          [](mojom::MemoryMapOption, const std::vector<base::ProcessId>& pids,
-             MockClientProcess::RequestOSMemoryDumpCallback& callback) {
+  EXPECT_CALL(
+      browser_client,
+      RequestOSMemoryDumpMock(
+          _, _, AllOf(Contains(kBrowserPid), Contains(kRendererPid)), _))
+      .WillOnce(
+          Invoke([](mojom::MemoryMapOption,
+                    const std::vector<mojom::MemDumpFlags>& flags,
+                    const std::vector<base::ProcessId>& pids,
+                    MockClientProcess::RequestOSMemoryDumpCallback& callback) {
             base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
             results[kBrowserPid] = FillRawOSDump(kBrowserPid);
             results[kRendererPid] = FillRawOSDump(kRendererPid);
             std::move(callback).Run(true, std::move(results));
           }));
-  EXPECT_CALL(renderer_client, RequestOSMemoryDumpMock(_, _, _)).Times(0);
+  EXPECT_CALL(renderer_client, RequestOSMemoryDumpMock(_, _, _, _)).Times(0);
 #else
-  EXPECT_CALL(browser_client, RequestOSMemoryDumpMock(_, Contains(0), _))
-      .WillOnce(Invoke(
-          [](mojom::MemoryMapOption, const std::vector<base::ProcessId>& pids,
-             MockClientProcess::RequestOSMemoryDumpCallback& callback) {
+  EXPECT_CALL(browser_client, RequestOSMemoryDumpMock(_, _, Contains(0), _))
+      .WillOnce(
+          Invoke([](mojom::MemoryMapOption,
+                    const std::vector<mojom::MemDumpFlags>& flags,
+                    const std::vector<base::ProcessId>& pids,
+                    MockClientProcess::RequestOSMemoryDumpCallback& callback) {
             base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
             results[0] = FillRawOSDump(kBrowserPid);
             std::move(callback).Run(true, std::move(results));
           }));
-  EXPECT_CALL(renderer_client, RequestOSMemoryDumpMock(_, Contains(0), _))
-      .WillOnce(Invoke(
-          [](mojom::MemoryMapOption, const std::vector<base::ProcessId>& pids,
-             MockClientProcess::RequestOSMemoryDumpCallback& callback) {
+  EXPECT_CALL(renderer_client, RequestOSMemoryDumpMock(_, _, Contains(0), _))
+      .WillOnce(
+          Invoke([](mojom::MemoryMapOption,
+                    const std::vector<mojom::MemDumpFlags>& flags,
+                    const std::vector<base::ProcessId>& pids,
+                    MockClientProcess::RequestOSMemoryDumpCallback& callback) {
             base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
             results[0] = FillRawOSDump(kRendererPid);
             std::move(callback).Run(true, std::move(results));
@@ -881,49 +906,61 @@ TEST_F(CoordinatorImplTest, DumpByPidSuccess) {
 // On Linux, all memory dumps come from the browser client. On all other
 // platforms, they are expected to come from each individual client.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  EXPECT_CALL(client_process_1, RequestOSMemoryDumpMock(_, _, _))
-      .WillOnce(Invoke(
-          [](mojom::MemoryMapOption, const std::vector<base::ProcessId>& pids,
-             MockClientProcess::RequestOSMemoryDumpCallback& callback) {
+  EXPECT_CALL(client_process_1, RequestOSMemoryDumpMock(_, _, _, _))
+      .WillOnce(
+          Invoke([](mojom::MemoryMapOption,
+                    const std::vector<mojom::MemDumpFlags>& flags,
+                    const std::vector<base::ProcessId>& pids,
+                    MockClientProcess::RequestOSMemoryDumpCallback& callback) {
             base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
             results[kBrowserPid] = FillRawOSDump(kBrowserPid);
             std::move(callback).Run(true, std::move(results));
           }))
-      .WillOnce(Invoke(
-          [](mojom::MemoryMapOption, const std::vector<base::ProcessId>& pids,
-             MockClientProcess::RequestOSMemoryDumpCallback& callback) {
+      .WillOnce(
+          Invoke([](mojom::MemoryMapOption,
+                    const std::vector<mojom::MemDumpFlags>& flags,
+                    const std::vector<base::ProcessId>& pids,
+                    MockClientProcess::RequestOSMemoryDumpCallback& callback) {
             base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
             results[kRendererPid] = FillRawOSDump(kRendererPid);
             std::move(callback).Run(true, std::move(results));
           }))
-      .WillOnce(Invoke(
-          [](mojom::MemoryMapOption, const std::vector<base::ProcessId>& pids,
-             MockClientProcess::RequestOSMemoryDumpCallback& callback) {
+      .WillOnce(
+          Invoke([](mojom::MemoryMapOption,
+                    const std::vector<mojom::MemDumpFlags>& flags,
+                    const std::vector<base::ProcessId>& pids,
+                    MockClientProcess::RequestOSMemoryDumpCallback& callback) {
             base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
             results[kGpuPid] = FillRawOSDump(kGpuPid);
             std::move(callback).Run(true, std::move(results));
           }));
 #else
-  EXPECT_CALL(client_process_1, RequestOSMemoryDumpMock(_, Contains(0), _))
-      .WillOnce(Invoke(
-          [](mojom::MemoryMapOption, const std::vector<base::ProcessId>& pids,
-             MockClientProcess::RequestOSMemoryDumpCallback& callback) {
+  EXPECT_CALL(client_process_1, RequestOSMemoryDumpMock(_, _, Contains(0), _))
+      .WillOnce(
+          Invoke([](mojom::MemoryMapOption,
+                    const std::vector<mojom::MemDumpFlags>& flags,
+                    const std::vector<base::ProcessId>& pids,
+                    MockClientProcess::RequestOSMemoryDumpCallback& callback) {
             base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
             results[0] = FillRawOSDump(kBrowserPid);
             std::move(callback).Run(true, std::move(results));
           }));
-  EXPECT_CALL(client_process_2, RequestOSMemoryDumpMock(_, Contains(0), _))
-      .WillOnce(Invoke(
-          [](mojom::MemoryMapOption, const std::vector<base::ProcessId>& pids,
-             MockClientProcess::RequestOSMemoryDumpCallback& callback) {
+  EXPECT_CALL(client_process_2, RequestOSMemoryDumpMock(_, _, Contains(0), _))
+      .WillOnce(
+          Invoke([](mojom::MemoryMapOption,
+                    const std::vector<mojom::MemDumpFlags>& flags,
+                    const std::vector<base::ProcessId>& pids,
+                    MockClientProcess::RequestOSMemoryDumpCallback& callback) {
             base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
             results[0] = FillRawOSDump(kRendererPid);
             std::move(callback).Run(true, std::move(results));
           }));
-  EXPECT_CALL(client_process_3, RequestOSMemoryDumpMock(_, Contains(0), _))
-      .WillOnce(Invoke(
-          [](mojom::MemoryMapOption, const std::vector<base::ProcessId>& pids,
-             MockClientProcess::RequestOSMemoryDumpCallback& callback) {
+  EXPECT_CALL(client_process_3, RequestOSMemoryDumpMock(_, _, Contains(0), _))
+      .WillOnce(
+          Invoke([](mojom::MemoryMapOption,
+                    const std::vector<mojom::MemDumpFlags>& flags,
+                    const std::vector<base::ProcessId>& pids,
+                    MockClientProcess::RequestOSMemoryDumpCallback& callback) {
             base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
             results[0] = FillRawOSDump(kGpuPid);
             std::move(callback).Run(true, std::move(results));
@@ -1009,10 +1046,12 @@ TEST_F(CoordinatorImplTest, GlobalDumpWithSubTrees) {
             std::move(callback).Run(true, args.dump_guid, std::move(pmd));
           }));
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  EXPECT_CALL(browser_client, RequestOSMemoryDumpMock(_, Contains(1), _))
-      .WillOnce(Invoke(
-          [](mojom::MemoryMapOption, const std::vector<base::ProcessId>& pids,
-             MockClientProcess::RequestOSMemoryDumpCallback& callback) {
+  EXPECT_CALL(browser_client, RequestOSMemoryDumpMock(_, _, Contains(1), _))
+      .WillOnce(
+          Invoke([](mojom::MemoryMapOption,
+                    const std::vector<mojom::MemDumpFlags>& flags,
+                    const std::vector<base::ProcessId>& pids,
+                    MockClientProcess::RequestOSMemoryDumpCallback& callback) {
             base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
             results[1] = mojom::RawOSMemDump::New();
             results[1]->resident_set_kb = 1;
@@ -1021,10 +1060,12 @@ TEST_F(CoordinatorImplTest, GlobalDumpWithSubTrees) {
             std::move(callback).Run(true, std::move(results));
           }));
 #else
-  EXPECT_CALL(browser_client, RequestOSMemoryDumpMock(_, Contains(0), _))
-      .WillOnce(Invoke(
-          [](mojom::MemoryMapOption, const std::vector<base::ProcessId>& pids,
-             MockClientProcess::RequestOSMemoryDumpCallback& callback) {
+  EXPECT_CALL(browser_client, RequestOSMemoryDumpMock(_, _, Contains(0), _))
+      .WillOnce(
+          Invoke([](mojom::MemoryMapOption,
+                    const std::vector<mojom::MemDumpFlags>& flags,
+                    const std::vector<base::ProcessId>& pids,
+                    MockClientProcess::RequestOSMemoryDumpCallback& callback) {
             base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
             results[0] = mojom::RawOSMemDump::New();
             results[0]->platform_private_footprint =
