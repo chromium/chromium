@@ -42,9 +42,8 @@ class COMPONENT_EXPORT(SERVICE_MANAGER_CPP_TYPES) Identity {
   ~Identity();
 
   Identity& operator=(const Identity& other);
-  bool operator<(const Identity& other) const;
-  bool operator==(const Identity& other) const;
-  bool operator!=(const Identity& other) const { return !(*this == other); }
+  friend bool operator==(const Identity&, const Identity&) = default;
+  friend auto operator<=>(const Identity&, const Identity&) = default;
 
   bool IsValid() const;
 
