@@ -3649,6 +3649,12 @@
       status: "test",
       base_feature: "none",
     },
+    {
+      // Propagate overscroll-behavior from the root element rather than the
+      // body element. crbug.com/41453796
+      name: "PropagateOverscrollBehaviorFromRoot",
+      status: "experimental"
+    },
     // Protected memory varariant of the sample API for testing integration with
     // the Origin Trials Framework. This is used only in unit tests.
     // Do not change this flag to stable, as it exists

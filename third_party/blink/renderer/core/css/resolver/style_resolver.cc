@@ -3371,10 +3371,14 @@ void StyleResolver::PropagateStyleToViewport() {
     // TODO(954423): overscroll-behavior (and most likely overflow-anchor)
     // should be propagated from the document element and not the viewport
     // defining element.
-    PROPAGATE_FROM(overflow_style, OverscrollBehaviorX, SetOverscrollBehaviorX,
-                   EOverscrollBehavior::kAuto);
-    PROPAGATE_FROM(overflow_style, OverscrollBehaviorY, SetOverscrollBehaviorY,
-                   EOverscrollBehavior::kAuto);
+    const ComputedStyle* overscroll_behavior_style =
+        RuntimeEnabledFeatures::PropagateOverscrollBehaviorFromRootEnabled()
+            ? document_element_style
+            : overflow_style;
+    PROPAGATE_FROM(overscroll_behavior_style, OverscrollBehaviorX,
+                   SetOverscrollBehaviorX, EOverscrollBehavior::kAuto);
+    PROPAGATE_FROM(overscroll_behavior_style, OverscrollBehaviorY,
+                   SetOverscrollBehaviorY, EOverscrollBehavior::kAuto);
 
     // Counts any time overscroll behavior break if we change its viewport
     // propagation logic. Overscroll behavior only breaks if the body style
