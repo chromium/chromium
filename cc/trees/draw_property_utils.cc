@@ -1033,9 +1033,9 @@ void AddSurfaceToRenderSurfaceList(
   const bool allow_skipping_render_pass = base::FeatureList::IsEnabled(
       features::kAllowUndamagedNonrootRenderPassToSkip);
   const FilterOperations& filters = render_surface->Filters();
-  bool is_occlusion_immune =
-      render_surface->CopyOfOutputRequired() || filters.HasReferenceFilter() ||
-      filters.HasFilterThatMovesPixels() || allow_skipping_render_pass;
+  bool is_occlusion_immune = render_surface->CopyOfOutputRequired() ||
+                             filters.HasFilterThatMovesPixels() ||
+                             allow_skipping_render_pass;
 
   // Setting |is_occlusion_immune| leads to an empty
   // |occlusion_from_outside_target| for a non-root render_surface. It does not
