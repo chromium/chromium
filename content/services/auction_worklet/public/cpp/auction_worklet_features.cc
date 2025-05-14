@@ -89,10 +89,6 @@ BASE_FEATURE(kFledgeSellerSignalsRequestsOneAtATime,
              "FledgeSellerSignalsRequestsOneAtATime",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFledgeSplitTrustedSignalsFetchingURL,
-             "FledgeSplitTrustedSignalsFetchingURL",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFledgeTextConversionHelpers,
              "FledgeTextConversionHelpers",
              base::FEATURE_DISABLED_BY_DEFAULT);

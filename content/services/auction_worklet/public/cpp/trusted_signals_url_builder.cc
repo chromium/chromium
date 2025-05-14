@@ -174,12 +174,10 @@ std::set<CreativeInfo> TrustedSignalsUrlBuilder::TakeAdComponents() {
 TrustedSignalsUrlBuilder::TrustedSignalsUrlBuilder(
     std::string hostname,
     GURL trusted_signals_url,
-    std::optional<uint16_t> experiment_group_id,
-    bool split_fetch)
+    std::optional<uint16_t> experiment_group_id)
     : hostname_(std::move(hostname)),
       trusted_signals_url_(std::move(trusted_signals_url)),
-      experiment_group_id_(experiment_group_id),
-      split_fetch_(split_fetch) {}
+      experiment_group_id_(experiment_group_id) {}
 
 bool TrustedSignalsUrlBuilder::CommitOrRollback(
     size_t initial_num_main_fragments,
@@ -194,7 +192,7 @@ bool TrustedSignalsUrlBuilder::CommitOrRollback(
   }
 
   size_t len_target = std::min(length_limit_, max_trusted_signals_url_length);
-  if (!split_fetch_ || !added_first_request_ || attempted_len <= len_target) {
+  if (!added_first_request_ || attempted_len <= len_target) {
     length_limit_ = len_target;
     added_first_request_ = true;
     length_thus_far_ = attempted_len;
@@ -212,12 +210,10 @@ TrustedBiddingSignalsUrlBuilder::TrustedBiddingSignalsUrlBuilder(
     std::string hostname,
     GURL trusted_signals_url,
     std::optional<uint16_t> experiment_group_id,
-    std::string trusted_bidding_signals_slot_size_param,
-    bool split_fetch)
+    std::string trusted_bidding_signals_slot_size_param)
     : TrustedSignalsUrlBuilder(std::move(hostname),
                                std::move(trusted_signals_url),
-                               experiment_group_id,
-                               split_fetch),
+                               experiment_group_id),
       trusted_bidding_signals_slot_size_param_(
           std::move(trusted_bidding_signals_slot_size_param)) {}
 
@@ -293,12 +289,10 @@ TrustedScoringSignalsUrlBuilder::TrustedScoringSignalsUrlBuilder(
     std::string hostname,
     GURL trusted_signals_url,
     std::optional<uint16_t> experiment_group_id,
-    bool send_creative_scanning_metadata,
-    bool split_fetch)
+    bool send_creative_scanning_metadata)
     : TrustedSignalsUrlBuilder(std::move(hostname),
                                std::move(trusted_signals_url),
-                               experiment_group_id,
-                               split_fetch),
+                               experiment_group_id),
       send_creative_scanning_metadata_(send_creative_scanning_metadata) {}
 
 bool TrustedScoringSignalsUrlBuilder::TryToAddRequest(

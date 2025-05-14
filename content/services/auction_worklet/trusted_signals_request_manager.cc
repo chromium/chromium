@@ -336,14 +336,11 @@ void TrustedSignalsRequestManager::StartBatchedTrustedSignalsRequest() {
 
   base::ElapsedTimer compute_batch_cost;
 
-  bool split_fetch = base::FeatureList::IsEnabled(
-      features::kFledgeSplitTrustedSignalsFetchingURL);
-
   RequestSet merged_requests;
   if (type_ == Type::kBiddingSignals) {
     TrustedBiddingSignalsUrlBuilder bidding_url_builder(
         top_level_origin_.host(), trusted_signals_url_, experiment_group_id_,
-        trusted_bidding_signals_slot_size_param_, split_fetch);
+        trusted_bidding_signals_slot_size_param_);
     for (auto& request : queued_requests_) {
       if (!TryToAddRequest(bidding_url_builder, merged_requests, request)) {
         // The url got too big so split out what we already have.
@@ -356,7 +353,7 @@ void TrustedSignalsRequestManager::StartBatchedTrustedSignalsRequest() {
   } else {
     TrustedScoringSignalsUrlBuilder scoring_url_builder(
         top_level_origin_.host(), trusted_signals_url_, experiment_group_id_,
-        send_creative_scanning_metadata_, split_fetch);
+        send_creative_scanning_metadata_);
     for (auto& request : queued_requests_) {
       if (!TryToAddRequest(scoring_url_builder, merged_requests, request)) {
         // The url got too big so split out what we already have.

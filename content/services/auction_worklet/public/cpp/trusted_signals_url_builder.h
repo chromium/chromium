@@ -96,8 +96,7 @@ class CONTENT_EXPORT TrustedSignalsUrlBuilder {
 
   TrustedSignalsUrlBuilder(std::string hostname,
                            GURL trusted_signals_url,
-                           std::optional<uint16_t> experiment_group_id,
-                           bool split_fetch);
+                           std::optional<uint16_t> experiment_group_id);
 
   // This method should be called after updating `main_fragments_` and
   // `aux_fragments_` to incorporate a request, with
@@ -123,9 +122,6 @@ class CONTENT_EXPORT TrustedSignalsUrlBuilder {
   const GURL trusted_signals_url_;
 
   const std::optional<uint16_t> experiment_group_id_;
-
-  // Whether the URL should be split based on length limits.
-  const bool split_fetch_;
 
   // True if we've added a request with TryToAddRequest() and haven't Reset()
   // since.
@@ -156,8 +152,7 @@ class CONTENT_EXPORT TrustedBiddingSignalsUrlBuilder
       std::string hostname,
       GURL trusted_signals_url,
       std::optional<uint16_t> experiment_group_id,
-      std::string trusted_bidding_signals_slot_size_param,
-      bool split_fetch);
+      std::string trusted_bidding_signals_slot_size_param);
 
   TrustedBiddingSignalsUrlBuilder& operator=(
       const TrustedBiddingSignalsUrlBuilder&) = delete;
@@ -197,8 +192,7 @@ class CONTENT_EXPORT TrustedScoringSignalsUrlBuilder
   TrustedScoringSignalsUrlBuilder(std::string hostname,
                                   GURL trusted_signals_url,
                                   std::optional<uint16_t> experiment_group_id,
-                                  bool send_creative_scanning_metadata,
-                                  bool split_fetch);
+                                  bool send_creative_scanning_metadata);
 
   TrustedScoringSignalsUrlBuilder& operator=(
       const TrustedScoringSignalsUrlBuilder&) = delete;

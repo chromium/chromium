@@ -68,8 +68,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // that it does not get batched.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeSellerSignalsRequestsOneAtATime);
 
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeSplitTrustedSignalsFetchingURL);
-
 // Provide encodeUtf8/decodeUtf8 helpers.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeTextConversionHelpers);
 

@@ -37,8 +37,7 @@ TEST(TrustedSignalsUrlBuilderTest, BuildTrustedBiddingSignalsURLBasic) {
   TrustedBiddingSignalsUrlBuilder url_builder(
       kHostname, GURL(kBaseUrl),
       /*experiment_group_id=*/std::nullopt,
-      /*trusted_bidding_signals_slot_size_param=*/"",
-      /*split_fetch=*/false);
+      /*trusted_bidding_signals_slot_size_param=*/"");
 
   bool success =
       url_builder.TryToAddRequest(kInterestGroup1, kBidderKeys1,
@@ -56,8 +55,7 @@ TEST(TrustedSignalsUrlBuilderTest, BuildTrustedBiddingSignalsURLSlotSize) {
 
   TrustedBiddingSignalsUrlBuilder url_builder(
       kHostname, GURL(kBaseUrl),
-      /*experiment_group_id=*/std::nullopt, kSlotSize,
-      /*split_fetch=*/false);
+      /*experiment_group_id=*/std::nullopt, kSlotSize);
 
   bool success =
       url_builder.TryToAddRequest(kInterestGroup1, kBidderKeys1,
@@ -76,8 +74,7 @@ TEST(TrustedSignalsUrlBuilderTest, BuildTrustedBiddingSignalsURLExperimentId) {
   TrustedBiddingSignalsUrlBuilder url_builder(
       kHostname, GURL(kBaseUrl),
       /*experiment_group_id=*/kExperimentId,
-      /*trusted_bidding_signals_slot_size_param=*/"",
-      /*split_fetch=*/false);
+      /*trusted_bidding_signals_slot_size_param=*/"");
 
   bool success =
       url_builder.TryToAddRequest(kInterestGroup1, kBidderKeys1,
@@ -98,8 +95,7 @@ TEST(TrustedSignalsUrlBuilderTest, BuildTrustedBiddingSignalsTinyLimit) {
   TrustedBiddingSignalsUrlBuilder url_builder(
       kHostname, GURL(kBaseUrl),
       /*experiment_group_id=*/kExperimentId,
-      /*trusted_bidding_signals_slot_size_param=*/"",
-      /*split_fetch=*/true);
+      /*trusted_bidding_signals_slot_size_param=*/"");
 
   bool success =
       url_builder.TryToAddRequest(kInterestGroup, kBidderKeys,
@@ -116,7 +112,7 @@ TEST(TrustedSignalsUrlBuilderTest, BuildTrustedBiddingSignalsTinyLimit) {
 TEST(TrustedSignalsUrlBuilderTest, BuildTrustedScoringSignalsTinyLimit) {
   TrustedScoringSignalsUrlBuilder url_builder(
       kHostname, GURL(kBaseUrl), kExperimentId,
-      /*send_creative_scanning_metadata=*/false, /*split_fetch=*/true);
+      /*send_creative_scanning_metadata=*/false);
 
   const CreativeInfo kAd = CreateCreativeInfo("https://a1.com");
   const std::set<CreativeInfo> kAdComponents =
@@ -143,8 +139,7 @@ TEST(TrustedSignalsUrlBuilderTest, BuildTrustedBiddingSignalsNormalLimit) {
   TrustedBiddingSignalsUrlBuilder url_builder(
       kHostname, GURL(kBaseUrl),
       /*experiment_group_id=*/kExperimentId,
-      /*trusted_bidding_signals_slot_size_param=*/"",
-      /*split_fetch=*/true);
+      /*trusted_bidding_signals_slot_size_param=*/"");
 
   bool success =
       url_builder.TryToAddRequest(kInterestGroup, kBidderKeys,
@@ -161,7 +156,7 @@ TEST(TrustedSignalsUrlBuilderTest, BuildTrustedBiddingSignalsNormalLimit) {
 TEST(TrustedSignalsUrlBuilderTest, BuildTrustedScoringSignalsNormalLimit) {
   TrustedScoringSignalsUrlBuilder url_builder(
       kHostname, GURL(kBaseUrl), kExperimentId,
-      /*send_creative_scanning_metadata=*/false, /*split_fetch=*/true);
+      /*send_creative_scanning_metadata=*/false);
 
   const CreativeInfo kAd = CreateCreativeInfo("https://a1.com");
   const std::set<CreativeInfo> kAdComponents =
@@ -187,8 +182,7 @@ TEST(TrustedSignalsUrlBuilderTest, BuildTrustedScoringSignalsNormalLimit) {
 TEST(TrustedSignalsUrlBuilderTest, BiddingSignalsJointBatchedRequests) {
   TrustedBiddingSignalsUrlBuilder url_builder(
       kHostname, GURL(kBaseUrl),
-      /*experiment_group_id=*/std::nullopt, kSlotSize,
-      /*split_fetch=*/true);
+      /*experiment_group_id=*/std::nullopt, kSlotSize);
 
   const std::vector<std::string> kInterestGroups = {"name1", "name2"};
   const std::vector<std::set<std::string>> kBidderKeys{{"key1", "key3"},
@@ -213,8 +207,7 @@ TEST(TrustedSignalsUrlBuilderTest, BiddingSignalsJointBatchedRequests) {
 TEST(TrustedSignalsUrlBuilderTest, BiddingSignalsSplitRequests) {
   TrustedBiddingSignalsUrlBuilder url_builder(
       kHostname, GURL(kBaseUrl),
-      /*experiment_group_id=*/std::nullopt, kSlotSize,
-      /*split_fetch=*/true);
+      /*experiment_group_id=*/std::nullopt, kSlotSize);
 
   const std::vector<std::string> kInterestGroups = {"name1", "name2"};
   const std::vector<std::set<std::string>> kBidderKeys{{"key1", "key3"},
@@ -252,8 +245,7 @@ TEST(TrustedSignalsUrlBuilderTest, BiddingSignalsSplitRequests) {
 TEST(TrustedSignalsUrlBuilderTest, BiddingSignalsSplitRequests2) {
   TrustedBiddingSignalsUrlBuilder url_builder(
       kHostname, GURL(kBaseUrl),
-      /*experiment_group_id=*/std::nullopt, kSlotSize,
-      /*split_fetch=*/true);
+      /*experiment_group_id=*/std::nullopt, kSlotSize);
 
   const std::vector<std::string> kInterestGroups = {"name1", "name2", "name3"};
   const std::vector<std::set<std::string>> kBidderKeys{
@@ -293,7 +285,7 @@ TEST(TrustedSignalsUrlBuilderTest, BiddingSignalsSplitRequests2) {
 TEST(TrustedSignalsUrlBuilderTest, ScoringSignalsSplitRequests) {
   TrustedScoringSignalsUrlBuilder url_builder(
       kHostname, GURL(kBaseUrl), /*experiment_group_id=*/std::nullopt,
-      /*send_creative_scanning_metadata=*/false, /*split_fetch=*/true);
+      /*send_creative_scanning_metadata=*/false);
 
   const std::vector<CreativeInfo> kAds = {
       CreateCreativeInfo("https://foo.test/"),
@@ -335,7 +327,7 @@ TEST(TrustedSignalsUrlBuilderTest, ScoringSignalsSplitRequests) {
 TEST(TrustedSignalsUrlBuilderTest, ScoringSignalsSplitRequests2) {
   TrustedScoringSignalsUrlBuilder url_builder(
       kHostname, GURL(kBaseUrl), /*experiment_group_id=*/std::nullopt,
-      /*send_creative_scanning_metadata=*/false, /*split_fetch=*/true);
+      /*send_creative_scanning_metadata=*/false);
 
   const std::vector<CreativeInfo> kAds = {
       CreateCreativeInfo("https://foo.test/"),
@@ -374,8 +366,7 @@ TEST(TrustedSignalsUrlBuilderTest, ScoringSignalsSplitRequests2) {
 
 TEST(TrustedSignalsUrlBuilderTest, IncrementalBuildTrustedSignalsURL) {
   TrustedBiddingSignalsUrlBuilder url_builder(kHostname, GURL(kBaseUrl),
-                                              kExperimentId, kSlotSize,
-                                              /*split_fetch=*/false);
+                                              kExperimentId, kSlotSize);
 
   const std::vector<std::string> kInterestGroups = {"ig1", "ig2", "ig3"};
   const std::vector<std::set<std::string>> kBidderKeys{
@@ -406,8 +397,7 @@ TEST(TrustedSignalsUrlBuilderTest, IncrementalBuildTrustedSignalsURL) {
 // Variant where keys is empty on first call.
 TEST(TrustedSignalsUrlBuilderTest, IncrementalBuildTrustedSignalsURL2) {
   TrustedBiddingSignalsUrlBuilder url_builder(kHostname, GURL(kBaseUrl),
-                                              kExperimentId, kSlotSize,
-                                              /*split_fetch=*/false);
+                                              kExperimentId, kSlotSize);
 
   const std::string kInterestGroup1 = "ig1";
   const std::set<std::string> kBidderKeys1 = {};
@@ -442,7 +432,7 @@ TEST(TrustedSignalsUrlBuilderTest, IncrementalBuildTrustedSignalsURL2) {
 TEST(TrustedSignalsUrlBuilderTest, IncrementalBuildScoringSignalsURL) {
   TrustedScoringSignalsUrlBuilder url_builder(
       kHostname, GURL(kBaseUrl), kExperimentId,
-      /*send_creative_scanning_metadata=*/false, /*split_fetch=*/false);
+      /*send_creative_scanning_metadata=*/false);
 
   const std::vector<CreativeInfo> kAds = {CreateCreativeInfo("https://a1.com"),
                                           CreateCreativeInfo("https://a2.com"),
@@ -483,7 +473,7 @@ TEST(TrustedSignalsUrlBuilderTest, IncrementalBuildScoringSignalsURL) {
 TEST(TrustedSignalsUrlBuilderTest, IncrementalBuildScoringSignalsURL2) {
   TrustedScoringSignalsUrlBuilder url_builder(
       kHostname, GURL(kBaseUrl), kExperimentId,
-      /*send_creative_scanning_metadata=*/false, /*split_fetch=*/false);
+      /*send_creative_scanning_metadata=*/false);
 
   CreativeInfo ad = CreateCreativeInfo("https://a1.com");
   std::set<CreativeInfo> ad_components = {};
@@ -572,7 +562,7 @@ TEST(TrustedSignalsUrlBuilderTest, IncrementalBuildScoringSignalsURL3) {
 
   TrustedScoringSignalsUrlBuilder url_builder(
       kHostname, GURL(kBaseUrl), kExperimentId,
-      /*send_creative_scanning_metadata=*/true, /*split_fetch=*/false);
+      /*send_creative_scanning_metadata=*/true);
 
   const std::vector<CreativeInfo> kAds = {m1, m2, m3};
   const std::vector<std::set<CreativeInfo>> kAdComponents = {
@@ -698,8 +688,8 @@ TEST(TrustedSignalsUrlBuilderTest,
       TrustedScoringSignalsUrlBuilder url_builder(
           /*hostname=*/"https://publisher.test/",
           /*trusted_scoring_signals_url=*/GURL("https://kv.test"),
-          /*experiment_group_id=*/std::nullopt, send_creative_scanning_metadata,
-          /*split_fetch=*/false);
+          /*experiment_group_id=*/std::nullopt,
+          send_creative_scanning_metadata);
       for (const CreativeInfo& ad : creative_set) {
         std::set<CreativeInfo> ad_components;
         bool success = url_builder.TryToAddRequest(
@@ -714,8 +704,8 @@ TEST(TrustedSignalsUrlBuilderTest,
       TrustedScoringSignalsUrlBuilder url_builder(
           /*hostname=*/"https://publisher.test/",
           /*trusted_scoring_signals_url=*/GURL("https://kv.test"),
-          /*experiment_group_id=*/std::nullopt, send_creative_scanning_metadata,
-          /*split_fetch=*/false);
+          /*experiment_group_id=*/std::nullopt,
+          send_creative_scanning_metadata);
       bool success =
           url_builder.TryToAddRequest(single_ad, creative_set,
                                       /*max_trusted_signals_url_length=*/1000);
@@ -807,8 +797,7 @@ TEST(TrustedSignalsUrlBuilderTest, BuildTrustedScoringSignalsURLNoSize) {
         /*hostname=*/"https://publisher.test/",
         /*trusted_scoring_signals_url=*/GURL("https://kv.test"),
         /*experiment_group_id=*/std::nullopt,
-        /*send_creative_scanning_metadata=*/true,
-        /*split_fetch=*/false);
+        /*send_creative_scanning_metadata=*/true);
     for (const CreativeInfo& info : input) {
       std::set<CreativeInfo> ad_components;
       bool success =
@@ -867,8 +856,7 @@ TEST(TrustedSignalsUrlBuilderTest,
       /*hostname=*/"https://publisher.test/",
       /*trusted_scoring_signals_url=*/GURL("https://kv.test"),
       /*experiment_group_id=*/std::nullopt,
-      /*send_creative_scanning_metadata=*/true,
-      /*split_fetch=*/false);
+      /*send_creative_scanning_metadata=*/true);
   for (const CreativeInfo& info : input) {
     std::set<CreativeInfo> ad_components;
     bool success =
