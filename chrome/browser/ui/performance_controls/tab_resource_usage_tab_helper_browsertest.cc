@@ -6,21 +6,49 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/test/bind.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/performance_controls/test_support/memory_metrics_refresh_waiter.h"
+#include "chrome/browser/ui/performance_controls/test_support/resource_usage_collector_observer.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "url/gurl.h"
 
 namespace {
 constexpr char kTestDomain[] = "https://foo.bar";
 constexpr uint64_t kTestMemoryUsageBytes = 100000;
+constexpr uint64_t kMaxByteUsed = std::numeric_limits<int64_t>::max();
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kUpdatedEvent);
 }  // namespace
 
-class TabResourceUsageTabHelperUiTest : public InteractiveBrowserTest {
+class TabResourceUsageTabHelperBrowsertest : public InteractiveBrowserTest {
+ public:
+  TabResourceUsageTabHelperBrowsertest() = default;
+  ~TabResourceUsageTabHelperBrowsertest() override = default;
+
  protected:
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  GURL GetURL() {
+    return embedded_test_server()->GetURL("example.com", "/title1.html");
+  }
+
+  auto ForceRefreshMemoryMetrics() {
+    return Do([]() {
+      TabResourceUsageRefreshWaiter waiter;
+      waiter.Wait();
+    });
+  }
+
   using WithTabHelperCallback =
       base::OnceCallback<void(TabResourceUsageTabHelper&)>;
   auto WithTabHelper(ui::ElementIdentifier instrumented_tab_id,
@@ -56,8 +84,47 @@ class TabResourceUsageTabHelperUiTest : public InteractiveBrowserTest {
   }
 };
 
+IN_PROC_BROWSER_TEST_F(TabResourceUsageTabHelperBrowsertest,
+                       MemoryUsagePopulated) {
+  RunTestSequence(
+      InstrumentTab(kTabId), NavigateWebContents(kTabId, GetURL()),
+      ForceRefreshMemoryMetrics(),
+      CheckTabHelper(kTabId,
+                     base::BindOnce([](TabResourceUsageTabHelper& helper) {
+                       return helper.GetMemoryUsageInBytes();
+                     }),
+                     testing::Ne(0)));
+}
+
+IN_PROC_BROWSER_TEST_F(TabResourceUsageTabHelperBrowsertest,
+                       MemoryUsageUpdatesAfterNavigation) {
+  std::unique_ptr<ResourceUsageCollectorObserver> observer;
+  RunTestSequence(
+      InstrumentTab(kTabId),
+      WithTabHelper(kTabId,
+                    base::BindOnce([](TabResourceUsageTabHelper& helper) {
+                      helper.SetMemoryUsageInBytes(kMaxByteUsed);
+                    })),
+      WithElement(
+          kBrowserViewElementId,
+          [&observer](ui::TrackedElement* el) {
+            observer = std::make_unique<ResourceUsageCollectorObserver>(
+                base::BindLambdaForTesting([el]() {
+                  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+                      el, kUpdatedEvent);
+                }));
+          }),
+      NavigateWebContents(kTabId, GetURL()),
+      WaitForEvent(kBrowserViewElementId, kUpdatedEvent),
+      CheckTabHelper(kTabId,
+                     base::BindOnce([](TabResourceUsageTabHelper& helper) {
+                       return helper.GetMemoryUsageInBytes();
+                     }),
+                     testing::Ne(kMaxByteUsed)));
+}
+
 // Clears memory usage on navigate.
-IN_PROC_BROWSER_TEST_F(TabResourceUsageTabHelperUiTest,
+IN_PROC_BROWSER_TEST_F(TabResourceUsageTabHelperBrowsertest,
                        ClearsMemoryUsageOnNavigate) {
   RunTestSequence(
       InstrumentTab(kTabId),
