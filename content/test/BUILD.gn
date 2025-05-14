@@ -37,6 +37,7 @@ if (is_android) {
 }
 
 if (is_ios) {
+  import("//build/config/apple/mobile_config.gni")  # For `target_platform`
   import("//build/config/ios/bundle_data_from_filelist.gni")
   import("//build/ios/extension_bundle_data.gni")
 }
@@ -3023,7 +3024,7 @@ test("content_unittests") {
     ]
   }
 
-  if (is_ios) {
+  if (is_ios && target_platform == "iphoneos") {
     sources += [
       "../browser/date_time_chooser/ios/date_time_chooser_util_unittest.mm",
     ]
