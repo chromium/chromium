@@ -55,6 +55,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/range/range.h"
 #include "ui/surface/transport_dib.h"
+#include "url/origin.h"
 
 namespace blink {
 class WebMouseEvent;
@@ -178,6 +179,21 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
       const gfx::Size& output_size,
       base::OnceCallback<void(const SkBitmap&)> callback,
       base::TimeDelta ipc_delay);
+
+  // Returns whethere there's a touch sequence active on Viz.
+  //  false: There's definitely no active touch sequence on Viz.
+  //  true: A touch sequence is likely active on Viz, but could be a false
+  //  positive in some racy conditions.
+  virtual bool IsTouchSequencePotentiallyActiveOnViz() = 0;
+
+  virtual void RequestInputBackForDragAndDrop(
+      blink::mojom::DragDataPtr drag_data,
+      const url::Origin& source_origin,
+      blink::DragOperationsMask drag_operations_mask,
+      SkBitmap bitmap,
+      gfx::Vector2d cursor_offset_in_dip,
+      gfx::Rect drag_obj_rect_in_dip,
+      blink::mojom::DragEventSourceInfoPtr event_info) = 0;
 #endif
 
   // For HiDPI capture mode, allow applying a render scale multiplier

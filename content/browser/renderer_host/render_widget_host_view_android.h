@@ -230,6 +230,15 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
       const gfx::PointF& point,
       input::RenderWidgetHostViewInput* target_view,
       gfx::PointF* transformed_point) override;
+  bool IsTouchSequencePotentiallyActiveOnViz() override;
+  void RequestInputBackForDragAndDrop(
+      blink::mojom::DragDataPtr drag_data,
+      const url::Origin& source_origin,
+      blink::DragOperationsMask drag_operations_mask,
+      SkBitmap bitmap,
+      gfx::Vector2d cursor_offset_in_dip,
+      gfx::Rect drag_obj_rect_in_dip,
+      blink::mojom::DragEventSourceInfoPtr event_info) override;
   TouchSelectionControllerClientManager*
   GetTouchSelectionControllerClientManager() override;
   TouchSelectionControllerInputObserver*
@@ -355,21 +364,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
       bool ignore_ack = false);
 
   bool HasValidFrame() const;
-
-  // Returns whethere there's a touch sequence active on Viz.
-  //  false: There's definitely no active touch sequence on Viz.
-  //  true: A touch sequence is likely active on Viz, but could be a false
-  //  positive in some racy conditions.
-  bool IsTouchSequencePotentiallyActiveOnViz();
-
-  void RequestInputBackForDragAndDrop(
-      blink::mojom::DragDataPtr drag_data,
-      const url::Origin& source_origin,
-      blink::DragOperationsMask drag_operations_mask,
-      SkBitmap bitmap,
-      gfx::Vector2d cursor_offset_in_dip,
-      gfx::Rect drag_obj_rect_in_dip,
-      blink::mojom::DragEventSourceInfoPtr event_info);
 
   void MoveCaret(const gfx::Point& point);
   void DismissTextHandles();

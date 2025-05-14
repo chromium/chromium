@@ -10792,22 +10792,18 @@ void RenderFrameHostImpl::StartDragging(
 #if BUILDFLAG(IS_ANDROID)
   RenderWidgetHostImpl* widget = GetRenderWidgetHost();
   RenderWidgetHostViewBase* view = (widget) ? widget->GetView() : nullptr;
-  if (view && input::IsTransferInputToVizSupported()) {
-    RenderWidgetHostViewAndroid* view_android =
-        static_cast<RenderWidgetHostViewAndroid*>(view);
-    if (view_android->IsTouchSequencePotentiallyActiveOnViz()) {
-      view_android->RequestInputBackForDragAndDrop(
-          std::move(drag_data), GetLastCommittedOrigin(), drag_operations_mask,
-          std::move(unsafe_bitmap), std::move(cursor_offset_in_dip),
-          std::move(drag_obj_rect_in_dip), std::move(event_info));
-      return;
-    }
+  if (view && view->IsTouchSequencePotentiallyActiveOnViz()) {
+    view->RequestInputBackForDragAndDrop(
+        std::move(drag_data), GetLastCommittedOrigin(), drag_operations_mask,
+        unsafe_bitmap, cursor_offset_in_dip, drag_obj_rect_in_dip,
+        std::move(event_info));
+    return;
   }
 #endif
   GetRenderWidgetHost()->StartDragging(
       std::move(drag_data), GetLastCommittedOrigin(), drag_operations_mask,
-      std::move(unsafe_bitmap), std::move(cursor_offset_in_dip),
-      std::move(drag_obj_rect_in_dip), std::move(event_info));
+      unsafe_bitmap, cursor_offset_in_dip, drag_obj_rect_in_dip,
+      std::move(event_info));
 }
 
 void RenderFrameHostImpl::IssueKeepAliveHandle(

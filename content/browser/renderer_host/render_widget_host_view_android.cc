@@ -2613,11 +2613,11 @@ void RenderWidgetHostViewAndroid::RequestInputBackForDragAndDrop(
       base::BindOnce(&RenderWidgetHostViewAndroid::CleanupDraggingCallback,
                      GetWeakPtrAndroid()));
   CHECK(host());
-  start_dragging_callback_ = base::BindOnce(
-      &RenderWidgetHostImpl::StartDragging, host()->GetWeakPtr(),
-      std::move(drag_data), std::move(source_origin), drag_operations_mask,
-      std::move(bitmap), std::move(cursor_offset_in_dip),
-      std::move(drag_obj_rect_in_dip), std::move(event_info));
+  start_dragging_callback_ =
+      base::BindOnce(&RenderWidgetHostImpl::StartDragging, host()->GetWeakPtr(),
+                     std::move(drag_data), source_origin, drag_operations_mask,
+                     std::move(bitmap), std::move(cursor_offset_in_dip),
+                     std::move(drag_obj_rect_in_dip), std::move(event_info));
 }
 
 void RenderWidgetHostViewAndroid::DismissTextHandles() {

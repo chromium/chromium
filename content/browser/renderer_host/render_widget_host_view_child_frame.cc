@@ -411,6 +411,32 @@ gfx::Size RenderWidgetHostViewChildFrame::GetCompositorViewportPixelSize() {
   return gfx::Size();
 }
 
+#if BUILDFLAG(IS_ANDROID)
+bool RenderWidgetHostViewChildFrame::IsTouchSequencePotentiallyActiveOnViz() {
+  RenderWidgetHostViewBase* root_view = GetRootView();
+  if (!root_view) {
+    return false;
+  }
+  return root_view->IsTouchSequencePotentiallyActiveOnViz();
+}
+
+void RenderWidgetHostViewChildFrame::RequestInputBackForDragAndDrop(
+    blink::mojom::DragDataPtr drag_data,
+    const url::Origin& source_origin,
+    blink::DragOperationsMask drag_operations_mask,
+    SkBitmap bitmap,
+    gfx::Vector2d cursor_offset_in_dip,
+    gfx::Rect drag_obj_rect_in_dip,
+    blink::mojom::DragEventSourceInfoPtr event_info) {
+  RenderWidgetHostViewBase* root_view = GetRootView();
+  CHECK(root_view);
+  root_view->RequestInputBackForDragAndDrop(
+      std::move(drag_data), std::move(source_origin), drag_operations_mask,
+      std::move(bitmap), std::move(cursor_offset_in_dip),
+      std::move(drag_obj_rect_in_dip), std::move(event_info));
+}
+#endif
+
 RenderWidgetHostViewBase* RenderWidgetHostViewChildFrame::GetRootView() {
   return frame_connector_ ? frame_connector_->GetRootRenderWidgetHostView()
                           : nullptr;
