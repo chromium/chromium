@@ -1294,6 +1294,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   CheckCorrectForwardingResultMetric(
       histogram_tester,
       StreamingSearchPrefetchURLLoader::ForwardingResult::kCompleted, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.ServedToOnlyFromCacheRequest", false, 1);
 
   content::RenderFrameHost* frame = GetWebContents()->GetPrimaryMainFrame();
   EXPECT_EQ(
@@ -1506,7 +1508,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
       "Omnibox.SearchPrefetch.NavigationInterceptedToForwardingComplete",
       expected_count);
   histogram_tester.ExpectTotalCount(
-        "Omnibox.SearchPrefetch.DuplicateSearchTermsAge", 0);
+      "Omnibox.SearchPrefetch.DuplicateSearchTermsAge", 0);
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,

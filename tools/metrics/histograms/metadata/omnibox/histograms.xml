@@ -2066,6 +2066,20 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </token>
 </histogram>
 
+<histogram name="Omnibox.SearchPrefetch.ServedToOnlyFromCacheRequest"
+    enum="Boolean" expires_after="2025-09-14">
+  <owner>lingqi@chromium.org</owner>
+  <owner>nhiroki@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Whether the search prefetch response is served to a resource request that
+    only allows loading from cache, which is likely a DiskCache warm-up request.
+
+    Recorded at SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest
+    when a search prefetch response is served to a resource request.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.SearchPreload.ForwardingResult.NotServedToPrerender"
     enum="SearchPreloadForwardingResult" expires_after="2025-09-14">
   <owner>lingqi@chromium.org</owner>
