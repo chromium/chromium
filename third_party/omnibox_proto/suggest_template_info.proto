@@ -14,7 +14,7 @@ import "answer_data.proto";
 import "chrome_searchbox_stats.proto";
 
 // Suggest Template rendering data.
-// Next ID: 7
+// Next ID: 8
 message SuggestTemplateInfo {
   enum StandardSuggestStyle {
     SUGGEST_STYLE_UNSPECIFIED = 0;
@@ -74,9 +74,12 @@ message SuggestTemplateInfo {
   // replaces the suggestion icon.
   optional Image image = 5;
 
+  // Additioanl request parameters for SRP fulfillment.
+  map<string, string> default_search_parameters = 6;
+
+  // Entity Suggestion Action descriptor.
   message TemplateAction {
     enum ActionType {
-      SEARCH = 1;
       DIRECTIONS = 2;
       CALL = 3;
       REVIEWS = 20;
@@ -106,6 +109,5 @@ message SuggestTemplateInfo {
   }
 
   // List of possible actions for the suggestion.
-  repeated TemplateAction action_suggestions = 6;
-
+  repeated TemplateAction action_suggestions = 7;
 }
