@@ -1,6 +1,6 @@
 {
-  "version": "53.43",
-  "log_list_timestamp": "2025-05-13T12:53:40Z",
+  "version": "54.1",
+  "log_list_timestamp": "2025-05-14T12:54:55Z",
   "operators": [
     {
       "name": "Google",
@@ -500,6 +500,86 @@
           "temporal_interval": {
             "start_inclusive": "2026-07-01T00:00:00Z",
             "end_exclusive": "2027-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Sectigo 'Elephant2025h2'",
+          "log_id": "DR28iUTp9QBVQtctPhRMzEMIKrbqHpTf1wZlfS6G8wE=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE0OlLeGW2qUZGUoQERydw3GlayEO3ZK3418zThY1tDYr85ASme6ZOL/2DXyOXw8RCwVsKhRbOqMEOxW4Q2p4KQg==",
+          "url": "https://elephant2025h2.ct.sectigo.com/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2025-05-13T01:33:20Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2025-07-01T00:00:00Z",
+            "end_exclusive": "2026-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Sectigo 'Elephant2026h1'",
+          "log_id": "0W6ppWgHfmY1oD83pd28A6U8QRIU1IgY9ekxsyPLlQQ=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEU0lqnPHoXuU9Fc9dJv1HQZCvssJfvxLsirwVQ/fkFyUqeu4inwPKikeT4DGyyWWH4NR/DCJa2bAumHrXJdAcaQ==",
+          "url": "https://elephant2026h1.ct.sectigo.com/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2025-05-13T01:33:20Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2026-01-01T00:00:00Z",
+            "end_exclusive": "2026-07-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Sectigo 'Elephant2026h2'",
+          "log_id": "r2eIO1ewTt2Pptl+9i6o64EKx3Fg8CReVdYML+eFhzo=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEO/t4Uwkoou78zkCchh9tfAKbIUJmbOoUAb8szD8StnnHFKAVY5kq1Ljs8YD7CfzdD7xcVjmQYpbtNUhxRMRtmA==",
+          "url": "https://elephant2026h2.ct.sectigo.com/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2025-05-13T01:33:20Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2026-07-01T00:00:00Z",
+            "end_exclusive": "2027-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Sectigo 'Elephant2027h1'",
+          "log_id": "YEyar3p/d18B1Ab8kg3ImesLHH34yVIb+voXdzuXi8k=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE4fu36JygUwaaVO+ddWJ97FJZlA5SjPLmT+RHwg0pavkIrbT1b5LNQrsaEw0CoGraf7BkzKZf7PC8gYAScw2woA==",
+          "url": "https://elephant2027h1.ct.sectigo.com/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2025-05-13T01:33:20Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2027-01-01T00:00:00Z",
+            "end_exclusive": "2027-07-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Sectigo 'Elephant2027h2'",
+          "log_id": "okkM3NuOM6QAMhdg1tTVGiA2GR6nfZaL4mqKAPb///c=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAECTPhpJnRFroRRpP/1DdAns+PrnmUywtqIV+EeL4Jg8zKouoW7kuAkYo+kZeoHtyK7CBhflIlMk7T2Qrn4w/t8g==",
+          "url": "https://elephant2027h2.ct.sectigo.com/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2025-05-13T01:33:20Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2027-07-01T00:00:00Z",
+            "end_exclusive": "2028-01-01T00:00:00Z"
           }
         }
       ],
