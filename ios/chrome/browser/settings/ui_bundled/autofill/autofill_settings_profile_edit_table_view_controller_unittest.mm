@@ -226,26 +226,25 @@ class AutofillSettingsProfileEditTableViewControllerWithMigrationButtonTest
 };
 
 // Tests the number of sections and the number of items in the sections.
-// TODO(crbug.com/416030990): Adapt test to
-// AutofillDynamicallyLoadsFieldsForAddressInput and re-enable the test.
 TEST_F(AutofillSettingsProfileEditTableViewControllerWithMigrationButtonTest,
-       DISABLED_TestElementsInView) {
+       TestElementsInView) {
   TableViewModel* model = [controller() tableViewModel];
-  int rowCnt = 12;
 
-  EXPECT_EQ(1, [model numberOfSections]);
-  EXPECT_EQ(rowCnt, [model numberOfItemsInSection:0]);
+  EXPECT_EQ(4, [model numberOfSections]);
+  EXPECT_EQ(2, [model numberOfItemsInSection:0]);
+  EXPECT_EQ(5, [model numberOfItemsInSection:1]);
+  EXPECT_EQ(2, [model numberOfItemsInSection:2]);
+  EXPECT_EQ(2, [model numberOfItemsInSection:3]);
   NSString* migrateButtonDescription = l10n_util::GetNSStringF(
       IDS_IOS_SETTINGS_AUTOFILL_MIGRATE_ADDRESS_TO_ACCOUNT_BUTTON_DESCRIPTION,
       kTestSyncingEmail);
-  TableViewItem* descriptionItem = GetTableViewItem(0, rowCnt - 2);
+  TableViewItem* descriptionItem = GetTableViewItem(3, 0);
   EXPECT_NSEQ(
       static_cast<SettingsImageDetailTextItem*>(descriptionItem).detailText,
       migrateButtonDescription);
-  EXPECT_NSEQ(
-      static_cast<TableViewTextItem*>(GetTableViewItem(0, rowCnt - 1)).text,
-      l10n_util::GetNSString(
-          IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_BUTTON_ITEM));
+  EXPECT_NSEQ(static_cast<TableViewTextItem*>(GetTableViewItem(3, 1)).text,
+              l10n_util::GetNSString(
+                  IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_BUTTON_ITEM));
 }
 
 }  // namespace
