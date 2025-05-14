@@ -393,6 +393,7 @@ enum {
   kReadAloudPlaybackMode = 100326,
   kPinSplitTabButton = 100327,
   kGlicRolloutEligibility = 100328,
+  kShelfNotebookLmAppPinRolls = 100329,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1300,6 +1301,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kKeyboardHasSplitModifierKeyboard,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
+    {prefs::kShelfNotebookLmAppPinRolls,
+     {syncable_prefs_ids::kShelfNotebookLmAppPinRolls, syncer::OS_PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kMergeableListWithRewriteOnUpdate}},
 #endif  // BUILDFLAG(IS_CHROMEOS)
     {performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
      {syncable_prefs_ids::kTabDiscardingExceptions, syncer::PREFERENCES,

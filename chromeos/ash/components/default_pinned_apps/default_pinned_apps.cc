@@ -29,9 +29,13 @@ std::vector<StaticAppId> GetDefaultPinnedApps(
   if (chromeos::features::IsGeminiAppPreinstallEnabled()) {
     app_ids.push_back(ash::kGeminiAppId);
   }
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kNotebookLmAppShelfPin)) {
+    app_ids.push_back(ash::kNotebookLmAppId);
+  }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  // Pin Mall after Gemini, when both are enabled.
+  // Pin Mall after AI offerings.
   if (chromeos::features::IsCrosMallSwaEnabled()) {
     app_ids.push_back(ash::kMallSystemAppId);
   }
