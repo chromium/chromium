@@ -754,22 +754,13 @@ std::optional<CSPDirectiveName> GetDirectiveTypeFromRequestContextType(
     case mojom::blink::RequestContextType::PREFETCH:
       return CSPDirectiveName::DefaultSrc;
 
-    case mojom::blink::RequestContextType::SPECULATION_RULES:
-      // If speculation rules ever supports <script src>, then it will
-      // probably be necessary to use ScriptSrcElem in such cases.
-      if (!base::FeatureList::IsEnabled(
-              features::kExemptSpeculationRulesHeaderFromCSP)) {
-        return CSPDirectiveName::ScriptSrc;
-      }
-      // Speculation Rules loaded from Speculation-Rules header are exempt
-      // from CSP checks.
-      [[fallthrough]];
     case mojom::blink::RequestContextType::CSP_REPORT:
     case mojom::blink::RequestContextType::DOWNLOAD:
     case mojom::blink::RequestContextType::HYPERLINK:
     case mojom::blink::RequestContextType::INTERNAL:
     case mojom::blink::RequestContextType::LOCATION:
     case mojom::blink::RequestContextType::PLUGIN:
+    case mojom::blink::RequestContextType::SPECULATION_RULES:
     case mojom::blink::RequestContextType::UNSPECIFIED:
       return std::nullopt;
   }

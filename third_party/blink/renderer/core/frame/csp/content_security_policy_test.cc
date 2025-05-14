@@ -1590,17 +1590,7 @@ TEST_F(ContentSecurityPolicyTest, AllowFencedFrameOpaqueURL) {
   }
 }
 
-class SpeculationRulesHeaderContentSecurityPolicyTest
-    : public base::test::WithFeatureOverride,
-      public ContentSecurityPolicyTest {
- public:
-  SpeculationRulesHeaderContentSecurityPolicyTest()
-      : base::test::WithFeatureOverride(
-            features::kExemptSpeculationRulesHeaderFromCSP) {}
-};
-
-TEST_P(SpeculationRulesHeaderContentSecurityPolicyTest,
-       ExemptSpeculationRulesFromHeader) {
+TEST_F(ContentSecurityPolicyTest, ExemptSpeculationRulesFromHeader) {
   KURL speculation_rules_url("http://example.com/rules.json");
   csp = MakeGarbageCollected<ContentSecurityPolicy>();
   csp->BindToDelegate(execution_context->GetContentSecurityPolicyDelegate());
@@ -1608,19 +1598,13 @@ TEST_P(SpeculationRulesHeaderContentSecurityPolicyTest,
       "script-src 'strict-dynamic'", ContentSecurityPolicyType::kEnforce,
       ContentSecurityPolicySource::kHTTP, *secure_origin));
 
-  EXPECT_EQ(
-      base::FeatureList::IsEnabled(
-          features::kExemptSpeculationRulesHeaderFromCSP),
-      csp->AllowRequest(mojom::blink::RequestContextType::SPECULATION_RULES,
-                        network::mojom::RequestDestination::kSpeculationRules,
-                        network::mojom::RequestMode::kCors,
-                        speculation_rules_url, String(), IntegrityMetadataSet(),
-                        kParserInserted, speculation_rules_url,
-                        ResourceRequest::RedirectStatus::kNoRedirect,
-                        ReportingDisposition::kSuppressReporting));
+  EXPECT_TRUE(csp->AllowRequest(
+      mojom::blink::RequestContextType::SPECULATION_RULES,
+      network::mojom::RequestDestination::kSpeculationRules,
+      network::mojom::RequestMode::kCors, speculation_rules_url, String(),
+      IntegrityMetadataSet(), kParserInserted, speculation_rules_url,
+      ResourceRequest::RedirectStatus::kNoRedirect,
+      ReportingDisposition::kSuppressReporting));
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    SpeculationRulesHeaderContentSecurityPolicyTest);
 
 }  // namespace blink
