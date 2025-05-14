@@ -2553,7 +2553,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateBackgroundClip() {
 static void AdjustRoundedClipForOverflowClipMargin(
     const LayoutBox& box,
     gfx::RectF& layout_clip_rect,
-    FloatRoundedRect& paint_clip_rect) {
+    ContouredRect& paint_clip_rect) {
   const auto& style = box.StyleRef();
   auto overflow_clip_margin = style.OverflowClipMargin();
   if (!overflow_clip_margin || !box.ShouldApplyOverflowClipMargin())
@@ -2602,14 +2602,11 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip() {
       gfx::Vector2dF offset(-OffsetInStitchedFragments(BoxFragment()));
       layout_clip_rect.Offset(offset);
       paint_clip_rect.Move(offset);
-
-      FloatRoundedRect rounded_rect = paint_clip_rect.AsRoundedRect();
-
-      // TODO(crbug.com/397459628) Apply corner-shape to overflow-clip-margin
       AdjustRoundedClipForOverflowClipMargin(box, layout_clip_rect,
-                                             rounded_rect);
+                                             paint_clip_rect);
       ClipPaintPropertyNode::State state(*context_.current.transform,
-                                         layout_clip_rect, rounded_rect);
+                                         layout_clip_rect,
+                                         paint_clip_rect.AsRoundedRect());
       if (!paint_clip_rect.HasRoundCurvature()) {
         state.SetClipRect(layout_clip_rect,
                           FloatRoundedRect(paint_clip_rect.Rect()));

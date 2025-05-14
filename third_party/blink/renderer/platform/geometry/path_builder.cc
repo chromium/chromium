@@ -249,8 +249,9 @@ PathBuilder& PathBuilder::AddContouredRect(
       target_rect.Rect().Contains(origin_rect.Rect())) {
     // A rect with no insets/outsets, we can draw all the corners and not worry
     // about intersections.
-    MoveTo(origin_rect.TopRightCorner().origin());
-    AddCurvedCorner(builder_, contoured_rect.TopRightCorner());
+    const Corner top_right_corner = contoured_rect.TopRightCorner();
+    MoveTo(top_right_corner.Start());
+    AddCurvedCorner(builder_, top_right_corner);
     AddCurvedCorner(builder_, contoured_rect.BottomRightCorner());
     AddCurvedCorner(builder_, contoured_rect.BottomLeftCorner());
     AddCurvedCorner(builder_, contoured_rect.TopLeftCorner());

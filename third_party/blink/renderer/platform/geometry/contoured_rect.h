@@ -211,32 +211,37 @@ class PLATFORM_EXPORT ContouredRect {
   }
   void SetOriginRect(const FloatRoundedRect& rect) { origin_rect_ = rect; }
 
+  constexpr bool IsInnerRect() const {
+    return origin_rect_ && *origin_rect_ != rect_ &&
+           origin_rect_->Rect().Contains(rect_.Rect());
+  }
+
   constexpr Corner TopRightCorner() const {
-    return origin_rect_ ? TopRightCornerInternal().AlignedToOrigin(
-                              ContouredRect(*origin_rect_, corner_curvature_)
-                                  .TopRightCornerInternal())
-                        : TopRightCornerInternal();
+    return IsInnerRect() ? TopRightCornerInternal().AlignedToOrigin(
+                               ContouredRect(*origin_rect_, corner_curvature_)
+                                   .TopRightCornerInternal())
+                         : TopRightCornerInternal();
   }
 
   constexpr Corner BottomRightCorner() const {
-    return origin_rect_ ? BottomRightCornerInternal().AlignedToOrigin(
-                              ContouredRect(*origin_rect_, corner_curvature_)
-                                  .BottomRightCornerInternal())
-                        : BottomRightCornerInternal();
+    return IsInnerRect() ? BottomRightCornerInternal().AlignedToOrigin(
+                               ContouredRect(*origin_rect_, corner_curvature_)
+                                   .BottomRightCornerInternal())
+                         : BottomRightCornerInternal();
   }
 
   constexpr Corner BottomLeftCorner() const {
-    return origin_rect_ ? BottomLeftCornerInternal().AlignedToOrigin(
-                              ContouredRect(*origin_rect_, corner_curvature_)
-                                  .BottomLeftCornerInternal())
-                        : BottomLeftCornerInternal();
+    return IsInnerRect() ? BottomLeftCornerInternal().AlignedToOrigin(
+                               ContouredRect(*origin_rect_, corner_curvature_)
+                                   .BottomLeftCornerInternal())
+                         : BottomLeftCornerInternal();
   }
 
   constexpr Corner TopLeftCorner() const {
-    return origin_rect_ ? TopLeftCornerInternal().AlignedToOrigin(
-                              ContouredRect(*origin_rect_, corner_curvature_)
-                                  .TopLeftCornerInternal())
-                        : TopLeftCornerInternal();
+    return IsInnerRect() ? TopLeftCornerInternal().AlignedToOrigin(
+                               ContouredRect(*origin_rect_, corner_curvature_)
+                                   .TopLeftCornerInternal())
+                         : TopLeftCornerInternal();
   }
 
  private:
