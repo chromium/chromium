@@ -102,13 +102,21 @@ void TabSearchContainer::TabOrganizationAnimationSession::Start() {
 }
 
 void TabSearchContainer::TabOrganizationAnimationSession::
-    ResetAnimationForTesting(double value) {
+    ResetExpansionAnimationForTesting(double value) {
+  expansion_animation_.Reset(value);
+}
+
+void TabSearchContainer::TabOrganizationAnimationSession::
+    ResetFlatEdgeAnimationForTesting(double value) {
+  flat_edge_animation_.Reset(value);
+}
+
+void TabSearchContainer::TabOrganizationAnimationSession::
+    ResetOpacityAnimationForTesting(double value) {
   if (opacity_animation_delay_timer_.IsRunning()) {
     opacity_animation_delay_timer_.FireNow();
   }
 
-  expansion_animation_.Reset(value);
-  flat_edge_animation_.Reset(value);
   opacity_animation_.Reset(value);
 }
 

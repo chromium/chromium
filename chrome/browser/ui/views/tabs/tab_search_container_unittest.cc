@@ -74,6 +74,21 @@ class TabSearchContainerTest : public ChromeViewsTestBase {
   }
 
  protected:
+  void ResetAnimation(int value) {
+    if (container_before_tab_strip_->animation_session_for_testing()) {
+      container_before_tab_strip_->animation_session_for_testing()
+          ->ResetOpacityAnimationForTesting(value);
+    }
+    if (container_before_tab_strip_->animation_session_for_testing()) {
+      container_before_tab_strip_->animation_session_for_testing()
+          ->ResetExpansionAnimationForTesting(value);
+    }
+    if (container_before_tab_strip_->animation_session_for_testing()) {
+      container_before_tab_strip_->animation_session_for_testing()
+          ->ResetFlatEdgeAnimationForTesting(value);
+    }
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TabStrip> tab_strip_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
@@ -130,8 +145,7 @@ TEST_F(TabSearchContainerTest, AnimatesToExpanded) {
                   ->expansion_animation()
                   ->IsShowing());
 
-  container_before_tab_strip_->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
 
   ASSERT_EQ(1, container_before_tab_strip_->auto_tab_group_button()
                    ->width_factor_for_testing());

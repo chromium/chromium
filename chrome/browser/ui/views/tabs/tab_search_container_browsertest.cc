@@ -57,7 +57,17 @@ class TabSearchContainerBrowserTest : public InProcessBrowserTest {
     if (tab_search_container()->animation_session_for_testing()) {
       tab_search_container()
           ->animation_session_for_testing()
-          ->ResetAnimationForTesting(value);
+          ->ResetOpacityAnimationForTesting(value);
+    }
+    if (tab_search_container()->animation_session_for_testing()) {
+      tab_search_container()
+          ->animation_session_for_testing()
+          ->ResetExpansionAnimationForTesting(value);
+    }
+    if (tab_search_container()->animation_session_for_testing()) {
+      tab_search_container()
+          ->animation_session_for_testing()
+          ->ResetFlatEdgeAnimationForTesting(value);
     }
   }
 
