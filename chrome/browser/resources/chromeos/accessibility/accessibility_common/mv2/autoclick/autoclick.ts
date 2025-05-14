@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Required for running accessibility/common tests like
+// AccessibilityExtensionArrayUtilTest. Without this, necessary exports
+// are not available in the test enviropment.
+import '/common/array_util.js';
+
 import {EventHandler} from '/common/event_handler.js';
 
 /**
