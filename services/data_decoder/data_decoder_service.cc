@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/facilitated_payments/core/validation/pix_code_validator.h"
 #include "components/web_package/web_bundle_parser_factory.h"
@@ -23,7 +24,7 @@
 #include "services/data_decoder/ble_scan_parser_impl.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
 #include "services/data_decoder/image_decoder_impl.h"
 #endif
 
@@ -45,8 +46,8 @@ void DataDecoderService::BindReceiver(
 
 void DataDecoderService::BindImageDecoder(
     mojo::PendingReceiver<mojom::ImageDecoder> receiver) {
-#if BUILDFLAG(IS_IOS)
-  LOG(FATAL) << "ImageDecoder not supported on iOS.";
+#if !BUILDFLAG(USE_BLINK)
+  LOG(FATAL) << "ImageDecoder not supported on non-Blink platforms.";
 #else
   mojo::MakeSelfOwnedReceiver(std::make_unique<ImageDecoderImpl>(),
                               std::move(receiver));
