@@ -78,3 +78,8 @@ class UploadTestScriptRecordsTest(unittest.TestCase):
     self.exc_recorder.clear_stacktrace.assert_called_once()
     self.exc_recorder.register.assert_called_once()
     self.mm_recorder.clear.assert_called_once()
+
+
+if __name__ == '__main__':
+  # Suppress logging messages.
+  unittest.main(buffer=True)
