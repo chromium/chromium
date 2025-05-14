@@ -567,7 +567,6 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
         case AutofillProfile::RecordType::kAccountHome:
         case AutofillProfile::RecordType::kAccountWork:
           return false;
-        default:
         case AutofillProfile::RecordType::kLocalOrSyncable:
         case AutofillProfile::RecordType::kAccount:
           break;
