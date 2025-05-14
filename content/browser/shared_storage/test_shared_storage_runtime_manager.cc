@@ -5,6 +5,7 @@
 #include "content/browser/shared_storage/test_shared_storage_runtime_manager.h"
 
 #include <cstddef>
+#include <map>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -23,6 +24,10 @@
 
 namespace content {
 
+TestSharedStorageRuntimeManager::TestSharedStorageRuntimeManager(
+    StoragePartitionImpl& storage_partition)
+    : SharedStorageRuntimeManager(storage_partition) {}
+
 TestSharedStorageRuntimeManager::~TestSharedStorageRuntimeManager() = default;
 
 std::unique_ptr<SharedStorageWorkletHost>
@@ -34,17 +39,23 @@ TestSharedStorageRuntimeManager::CreateWorkletHostHelper(
     const GURL& script_source_url,
     network::mojom::CredentialsMode credentials_mode,
     blink::mojom::SharedStorageWorkletCreationMethod creation_method,
-    int worklet_id,
+    int worklet_ordinal_id,
     const std::vector<blink::mojom::OriginTrialFeature>& origin_trial_features,
     mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
         worklet_host,
     blink::mojom::SharedStorageDocumentService::CreateWorkletCallback
         callback) {
-  return std::make_unique<TestSharedStorageWorkletHost>(
+  auto test_worklet_host = std::make_unique<TestSharedStorageWorkletHost>(
       document_service, frame_origin, data_origin, data_origin_type,
-      script_source_url, credentials_mode, creation_method, worklet_id,
+      script_source_url, credentials_mode, creation_method, worklet_ordinal_id,
       origin_trial_features, std::move(worklet_host), std::move(callback),
       should_defer_worklet_messages_);
+
+  cached_worklet_host_devtools_tokens_.emplace(
+      worklet_ordinal_id,
+      test_worklet_host->GetWorkletDevToolsTokenForTesting());
+
+  return std::move(test_worklet_host);
 }
 
 // Precondition: there's only one eligible worklet host.
@@ -146,6 +157,11 @@ size_t TestSharedStorageRuntimeManager::GetAttachedWorkletHostsCount() {
 
 size_t TestSharedStorageRuntimeManager::GetKeepAliveWorkletHostsCount() {
   return GetKeepAliveWorkletHostsForTesting().size();
+}
+
+std::map<int, base::UnguessableToken>&
+TestSharedStorageRuntimeManager::GetCachedWorkletHostDevToolsTokens() {
+  return cached_worklet_host_devtools_tokens_;
 }
 
 }  // namespace content

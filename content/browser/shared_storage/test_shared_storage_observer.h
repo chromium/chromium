@@ -38,9 +38,23 @@ class TestSharedStorageObserver
     base::TimeDelta execution_time;
     AccessMethod method;
     int operation_id;
-    int worklet_id;
+    int worklet_ordinal_id;
+    base::UnguessableToken worklet_devtools_token;
     GlobalRenderFrameHostId main_frame_id;
     std::string owner_origin;
+    OperationFinishedInfo();
+    OperationFinishedInfo(base::TimeDelta execution_time,
+                          AccessMethod method,
+                          int operation_id,
+                          int worklet_ordinal_id,
+                          const base::UnguessableToken& worklet_devtools_token,
+                          GlobalRenderFrameHostId main_frame_id,
+                          std::string owner_origin);
+    OperationFinishedInfo(const OperationFinishedInfo&);
+    OperationFinishedInfo(OperationFinishedInfo&&);
+    ~OperationFinishedInfo();
+    OperationFinishedInfo& operator=(const OperationFinishedInfo&);
+    OperationFinishedInfo& operator=(OperationFinishedInfo&&);
   };
 
   TestSharedStorageObserver();
@@ -67,7 +81,8 @@ class TestSharedStorageObserver
       base::TimeDelta execution_time,
       AccessMethod method,
       int operation_id,
-      int worklet_id,
+      int worklet_ordinal_id,
+      const base::UnguessableToken& worklet_devtools_token,
       GlobalRenderFrameHostId main_frame_id,
       const std::string& owner_origin) override;
 

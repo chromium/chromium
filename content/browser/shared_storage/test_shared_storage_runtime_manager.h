@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_SHARED_STORAGE_TEST_SHARED_STORAGE_RUNTIME_MANAGER_H_
 
 #include <cstddef>
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -34,6 +35,9 @@ class TestSharedStorageRuntimeManager : public SharedStorageRuntimeManager {
  public:
   using SharedStorageRuntimeManager::SharedStorageRuntimeManager;
 
+  explicit TestSharedStorageRuntimeManager(
+      StoragePartitionImpl& storage_partition);
+
   ~TestSharedStorageRuntimeManager() override;
 
   std::unique_ptr<SharedStorageWorkletHost> CreateWorkletHostHelper(
@@ -44,7 +48,7 @@ class TestSharedStorageRuntimeManager : public SharedStorageRuntimeManager {
       const GURL& script_source_url,
       network::mojom::CredentialsMode credentials_mode,
       blink::mojom::SharedStorageWorkletCreationMethod creation_method,
-      int worklet_id,
+      int worklet_ordinal_id,
       const std::vector<blink::mojom::OriginTrialFeature>&
           origin_trial_features,
       mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
@@ -77,6 +81,11 @@ class TestSharedStorageRuntimeManager : public SharedStorageRuntimeManager {
   std::vector<TestSharedStorageWorkletHost*> GetAttachedWorkletHostsForFrame(
       RenderFrameHost* frame);
 
+  // Returns a map of worklet ordinal IDs to worklet DevTools tokens for all of
+  // the shared storage worklet hosts created up to that point of the test,
+  // regardless of which of these hosts are still attached and/or alive.
+  std::map<int, base::UnguessableToken>& GetCachedWorkletHostDevToolsTokens();
+
   void ConfigureShouldDeferWorkletMessagesOnWorkletHostCreation(
       bool should_defer_worklet_messages);
 
@@ -86,6 +95,9 @@ class TestSharedStorageRuntimeManager : public SharedStorageRuntimeManager {
 
  private:
   bool should_defer_worklet_messages_ = false;
+
+  // A map of worklet ordinal IDs to worklet DevTools Tokens.
+  std::map<int, base::UnguessableToken> cached_worklet_host_devtools_tokens_;
 };
 
 }  // namespace content

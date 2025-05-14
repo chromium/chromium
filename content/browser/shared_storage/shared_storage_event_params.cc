@@ -309,7 +309,8 @@ SharedStorageEventParams::SharedStorageEventParams(
     std::optional<std::string> key,
     std::optional<std::string> value,
     std::optional<bool> ignore_if_present,
-    std::optional<int> worklet_id,
+    std::optional<int> worklet_ordinal_id,
+    const base::UnguessableToken& worklet_devtools_token,
     std::optional<std::string> with_lock,
     std::optional<int> batch_update_id,
     std::optional<int> batch_size)
@@ -327,7 +328,8 @@ SharedStorageEventParams::SharedStorageEventParams(
       key(std::move(key)),
       value(std::move(value)),
       ignore_if_present(ignore_if_present),
-      worklet_id(worklet_id),
+      worklet_ordinal_id(worklet_ordinal_id),
+      worklet_devtools_token(worklet_devtools_token),
       with_lock(std::move(with_lock)),
       batch_update_id(batch_update_id),
       batch_size(batch_size) {}
@@ -335,18 +337,22 @@ SharedStorageEventParams::SharedStorageEventParams(
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateForAddModule(
     const GURL& script_source_url,
-    int worklet_id) {
+    int worklet_ordinal_id,
+    const base::UnguessableToken& worklet_devtools_token) {
   return SharedStorageEventParams::CreateForWorkletCreation(
-      script_source_url, /*data_origin=*/std::nullopt, worklet_id);
+      script_source_url, /*data_origin=*/std::nullopt, worklet_ordinal_id,
+      worklet_devtools_token);
 }
 
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateForCreateWorklet(
     const GURL& script_source_url,
     const std::string& data_origin,
-    int worklet_id) {
+    int worklet_ordinal_id,
+    const base::UnguessableToken& worklet_devtools_token) {
   return SharedStorageEventParams::CreateForWorkletCreation(
-      script_source_url, data_origin, worklet_id);
+      script_source_url, data_origin, worklet_ordinal_id,
+      worklet_devtools_token);
 }
 
 // static
@@ -356,12 +362,14 @@ SharedStorageEventParams SharedStorageEventParams::CreateForRun(
     bool keep_alive,
     const blink::mojom::PrivateAggregationConfigPtr& private_aggregation_config,
     const blink::CloneableMessage& serialized_data,
-    int worklet_id) {
+    int worklet_ordinal_id,
+    const base::UnguessableToken& worklet_devtools_token) {
   return SharedStorageEventParams::CreateForWorkletOperation(
       operation_name, operation_id, keep_alive, private_aggregation_config,
       serialized_data,
       /*urls_with_metadata=*/std::nullopt, /*resolve_to_config=*/std::nullopt,
-      /*saved_query=*/std::nullopt, /*urn_uuid=*/std::nullopt, worklet_id);
+      /*saved_query=*/std::nullopt, /*urn_uuid=*/std::nullopt,
+      worklet_ordinal_id, worklet_devtools_token);
 }
 
 // static
@@ -371,12 +379,14 @@ SharedStorageEventParams SharedStorageEventParams::CreateForRunForTesting(
     bool keep_alive,
     PrivateAggregationConfigWrapper config_wrapper,
     const blink::CloneableMessage& serialized_data,
-    int worklet_id) {
+    int worklet_ordinal_id,
+    const base::UnguessableToken& worklet_devtools_token) {
   return SharedStorageEventParams::CreateForWorkletOperationForTesting(
       operation_name, operation_id, keep_alive, std::move(config_wrapper),
       serialized_data,
       /*urls_with_metadata=*/std::nullopt, /*resolve_to_config=*/std::nullopt,
-      /*saved_query=*/std::nullopt, /*urn_uuid=*/std::nullopt, worklet_id);
+      /*saved_query=*/std::nullopt, /*urn_uuid=*/std::nullopt,
+      worklet_ordinal_id, worklet_devtools_token);
 }
 
 // static
@@ -390,11 +400,13 @@ SharedStorageEventParams SharedStorageEventParams::CreateForSelectURL(
     bool resolve_to_config,
     std::string saved_query,
     const GURL& urn_uuid,
-    int worklet_id) {
+    int worklet_ordinal_id,
+    const base::UnguessableToken& worklet_devtools_token) {
   return SharedStorageEventParams::CreateForWorkletOperation(
       operation_name, operation_id, keep_alive, private_aggregation_config,
       serialized_data, std::move(urls_with_metadata), resolve_to_config,
-      std::move(saved_query), urn_uuid.spec(), worklet_id);
+      std::move(saved_query), urn_uuid.spec(), worklet_ordinal_id,
+      worklet_devtools_token);
 }
 
 // static
@@ -408,11 +420,13 @@ SharedStorageEventParams SharedStorageEventParams::CreateForSelectURLForTesting(
     bool resolve_to_config,
     std::string saved_query,
     const GURL& urn_uuid,
-    int worklet_id) {
+    int worklet_ordinal_id,
+    const base::UnguessableToken& worklet_devtools_token) {
   return SharedStorageEventParams::CreateForWorkletOperationForTesting(
       operation_name, operation_id, keep_alive, std::move(config_wrapper),
       serialized_data, std::move(urls_with_metadata), resolve_to_config,
-      std::move(saved_query), urn_uuid.spec(), worklet_id);
+      std::move(saved_query), urn_uuid.spec(), worklet_ordinal_id,
+      worklet_devtools_token);
 }
 
 // static
@@ -420,69 +434,77 @@ SharedStorageEventParams SharedStorageEventParams::CreateForSet(
     const std::string& key,
     const std::string& value,
     bool ignore_if_present,
-    std::optional<int> worklet_id,
+    std::optional<int> worklet_ordinal_id,
+    const base::UnguessableToken& worklet_devtools_token,
     std::optional<std::string> with_lock,
     std::optional<int> batch_update_id) {
   return SharedStorageEventParams::CreateForModifierMethod(
-      key, value, ignore_if_present, worklet_id, std::move(with_lock),
-      batch_update_id);
+      key, value, ignore_if_present, worklet_ordinal_id, worklet_devtools_token,
+      std::move(with_lock), batch_update_id);
 }
 
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateForAppend(
     const std::string& key,
     const std::string& value,
-    std::optional<int> worklet_id,
+    std::optional<int> worklet_ordinal_id,
+    const base::UnguessableToken& worklet_devtools_token,
     std::optional<std::string> with_lock,
     std::optional<int> batch_update_id) {
   return SharedStorageEventParams::CreateForModifierMethod(
       key, value,
-      /*ignore_if_present=*/std::nullopt, worklet_id, std::move(with_lock),
-      batch_update_id);
+      /*ignore_if_present=*/std::nullopt, worklet_ordinal_id,
+      worklet_devtools_token, std::move(with_lock), batch_update_id);
 }
 
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateForDelete(
     const std::string& key,
-    std::optional<int> worklet_id,
+    std::optional<int> worklet_ordinal_id,
+    const base::UnguessableToken& worklet_devtools_token,
     std::optional<std::string> with_lock,
     std::optional<int> batch_update_id) {
   return SharedStorageEventParams::CreateForModifierMethod(
       key,
       /*value=*/std::nullopt,
-      /*ignore_if_present=*/std::nullopt, worklet_id, std::move(with_lock),
-      batch_update_id);
+      /*ignore_if_present=*/std::nullopt, worklet_ordinal_id,
+      worklet_devtools_token, std::move(with_lock), batch_update_id);
 }
 
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateForClear(
-    std::optional<int> worklet_id,
+    std::optional<int> worklet_ordinal_id,
+    const base::UnguessableToken& worklet_devtools_token,
     std::optional<std::string> with_lock,
     std::optional<int> batch_update_id) {
   return SharedStorageEventParams::CreateForModifierMethod(
       /*key=*/std::nullopt,
       /*value=*/std::nullopt,
-      /*ignore_if_present=*/std::nullopt, worklet_id, std::move(with_lock),
-      batch_update_id);
+      /*ignore_if_present=*/std::nullopt, worklet_ordinal_id,
+      worklet_devtools_token, std::move(with_lock), batch_update_id);
 }
 
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateForGet(
     const std::string& key,
-    std::optional<int> worklet_id) {
-  return SharedStorageEventParams::CreateForGetterMethod(key, worklet_id);
+    std::optional<int> worklet_ordinal_id,
+    const base::UnguessableToken& worklet_devtools_token) {
+  return SharedStorageEventParams::CreateForGetterMethod(
+      key, worklet_ordinal_id, worklet_devtools_token);
 }
 
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateWithWorkletId(
-    int worklet_id) {
+    int worklet_ordinal_id,
+    const base::UnguessableToken& worklet_devtools_token) {
   return SharedStorageEventParams::CreateForGetterMethod(
-      /*key=*/std::nullopt, worklet_id);
+      /*key=*/std::nullopt, worklet_ordinal_id, worklet_devtools_token);
 }
 
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateForBatchUpdate(
-    std::optional<int> worklet_id,
+    std::optional<int> worklet_ordinal_id,
+    const base::UnguessableToken& worklet_devtools_token,
     std::optional<std::string> with_lock,
     int batch_update_id,
     size_t batch_size) {
@@ -500,32 +522,35 @@ SharedStorageEventParams SharedStorageEventParams::CreateForBatchUpdate(
       /*urn_uuid=*/std::nullopt,
       /*key=*/std::nullopt,
       /*value=*/std::nullopt,
-      /*ignore_if_present=*/std::nullopt, worklet_id, std::move(with_lock),
-      batch_update_id, static_cast<int>(batch_size));
+      /*ignore_if_present=*/std::nullopt, worklet_ordinal_id,
+      worklet_devtools_token, std::move(with_lock), batch_update_id,
+      static_cast<int>(batch_size));
 }
 
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateForWorkletCreation(
     const GURL& script_source_url,
     std::optional<std::string> data_origin,
-    int worklet_id) {
-  return SharedStorageEventParams(
-      script_source_url.spec(), std::move(data_origin),
-      /*operation_name=*/std::nullopt,
-      /*operation_id=*/std::nullopt,
-      /*keep_alive=*/std::nullopt,
-      /*private_aggregation_config=*/std::nullopt,
-      /*serialized_data=*/std::nullopt,
-      /*urls_with_metadata=*/std::nullopt,
-      /*resolve_to_config=*/std::nullopt,
-      /*saved_query=*/std::nullopt,
-      /*urn_uuid=*/std::nullopt,
-      /*key=*/std::nullopt,
-      /*value=*/std::nullopt,
-      /*ignore_if_present=*/std::nullopt, worklet_id,
-      /*with_lock=*/std::nullopt,
-      /*batch_update_id=*/std::nullopt,
-      /*batch_size=*/std::nullopt);
+    int worklet_ordinal_id,
+    const base::UnguessableToken& worklet_devtools_token) {
+  return SharedStorageEventParams(script_source_url.spec(),
+                                  std::move(data_origin),
+                                  /*operation_name=*/std::nullopt,
+                                  /*operation_id=*/std::nullopt,
+                                  /*keep_alive=*/std::nullopt,
+                                  /*private_aggregation_config=*/std::nullopt,
+                                  /*serialized_data=*/std::nullopt,
+                                  /*urls_with_metadata=*/std::nullopt,
+                                  /*resolve_to_config=*/std::nullopt,
+                                  /*saved_query=*/std::nullopt,
+                                  /*urn_uuid=*/std::nullopt,
+                                  /*key=*/std::nullopt,
+                                  /*value=*/std::nullopt,
+                                  /*ignore_if_present=*/std::nullopt,
+                                  worklet_ordinal_id, worklet_devtools_token,
+                                  /*with_lock=*/std::nullopt,
+                                  /*batch_update_id=*/std::nullopt,
+                                  /*batch_size=*/std::nullopt);
 }
 
 // static
@@ -540,7 +565,8 @@ SharedStorageEventParams SharedStorageEventParams::CreateForWorkletOperation(
     std::optional<bool> resolve_to_config,
     std::optional<std::string> saved_query,
     std::optional<std::string> urn_uuid,
-    int worklet_id) {
+    int worklet_ordinal_id,
+    const base::UnguessableToken& worklet_devtools_token) {
   return SharedStorageEventParams(
       /*script_source_url=*/std::nullopt,
       /*data_origin=*/std::nullopt, operation_name, operation_id, keep_alive,
@@ -550,7 +576,8 @@ SharedStorageEventParams SharedStorageEventParams::CreateForWorkletOperation(
       std::move(urn_uuid),
       /*key=*/std::nullopt,
       /*value=*/std::nullopt,
-      /*ignore_if_present=*/std::nullopt, worklet_id,
+      /*ignore_if_present=*/std::nullopt, worklet_ordinal_id,
+      worklet_devtools_token,
       /*with_lock=*/std::nullopt,
       /*batch_update_id=*/std::nullopt,
       /*batch_size=*/std::nullopt);
@@ -569,7 +596,8 @@ SharedStorageEventParams::CreateForWorkletOperationForTesting(
     std::optional<bool> resolve_to_config,
     std::optional<std::string> saved_query,
     std::optional<std::string> urn_uuid,
-    int worklet_id) {
+    int worklet_ordinal_id,
+    const base::UnguessableToken& worklet_devtools_token) {
   return SharedStorageEventParams(
       /*script_source_url=*/std::nullopt,
       /*data_origin=*/std::nullopt, operation_name, operation_id, keep_alive,
@@ -580,7 +608,8 @@ SharedStorageEventParams::CreateForWorkletOperationForTesting(
       std::move(urn_uuid),
       /*key=*/std::nullopt,
       /*value=*/std::nullopt,
-      /*ignore_if_present=*/std::nullopt, worklet_id,
+      /*ignore_if_present=*/std::nullopt, worklet_ordinal_id,
+      worklet_devtools_token,
       /*with_lock=*/std::nullopt,
       /*batch_update_id=*/std::nullopt,
       /*batch_size=*/std::nullopt);
@@ -591,7 +620,8 @@ SharedStorageEventParams SharedStorageEventParams::CreateForModifierMethod(
     std::optional<std::string> key,
     std::optional<std::string> value,
     std::optional<bool> ignore_if_present,
-    std::optional<int> worklet_id,
+    std::optional<int> worklet_ordinal_id,
+    const base::UnguessableToken& worklet_devtools_token,
     std::optional<std::string> with_lock,
     std::optional<int> batch_update_id) {
   return SharedStorageEventParams(
@@ -606,14 +636,16 @@ SharedStorageEventParams SharedStorageEventParams::CreateForModifierMethod(
       /*resolve_to_config=*/std::nullopt,
       /*saved_query=*/std::nullopt,
       /*urn_uuid=*/std::nullopt, std::move(key), std::move(value),
-      ignore_if_present, worklet_id, std::move(with_lock), batch_update_id,
+      ignore_if_present, worklet_ordinal_id, worklet_devtools_token,
+      std::move(with_lock), batch_update_id,
       /*batch_size=*/std::nullopt);
 }
 
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateForGetterMethod(
     std::optional<std::string> key,
-    std::optional<int> worklet_id) {
+    std::optional<int> worklet_ordinal_id,
+    const base::UnguessableToken& worklet_devtools_token) {
   return SharedStorageEventParams(
       /*script_source_url=*/std::nullopt,
       /*data_origin=*/std::nullopt,
@@ -627,7 +659,8 @@ SharedStorageEventParams SharedStorageEventParams::CreateForGetterMethod(
       /*saved_query=*/std::nullopt,
       /*urn_uuid=*/std::nullopt, std::move(key),
       /*value=*/std::nullopt,
-      /*ignore_if_present=*/std::nullopt, worklet_id,
+      /*ignore_if_present=*/std::nullopt, worklet_ordinal_id,
+      worklet_devtools_token,
       /*with_lock=*/std::nullopt,
       /*batch_update_id=*/std::nullopt,
       /*batch_size=*/std::nullopt);
@@ -648,7 +681,9 @@ bool operator==(const SharedStorageEventParams& lhs,
          lhs.saved_query == rhs.saved_query && lhs.urn_uuid == rhs.urn_uuid &&
          lhs.key == rhs.key && lhs.value == rhs.value &&
          lhs.ignore_if_present == rhs.ignore_if_present &&
-         lhs.worklet_id == rhs.worklet_id && lhs.with_lock == rhs.with_lock &&
+         lhs.worklet_ordinal_id == rhs.worklet_ordinal_id &&
+         lhs.worklet_devtools_token == rhs.worklet_devtools_token &&
+         lhs.with_lock == rhs.with_lock &&
          lhs.batch_update_id == rhs.batch_update_id &&
          lhs.batch_size == rhs.batch_size;
 }
@@ -676,7 +711,9 @@ std::ostream& operator<<(std::ostream& os,
      << "; Value: " << SerializeOptionalString(params.value)
      << "; Ignore If Present: "
      << SerializeOptionalBool(params.ignore_if_present)
-     << "; Worklet ID: " << SerializeOptionalInt(params.worklet_id)
+     << "; Worklet Ordinal ID: "
+     << SerializeOptionalInt(params.worklet_ordinal_id)
+     << "; Worklet Devtools Token: " << params.worklet_devtools_token
      << "; With Lock: " << SerializeOptionalString(params.with_lock)
      << "; Batch Update ID: " << SerializeOptionalInt(params.batch_update_id)
      << "; Batch Size: " << SerializeOptionalInt(params.batch_size) << " }";

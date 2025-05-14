@@ -83,7 +83,8 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
         base::TimeDelta execution_time,
         AccessMethod method,
         int operation_id,
-        int worklet_id,
+        int worklet_ordinal_id,
+        const base::UnguessableToken& worklet_devtools_token,
         GlobalRenderFrameHostId main_frame_id,
         const std::string& owner_origin) = 0;
   };
@@ -125,7 +126,8 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
       base::TimeDelta execution_time,
       SharedStorageObserverInterface::AccessMethod method,
       int operation_id,
-      int worklet_id,
+      int worklet_ordinal_id,
+      const base::UnguessableToken& worklet_devtools_token,
       GlobalRenderFrameHostId main_frame_id,
       const std::string& owner_origin);
 
@@ -158,7 +160,7 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
       const GURL& script_source_url,
       network::mojom::CredentialsMode credentials_mode,
       blink::mojom::SharedStorageWorkletCreationMethod creation_method,
-      int worklet_id,
+      int worklet_ordinal_id,
       const std::vector<blink::mojom::OriginTrialFeature>&
           origin_trial_features,
       mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
@@ -190,7 +192,7 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
   // This ID is assigned during construction of the SharedStorageWorkletHost.
   // TODO(crbug.com/401011862): Use the worklet IDs generated in DevTools
   // reporting.
-  int next_worklet_id_ = 0;
+  int next_worklet_ordinal_id_ = 0;
 };
 
 }  // namespace content

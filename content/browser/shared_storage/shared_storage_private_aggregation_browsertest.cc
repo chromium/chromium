@@ -364,14 +364,16 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   ExpectAccessObserved(
       {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
         a_test_origin_.Serialize(),
-        SharedStorageEventParams::CreateForAddModule(out_script_url,
-                                                     /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForAddModule(
+            out_script_url,
+            /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken())},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
         a_test_origin_.Serialize(),
         SharedStorageEventParams::CreateForRunForTesting(
             "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
-            blink::CloneableMessage(), /*worklet_id=*/0)}});
+            blink::CloneableMessage(), /*worklet_ordinal_id=*/0,
+            GetFirstWorkletHostDevToolsToken())}});
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
@@ -595,8 +597,9 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   ExpectAccessObserved(
       {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
         a_test_origin_.Serialize(),
-        SharedStorageEventParams::CreateForAddModule(out_script_url,
-                                                     /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForAddModule(
+            out_script_url,
+            /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken())},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
         a_test_origin_.Serialize(),
         SharedStorageEventParams::CreateForRunForTesting(
@@ -606,7 +609,8 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                 /*context_id=*/"example_context_id",
                 /*filtering_id_max_bytes=*/1,
                 /*max_contributions=*/std::nullopt),
-            blink::CloneableMessage(), /*worklet_id=*/0)}});
+            blink::CloneableMessage(), /*worklet_ordinal_id=*/0,
+            GetFirstWorkletHostDevToolsToken())}});
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
@@ -668,8 +672,9 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   ExpectAccessObserved(
       {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
         a_test_origin_.Serialize(),
-        SharedStorageEventParams::CreateForAddModule(out_script_url,
-                                                     /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForAddModule(
+            out_script_url,
+            /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken())},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
         a_test_origin_.Serialize(),
         SharedStorageEventParams::CreateForRunForTesting(
@@ -678,7 +683,8 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                 /*aggregation_coordinator_origin=*/std::nullopt,
                 /*context_id=*/std::string(), /*filtering_id_max_bytes=*/1,
                 /*max_contributions=*/std::nullopt),
-            blink::CloneableMessage(), /*worklet_id=*/0)}});
+            blink::CloneableMessage(), /*worklet_ordinal_id=*/0,
+            GetFirstWorkletHostDevToolsToken())}});
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
@@ -745,8 +751,9 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   ExpectAccessObserved(
       {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
         a_test_origin_.Serialize(),
-        SharedStorageEventParams::CreateForAddModule(out_script_url,
-                                                     /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForAddModule(
+            out_script_url,
+            /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken())},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
         a_test_origin_.Serialize(),
         SharedStorageEventParams::CreateForRunForTesting(
@@ -757,7 +764,8 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                 "length",
                 /*filtering_id_max_bytes=*/1,
                 /*max_contributions=*/std::nullopt),
-            blink::CloneableMessage(), /*worklet_id=*/0)}});
+            blink::CloneableMessage(), /*worklet_ordinal_id=*/0,
+            GetFirstWorkletHostDevToolsToken())}});
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
@@ -1311,8 +1319,9 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   ExpectAccessObserved(
       {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
         a_test_origin_.Serialize(),
-        SharedStorageEventParams::CreateForAddModule(out_script_url,
-                                                     /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForAddModule(
+            out_script_url,
+            /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken())},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
         a_test_origin_.Serialize(),
         SharedStorageEventParams::CreateForRunForTesting(
@@ -1321,7 +1330,8 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                 /*aggregation_coordinator_origin=*/std::nullopt,
                 /*context_id=*/std::nullopt, /*filtering_id_max_bytes=*/8,
                 /*max_contributions=*/std::nullopt),
-            blink::CloneableMessage(), /*worklet_id=*/0)}});
+            blink::CloneableMessage(), /*worklet_ordinal_id=*/0,
+            GetFirstWorkletHostDevToolsToken())}});
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
@@ -1401,8 +1411,9 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   ExpectAccessObserved(
       {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
         a_test_origin_.Serialize(),
-        SharedStorageEventParams::CreateForAddModule(out_script_url,
-                                                     /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForAddModule(
+            out_script_url,
+            /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken())},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
         a_test_origin_.Serialize(),
         SharedStorageEventParams::CreateForRunForTesting(
@@ -1411,7 +1422,8 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                 /*aggregation_coordinator_origin=*/std::nullopt,
                 /*context_id=*/std::nullopt, /*filtering_id_max_bytes=*/8,
                 /*max_contributions=*/std::nullopt),
-            blink::CloneableMessage(), /*worklet_id=*/0)}});
+            blink::CloneableMessage(), /*worklet_ordinal_id=*/0,
+            GetFirstWorkletHostDevToolsToken())}});
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
@@ -1482,8 +1494,9 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   ExpectAccessObserved(
       {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
         a_test_origin_.Serialize(),
-        SharedStorageEventParams::CreateForAddModule(out_script_url,
-                                                     /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForAddModule(
+            out_script_url,
+            /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken())},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
         a_test_origin_.Serialize(),
         SharedStorageEventParams::CreateForRunForTesting(
@@ -1492,7 +1505,8 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                 /*aggregation_coordinator_origin=*/std::nullopt,
                 /*context_id=*/std::nullopt, /*filtering_id_max_bytes=*/8,
                 /*max_contributions=*/std::nullopt),
-            blink::CloneableMessage(), /*worklet_id=*/0)}});
+            blink::CloneableMessage(), /*worklet_ordinal_id=*/0,
+            GetFirstWorkletHostDevToolsToken())}});
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
@@ -2197,14 +2211,15 @@ IN_PROC_BROWSER_TEST_P(
   ExpectAccessObserved(
       {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
         a_test_origin_.Serialize(),
-        SharedStorageEventParams::CreateForAddModule(out_script_url,
-                                                     /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForAddModule(
+            out_script_url,
+            /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken())},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
         a_test_origin_.Serialize(),
         SharedStorageEventParams::CreateForRunForTesting(
             "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             expected_config_to_observe, blink::CloneableMessage(),
-            /*worklet_id=*/0)}});
+            /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken())}});
 }
 
 class SharedStoragePrivateAggregationErrorReportingDisabledBrowserTest
@@ -3279,8 +3294,9 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   ExpectAccessObserved(
       {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
         a_test_origin_.Serialize(),
-        SharedStorageEventParams::CreateForAddModule(out_script_url,
-                                                     /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForAddModule(
+            out_script_url,
+            /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken())},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
         a_test_origin_.Serialize(),
         SharedStorageEventParams::CreateForRunForTesting(
@@ -3290,7 +3306,8 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                     GetDefaultAggregationCoordinatorOrigin(),
                 /*context_id=*/std::nullopt, /*filtering_id_max_bytes=*/1,
                 /*max_contributions=*/std::nullopt),
-            blink::CloneableMessage(), /*worklet_id=*/0)}});
+            blink::CloneableMessage(), /*worklet_ordinal_id=*/0,
+            GetFirstWorkletHostDevToolsToken())}});
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
@@ -3407,8 +3424,9 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   ExpectAccessObserved(
       {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
         a_test_origin_.Serialize(),
-        SharedStorageEventParams::CreateForAddModule(out_script_url,
-                                                     /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForAddModule(
+            out_script_url,
+            /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken())},
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         a_test_origin_.Serialize(),
         SharedStorageEventParams::CreateForSelectURLForTesting(
@@ -3426,7 +3444,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                   {}}}),
             /*resolve_to_config=*/true,
             /*saved_query=*/std::string(), urn_uuids_observed()[0],
-            /*worklet_id=*/0)}});
+            /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken())}});
 }
 
 // TODO(alexmt): Consider testing that reserved.uncaught-error not triggered

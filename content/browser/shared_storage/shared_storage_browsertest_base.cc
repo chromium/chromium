@@ -7,6 +7,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -543,6 +544,17 @@ void SharedStorageBrowserTestBase::WaitForHistograms(
   for (const auto& name : histogram_names) {
     WaitForHistogram(name);
   }
+}
+
+std::map<int, base::UnguessableToken>&
+SharedStorageBrowserTestBase::GetCachedWorkletHostDevToolsTokens() {
+  return test_runtime_manager().GetCachedWorkletHostDevToolsTokens();
+}
+
+base::UnguessableToken
+SharedStorageBrowserTestBase::GetFirstWorkletHostDevToolsToken() {
+  CHECK(!test_runtime_manager().GetCachedWorkletHostDevToolsTokens().empty());
+  return test_runtime_manager().GetCachedWorkletHostDevToolsTokens()[0];
 }
 
 }  // namespace content

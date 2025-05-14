@@ -1584,8 +1584,9 @@ void StorageHandler::OnSharedStorageAccessed(
   if (params.ignore_if_present) {
     protocol_params->SetIgnoreIfPresent(*params.ignore_if_present);
   }
-  if (params.worklet_id) {
-    protocol_params->SetWorkletId(base::NumberToString(*params.worklet_id));
+  if (params.worklet_ordinal_id) {
+    protocol_params->SetWorkletId(
+        base::NumberToString(*params.worklet_ordinal_id));
   }
   if (params.with_lock) {
     protocol_params->SetWithLock(*params.with_lock);
@@ -1669,7 +1670,8 @@ void StorageHandler::OnSharedStorageWorkletOperationExecutionFinished(
     SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod
         method,
     int operation_id,
-    int worklet_id,
+    int worklet_ordinal_id,
+    const base::UnguessableToken& worklet_devtools_token,
     GlobalRenderFrameHostId main_frame_id,
     const std::string& owner_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

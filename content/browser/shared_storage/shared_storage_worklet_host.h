@@ -40,6 +40,7 @@ class SimpleURLLoader;
 namespace content {
 
 class BrowserContext;
+struct GlobalRenderFrameHostId;
 class RenderFrameHostImpl;
 class RenderProcessHost;
 class SharedStorageDocumentServiceImpl;
@@ -86,7 +87,7 @@ class CONTENT_EXPORT SharedStorageWorkletHost
       const GURL& script_source_url,
       network::mojom::CredentialsMode credentials_mode,
       blink::mojom::SharedStorageWorkletCreationMethod creation_method,
-      int worklet_id,
+      int worklet_ordinal_id,
       const std::vector<blink::mojom::OriginTrialFeature>&
           origin_trial_features,
       mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
@@ -163,6 +164,12 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // gone (e.g. during keep-alive phase).
   RenderFrameHostImpl* GetFrame();
 
+  // Returns the associated main frame's GlobalRenderFrameHostId if
+  // `document_service_` is still alive. Returns the default null
+  // GlobalRenderFrameHostId if `document_service_` is gone (e.g. during
+  // keep-alive phase).
+  GlobalRenderFrameHostId GetMainFrameIdIfAvailable() const;
+
   const GURL& script_source_url() const {
     return script_source_url_;
   }
@@ -170,6 +177,8 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   blink::mojom::SharedStorageWorkletCreationMethod creation_method() const {
     return creation_method_;
   }
+
+  const base::UnguessableToken& GetWorkletDevToolsTokenForTesting() const;
 
  protected:
   // virtual for testing
@@ -258,6 +267,9 @@ class CONTENT_EXPORT SharedStorageWorkletHost
 
   // virtual for testing
   virtual base::TimeDelta GetKeepAliveTimeout() const;
+
+  // Returns `devtools_handle_->devtools_token()`.
+  const base::UnguessableToken& GetWorkletDevToolsToken() const;
 
   blink::mojom::SharedStorageWorkletService*
   GetAndConnectToSharedStorageWorkletService();
@@ -379,7 +391,7 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // A monotonically increasing ID assigned to each SharedStorageWorkletHost.
   // TODO(crbug.com/401011862): Use this ID in DevTools reporting for Shared
   // Storage.
-  int worklet_id_ = 0;
+  int worklet_ordinal_id_ = 0;
 
   // A monotonically increasing ID assigned to each run or selectURL call.
   // TODO(crbug.com/401011862): Use this ID in DevTools reporting for Shared

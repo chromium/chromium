@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -73,6 +74,13 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
   void ExpectOperationFinishedInfosObserved(
       const std::vector<TestSharedStorageObserver::OperationFinishedInfo>&
           expected_infos);
+
+  std::map<int, base::UnguessableToken>& GetCachedWorkletHostDevToolsTokens();
+
+  // Precondition: At least one worklet host has been created.
+  // Returns the DevTools token associated with the first-created worklet host
+  // (which would have ordinal worklet ID 0).
+  base::UnguessableToken GetFirstWorkletHostDevToolsToken();
 
   uint16_t port() { return https_server()->port(); }
 

@@ -3077,7 +3077,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageSelectURLSavedQueryBrowserTest,
        origin_str,
        SharedStorageEventParams::CreateForAddModule(
            https_server()->GetURL("a.test", "/shared_storage/simple_module.js"),
-           /*worklet_id=*/0)});
+           /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken())});
 
   std::vector<OperationFinishedInfo> expected_finished_infos;
   for (int call = 0; call < call_limit; call++) {
@@ -3092,10 +3092,12 @@ IN_PROC_BROWSER_TEST_F(SharedStorageSelectURLSavedQueryBrowserTest,
              ResolveSelectURLToConfig(),
              /*saved_query=*/
              base::StrCat({"query", base::NumberToString(call)}),
-             urn_uuids_observed()[call], /*worklet_id=*/0)});
+             urn_uuids_observed()[call], /*worklet_ordinal_id=*/0,
+             GetFirstWorkletHostDevToolsToken())});
     expected_finished_infos.push_back(
         {base::TimeDelta(), AccessMethod::kSelectURL, /*operation_id=*/call,
-         /*worklet_id=*/0, MainFrameId(), origin_str});
+         /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken(),
+         MainFrameId(), origin_str});
   }
   expected_accesses.push_back(
       {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
@@ -3107,10 +3109,11 @@ IN_PROC_BROWSER_TEST_F(SharedStorageSelectURLSavedQueryBrowserTest,
            blink::CloneableMessage(), expected_urls_with_metadata,
            ResolveSelectURLToConfig(),
            /*saved_query=*/std::string(), urn_uuids_observed()[call_limit],
-           /*worklet_id=*/0)});
+           /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken())});
   expected_finished_infos.push_back(
       {base::TimeDelta(), AccessMethod::kSelectURL, /*operation_id=*/call_limit,
-       /*worklet_id=*/0, MainFrameId(), origin_str});
+       /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken(),
+       MainFrameId(), origin_str});
   for (int call = 0; call < call_limit; call++) {
     expected_accesses.push_back(
         {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
@@ -3124,11 +3127,12 @@ IN_PROC_BROWSER_TEST_F(SharedStorageSelectURLSavedQueryBrowserTest,
              ResolveSelectURLToConfig(),
              /*saved_query=*/
              base::StrCat({"query", base::NumberToString(call)}),
-             urn_uuids_observed()[call_limit + 1 + call], /*worklet_id=*/0)});
+             urn_uuids_observed()[call_limit + 1 + call],
+             /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken())});
     expected_finished_infos.push_back(
         {base::TimeDelta(), AccessMethod::kSelectURL,
-         /*operation_id=*/call_limit + 1 + call, /*worklet_id=*/0,
-         MainFrameId(), origin_str});
+         /*operation_id=*/call_limit + 1 + call, /*worklet_ordinal_id=*/0,
+         GetFirstWorkletHostDevToolsToken(), MainFrameId(), origin_str});
   }
 
   ExpectAccessObserved(expected_accesses);
@@ -3224,6 +3228,11 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_EQ(static_cast<int>(urn_uuids_observed().size()), 2 * call_limit + 1);
 
+  std::map<int, base::UnguessableToken>& cached_worklet_devtools_tokens =
+      GetCachedWorkletHostDevToolsTokens();
+  ASSERT_EQ(static_cast<int>(cached_worklet_devtools_tokens.size()),
+            2 * call_limit + 1);
+
   std::vector<Access> expected_accesses;
   std::vector<OperationFinishedInfo> expected_finished_infos;
   std::string host;
@@ -3236,7 +3245,8 @@ IN_PROC_BROWSER_TEST_F(
          origin_str,
          SharedStorageEventParams::CreateForAddModule(
              https_server()->GetURL(host, "/shared_storage/simple_module.js"),
-             /*worklet_id=*/call)});
+             /*worklet_ordinal_id=*/call,
+             cached_worklet_devtools_tokens[call])});
     expected_accesses.push_back(
         {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
          origin_str,
@@ -3249,10 +3259,12 @@ IN_PROC_BROWSER_TEST_F(
              ResolveSelectURLToConfig(),
              /*saved_query=*/
              base::StrCat({"query", base::NumberToString(call)}),
-             urn_uuids_observed()[call], /*worklet_id=*/call)});
+             urn_uuids_observed()[call], /*worklet_ordinal_id=*/call,
+             cached_worklet_devtools_tokens[call])});
     expected_finished_infos.push_back(
         {base::TimeDelta(), AccessMethod::kSelectURL, /*operation_id=*/0,
-         /*worklet_id=*/call, MainFrameId(), origin_str});
+         /*worklet_ordinal_id=*/call, cached_worklet_devtools_tokens[call],
+         MainFrameId(), origin_str});
   }
   origin_str = https_server()->GetOrigin("b.test").Serialize();
   expected_accesses.push_back(
@@ -3260,7 +3272,8 @@ IN_PROC_BROWSER_TEST_F(
        origin_str,
        SharedStorageEventParams::CreateForAddModule(
            https_server()->GetURL("b.test", "/shared_storage/simple_module.js"),
-           /*worklet_id=*/call_limit)});
+           /*worklet_ordinal_id=*/call_limit,
+           cached_worklet_devtools_tokens[call_limit])});
   expected_accesses.push_back(
       {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
        origin_str,
@@ -3272,10 +3285,12 @@ IN_PROC_BROWSER_TEST_F(
            GetExpectedUrlsWithMetadata("b.test", /*num_urls=*/8),
            ResolveSelectURLToConfig(),
            /*saved_query=*/std::string(), urn_uuids_observed()[call_limit],
-           /*worklet_id=*/call_limit)});
+           /*worklet_ordinal_id=*/call_limit,
+           cached_worklet_devtools_tokens[call_limit])});
   expected_finished_infos.push_back(
       {base::TimeDelta(), AccessMethod::kSelectURL, /*operation_id=*/0,
-       /*worklet_id=*/call_limit, MainFrameId(), origin_str});
+       /*worklet_ordinal_id=*/call_limit,
+       cached_worklet_devtools_tokens[call_limit], MainFrameId(), origin_str});
   for (int call = 0; call < call_limit; call++) {
     host = base::StrCat({"subdomain", base::NumberToString(call), ".b.test"});
     origin_str = https_server()->GetOrigin(host).Serialize();
@@ -3284,7 +3299,8 @@ IN_PROC_BROWSER_TEST_F(
          origin_str,
          SharedStorageEventParams::CreateForAddModule(
              https_server()->GetURL(host, "/shared_storage/simple_module.js"),
-             /*worklet_id=*/call_limit + 1 + call)});
+             /*worklet_ordinal_id=*/call_limit + 1 + call,
+             cached_worklet_devtools_tokens[call_limit + 1 + call])});
     expected_accesses.push_back(
         {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
          origin_str,
@@ -3298,10 +3314,13 @@ IN_PROC_BROWSER_TEST_F(
              /*saved_query=*/
              base::StrCat({"query", base::NumberToString(call)}),
              urn_uuids_observed()[call_limit + 1 + call],
-             /*worklet_id=*/call_limit + 1 + call)});
+             /*worklet_ordinal_id=*/call_limit + 1 + call,
+             cached_worklet_devtools_tokens[call_limit + 1 + call])});
     expected_finished_infos.push_back(
         {base::TimeDelta(), AccessMethod::kSelectURL, /*operation_id=*/0,
-         /*worklet_id=*/call_limit + 1 + call, MainFrameId(), origin_str});
+         /*worklet_ordinal_id=*/call_limit + 1 + call,
+         cached_worklet_devtools_tokens[call_limit + 1 + call], MainFrameId(),
+         origin_str});
   }
 
   ExpectAccessObserved(expected_accesses);
