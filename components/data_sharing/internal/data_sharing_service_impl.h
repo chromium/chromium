@@ -10,6 +10,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/threading/thread_checker.h"
 #include "base/version_info/channel.h"
 #include "components/data_sharing/internal/collaboration_group_sync_bridge.h"
 #include "components/data_sharing/internal/group_data_model.h"
@@ -203,6 +204,8 @@ class DataSharingServiceImpl : public DataSharingService,
   // Called when the SDK delegate has been updated, allowing the group data
   // model to be updated too.
   void OnSDKDelegateUpdated();
+
+  THREAD_CHECKER(thread_checker_);
 
   // It must be destroyed after the `sdk_delegate_` member because
   // `sdk_delegate` needs the `data_sharing_network_loader_`.

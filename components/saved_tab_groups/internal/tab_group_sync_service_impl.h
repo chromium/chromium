@@ -17,6 +17,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "base/uuid.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
@@ -360,6 +361,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void UpdateLastSeenTimeForAnyFocusedTabForRemoteUpdates(
       const SavedTabGroup* group,
       TriggerSource source);
+
+  THREAD_CHECKER(thread_checker_);
 
   // The in-memory model representing the currently present saved tab groups.
   std::unique_ptr<SavedTabGroupModel> model_;

@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/threading/thread_checker.h"
 #include "components/collaboration/public/collaboration_controller_delegate.h"
 #include "components/collaboration/public/collaboration_flow_type.h"
 #include "components/data_sharing/public/data_sharing_service.h"
@@ -341,6 +342,8 @@ class CollaborationController {
 
   bool IsValidStateTransition(StateId from, StateId to);
   std::unique_ptr<ControllerState> CreateStateObject(StateId state);
+
+  THREAD_CHECKER(thread_checker_);
 
   std::unique_ptr<ControllerState> current_state_;
 
