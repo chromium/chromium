@@ -3145,10 +3145,6 @@ BoxStrut BlockLayoutAlgorithm::CalculateMargins(
       builder.SetAvailableSize(ChildAvailableSize());
       builder.SetPercentageResolutionSize(child_percentage_size_);
 
-      const bool has_auto_margins =
-          child_style.MarginInlineStartUsing(Style()).IsAuto() ||
-          child_style.MarginInlineEndUsing(Style()).IsAuto();
-
       const ItemPosition justify_self =
           child_style
               .ResolvedJustifySelf(
@@ -3158,9 +3154,9 @@ BoxStrut BlockLayoutAlgorithm::CalculateMargins(
 
       if (child.IsAnonymousBlockFlow()) {
         builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
-      } else if (justify_self == ItemPosition::kStretch && !has_auto_margins) {
+      } else if (justify_self == ItemPosition::kStretch) {
         builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
-      } else if (justify_self != ItemPosition::kNormal && !has_auto_margins) {
+      } else if (justify_self != ItemPosition::kNormal) {
         builder.SetInlineAutoBehavior(AutoSizeBehavior::kFitContent);
       } else {
         builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
@@ -3230,10 +3226,6 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
       builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
     }
   } else {
-    const bool has_auto_margins =
-        child_style.MarginInlineStartUsing(Style()).IsAuto() ||
-        child_style.MarginInlineEndUsing(Style()).IsAuto();
-
     const ItemPosition justify_self =
         child_style
             .ResolvedJustifySelf(
@@ -3242,9 +3234,9 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
 
     if (child.IsAnonymousBlockFlow()) {
       builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
-    } else if (justify_self == ItemPosition::kStretch && !has_auto_margins) {
+    } else if (justify_self == ItemPosition::kStretch) {
       builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
-    } else if (justify_self != ItemPosition::kNormal && !has_auto_margins) {
+    } else if (justify_self != ItemPosition::kNormal) {
       builder.SetInlineAutoBehavior(AutoSizeBehavior::kFitContent);
     } else if (is_in_parallel_flow &&
                ShouldBlockContainerChildStretchAutoInlineSize(
