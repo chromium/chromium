@@ -393,21 +393,23 @@ void TabHoverCardController::ShowHoverCard(bool is_initial,
     return;
   }
 
+  // Note: `target_tab_` can be nullified via reentreant callbacks invoked
+  // throughout the HoverCard creation process. The doc mentioned at
+  // crbug.com/40865488#comment23 discusses proper fixes for this. Until then,
+  // early-return after vulnerable calls here if `target_tab_` has become null.
+  // See also: crbug.com/1295601, crbug.com/1322117, crbug.com/1348956
   CreateHoverCard(target_tab_);
-
-  // For some reason, `target_tab_` can be rendered invalid before the next
-  // call. There may be an asynchronous operation buried deep within
-  // CreateHoverCard() above. Regardless, the validity needs to be checked
-  // before the next call.
-  // See: crbug.com/1295601, crbug.com/1322117, crbug.com/1348956
-  // TODO(crbug.com/40865488): look into this and figure out what is actually
-  // happening.
   if (!TargetTabIsValid()) {
     HideHoverCard();
     return;
   }
 
   UpdateCardContent(target_tab_);
+  if (!TargetTabIsValid()) {
+    HideHoverCard();
+    return;
+  }
+
   slide_animator_->UpdateTargetBounds();
   MaybeStartThumbnailObservation(target_tab_, is_initial);
   hover_card_->GetWidget()->SetZOrderSublevel(
