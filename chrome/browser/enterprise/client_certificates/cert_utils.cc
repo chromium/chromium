@@ -11,6 +11,11 @@
 #include "components/enterprise/client_certificates/core/private_key_types.h"
 #include "components/enterprise/client_certificates/core/unexportable_private_key_factory.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "components/enterprise/client_certificates/core/features.h"
+#include "components/enterprise/client_certificates/core/win/windows_software_private_key_factory.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace client_certificates {
 
 namespace {
@@ -34,6 +39,18 @@ std::unique_ptr<PrivateKeyFactory> CreatePrivateKeyFactory() {
     sub_factories.insert_or_assign(PrivateKeySource::kUnexportableKey,
                                    std::move(unexportable_key_factory));
   }
+
+#if BUILDFLAG(IS_WIN)
+  if (features::AreWindowsSoftwareKeysEnabled()) {
+    auto windows_software_key_factory =
+        WindowsSoftwarePrivateKeyFactory::TryCreate();
+    if (windows_software_key_factory) {
+      sub_factories.insert_or_assign(PrivateKeySource::kOsSoftwareKey,
+                                     std::move(windows_software_key_factory));
+    }
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   sub_factories.insert_or_assign(PrivateKeySource::kSoftwareKey,
                                  std::make_unique<ECPrivateKeyFactory>());
 

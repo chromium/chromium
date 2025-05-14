@@ -110,6 +110,10 @@ export class ManagedClientCertificateElement extends CustomElement {
           key: 'Public Key Hash',
           value: managedIdentity.loadedKeyInfo.encodedSpkiHash,
         },
+        {
+          key: 'Has SSL Key',
+          value: managedIdentity.loadedKeyInfo.hasSslKey.toString(),
+        },
       ]);
 
       if (managedIdentity.loadedKeyInfo.keyUploadStatus) {

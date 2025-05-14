@@ -108,6 +108,12 @@ source_set("core") {
     "upload_client_error.cc",
   ]
 
+  if (is_win) {
+    public += [ "win/windows_software_private_key_factory.h" ]
+
+    sources += [ "win/windows_software_private_key_factory.cc" ]
+  }
+
   public_deps = [
     "//base",
     "//components/enterprise/client_certificates/proto:db_client_certs",
@@ -189,6 +195,10 @@ source_set("unit_tests") {
     "unexportable_private_key_factory_unittest.cc",
     "unexportable_private_key_unittest.cc",
   ]
+
+  if (is_win) {
+    sources += [ "win/windows_software_private_key_factory_unittest.cc" ]
+  }
 
   deps = [
     ":cloud_management_delegate",

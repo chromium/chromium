@@ -15,6 +15,18 @@
 
 namespace client_certificates {
 
+namespace {
+
+// List of all the key sources ordered by security (i.e. first entry yields most
+// secure key source).
+constexpr std::array<PrivateKeySource, 3> kKeySourcesOrderedBySecurity = {
+    PrivateKeySource::kUnexportableKey,
+    PrivateKeySource::kOsSoftwareKey,
+    PrivateKeySource::kSoftwareKey,
+};
+
+}  // namespace
+
 PrivateKeyFactory::PrivateKeyFactory() = default;
 PrivateKeyFactory::~PrivateKeyFactory() = default;
 
@@ -52,21 +64,14 @@ void PrivateKeyFactoryImpl::CreatePrivateKey(
     PrivateKeyFactory::PrivateKeyCallback callback) {
   // Go through the supported key sources in order of most secure to least, and
   // delegate the key creation to that sub factory.
-  if (sub_factories_.contains(PrivateKeySource::kUnexportableKey)) {
-    sub_factories_[PrivateKeySource::kUnexportableKey]->CreatePrivateKey(
-        base::BindOnce(&PrivateKeyFactoryImpl::OnPrivateKeyCreated,
-                       weak_factory_.GetWeakPtr(),
-                       PrivateKeySource::kUnexportableKey,
-                       std::move(callback)));
-    return;
-  }
-
-  if (sub_factories_.contains(PrivateKeySource::kSoftwareKey)) {
-    sub_factories_[PrivateKeySource::kSoftwareKey]->CreatePrivateKey(
-        base::BindOnce(&PrivateKeyFactoryImpl::OnPrivateKeyCreated,
-                       weak_factory_.GetWeakPtr(),
-                       PrivateKeySource::kSoftwareKey, std::move(callback)));
-    return;
+  for (size_t i = 0U; i < kKeySourcesOrderedBySecurity.size(); i++) {
+    PrivateKeySource source = kKeySourcesOrderedBySecurity[i];
+    if (sub_factories_.contains(source)) {
+      sub_factories_[source]->CreatePrivateKey(base::BindOnce(
+          &PrivateKeyFactoryImpl::OnPrivateKeyCreated,
+          weak_factory_.GetWeakPtr(), source, std::move(callback)));
+      return;
+    }
   }
 
   std::move(callback).Run(nullptr);

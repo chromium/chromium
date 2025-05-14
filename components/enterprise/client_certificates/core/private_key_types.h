@@ -23,7 +23,10 @@ enum class PrivateKeySource {
   // mechanism.
   kSoftwareKey = 1,
 
-  kMaxValue = kSoftwareKey
+  // Key created by the operating system that is not hardware-backed.
+  kOsSoftwareKey = 2,
+
+  kMaxValue = kOsSoftwareKey
 };
 
 // Converts a `proto_key_source` from the proto values to the C++ enum values.

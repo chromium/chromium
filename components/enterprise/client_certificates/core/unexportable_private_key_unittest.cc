@@ -50,4 +50,36 @@ TEST(UnexportablePrivateKeyTest, SupportedCreateKey) {
   EXPECT_GT(dict_key.FindString(kKey)->size(), 0U);
 }
 
+TEST(UnexportablePrivateKeyTest, SupportedCreateKeySoftware) {
+  ScopedSSLKeyConverter scoped_converter;
+  auto provider = crypto::GetUnexportableKeyProvider(/*config=*/{});
+  ASSERT_TRUE(provider);
+
+  // The mock only works with the ECDSA_SHA256 algorithm.
+  std::array<crypto::SignatureVerifier::SignatureAlgorithm, 1>
+      kAcceptableAlgorithms = {crypto::SignatureVerifier::ECDSA_SHA256};
+  auto unexportable_key =
+      provider->GenerateSigningKeySlowly(kAcceptableAlgorithms);
+  ASSERT_TRUE(unexportable_key);
+
+  auto private_key = base::MakeRefCounted<UnexportablePrivateKey>(
+      std::move(unexportable_key), PrivateKeySource::kOsSoftwareKey);
+
+  auto spki_bytes = private_key->GetSubjectPublicKeyInfo();
+  EXPECT_GT(spki_bytes.size(), 0U);
+  EXPECT_EQ(private_key->GetAlgorithm(),
+            crypto::SignatureVerifier::ECDSA_SHA256);
+  EXPECT_TRUE(private_key->SignSlowly(spki_bytes).has_value());
+
+  auto proto_key = private_key->ToProto();
+  EXPECT_EQ(proto_key.source(),
+            client_certificates_pb::PrivateKey::PRIVATE_OS_SOFTWARE_KEY);
+  EXPECT_GT(proto_key.wrapped_key().size(), 0U);
+
+  auto dict_key = private_key->ToDict();
+  EXPECT_EQ(*dict_key.FindInt(kKeySource),
+            static_cast<int>(PrivateKeySource::kOsSoftwareKey));
+  EXPECT_GT(dict_key.FindString(kKey)->size(), 0U);
+}
+
 }  // namespace client_certificates

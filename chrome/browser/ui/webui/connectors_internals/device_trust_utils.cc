@@ -32,6 +32,7 @@ using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/client_certificates/core/private_key_types.h"
 #include "net/cert/x509_certificate.h"
+#include "net/ssl/ssl_private_key.h"
 #endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 
 namespace enterprise_connectors::utils {
@@ -116,6 +117,8 @@ connectors_internals::mojom::KeyTrustLevel ConvertPrivateKeySource(
       return connectors_internals::mojom::KeyTrustLevel::HW;
     case client_certificates::PrivateKeySource::kSoftwareKey:
       return connectors_internals::mojom::KeyTrustLevel::OS;
+    case client_certificates::PrivateKeySource::kOsSoftwareKey:
+      return connectors_internals::mojom::KeyTrustLevel::OS_SOFTWARE;
   }
 }
 
@@ -145,8 +148,8 @@ connectors_internals::mojom::LoadedKeyInfoPtr ConvertPrivateKey(
   return connectors_internals::mojom::LoadedKeyInfo::New(
       ConvertPrivateKeySource(private_key->GetSource()),
       AlgorithmToType(private_key->GetAlgorithm()),
-      HashAndEncodeString(BufferToString(spki_bytes)),
-      std::move(upload_status));
+      HashAndEncodeString(BufferToString(spki_bytes)), std::move(upload_status),
+      bool(private_key->GetSSLPrivateKey()));
 }
 
 connectors_internals::mojom::CertificateMetadataPtr ConvertCertificate(
@@ -190,7 +193,8 @@ connectors_internals::mojom::KeyInfoPtr GetKeyInfo() {
                 HashAndEncodeString(metadata->spki_bytes),
                 connectors_internals::mojom::KeyUploadStatus::
                     NewSyncKeyResponseCode(
-                        ToMojomValue(metadata->synchronization_response_code))),
+                        ToMojomValue(metadata->synchronization_response_code)),
+                /*has_ssl_key=*/false),
             ConvertPermanentFailure(metadata->permanent_failure));
       }
 

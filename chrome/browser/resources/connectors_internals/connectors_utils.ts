@@ -9,6 +9,7 @@ const TrustLevelStringMap = {
   [KeyTrustLevel.UNSPECIFIED]: 'Unspecified',
   [KeyTrustLevel.HW]: 'HW',
   [KeyTrustLevel.OS]: 'OS',
+  [KeyTrustLevel.OS_SOFTWARE]: 'OS Storage',
 };
 
 const KeyTypeStringMap = {

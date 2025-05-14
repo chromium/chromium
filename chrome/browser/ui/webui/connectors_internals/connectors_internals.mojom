@@ -17,6 +17,7 @@ enum KeyTrustLevel {
   UNSPECIFIED = 0,
   HW = 1,
   OS = 2,
+  OS_SOFTWARE = 3,
 };
 
 // Type of the signing key, equivalent to the algorithm used for its generation.
@@ -64,6 +65,9 @@ struct LoadedKeyInfo {
   // Result of an attempt to upload the key. May be empty if the
   // key has not yet been uploaded.
   KeyUploadStatus? key_upload_status;
+
+  // Whether the key was correctly converted into an SSL key.
+  bool has_ssl_key;
 };
 
 struct KeyInfo {

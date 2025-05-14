@@ -19,8 +19,15 @@ namespace client_certificates {
 
 class UnexportablePrivateKey : public PrivateKey {
  public:
+  // Wraps `key` and associates it with PrivateKeySource::kUnexportableKey.
   explicit UnexportablePrivateKey(
       std::unique_ptr<crypto::UnexportableSigningKey> key);
+
+  // Not all crypto::UnexportableSigningKey are TPM-backed, so allow
+  // reusing this class by enabling the association of `key` with parameterized
+  // `key_source`.
+  UnexportablePrivateKey(std::unique_ptr<crypto::UnexportableSigningKey> key,
+                         PrivateKeySource key_source);
 
   // PrivateKey:
   std::optional<std::vector<uint8_t>> SignSlowly(

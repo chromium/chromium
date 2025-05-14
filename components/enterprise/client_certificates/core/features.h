@@ -6,6 +6,7 @@
 #define COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 
 namespace client_certificates::features {
 
@@ -28,6 +29,14 @@ BASE_DECLARE_FEATURE(kManagedUserClientCertificateInPrefs);
 
 // Return true if the managed user certificate should be stored in prefs.
 bool IsManagedUserClientCertificateInPrefsEnabled();
+
+#if BUILDFLAG(IS_WIN)
+// Controls whether Windows software keys are enabled or not.
+BASE_DECLARE_FEATURE(kWindowsSoftwareKeysEnabled);
+
+// Return true if Windows software keys are enabled.
+bool AreWindowsSoftwareKeysEnabled();
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace client_certificates::features
 

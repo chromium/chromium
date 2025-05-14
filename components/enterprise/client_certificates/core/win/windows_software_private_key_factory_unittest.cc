@@ -1,8 +1,8 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/enterprise/client_certificates/core/unexportable_private_key_factory.h"
+#include "components/enterprise/client_certificates/core/win/windows_software_private_key_factory.h"
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
@@ -25,7 +25,7 @@ void ValidatePrivateKey(scoped_refptr<PrivateKey> key,
   EXPECT_NE(key, loaded_key);
   EXPECT_EQ(key->GetAlgorithm(), loaded_key->GetAlgorithm());
   EXPECT_EQ(key->GetSource(), loaded_key->GetSource());
-  EXPECT_EQ(key->GetSource(), PrivateKeySource::kUnexportableKey);
+  EXPECT_EQ(key->GetSource(), PrivateKeySource::kOsSoftwareKey);
   ASSERT_THAT(key->GetSubjectPublicKeyInfo(),
               testing::ElementsAreArray(loaded_key->GetSubjectPublicKeyInfo()));
   ASSERT_TRUE(key->GetSSLPrivateKey());
@@ -33,11 +33,11 @@ void ValidatePrivateKey(scoped_refptr<PrivateKey> key,
 
 }  // namespace
 
-TEST(UnexportablePrivateKeyFactoryTest, SupportedCreateKey_LoadKey) {
+TEST(WindowsSoftwarePrivateKeyFactoryTest, SupportedCreateKey_LoadKey) {
   base::test::TaskEnvironment task_environment;
   ScopedSSLKeyConverter scoped_converter;
 
-  auto factory = UnexportablePrivateKeyFactory::TryCreate(/*config=*/{});
+  auto factory = WindowsSoftwarePrivateKeyFactory::TryCreate();
 
   ASSERT_TRUE(factory);
 
@@ -53,11 +53,11 @@ TEST(UnexportablePrivateKeyFactoryTest, SupportedCreateKey_LoadKey) {
   ValidatePrivateKey(private_key, load_key_future.Get());
 }
 
-TEST(UnexportablePrivateKeyFactoryTest, SupportedCreateKey_LoadKeyFromDict) {
+TEST(WindowsSoftwarePrivateKeyFactoryTest, SupportedCreateKey_LoadKeyFromDict) {
   base::test::TaskEnvironment task_environment;
   ScopedSSLKeyConverter scoped_converter;
 
-  auto factory = UnexportablePrivateKeyFactory::TryCreate(/*config=*/{});
+  auto factory = WindowsSoftwarePrivateKeyFactory::TryCreate();
 
   ASSERT_TRUE(factory);
 
@@ -75,17 +75,16 @@ TEST(UnexportablePrivateKeyFactoryTest, SupportedCreateKey_LoadKeyFromDict) {
   base::test::TestFuture<scoped_refptr<PrivateKey>>
       load_key_fails_future_invalid_key;
   dict_key.Set(kKey, "");
-  dict_key.Set(kKeySource,
-               static_cast<int>(PrivateKeySource::kUnexportableKey));
+  dict_key.Set(kKeySource, static_cast<int>(PrivateKeySource::kOsSoftwareKey));
   factory->LoadPrivateKeyFromDict(
       dict_key, load_key_fails_future_invalid_key.GetCallback());
   EXPECT_FALSE(load_key_fails_future_invalid_key.Get());
 }
 
-TEST(UnexportablePrivateKeyFactoryTest, UnsupportedCreateKey) {
+TEST(WindowsSoftwarePrivateKeyFactoryTest, UnsupportedCreateKey) {
   ScopedSSLKeyConverter scoped_converter(/*supports_unexportable=*/false);
 
-  auto factory = UnexportablePrivateKeyFactory::TryCreate(/*config=*/{});
+  auto factory = WindowsSoftwarePrivateKeyFactory::TryCreate();
 
   EXPECT_FALSE(factory);
 }

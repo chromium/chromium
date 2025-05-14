@@ -34,6 +34,7 @@ chromium-metrics-reviews@google.com.
 <enum name="CertificatePrivateKeySource">
   <int value="0" label="Unexportable"/>
   <int value="1" label="Software"/>
+  <int value="2" label="OsSoftware"/>
 </enum>
 
 <enum name="CertificateProvisioningError">
