@@ -7,18 +7,17 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_controller.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_collection.h"
+
+class TabGroup;
 
 namespace tab_groups {
 class TabGroupId;
 }  // namespace tab_groups
 
 namespace tabs {
-
-class TabModel;
 
 class TabGroupTabCollection : public TabCollection {
  public:
@@ -29,13 +28,11 @@ class TabGroupTabCollection : public TabCollection {
   TabGroupTabCollection(const TabGroupTabCollection&) = delete;
   TabGroupTabCollection& operator=(const TabGroupTabCollection&) = delete;
 
-  // Returns the `group_id_` this collection is associated with.
-  tab_groups::TabGroupId GetTabGroupId() const { return group_->id(); }
-
   // Returns the `group_` this collection is associated with.
-  TabGroup* GetTabGroup() const { return group_.get(); }
+  const TabGroup* GetTabGroup() const { return group_.get(); }
+  TabGroup* GetTabGroup() { return group_.get(); }
 
-  std::vector<tabs::TabModel*> GetTabs() const;
+  const tab_groups::TabGroupId& GetTabGroupId() const;
 
  private:
   // Group metadata for this collection.

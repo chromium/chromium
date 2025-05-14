@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "chrome/browser/ui/tabs/tab_group.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_collection_storage.h"
 
@@ -23,5 +24,9 @@ TabGroupTabCollection::TabGroupTabCollection(
 }
 
 TabGroupTabCollection::~TabGroupTabCollection() = default;
+
+const tab_groups::TabGroupId& TabGroupTabCollection::GetTabGroupId() const {
+  return group_->id();
+}
 
 }  // namespace tabs
