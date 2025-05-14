@@ -114,19 +114,19 @@ class OutputNode(base.Node):
   def _AddGenderToFilename(self, path):
     assert self.GetType() == 'data_package' or self.GetType() == 'android'
 
+    if self.GetGender() == constants.DEFAULT_GENDER:
+      return path
+
     if self.GetType() == 'data_package':
       match = DATA_PACKAGE_FILENAME_RE.search(path)
       assert match is not None, f'unrecognized data_package path: {path}'
       return path.replace(match.group(),
                           f'{match.group(1)}_{self.GetGender()}.pak')
     else:  # self.GetType() == 'android'
-      if self.GetGender() == constants.DEFAULT_GENDER:
-        return path
-      else:
-        match = ANDROID_FILENAME_RE.search(path)
-        assert match is not None, f'unrecognized android path: {path}'
-        return path.replace(match.group(1),
-                            f'{match.group(1)}-{self.GetGender()}')
+      match = ANDROID_FILENAME_RE.search(path)
+      assert match is not None, f'unrecognized android path: {path}'
+      return path.replace(match.group(1),
+                          f'{match.group(1)}-{self.GetGender()}')
 
   def MandatoryAttributes(self):
     return ['filename', 'type']

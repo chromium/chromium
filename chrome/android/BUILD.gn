@@ -1822,17 +1822,9 @@ if (_is_default_toolchain) {
       renaming_destinations = []
 
       foreach(_locale, platform_pak_locales) {
-        if (translate_genders) {
-          renaming_sources += process_file_template(
-                  all_chrome_genders,
-                  "$target_gen_dir/${_variant}_paks/locales/${_locale}_{{source_name_part}}.pak")
-          renaming_destinations += process_file_template(
-                  all_chrome_genders,
-                  "locales/${_locale}_{{source_name_part}}.pak")
-        } else {
-          renaming_sources +=
-              [ "$target_gen_dir/${_variant}_paks/locales/${_locale}.pak" ]
-          renaming_destinations += [ "locales/${_locale}.pak" ]
+        foreach(_gender_suffix, gender_suffixes) {
+          renaming_sources += [ "$target_gen_dir/${_variant}_paks/locales/${_locale}${_gender_suffix}.pak" ]
+          renaming_destinations += [ "locales/${_locale}${_gender_suffix}.pak" ]
         }
       }
       treat_as_locale_paks = true

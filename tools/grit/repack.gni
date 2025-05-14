@@ -148,12 +148,6 @@ template("repack_locales") {
   # Collects all targets the loop generates.
   _locale_targets = []
 
-  if (translate_genders) {
-    _genders = all_chrome_genders
-  } else {
-    _genders = [ "" ]
-  }
-
   # This loop iterates over the input locales and also keeps a counter so it
   # can simultaneously iterate over the output locales (using GN's very
   # limited looping capabilities).
@@ -161,13 +155,7 @@ template("repack_locales") {
   foreach(_input_locale, invoker.input_locales) {
     _output_locale = _output_locales[_current_index]
 
-    foreach(_gender, _genders) {
-      if (_gender == "") {
-        _gender_suffix = ""
-      } else {
-        _gender_suffix = "_${_gender}"
-      }
-
+    foreach(_gender_suffix, gender_suffixes) {
       # Compute the name of the target for the current file. Save it for the deps.
       _current_name = "${target_name}_${_input_locale}${_gender_suffix}"
       _locale_targets += [ ":$_current_name" ]

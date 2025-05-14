@@ -68,12 +68,9 @@ action("copy_locales") {
   # will just expand to the locale name.
   inputs = []
   foreach(locale, remoting_locales) {
-    if (translate_genders) {
-      inputs += process_file_template(
-              all_chrome_genders,
-              "$root_gen_dir/remoting/resources/${locale}_{{source_name_part}}.pak")
-    } else {
-      inputs += [ "$root_gen_dir/remoting/resources/${locale}.pak" ]
+    foreach(_gender_suffix, gender_suffixes) {
+      inputs +=
+          [ "$root_gen_dir/remoting/resources/${locale}${_gender_suffix}.pak" ]
     }
   }
 
@@ -83,23 +80,15 @@ action("copy_locales") {
     # On mac, use underscores instead of hyphens and put the files in a
     # different place.
     foreach(locale, remoting_locales_with_underscores) {
-      if (translate_genders) {
-        outputs += process_file_template(
-                all_chrome_genders,
-                "$root_out_dir/remoting/resources/${locale}_{{source_name_part}}.lproj/locale.pak")
-      } else {
-        outputs +=
-            [ "$root_out_dir/remoting/resources/${locale}.lproj/locale.pak" ]
+      foreach(_gender_suffix, gender_suffixes) {
+        outputs += [ "$root_out_dir/remoting/resources/${locale}${_gender_suffix}.lproj/locale.pak" ]
       }
     }
   } else {
     foreach(locale, remoting_locales) {
-      if (translate_genders) {
-        outputs += process_file_template(
-                all_chrome_genders,
-                "$root_out_dir/remoting_locales/${locale}_{{source_name_part}}.pak")
-      } else {
-        outputs += [ "$root_out_dir/remoting_locales/${locale}.pak" ]
+      foreach(_gender_suffix, gender_suffixes) {
+        outputs +=
+            [ "$root_out_dir/remoting_locales/${locale}${_gender_suffix}.pak" ]
       }
     }
   }

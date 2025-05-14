@@ -14,12 +14,6 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-if (translate_genders) {
-  _gender_suffix = "_OTHER"
-} else {
-  _gender_suffix = ""
-}
-
 assert(enable_vr)
 
 component("vr_ui") {
@@ -406,9 +400,9 @@ source_set("vr_gl_test_support") {
 
 repack("vr_test_pak") {
   sources = [
-    "$root_gen_dir/chrome/generated_resources_en-US${_gender_suffix}.pak",
+    "$root_gen_dir/chrome/generated_resources_en-US.pak",
     "$root_gen_dir/components/components_resources.pak",
-    "$root_gen_dir/components/strings/components_strings_en-US${_gender_suffix}.pak",
+    "$root_gen_dir/components/strings/components_strings_en-US.pak",
   ]
 
   output = "$root_out_dir/vr_test.pak"

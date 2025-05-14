@@ -82,9 +82,7 @@ class BuildUnittest(unittest.TestCase):
       (dep_output_file, deps_string) = line.split(': ')
       deps = deps_string.split(' ')
 
-      self.assertEqual(
-          "default_100_percent_OTHER.pak"
-          if translate_genders else "default_100_percent.pak", dep_output_file)
+      self.assertEqual("default_100_percent.pak", dep_output_file)
       self.assertEqual(deps, [
           util.PathFromRoot('grit/testdata/default_100_percent/a.png'),
           util.PathFromRoot('grit/testdata/grit_part.grdp'),
@@ -483,9 +481,7 @@ class BuildUnittest(unittest.TestCase):
     header = output_dir.GetPath('allowlist_test_resources.h')
     map_cc = output_dir.GetPath('allowlist_test_resources_map.cc')
     map_h = output_dir.GetPath('allowlist_test_resources_map.h')
-    pak = output_dir.GetPath(
-        'allowlist_test_resources_OTHER.pak'
-        if translate_genders else 'allowlist_test_resources.pak')
+    pak = output_dir.GetPath('allowlist_test_resources.pak')
 
     # Ensure the resource map header and .pak files exist, but don't verify
     # their content.

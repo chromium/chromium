@@ -215,7 +215,7 @@ class FileNodeUnittest(unittest.TestCase):
             'gender': None
         },
         {
-            'filename': 'translation_en_OTHER.pak',
+            'filename': 'translation_en.pak',
             'gender': 'OTHER'
         },
         {
@@ -231,7 +231,7 @@ class FileNodeUnittest(unittest.TestCase):
             'gender': 'NEUTER'
         },
         {
-            'filename': 'resources/es_OTHER.pak',
+            'filename': 'resources/es.pak',
             'gender': 'OTHER'
         },
         {

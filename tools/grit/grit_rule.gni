@@ -1,14 +1,6 @@
 # Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
-declare_args() {
-  # pass the "--translate-genders" flag into GRIT to generate 4 translation
-  # files per locale ("_OTHER", "_FEMININE", "_MASCULINE", "_NEUTER") instead of
-  # one.
-  translate_genders = false
-}
-
 # Instantiate grit. This will produce a script target to run grit (named
 # ${target_name}_grit), and a static library that compiles the .cc files.
 #
@@ -409,9 +401,9 @@ template("grit") {
 #     # This will expand into many language-and-gender (where applicable) files
 #     # and be added to |outputs|. For example, the final |outputs| parameter
 #     # passed into "grit" would look something like:
-#     #   outputs = [ "foo_strings.h", "foo_strings_af_OTHER.pak",
+#     #   outputs = [ "foo_strings.h", "foo_strings_af.pak",
 #     #     "foo_strings_af_FEMININE.pak", "foo_strings_af_MASCULINE.pak",
-#     #     "foo_strings_af_NEUTER.pak", "foo_strings_am_OTHER.pak", ... ]
+#     #     "foo_strings_af_NEUTER.pak", "foo_strings_am.pak", ... ]
 #     locales = locales_with_pseudolocales
 #     output_prefix = "foo_strings_"
 #
@@ -449,12 +441,8 @@ template("grit_strings") {
     _outputs = []
   }
   foreach(locale, _locales) {
-    if (translate_genders) {
-      _outputs += process_file_template(
-              all_chrome_genders,
-              "${_output_prefix}${locale}_{{source_name_part}}.pak")
-    } else {
-      _outputs += [ "${_output_prefix}${locale}.pak" ]
+    foreach(_gender_suffix, gender_suffixes) {
+      _outputs += [ "${_output_prefix}${locale}${_gender_suffix}.pak" ]
     }
   }
 

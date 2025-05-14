@@ -860,17 +860,10 @@ if (_is_default_toolchain) {
     renaming_sources = []
     renaming_destinations = []
     foreach(_locale, platform_pak_locales) {
-      if (translate_genders) {
-        renaming_sources += process_file_template(
-                all_chrome_genders,
-                "$root_out_dir/android_webview/locales/${_locale}_{{source_name_part}}.pak")
-        renaming_destinations += process_file_template(
-                all_chrome_genders,
-                "stored-locales/${_locale}_{{source_name_part}}.pak")
-      } else {
-        renaming_sources +=
-            [ "$root_out_dir/android_webview/locales/${_locale}.pak" ]
-        renaming_destinations += [ "stored-locales/${_locale}.pak" ]
+      foreach(_gender_suffix, gender_suffixes) {
+        renaming_sources += [ "$root_out_dir/android_webview/locales/${_locale}${_gender_suffix}.pak" ]
+        renaming_destinations +=
+            [ "stored-locales/${_locale}${_gender_suffix}.pak" ]
       }
     }
     treat_as_locale_paks = true

@@ -15,12 +15,7 @@ grit_strings("strings") {
 }
 
 repack("services_test_strings") {
-  if (translate_genders) {
-    sources =
-        [ "$root_gen_dir/services/strings/services_strings_en-US_OTHER.pak" ]
-  } else {
-    sources = [ "$root_gen_dir/services/strings/services_strings_en-US.pak" ]
-  }
+  sources = [ "$root_gen_dir/services/strings/services_strings_en-US.pak" ]
   output = "$root_out_dir/services_test_strings.pak"
   deps = [ ":strings" ]
 }
