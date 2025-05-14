@@ -55,6 +55,8 @@ TestBrowser::~TestBrowser() {
   for (auto& observer : observers_) {
     observer.BrowserDestroyed(this);
   }
+  web_state_list_.reset();
+  ClearAllUserData();
 }
 
 #pragma mark - Browser
