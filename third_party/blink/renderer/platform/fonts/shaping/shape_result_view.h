@@ -8,7 +8,7 @@
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_data_range.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/glyph_offset_array.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/glyph_offset_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -186,9 +186,8 @@ class PLATFORM_EXPORT ShapeResultView final
       return *(UNSAFE_TODO(range_.begin() + index));
     }
     template <bool has_non_zero_glyph_offsets>
-    GlyphOffsetArray::iterator<has_non_zero_glyph_offsets> GetGlyphOffsets()
-        const {
-      return GlyphOffsetArray::iterator<has_non_zero_glyph_offsets>(range_);
+    GlyphOffsetIterator<has_non_zero_glyph_offsets> GetGlyphOffsets() const {
+      return GlyphOffsetIterator<has_non_zero_glyph_offsets>(range_);
     }
     bool HasGlyphOffsets() const { return range_.HasOffsets(); }
     // The end character index of |this| without considering offsets in

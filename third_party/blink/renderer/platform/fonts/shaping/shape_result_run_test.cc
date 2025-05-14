@@ -4,101 +4,152 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
 
+#include <hb.h>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
 
-class ShapeResultRunTest : public testing::Test {};
+namespace {
 
-TEST_F(ShapeResultRunTest, CopyConstructor) {
-  GlyphOffsetArray offsets;
-
-  GlyphOffsetArray offsets2(offsets);
-  EXPECT_FALSE(offsets2.HasStorage());
-
-  offsets.SetAt(0, GlyphOffset(1, 1), 2);
-  GlyphOffsetArray offsets3(offsets);
-  ASSERT_TRUE(offsets3.HasStorage());
-  EXPECT_EQ(GlyphOffset(1, 1), offsets3.GetStorage()[0]);
+ShapeResultRun* CreateTestShapeResultRun(unsigned num_glyphs,
+                                         unsigned num_characters) {
+  return MakeGarbageCollected<ShapeResultRun>(
+      /*font*/ nullptr, hb_direction_t::HB_DIRECTION_LTR,
+      CanvasRotationInVertical::kRegular, hb_script_t::HB_SCRIPT_LATIN,
+      /*start_index*/ 0, num_glyphs, num_characters);
 }
 
-TEST_F(ShapeResultRunTest, CopyFromRange) {
-  ShapeResultRun* run = MakeGarbageCollected<ShapeResultRun>(
-      nullptr, HB_DIRECTION_LTR, CanvasRotationInVertical::kRegular,
-      HB_SCRIPT_COMMON, 0, 2, 2);
+}  // namespace
 
-  GlyphOffsetArray offsets2;
-  offsets2.CopyFromRange(GlyphDataRange{*run});
-  EXPECT_FALSE(offsets2.HasStorage());
+class ShapeResultRunTest : public testing::Test {};
+
+TEST_F(ShapeResultRunTest, GlyphDataCopyConstructor) {
+  ShapeResultRun* run = CreateTestShapeResultRun(2, 2);
+
+  ShapeResultRun* run2 = MakeGarbageCollected<ShapeResultRun>(*run);
+  EXPECT_FALSE(run2->glyph_data_.HasNonZeroOffsets());
+
+  run->glyph_data_.SetOffsetAt(0, GlyphOffset(1, 1));
+  ShapeResultRun* run3 = MakeGarbageCollected<ShapeResultRun>(*run);
+  ASSERT_TRUE(run3->glyph_data_.HasNonZeroOffsets());
+  EXPECT_EQ(GlyphOffset(1, 1), run3->glyph_data_.Offsets()[0]);
+}
+
+TEST_F(ShapeResultRunTest, GlyphDataCopyFromRange) {
+  ShapeResultRun* run = CreateTestShapeResultRun(2, 2);
+
+  ShapeResultRun* run2 = CreateTestShapeResultRun(2, 2);
+  run2->glyph_data_.CopyFromRange(GlyphDataRange{*run});
+  EXPECT_FALSE(run2->glyph_data_.HasNonZeroOffsets());
 
   run->glyph_data_.SetOffsetAt(0, GlyphOffset(1, 1));
   ASSERT_TRUE(run->glyph_data_.HasNonZeroOffsets());
 
-  GlyphOffsetArray offsets3;
-  offsets3.CopyFromRange(GlyphDataRange{*run});
-  ASSERT_TRUE(offsets3.HasStorage());
-  EXPECT_EQ(GlyphOffset(1, 1), offsets3.GetStorage()[0]);
+  ShapeResultRun* run3 = CreateTestShapeResultRun(2, 2);
+  run3->glyph_data_.CopyFromRange(GlyphDataRange{*run});
+  ASSERT_TRUE(run3->glyph_data_.HasNonZeroOffsets());
+  EXPECT_EQ(GlyphOffset(1, 1), run3->glyph_data_.Offsets()[0]);
 }
 
-TEST_F(ShapeResultRunTest, GlyphOffsetArrayReverse) {
-  GlyphOffsetArray offsets;
+TEST_F(ShapeResultRunTest, GlyphDataReverse) {
+  ShapeResultRun* run = CreateTestShapeResultRun(2, 2);
 
-  offsets.Reverse();
-  EXPECT_FALSE(offsets.HasStorage());
+  run->glyph_data_.Reverse();
+  EXPECT_FALSE(run->glyph_data_.HasNonZeroOffsets());
 
-  offsets.SetAt(0, GlyphOffset(1, 1), 2);
-  ASSERT_TRUE(offsets.HasStorage());
-  offsets.Reverse();
-  EXPECT_EQ(GlyphOffset(), offsets.GetStorage()[0]);
-  EXPECT_EQ(GlyphOffset(1, 1), UNSAFE_TODO(offsets.GetStorage()[1]));
+  run->glyph_data_.SetOffsetAt(0, GlyphOffset(1, 1));
+  ASSERT_TRUE(run->glyph_data_.HasNonZeroOffsets());
+  run->glyph_data_.Reverse();
+  EXPECT_EQ(GlyphOffset(), run->glyph_data_.Offsets()[0]);
+  EXPECT_EQ(GlyphOffset(1, 1), run->glyph_data_.Offsets()[1]);
 }
 
-TEST_F(ShapeResultRunTest, GlyphOffsetArraySetAddOffsetHeightAt) {
-  GlyphOffsetArray offsets;
+TEST_F(ShapeResultRunTest, GlyphDataAddOffsetHeightAt) {
+  ShapeResultRun* run = CreateTestShapeResultRun(2, 2);
 
-  offsets.AddHeightAt(1, 1.5f, 2);
-  ASSERT_TRUE(offsets.HasStorage());
-  EXPECT_EQ(GlyphOffset(0, 1.5f), UNSAFE_TODO(offsets.GetStorage()[1]));
+  run->glyph_data_.AddOffsetHeightAt(1, 1.5f);
+  ASSERT_TRUE(run->glyph_data_.HasNonZeroOffsets());
+  EXPECT_EQ(GlyphOffset(0, 1.5f), run->glyph_data_.Offsets()[1]);
 
-  offsets.AddHeightAt(1, 2.0f, 2);
-  ASSERT_TRUE(offsets.HasStorage());
-  EXPECT_EQ(GlyphOffset(0, 3.5f), UNSAFE_TODO(offsets.GetStorage()[1]));
+  run->glyph_data_.AddOffsetHeightAt(1, 2.0f);
+  ASSERT_TRUE(run->glyph_data_.HasNonZeroOffsets());
+  EXPECT_EQ(GlyphOffset(0, 3.5f), run->glyph_data_.Offsets()[1]);
 }
 
-TEST_F(ShapeResultRunTest, GlyphOffsetArraySetAddOffsetWidthAt) {
-  GlyphOffsetArray offsets;
+TEST_F(ShapeResultRunTest, GlyphDataAddOffsetWidthAt) {
+  ShapeResultRun* run = CreateTestShapeResultRun(2, 2);
 
-  offsets.AddWidthAt(1, 1.5f, 2);
-  ASSERT_TRUE(offsets.HasStorage());
-  EXPECT_EQ(GlyphOffset(1.5f, 0), UNSAFE_TODO(offsets.GetStorage()[1]));
+  run->glyph_data_.AddOffsetWidthAt(1, 1.5f);
+  ASSERT_TRUE(run->glyph_data_.HasNonZeroOffsets());
+  EXPECT_EQ(GlyphOffset(1.5f, 0), run->glyph_data_.Offsets()[1]);
 
-  offsets.AddWidthAt(1, 2.0f, 2);
-  ASSERT_TRUE(offsets.HasStorage());
-  EXPECT_EQ(GlyphOffset(3.5f, 0), UNSAFE_TODO(offsets.GetStorage()[1]));
+  run->glyph_data_.AddOffsetWidthAt(1, 2.0f);
+  ASSERT_TRUE(run->glyph_data_.HasNonZeroOffsets());
+  EXPECT_EQ(GlyphOffset(3.5f, 0), run->glyph_data_.Offsets()[1]);
 }
 
-TEST_F(ShapeResultRunTest, GlyphOffsetArraySetAt) {
-  GlyphOffsetArray offsets;
+TEST_F(ShapeResultRunTest, GlyphDataSetAt) {
+  ShapeResultRun* run = CreateTestShapeResultRun(2, 2);
 
-  offsets.SetAt(0, GlyphOffset(), 2);
-  EXPECT_FALSE(offsets.HasStorage());
+  run->glyph_data_.SetOffsetAt(0, GlyphOffset());
+  // Setting a zero offset should not allocate storage if it wasn't already
+  // allocated.
+  EXPECT_FALSE(run->glyph_data_.HasNonZeroOffsets());
 
-  offsets.SetAt(1, GlyphOffset(1, 1), 2);
-  EXPECT_TRUE(offsets.HasStorage());
+  run->glyph_data_.SetOffsetAt(1, GlyphOffset(1, 1));
+  ASSERT_TRUE(run->glyph_data_.HasNonZeroOffsets());
+  EXPECT_EQ(GlyphOffset(1, 1), run->glyph_data_.Offsets()[1]);
 }
 
-TEST_F(ShapeResultRunTest, GlyphOffsetArrayShrink) {
-  GlyphOffsetArray offsets;
+TEST_F(ShapeResultRunTest, GlyphDataShrink) {
+  // Case 1: Shrink when no offsets are allocated.
+  ShapeResultRun* run_no_offsets = CreateTestShapeResultRun(3, 3);
+  EXPECT_FALSE(run_no_offsets->glyph_data_.HasNonZeroOffsets());
+  EXPECT_EQ(3u, run_no_offsets->glyph_data_.size());
 
-  offsets.Shrink(2);
-  EXPECT_FALSE(offsets.HasStorage());
+  run_no_offsets->glyph_data_.Shrink(2);  // Shrink from 3 to 2
+  // Offsets should remain unallocated.
+  EXPECT_FALSE(run_no_offsets->glyph_data_.HasNonZeroOffsets());
+  EXPECT_EQ(2u, run_no_offsets->glyph_data_.size());  // Data should shrink.
 
-  offsets.SetAt(0, GlyphOffset(1, 1), 2);
-  ASSERT_TRUE(offsets.HasStorage());
+  run_no_offsets->glyph_data_.Shrink(1);  // Shrink from 2 to 1
+  EXPECT_FALSE(run_no_offsets->glyph_data_.HasNonZeroOffsets());
+  EXPECT_EQ(1u, run_no_offsets->glyph_data_.size());
 
-  offsets.Shrink(1);
-  ASSERT_TRUE(offsets.HasStorage());
-  EXPECT_EQ(GlyphOffset(1, 1), offsets.GetStorage()[0]);
+  // Case 2: Shrink when offsets are allocated.
+  ShapeResultRun* run_with_offsets = CreateTestShapeResultRun(3, 3);
+  run_with_offsets->glyph_data_.SetOffsetAt(0, GlyphOffset(1, 0));
+  run_with_offsets->glyph_data_.SetOffsetAt(1, GlyphOffset(2, 0));
+  run_with_offsets->glyph_data_.SetOffsetAt(2, GlyphOffset(3, 0));
+  ASSERT_TRUE(run_with_offsets->glyph_data_.HasNonZeroOffsets());
+  EXPECT_EQ(3u, run_with_offsets->glyph_data_.size());
+  ASSERT_EQ(3u, run_with_offsets->glyph_data_.Offsets().size());
+
+  // Shrink to a smaller size.
+  run_with_offsets->glyph_data_.Shrink(2);
+  ASSERT_TRUE(run_with_offsets->glyph_data_.HasNonZeroOffsets());
+  EXPECT_EQ(2u, run_with_offsets->glyph_data_.size());
+  ASSERT_EQ(2u, run_with_offsets->glyph_data_.Offsets().size());
+  EXPECT_EQ(GlyphOffset(1, 0), run_with_offsets->glyph_data_.Offsets()[0]);
+  EXPECT_EQ(GlyphOffset(2, 0), run_with_offsets->glyph_data_.Offsets()[1]);
+
+  // Shrink further.
+  run_with_offsets->glyph_data_.Shrink(1);
+  ASSERT_TRUE(run_with_offsets->glyph_data_.HasNonZeroOffsets());
+  EXPECT_EQ(1u, run_with_offsets->glyph_data_.size());
+  ASSERT_EQ(1u, run_with_offsets->glyph_data_.Offsets().size());
+  EXPECT_EQ(GlyphOffset(1, 0), run_with_offsets->glyph_data_.Offsets()[0]);
+
+  // Case 3: Shrink to the same size (no-op for vector sizes).
+  ShapeResultRun* run_shrink_same_size = CreateTestShapeResultRun(2, 2);
+  run_shrink_same_size->glyph_data_.SetOffsetAt(0, GlyphOffset(5, 0));
+  ASSERT_TRUE(run_shrink_same_size->glyph_data_.HasNonZeroOffsets());
+  run_shrink_same_size->glyph_data_.Shrink(2);  // Shrink to current size.
+  ASSERT_TRUE(run_shrink_same_size->glyph_data_.HasNonZeroOffsets());
+  EXPECT_EQ(2u, run_shrink_same_size->glyph_data_.size());
+  ASSERT_EQ(2u, run_shrink_same_size->glyph_data_.Offsets().size());
+  EXPECT_EQ(GlyphOffset(5, 0), run_shrink_same_size->glyph_data_.Offsets()[0]);
 }
 
 }  // namespace blink
