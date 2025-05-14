@@ -43,8 +43,8 @@ LogicalRect BoxShape::ShapeMarginLogicalBoundingBox() const {
   return LogicalRect::EnclosingRect(margin_bounds);
 }
 
-FloatRoundedRect BoxShape::ShapeMarginBounds() const {
-  FloatRoundedRect margin_bounds = bounds_;
+ContouredRect BoxShape::ShapeMarginBounds() const {
+  ContouredRect margin_bounds = bounds_;
   if (ShapeMargin() > 0)
     margin_bounds.OutsetForShapeMargin(ShapeMargin());
   return margin_bounds;
@@ -52,7 +52,7 @@ FloatRoundedRect BoxShape::ShapeMarginBounds() const {
 
 LineSegment BoxShape::GetExcludedInterval(LayoutUnit logical_top,
                                           LayoutUnit logical_height) const {
-  const FloatRoundedRect& margin_bounds = ShapeMarginBounds();
+  const ContouredRect& margin_bounds = ShapeMarginBounds();
   if (margin_bounds.IsEmpty() ||
       !LineOverlapsShapeMarginBounds(logical_top, logical_height))
     return LineSegment();
@@ -64,12 +64,13 @@ LineSegment BoxShape::GetExcludedInterval(LayoutUnit logical_top,
   if (!margin_bounds.IsRounded())
     return LineSegment(margin_bounds.Rect().x(), margin_bounds.Rect().right());
 
+  const FloatRoundedRect& margin_rect = margin_bounds.AsRoundedRect();
+
   float top_corner_max_y =
-      std::max<float>(margin_bounds.TopLeftCorner().bottom(),
-                      margin_bounds.TopRightCorner().bottom());
-  float bottom_corner_min_y =
-      std::min<float>(margin_bounds.BottomLeftCorner().y(),
-                      margin_bounds.BottomRightCorner().y());
+      std::max<float>(margin_rect.TopLeftCorner().bottom(),
+                      margin_rect.TopRightCorner().bottom());
+  float bottom_corner_min_y = std::min<float>(
+      margin_rect.BottomLeftCorner().y(), margin_rect.BottomRightCorner().y());
 
   if (top_corner_max_y <= bottom_corner_min_y && y1 <= top_corner_max_y &&
       y2 >= bottom_corner_min_y)
@@ -80,13 +81,15 @@ LineSegment BoxShape::GetExcludedInterval(LayoutUnit logical_top,
   float min_x_intercept;
   float max_x_intercept;
 
-  if (y1 <= margin_bounds.TopLeftCorner().bottom() &&
-      y2 >= margin_bounds.BottomLeftCorner().y())
+  if (y1 <= margin_rect.TopLeftCorner().bottom() &&
+      y2 >= margin_rect.BottomLeftCorner().y()) {
     x1 = rect.x();
+  }
 
-  if (y1 <= margin_bounds.TopRightCorner().bottom() &&
-      y2 >= margin_bounds.BottomRightCorner().y())
+  if (y1 <= margin_rect.TopRightCorner().bottom() &&
+      y2 >= margin_rect.BottomRightCorner().y()) {
     x2 = rect.right();
+  }
 
   if (margin_bounds.XInterceptsAtY(y1, min_x_intercept, max_x_intercept)) {
     x1 = std::min<float>(x1, min_x_intercept);
@@ -106,14 +109,14 @@ void BoxShape::BuildDisplayPaths(DisplayPaths& paths) const {
   DCHECK(paths.shape.IsEmpty());
   DCHECK(paths.margin_shape.IsEmpty());
 
-  paths.shape = Path::MakeRoundedRect(bounds_);
+  paths.shape = Path::MakeContouredRect(bounds_);
   if (ShapeMargin()) {
-    paths.margin_shape = Path::MakeRoundedRect(ShapeMarginBounds());
+    paths.margin_shape = Path::MakeContouredRect(ShapeMarginBounds());
   }
 }
 
-FloatRoundedRect BoxShape::ToLogical(const FloatRoundedRect& rect,
-                                     const WritingModeConverter& converter) {
+ContouredRect BoxShape::ToLogical(const ContouredRect& rect,
+                                  const WritingModeConverter& converter) {
   if (converter.GetWritingMode() == WritingMode::kHorizontalTb) {
     return rect;
   }
@@ -128,19 +131,31 @@ FloatRoundedRect BoxShape::ToLogical(const FloatRoundedRect& rect,
   gfx::SizeF bottom_right = rect.GetRadii().BottomRight();
   bottom_right.Transpose();
 
+  const ContouredRect::CornerCurvature& curvature = rect.GetCornerCurvature();
+
   switch (converter.GetWritingMode()) {
     case WritingMode::kHorizontalTb:
       NOTREACHED();
     case WritingMode::kVerticalLr:
-      return FloatRoundedRect(logical_rect, top_left, bottom_left, top_right,
-                              bottom_right);
+      return ContouredRect(FloatRoundedRect(logical_rect, top_left, bottom_left,
+                                            top_right, bottom_right),
+                           ContouredRect::CornerCurvature(
+                               curvature.TopLeft(), curvature.BottomLeft(),
+                               curvature.TopRight(), curvature.BottomRight()));
     case WritingMode::kVerticalRl:
     case WritingMode::kSidewaysRl:
-      return FloatRoundedRect(logical_rect, top_right, bottom_right, top_left,
-                              bottom_left);
+      return ContouredRect(
+          FloatRoundedRect(logical_rect, top_right, bottom_right, top_left,
+                           bottom_left),
+          ContouredRect::CornerCurvature(
+              curvature.TopRight(), curvature.BottomRight(),
+              curvature.TopLeft(), curvature.BottomLeft()));
     case WritingMode::kSidewaysLr:
-      return FloatRoundedRect(logical_rect, bottom_left, top_left, bottom_right,
-                              top_right);
+      return ContouredRect(FloatRoundedRect(logical_rect, bottom_left, top_left,
+                                            bottom_right, top_right),
+                           ContouredRect::CornerCurvature(
+                               curvature.BottomLeft(), curvature.TopLeft(),
+                               curvature.BottomRight(), curvature.TopRight()));
   }
 }
 

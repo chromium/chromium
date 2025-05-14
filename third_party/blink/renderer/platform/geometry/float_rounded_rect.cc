@@ -183,64 +183,6 @@ void FloatRoundedRect::Radii::OutsetForShapeMargin(float outset) {
   bottom_right_ += outset_size;
 }
 
-// TODO(crbug.com/396173464) support curvature
-static inline float CornerRectIntercept(float y,
-                                        const gfx::RectF& corner_rect) {
-  DCHECK_GT(corner_rect.height(), 0);
-  return corner_rect.width() *
-         sqrt(1 - (y * y) / (corner_rect.height() * corner_rect.height()));
-}
-
-// TODO(crbug.com/396173464) support curvature
-bool FloatRoundedRect::XInterceptsAtY(float y,
-                                      float& min_x_intercept,
-                                      float& max_x_intercept) const {
-  if (y < Rect().y() || y > Rect().bottom())
-    return false;
-
-  if (!IsRounded()) {
-    min_x_intercept = Rect().x();
-    max_x_intercept = Rect().right();
-    return true;
-  }
-
-  const gfx::RectF& top_left_rect = TopLeftCorner();
-  const gfx::RectF& bottom_left_rect = BottomLeftCorner();
-
-  if (!top_left_rect.IsEmpty() && y >= top_left_rect.y() &&
-      y < top_left_rect.bottom()) {
-    min_x_intercept =
-        top_left_rect.right() -
-        CornerRectIntercept(top_left_rect.bottom() - y, top_left_rect);
-  } else if (!bottom_left_rect.IsEmpty() && y >= bottom_left_rect.y() &&
-             y <= bottom_left_rect.bottom()) {
-    min_x_intercept =
-        bottom_left_rect.right() -
-        CornerRectIntercept(y - bottom_left_rect.y(), bottom_left_rect);
-  } else {
-    min_x_intercept = rect_.x();
-  }
-
-  const gfx::RectF& top_right_rect = TopRightCorner();
-  const gfx::RectF& bottom_right_rect = BottomRightCorner();
-
-  if (!top_right_rect.IsEmpty() && y >= top_right_rect.y() &&
-      y <= top_right_rect.bottom()) {
-    max_x_intercept =
-        top_right_rect.x() +
-        CornerRectIntercept(top_right_rect.bottom() - y, top_right_rect);
-  } else if (!bottom_right_rect.IsEmpty() && y >= bottom_right_rect.y() &&
-             y <= bottom_right_rect.bottom()) {
-    max_x_intercept =
-        bottom_right_rect.x() +
-        CornerRectIntercept(y - bottom_right_rect.y(), bottom_right_rect);
-  } else {
-    max_x_intercept = rect_.right();
-  }
-
-  return true;
-}
-
 void FloatRoundedRect::Outset(const gfx::OutsetsF& outsets) {
   rect_.Outset(outsets);
   radii_.Outset(outsets);

@@ -290,11 +290,10 @@ const Shape& ShapeOutsideInfo::ComputedShape() const {
                                    shape_image_threshold, writing_mode, margin);
       break;
     case ShapeValue::kBox: {
-      // TODO(crbug.com/402437726) support corner-shape in shape-outside
       shape_ = Shape::CreateLayoutBoxShape(
           ContouredBorderGeometry::ContouredBorder(
-              style, PhysicalRect(PhysicalOffset(), ReferenceBoxPhysicalSize()))
-              .AsRoundedRect(),
+              style,
+              PhysicalRect(PhysicalOffset(), ReferenceBoxPhysicalSize())),
           writing_mode, margin);
       break;
     }

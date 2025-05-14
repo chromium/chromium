@@ -206,10 +206,6 @@ class PLATFORM_EXPORT FloatRoundedRect {
                       radii_.BottomRight().height());
   }
 
-  bool XInterceptsAtY(float y,
-                      float& min_x_intercept,
-                      float& max_x_intercept) const;
-
   // Tests whether the quad intersects any part of this rounded rectangle.
   // This only works for convex quads.
   // This intersection is edge-inclusive and will return true even if the

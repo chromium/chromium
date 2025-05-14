@@ -195,6 +195,14 @@ class PLATFORM_EXPORT ContouredRect {
     OutsetForMarginOrShadow(gfx::OutsetsF(outset));
   }
 
+  void OutsetForShapeMargin(float outset) {
+    rect_.OutsetForShapeMargin(outset);
+  }
+
+  bool XInterceptsAtY(float y,
+                      float& min_x_intercept,
+                      float& max_x_intercept) const;
+
   void Outset(const gfx::OutsetsF& outsets) { rect_.Outset(outsets); }
   void OutsetForMarginOrShadow(const gfx::OutsetsF&);
 

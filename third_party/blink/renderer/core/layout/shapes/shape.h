@@ -42,7 +42,7 @@
 
 namespace blink {
 
-class FloatRoundedRect;
+class ContouredRect;
 struct LogicalSize;
 
 struct LineSegment {
@@ -91,7 +91,7 @@ class CORE_EXPORT Shape {
       WritingMode,
       float margin,
       RespectImageOrientationEnum);
-  static std::unique_ptr<Shape> CreateLayoutBoxShape(const FloatRoundedRect&,
+  static std::unique_ptr<Shape> CreateLayoutBoxShape(const ContouredRect&,
                                                      WritingMode,
                                                      float margin);
 

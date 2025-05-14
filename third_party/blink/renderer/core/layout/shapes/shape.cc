@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/layout/shapes/raster_shape.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -120,7 +121,7 @@ class LogicalPixelScanner {
 
 }  // namespace
 
-static std::unique_ptr<Shape> CreateInsetShape(const FloatRoundedRect& bounds) {
+static std::unique_ptr<Shape> CreateInsetShape(const ContouredRect& bounds) {
   DCHECK_GE(bounds.Rect().width(), 0);
   DCHECK_GE(bounds.Rect().height(), 0);
   return std::make_unique<BoxShape>(bounds);
@@ -207,7 +208,8 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
                                      bottom_left_radius, bottom_right_radius);
       physical_rect.ConstrainRadii();
 
-      shape = CreateInsetShape(BoxShape::ToLogical(physical_rect, converter));
+      shape = CreateInsetShape(
+          BoxShape::ToLogical(ContouredRect(physical_rect), converter));
       break;
     }
 
@@ -381,15 +383,15 @@ std::unique_ptr<Shape> Shape::CreateRasterShape(
 }
 
 std::unique_ptr<Shape> Shape::CreateLayoutBoxShape(
-    const FloatRoundedRect& rounded_rect,
+    const ContouredRect& contoured_rect,
     WritingMode writing_mode,
     float margin) {
-  gfx::RectF rect(rounded_rect.Rect().size());
+  gfx::RectF rect(contoured_rect.Rect().size());
   WritingModeConverter converter(
       {writing_mode, TextDirection::kLtr},
-      PhysicalSize::FromSizeFFloor(rounded_rect.Rect().size()));
+      PhysicalSize::FromSizeFFloor(contoured_rect.Rect().size()));
   std::unique_ptr<Shape> shape =
-      CreateInsetShape(BoxShape::ToLogical(rounded_rect, converter));
+      CreateInsetShape(BoxShape::ToLogical(contoured_rect, converter));
   shape->writing_mode_ = writing_mode;
   shape->margin_ = margin;
 
