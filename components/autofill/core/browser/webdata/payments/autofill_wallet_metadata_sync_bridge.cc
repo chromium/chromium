@@ -242,7 +242,7 @@ bool AddServerMetadata(PaymentsAutofillTable* table,
                        const PaymentsMetadata& metadata) {
   switch (type) {
     case WalletMetadataSpecifics::CARD:
-      return table->AddServerCardMetadata(metadata);
+      return table->AddOrUpdateServerCardMetadata(metadata);
     case WalletMetadataSpecifics::IBAN:
       return table->AddOrUpdateServerIbanMetadata(metadata);
     // ADDRESS metadata syncing is deprecated.
@@ -272,7 +272,7 @@ bool UpdateServerMetadata(PaymentsAutofillTable* table,
                           const PaymentsMetadata& metadata) {
   switch (type) {
     case WalletMetadataSpecifics::CARD:
-      return table->UpdateServerCardMetadata(metadata);
+      return table->AddOrUpdateServerCardMetadata(metadata);
     case WalletMetadataSpecifics::IBAN:
       return table->AddOrUpdateServerIbanMetadata(metadata);
     // ADDRESS metadata syncing is deprecated.

@@ -462,11 +462,7 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // For get method, return true if the operations succeeded.
   // For add/update/remove methods, return true if any changes actually
   // occurred.
-  // TODO (crbug.com/1504063): Merge Add/UpdateServerCardMetadata into a single
-  // method AddOrUpdateServerCardMetadata.
-  bool AddServerCardMetadata(const PaymentsMetadata& card_metadata);
-  bool UpdateServerCardMetadata(const CreditCard& credit_card);
-  bool UpdateServerCardMetadata(const PaymentsMetadata& card_metadata);
+  bool AddOrUpdateServerCardMetadata(const PaymentsMetadata& card_metadata);
   bool RemoveServerCardMetadata(const std::string& id);
   bool GetServerCardsMetadata(
       std::vector<PaymentsMetadata>& cards_metadata) const;

@@ -1078,43 +1078,12 @@ bool PaymentsAutofillTable::ClearLocalCvcs() {
   return db()->GetLastChangeCount() > 0;
 }
 
-bool PaymentsAutofillTable::AddServerCardMetadata(
-    const PaymentsMetadata& card_metadata) {
-  sql::Statement s;
-  InsertBuilder(db(), s, kServerCardMetadataTable,
-                {kUseCount, kUseDate, kBillingAddressId, kId});
-  s.BindInt64(0, card_metadata.use_count);
-  s.BindTime(1, card_metadata.use_date);
-  s.BindString(2, card_metadata.billing_address_id);
-  s.BindString(3, card_metadata.id);
-  s.Run();
-
-  return db()->GetLastChangeCount() > 0;
-}
-
-bool PaymentsAutofillTable::UpdateServerCardMetadata(const CreditCard& credit_card) {
-  DCHECK_NE(CreditCard::RecordType::kLocalCard, credit_card.record_type());
-
-  DeleteWhereColumnEq(db(), kServerCardMetadataTable, kId,
-                      credit_card.server_id());
-
-  sql::Statement s;
-  InsertBuilder(db(), s, kServerCardMetadataTable,
-                {kUseCount, kUseDate, kBillingAddressId, kId});
-  s.BindInt64(0, credit_card.usage_history().use_count());
-  s.BindTime(1, credit_card.usage_history().use_date());
-  s.BindString(2, credit_card.billing_address_id());
-  s.BindString(3, credit_card.server_id());
-  s.Run();
-
-  return db()->GetLastChangeCount() > 0;
-}
-
-bool PaymentsAutofillTable::UpdateServerCardMetadata(
+bool PaymentsAutofillTable::AddOrUpdateServerCardMetadata(
     const PaymentsMetadata& card_metadata) {
   // Do not check if there was a record that got deleted. Inserting a new one is
   // also fine.
   RemoveServerCardMetadata(card_metadata.id);
+
   sql::Statement s;
   InsertBuilder(db(), s, kServerCardMetadataTable,
                 {kUseCount, kUseDate, kBillingAddressId, kId});
@@ -2206,7 +2175,7 @@ void PaymentsAutofillTable::AddMaskedCreditCards(
     masked_insert.Reset(/*clear_bound_vars=*/true);
 
     // Save the use count and use date of the card.
-    UpdateServerCardMetadata(card);
+    AddOrUpdateServerCardMetadata(card.GetMetadata());
   }
 }
 

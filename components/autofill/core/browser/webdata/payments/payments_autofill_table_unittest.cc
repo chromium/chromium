@@ -945,7 +945,7 @@ TEST_F(PaymentsAutofillTableTest, SetGetRemoveServerCardMetadata) {
   input.use_count = 50;
   input.use_date = base::Time::Now();
   input.billing_address_id = "billing id";
-  EXPECT_TRUE(table_->AddServerCardMetadata(input));
+  EXPECT_TRUE(table_->AddOrUpdateServerCardMetadata(input));
 
   // Make sure it was added correctly.
   std::vector<PaymentsMetadata> outputs;
@@ -991,7 +991,7 @@ TEST_F(PaymentsAutofillTableTest, AddUpdateServerCardMetadata) {
   input.use_count = 50;
   input.use_date = base::Time::Now();
   input.billing_address_id = "billing id";
-  ASSERT_TRUE(table_->AddServerCardMetadata(input));
+  ASSERT_TRUE(table_->AddOrUpdateServerCardMetadata(input));
 
   // Make sure it was added correctly.
   std::vector<PaymentsMetadata> outputs;
@@ -1001,7 +1001,7 @@ TEST_F(PaymentsAutofillTableTest, AddUpdateServerCardMetadata) {
 
   // Update the metadata in the table.
   input.use_count = 51;
-  EXPECT_TRUE(table_->UpdateServerCardMetadata(input));
+  EXPECT_TRUE(table_->AddOrUpdateServerCardMetadata(input));
 
   // Make sure it was updated correctly.
   ASSERT_TRUE(table_->GetServerCardsMetadata(outputs));
@@ -1010,7 +1010,7 @@ TEST_F(PaymentsAutofillTableTest, AddUpdateServerCardMetadata) {
 
   // Insert a new entry using update - that should also be legal.
   input.id = "another server id";
-  EXPECT_TRUE(table_->UpdateServerCardMetadata(input));
+  EXPECT_TRUE(table_->AddOrUpdateServerCardMetadata(input));
   ASSERT_TRUE(table_->GetServerCardsMetadata(outputs));
   ASSERT_EQ(2U, outputs.size());
 }
@@ -1035,7 +1035,7 @@ TEST_F(PaymentsAutofillTableTest, UpdateServerCardMetadataDoesNotChangeData) {
   outputs[0]->usage_history().set_use_count(51);
 
   PaymentsMetadata input_metadata = outputs[0]->GetMetadata();
-  EXPECT_TRUE(table_->UpdateServerCardMetadata(input_metadata));
+  EXPECT_TRUE(table_->AddOrUpdateServerCardMetadata(input_metadata));
 
   // Make sure it was updated correctly.
   std::vector<PaymentsMetadata> output_metadata;
@@ -1086,7 +1086,7 @@ TEST_F(PaymentsAutofillTableTest, RemoveWrongServerCardMetadata) {
   input.use_count = 50;
   input.use_date = base::Time::Now();
   input.billing_address_id = "billing id";
-  table_->AddServerCardMetadata(input);
+  table_->AddOrUpdateServerCardMetadata(input);
 
   // Make sure it was added correctly.
   std::vector<PaymentsMetadata> outputs;
@@ -1188,7 +1188,7 @@ TEST_F(PaymentsAutofillTableTest, SetServerCardsData_ExistingMetadata) {
   input.use_count = 50;
   input.use_date = base::Time::Now();
   input.billing_address_id = "billing id";
-  table_->AddServerCardMetadata(input);
+  table_->AddOrUpdateServerCardMetadata(input);
 
   // Set a card data.
   std::vector<CreditCard> inputs;
@@ -1266,7 +1266,7 @@ TEST_F(PaymentsAutofillTableTest, SetServerCardUpdateUsageStatsAndBillingAddress
   inputs.back().usage_history().set_use_count(4U);
   inputs.back().usage_history().set_use_date(base::Time());
   inputs.back().set_billing_address_id("2");
-  table_->UpdateServerCardMetadata(inputs.back());
+  table_->AddOrUpdateServerCardMetadata(inputs.back().GetMetadata());
   table_->GetServerCreditCards(outputs);
   ASSERT_EQ(1u, outputs.size());
   EXPECT_EQ(masked_card.server_id(), outputs[0]->server_id());
