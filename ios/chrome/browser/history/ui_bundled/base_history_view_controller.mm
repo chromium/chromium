@@ -828,6 +828,9 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
 // performBatchUpdates block.
 - (void)deleteItemsFromTableViewModelWithIndex:(NSArray*)indexArray
                       deleteItemsFromTableView:(BOOL)deleteItemsFromTableView {
+  // Dismiss any context menu so it's not attached to a wrong row.
+  [self.tableView.contextMenuInteraction dismissMenu];
+
   NSArray* sortedIndexPaths =
       [indexArray sortedArrayUsingSelector:@selector(compare:)];
   for (NSIndexPath* indexPath in [sortedIndexPaths reverseObjectEnumerator]) {
