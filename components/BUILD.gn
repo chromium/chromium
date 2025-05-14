@@ -910,6 +910,7 @@ test("components_unittests") {
   fuzztests = [
     "FilterDataTest.Matches",
     "OsRegistrationTest.Parses",
+    "PrivacyMathTest.GetKCombinationAtIndexDoesNotCrash",
     "RegistrationInfoTest.Parses",
     "SourceRegistrationTest.Parses",
     "TriggerRegistrationTest.Parses",

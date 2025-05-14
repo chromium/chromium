@@ -504,15 +504,3 @@ mojom("data_host_mojom") {
   export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
   export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
 }
-
-test("privacy_math_fuzztest") {
-  sources = [ "privacy_math_fuzztest.cc" ]
-
-  fuzztests = [ "PrivacyMathTest.GetKCombinationAtIndex" ]
-
-  deps = [
-    ":attribution_reporting",
-    ":test_support",
-    "//third_party/fuzztest:fuzztest_gtest_main",
-  ]
-}

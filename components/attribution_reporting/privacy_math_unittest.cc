@@ -29,6 +29,7 @@
 #include "components/attribution_reporting/trigger_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace attribution_reporting {
 namespace {
@@ -860,6 +861,16 @@ TEST(PrivacyMathTest, IsValid) {
     EXPECT_EQ(test_case.expected, IsValid(test_case.response, kSpecs));
   }
 }
+
+void GetKCombinationAtIndexDoesNotCrash(uint32_t combination_index,
+                                        uint32_t k) {
+  internal::GetKCombinationAtIndex(combination_index, k);
+}
+
+FUZZ_TEST(PrivacyMathTest, GetKCombinationAtIndexDoesNotCrash)
+    .WithDomains(
+        /*combination_index=*/fuzztest::Arbitrary<uint32_t>(),
+        /*k=*/fuzztest::InRange<uint32_t>(0, 20));
 
 }  // namespace
 }  // namespace attribution_reporting
