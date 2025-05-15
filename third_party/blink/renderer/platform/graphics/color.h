@@ -345,6 +345,12 @@ class PLATFORM_EXPORT Color {
   Color Light() const;
   Color Dark() const;
 
+  Color MakeOpaque() const {
+    Color opaque = *this;
+    opaque.SetAlpha(1.0f);
+    return opaque;
+  }
+
   // This is an implementation of Porter-Duff's "source-over" equation
   // TODO(https://crbug.com/1333988): Implement CSS Color level 4 blending,
   // including a color interpolation method parameter.
