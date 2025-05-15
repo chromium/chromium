@@ -697,6 +697,33 @@ base::flat_set<FormSignature> GetFormsForWhichToRunAiModel(
   return base::flat_set<FormSignature>(std::move(forms));
 }
 
+// Checks the list of server predictions and potentially merges predictions for
+// joined types e.g. if the server returned separate predictions for email and
+// loyalty card, those are merged into the EMAIL_OR_LOYALTY_MEMBERSHIP_ID type.
+void MaybeMergeServerPredictions(
+    std::vector<FieldPrediction>& server_predictions) {
+  const auto server_types =
+      DenseSet<FieldType>(server_predictions, [](const FieldPrediction& pred) {
+        return ToSafeFieldType(pred.type(), UNKNOWN_TYPE);
+      });
+
+  if (server_types.contains_all({EMAIL_ADDRESS, LOYALTY_MEMBERSHIP_ID}) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableEmailOrLoyaltyCardsFilling)) {
+    // Remove email and loyalty card predictions.
+    std::erase_if(server_predictions, [](const FieldPrediction& x) {
+      return x.type() == EMAIL_ADDRESS || x.type() == LOYALTY_MEMBERSHIP_ID;
+    });
+    FieldPrediction email_and_loyalty_card_prediction;
+    email_and_loyalty_card_prediction.set_type(EMAIL_OR_LOYALTY_MEMBERSHIP_ID);
+    email_and_loyalty_card_prediction.set_source(
+        FieldPrediction::SOURCE_AUTOFILL_DEFAULT);
+    email_and_loyalty_card_prediction.set_override(false);
+    server_predictions.insert(server_predictions.begin(),
+                              email_and_loyalty_card_prediction);
+  }
+}
+
 }  // namespace
 
 EncodeUploadRequestOptions::Field::Field() = default;
@@ -912,8 +939,11 @@ void ProcessServerPredictionsQueryResponse(
       if (heuristic_type != UNKNOWN_TYPE) {
         heuristics_detected_fillable_field = true;
       }
-      field->set_server_predictions({field_suggestion->predictions().begin(),
-                                     field_suggestion->predictions().end()});
+      std::vector<FieldPrediction> server_predictions = {
+          field_suggestion->predictions().begin(),
+          field_suggestion->predictions().end()};
+      MaybeMergeServerPredictions(server_predictions);
+      field->set_server_predictions(std::move(server_predictions));
       if (heuristic_type != field->Type().GetStorableType()) {
         query_response_overrode_heuristics = true;
       }

@@ -2390,6 +2390,91 @@ TEST_F(AutofillCrowdsourcingEncoding,
   EXPECT_EQ(form.field(2)->Type().GetStorableType(), ADDRESS_HOME_HOUSE_NUMBER);
 }
 
+// Tests that a joined prediction for email or loyalty card fields is generated
+// when the server returns separate predictions for each type.
+TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_JoinedTypes) {
+  base::test::ScopedFeatureList features{
+      features::kAutofillEnableEmailOrLoyaltyCardsFilling};
+  FormData form_data = test::GetFormData(
+      {.fields =
+           {// Field accepting the user email of loyalty card.
+            {.label = u"Email or Member ID", .name = u"email-or-loyalty-card"},
+            // Password field.
+            {.label = u"Password",
+             .name = u"password",
+             .form_control_type = FormControlType::kInputPassword}},
+       .url = "http://foo.com"});
+  FormStructure form(form_data);
+  form.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+
+  // Setup the query response.
+  AutofillQueryResponse response;
+  auto* form_suggestion = response.add_form_suggestions();
+  AddFieldPredictionsToForm(form_data.fields()[0],
+                            {CreateFieldPrediction(EMAIL_ADDRESS),
+                             CreateFieldPrediction(LOYALTY_MEMBERSHIP_ID)},
+                            form_suggestion);
+  AddFieldPredictionToForm(form_data.fields()[1], PASSWORD, form_suggestion);
+
+  // Parse the response and update the field type predictions.
+  std::string response_string = SerializeAndEncode(response);
+  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{&form};
+  ParseServerPredictionsQueryResponse(
+      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  ASSERT_EQ(form.field_count(), 2U);
+
+  // Validate the heuristic and server predictions.
+  EXPECT_EQ(form.field(0)->heuristic_type(), EMAIL_ADDRESS);
+  EXPECT_EQ(form.field(0)->server_type(), EMAIL_OR_LOYALTY_MEMBERSHIP_ID);
+
+  // Validate that the server prediction wins for email or loyalty cards.
+  EXPECT_EQ(EMAIL_OR_LOYALTY_MEMBERSHIP_ID,
+            form.field(0)->Type().GetStorableType());
+  EXPECT_EQ(PASSWORD, form.field(1)->Type().GetStorableType());
+}
+
+// Tests that a server joined prediction is not generated for email or loyalty
+// card fields if the server does not return separate predictions for each type.
+TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_NoJoinedTypes) {
+  base::test::ScopedFeatureList features{
+      features::kAutofillEnableEmailOrLoyaltyCardsFilling};
+  FormData form_data = test::GetFormData(
+      {.fields =
+           {// Field accepting the user email of loyalty card.
+            {.label = u"Email or Member ID", .name = u"email-or-loyalty-card"},
+            // Password field.
+            {.label = u"Password",
+             .name = u"password",
+             .form_control_type = FormControlType::kInputPassword}},
+       .url = "http://foo.com"});
+  FormStructure form(form_data);
+  form.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+
+  // Setup the query response.
+  AutofillQueryResponse response;
+  auto* form_suggestion = response.add_form_suggestions();
+  // Only email predictions are sent.
+  AddFieldPredictionsToForm(form_data.fields()[0],
+                            {CreateFieldPrediction(EMAIL_ADDRESS)},
+                            form_suggestion);
+  AddFieldPredictionToForm(form_data.fields()[1], PASSWORD, form_suggestion);
+
+  // Parse the response and update the field type predictions.
+  std::string response_string = SerializeAndEncode(response);
+  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{&form};
+  ParseServerPredictionsQueryResponse(
+      response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+  ASSERT_EQ(form.field_count(), 2U);
+
+  // Validate the heuristic and server predictions.
+  EXPECT_EQ(form.field(0)->heuristic_type(), EMAIL_ADDRESS);
+  EXPECT_EQ(form.field(0)->server_type(), EMAIL_ADDRESS);
+
+  // Validate that the server prediction wins for email or loyalty cards.
+  EXPECT_EQ(form.field(0)->Type().GetStorableType(), EMAIL_ADDRESS);
+  EXPECT_EQ(form.field(1)->Type().GetStorableType(), PASSWORD);
+}
+
 // Tests proper resolution heuristic, server and html field types when the
 // server returns NO_SERVER_DATA, UNKNOWN_TYPE, and a valid type.
 TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_TooManyTypes) {
