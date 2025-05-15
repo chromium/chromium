@@ -254,13 +254,6 @@ class CORE_EXPORT StyleColor {
                 mojom::blink::ColorScheme color_scheme,
                 bool* is_current_color = nullptr) const;
 
-  // Resolve and override the resolved color's alpha channel as specified by
-  // |alpha|.
-  Color ResolveWithAlpha(Color current_color,
-                         mojom::blink::ColorScheme color_scheme,
-                         int alpha,
-                         bool* is_current_color = nullptr) const;
-
   // Re-resolve the current system color keyword. This is needed in cases such
   // as forced colors mode because initial values for some internal forced
   // colors properties are system colors so we need to re-resolve them to ensure

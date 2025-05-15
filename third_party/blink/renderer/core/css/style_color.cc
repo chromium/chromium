@@ -351,15 +351,6 @@ Color StyleColor::Resolve(const Color& current_color,
   return GetColor();
 }
 
-Color StyleColor::ResolveWithAlpha(Color current_color,
-                                   mojom::blink::ColorScheme color_scheme,
-                                   int alpha,
-                                   bool* is_current_color) const {
-  Color color = Resolve(current_color, color_scheme, is_current_color);
-  // TODO(crbug.com/1333988) This looks unfriendly to CSS Color 4.
-  return Color(color.Red(), color.Green(), color.Blue(), alpha);
-}
-
 StyleColor StyleColor::ResolveSystemColor(
     mojom::blink::ColorScheme color_scheme,
     const ui::ColorProvider* color_provider,

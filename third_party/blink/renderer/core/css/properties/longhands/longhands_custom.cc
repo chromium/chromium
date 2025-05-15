@@ -5786,7 +5786,7 @@ const blink::Color InternalForcedBackgroundColor::ColorIncludingFallback(
     const ComputedStyle& style,
     bool* is_current_color) const {
   blink::Color forced_current_color;
-  int alpha;
+  float alpha;
   bool alpha_is_current_color;
   if (visited_link) {
     forced_current_color = style.GetInternalForcedVisitedCurrentColor(
@@ -5794,20 +5794,20 @@ const blink::Color InternalForcedBackgroundColor::ColorIncludingFallback(
     alpha = style.InternalVisitedBackgroundColor()
                 .Resolve(style.GetInternalVisitedCurrentColor(),
                          style.UsedColorScheme(), &alpha_is_current_color)
-                .AlphaAsInteger();
+                .Alpha();
   } else {
     forced_current_color = style.GetInternalForcedCurrentColor(
         /* No is_current_color because we might not be forced_current_color */);
     alpha = style.BackgroundColor()
                 .Resolve(style.GetCurrentColor(), style.UsedColorScheme(),
                          &alpha_is_current_color)
-                .AlphaAsInteger();
+                .Alpha();
   }
 
   bool result_is_current_color;
-  blink::Color result = style.InternalForcedBackgroundColor().ResolveWithAlpha(
-      forced_current_color, style.UsedColorScheme(), alpha,
-      &result_is_current_color);
+  blink::Color result = style.InternalForcedBackgroundColor().Resolve(
+      forced_current_color, style.UsedColorScheme(), &result_is_current_color);
+  result.SetAlpha(alpha);
 
   if (is_current_color) {
     *is_current_color = alpha_is_current_color || result_is_current_color;
