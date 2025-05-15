@@ -264,7 +264,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
       base::optional_ref<const std::vector<std::string>>
           trusted_bidding_signals_keys,
       base::Value::Dict additional_params,
-      const std::optional<std::string>& buyer_tkv_signals,
+      base::optional_ref<const std::string> buyer_tkv_signals,
       int& partition_id);
 
   // Requests scoring signals. Return value is a Handle which must be kept alive
@@ -300,7 +300,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
       const GURL& render_url,
       const std::vector<GURL>& component_render_urls,
       base::Value::Dict additional_params,
-      const std::optional<std::string>& seller_tkv_signals,
+      base::optional_ref<const std::string> seller_tkv_signals,
       int& partition_id);
 
   // TrustedSignalsFetcher implementation:
@@ -487,7 +487,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
         network::mojom::IPAddressSpace ip_address_space,
         const url::Origin& joining_origin,
         base::Value::Dict additional_params,
-        const std::optional<std::string>& buyer_tkv_signals);
+        base::optional_ref<const std::string> buyer_tkv_signals);
 
     ~BiddingCacheKey();
 
@@ -551,7 +551,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
         const GURL& render_url,
         const std::vector<GURL>& component_render_urls,
         base::Value::Dict additional_params,
-        const std::optional<std::string>& seller_tkv_signals);
+        base::optional_ref<const std::string> seller_tkv_signals);
 
     ~ScoringCacheKey();
 

@@ -2417,11 +2417,6 @@ class InterestGroupAuction::BuyerHelper
                             std::move(optional_pair->second));
     }
 
-    const blink::AuctionConfig::MaybePromiseJson* tkv_signals = GetTkvSignals();
-    // This method must only be called once any applicable buyer TKV signals
-    // promise is resolved.
-    CHECK(!tkv_signals || !tkv_signals->is_promise());
-
     int partition_id;
     bid_state.bidding_signals_handle =
         auction_->interest_group_manager_->trusted_signals_cache()
@@ -2435,8 +2430,7 @@ class InterestGroupAuction::BuyerHelper
                 *interest_group.trusted_bidding_signals_url,
                 *interest_group.trusted_bidding_signals_coordinator,
                 interest_group.trusted_bidding_signals_keys,
-                std::move(additional_params),
-                tkv_signals ? tkv_signals->value() : std::nullopt,
+                std::move(additional_params), GetTkvSignalsAsOptionalRef(),
                 partition_id);
     return auction_worklet::mojom::TrustedSignalsCacheKey::New(
         bid_state.bidding_signals_handle->compression_group_token(),
@@ -3070,6 +3064,23 @@ class InterestGroupAuction::BuyerHelper
   const blink::AuctionConfig::MaybePromiseJson* GetTkvSignals() const {
     // TODO(crbug.com/412588114): Consider caching a raw pointer to this.
     return auction_->InterestGroupAuction::GetBuyerTKVSignals(owner_);
+  }
+
+  // Helper to returns TKV signals as an `optional_ref`. This avoids copying the
+  // TKV buyer signals optional, as the ternary conditional operator would do
+  // (e.g. `optional ? optional : std::nullopt` would copy `optional`).
+  //
+  // May only be called once any TKV signals promise has been resolved.
+  base::optional_ref<const std::string> GetTkvSignalsAsOptionalRef() const {
+    const blink::AuctionConfig::MaybePromiseJson* tkv_signals = GetTkvSignals();
+    if (!tkv_signals) {
+      return std::nullopt;
+    }
+
+    // This method must only be called once any applicable buyer TKV signals
+    // promise is resolved.
+    CHECK(!tkv_signals->is_promise());
+    return tkv_signals->value();
   }
 
   size_t size_limit_;

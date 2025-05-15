@@ -257,7 +257,7 @@ TrustedSignalsCacheImpl::BiddingCacheKey::BiddingCacheKey(
     network::mojom::IPAddressSpace ip_address_space,
     const url::Origin& joining_origin,
     base::Value::Dict additional_params,
-    const std::optional<std::string>& buyer_tkv_signals)
+    base::optional_ref<const std::string> buyer_tkv_signals)
     : interest_group_name(std::move(interest_group_name)),
       fetch_key(std::move(url_loader_factory),
                 frame_tree_node_id,
@@ -269,7 +269,7 @@ TrustedSignalsCacheImpl::BiddingCacheKey::BiddingCacheKey(
                 coordinator),
       joining_origin(joining_origin),
       additional_params(std::move(additional_params)),
-      buyer_tkv_signals(buyer_tkv_signals) {}
+      buyer_tkv_signals(buyer_tkv_signals.CopyAsOptional()) {}
 
 TrustedSignalsCacheImpl::BiddingCacheKey::BiddingCacheKey(BiddingCacheKey&&) =
     default;
@@ -393,7 +393,7 @@ TrustedSignalsCacheImpl::ScoringCacheKey::ScoringCacheKey(
     const GURL& render_url,
     const std::vector<GURL>& component_render_urls,
     base::Value::Dict additional_params,
-    const std::optional<std::string>& seller_tkv_signals)
+    base::optional_ref<const std::string> seller_tkv_signals)
     : render_url(render_url),
       component_render_urls(component_render_urls.begin(),
                             component_render_urls.end()),
@@ -408,7 +408,7 @@ TrustedSignalsCacheImpl::ScoringCacheKey::ScoringCacheKey(
       joining_origin(joining_origin),
       interest_group_owner(interest_group_owner),
       additional_params(std::move(additional_params)),
-      seller_tkv_signals(seller_tkv_signals) {}
+      seller_tkv_signals(seller_tkv_signals.CopyAsOptional()) {}
 
 TrustedSignalsCacheImpl::ScoringCacheKey::ScoringCacheKey(ScoringCacheKey&&) =
     default;
@@ -863,7 +863,7 @@ TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
     base::optional_ref<const std::vector<std::string>>
         trusted_bidding_signals_keys,
     base::Value::Dict additional_params,
-    const std::optional<std::string>& buyer_tkv_signals,
+    base::optional_ref<const std::string> buyer_tkv_signals,
     int& partition_id) {
   bool is_group_by_origin =
       execution_mode ==
@@ -976,7 +976,7 @@ TrustedSignalsCacheImpl::RequestTrustedScoringSignals(
     const GURL& render_url,
     const std::vector<GURL>& component_render_urls,
     base::Value::Dict additional_params,
-    const std::optional<std::string>& seller_tkv_signals,
+    base::optional_ref<const std::string> seller_tkv_signals,
     int& partition_id) {
   ScoringCacheKey cache_key(
       seller, trusted_signals_url, coordinator, std::move(url_loader_factory),
