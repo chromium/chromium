@@ -529,6 +529,13 @@ void VideoResourceUpdater::ObtainFrameResource(
     return;
   }
 
+  // TODO(crbug.com/410591523): Move this to where the TransferableResources are
+  // created. Note that it will be necessary to query `external_resource.type`
+  // at that point as `frame_resource_type_` won't yet be assigned.
+  external_resource.resource.alpha_type =
+      (frame_resource_type_ == VideoFrameResourceType::RGBA_PREMULTIPLIED)
+          ? kPremul_SkAlphaType
+          : kUnpremul_SkAlphaType;
   frame_resource_id_ = resource_provider_->ImportResource(
       external_resource.resource,
       std::move(external_resource.release_callback));
@@ -600,8 +607,6 @@ void VideoResourceUpdater::AppendQuad(
                            needs_blending, frame_resource_id_, uv_top_left,
                            uv_bottom_right, SkColors::kTransparent,
                            nearest_neighbor, false, protected_video_type);
-      texture_quad->premultiplied_alpha =
-          frame_resource_type_ == VideoFrameResourceType::RGBA_PREMULTIPLIED;
 #if BUILDFLAG(IS_WIN)
       // Windows uses DComp surfaces to e.g. hold MediaFoundation videos, which
       // must be promoted to overlay to be composited correctly.

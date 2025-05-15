@@ -168,7 +168,7 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
       !data.ReadHdrMetadata(&out->hdr_metadata) ||
       !data.ReadYcbcrInfo(&out->ycbcr_info) || !data.ReadId(&id) ||
       !data.ReadSynchronizationType(&out->synchronization_type) ||
-      !data.ReadOrigin(&out->origin) ||
+      !data.ReadOrigin(&out->origin) || !data.ReadAlphaType(&out->alpha_type) ||
       !data.ReadResourceSource(&out->resource_source)) {
     return false;
   }

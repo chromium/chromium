@@ -159,7 +159,6 @@ bool StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad>::Read(
     return false;
   }
 
-  quad->premultiplied_alpha = data.premultiplied_alpha();
   gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kClear;
   viz::OverlayPriority overlay_priority_hint = viz::OverlayPriority::kLow;

@@ -145,6 +145,7 @@ ResourceId CreateGpuResource(
       false /* is_overlay_candidate */);
   gl_resource.color_space = std::move(color_space);
   gl_resource.origin = origin;
+  gl_resource.alpha_type = alpha_type;
   auto release_callback =
       base::BindOnce(&DeleteSharedImage, std::move(client_shared_image));
   return resource_provider->ImportResource(gl_resource,
@@ -351,7 +352,6 @@ void CreateTestTwoColoredTextureDrawQuad(
   quad->SetNew(shared_state, rect, rect, needs_blending, mapped_resource,
                uv_top_left, uv_bottom_right, background_color, nearest_neighbor,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
-  quad->premultiplied_alpha = premultiplied_alpha;
 }
 
 // TODO(crbug.com/40219248): Make this function use SkColor4f
@@ -421,7 +421,6 @@ void CreateTestTextureDrawQuad(
   quad->SetNew(shared_state, rect, rect, needs_blending, mapped_resource,
                uv_top_left, uv_bottom_right, background_color, nearest_neighbor,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
-  quad->premultiplied_alpha = premultiplied_alpha;
 }
 
 void CreateTestY16TextureDrawQuad_FromVideoFrame(
@@ -6409,7 +6408,6 @@ class ColorTransformPixelTest
                    uv_top_left, uv_bottom_right, SkColors::kBlack,
                    nearest_neighbor,
                    /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
-      quad->premultiplied_alpha = this->premultiplied_alpha_;
 
       auto* color_quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
       color_quad->SetNew(shared_state, rect, rect, SkColors::kBlack, false);

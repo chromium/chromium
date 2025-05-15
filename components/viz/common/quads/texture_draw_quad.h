@@ -59,7 +59,6 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
   SkColor4f background_color = SkColors::kTransparent;
   cc::PaintFlags::DynamicRangeLimitMixture dynamic_range_limit;
   bool nearest_neighbor : 1;
-  bool premultiplied_alpha : 1;
 
   // True if the quad must only be GPU composited if shown on secure outputs.
   bool secure_output_only : 1;

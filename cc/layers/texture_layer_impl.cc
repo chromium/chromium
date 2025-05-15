@@ -100,6 +100,12 @@ bool TextureLayerImpl::WillDraw(
         DCHECK(MayEvictResourceInBackground(
             transferable_resource_.resource_source));
       }
+
+      // NOTE: We must perform any updates to `transferable_resource_` *before*
+      // exporting it to the resource provider, as that copies the resource into
+      // a new instance that is what is transferred across processes.
+      transferable_resource_.alpha_type =
+          premultiplied_alpha_ ? kPremul_SkAlphaType : kUnpremul_SkAlphaType;
       resource_id_ = resource_provider->ImportResource(
           transferable_resource_,
           /* impl_thread_release_callback= */ viz::ReleaseCallback(),
@@ -149,7 +155,6 @@ void TextureLayerImpl::AppendQuads(const AppendQuadsContext& context,
                resource_id_, uv_top_left_, uv_bottom_right_, bg_color,
                nearest_neighbor,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
-  quad->premultiplied_alpha = premultiplied_alpha_;
   quad->dynamic_range_limit = GetDynamicRangeLimit();
   ValidateQuadResources(quad);
 }

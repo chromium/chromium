@@ -416,12 +416,6 @@ struct StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad> {
     return quad->rounded_display_masks_info;
   }
 
-  static bool premultiplied_alpha(const viz::DrawQuad& input) {
-    const viz::TextureDrawQuad* quad =
-        viz::TextureDrawQuad::MaterialCast(&input);
-    return quad->premultiplied_alpha;
-  }
-
   static const gfx::PointF& uv_top_left(const viz::DrawQuad& input) {
     const viz::TextureDrawQuad* quad =
         viz::TextureDrawQuad::MaterialCast(&input);

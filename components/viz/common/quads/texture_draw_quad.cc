@@ -19,7 +19,6 @@ namespace viz {
 
 TextureDrawQuad::TextureDrawQuad()
     : nearest_neighbor(false),
-      premultiplied_alpha(true),
       secure_output_only(false),
       is_video_frame(false),
       protected_video_type(gfx::ProtectedVideoType::kClear) {
@@ -86,7 +85,6 @@ const TextureDrawQuad* TextureDrawQuad::MaterialCast(const DrawQuad* quad) {
 
 void TextureDrawQuad::ExtendValue(base::trace_event::TracedValue* value) const {
   value->SetInteger("resource_id", resource_id.GetUnsafeValue());
-  value->SetBoolean("premultiplied_alpha", premultiplied_alpha);
 
   cc::MathUtil::AddToTracedValue("uv_top_left", uv_top_left, value);
   cc::MathUtil::AddToTracedValue("uv_bottom_right", uv_bottom_right, value);

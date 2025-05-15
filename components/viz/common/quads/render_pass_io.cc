@@ -1251,7 +1251,9 @@ void TextureDrawQuadToDict(const TextureDrawQuad* draw_quad,
                            base::Value::Dict* dict) {
   DCHECK(draw_quad);
   DCHECK(dict);
-  dict->Set("premultiplied_alpha", draw_quad->premultiplied_alpha);
+  // Set premultiplied_alpha to not break backwards-compatibility with unit test
+  // data.
+  dict->Set("premultiplied_alpha", true);
   dict->Set("uv_top_left", PointFToDict(draw_quad->uv_top_left));
   dict->Set("uv_bottom_right", PointFToDict(draw_quad->uv_bottom_right));
   dict->Set("background_color", SkColor4fToDict(draw_quad->background_color));
@@ -1437,8 +1439,6 @@ bool TextureDrawQuadFromDict(const base::Value::Dict& dict,
                              TextureDrawQuad* draw_quad) {
   DCHECK(draw_quad);
 
-  std::optional<bool> premultiplied_alpha =
-      dict.FindBool("premultiplied_alpha");
   const base::Value::Dict* uv_top_left = dict.FindDict("uv_top_left");
   const base::Value::Dict* uv_bottom_right = dict.FindDict("uv_bottom_right");
   // TODO(crbug.com/40942150): Update
@@ -1451,9 +1451,8 @@ bool TextureDrawQuadFromDict(const base::Value::Dict& dict,
   const std::string* protected_video_type =
       dict.FindString("protected_video_type");
 
-  if (!premultiplied_alpha || !uv_top_left || !uv_bottom_right ||
-      !vertex_opacity || !nearest_neighbor || !secure_output_only ||
-      !protected_video_type) {
+  if (!uv_top_left || !uv_bottom_right || !vertex_opacity ||
+      !nearest_neighbor || !secure_output_only || !protected_video_type) {
     return false;
   }
   int protected_video_type_index =
@@ -1474,7 +1473,6 @@ bool TextureDrawQuadFromDict(const base::Value::Dict& dict,
       common.needs_blending, resource_id, t_uv_top_left, t_uv_bottom_right,
       t_background_color, nearest_neighbor.value(), secure_output_only.value(),
       static_cast<gfx::ProtectedVideoType>(protected_video_type_index));
-  draw_quad->premultiplied_alpha = premultiplied_alpha.value();
 
   gfx::Rect t_damage_rect;
   if (damage_rect && RectFromDict(*damage_rect, &t_damage_rect)) {

@@ -99,6 +99,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   const gfx::HDRMetadata& GetHDRMetadata(ResourceId id) const;
 
   GrSurfaceOrigin GetOrigin(ResourceId id) const;
+  SkAlphaType GetAlphaType(ResourceId id) const;
 
   // Indicates if this resource may be used for a hardware overlay plane.
   bool IsOverlayCandidate(ResourceId id) const;

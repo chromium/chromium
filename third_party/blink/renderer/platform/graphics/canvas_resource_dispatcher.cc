@@ -292,6 +292,9 @@ bool CanvasResourceDispatcher::PrepareFrame(
 
   PostImageToPlaceholderIfNotBlocked(std::move(canvas_resource), resource_id);
 
+  // TODO(crbug.com/645993): this should be inherited from WebGL context's
+  // creation settings.
+  resource.alpha_type = kPremul_SkAlphaType;
   frame->resource_list.push_back(std::move(resource));
 
   viz::TextureDrawQuad* quad =
@@ -303,10 +306,6 @@ bool CanvasResourceDispatcher::PrepareFrame(
   quad->SetAll(sqs, bounds, bounds, needs_blending, resource_id, uv_top_left,
                uv_bottom_right, SkColors::kTransparent, nearest_neighbor,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
-
-  // TODO(crbug.com/645993): this should be inherited from WebGL context's
-  // creation settings.
-  quad->premultiplied_alpha = true;
 
   frame->render_pass_list.push_back(std::move(pass));
 

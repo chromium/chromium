@@ -12,6 +12,7 @@ import "services/viz/public/mojom/compositing/resource_id.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/color_space.mojom";
 import "ui/gfx/mojom/hdr_metadata.mojom";
+import "skia/public/mojom/image_info.mojom";
 import "skia/public/mojom/surface_origin.mojom";
 
 // See viz::TransferableResource::SynchronizationType in
@@ -70,5 +71,6 @@ struct TransferableResource {
   bool needs_detiling;
   gpu.mojom.VulkanYCbCrInfo? ycbcr_info;
   skia.mojom.SurfaceOrigin origin;
+  skia.mojom.AlphaType alpha_type;
   ResourceSource resource_source;
 };

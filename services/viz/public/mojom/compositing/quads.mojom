@@ -88,7 +88,6 @@ struct SurfaceQuadState {
 
 struct TextureQuadState {
   ResourceId resource_id;
-  bool premultiplied_alpha;
   gfx.mojom.PointF uv_top_left;
   gfx.mojom.PointF uv_bottom_right;
   skia.mojom.SkColor4f background_color;

@@ -208,6 +208,11 @@ GrSurfaceOrigin DisplayResourceProvider::GetOrigin(ResourceId id) const {
   return resource->transferable.origin;
 }
 
+SkAlphaType DisplayResourceProvider::GetAlphaType(ResourceId id) const {
+  const ChildResource* resource = GetResource(id);
+  return resource->transferable.alpha_type;
+}
+
 int DisplayResourceProvider::CreateChild(ReturnCallback return_callback,
                                          const SurfaceId& surface_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
