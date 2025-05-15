@@ -44,6 +44,7 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
     case AutofillAiAction::kImport:
     case AutofillAiAction::kIphForOptIn:
     case AutofillAiAction::kLogToMqls:
+    case AutofillAiAction::kNavigateToSettings:
     case AutofillAiAction::kOptIn:
     case AutofillAiAction::kServerClassificationModel:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
@@ -79,6 +80,7 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
     case AutofillAiAction::kImport:
     case AutofillAiAction::kListEntityInstancesInSettings:
     case AutofillAiAction::kLogToMqls:
+    case AutofillAiAction::kNavigateToSettings:
     case AutofillAiAction::kOptIn:
       return true;
   }
@@ -100,6 +102,11 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
     return false;
   }
 
+  // State of the Address-Autofill pref.
+  if (!prefs->GetBoolean(prefs::kAutofillProfileEnabled)) {
+    return false;
+  }
+
   // State of the AutofillAI-specific enterprise policy pref.
   constexpr int kAutofillPredictionSettingsAllowWithoutLogging =
       base::to_underlying(
@@ -114,16 +121,10 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
   const int policy_pref_state = prefs->GetInteger(
       optimization_guide::prefs::
           kAutofillPredictionImprovementsEnterprisePolicyAllowed);
-  if (policy_pref_state == kAutofillPredictionSettingsDisabled) {
-    return false;
-  }
-
-  // State of the Address-Autofill pref.
-  if (!prefs->GetBoolean(prefs::kAutofillProfileEnabled)) {
-    return false;
-  }
-
-  const bool autofill_ai_enabled = GetAutofillAiOptInStatus(client);
+  const bool policy_pref_enabled =
+      policy_pref_state != kAutofillPredictionSettingsDisabled;
+  const bool user_opted_in = GetAutofillAiOptInStatus(client);
+  // Note that the policy can become disabled even after an user has opted in.
   switch (action) {
     case AutofillAiAction::kAddEntityInstanceInSettings:
     case AutofillAiAction::kCrowdsourcingVote:
@@ -134,11 +135,13 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
     case AutofillAiAction::kLogToMqls:
     case AutofillAiAction::kServerClassificationModel:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
-      return autofill_ai_enabled;
+      return policy_pref_enabled && user_opted_in;
     case AutofillAiAction::kIphForOptIn:
       // IPH should only show if the user has not opted in yet.
-      return !autofill_ai_enabled;
+      return policy_pref_enabled && !user_opted_in;
     case AutofillAiAction::kOptIn:
+      return policy_pref_enabled;
+    case autofill::AutofillAiAction::kNavigateToSettings:
       return true;
   }
   NOTREACHED();
@@ -192,6 +195,7 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
     case AutofillAiAction::kIphForOptIn:
     case AutofillAiAction::kListEntityInstancesInSettings:
     case AutofillAiAction::kLogToMqls:
+    case AutofillAiAction::kNavigateToSettings:
     case AutofillAiAction::kOptIn:
     case AutofillAiAction::kServerClassificationModel: {
       if (is_off_the_record) {

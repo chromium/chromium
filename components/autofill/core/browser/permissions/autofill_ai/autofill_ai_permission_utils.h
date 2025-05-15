@@ -34,6 +34,8 @@ enum class AutofillAiAction {
   kServerClassificationModel,
   // Access locally cached results from the server classification model.
   kUseCachedServerClassificationModelResults,
+  // Navigate and open the Autofill ai settings page.
+  kNavigateToSettings,
 };
 
 // Returns whether all permission-related requirements are met for `action`.
