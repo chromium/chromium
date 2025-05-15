@@ -32,6 +32,21 @@
 
 namespace partition_alloc {
 
+namespace internal::base {
+
+// For gtest-printers. This `operator<<` makes failures of EXPECT-s, which
+// compare TimeDelta values, human-readable.
+// E.g. Without the `operator<<`,
+//  NextInterval()
+//    Which is: 8-byte object <00-09 3D-00 00-00 00-00>
+// With the `operator<<`,
+//    Which is: 4 s
+std::ostream& operator<<(std::ostream& os, TimeDelta time_delta) {
+  return os << time_delta.InSecondsF() << " s";
+}
+
+}  // namespace internal::base
+
 using BucketDistribution = PartitionRoot::BucketDistribution;
 
 struct ThreadCacheTestParam {

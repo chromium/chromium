@@ -375,10 +375,6 @@ constexpr TimeDelta operator*(T a, TimeDelta td) {
   return td * a;
 }
 
-// For logging use only.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
-std::ostream& operator<<(std::ostream& os, TimeDelta time_delta);
-
 // TimeBase--------------------------------------------------------------------
 
 // Do not reference the time_internal::TimeBase template class directly.  Please
