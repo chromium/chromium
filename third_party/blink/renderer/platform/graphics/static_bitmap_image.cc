@@ -66,9 +66,9 @@ Vector<uint8_t> StaticBitmapImage::CopyImageData(const SkImageInfo& info,
 
   // Orient the data, and re-read the pixels.
   if (apply_orientation && !HasDefaultOrientation()) {
-    paint_image = Image::ResizeAndOrientImage(
-        paint_image, CurrentFrameOrientation(), gfx::Vector2dF(1, 1), 1,
-        kInterpolationNone);
+    paint_image = Image::ResizeAndOrientImage(paint_image, Orientation(),
+                                              gfx::Vector2dF(1, 1), 1,
+                                              kInterpolationNone);
     read_pixels_successful = paint_image.readPixels(info, dst_buffer.data(),
                                                     info.minRowBytes(), 0, 0);
     DCHECK(read_pixels_successful);

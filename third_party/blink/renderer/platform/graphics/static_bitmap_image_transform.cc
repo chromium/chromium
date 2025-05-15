@@ -72,7 +72,7 @@ ImageOrientation GetSourceOrientation(
   if (!params.orientation_from_image) {
     return ImageOrientationEnum::kOriginTopLeft;
   }
-  return source->CurrentFrameOrientation();
+  return source->Orientation();
 }
 
 // Return the oriented size of `source`.

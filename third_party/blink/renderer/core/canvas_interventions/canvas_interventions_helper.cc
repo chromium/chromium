@@ -169,7 +169,7 @@ bool CanvasInterventionsHelper::MaybeNoiseSnapshot(
 
   auto noised_image = bm.asImage();
   snapshot = blink::UnacceleratedStaticBitmapImage::Create(
-      std::move(noised_image), snapshot->CurrentFrameOrientation());
+      std::move(noised_image), snapshot->Orientation());
 
   constexpr int canvas_op_exclusive_max =
       static_cast<int>(CanvasOperationType::kMaxValue) << 1;

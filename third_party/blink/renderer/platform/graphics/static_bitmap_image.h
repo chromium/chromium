@@ -96,9 +96,7 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   // StaticBitmapImage needs to store the orientation of the image itself,
   // because the underlying representations do not. If the bitmap represents
   // a non-default orientation it must be explicitly given in the constructor.
-  ImageOrientation CurrentFrameOrientation() const override {
-    return orientation_;
-  }
+  ImageOrientation Orientation() const override { return orientation_; }
 
   void SetOrientation(ImageOrientation orientation) {
     orientation_ = orientation;

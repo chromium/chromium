@@ -85,14 +85,14 @@ void TestOrientation(scoped_refptr<media::VideoFrame> frame,
       CreateImageFromVideoFrame(frame, true, nullptr, nullptr, gfx::Rect(),
                                 /*prefer_tagged_orientation=*/true);
   if (expect_broken_tagging) {
-    EXPECT_EQ(image->CurrentFrameOrientation(), ImageOrientationEnum::kDefault);
+    EXPECT_EQ(image->Orientation(), ImageOrientationEnum::kDefault);
   } else {
-    EXPECT_EQ(image->CurrentFrameOrientation(), kTestOrientation);
+    EXPECT_EQ(image->Orientation(), kTestOrientation);
   }
 
   image = CreateImageFromVideoFrame(frame, true, nullptr, nullptr, gfx::Rect(),
                                     /*prefer_tagged_orientation=*/false);
-  EXPECT_EQ(image->CurrentFrameOrientation(), ImageOrientationEnum::kDefault);
+  EXPECT_EQ(image->Orientation(), ImageOrientationEnum::kDefault);
 }
 
 }  // namespace

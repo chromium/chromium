@@ -35,7 +35,7 @@ namespace blink {
 
 class PLATFORM_EXPORT GeneratedImage : public Image {
  public:
-  bool CurrentFrameHasSingleSecurityOrigin() const override { return true; }
+  bool HasSingleSecurityOrigin() const override { return true; }
 
   bool HasIntrinsicSize() const override { return false; }
 

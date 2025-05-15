@@ -79,14 +79,14 @@ void SVGImageElement::Trace(Visitor* visitor) const {
   SVGURIReference::Trace(visitor);
 }
 
-bool SVGImageElement::CurrentFrameHasSingleSecurityOrigin() const {
+bool SVGImageElement::HasSingleSecurityOrigin() const {
   if (auto* layout_svg_image = To<LayoutSVGImage>(GetLayoutObject())) {
     LayoutImageResource* layout_image_resource =
         layout_svg_image->ImageResource();
     ImageResourceContent* image_content = layout_image_resource->CachedImage();
     if (image_content) {
       if (Image* image = image_content->GetImage())
-        return image->CurrentFrameHasSingleSecurityOrigin();
+        return image->HasSingleSecurityOrigin();
     }
   }
   return true;

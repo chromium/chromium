@@ -40,7 +40,7 @@ class SVGFEImageElement final : public SVGFilterPrimitiveStandardAttributes,
   USING_PRE_FINALIZER(SVGFEImageElement, Dispose);
 
  public:
-  bool CurrentFrameHasSingleSecurityOrigin() const;
+  bool HasSingleSecurityOrigin() const;
 
   explicit SVGFEImageElement(Document&);
   ~SVGFEImageElement() override;

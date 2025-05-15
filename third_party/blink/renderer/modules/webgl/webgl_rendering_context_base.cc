@@ -5523,9 +5523,9 @@ void WebGLRenderingContextBase::TexImageStaticBitmapImage(
   // transformations performed inside TexImageSkImage.
   PaintImage paint_image = image->PaintImageForCurrentFrame();
   if (!image->HasDefaultOrientation()) {
-    paint_image = Image::ResizeAndOrientImage(
-        paint_image, image->CurrentFrameOrientation(), gfx::Vector2dF(1, 1), 1,
-        kInterpolationNone);
+    paint_image = Image::ResizeAndOrientImage(paint_image, image->Orientation(),
+                                              gfx::Vector2dF(1, 1), 1,
+                                              kInterpolationNone);
   }
 
   sk_sp<SkImage> sk_image = paint_image.GetSwSkImage();

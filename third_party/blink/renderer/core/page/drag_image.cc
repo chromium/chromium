@@ -114,7 +114,7 @@ std::unique_ptr<DragImage> DragImage::Create(
   auto* bitmap_image = DynamicTo<BitmapImage>(image);
   if (should_respect_image_orientation == kRespectImageOrientation &&
       bitmap_image)
-    orientation = bitmap_image->CurrentFrameOrientation();
+    orientation = bitmap_image->Orientation();
 
   SkBitmap bm;
   paint_image = Image::ResizeAndOrientImage(

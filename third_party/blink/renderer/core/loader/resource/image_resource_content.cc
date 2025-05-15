@@ -623,7 +623,7 @@ void ImageResourceContent::Changed(const blink::Image* image) {
 
 bool ImageResourceContent::IsAccessAllowed() const {
   return info_->IsAccessAllowed(
-      GetImage()->CurrentFrameHasSingleSecurityOrigin()
+      GetImage()->HasSingleSecurityOrigin()
           ? ImageResourceInfo::kHasSingleSecurityOrigin
           : ImageResourceInfo::kHasMultipleSecurityOrigin);
 }

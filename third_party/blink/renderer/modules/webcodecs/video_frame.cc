@@ -792,7 +792,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     return nullptr;
   }
 
-  const auto orientation = image->CurrentFrameOrientation().Orientation();
+  const auto orientation = image->Orientation().Orientation();
   const gfx::Size coded_size(sk_image_info.width(), sk_image_info.height());
   const gfx::Rect default_visible_rect(coded_size);
   const gfx::Size default_display_size(coded_size);

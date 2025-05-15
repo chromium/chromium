@@ -185,10 +185,9 @@ ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
                                         std::optional<gfx::Rect> crop_rect,
                                         scoped_refptr<Image> input) {
   const auto info = input->PaintImageForCurrentFrame().GetSkImageInfo();
-  return ParseOptions(options, crop_rect,
-                      gfx::Size(info.width(), info.height()),
-                      input->CurrentFrameOrientation(),
-                      info.alphaType() == kUnpremul_SkAlphaType);
+  return ParseOptions(
+      options, crop_rect, gfx::Size(info.width(), info.height()),
+      input->Orientation(), info.alphaType() == kUnpremul_SkAlphaType);
 }
 
 ImageBitmap::ParsedOptions ParseOptions(
@@ -196,7 +195,7 @@ ImageBitmap::ParsedOptions ParseOptions(
     std::optional<gfx::Rect> crop_rect,
     scoped_refptr<StaticBitmapImage> input) {
   return ParseOptions(options, crop_rect, input->GetSize(),
-                      input->CurrentFrameOrientation(),
+                      input->Orientation(),
                       input->GetAlphaType() == kUnpremul_SkAlphaType);
 }
 
@@ -340,7 +339,7 @@ ImageBitmap::ImageBitmap(ImageElementBase* image,
   }
 
   auto static_input = UnacceleratedStaticBitmapImage::Create(
-      std::move(paint_image), input->CurrentFrameOrientation());
+      std::move(paint_image), input->Orientation());
 
   image_ = ApplyTransformsFromOptions(static_input, parsed_options);
   if (!image_)
@@ -657,13 +656,11 @@ ScriptPromise<ImageBitmap> ImageBitmap::CreateAsync(
 
   // apply the orientation from EXIF metadata if needed.
   if (!parsed_options.orientation_from_image &&
-      input->CurrentFrameOrientation() !=
-          ImageOrientationEnum::kOriginTopLeft) {
-    auto affineTransform =
-        input->CurrentFrameOrientation().TransformFromDefault(
-            gfx::SizeF(draw_dst_rect.size()));
+      input->Orientation() != ImageOrientationEnum::kOriginTopLeft) {
+    auto affineTransform = input->Orientation().TransformFromDefault(
+        gfx::SizeF(draw_dst_rect.size()));
     canvas->concat(affineTransform.ToSkM44());
-    if (input->CurrentFrameOrientation().UsesWidthAsHeight()) {
+    if (input->Orientation().UsesWidthAsHeight()) {
       draw_dst_rect.set_size(gfx::TransposeSize(draw_dst_rect.size()));
     }
   }

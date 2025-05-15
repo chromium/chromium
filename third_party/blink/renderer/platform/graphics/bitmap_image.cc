@@ -84,7 +84,7 @@ BitmapImage::BitmapImage(ImageObserver* observer, bool is_multipart)
 
 BitmapImage::~BitmapImage() {}
 
-bool BitmapImage::CurrentFrameHasSingleSecurityOrigin() const {
+bool BitmapImage::HasSingleSecurityOrigin() const {
   return true;
 }
 
@@ -304,7 +304,7 @@ void BitmapImage::Draw(cc::PaintCanvas* canvas,
 
   ImageOrientation orientation = ImageOrientationEnum::kDefault;
   if (draw_options.respect_orientation == kRespectImageOrientation)
-    orientation = CurrentFrameOrientation();
+    orientation = Orientation();
 
   PaintCanvasAutoRestore auto_restore(canvas, false);
   gfx::RectF adjusted_dst_rect = dst_rect;
@@ -428,7 +428,7 @@ bool BitmapImage::IsLazyDecoded() {
   return true;
 }
 
-ImageOrientation BitmapImage::CurrentFrameOrientation() const {
+ImageOrientation BitmapImage::Orientation() const {
   return decoder_ ? decoder_->OrientationAtIndex(0)
                   : ImageOrientationEnum::kDefault;
 }

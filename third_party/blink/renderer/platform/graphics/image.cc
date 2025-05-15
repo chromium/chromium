@@ -259,7 +259,7 @@ void Image::DrawPattern(GraphicsContext& context,
   // Fetch orientation data if needed.
   ImageOrientation orientation = ImageOrientationEnum::kDefault;
   if (draw_options.respect_orientation)
-    orientation = CurrentFrameOrientation();
+    orientation = Orientation();
 
   // |tiling_info.image_rect| is in source image space, unscaled but oriented.
   // image-resolution information is baked into |tiling_info.scale|,
@@ -388,7 +388,7 @@ SkBitmap Image::AsSkBitmapForCurrentFrame(
 
     ImageOrientation orientation = ImageOrientationEnum::kDefault;
     if (respect_image_orientation == kRespectImageOrientation)
-      orientation = bitmap_image->CurrentFrameOrientation();
+      orientation = bitmap_image->Orientation();
 
     gfx::Vector2dF image_scale(1, 1);
     if (density_corrected_size != paint_image_size) {
@@ -420,7 +420,7 @@ DarkModeImageCache* Image::GetDarkModeImageCache() {
 
 gfx::RectF Image::CorrectSrcRectForImageOrientation(gfx::SizeF image_size,
                                                     gfx::RectF src_rect) const {
-  ImageOrientation orientation = CurrentFrameOrientation();
+  ImageOrientation orientation = Orientation();
   DCHECK(orientation != ImageOrientationEnum::kDefault);
   AffineTransform forward_map = orientation.TransformFromDefault(image_size);
   AffineTransform inverse_map = forward_map.Inverse();

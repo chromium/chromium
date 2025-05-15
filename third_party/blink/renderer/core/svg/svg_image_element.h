@@ -46,7 +46,7 @@ class CORE_EXPORT SVGImageElement final
 
   void Trace(Visitor*) const override;
 
-  bool CurrentFrameHasSingleSecurityOrigin() const;
+  bool HasSingleSecurityOrigin() const;
 
   SVGAnimatedLength* x() const { return x_.Get(); }
   SVGAnimatedLength* y() const { return y_.Get(); }

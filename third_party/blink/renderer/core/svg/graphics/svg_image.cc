@@ -149,12 +149,12 @@ Page* SVGImage::GetPageForTesting() {
 void SVGImage::CheckLoaded() const {
   CHECK(document_host_);
   // Failures of this assertion might result in wrong origin tainting checks,
-  // because CurrentFrameHasSingleSecurityOrigin() assumes all subresources of
+  // because HasSingleSecurityOrigin() assumes all subresources of
   // the SVG are loaded and thus ready for origin checks.
   CHECK(GetFrame()->GetDocument()->LoadEventFinished());
 }
 
-bool SVGImage::CurrentFrameHasSingleSecurityOrigin() const {
+bool SVGImage::HasSingleSecurityOrigin() const {
   if (!document_host_) {
     return true;
   }
@@ -169,11 +169,13 @@ bool SVGImage::CurrentFrameHasSingleSecurityOrigin() const {
     if (IsA<SVGForeignObjectElement>(*node))
       return false;
     if (auto* image = DynamicTo<SVGImageElement>(*node)) {
-      if (!image->CurrentFrameHasSingleSecurityOrigin())
+      if (!image->HasSingleSecurityOrigin()) {
         return false;
+      }
     } else if (auto* fe_image = DynamicTo<SVGFEImageElement>(*node)) {
-      if (!fe_image->CurrentFrameHasSingleSecurityOrigin())
+      if (!fe_image->HasSingleSecurityOrigin()) {
         return false;
+      }
     }
   }
 

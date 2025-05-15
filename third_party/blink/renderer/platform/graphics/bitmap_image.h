@@ -63,7 +63,7 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
 
   bool IsBitmapImage() const override { return true; }
 
-  bool CurrentFrameHasSingleSecurityOrigin() const override;
+  bool HasSingleSecurityOrigin() const override;
 
   gfx::Size SizeWithConfig(SizeConfig) const override;
   bool GetHotSpot(gfx::Point&) const override;
@@ -92,7 +92,7 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   bool IsLazyDecoded() override;
   size_t FrameCount() override;
   PaintImage PaintImageForCurrentFrame() override;
-  ImageOrientation CurrentFrameOrientation() const override;
+  ImageOrientation Orientation() const override;
 
   PaintImage PaintImageForTesting();
   void AdvanceAnimationForTesting() override {

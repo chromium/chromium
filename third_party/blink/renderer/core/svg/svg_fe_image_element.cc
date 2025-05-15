@@ -57,10 +57,10 @@ void SVGFEImageElement::Trace(Visitor* visitor) const {
   ImageResourceObserver::Trace(visitor);
 }
 
-bool SVGFEImageElement::CurrentFrameHasSingleSecurityOrigin() const {
+bool SVGFEImageElement::HasSingleSecurityOrigin() const {
   if (cached_image_) {
     if (Image* image = cached_image_->GetImage())
-      return image->CurrentFrameHasSingleSecurityOrigin();
+      return image->HasSingleSecurityOrigin();
   }
   return true;
 }

@@ -314,7 +314,7 @@ ExternalSource GetExternalSourceFromExternalImage(
     // PaintImageBuilder. Use the builder to create PaintImage internally.
     // Store the orientation metadata but no transforms apply to the content.
     auto image = UnacceleratedStaticBitmapImage::Create(
-        std::move(sk_image), image_for_canvas->CurrentFrameOrientation());
+        std::move(sk_image), image_for_canvas->Orientation());
 
     // Recruit Image::ResizeAndOrientImage() to apply transformation based on
     // orientation metadata. This API helps rotate contents based on orientation
@@ -325,8 +325,8 @@ ExternalSource GetExternalSourceFromExternalImage(
     if (!image_is_default_orientation) {
       PaintImage paint_image = image->PaintImageForCurrentFrame();
       paint_image = Image::ResizeAndOrientImage(
-          paint_image, image_for_canvas->CurrentFrameOrientation(),
-          gfx::Vector2dF(1, 1), 1, kInterpolationNone);
+          paint_image, image_for_canvas->Orientation(), gfx::Vector2dF(1, 1), 1,
+          kInterpolationNone);
 
       // Have default orientation now.
       image = UnacceleratedStaticBitmapImage::Create(std::move(paint_image));

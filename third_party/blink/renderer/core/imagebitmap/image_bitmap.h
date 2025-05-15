@@ -97,7 +97,7 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
   bool OriginClean() const { return image_->OriginClean(); }
   bool IsPremultiplied() const { return image_->IsPremultiplied(); }
   ImageOrientationEnum ImageOrientation() const {
-    return image_->CurrentFrameOrientation().Orientation();
+    return image_->Orientation().Orientation();
   }
   scoped_refptr<StaticBitmapImage> Transfer();
   void close();
