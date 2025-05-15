@@ -1031,9 +1031,11 @@ message ClientDownloadRequest {
   optional int32 DEPRECATED_archive_file_count = 68 [deprecated = true];
   optional int32 DEPRECATED_archive_directory_count = 69 [deprecated = true];
 
-  // Only for display on chrome://safe-browsing. The actual token is sent in the
-  // "Authorization: Bearer" header
-  optional string access_token = 78;
+  // This data must not be sent to the server in ClientDownloadRequest.
+  // This field was only used for display on chrome://safe-browsing. The token
+  // value may be sent in the "Authorization: Bearer" HTTP request header.
+  reserved 78;
+  reserved "access_token";
 
   reserved 84;
 

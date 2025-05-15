@@ -497,11 +497,6 @@ void CheckClientDownloadRequestBase::SendRequest() {
                      GetWeakPtr()));
   request_start_time_ = base::TimeTicks::Now();
 
-#if !BUILDFLAG(IS_ANDROID)
-  // Add the access token to the proto for display on chrome://safe-browsing
-  client_download_request_->set_access_token(access_token_);
-#endif
-
   // The following is to log this ClientDownloadRequest on any open
   // chrome://safe-browsing pages. If no such page is open, the request is
   // dropped and the |client_download_request_| object deleted.
