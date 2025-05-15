@@ -1889,7 +1889,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, MAYBE_CantInspectChromeScheme) {
           base::StrCat({kArbitraryPage, "#chrome://version/"}));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, CantInspectDevtoolsScheme) {
+// TODO(crbug.com/417938496): Flaky on Linux ASAN.
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_CantInspectDevtoolsScheme DISABLED_CantInspectDevtoolsScheme
+#else
+#define MAYBE_CantInspectDevtoolsScheme CantInspectDevtoolsScheme
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, MAYBE_CantInspectDevtoolsScheme) {
   LoadExtension("can_inspect_url");
   RunTest(
       "waitForTestResultsAsMessage",
