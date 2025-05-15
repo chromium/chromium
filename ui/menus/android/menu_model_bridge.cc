@@ -26,6 +26,9 @@ MenuModelBridge::MenuModelBridge() {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_ = Java_MenuModelBridge_create(env);
 }
+
+MenuModelBridge::~MenuModelBridge() = default;
+
 void MenuModelBridge::AddExtensionItems(ui::MenuModel* menu_model) {
   JNIEnv* env = base::android::AttachCurrentThread();
   for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
