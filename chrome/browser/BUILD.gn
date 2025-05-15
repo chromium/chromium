@@ -6145,11 +6145,13 @@ static_library("browser") {
       "//chrome/browser/background/glic:impl",
       "//chrome/browser/glic",
       "//chrome/browser/glic:impl",
+      "//chrome/browser/glic/media",
     ]
 
     allow_circular_includes_from += [
       "//chrome/browser/background/glic:impl",
       "//chrome/browser/glic:impl",
+      "//chrome/browser/glic/media",
     ]
   }
 

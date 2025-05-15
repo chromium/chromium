@@ -1,0 +1,49 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+
+assert(enable_glic)
+
+source_set("media") {
+  sources = [
+    "glic_media_context.cc",
+    "glic_media_context.h",
+    "glic_media_integration.cc",
+    "glic_media_integration.h",
+    "glic_media_page_cache.cc",
+    "glic_media_page_cache.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/glic:glic",
+    "//chrome/browser/profiles:profile",
+    "//components/live_caption:utils",
+    "//content/public/browser",
+  ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//components/live_caption:constants",
+    "//components/live_caption:live_caption",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "glic_media_context_unittest.cc",
+    "glic_media_integration_unittest.cc",
+    "glic_media_page_cache_unittest.cc",
+  ]
+  deps = [
+    ":media",
+    "//base/test:test_support",
+    "//chrome/browser/glic/test_support",
+    "//chrome/browser/prefs:prefs",
+    "//chrome/test:test_support",
+    "//components/optimization_guide/content/browser:browser",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
