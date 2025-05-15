@@ -200,7 +200,6 @@
 <translation id="1131201598497838573">子女的 PIN 已更新</translation>
 <translation id="1133418583142946603">新增目前的分頁</translation>
 <translation id="1133751489735776037">連按三下滑鼠</translation>
-<translation id="1134363466745332968">你可以根據一般網頁內容 (而不只是網頁標題和網址) 搜尋瀏覽記錄。這樣，無論你在網址列中使用 @history 還是經由「記錄」頁面搜尋瀏覽記錄，搜尋結果都會有所改善。</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />。第 <ph name="EMOJI_INDEX" /> 個，總共有 <ph name="EMOJI_COUNT" /> 個。</translation>
 <translation id="1136712381129578788">由於您輸入太多次錯誤的 PIN，因此安全密鑰已被鎖定。如要解鎖，請移除安全密鑰後重新插入。</translation>
 <translation id="1137589305610962734">暫存資料</translation>
@@ -3267,7 +3266,6 @@
 <translation id="3262261769033093854">不允許網站擷取和使用你的滑鼠輸入</translation>
 <translation id="3262336253311870293">由於此帳戶由 <ph name="DOMAIN" /> 管理，您將不會登出 Google 帳戶。系統將不會繼續同步您的書籤、記錄、密碼和其他設定。不過，您先前同步的資料仍會儲存在 Google 帳戶中，並可在「<ph name="BEGIN_LINK" />Google 資訊主頁<ph name="END_LINK" />」上管理。</translation>
 <translation id="3262986719682892278">太大</translation>
-<translation id="3263103592011092762">當你瀏覽網站時，其網頁內容會加密並儲存至你的裝置。如果網站內容自上次瀏覽後有變，採用 AI 技術的記錄搜尋結果和答案可能會過時。此功能可能也會影響 Chrome 的效能。</translation>
 <translation id="3264544094376351444">Sans-serif 字型</translation>
 <translation id="3264582393905923483">內容</translation>
 <translation id="3265459715026181080">關閉視窗</translation>
@@ -3843,7 +3841,6 @@
 <translation id="3670113805793654926">來自任何供應商的裝置</translation>
 <translation id="3670229581627177274">開啟藍牙功能</translation>
 <translation id="3670480940339182416">網站可使用 V8 優化工具</translation>
-<translation id="3671764914317109892">利用日常用語搜尋瀏覽記錄。你也可以提問，系統會根據瀏覽記錄提供答案。</translation>
 <translation id="3671982238795754537">進一步瞭解密鑰</translation>
 <translation id="3672681487849735243">系統偵測到原廠錯誤</translation>
 <translation id="3673097791729989571">登入由 <ph name="SAML_DOMAIN" /> 代管</translation>
@@ -6337,7 +6334,6 @@
 <translation id="542750953150239272">繼續操作即代表您同意此裝置亦可自動下載及安裝由 Google、您的流動網絡供應商及裝置製造商提供的更新和應用程式 (可能會耗用流動數據)。部分應用程式可能會提供應用程式內購買。</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (有可用的更新)</translation>
 <translation id="542948651837270806">需要安裝信任平台模組韌體的更新。請參閱 <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
-<translation id="5429549332422308385">只有啟用此功能後瀏覽的網站，才會在採用 AI 技術的記錄搜尋結果中顯示。</translation>
 <translation id="5429818411180678468">全形</translation>
 <translation id="5430931332414098647">即時網絡共享</translation>
 <translation id="5431318178759467895">顏色</translation>
@@ -6495,7 +6491,6 @@
 <translation id="5542750926112347543">已封鎖來自 <ph name="DOMAIN" /> 的 Cookie</translation>
 <translation id="5542949973455282971">正在連線至 <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">正在檢查狀態…</translation>
-<translation id="5544193518673765595">系統會根據網頁內容顯示答案和搜尋結果。這樣，無論你在網址列中使用「@history」還是經由「記錄」頁面搜尋瀏覽記錄，搜尋結果都會有所改善。</translation>
 <translation id="5544482392629385159">第 <ph name="DEVICE_INDEX" /> 部裝置 (共 <ph name="DEVICE_COUNT" /> 部)，<ph name="DEVICE_NAME" /></translation>
 <translation id="554517701842997186">轉譯器</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{在群組中加入分頁}other{在群組中加入分頁}}</translation>
@@ -7890,7 +7885,6 @@
 <translation id="656293578423618167">檔案路徑或名稱太長。請選用較短的名稱或將其儲存至其他位置。</translation>
 <translation id="6563002009564846727">查看從 Windows 匯入的憑證</translation>
 <translation id="6563055593659435495">無法與手機保持連線。請確認你的手機在附近並已解鎖，且已開啟藍牙和 Wi-Fi。</translation>
-<translation id="6564860838537532172">當你搜尋瀏覽記錄時，你的記錄搜尋內容、最相符的網頁內容及生成式模型輸出項目都會傳送給 Google，並可能交由人手審查以改善有關功能。</translation>
 <translation id="6565144332292237355">網站可使用此功能來搜尋和連線至區域網絡上的任何裝置</translation>
 <translation id="6568283005472142698">分頁搜尋</translation>
 <translation id="6569931898053264308">節省中量記憶體</translation>
@@ -8265,7 +8259,6 @@
 <translation id="6818920801736417483">要儲存密碼嗎？</translation>
 <translation id="6820079682647046800">Kerberos 驗證失敗</translation>
 <translation id="6821439254917412979">取消固定「<ph name="EXTENSION_NAME" />」</translation>
-<translation id="6823097506504975234">當你搜尋瀏覽記錄時，你的記錄搜尋字詞、最相符的網頁內容及生成式模型輸出項目都會傳送給 Google，並可能交由人手審查以改善有關功能。</translation>
 <translation id="6823174134746916417">觸控板輕按點撃功能</translation>
 <translation id="6823561724060793716">你可以透過網址列開啟網頁資料，查看目前所在網頁的其他資料</translation>
 <translation id="6824564591481349393">複製電郵地址(&amp;E)</translation>
@@ -9656,7 +9649,6 @@
 <translation id="7811263553491007091">請再試一次，或選取下方其中一個先前生成的主題。</translation>
 <translation id="7811986034759500329">在系統設定中設置</translation>
 <translation id="7812170317334653156">「Google 日曆」已隱藏</translation>
-<translation id="7814090115158024843">一律在這些網站上停用撰寫協助</translation>
 <translation id="7814458197256864873">複製(&amp;C)</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">編輯「<ph name="EXTENSION_NAME" />」的快速鍵 <ph name="SHORTCUT" /></translation>
@@ -11015,7 +11007,6 @@
 <translation id="8749863574775030885">存取來自未知供應商的 USB 裝置</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> 要求與序列連接埠連線</translation>
 <translation id="8750346984209549530">流動網絡 APN</translation>
-<translation id="8750521821491993283">利用日常用語搜尋瀏覽記錄，搜尋你瀏覽過的網站。只有啟用此功能後瀏覽的網站，才會在採用 AI 技術的記錄搜尋結果中顯示。</translation>
 <translation id="8750786237117206586">管理 ChromeOS Flex 音訊設定</translation>
 <translation id="8751034568832412184">學校</translation>
 <translation id="8751329102746373229">來自管理員的憑證</translation>
@@ -11703,7 +11694,6 @@
 <translation id="93393615658292258">只限密碼</translation>
 <translation id="934244546219308557">為此群組命名</translation>
 <translation id="93480724622239549">問題或錯誤</translation>
-<translation id="93522993865592410">當你瀏覽網站時，其網頁內容會以加密形式儲存在你的裝置上。這可能會影響 Chrome 的效能。</translation>
 <translation id="9354763467503131">允許要求在你的裝置上安裝網絡應用程式</translation>
 <translation id="936646668635477464">攝錄機和麥克風</translation>
 <translation id="936801553271523408">系統診斷數據</translation>

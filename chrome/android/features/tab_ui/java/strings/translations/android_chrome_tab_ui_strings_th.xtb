@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">ราคาสินค้านี้เพิ่งลดลงจาก <ph name="PREVIOUS_PRICE" /> เหลือ <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">ตอนนี้ระบบจะเก็บแท็บที่ซ้ำกันทั้งหมดด้วย ยกเว้นสำเนาที่ใช้ล่าสุด</translation>
 <translation id="6193448654517602979">เลือกแท็บ</translation>
+<translation id="6220820548421939212">ได้ ตกลง</translation>
 <translation id="6228793724645064692">(คะแนนร้านค้า)</translation>
 <translation id="6271513594716432922">ปิดแท็บที่ไม่ได้ใช้งานทั้งหมด</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{เพิ่มแท็บไปยังกลุ่มใหม่}other{เพิ่มแท็บไปยังกลุ่มใหม่}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">กิจกรรม</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ การให้คะแนน <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> รีวิว}other{การให้คะแนน <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> รีวิว}}</translation>
 <translation id="7885132941432959125">ย้ายแท็บไปทางขวา</translation>
+<translation id="788914896430720926">เก็บส่วนที่ไม่ได้ใช้งานไว้ให้เรียบร้อยไหม</translation>
 <translation id="7939917283308035850">ไม่ได้เลือก <ph name="COLOR_NAME" /> อยู่</translation>
 <translation id="7942349550061667556">สีแดง</translation>
 <translation id="7961015016161918242">ไม่ต้องเลย</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">ระบบจะนำกิจกรรมในแท็บที่ไม่ระบุตัวตนเหล่านี้ออกจากอุปกรณ์นี้</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{สร้างเมื่อ <ph name="NUM_MONTHS_ONE" /> เดือนที่ผ่านมา}other{สร้างเมื่อ <ph name="NUM_MONTHS_MANY" /> เดือนที่ผ่านมา}}</translation>
 <translation id="8820741577754260431">ดูการลดราคาในแท็บ</translation>
+<translation id="883379923675618699">Chrome จะปิดรายการในส่วนที่ไม่ได้ใช้งานซึ่งคุณไม่ได้ใช้เป็นเวลา 3 เดือนโดยอัตโนมัติ คุณปิดฟีเจอร์นี้ในการตั้งค่าได้ทุกเมื่อ</translation>
 <translation id="8887921976452567404">แท็บและกลุ่มที่ปิดไว้สามารถเปิดอีกครั้งได้ในส่วน "แท็บล่าสุด" และส่วน "กลุ่มแท็บ"</translation>
 <translation id="8915916167043355778">ปิดทั้งหมด</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{ย้ายไปยังหน้าต่างใหม่}other{ย้ายไปยังหน้าต่างอื่น}}</translation>

@@ -96,7 +96,6 @@
 <translation id="1377508275003315939">Паролі</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} з {count} адреси}one{{position} з {count} адреси}few{{position} з {count} адрес}many{{position} з {count} адрес}other{{position} з {count} адреси}}</translation>
 <translation id="1383876407941801731">Пошук</translation>
-<translation id="1385168997509105202">Ви відразу втратите доступ до групи вкладок "<ph name="GROUP_NAME" />", а <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) більше не зможе взаємодіяти з вами в сервісах Google.</translation>
 <translation id="138618066238211776">Продовжити як <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Опції для зберігання картки</translation>
 <translation id="1396260204083880024">Ви ввійшли як <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Відкрити меню облікового запису.</translation>
@@ -653,7 +652,6 @@
 <translation id="381219490185664296">Розгрупувати вкладки?</translation>
 <translation id="3812308602011798782">Відгуки</translation>
 <translation id="3813175908845379029">Корисні підказки, які полегшують і покращують вебперегляд</translation>
-<translation id="3815668647912194650">Збережіть цю групу, щоб додавати вкладки пізніше, або вийдіть із неї, якщо вона вам більше не потрібна.</translation>
 <translation id="3819183753496523827">Ви не в мережі. Перевірте інтернет-з’єднання й повторіть спробу.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 спосіб оплати}one{# спосіб оплати}few{# способи оплати}many{# способів оплати}other{# способу оплати}}</translation>
 <translation id="3831560640878483188">Закрити попередження?</translation>
@@ -1001,7 +999,6 @@
 <translation id="5197255632782567636">Інтернет</translation>
 <translation id="5200894869889836319">Параметри дозволів</translation>
 <translation id="5203051773066903947">Ввести</translation>
-<translation id="5205750905107419335"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) одразу втратить доступ до групи вкладок "<ph name="GROUP_NAME" />" і більше не зможе взаємодіяти з вами в сервісах Google.</translation>
 <translation id="5206453674369664567">Вийти й очистити дані</translation>
 <translation id="5210365745912300556">Закрити вкладку</translation>
 <translation id="5211488077761630279">Дозволити сайту <ph name="SITE_NAME" /> використовувати <ph name="PERMISSION" />?</translation>
@@ -1081,7 +1078,6 @@
 <translation id="5567439033041178034">ДОКЛАДНІШЕ</translation>
 <translation id="5572648434713976849">В адресному рядку з’являтимуться покращені підказки</translation>
 <translation id="5576885723883013398">Нове вікно</translation>
-<translation id="5578543325423650885"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) одразу втратить доступ до групи вкладок "<ph name="GROUP_NAME" />".</translation>
 <translation id="5578795271662203820">Шукати зображення в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Сховати опцію "Список читання"</translation>
 <translation id="5585019845078534178">Картки</translation>
@@ -1570,6 +1566,7 @@
 <translation id="750493650310597496">Вибрано 0</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Щоб закріпляти анонімні вкладки, налаштуйте Touch ID, Face ID або код доступу.</translation>
+<translation id="750886945254958667">Збережіть цю групу, щоб додавати вкладки пізніше, або вийдіть із неї, якщо вона вам більше не потрібна</translation>
 <translation id="7512075701202892785">Ваш улюблений вебпереглядач на iPad</translation>
 <translation id="7512909159512473473">Ввести парольну фразу…</translation>
 <translation id="7514365320538308">Завантажити</translation>

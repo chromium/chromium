@@ -550,7 +550,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="7986741934819883144">Select a contact</translation>
 <translation id="7990211076305263060">When on, sites can ask to use your microphone. When off, sites can't use your microphone.</translation>
 <translation id="8007176423574883786">Turned off for this device</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Hide continue with this tab card}other{Hide continue with these tabs card}}</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Hide 'Continue with this tab' card}other{Hide 'Continue with these tabs' card}}</translation>
 <translation id="802154636333426148">Download failed</translation>
 <translation id="8042586301629853791">Sort by:</translation>
 <translation id="8051193500142930381">Features that need a camera won't work</translation>

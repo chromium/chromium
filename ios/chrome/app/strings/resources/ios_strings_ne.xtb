@@ -96,7 +96,6 @@
 <translation id="1377508275003315939">पासवर्डहरू</translation>
 <translation id="1381022135873211423">{count,plural, =1{सूचीमा भएका {count} मध्ये {position} ठेगाना}other{सूचीमा भएका {count} मध्ये {position} वटा ठेगाना}}</translation>
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
-<translation id="1385168997509105202">तपाईं तत्कालै “<ph name="GROUP_NAME" />" ट्याब समूहको एक्सेस गुमाउनु हुने छ र <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) अबदेखि Google का विभिन्न सेवाहरूमार्फत तपाईंसँग अन्तर्क्रिया गर्न सक्नु हुने छैन।</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> का नामबाट जारी राख्नुहोस्</translation>
 <translation id="138692594145659985">कार्ड सेभ गर्ने विकल्पहरू</translation>
 <translation id="1396260204083880024"><ph name="USER_NAME" /> का रूपमा साइन इन गरिएको छ। <ph name="USER_EMAIL" />। खाताको मेनु खोल्नुहोस्।</translation>
@@ -653,7 +652,6 @@
 <translation id="381219490185664296">ट्याबहरू समूहबाट हटाउने हो?</translation>
 <translation id="3812308602011798782">समीक्षाहरू</translation>
 <translation id="3813175908845379029">अझ राम्ररी र सजिलैसँग ब्राउज गर्न सघाउने उपयोगी सुझावहरू</translation>
-<translation id="3815668647912194650">ट्याबहरू पछि हाल्न यो समूह राखिराख्नुहोस् वा तपाईं अबदेखि यो समूह एक्सेस गर्न चाहनुहुन्न भने यो समूह छाड्नुहोस्।</translation>
 <translation id="3819183753496523827">तपाईं अफलाइन हुनुहुन्छ। आफ्नो इन्टरनेट कनेक्सनको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{एउटा भुक्तानी विधि}other{# वटा भुक्तानी विधि}}</translation>
 <translation id="3831560640878483188">चेतावनी बन्द गर्ने हो?</translation>
@@ -1001,7 +999,6 @@
 <translation id="5197255632782567636">इन्टरनेट</translation>
 <translation id="5200894869889836319">अनुमति तय गर्ने विकल्पहरू</translation>
 <translation id="5203051773066903947">हाल्नुहोस्</translation>
-<translation id="5205750905107419335"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) तत्कालै <ph name="GROUP_NAME" /> ट्याब समूहको एक्सेस गुमाउनु हुने छ र अबदेखि Google का विभिन्न सेवाहरूमार्फत तपाईंसँग अन्तर्क्रिया गर्न सक्नु हुने छैन।</translation>
 <translation id="5206453674369664567">साइन आउट गर्नुहोस् र डेटा मेटाउनुहोस्</translation>
 <translation id="5210365745912300556">ट्याब बन्द गर्नुहोस्</translation>
 <translation id="5211488077761630279">"<ph name="SITE_NAME" />" लाई आफ्नो <ph name="PERMISSION" /> प्रयोग गर्ने अनुमति दिन चाहनुहुन्छ?</translation>
@@ -1081,7 +1078,6 @@
 <translation id="5567439033041178034">थप जान्नुहोस्</translation>
 <translation id="5572648434713976849">तपाईं एड्रेस बारमा अझ राम्रा सुझावहरू प्राप्त गर्नु हुने छ</translation>
 <translation id="5576885723883013398">नयाँ विन्डो</translation>
-<translation id="5578543325423650885"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) तत्कालै “<ph name="GROUP_NAME" />" ट्याब समूहको एक्सेस गुमाउनु हुने छ।</translation>
 <translation id="5578795271662203820">यस छविको लागि <ph name="SEARCH_ENGINE" /> खोज्नुहोस्</translation>
 <translation id="5579012242779565775">"रिडिङ लिस्ट" लुकाउनुहोस्</translation>
 <translation id="5585019845078534178">कार्डहरू</translation>
@@ -1570,6 +1566,7 @@
 <translation id="750493650310597496">0 चयन गरियो</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />)।</translation>
 <translation id="7508728395076009983">आफ्ना इन्कोग्निटो ट्याबहरू लक गर्न Touch ID, Face ID वा पासकोड सेटअप गर्नुहोस्।</translation>
+<translation id="750886945254958667">ट्याबहरू पछि हाल्न यो समूह राखिराख्नुहोस् वा तपाईं अबदेखि यो एक्सेस गर्न चाहनुहुन्न भने यसबाट बाहिरिनुहोस्</translation>
 <translation id="7512075701202892785">तपाईंलाई मन पर्ने ब्राउजर अब iPad मा उपलब्ध भएको छ</translation>
 <translation id="7512909159512473473">पासफ्रेज हाल्नुहोस्…</translation>
 <translation id="7514365320538308">डाउनलोड गर्नुहोस्</translation>

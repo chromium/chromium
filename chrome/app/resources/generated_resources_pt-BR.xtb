@@ -200,7 +200,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1131201598497838573">O PIN da criança foi atualizado</translation>
 <translation id="1133418583142946603">Adicionar guia atual</translation>
 <translation id="1133751489735776037">Clicar três vezes com o mouse</translation>
-<translation id="1134363466745332968">Você pode pesquisar seu histórico de navegação com base no conteúdo geral da página, não apenas no título e no URL. Isso oferece resultados melhores, seja na pesquisa do histórico de navegação na barra de endereço usando @history ou na página "Histórico".</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> de <ph name="EMOJI_COUNT" /></translation>
 <translation id="1136712381129578788">A chave de segurança está bloqueada porque o PIN incorreto foi inserido muitas vezes. Remova e insira a chave novamente para desbloqueá-la.</translation>
 <translation id="1137589305610962734">dados temporários</translation>
@@ -3269,7 +3268,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3262261769033093854">Não permitir que os sites capturem e usem a entrada do mouse</translation>
 <translation id="3262336253311870293">Como essa conta é gerenciada por <ph name="DOMAIN" />, sua Conta do Google não vai ser desconectada. Seus favoritos, histórico, senhas e outras configurações não serão mais sincronizados. No entanto, os dados sincronizados anteriormente vão continuar armazenados na sua conta e poderão ser gerenciados no <ph name="BEGIN_LINK" />Painel do Google<ph name="END_LINK" />.</translation>
 <translation id="3262986719682892278">Muito grande</translation>
-<translation id="3263103592011092762">Quando você navega em sites, o conteúdo das páginas é criptografado e salvo no seu dispositivo.  Os resultados e as respostas da pesquisa de histórico com tecnologia de IA poderão ficar desatualizados se o conteúdo do site tiver mudado desde a última visita.  Esse recurso também pode afetar o desempenho do Chrome.</translation>
 <translation id="3264544094376351444">Fonte Sans-Serif</translation>
 <translation id="3264582393905923483">Contexto</translation>
 <translation id="3265459715026181080">Fechar janela</translation>
@@ -3844,7 +3842,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3670113805793654926">Dispositivos de qualquer fornecedor</translation>
 <translation id="3670229581627177274">Ativar Bluetooth</translation>
 <translation id="3670480940339182416">Permitir que sites usem o otimizador V8</translation>
-<translation id="3671764914317109892">Use a linguagem cotidiana para pesquisar no seu histórico de navegação. Também é possível fazer perguntas e receber respostas com base nesse histórico.</translation>
 <translation id="3671982238795754537">Saiba mais sobre chaves de acesso</translation>
 <translation id="3672681487849735243">Foi detectado um erro de fábrica</translation>
 <translation id="3673097791729989571">Login hospedado por <ph name="SAML_DOMAIN" /></translation>
@@ -6342,7 +6339,6 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="542750953150239272">Ao continuar, você aceita que este dispositivo também pode fazer o download e a instalação de atualizações e apps do Google, da operadora e do fabricante do dispositivo automaticamente, possivelmente usando dados da rede celular. Alguns desses apps podem oferecer compras no aplicativo.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (atualização disponível)</translation>
 <translation id="542948651837270806">É necessário instalar uma atualização do firmware Trusted Platform Module. Acesse <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
-<translation id="5429549332422308385">Apenas os sites que você visitar depois de ativar este recurso vão aparecer nos resultados da pesquisa no histórico com tecnologia de IA.</translation>
 <translation id="5429818411180678468">Extensão total</translation>
 <translation id="5430931332414098647">Tethering instantâneo</translation>
 <translation id="5431318178759467895">Colorido</translation>
@@ -6500,7 +6496,6 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5542750926112347543">Os cookies de <ph name="DOMAIN" /> foram bloqueados</translation>
 <translation id="5542949973455282971">Conectando-se à <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Verificando status...</translation>
-<translation id="5544193518673765595">As respostas e os resultados da pesquisa são baseados no conteúdo de uma página.  Isso oferece resultados melhores, seja na pesquisa do histórico de navegação na barra de endereço usando "@history" ou na página "Histórico".</translation>
 <translation id="5544482392629385159">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />: <ph name="DEVICE_NAME" /></translation>
 <translation id="554517701842997186">Renderizador</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Adicionar guia ao grupo}one{Adicionar guia ao grupo}other{Adicionar guias ao grupo}}</translation>
@@ -7899,7 +7894,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="656293578423618167">O caminho ou nome do arquivo é muito longo. Salve com um nome mais curto ou em outro local.</translation>
 <translation id="6563002009564846727">Ver certificados importados do Windows</translation>
 <translation id="6563055593659435495">Não é possível manter uma conexão com o smartphone. Confira se o smartphone está por perto, desbloqueado e com o Bluetooth e o Wi-Fi ativados.</translation>
-<translation id="6564860838537532172">Quando você pesquisa no histórico de navegação, as pesquisas do histórico, o conteúdo da página das melhores correspondências e as saídas do modelo geradas são enviados ao Google e podem ser vistos por revisores humanos para melhorar esse recurso.</translation>
 <translation id="6565144332292237355">Os sites podem usar esse recurso para buscar e se conectar a qualquer dispositivo na sua rede local</translation>
 <translation id="6568283005472142698">Pesquisa de guias</translation>
 <translation id="6569931898053264308">Economia média</translation>
@@ -8276,7 +8270,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6818920801736417483">Salvar senhas?</translation>
 <translation id="6820079682647046800">Falha na autenticação Kerberos</translation>
 <translation id="6821439254917412979">Liberar <ph name="EXTENSION_NAME" /></translation>
-<translation id="6823097506504975234">Quando você pesquisa no histórico de navegação, os termos de pesquisa do histórico, o conteúdo da página das melhores correspondências e as saídas do modelo gerado são enviados ao Google e podem ser vistos por revisores humanos para melhorar esse recurso.</translation>
 <translation id="6823174134746916417">Tocar para clicar no touchpad</translation>
 <translation id="6823561724060793716">Na barra de endereço, você pode abrir as informações da página para saber mais sobre o site que está visitando</translation>
 <translation id="6824564591481349393">Copiar &amp;endereço de e-mail</translation>
@@ -9670,7 +9663,6 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7811263553491007091">Tente de novo ou selecione um dos temas gerados anteriormente abaixo.</translation>
 <translation id="7811986034759500329">Definir nas configurações do sistema</translation>
 <translation id="7812170317334653156">Google Agenda oculto</translation>
-<translation id="7814090115158024843">Nunca oferecer ajuda para escrever nestes sites</translation>
 <translation id="7814458197256864873">Co&amp;piar</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Editar o atalho <ph name="SHORTCUT" /> para a extensão <ph name="EXTENSION_NAME" /></translation>
@@ -11028,7 +11020,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8749863574775030885">Acessar dispositivos USB de um fornecedor desconhecido</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> quer se conectar a uma porta serial</translation>
 <translation id="8750346984209549530">APN da rede celular</translation>
-<translation id="8750521821491993283">Use a linguagem cotidiana para pesquisar no seu histórico de navegação e encontrar sites que você visitou. Apenas os sites que você visitar depois de ativar este recurso vão aparecer nos resultados da pesquisa no histórico com tecnologia de IA.</translation>
 <translation id="8750786237117206586">Gerenciar as configurações de áudio do ChromeOS Flex</translation>
 <translation id="8751034568832412184">Escola</translation>
 <translation id="8751329102746373229">Do seu administrador</translation>
@@ -11720,7 +11711,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="93393615658292258">Somente senha</translation>
 <translation id="934244546219308557">Dê um nome para este grupo</translation>
 <translation id="93480724622239549">Bug ou erro</translation>
-<translation id="93522993865592410">Quando você navega em sites, o conteúdo das páginas é salvo de forma criptografada no seu dispositivo. Isso pode afetar o desempenho do Chrome.</translation>
 <translation id="9354763467503131">Podem pedir para instalar apps da Web no dispositivo</translation>
 <translation id="936646668635477464">Câmera e microfone</translation>
 <translation id="936801553271523408">Dados de diagnóstico do sistema</translation>

@@ -550,7 +550,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="7986741934819883144">Seleziona un contatto</translation>
 <translation id="7990211076305263060">Quando l'opzione è attiva, i siti potrebbero chiedere l'utilizzo del microfono. Quando l'opzione è disattivata, i siti non possono utilizzare il microfono.</translation>
 <translation id="8007176423574883786">Disattivata per questo dispositivo</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Nascondi scheda Continua con questa scheda}other{Nascondi scheda Continua con queste schede}}</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Nascondi "Continua con questa scheda"}other{Nascondi "Continua con queste schede"}}</translation>
 <translation id="802154636333426148">Download non riuscito</translation>
 <translation id="8042586301629853791">Ordina per:</translation>
 <translation id="8051193500142930381">Le funzionalità che richiedono una videocamera non funzioneranno</translation>

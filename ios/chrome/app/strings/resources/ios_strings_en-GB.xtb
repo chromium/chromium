@@ -96,7 +96,6 @@
 <translation id="1377508275003315939">Passwords</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} of {count} address}other{{position} of {count} addresses}}</translation>
 <translation id="1383876407941801731">Search</translation>
-<translation id="1385168997509105202">You'll immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) will no longer be able to interact with you across Google services.</translation>
 <translation id="138618066238211776">Continue as <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Options to save card</translation>
 <translation id="1396260204083880024">Signed in as <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Open account menu.</translation>
@@ -534,6 +533,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3208260410153224535">Your organisation turned off sign-in. New bookmarks, passwords and more will be saved only to this device.</translation>
 <translation id="3213807041830307252">Shop, translate and identify what you see using your camera and photo gallery.</translation>
 <translation id="3214379938835224220">You were signed out as part of your iPad reset. Tap continue below to sign in.</translation>
+<translation id="3218296450292600703">Signing in with your managed account helps you keep browsing related to your organisation (including tabs, history and passwords) separate from your other browsing</translation>
 <translation id="3224075676564434205">The tabs will remain open on this device but the group will be deleted from all devices signed in to <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">To export passwords, you must first set a passcode on your device.</translation>
 <translation id="3227137524299004712">Microphone</translation>
@@ -653,7 +653,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="381219490185664296">Ungroup tab group?</translation>
 <translation id="3812308602011798782">Reviews</translation>
 <translation id="3813175908845379029">Helpful suggestions that make browsing better and easier</translation>
-<translation id="3815668647912194650">Keep this group to add tabs later, or leave it if you no longer want access to it.</translation>
 <translation id="3819183753496523827">You're offline. Check your Internet connection and try again.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 payment method}other{# payment methods}}</translation>
 <translation id="3831560640878483188">Dismiss warning?</translation>
@@ -1001,7 +1000,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5200894869889836319">Options to set permissions</translation>
 <translation id="5203051773066903947">Enter</translation>
-<translation id="5205750905107419335"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) will immediately lose access to the '<ph name="GROUP_NAME" />' tab group and will no longer be able to interact with you across Google services.</translation>
 <translation id="5206453674369664567">Sign out and clear data</translation>
 <translation id="5210365745912300556">Close tab</translation>
 <translation id="5211488077761630279">Allow ‘<ph name="SITE_NAME" />’ to use your <ph name="PERMISSION" />?</translation>
@@ -1081,7 +1079,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5567439033041178034">LEARN MORE</translation>
 <translation id="5572648434713976849">You'll get improved suggestions in the address bar</translation>
 <translation id="5576885723883013398">New window</translation>
-<translation id="5578543325423650885"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) will immediately lose access to the '<ph name="GROUP_NAME" />' tab group.</translation>
 <translation id="5578795271662203820">Search <ph name="SEARCH_ENGINE" /> for this image</translation>
 <translation id="5579012242779565775">Hide reading list</translation>
 <translation id="5585019845078534178">Cards</translation>
@@ -1570,6 +1567,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="750493650310597496">0 selected</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">To lock your incognito tabs, set up touch ID, face ID or a passcode.</translation>
+<translation id="750886945254958667">Keep this group to add tabs later, or leave it if you no longer want access to it</translation>
 <translation id="7512075701202892785">The browser that you love, now on iPad</translation>
 <translation id="7512909159512473473">Enter passphrase…</translation>
 <translation id="7514365320538308">Download</translation>

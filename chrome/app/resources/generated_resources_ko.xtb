@@ -200,7 +200,6 @@
 <translation id="1131201598497838573">자녀의 PIN이 업데이트됨</translation>
 <translation id="1133418583142946603">현재 탭 추가</translation>
 <translation id="1133751489735776037">마우스 세 번 클릭</translation>
-<translation id="1134363466745332968">페이지 제목과 URL뿐만 아니라 일반 페이지 콘텐츠를 기준으로 방문 기록을 검색할 수 있습니다. 이렇게 하면 @history를 사용하여 주소 표시줄에서 또는 방문 기록 페이지에서 방문 기록을 검색할 때 더 나은 결과를 얻을 수 있습니다.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_COUNT" />개 중 <ph name="EMOJI_INDEX" />번째.</translation>
 <translation id="1136712381129578788">잘못된 PIN을 너무 여러 번 입력하여 보안 키가 잠겼습니다. 보안 키를 잠금 해제하려면 분리한 후 다시 삽입하세요.</translation>
 <translation id="1137589305610962734">임시 데이터</translation>
@@ -3272,7 +3271,6 @@
 <translation id="3262261769033093854">사이트에서 마우스 입력을 캡처하고 사용하도록 허용하지 않음</translation>
 <translation id="3262336253311870293"><ph name="DOMAIN" />에서 관리하는 계정이므로 Google 계정에서 로그아웃되지 않습니다. 북마크, 방문 기록, 비밀번호, 기타 설정이 더 이상 동기화되지 않습니다. 하지만 이전에 동기화된 데이터는 Google 계정에 계속 남아 있으며 <ph name="BEGIN_LINK" />Google 대시보드<ph name="END_LINK" />에서 관리할 수 있습니다.</translation>
 <translation id="3262986719682892278">너무 큼</translation>
-<translation id="3263103592011092762">사이트를 탐색하면 페이지 콘텐츠가 암호화되어 기기에 저장됩니다.  마지막 방문 이후 사이트 콘텐츠가 변경된 경우 AI 기반 방문 기록 검색 결과 및 답변이 오래된 정보일 수 있습니다.  이 기능은 Chrome의 성능에도 영향을 줄 수 있습니다.</translation>
 <translation id="3264544094376351444">Sans-serif</translation>
 <translation id="3264582393905923483">컨텍스트</translation>
 <translation id="3265459715026181080">창 닫기</translation>
@@ -3848,7 +3846,6 @@
 <translation id="3670113805793654926">모든 공급업체의 기기</translation>
 <translation id="3670229581627177274">블루투스 켜기</translation>
 <translation id="3670480940339182416">사이트에서 V8 옵티마이저를 사용할 수 있음</translation>
-<translation id="3671764914317109892">일상적인 단어를 사용하여 방문 기록을 검색하세요. 방문 기록을 기반으로 질문하고 답변을 받을 수도 있습니다.</translation>
 <translation id="3671982238795754537">패스키에 대해 자세히 알아보기</translation>
 <translation id="3672681487849735243">하드웨어에서 문제가 발견되었습니다.</translation>
 <translation id="3673097791729989571">로그인 호스팅 제공: <ph name="SAML_DOMAIN" /></translation>
@@ -6346,7 +6343,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="542750953150239272">계속하면 이 기기에서 Google, 이동통신사, 기기 제조업체로부터 업데이트와 앱을 자동으로 다운로드하고 설치할 수 있으며 모바일 데이터를 사용할 수도 있음에 동의하는 것으로 간주됩니다. 일부 앱에서는 인앱 구매가 제공될 수도 있습니다.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" />(업데이트 사용 가능)</translation>
 <translation id="542948651837270806">신뢰할 수 있는 플랫폼 모듈 펌웨어 업데이트를 설치해야 합니다. <ph name="TPM_FIRMWARE_UPDATE_LINK" /> 보기</translation>
-<translation id="5429549332422308385">이 기능을 사용 설정한 후 방문한 사이트만 AI 기반 방문 기록 검색 결과에 표시됩니다.</translation>
 <translation id="5429818411180678468">전각</translation>
 <translation id="5430931332414098647">인스턴트 테더링</translation>
 <translation id="5431318178759467895">컬러</translation>
@@ -6504,7 +6500,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" />의 쿠키를 차단함</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" />에 연결 중</translation>
 <translation id="5543983818738093899">상태 확인 중...</translation>
-<translation id="5544193518673765595">답변과 검색 결과는 페이지의 콘텐츠를 기반으로 제시됩니다.  이렇게 하면 “@history“를 사용하여 주소 표시줄이나 방문 기록 페이지에서 방문 기록을 검색할 때 더 나은 결과를 얻을 수 있습니다.</translation>
 <translation id="5544482392629385159">기기 <ph name="DEVICE_INDEX" />/<ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" /></translation>
 <translation id="554517701842997186">렌더러</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{그룹에 탭 추가}other{그룹에 탭 추가}}</translation>
@@ -7902,7 +7897,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="656293578423618167">파일 경로 또는 이름이 너무 깁니다. 짧은 이름으로 변경하거나 다른 위치에 저장하세요.</translation>
 <translation id="6563002009564846727">Windows에서 가져온 인증서 보기</translation>
 <translation id="6563055593659435495">휴대전화와 연결을 유지할 수 없습니다. 휴대전화가 근처에 있고 잠금 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
-<translation id="6564860838537532172">방문 기록을 검색하면 기존 검색어, 최적 일치 페이지 콘텐츠, 생성된 모델 출력이 Google로 전송되며 이 기능을 개선하기 위해 인적 검토자가 이를 확인할 수 있습니다.</translation>
 <translation id="6565144332292237355">사이트에서 이 기능을 사용하여 로컬 네트워크의 기기를 찾고 연결할 수 있습니다.</translation>
 <translation id="6568283005472142698">탭 검색</translation>
 <translation id="6569931898053264308">메모리 다소 절약</translation>
@@ -8277,7 +8271,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6818920801736417483">비밀번호를 저장하시겠습니까?</translation>
 <translation id="6820079682647046800">Kerberos 인증 실패</translation>
 <translation id="6821439254917412979"><ph name="EXTENSION_NAME" /> 고정 해제</translation>
-<translation id="6823097506504975234">방문 기록을 검색하면 기존 검색어, 최적 일치 페이지 콘텐츠, 생성된 모델 출력이 Google로 전송되며 이 기능을 개선하기 위해 인적 검토자가 이를 확인할 수 있습니다.</translation>
 <translation id="6823174134746916417">터치패드 탭하여 클릭</translation>
 <translation id="6823561724060793716">주소 표시줄에서 페이지 정보를 열어 현재 방문 중인 페이지에 대한 추가 정보를 볼 수 있습니다.</translation>
 <translation id="6824564591481349393">이메일 주소 복사(&amp;E)</translation>
@@ -9670,7 +9663,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7811263553491007091">다시 시도하거나 아래에서 이전에 생성한 테마 중 하나를 선택하세요.</translation>
 <translation id="7811986034759500329">시스템 설정에서 설정</translation>
 <translation id="7812170317334653156">Google Calendar 숨김</translation>
-<translation id="7814090115158024843">이 사이트에서 글쓰기 도움을 제공하지 않음</translation>
 <translation id="7814458197256864873">복사(&amp;C)</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" />의 <ph name="SHORTCUT" /> 단축키 수정</translation>
@@ -11030,7 +11022,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8749863574775030885">알 수 없는 공급업체의 USB 기기에 액세스</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" />에서 시리얼 포트에 연결하려고 합니다.</translation>
 <translation id="8750346984209549530">셀룰러 APN</translation>
-<translation id="8750521821491993283">일상적인 단어를 사용하여 방문 기록을 검색하고 방문한 사이트를 찾아보세요. 이 기능을 사용 설정한 후 방문한 사이트만 AI 기반 방문 기록 검색 결과에 표시됩니다.</translation>
 <translation id="8750786237117206586">ChromeOS Flex 오디오 설정 관리</translation>
 <translation id="8751034568832412184">학교</translation>
 <translation id="8751329102746373229">관리자 제공 인증서</translation>
@@ -11722,7 +11713,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="93393615658292258">비밀번호만</translation>
 <translation id="934244546219308557">그룹 이름 지정</translation>
 <translation id="93480724622239549">버그 또는 오류</translation>
-<translation id="93522993865592410">사이트를 탐색하면 사이트의 페이지 콘텐츠가 기기에 암호화된 형식으로 저장됩니다. 이로 인해 Chrome의 성능이 저하될 수 있습니다.</translation>
 <translation id="9354763467503131">기기에 웹 앱 설치를 요청할 수 있음</translation>
 <translation id="936646668635477464">카메라 및 마이크</translation>
 <translation id="936801553271523408">시스템 진단 데이터</translation>

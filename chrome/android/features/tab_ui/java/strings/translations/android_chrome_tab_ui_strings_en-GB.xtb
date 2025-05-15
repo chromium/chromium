@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">The price of this item recently dropped from <ph name="PREVIOUS_PRICE" /> to <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">All duplicate tabs will now also be archived, with the exception of the most recently used copy.</translation>
 <translation id="6193448654517602979">Select tabs</translation>
+<translation id="6220820548421939212">Yes. I'm in</translation>
 <translation id="6228793724645064692">(store rating)</translation>
 <translation id="6271513594716432922">Close all inactive tabs</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Add tab to new group}other{Add tabs to new group}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Activity</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_ONE" /> review}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_MANY" /> reviews}}</translation>
 <translation id="7885132941432959125">Move tab right</translation>
+<translation id="788914896430720926">Keep your inactive section tidy?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> not selected</translation>
 <translation id="7942349550061667556">Red</translation>
 <translation id="7961015016161918242">Never</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Your activity in these Incognito tabs will be removed from this device</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Created <ph name="NUM_MONTHS_ONE" /> month ago}other{Created <ph name="NUM_MONTHS_MANY" /> months ago}}</translation>
 <translation id="8820741577754260431">See price drops on your tabs</translation>
+<translation id="883379923675618699">Chrome automatically closes items in the inactive section that you haven't used in three months. You can turn this off now or at any time in Settings.</translation>
 <translation id="8887921976452567404">Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section.</translation>
 <translation id="8915916167043355778">Close all</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Move to new window}other{Move to other window}}</translation>

@@ -200,7 +200,6 @@
 <translation id="1131201598497838573">孩子的 PIN 码已更新</translation>
 <translation id="1133418583142946603">添加当前标签页</translation>
 <translation id="1133751489735776037">三击鼠标</translation>
-<translation id="1134363466745332968">您可以根据一般网页内容（而不仅仅是网页标题和网址）搜索您的浏览记录。无论您是使用 @history 在地址栏中搜索浏览记录，还是在“历史记录”页面中搜索，这都能让您获得更优质的搜索结果。</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />。第 <ph name="EMOJI_INDEX" /> 个，共 <ph name="EMOJI_COUNT" /> 个。</translation>
 <translation id="1136712381129578788">此安全密钥已被锁定，因为您输错 PIN 码的次数过多。要解锁此密钥，请先将其拔出，然后再重新插入。</translation>
 <translation id="1137589305610962734">临时数据</translation>
@@ -3247,7 +3246,6 @@
 <translation id="3262261769033093854">不允许网站捕获和使用您的鼠标输入</translation>
 <translation id="3262336253311870293">由于此账号是由 <ph name="DOMAIN" /> 管理，您不会被强制退出自己的 Google 账号。您的书签、历史记录、密码和其他设置将不再保持同步。不过，您之前同步的数据仍会存储在您的 Google 账号中，并可通过 <ph name="BEGIN_LINK" />Google 信息中心<ph name="END_LINK" />进行管理。</translation>
 <translation id="3262986719682892278">太大</translation>
-<translation id="3263103592011092762">当您浏览网站时，网页内容会加密并保存到您的设备上。如果网站内容自您上次访问以来发生了变化，那么基于 AI 功能所提供的历史记录搜索结果和答案可能会过时。此功能还可能会影响 Chrome 的性能。</translation>
 <translation id="3264544094376351444">Sans-serif 字体</translation>
 <translation id="3264582393905923483">上下文</translation>
 <translation id="3265459715026181080">关闭窗口</translation>
@@ -3823,7 +3821,6 @@
 <translation id="3670113805793654926">来自任何供应商的设备</translation>
 <translation id="3670229581627177274">开启蓝牙</translation>
 <translation id="3670480940339182416">网站可以使用 V8 优化工具</translation>
-<translation id="3671764914317109892">使用日常用语搜索您的浏览记录。您还可以提出问题，系统会根据您的浏览记录提供答案。</translation>
 <translation id="3671982238795754537">详细了解通行密钥</translation>
 <translation id="3672681487849735243">检测到出厂错误</translation>
 <translation id="3673097791729989571">由 <ph name="SAML_DOMAIN" /> 托管的登录服务</translation>
@@ -6319,7 +6316,6 @@
 <translation id="542750953150239272">继续操作即表示您同意：此设备还可自动下载并安装来自 Google、您的运营商和此设备的制造商的更新及应用（期间可能会使用移动数据网络），其中的部分应用可能会提供应用内购商品。</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" />（可进行更新）</translation>
 <translation id="542948651837270806">需为“可信平台模块”固件安装更新。请访问 <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
-<translation id="5429549332422308385">只有在您开启此功能后访问的网站才会显示在具有 AI 功能的历史记录搜索结果中。</translation>
 <translation id="5429818411180678468">全角</translation>
 <translation id="5430931332414098647">即时网络共享</translation>
 <translation id="5431318178759467895">彩色</translation>
@@ -6477,7 +6473,6 @@
 <translation id="5542750926112347543">已拦截来自 <ph name="DOMAIN" /> 的 Cookie</translation>
 <translation id="5542949973455282971">正在连接到<ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">正在检查状态…</translation>
-<translation id="5544193518673765595">系统会根据网页内容提供回答和搜索结果。无论您是使用“@history”在地址栏中搜索浏览记录，还是在“历史记录”页面中搜索，这都能让您获得更优质的搜索结果。</translation>
 <translation id="5544482392629385159">第 <ph name="DEVICE_INDEX" /> 部设备（共 <ph name="DEVICE_COUNT" /> 部），设备名称为“<ph name="DEVICE_NAME" />”</translation>
 <translation id="554517701842997186">渲染程序</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{向群组中添加标签页}other{向群组中添加标签页}}</translation>
@@ -7872,7 +7867,6 @@
 <translation id="656293578423618167">该文件的路径或名称过长。请以较短的名称保存或保存到其他位置。</translation>
 <translation id="6563002009564846727">查看从 Windows 导入的证书</translation>
 <translation id="6563055593659435495">无法保持与手机的连接。请确保手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi。</translation>
-<translation id="6564860838537532172">当您搜索浏览记录时，您的历史搜索、最匹配的网页内容以及生成的模型输出会发送给 Google，并且可能由人工审核员查看，以改进此功能。</translation>
 <translation id="6565144332292237355">网站可以使用此功能查找并连接到本地网络上的任何设备</translation>
 <translation id="6568283005472142698">标签页搜索</translation>
 <translation id="6569931898053264308">节省适量内存</translation>
@@ -8247,7 +8241,6 @@
 <translation id="6818920801736417483">保存密码？</translation>
 <translation id="6820079682647046800">Kerberos 身份验证失败</translation>
 <translation id="6821439254917412979">取消固定“<ph name="EXTENSION_NAME" />”</translation>
-<translation id="6823097506504975234">当您搜索浏览记录时，您的历史记录搜索字词、最匹配的网页内容以及生成的模型输出会发送给 Google，并且可能由人工审核员查看，以改进此功能。</translation>
 <translation id="6823174134746916417">触控板点按即点击</translation>
 <translation id="6823561724060793716">在地址栏中，您可打开网页信息，查看当前所访问网页的更多信息</translation>
 <translation id="6824564591481349393">复制电子邮件地址(&amp;E)</translation>
@@ -9641,7 +9634,6 @@
 <translation id="7811263553491007091">请重试，或从下面之前生成的主题中选择一个。</translation>
 <translation id="7811986034759500329">在系统设置中设置</translation>
 <translation id="7812170317334653156">Google 日历已隐藏</translation>
-<translation id="7814090115158024843">在这些网站上一律停用写作帮助</translation>
 <translation id="7814458197256864873">复制(&amp;C)</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">修改“<ph name="EXTENSION_NAME" />”的快捷方式 <ph name="SHORTCUT" /></translation>
@@ -11000,7 +10992,6 @@
 <translation id="8749863574775030885">访问来自未知供应商的 USB 设备</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> 想连接到串行端口</translation>
 <translation id="8750346984209549530">移动网络 APN</translation>
-<translation id="8750521821491993283">使用日常用语搜索您的浏览记录，并查找您访问过的网站。只有在您开启此功能后访问的网站才会显示在使用 AI 功能生成的历史记录搜索结果中。</translation>
 <translation id="8750786237117206586">管理 ChromeOS Flex 音频设置</translation>
 <translation id="8751034568832412184">学校</translation>
 <translation id="8751329102746373229">来自您的管理员</translation>
@@ -11692,7 +11683,6 @@
 <translation id="93393615658292258">密码</translation>
 <translation id="934244546219308557">为此组命名</translation>
 <translation id="93480724622239549">问题或错误</translation>
-<translation id="93522993865592410">当您浏览网站时，网页内容会以加密形式保存在您的设备上。这可能会影响 Chrome 的性能。</translation>
 <translation id="9354763467503131">可以请求在设备上安装 Web 应用</translation>
 <translation id="936646668635477464">摄像头和麦克风</translation>
 <translation id="936801553271523408">系统诊断数据</translation>

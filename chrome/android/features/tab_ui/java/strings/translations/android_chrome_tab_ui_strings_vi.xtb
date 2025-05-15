@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Mức giá của mặt hàng này gần đây đã giảm từ <ph name="PREVIOUS_PRICE" /> xuống còn <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Giờ đây, tất cả các thẻ trùng lặp cũng sẽ được lưu trữ, ngoại trừ thẻ trùng lặp được sử dụng gần đây nhất.</translation>
 <translation id="6193448654517602979">Chọn các thẻ</translation>
+<translation id="6220820548421939212">Có. Tôi đồng ý</translation>
 <translation id="6228793724645064692">(điểm xếp hạng cửa hàng)</translation>
 <translation id="6271513594716432922">Đóng tất cả các thẻ không hoạt động</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Thêm thẻ vào nhóm mới}other{Thêm các thẻ vào nhóm mới}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Hoạt động</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Điểm xếp hạng: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> bài đánh giá}other{Điểm xếp hạng: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> bài đánh giá}}</translation>
 <translation id="7885132941432959125">Chuyển thẻ sang phải</translation>
+<translation id="788914896430720926">Dọn dẹp mục không hoạt động?</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> hiện không được chọn</translation>
 <translation id="7942349550061667556">Đỏ</translation>
 <translation id="7961015016161918242">Không bao giờ</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Hoạt động của bạn trong các thẻ ẩn danh này sẽ bị xoá khỏi thiết bị này</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Tạo <ph name="NUM_MONTHS_ONE" /> tháng trước}other{Tạo <ph name="NUM_MONTHS_MANY" /> tháng trước}}</translation>
 <translation id="8820741577754260431">Xem các mặt hàng giảm giá trong thẻ của bạn</translation>
+<translation id="883379923675618699">Chrome tự động đóng các mục trong phần không hoạt động mà bạn không dùng đến trong vòng 3 tháng. Bạn có thể tắt tính năng này ngay bây giờ hoặc bất cứ lúc nào trong phần Cài đặt.</translation>
 <translation id="8887921976452567404">Bạn có thể mở lại các thẻ và nhóm đã đóng trong phần Các thẻ gần đây và phần Nhóm thẻ.</translation>
 <translation id="8915916167043355778">Đóng tất cả</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Chuyển sang cửa sổ mới}other{Chuyển sang cửa sổ khác}}</translation>

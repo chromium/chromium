@@ -96,7 +96,6 @@
 <translation id="1377508275003315939">Лозинке</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position}. од {count} адресе}one{{position}. од {count} адресе}few{{position}. од {count} адресе}other{{position}. од {count} адреса}}</translation>
 <translation id="1383876407941801731">Претражи</translation>
-<translation id="1385168997509105202">Одмах ћете изгубити приступ групи картица <ph name="GROUP_NAME" /> и <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) више неће моћи да комуницира са вама у Google услугама.</translation>
 <translation id="138618066238211776">Настави као <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Опције за чување картице</translation>
 <translation id="1396260204083880024">Пријављени сте као <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Отвори мени налога.</translation>
@@ -654,7 +653,6 @@
 <translation id="381219490185664296">Желите да раздвојите групу картица?</translation>
 <translation id="3812308602011798782">Рецензије</translation>
 <translation id="3813175908845379029">Корисни предлози који чине прегледање бољим и лакшим</translation>
-<translation id="3815668647912194650">Задржите ову групу да бисте додали картице касније или је напустите ако више не желите да јој приступате.</translation>
 <translation id="3819183753496523827">Офлајн сте. Проверите интернет везу и пробајте поново.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 начин плаћања}one{# начин плаћања}few{# начина плаћања}other{# начина плаћања}}</translation>
 <translation id="3831560640878483188">Желите да одбаците упозорење?</translation>
@@ -1002,7 +1000,6 @@
 <translation id="5197255632782567636">Интернет</translation>
 <translation id="5200894869889836319">Опције за подешавање дозвола</translation>
 <translation id="5203051773066903947">Унеси</translation>
-<translation id="5205750905107419335"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) ће одмах изгубити приступ групи картица <ph name="GROUP_NAME" /> и више неће моћи да комуницира са вама у Google услугама.</translation>
 <translation id="5206453674369664567">Одјави ме и обриши податке</translation>
 <translation id="5210365745912300556">Затвори картицу</translation>
 <translation id="5211488077761630279">Желите да дозволите да <ph name="SITE_NAME" /> користи дозволу <ph name="PERMISSION" />?</translation>
@@ -1082,7 +1079,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5567439033041178034">САЗНАЈТЕ ВИШЕ</translation>
 <translation id="5572648434713976849">Добијаћете побољшане предлоге на траци за адресу</translation>
 <translation id="5576885723883013398">Нови прозор</translation>
-<translation id="5578543325423650885"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) ће одмах изгубити приступ групи картица <ph name="GROUP_NAME" />.</translation>
 <translation id="5578795271662203820">Потражи ову слику на <ph name="SEARCH_ENGINE" />-у</translation>
 <translation id="5579012242779565775">Сакриј опцију Листа за читање</translation>
 <translation id="5585019845078534178">Картице</translation>
@@ -1571,6 +1567,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="750493650310597496">Изабрано је 0 ставки</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Да бисте закључали картице без архивирања, подесите Touch ID, Face ID или шифру.</translation>
+<translation id="750886945254958667">Задржите ову групу да бисте додали картице касније или је напустите ако више не желите да јој приступате</translation>
 <translation id="7512075701202892785">Прегледач који волите сада и на iPad-у</translation>
 <translation id="7512909159512473473">Унеси приступну фразу…</translation>
 <translation id="7514365320538308">Преузми</translation>
@@ -1906,6 +1903,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8786100550345425552">Измените дозволе</translation>
 <translation id="878871978861915380">Сакриј Праћење цена</translation>
 <translation id="8792626944327216835">микрофон</translation>
+<translation id="8796634520835503150">Режим читања је доступан</translation>
 <translation id="8803526663383843427">Када је укључено</translation>
 <translation id="8803639129939845298">Безбедан</translation>
 <translation id="8806823403540278281">Организација захтева да прегледате приватно. Картице се не чувају у режиму без архивирања.

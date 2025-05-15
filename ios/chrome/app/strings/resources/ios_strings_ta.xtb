@@ -96,7 +96,6 @@
 <translation id="1377508275003315939">கடவுச்சொற்கள்</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count} முகவரியில் {position}வது}other{{count} முகவரிகளில் {position}வது}}</translation>
 <translation id="1383876407941801731">தேடுக</translation>
-<translation id="1385168997509105202">“<ph name="GROUP_NAME" />” பக்கக் குழுவிற்கான இணைப்பை உடனடியாக இழப்பீர்கள். அத்துடன், Google சேவை எதிலும் உங்களை இனி <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) தொடர்புகொள்ள முடியாது.</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> ஆகத் தொடர்க</translation>
 <translation id="138692594145659985">கார்டைச் சேமிப்பதற்கான விருப்பங்கள்</translation>
 <translation id="1396260204083880024">உள்நுழைந்துள்ள கணக்கு: <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. கணக்கு மெனுவைத் திறக்கும்.</translation>
@@ -653,7 +652,6 @@
 <translation id="381219490185664296">பக்கக் குழுவைப் பிரிக்கவா?</translation>
 <translation id="3812308602011798782">கருத்துகள்</translation>
 <translation id="3813175908845379029">பிரவுஸிங்கை இன்னும் சிறப்பானதாகவும் சுலபமானதாகவும் மாற்றக்கூடிய உதவிகரமான பரிந்துரைகள்</translation>
-<translation id="3815668647912194650">பக்கங்களைப் பின்னர் சேர்ப்பதற்காக இந்தக் குழுவை வைத்திருக்கலாம், வேண்டாமென்றால் வெளியேறிவிடலாம்.</translation>
 <translation id="3819183753496523827">ஆஃப்லைனில் உள்ளீர்கள். இணைய இணைப்பைச் சரிபார்த்து மீண்டும் முயலவும்.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 பேமெண்ட் முறை}other{# பேமெண்ட் முறைகள்}}</translation>
 <translation id="3831560640878483188">எச்சரிக்கையை நிராகரிக்கவா?</translation>
@@ -1001,7 +999,6 @@
 <translation id="5197255632782567636">இணையம்</translation>
 <translation id="5200894869889836319">அனுமதிகளை அமைப்பதற்கான விருப்பங்கள்</translation>
 <translation id="5203051773066903947">உள்ளிடுங்கள்</translation>
-<translation id="5205750905107419335">“<ph name="GROUP_NAME" />” பக்கக் குழுவிற்கான இணைப்பை <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) உடனடியாக இழப்பார். அத்துடன், Google சேவை எதிலும் உங்களை இனி அவரால் தொடர்புகொள்ள முடியாது.</translation>
 <translation id="5206453674369664567">வெளியேறு &amp; தரவை அழி</translation>
 <translation id="5210365745912300556">பக்கத்தை மூடுக</translation>
 <translation id="5211488077761630279">உங்கள் <ph name="PERMISSION" /> பயன்படுத்த "<ph name="SITE_NAME" />" தளத்தை அனுமதிக்கவா?</translation>
@@ -1081,7 +1078,6 @@
 <translation id="5567439033041178034">மேலும் அறிக</translation>
 <translation id="5572648434713976849">முகவரிப் பட்டியில் இன்னும் துல்லியமான பரிந்துரைகள் காட்டப்படும்</translation>
 <translation id="5576885723883013398">புதிய சாளரம்</translation>
-<translation id="5578543325423650885">“<ph name="GROUP_NAME" />" பக்கக் குழுவிற்கான அணுகலை <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) உடனடியாக இழப்பார்.</translation>
 <translation id="5578795271662203820">இந்தப் படத்திற்கு <ph name="SEARCH_ENGINE" /> இல் தேடவும்</translation>
 <translation id="5579012242779565775">‘வாசிப்புப் பட்டியல்’ என்பதை மறை</translation>
 <translation id="5585019845078534178">கார்டுகள்</translation>
@@ -1570,6 +1566,7 @@
 <translation id="750493650310597496">எதுவும் தேர்ந்தெடுக்கப்படவில்லை</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">மறைநிலைத் தாவல்களைப் பூட்ட Touch ID, Face ID, கடவுக்குறியீடு போன்றவற்றை அமைக்கவும்.</translation>
+<translation id="750886945254958667">பக்கங்களைப் பின்னர் சேர்ப்பதற்காக இந்தக் குழுவை வைத்திருக்கலாம், வேண்டாமென்றால் வெளியேறிவிடலாம்</translation>
 <translation id="7512075701202892785">உங்களுக்கு மிகவும் பிடித்த பிரவுசர் இப்போது iPadல்</translation>
 <translation id="7512909159512473473">கடவுச்சொற்றொடரை வழங்குங்கள்…</translation>
 <translation id="7514365320538308">பதிவிறக்கு</translation>

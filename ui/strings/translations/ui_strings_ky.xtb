@@ -162,6 +162,7 @@
 <translation id="6264365405983206840">&amp;Баарын тандоо</translation>
 <translation id="6346952829206698721">Алмашуу буферинен чаптоо</translation>
 <translation id="6364916375976753737">Солго сыдырып кароо</translation>
+<translation id="63712816010840859">Эгер учурдагы дисплей сенсордук экран болбосо, "Esc" баскычын басыңыз.</translation>
 <translation id="6394627529324717982">Үтүр</translation>
 <translation id="6397363302884558537">Сүйлөөнү токтот</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{1 сек. мурун}other{# сек. мурун}}</translation>
@@ -173,6 +174,7 @@
 <translation id="6612467943526193239">Калибрлөө режиминен чыгуу үчүн "Esc" басыңыз.</translation>
 <translation id="6620110761915583480">Файлды сактоо</translation>
 <translation id="6699343763173986273">Кийинки трек медиасы</translation>
+<translation id="6738856801552481343">Эгер бул дисплей сенсордук экран болбосо, "Esc" баскычын басыңыз.</translation>
 <translation id="6807086321996342431"><ph name="COLUMN_NAME" />-мамыча</translation>
 <translation id="6808150112686056157">Медианы токтотуу</translation>
 <translation id="6845383723252244143">Куржун тандоо</translation>

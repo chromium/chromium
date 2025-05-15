@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">قیمت این محصول اخیراً از <ph name="PREVIOUS_PRICE" /> به <ph name="NEW_PRICE" /> کاهش یافته است</translation>
 <translation id="6109251075362363230">همه برگه‌های تکراری اکنون بایگانی نیز خواهند شد، به‌غیراز نسخه‌ای که آخرین بار استفاده شده است.</translation>
 <translation id="6193448654517602979">انتخاب برگه‌ها</translation>
+<translation id="6220820548421939212">بله. مایلم</translation>
 <translation id="6228793724645064692">(رده‌بندی فروشگاه)</translation>
 <translation id="6271513594716432922">بستن همه برگه‌های غیرفعال</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{افزودن برگه به گروه جدید}one{افزودن برگه به گروه جدید}other{افزودن برگه‌ها به گروه جدید}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">فعالیت</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ رده‌بندی <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />، <ph name="REVIEWS_COUNT_ONE" /> مرور}one{رده‌بندی <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />، <ph name="REVIEWS_COUNT_MANY" /> مرور}other{رده‌بندی <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />، <ph name="REVIEWS_COUNT_MANY" /> مرور}}</translation>
 <translation id="7885132941432959125">انتقال برگه به چپ</translation>
+<translation id="788914896430720926">می‌خواهید بخش غیرفعال مرتب بماند؟</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> انتخاب نشده است</translation>
 <translation id="7942349550061667556">قرمز</translation>
 <translation id="7961015016161918242">هرگز</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">فعالیتتان در این «برگه‌های ناشناس» از این دستگاه حذف خواهد شد</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{‫<ph name="NUM_MONTHS_ONE" /> ماه پیش ایجاد شد}one{‫<ph name="NUM_MONTHS_MANY" /> ماه پیش ایجاد شد}other{‫<ph name="NUM_MONTHS_MANY" /> ماه پیش ایجاد شد}}</translation>
 <translation id="8820741577754260431">دیدن کاهش قیمت در برگه‌ها</translation>
+<translation id="883379923675618699">‏‫Chrome به‌طور خودکار موارد موجود در بخش غیرفعال را که طی ۳ ماه گذشته استفاده نکرده‌اید می‌بندد. می‌توانید این ویژگی را اکنون یا در هر زمان دیگری در «تنظیمات» خاموش کنید.</translation>
 <translation id="8887921976452567404">برگه‌ها و گروه‌های بسته‌شده از بخش «برگه‌های اخیر» و بخش «گروه‌های برگه» مجدداً باز خواهند شد.</translation>
 <translation id="8915916167043355778">بستن همه</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{انتقال به پنجره جدید}one{انتقال به پنجره دیگر}other{انتقال به پنجره دیگر}}</translation>

@@ -200,7 +200,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1131201598497838573">El PIN de tu hijo/a se ha actualizado</translation>
 <translation id="1133418583142946603">Añadir pestaña actual</translation>
 <translation id="1133751489735776037">Hacer triple clic con el ratón</translation>
-<translation id="1134363466745332968">Puedes buscar en tu historial de navegación en función del contenido general de la página, no solo del título y la URL. De esta forma, obtendrás mejores resultados, tanto si buscas en el historial de navegación en la barra de direcciones usando @history como si lo haces en la página Historial.</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> de <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">La llave de seguridad está bloqueada porque se ha introducido el PIN de forma incorrecta demasiadas veces. Para desbloquearla, quítala y vuelve a introducirla.</translation>
 <translation id="1137589305610962734">datos temporales</translation>
@@ -3258,7 +3257,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3262261769033093854">No permitir que los sitios capturen y usen la entrada de tu ratón</translation>
 <translation id="3262336253311870293">Como <ph name="DOMAIN" /> administra esta cuenta, no se cerrará la sesión de tu cuenta de Google. Tus marcadores, tu historial, tus contraseñas y otros ajustes dejarán de sincronizarse. Sin embargo, los datos que hayas sincronizado anteriormente permanecerán almacenados en tu cuenta de Google y podrás gestionarlos en el <ph name="BEGIN_LINK" />Panel de Control de Google<ph name="END_LINK" />.</translation>
 <translation id="3262986719682892278">Demasiado grande</translation>
-<translation id="3263103592011092762">Cuando navegas por sitios, el contenido de sus páginas se cifra y se guarda en tu dispositivo.  Los resultados de búsqueda del historial y las respuestas basados en IA pueden quedar obsoletos si el contenido del sitio ha cambiado desde tu última visita.  Esta función también puede afectar al rendimiento de Chrome.</translation>
 <translation id="3264544094376351444">Fuente Sans-serif</translation>
 <translation id="3264582393905923483">Contexto</translation>
 <translation id="3265459715026181080">Cerrar ventana</translation>
@@ -3834,7 +3832,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3670113805793654926">Dispositivos de cualquier proveedor</translation>
 <translation id="3670229581627177274">Activar Bluetooth</translation>
 <translation id="3670480940339182416">Los sitios pueden usar el optimizador de V8</translation>
-<translation id="3671764914317109892">Usa frases cotidianas para buscar en tu historial de navegación. También puedes hacer preguntas y obtener respuestas basadas en tu historial de navegación.</translation>
 <translation id="3671982238795754537">Más información sobre las llaves de acceso</translation>
 <translation id="3672681487849735243">Se ha detectado un error de fabricación</translation>
 <translation id="3673097791729989571">Inicio de sesión alojado por <ph name="SAML_DOMAIN" /></translation>
@@ -6330,7 +6327,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="542750953150239272">Al continuar, aceptas que el dispositivo pueda descargar e instalar actualizaciones de aplicaciones de Google, de tu operador y del fabricante del dispositivo automáticamente, y que incluso pueda usar datos móviles. Es posible que algunas de estas aplicaciones ofrezcan compras en la aplicación.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (actualización disponible)</translation>
 <translation id="542948651837270806">Se necesita instalar una actualización para el firmware del módulo de plataforma de confianza. Consulta <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
-<translation id="5429549332422308385">Solo los sitios que visites después de activar esta función se mostrarán en los resultados de búsqueda del historial basados en IA</translation>
 <translation id="5429818411180678468">Ancho completo</translation>
 <translation id="5430931332414098647">Conexión compartida instantánea</translation>
 <translation id="5431318178759467895">Color</translation>
@@ -6488,7 +6484,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5542750926112347543">Se han bloqueado las cookies de <ph name="DOMAIN" /></translation>
 <translation id="5542949973455282971">Conectando con <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Comprobando el estado...</translation>
-<translation id="5544193518673765595">Las respuestas y los resultados de búsqueda se basan en el contenido de una página.  De esta forma, obtendrás mejores resultados, tanto si buscas en el historial de navegación en la barra de direcciones usando "@history" como si lo haces en la página Historial.</translation>
 <translation id="5544482392629385159">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" /></translation>
 <translation id="554517701842997186">Renderizador</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Añadir pestaña al grupo}other{Añadir pestañas al grupo}}</translation>
@@ -7886,7 +7881,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="656293578423618167">La ruta o el nombre del archivo es demasiado largo. Especifica un nombre más corto o guarda el archivo en otra ubicación.</translation>
 <translation id="6563002009564846727">Ver certificados importados desde Windows</translation>
 <translation id="6563055593659435495">No se puede mantener una conexión con tu teléfono. Asegúrate de tener el teléfono cerca, que esté desbloqueado y que el Bluetooth y la Wi-Fi estén activados.</translation>
-<translation id="6564860838537532172">Cuando buscas en el historial de navegación, las búsquedas del historial, el contenido de las páginas de las mejores coincidencias y los resultados del modelo generado se envían a Google. Puede que toda esta información la vean revisores humanos para mejorar esta función.</translation>
 <translation id="6565144332292237355">Los sitios pueden usar esta función para buscar y conectarse a cualquier dispositivo de tu red local</translation>
 <translation id="6568283005472142698">Búsqueda en pestañas</translation>
 <translation id="6569931898053264308">Ahorro medio</translation>
@@ -8261,7 +8255,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6818920801736417483">¿Guardar contraseñas?</translation>
 <translation id="6820079682647046800">Error de autenticación en Kerberos</translation>
 <translation id="6821439254917412979">No fijar <ph name="EXTENSION_NAME" /></translation>
-<translation id="6823097506504975234">Cuando buscas en el historial de navegación, los términos de búsqueda del historial, el contenido de las páginas de las mejores coincidencias y los resultados del modelo generado se envían a Google. Puede que toda esta información la vean revisores humanos para mejorar esta función.</translation>
 <translation id="6823174134746916417">Tocar para hacer clic en el panel táctil</translation>
 <translation id="6823561724060793716">En la barra de direcciones, puedes abrir la información de la página en la que estás para ver datos adicionales sobre ella</translation>
 <translation id="6824564591481349393">Copiar &amp;dirección de correo electrónico</translation>
@@ -9655,7 +9648,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7811263553491007091">Vuelve a intentarlo o selecciona uno de los temas generados anteriormente que aparecen abajo.</translation>
 <translation id="7811986034759500329">Configurado en los ajustes del sistema</translation>
 <translation id="7812170317334653156">Google Calendar oculto</translation>
-<translation id="7814090115158024843">No ofrecer nunca ayuda para escribir en estos sitios</translation>
 <translation id="7814458197256864873">&amp;Copiar</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Editar acceso directo <ph name="SHORTCUT" /> para <ph name="EXTENSION_NAME" /></translation>
@@ -11014,7 +11006,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8749863574775030885">Acceder a dispositivos USB desde un proveedor desconocido</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> solicita conectarse a un puerto serie</translation>
 <translation id="8750346984209549530">APN de la red móvil</translation>
-<translation id="8750521821491993283">Usa frases cotidianas para buscar en tu historial de navegación y encontrar los sitios que has visitado. Solo los sitios que visites después de activar esta función se mostrarán en los resultados de búsqueda del historial basados en IA</translation>
 <translation id="8750786237117206586">Gestionar la configuración de audio de ChromeOS Flex</translation>
 <translation id="8751034568832412184">Centro educativo</translation>
 <translation id="8751329102746373229">De tu administrador</translation>
@@ -11706,7 +11697,6 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="93393615658292258">Solo contraseña</translation>
 <translation id="934244546219308557">Ponle un nombre a este grupo</translation>
 <translation id="93480724622239549">Fallo o error</translation>
-<translation id="93522993865592410">Cuando navegas por sitios, el contenido de sus páginas se guarda en tu dispositivo de forma cifrada. Esto puede afectar al rendimiento de Chrome.</translation>
 <translation id="9354763467503131">Con permiso para solicitar la instalación de aplicaciones web en tu dispositivo</translation>
 <translation id="936646668635477464">Cámara y micrófono</translation>
 <translation id="936801553271523408">Datos de diagnóstico del sistema</translation>
