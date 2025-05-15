@@ -309,7 +309,7 @@ used when committed.
     coverage data with the EMMA tool.
 *   [Dynamic Feature Modules (DFMs)](android_dynamic_feature_modules.md) - What
     are they and how to create new ones.
-*   [Other build-related Android docs](../build/android/docs/index.md)
+*   [Other build-related Android docs](../build/android/docs/README.md)
 *   [Chrome for Android UI](ui/android/overview.md) - Resources and best practices for
     developing UI
 
