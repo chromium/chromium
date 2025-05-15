@@ -9641,7 +9641,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7799650166313181433"><ph name="USER_EMAIL" />에 로그인된 기기만 이 기기와 공유할 수 있습니다. 내 기기 간에 공유할 경우 승인할 필요가 없습니다.</translation>
 <translation id="7800485561443537737"><ph name="DEVICE_TYPE" />의 모바일 데이터를 사용하며 이동통신사에서 추가 요금을 부과할 수 있습니다. 배터리 사용량이 증가할 수 있습니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">반시계 방향으로 회전(&amp;O)</translation>
-<translation id="780301667611848630">사용 안함</translation>
+<translation id="780301667611848630">나중에</translation>
 <translation id="7803657407897251194">Android 기기로 설정을 계속하려면 <ph name="DEVICE_TYPE" /> 기기를 네트워크에 연결하세요</translation>
 <translation id="7804072833593604762">탭 닫음</translation>
 <translation id="7805371082115476536">밝게</translation>

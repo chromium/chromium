@@ -1518,7 +1518,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7791543448312431591">추가</translation>
 <translation id="7792388396321542707">공유 중지</translation>
 <translation id="780287761701992588">모든 기기에 북마크, 비밀번호 등 가져오기</translation>
-<translation id="780301667611848630">사용 안함</translation>
+<translation id="780301667611848630">나중에</translation>
 <translation id="7808889146555843082">비밀번호를 삭제해도 <ph name="SITE" /> 계정은 삭제되지 않습니다. 비밀번호를 변경하거나 <ph name="SITE" /> 계정을 삭제하여 보안을 유지하세요.</translation>
 <translation id="7810647596859435254">연결 프로그램...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{모든 파일, 목록에 있는 파일 1개}other{모든 파일, 목록에 있는 파일 #개}}</translation>

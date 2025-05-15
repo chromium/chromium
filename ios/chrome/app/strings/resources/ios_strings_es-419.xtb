@@ -244,7 +244,7 @@
 <translation id="1972325230031091483">Navegarás más rápido porque el contenido se cargará proactivamente en función de la página web que visites en el momento</translation>
 <translation id="1974060860693918893">Opciones avanzadas</translation>
 <translation id="1977621687170192347">Activa la opción "Solicitar abrir vínculos en otras apps con el modo Incógnito".</translation>
-<translation id="1979188886349613713">Incluir extensiones de archivo que no especificó el sitio web</translation>
+<translation id="1979188886349613713">Incluir extensiones no especificadas por el sitio web</translation>
 <translation id="1980417445547898121">{count,plural, =1{Obtén {count} pestaña activa recientemente de tu otro dispositivo en este iPhone}other{Obtén {count} pestañas activas recientemente de tu otro dispositivo en este iPhone}}</translation>
 <translation id="1981118202195772574">Dispositivo móvil</translation>
 <translation id="1984417487208496350">Sin protección (opción no recomendada)</translation>
@@ -462,7 +462,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="286382692684806520">{COUNT,plural, =1{1 sitio (y más en dispositivos sincronizados)}other{# sitios (y más en dispositivos sincronizados)}}</translation>
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2876369937070532032">Enviar a Google las URL de algunas páginas que visitas, cuando tu seguridad esté en riesgo</translation>
-<translation id="2883151425485251736">Ver y editar temas que ocultaste en tu cuenta</translation>
+<translation id="2883151425485251736">Ve y edita los temas que ocultaste en tu cuenta</translation>
 <translation id="288655811176831528">Cerrar pestaña</translation>
 <translation id="2888631381369839306">Se activaron las notificaciones de seguimiento de precios</translation>
 <translation id="2893168226686371498">Navegador predeterminado</translation>
@@ -617,7 +617,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3602260545951981695">Elige "Protección mejorada"</translation>
 <translation id="3622175633937495219">Buscar Historial (se encontraron <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Puedes deslizar el borde para volver.</translation>
-<translation id="362709345066740529">Personaliza tus tarjetas, feed y mucho más aquí</translation>
+<translation id="362709345066740529">Personaliza tus tarjetas, tu feed y mucho más aquí</translation>
 <translation id="3630104167004786843">No recibir actualizaciones</translation>
 <translation id="3631443864840848029">Asegúrate de guardar la contraseña actual para este sitio.</translation>
 <translation id="3642060527569456384">Los grupos de pestañas se guardan y actualizan automáticamente en todos tus dispositivos.</translation>
@@ -1033,7 +1033,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5343472494710226394">Noticias, deportes y contenido según tus intereses.</translation>
 <translation id="5352128922772839949">Guardar archivo</translation>
 <translation id="5355191726083956201">Se activó la protección mejorada</translation>
-<translation id="537853552771686272">Administrar los temas y los sitios que te interesan</translation>
+<translation id="537853552771686272">Administra los temas y los sitios que te interesan</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} cerrada}other{{count} cerradas}}</translation>
 <translation id="5394975111793637642">Ocultar la tarjeta Opiniones sobre productos para ti</translation>
 <translation id="5395707839134961196">Ocultar detalles del motor de búsqueda</translation>
@@ -1345,7 +1345,7 @@ Sin embargo, no pueden usar cookies para ver la actividad de navegación en dife
 <translation id="656065428026159829">Ver más</translation>
 <translation id="6571070086367343653">Editar tarjeta de crédito</translation>
 <translation id="6574092468346088891">Activar las notificaciones de la Verificación de seguridad</translation>
-<translation id="6574225511994820656">Inicia la configuración</translation>
+<translation id="6574225511994820656">Configuración</translation>
 <translation id="6579867704846662339">Puedes abrir las URLs entrantes de otras apps en el modo Incógnito.</translation>
 <translation id="6583087784430677195">Para desactivar esta función, abre <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" /> y ve a Autocompletar contraseñas.</translation>
 <translation id="6585048665672348661">Borrar datos de navegación…</translation>
@@ -1716,7 +1716,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8079530767338315840">Repetir</translation>
 <translation id="8079602123447022758">Esta configuración está administrada; presiona dos veces para obtener más información</translation>
 <translation id="8080028325999236607">Cerrar todas las pestañas</translation>
-<translation id="8084285576995584326">Controla los datos de tu Cuenta de Google.</translation>
+<translation id="8084285576995584326">Controla los datos de tu Cuenta de Google</translation>
 <translation id="809543534949702122">Historial de búsqueda</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{Las pestañas que no usas se mueven aquí después de {COUNT} día}other{Las pestañas que no usas se mueven aquí después de {COUNT} días}}</translation>
 <translation id="8096559642098770318">Puedes establecer un recordatorio de pestaña para volver a consultar este sitio en el futuro</translation>

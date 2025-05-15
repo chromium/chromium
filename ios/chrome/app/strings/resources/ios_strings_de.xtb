@@ -36,7 +36,7 @@
 <translation id="1126696498560056882">Konten auf diesem Gerät verwalten</translation>
 <translation id="1126809382673880764">Du wirst nicht vor schädlichen Websites, Downloads und Erweiterungen geschützt. Sofern verfügbar, bist du in anderen Google-Diensten, wie Gmail und der Google Suche, durch Safe Browsing geschützt.</translation>
 <translation id="1136104150802877429">Rezensionen anzeigen</translation>
-<translation id="1142371195993008685">Benachrichtigungen für „<ph name="FEATURE_NAME" />“ deaktivieren</translation>
+<translation id="1142371195993008685">„<ph name="FEATURE_NAME" />“-Benachrichtigungen deaktivieren</translation>
 <translation id="1147031633655575115">Angemeldet als <ph name="USER" /></translation>
 <translation id="1149401351239820326">Ablaufmonat</translation>
 <translation id="1150989369772528668">Kalender</translation>
@@ -133,7 +133,7 @@
 <translation id="1509960214886564027">Funktionen auf vielen Websites funktionieren möglicherweise nicht mehr</translation>
 <translation id="1513858653616922153">Passwort löschen</translation>
 <translation id="1517166097004694782">„Mit diesem Tab fortfahren“ ausblenden</translation>
-<translation id="1520027731907768768">Ich möchte Benachrichtigungen zu Preissenkungen für Produkte erhalten, die ich beobachte.</translation>
+<translation id="1520027731907768768">Benachrichtigungen zu Preissenkungen für Produkte, die ich beobachte.</translation>
 <translation id="1521366073263497277">Gehe zum Tab-Raster</translation>
 <translation id="1521774566618522728">Heute aktiv</translation>
 <translation id="1524563461097350801">Nein, danke</translation>
@@ -163,7 +163,7 @@
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1644574205037202324">Verlauf</translation>
 <translation id="164673457281113247">{count,plural, =1{Lesezeichen wurde gespeichert}other{Lesezeichen wurden gespeichert}}</translation>
-<translation id="1652051421944182562">Sicherheitscheck-Benachrichtigungen aktivieren…</translation>
+<translation id="1652051421944182562">„Sicherheitscheck“-Benachrichtigungen aktivieren…</translation>
 <translation id="1652333207707886577">Menü anpassen</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{Verbleibende Zeit: {TIME} Sekunden}=1{Verbleibende Zeit: {TIME} Sekunde}other{Verbleibende Zeit: {TIME} Sekunden}}</translation>
 <translation id="1654232554734641711">Mikrofonzugriff gewährt</translation>
@@ -244,7 +244,7 @@
 <translation id="1972325230031091483">Du kannst schneller im Web surfen, da Inhalte basierend auf deinen Seitenaufrufen proaktiv geladen werden</translation>
 <translation id="1974060860693918893">Erweitert</translation>
 <translation id="1977621687170192347">Aktiviere „Nachfragen, ob Links aus anderen Apps im Inkognitomodus geöffnet werden sollen“.</translation>
-<translation id="1979188886349613713">Es werden Dateiendungen einbezogen, die nicht von der Website angegeben wurden</translation>
+<translation id="1979188886349613713">Inkl. Dateiendungen, die nicht von der Website angegeben wurden</translation>
 <translation id="1980417445547898121">{count,plural, =1{{count} kürzlich aktiven Tab von deinem anderen Gerät auf dieses iPhone importieren}other{{count} kürzlich aktive Tabs von deinem anderen Gerät auf dieses iPhone importieren}}</translation>
 <translation id="1981118202195772574">Mobil</translation>
 <translation id="1984417487208496350">Kein Schutz (nicht empfohlen)</translation>
@@ -760,7 +760,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4224534474590365556">Über 99 inaktive Tabs schließen?</translation>
 <translation id="422474357428465195">Es gibt mehrere Probleme mit Passwörtern, die deine Sicherheit gefährden könnten.</translation>
 <translation id="422477017457571619">KI-basierter Schutz in Echtzeit vor gefährlichen Websites, Downloads und Erweiterungen auf der Grundlage deiner Browserdaten, die an Google gesendet werden</translation>
-<translation id="4231395118547300571">Sicherheitscheck-Benachrichtigungen aktiviert</translation>
+<translation id="4231395118547300571">„Sicherheitscheck“-Benachrichtigungen aktiviert</translation>
 <translation id="4237377247299956313">Tippe auf <ph name="BEGIN_BOLD" />Standard-Browser-App<ph name="END_BOLD" /></translation>
 <translation id="4241893428331130998">Keine gespeicherten Passwörter oder Passkeys</translation>
 <translation id="4242533952199664413">Einstellungen öffnen</translation>
@@ -887,7 +887,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4744428388659507035">Um auf all deinen Geräten auf deine Lesezeichen zugreifen zu können, musst du in den Einstellungen die Option „Lesezeichen“ aktivieren.</translation>
 <translation id="4746926359847517643">Du kannst sie jederzeit im Verlauf wiederherstellen.</translation>
 <translation id="4751645464639803239">Neuer Inkognitotab</translation>
-<translation id="4752348350801431746">Sicherheitscheck-Benachrichtigungen deaktivieren…</translation>
+<translation id="4752348350801431746">„Sicherheitscheck“-Benachrichtigungen deaktivieren…</translation>
 <translation id="4764612367328936189">Deine Organisation lässt die Anmeldung nur mit bestimmten Konten zu. Unzulässige Konten sind ausgeblendet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="4766112107778026136">Discover &amp; Folgen</translation>
 <translation id="4769198578611055647">Mit dieser PIN kannst du von jedem Gerät auf deine gespeicherten Passkeys zugreifen</translation>
@@ -969,7 +969,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="507187271399539513">{count,plural, =1{{position} von {count} Zahlungsmethode}other{{position} von {count} Zahlungsmethoden}}</translation>
 <translation id="5075939510584558547">Ohne Verschlüsselung speichern</translation>
 <translation id="5076534614343816664">Preis-Tracking</translation>
-<translation id="5078303485429639424">Benachrichtigungen für „<ph name="FEATURE_NAME" />“ aktivieren</translation>
+<translation id="5078303485429639424">„<ph name="FEATURE_NAME" />“-Benachrichtigungen aktivieren</translation>
 <translation id="5079950360618752063">Vorgeschlagenes Passwort verwenden</translation>
 <translation id="5083464117946352670">Fehler bei Bestimmung der Dateigröße</translation>
 <translation id="5085558938118581974">In Tabs auf synchronisierten Geräten suchen</translation>
@@ -1134,7 +1134,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5738887413654608789">Dann kannst du relevante Webseiten zu Objekten in deiner Umgebung entdecken.</translation>
 <translation id="573974402615125334">Wenn du Tabgruppen teilen, ihnen beitreten und gemeinsam mit anderen an ihnen arbeiten möchtest, synchronisiere deinen Verlauf und deine Tabs</translation>
 <translation id="5740123193752401435">Tabs suchen…</translation>
-<translation id="5744274077973758795">Benachrichtigungen für „<ph name="FEATURE_NAME" />“ aktiviert</translation>
+<translation id="5744274077973758795">„<ph name="FEATURE_NAME" />“-Benachrichtigungen aktiviert</translation>
 <translation id="5745598824054949526">Kein Text gefunden</translation>
 <translation id="574762237186762643">Termine</translation>
 <translation id="5749158352074143502">Mit diesem Tab fortfahren</translation>
@@ -1326,7 +1326,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="647867789226964031">Passwörter ändern</translation>
 <translation id="6494931198667773526">Ende</translation>
 <translation id="6503077044568424649">Meistbesucht</translation>
-<translation id="6503763061813913607">Sicherheitscheck-Benachrichtigungen</translation>
+<translation id="6503763061813913607">„Sicherheitscheck“-Benachrichtigungen</translation>
 <translation id="6505334220040167806">Tabgruppe minimieren.</translation>
 <translation id="6506996418997555004">Tabgruppe „<ph name="GROUP_NAME" />“ teilen</translation>
 <translation id="6507973708545996744">Melde dich an, um deine Lesezeichen auf allen deinen Geräten abrufen zu können.</translation>
@@ -1434,7 +1434,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="6888009575607455378">Möchtest du die Änderungen wirklich verwerfen?</translation>
 <translation id="6896758677409633944">Kopieren</translation>
 <translation id="6897187120838603299">Dein Passwort wird auf deinem Gerät gespeichert.</translation>
-<translation id="6899890595581608884">Sicherheitscheck-Benachrichtigungen deaktiviert</translation>
+<translation id="6899890595581608884">„Sicherheitscheck“-Benachrichtigungen deaktiviert</translation>
 <translation id="6900532703269623216">Erweitertes Safe Browsing</translation>
 <translation id="6900702165119149418">Du bist abgemeldet</translation>
 <translation id="6903907808598579934">Synchronisierung aktivieren</translation>
@@ -1768,7 +1768,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8282657446819506217">In Tabgruppe öffnen</translation>
 <translation id="828291969289324795">{count,plural, =1{Tab zu neuer Gruppe hinzufügen}other{Tabs zu neuer Gruppe hinzufügen}}</translation>
 <translation id="8283172974887967105">Festlegen…</translation>
-<translation id="8289930144142009940">Benachrichtigungen für „<ph name="FEATURE_NAME" />“ deaktiviert</translation>
+<translation id="8289930144142009940">„<ph name="FEATURE_NAME" />“-Benachrichtigungen deaktiviert</translation>
 <translation id="8290077367744012649">Preise von deinen Tabs beobachten</translation>
 <translation id="8299417921174340354">Du musst zuerst einen Sicherheitscode auf deinem Gerät einrichten, um Passwörter zu verwenden.</translation>
 <translation id="8307481894409578819">Diese Datei konnte nicht hochgeladen werden</translation>

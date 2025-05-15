@@ -199,7 +199,7 @@
 <translation id="1810976980198522421">取消</translation>
 <translation id="1812514023095547458">選取顏色</translation>
 <translation id="1815941218935345331">密碼</translation>
-<translation id="1818687879307252150">{count,plural, =0{沒有任何遭外洩的密碼}=1{有 {count} 組遭外洩的密碼}other{有 {count} 組遭外洩的密碼}}</translation>
+<translation id="1818687879307252150">{count,plural, =0{沒有任何密碼外洩}=1{有 {count} 組密碼外洩}other{有 {count} 組密碼外洩}}</translation>
 <translation id="1819374301217551116">價格追蹤和深入分析</translation>
 <translation id="1820195936249950412">使用有效帳戶登入</translation>
 <translation id="1820259098641718022">已加入閱讀清單</translation>
@@ -404,7 +404,7 @@
 <translation id="2626236249646841566">請檢查你的連線狀態，然後再次嘗試登入。</translation>
 <translation id="2635918910848538771">自動填入信用卡驗證碼</translation>
 <translation id="2640733327287333451">沒有使用者名稱 ••••••</translation>
-<translation id="264215785133931186">剛才已檢查</translation>
+<translation id="264215785133931186">剛剛檢查</translation>
 <translation id="2647434099613338025">新增語言</translation>
 <translation id="2649592894792404568">Google 密碼管理工具資料即將刪除</translation>
 <translation id="2652129567809778422">選取密碼</translation>
@@ -566,7 +566,7 @@
 <translation id="3392923070107623576">建立分頁群組，讓一切井然有序</translation>
 <translation id="3404232721752787413">儲存在 Google 相簿中</translation>
 <translation id="3406506285180498376">分享網頁…</translation>
-<translation id="340669334496430859">上次修改日期</translation>
+<translation id="340669334496430859">上次修改時間</translation>
 <translation id="3409785640040772790">地圖</translation>
 <translation id="3416023309465857378">2023 年 10 月 25 日</translation>
 <translation id="3435738964857648380">安全性</translation>
@@ -729,7 +729,7 @@
 <translation id="4112644173421521737">搜尋</translation>
 <translation id="4112786312631440274">前往下一個分頁</translation>
 <translation id="4113030288477039509">您的管理員已停用這項功能</translation>
-<translation id="4113957097611235433">變更密碼</translation>
+<translation id="4113957097611235433">請變更密碼</translation>
 <translation id="4120936477286528673">這個網站不斷嘗試開啟另一個應用程式。</translation>
 <translation id="4121993058175073134">如要傳送淨匯出資料，請在「設定」應用程式中設定你的電子郵件帳戶。</translation>
 <translation id="4133139945030148655">設定完成</translation>
@@ -929,7 +929,7 @@
 <translation id="4889521386764567563">目前的設定檔</translation>
 <translation id="4893713555726946316">隱藏「在網頁中尋找」</translation>
 <translation id="4894963374040315706">這項操作可以讓你使用語音搜尋功能查詢資訊</translation>
-<translation id="4895540042460820904">上次開啟日期</translation>
+<translation id="4895540042460820904">上次開啟時間</translation>
 <translation id="4896467949657706481">系統已關閉分頁並將你登出</translation>
 <translation id="4913626501929406101">你可以安全地分享密碼副本給家庭群組的成員。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">接受</translation>
@@ -979,7 +979,7 @@
 <translation id="5118764316110575523">關閉</translation>
 <translation id="5119329531859909472">輕觸「追蹤」即可追蹤商品</translation>
 <translation id="5121618895923301719">你已追蹤這項產品，這個頁面會儲存在<ph name="BEGIN_LINK" />行動裝置的書籤<ph name="END_LINK" />中。</translation>
-<translation id="512533434554095351">你有多個密碼問題。</translation>
+<translation id="512533434554095351">發現多個密碼相關問題。</translation>
 <translation id="5127538504377457572">上次使用時間：<ph name="DAYS" /> 天前</translation>
 <translation id="5128788795241319992">瀏覽新選單</translation>
 <translation id="5132942445612118989">同步處理你所有裝置上的密碼、歷史記錄和其他設定</translation>
@@ -1323,7 +1323,7 @@
 <translation id="6476253015009698798">價格追蹤功能不支援這個網頁。</translation>
 <translation id="6476284679642588870">管理付款方式</translation>
 <translation id="6476800141292307438">將網頁翻譯成<ph name="LANGUAGE" />。翻譯選項位於靠近畫面底部的位置。</translation>
-<translation id="647867789226964031">變更密碼</translation>
+<translation id="647867789226964031">請變更密碼</translation>
 <translation id="6494931198667773526">結束時間</translation>
 <translation id="6503077044568424649">最常造訪</translation>
 <translation id="6503763061813913607">安全檢查通知</translation>

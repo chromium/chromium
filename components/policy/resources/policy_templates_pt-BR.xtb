@@ -584,12 +584,12 @@ atualizações estendidas automaticamente.
 
 Para mais detalhes, acesse
 https://support.google.com/chrome/a/?p=extended_updates_support.</translation>
-<translation id="1432834104376790711">Esta política ativa ou desativa a configuração do modo de Economia de bateria.
+<translation id="1432834104376790711">Esta política ativa ou desativa a configuração do modo de economia de bateria.
       No Chrome, essa configuração limita o frame rate para reduzir o consumo de energia. Se a política for deixada sem definição, o usuário final poderá controlar essa configuração em chrome://settings/performance.
-      No ChromeOS, essa configuração faz com que o frame rate e a frequência da CPU sejam limitados, as luzes de fundo fiquem esmaecidas e o Android seja colocado no modo de Economia de bateria. Em dispositivos com várias CPUs, algumas delas serão desativadas.
+      No ChromeOS, essa configuração faz com que o frame rate e a frequência da CPU sejam limitados, as luzes de fundo fiquem esmaecidas e o Android seja colocado no modo de economia de bateria. Em dispositivos com várias CPUs, algumas delas serão desativadas.
       Os diferentes níveis são:
       <ph name="BATTERY_SAVER_MODE_DISABLED" /> (0): o modo de economia de bateria será desativado.
-      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1): o modo Economia de bateria será ativado quando o dispositivo estiver usando a energia da bateria e o nível dela estiver baixo.
+      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1): o modo economia de bateria será ativado quando o dispositivo estiver usando a energia da bateria e o nível dela estiver baixo.
       <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): esse valor foi descontinuado na versão M121. Na versão M121 e mais recentes, os valores serão tratados como EnabledBelowThreshold.
       </translation>
 <translation id="1434300053894025056">Desativar verificação ortográfica</translation>

@@ -462,7 +462,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="286382692684806520">{COUNT,plural, =1{1 site (mais nos dispositivos sincronizados)}one{# site (mais nos dispositivos sincronizados)}other{# sites (mais nos dispositivos sincronizados)}}</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Quando há risco de segurança, envia para o Google os URLs de algumas páginas que você visita</translation>
-<translation id="2883151425485251736">Ver e editar temas que você ocultou da sua conta</translation>
+<translation id="2883151425485251736">Veja e edite temas que você ocultou da sua conta</translation>
 <translation id="288655811176831528">Fechar guia</translation>
 <translation id="2888631381369839306">Notificações de monitoramento de preços ativadas</translation>
 <translation id="2893168226686371498">Navegador padrão</translation>
@@ -1137,7 +1137,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5744274077973758795">Notificações de <ph name="FEATURE_NAME" /> ativadas</translation>
 <translation id="5745598824054949526">Nenhum texto encontrado</translation>
 <translation id="574762237186762643">Eventos</translation>
-<translation id="5749158352074143502">Continue com esta guia</translation>
+<translation id="5749158352074143502">Continuar com esta guia</translation>
 <translation id="5753021559215751319">Salvar senha</translation>
 <translation id="5756525336488841345">Ocultar Favoritos</translation>
 <translation id="5758631781033351321">Você vai encontrar sua lista de leituras aqui</translation>
@@ -1147,7 +1147,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5779117921996157216">{count,plural, =1{Você tem {count} senha comprometida que pode colocar sua segurança em risco. Corrija o problema agora para se proteger.}one{Você tem {count} senha comprometida que pode colocar sua segurança em risco. Corrija o problema agora para se proteger.}other{Você tem {count} senhas comprometidas que podem colocar sua segurança em risco. Corrija o problema agora para se proteger.}}</translation>
 <translation id="5791632441210678828">Botão para ordenar o feed "Seguindo".</translation>
 <translation id="5803566855766646066">Tem certeza de que você quer descartar este novo card?</translation>
-<translation id="5804012843049740908">Escolha dicas para aproveitar o Chrome ao máximo</translation>
+<translation id="5804012843049740908">Dicas para ajudar você a aproveitar o Chrome ao máximo</translation>
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="5817176759448082654">Check-up de senha</translation>
 <translation id="5819208479324046259">Gerenciado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -1716,7 +1716,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8079530767338315840">Repetir</translation>
 <translation id="8079602123447022758">Esta configuração é gerenciada. Toque duas vezes para ver mais informações</translation>
 <translation id="8080028325999236607">Fechar todas as guias</translation>
-<translation id="8084285576995584326">Controlar os dados da sua Conta do Google</translation>
+<translation id="8084285576995584326">Controle os dados da sua Conta do Google</translation>
 <translation id="809543534949702122">Pesquisar no histórico</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{As guias que você não usa são movidas para cá depois de {COUNT} dia}one{As guias que você não usa são movidas para cá depois de {COUNT} dia}other{As guias que você não usa são movidas para cá depois de {COUNT} dias}}</translation>
 <translation id="8096559642098770318">Você pode definir um lembrete de guia para visitar este site novamente no futuro</translation>
