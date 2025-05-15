@@ -41,6 +41,7 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window",
     "//components/keyed_service/core",
     "//components/optimization_guide/content/browser",
+    "//components/optimization_guide/content/browser:page_context_eligibility",
     "//components/optimization_guide/core:core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/pdf/common:constants",

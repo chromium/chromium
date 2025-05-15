@@ -15,6 +15,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_common.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
@@ -255,14 +256,25 @@ void ZeroStateSuggestionsPageData::FetchSuggestions(
 
 void ZeroStateSuggestionsPageData::OnReceivedAnnotatedPageContent(
     std::optional<optimization_guide::AIPageContentResult> content) {
-  annotated_page_content_ = std::move(content);
-  annotated_page_content_done_ = true;
-  if (annotated_page_content_) {
+  GURL url = GetUrl();
+  auto* pce = optimization_guide::PageContextEligibility::Get();
+  bool is_eligible =
+      content &&
+      (!pce || pce->api().IsPageContextEligible(
+                   url.host(), url.path(),
+                   optimization_guide::GetFrameMetadataFromPageContent(
+                       content.value())));
+
+  if (is_eligible) {
+    annotated_page_content_ = std::move(content);
     base::UmaHistogramTimes(
         "ContextualCueing.GlicSuggestions.PageContextFetchlatency."
         "AnnotatedPageContent",
         base::TimeTicks::Now() - page_context_begin_time_);
+  } else {
+    annotated_page_content_ = std::nullopt;
   }
+  annotated_page_content_done_ = true;
   RequestSuggestionsIfComplete();
 }
 

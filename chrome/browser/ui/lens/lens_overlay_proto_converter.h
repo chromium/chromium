@@ -41,12 +41,6 @@ lens::mojom::TextPtr CreateTextMojomFromInteractionResponse(
     const lens::LensOverlayInteractionResponse& response,
     const lens::ZoomedCrop& region_crop_box,
     const gfx::Size& resized_bitmap_size);
-
-// Convert the page metadata from the AIPageContentResult proto to a C struct
-// defined in the optimization_guide component so it can be passed to a shared
-// library.
-std::vector<optimization_guide::FrameMetadata> ConvertFrameMetadataFromProto(
-    const optimization_guide::AIPageContentResult& result);
 }  // namespace lens
 
 #endif  // CHROME_BROWSER_UI_LENS_LENS_OVERLAY_PROTO_CONVERTER_H_

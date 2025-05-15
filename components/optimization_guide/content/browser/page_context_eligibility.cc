@@ -49,4 +49,24 @@ std::unique_ptr<PageContextEligibility> PageContextEligibility::Create() {
   return base::WrapUnique(new PageContextEligibility(api));
 }
 
+std::vector<FrameMetadata> GetFrameMetadataFromPageContent(
+    const AIPageContentResult& result) {
+  std::vector<FrameMetadata> frame_metadata_structs;
+  const auto& page_metadata = result.metadata;
+  frame_metadata_structs.reserve(page_metadata->frame_metadata.size());
+  for (auto& frame_metadata_mojom : page_metadata->frame_metadata) {
+    std::vector<MetaTag> meta_tags;
+    meta_tags.reserve(frame_metadata_mojom->meta_tags.size());
+    for (auto& tag : frame_metadata_mojom->meta_tags) {
+      MetaTag meta_tag(tag->name, tag->content);
+      meta_tags.push_back(std::move(meta_tag));
+    }
+    FrameMetadata metadata(frame_metadata_mojom->url.host(),
+                           frame_metadata_mojom->url.path(),
+                           std::move(meta_tags));
+    frame_metadata_structs.push_back(std::move(metadata));
+  }
+  return frame_metadata_structs;
+}
+
 }  // namespace optimization_guide

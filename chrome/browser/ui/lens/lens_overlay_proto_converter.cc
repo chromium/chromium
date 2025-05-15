@@ -460,22 +460,4 @@ lens::mojom::TextPtr CreateTextMojomFromInteractionResponse(
       region_crop_box, resized_bitmap_size);
 }
 
-std::vector<optimization_guide::FrameMetadata> ConvertFrameMetadataFromProto(
-    const optimization_guide::AIPageContentResult& result) {
-  std::vector<optimization_guide::FrameMetadata> frame_metadata_structs;
-  const auto& page_metadata = result.metadata;
-  for (auto& frame_metadata_mojom : page_metadata->frame_metadata) {
-    std::vector<optimization_guide::MetaTag> meta_tags;
-    for (auto& tag : frame_metadata_mojom->meta_tags) {
-      optimization_guide::MetaTag meta_tag(tag->name, tag->content);
-      meta_tags.push_back(std::move(meta_tag));
-    }
-    optimization_guide::FrameMetadata metadata(frame_metadata_mojom->url.host(),
-                                               frame_metadata_mojom->url.path(),
-                                               std::move(meta_tags));
-    frame_metadata_structs.push_back(std::move(metadata));
-  }
-  return frame_metadata_structs;
-}
-
 }  // namespace lens

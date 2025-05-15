@@ -54,6 +54,7 @@ static_library("page_context_eligibility") {
   sources = [ "page_context_eligibility.cc" ]
 
   public_deps = [
+    ":browser",
     ":page_context_eligibility_api",
     "//base",
     "//components/optimization_guide/core:optimization_guide_library_holder",
@@ -70,12 +71,14 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "page_content_proto_util_unittest.cc",
+    "page_context_eligibility_unittest.cc",
     "page_text_dump_result_unittest.cc",
     "page_text_observer_unittest.cc",
   ]
 
   deps = [
     ":browser",
+    ":page_context_eligibility",
     "//components/optimization_guide/core:test_support",
     "//content/test:test_support",
     "//testing/gmock",

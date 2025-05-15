@@ -244,7 +244,7 @@ void LensSearchContextualizationController::OnAnnotatedPageContentReceived(
     // Convert the page metadata to a C struct defined in the optimization_guide
     // component so it can be passed to the shared library.
     std::vector<optimization_guide::FrameMetadata> frame_metadata_structs =
-        lens::ConvertFrameMetadataFromProto(result.value());
+        optimization_guide::GetFrameMetadataFromPageContent(result.value());
 
     // If the page is protected, do not send the latest page content to the
     // server.
