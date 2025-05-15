@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -85,6 +86,7 @@ void AutofillAiLogger::RecordFormMetrics(const autofill::FormStructure& form,
                                          bool opt_in_status) {
   FunnelState state = form_states_[form.global_id()];
   if (submission_state) {
+    base::UmaHistogramBoolean("Autofill.Ai.OptInStatus", opt_in_status);
     ukm_logger_.LogKeyMetrics(
         ukm_source_id, form, /*data_to_fill_available=*/state.has_data_to_fill,
         /*suggestions_shown=*/state.suggestions_shown,
