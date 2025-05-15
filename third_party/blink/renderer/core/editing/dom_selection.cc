@@ -755,19 +755,26 @@ void DOMSelection::deleteFromDocument() {
   DomWindow()->document()->UpdateStyleAndLayout(
       DocumentUpdateReason::kSelection);
 
-  // The following code is necessary for
-  // editing/selection/deleteFromDocument-crash.html, which assumes
-  // deleteFromDocument() for text selection in a TEXTAREA deletes the TEXTAREA
-  // value.
-
-  if (Selection().ComputeVisibleSelectionInDOMTree().IsNone())
-    return;
+  if (!RuntimeEnabledFeatures::
+          SelectionDeleteFromDocumentUaShadowFixEnabled()) {
+    // The following code is necessary for
+    // editing/selection/deleteFromDocument-crash.html, which assumes
+    // deleteFromDocument() for text selection in a TEXTAREA deletes the
+    // TEXTAREA value.
+    if (Selection().ComputeVisibleSelectionInDOMTree().IsNone()) {
+      return;
+    }
+  }
 
   Range* selected_range = CreateRange(Selection()
                                           .ComputeVisibleSelectionInDOMTree()
                                           .ToNormalizedEphemeralRange());
   if (!selected_range)
     return;
+  if (RuntimeEnabledFeatures::SelectionDeleteFromDocumentUaShadowFixEnabled() &&
+      selected_range->startContainer()->IsInUserAgentShadowRoot()) {
+    return;
+  }
 
   // |selectedRange| may point nodes in a different root.
   selected_range->deleteContents(ASSERT_NO_EXCEPTION);

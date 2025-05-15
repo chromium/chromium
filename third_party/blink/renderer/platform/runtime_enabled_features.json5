@@ -4219,6 +4219,11 @@
       status: "stable",
     },
     {
+      // See https://crbug.com/417823377
+      name: "SelectionDeleteFromDocumentUaShadowFix",
+      status: "stable",
+    },
+    {
       // See https://crbug.com/395544401
       name: "SelectionUpdateToInitialSelectionInListify",
       status: "stable",
