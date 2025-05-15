@@ -159,9 +159,17 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
       visitor->Trace(promise_);
     }
 
-    void Attach(ScriptState* script_state, Rejected* rejected) final {
+    // The default Attach() implementation uses `this` to handle resolved
+    // promises, and the passed in shared Rejected handle to handle rejected
+    // promises. Subclasses may override Attach() to provide their own handler
+    // for rejected promises.
+    void Attach(ScriptState* script_state, Rejected* rejected) override {
       promise_.Unwrap().Then(script_state, this, rejected);
     }
+
+   protected:
+    // Exposed for classes that override Attach().
+    MemberScriptPromise<IDLType>& promise() { return promise_; }
 
    private:
     MemberScriptPromise<IDLType> promise_;
@@ -209,9 +217,9 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
 
   // Handles resolution of a single promise in perBuyerTkvSignals.
   //
-  // TODO(crbug.com/412588114): Handle rejected promises by sending
-  // a rejected MaybePromiseBuyerTkvSignals promise, rather than by aborting the
-  // auction.
+  // Overrides common reject handler to treat rejection as a promise resolution,
+  // with no data passed in, so the auction will continue, but with empty TKV
+  // signals for the affected buyer.
   class BuyerTkvSignalsResolved
       : public AuctionHandleFunctionImpl<IDLAny, BuyerTkvSignalsResolved> {
    public:
@@ -224,7 +232,39 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
 
     void React(ScriptState* script_state, ScriptValue value);
 
+    // Override default reject handler, to instead continue the auction (with no
+    // signals for the current buyer) on promise rejection.
+    void Attach(ScriptState* script_state, Rejected* rejected) override {
+      auto* rejected_buyer_tkv_signals =
+          MakeGarbageCollected<BuyerTkvSignalsRejected>(this);
+      promise().Unwrap().Then(script_state, this, rejected_buyer_tkv_signals);
+    }
+
    private:
+    // Reject handler that calls into the BuyerTkvSignalsResolved's React()
+    // method to continue the auction, but passing in no contextual signals to
+    // the affected buyer.
+    class BuyerTkvSignalsRejected
+        : public ThenCallable<IDLAny, BuyerTkvSignalsRejected> {
+     public:
+      explicit BuyerTkvSignalsRejected(
+          BuyerTkvSignalsResolved* buyer_tkv_signals_resolved)
+          : buyer_tkv_signals_resolved_(buyer_tkv_signals_resolved) {}
+
+      void Trace(Visitor* visitor) const override {
+        ThenCallable<IDLAny, BuyerTkvSignalsRejected>::Trace(visitor);
+        visitor->Trace(buyer_tkv_signals_resolved_);
+      }
+
+      void React(ScriptState* script_state, ScriptValue) {
+        // Call into the resolution handler, with no data.
+        buyer_tkv_signals_resolved_->React(script_state, ScriptValue());
+      }
+
+     private:
+      const Member<BuyerTkvSignalsResolved> buyer_tkv_signals_resolved_;
+    };
+
     scoped_refptr<const SecurityOrigin> buyer_;
     const mojom::blink::AuctionAdConfigAuctionIdPtr auction_id_;
     const String seller_name_;

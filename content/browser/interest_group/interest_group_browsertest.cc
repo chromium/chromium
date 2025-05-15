@@ -29738,102 +29738,24 @@ IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2ContextualDataBrowserTest,
                          /*buyer_tkv_signals=*/"null");
 }
 
-// Passing in a rejected promise as a `perBuyerTKVSignal` value currently fails
-// the auction.
-//
-// TODO(crbug.com/412588114): Make a rejected promise result in sending no
-// signals instead.
+// Passing in a rejected promise as a `perBuyerTKVSignals` should result in no
+// signals being sent, but the auction still being run to completion.
 IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2ContextualDataBrowserTest,
                        PerBuyerTKVSignalsAlreadyRejectedPromise) {
-  GURL test_url =
-      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  url::Origin test_origin = url::Origin::Create(test_url);
-  // Buyer without any joined interest groups.
-  url::Origin other_buyer_origin =
-      embedded_https_test_server().GetOrigin("b.test");
-  GURL ad_url = GURL("https://ad.test/");
-
-  // Join an interest group without a trusted bidding signals URL. Rejecting the
-  // promise should still fail the auction.
-  EXPECT_EQ(kSuccess,
-            JoinInterestGroupAndVerify(
-                blink::TestInterestGroupBuilder(
-                    /*owner=*/test_origin,
-                    /*name=*/"cars")
-                    .SetBiddingUrl(embedded_https_test_server().GetURL(
-                        "a.test", "/interest_group/bidding_logic.js"))
-                    .SetAds(/*ads=*/{{{ad_url, /*metadata=*/std::nullopt}}})
-                    .Build()));
-
-  for (const auto& origin_with_signals : {test_origin, other_buyer_origin}) {
-    SCOPED_TRACE(origin_with_signals.Serialize());
-    std::string auction_config = JsReplace(
-        R"({
-          seller: $1,
-          decisionLogicURL: $2,
-          interestGroupBuyers: [$1, $3],
-          perBuyerTKVSignals:
-              {$4: new Promise((resolve, reject) => { reject(); })},
-        })",
-        test_origin,
-        embedded_https_test_server().GetURL(
-            "a.test", "/interest_group/decision_logic.js"),
-        other_buyer_origin, origin_with_signals);
-    EXPECT_EQ(
-        "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
-        "argument rejected or resolved to invalid value.",
-        RunAuctionAndWait(auction_config));
-  }
+  TestPerBuyerTKVSignals(/*expected_bidding_key=*/kNoContextualDataValue,
+                         /*buyer_tkv_signals=*/
+                         R"(new Promise((resolve, reject) => { reject(); }))");
 }
 
-// Rejecting a promise passed in as a `perBuyerTKVSignal` currently fails the
-// auction.
-//
-// TODO(crbug.com/412588114): Make a rejected promise result in sending no
-// signals instead.
+// Rejecting a promise passed in as a `perBuyerTKVSignals` should result in no
+// signals being sent, but the auction still being run to completion.
 IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2ContextualDataBrowserTest,
                        BuyerTkvSignalsRunAdAuctionAndThenRejectPromise) {
-  GURL test_url =
-      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  url::Origin test_origin = url::Origin::Create(test_url);
-  // Buyer without any joined interest groups.
-  url::Origin other_buyer_origin =
-      embedded_https_test_server().GetOrigin("b.test");
-  GURL ad_url = GURL("https://ad.test/");
-
-  // Join an interest group without a trusted bidding signals URL. Rejecting the
-  // promise should still fail the auction.
-  EXPECT_EQ(kSuccess,
-            JoinInterestGroupAndVerify(
-                blink::TestInterestGroupBuilder(
-                    /*owner=*/test_origin,
-                    /*name=*/"cars")
-                    .SetBiddingUrl(embedded_https_test_server().GetURL(
-                        "a.test", "/interest_group/bidding_logic.js"))
-                    .SetAds(/*ads=*/{{{ad_url, /*metadata=*/std::nullopt}}})
-                    .Build()));
-
-  for (const auto& origin_with_signals : {test_origin, other_buyer_origin}) {
-    SCOPED_TRACE(origin_with_signals.Serialize());
-    std::string auction_config = JsReplace(
-        R"({
-          seller: $1,
-          decisionLogicURL: $2,
-          interestGroupBuyers: [$1, $3],
-          perBuyerTKVSignals: {$4: new Promise((resolve, reject) =>
-                                  { setTimeout(() => {reject()}, 100) })},
-        })",
-        test_origin,
-        embedded_https_test_server().GetURL(
-            "a.test", "/interest_group/decision_logic.js"),
-        other_buyer_origin, origin_with_signals);
-    EXPECT_EQ(
-        "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
-        "argument rejected or resolved to invalid value.",
-        RunAuctionAndWait(auction_config));
-  }
+  TestPerBuyerTKVSignals(/*expected_bidding_key=*/kNoContextualDataValue,
+                         /*buyer_tkv_signals=*/
+                         R"(new Promise((resolve, reject) => {
+                             setTimeout(() => { reject(); }, 100);
+                         }))");
 }
 
 // Test that providing an invalid `buyer_tkv_signals` value for a buyer via a
