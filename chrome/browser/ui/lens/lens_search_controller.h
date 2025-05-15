@@ -133,6 +133,9 @@ class LensSearchController {
   // Returns true if Lens is currently active on this tab.
   bool IsActive();
 
+  // Returns true if Lens is currently off on this tab.
+  bool IsOff();
+
   // Returns true if the overlay is in the process of closing. If true, Lens on
   // this tab will soon be off.
   bool IsClosing();
@@ -142,6 +145,9 @@ class LensSearchController {
 
   // Returns the page URL of the tab if Lens has access to it.
   const GURL& GetPageURL() const;
+
+  // Gets the page title.
+  std::optional<std::string> GetPageTitle();
 
   // Returns the weak pointer to this class.
   base::WeakPtr<LensSearchController> GetWeakPtr();
@@ -412,6 +418,9 @@ class LensSearchController {
   // The pref service associated with the current profile. Owned by Profile,
   // and thus guaranteed to outlive this instance.
   raw_ptr<PrefService> pref_service_;
+
+  // The sync service associated with the current profile.
+  raw_ptr<syncer::SyncService> sync_service_;
 
   // The theme service associated with the current profile. Owned by Profile,
   // and thus guaranteed to outlive this instance.

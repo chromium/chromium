@@ -74,6 +74,7 @@ void LensSearchController::Initialize(
   variations_client_ = variations_client;
   identity_manager_ = identity_manager;
   pref_service_ = pref_service;
+  sync_service_ = sync_service;
   theme_service_ = theme_service;
 
   // Create Gen204 controller first as query controller depends on it.
@@ -119,11 +120,11 @@ void LensSearchController::OpenLensOverlay(
   CheckInitialized(initialized_);
 
   // If the eligibility checks fail, do not procced with opening any UI.
-  if (!RunLensEligibilityChecks(
-          invocation_source,
-          /*permission_granted_callback=*/base::BindRepeating(
-              &LensSearchController::OpenLensOverlay,
-              weak_ptr_factory_.GetWeakPtr(), invocation_source))) {
+  if (!IsOff() || !RunLensEligibilityChecks(
+                      invocation_source,
+                      /*permission_granted_callback=*/base::BindRepeating(
+                          &LensSearchController::OpenLensOverlay,
+                          weak_ptr_factory_.GetWeakPtr(), invocation_source))) {
     return;
   }
 
@@ -152,7 +153,8 @@ void LensSearchController::OpenLensOverlayWithPendingRegion(
     lens::mojom::CenterRotatedBoxPtr region,
     const SkBitmap& region_bitmap) {
   // If the eligibility checks fail, do not procced with opening any UI.
-  if (!RunLensEligibilityChecks(
+  if (!IsOff() ||
+      !RunLensEligibilityChecks(
           invocation_source,
           /*permission_granted_callback=*/base::BindRepeating(
               &LensSearchController::OpenLensOverlayWithPendingRegion,
@@ -172,11 +174,11 @@ void LensSearchController::OpenLensOverlayWithPendingRegion(
 void LensSearchController::StartContextualization(
     lens::LensOverlayInvocationSource invocation_source) {
   // If the eligibility checks fail, do not procced with opening any UI.
-  if (!RunLensEligibilityChecks(
-          invocation_source,
-          /*permission_granted_callback=*/base::BindRepeating(
-              &LensSearchController::StartContextualization,
-              weak_ptr_factory_.GetWeakPtr(), invocation_source))) {
+  if (!IsOff() || !RunLensEligibilityChecks(
+                      invocation_source,
+                      /*permission_granted_callback=*/base::BindRepeating(
+                          &LensSearchController::StartContextualization,
+                          weak_ptr_factory_.GetWeakPtr(), invocation_source))) {
     return;
   }
 
@@ -209,8 +211,10 @@ void LensSearchController::IssueContextualSearchRequest(
     return;
   }
 
-  // Setup all state necessary for this Lens session.
-  StartLensSession(invocation_source);
+  if (IsOff()) {
+    // If the state is off, the Lens sessions needs to be initialized.
+    StartLensSession(invocation_source);
+  }
 
   // TODO(crbug.com/404941800): This flow should not start the overlay once
   // contextualization is separated from the overlay.
@@ -269,6 +273,10 @@ bool LensSearchController::IsActive() {
   return state_ == State::kActive;
 }
 
+bool LensSearchController::IsOff() {
+  return state_ == State::kOff;
+}
+
 bool LensSearchController::IsClosing() {
   return state_ == State::kClosing || state_ == State::kClosingSidePanel;
 }
@@ -284,6 +292,16 @@ const GURL& LensSearchController::GetPageURL() const {
   return GURL::EmptyGURL();
 }
 
+std::optional<std::string> LensSearchController::GetPageTitle() {
+  std::optional<std::string> page_title;
+  content::WebContents* active_web_contents = tab_->GetContents();
+  if (lens::CanSharePageTitleWithLensOverlay(sync_service_, pref_service_)) {
+    page_title = std::make_optional<std::string>(
+        base::UTF16ToUTF8(active_web_contents->GetTitle()));
+  }
+  return page_title;
+}
+
 base::WeakPtr<LensSearchController> LensSearchController::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
@@ -297,6 +315,12 @@ const LensOverlayController* LensSearchController::lens_overlay_controller()
     const {
   CheckInitialized(initialized_);
   return lens_overlay_controller_.get();
+}
+
+lens::LensOverlayQueryController*
+LensSearchController::lens_overlay_query_controller() {
+  CheckInitialized(initialized_);
+  return lens_overlay_query_controller_.get();
 }
 
 lens::LensOverlaySidePanelCoordinator*
@@ -452,11 +476,6 @@ bool LensSearchController::RunLensEligibilityChecks(
     return false;
   }
 
-  // Exit early if the Lens feature is already active.
-  if (state() != State::kOff) {
-    return false;
-  }
-
   // If the user hasn't granted permission, request user permission before
   // showing the UI.
   if (!lens::CanSharePageScreenshotWithLensOverlay(pref_service_) ||
@@ -491,6 +510,7 @@ void LensSearchController::CloseLensPart2(
   lens_overlay_controller_->CloseUI(dismissal_source);
   lens_searchbox_controller_->CloseUI();
   lens_permission_bubble_controller_.reset();
+  lens_contextualization_controller_->ResetState();
 
   // Cleanup the query controller after the overlay controller to prevent
   // dangling ptrs.

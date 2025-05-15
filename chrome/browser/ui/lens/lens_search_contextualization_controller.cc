@@ -5,13 +5,18 @@
 #include "chrome/browser/ui/lens/lens_search_contextualization_controller.h"
 
 #include "base/functional/bind.h"
+#include "base/task/bind_post_task.h"
 #include "chrome/browser/content_extraction/inner_html.h"
 #include "chrome/browser/content_extraction/inner_text.h"
+#include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_proto_converter.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
 #include "components/lens/lens_features.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "pdf/buildflags.h"
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -20,6 +25,11 @@
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace {
+
+// The amount of change in bytes that is considered a significant change and
+// should trigger a page content update request. This provides tolerance in
+// case there is slight variation in the retrieved bytes in between calls.
+constexpr float kByteChangeTolerancePercent = 0.01;
 
 bool IsPageContextEligible(
     const GURL& main_frame_url,
@@ -99,6 +109,27 @@ void LensSearchContextualizationController::GetPageContextualization(
   MaybeGetInnerHtml(page_contents, render_frame_host, std::move(callback));
 }
 
+void LensSearchContextualizationController::TryUpdatePageContextualization(
+    lens::LensOverlayQueryController* lens_overlay_query_controller,
+    OnPageContextUpdatedCallback callback) {
+  // TODO(crbug.com/403573362): Move this to StartContextualization.
+  lens_overlay_query_controller_ = lens_overlay_query_controller;
+
+  // If there is already an upload, do not send another request.
+  // TODO(crbug.com/399154548): Ideally, there could be two uploads in progress
+  // at a time, however, the current query controller implementation does not
+  // support this.
+  if (lens_overlay_query_controller_->IsPageContentUploadInProgress()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  on_page_context_updated_callback_ = std::move(callback);
+  GetPageContextualization(base::BindOnce(
+      &LensSearchContextualizationController::UpdatePageContextualization,
+      weak_ptr_factory_.GetWeakPtr()));
+}
+
 #if BUILDFLAG(ENABLE_PDF)
 void LensSearchContextualizationController::
     FetchVisiblePageIndexAndGetPartialPdfText(
@@ -114,9 +145,10 @@ void LensSearchContextualizationController::
     return;
   }
 
+  // TODO(crbug.com/403573362): Move this to StartContextualization.
+  lens_overlay_query_controller_ = lens_overlay_query_controller;
   CHECK(lens_overlay_query_controller);
   CHECK(callback);
-  lens_overlay_query_controller_ = lens_overlay_query_controller;
   pdf_partial_page_text_retrieved_callback_ = std::move(callback);
 
   // TODO(387306854): Add logic to grab page text form the visible page index.
@@ -132,6 +164,199 @@ void LensSearchContextualizationController::
           /*total_characters_retrieved=*/0));
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
+
+void LensSearchContextualizationController::ResetState() {
+  lens_overlay_query_controller_ = nullptr;
+  on_page_context_updated_callback_.Reset();
+  is_page_context_eligible_ = false;
+  page_contents_.clear();
+  primary_content_type_ = lens::MimeType::kUnknown;
+  viewport_screenshot_.reset();
+  last_retrieved_most_visible_page_ = std::nullopt;
+  pdf_partial_page_text_retrieved_callback_.Reset();
+  pdf_pages_text_.clear();
+  state_ = State::kOff;
+}
+
+void LensSearchContextualizationController::UpdatePageContextualization(
+    std::vector<lens::PageContent> page_contents,
+    lens::MimeType primary_content_type,
+    std::optional<uint32_t> page_count) {
+  if (!lens::features::IsLensOverlayContextualSearchboxEnabled()) {
+    std::move(on_page_context_updated_callback_).Run();
+    return;
+  }
+
+  // If page is not eligible, then return early as none of the content
+  // will be sent.
+  if (!is_page_context_eligible_) {
+    std::move(on_page_context_updated_callback_).Run();
+    return;
+  }
+
+  // Do not capture a new screenshot if the feature param is not enabled or if
+  // the user is not viewing the live page, meaning the viewport cannot have
+  // changed.
+  if (!lens::features::UpdateViewportEachQueryEnabled()) {
+    UpdatePageContextualizationPart2(page_contents, primary_content_type,
+                                     page_count, SkBitmap());
+    return;
+  }
+
+  // Begin the process of grabbing a screenshot.
+  content::RenderWidgetHostView* view =
+      lens_search_controller_->GetTabInterface()
+          ->GetContents()
+          ->GetPrimaryMainFrame()
+          ->GetRenderViewHost()
+          ->GetWidget()
+          ->GetView();
+  if (!IsScreenshotPossible(view)) {
+    UpdatePageContextualizationPart2(page_contents, primary_content_type,
+                                     page_count, SkBitmap());
+    return;
+  }
+  view->CopyFromSurface(
+      /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(),
+      base::BindPostTask(
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          base::BindOnce(&LensSearchContextualizationController::
+                             UpdatePageContextualizationPart2,
+                         weak_ptr_factory_.GetWeakPtr(), page_contents,
+                         primary_content_type, page_count)));
+}
+
+void LensSearchContextualizationController::UpdatePageContextualizationPart2(
+    std::vector<lens::PageContent> page_contents,
+    lens::MimeType primary_content_type,
+    std::optional<uint32_t> page_count,
+    const SkBitmap& bitmap) {
+#if BUILDFLAG(ENABLE_PDF)
+  if (lens::features::SendPdfCurrentPageEnabled()) {
+    pdf::PDFDocumentHelper* pdf_helper =
+        pdf::PDFDocumentHelper::MaybeGetForWebContents(
+            lens_search_controller_->GetTabInterface()->GetContents());
+    if (pdf_helper) {
+      pdf_helper->GetMostVisiblePageIndex(
+          base::BindOnce(&LensSearchContextualizationController::
+                             UpdatePageContextualizationPart3,
+                         weak_ptr_factory_.GetWeakPtr(), page_contents,
+                         primary_content_type, page_count, bitmap));
+      return;
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
+
+  UpdatePageContextualizationPart3(page_contents, primary_content_type,
+                                   page_count, bitmap,
+                                   /*most_visible_page=*/std::nullopt);
+}
+
+void LensSearchContextualizationController::UpdatePageContextualizationPart3(
+    std::vector<lens::PageContent> page_contents,
+    lens::MimeType primary_content_type,
+    std::optional<uint32_t> page_count,
+    const SkBitmap& bitmap,
+    std::optional<uint32_t> most_visible_page) {
+  bool sending_bitmap = false;
+  if (!bitmap.drawsNothing() &&
+      (viewport_screenshot_.drawsNothing() ||
+       !lens::AreBitmapsEqual(viewport_screenshot_, bitmap))) {
+    viewport_screenshot_ = bitmap;
+    sending_bitmap = true;
+  }
+  last_retrieved_most_visible_page_ = most_visible_page;
+
+  // TODO(crbug.com/399215935): Ideally, this check should ensure that any of
+  // the content date has not changed. For now, we only check if the
+  // primary_content_type bytes have changed.
+  auto old_page_content_it = std::ranges::find_if(
+      page_contents_, [&primary_content_type](const auto& page_content) {
+        return page_content.content_type_ == primary_content_type;
+      });
+  auto new_page_content_it = std::ranges::find_if(
+      page_contents, [&primary_content_type](const auto& page_content) {
+        return page_content.content_type_ == primary_content_type;
+      });
+  const lens::PageContent* old_page_content =
+      old_page_content_it != page_contents_.end() ? &(*old_page_content_it)
+                                                  : nullptr;
+  const lens::PageContent* new_page_content =
+      new_page_content_it != page_contents.end() ? &(*new_page_content_it)
+                                                 : nullptr;
+
+  if (primary_content_type_ == primary_content_type && old_page_content &&
+      new_page_content) {
+    const float old_size = old_page_content->bytes_.size();
+    const float new_size = new_page_content->bytes_.size();
+    const float percent_changed = abs((new_size - old_size) / old_size);
+    if (percent_changed < kByteChangeTolerancePercent) {
+      if (!sending_bitmap) {
+        // If the bytes have not changed more than our threshold and the
+        // screenshot has not changed, exit early. Notify the query controller
+        // that the user may be issuing a search request, and therefore the
+        // query should be restarted if TTL expired. If the bytes did change,
+        // this will happen automatically as a result of the
+        // SendUpdatedPageContent call below.
+        lens_overlay_query_controller_->MaybeRestartQueryFlow();
+        std::move(on_page_context_updated_callback_).Run();
+        return;
+      }
+
+      // If the screenshot has changed but the bytes have not, send only the
+      // screenshot.
+      lens_overlay_query_controller_->SendUpdatedPageContent(
+          std::nullopt, std::nullopt, std::nullopt, std::nullopt,
+          last_retrieved_most_visible_page_,
+          sending_bitmap ? bitmap : SkBitmap());
+
+      // Run the callback that the page context has finished updating.
+      std::move(on_page_context_updated_callback_).Run();
+      return;
+    }
+  }
+
+  // Since the page content has changed, let the query controller know to avoid
+  // dangling pointers.
+  lens_overlay_query_controller_->ResetPageContentData();
+
+  page_contents_ = page_contents;
+  primary_content_type_ = primary_content_type;
+
+  // If no bytes were retrieved from the page, the query won't be able to be
+  // contextualized. Notify the side panel so the ghost loader isn't shown. No
+  // need to update update the overlay as this update only happens on navigation
+  // where the side panel will already be open.
+  if (!new_page_content || new_page_content->bytes_.empty()) {
+    lens_search_controller_->lens_overlay_side_panel_coordinator()
+        ->SuppressGhostLoader();
+  }
+
+#if BUILDFLAG(ENABLE_PDF)
+  // If the new page is a PDF, fetch the text from the page to be used as early
+  // suggest signals.
+  if (new_page_content &&
+      new_page_content->content_type_ == lens::MimeType::kPdf) {
+    FetchVisiblePageIndexAndGetPartialPdfText(
+        lens_overlay_query_controller_, page_count.value_or(0),
+        base::BindOnce(&LensSearchContextualizationController::
+                           OnPdfPartialPageTextRetrieved,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+#endif
+
+  lens_overlay_query_controller_->SendUpdatedPageContent(
+      page_contents_, primary_content_type_,
+      lens_search_controller_->GetPageURL(),
+      lens_search_controller_->GetPageTitle(),
+      last_retrieved_most_visible_page_, sending_bitmap ? bitmap : SkBitmap());
+  // TODO(crbug.com/417812533): Record document metrics.
+  lens_search_controller_->lens_session_metrics_logger()
+      ->OnFollowUpPageContentRetrieved(primary_content_type);
+
+  // Run the callback that the page context has finished updating.
+  std::move(on_page_context_updated_callback_).Run();
+}
 
 void LensSearchContextualizationController::MaybeGetInnerHtml(
     std::vector<lens::PageContent> page_contents,
@@ -338,8 +563,6 @@ void LensSearchContextualizationController::GetPartialPdfTextCallback(
     std::move(pdf_partial_page_text_retrieved_callback_).Run(pdf_pages_text_);
     lens_overlay_query_controller_->SendPartialPageContentRequest(
         pdf_pages_text_);
-    // Reset the query controller to prevent dangling pointer.
-    lens_overlay_query_controller_ = nullptr;
     return;
   }
 
@@ -350,6 +573,16 @@ void LensSearchContextualizationController::GetPartialPdfTextCallback(
           weak_ptr_factory_.GetWeakPtr(), page_index + 1, total_page_count,
           total_characters_retrieved));
 }
+
+void LensSearchContextualizationController::OnPdfPartialPageTextRetrieved(
+    std::vector<std::u16string> pdf_pages_text) {
+  pdf_pages_text_ = std::move(pdf_pages_text);
+}
 #endif  // BUILDFLAG(ENABLE_PDF)
+
+bool LensSearchContextualizationController::IsScreenshotPossible(
+    content::RenderWidgetHostView* view) {
+  return view && view->IsSurfaceAvailableForCopy();
+}
 
 }  // namespace lens

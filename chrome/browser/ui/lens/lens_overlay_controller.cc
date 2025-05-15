@@ -1033,13 +1033,25 @@ void LensOverlayController::IssueContextualSearchRequest(
                                          lens_overlay_query_controller);
   }
 
-  // Hold the request until the overlay has finished initializing.
   if (IsOverlayInitializing()) {
+    // Hold the request until the overlay has finished initializing.
     pending_contextual_search_request_ =
         base::BindOnce(&LensOverlayController::IssueContextualSearchRequest,
                        weak_factory_.GetWeakPtr(), destination_url,
                        lens_overlay_query_controller, match_type,
                        is_zero_prefix_suggestion, invocation_source);
+    return;
+  } else if (state_ != State::kOff) {
+    // If the state is not off or initializing, the Lens sessions should already
+    // be initialized. This means the page could have changed since the last
+    // contextualization so it should be updated before issuing the contextual
+    // search request.
+    CHECK(lens_overlay_query_controller_);
+    GetContextualizationController()->TryUpdatePageContextualization(
+        lens_overlay_query_controller_.get(),
+        base::BindOnce(&LensOverlayController::OnPageContextUpdated,
+                       weak_factory_.GetWeakPtr(), destination_url, match_type,
+                       is_zero_prefix_suggestion, invocation_source));
     return;
   }
 
@@ -1488,7 +1500,7 @@ void LensOverlayController::DidCaptureScreenshot(
 
     auto bitmap_to_send = bitmap;
     auto page_url = lens_search_controller_->GetPageURL();
-    auto page_title = GetPageTitle();
+    auto page_title = lens_search_controller_->GetPageTitle();
     if (!IsPageContextEligible(
             tab_url, {}, lens_search_controller_->page_context_eligibility())) {
       is_page_context_eligible_ = false;
@@ -1556,7 +1568,8 @@ void LensOverlayController::ContinueCreateInitializationData(
 
   auto initialization_data = std::make_unique<OverlayInitializationData>(
       screenshot, std::move(rgb_screenshot), color_palette,
-      lens_search_controller_->GetPageURL(), GetPageTitle());
+      lens_search_controller_->GetPageURL(),
+      lens_search_controller_->GetPageTitle());
   initialization_data->significant_region_boxes_ =
       ConvertSignificantRegionBoxes(all_bounds);
   initialization_data->last_retrieved_most_visible_page_ = pdf_current_page;
@@ -1799,7 +1812,8 @@ void LensOverlayController::UpdatePageContextualizationPart3(
   lens_overlay_query_controller_->SendUpdatedPageContent(
       initialization_data_->page_contents_,
       initialization_data_->primary_content_type_,
-      lens_search_controller_->GetPageURL(), GetPageTitle(),
+      lens_search_controller_->GetPageURL(),
+      lens_search_controller_->GetPageTitle(),
       initialization_data_->last_retrieved_most_visible_page_,
       sending_bitmap ? bitmap : SkBitmap());
 
@@ -2000,7 +2014,8 @@ void LensOverlayController::InitializeOverlay(
     lens_overlay_query_controller_->SendUpdatedPageContent(
         initialization_data_->page_contents_,
         initialization_data_->primary_content_type_,
-        lens_search_controller_->GetPageURL(), GetPageTitle(),
+        lens_search_controller_->GetPageURL(),
+        lens_search_controller_->GetPageTitle(),
         initialization_data_->last_retrieved_most_visible_page_,
         should_send_screenshot_on_init_
             ? initialization_data_->initial_screenshot_
@@ -2345,16 +2360,6 @@ LensOverlayController::GetLensSuggestInputsWhenReady(
     return {};
   }
   return pending_suggest_inputs_callbacks_.Add(std::move(callback));
-}
-
-std::optional<std::string> LensOverlayController::GetPageTitle() {
-  std::optional<std::string> page_title;
-  content::WebContents* active_web_contents = tab_->GetContents();
-  if (lens::CanSharePageTitleWithLensOverlay(sync_service_, pref_service_)) {
-    page_title = std::make_optional<std::string>(
-        base::UTF16ToUTF8(active_web_contents->GetTitle()));
-  }
-  return page_title;
 }
 
 float LensOverlayController::GetUiScaleFactor() {
@@ -3258,6 +3263,18 @@ void LensOverlayController::UpdateEntryPointsState() {
 void LensOverlayController::OnPdfPartialPageTextRetrieved(
     std::vector<std::u16string> pdf_pages_text) {
   initialization_data_->pdf_pages_text_ = std::move(pdf_pages_text);
+}
+
+void LensOverlayController::OnPageContextUpdated(
+    const GURL& destination_url,
+    AutocompleteMatchType::Type match_type,
+    bool is_zero_prefix_suggestion,
+    lens::LensOverlayInvocationSource invocation_source) {
+  CHECK(lens_overlay_query_controller_);
+  // TODO(crbug.com/404941800): This flow should not start the overlay once
+  // contextualization is separated from the overlay.
+  GetLensSearchboxController()->OnSuggestionAccepted(
+      destination_url, match_type, is_zero_prefix_suggestion);
 }
 
 lens::LensSearchboxController*

@@ -891,9 +891,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // immediately.
   void OnLensBackendHandshakeFinished(base::OnceClosure callback);
 
-  // Gets the page title.
-  std::optional<std::string> GetPageTitle();
-
   // Gets the ui scale factor of the page.
   float GetUiScaleFactor();
 
@@ -1029,6 +1026,13 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Callback to run when the partial page text is retrieved from the PDF.
   void OnPdfPartialPageTextRetrieved(
       std::vector<std::u16string> pdf_pages_text);
+
+  // Callback to run when the page context has been updated.
+  void OnPageContextUpdated(
+      const GURL& destination_url,
+      AutocompleteMatchType::Type match_type,
+      bool is_zero_prefix_suggestion,
+      lens::LensOverlayInvocationSource invocation_source);
 
   // Shorthand to grab the LensSearchboxController for this instance of Lens.
   lens::LensSearchboxController* GetLensSearchboxController();

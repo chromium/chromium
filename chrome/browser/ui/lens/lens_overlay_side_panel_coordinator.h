@@ -208,6 +208,9 @@ class LensOverlaySidePanelCoordinator
   };
   State state() { return state_; }
 
+  // Suppresses the ghost loader in the side panel.
+  void SuppressGhostLoader();
+
   /////////////////////////////////////////////////////////////////////////////
   // Test only methods.
   /////////////////////////////////////////////////////////////////////////////
@@ -254,9 +257,6 @@ class LensOverlaySidePanelCoordinator
   // Sets the page content upload progress for the progress bar in the side
   // panel.
   void SetPageContentUploadProgress(double progress);
-
-  // Suppresses the ghost loader in the side panel.
-  void SuppressGhostLoader();
 
  private:
   // Data class for constructing the side panel and storing side panel state for
