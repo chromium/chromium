@@ -564,6 +564,7 @@ class TestImporterTest(LoggingTestCase):
 
                 NOAUTOREVERT=true
                 No-Export: true
+                Validate-Test-Flakiness: skip
                 Cq-Include-Trybots: luci.chromium.try:linux-blink-rel
                 """))
         self.assertEqual(host.executive.calls, [MANIFEST_INSTALL_CMD] +
