@@ -246,6 +246,17 @@ BASE_DECLARE_FEATURE(kContentSettingsPartitioning);
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 extern const char kUseTestMetadataName[];
 
+// TODO(crbug.com/415223384):
+// `document.requestStorageAccess` is racy when permission has been overridden
+// (e.g. via `test_driver.set_permission`). This is because the RFHI in the
+// browser process may not be aware that the renderer has requested (and gotten)
+// permission by the time StorageAccessHandle tries to bind mojo endpoints.
+// This is used in the virtual test suite `force-allow-storage-access` to ensure
+// no WPTs go stale while we wait on the less temporary fix in the task
+// linked above.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+BASE_DECLARE_FEATURE(kForceAllowStorageAccess);
+
 }  // namespace features
 }  // namespace content_settings
 

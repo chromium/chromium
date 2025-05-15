@@ -9382,11 +9382,13 @@ crbug.com/407751668 http/tests/devtools/elements/styles-4/styles-overloaded-shor
 crbug.com/407751668 http/tests/devtools/elements/styles-4/styles-properties-overload.js [ Failure Pass ]
 crbug.com/407751668 http/tests/devtools/elements/styles-4/styles-update-from-js.js [ Failure Pass ]
 
-# TODO(https://crbug.com/415223384): `document.requestStorageAccess` is racy
-# when permission has been overridden (e.g. via `test_driver.set_permission`).
+# TODO(crbug.com/415223384): `document.requestStorageAccess` is racy when
+# permission has been overridden (e.g. via `test_driver.set_permission`).
 # This is because the RFHI in the browser process may not be aware that the
 # renderer has requested (and gotten) permission by the time StorageAccessHandle
-# tries to bind mojo endpoints.
+# tries to bind mojo endpoints. All of the tests below are temporarially running
+# in a virtual test suite `force-allow-storage-access` to ensure none go stale
+# while we wait on the less temporary fixes in the tasks linked above.
 crbug.com/415223384 external/wpt/partitioned-popins/partitioned-popins.localStorage.tentative.sub.https.window.html [ Crash Failure Pass Timeout ]
 crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.BlobURLDedicatedWorker.sub.https.tentative.window.html [ Crash Failure Pass Timeout ]
 crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.BlobURLSharedWorker.sub.https.tentative.window.html [ Crash Failure Pass Timeout ]

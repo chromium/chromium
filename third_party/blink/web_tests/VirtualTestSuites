@@ -4353,6 +4353,33 @@
     "expires": "Aug 1, 2025"
   },
   {
+    "prefix": "force-allow-storage-access",
+    "owners": ["arichiv@chromium.org", "cfredric@chromium.org"],
+    "platforms": ["Android", "Fuchsia", "Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/partitioned-popins/partitioned-popins.localStorage.tentative.sub.https.window.html",
+      "external/wpt/storage-access-api/storage-access-beyond-cookies.BlobURLDedicatedWorker.sub.https.tentative.window.html",
+      "external/wpt/storage-access-api/storage-access-beyond-cookies.BlobURLSharedWorker.sub.https.tentative.window.html",
+      "external/wpt/storage-access-api/storage-access-beyond-cookies.BroadcastChannel.sub.https.window.html",
+      "external/wpt/storage-access-api/storage-access-beyond-cookies.SharedWorker.sub.https.window.html",
+      "external/wpt/storage-access-api/storage-access-beyond-cookies.blobStorage.sub.https.window.html",
+      "external/wpt/storage-access-api/storage-access-beyond-cookies.caches.sub.https.window.html",
+      "external/wpt/storage-access-api/storage-access-beyond-cookies.estimate.sub.https.window.html",
+      "external/wpt/storage-access-api/storage-access-beyond-cookies.getDirectory.sub.https.window.html",
+      "external/wpt/storage-access-api/storage-access-beyond-cookies.indexedDB.sub.https.window.html",
+      "external/wpt/storage-access-api/storage-access-beyond-cookies.localStorage.sub.https.window.html",
+      "external/wpt/storage-access-api/storage-access-beyond-cookies.locks.sub.https.window.html",
+      "external/wpt/storage-access-api/storage-access-beyond-cookies.none.sub.https.window.html",
+      "external/wpt/storage-access-api/storage-access-beyond-cookies.sessionStorage.sub.https.window.html",
+      "external/wpt/storage-access-api/storage-access-beyond-cookies.thirdPartyBlobStorage.sub.https.window.html",
+      "external/wpt/storage-access-api/storage-access-beyond-cookies.unpartitioned.sub.https.window.html"
+    ],
+    "args": [
+      "--enable-features=ForceAllowStorageAccess"
+    ],
+    "expires": "May 14, 2026"
+  },
+  {
     "prefix": "javascript-source-phase-imports",
     "owners": ["lpardosixtos@microsoft.com"],
     "platforms": ["Linux", "Win"],
