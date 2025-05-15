@@ -12,16 +12,17 @@ import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.
 import {createDocumentSettings, getCddTemplateWithAdvancedSettings} from './print_preview_test_utils.js';
 
 
-function assertMarginsSettingsResetToDefault(settings: Settings) {
-  assertEquals(settings.margins.value, MarginsType.DEFAULT);
-  assertFalse('marginTop' in settings.customMargins.value);
-  assertFalse('marginRight' in settings.customMargins.value);
-  assertFalse('marginBottom' in settings.customMargins.value);
-  assertFalse('marginLeft' in settings.customMargins.value);
-}
-
 suite('ModelTest', function() {
   let model: PrintPreviewModelElement;
+
+  function assertMarginsSettingsResetToDefault() {
+    assertEquals(model.getSettingValue('margins'), MarginsType.DEFAULT);
+    const customMargins = model.getSetting('customMargins').value;
+    assertFalse('marginTop' in customMargins);
+    assertFalse('marginRight' in customMargins);
+    assertFalse('marginBottom' in customMargins);
+    assertFalse('marginLeft' in customMargins);
+  }
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -139,7 +140,7 @@ suite('ModelTest', function() {
    */
   test('SetPolicySettings', function() {
     model.setSetting('headerFooter', false);
-    assertFalse(model.settings.headerFooter.value as boolean);
+    assertFalse(model.getSetting('headerFooter').value as boolean);
 
     // Sets to true, but doesn't mark as controlled by a policy.
     model.setPolicySettings({headerFooter: {defaultMode: true}});
@@ -148,18 +149,18 @@ suite('ModelTest', function() {
       headerFooter: false,
     }));
     model.applyStickySettings();
-    assertTrue(model.settings.headerFooter.value as boolean);
+    assertTrue(model.getSetting('headerFooter').value as boolean);
     model.setSetting('headerFooter', false);
-    assertFalse(model.settings.headerFooter.value as boolean);
+    assertFalse(model.getSetting('headerFooter').value as boolean);
 
     model.setPolicySettings({headerFooter: {allowedMode: true}});
     model.applyStickySettings();
-    assertTrue(model.settings.headerFooter.value as boolean);
+    assertTrue(model.getSetting('headerFooter').value as boolean);
 
     model.setSetting('headerFooter', false);
     // The value didn't change after setSetting(), because the policy takes
     // priority.
-    assertTrue(model.settings.headerFooter.value as boolean);
+    assertTrue(model.getSetting('headerFooter').value as boolean);
   });
 
   function toggleSettings(
@@ -573,10 +574,10 @@ suite('ModelTest', function() {
 
     // Set to a new destination with the same capabilities. Confirm that
     // everything stays the same.
-    const oldSettings = JSON.stringify(model.settings);
+    const oldSettings = JSON.stringify(model.observable.getTarget());
     model.destination = testDestination2;
     await microtasksFinished();
-    const newSettings = JSON.stringify(model.settings);
+    const newSettings = JSON.stringify(model.observable.getTarget());
 
     // Should be the same (same printer capabilities).
     assertEquals(oldSettings, newSettings);
@@ -618,7 +619,7 @@ suite('ModelTest', function() {
     await microtasksFinished();
 
     // Verify things changed.
-    const updatedSettings = JSON.stringify(model.settings);
+    const updatedSettings = JSON.stringify(model.observable.getTarget());
     assertNotEquals(oldSettings, updatedSettings);
     assertEquals(false, model.getSettingValue('color'));
     assertEquals('ISO_A4', model.getSettingValue('mediaSize').name);
@@ -730,11 +731,11 @@ suite('ModelTest', function() {
     model.destination = testDestination;
     model.setStickySettings(JSON.stringify(stickySettings));
     model.applyStickySettings();
-    assertEquals(model.settings.color.value, cddColorEnabled);
-    assertEquals(model.settings.duplex.value, cddDuplexEnabled);
-    assertEquals(model.settings.dpi.value.horizontal_dpi, cddDpi);
+    assertEquals(model.getSetting('color').value, cddColorEnabled);
+    assertEquals(model.getSetting('duplex').value, cddDuplexEnabled);
+    assertEquals(model.getSetting('dpi').value.horizontal_dpi, cddDpi);
     assertEquals(
-        model.settings.mediaSize.value.custom_display_name,
+        model.getSetting('mediaSize').value.custom_display_name,
         cddMediaSizeDisplayName);
 
     testDestination.capabilities =
@@ -742,11 +743,11 @@ suite('ModelTest', function() {
     model.destination = testDestination;
     model.setStickySettings(JSON.stringify(stickySettings));
     model.applyStickySettings();
-    assertEquals(model.settings.color.value, stickyColorEnabled);
-    assertEquals(model.settings.duplex.value, stickyDuplexEnabled);
-    assertEquals(model.settings.dpi.value.horizontal_dpi, stickyDpi);
+    assertEquals(model.getSetting('color').value, stickyColorEnabled);
+    assertEquals(model.getSetting('duplex').value, stickyDuplexEnabled);
+    assertEquals(model.getSetting('dpi').value.horizontal_dpi, stickyDpi);
     assertEquals(
-        model.settings.mediaSize.value.custom_display_name,
+        model.getSetting('mediaSize').value.custom_display_name,
         stickyMediaSizeDisplayName);
 
     const testDestination2 =
@@ -767,11 +768,11 @@ suite('ModelTest', function() {
     // specify default values to reset to.
     model.setStickySettings(JSON.stringify(stickySettings));
     model.applyStickySettings();
-    assertEquals(model.settings.color.value, stickyColorEnabled);
-    assertEquals(model.settings.duplex.value, stickyDuplexEnabled);
-    assertEquals(model.settings.dpi.value.horizontal_dpi, stickyDpi);
+    assertEquals(model.getSetting('color').value, stickyColorEnabled);
+    assertEquals(model.getSetting('duplex').value, stickyDuplexEnabled);
+    assertEquals(model.getSetting('dpi').value.horizontal_dpi, stickyDpi);
     assertEquals(
-        model.settings.mediaSize.value.custom_display_name,
+        model.getSetting('mediaSize').value.custom_display_name,
         stickyMediaSizeDisplayName);
   });
 
@@ -790,15 +791,15 @@ suite('ModelTest', function() {
       marginsType: MarginsType.CUSTOM,
     }));
     model.applyStickySettings();
-    assertEquals(model.settings.margins.value, MarginsType.CUSTOM);
-    assertTrue('marginTop' in model.settings.customMargins.value);
-    assertTrue('marginRight' in model.settings.customMargins.value);
-    assertTrue('marginBottom' in model.settings.customMargins.value);
-    assertTrue('marginLeft' in model.settings.customMargins.value);
-    assertEquals(model.settings.customMargins.value.marginTop, 101);
-    assertEquals(model.settings.customMargins.value.marginRight, 200);
-    assertEquals(model.settings.customMargins.value.marginBottom, 333);
-    assertEquals(model.settings.customMargins.value.marginLeft, 400);
+    assertEquals(model.getSetting('margins').value, MarginsType.CUSTOM);
+    assertTrue('marginTop' in model.getSetting('customMargins').value);
+    assertTrue('marginRight' in model.getSetting('customMargins').value);
+    assertTrue('marginBottom' in model.getSetting('customMargins').value);
+    assertTrue('marginLeft' in model.getSetting('customMargins').value);
+    assertEquals(model.getSetting('customMargins').value.marginTop, 101);
+    assertEquals(model.getSetting('customMargins').value.marginRight, 200);
+    assertEquals(model.getSetting('customMargins').value.marginBottom, 333);
+    assertEquals(model.getSetting('customMargins').value.marginLeft, 400);
   });
 
   /**
@@ -811,7 +812,7 @@ suite('ModelTest', function() {
       marginsType: MarginsType.CUSTOM,
     }));
     model.applyStickySettings();
-    assertMarginsSettingsResetToDefault(model.settings);
+    assertMarginsSettingsResetToDefault();
   });
 
   /**
@@ -830,7 +831,7 @@ suite('ModelTest', function() {
       marginsType: MarginsType.CUSTOM,
     }));
     model.applyStickySettings();
-    assertMarginsSettingsResetToDefault(model.settings);
+    assertMarginsSettingsResetToDefault();
   });
 
   /**
@@ -849,7 +850,7 @@ suite('ModelTest', function() {
       marginsType: MarginsType.CUSTOM,
     }));
     model.applyStickySettings();
-    assertMarginsSettingsResetToDefault(model.settings);
+    assertMarginsSettingsResetToDefault();
   });
 
   /**

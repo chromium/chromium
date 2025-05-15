@@ -478,18 +478,6 @@ export class PrintPreviewModelElement extends CrLitElement {
 
   static override get properties() {
     return {
-      /**
-       * Object containing current settings of Print Preview, for use by Polymer
-       * controls.
-       * Initialize all settings to available so that more settings always stays
-       * in a collapsed state during startup, when document information and
-       * printer capabilities may arrive at slightly different times.
-       */
-      settings: {
-        type: Object,
-        notify: true,
-      },
-
       settingsManaged: {
         type: Boolean,
         notify: true,
@@ -502,7 +490,6 @@ export class PrintPreviewModelElement extends CrLitElement {
     };
   }
 
-  accessor settings: Settings;
   accessor settingsManaged: boolean = false;
   accessor destination: Destination;
   accessor documentSettings: DocumentSettings;
@@ -515,10 +502,18 @@ export class PrintPreviewModelElement extends CrLitElement {
   private policySettings_: PolicySettings|null = null;
   private lastDestinationCapabilities_: Cdd|null = null;
 
+  /**
+   * Object containing current settings of Print Preview.
+   * Initialize all settings to available so that more settings always stays
+   * in a collapsed state during startup, when document information and
+   * printer capabilities may arrive at slightly different times.
+   */
+  private settings_: Settings;
+
   constructor() {
     super();
     this.observable = new Observable<Settings>(createSettings());
-    this.settings = this.observable.getProxy();
+    this.settings_ = this.observable.getProxy();
   }
 
   override connectedCallback() {
@@ -589,7 +584,7 @@ export class PrintPreviewModelElement extends CrLitElement {
     const settingName = parts[0] as keyof Settings;
     const setting = this.getSetting(settingName);
     const oldValue = this.getSettingValue(settingName);
-    setValueAtPath(parts, this.settings, value);
+    setValueAtPath(parts, this.settings_, value);
     const newValue = this.getSettingValue(settingName);
     if (newValue !== oldValue && setting.updatesPreview) {
       this.fire('preview-setting-changed');
@@ -634,7 +629,7 @@ export class PrintPreviewModelElement extends CrLitElement {
       assert(setting.available, 'Setting is not available: ' + settingName);
     }
     const shouldFireEvent = valid !== setting.valid;
-    this.settings[settingName].valid = valid;
+    this.settings_[settingName].valid = valid;
     if (shouldFireEvent) {
       this.fire('setting-valid-changed', valid);
     }
@@ -647,7 +642,7 @@ export class PrintPreviewModelElement extends CrLitElement {
    */
   setSettingAvailableForTesting(
       settingName: keyof Settings, available: boolean) {
-    this.settings[settingName].available = available;
+    this.settings_[settingName].available = available;
   }
 
   /**
@@ -656,7 +651,7 @@ export class PrintPreviewModelElement extends CrLitElement {
    */
   setSettingSetByGlobalPolicyForTesting(
       settingName: keyof Settings, setByGlobalPolicy: boolean) {
-    this.settings[settingName].setByGlobalPolicy = setByGlobalPolicy;
+    this.settings_[settingName].setByGlobalPolicy = setByGlobalPolicy;
   }
 
   /**
@@ -664,7 +659,7 @@ export class PrintPreviewModelElement extends CrLitElement {
    * settings based on the destination capabilities.
    */
   updateSettingsFromDestination() {
-    if (!this.destination || !this.settings) {
+    if (!this.destination) {
       return;
     }
 
@@ -746,10 +741,6 @@ export class PrintPreviewModelElement extends CrLitElement {
   }
 
   private updateSettingsAvailabilityFromDocumentSettings_() {
-    if (!this.settings) {
-      return;
-    }
-
     this.setSettingPath_(
         'margins.available', this.documentSettings.isModifiable);
     this.setSettingPath_(
@@ -765,10 +756,10 @@ export class PrintPreviewModelElement extends CrLitElement {
     this.setSettingPath_('rasterize.available', this.isRasterizeAvailable_());
     this.setSettingPath_(
         'otherOptions.available',
-        this.settings.cssBackground.available ||
-            this.settings.selectionOnly.available ||
-            this.settings.headerFooter.available ||
-            this.settings.rasterize.available);
+        this.settings_.cssBackground.available ||
+            this.settings_.selectionOnly.available ||
+            this.settings_.headerFooter.available ||
+            this.settings_.rasterize.available);
 
     if (this.destination) {
       this.updateSettingsAvailabilityFromDestinationAndDocumentSettings_();
@@ -870,14 +861,14 @@ export class PrintPreviewModelElement extends CrLitElement {
       return;
     }
 
-    if (this.settings.mediaSize.available) {
+    if (this.settings_.mediaSize.available) {
       const defaultOption = caps.media_size!.option.find(o => !!o.is_default) ||
           caps.media_size!.option[0];
       let matchingOption = null;
       // If the setting does not have a valid value, the UI has just started so
       // do not try to get a matching value; just set the printer default in
       // case the user doesn't have sticky settings.
-      if (this.settings.mediaSize.setFromUi) {
+      if (this.settings_.mediaSize.setFromUi) {
         const currentMediaSize = this.getSettingValue('mediaSize');
         matchingOption = this.destination.getMediaSize(
             currentMediaSize.width_microns, currentMediaSize.height_microns);
@@ -885,11 +876,11 @@ export class PrintPreviewModelElement extends CrLitElement {
       this.setSetting('mediaSize', matchingOption || defaultOption, true);
     }
 
-    if (this.settings.dpi.available) {
+    if (this.settings_.dpi.available) {
       const defaultOption =
           caps.dpi!.option.find(o => !!o.is_default) || caps.dpi!.option[0];
       let matchingOption = null;
-      if (this.settings.dpi.setFromUi) {
+      if (this.settings_.dpi.setFromUi) {
         const currentDpi = this.getSettingValue('dpi');
         matchingOption = this.destination.getDpi(
             currentDpi.horizontal_dpi, currentDpi.vertical_dpi);
@@ -901,7 +892,7 @@ export class PrintPreviewModelElement extends CrLitElement {
       this.setSettingPath_('dpi.unavailableValue', unavailableValue);
     }
 
-    if (!this.settings.color.setFromUi && this.settings.color.available) {
+    if (!this.settings_.color.setFromUi && this.settings_.color.available) {
       const defaultOption = this.destination.defaultColorOption;
       if (defaultOption) {
         this.setSetting(
@@ -911,18 +902,18 @@ export class PrintPreviewModelElement extends CrLitElement {
             true);
       }
     } else if (
-        !this.settings.color.available && caps.color && caps.color.option &&
+        !this.settings_.color.available && caps.color && caps.color.option &&
         caps.color.option.length > 0) {
       this.setSettingPath_(
           'color.unavailableValue',
           !['STANDARD_MONOCHROME', 'CUSTOM_MONOCHROME'].includes(
               caps.color.option[0].type!));
-    } else if (!this.settings.color.available) {
+    } else if (!this.settings_.color.available) {
       // if no color capability is reported, assume black and white.
       this.setSettingPath_('color.unavailableValue', false);
     }
 
-    if (!this.settings.duplex.setFromUi && this.settings.duplex.available) {
+    if (!this.settings_.duplex.setFromUi && this.settings_.duplex.available) {
       const defaultOption = caps.duplex!.option.find(o => !!o.is_default);
       if (defaultOption !== undefined) {
         const defaultOptionIsDuplex =
@@ -935,7 +926,7 @@ export class PrintPreviewModelElement extends CrLitElement {
               true);
         }
 
-        if (!this.settings.duplexShortEdge.available) {
+        if (!this.settings_.duplexShortEdge.available) {
           // Duplex is available, so must have only one two sided printing
           // option. Set duplexShortEdge's unavailable value based on the
           // printer.
@@ -945,7 +936,7 @@ export class PrintPreviewModelElement extends CrLitElement {
         }
       }
     } else if (
-        !this.settings.duplex.available && caps && caps.duplex &&
+        !this.settings_.duplex.available && caps && caps.duplex &&
         caps.duplex.option) {
       // In this case, there must only be one option.
       const hasLongEdge =
@@ -957,13 +948,13 @@ export class PrintPreviewModelElement extends CrLitElement {
       this.setSettingPath_(
           'duplex.unavailableValue', hasLongEdge || hasShortEdge);
       this.setSettingPath_('duplexShortEdge.unavailableValue', hasShortEdge);
-    } else if (!this.settings.duplex.available) {
+    } else if (!this.settings_.duplex.available) {
       // If no duplex capability is reported, assume false.
       this.setSettingPath_('duplex.unavailableValue', false);
       this.setSettingPath_('duplexShortEdge.unavailableValue', false);
     }
 
-    if (this.settings.vendorItems.available) {
+    if (this.settings_.vendorItems.available) {
       const vendorSettings: {[key: string]: any} = {};
       for (const item of caps.vendor_capability!) {
         let defaultValue = null;
@@ -1236,7 +1227,7 @@ export class PrintPreviewModelElement extends CrLitElement {
         // <if expr="is_win or is_macosx">
         if (settingName === 'printPdfAsImageAvailability') {
           this.updateRasterizeAvailable_();
-          if (this.settings.rasterize.available) {
+          if (this.settings_.rasterize.available) {
             // If rasterize is available then otherOptions must be available.
             this.setSettingPath_('otherOptions.available', true);
           }
@@ -1254,7 +1245,7 @@ export class PrintPreviewModelElement extends CrLitElement {
           const settingKey = settingName as keyof Settings;
           this.setSetting(settingKey, policyEntry.value, true);
           if (policyEntry.managed) {
-            this.settings[settingKey].setByGlobalPolicy = true;
+            this.settings_[settingKey].setByGlobalPolicy = true;
           }
         }
       }
@@ -1296,14 +1287,14 @@ export class PrintPreviewModelElement extends CrLitElement {
       return;
     }
 
-    if (this.settings.mediaSize.available) {
+    if (this.settings_.mediaSize.available) {
       const cddDefault = this.getResetValue_(caps['media_size']!);
       if (cddDefault) {
         this.setSettingPath_('mediaSize.value', cddDefault);
       }
     }
 
-    if (this.settings.color.available) {
+    if (this.settings_.color.available) {
       const cddDefault = this.getResetValue_(caps['color']!) as ColorOption;
       if (cddDefault) {
         this.setSettingPath_(
@@ -1313,14 +1304,14 @@ export class PrintPreviewModelElement extends CrLitElement {
       }
     }
 
-    if (this.settings.duplex.available) {
+    if (this.settings_.duplex.available) {
       const cddDefault = this.getResetValue_(caps['duplex']!) as DuplexOption;
       if (cddDefault) {
         this.setSettingPath_(
             'duplex.value',
             cddDefault.type === DuplexType.LONG_EDGE ||
                 cddDefault.type === DuplexType.SHORT_EDGE);
-        if (!this.settings.duplexShortEdge.available) {
+        if (!this.settings_.duplexShortEdge.available) {
           this.setSettingPath_(
               'duplexShortEdge.value',
               cddDefault.type === DuplexType.SHORT_EDGE);
@@ -1328,7 +1319,7 @@ export class PrintPreviewModelElement extends CrLitElement {
       }
     }
 
-    if (this.settings.dpi.available) {
+    if (this.settings_.dpi.available) {
       const cddDefault = this.getResetValue_(caps['dpi']!);
       if (cddDefault) {
         this.setSettingPath_('dpi.value', cddDefault);
@@ -1344,7 +1335,7 @@ export class PrintPreviewModelElement extends CrLitElement {
   applyPoliciesOnDestinationUpdate() {
     if (!this.policySettings_ || !this.policySettings_['mediaSize'] ||
         !this.policySettings_['mediaSize'].value ||
-        !this.settings.mediaSize.available) {
+        !this.settings_.mediaSize.available) {
       return;
     }
 
@@ -1483,12 +1474,12 @@ export class PrintPreviewModelElement extends CrLitElement {
 
     // Create CJT (Cloud Job Ticket)
     const cjt: CloudJobTicket = {version: '1.0', print: {}};
-    if (this.settings.collate.available) {
-      cjt.print.collate = {collate: this.settings.collate.value};
+    if (this.settings_.collate.available) {
+      cjt.print.collate = {collate: this.settings_.collate.value};
     }
-    if (this.settings.color.available) {
+    if (this.settings_.color.available) {
       const selectedOption =
-          destination.getColor(this.settings.color.value as boolean);
+          destination.getColor(this.settings_.color.value as boolean);
       if (!selectedOption) {
         console.warn('Could not find correct color option');
       } else {
@@ -1510,16 +1501,16 @@ export class PrintPreviewModelElement extends CrLitElement {
         }
       }
     }
-    if (this.settings.copies.available) {
+    if (this.settings_.copies.available) {
       cjt.print.copies = {copies: this.getSettingValue('copies')};
     }
-    if (this.settings.duplex.available) {
+    if (this.settings_.duplex.available) {
       cjt.print.duplex = {
         type: this.getCddDuplexType_(),
       };
     }
-    if (this.settings.mediaSize.available) {
-      const mediaValue = this.settings.mediaSize.value;
+    if (this.settings_.mediaSize.available) {
+      const mediaValue = this.settings_.mediaSize.value;
       cjt.print.media_size = {
         width_microns: mediaValue.width_microns,
         height_microns: mediaValue.height_microns,
@@ -1527,7 +1518,7 @@ export class PrintPreviewModelElement extends CrLitElement {
         vendor_id: mediaValue.vendor_id,
       };
     }
-    if (!this.settings.layout.available) {
+    if (!this.settings_.layout.available) {
       // In this case "orientation" option is hidden from user, so user can't
       // adjust it for page content, see Landscape.isCapabilityAvailable().
       // We can improve results if we set AUTO here.
@@ -1540,19 +1531,19 @@ export class PrintPreviewModelElement extends CrLitElement {
       }
     } else {
       cjt.print.page_orientation = {
-        type: this.settings.layout.value ? 'LANDSCAPE' : 'PORTRAIT',
+        type: this.settings_.layout.value ? 'LANDSCAPE' : 'PORTRAIT',
       };
     }
-    if (this.settings.dpi.available) {
-      const dpiValue = this.settings.dpi.value;
+    if (this.settings_.dpi.available) {
+      const dpiValue = this.settings_.dpi.value;
       cjt.print.dpi = {
         horizontal_dpi: dpiValue.horizontal_dpi,
         vertical_dpi: dpiValue.vertical_dpi,
         vendor_id: dpiValue.vendor_id,
       };
     }
-    if (this.settings.vendorItems.available) {
-      const items = this.settings.vendorItems.value;
+    if (this.settings_.vendorItems.available) {
+      const items = this.settings_.vendorItems.value;
       cjt.print.vendor_ticket_item = [];
       for (const itemId in items) {
         if (items.hasOwnProperty(itemId)) {
