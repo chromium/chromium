@@ -6,31 +6,20 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {BaseDialogPageHandlerInterface} from './base_dialog.mojom-webui.js';
-import {BaseDialogBrowserProxy} from './base_dialog_browser_proxy.js';
-import {PrivacySandboxNotice, PrivacySandboxNoticeEvent} from './notice.mojom-webui.js';
+import {BaseDialogMixin} from './base_dialog_mixin.js';
+import {PrivacySandboxNotice} from './notice.mojom-webui.js';
 import {getHtml} from './topics_consent.html.js';
 
-export class TopicsConsent extends CrLitElement {
+const TopicsConsentBase =
+    BaseDialogMixin(CrLitElement, PrivacySandboxNotice.kTopicsConsentNotice);
+
+export class TopicsConsent extends TopicsConsentBase {
   static get is() {
     return 'topics-consent';
   }
 
   override render() {
     return getHtml.bind(this)();
-  }
-
-  private handler_: BaseDialogPageHandlerInterface;
-
-  override firstUpdated() {
-    this.handler_ = BaseDialogBrowserProxy.getInstance().handler;
-  }
-
-  protected onConsentButton_() {
-    this.handler_.eventOccurred(
-        PrivacySandboxNotice.kTopicsConsentNotice,
-        PrivacySandboxNoticeEvent.kOptIn);
-    this.handler_.closeDialog();
   }
 }
 

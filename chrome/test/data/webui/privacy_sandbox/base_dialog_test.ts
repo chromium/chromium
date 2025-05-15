@@ -55,10 +55,10 @@ suite('BaseDialogTest', function() {
     const topicsConsent = page.shadowRoot.querySelector('topics-consent');
     assertTrue(!!topicsConsent);
     assertTrue(!!topicsConsent.shadowRoot);
-    const consentButton =
-        topicsConsent.shadowRoot.querySelector<HTMLElement>('#consentButton');
-    assertTrue(!!consentButton);
-    consentButton.click();
+    const acceptButton =
+        topicsConsent.shadowRoot.querySelector<HTMLElement>('#acceptButton');
+    assertTrue(!!acceptButton);
+    acceptButton.click();
     await testHandler.eventOccurred(
         PrivacySandboxNotice.kTopicsConsentNotice,
         PrivacySandboxNoticeEvent.kOptIn);

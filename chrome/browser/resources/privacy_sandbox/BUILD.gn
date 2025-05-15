@@ -43,6 +43,7 @@ build_webui("build") {
     "base_dialog_browser_proxy.ts",
     "topics_consent.html.ts",
     "topics_consent.ts",
+    "base_dialog_mixin.ts",
   ]
 
   css_files = [
