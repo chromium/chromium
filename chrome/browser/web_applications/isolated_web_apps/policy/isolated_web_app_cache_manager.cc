@@ -11,8 +11,11 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/types/expected_macros.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
@@ -83,6 +86,7 @@ void IwaBundleCacheManager::Start() {
   }
   CHECK(provider_);
 
+  install_manager_observation_.Observe(&provider_->install_manager());
   CleanCacheForIwasDeletedFromPolicy();
   // TODO(crbug.com/388727598): observe IWA installation to trigger updates.
 }
@@ -90,6 +94,23 @@ void IwaBundleCacheManager::Start() {
 void IwaBundleCacheManager::SetProvider(base::PassKey<WebAppProvider>,
                                         WebAppProvider& provider) {
   provider_ = &provider;
+}
+
+void IwaBundleCacheManager::OnWebAppInstalled(const webapps::AppId& app_id) {
+  ASSIGN_OR_RETURN(const WebApp& iwa,
+                   GetIsolatedWebAppById(provider_->registrar_unsafe(), app_id),
+                   [](const std::string&) { return; });
+
+  // In ephemeral sessions `IsolatedWebAppUpdateManager` checks for updates
+  // before IWAs are installed from cache (without updating IWAs even when the
+  // update is available, since only installed IWAs can be updated). Triggering
+  // the update check manually here after the IWA installation to avoid waiting
+  // for the next scheduled update check.
+  TriggerIwaUpdateCheck(iwa);
+}
+
+void IwaBundleCacheManager::OnWebAppInstallManagerDestroyed() {
+  install_manager_observation_.Reset();
 }
 
 void IwaBundleCacheManager::CleanCacheForIwasDeletedFromPolicy() {
@@ -106,6 +127,12 @@ void IwaBundleCacheManager::CleanCacheForIwasDeletedFromPolicy() {
 
 void IwaBundleCacheManager::OnCleanCacheForIwasDeletedFromPolicy(
     base::expected<CleanupBundleCacheSuccess, CleanupBundleCacheError> result) {
+  // TODO(crbug.com/388728155): add result to log.
+}
+
+void IwaBundleCacheManager::TriggerIwaUpdateCheck(const WebApp& iwa) {
+  CHECK(iwa.isolation_data());
+  provider_->iwa_update_manager().MaybeDiscoverUpdatesForApp(iwa.app_id());
   // TODO(crbug.com/388728155): add result to log.
 }
 
