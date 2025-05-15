@@ -371,6 +371,14 @@ class ChromeDownloadManagerDelegate
   // Return true if the mime type is pdf and Chrome supports open this pdf.
   bool IsPdfAndSupported(const std::string& mime_type,
                          content::WebContents* web_contents);
+
+  // Called after user interacted on the incognito download confirmation message
+  // before proceeding to save a package.
+  void RequestIncognitoSavePackageConfirmationDone(
+      const GURL& url,
+      const base::FilePath& suggested_path,
+      content::SavePackagePathPickedCallback callback,
+      bool accept);
 #endif
 
   raw_ptr<Profile, DanglingUntriaged> profile_;

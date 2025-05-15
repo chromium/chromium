@@ -1111,16 +1111,22 @@ void ChromeDownloadManagerDelegate::ChooseSavePath(
     bool can_save_as_complete,
     content::SavePackagePathPickedCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
-  content::SavePackagePathPickedParams param;
   if (!web_contents) {
-    std::move(callback).Run(param, base::DoNothing());
+    std::move(callback).Run(content::SavePackagePathPickedParams(),
+                            base::DoNothing());
     return;
   }
 
-  download::DetermineSavePackagePath(
-      web_contents->GetURL(), suggested_path,
-      base::BindOnce(&OnDetermineSavePackagePathDone, std::move(callback)));
-
+  base::OnceCallback<void(bool)> confirm_callback =
+      base::BindOnce(&ChromeDownloadManagerDelegate::
+                         RequestIncognitoSavePackageConfirmationDone,
+                     weak_ptr_factory_.GetWeakPtr(), web_contents->GetURL(),
+                     suggested_path, std::move(callback));
+  if (profile_->IsOffTheRecord()) {
+    RequestIncognitoWarningConfirmation(std::move(confirm_callback));
+  } else {
+    std::move(confirm_callback).Run(/*accepted=*/true);
+  }
 #else
   // Deletes itself.
   new SavePackageFilePicker(web_contents, suggested_path, default_extension,
@@ -2310,3 +2316,21 @@ void ChromeDownloadManagerDelegate::CancelAllEphemeralWarnings() {
     }
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void ChromeDownloadManagerDelegate::RequestIncognitoSavePackageConfirmationDone(
+    const GURL& url,
+    const base::FilePath& suggested_path,
+    content::SavePackagePathPickedCallback callback,
+    bool accept) {
+  if (!accept) {
+    std::move(callback).Run(content::SavePackagePathPickedParams(),
+                            base::DoNothing());
+    return;
+  }
+
+  download::DetermineSavePackagePath(
+      url, suggested_path,
+      base::BindOnce(&OnDetermineSavePackagePathDone, std::move(callback)));
+}
+#endif
