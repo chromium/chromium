@@ -375,10 +375,6 @@ class WebApp {
     return related_applications_;
   }
 
-  const std::optional<std::string>& update_token() const {
-    return update_token_;
-  }
-
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(WebAppManagement::Type source);
@@ -480,7 +476,6 @@ class WebApp {
   void SetDiyAppIconsMaskedOnMac(bool diy_app_icons_masked_on_mac);
   void SetRelatedApplications(
       std::vector<blink::Manifest::RelatedApplication> related_applications);
-  void SetUpdateToken(const std::optional<std::string>& update_token);
 
   void AddPlaceholderInfoToManagementExternalConfigMap(
       WebAppManagement::Type source_type,
@@ -628,8 +623,6 @@ class WebApp {
   bool diy_app_icons_masked_on_mac_ = false;
 
   std::vector<blink::Manifest::RelatedApplication> related_applications_;
-
-  std::optional<std::string> update_token_;
 
   // New fields must be added to:
   //  - |operator==|

@@ -17,7 +17,6 @@
    "disallowed_launch_protocols": [  ],
    "display_mode": "",
    "display_override": [  ],
-   "diy_app_icons_masked_on_mac": false,
    "downloaded_icon_sizes": {
       "ANY": [  ],
       "MASKABLE": [  ],
@@ -29,6 +28,7 @@
    "generated_icon_fix": null,
    "install_state": "2",
    "is_diy_app": false,
+   "diy_app_icons_masked_on_mac": false,
    "is_from_sync_and_pending_installation": false,
    "is_generated_icon": false,
    "is_uninstalling": false,
@@ -64,7 +64,6 @@
    },
    "tab_strip": null,
    "theme_color": "none",
-   "update_token": null,
    "user_link_capturing_preference": "0",
    "was_shortcut_app": false,
    "window_controls_overlay_enabled": false

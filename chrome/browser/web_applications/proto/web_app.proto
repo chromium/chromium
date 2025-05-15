@@ -188,7 +188,7 @@ message GeneratedIconFix {
 message WebApp {
   reserved "handle_links", "is_in_sync_install", "is_placeholder",
       "file_handler_os_integration_state",
-      "run_on_os_login_os_integration_state", "url_handlers";
+      "run_on_os_login_os_integration_state", "url_handlers", "update_token";
   // Synced data. It is replicated across , all devices with WEB_APPS.
   //
   // |sync_data.name| and |sync_data.theme_color| are read by a device to
@@ -457,7 +457,5 @@ message WebApp {
   // install path by the user and had new icons.
   optional bool diy_app_icons_masked_on_mac = 71;
 
-  // When specified, used to track whether a manifest update should happen or
-  // not.
-  optional string update_token = 72;
+  reserved 72;
 }

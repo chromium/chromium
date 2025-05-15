@@ -1150,10 +1150,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   app->SetRelatedApplications(CreateRandomRelatedApplications(random));
   app->SetDiyAppIconsMaskedOnMac(random.next_bool());
 
-  if (random.next_bool()) {
-    app->SetUpdateToken(base::NumberToString(random.next_uint()));
-  }
-
   return app;
 }
 
