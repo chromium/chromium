@@ -36,6 +36,7 @@ class SaveOrUpdateAutofillAiDataController {
     kNotInteracted,
     // The bubble lost focus and was closed.
     kLostFocus,
+    kMaxValue = kLostFocus
   };
 
   enum class EntityAttributeUpdateType {

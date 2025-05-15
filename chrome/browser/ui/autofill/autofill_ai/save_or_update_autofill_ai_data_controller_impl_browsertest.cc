@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -97,6 +98,19 @@ IN_PROC_BROWSER_TEST_F(SaveOrUpdateAutofillAiDataControllerImplTest,
             SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType::
                 kNewEntityAttributeAdded);
   EXPECT_EQ(update_details[1].attribute_value, u"Sweden");
+  base::HistogramTester histogram_tester;
+  controller()->OnBubbleClosed(SaveOrUpdateAutofillAiDataController::
+                                   AutofillAiBubbleClosedReason::kAccepted);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.UpdatePrompt.Passport",
+      SaveOrUpdateAutofillAiDataController::AutofillAiBubbleClosedReason::
+          kAccepted,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.UpdatePrompt.AllEntities",
+      SaveOrUpdateAutofillAiDataController::AutofillAiBubbleClosedReason::
+          kAccepted,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(SaveOrUpdateAutofillAiDataControllerImplTest,
@@ -112,5 +126,18 @@ IN_PROC_BROWSER_TEST_F(SaveOrUpdateAutofillAiDataControllerImplTest,
               SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType::
                   kNewEntityAttributeAdded);
   }
+  base::HistogramTester histogram_tester;
+  controller()->OnBubbleClosed(SaveOrUpdateAutofillAiDataController::
+                                   AutofillAiBubbleClosedReason::kAccepted);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.SavePrompt.Passport",
+      SaveOrUpdateAutofillAiDataController::AutofillAiBubbleClosedReason::
+          kAccepted,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.SavePrompt.AllEntities",
+      SaveOrUpdateAutofillAiDataController::AutofillAiBubbleClosedReason::
+          kAccepted,
+      1);
 }
 }  // namespace autofill_ai
