@@ -2737,7 +2737,13 @@
     },
     {
       name: "LanguageDetectionAPI",
-      status: "stable",
+      status: {
+        "Win": "stable",
+        "Mac": "stable",
+        "Linux": "stable",
+        "ChromeOS": "stable",
+        "default": "",
+      },
       origin_trial_feature_name: "LanguageDetectionAPI",
       origin_trial_allows_third_party: true,
       base_feature_status: "enabled",
