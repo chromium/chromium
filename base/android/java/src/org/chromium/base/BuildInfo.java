@@ -57,7 +57,7 @@ public class BuildInfo {
      * context of the SDK Runtime, this is the versionCode of the app that owns this particular
      * instance of the SDK Runtime.
      */
-    public final long hostVersionCode;
+    public final String hostVersionCode;
 
     /**
      * The packageName of Chrome/WebView. Use application context for host app packageName. Same as

@@ -16,27 +16,35 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/build_info_jni/DeviceInfo_jni.h"
-#include "base/synchronization/lock.h"
+
+#if __ANDROID_API__ >= 29
+// .aidl based NDK generation is only available when our min SDK level is 29 or
+// higher.
+#include "aidl/org/chromium/base/IDeviceInfo.h"
+using aidl::org::chromium::base::IDeviceInfo;
+#endif
 
 namespace base::android::device_info {
 namespace {
-struct DeviceInfo {
-  std::string gms_version_code;
-  bool is_tv;
-  bool is_automotive;
-  bool is_foldable;
-  bool is_desktop;
+#if __ANDROID_API__ < 29
+struct IDeviceInfo {
+  std::string gmsVersionCode;
+  bool isTv;
+  bool isAutomotive;
+  bool isFoldable;
+  bool isDesktop;
   // Available only on Android T+.
-  int32_t vulkan_deqp_level;
+  int32_t vulkanDeqpLevel;
 };
+#endif
 
-static std::optional<DeviceInfo>& get_holder() {
-  static base::NoDestructor<std::optional<DeviceInfo>> holder;
+static std::optional<IDeviceInfo>& get_holder() {
+  static base::NoDestructor<std::optional<IDeviceInfo>> holder;
   return *holder;
 }
 
-DeviceInfo& get_device_info() {
-  std::optional<DeviceInfo>& holder = get_holder();
+IDeviceInfo& get_device_info() {
+  std::optional<IDeviceInfo>& holder = get_holder();
   if (!holder.has_value()) {
     Java_DeviceInfo_nativeReadyForFields(AttachCurrentThread());
   }
@@ -52,43 +60,43 @@ static void JNI_DeviceInfo_FillFields(JNIEnv* env,
                                       jboolean isFoldable,
                                       jboolean isDesktop,
                                       jint vulkanDeqpLevel) {
-  std::optional<DeviceInfo>& holder = get_holder();
+  std::optional<IDeviceInfo>& holder = get_holder();
   DCHECK(!holder.has_value());
-  holder.emplace(DeviceInfo{.gms_version_code = gmsVersionCode,
-                            .is_tv = static_cast<bool>(isTV),
-                            .is_automotive = static_cast<bool>(isAutomotive),
-                            .is_foldable = static_cast<bool>(isFoldable),
-                            .is_desktop = static_cast<bool>(isDesktop),
-                            .vulkan_deqp_level = vulkanDeqpLevel});
+  holder.emplace(IDeviceInfo{.gmsVersionCode = gmsVersionCode,
+                             .isTv = static_cast<bool>(isTV),
+                             .isAutomotive = static_cast<bool>(isAutomotive),
+                             .isFoldable = static_cast<bool>(isFoldable),
+                             .isDesktop = static_cast<bool>(isDesktop),
+                             .vulkanDeqpLevel = vulkanDeqpLevel});
 }
 
 const std::string& gms_version_code() {
-  return get_device_info().gms_version_code;
+  return get_device_info().gmsVersionCode;
 }
 
 void set_gms_version_code_for_test(const std::string& gms_version_code) {
-  get_device_info().gms_version_code = gms_version_code;
+  get_device_info().gmsVersionCode = gms_version_code;
   Java_DeviceInfo_setGmsVersionCodeForTest(AttachCurrentThread(),
                                            gms_version_code);
 }
 
 bool is_tv() {
-  return get_device_info().is_tv;
+  return get_device_info().isTv;
 }
 bool is_automotive() {
-  return get_device_info().is_automotive;
+  return get_device_info().isAutomotive;
 }
 bool is_foldable() {
-  return get_device_info().is_foldable;
+  return get_device_info().isFoldable;
 }
 
 bool is_desktop() {
-  return get_device_info().is_desktop;
+  return get_device_info().isDesktop;
 }
 
 // Available only on Android T+.
 int32_t vulkan_deqp_level() {
-  return get_device_info().vulkan_deqp_level;
+  return get_device_info().vulkanDeqpLevel;
 }
 
 }  // namespace base::android::device_info
