@@ -68,6 +68,7 @@
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
+#include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/preloading/prerender/prerender_navigation_utils.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
@@ -2732,6 +2733,21 @@ void NavigationRequest::BeginNavigationImpl() {
           frame_tree_node_->frame_tree().is_prerendering(),
           ui::PageTransitionFromInt(common_params_->transition),
           &should_override_url_loading)) {
+    if (prerender_frame_tree_node_id_.has_value() &&
+        !prerender_frame_tree_node_id_.value().is_null()) {
+      // Prerender activation must not fail but some reports imply it can
+      // actually be failing: crbug.com/408969974. This dump is useful for
+      // debugging it.
+      PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+      std::string prerender_type = GeneratePrerenderHistogramSuffix(
+          registry.GetPrerenderTriggerType(prerender_frame_tree_node_id()),
+          registry.GetPrerenderEmbedderHistogramSuffix(
+              prerender_frame_tree_node_id()));
+      SCOPED_CRASH_KEY_STRING64("Bug411566699", "prerender_type",
+                                prerender_type);
+      base::debug::DumpWithoutCrashing();
+    }
+
     // A Java exception was thrown by the embedding application; we
     // need to return from this task. Specifically, it's not safe from
     // this point on to make any JNI calls.
@@ -5078,6 +5094,20 @@ void NavigationRequest::OnRequestFailedInternal(
   DCHECK(!(status.error_code == net::ERR_ABORTED &&
            error_page_content.has_value()));
   ScopedCrashKeys crash_keys(*this);
+
+  if (prerender_frame_tree_node_id_.has_value() &&
+      !prerender_frame_tree_node_id_.value().is_null()) {
+    // Prerender activation must not fail but some reports imply it can actually
+    // be failing: crbug.com/411566699, crbug.com/408969974. This dump is useful
+    // for debugging it.
+    PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+    std::string prerender_type = GeneratePrerenderHistogramSuffix(
+        registry.GetPrerenderTriggerType(prerender_frame_tree_node_id()),
+        registry.GetPrerenderEmbedderHistogramSuffix(
+            prerender_frame_tree_node_id()));
+    SCOPED_CRASH_KEY_STRING64("Bug411566699", "prerender_type", prerender_type);
+    base::debug::DumpWithoutCrashing();
+  }
 
   if (MaybeEvictFromBackForwardCacheBySubframeNavigation(
           frame_tree_node_->current_frame_host())) {
