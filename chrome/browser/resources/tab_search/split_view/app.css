@@ -28,6 +28,7 @@ picture {
   justify-content: center;
   width: 130px;
   margin-block-end: 16px;
+  margin-block-start: 32px;
 }
 
 #closeButton {

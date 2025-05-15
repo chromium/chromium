@@ -100,7 +100,6 @@ export class SplitNewTabPageAppElement extends CrLitElement {
     this.scrollTarget_ = this.$.splitTabsList;
 
     this.apiProxy_.getProfileData().then(({profileData}) => {
-      this.updateViewportHeight_(profileData);
       this.onTabsChanged_(profileData);
     });
 
@@ -156,6 +155,9 @@ export class SplitNewTabPageAppElement extends CrLitElement {
         activeWindow.tabs.filter(tab => !tab.visible)
             .map(tab => this.getTabData_(tab, true, TabItemType.OPEN_TAB));
     this.sortTabs_();
+    this.updateComplete.then(() => {
+      this.updateViewportHeight_(profileData);
+    });
   }
 
   private onTabUpdated_(tabUpdateInfo: TabUpdateInfo) {
