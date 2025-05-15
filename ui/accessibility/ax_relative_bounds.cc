@@ -44,10 +44,6 @@ bool AXRelativeBounds::operator==(const AXRelativeBounds& other) const {
   return base::ValuesEquivalent(transform, other.transform);
 }
 
-bool AXRelativeBounds::operator!=(const AXRelativeBounds& other) const {
-  return !operator==(other);
-}
-
 std::string AXRelativeBounds::ToString() const {
   std::string result;
 

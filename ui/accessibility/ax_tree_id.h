@@ -51,12 +51,8 @@ class AX_BASE_EXPORT AXTreeID {
   ax::mojom::AXTreeIDType type() const { return type_; }
   const std::optional<base::UnguessableToken>& token() const { return token_; }
 
-  bool operator==(const AXTreeID& rhs) const;
-  bool operator!=(const AXTreeID& rhs) const;
-  bool operator<(const AXTreeID& rhs) const;
-  bool operator<=(const AXTreeID& rhs) const;
-  bool operator>(const AXTreeID& rhs) const;
-  bool operator>=(const AXTreeID& rhs) const;
+  friend bool operator==(const AXTreeID&, const AXTreeID&) = default;
+  friend auto operator<=>(const AXTreeID&, const AXTreeID&) = default;
 
  private:
   explicit AXTreeID(ax::mojom::AXTreeIDType type);

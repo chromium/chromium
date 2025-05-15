@@ -100,24 +100,6 @@ AXTextAttributes& AXTextAttributes::operator=(AXTextAttributes&& other) {
   return *this;
 }
 
-bool AXTextAttributes::operator==(const AXTextAttributes& other) const {
-  return background_color == other.background_color && color == other.color &&
-         invalid_state == other.invalid_state &&
-         overline_style == other.overline_style &&
-         strikethrough_style == other.strikethrough_style &&
-         text_direction == other.text_direction &&
-         text_position == other.text_position && font_size == other.font_size &&
-         font_weight == other.font_weight && text_style == other.text_style &&
-         underline_style == other.underline_style &&
-         font_family == other.font_family &&
-         marker_types == other.marker_types &&
-         highlight_types == other.highlight_types;
-}
-
-bool AXTextAttributes::operator!=(const AXTextAttributes& other) const {
-  return !operator==(other);
-}
-
 bool AXTextAttributes::IsUnset() const {
   return background_color == kUnsetValue && color == kUnsetValue &&
          invalid_state == kUnsetValue && overline_style == kUnsetValue &&

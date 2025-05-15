@@ -40,7 +40,6 @@ struct AX_BASE_EXPORT AXRelativeBounds final {
   AXRelativeBounds(AXRelativeBounds&& other) noexcept;
   AXRelativeBounds& operator=(const AXRelativeBounds& other);
   AXRelativeBounds& operator=(AXRelativeBounds&& other) noexcept = default;
-  bool operator!=(const AXRelativeBounds& other) const;
   bool operator==(const AXRelativeBounds& other) const;
 
   std::string ToString() const;

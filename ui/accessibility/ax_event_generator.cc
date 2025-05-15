@@ -171,11 +171,6 @@ bool operator==(const AXEventGenerator::Iterator& lhs,
   return lhs.map_iter_ == rhs.map_iter_ && lhs.set_iter_ == rhs.set_iter_;
 }
 
-bool operator!=(const AXEventGenerator::Iterator& lhs,
-                const AXEventGenerator::Iterator& rhs) {
-  return !(lhs == rhs);
-}
-
 void swap(AXEventGenerator::Iterator& lhs, AXEventGenerator::Iterator& rhs) {
   if (lhs == rhs)
     return;

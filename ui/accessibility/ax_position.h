@@ -208,9 +208,6 @@ class AXRange;
 template <class AXPositionType, class AXNodeType>
 bool operator==(const AXPosition<AXPositionType, AXNodeType>& first,
                 const AXPosition<AXPositionType, AXNodeType>& second);
-template <class AXPositionType, class AXNodeType>
-bool operator!=(const AXPosition<AXPositionType, AXNodeType>& first,
-                const AXPosition<AXPositionType, AXNodeType>& second);
 
 // A position in the accessibility tree.
 //
@@ -6073,17 +6070,6 @@ bool operator==(const AXPosition<AXPositionType, AXNodeType>& first,
                 const AXPosition<AXPositionType, AXNodeType>& second) {
   const std::optional<int> compare_to_optional = first.CompareTo(second);
   return compare_to_optional.has_value() && compare_to_optional.value() == 0;
-}
-
-template <class AXPositionType, class AXNodeType>
-bool operator!=(const AXPosition<AXPositionType, AXNodeType>& first,
-                const AXPosition<AXPositionType, AXNodeType>& second) {
-  const std::optional<int> compare_to_optional = first.CompareTo(second);
-  // It makes sense to also return false if the positions are not comparable,
-  // because by definition non-comparable positions are uniqual. Positions are
-  // not comparable when one position is null and the other is not or if the
-  // positions do not have any common ancestor.
-  return !compare_to_optional.has_value() || compare_to_optional.value() != 0;
 }
 
 template <class AXPositionType, class AXNodeType>

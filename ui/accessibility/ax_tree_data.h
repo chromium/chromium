@@ -86,7 +86,6 @@ struct AX_BASE_EXPORT AXTreeData final {
 };
 
 AX_BASE_EXPORT bool operator==(const AXTreeData& lhs, const AXTreeData& rhs);
-AX_BASE_EXPORT bool operator!=(const AXTreeData& lhs, const AXTreeData& rhs);
 
 AX_BASE_EXPORT const AXTreeData& AXTreeDataUnknown();
 

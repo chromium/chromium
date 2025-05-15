@@ -151,6 +151,8 @@ class AX_BASE_EXPORT AXMode {
 
   std::string ToString() const;
 
+  friend constexpr bool operator==(const AXMode&, const AXMode&) = default;
+
   // IMPORTANT!
   // These values are written to logs.  Do not renumber or delete
   // existing items; add new entries to the end of the list.
@@ -217,14 +219,6 @@ class AX_BASE_EXPORT AXMode {
   // represent the idea that nodes or properties may be removed for performance.
   uint32_t filter_flags_ = 0U;
 };
-
-constexpr bool operator==(const AXMode& lhs, const AXMode& rhs) {
-  return lhs.flags() == rhs.flags() && lhs.filter_flags() == rhs.filter_flags();
-}
-
-constexpr bool operator!=(const AXMode& lhs, const AXMode& rhs) {
-  return lhs.flags() != rhs.flags() || lhs.filter_flags() != rhs.filter_flags();
-}
 
 constexpr AXMode operator|(const AXMode& lhs, const AXMode& rhs) {
   return {lhs.flags() | rhs.flags(), lhs.filter_flags() | rhs.filter_flags()};

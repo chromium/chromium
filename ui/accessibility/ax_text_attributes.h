@@ -35,9 +35,8 @@ struct AX_BASE_EXPORT AXTextAttributes final {
   AXTextAttributes(AXTextAttributes&& other);
   AXTextAttributes& operator=(AXTextAttributes&& other);
 
-  bool operator==(const AXTextAttributes& other) const;
-
-  bool operator!=(const AXTextAttributes& other) const;
+  friend bool operator==(const AXTextAttributes&,
+                         const AXTextAttributes&) = default;
 
   bool IsUnset() const;
 

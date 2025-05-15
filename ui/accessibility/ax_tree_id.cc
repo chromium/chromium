@@ -70,30 +70,6 @@ void swap(AXTreeID& first, AXTreeID& second) {
   std::swap(first.token_, second.token_);
 }
 
-bool AXTreeID::operator==(const AXTreeID& rhs) const {
-  return type_ == rhs.type_ && token_ == rhs.token_;
-}
-
-bool AXTreeID::operator!=(const AXTreeID& rhs) const {
-  return !(*this == rhs);
-}
-
-bool AXTreeID::operator<(const AXTreeID& rhs) const {
-  return std::tie(type_, token_) < std::tie(rhs.type_, rhs.token_);
-}
-
-bool AXTreeID::operator<=(const AXTreeID& rhs) const {
-  return std::tie(type_, token_) <= std::tie(rhs.type_, rhs.token_);
-}
-
-bool AXTreeID::operator>(const AXTreeID& rhs) const {
-  return !(*this <= rhs);
-}
-
-bool AXTreeID::operator>=(const AXTreeID& rhs) const {
-  return !(*this < rhs);
-}
-
 size_t AXTreeIDHash::operator()(const AXTreeID& tree_id) const {
   DCHECK(tree_id.type() == ax::mojom::AXTreeIDType::kToken);
   return base::UnguessableTokenHash()(tree_id.token().value());
