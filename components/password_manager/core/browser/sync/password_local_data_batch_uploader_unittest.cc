@@ -20,11 +20,17 @@
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/service/local_data_description.h"
+#include "components/sync/test/test_matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager {
 namespace {
 
+using ::syncer::IsEmptyLocalDataDescription;
+using ::syncer::MatchesLocalDataDescription;
+using ::syncer::MatchesLocalDataItemModel;
+using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::SizeIs;
@@ -127,11 +133,7 @@ TEST_F(PasswordLocalDataBatchUploaderTest, DescriptionEmptyIfAccountStoreNull) {
 
   uploader.GetLocalDataDescription(description.GetCallback());
 
-  EXPECT_EQ(description.Get().item_count, 0u);
-  EXPECT_EQ(description.Get().domain_count, 0u);
-  EXPECT_EQ(description.Get().domains, std::vector<std::string>{});
-  EXPECT_EQ(description.Get().local_data_models,
-            std::vector<syncer::LocalDataItemModel>{});
+  EXPECT_THAT(description.Get(), IsEmptyLocalDataDescription());
 }
 
 // This should not happen outside of tests, it's just tested for symmetry with
@@ -146,11 +148,7 @@ TEST_F(PasswordLocalDataBatchUploaderTest, DescriptionEmptyIfProfileStoreNull) {
 
   uploader.GetLocalDataDescription(description.GetCallback());
 
-  EXPECT_EQ(description.Get().item_count, 0u);
-  EXPECT_EQ(description.Get().domain_count, 0u);
-  EXPECT_EQ(description.Get().domains, std::vector<std::string>{});
-  EXPECT_EQ(description.Get().local_data_models,
-            std::vector<syncer::LocalDataItemModel>{});
+  EXPECT_THAT(description.Get(), IsEmptyLocalDataDescription());
 }
 
 TEST_F(PasswordLocalDataBatchUploaderTest,
@@ -168,11 +166,7 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
 
   uploader.GetLocalDataDescription(description.GetCallback());
 
-  EXPECT_EQ(description.Get().item_count, 0u);
-  EXPECT_EQ(description.Get().domain_count, 0u);
-  EXPECT_EQ(description.Get().domains, std::vector<std::string>{});
-  EXPECT_EQ(description.Get().local_data_models,
-            std::vector<syncer::LocalDataItemModel>{});
+  EXPECT_THAT(description.Get(), IsEmptyLocalDataDescription());
 }
 
 TEST_F(PasswordLocalDataBatchUploaderTest,
@@ -189,12 +183,16 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
 
   uploader.GetLocalDataDescription(description.GetCallback());
 
-  EXPECT_EQ(description.Get().item_count, 1u);
-  EXPECT_EQ(description.Get().domain_count, 1u);
-  EXPECT_EQ(description.Get().domains, std::vector<std::string>{"local.com"});
-  ASSERT_EQ(description.Get().local_data_models.size(), 1u);
-  EXPECT_EQ(description.Get().local_data_models[0].title, "local.com");
-  EXPECT_EQ(description.Get().local_data_models[0].subtitle, "username");
+  EXPECT_THAT(
+      description.Get(),
+      MatchesLocalDataDescription(
+          syncer::DataType::PASSWORDS,
+          ElementsAre(MatchesLocalDataItemModel(
+              /*id=*/_,
+              syncer::LocalDataItemModel::PageUrlIcon(GURL("http://local.com")),
+              /*title=*/"local.com", /*subtitle=*/"username")),
+          /*item_count=*/1u, /*domains=*/ElementsAre("local.com"),
+          /*domain_count=*/1u));
 }
 
 TEST_F(PasswordLocalDataBatchUploaderTest,
@@ -214,13 +212,16 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   uploader.GetLocalDataDescription(first_description.GetCallback());
   uploader.GetLocalDataDescription(second_description.GetCallback());
 
-  EXPECT_EQ(first_description.Get().item_count, 1u);
-  EXPECT_EQ(first_description.Get().domain_count, 1u);
-  EXPECT_EQ(first_description.Get().domains,
-            std::vector<std::string>{"local.com"});
-  ASSERT_EQ(first_description.Get().local_data_models.size(), 1u);
-  EXPECT_EQ(first_description.Get().local_data_models[0].title, "local.com");
-  EXPECT_EQ(first_description.Get().local_data_models[0].subtitle, "username");
+  EXPECT_THAT(
+      first_description.Get(),
+      MatchesLocalDataDescription(
+          syncer::DataType::PASSWORDS,
+          ElementsAre(MatchesLocalDataItemModel(
+              /*id=*/_,
+              syncer::LocalDataItemModel::PageUrlIcon(GURL("http://local.com")),
+              /*title=*/"local.com", /*subtitle=*/"username")),
+          /*item_count=*/1u, /*domains=*/ElementsAre("local.com"),
+          /*domain_count=*/1u));
   EXPECT_EQ(second_description.Get(), first_description.Get());
 }
 
@@ -366,9 +367,7 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   base::test::TestFuture<syncer::LocalDataDescription> description;
   uploader.GetLocalDataDescription(description.GetCallback());
 
-  EXPECT_EQ(description.Get().item_count, 0u);
-  EXPECT_EQ(description.Get().domain_count, 0u);
-  EXPECT_EQ(description.Get().domains, std::vector<std::string>{});
+  EXPECT_THAT(description.Get(), IsEmptyLocalDataDescription());
 
   // Complete the migration before destroying the uploader to avoid crashes.
   RunUntilIdle();
