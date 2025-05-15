@@ -61,6 +61,7 @@ source_set("autofill") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -90,6 +91,7 @@ source_set("constants") {
 source_set("shared_ui") {
   sources =
       [ "autofill_settings_profile_edit_table_view_controller_delegate.h" ]
+  deps = [ "//components/autofill/core/browser" ]
 }
 
 source_set("unit_tests") {

@@ -7,12 +7,16 @@
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/common/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_profile_edit_table_view_controller_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
@@ -21,6 +25,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -153,6 +158,24 @@ const CGFloat kSymbolSize = 22;
 #pragma mark - SettingsRootTableViewController
 
 - (void)editButtonPressed {
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableSupportForHomeAndWork)) {
+    autofill::AutofillProfile::RecordType type = [_delegate accountRecordType];
+    if (type == autofill::AutofillProfile::RecordType::kAccountHome) {
+      OpenNewTabCommand* command = [OpenNewTabCommand
+          commandWithURLFromChrome:GURL(kGoogleMyAccountHomeAddressURL)];
+      [self.applicationHandler closePresentedViewsAndOpenURL:command];
+      return;
+    }
+
+    if (type == autofill::AutofillProfile::RecordType::kAccountWork) {
+      OpenNewTabCommand* command = [OpenNewTabCommand
+          commandWithURLFromChrome:GURL(kGoogleMyAccountWorkAddressURL)];
+      [self.applicationHandler closePresentedViewsAndOpenURL:command];
+      return;
+    }
+  }
+
   [super editButtonPressed];
 
   if (!self.tableView.editing) {

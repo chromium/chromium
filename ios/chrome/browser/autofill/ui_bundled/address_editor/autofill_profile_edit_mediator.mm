@@ -195,6 +195,10 @@ constexpr std::array<autofill::FieldType, 3> kStaticFieldsTypes = {
   return autofill::IsMinimumAddress(*_autofillProfile);
 }
 
+- (autofill::AutofillProfile::RecordType)accountRecordType {
+  return _autofillProfile->record_type();
+}
+
 - (void)didTapMigrateToAccountButton {
   _personalDataManager->address_data_manager().MigrateProfileToAccount(
       *_autofillProfile);
