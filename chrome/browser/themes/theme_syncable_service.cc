@@ -54,8 +54,8 @@ struct ThemePrefNames {
 constexpr auto kThemePrefsInMigration =
     base::MakeFixedFlatMap<ThemePrefInMigration, ThemePrefNames>({
         {ThemePrefInMigration::kBrowserColorScheme,
-         {prefs::kBrowserColorSchemeDoNotUse,
-          prefs::kNonSyncingBrowserColorSchemeDoNotUse}},
+         {prefs::kDeprecatedBrowserColorSchemeDoNotUse,
+          prefs::kBrowserColorScheme}},
         {ThemePrefInMigration::kUserColor,
          {prefs::kDeprecatedUserColorDoNotUse, prefs::kUserColor}},
         {ThemePrefInMigration::kBrowserColorVariant,

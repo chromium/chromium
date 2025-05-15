@@ -1361,12 +1361,10 @@ inline constexpr char kShouldReadIncomingSyncingThemePrefs[] =
     "should_read_incoming_syncing_theme_prefs";
 
 // Enum tracking the color scheme preference for the browser.
-// Note: In the process of migration. Please use `GetThemePrefNameInMigration()`
-// instead. See crbug.com/356148174.
-inline constexpr char kBrowserColorSchemeDoNotUse[] =
+// Use `kBrowserColorScheme` only.
+inline constexpr char kDeprecatedBrowserColorSchemeDoNotUse[] =
     "browser.theme.color_scheme";
-inline constexpr char kNonSyncingBrowserColorSchemeDoNotUse[] =
-    "browser.theme.color_scheme2";
+inline constexpr char kBrowserColorScheme[] = "browser.theme.color_scheme2";
 
 // SkColor used to theme the browser for Chrome Refresh. The value
 // SK_ColorTRANSPARENT means the user color has not been set.

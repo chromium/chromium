@@ -257,15 +257,17 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest,
     sync_pb::EntitySpecifics specifics;
     sync_pb::PreferenceSpecifics* preference_specifics =
         specifics.mutable_preference();
-    preference_specifics->set_name(prefs::kBrowserColorSchemeDoNotUse);
+    preference_specifics->set_name(
+        prefs::kDeprecatedBrowserColorSchemeDoNotUse);
     preference_specifics->set_value(
         preferences_helper::ConvertPrefValueToValueInSpecifics(base::Value(
             static_cast<int>(ThemeService::BrowserColorScheme::kLight))));
 
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-            /*non_unique_name=*/prefs::kBrowserColorSchemeDoNotUse,
-            /*client_tag=*/prefs::kBrowserColorSchemeDoNotUse, specifics,
+            /*non_unique_name=*/prefs::kDeprecatedBrowserColorSchemeDoNotUse,
+            /*client_tag=*/prefs::kDeprecatedBrowserColorSchemeDoNotUse,
+            specifics,
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
   {
@@ -334,15 +336,17 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest,
     sync_pb::EntitySpecifics specifics;
     sync_pb::PreferenceSpecifics* preference_specifics =
         specifics.mutable_preference();
-    preference_specifics->set_name(prefs::kBrowserColorSchemeDoNotUse);
+    preference_specifics->set_name(
+        prefs::kDeprecatedBrowserColorSchemeDoNotUse);
     preference_specifics->set_value(
         preferences_helper::ConvertPrefValueToValueInSpecifics(base::Value(
             static_cast<int>(ThemeService::BrowserColorScheme::kDark))));
 
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-            /*non_unique_name=*/prefs::kBrowserColorSchemeDoNotUse,
-            /*client_tag=*/prefs::kBrowserColorSchemeDoNotUse, specifics,
+            /*non_unique_name=*/prefs::kDeprecatedBrowserColorSchemeDoNotUse,
+            /*client_tag=*/prefs::kDeprecatedBrowserColorSchemeDoNotUse,
+            specifics,
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
   {
@@ -394,20 +398,22 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest,
     sync_pb::EntitySpecifics specifics;
     sync_pb::PreferenceSpecifics* preference_specifics =
         specifics.mutable_preference();
-    preference_specifics->set_name(prefs::kBrowserColorSchemeDoNotUse);
+    preference_specifics->set_name(
+        prefs::kDeprecatedBrowserColorSchemeDoNotUse);
     preference_specifics->set_value(
         preferences_helper::ConvertPrefValueToValueInSpecifics(base::Value(
             static_cast<int>(ThemeService::BrowserColorScheme::kLight))));
 
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-            /*non_unique_name=*/prefs::kBrowserColorSchemeDoNotUse,
-            /*client_tag=*/prefs::kBrowserColorSchemeDoNotUse, specifics,
+            /*non_unique_name=*/prefs::kDeprecatedBrowserColorSchemeDoNotUse,
+            /*client_tag=*/prefs::kDeprecatedBrowserColorSchemeDoNotUse,
+            specifics,
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
 
   ASSERT_TRUE(PrefValueChecker(preferences_helper::GetPrefs(/*index=*/0),
-                               prefs::kBrowserColorSchemeDoNotUse,
+                               prefs::kDeprecatedBrowserColorSchemeDoNotUse,
                                base::Value(static_cast<int>(
                                    ThemeService::BrowserColorScheme::kLight)))
                   .Wait());
@@ -431,14 +437,16 @@ IN_PROC_BROWSER_TEST_F(
     sync_pb::EntitySpecifics specifics;
     sync_pb::PreferenceSpecifics* preference_specifics =
         specifics.mutable_preference();
-    preference_specifics->set_name(prefs::kBrowserColorSchemeDoNotUse);
+    preference_specifics->set_name(
+        prefs::kDeprecatedBrowserColorSchemeDoNotUse);
     preference_specifics->set_value(
         preferences_helper::ConvertPrefValueToValueInSpecifics(base::Value(
             static_cast<int>(ThemeService::BrowserColorScheme::kLight))));
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-            /*non_unique_name=*/prefs::kBrowserColorSchemeDoNotUse,
-            /*client_tag=*/prefs::kBrowserColorSchemeDoNotUse, specifics,
+            /*non_unique_name=*/prefs::kDeprecatedBrowserColorSchemeDoNotUse,
+            /*client_tag=*/prefs::kDeprecatedBrowserColorSchemeDoNotUse,
+            specifics,
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
   {
@@ -493,14 +501,16 @@ IN_PROC_BROWSER_TEST_F(
     sync_pb::EntitySpecifics specifics;
     sync_pb::PreferenceSpecifics* preference_specifics =
         specifics.mutable_preference();
-    preference_specifics->set_name(prefs::kBrowserColorSchemeDoNotUse);
+    preference_specifics->set_name(
+        prefs::kDeprecatedBrowserColorSchemeDoNotUse);
     preference_specifics->set_value(
         preferences_helper::ConvertPrefValueToValueInSpecifics(base::Value(
             static_cast<int>(ThemeService::BrowserColorScheme::kLight))));
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-            /*non_unique_name=*/prefs::kBrowserColorSchemeDoNotUse,
-            /*client_tag=*/prefs::kBrowserColorSchemeDoNotUse, specifics,
+            /*non_unique_name=*/prefs::kDeprecatedBrowserColorSchemeDoNotUse,
+            /*client_tag=*/prefs::kDeprecatedBrowserColorSchemeDoNotUse,
+            specifics,
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
   {
