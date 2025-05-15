@@ -744,6 +744,66 @@ IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
+                       PerformOCRMultipleClientsNoWaitBetween) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Create multiple OCR clients.
+  scoped_refptr<OpticalCharacterRecognizer> ocr_clients[kTestFilenamesCount];
+  {
+    base::test::TestFuture<bool> futures[kTestFilenamesCount];
+    {
+      auto* future = std::begin(futures);
+      auto* ocr = std::begin(ocr_clients);
+      for (int i = 0; i < kTestFilenamesCount; i++) {
+        (*ocr) = OpticalCharacterRecognizer::CreateWithStatusCallback(
+            browser()->profile(), mojom::OcrClientType::kTest,
+            future->GetCallback());
+        future = std::next(future);
+        ocr = std::next(ocr);
+      }
+    }
+
+    for (auto& future : futures) {
+      ASSERT_TRUE(future.Wait());
+      ASSERT_TRUE(future.Get<bool>());
+    }
+  }
+
+  // Load files.
+  SkBitmap bitmaps[kTestFilenamesCount];
+  {
+    auto* bitmap = std::begin(bitmaps);
+    for (std::string_view& file_name : kTestFilenames) {
+      base::FilePath image_path =
+          base::FilePath(FILE_PATH_LITERAL("ocr"))
+              .AppendASCII(base::StringPrintf("%s.png", file_name));
+      *bitmap = LoadImageFromTestFile(image_path);
+      bitmap = std::next(bitmap);
+    }
+  }
+
+  // Perform OCR on all client without waiting.
+  base::test::TestFuture<mojom::VisualAnnotationPtr>
+      futures[kTestFilenamesCount];
+  {
+    auto* future = std::begin(futures);
+    auto* ocr = std::begin(ocr_clients);
+    for (SkBitmap& bitmap : bitmaps) {
+      (*ocr)->PerformOCR(bitmap, future->GetCallback());
+      future = std::next(future);
+      ocr = std::next(ocr);
+    }
+  }
+
+  // Verify all got results.
+  for (auto& future : futures) {
+    ASSERT_TRUE(future.Wait());
+    auto& results = future.Get<mojom::VisualAnnotationPtr>();
+    EXPECT_TRUE(results->lines.size());
+  }
+}
+
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && !
         // BUILDFLAG(USE_FAKE_SCREEN_AI)
 }  // namespace screen_ai
