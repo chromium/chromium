@@ -9,7 +9,6 @@
 
 namespace autofill {
 
-class CreditCard;
 class Iban;
 class LoyaltyCard;
 struct Suggestion;
@@ -23,7 +22,6 @@ class TouchToFillPaymentMethodView {
 
   virtual bool ShowCreditCards(
       TouchToFillPaymentMethodViewController* controller,
-      base::span<const CreditCard> cards_to_suggest,
       base::span<const Suggestion> suggestions,
       bool should_show_scan_credit_card) = 0;
   virtual bool ShowIbans(TouchToFillPaymentMethodViewController* controller,

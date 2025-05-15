@@ -871,7 +871,6 @@ AutofillOfferManager* ChromePaymentsAutofillClient::GetAutofillOfferManager() {
 
 bool ChromePaymentsAutofillClient::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const autofill::CreditCard> cards_to_suggest,
     base::span<const Suggestion> suggestions) {
 #if BUILDFLAG(IS_ANDROID)
   // Create the manual filling controller which will be used to show the
@@ -879,11 +878,11 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillCreditCard(
   ManualFillingController::GetOrCreate(web_contents())
       ->UpdateSourceAvailability(
           ManualFillingController::FillingSource::CREDIT_CARD_FALLBACKS,
-          !cards_to_suggest.empty());
+          !suggestions.empty());
 
   return touch_to_fill_payment_method_controller_.ShowCreditCards(
       std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
-      delegate, std::move(cards_to_suggest), std::move(suggestions));
+      delegate, std::move(suggestions));
 #else
   // Touch To Fill is not supported on Desktop.
   NOTREACHED();

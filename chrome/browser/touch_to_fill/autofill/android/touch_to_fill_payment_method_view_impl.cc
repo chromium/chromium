@@ -70,20 +70,11 @@ bool TouchToFillPaymentMethodViewImpl::IsReadyToShow(
 
 bool TouchToFillPaymentMethodViewImpl::ShowCreditCards(
     TouchToFillPaymentMethodViewController* controller,
-    base::span<const autofill::CreditCard> cards_to_suggest,
     base::span<const Suggestion> suggestions,
     bool should_show_scan_credit_card) {
-  CHECK_EQ(cards_to_suggest.size(), suggestions.size());
   JNIEnv* env = base::android::AttachCurrentThread();
   if (!IsReadyToShow(controller, env)) {
     return false;
-  }
-
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> credit_cards_array;
-  credit_cards_array.reserve(cards_to_suggest.size());
-  for (const autofill::CreditCard& card : cards_to_suggest) {
-    credit_cards_array.push_back(
-        PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(env, card));
   }
 
   std::vector<base::android::ScopedJavaLocalRef<jobject>> suggestions_array;
@@ -118,11 +109,13 @@ bool TouchToFillPaymentMethodViewImpl::ShowCreditCards(
                                   env, custom_icon_url->value())
                             : url::GURLAndroid::EmptyGURL(env),
             android_icon_id, suggestion.HasDeactivatedStyle(),
-            payments_payload.should_display_terms_available));
+            payments_payload.should_display_terms_available,
+            payments_payload.guid.value(),
+            payments_payload.is_local_payments_method));
   }
   Java_TouchToFillPaymentMethodViewBridge_showCreditCards(
-      env, java_object_, std::move(credit_cards_array),
-      std::move(suggestions_array), should_show_scan_credit_card);
+      env, java_object_, std::move(suggestions_array),
+      should_show_scan_credit_card);
   return true;
 }
 

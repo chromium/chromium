@@ -187,7 +187,9 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* customIconUrl= */ new GURL(""),
                     VISA.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
-                    /* shouldDisplayTermsAvailable= */ false);
+                    /* shouldDisplayTermsAvailable= */ false,
+                    VISA.getGUID(),
+                    VISA.getIsLocal());
     private static final AutofillSuggestion VISA_SUGGESTION_WITH_CARD_BENEFITS =
             createCreditCardSuggestion(
                     VISA.getCardNameForAutofillDisplay(),
@@ -199,7 +201,9 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* customIconUrl= */ new GURL("http://www.example.com"),
                     VISA.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
-                    /* shouldDisplayTermsAvailable= */ true);
+                    /* shouldDisplayTermsAvailable= */ true,
+                    VISA.getGUID(),
+                    VISA.getIsLocal());
     private static final AutofillSuggestion MASTERCARD_SUGGESTION =
             createCreditCardSuggestion(
                     MASTERCARD.getCardNameForAutofillDisplay(),
@@ -211,7 +215,9 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* customIconUrl= */ new GURL("http://www.example.com"),
                     MASTERCARD.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
-                    /* shouldDisplayTermsAvailable= */ false);
+                    /* shouldDisplayTermsAvailable= */ false,
+                    MASTERCARD.getGUID(),
+                    MASTERCARD.getIsLocal());
     private static final AutofillSuggestion SERVER_MASTERCARD_SUGGESTION =
             createCreditCardSuggestion(
                     SERVER_MASTERCARD.getCardNameForAutofillDisplay(),
@@ -224,7 +230,9 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* customIconUrl= */ new GURL("http://www.example.com"),
                     SERVER_MASTERCARD.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
-                    /* shouldDisplayTermsAvailable= */ false);
+                    /* shouldDisplayTermsAvailable= */ false,
+                    SERVER_MASTERCARD.getGUID(),
+                    SERVER_MASTERCARD.getIsLocal());
     private static final AutofillSuggestion DISCOVER_SUGGESTION =
             createCreditCardSuggestion(
                     DISCOVER.getCardNameForAutofillDisplay(),
@@ -236,7 +244,9 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* customIconUrl= */ new GURL("http://www.example.com"),
                     DISCOVER.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
-                    /* shouldDisplayTermsAvailable= */ false);
+                    /* shouldDisplayTermsAvailable= */ false,
+                    DISCOVER.getGUID(),
+                    DISCOVER.getIsLocal());
     private static final AutofillSuggestion AMERICAN_EXPRESS_SUGGESTION =
             createCreditCardSuggestion(
                     AMERICAN_EXPRESS.getCardNameForAutofillDisplay(),
@@ -249,7 +259,9 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* customIconUrl= */ new GURL("http://www.example.com"),
                     AMERICAN_EXPRESS.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
-                    /* shouldDisplayTermsAvailable= */ false);
+                    /* shouldDisplayTermsAvailable= */ false,
+                    AMERICAN_EXPRESS.getGUID(),
+                    AMERICAN_EXPRESS.getIsLocal());
     private static final AutofillSuggestion ACCEPTABLE_MASTERCARD_VIRTUAL_CARD_SUGGESTION =
             createCreditCardSuggestion(
                     MASTERCARD_VIRTUAL_CARD.getCardNameForAutofillDisplay(),
@@ -261,7 +273,9 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* customIconUrl= */ new GURL(AutofillUiUtils.CAPITAL_ONE_ICON_URL),
                     MASTERCARD_VIRTUAL_CARD.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
-                    /* shouldDisplayTermsAvailable= */ false);
+                    /* shouldDisplayTermsAvailable= */ false,
+                    MASTERCARD_VIRTUAL_CARD.getGUID(),
+                    MASTERCARD_VIRTUAL_CARD.getIsLocal());
     private static final AutofillSuggestion NON_ACCEPTABLE_MASTERCARD_VIRTUAL_CARD_SUGGESTION =
             createCreditCardSuggestion(
                     MASTERCARD_VIRTUAL_CARD.getCardNameForAutofillDisplay(),
@@ -273,7 +287,9 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* customIconUrl= */ new GURL("http://www.example.com"),
                     MASTERCARD_VIRTUAL_CARD.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ true,
-                    /* shouldDisplayTermsAvailable= */ false);
+                    /* shouldDisplayTermsAvailable= */ false,
+                    MASTERCARD_VIRTUAL_CARD.getGUID(),
+                    MASTERCARD_VIRTUAL_CARD.getIsLocal());
     private static final AutofillSuggestion MASTERCARD_VIRTUAL_CARD_SUGGESTION_WITH_CARD_BENEFITS =
             createCreditCardSuggestion(
                     MASTERCARD_VIRTUAL_CARD.getCardNameForAutofillDisplay(),
@@ -285,7 +301,9 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* customIconUrl= */ new GURL("http://www.example.com"),
                     MASTERCARD_VIRTUAL_CARD.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
-                    /* shouldDisplayTermsAvailable= */ true);
+                    /* shouldDisplayTermsAvailable= */ true,
+                    MASTERCARD_VIRTUAL_CARD.getGUID(),
+                    MASTERCARD_VIRTUAL_CARD.getIsLocal());
     private static final AutofillSuggestion LONG_CARD_NAME_CARD_SUGGESTION =
             createCreditCardSuggestion(
                     LONG_CARD_NAME_CARD.getCardNameForAutofillDisplay(),
@@ -298,7 +316,9 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* customIconUrl= */ new GURL("http://www.example.com"),
                     LONG_CARD_NAME_CARD.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
-                    /* shouldDisplayTermsAvailable= */ false);
+                    /* shouldDisplayTermsAvailable= */ false,
+                    LONG_CARD_NAME_CARD.getGUID(),
+                    LONG_CARD_NAME_CARD.getIsLocal());
 
     private BottomSheetController mBottomSheetController;
     private TouchToFillPaymentMethodCoordinator mCoordinator;
@@ -350,9 +370,7 @@ public class TouchToFillPaymentMethodRenderTest {
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.showCreditCards(
-                            List.of(VISA),
-                            List.of(VISA_SUGGESTION),
-                            /* shouldShowScanCreditCard= */ true);
+                            List.of(VISA_SUGGESTION), /* shouldShowScanCreditCard= */ true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -367,9 +385,7 @@ public class TouchToFillPaymentMethodRenderTest {
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.showCreditCards(
-                            List.of(VISA),
-                            List.of(VISA_SUGGESTION),
-                            /* shouldShowScanCreditCard= */ true);
+                            List.of(VISA_SUGGESTION), /* shouldShowScanCreditCard= */ true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -387,7 +403,6 @@ public class TouchToFillPaymentMethodRenderTest {
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.showCreditCards(
-                            List.of(VISA, MASTERCARD),
                             List.of(VISA_SUGGESTION, MASTERCARD_SUGGESTION),
                             /* shouldShowScanCreditCard= */ true);
                 });
@@ -404,7 +419,6 @@ public class TouchToFillPaymentMethodRenderTest {
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.showCreditCards(
-                            List.of(VISA, MASTERCARD),
                             List.of(VISA_SUGGESTION, MASTERCARD_SUGGESTION),
                             /* shouldShowScanCreditCard= */ true);
                 });
@@ -424,7 +438,6 @@ public class TouchToFillPaymentMethodRenderTest {
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.showCreditCards(
-                            List.of(VISA, MASTERCARD, DISCOVER),
                             List.of(VISA_SUGGESTION, MASTERCARD_SUGGESTION, DISCOVER_SUGGESTION),
                             /* shouldShowScanCreditCard= */ true);
                 });
@@ -441,7 +454,6 @@ public class TouchToFillPaymentMethodRenderTest {
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.showCreditCards(
-                            List.of(VISA, MASTERCARD, DISCOVER),
                             List.of(VISA_SUGGESTION, MASTERCARD_SUGGESTION, DISCOVER_SUGGESTION),
                             /* shouldShowScanCreditCard= */ true);
                 });
@@ -461,7 +473,6 @@ public class TouchToFillPaymentMethodRenderTest {
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.showCreditCards(
-                            List.of(VISA, MASTERCARD, DISCOVER, AMERICAN_EXPRESS),
                             List.of(
                                     VISA_SUGGESTION,
                                     MASTERCARD_SUGGESTION,
@@ -482,7 +493,6 @@ public class TouchToFillPaymentMethodRenderTest {
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.showCreditCards(
-                            List.of(VISA, MASTERCARD, DISCOVER, AMERICAN_EXPRESS),
                             List.of(
                                     VISA_SUGGESTION,
                                     MASTERCARD_SUGGESTION,
@@ -506,7 +516,6 @@ public class TouchToFillPaymentMethodRenderTest {
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.showCreditCards(
-                            List.of(VISA, MASTERCARD_VIRTUAL_CARD, SERVER_MASTERCARD),
                             List.of(
                                     VISA_SUGGESTION,
                                     ACCEPTABLE_MASTERCARD_VIRTUAL_CARD_SUGGESTION,
@@ -528,7 +537,6 @@ public class TouchToFillPaymentMethodRenderTest {
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.showCreditCards(
-                            List.of(VISA, MASTERCARD_VIRTUAL_CARD, SERVER_MASTERCARD),
                             List.of(
                                     VISA_SUGGESTION,
                                     NON_ACCEPTABLE_MASTERCARD_VIRTUAL_CARD_SUGGESTION,
@@ -550,7 +558,6 @@ public class TouchToFillPaymentMethodRenderTest {
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.showCreditCards(
-                            List.of(VISA, MASTERCARD_VIRTUAL_CARD),
                             List.of(
                                     VISA_SUGGESTION_WITH_CARD_BENEFITS,
                                     MASTERCARD_VIRTUAL_CARD_SUGGESTION_WITH_CARD_BENEFITS),
@@ -571,7 +578,6 @@ public class TouchToFillPaymentMethodRenderTest {
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.showCreditCards(
-                            List.of(LONG_CARD_NAME_CARD),
                             List.of(LONG_CARD_NAME_CARD_SUGGESTION),
                             /* shouldShowScanCreditCard= */ true);
                 });
@@ -590,9 +596,7 @@ public class TouchToFillPaymentMethodRenderTest {
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.showCreditCards(
-                            List.of(VISA),
-                            List.of(VISA_SUGGESTION),
-                            /* shouldShowScanCreditCard= */ false);
+                            List.of(VISA_SUGGESTION), /* shouldShowScanCreditCard= */ false);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 

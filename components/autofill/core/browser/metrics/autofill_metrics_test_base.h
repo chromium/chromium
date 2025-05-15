@@ -47,7 +47,6 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
   MOCK_METHOD(bool,
               ShowTouchToFillCreditCard,
               ((base::WeakPtr<TouchToFillDelegate>),
-               (base::span<const autofill::CreditCard>),
                (base::span<const autofill::Suggestion>)),
               (override));
 };

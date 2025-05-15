@@ -69,11 +69,8 @@ class TouchToFillPaymentMethodViewBridge {
 
     @CalledByNative
     private void showCreditCards(
-            @JniType("std::vector") Object[] cards,
-            @JniType("std::vector") Object[] suggestions,
-            boolean shouldShowScanCreditCard) {
+            @JniType("std::vector") Object[] suggestions, boolean shouldShowScanCreditCard) {
         mComponent.showCreditCards(
-                (List<PersonalDataManager.CreditCard>) (List<?>) Arrays.asList(cards),
                 (List<AutofillSuggestion>) (List<?>) Arrays.asList(suggestions),
                 shouldShowScanCreditCard);
     }
@@ -104,7 +101,9 @@ class TouchToFillPaymentMethodViewBridge {
             GURL customIconUrl,
             int iconId,
             boolean applyDeactivatedStyle,
-            boolean shouldDisplayTermsAvailable) {
+            boolean shouldDisplayTermsAvailable,
+            @JniType("std::string") String guid,
+            boolean isLocalPaymentsMethod) {
         return new AutofillSuggestion.Builder()
                 .setLabel(label)
                 .setSecondaryLabel(secondaryLabel)
@@ -116,6 +115,8 @@ class TouchToFillPaymentMethodViewBridge {
                 .setIconId(iconId)
                 .setApplyDeactivatedStyle(applyDeactivatedStyle)
                 .setShouldDisplayTermsAvailable(shouldDisplayTermsAvailable)
+                .setGuid(guid)
+                .setIsLocalPaymentsMethod(isLocalPaymentsMethod)
                 .build();
     }
 }

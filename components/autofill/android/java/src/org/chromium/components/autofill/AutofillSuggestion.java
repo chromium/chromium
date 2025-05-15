@@ -31,6 +31,8 @@ public class AutofillSuggestion extends DropdownItemBase {
     private final @Nullable String mFeatureForIph;
     private final @Nullable String mIphDescriptionText;
     private final @Nullable GURL mCustomIconUrl;
+    private final @Nullable String mGuid;
+    private final boolean mIsLocalPaymentsMethod;
 
     /**
      * Constructs a Autofill suggestion container. Use the {@link AutofillSuggestion.Builder}
@@ -47,6 +49,9 @@ public class AutofillSuggestion extends DropdownItemBase {
      * @param featureForIph The IPH feature for the autofill suggestion. If present, it'll be
      *     attempted to be shown in the keyboard accessory.
      * @param customIconUrl The {@link GURL} for the custom icon, if any.
+     * @param guid The payment method identifier associated with the suggestion.
+     * @param isLocalPaymentsMethod Whether the payments method associated with the suggestion is
+     *     local.
      */
     @VisibleForTesting
     public AutofillSuggestion(
@@ -62,7 +67,9 @@ public class AutofillSuggestion extends DropdownItemBase {
             boolean shouldDisplayTermsAvailable,
             @Nullable String featureForIph,
             @Nullable String iphDescriptionText,
-            @Nullable GURL customIconUrl) {
+            @Nullable GURL customIconUrl,
+            @Nullable String guid,
+            boolean isLocalPaymentsMethod) {
         mLabel = label;
         mSecondaryLabel = secondaryLabel;
         mSublabel = sublabel;
@@ -76,6 +83,8 @@ public class AutofillSuggestion extends DropdownItemBase {
         mFeatureForIph = featureForIph;
         mIphDescriptionText = iphDescriptionText;
         mCustomIconUrl = customIconUrl;
+        mGuid = guid;
+        mIsLocalPaymentsMethod = isLocalPaymentsMethod;
     }
 
     @Override
@@ -124,6 +133,14 @@ public class AutofillSuggestion extends DropdownItemBase {
         return mSuggestionType;
     }
 
+    public @Nullable String getGuid() {
+        return mGuid;
+    }
+
+    public boolean isLocalPaymentsMethod() {
+        return mIsLocalPaymentsMethod;
+    }
+
     public boolean isDeletable() {
         return mIsDeletable;
     }
@@ -170,7 +187,9 @@ public class AutofillSuggestion extends DropdownItemBase {
                 && this.mShouldDisplayTermsAvailable == other.mShouldDisplayTermsAvailable
                 && Objects.equals(this.mFeatureForIph, other.mFeatureForIph)
                 && Objects.equals(this.mIphDescriptionText, other.mIphDescriptionText)
-                && Objects.equals(this.mCustomIconUrl, other.mCustomIconUrl);
+                && Objects.equals(this.mCustomIconUrl, other.mCustomIconUrl)
+                && Objects.equals(this.mGuid, other.mGuid)
+                && this.mIsLocalPaymentsMethod == other.mIsLocalPaymentsMethod;
     }
 
     /** Builder for the {@link AutofillSuggestion}. */
@@ -188,6 +207,8 @@ public class AutofillSuggestion extends DropdownItemBase {
         private @Nullable String mSecondarySubLabel;
         private @Nullable String mLabelContentDescription;
         private int mSuggestionType;
+        private @Nullable String mGuid;
+        private boolean mIsLocalPaymentsMethod;
 
         public Builder setIconId(int iconId) {
             this.mIconId = iconId;
@@ -254,6 +275,16 @@ public class AutofillSuggestion extends DropdownItemBase {
             return this;
         }
 
+        public Builder setGuid(String guid) {
+            this.mGuid = guid;
+            return this;
+        }
+
+        public Builder setIsLocalPaymentsMethod(boolean isLocalPaymentsMethod) {
+            this.mIsLocalPaymentsMethod = isLocalPaymentsMethod;
+            return this;
+        }
+
         public AutofillSuggestion build() {
             assert mSuggestionType == SuggestionType.SEPARATOR || !TextUtils.isEmpty(mLabel)
                     : "Only separators may have an empty label.";
@@ -272,7 +303,9 @@ public class AutofillSuggestion extends DropdownItemBase {
                     mShouldDisplayTermsAvailable,
                     mFeatureForIph,
                     mIphDescriptionText,
-                    mCustomIconUrl);
+                    mCustomIconUrl,
+                    mGuid,
+                    mIsLocalPaymentsMethod);
         }
     }
 }

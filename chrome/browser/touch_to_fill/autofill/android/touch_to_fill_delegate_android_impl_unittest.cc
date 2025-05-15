@@ -80,7 +80,6 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
   MOCK_METHOD(bool,
               ShowTouchToFillCreditCard,
               ((base::WeakPtr<autofill::TouchToFillDelegate> delegate),
-               (base::span<const CreditCard> cards_to_suggest),
                (base::span<const Suggestion> suggestions)),
               (override));
   MOCK_METHOD(bool,
@@ -98,7 +97,6 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
   void ExpectDelegateWeakPtrFromShowInvalidatedOnHideForCards() {
     EXPECT_CALL(*this, ShowTouchToFillCreditCard)
         .WillOnce([this](base::WeakPtr<autofill::TouchToFillDelegate> delegate,
-                         base::span<const CreditCard> cards_to_suggest,
                          base::span<const Suggestion> suggestions) {
           captured_delegate_ = delegate;
           return true;
@@ -780,7 +778,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
   EXPECT_CALL(
       payments_autofill_client(),
       ShowTouchToFillCreditCard(
-          _, ElementsAreArray(GetCardsToSuggest(credit_cards)),
+          _,
           ElementsAre(
               EqualsSuggestionFields(
                   credit_cards[0]->CardNameForAutofillDisplay(
@@ -818,11 +816,10 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
   EXPECT_CALL(
       payments_autofill_client(),
       ShowTouchToFillCreditCard(
-          _, ElementsAre(credit_card),
-          ElementsAre(EqualsSuggestionFields(
-              credit_card.CardNameForAutofillDisplay(credit_card.nickname()),
-              credit_card.ObfuscatedNumberWithVisibleLastFourDigits(),
-              /*has_deactivated_style=*/false))));
+          _, ElementsAre(EqualsSuggestionFields(
+                 credit_card.CardNameForAutofillDisplay(credit_card.nickname()),
+                 credit_card.ObfuscatedNumberWithVisibleLastFourDigits(),
+                 /*has_deactivated_style=*/false))));
 
   TryToShowTouchToFill(/*expected_success=*/true);
 }
@@ -849,18 +846,17 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
   EXPECT_CALL(
       payments_autofill_client(),
       ShowTouchToFillCreditCard(
-          _, ElementsAreArray({virtual_card, credit_card}),
-          ElementsAre(
-              EqualsSuggestionFields(
-                  virtual_card.CardNameForAutofillDisplay(
-                      virtual_card.nickname()),
-                  virtual_card.ObfuscatedNumberWithVisibleLastFourDigits(),
-                  /*has_deactivated_style=*/false),
-              EqualsSuggestionFields(
-                  credit_card.CardNameForAutofillDisplay(
-                      credit_card.nickname()),
-                  credit_card.ObfuscatedNumberWithVisibleLastFourDigits(),
-                  /*has_deactivated_style=*/false))));
+          _, ElementsAre(
+                 EqualsSuggestionFields(
+                     virtual_card.CardNameForAutofillDisplay(
+                         virtual_card.nickname()),
+                     virtual_card.ObfuscatedNumberWithVisibleLastFourDigits(),
+                     /*has_deactivated_style=*/false),
+                 EqualsSuggestionFields(
+                     credit_card.CardNameForAutofillDisplay(
+                         credit_card.nickname()),
+                     credit_card.ObfuscatedNumberWithVisibleLastFourDigits(),
+                     /*has_deactivated_style=*/false))));
 
   TryToShowTouchToFill(/*expected_success=*/true);
 }
@@ -900,7 +896,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
   EXPECT_CALL(
       payments_autofill_client(),
       ShowTouchToFillCreditCard(
-          _, ElementsAreArray(GetCardsToSuggest(credit_cards)),
+          _,
           ElementsAre(
               EqualsSuggestionFields(
                   credit_cards[0]->CardNameForAutofillDisplay(
@@ -1194,18 +1190,17 @@ TEST_F(TouchToFillDelegateAndroidImplVcnGrayOutForMerchantOptOutUnitTest,
   EXPECT_CALL(
       payments_autofill_client(),
       ShowTouchToFillCreditCard(
-          _, ElementsAreArray({virtual_card, credit_card}),
-          ElementsAre(
-              EqualsSuggestionFields(
-                  virtual_card.CardNameForAutofillDisplay(
-                      virtual_card.nickname()),
-                  virtual_card.ObfuscatedNumberWithVisibleLastFourDigits(),
-                  /*has_deactivated_style=*/true),
-              EqualsSuggestionFields(
-                  credit_card.CardNameForAutofillDisplay(
-                      credit_card.nickname()),
-                  credit_card.ObfuscatedNumberWithVisibleLastFourDigits(),
-                  /*has_deactivated_style=*/false))));
+          _, ElementsAre(
+                 EqualsSuggestionFields(
+                     virtual_card.CardNameForAutofillDisplay(
+                         virtual_card.nickname()),
+                     virtual_card.ObfuscatedNumberWithVisibleLastFourDigits(),
+                     /*has_deactivated_style=*/true),
+                 EqualsSuggestionFields(
+                     credit_card.CardNameForAutofillDisplay(
+                         credit_card.nickname()),
+                     credit_card.ObfuscatedNumberWithVisibleLastFourDigits(),
+                     /*has_deactivated_style=*/false))));
 
   TryToShowTouchToFill(/*expected_success=*/true);
 }

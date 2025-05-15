@@ -205,7 +205,6 @@ AutofillOfferManager* TestPaymentsAutofillClient::GetAutofillOfferManager() {
 
 bool TestPaymentsAutofillClient::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const CreditCard> cards_to_suggest,
     base::span<const Suggestion> suggestions) {
   return false;
 }

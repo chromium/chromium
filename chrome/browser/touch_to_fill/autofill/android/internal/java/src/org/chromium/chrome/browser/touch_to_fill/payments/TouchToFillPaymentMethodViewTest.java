@@ -164,7 +164,9 @@ public class TouchToFillPaymentMethodViewTest {
                     /* customIconUrl= */ new GURL(""),
                     VISA.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
-                    /* shouldDisplayTermsAvailable= */ false);
+                    /* shouldDisplayTermsAvailable= */ false,
+                    VISA.getGUID(),
+                    VISA.getIsLocal());
     private static final AutofillSuggestion VISA_SUGGESTION_WITH_CARD_BENEFITS =
             createCreditCardSuggestion(
                     VISA.getCardNameForAutofillDisplay(),
@@ -176,7 +178,9 @@ public class TouchToFillPaymentMethodViewTest {
                     /* customIconUrl= */ new GURL("http://www.example.com"),
                     VISA.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
-                    /* shouldDisplayTermsAvailable= */ true);
+                    /* shouldDisplayTermsAvailable= */ true,
+                    VISA.getGUID(),
+                    VISA.getIsLocal());
     private static final AutofillSuggestion NICKNAMED_VISA_SUGGESTION =
             createCreditCardSuggestion(
                     NICKNAMED_VISA.getCardNameForAutofillDisplay(),
@@ -191,7 +195,9 @@ public class TouchToFillPaymentMethodViewTest {
                     /* customIconUrl= */ new GURL("http://www.example.com"),
                     NICKNAMED_VISA.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
-                    /* shouldDisplayTermsAvailable= */ false);
+                    /* shouldDisplayTermsAvailable= */ false,
+                    NICKNAMED_VISA.getGUID(),
+                    NICKNAMED_VISA.getIsLocal());
     private static final AutofillSuggestion MASTERCARD_SUGGESTION =
             createCreditCardSuggestion(
                     MASTERCARD.getName(),
@@ -203,7 +209,9 @@ public class TouchToFillPaymentMethodViewTest {
                     /* customIconUrl= */ new GURL("http://www.example.com"),
                     MASTERCARD.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
-                    /* shouldDisplayTermsAvailable= */ false);
+                    /* shouldDisplayTermsAvailable= */ false,
+                    MASTERCARD.getGUID(),
+                    MASTERCARD.getIsLocal());
     private static final AutofillSuggestion VIRTUAL_CARD_SUGGESTION =
             createCreditCardSuggestion(
                     VIRTUAL_CARD.getCardNameForAutofillDisplay(),
@@ -215,7 +223,9 @@ public class TouchToFillPaymentMethodViewTest {
                     /* customIconUrl= */ new GURL(AutofillUiUtils.CAPITAL_ONE_ICON_URL),
                     VIRTUAL_CARD.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
-                    /* shouldDisplayTermsAvailable= */ false);
+                    /* shouldDisplayTermsAvailable= */ false,
+                    VIRTUAL_CARD.getGUID(),
+                    VIRTUAL_CARD.getIsLocal());
     private static final AutofillSuggestion VIRTUAL_CARD_SUGGESTION_WITH_CARD_BENEFITS =
             createCreditCardSuggestion(
                     VIRTUAL_CARD.getCardNameForAutofillDisplay(),
@@ -227,7 +237,9 @@ public class TouchToFillPaymentMethodViewTest {
                     /* customIconUrl= */ new GURL("http://www.example.com"),
                     VIRTUAL_CARD.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
-                    /* shouldDisplayTermsAvailable= */ true);
+                    /* shouldDisplayTermsAvailable= */ true,
+                    VIRTUAL_CARD.getGUID(),
+                    VIRTUAL_CARD.getIsLocal());
     private static final AutofillSuggestion NON_ACCEPTABLE_VIRTUAL_CARD_SUGGESTION =
             createCreditCardSuggestion(
                     VIRTUAL_CARD.getCardNameForAutofillDisplay(),
@@ -239,7 +251,9 @@ public class TouchToFillPaymentMethodViewTest {
                     /* customIconUrl= */ new GURL("http://www.example.com"),
                     VIRTUAL_CARD.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ true,
-                    /* shouldDisplayTermsAvailable= */ false);
+                    /* shouldDisplayTermsAvailable= */ false,
+                    VIRTUAL_CARD.getGUID(),
+                    VIRTUAL_CARD.getIsLocal());
     private static final AutofillSuggestion LONG_CARD_NAME_CARD_SUGGESTION =
             createCreditCardSuggestion(
                     LONG_CARD_NAME_CARD.getCardNameForAutofillDisplay(),
@@ -252,7 +266,9 @@ public class TouchToFillPaymentMethodViewTest {
                     /* customIconUrl= */ new GURL("http://www.example.com"),
                     LONG_CARD_NAME_CARD.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
-                    /* shouldDisplayTermsAvailable= */ false);
+                    /* shouldDisplayTermsAvailable= */ false,
+                    LONG_CARD_NAME_CARD.getGUID(),
+                    LONG_CARD_NAME_CARD.getIsLocal());
     private static final Iban LOCAL_IBAN =
             Iban.createLocal(
                     /* guid= */ "000000111111",
@@ -326,7 +342,7 @@ public class TouchToFillPaymentMethodViewTest {
                                     new ListItem(
                                             CREDIT_CARD,
                                             createCardSuggestionModel(
-                                                    VISA, VISA_SUGGESTION, mItemCollectionInfo)));
+                                                    VISA_SUGGESTION, mItemCollectionInfo)));
                 });
         // After setting the visibility to true, the view should exist and be visible.
         runOnUiThreadBlocking(() -> mTouchToFillPaymentMethodModel.set(VISIBLE, true));
@@ -350,7 +366,7 @@ public class TouchToFillPaymentMethodViewTest {
                                     new ListItem(
                                             CREDIT_CARD,
                                             createCardSuggestionModel(
-                                                    VISA, VISA_SUGGESTION, mItemCollectionInfo)));
+                                                    VISA_SUGGESTION, mItemCollectionInfo)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
@@ -358,18 +374,14 @@ public class TouchToFillPaymentMethodViewTest {
                                     new ListItem(
                                             CREDIT_CARD,
                                             createCardSuggestionModel(
-                                                    MASTERCARD,
-                                                    MASTERCARD_SUGGESTION,
-                                                    mItemCollectionInfo)));
+                                                    MASTERCARD_SUGGESTION, mItemCollectionInfo)));
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
                             .add(
                                     new ListItem(
                                             CREDIT_CARD,
                                             createCardSuggestionModel(
-                                                    VIRTUAL_CARD,
-                                                    VIRTUAL_CARD_SUGGESTION,
-                                                    mItemCollectionInfo)));
+                                                    VIRTUAL_CARD_SUGGESTION, mItemCollectionInfo)));
                 });
 
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -416,7 +428,7 @@ public class TouchToFillPaymentMethodViewTest {
                                     new ListItem(
                                             CREDIT_CARD,
                                             createCardSuggestionModel(
-                                                    VISA, VISA_SUGGESTION, mItemCollectionInfo)));
+                                                    VISA_SUGGESTION, mItemCollectionInfo)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -442,7 +454,7 @@ public class TouchToFillPaymentMethodViewTest {
                                     new ListItem(
                                             CREDIT_CARD,
                                             createCardSuggestionModel(
-                                                    VISA, VISA_SUGGESTION, mItemCollectionInfo)));
+                                                    VISA_SUGGESTION, mItemCollectionInfo)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -468,7 +480,7 @@ public class TouchToFillPaymentMethodViewTest {
                                     new ListItem(
                                             CREDIT_CARD,
                                             createCardSuggestionModel(
-                                                    VISA, VISA_SUGGESTION, mItemCollectionInfo)));
+                                                    VISA_SUGGESTION, mItemCollectionInfo)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -498,10 +510,7 @@ public class TouchToFillPaymentMethodViewTest {
                 () -> {
                     PropertyModel cardModel =
                             createCardSuggestionModel(
-                                    NICKNAMED_VISA,
-                                    NICKNAMED_VISA_SUGGESTION,
-                                    mItemCollectionInfo,
-                                    actionCallback);
+                                    NICKNAMED_VISA_SUGGESTION, mItemCollectionInfo, actionCallback);
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
                             .add(new ListItem(CREDIT_CARD, cardModel));
@@ -526,10 +535,7 @@ public class TouchToFillPaymentMethodViewTest {
                 () -> {
                     PropertyModel cardModel =
                             createCardSuggestionModel(
-                                    NICKNAMED_VISA,
-                                    NICKNAMED_VISA_SUGGESTION,
-                                    mItemCollectionInfo,
-                                    actionCallback);
+                                    NICKNAMED_VISA_SUGGESTION, mItemCollectionInfo, actionCallback);
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
                             .add(new ListItem(CREDIT_CARD, cardModel));
@@ -558,7 +564,6 @@ public class TouchToFillPaymentMethodViewTest {
                 () -> {
                     PropertyModel cardModel =
                             createCardSuggestionModel(
-                                    NICKNAMED_VISA,
                                     NICKNAMED_VISA_SUGGESTION,
                                     mItemCollectionInfo,
                                     /* actionCallback= */ () -> fail());
@@ -604,7 +609,6 @@ public class TouchToFillPaymentMethodViewTest {
                                     new ListItem(
                                             CREDIT_CARD,
                                             createCardSuggestionModel(
-                                                    NICKNAMED_VISA,
                                                     NICKNAMED_VISA_SUGGESTION,
                                                     mItemCollectionInfo)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
@@ -627,7 +631,6 @@ public class TouchToFillPaymentMethodViewTest {
                                     new ListItem(
                                             CREDIT_CARD,
                                             createCardSuggestionModel(
-                                                    VISA,
                                                     VISA_SUGGESTION,
                                                     new FillableItemCollectionInfo(
                                                             /* position= */ 1, /* total= */ 1))));
@@ -650,7 +653,6 @@ public class TouchToFillPaymentMethodViewTest {
                                     new ListItem(
                                             CREDIT_CARD,
                                             createCardSuggestionModel(
-                                                    VIRTUAL_CARD,
                                                     VIRTUAL_CARD_SUGGESTION,
                                                     new FillableItemCollectionInfo(
                                                             /* position= */ 1, /* total= */ 1))));
@@ -669,7 +671,6 @@ public class TouchToFillPaymentMethodViewTest {
                 () -> {
                     PropertyModel cardModel =
                             createCardSuggestionModel(
-                                    VISA,
                                     VISA_SUGGESTION_WITH_CARD_BENEFITS,
                                     new FillableItemCollectionInfo(
                                             /* position= */ 1, /* total= */ 1));
@@ -719,7 +720,7 @@ public class TouchToFillPaymentMethodViewTest {
                                     new ListItem(
                                             CREDIT_CARD,
                                             createCardSuggestionModel(
-                                                    VISA, VISA_SUGGESTION, mItemCollectionInfo)));
+                                                    VISA_SUGGESTION, mItemCollectionInfo)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -736,7 +737,6 @@ public class TouchToFillPaymentMethodViewTest {
                 () -> {
                     PropertyModel cardModel =
                             createCardSuggestionModel(
-                                    VIRTUAL_CARD,
                                     VIRTUAL_CARD_SUGGESTION_WITH_CARD_BENEFITS,
                                     new FillableItemCollectionInfo(
                                             /* position= */ 1, /* total= */ 1));
@@ -786,7 +786,6 @@ public class TouchToFillPaymentMethodViewTest {
                                     new ListItem(
                                             CREDIT_CARD,
                                             createCardSuggestionModel(
-                                                    VIRTUAL_CARD,
                                                     NON_ACCEPTABLE_VIRTUAL_CARD_SUGGESTION,
                                                     new FillableItemCollectionInfo(1, 1),
                                                     CallbackUtils.emptyRunnable())));
@@ -820,7 +819,6 @@ public class TouchToFillPaymentMethodViewTest {
                                     new ListItem(
                                             CREDIT_CARD,
                                             createCardSuggestionModel(
-                                                    LONG_CARD_NAME_CARD,
                                                     LONG_CARD_NAME_CARD_SUGGESTION,
                                                     mItemCollectionInfo)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
@@ -1025,15 +1023,11 @@ public class TouchToFillPaymentMethodViewTest {
     }
 
     private static PropertyModel createCardSuggestionModel(
-            CreditCard card,
-            AutofillSuggestion suggestion,
-            FillableItemCollectionInfo collectionInfo) {
-        return createCardSuggestionModel(
-                card, suggestion, collectionInfo, CallbackUtils.emptyRunnable());
+            AutofillSuggestion suggestion, FillableItemCollectionInfo collectionInfo) {
+        return createCardSuggestionModel(suggestion, collectionInfo, CallbackUtils.emptyRunnable());
     }
 
     private static PropertyModel createCardSuggestionModel(
-            CreditCard card,
             AutofillSuggestion suggestion,
             FillableItemCollectionInfo collectionInfo,
             Runnable actionCallback) {

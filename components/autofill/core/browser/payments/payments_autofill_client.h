@@ -527,7 +527,6 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // implementation.
   virtual bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const CreditCard> cards_to_suggest,
       base::span<const Suggestion> suggestions);
 
   // Shows the Touch To Fill surface for filling IBAN information, if

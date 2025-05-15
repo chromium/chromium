@@ -18,7 +18,6 @@
 namespace autofill {
 
 class ContentAutofillClient;
-class CreditCard;
 class Iban;
 class LoyaltyCard;
 class TouchToFillDelegate;
@@ -61,7 +60,6 @@ class TouchToFillPaymentMethodController
   // shown.
   bool ShowCreditCards(std::unique_ptr<TouchToFillPaymentMethodView> view,
                        base::WeakPtr<TouchToFillDelegate> delegate,
-                       base::span<const CreditCard> cards_to_suggest,
                        base::span<const Suggestion> suggestions);
 
   // Shows the Touch To Fill `view`. `delegate` will provide the fillable IBANs

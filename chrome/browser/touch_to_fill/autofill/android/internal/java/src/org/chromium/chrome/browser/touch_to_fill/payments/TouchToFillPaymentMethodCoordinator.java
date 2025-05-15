@@ -22,7 +22,6 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.autofill.AutofillSuggestion;
@@ -72,11 +71,9 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
 
     @Override
     public void showCreditCards(
-            List<CreditCard> cards,
-            List<AutofillSuggestion> suggestions,
-            boolean shouldShowScanCreditCard) {
+            List<AutofillSuggestion> suggestions, boolean shouldShowScanCreditCard) {
         assert mCardImageFunction != null : "Attempting to call showCreditCards before initialize.";
-        mMediator.showCreditCards(cards, suggestions, shouldShowScanCreditCard, mCardImageFunction);
+        mMediator.showCreditCards(suggestions, shouldShowScanCreditCard, mCardImageFunction);
     }
 
     @Override

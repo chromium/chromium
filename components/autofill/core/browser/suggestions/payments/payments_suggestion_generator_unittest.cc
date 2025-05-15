@@ -4194,6 +4194,7 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
   EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kCardVisa);
 }
 
+#if BUILDFLAG(IS_ANDROID)
 TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
        GetCreditCardSuggestionsForTouchToFill_CustomIcon) {
   CreditCard server_card = CreateServerCard();
@@ -4208,6 +4209,36 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
   const Suggestion::CustomIconUrl* custom_icon_url =
       std::get_if<Suggestion::CustomIconUrl>(&suggestions[0].custom_icon);
   EXPECT_EQ(**custom_icon_url, expected_custom_icon_url);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+// Verify that the suggestion's payment payload includes credit card guid and
+// local card status.
+TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
+       GetCreditCardSuggestionsForTouchToFill_PaymentsPayloadGuid) {
+  CreditCard server_card = CreateServerCard();
+  server_card.SetNetworkForMaskedCard(kVisaCard);
+  CreditCard local_card = test::GetCreditCard();
+  local_card.set_record_type(CreditCard::RecordType::kLocalCard);
+  payments_data().AddCreditCard(local_card);
+  std::vector<CreditCard> cards = {server_card, local_card};
+
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      cards, *autofill_client(), *credit_card_form_event_logger_);
+
+  ASSERT_EQ(suggestions.size(), 2U);
+  EXPECT_EQ(
+      suggestions[0].GetPayload<Suggestion::PaymentsPayload>().guid.value(),
+      server_card.guid());
+  EXPECT_FALSE(suggestions[0]
+                   .GetPayload<Suggestion::PaymentsPayload>()
+                   .is_local_payments_method);
+  EXPECT_EQ(
+      suggestions[1].GetPayload<Suggestion::PaymentsPayload>().guid.value(),
+      local_card.guid());
+  EXPECT_TRUE(suggestions[1]
+                  .GetPayload<Suggestion::PaymentsPayload>()
+                  .is_local_payments_method);
 }
 
 }  // namespace

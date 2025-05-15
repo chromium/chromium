@@ -96,10 +96,14 @@ struct Suggestion {
     base::Uuid guid;
   };
 
+  using Guid = base::StrongAlias<class GuidTag, std::string>;
+
   struct PaymentsPayload final {
     PaymentsPayload();
     PaymentsPayload(std::u16string main_text_content_description,
-                    bool should_display_terms_available);
+                    bool should_display_terms_available,
+                    Guid guid,
+                    bool is_local_payments_method);
     PaymentsPayload(const PaymentsPayload&);
     PaymentsPayload(PaymentsPayload&&);
     PaymentsPayload& operator=(const PaymentsPayload&);
@@ -116,13 +120,17 @@ struct Suggestion {
     // benefits" message below the suggestions list on TTF for mobile.
     bool should_display_terms_available = false;
 
+    // Payments method identifier associated with suggestion.
+    Guid guid;
+
+    // If true, the payments method associated with the suggestion is local.
+    bool is_local_payments_method = false;
+
     // The amount of the payment as extracted from the page. For example, used
     // for BNPL suggestions to confirm the amount is in the supported range for
     // a BNPL provider.
     std::optional<uint64_t> extracted_amount_in_micros = std::nullopt;
   };
-
-  using Guid = base::StrongAlias<class GuidTag, std::string>;
 
   struct AutofillProfilePayload final {
     AutofillProfilePayload();
