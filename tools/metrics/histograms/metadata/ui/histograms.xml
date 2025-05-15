@@ -172,6 +172,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextMenu.SelectedOptionAndroid{Type}"
+    enum="ContextMenuOptionAndroid" expires_after="never">
+<!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->
+
+  <owner>twellington@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    {Type}
+
+    The option that the user selected from a context menu on Android. This is
+    logged on Android only; check out ContextMenu.SelectedOptionIOS for iOS, and
+    ContextMenu.SelectedOptionDesktop for desktop. Note that if a menu is
+    invoked on mixed content, only one of the submetrics receives the log; read
+    the code to determine which one.
+  </summary>
+  <token key="Type" variants="ContextMenuAndroidTypes"/>
+</histogram>
+
 <histogram name="ContextMenu.SelectedOptionDesktop{ContextMenuTypeDesktop}"
     enum="ContextMenuOptionDesktop" expires_after="2025-09-14">
   <owner>avi@chromium.org</owner>
