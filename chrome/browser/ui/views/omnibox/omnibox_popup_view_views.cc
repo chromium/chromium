@@ -355,9 +355,7 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
     const AutocompleteMatch& match = GetMatchAtIndex(i);
     const auto group_id = match.suggestion_group_id;
     std::u16string current_row_header =
-        group_id.has_value() &&
-                (!force_hide_row_header ||
-                 group_id.value() == omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH)
+        group_id.has_value() && !force_hide_row_header
             ? autocomplete_controller->result().GetHeaderForSuggestionGroup(
                   group_id.value())
             : u"";

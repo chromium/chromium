@@ -1054,8 +1054,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupSuggestionGroupHeadersTest,
     EXPECT_FALSE(popup_view()->header_view_at(0)->GetVisible());
     EXPECT_TRUE(popup_view()->result_view_at(0)->GetVisible());
 
-    // Contextual suggestion group header should be SHOWN for SRP page context.
-    EXPECT_TRUE(popup_view()->header_view_at(1)->GetVisible());
+    // Contextual suggestion group header should be HIDDEN for SRP page context.
+    EXPECT_FALSE(popup_view()->header_view_at(1)->GetVisible());
     EXPECT_TRUE(popup_view()->result_view_at(1)->GetVisible());
   }
 
@@ -1084,8 +1084,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupSuggestionGroupHeadersTest,
     EXPECT_FALSE(popup_view()->header_view_at(0)->GetVisible());
     EXPECT_TRUE(popup_view()->result_view_at(0)->GetVisible());
 
-    // Contextual suggestion group header should be SHOWN for Web page context.
-    EXPECT_TRUE(popup_view()->header_view_at(1)->GetVisible());
+    // Contextual suggestion group header should be HIDDEN for Web page context.
+    EXPECT_FALSE(popup_view()->header_view_at(1)->GetVisible());
     EXPECT_TRUE(popup_view()->result_view_at(1)->GetVisible());
   }
 }

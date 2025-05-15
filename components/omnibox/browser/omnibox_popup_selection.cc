@@ -113,7 +113,8 @@ OmniboxPopupSelection OmniboxPopupSelection::GetNextSelection(
     const PrefService* pref_service,
     TemplateURLService* template_url_service,
     Direction direction,
-    Step step) const {
+    Step step,
+    bool force_hide_row_header) const {
   if (result.empty()) {
     return *this;
   }
@@ -129,7 +130,8 @@ OmniboxPopupSelection OmniboxPopupSelection::GetNextSelection(
   // easy to reason about.
   std::vector<OmniboxPopupSelection> all_available_selections =
       GetAllAvailableSelectionsSorted(result, pref_service,
-                                      template_url_service, direction, step);
+                                      template_url_service, direction, step,
+                                      force_hide_row_header);
 
   if (all_available_selections.empty()) {
     return *this;
@@ -183,7 +185,8 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
     const PrefService* pref_service,
     TemplateURLService* template_url_service,
     Direction direction,
-    Step step) {
+    Step step,
+    bool force_hide_row_header) {
   // First enumerate all the accessible states based on `direction` and `step`,
   // as well as enabled feature flags. This doesn't mean each match will have
   // all of these states - just that it's possible to get there, if available.
@@ -194,7 +197,8 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
     all_states.push_back(KEYWORD_MODE);
   } else {
     // Arrow keys should never reach the header controls.
-    if (step == kStateOrLine) {
+    // If header is hidden, header controls are neither visible nor reachable.
+    if (step == kStateOrLine && !force_hide_row_header) {
       all_states.push_back(FOCUSED_BUTTON_HEADER);
     }
 
