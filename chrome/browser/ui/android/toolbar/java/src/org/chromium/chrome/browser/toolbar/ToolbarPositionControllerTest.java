@@ -155,6 +155,11 @@ public class ToolbarPositionControllerTest {
                 }
 
                 @Override
+                public int getTopControlsHairlineHeight() {
+                    return 0;
+                }
+
+                @Override
                 public int getTopControlsMinHeight() {
                     return mTopControlsMinHeight;
                 }

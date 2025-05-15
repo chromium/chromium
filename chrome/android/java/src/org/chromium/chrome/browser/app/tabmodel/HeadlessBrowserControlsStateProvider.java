@@ -21,6 +21,11 @@ public class HeadlessBrowserControlsStateProvider implements BrowserControlsStat
     }
 
     @Override
+    public int getTopControlsHairlineHeight() {
+        return 0;
+    }
+
+    @Override
     public int getTopControlsMinHeight() {
         return 0;
     }

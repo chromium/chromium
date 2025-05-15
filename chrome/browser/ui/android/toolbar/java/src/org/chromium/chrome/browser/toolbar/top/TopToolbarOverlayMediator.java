@@ -436,6 +436,14 @@ public class TopToolbarOverlayMediator {
         // gets called in the middle of a change of position.
         if (mControlsPosition == ControlsPosition.BOTTOM) {
             contentOffset = (int) (mBottomToolbarControlsOffsetSupplier.get() + mViewportHeight);
+        } else {
+            // If BCIV is enabled, we keep the composited view visible even when hiding the toolbar,
+            // but the shadow isn't included in the toolbar's height, so we shift the toolbar up by
+            // the shadow's height to hide the toolbar completely.
+            if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()
+                    && contentOffset == mBrowserControlsStateProvider.getTopControlsMinHeight()) {
+                contentOffset -= mBrowserControlsStateProvider.getTopControlsHairlineHeight();
+            }
         }
 
         mModel.set(TopToolbarOverlayProperties.CONTENT_OFFSET, contentOffset);

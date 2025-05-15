@@ -120,6 +120,11 @@ public interface BrowserControlsStateProvider {
     int getTopControlsHeight();
 
     /**
+     * @return The height of the toolbar's hairline.
+     */
+    int getTopControlsHairlineHeight();
+
+    /**
      * @return The minimum visible height top controls can have in pixels.
      */
     int getTopControlsMinHeight();
