@@ -428,8 +428,37 @@ const base::FeatureParam<bool> kTabstripComboButtonHasReverseButtonOrder{
 const base::FeatureParam<bool> kTabSearchToolbarButton{
     &kTabstripComboButton, "tab_search_toolbar_button", false};
 
+const base::FeatureParam<bool> kLaunchedTabSearchToolbarButton{
+    &kTabstripComboButton, "launched_tab_search_toolbar_button",
+#if BUILDFLAG(IS_CHROMEOS)
+    false
+#else
+    true
+#endif
+};
+
+static std::string GetCountryCode() {
+  if (!g_browser_process || !g_browser_process->variations_service()) {
+    return std::string();
+  }
+  std::string country_code =
+      g_browser_process->variations_service()->GetStoredPermanentCountry();
+  if (country_code.empty()) {
+    country_code = g_browser_process->variations_service()->GetLatestCountry();
+  }
+  return country_code;
+}
+
 bool IsTabSearchMoving() {
-  return base::FeatureList::IsEnabled(features::kTabstripComboButton);
+  static const bool is_tab_search_moving = [] {
+    if (GetCountryCode() == "US" &&
+        features::kLaunchedTabSearchToolbarButton.Get()) {
+      return true;
+    }
+    return base::FeatureList::IsEnabled(features::kTabstripComboButton);
+  }();
+
+  return is_tab_search_moving;
 }
 
 bool HasTabstripComboButtonWithBackground() {
@@ -445,7 +474,18 @@ bool HasTabstripComboButtonWithReverseButtonOrder() {
 }
 
 bool HasTabSearchToolbarButton() {
-  return IsTabSearchMoving() && features::kTabSearchToolbarButton.Get();
+  static const bool has_tab_search_toolbar_button = [] {
+    if (!IsTabSearchMoving()) {
+      return false;
+    }
+    if (GetCountryCode() == "US") {
+      return features::kLaunchedTabSearchToolbarButton.Get();
+    }
+    // Gate on server-side Finch config for all other countries.
+    return features::kTabSearchToolbarButton.Get();
+  }();
+
+  return has_tab_search_toolbar_button;
 }
 
 }  // namespace features
