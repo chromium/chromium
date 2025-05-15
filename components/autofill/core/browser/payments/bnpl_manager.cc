@@ -16,6 +16,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
@@ -565,6 +566,11 @@ std::vector<BnplIssuerContext> BnplManager::GetSortedBnplIssuerContext() {
 
         return {issuer, eligibility};
       });
+
+  // Shuffle `result` before sorting so that the order of two
+  // equivalently-sorted elements are randomized. This is to ensure there is no
+  // implicit preference towards any issuers.
+  base::RandomShuffle(result.begin(), result.end());
 
   // Sort the `BnplIssuerContext` vector so that it follows below rules:
   // 1. Eligible issuers should be in front of uneligible ones in a sorted
