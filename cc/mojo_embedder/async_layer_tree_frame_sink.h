@@ -21,7 +21,6 @@
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/frame_timing_details_map.h"
-#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
@@ -34,11 +33,14 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 
+namespace viz {
+class RasterContextProvider;
+}  // namespace viz
+
 namespace cc {
 
 class LayerContext;
 class LayerTreeHostImpl;
-class RasterContextProviderWrapper;
 
 namespace mojo_embedder {
 
@@ -108,8 +110,7 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
 
   AsyncLayerTreeFrameSink(
       scoped_refptr<viz::RasterContextProvider> context_provider,
-      scoped_refptr<RasterContextProviderWrapper>
-          worker_context_provider_wrapper,
+      scoped_refptr<viz::RasterContextProvider> worker_context_provider,
       scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface,
       InitParams* params);
 

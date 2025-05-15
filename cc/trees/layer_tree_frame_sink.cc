@@ -54,12 +54,11 @@ LayerTreeFrameSink::LayerTreeFrameSink()
 
 LayerTreeFrameSink::LayerTreeFrameSink(
     scoped_refptr<viz::RasterContextProvider> context_provider,
-    scoped_refptr<RasterContextProviderWrapper> worker_context_provider_wrapper,
+    scoped_refptr<viz::RasterContextProvider> worker_context_provider,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
     scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface)
     : context_provider_(std::move(context_provider)),
-      worker_context_provider_wrapper_(
-          std::move(worker_context_provider_wrapper)),
+      worker_context_provider_(std::move(worker_context_provider)),
       compositor_task_runner_(std::move(compositor_task_runner)),
       shared_image_interface_(std::move(shared_image_interface)) {
   DETACH_FROM_THREAD(thread_checker_);

@@ -154,13 +154,7 @@ TestLayerTreeFrameSink::TestLayerTreeFrameSink(
     viz::BeginFrameSource* begin_frame_source)
     : LayerTreeFrameSink(
           std::move(compositor_context_provider),
-          worker_context_provider
-              ? base::MakeRefCounted<RasterContextProviderWrapper>(
-                    std::move(worker_context_provider),
-                    /*dark_mode_filter=*/nullptr,
-                    ImageDecodeCacheUtils::GetWorkingSetBytesForImageDecode(
-                        /*for_renderer=*/false))
-              : nullptr,
+          std::move(worker_context_provider),
           task_runner_provider->HasImplThread()
               ? task_runner_provider->ImplThreadTaskRunner()
               : task_runner_provider->MainThreadTaskRunner(),

@@ -11,7 +11,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "cc/tiles/image_decode_cache_utils.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -33,12 +32,11 @@ DirectLayerTreeFrameSink::DirectLayerTreeFrameSink(
     viz::FrameSinkManagerImpl* frame_sink_manager,
     viz::Display* display,
     scoped_refptr<viz::RasterContextProvider> context_provider,
-    scoped_refptr<cc::RasterContextProviderWrapper>
-        worker_context_provider_wrapper,
+    scoped_refptr<viz::RasterContextProvider> worker_context_provider,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
     gfx::AcceleratedWidget widget)
     : LayerTreeFrameSink(std::move(context_provider),
-                         std::move(worker_context_provider_wrapper),
+                         std::move(worker_context_provider),
                          std::move(compositor_task_runner),
                          /*shared_image_interface=*/nullptr),
       frame_sink_id_(frame_sink_id),

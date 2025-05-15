@@ -61,10 +61,8 @@
 #include "cc/base/switches.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/raster/task_graph_runner.h"
-#include "cc/tiles/image_decode_cache_utils.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_settings.h"
-#include "cc/trees/raster_context_provider_wrapper.h"
 #include "components/discardable_memory/client/client_discardable_shared_memory_manager.h"
 #include "components/metrics/public/mojom/single_sample_metrics.mojom.h"
 #include "components/metrics/single_sample_metrics.h"
@@ -1700,24 +1698,24 @@ RenderThreadImpl::GetMediaSequencedTaskRunner() {
   return media_thread_->task_runner();
 }
 
-scoped_refptr<cc::RasterContextProviderWrapper>
+scoped_refptr<viz::RasterContextProvider>
 RenderThreadImpl::SharedCompositorWorkerContextProvider(
     cc::RasterDarkModeFilter* dark_mode_filter) {
   DCHECK(IsMainThread());
   // Try to reuse existing shared worker context provider.
-  if (shared_worker_context_provider_wrapper_) {
+  if (shared_worker_context_provider_) {
     // Note: If context is lost, delete reference after releasing the lock.
     viz::RasterContextProvider::ScopedRasterContextLock lock(
-        shared_worker_context_provider_wrapper_->GetContext().get());
+        shared_worker_context_provider_.get());
     if (lock.RasterInterface()->GetGraphicsResetStatusKHR() == GL_NO_ERROR)
-      return shared_worker_context_provider_wrapper_;
+      return shared_worker_context_provider_;
   }
 
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_host(
       EstablishGpuChannelSync());
   if (!gpu_channel_host) {
-    shared_worker_context_provider_wrapper_ = nullptr;
-    return shared_worker_context_provider_wrapper_;
+    shared_worker_context_provider_ = nullptr;
+    return shared_worker_context_provider_;
   }
 
   bool support_locking = true;
@@ -1736,25 +1734,20 @@ RenderThreadImpl::SharedCompositorWorkerContextProvider(
   auto shared_memory_limits =
       support_gpu_rasterization ? gpu::SharedMemoryLimits::ForOOPRasterContext()
                                 : gpu::SharedMemoryLimits();
-  scoped_refptr<viz::ContextProviderCommandBuffer>
-      shared_worker_context_provider = CreateOffscreenContext(
-          std::move(gpu_channel_host), shared_memory_limits, support_locking,
-          support_gles2_interface, support_raster_interface,
-          support_gpu_rasterization, support_grcontext, automatic_flushes,
-          viz::command_buffer_metrics::ContextType::RENDER_WORKER,
-          kGpuStreamIdWorker, kGpuStreamPriorityWorker);
+  shared_worker_context_provider_ = CreateOffscreenContext(
+      std::move(gpu_channel_host), shared_memory_limits, support_locking,
+      support_gles2_interface, support_raster_interface,
+      support_gpu_rasterization, support_grcontext, automatic_flushes,
+      viz::command_buffer_metrics::ContextType::RENDER_WORKER,
+      kGpuStreamIdWorker, kGpuStreamPriorityWorker);
 
-  auto result = shared_worker_context_provider->BindToCurrentSequence();
-  if (result != gpu::ContextResult::kSuccess)
+  auto result = shared_worker_context_provider_->BindToCurrentSequence();
+  if (result != gpu::ContextResult::kSuccess) {
+    shared_worker_context_provider_ = nullptr;
     return nullptr;
+  }
 
-  shared_worker_context_provider_wrapper_ =
-      base::MakeRefCounted<cc::RasterContextProviderWrapper>(
-          std::move(shared_worker_context_provider), dark_mode_filter,
-          cc::ImageDecodeCacheUtils::GetWorkingSetBytesForImageDecode(
-              /*for_renderer=*/true));
-
-  return shared_worker_context_provider_wrapper_;
+  return shared_worker_context_provider_;
 }
 
 bool RenderThreadImpl::RendererIsHidden() const {

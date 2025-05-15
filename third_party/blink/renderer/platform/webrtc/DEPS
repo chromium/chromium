@@ -15,7 +15,6 @@ specific_include_rules = {
         "+gpu/command_buffer/common/shared_image_capabilities.h",
         "+gpu/command_buffer/common/shared_image_usage.h",
         "+media/renderers/video_frame_rgba_to_yuva_converter.h",
-        "+cc/trees/raster_context_provider_wrapper.h",
     ],
     "webrtc_video_frame_adapter_test\.cc": [
         "+gpu/command_buffer/client/test_shared_image_interface.h",

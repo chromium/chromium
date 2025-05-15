@@ -17,7 +17,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
-#include "cc/trees/raster_context_provider_wrapper.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -282,30 +281,21 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
     base::WeakPtr<Compositor> compositor) {
   // Try to reuse existing shared worker context provider.
   bool shared_worker_context_provider_lost = false;
-  if (shared_worker_context_provider_wrapper_) {
+  if (shared_worker_context_provider_) {
     // Note: If context is lost, delete reference after releasing the lock.
-    const scoped_refptr<viz::RasterContextProvider>& worker_context =
-        shared_worker_context_provider_wrapper_->GetContext();
-    base::AutoLock lock(*worker_context->GetLock());
-    if (worker_context->RasterInterface()->GetGraphicsResetStatusKHR() !=
-        GL_NO_ERROR) {
+    base::AutoLock lock(*shared_worker_context_provider_->GetLock());
+    if (shared_worker_context_provider_->RasterInterface()
+            ->GetGraphicsResetStatusKHR() != GL_NO_ERROR) {
       shared_worker_context_provider_lost = true;
     }
   }
-  if (!shared_worker_context_provider_wrapper_ ||
-      shared_worker_context_provider_lost) {
-    auto shared_worker_context_provider =
+  if (!shared_worker_context_provider_ || shared_worker_context_provider_lost) {
+    shared_worker_context_provider_ =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
             viz::TestContextType::kGpuRaster, /*support_locking=*/true);
-    auto result = shared_worker_context_provider->BindToCurrentSequence();
+    auto result = shared_worker_context_provider_->BindToCurrentSequence();
     if (result != gpu::ContextResult::kSuccess) {
-      shared_worker_context_provider_wrapper_ = nullptr;
-    } else {
-      shared_worker_context_provider_wrapper_ =
-          base::MakeRefCounted<cc::RasterContextProviderWrapper>(
-              std::move(shared_worker_context_provider), nullptr,
-              cc::ImageDecodeCacheUtils::GetWorkingSetBytesForImageDecode(
-                  /*for_renderer=*/false));
+      shared_worker_context_provider_ = nullptr;
     }
   }
 
@@ -360,9 +350,8 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
 
   auto layer_tree_frame_sink = std::make_unique<DirectLayerTreeFrameSink>(
       compositor->frame_sink_id(), frame_sink_manager_, data->display(),
-      SharedMainThreadRasterContextProvider(),
-      shared_worker_context_provider_wrapper_, compositor->task_runner(),
-      compositor->widget());
+      SharedMainThreadRasterContextProvider(), shared_worker_context_provider_,
+      compositor->task_runner(), compositor->widget());
   compositor->SetLayerTreeFrameSink(std::move(layer_tree_frame_sink),
                                     std::move(display_private));
 

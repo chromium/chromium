@@ -16,7 +16,6 @@
 #include "base/threading/thread_checker.h"
 #include "cc/cc_export.h"
 #include "cc/scheduler/scheduler.h"
-#include "cc/trees/raster_context_provider_wrapper.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
@@ -56,7 +55,7 @@ class CC_EXPORT LayerTreeFrameSink : public viz::ContextLostObserver,
   //
   // |compositor_task_runner| is used to post worker context lost callback and
   // must belong to the same thread where all calls to or from client are made.
-  // Optional and won't be used unless |worker_context_provider_wrapper| is
+  // Optional and won't be used unless |worker_context_provider| is
   // present.
   //
   // |gpu_memory_buffer_manager|  must outlive the
@@ -64,8 +63,7 @@ class CC_EXPORT LayerTreeFrameSink : public viz::ContextLostObserver,
   // (won't be used) unless |context_provider| is present.
   LayerTreeFrameSink(
       scoped_refptr<viz::RasterContextProvider> context_provider,
-      scoped_refptr<RasterContextProviderWrapper>
-          worker_context_provider_wrapper,
+      scoped_refptr<viz::RasterContextProvider> worker_context_provider,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
       scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface);
   LayerTreeFrameSink(const LayerTreeFrameSink&) = delete;
@@ -102,13 +100,8 @@ class CC_EXPORT LayerTreeFrameSink : public viz::ContextLostObserver,
   viz::RasterContextProvider* context_provider() const {
     return context_provider_.get();
   }
-  RasterContextProviderWrapper* worker_context_provider_wrapper() const {
-    return worker_context_provider_wrapper_.get();
-  }
   viz::RasterContextProvider* worker_context_provider() const {
-    return worker_context_provider_wrapper_
-               ? worker_context_provider_wrapper_->GetContext().get()
-               : nullptr;
+    return worker_context_provider_.get();
   }
 
   scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface() const;
@@ -162,7 +155,7 @@ class CC_EXPORT LayerTreeFrameSink : public viz::ContextLostObserver,
   raw_ptr<LayerTreeFrameSinkClient> client_ = nullptr;
 
   scoped_refptr<viz::RasterContextProvider> context_provider_;
-  scoped_refptr<RasterContextProviderWrapper> worker_context_provider_wrapper_;
+  scoped_refptr<viz::RasterContextProvider> worker_context_provider_;
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
   scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
 

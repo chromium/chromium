@@ -105,7 +105,6 @@
 #include "cc/trees/mutator_host.h"
 #include "cc/trees/presentation_time_callback_buffer.h"
 #include "cc/trees/raster_capabilities.h"
-#include "cc/trees/raster_context_provider_wrapper.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "cc/trees/render_frame_metadata_observer.h"
 #include "cc/trees/scroll_node.h"
@@ -242,15 +241,15 @@ const char* ClientNameForVerboseLog() {
 // GpuImageDecodeCache.
 class LayerTreeHostImpl::ImageDecodeCacheHolder {
  public:
-  ImageDecodeCacheHolder(const RasterCapabilities& raster_caps,
-                         scoped_refptr<RasterContextProviderWrapper>
-                             worker_context_provider_wrapper,
-                         size_t decoded_image_working_set_budget_bytes,
-                         RasterDarkModeFilter* dark_mode_filter) {
+  ImageDecodeCacheHolder(
+      const RasterCapabilities& raster_caps,
+      scoped_refptr<viz::RasterContextProvider> worker_context_provider,
+      size_t decoded_image_working_set_budget_bytes,
+      RasterDarkModeFilter* dark_mode_filter) {
     if (raster_caps.use_gpu_rasterization) {
       auto color_type = viz::ToClosestSkColorType(raster_caps.tile_format);
       image_decode_cache_ = std::make_unique<GpuImageDecodeCache>(
-          worker_context_provider_wrapper->GetContext().get(),
+          worker_context_provider.get(),
           /*use_transfer_cache=*/true, color_type,
           decoded_image_working_set_budget_bytes, raster_caps.max_texture_size,
           dark_mode_filter);
@@ -266,10 +265,6 @@ class LayerTreeHostImpl::ImageDecodeCacheHolder {
   }
 
   void SetShouldAggressivelyFreeResources(bool aggressively_free_resources) {
-    // This must only be called if the decode cache is not shared aka is not
-    // created via RasterContextProviderWrapper as the cache created via that
-    // gets this calls from ContextCacheController, which notifies only after
-    // ALL clients are invisible or at least one is visible.
     if (image_decode_cache_) {
       image_decode_cache_->SetShouldAggressivelyFreeResources(
           aggressively_free_resources, /*context_lock_acquired=*/false);
@@ -4200,7 +4195,7 @@ void LayerTreeHostImpl::RecreateTileResources() {
 void LayerTreeHostImpl::CreateTileManagerResources() {
   DCHECK(!settings_.trees_in_viz_in_viz_process);
   image_decode_cache_holder_ = std::make_unique<ImageDecodeCacheHolder>(
-      raster_caps(), layer_tree_frame_sink_->worker_context_provider_wrapper(),
+      raster_caps(), layer_tree_frame_sink_->worker_context_provider(),
       settings_.decoded_image_working_set_budget_bytes, dark_mode_filter_);
 
   if (raster_caps().use_gpu_rasterization) {

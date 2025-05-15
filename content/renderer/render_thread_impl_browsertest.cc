@@ -22,6 +22,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/structured_shared_memory.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/histogram.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"

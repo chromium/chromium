@@ -34,7 +34,6 @@
 #include "base/time/time.h"
 #include "base/time/time_delta_from_string.h"
 #include "build/build_config.h"
-#include "cc/trees/raster_context_provider_wrapper.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/input/input_constants.h"
 #include "components/url_formatter/url_formatter.h"
@@ -540,7 +539,7 @@ RendererBlinkPlatformImpl::SharedMainThreadContextProvider() {
   return RenderThreadImpl::current()->SharedMainThreadContextProvider();
 }
 
-scoped_refptr<cc::RasterContextProviderWrapper>
+scoped_refptr<viz::RasterContextProvider>
 RendererBlinkPlatformImpl::SharedCompositorWorkerContextProvider(
     cc::RasterDarkModeFilter* dark_mode_filter) {
   return RenderThreadImpl::current()->SharedCompositorWorkerContextProvider(

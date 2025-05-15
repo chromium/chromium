@@ -23,11 +23,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/viz/privileged/mojom/compositing/vsync_parameter_observer.mojom.h"
 #include "ui/compositor/compositor.h"
-
-namespace cc {
-class RasterContextProviderWrapper;
-}
-
 namespace viz {
 class HostFrameSinkManager;
 class TestInProcessContextProvider;
@@ -91,8 +86,7 @@ class InProcessContextFactory : public ContextFactory {
   PerCompositorData* CreatePerCompositorData(Compositor* compositor);
 
   scoped_refptr<viz::TestInProcessContextProvider> shared_main_thread_contexts_;
-  scoped_refptr<cc::RasterContextProviderWrapper>
-      shared_worker_context_provider_wrapper_;
+  scoped_refptr<viz::RasterContextProvider> shared_worker_context_provider_;
   gpu::SharedImageManager shared_image_manager_;
   gpu::SyncPointManager sync_point_manager_;
   gpu::Scheduler gpu_scheduler_{&sync_point_manager_};

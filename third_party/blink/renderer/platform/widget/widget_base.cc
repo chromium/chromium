@@ -846,11 +846,10 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
     return;
   }
 
-  scoped_refptr<cc::RasterContextProviderWrapper>
-      worker_context_provider_wrapper =
-          Platform::Current()->SharedCompositorWorkerContextProvider(
-              &RasterDarkModeFilterImpl::Instance());
-  if (!worker_context_provider_wrapper) {
+  scoped_refptr<viz::RasterContextProvider> worker_context_provider =
+      Platform::Current()->SharedCompositorWorkerContextProvider(
+          &RasterDarkModeFilterImpl::Instance());
+  if (!worker_context_provider) {
     // Cause the compositor to wait and try again.
     std::move(callback).Run(nullptr, nullptr);
     return;
@@ -858,11 +857,9 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
 
   {
     viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
-        worker_context_provider_wrapper->GetContext().get());
+        worker_context_provider.get());
     max_render_buffer_bounds_gpu_ =
-        worker_context_provider_wrapper->GetContext()
-            ->ContextCapabilities()
-            .max_texture_size;
+        worker_context_provider->ContextCapabilities().max_texture_size;
   }
 
   // The renderer compositor context doesn't do a lot of stuff, so we don't
@@ -908,8 +905,7 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
 
     std::move(callback).Run(
         std::make_unique<SynchronousLayerTreeFrameSink>(
-            std::move(context_provider),
-            std::move(worker_context_provider_wrapper),
+            std::move(context_provider), std::move(worker_context_provider),
             Platform::Current()->CompositorThreadTaskRunner(),
             g_next_layer_tree_frame_sink_id++,
             std::move(params->synthetic_begin_frame_source),
@@ -933,8 +929,7 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
       std::move(render_frame_metadata_observer_remote));
   std::move(callback).Run(
       std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
-          std::move(context_provider),
-          std::move(worker_context_provider_wrapper),
+          std::move(context_provider), std::move(worker_context_provider),
           gpu_channel_host->CreateClientSharedImageInterface(), params.get()),
       std::move(render_frame_metadata_observer));
 }

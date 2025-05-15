@@ -1354,6 +1354,14 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/public/platform/platform.h',
+        ],
+        'allowed': [
+            'viz::RasterContextProvider',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/public/platform/web_content_security_policy_struct.h',
         ],
         'allowed': [
