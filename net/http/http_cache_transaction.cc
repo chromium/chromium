@@ -2623,27 +2623,36 @@ void HttpCache::Transaction::SetRequest(const NetLogWithSource& net_log) {
 }
 
 bool HttpCache::Transaction::ShouldPassThrough() {
-  bool cacheable = true;
-
   // We may have a null disk_cache if there is an error we cannot recover from,
   // like not enough disk space, or sharing violations.
   if (!cache_->disk_cache_.get()) {
-    cacheable = false;
-  } else if (effective_load_flags_ & LOAD_DISABLE_CACHE) {
-    cacheable = false;
-  } else if (method_ == "GET" || method_ == "HEAD") {
-  } else if (method_ == "POST" && request_->upload_data_stream &&
-             request_->upload_data_stream->identifier()) {
-  } else if (method_ == "PUT" && request_->upload_data_stream) {
-  }
-  // DELETE and PATCH requests may result in invalidating the cache, so cannot
-  // just pass through.
-  else if (method_ == "DELETE" || method_ == "PATCH") {
-  } else {
-    cacheable = false;
+    return true;
   }
 
-  return !cacheable;
+  if (effective_load_flags_ & LOAD_DISABLE_CACHE) {
+    return true;
+  }
+
+  if (method_ == "GET" || method_ == "HEAD") {
+    return false;
+  }
+
+  if (method_ == "POST" && request_->upload_data_stream &&
+      request_->upload_data_stream->identifier()) {
+    return false;
+  }
+
+  if (method_ == "PUT" && request_->upload_data_stream) {
+    return false;
+  }
+
+  // DELETE and PATCH requests may result in invalidating the cache, so cannot
+  // just pass through.
+  if (method_ == "DELETE" || method_ == "PATCH") {
+    return false;
+  }
+
+  return true;
 }
 
 int HttpCache::Transaction::BeginCacheRead() {
