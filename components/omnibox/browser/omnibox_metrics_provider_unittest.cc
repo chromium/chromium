@@ -37,6 +37,8 @@ struct SessionData {
   bool zero_prefix_url_suggestions_shown_in_session = false;
   bool typed_search_suggestions_shown_in_session = false;
   bool typed_url_suggestions_shown_in_session = false;
+  bool contextual_search_suggestions_shown_in_session = false;
+  bool lens_action_shown_in_session = false;
 };
 
 const SessionData kTypedSearchShown = {false, false, false, true, false};
@@ -63,7 +65,9 @@ class OmniboxMetricsProviderTest : public testing::Test {
 
   OmniboxLog BuildOmniboxLog(const AutocompleteResult& result,
                              size_t selected_index,
-                             SessionData session_data) {
+                             SessionData session_data,
+                             bool contextual_search_selected = false,
+                             bool lens_action_selected = false) {
     return OmniboxLog(
         /*text=*/u"my text", /*just_deleted_text=*/false,
         /*input_type=*/metrics::OmniboxInputType::URL,
@@ -91,7 +95,15 @@ class OmniboxMetricsProviderTest : public testing::Test {
         /*typed_search_suggestions_shown_in_session=*/
         session_data.typed_search_suggestions_shown_in_session,
         /*typed_url_suggestions_shown_in_session=*/
-        session_data.typed_url_suggestions_shown_in_session);
+        session_data.typed_url_suggestions_shown_in_session,
+        /*contextual_search_suggestions_selected_in_session=*/
+        contextual_search_selected,
+        /*contextual_search_suggestions_shown_in_session=*/
+        session_data.contextual_search_suggestions_shown_in_session,
+        /*lens_action_selected_in_session=*/
+        lens_action_selected,
+        /*lens_action_shown_in_session=*/
+        session_data.lens_action_shown_in_session);
   }
 
   AutocompleteMatch BuildMatch(AutocompleteMatch::Type type) {
@@ -101,6 +113,10 @@ class OmniboxMetricsProviderTest : public testing::Test {
 
   void RecordMetrics(const OmniboxLog& log) {
     metrics_provider_->RecordMetrics(log);
+  }
+
+  void RecordContextualSearchPrecisionRecallUsage(const OmniboxLog& log) {
+    metrics_provider_->RecordContextualSearchPrecisionRecallUsage(log);
   }
 
   void RecordLogAndVerifyScoringSignals(
@@ -335,6 +351,143 @@ TEST_F(OmniboxMetricsProviderTest, RecordMetrics_SingleSearch) {
     ukm_recorder.ExpectEntryMetric(
         entry, ukm::builders::Omnibox_SuggestionUsed::kResultTypeGroupName,
         static_cast<uint64_t>(ClientSummarizedResultType::kSearch));
+  }
+}
+
+TEST_F(OmniboxMetricsProviderTest, RecordContextualSearchPrecisionRecallUsage) {
+  // Contextual search suggestion shown, but not selected.
+  {
+    base::HistogramTester histogram_tester;
+
+    AutocompleteResult result;
+    result.AppendMatches({BuildMatch(AutocompleteMatch::Type::SEARCH_SUGGEST)});
+
+    SessionData session_data = kZeroPrefixSearchShown;
+    session_data.contextual_search_suggestions_shown_in_session = true;
+
+    OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/0,
+                                     /*session_data=*/session_data,
+                                     /*contextual_search_selected=*/false,
+                                     /*lens_action_selected=*/false);
+    RecordContextualSearchPrecisionRecallUsage(log);
+
+    // Verify the UMA histograms.
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.ContextualSearchSuggestion.Precision", /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ContextualSearchSuggestion.Precision", false,
+        /*expected_count=*/1);
+
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.ContextualSearchSuggestion.Recall",
+        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ContextualSearchSuggestion.Recall", true,
+        /*expected_count=*/1);
+
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.ContextualSearchSuggestion.Usage",
+        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ContextualSearchSuggestion.Usage", false,
+        /*expected_count=*/1);
+  }
+
+  // Contextual search suggestion shown and selected.
+  {
+    base::HistogramTester histogram_tester;
+
+    AutocompleteResult result;
+    result.AppendMatches({BuildMatch(AutocompleteMatch::Type::SEARCH_SUGGEST)});
+
+    SessionData session_data = kZeroPrefixSearchShown;
+    session_data.contextual_search_suggestions_shown_in_session = true;
+
+    OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/0,
+                                     /*session_data=*/session_data,
+                                     /*contextual_search_selected=*/true,
+                                     /*lens_action_selected=*/false);
+    RecordContextualSearchPrecisionRecallUsage(log);
+
+    // Verify the UMA histograms.
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.ContextualSearchSuggestion.Precision", /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ContextualSearchSuggestion.Precision", true,
+        /*expected_count=*/1);
+
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.ContextualSearchSuggestion.Recall",
+        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ContextualSearchSuggestion.Recall", true,
+        /*expected_count=*/1);
+
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.ContextualSearchSuggestion.Usage",
+        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ContextualSearchSuggestion.Usage", true, /*expected_count=*/1);
+  }
+
+  // Google Lens action shown, but not selected.
+  {
+    base::HistogramTester histogram_tester;
+
+    AutocompleteResult result;
+    result.AppendMatches({BuildMatch(AutocompleteMatch::Type::SEARCH_SUGGEST)});
+
+    SessionData session_data = kZeroPrefixSearchShown;
+    session_data.lens_action_shown_in_session = true;
+
+    OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/0,
+                                     /*session_data=*/session_data,
+                                     /*contextual_search_selected=*/false,
+                                     /*lens_action_selected=*/false);
+    RecordContextualSearchPrecisionRecallUsage(log);
+
+    // Verify the UMA histograms.
+    histogram_tester.ExpectTotalCount("Omnibox.LensAction.Precision", 1);
+    histogram_tester.ExpectBucketCount("Omnibox.LensAction.Precision", false,
+                                       /*expected_count=*/1);
+
+    histogram_tester.ExpectTotalCount("Omnibox.LensAction.Recall", 1);
+    histogram_tester.ExpectBucketCount("Omnibox.LensAction.Recall", true,
+                                       /*expected_count=*/1);
+
+    histogram_tester.ExpectTotalCount("Omnibox.LensAction.Usage", 1);
+    histogram_tester.ExpectBucketCount("Omnibox.LensAction.Usage", false,
+                                       /*expected_count=*/1);
+  }
+
+  // Google Lens action shown and selected.
+  {
+    base::HistogramTester histogram_tester;
+
+    AutocompleteResult result;
+    result.AppendMatches({BuildMatch(AutocompleteMatch::Type::SEARCH_SUGGEST)});
+
+    SessionData session_data = kZeroPrefixSearchShown;
+    session_data.lens_action_shown_in_session = true;
+
+    OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/0,
+                                     /*session_data=*/session_data,
+                                     /*contextual_search_selected=*/false,
+                                     /*lens_action_selected=*/true);
+    RecordContextualSearchPrecisionRecallUsage(log);
+
+    // Verify the UMA histograms.
+    histogram_tester.ExpectTotalCount("Omnibox.LensAction.Precision", 1);
+    histogram_tester.ExpectBucketCount("Omnibox.LensAction.Precision", true,
+                                       /*expected_count=*/1);
+
+    histogram_tester.ExpectTotalCount("Omnibox.LensAction.Recall", 1);
+    histogram_tester.ExpectBucketCount("Omnibox.LensAction.Recall", true,
+                                       /*expected_count=*/1);
+
+    histogram_tester.ExpectTotalCount("Omnibox.LensAction.Usage", 1);
+    histogram_tester.ExpectBucketCount("Omnibox.LensAction.Usage", true,
+                                       /*expected_count=*/1);
   }
 }
 

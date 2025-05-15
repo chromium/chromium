@@ -14,6 +14,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
+#include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/match_compare.h"
 #include "components/omnibox/browser/omnibox_metrics_provider.h"
@@ -275,6 +276,11 @@ class AutocompleteResult {
     session_.gws_event_id_hashes_.clear();
   }
 
+  std::pair<bool, bool> contextual_suggestions_shown_in_session() {
+    return {session_.contextual_search_suggestions_shown_in_session_,
+            session_.lens_action_shown_in_session_};
+  }
+
   std::pair<bool, bool> suggestions_shown_in_session(bool is_zero_suggest) {
     if (is_zero_suggest) {
       return {session_.zero_prefix_search_suggestions_shown_in_session_,
@@ -302,6 +308,19 @@ class AutocompleteResult {
         session_.typed_search_suggestions_shown_in_session_ = true;
       } else {
         session_.typed_url_suggestions_shown_in_session_ = true;
+      }
+    }
+
+    if (match.takeover_action) {
+      switch (match.takeover_action->ActionId()) {
+        case OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT:
+          session_.contextual_search_suggestions_shown_in_session_ = true;
+          break;
+        case OmniboxActionId::CONTEXTUAL_SEARCH_OPEN_LENS:
+          session_.lens_action_shown_in_session_ = true;
+          break;
+        default:
+          break;
       }
     }
   }
@@ -432,6 +451,14 @@ class AutocompleteResult {
     // metrics logging code emits the proper values.
     bool typed_search_suggestions_shown_in_session_ = false;
     bool typed_url_suggestions_shown_in_session_ = false;
+
+    // Whether at least one contextual search suggestion was shown in the
+    // session.
+    bool contextual_search_suggestions_shown_in_session_ = false;
+
+    // Whether the "Ask Google Lens about this page" action was shown at least
+    // once in the session.
+    bool lens_action_shown_in_session_ = false;
   };
 
   // Swaps this result set - i.e., `matches_` and `suggestion_groups_map_` -

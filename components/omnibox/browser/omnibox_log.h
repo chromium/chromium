@@ -48,7 +48,11 @@ struct OmniboxLog {
              bool zero_prefix_search_suggestions_shown_in_session,
              bool zero_prefix_url_suggestions_shown_in_session,
              bool typed_search_suggestions_shown_in_session,
-             bool typed_url_suggestions_shown_in_session);
+             bool typed_url_suggestions_shown_in_session,
+             bool contextual_search_suggestions_selected_in_session,
+             bool contextual_search_suggestions_shown_in_session,
+             bool lens_action_selected_in_session,
+             bool lens_action_shown_in_session);
   ~OmniboxLog();
 
   // The user's input text in the omnibox.
@@ -164,6 +168,16 @@ struct OmniboxLog {
   // client-side metrics logging code emits the proper values.
   bool typed_search_suggestions_shown_in_session = false;
   bool typed_url_suggestions_shown_in_session = false;
+
+  // Whether at least one contextual search suggestion was selected/shown in the
+  // session.
+  bool contextual_search_suggestions_selected_in_session = false;
+  bool contextual_search_suggestions_shown_in_session = false;
+
+  // Whether the "Ask Google Lens about this page" action was selected/shown at
+  // least once in the session.
+  bool lens_action_selected_in_session = false;
+  bool lens_action_shown_in_session = false;
 
   // The preferred steady state (unfocused) omnibox position. Only logged on
   // iOS phones.

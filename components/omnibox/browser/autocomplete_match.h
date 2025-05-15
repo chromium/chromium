@@ -958,6 +958,13 @@ struct AutocompleteMatch {
   bool typed_search_suggestions_shown_in_session = false;
   bool typed_url_suggestions_shown_in_session = false;
 
+  // Whether at least one contextual search suggestion was shown in the session.
+  bool contextual_search_suggestions_shown_in_session = false;
+
+  // Whether the "Ask Google Lens about this page" action was shown at least
+  // once in the session.
+  bool lens_action_shown_in_session = false;
+
   // Optional search terms args.  If present,
   // AutocompleteController::UpdateSearchboxStats() will incorporate this data
   // with additional data it calculates and pass the completed struct to

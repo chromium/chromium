@@ -28,7 +28,11 @@ OmniboxLog::OmniboxLog(
     bool zero_prefix_search_suggestions_shown_in_session,
     bool zero_prefix_url_suggestions_shown_in_session,
     bool typed_search_suggestions_shown_in_session,
-    bool typed_url_suggestions_shown_in_session)
+    bool typed_url_suggestions_shown_in_session,
+    bool contextual_search_suggestions_selected_in_session,
+    bool contextual_search_suggestions_shown_in_session,
+    bool lens_action_selected_in_session,
+    bool lens_action_shown_in_session)
     : text(text),
       just_deleted_text(just_deleted_text),
       input_type(input_type),
@@ -58,6 +62,12 @@ OmniboxLog::OmniboxLog(
           typed_search_suggestions_shown_in_session),
       typed_url_suggestions_shown_in_session(
           typed_url_suggestions_shown_in_session),
+      contextual_search_suggestions_selected_in_session(
+          contextual_search_suggestions_selected_in_session),
+      contextual_search_suggestions_shown_in_session(
+          contextual_search_suggestions_shown_in_session),
+      lens_action_selected_in_session(lens_action_selected_in_session),
+      lens_action_shown_in_session(lens_action_shown_in_session),
       steady_state_omnibox_position(
           metrics::OmniboxEventProto::UNKNOWN_POSITION),
       ukm_source_id(ukm::kInvalidSourceId) {

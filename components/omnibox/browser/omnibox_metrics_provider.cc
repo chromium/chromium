@@ -275,6 +275,7 @@ void OmniboxMetricsProvider::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   RecordOmniboxEvent(*log);
   RecordMetrics(*log);
   RecordZeroPrefixPrecisionRecallUsage(*log);
+  RecordContextualSearchPrecisionRecallUsage(*log);
 }
 
 void OmniboxMetricsProvider::RecordOmniboxEvent(const OmniboxLog& log) {
@@ -517,4 +518,31 @@ void OmniboxMetricsProvider::RecordZeroPrefixPrecisionRecallUsage(
   base::UmaHistogramBoolean(
       base::StrCat({"Omnibox.ZeroSuggest.Usage.ByPageContext.", page_context}),
       zero_prefix_selected);
+}
+
+void OmniboxMetricsProvider::RecordContextualSearchPrecisionRecallUsage(
+    const OmniboxLog& log) {
+  bool contextual_search_selected =
+      log.contextual_search_suggestions_selected_in_session;
+  bool contextual_search_shown =
+      log.contextual_search_suggestions_shown_in_session;
+
+  if (contextual_search_shown) {
+    base::UmaHistogramBoolean("Omnibox.ContextualSearchSuggestion.Precision",
+                              contextual_search_selected);
+  }
+  base::UmaHistogramBoolean("Omnibox.ContextualSearchSuggestion.Recall",
+                            contextual_search_shown);
+  base::UmaHistogramBoolean("Omnibox.ContextualSearchSuggestion.Usage",
+                            contextual_search_selected);
+
+  bool lens_action_selected = log.lens_action_selected_in_session;
+  bool lens_action_shown = log.lens_action_shown_in_session;
+
+  if (lens_action_shown) {
+    base::UmaHistogramBoolean("Omnibox.LensAction.Precision",
+                              lens_action_selected);
+  }
+  base::UmaHistogramBoolean("Omnibox.LensAction.Recall", lens_action_shown);
+  base::UmaHistogramBoolean("Omnibox.LensAction.Usage", lens_action_selected);
 }

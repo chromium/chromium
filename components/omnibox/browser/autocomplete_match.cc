@@ -287,6 +287,9 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
           match.typed_search_suggestions_shown_in_session),
       typed_url_suggestions_shown_in_session(
           match.typed_url_suggestions_shown_in_session),
+      contextual_search_suggestions_shown_in_session(
+          match.contextual_search_suggestions_shown_in_session),
+      lens_action_shown_in_session(match.lens_action_shown_in_session),
       search_terms_args(
           match.search_terms_args
               ? new TemplateURLRef::SearchTermsArgs(*match.search_terms_args)
@@ -375,6 +378,9 @@ AutocompleteMatch& AutocompleteMatch::operator=(
       std::move(match.typed_search_suggestions_shown_in_session);
   typed_url_suggestions_shown_in_session =
       std::move(match.typed_url_suggestions_shown_in_session);
+  contextual_search_suggestions_shown_in_session =
+      std::move(match.contextual_search_suggestions_shown_in_session);
+  lens_action_shown_in_session = std::move(match.lens_action_shown_in_session);
   search_terms_args = std::move(match.search_terms_args);
   post_content = std::move(match.post_content);
   additional_info = std::move(match.additional_info);
@@ -467,6 +473,9 @@ AutocompleteMatch& AutocompleteMatch::operator=(
       match.typed_search_suggestions_shown_in_session;
   typed_url_suggestions_shown_in_session =
       match.typed_url_suggestions_shown_in_session;
+  contextual_search_suggestions_shown_in_session =
+      match.contextual_search_suggestions_shown_in_session;
+  lens_action_shown_in_session = match.lens_action_shown_in_session;
   search_terms_args.reset(
       match.search_terms_args
           ? new TemplateURLRef::SearchTermsArgs(*match.search_terms_args)

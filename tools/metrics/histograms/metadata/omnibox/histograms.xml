@@ -795,6 +795,69 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.ContextualSearchSuggestion.Precision" enum="Boolean"
+    expires_after="2025-10-12">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Upon navigation, this metric is recorded if at least one contextual search
+    suggestion was offered during the course of the Omnibox session. Given that
+    at least one contextual search suggestion was offered during the session,
+    this records whether or not the user ultimately selected a contextual search
+    suggestion in the Omnibox.
+
+    An &quot;Omnibox session&quot; is currently defined as a span of time that
+    starts when the user focuses the Omnibox and ends when the user de-focuses
+    it, whether implicitly (e.g. by selecting one of the suggestions) or
+    explictly (e.g. by clicking on some non-Omnibox browser UI). The session
+    data that's maintained by AutocompleteResult will be initialized when the
+    session starts, updated throughout the course of the session, and ultimately
+    reset when the session ends.
+
+    (Precision = Usage / Recall)
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.ContextualSearchSuggestion.Recall" enum="Boolean"
+    expires_after="2025-10-19">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Upon navigation, this metric is recorded if at least one contextual search
+    suggestion was offered during the course of the Omnibox session.
+
+    An &quot;Omnibox session&quot; is currently defined as a span of time that
+    starts when the user focuses the Omnibox and ends when the user de-focuses
+    it, whether implicitly (e.g. by selecting one of the suggestions) or
+    explictly (e.g. by clicking on some non-Omnibox browser UI). The session
+    data that's maintained by AutocompleteResult will be initialized when the
+    session starts, updated throughout the course of the session, and ultimately
+    reset when the session ends.
+
+    (Recall = Usage / Precision)
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.ContextualSearchSuggestion.Usage" enum="Boolean"
+    expires_after="2025-10-19">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Upon navigation, this metric is recorded if the user selected a contextual
+    search suggestion in the Omnibox.
+
+    An &quot;Omnibox session&quot; is currently defined as a span of time that
+    starts when the user focuses the Omnibox and ends when the user de-focuses
+    it, whether implicitly (e.g. by selecting one of the suggestions) or
+    explictly (e.g. by clicking on some non-Omnibox browser UI). The session
+    data that's maintained by AutocompleteResult will be initialized when the
+    session starts, updated throughout the course of the session, and ultimately
+    reset when the session ends.
+
+    (Usage = Precision * Recall)
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.CutOrCopyAllText" units="count"
     expires_after="2025-10-12">
   <owner>jdonnelly@chromium.org</owner>
@@ -1503,6 +1566,70 @@ Keep consistent with active providers. Doesn't need to include every provider in
                  user changes the active status of a search engine during the
                  same browser session, this does not get logged again."/>
   </token>
+</histogram>
+
+<histogram name="Omnibox.LensAction.Precision" enum="Boolean"
+    expires_after="2025-10-12">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Upon navigation, this metric is recorded if the &quot;Ask Google Lens about
+    this page&quot; action was offered at least once during the course of the
+    Omnibox session. Given it was offered at least once during the session, this
+    records whether or not the user ultimately selected the &quot;Ask Google
+    Lens about this page&quot; action in the Omnibox.
+
+    An &quot;Omnibox session&quot; is currently defined as a span of time that
+    starts when the user focuses the Omnibox and ends when the user de-focuses
+    it, whether implicitly (e.g. by selecting one of the suggestions) or
+    explictly (e.g. by clicking on some non-Omnibox browser UI). The session
+    data that's maintained by AutocompleteResult will be initialized when the
+    session starts, updated throughout the course of the session, and ultimately
+    reset when the session ends.
+
+    (Precision = Usage / Recall)
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.LensAction.Recall" enum="Boolean"
+    expires_after="2025-10-19">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Upon navigation, this metric is recorded if the &quot;Ask Google Lens about
+    this page&quot; action was offered at least once during the course of the
+    Omnibox session.
+
+    An &quot;Omnibox session&quot; is currently defined as a span of time that
+    starts when the user focuses the Omnibox and ends when the user de-focuses
+    it, whether implicitly (e.g. by selecting one of the suggestions) or
+    explictly (e.g. by clicking on some non-Omnibox browser UI). The session
+    data that's maintained by AutocompleteResult will be initialized when the
+    session starts, updated throughout the course of the session, and ultimately
+    reset when the session ends.
+
+    (Recall = Usage / Precision)
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.LensAction.Usage" enum="Boolean"
+    expires_after="2025-10-19">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Upon navigation, this metric is recorded if the user selected the &quot;Ask
+    Google Lens about this page&quot; action in the Omnibox.
+
+    An &quot;Omnibox session&quot; is currently defined as a span of time that
+    starts when the user focuses the Omnibox and ends when the user de-focuses
+    it, whether implicitly (e.g. by selecting one of the suggestions) or
+    explictly (e.g. by clicking on some non-Omnibox browser UI). The session
+    data that's maintained by AutocompleteResult will be initialized when the
+    session starts, updated throughout the course of the session, and ultimately
+    reset when the session ends.
+
+    (Usage = Precision * Recall)
+  </summary>
 </histogram>
 
 <histogram name="Omnibox.LocalHistoryPrefixSuggest.SearchTermsExtractionTimeV2"

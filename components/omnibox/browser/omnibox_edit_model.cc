@@ -2700,6 +2700,13 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   bool is_incognito = autocomplete_controller()
                           ->autocomplete_provider_client()
                           ->IsOffTheRecord();
+  bool contextual_search_selected =
+      match.takeover_action &&
+      match.takeover_action->ActionId() ==
+          OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT;
+  bool lens_action_selected =
+      match.takeover_action && match.takeover_action->ActionId() ==
+                                   OmniboxActionId::CONTEXTUAL_SEARCH_OPEN_LENS;
   OmniboxLog log(
       user_text, just_deleted_text_, input_.type(), is_keyword_selected(),
       keyword_mode_entry_method_, popup_open,
@@ -2715,7 +2722,9 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
       match.zero_prefix_search_suggestions_shown_in_session,
       match.zero_prefix_url_suggestions_shown_in_session,
       match.typed_search_suggestions_shown_in_session,
-      match.typed_url_suggestions_shown_in_session);
+      match.typed_url_suggestions_shown_in_session, contextual_search_selected,
+      match.contextual_search_suggestions_shown_in_session,
+      lens_action_selected, match.lens_action_shown_in_session);
 // Check disabled on iOS as the platform shows a default suggestion on focus
 // (crbug.com/40061502).
 #if !BUILDFLAG(IS_IOS)

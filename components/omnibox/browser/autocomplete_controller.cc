@@ -2020,6 +2020,12 @@ void AutocompleteController::UpdateShownInSession(AutocompleteResult* result) {
         result->suggestions_shown_in_session(/*is_zero_suggest=*/false);
     match.typed_search_suggestions_shown_in_session = typed_search_shown;
     match.typed_url_suggestions_shown_in_session = typed_url_shown;
+
+    const auto [contextual_search_shown, lens_action_shown] =
+        result->contextual_suggestions_shown_in_session();
+    match.contextual_search_suggestions_shown_in_session =
+        contextual_search_shown;
+    match.lens_action_shown_in_session = lens_action_shown;
   }
 }
 

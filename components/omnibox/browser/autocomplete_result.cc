@@ -1228,6 +1228,8 @@ void AutocompleteResult::SessionData::Reset() {
   zero_prefix_url_suggestions_shown_in_session_ = false;
   typed_search_suggestions_shown_in_session_ = false;
   typed_url_suggestions_shown_in_session_ = false;
+  contextual_search_suggestions_shown_in_session_ = false;
+  lens_action_shown_in_session_ = false;
   gws_event_id_hashes_.clear();
 }
 
