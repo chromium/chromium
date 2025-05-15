@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/test/split_tabs_interactive_test_mixin.h"
+#include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_button.h"
@@ -415,6 +416,30 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
                }),
       WaitForState(kMultiContentsViewSwapObserver, true), CheckTabIsActive(1),
       CheckActiveContentsHasFocus());
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
+                       ContentsDividersHiddenInSplitView) {
+  RunTestSequence(
+      // Open the bookmarks side panel.
+      PressButton(kToolbarAppMenuButtonElementId),
+      SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
+      SelectMenuItem(BookmarkSubMenuModel::kShowBookmarkSidePanelItem),
+      WaitForShow(kSidePanelElementId),
+      // Verify expected contents separators are visible. Note, only one side
+      // panel separator should be visible and the side panel is right aligned
+      // by default.
+      WaitForShow(kContentsSeparatorViewElementId),
+      WaitForShow(kRightAlignedSidePanelSeparatorViewElementId),
+      WaitForHide(kLeftAlignedSidePanelSeparatorViewElementId),
+      WaitForShow(kSidePanelRoundedCornerViewElementId),
+      // Open split view.
+      CreateTabsAndEnterSplitView(),
+      // Verify no contents separators are visible.
+      WaitForHide(kContentsSeparatorViewElementId),
+      WaitForHide(kRightAlignedSidePanelSeparatorViewElementId),
+      WaitForHide(kLeftAlignedSidePanelSeparatorViewElementId),
+      WaitForHide(kSidePanelRoundedCornerViewElementId));
 }
 
 // TODO(crbug.com/414590951): There's limited support for testing drag and drop

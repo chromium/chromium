@@ -831,8 +831,12 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
     // based on whether it is visible instead of setting the height to 0px. This
     // will enable BrowserViewLayout to hide the contents separator on its own
     // using the same logic used by normal BrowserViews.
-    return !browser_view_->browser()->app_controller();
+    // The separator should not be shown when in split view.
+    return !browser_view_->browser()->app_controller() &&
+           !browser_view_->IsInSplitView();
   }
+
+  bool IsInSplitView() const override { return browser_view_->IsInSplitView(); }
 
   ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() const override {
     return browser_view_->exclusive_access_bubble();
@@ -1118,12 +1122,17 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 
   contents_separator_ =
       top_container_->AddChildView(std::make_unique<ContentsSeparator>());
+  contents_separator_->SetProperty(views::kElementIdentifierKey,
+                                   kContentsSeparatorViewElementId);
 
   contents_container_ = AddChildView(std::move(contents_container));
   set_contents_view(contents_container_);
 
   right_aligned_side_panel_separator_ =
       AddChildView(std::make_unique<ContentsSeparator>());
+  right_aligned_side_panel_separator_->SetProperty(
+      views::kElementIdentifierKey,
+      kRightAlignedSidePanelSeparatorViewElementId);
 
   const bool is_right_aligned = GetProfile()->GetPrefs()->GetBoolean(
       prefs::kSidePanelHorizontalAlignment);
@@ -1132,8 +1141,13 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
                              : SidePanel::HorizontalAlignment::kLeft));
   left_aligned_side_panel_separator_ =
       AddChildView(std::make_unique<ContentsSeparator>());
+  left_aligned_side_panel_separator_->SetProperty(
+      views::kElementIdentifierKey,
+      kLeftAlignedSidePanelSeparatorViewElementId);
   side_panel_rounded_corner_ =
       AddChildView(std::make_unique<SidePanelRoundedCorner>(this));
+  side_panel_rounded_corner_->SetProperty(views::kElementIdentifierKey,
+                                          kSidePanelRoundedCornerViewElementId);
 
   // InfoBarContainer needs to be added as a child here for drop-shadow, but
   // needs to come after toolbar in focus order (see EnsureFocusOrder()).
@@ -1492,6 +1506,10 @@ views::Widget* BrowserView::GetWidgetForAnchoring() {
   }
 #endif
   return GetWidget();
+}
+
+bool BrowserView::IsInSplitView() const {
+  return multi_contents_view_ && multi_contents_view_->IsInSplitView();
 }
 
 void BrowserView::ShowSplitView(bool focus_active_view) {

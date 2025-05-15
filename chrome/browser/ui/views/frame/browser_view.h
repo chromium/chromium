@@ -480,6 +480,9 @@ class BrowserView : public BrowserWindow,
   // Getter for the `window.setResizable(bool)` state.
   std::optional<bool> GetWebApiWindowResizable() const;
 
+  // Returns true if the browser is currently showing tabs in a split view.
+  bool IsInSplitView() const;
+
   // Display the current active split view as a series of multiple side-by-side
   // web contents.
   void ShowSplitView(bool focus_active_view);
