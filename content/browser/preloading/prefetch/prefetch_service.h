@@ -107,15 +107,6 @@ class CONTENT_EXPORT PrefetchService {
   virtual PrefetchOriginProber* GetPrefetchOriginProber() const;
   virtual void PrefetchUrl(base::WeakPtr<PrefetchContainer> prefetch_container);
 
-  // Finds the prefetch (if any) that can be used to serve a navigation to
-  // |url|, and then calls |on_prefetch_to_serve_ready| with that prefetch.
-  using OnPrefetchToServeReady =
-      base::OnceCallback<void(PrefetchContainer::Reader prefetch_to_serve)>;
-  void GetPrefetchToServe(const PrefetchContainer::Key& key,
-                          base::WeakPtr<PrefetchServingPageMetricsContainer>
-                              serving_page_metrics_container,
-                          PrefetchMatchResolver& prefetch_match_resolver);
-
   // Copies any cookies in the isolated network context associated with
   // |prefetch_container| to the default network context.
   virtual void CopyIsolatedCookies(const PrefetchContainer::Reader& reader);
