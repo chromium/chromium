@@ -143,7 +143,7 @@ export class PrintPreviewPagesSettingsElement extends
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
 
-    if (changedProperties.has('disabled') &&
+    if (changedProperties.has('disabled') ||
         changedPrivateProperties.has('hasError_')) {
       this.controlsDisabled_ = this.computeControlsDisabled_();
     }

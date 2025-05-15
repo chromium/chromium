@@ -137,6 +137,10 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewPagesSettingsTest, PagesDropdown) {
   RunTestCase("PagesDropdown");
 }
 
+IN_PROC_BROWSER_TEST_F(PrintPreviewPagesSettingsTest, PagesDropdownDisabled) {
+  RunTestCase("PagesDropdownDisabled");
+}
+
 IN_PROC_BROWSER_TEST_F(PrintPreviewPagesSettingsTest, NoParityOptions) {
   RunTestCase("NoParityOptions");
 }
