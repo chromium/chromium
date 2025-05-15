@@ -65,10 +65,10 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // Sets `third_party_cookies_title_` and `third_party_cookies_description_`
   // text using:
   // `controls_state`: state of controls to display
-  // `enforcement`: type of enforcement on the protection (e.g. by policy, user
+  // `enforcement`: type of enforcement on 3PCs (e.g. by policy, user
   // setting)
   // `status: current 3PC blocking status
-  // `blocking_status`: label for the status of the protection (e.g. allowed,
+  // `blocking_status`: label for the status of 3PCs (e.g. allowed,
   // limited, blocked)
   // `expiration`: duration of site exception
   void SetThirdPartyCookiesTitleAndDescription(
@@ -88,18 +88,26 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
                                   CookieBlocking3pcdStatus blocking_status);
 
   // Sets `cookie_description_label_` text and style using:
-  // `blocking_status`: label for the status of the protection (e.g. allowed,
+  // `blocking_status`: label for the status of 3PCs (e.g. allowed,
   // limited, blocked)
-  // `enforcement`: type of enforcement on the protection (e.g. by policy, user
+  // `enforcement`: type of enforcement on 3PCs (e.g. by policy, user
   // setting)
   // `is_otr: whether the current profile is "off the record"
-  void SetDescriptionLabel(CookieBlocking3pcdStatus blocking_status,
-                           CookieControlsEnforcement enforcement,
-                           bool is_otr);
+  void SetCookiesDescription(CookieBlocking3pcdStatus blocking_status,
+                             CookieControlsEnforcement enforcement,
+                             bool is_otr);
+
+  // Sets `cookie_description_label_` text and style for incognito using:
+  // `enforcement`: type of enforcement on 3PCs (e.g. by policy, user
+  // setting)
+  // `controls_state`: state of controls to display
+  void SetIncognitoTrackingProtectionsDescription(
+      CookieControlsEnforcement enforcement,
+      CookieControlsState controls_state);
 
   // Updates the new third-party cookies section using:
   // `controls_state`: state of controls to display
-  // `blocking_status`: label for the status of the protection (e.g. allowed,
+  // `blocking_status`: label for the status of 3PCs (e.g. allowed,
   // limited, blocked)
   // `expiration`: duration of site exception
   void SetThirdPartyCookiesInfo(CookieControlsState controls_state,

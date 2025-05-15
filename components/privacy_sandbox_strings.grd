@@ -333,6 +333,33 @@
         Tracking protections are paused on this site
       </message>
       <!-- Page Info -->
+      <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_DESCRIPTION" desc="" translateable="false">
+        Third-party cookies are blocked. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
+      </message>
+      <if expr="_google_chrome">
+        <then>
+          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION" desc="" translateable="false">
+            Chrome blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
+          </message>
+          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_EXTENSION_ALLOWED_DESCRIPTION" desc="" translateable="false">
+            Chrome blocks third-party cookies in Incognito, but an extension allowed third-party cookies for this site.
+          </message>
+          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_USER_ALLOWED_DESCRIPTION" desc="" translateable="false">
+            Chrome blocks third-party cookies in Incognito, but you made an exception for this site.
+          </message>
+        </then>
+        <else>
+          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION" desc="" translateable="false">
+            Chromium blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site. Incognito also provides features that can limit the information available to companies whose content is embedded on a site you visit.
+          </message>
+          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_EXTENSION_ALLOWED_DESCRIPTION" desc="" translateable="false">
+            Chromium blocks third-party cookies in Incognito, but an extension allowed third-party cookies for this site.
+          </message>
+          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_USER_ALLOWED_DESCRIPTION" desc="" translateable="false">
+            Chromium blocks third-party cookies in Incognito, but you made an exception for this site.
+          </message>
+        </else>
+      </if>
       <message name="IDS_PAGE_INFO_INCOGNITO_TRACKING_PROTECTION_SETTINGS_BUTTON_TITLE" desc="" translateable="false">
         Settings
       </message>

@@ -246,8 +246,13 @@ void PageInfoCookiesContentView::SyncSettingsLinkClicked(
 
 void PageInfoCookiesContentView::SetCookieInfo(
     const CookiesNewInfo& cookie_info) {
-  SetDescriptionLabel(cookie_info.blocking_status, cookie_info.enforcement,
-                      cookie_info.is_incognito);
+  if (IsActUi(cookie_info.controls_state)) {
+    SetIncognitoTrackingProtectionsDescription(cookie_info.enforcement,
+                                               cookie_info.controls_state);
+  } else {
+    SetCookiesDescription(cookie_info.blocking_status, cookie_info.enforcement,
+                          cookie_info.is_incognito);
+  }
   SetThirdPartyCookiesInfo(cookie_info.controls_state, cookie_info.enforcement,
                            cookie_info.blocking_status, cookie_info.expiration);
 
@@ -359,7 +364,29 @@ void PageInfoCookiesContentView::SetTrackingProtectionButtonLabel(
   tracking_protection_button_->GetViewAccessibility().SetName(label);
 }
 
-void PageInfoCookiesContentView::SetDescriptionLabel(
+void PageInfoCookiesContentView::SetIncognitoTrackingProtectionsDescription(
+    CookieControlsEnforcement enforcement,
+    CookieControlsState controls_state) {
+  // No description exists for when protections are paused.
+  if (controls_state == CookieControlsState::kTpPaused) {
+    cookies_description_label_->SetVisible(false);
+    return;
+  }
+  int description = IDS_PAGE_INFO_PRIVACY_SITE_DATA_DESCRIPTION;
+  if (enforcement == CookieControlsEnforcement::kEnforcedByCookieSetting) {
+    description = IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_USER_ALLOWED_DESCRIPTION;
+  } else if (enforcement == CookieControlsEnforcement::kEnforcedByPolicy) {
+    description =
+        IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION;
+  } else if (enforcement == CookieControlsEnforcement::kEnforcedByExtension) {
+    description =
+        IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_EXTENSION_ALLOWED_DESCRIPTION;
+  }
+  cookies_description_label_->SetText(l10n_util::GetStringUTF16(description));
+  cookies_description_label_->SetVisible(true);
+}
+
+void PageInfoCookiesContentView::SetCookiesDescription(
     CookieBlocking3pcdStatus blocking_status,
     CookieControlsEnforcement enforcement,
     bool is_incognito) {
@@ -369,8 +396,6 @@ void PageInfoCookiesContentView::SetDescriptionLabel(
 
   size_t offset;
   int description;
-  // TODO(crbug.com/388294499): Add support for ACT enterprise states in
-  // description label.
   if (blocking_status == CookieBlocking3pcdStatus::kNotIn3pcd) {
     description = IDS_PAGE_INFO_COOKIES_DESCRIPTION;
     settings_text_for_link =
@@ -419,23 +444,28 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
   tracking_protection_button_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_ACT_PROTECTIONS_BUTTON);
 
-  bool act_ui = IsActUi(controls_state);
-  third_party_cookies_row_->SetVisible(!act_ui);
-  tracking_protection_button_->SetVisible(act_ui);
-
-  third_party_cookies_container_->SetCrossAxisAlignment(
-      act_ui ? views::BoxLayout::CrossAxisAlignment::kStart
-             : views::BoxLayout::CrossAxisAlignment::kStretch);
+  if (IsActUi(controls_state)) {
+    third_party_cookies_row_->SetVisible(false);
+    tracking_protection_button_->SetVisible(true);
+    third_party_cookies_container_->SetCrossAxisAlignment(
+        views::BoxLayout::CrossAxisAlignment::kStart);
+    third_party_cookies_label_wrapper_->SetVisible(true);
+  } else {
+    third_party_cookies_row_->SetVisible(true);
+    tracking_protection_button_->SetVisible(false);
+    third_party_cookies_container_->SetCrossAxisAlignment(
+        views::BoxLayout::CrossAxisAlignment::kStretch);
+    bool show_controls_description =
+        enforcement == CookieControlsEnforcement::kNoEnforcement ||
+        (blocking_status != CookieBlocking3pcdStatus::kNotIn3pcd &&
+         enforcement == CookieControlsEnforcement::kEnforcedByCookieSetting);
+    third_party_cookies_label_wrapper_->SetVisible(show_controls_description);
+  }
 
   if (enforcement == CookieControlsEnforcement::kNoEnforcement) {
-    third_party_cookies_label_wrapper_->SetVisible(true);
     third_party_cookies_toggle_->SetVisible(true);
     third_party_cookies_enforced_icon_->SetVisible(false);
   } else {
-    // In 3PCD, tell the user if they allowed the current site via settings.
-    third_party_cookies_label_wrapper_->SetVisible(
-        blocking_status != CookieBlocking3pcdStatus::kNotIn3pcd &&
-        enforcement == CookieControlsEnforcement::kEnforcedByCookieSetting);
     // In the enforced state, the toggle button is hidden; enforced icon is
     // shown instead of the toggle button.
     third_party_cookies_toggle_->SetVisible(false);
