@@ -1816,17 +1816,15 @@ void AXObject::SerializeInlineTextBox(ui::AXNodeData* node_data) const {
   DCHECK_EQ(name_from, ax::mojom::blink::NameFrom::kContents);
   node_data->SetNameFrom(ax::mojom::blink::NameFrom::kContents);
 
-  if (::features::IsAccessibilityPruneRedundantInlineTextEnabled()) {
-    DCHECK(parent_);
-    DCHECK(parent_->GetLayoutObject()->IsText());
-    if (IsOnlyChild()) {
-      auto* layout_text = To<LayoutText>(parent_->GetLayoutObject());
-      String visible_text = layout_text->PlainText();
-      if (name == visible_text) {
-        // The text of an only-child inline text box can be inferred directly
-        // from the parent. No need to serialize redundant data.
-        return;
-      }
+  DCHECK(parent_);
+  DCHECK(parent_->GetLayoutObject()->IsText());
+  if (IsOnlyChild()) {
+    auto* layout_text = To<LayoutText>(parent_->GetLayoutObject());
+    String visible_text = layout_text->PlainText();
+    if (name == visible_text) {
+      // The text of an only-child inline text box can be inferred directly
+      // from the parent. No need to serialize redundant data.
+      return;
     }
   }
 

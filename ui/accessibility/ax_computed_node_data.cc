@@ -232,8 +232,7 @@ int AXComputedNodeData::GetOrComputeTextContentLengthUTF16() const {
 bool AXComputedNodeData::CanInferNameAttribute() const {
   // The name may be suppressed when serializing an AXInlineTextBox if it
   // can be inferred from the parent.
-  return ::features::IsAccessibilityPruneRedundantInlineTextEnabled() &&
-         owner_->data().role == ax::mojom::Role::kInlineTextBox &&
+  return owner_->data().role == ax::mojom::Role::kInlineTextBox &&
          owner_->data().GetNameFrom() == ax::mojom::NameFrom::kContents &&
          owner_->GetParent()->data().GetNameFrom() ==
              ax::mojom::NameFrom::kContents &&
@@ -419,12 +418,10 @@ std::string AXComputedNodeData::ComputeTextContentUTF8() const {
   // the same as the parent. We can differentiate this case from a specified
   // but empty name based on the name from attribute, which is kFromContent if
   // set and kNone if the text content is to be inferred from the parent.
-  if (::features::IsAccessibilityPruneRedundantInlineTextEnabled()) {
-    if (owner_->data().role == ax::mojom::Role::kInlineTextBox &&
-        !owner_->data().HasStringAttribute(ax::mojom::StringAttribute::kName)) {
-      return owner_->GetParent()->data().GetStringAttribute(
-          ax::mojom::StringAttribute::kName);
-    }
+  if (owner_->data().role == ax::mojom::Role::kInlineTextBox &&
+      !owner_->data().HasStringAttribute(ax::mojom::StringAttribute::kName)) {
+    return owner_->GetParent()->data().GetStringAttribute(
+        ax::mojom::StringAttribute::kName);
   }
 
   // If a text field has no descendants, then we compute its text content from

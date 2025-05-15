@@ -992,8 +992,7 @@ bool AXNode::CanComputeStringAttribute(
     case ax::mojom::StringAttribute::kName:
       // The name may be suppressed when serializing an AXInlineTextBox if it
       // can be inferred from the parent.
-      return ::features::IsAccessibilityPruneRedundantInlineTextEnabled() &&
-             data().role == ax::mojom::Role::kInlineTextBox &&
+      return data().role == ax::mojom::Role::kInlineTextBox &&
              data().GetNameFrom() == ax::mojom::NameFrom::kContents &&
              GetParent() &&
              GetParent()->data().GetNameFrom() ==

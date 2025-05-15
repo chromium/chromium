@@ -43,14 +43,6 @@ bool IsAccessibilityBlockFlowIteratorEnabled() {
       ::features::kAccessibilityBlockFlowIterator);
 }
 
-BASE_FEATURE(kAccessibilityPruneRedundantInlineText,
-             "AccessibilityPruneRedundantInlineText",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityPruneRedundantInlineTextEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityPruneRedundantInlineText);
-}
-
 BASE_FEATURE(kAccessibilityPruneRedundantInlineConnectivity,
              "AccessibilityPruneRedundantInlineConnectivity",
              base::FEATURE_DISABLED_BY_DEFAULT);
