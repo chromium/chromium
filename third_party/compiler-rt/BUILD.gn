@@ -17,15 +17,21 @@ if (is_component_build) {
 }
 
 target(_target_type, "atomic") {
-  if (_target_type == "shared_library") {
-    no_default_deps = true
-  }
-
   sources = [
     "src/lib/builtins/assembly.h",
     "src/lib/builtins/atomic.c",
     "src/lib/builtins/int_endianness.h",
   ]
+
+  if (_target_type == "shared_library") {
+    no_default_deps = true
+    if (is_win) {
+      sources += [ "atomics.def" ]
+    } else {
+      configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
+      configs += [ "//build/config/gcc:symbol_visibility_default" ]
+    }
+  }
 
   configs += [ "//build/config/compiler:no_chromium_code" ]
 
