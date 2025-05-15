@@ -23,6 +23,7 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/scoped_set_task_priority_for_current_thread.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool/pooled_parallel_task_runner.h"
 #include "base/task/thread_pool/pooled_sequenced_task_runner.h"
 #include "base/task/thread_pool/task.h"

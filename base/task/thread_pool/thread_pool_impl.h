@@ -17,7 +17,6 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
-#include "base/task/task_traits.h"
 #include "base/task/thread_pool/delayed_task_manager.h"
 #include "base/task/thread_pool/environment_config.h"
 #include "base/task/thread_pool/pooled_sequenced_task_runner.h"
