@@ -62,6 +62,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
@@ -105,6 +106,7 @@ import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
@@ -225,6 +227,32 @@ public class NewTabPageTest {
         ChromeRenderTestRule.sanitize(view);
         mRenderTestRule.render(view, "focus_fake_box");
         scrimManager.disableAnimationForTesting(false);
+    }
+
+    /**
+     * If this test fails because of new buttons being added to the new tab page toolbar
+     * (immediately adjacent to the real URL bar), ensure those buttons are manually wired for Tab
+     * key navigation following this crbug.com/394169187.
+     */
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.PHONE)
+    @Feature({"NewTabPage"})
+    public void testToolBar_Phone() {
+        ViewGroup toolBar = mActivityTestRule.getActivity().findViewById(R.id.toolbar);
+        int[] toolbarContentIds =
+                new int[] {
+                    R.id.home_button,
+                    R.id.home_page_buttons_stub,
+                    R.id.location_bar,
+                    R.id.toolbar_buttons
+                };
+        for (int i = 0; i < toolbarContentIds.length; i++) {
+            assertEquals(toolbarContentIds[i], toolBar.getChildAt(i).getId());
+        }
+
+        ViewGroup toolBarButtons = (ViewGroup) toolBar.getChildAt(toolbarContentIds.length - 1);
+        assertEquals(R.id.optional_toolbar_button_container, toolBarButtons.getChildAt(0).getId());
     }
 
     @Test
