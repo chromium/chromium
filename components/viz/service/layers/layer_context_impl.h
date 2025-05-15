@@ -47,9 +47,8 @@ class LayerContextImpl : public cc::LayerTreeHostImplClient,
 
   void BeginFrame(const BeginFrameArgs& args);
 
-  void ReturnResources(std::vector<ReturnedResource> resources);
-
-  void DoReturnResources(std::vector<ReturnedResource> resources);
+  // Receive exported resources returned from the frame sink.
+  void ReceiveReturnsFromParent(std::vector<ReturnedResource> resources);
 
  private:
   // cc::LayerTreeHostImplClient:
@@ -124,6 +123,10 @@ class LayerContextImpl : public cc::LayerTreeHostImplClient,
 
   base::expected<void, std::string> DoUpdateDisplayTree(
       mojom::LayerTreeUpdatePtr update);
+
+  // Return any resources pending in |resources_to_return_| to the LayerContext
+  // client, via the frame sink.
+  void DoReturnResources();
 
   const raw_ptr<CompositorFrameSinkSupport> compositor_sink_;
   const std::unique_ptr<cc::AnimationHost> animation_host_{

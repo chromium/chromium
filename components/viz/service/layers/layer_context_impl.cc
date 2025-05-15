@@ -1129,8 +1129,8 @@ LayerContextImpl::LayerContextImpl(CompositorFrameSinkSupport* compositor_sink,
 }
 
 LayerContextImpl::~LayerContextImpl() {
+  DoReturnResources();
   host_impl_->ReleaseLayerTreeFrameSink();
-  DoReturnResources(std::move(resources_to_return_));
 }
 
 void LayerContextImpl::BeginFrame(const BeginFrameArgs& args) {
@@ -1154,16 +1154,17 @@ void LayerContextImpl::BeginFrame(const BeginFrameArgs& args) {
   }
 }
 
-void LayerContextImpl::ReturnResources(
+void LayerContextImpl::ReceiveReturnsFromParent(
     std::vector<ReturnedResource> resources) {
   host_impl_->resource_provider()->ReceiveReturnsFromParent(
       std::move(resources));
-  DoReturnResources(std::move(resources_to_return_));
+  DoReturnResources();
 }
 
-void LayerContextImpl::DoReturnResources(
-    std::vector<ReturnedResource> resources) {
-  compositor_sink_->DoReturnResources(std::move(resources));
+void LayerContextImpl::DoReturnResources() {
+  if (!resources_to_return_.empty()) {
+    compositor_sink_->DoReturnResources(std::move(resources_to_return_));
+  }
 }
 
 void LayerContextImpl::DidLoseLayerTreeFrameSinkOnImplThread() {
@@ -1556,6 +1557,10 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       host_impl_->DidFinishImplFrame(update->begin_frame_args);
     }
   }
+
+  // We may have resources to return after a tree update and draw.
+  DoReturnResources();
+
   return base::ok();
 }
 

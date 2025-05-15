@@ -135,6 +135,10 @@ CompositorFrameSinkSupport::CompositorFrameSinkSupport(
 }
 
 CompositorFrameSinkSupport::~CompositorFrameSinkSupport() {
+  // Shut down the layer context so that it no longer calls into
+  // |this|, before doing other tear down.
+  layer_context_.reset();
+
   // Unregister |this| as a BeginFrameObserver so that the
   // BeginFrameSource does not call into |this| after it's deleted.
   callback_received_begin_frame_ = true;
@@ -460,7 +464,7 @@ void CompositorFrameSinkSupport::ReturnResources(
 
   if (layer_context_) {
     // Resource management is delegated to LayerContext when it's in use.
-    layer_context_->ReturnResources(std::move(resources));
+    layer_context_->ReceiveReturnsFromParent(std::move(resources));
     return;
   }
 
