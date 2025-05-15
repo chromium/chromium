@@ -13276,8 +13276,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "LCPPPrefetchSubresource",
-                        "LCPPPrefetchSubresourceAsync"
+                        "LCPPPrefetchSubresource"
                     ]
                 }
             ]
