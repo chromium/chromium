@@ -46,6 +46,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace enterprise_companion {
@@ -263,9 +264,14 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
         policy::dm_protocol::kGoogleUpdateMachineLevelAppsPolicyType,
         /*settings_entity_id=*/"");
     if (!dm_storage->GetDmToken().empty()) {
-      cloud_policy_client_->SetupRegistration(dm_storage_->GetDmToken(),
-                                              dm_storage_->GetDeviceID(),
-                                              /*user_affiliation_ids=*/{});
+      if (net::HttpUtil::IsValidHeaderValue(dm_storage->GetDmToken())) {
+        cloud_policy_client_->SetupRegistration(dm_storage_->GetDmToken(),
+                                                dm_storage_->GetDeviceID(),
+                                                /*user_affiliation_ids=*/{});
+      } else {
+        VLOG(1) << "The stored DM token is malformed. The device will be "
+                   "considered not registered.";
+      }
     }
     UpdateCachedPolicyInfo();
   }
@@ -289,10 +295,21 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
       return;
     }
 
-    dm_storage_->RemoveAllPolicies();
-    SetPendingCallback(base::BindPostTaskToCurrentDefault(base::BindOnce(
+    // Wrap the callback with event logging to ensure that precondition errors
+    // are logged.
+    callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
         &EnterpriseCompanionEventLogger::LogRegisterPolicyAgentEvent,
-        event_logger, base::Time::Now(), std::move(callback))));
+        event_logger, base::Time::Now(), std::move(callback)));
+
+    if (!net::HttpUtil::IsValidHeaderValue(dm_storage_->GetEnrollmentToken())) {
+      VLOG(1) << "The stored enrollment token is malformed.";
+      std::move(callback).Run(
+          EnterpriseCompanionStatus(ApplicationError::kInvalidEnrollmentToken));
+      return;
+    }
+
+    dm_storage_->RemoveAllPolicies();
+    SetPendingCallback(std::move(callback));
     cloud_policy_client_->RegisterPolicyAgentWithEnrollmentToken(
         dm_storage_->GetEnrollmentToken(), dm_storage_->GetDeviceID(),
         client_data_delegate_);

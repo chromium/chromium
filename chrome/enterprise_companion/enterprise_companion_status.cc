@@ -103,6 +103,8 @@ constexpr std::string ApplicationErrorToString(ApplicationError error) {
       return "COM initialization failed.";
     case ApplicationError::kCloudPolicyClientTimeout:
       return "Cloud Policy Client timed out";
+    case ApplicationError::kInvalidEnrollmentToken:
+      return "The enrollment token is invalid";
   }
 }
 

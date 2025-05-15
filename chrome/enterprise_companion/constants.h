@@ -28,6 +28,8 @@ enum class ApplicationError {
   kCOMInitializationFailed,
   // The CloudPolicyClient timed out.
   kCloudPolicyClientTimeout,
+  // The enrollment token is malformed.
+  kInvalidEnrollmentToken,
 };
 
 inline constexpr int kStatusOk = 0;

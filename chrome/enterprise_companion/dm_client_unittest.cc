@@ -423,6 +423,56 @@ TEST_F(DMClientTest, RegistrationSkippedAlreadyManaged) {
   EXPECT_TRUE(test_event_logger_->policy_fetch_events().empty());
 }
 
+// If a malformed DM token has been persisted to DM storage, DM client should
+// ignore it and attempt to register using the enrollment token.
+TEST_F(DMClientTest, MalformedDMTokenCanReregister) {
+  test_token_service_->StoreEnrollmentToken(kFakeEnrollmentToken);
+  // Tokens which aren't serializable as HTTP header values are invalid.
+  test_token_service_->StoreDmToken("malformed\r\n\0token");
+  EXPECT_CALL(*mock_cloud_policy_client_,
+              RegisterPolicyAgentWithEnrollmentToken(kFakeEnrollmentToken,
+                                                     kFakeDeviceId, _))
+      .WillOnce([&] {
+        mock_cloud_policy_client_->SetDMToken(kFakeDMToken);
+        mock_cloud_policy_client_->NotifyRegistrationStateChanged();
+      });
+
+  base::RunLoop run_loop;
+  dm_client_->RegisterPolicyAgent(
+      test_event_logger_,
+      base::BindLambdaForTesting([&](const EnterpriseCompanionStatus& status) {
+        EXPECT_TRUE(status.ok());
+        test_event_logger_->Flush(run_loop.QuitClosure());
+      }));
+  run_loop.Run();
+
+  EXPECT_EQ(test_token_service_->GetDmToken(), kFakeDMToken);
+  EXPECT_THAT(test_event_logger_->registration_events(),
+              ElementsAre(EnterpriseCompanionStatus::Success()));
+  EXPECT_TRUE(test_event_logger_->policy_fetch_events().empty());
+}
+
+TEST_F(DMClientTest, RegisterDeviceMalformedEnrollmentToken) {
+  // Tokens which aren't serializable as HTTP header values are invalid.
+  test_token_service_->StoreEnrollmentToken("malformed\r\n\0token");
+
+  base::RunLoop run_loop;
+  dm_client_->RegisterPolicyAgent(
+      test_event_logger_,
+      base::BindLambdaForTesting([&](const EnterpriseCompanionStatus& status) {
+        EXPECT_TRUE(status.EqualsApplicationError(
+            ApplicationError::kInvalidEnrollmentToken));
+        test_event_logger_->Flush(run_loop.QuitClosure());
+      }));
+  run_loop.Run();
+
+  EXPECT_TRUE(test_token_service_->GetDmToken().empty());
+  EXPECT_THAT(test_event_logger_->registration_events(),
+              ElementsAre(EnterpriseCompanionStatus(
+                  ApplicationError::kInvalidEnrollmentToken)));
+  EXPECT_TRUE(test_event_logger_->policy_fetch_events().empty());
+}
+
 TEST_F(DMClientTest, PoliciesPersistedThroughSkippedRegistration) {
   EnsureRegistered();
 
