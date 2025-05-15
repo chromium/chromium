@@ -24,6 +24,8 @@ public class ReadAloudUnsupportedException extends ReadAloudException {
                 RejectionReason.CONTENT_TOO_LARGE, RejectionReason.INVALID_URL,
                 RejectionReason.DISALLOWED_FOR_READOUT, RejectionReason.BAD_REQUEST,
         RejectionReason.EXPIRED_CONTENT_VERSION, RejectionReason.UNSUPPORTED_EMAIL_FORMAT,
+                RejectionReason.UNSUPPORTED_TUPLE_DATA_EXTRACTION,
+                RejectionReason.UNSUPPORTED_LATTICE_REVIEW_DATA_EXTRACTION,
                 RejectionReason.DISALLOWED_FOR_TRANSLATION, RejectionReason.COUNT
     })
     // This must be kept in sync with readaloud/enums.xml values
@@ -66,6 +68,10 @@ public class ReadAloudUnsupportedException extends ReadAloudException {
         int EXPIRED_CONTENT_VERSION = 16;
         // We don't support this kind of email.
         int UNSUPPORTED_EMAIL_FORMAT = 17;
+        // There is no Tuple data available for this url.
+        int UNSUPPORTED_TUPLE_DATA_EXTRACTION = 18;
+        // There is no LatticeReview data available for this url.
+        int UNSUPPORTED_LATTICE_REVIEW_DATA_EXTRACTION = 19;
         // The content is not allowed to be translated.
         int DISALLOWED_FOR_TRANSLATION = 20;
         int COUNT = 21;
