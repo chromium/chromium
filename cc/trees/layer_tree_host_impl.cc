@@ -267,7 +267,7 @@ class LayerTreeHostImpl::ImageDecodeCacheHolder {
   void SetShouldAggressivelyFreeResources(bool aggressively_free_resources) {
     if (image_decode_cache_) {
       image_decode_cache_->SetShouldAggressivelyFreeResources(
-          aggressively_free_resources, /*context_lock_acquired=*/false);
+          aggressively_free_resources);
     }
   }
 
@@ -4371,11 +4371,6 @@ void LayerTreeHostImpl::ClearCaches() {
   // comes with an invalidation and the image ids are never reused.
   bool can_clear_decode_policy_tracking = true;
   tile_manager_.ClearCheckerImageTracking(can_clear_decode_policy_tracking);
-  // TODO(crbug.com/40243840): add tracking for which clients have used an image
-  // and remove entries used by only one client when the URL on that client
-  // changes. This should be fixed to correctly clear caches for web contents.
-  // This is only a problem when
-  // LayerTreeSettings::enable_shared_image_cache_for_gpu is true.
   if (GetImageDecodeCache())
     GetImageDecodeCache()->ClearCache();
   image_animation_controller_.set_did_navigate();

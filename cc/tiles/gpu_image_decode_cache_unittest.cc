@@ -2237,8 +2237,7 @@ TEST_P(GpuImageDecodeCacheTest, ShouldAggressivelyFreeResources) {
     EXPECT_GT(cache->GetNumCacheEntriesForTesting(), 0u);
 
     // Tell our cache to aggressively free resources.
-    cache->SetShouldAggressivelyFreeResources(true,
-                                              /*context_lock_acquired=*/false);
+    cache->SetShouldAggressivelyFreeResources(true);
     EXPECT_EQ(0u, cache->GetNumCacheEntriesForTesting());
   }
 
@@ -2259,8 +2258,7 @@ TEST_P(GpuImageDecodeCacheTest, ShouldAggressivelyFreeResources) {
 
   // We now tell the cache to not aggressively free resources. The image may
   // now be cached past its use.
-  cache->SetShouldAggressivelyFreeResources(false,
-                                            /*context_lock_acquired=*/false);
+  cache->SetShouldAggressivelyFreeResources(false);
   {
     ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
         client_id, draw_image, ImageDecodeCache::TracingInfo());

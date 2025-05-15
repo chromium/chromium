@@ -1299,7 +1299,7 @@ GpuImageDecodeCache::~GpuImageDecodeCache() {
 
   // SetShouldAggressivelyFreeResources will zero our limits and free all
   // outstanding image memory.
-  SetShouldAggressivelyFreeResources(true, /*context_lock_acquired=*/false);
+  SetShouldAggressivelyFreeResources(true);
 
   // It is safe to unregister, even if we didn't register in the constructor.
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
@@ -1614,21 +1614,15 @@ void GpuImageDecodeCache::ReduceCacheUsageLocked() NO_THREAD_SAFETY_ANALYSIS {
 }
 
 void GpuImageDecodeCache::SetShouldAggressivelyFreeResources(
-    bool aggressively_free_resources,
-    bool context_lock_acquired) {
+    bool aggressively_free_resources) {
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "GpuImageDecodeCache::SetShouldAggressivelyFreeResources",
                "agressive_free_resources", aggressively_free_resources);
   if (aggressively_free_resources) {
     std::optional<viz::RasterContextProvider::ScopedRasterContextLock>
         context_lock;
-    if (auto* lock = context_->GetLock()) {
-      // There are callers that might have already acquired the lock. Thus,
-      // check if that's the case.
-      if (context_lock_acquired)
-        lock->AssertAcquired();
-      else
-        context_lock.emplace(context_);
+    if (context_->GetLock()) {
+      context_lock.emplace(context_);
     }
 
     base::AutoLock lock(lock_);
