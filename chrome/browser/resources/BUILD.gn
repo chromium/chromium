@@ -21,10 +21,13 @@ group("resources") {
     "segmentation_internals:resources",
   ]
 
+  if (enable_extensions_core) {
+    public_deps += [ ":component_extension_resources" ]
+  }
+
   if (!is_android) {
     public_deps += [
       ":app_icon_resources",
-      ":component_extension_resources",
       ":dev_ui_paks",
       "about_sys:resources",
       "access_code_cast:resources",
@@ -189,7 +192,7 @@ if (is_chromeos && enable_js_type_check) {
   }
 }
 
-if (!is_android) {
+if (enable_extensions_core) {
   grit("component_extension_resources") {
     source = "component_extension_resources.grd"
 
@@ -216,7 +219,9 @@ if (!is_android) {
     ]
     output_dir = "$root_gen_dir/chrome"
   }
+}
 
+if (!is_android) {
   grit("app_icon_resources") {
     source = "app_icon/app_icon_resources.grd"
     defines = chrome_grit_defines

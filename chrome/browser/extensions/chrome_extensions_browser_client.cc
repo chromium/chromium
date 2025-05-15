@@ -31,6 +31,7 @@
 #include "chrome/browser/extensions/api/preference/protected_content_enabled_transformer.h"
 #include "chrome/browser/extensions/api/proxy/proxy_pref_transformer.h"
 #include "chrome/browser/extensions/api/runtime/chrome_runtime_api_delegate.h"
+#include "chrome/browser/extensions/chrome_component_extension_resource_manager.h"
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
@@ -201,7 +202,9 @@ bool RegisterTransformers() {
 }  // namespace
 
 ChromeExtensionsBrowserClient::ChromeExtensionsBrowserClient()
-    : event_router_forwarder_(base::MakeRefCounted<EventRouterForwarder>()) {
+    : resource_manager_(
+          std::make_unique<ChromeComponentExtensionResourceManager>()),
+      event_router_forwarder_(base::MakeRefCounted<EventRouterForwarder>()) {
   AddAPIProvider(std::make_unique<CoreExtensionsBrowserAPIProvider>());
   AddAPIProvider(std::make_unique<ChromeExtensionsBrowserAPIProvider>());
   // This ensures transformers are only registered once. This is required
@@ -479,6 +482,11 @@ std::unique_ptr<RuntimeAPIDelegate>
 ChromeExtensionsBrowserClient::CreateRuntimeAPIDelegate(
     content::BrowserContext* context) const {
   return std::make_unique<ChromeRuntimeAPIDelegate>(context);
+}
+
+const ComponentExtensionResourceManager*
+ChromeExtensionsBrowserClient::GetComponentExtensionResourceManager() {
+  return resource_manager_.get();
 }
 
 void ChromeExtensionsBrowserClient::BroadcastEventToRenderers(

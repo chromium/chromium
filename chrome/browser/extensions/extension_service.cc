@@ -326,13 +326,7 @@ void ExtensionService::Init() {
   DCHECK(!system_->is_ready());  // Can't redo init.
   DCHECK_EQ(registry_->enabled_extensions().size(), 0u);
 
-// TODO(crbug.com/417617863): Skip loading component extensions until the
-// startup crash is fixed on desktop Android (see bug).
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   component_loader_->LoadAll();
-#else
-  LOG(WARNING) << "Skipping component extension load.";
-#endif
   bool load_saved_extensions = true;
   bool load_command_line_extensions =
       extension_registrar_->extensions_enabled();

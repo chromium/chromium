@@ -221,11 +221,6 @@ void ChromeExtensionsBrowserClient::RegisterBrowserInterfaceBindersForFrame(
   PopulateExtensionFrameBinders(binder_map, render_frame_host, extension);
 }
 
-const ComponentExtensionResourceManager*
-ChromeExtensionsBrowserClient::GetComponentExtensionResourceManager() {
-  return nullptr;
-}
-
 void ChromeExtensionsBrowserClient::ReportError(
     content::BrowserContext* context,
     std::unique_ptr<ExtensionError> error) {

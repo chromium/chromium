@@ -4335,7 +4335,6 @@ static_library("browser") {
       "//chrome/browser/metrics/desktop_session_duration",
       "//chrome/browser/new_tab_page/chrome_colors",
       "//chrome/browser/policy:path_parser",
-      "//chrome/browser/resources:component_extension_resources",
       "//chrome/browser/screen_ai:prefs",
       "//chrome/browser/screen_ai:screen_ai_install_state",
       "//chrome/browser/screen_ai:screen_ai_service_router_factory",
@@ -7490,6 +7489,7 @@ static_library("browser") {
     deps += [
       "//chrome/browser/enterprise/incognito",
       "//chrome/browser/extensions/api/browsing_data",
+      "//chrome/browser/resources:component_extension_resources",
 
       # This dependency should be removed when //chrome/browser/notifications
       # is modularized.

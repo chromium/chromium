@@ -372,7 +372,8 @@
         <structure type="chrome_scaled_image" name="IDR_UPLOAD_VIOLATION_DARK" file="common/upload_violation_dark.png" />
       </if>
       <if expr="not _google_chrome">
-        <if expr="not is_android">
+        <if expr="not is_android or is_desktop_android">
+          <!-- Desktop Android supports extensions and the web store. -->
           <structure type="chrome_scaled_image" name="IDR_WEBSTORE_ICON" file="chromium/webstore_icon.png" />
           <structure type="chrome_scaled_image" name="IDR_WEBSTORE_ICON_16" file="chromium/webstore_icon_16.png" />
           <structure type="chrome_scaled_image" name="IDR_WEBSTORE_ICON_24" file="chromium/webstore_icon_24.png" />
@@ -380,11 +381,14 @@
         </if>
       </if>
       <if expr="_google_chrome">
-        <if expr="not is_android">
+        <if expr="not is_android or is_desktop_android">
+          <!-- Desktop Android supports extensions and the web store. -->
           <structure type="chrome_scaled_image" name="IDR_WEBSTORE_ICON" file="google_chrome/webstore_icon.png" />
           <structure type="chrome_scaled_image" name="IDR_WEBSTORE_ICON_16" file="google_chrome/webstore_icon_16.png" />
           <structure type="chrome_scaled_image" name="IDR_WEBSTORE_ICON_24" file="google_chrome/webstore_icon_24.png" />
           <structure type="chrome_scaled_image" name="IDR_WEBSTORE_ICON_32" file="google_chrome/webstore_icon_32.png" />
+        </if>
+        <if expr="not is_android">
           <structure type="chrome_scaled_image" name="IDR_TRANSLATE_TAB_WORDMARK" file="google_chrome/translate_tab_wordmark.png" />
           <structure type="chrome_scaled_image" name="IDR_TAILORED_SECURITY_UNCONSENTED_NOTIFICATION" file="google_chrome/safer_with_google_blue_shield.png" />
         </if>

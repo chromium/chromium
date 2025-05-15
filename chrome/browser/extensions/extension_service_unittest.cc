@@ -4103,9 +4103,6 @@ TEST_F(ExtensionServiceTest, BlockAndUnblockBlocklistedExtension) {
 }
 #endif  // defined(ENABLE_BLOCKLIST_TESTS)
 
-// TODO(crbug.com/417617863): Skip loading component extensions until the
-// startup crash is fixed on desktop Android (see bug).
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests blocking then unblocking enabled component extensions after the service
 // has been initialized.
 TEST_F(ExtensionServiceTest, BlockAndUnblockEnabledComponentExtension) {
@@ -4126,7 +4123,6 @@ TEST_F(ExtensionServiceTest, BlockAndUnblockEnabledComponentExtension) {
   // Component extension should never block.
   AssertExtensionBlocksAndUnblocks(false, good0);
 }
-#endif
 
 // Tests blocking then unblocking a theme after the service has been
 // initialized.
@@ -4209,9 +4205,6 @@ TEST_F(ExtensionServiceTest, BlocklistedByPolicyRemovedIfRunning) {
   EXPECT_EQ(0u, registry()->enabled_extensions().size());
 }
 
-// TODO(crbug.com/417617863): Skip loading component extensions until the
-// startup crash is fixed on desktop Android (see bug).
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that component extensions are not blocklisted by policy.
 TEST_F(ExtensionServiceTest, ComponentExtensionAllowlisted) {
   InitializeEmptyExtensionServiceWithTestingPrefs();
@@ -4293,7 +4286,6 @@ TEST_F(ExtensionServiceTest, ComponentExtensionAllowlistedPermission) {
                   ->active_permissions()
                   .HasAPIPermission(APIPermissionID::kTab));
 }
-#endif
 
 // Tests that policy-installed extensions are not blocklisted by policy.
 TEST_F(ExtensionServiceTest, PolicyInstalledExtensionsAllowlisted) {
@@ -6984,9 +6976,6 @@ TEST_F(ExtensionServiceTest, StorageQuota) {
       loaded_extensions()[2]->url()));
 }
 
-// TODO(crbug.com/417617863): Skip loading component extensions until the
-// startup crash is fixed on desktop Android (see bug).
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests ComponentLoader::Add().
 TEST_F(ExtensionServiceTest, ComponentExtensions) {
   // Component extensions should work even when extensions are disabled.
@@ -7023,7 +7012,6 @@ TEST_F(ExtensionServiceTest, ComponentExtensions) {
   ASSERT_EQ(1u, registry()->enabled_extensions().size());
   EXPECT_EQ(extension_id, (*registry()->enabled_extensions().begin())->id());
 }
-#endif
 
 TEST_F(ExtensionServiceTest, InstallPriorityExternalUpdateUrl) {
   InitializeEmptyExtensionService();
