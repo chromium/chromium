@@ -59,6 +59,7 @@ source_set("impl") {
     deps += [
       "//build:branding_buildflags",
       "//chrome/browser/search_engines",
+      "//chrome/browser/ui/search_engine_choice",
       "//chrome/common:non_code_constants",
       "//components/country_codes",
     ]

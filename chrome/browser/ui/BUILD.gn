@@ -1184,8 +1184,6 @@ static_library("ui") {
       "search/search_ipc_router_policy_impl.h",
       "search/search_tab_helper.cc",
       "search/search_tab_helper.h",
-      "search_engine_choice/search_engine_choice_tab_helper.cc",
-      "search_engine_choice/search_engine_choice_tab_helper.h",
       "shared_highlighting/shared_highlighting_promo.cc",
       "shared_highlighting/shared_highlighting_promo.h",
       "singleton_tabs.cc",
@@ -1684,6 +1682,8 @@ static_library("ui") {
       "//chrome/browser/first_party_sets",
       "//chrome/browser/lifetime:termination_notification",
       "//chrome/browser/privacy_sandbox",
+      "//chrome/browser/ui/search_engine_choice",
+      "//chrome/browser/ui/search_engine_choice:impl",
       "//chrome/browser/ui/webui/access_code_cast",
 
       # TODO(crbug.com/370804668i): Remove the dependency when chrome/browser/serial
@@ -1944,6 +1944,7 @@ static_library("ui") {
       "//chrome/browser/ui/media_router:impl",
       "//chrome/browser/ui/window_sizer:impl",
       "//chrome/browser/ui/webui/settings:impl",
+      "//chrome/browser/ui/search_engine_choice:impl",
       "//chrome/browser/ui/global_media_controls:impl",
       "//chrome/browser/ui/toolbar/cast:impl",
       "//chrome/browser/ui/tabs:impl",
