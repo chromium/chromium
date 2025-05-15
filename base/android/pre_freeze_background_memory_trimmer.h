@@ -200,7 +200,8 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
     void StartInternal(const Location& from_here,
                        TimeDelta delay,
                        OnceClosure task);
-    scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+    const scoped_refptr<base::SequencedTaskRunner> task_runner_;
     base::DelayedTaskHandle GUARDED_BY_CONTEXT(sequence_checker_) task_handle_;
 
     OnceCallback<void(MemoryReductionTaskContext)> task_;
