@@ -5928,7 +5928,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         If you delete it, everyone will immediately lose access to the “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>" tab group, and it will be deleted from all devices.
       </message>
       <message name="IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_KEEP_OR_LEAVE_MESSAGE" desc="Message of the confirmation when a member of a shared tab group is closing the last tab.">
-        Keep this group to add tabs later, or leave it if you no longer want access to it.
+        Keep this group to add tabs later, or leave it if you no longer want access to it
       </message>
       <message name="IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_LEAVE_MESSAGE" desc="Message of the confirmation to leave a shared tab group in the action sheet.">
         You’ll immediately lose access to the “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>" tab group, and it will be deleted from all your devices
@@ -5937,7 +5937,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Leave group?
       </message>
       <message name="IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_STOP_SHARING_MESSAGE" desc="Message of the confirmation to delete a shared tab group in the action sheet.">
-        Everyone will immediately lose access to the “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>" tab group, and all invitation links will be turned off.
+        Everyone will immediately lose access to the “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>" tab group, and all invitation links will be turned off
       </message>
       <message name="IDS_IOS_SHARE_BUTTON_LABEL" desc="Label of a button which will initiate a share flow. [iOS only]">
         Share…
@@ -5952,10 +5952,10 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Google+ post completed.
       </message>
       <message name="IDS_IOS_SHARE_KIT_BLOCK_AND_LEAVE_MESSAGE" desc="The message shown when the user tries to block another user and leave a tab group.">
-        You'll immediately lose access to the “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>" tab group, and <ph name="USER_NAME">$2<ex>John Doe</ex></ph> (<ph name="USER_EMAIL">$3<ex>john.doe@gmail.com</ex></ph>) will no longer be able to interact with you across Google services.
+        You'll immediately lose access to the “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>" tab group, and <ph name="USER_NAME">$2<ex>John Doe</ex></ph> (<ph name="USER_EMAIL">$3<ex>john.doe@gmail.com</ex></ph>) will no longer be able to interact with you across Google services
       </message>
       <message name="IDS_IOS_SHARE_KIT_BLOCK_MESSAGE" desc="The message shown when the user tries to block another user.">
-        <ph name="USER_NAME">$1<ex>John Doe</ex></ph> (<ph name="USER_EMAIL">$2<ex>john.doe@gmail.com</ex></ph>) will immediately lose access to the “<ph name="GROUP_NAME">$3<ex>Vacation</ex></ph>" tab group, and will no longer be able to interact with you across Google services.
+        <ph name="USER_NAME">$1<ex>John Doe</ex></ph> (<ph name="USER_EMAIL">$2<ex>john.doe@gmail.com</ex></ph>) will immediately lose access to the “<ph name="GROUP_NAME">$3<ex>Vacation</ex></ph>" tab group, and will no longer be able to interact with you across Google services
       </message>
       <message name="IDS_IOS_SHARE_KIT_JOIN_ALERT_EXPIRED_ACTION_TITLE" desc="The title of the button in the alert displayed when the shared link has expired.">
         Got it
@@ -6005,7 +6005,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Anyone with the link can edit all tabs.
       </message>
       <message name="IDS_IOS_SHARE_KIT_REMOVE_MESSAGE" desc="The message shown when the user tries to remove another user from a tab group.">
-        <ph name="USER_NAME">$1<ex>John Doe</ex></ph> (<ph name="USER_EMAIL">$2<ex>john.doe@gmail.com</ex></ph>) will immediately lose access to the “<ph name="GROUP_NAME">$3<ex>Vacation</ex></ph>" tab group.
+        <ph name="USER_NAME">$1<ex>John Doe</ex></ph> (<ph name="USER_EMAIL">$2<ex>john.doe@gmail.com</ex></ph>) will immediately lose access to the “<ph name="GROUP_NAME">$3<ex>Vacation</ex></ph>" tab group
       </message>
       <message name="IDS_IOS_SHARE_KIT_SHARE_GROUP_DISCLAIMER" desc="Disclaimer for sharing a tab group.">
         Anyone with the link can edit all tabs, so share wisely. Link expires in 48 hours.
