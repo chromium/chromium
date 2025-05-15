@@ -120,9 +120,14 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
         String getContextMenuTitle();
 
         /**
-         * @return whether the given menu item is supported.
+         * @returns Whether the given menu item is supported.
          */
         boolean isItemSupported(@ContextMenuItemId int menuItemId);
+
+        /**
+         * @returns Whether there exists enough space for pinned shortcut addition.
+         */
+        boolean hasSpaceForPinnedShortcut();
 
         /** Called when a context menu has been created. */
         void onContextMenuCreated();
@@ -163,6 +168,11 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
 
         @Override
         public boolean isItemSupported(@ContextMenuItemId int menuItemId) {
+            return false;
+        }
+
+        @Override
+        public boolean hasSpaceForPinnedShortcut() {
             return false;
         }
 
@@ -381,8 +391,8 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
                 return true;
             case ContextMenuItemId.PIN_THIS_SHORTCUT:
                 {
-                    GURL itemUrl = delegate.getUrl();
-                    return TileUtils.isValidCustomTileUrl(itemUrl);
+                    return delegate.hasSpaceForPinnedShortcut()
+                            && TileUtils.isValidCustomTileUrl(delegate.getUrl());
                 }
             case ContextMenuItemId.EDIT_SHORTCUT: // Fall through.
             case ContextMenuItemId.UNPIN:

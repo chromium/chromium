@@ -15,6 +15,7 @@ import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /** Utility class for {@link Tile}s related queries or operations. */
@@ -66,5 +67,18 @@ public class TileUtils {
         return !GURL.isEmptyOrInvalid(url)
                 && url.getSpec().length() <= SuggestionsConfig.MAX_CUSTOM_TILES_URL_LENGTH
                 && CUSTOM_TILE_SCHEMES.contains(url.getScheme());
+    }
+
+    /**
+     * @return Whether number of Custom Tiles in {@param tiles} is below maximum.
+     */
+    public static boolean customTileCountIsUnderLimit(List<Tile> tiles) {
+        int numCustomTiles = 0;
+        for (Tile tile : tiles) {
+            if (tile.getData().source == TileSource.CUSTOM_LINKS) {
+                ++numCustomTiles;
+            }
+        }
+        return numCustomTiles < SuggestionsConfig.MAX_NUM_CUSTOM_LINKS;
     }
 }

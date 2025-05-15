@@ -267,6 +267,9 @@ public class TileGroup implements MostVisitedSites.Observer {
          * @return Whether the operation successfully ran.
          */
         boolean reorder(SiteSuggestion fromSuggestion, SiteSuggestion toSuggestion);
+
+        /** Returns whether there exists space for new Custom Tiles. */
+        boolean hasSpace();
     }
 
     /**
@@ -330,6 +333,8 @@ public class TileGroup implements MostVisitedSites.Observer {
     private SparseArray<List<Tile>> mTileSections = createEmptyTileData();
 
     private final PendingChanges mPendingChanges = new PendingChanges();
+
+    private boolean mCustomTileCountIsUnderLimit;
 
     private boolean mHasReceivedData;
 
@@ -551,6 +556,8 @@ public class TileGroup implements MostVisitedSites.Observer {
 
         if (!dataChanged) return;
 
+        mCustomTileCountIsUnderLimit = TileUtils.customTileCountIsUnderLimit(personalizedTiles);
+
         mOfflineModelObserver.updateAllSuggestionsOfflineAvailability();
 
         if (countChanged) mObserver.onTileCountChanged();
@@ -706,6 +713,11 @@ public class TileGroup implements MostVisitedSites.Observer {
             return fromTile != null
                     && toTile != null
                     && reorderCustomLinkAndUpdateOnSuccess(fromTile.getUrl(), toTile.getIndex());
+        }
+
+        @Override
+        public boolean hasSpace() {
+            return mCustomTileCountIsUnderLimit;
         }
 
         private boolean addCustomLinkAndUpdateOnSuccess(String name, GURL url) {

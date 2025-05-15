@@ -254,6 +254,11 @@ class TileInteractionDelegateImpl
     }
 
     @Override
+    public boolean hasSpaceForPinnedShortcut() {
+        return mCustomTileModificationDelegate.hasSpace();
+    }
+
+    @Override
     public void onContextMenuCreated() {}
 
     // TileGroup.TileDragHandlerDelegate implementation.

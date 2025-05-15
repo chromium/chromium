@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.SuggestTileTy
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.ImageFetcher;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
-import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig.TileStyle;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
@@ -333,13 +332,7 @@ public class TileRenderer {
             return true;
         }
 
-        int numCustomTiles = 0;
-        for (Tile tile : sectionTiles) {
-            if (tile.getData().source == TileSource.CUSTOM_LINKS) {
-                ++numCustomTiles;
-            }
-        }
-        return numCustomTiles < SuggestionsConfig.MAX_NUM_CUSTOM_LINKS;
+        return TileUtils.customTileCountIsUnderLimit(sectionTiles);
     }
 
     TileView buildAddCustomLinksButton(
