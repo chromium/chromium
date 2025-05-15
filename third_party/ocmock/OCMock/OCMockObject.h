@@ -36,10 +36,12 @@
 
 + (id)mockForClass:(Class)aClass;
 + (id)mockForProtocol:(Protocol *)aProtocol;
++ (id)mockForProtocols:(NSArray<Protocol *>*)aProtocols;
 + (id)partialMockForObject:(NSObject *)anObject;
 
 + (id)niceMockForClass:(Class)aClass;
 + (id)niceMockForProtocol:(Protocol *)aProtocol;
++ (id)niceMockForProtocols:(NSArray<Protocol *> *)aProtocols;
 
 + (id)observerMock __deprecated_msg("Please use XCTNSNotificationExpectation instead.");
 

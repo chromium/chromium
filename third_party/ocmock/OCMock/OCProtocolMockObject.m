@@ -22,20 +22,44 @@
 
 #pragma mark Initialisers, description, accessors, etc.
 
+- (id)initWithProtocols:(NSArray<Protocol *> *)aProtocols
+{
+    if(aProtocols == nil)
+        [NSException raise:NSInvalidArgumentException format:@"Protocols cannot be nil."];
+    if([aProtocols count] == 0)
+        [NSException raise:NSInvalidArgumentException format:@"Protocols cannot be empty."];
+    for (Protocol *protocol in aProtocols) {
+        if(protocol == nil)
+           [NSException raise:NSInvalidArgumentException format:@"Protocol cannot be nil."];
+    }
+
+    [super init];
+    mockedProtocols = aProtocols;
+    return self;
+}
+
 - (id)initWithProtocol:(Protocol *)aProtocol
 {
     if(aProtocol == nil)
         [NSException raise:NSInvalidArgumentException format:@"Protocol cannot be nil."];
 
-    [super init];
-    mockedProtocol = aProtocol;
-    return self;
+    return [self initWithProtocols:@[aProtocol]];
 }
 
 - (NSString *)description
 {
-    const char *name = protocol_getName(mockedProtocol);
-    return [NSString stringWithFormat:@"OCProtocolMockObject(%s)", name];
+    if ([mockedProtocols count] == 1) {
+      const char *name = protocol_getName(mockedProtocols[0]);
+      return [NSString stringWithFormat:@"OCProtocolMockObject(%s)", name];
+    }
+
+    NSMutableString* string = [[NSMutableString alloc] initWithString:@"OCProtoolMockObject(["];
+    for (int i = 0; i < [mockedProtocols count]; i++) {
+        if (i > 0) [string appendString:@", "];
+        [string appendFormat:@"%s", protocol_getName(mockedProtocols[i])];
+    }
+    [string appendString:@"])"];
+    return string;
 }
 
 #pragma mark Proxy API
@@ -45,21 +69,32 @@
     struct { BOOL isRequired; BOOL isInstance; } opts[4] = { {YES, YES}, {NO, YES}, {YES, NO}, {NO, NO} };
     for(int i = 0; i < 4; i++)
     {
+      for (Protocol *mockedProtocol in mockedProtocols) {
         struct objc_method_description methodDescription = protocol_getMethodDescription(mockedProtocol, aSelector, opts[i].isRequired, opts[i].isInstance);
         if(methodDescription.name != NULL)
-            return [NSMethodSignature signatureWithObjCTypes:methodDescription.types];
+          return [NSMethodSignature signatureWithObjCTypes:methodDescription.types];
+      }
     }
     return nil;
 }
 
 - (BOOL)conformsToProtocol:(Protocol *)aProtocol
 {
-    return protocol_conformsToProtocol(mockedProtocol, aProtocol);
+  for (Protocol *mockedProtocol in mockedProtocols) {
+
+    if(protocol_conformsToProtocol(mockedProtocol, aProtocol)) return YES;
+  }
+  return NO;
 }
 
 - (BOOL)respondsToSelector:(SEL)selector
 {
-    return ([self methodSignatureForSelector:selector] != nil);
+  for (Protocol *mockedProtocol in mockedProtocols) {
+    if ([self methodSignatureForSelector:selector] != nil) {
+      return YES;
+    }
+  }
+  return NO;
 }
 
 @end
