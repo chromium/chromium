@@ -352,8 +352,12 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
       worker_context_provider_);
   gpu::raster::RasterInterface* ri = scoped_context.RasterInterface();
   DCHECK(ri);
-  ri->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
-  ri->WaitSyncTokenCHROMIUM(sii_->GenUnverifiedSyncToken().GetConstData());
+  std::unique_ptr<gpu::RasterScopedAccess> dst_ri_access =
+      backing->shared_image()->BeginRasterAccess(ri, sync_token,
+                                                 /*readonly=*/false);
+  std::unique_ptr<gpu::RasterScopedAccess> src_ri_access =
+      staging_buffer->client_shared_image->BeginRasterAccess(
+          ri, sii_->GenUnverifiedSyncToken(), /*readonly=*/true);
 
   // Do not use queries unless COMMANDS_COMPLETED queries are supported, or
   // COMMANDS_ISSUED queries are sufficient.
@@ -410,8 +414,9 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
   // ordering, but there are some paths (e.g.
   // StagingBufferPool::ReduceMemoryUsage) that may destroy the staging buffer
   // without waiting for the query completion.
+  gpu::RasterScopedAccess::EndAccess(std::move(dst_ri_access));
   gpu::SyncToken out_sync_token =
-      viz::ClientResourceProvider::GenerateSyncTokenHelper(ri);
+      gpu::RasterScopedAccess::EndAccess(std::move(src_ri_access));
   staging_buffer->sync_token = out_sync_token;
   return out_sync_token;
 }
