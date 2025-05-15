@@ -716,6 +716,12 @@ tabs::TabCollection* TabAndroid::GetParentCollection(
 }
 
 // TODO(crbug.com/409366905): Finish implementing TabInterface.
+const tabs::TabCollection* TabAndroid::GetParentCollection() const {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+// TODO(crbug.com/409366905): Finish implementing TabInterface.
 void TabAndroid::OnReparented(tabs::TabCollection* parent,
                               base::PassKey<tabs::TabCollection>) {
   NOTIMPLEMENTED();

@@ -243,6 +243,8 @@ class TabAndroid : public tabs::TabInterface,
   std::optional<split_tabs::SplitTabId> GetSplit() const override;
   tabs::TabCollection* GetParentCollection(
       base::PassKey<tabs::TabCollection>) const override;
+  const tabs::TabCollection* GetParentCollection() const override;
+
   void OnReparented(tabs::TabCollection* parent,
                     base::PassKey<tabs::TabCollection>) override;
   void OnAncestorChanged(base::PassKey<tabs::TabCollection>) override;

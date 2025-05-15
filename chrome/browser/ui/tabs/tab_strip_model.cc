@@ -95,6 +95,7 @@
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/split_tab_visual_data.h"
+#include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/webapps/common/web_app_id.h"
@@ -468,7 +469,8 @@ std::unique_ptr<DetachedTabCollection> TabStripModel::DetachTabGroupImpl(
   TabStripModelChange::Remove remove;
 
   // Calculate the next selected index before fixing openers.
-  std::optional<int> next_selected_index = DetermineNewSelectedIndex(group_id);
+  std::optional<int> next_selected_index = DetermineNewSelectedIndex(
+      contents_data_->GetTabGroupCollection(group_id));
 
   std::map<split_tabs::SplitTabId,
            std::vector<std::pair<tabs::TabInterface*, int>>>
@@ -2666,45 +2668,25 @@ bool TabStripModel::ContextMenuCommandToBrowserCommand(int cmd_id,
   return true;
 }
 
-int TabStripModel::GetIndexOfNextWebContentsOpenedBy(const WebContents* opener,
-                                                     int start_index) const {
-  DCHECK(opener);
-  CHECK(ContainsIndex(start_index));
-  const tabs::TabInterface* opener_tab = GetTabForWebContents(opener);
-
-  // Check tabs after start_index first.
-  for (int i = start_index + 1; i < count(); ++i) {
-    if (GetTabModelAtIndex(i)->opener() == opener_tab) {
-      return i;
-    }
-  }
-  // Then check tabs before start_index, iterating backwards.
-  for (int i = start_index - 1; i >= 0; --i) {
-    if (GetTabModelAtIndex(i)->opener() == opener_tab) {
-      return i;
-    }
-  }
-  return kNoTab;
-}
-
 int TabStripModel::GetIndexOfNextWebContentsOpenedBy(
-    const tab_groups::TabGroupId& group_id) const {
-  const gfx::Range tabs_in_group =
-      group_model_->GetTabGroup(group_id)->ListTabs();
-  std::set<tabs::TabInterface*> group_tabs;
+    const gfx::Range& block_tab_range) const {
+  CHECK(ContainsIndex(block_tab_range.start()));
+  CHECK(ContainsIndex(block_tab_range.end() - 1));
 
-  for (size_t i = tabs_in_group.start(); i < tabs_in_group.end(); i++) {
-    group_tabs.insert(GetTabModelAtIndex(i));
+  std::set<tabs::TabInterface*> block_tabs;
+  for (size_t i = block_tab_range.start(); i < block_tab_range.end(); i++) {
+    block_tabs.insert(GetTabModelAtIndex(i));
   }
 
-  for (size_t i = tabs_in_group.end(); i < static_cast<size_t>(count()); i++) {
-    if (group_tabs.find(GetTabModelAtIndex(i)->opener()) != group_tabs.end()) {
+  for (size_t i = block_tab_range.end(); i < static_cast<size_t>(count());
+       i++) {
+    if (block_tabs.find(GetTabModelAtIndex(i)->opener()) != block_tabs.end()) {
       return i;
     }
   }
 
-  for (int i = tabs_in_group.start() - 1; i >= 0; i--) {
-    if (group_tabs.find(GetTabModelAtIndex(i)->opener()) != group_tabs.end()) {
+  for (int i = block_tab_range.start() - 1; i >= 0; i--) {
+    if (block_tabs.find(GetTabModelAtIndex(i)->opener()) != block_tabs.end()) {
       return i;
     }
   }
@@ -2713,31 +2695,34 @@ int TabStripModel::GetIndexOfNextWebContentsOpenedBy(
 }
 
 int TabStripModel::GetIndexOfNextWebContentsOpenedByOpenerOf(
-    const tab_groups::TabGroupId& group_id) const {
-  const gfx::Range tabs_in_group =
-      group_model_->GetTabGroup(group_id)->ListTabs();
-  std::set<tabs::TabInterface*> group_openers;
+    const gfx::Range& block_tab_range) const {
+  CHECK(ContainsIndex(block_tab_range.start()));
+  CHECK(ContainsIndex(block_tab_range.end() - 1));
 
-  for (size_t i = tabs_in_group.start(); i < tabs_in_group.end(); ++i) {
-    if (GetTabModelAtIndex(i)->opener()) {
-      group_openers.insert(GetTabModelAtIndex(i)->opener());
+  std::set<tabs::TabInterface*> block_openers;
+
+  for (size_t i = block_tab_range.start(); i < block_tab_range.end(); ++i) {
+    tabs::TabModel* tab = GetTabModelAtIndex(i);
+    if (tab->opener()) {
+      block_openers.insert(tab->opener());
     }
   }
 
-  if (group_openers.empty()) {
+  if (block_openers.empty()) {
     return kNoTab;
   }
 
-  for (size_t i = tabs_in_group.end(); i < static_cast<size_t>(count()); i++) {
-    if (group_openers.find(GetTabModelAtIndex(i)->opener()) !=
-        group_openers.end()) {
+  for (size_t i = block_tab_range.end(); i < static_cast<size_t>(count());
+       i++) {
+    if (block_openers.find(GetTabModelAtIndex(i)->opener()) !=
+        block_openers.end()) {
       return i;
     }
   }
 
-  for (int i = tabs_in_group.start() - 1; i >= 0; i--) {
-    if (group_openers.find(GetTabModelAtIndex(i)->opener()) !=
-        group_openers.end()) {
+  for (int i = block_tab_range.start() - 1; i >= 0; i--) {
+    if (block_openers.find(GetTabModelAtIndex(i)->opener()) !=
+        block_openers.end()) {
       return i;
     }
   }
@@ -2746,27 +2731,33 @@ int TabStripModel::GetIndexOfNextWebContentsOpenedByOpenerOf(
 }
 
 std::optional<int> TabStripModel::GetNextExpandedActiveTab(
-    int start_index,
-    std::optional<tab_groups::TabGroupId> collapsing_group) const {
-  // Check tabs from the start_index first.
-  for (int i = start_index + 1; i < count(); ++i) {
+    const gfx::Range& block_tab_range) const {
+  // Check tabs from the end of the block.
+  for (int i = block_tab_range.end(); i < count(); ++i) {
     std::optional<tab_groups::TabGroupId> current_group = GetTabGroupForTab(i);
     if (!current_group.has_value() ||
-        (!IsGroupCollapsed(current_group.value()) &&
-         current_group != collapsing_group)) {
+        (!IsGroupCollapsed(current_group.value()))) {
       return i;
     }
   }
   // Then check tabs before start_index, iterating backwards.
-  for (int i = start_index - 1; i >= 0; --i) {
+  for (int i = block_tab_range.start() - 1; i >= 0; --i) {
     std::optional<tab_groups::TabGroupId> current_group = GetTabGroupForTab(i);
     if (!current_group.has_value() ||
-        (!IsGroupCollapsed(current_group.value()) &&
-         current_group != collapsing_group)) {
+        (!IsGroupCollapsed(current_group.value()))) {
       return i;
     }
   }
+
   return std::nullopt;
+}
+
+std::optional<int> TabStripModel::GetNextExpandedActiveTab(
+    tab_groups::TabGroupId collapsing_group) const {
+  CHECK(group_model()->ContainsTabGroup(collapsing_group));
+  gfx::Range group_tab_indices =
+      group_model()->GetTabGroup(collapsing_group)->ListTabs();
+  return GetNextExpandedActiveTab(group_tab_indices);
 }
 
 void TabStripModel::ForgetAllOpeners() {
@@ -3618,7 +3609,8 @@ std::unique_ptr<tabs::TabModel> TabStripModel::RemoveTabFromIndexImpl(
   tabs::TabInterface* tab = GetTabAtIndex(index);
   const std::optional<tab_groups::TabGroupId> old_group = tab->GetGroup();
 
-  std::optional<int> next_selected_index = DetermineNewSelectedIndex(index);
+  std::optional<int> next_selected_index =
+      DetermineNewSelectedIndex(GetTabAtIndex(index));
   const bool removed_tab_is_split = tab->IsSplit();
   if (removed_tab_is_split) {
     RemoveSplitImpl(tab->GetSplit().value(),
@@ -4271,23 +4263,14 @@ std::optional<tab_groups::TabGroupId> TabStripModel::GetGroupToAssign(
 }
 
 int TabStripModel::GetTabIndexAfterClosing(int index,
-                                           int removing_index) const {
-  if (removing_index < index) {
-    index = std::max(0, index - 1);
-  }
-  return index;
-}
+                                           const gfx::Range& block_tabs) const {
+  CHECK(!block_tabs.Contains(gfx::Range(index)));
 
-int TabStripModel::GetTabIndexAfterClosing(
-    int index,
-    const tab_groups::TabGroupId& removed_group_id) const {
-  const gfx::Range tabs_in_group =
-      group_model_->GetTabGroup(removed_group_id)->ListTabs();
+  const int last_tab_in_block = static_cast<int>(block_tabs.end() - 1);
 
-  const int last_tab_in_group = static_cast<int>(tabs_in_group.end() - 1);
-
-  if (index > last_tab_in_group) {
-    index = std::max(0, index - static_cast<int>(tabs_in_group.length()));
+  if (index > last_tab_in_block) {
+    index = index - static_cast<int>(block_tabs.length());
+    CHECK(index >= 0);
   }
 
   return index;
@@ -4416,136 +4399,109 @@ void TabStripModel::GroupCloseStopped(const tab_groups::TabGroupId& group) {
 }
 
 std::optional<int> TabStripModel::DetermineNewSelectedIndex(
-    const tab_groups::TabGroupId& removed_group_id) const {
-  const gfx::Range tabs_in_group =
-      group_model_->GetTabGroup(removed_group_id)->ListTabs();
+    std::variant<tabs::TabInterface*, tabs::TabCollection*> tab_or_collection)
+    const {
+  int start_index;
+  int block_size;
 
-  // First preference is a tab the group opened.
-  int new_selected_index = GetIndexOfNextWebContentsOpenedBy(removed_group_id);
-  if (new_selected_index != TabStripModel::kNoTab &&
-      !IsTabCollapsed(new_selected_index)) {
-    return GetTabIndexAfterClosing(new_selected_index, removed_group_id);
+  if (std::holds_alternative<tabs::TabInterface*>(tab_or_collection)) {
+    if (count() == 1) {
+      return std::nullopt;
+    }
+
+    tabs::TabInterface* tab = std::get<tabs::TabInterface*>(tab_or_collection);
+    start_index = GetIndexOfTab(tab);
+    block_size = 1;
+  } else {
+    tabs::TabCollection* collection =
+        std::get<tabs::TabCollection*>(tab_or_collection);
+
+    if (count() == static_cast<int>(collection->TabCountRecursive())) {
+      return std::nullopt;
+    }
+
+    CHECK(collection && collection->TabCountRecursive() > 0);
+    start_index = GetIndexOfTab(collection->GetTabAtIndexRecursive(0));
+    block_size = collection->TabCountRecursive();
   }
 
-  // Second preference is a tab the group's opener opened.
-  new_selected_index =
-      GetIndexOfNextWebContentsOpenedByOpenerOf(removed_group_id);
+  gfx::Range block_tabs = gfx::Range(start_index, start_index + block_size);
+
+  // First preference is a tab the block opened.
+  int new_selected_index = GetIndexOfNextWebContentsOpenedBy(block_tabs);
+  if (new_selected_index != TabStripModel::kNoTab &&
+      !IsTabCollapsed(new_selected_index)) {
+    return GetTabIndexAfterClosing(new_selected_index, block_tabs);
+  }
+
+  // Second preference is a tab the block's opener opened.
+  new_selected_index = GetIndexOfNextWebContentsOpenedByOpenerOf(block_tabs);
 
   if (new_selected_index != TabStripModel::kNoTab &&
       !IsTabCollapsed(new_selected_index)) {
-    return GetTabIndexAfterClosing(new_selected_index, removed_group_id);
+    return GetTabIndexAfterClosing(new_selected_index, block_tabs);
   }
 
-  // third preference is the group's opener.
-  for (size_t i = tabs_in_group.start(); i < tabs_in_group.end(); ++i) {
+  // Third preference is the block's opener.
+  for (size_t i = block_tabs.start(); i < block_tabs.end(); ++i) {
     tabs::TabInterface* opener = GetTabModelAtIndex(i)->opener();
-    if (opener && opener->GetGroup() != removed_group_id &&
-        !IsTabCollapsed(GetIndexOfTab(opener))) {
-      new_selected_index = GetIndexOfTab(opener);
-      return GetTabIndexAfterClosing(new_selected_index, removed_group_id);
+    std::optional<int> opener_index =
+        opener ? std::make_optional(GetIndexOfTab(opener)) : std::nullopt;
+    if (opener && !block_tabs.Contains(gfx::Range(opener_index.value())) &&
+        !IsTabCollapsed(opener_index.value())) {
+      return GetTabIndexAfterClosing(opener_index.value(), block_tabs);
     }
   }
 
-  // Otherwise, prefer picking the tab after the last tab in the group.
-  const int first_tab_in_group = static_cast<int>(tabs_in_group.start());
-  const int last_tab_in_group = static_cast<int>(tabs_in_group.end() - 1);
-
-  if (last_tab_in_group >= (count() - 1)) {
-    return first_tab_in_group - 1;
+  // Fourth preference is a tab that belongs in the same parent collection as
+  // `tab_or_collection`.
+  const tabs::TabCollection* parent_collection_detached_object = nullptr;
+  if (std::holds_alternative<tabs::TabInterface*>(tab_or_collection)) {
+    tabs::TabInterface* tab = std::get<tabs::TabInterface*>(tab_or_collection);
+    parent_collection_detached_object = tab->GetParentCollection();
+  } else {
+    tabs::TabCollection* collection =
+        std::get<tabs::TabCollection*>(tab_or_collection);
+    parent_collection_detached_object = collection->GetParentCollection();
   }
 
-  return last_tab_in_group + 1 - tabs_in_group.length();
-}
+  // Check if either the right of the block is present in
+  // `parent_collection_range` or the left of the block.
+  if (parent_collection_detached_object->type() ==
+          tabs::TabCollection::Type::GROUP ||
+      parent_collection_detached_object->type() ==
+          tabs::TabCollection::Type::SPLIT) {
+    const int first_tab_index = GetIndexOfTab(
+        parent_collection_detached_object->GetTabAtIndexRecursive(0));
+    const gfx::Range parent_collection_range =
+        gfx::Range(first_tab_index,
+                   first_tab_index +
+                       parent_collection_detached_object->TabCountRecursive());
 
-std::optional<int> TabStripModel::DetermineNewSelectedIndex(
-    int removing_index) const {
-  DCHECK(ContainsIndex(removing_index));
-
-  if (removing_index != active_index()) {
-    return std::nullopt;
-  }
-
-  if (selection_model().size() > 1) {
-    // In the case of split tabs, return the first non-removed tab in the split.
-    if (GetSplitForTab(removing_index).has_value()) {
-      split_tabs::SplitTabId split_id = GetSplitForTab(removing_index).value();
-      for (const ::tabs::TabInterface* split_tab :
-           GetSplitData(split_id)->ListTabs()) {
-        int split_tab_index = GetIndexOfTab(split_tab);
-        if (split_tab_index != removing_index) {
-          return GetTabIndexAfterClosing(split_tab_index, removing_index);
-        }
-      }
-    }
-    return std::nullopt;
-  }
-
-  tabs::TabInterface* tab_to_remove_opener = GetOpenerOfTabAt(removing_index);
-  // First see if the index being removed has any "child" tabs. If it does, we
-  // want to select the first that child opened, not the next tab opened by the
-  // removed tab.
-  tabs::TabInterface* removed_tab = GetTabAtIndex(removing_index);
-  // The parent opener should never be the same as the controller being removed.
-  DCHECK(tab_to_remove_opener != removed_tab);
-  int index = GetIndexOfNextWebContentsOpenedBy(removed_tab->GetContents(),
-                                                removing_index);
-  if (index != TabStripModel::kNoTab && !IsTabCollapsed(index)) {
-    return GetTabIndexAfterClosing(index, removing_index);
-  }
-
-  if (tab_to_remove_opener && tab_to_remove_opener->GetContents()) {
-    // If the tab has an opener, shift selection to the next tab with the same
-    // opener.
-    index = GetIndexOfNextWebContentsOpenedBy(
-        tab_to_remove_opener->GetContents(), removing_index);
-    if (index != TabStripModel::kNoTab && !IsTabCollapsed(index)) {
-      return GetTabIndexAfterClosing(index, removing_index);
+    if (parent_collection_range.end() != block_tabs.end()) {
+      return GetTabIndexAfterClosing(start_index + block_size, block_tabs);
     }
 
-    // If we can't find another tab with the same opener, fall back to the
-    // opener itself.
-    index = GetIndexOfTab(tab_to_remove_opener);
-    if (index != TabStripModel::kNoTab && !IsTabCollapsed(index)) {
-      return GetTabIndexAfterClosing(index, removing_index);
+    if (parent_collection_range.start() != block_tabs.start()) {
+      return GetTabIndexAfterClosing(start_index - 1, block_tabs);
     }
   }
 
-  // If closing a grouped tab, return a tab that is still in the group, if any.
-  const std::optional<tab_groups::TabGroupId> current_group =
-      GetTabGroupForTab(removing_index);
-  if (current_group.has_value()) {
-    // Match the default behavior below: prefer the tab to the right.
-    const std::optional<tab_groups::TabGroupId> right_group =
-        GetTabGroupForTab(removing_index + 1);
-    if (current_group == right_group) {
-      return removing_index;
-    }
-
-    const std::optional<tab_groups::TabGroupId> left_group =
-        GetTabGroupForTab(removing_index - 1);
-    if (current_group == left_group) {
-      return removing_index - 1;
-    }
-  }
-
-  // At this point, the tab detaching is either not inside a group, or the last
-  // tab in the group. If there are any tabs in a not collapsed group,
-  // |GetNextExpandedActiveTab()| will return the index of that tab.
-  std::optional<int> next_available =
-      GetNextExpandedActiveTab(removing_index, std::nullopt);
+  // Try to pick an uncollapsed index.
+  std::optional<int> next_available = GetNextExpandedActiveTab(block_tabs);
   if (next_available.has_value()) {
-    return GetTabIndexAfterClosing(next_available.value(), removing_index);
+    return GetTabIndexAfterClosing(next_available.value(), block_tabs);
   }
 
-  // By default, return the tab on the right, unless this is the last tab.
-  // Reaching this point means there are no other tabs in an uncollapsed group.
-  // The tab at the specified index will become automatically expanded by the
-  // caller.
-  if (removing_index >= (count() - 1)) {
-    return removing_index - 1;
+  // Otherwise, prefer picking the tab after the last tab in the block.
+  const int first_tab_in_block = static_cast<int>(block_tabs.start());
+  const int last_tab_in_block = static_cast<int>(block_tabs.end() - 1);
+
+  if (last_tab_in_block >= (count() - 1)) {
+    return first_tab_in_block - 1;
   }
 
-  return removing_index;
+  return last_tab_in_block + 1 - block_tabs.length();
 }
 
 std::vector<std::pair<tabs::TabInterface*, int>>

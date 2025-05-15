@@ -146,7 +146,7 @@ class TabCollection : public SupportsHandles<TabCollection> {
     return impl_.get();
   }
 
-  Type type() { return type_; }
+  Type type() const { return type_; }
 
   // Total number of tabs the collection contains.
   size_t TabCountRecursive() const { return recursive_tab_count_; }

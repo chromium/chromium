@@ -132,6 +132,10 @@ TabCollection* TabModel::GetParentCollection(
   return parent_collection_;
 }
 
+const TabCollection* TabModel::GetParentCollection() const {
+  return parent_collection_;
+}
+
 void TabModel::OnReparented(TabCollection* parent,
                             base::PassKey<TabCollection> passkey) {
   parent_collection_ = parent;

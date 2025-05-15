@@ -535,7 +535,7 @@ void BrowserTabStripController::ToggleTabGroupCollapsedState(
       // available tabs for the active tab to switch to, a new tab will
       // be created.
       const std::optional<int> next_active =
-          model_->GetNextExpandedActiveTab(active_index, group);
+          model_->GetNextExpandedActiveTab(group);
       if (next_active.has_value()) {
         model_->ActivateTabAt(
             next_active.value(),

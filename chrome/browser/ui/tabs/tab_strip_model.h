@@ -738,26 +738,25 @@ class TabStripModel : public TabGroupController {
   // corresponding browser command exists, false otherwise.
   static bool ContextMenuCommandToBrowserCommand(int cmd_id, int* browser_cmd);
 
-  // Returns the index of the next WebContents in the sequence of WebContentses
-  // spawned by the specified WebContents after |start_index|.
-  int GetIndexOfNextWebContentsOpenedBy(const content::WebContents* opener,
-                                        int start_index) const;
-
+  // Returns the index of the next tab spawned by the specified tabs in
+  // `block_tab_range`.
   int GetIndexOfNextWebContentsOpenedBy(
-      const tab_groups::TabGroupId& group_id) const;
+      const gfx::Range& block_tab_range) const;
 
+  // Returns the index of the next tab spawned by the opener of the specified
+  // tabs in `block_tab_range`.
   int GetIndexOfNextWebContentsOpenedByOpenerOf(
-      const tab_groups::TabGroupId& group_id) const;
+      const gfx::Range& block_tab_range) const;
 
   // Finds the next available tab to switch to as the active tab starting at
-  // |index|. This method will check the indices to the right of |index| before
-  // checking the indices to the left of |index|. |index| cannot be returned.
-  // |collapsing_group| is optional and used in cases where the group is
-  // collapsing but not yet reflected in the model. Returns std::nullopt if
+  // a block of tabs. The methods will check the indices to
+  // the right of the block before checking the indices to the left of the
+  // block. Index within the block cannot be returned. Returns std::nullopt if
   // there are no valid tabs.
   std::optional<int> GetNextExpandedActiveTab(
-      int index,
-      std::optional<tab_groups::TabGroupId> collapsing_group) const;
+      const gfx::Range& block_tab_range) const;
+  std::optional<int> GetNextExpandedActiveTab(
+      tab_groups::TabGroupId collapsing_group) const;
 
   // Forget all opener relationships, to reduce unpredictable tab switching
   // behavior in complex session states.
@@ -1158,14 +1157,10 @@ class TabStripModel : public TabGroupController {
   std::optional<tab_groups::TabGroupId> GetGroupToAssign(int index,
                                                          int to_position);
 
-  // Returns a valid index to be selected after the tab at |removing_index| is
-  // closed. If |index| is after |removing_index|, |index| is adjusted to
-  // reflect the fact that |removing_index| is going away.
-  int GetTabIndexAfterClosing(int index, int removing_index) const;
-
-  int GetTabIndexAfterClosing(
-      int index,
-      const tab_groups::TabGroupId& removed_group_id) const;
+  // Returns a valid index to be selected after the tabs in `block_tabs` are
+  // closed. If index is after the block, index is adjusted to reflect the fact
+  // that the block is going away.
+  int GetTabIndexAfterClosing(int index, const gfx::Range& block_tabs) const;
 
   // Takes the |selection| change and decides whether to forget the openers.
   void OnActiveTabChanged(const TabStripSelectionChange& selection);
@@ -1173,12 +1168,10 @@ class TabStripModel : public TabGroupController {
   // Checks if policy allows a tab to be closed.
   bool PolicyAllowsTabClosing(content::WebContents* contents) const;
 
-  // Determine where to shift selection after a tab is closed.
-  std::optional<int> DetermineNewSelectedIndex(int removed_index) const;
-
-  // Determine where to shift selection after a group is detached.
+  // Determine where to shift selection after a tab or collection is closed.
   std::optional<int> DetermineNewSelectedIndex(
-      const tab_groups::TabGroupId& removed_group_id) const;
+      std::variant<tabs::TabInterface*, tabs::TabCollection*> tab_or_collection)
+      const;
 
   std::vector<std::pair<tabs::TabInterface*, int>> GetTabsAndIndicesInSplit(
       split_tabs::SplitTabId split_id);

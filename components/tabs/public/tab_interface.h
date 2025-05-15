@@ -221,11 +221,11 @@ class TabInterface : public SupportsHandles<TabInterface> {
   // is not part of a split tab.
   virtual std::optional<split_tabs::SplitTabId> GetSplit() const = 0;
 
-  // Returns a pointer to the parent TabCollection. This method is specifically
-  // designed to be accessible only within the collection tree that has the
-  // kTabStripCollectionStorage flag enabled.
+  // Returns a pointer to the parent TabCollection.
   virtual TabCollection* GetParentCollection(
       base::PassKey<TabCollection>) const = 0;
+
+  virtual const TabCollection* GetParentCollection() const = 0;
 
   // Updates the parent collection of the TabModel in response to structural
   // changes such as pinning, grouping, or moving the tab between collections.

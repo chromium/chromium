@@ -90,6 +90,7 @@ class MockTabInterface : public testing::NiceMock<TabInterface> {
               GetParentCollection,
               (base::PassKey<TabCollection>),
               (const override));
+  MOCK_METHOD(const TabCollection*, GetParentCollection, (), (const override));
   MOCK_METHOD(void,
               OnReparented,
               (TabCollection*, base::PassKey<TabCollection>),

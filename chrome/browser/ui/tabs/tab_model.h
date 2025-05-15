@@ -147,6 +147,8 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   std::optional<split_tabs::SplitTabId> GetSplit() const override;
   TabCollection* GetParentCollection(
       base::PassKey<TabCollection>) const override;
+  const TabCollection* GetParentCollection() const override;
+
   void OnReparented(TabCollection* parent,
                     base::PassKey<TabCollection>) override;
   void OnAncestorChanged(base::PassKey<TabCollection>) override;
