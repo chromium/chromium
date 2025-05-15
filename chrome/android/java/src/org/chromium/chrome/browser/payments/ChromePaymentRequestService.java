@@ -14,6 +14,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -71,6 +72,10 @@ import java.util.Map;
 public class ChromePaymentRequestService
         implements BrowserPaymentRequest, PaymentUiService.Delegate {
     private static final String TAG = "ChromePaymentReqServ";
+    private static final String SPC_TRANSACTION_OUTCOME_HISTOGRAM =
+            "SecurePaymentRequest.Transaction.Outcome";
+    private static final String SPC_FALLBACK_OUTCOME_HISTOGRAM =
+            "SecurePaymentRequest.Fallback.Outcome";
 
     // Null-check is necessary because retainers of ChromePaymentRequestService could still
     // reference ChromePaymentRequestService after mPaymentRequestService is set null, e.g.,
@@ -348,6 +353,10 @@ public class ChromePaymentRequestService
 
         Runnable optOutCallback =
                 () -> {
+                    RecordHistogram.recordEnumeratedHistogram(
+                            SPC_FALLBACK_OUTCOME_HISTOGRAM,
+                            SpcResponseStatus.OPT_OUT,
+                            SpcResponseStatus.COUNT);
                     mJourneyLogger.setAborted(AbortReason.USER_OPTED_OUT);
                     disconnectFromClientWithDebugMessage(
                             ErrorStrings.SPC_USER_OPTED_OUT, PaymentErrorReason.USER_OPT_OUT);
@@ -362,6 +371,11 @@ public class ChromePaymentRequestService
 
             Callback<Integer> responseCallback =
                     (responseStatus) -> {
+                        RecordHistogram.recordEnumeratedHistogram(
+                                SPC_FALLBACK_OUTCOME_HISTOGRAM,
+                                responseStatus,
+                                SpcResponseStatus.COUNT);
+
                         switch (responseStatus) {
                             case SpcResponseStatus.ANOTHER_WAY:
                                 mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
@@ -406,6 +420,10 @@ public class ChromePaymentRequestService
                     SecurePaymentConfirmationNoMatchingCredController.create(mWebContents);
             Runnable continueCallback =
                     () -> {
+                        RecordHistogram.recordEnumeratedHistogram(
+                                SPC_FALLBACK_OUTCOME_HISTOGRAM,
+                                SpcResponseStatus.ANOTHER_WAY,
+                                SpcResponseStatus.COUNT);
                         mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
                         disconnectFromClientWithDebugMessage(
                                 ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
@@ -436,6 +454,11 @@ public class ChromePaymentRequestService
             assert spcMethodData != null;
             Callback<Integer> responseCallback =
                     (responseStatus) -> {
+                        RecordHistogram.recordEnumeratedHistogram(
+                                SPC_TRANSACTION_OUTCOME_HISTOGRAM,
+                                responseStatus,
+                                SpcResponseStatus.COUNT);
+
                         switch (responseStatus) {
                             case SpcResponseStatus.ACCEPT:
                                 onSecurePaymentConfirmationUiAccepted(getSelectedPaymentApp());
@@ -464,6 +487,10 @@ public class ChromePaymentRequestService
 
             Runnable optOutCallback =
                     () -> {
+                        RecordHistogram.recordEnumeratedHistogram(
+                                SPC_TRANSACTION_OUTCOME_HISTOGRAM,
+                                SpcResponseStatus.OPT_OUT,
+                                SpcResponseStatus.COUNT);
                         mJourneyLogger.setAborted(AbortReason.USER_OPTED_OUT);
                         disconnectFromClientWithDebugMessage(
                                 ErrorStrings.SPC_USER_OPTED_OUT, PaymentErrorReason.USER_OPT_OUT);

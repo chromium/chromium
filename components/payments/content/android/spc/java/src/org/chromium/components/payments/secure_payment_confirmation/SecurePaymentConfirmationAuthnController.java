@@ -58,11 +58,13 @@ import java.util.Locale;
  */
 @NullMarked
 public class SecurePaymentConfirmationAuthnController {
+    // LINT.IfChange(SecurePaymentRequestOutcome)
     @IntDef({
         SpcResponseStatus.UNKNOWN,
         SpcResponseStatus.ACCEPT,
         SpcResponseStatus.ANOTHER_WAY,
-        SpcResponseStatus.CANCEL
+        SpcResponseStatus.CANCEL,
+        SpcResponseStatus.OPT_OUT
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface SpcResponseStatus {
@@ -71,7 +73,10 @@ public class SecurePaymentConfirmationAuthnController {
         int ANOTHER_WAY = 2;
         int CANCEL = 3;
         int OPT_OUT = 4;
+        int COUNT = 5;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/payment/enums.xml:SecurePaymentRequestOutcome)
 
     private final WebContents mWebContents;
     private @Nullable Runnable mHider;

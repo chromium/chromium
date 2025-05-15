@@ -276,6 +276,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SecurePaymentRequest.Fallback.Outcome"
+    enum="SecurePaymentRequestOutcome" expires_after="2025-12-31">
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    The outcome of showing the SecurePaymentRequest &quot;Fallback&quot; UX and
+    how the user interacts with it.
+
+    Recorded when the SecurePaymentRequest fallback dialog is closed.
+
+    Note that this is only for the SPC fallback dialog (when matching
+    credentials are not found) and does not include the SPC transaction dialog
+    or the OS-level web authentication dialog.
+  </summary>
+</histogram>
+
+<histogram name="SecurePaymentRequest.Transaction.Outcome"
+    enum="SecurePaymentRequestOutcome" expires_after="2025-12-31">
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    The outcome of showing the SecurePaymentRequest &quot;Transaction&quot; UX
+    and how the user interacts with it.
+
+    Recorded when the SecurePaymentRequest transaction dialog is closed.
+
+    Note that this is only for the SPC transaction dialog and does not include
+    the OS-level web authentication dialog that comes after this dialog or the
+    fallback dialog when matching credentials are not found.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
