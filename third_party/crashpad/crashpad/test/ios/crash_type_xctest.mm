@@ -159,12 +159,19 @@ bool HasMacOSBrokeDYLDTaskInfo() {
 
 - (void)testTrap {
   [rootObject_ crashTrap];
+#if !BUILDFLAG(IS_IOS_TVOS)
 #if defined(ARCH_CPU_X86_64)
   [self verifyCrashReportException:EXC_BAD_INSTRUCTION];
 #elif defined(ARCH_CPU_ARM64)
   [self verifyCrashReportException:EXC_BREAKPOINT];
 #else
 #error Port to your CPU architecture
+#endif
+#else  // !BUILDFLAG(IS_IOS_TVOS)
+  [self verifyCrashReportException:EXC_SOFT_SIGNAL];
+  NSNumber* report_exception;
+  XCTAssertTrue([rootObject_ pendingReportExceptionInfo:&report_exception]);
+  XCTAssertEqual(report_exception.intValue, SIGTRAP);
 #endif
 }
 
@@ -178,7 +185,14 @@ bool HasMacOSBrokeDYLDTaskInfo() {
 
 - (void)testBadAccess {
   [rootObject_ crashBadAccess];
+#if !BUILDFLAG(IS_IOS_TVOS)
   [self verifyCrashReportException:EXC_BAD_ACCESS];
+#else
+  [self verifyCrashReportException:EXC_SOFT_SIGNAL];
+  NSNumber* report_exception;
+  XCTAssertTrue([rootObject_ pendingReportExceptionInfo:&report_exception]);
+  XCTAssertEqual(report_exception.intValue, SIGSEGV);
+#endif
 }
 
 - (void)testException {
@@ -250,7 +264,14 @@ bool HasMacOSBrokeDYLDTaskInfo() {
 
 - (void)testCatchUIGestureEnvironmentNSException {
   // Tap the button with the string UIGestureEnvironmentException.
+#if !BUILDFLAG(IS_IOS_TVOS)
   [app_.buttons[@"UIGestureEnvironmentException"] tap];
+#else
+  // tvOS does not have [XCUIElement tap]. This version assumes there is just
+  // one big button with "UIGestureEnvironmentException" as title, so we can
+  // just press Select on the remote to activate it.
+  [XCUIRemote.sharedRemote pressButton:XCUIRemoteButtonSelect];
+#endif
   [self verifyCrashReportException:crashpad::kMachExceptionFromNSException];
   NSDictionary* dict = [rootObject_ getAnnotations];
   XCTAssertTrue([[dict[@"objects"][0] valueForKeyPath:@"exceptionReason"]
@@ -280,10 +301,21 @@ bool HasMacOSBrokeDYLDTaskInfo() {
       isEqualToString:@"NSGenericException"]);
 }
 
+// This test cannot run correctly on tvOS: it is impossible to catch this stack
+// overflow as a Mach exception (like we do on iOS), and sigaltstack() is also
+// forbidden so we cannot detect it with POSIX signals either.
+// Per xnu-11215.81.4/bsd/uxkern/ux_exception.c's handle_ux_exception(), when a
+// stack overflow is detected but no alternate stack is specified, the kernel
+// will reset SIGSEGV to SIG_DFL before delivering the signal, so we are never
+// able to capture this crash. Even if we do pass SA_ONSTACK to sigaction(), we
+// will just crash a bit later, as we are still using the same stack that has
+// already overflown.
+#if !BUILDFLAG(IS_IOS_TVOS)
 - (void)testRecursion {
   [rootObject_ crashRecursion];
   [self verifyCrashReportException:EXC_BAD_ACCESS];
 }
+#endif
 
 - (void)testClientAnnotations {
   [rootObject_ crashKillAbort];

@@ -19,7 +19,7 @@ if (crashpad_is_in_chromium) {
   import("//build/config/sanitizers/sanitizers.gni")
 }
 
-if (crashpad_is_apple) {
+if (crashpad_is_apple && !crashpad_is_tvos) {
   if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
     import("//build/config/sysroot.gni")
   } else {
@@ -334,29 +334,37 @@ crashpad_static_library("util") {
       "mac/sysctl.h",
       "mac/xattr.cc",
       "mac/xattr.h",
-      "mach/composite_mach_message_server.cc",
-      "mach/composite_mach_message_server.h",
-      "mach/exc_client_variants.cc",
-      "mach/exc_client_variants.h",
-      "mach/exc_server_variants.cc",
-      "mach/exc_server_variants.h",
-      "mach/exception_behaviors.cc",
-      "mach/exception_behaviors.h",
-      "mach/exception_ports.cc",
-      "mach/exception_ports.h",
       "mach/mach_extensions.cc",
       "mach/mach_extensions.h",
-      "mach/mach_message.cc",
-      "mach/mach_message.h",
-      "mach/mach_message_server.cc",
-      "mach/mach_message_server.h",
-      "mach/symbolic_constants_mach.cc",
-      "mach/symbolic_constants_mach.h",
       "misc/capture_context_mac.S",
       "misc/clock_mac.cc",
       "misc/paths_mac.cc",
       "synchronization/semaphore_mac.cc",
     ]
+
+    # Exclude files related to Mach exceptions when building for tvOS. Mach
+    # messaging APIs are not available to third-party applications on tvOS so
+    # crashes are handled via POSIX signals.
+    if (!crashpad_is_tvos) {
+      sources += [
+        "mach/composite_mach_message_server.cc",
+        "mach/composite_mach_message_server.h",
+        "mach/exc_client_variants.cc",
+        "mach/exc_client_variants.h",
+        "mach/exc_server_variants.cc",
+        "mach/exc_server_variants.h",
+        "mach/exception_behaviors.cc",
+        "mach/exception_behaviors.h",
+        "mach/exception_ports.cc",
+        "mach/exception_ports.h",
+        "mach/mach_message.cc",
+        "mach/mach_message.h",
+        "mach/mach_message_server.cc",
+        "mach/mach_message_server.h",
+        "mach/symbolic_constants_mach.cc",
+        "mach/symbolic_constants_mach.h",
+      ]
+    }
   }
 
   if (crashpad_is_mac && !crashpad_is_in_fuchsia) {
@@ -593,10 +601,11 @@ crashpad_static_library("util") {
 
   if (crashpad_is_apple) {
     include_dirs += [ "$root_gen_dir" ]
-    deps += [
-      ":mig_output",
-      "../build:apple_enable_arc",
-    ]
+    deps += [ "../build:apple_enable_arc" ]
+
+    if (!crashpad_is_tvos) {
+      deps += [ ":mig_output" ]
+    }
   }
 
   if (crashpad_is_mac && !crashpad_is_in_fuchsia) {
@@ -823,14 +832,19 @@ source_set("util_test") {
   if (crashpad_is_apple) {
     sources += [
       "mac/xattr_test.cc",
-      "mach/composite_mach_message_server_test.cc",
-      "mach/exc_server_variants_test.cc",
-      "mach/exception_behaviors_test.cc",
-      "mach/mach_extensions_test.cc",
-      "mach/mach_message_test.cc",
-      "mach/symbolic_constants_mach_test.cc",
       "misc/capture_context_test_util_mac.cc",
     ]
+
+    if (!crashpad_is_tvos) {
+      sources += [
+        "mach/composite_mach_message_server_test.cc",
+        "mach/exc_server_variants_test.cc",
+        "mach/exception_behaviors_test.cc",
+        "mach/mach_extensions_test.cc",
+        "mach/mach_message_test.cc",
+        "mach/symbolic_constants_mach_test.cc",
+      ]
+    }
   }
 
   if (crashpad_is_mac) {

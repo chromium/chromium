@@ -32,6 +32,8 @@ crashpad_static_library("client") {
 
   if (crashpad_is_ios) {
     sources += [
+      "crash_handler_base_ios.cc",
+      "crash_handler_base_ios.h",
       "crashpad_client_ios.cc",
       "ios_handler/exception_processor.h",
       "ios_handler/exception_processor.mm",
@@ -44,6 +46,18 @@ crashpad_static_library("client") {
       "simulate_crash_ios.h",
       "upload_behavior_ios.h",
     ]
+
+    if (!crashpad_is_tvos) {
+      sources += [
+        "crash_handler_ios.cc",
+        "crash_handler_ios.h",
+      ]
+    } else {
+      sources += [
+        "crash_handler_tvos.cc",
+        "crash_handler_tvos.h",
+      ]
+    }
   }
 
   if (crashpad_is_linux || crashpad_is_android) {
