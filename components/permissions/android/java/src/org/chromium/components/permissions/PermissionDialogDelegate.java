@@ -14,6 +14,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
@@ -116,6 +117,18 @@ public class PermissionDialogDelegate {
         return mEmbeddedPromptVariant;
     }
 
+    public List<CharSequence> getRadioButtons() {
+        List<CharSequence> radioButtons = new ArrayList<>();
+        if (PermissionsAndroidFeatureMap.isEnabled(
+                        PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
+                && mContentSettingsTypes[0] == ContentSettingsType.GEOLOCATION) {
+            // TODO(crbug.com/417684493) Get buttons and selection from native delegate.
+            radioButtons.add("approximate");
+            radioButtons.add("precise");
+        }
+        return radioButtons;
+    }
+
     public void setEmbeddedPromptVariant(@EmbeddedPromptVariant int variant) {
         mEmbeddedPromptVariant = variant;
     }
@@ -157,6 +170,10 @@ public class PermissionDialogDelegate {
         PermissionDialogDelegateJni.get()
                 .systemPermissionResolved(
                         mNativeDelegatePtr, PermissionDialogDelegate.this, accepted);
+    }
+
+    public void onRadioButtonSelectionChanged(Integer selectedIndex) {
+        // TODO(crbug.com/417684493): Process radio button changes.
     }
 
     public void destroy() {

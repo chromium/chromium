@@ -13,6 +13,8 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.core.content.res.ResourcesCompat;
@@ -27,6 +29,9 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Robolectric tests for {@link PermissionOneTimeDialogCustomViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -109,5 +114,34 @@ public class PermissionOneTimeDialogCustomViewBinderTest {
 
         ImageView iconView = mCustomView.findViewById(R.id.icon);
         assertNull(iconView.getImageTintList());
+    }
+
+    @Test
+    @SmallTest
+    public void testRadioButtons() {
+        mPropertyModel.set(
+                PermissionDialogCustomViewProperties.RADIO_BUTTONS, List.of("button1", "button2"));
+
+        RadioGroup radioButtons = mCustomView.findViewById(R.id.radio_buttons);
+        assertEquals(2, radioButtons.getChildCount());
+        assertEquals("button1", ((RadioButton) radioButtons.getChildAt(0)).getText());
+        assertEquals("button2", ((RadioButton) radioButtons.getChildAt(1)).getText());
+    }
+
+    @Test
+    @SmallTest
+    public void testRadioButtonCallback() {
+        mPropertyModel.set(
+                PermissionDialogCustomViewProperties.RADIO_BUTTONS, List.of("button1", "button2"));
+        AtomicInteger selectedIndex = new AtomicInteger();
+        mPropertyModel.set(
+                PermissionDialogCustomViewProperties.RADIO_BUTTON_CALLBACK, selectedIndex::set);
+
+        RadioGroup radioButtons = mCustomView.findViewById(R.id.radio_buttons);
+        radioButtons.getChildAt(0).performClick();
+        assertEquals(0, selectedIndex.get());
+
+        radioButtons.getChildAt(1).performClick();
+        assertEquals(1, selectedIndex.get());
     }
 }

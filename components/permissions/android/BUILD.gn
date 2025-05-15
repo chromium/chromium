@@ -231,6 +231,7 @@ robolectric_library("components_permissions_junit_tests") {
     ":java_resources",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:callback_java",
     "//components/browser_ui/theme/android:java_resources",
     "//components/browser_ui/widget/android:java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
