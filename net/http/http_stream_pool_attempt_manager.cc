@@ -220,7 +220,7 @@ HttpStreamPool::AttemptManager::~AttemptManager() {
 }
 
 void HttpStreamPool::AttemptManager::StartJob(Job* job) {
-  CHECK(!is_failing_);
+  CHECK(availability_state_ == AvailabilityState::kAvailable);
 
   TRACE_EVENT_INSTANT("net.stream", "AttemptManager::StartJob", track_,
                       NetLogWithSourceToFlow(job->request_net_log()));
@@ -297,7 +297,7 @@ void HttpStreamPool::AttemptManager::StartJob(Job* job) {
 }
 
 void HttpStreamPool::AttemptManager::Preconnect(Job* job) {
-  CHECK(!is_failing_);
+  CHECK(availability_state_ == AvailabilityState::kAvailable);
 
   TRACE_EVENT_INSTANT("net.stream", "AttemptManager::Preconnect", track_,
                       NetLogWithSourceToFlow(job->request_net_log()));
@@ -468,7 +468,7 @@ HttpStreamPool::AttemptManager::GetSSLConfig(const IPEndPoint& ip_endpoint) {
 }
 
 void HttpStreamPool::AttemptManager::ProcessPendingJob() {
-  if (is_failing_) {
+  if (is_shutting_down()) {
     return;
   }
 
@@ -550,7 +550,6 @@ void HttpStreamPool::AttemptManager::OnJobComplete(Job* job) {
 }
 
 void HttpStreamPool::AttemptManager::CancelJobs(int error) {
-  is_canceling_jobs_ = true;
   HandleFinalError(error);
 }
 
@@ -671,7 +670,7 @@ RequestPriority HttpStreamPool::AttemptManager::GetPriority() const {
 }
 
 bool HttpStreamPool::AttemptManager::IsStalledByPoolLimit() {
-  if (is_failing_) {
+  if (is_shutting_down()) {
     return false;
   }
 
@@ -779,7 +778,7 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetInfoAsValue() const {
   dict.Set("tcp_based_attempt_count", static_cast<int>(TcpBasedAttemptCount()));
   dict.Set("slow_tcp_based_attempt_count",
            static_cast<int>(slow_tcp_based_attempt_count_));
-  dict.Set("is_failing", is_failing_);
+  dict.Set("availability_state", static_cast<int>(availability_state_));
   if (final_error_to_notify_jobs_.has_value()) {
     dict.Set("final_error_to_notify_job", *final_error_to_notify_jobs_);
   }
@@ -902,7 +901,7 @@ void HttpStreamPool::AttemptManager::
 }
 
 void HttpStreamPool::AttemptManager::ProcessServiceEndpointChanges() {
-  CHECK(!is_failing_);
+  CHECK(availability_state_ == AvailabilityState::kAvailable);
   CHECK(service_endpoint_request_);
 
   // The order of the following checks is important, see the following comments.
@@ -1050,7 +1049,7 @@ void HttpStreamPool::AttemptManager::MaybeNotifySSLConfigReady() {
 }
 
 void HttpStreamPool::AttemptManager::MaybeAttemptQuic() {
-  if (is_failing_ || !CanUseQuic() || quic_attempt_result_.has_value()) {
+  if (is_shutting_down() || !CanUseQuic() || quic_attempt_result_.has_value()) {
     return;
   }
 
@@ -1082,7 +1081,7 @@ void HttpStreamPool::AttemptManager::MaybeAttemptQuic() {
 void HttpStreamPool::AttemptManager::MaybeAttemptTcpBased(
     std::optional<IPEndPoint> exclude_ip_endpoint,
     std::optional<size_t> max_attempts) {
-  if (is_failing_) {
+  if (is_shutting_down()) {
     return;
   }
 
@@ -1416,13 +1415,13 @@ HttpStreamPool::AttemptManager::GetQuicEndpointToAttempt() {
 void HttpStreamPool::AttemptManager::HandleFinalError(int error) {
   // `this` may already be failing, e.g. IP address change happens while failing
   // for a different reason.
-  if (is_failing_) {
+  if (availability_state_ == AvailabilityState::kFailing) {
     return;
   }
 
   CHECK(!final_error_to_notify_jobs_.has_value());
   final_error_to_notify_jobs_ = error;
-  is_failing_ = true;
+  availability_state_ = AvailabilityState::kFailing;
   service_endpoint_request_.reset();
 
   net_log_.AddEvent(
@@ -1448,10 +1447,6 @@ void HttpStreamPool::AttemptManager::HandleFinalError(int error) {
 
 HttpStreamPool::AttemptManager::FailureKind
 HttpStreamPool::AttemptManager::DetermineFailureKind() {
-  if (is_canceling_jobs_) {
-    return FailureKind::kStreamFailed;
-  }
-
   if (IsCertificateError(final_error_to_notify_jobs())) {
     return FailureKind::kCertifcateError;
   }
@@ -1464,7 +1459,7 @@ HttpStreamPool::AttemptManager::DetermineFailureKind() {
 }
 
 void HttpStreamPool::AttemptManager::NotifyJobOfFailure() {
-  CHECK(is_failing_);
+  CHECK_EQ(availability_state_, AvailabilityState::kFailing);
 
   const FailureKind kind = DetermineFailureKind();
   base::WeakPtr<AttemptManager> weak_this = weak_ptr_factory_.GetWeakPtr();
@@ -1603,10 +1598,20 @@ bool HttpStreamPool::AttemptManager::HasAvailableSpdySession() const {
       spdy_session_key(), IsIpBasedPoolingEnabled(), /*is_websocket=*/false);
 }
 
+void HttpStreamPool::AttemptManager::StartDraining() {
+  CHECK_EQ(availability_state_, AvailabilityState::kAvailable);
+  CHECK(jobs_.empty());
+  CHECK(preconnect_jobs_.empty());
+  availability_state_ = AvailabilityState::kDraining;
+  service_endpoint_request_.reset();
+  // TODO(crbug.com/414173943): Cancel TcpBasedAttempts and QuicAttempt if
+  // exists.
+  group_->OnAttemptManagerShuttingDown(this);
+}
+
 void HttpStreamPool::AttemptManager::MaybeCreateSpdyStreamAndNotify(
     base::WeakPtr<SpdySession> spdy_session) {
-  CHECK(!is_canceling_jobs_);
-  CHECK(!is_failing_);
+  CHECK(availability_state_ == AvailabilityState::kAvailable);
   CHECK(spdy_session);
   CHECK(spdy_session->IsAvailable());
 
@@ -1638,8 +1643,7 @@ void HttpStreamPool::AttemptManager::MaybeCreateSpdyStreamAndNotify(
 
 void HttpStreamPool::AttemptManager::MaybeCreateQuicStreamAndNotify(
     QuicChromiumClientSession* quic_session) {
-  CHECK(!is_canceling_jobs_);
-  CHECK(!is_failing_);
+  CHECK(availability_state_ == AvailabilityState::kAvailable);
   CHECK(quic_session);
 
   if (jobs_.empty()) {
@@ -1665,6 +1669,11 @@ void HttpStreamPool::AttemptManager::MaybeCreateQuicStreamAndNotify(
     CHECK(weak_this);
   }
   CHECK(jobs_.empty());
+  // TODO(crbug.com/414173943): Move this StartDraining() call somewhere else
+  // so that `this` enters the draining state when all jobs are notified. We
+  // only start draining here tentatively as we need to update unittests first
+  // to support other paths like SPDY session ready.
+  StartDraining();
 }
 
 void HttpStreamPool::AttemptManager::NotifyStreamReady(
@@ -1682,7 +1691,7 @@ void HttpStreamPool::AttemptManager::HandleSpdySessionReady(
     base::WeakPtr<SpdySession> spdy_session,
     StreamSocketCloseReason refresh_group_reason) {
   CHECK(!group_->force_quic());
-  CHECK(!is_failing_);
+  CHECK(availability_state_ == AvailabilityState::kAvailable);
   CHECK(spdy_session);
   CHECK(spdy_session->IsAvailable());
 
@@ -1696,7 +1705,7 @@ void HttpStreamPool::AttemptManager::HandleSpdySessionReady(
 void HttpStreamPool::AttemptManager::HandleQuicSessionReady(
     QuicChromiumClientSession* quic_session,
     StreamSocketCloseReason refresh_group_reason) {
-  CHECK(!is_failing_);
+  CHECK(availability_state_ == AvailabilityState::kAvailable);
   CHECK(!quic_attempt_);
   CHECK(quic_session);
   // TODO(crbug.com/415488524): Change to DCHECK once we confirm the bug is
@@ -1884,7 +1893,7 @@ void HttpStreamPool::AttemptManager::HandleTcpBasedAttemptFailure(
   // the active stream count is up-to-date.
   ProcessPreconnectsAfterAttemptComplete(rv, group_->ActiveStreamSocketCount());
 
-  if (is_failing_) {
+  if (is_shutting_down()) {
     // `this` has already failed and is notifying jobs to the failure.
     return;
   }

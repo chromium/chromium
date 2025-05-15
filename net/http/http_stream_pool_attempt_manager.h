@@ -110,7 +110,9 @@ class HttpStreamPool::AttemptManager
 
   Group* group() { return group_; }
 
-  bool is_failing() const { return is_failing_; }
+  bool is_shutting_down() const {
+    return availability_state_ != AvailabilityState::kAvailable;
+  }
 
   int final_error_to_notify_jobs() const;
 
@@ -206,8 +208,6 @@ class HttpStreamPool::AttemptManager
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  void SetIsFailingForTest(bool is_failing) { is_failing_ = is_failing; }
-
   QuicAttempt* quic_attempt_for_testing() const { return quic_attempt_.get(); }
 
   IPEndPointStateMap& ip_endpoint_states_for_testing() {
@@ -222,6 +222,17 @@ class HttpStreamPool::AttemptManager
  private:
   FRIEND_TEST_ALL_PREFIXES(HttpStreamPoolAttemptManagerTest,
                            GetIPEndPointToAttempt);
+
+  // Represents the availability of this instance. If not kAvailable, `this`
+  // can't handle new Jobs and this should not have in-flight attempts.
+  enum class AvailabilityState {
+    // Can handle new Jobs and make connection attempts.
+    kAvailable = 0,
+    // Is in preparation of a successful completion.
+    kDraining = 1,
+    // Is handling a fatal error.
+    kFailing = 2,
+  };
 
   // Represents the initial attempt state of this manager.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -450,6 +461,8 @@ class HttpStreamPool::AttemptManager
 
   bool HasAvailableSpdySession() const;
 
+  void StartDraining();
+
   void MaybeCreateSpdyStreamAndNotify(base::WeakPtr<SpdySession> spdy_session);
 
   void MaybeCreateQuicStreamAndNotify(QuicChromiumClientSession* quic_session);
@@ -567,13 +580,7 @@ class HttpStreamPool::AttemptManager
   base::TimeTicks dns_resolution_start_time_;
   base::TimeTicks dns_resolution_end_time_;
 
-  // Set to true when `this` cannot handle further jobs. Used to ensure that
-  // `this` doesn't accept further jobs while notifying the failure to the
-  // existing jobs.
-  bool is_failing_ = false;
-
-  // Set to true when `CancelJobs()` is called.
-  bool is_canceling_jobs_ = false;
+  AvailabilityState availability_state_ = AvailabilityState::kAvailable;
 
   NetErrorDetails net_error_details_;
   ResolveErrorInfo resolve_error_info_;

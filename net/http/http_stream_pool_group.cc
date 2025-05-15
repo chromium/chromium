@@ -362,13 +362,6 @@ void HttpStreamPool::Group::CleanupTimedoutIdleStreamSocketsForTesting() {
   CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly, "For testing");
 }
 
-bool HttpStreamPool::Group::IsFailing() const {
-  // If we don't have an AttemptManager the group is not considered as failing
-  // because we destroy an AttemptManager after all in-flight attempts are
-  // completed (There are only handed out streams and/or idle streams).
-  return attempt_manager_ && attempt_manager_->is_failing();
-}
-
 void HttpStreamPool::Group::CleanupIdleStreamSockets(
     CleanupMode mode,
     std::string_view net_log_close_reason_utf8) {

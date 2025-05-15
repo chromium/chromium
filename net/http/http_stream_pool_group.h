@@ -219,8 +219,6 @@ class HttpStreamPool::Group {
   static base::expected<void, std::string_view> IsIdleStreamSocketUsable(
       const IdleStreamSocket& idle);
 
-  bool IsFailing() const;
-
   void CleanupIdleStreamSockets(CleanupMode mode,
                                 std::string_view net_log_close_reason_utf8);
 

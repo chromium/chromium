@@ -156,7 +156,7 @@ HttpStreamPool::Job::~Job() {
 
 void HttpStreamPool::Job::Start() {
   CHECK(attempt_manager_);
-  CHECK(!attempt_manager_->is_failing());
+  CHECK(!attempt_manager_->is_shutting_down());
 
   if (IsPreconnect()) {
     attempt_manager_->Preconnect(this);
