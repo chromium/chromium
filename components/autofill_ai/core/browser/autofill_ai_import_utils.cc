@@ -61,7 +61,7 @@ ValueAndFormatString GetValueAndFormatString(const AutofillField& field) {
   }
 
   if (!IsDateFieldType(*field_type) || !field.IsSelectElement()) {
-    std::u16string value = field.value(autofill::ValueSemantics::kCurrent);
+    std::u16string value = field.value_for_import();
     base::TrimWhitespace(value, base::TRIM_ALL, &value);
     return {
         .value = std::move(value),
@@ -69,6 +69,8 @@ ValueAndFormatString GetValueAndFormatString(const AutofillField& field) {
   }
 
   auto get_value = [&](DatePartRange range) {
+    // TODO(crbug.com/415805985): Consider adding a heuristic to decide what
+    // value to extract for date select options (value vs label vs index).
     const std::u16string& value =
         field.value(autofill::ValueSemantics::kCurrent);
     uint32_t index = 0;
