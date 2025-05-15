@@ -89,7 +89,7 @@ source_set("unit_tests") {
 proto_library("managed_printer_proto") {
   sources = [ "managed_printer_configuration.proto" ]
 
-  proto_deps = [ ":print_job_options_proto" ]
+  deps = [ ":print_job_options_proto" ]
 
   proto_out_dir = "chrome/browser/ash/printing/enterprise"
 }
