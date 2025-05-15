@@ -1290,7 +1290,7 @@
     "includes": [8220],
   },
   "<(SHARED_INTERMEDIATE_DIR)/content/browser/resources/traces_internals/resources.grd": {
-    "META": {"sizes": {"includes": [20],}},
+    "META": {"sizes": {"includes": [30],}},
     "includes": [8240],
   },
   "<(SHARED_INTERMEDIATE_DIR)/content/browser/resources/webxr_internals/resources.grd": {

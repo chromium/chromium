@@ -6,6 +6,7 @@ import '//resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 import './trace_report_list.js';
 import './tracing_scenarios_config.js';
+import './trace_recorder.js';
 
 import {CrRouter} from '//resources/js/cr_router.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -47,6 +48,10 @@ export class TraceReportAppElement extends CrLitElement {
     {
       name: 'Scenarios',
       path: 'scenarios',
+    },
+    {
+      name: 'Recorder',
+      path: 'recorder',
     },
   ];
   protected accessor selected_: number = 0;
