@@ -15,8 +15,11 @@
 #include "base/containers/id_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
@@ -130,9 +133,20 @@ void CompositorView::RecreateSurface() {
 }
 
 void CompositorView::UpdateLayerTreeHost() {
+  std::optional<base::ElapsedTimer> timer;
+  if (base::ShouldRecordSubsampledMetric(0.01)) {
+    timer.emplace();
+  }
+
   JNIEnv* env = base::android::AttachCurrentThread();
   // TODO(wkorman): Rename JNI interface to onCompositorUpdateLayerTreeHost.
   Java_CompositorView_onCompositorLayout(env, obj_);
+
+  if (timer) {
+    base::UmaHistogramCustomMicrosecondsTimes(
+        "Android.Compositor.UpdateLayerTree.Duration.Subsampled",
+        timer->Elapsed(), base::Microseconds(1), base::Milliseconds(30), 50);
+  }
 }
 
 void CompositorView::DidSwapFrame(int pending_frames) {

@@ -1284,6 +1284,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Compositor.UpdateLayerTree.Duration.Subsampled"
+    units="microseconds" expires_after="2025-10-30">
+  <owner>acondor@chromium.org</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    Records the duration of CompositorView::UpdateLayerTreeHost on Android,
+    which updates the layer tree when a frame is requested. Subsampled to 1/100.
+  </summary>
+</histogram>
+
 <histogram name="Android.ContactsPicker.ContactCount" units="Contacts"
     expires_after="2024-08-04">
   <owner>finnur@chromium.org</owner>
