@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_NEW_TAB_PAGE_MODULES_MODULES_CONSTANTS_H_
 #define CHROME_BROWSER_NEW_TAB_PAGE_MODULES_MODULES_CONSTANTS_H_
 
+#include <array>
+
 namespace ntp_modules {
 
 inline constexpr char kDriveModuleId[] = "drive";
