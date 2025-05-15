@@ -401,12 +401,17 @@ INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTest);
 class CanvasRenderingContext2DTestGLES2
     : public CanvasRenderingContext2DTestBase {
  public:
+  bool AllowsAcceleration() override { return true; }
+
   void CreateContextProvider(SetIsContextLost set_context_lost) override {
     test_context_provider_ = viz::TestContextProvider::Create();
     InitializeSharedGpuContextGLES2(test_context_provider_.get(),
                                     /*cache=*/nullptr, set_context_lost);
     ConfigureContextProvider(*test_context_provider_);
   }
+
+ private:
+  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform_;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTestGLES2);
@@ -754,6 +759,37 @@ TEST_P(CanvasRenderingContext2DTest, GetImageWithAccelerationDisabled) {
   // the validity of the resource.
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
   EXPECT_TRUE(CanvasElement().IsResourceValid());
+}
+
+TEST_P(CanvasRenderingContext2DTestGLES2, ReleaseResourcesAfterPageTornDown) {
+  CreateContext(kNonOpaque);
+
+  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider());
+
+  // Invoking PrepareTransferableResource() has a precondition that a CC layer
+  // is present.
+  ASSERT_TRUE(CanvasElement().GetOrCreateCcLayerIfNeeded());
+
+  Context2D()->fillRect(3, 3, 1, 1);
+
+  viz::TransferableResource resource;
+  viz::ReleaseCallback release_callback;
+
+  // Resources aren't released if the canvas still uses them.
+  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(&resource,
+                                                          &release_callback));
+  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
+  std::move(release_callback).Run(gpu::SyncToken(), /*is_lost=*/false);
+  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
+
+  // Tearing down the page does not destroy unreleased resources.
+  CanvasElement().PrepareTransferableResource(&resource, &release_callback);
+  TearDownPage();
+  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
+
+  std::move(release_callback).Run(gpu::SyncToken(), /*is_lost=*/false);
+  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 0u);
+  SharedGpuContext::Reset();
 }
 
 TEST_P(CanvasRenderingContext2DTestGLES2,
