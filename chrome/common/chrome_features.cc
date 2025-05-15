@@ -524,6 +524,9 @@ const base::FeatureParam<bool> kGlicPageContextEligibilityAllowNoMetadata{
     &kGlicPageContextEligibility,
     "glic-page-context-eligibility-allow-no-metadata", true};
 
+BASE_FEATURE(kGlicUnloadOnClose,
+             "GlicUnloadOnClose",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 BASE_FEATURE(kTabstripComboButton,

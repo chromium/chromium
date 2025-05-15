@@ -593,6 +593,30 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerWithPreviousPostionUiTest,
   ASSERT_EQ(initial_bounds.origin(), gfx::Point(20, 10));
 }
 
+class GlicWindowControllerUnloadOnCloseTest
+    : public GlicWindowControllerUiTest {
+ public:
+  GlicWindowControllerUnloadOnCloseTest() {
+    features_.InitAndEnableFeature(features::kGlicUnloadOnClose);
+  }
+  ~GlicWindowControllerUnloadOnCloseTest() override = default;
+
+  auto CheckWebUiContentsExist(bool exist) {
+    return CheckResult(
+        [this]() { return !!glic_service()->host().webui_contents(); }, exist,
+        "CheckWebUiContentsExist");
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUnloadOnCloseTest, UnloadOnClose) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
+                  CheckControllerHasWidget(true), CheckWebUiContentsExist(true),
+                  CloseGlicWindow(), CheckWebUiContentsExist(false));
+}
+
 class GlicWindowControllerWithMemoryPressureUiTest
     : public GlicWindowControllerUiTest {
  public:
