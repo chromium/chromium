@@ -2771,7 +2771,7 @@ BASE_FEATURE(kShimlessRMA3pDiagnosticsAllowPermissionPolicy,
 // landing page.
 BASE_FEATURE(kShimlessRMAHardwareValidationSkip,
              "ShimlessRMAHardwareValidationSkip",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables the option of grey out specific input fields on Shimless
 // RMA device information page.
