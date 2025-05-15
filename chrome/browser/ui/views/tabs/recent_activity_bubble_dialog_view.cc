@@ -73,6 +73,7 @@ namespace {
 
 // Unicode value for a bullet point.
 constexpr std::u16string kBulletPoint = u"\u2022";
+constexpr int bubble_content_margin_px = 20;
 
 // Returns the correct user that should be used for a given log item.
 // Sometimes the string should describe the user that triggered an event
@@ -186,6 +187,7 @@ RecentActivityBubbleDialogView::RecentActivityBubbleDialogView(
       .SetCollapseMargins(true);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
+  set_margins(gfx::Insets(bubble_content_margin_px));
 
   if (tab_activity_log.empty() && group_activity_log.empty()) {
     CreateEmptyState();
@@ -196,7 +198,8 @@ RecentActivityBubbleDialogView::RecentActivityBubbleDialogView(
 
   // Add bottom margin to tab container if the group container will appear
   // below.
-  if (group_activity_container_->GetVisible()) {
+  if (group_activity_container_->GetVisible() &&
+      tab_activity_container_->GetVisible()) {
     const int container_vertical_margin =
         ChromeLayoutProvider::Get()->GetDistanceMetric(
             DISTANCE_RECENT_ACTIVITY_CONTAINER_VERTICAL_MARGIN);
