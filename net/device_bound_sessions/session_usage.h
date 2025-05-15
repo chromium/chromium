@@ -10,6 +10,9 @@ namespace net::device_bound_sessions {
 // Represents per-request usage of a session for populating use
 // counters. This currently has the invariant that requests only move
 // from lower-valued usage enums to higher-valued ones.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(DeviceBoundSessionUsage)
 enum class SessionUsage {
   // Usage is unknown
   kUnknown = 0,
@@ -19,7 +22,9 @@ enum class SessionUsage {
   kInScopeNotDeferred = 2,
   // Request was deferred by a session
   kDeferred = 3,
+  kMaxValue = kDeferred
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionUsage)
 
 }  // namespace net::device_bound_sessions
 
