@@ -141,10 +141,9 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
     return;
   }
 
-  // TODO(crbug.com/404436027): Replace with i18n string.
-  Suggestion submenu_suggestion =
-      Suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_LOYALTY_CARD_GENERIC),
-                 SuggestionType::kLoyaltyCardEntry);
+  Suggestion submenu_suggestion = Suggestion(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_LOYALTY_CARDS_SUBMENU_TITLE),
+      SuggestionType::kLoyaltyCardEntry);
   submenu_suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
   submenu_suggestion.children = loyalty_card_suggestions;
 

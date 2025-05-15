@@ -234,9 +234,9 @@ TEST_F(ValuableSuggestionGeneratorTest,
           EqualsSuggestion(SuggestionType::kAddressEntry,
                            u"test-email2@domain2.example"),
           EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsSuggestion(
-              SuggestionType::kLoyaltyCardEntry,
-              l10n_util::GetStringUTF16(IDS_AUTOFILL_LOYALTY_CARD_GENERIC)),
+          EqualsSuggestion(SuggestionType::kLoyaltyCardEntry,
+                           l10n_util::GetStringUTF16(
+                               IDS_AUTOFILL_LOYALTY_CARDS_SUBMENU_TITLE)),
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsSuggestion(
               SuggestionType::kManageAddress,
