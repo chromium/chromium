@@ -63,29 +63,30 @@ void LogTabUnderAttempt(content::NavigationHandle* handle) {
 }  // namespace
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-TabUnderNavigationThrottle::MaybeCreate(content::NavigationHandle* handle) {
+void TabUnderNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
   // TODO(crbug.com/40187173): TabUnderNavigationThrottle doesn't block
   // prerendering activations. However, currently prerender is same-origin only
   // so a prerendered activation could never be classified as a tab-under.
   // Otherwise, it should be safe to avoid creating a throttle in non primary
   // pages because prerendered pages should not be able to open popups. A
   // tab-under could therefore never occur within the non-primary page.
-  if (handle->IsInPrimaryMainFrame()) {
-    return base::WrapUnique(new TabUnderNavigationThrottle(handle));
+  if (registry.GetNavigationHandle().IsInPrimaryMainFrame()) {
+    registry.AddThrottle(
+        base::WrapUnique(new TabUnderNavigationThrottle(registry)));
   }
-  return nullptr;
 }
 
 TabUnderNavigationThrottle::~TabUnderNavigationThrottle() = default;
 
 TabUnderNavigationThrottle::TabUnderNavigationThrottle(
-    content::NavigationHandle* handle)
-    : content::NavigationThrottle(handle),
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry),
       has_opened_popup_since_last_user_gesture_at_start_(
           HasOpenedPopupSinceLastUserGesture()),
-      started_in_foreground_(handle->GetWebContents()->GetVisibility() ==
-                             content::Visibility::VISIBLE) {}
+      started_in_foreground_(
+          registry.GetNavigationHandle().GetWebContents()->GetVisibility() ==
+          content::Visibility::VISIBLE) {}
 
 bool TabUnderNavigationThrottle::IsSuspiciousClientRedirect() const {
   // This throttle is only created for primary main frame navigations. See

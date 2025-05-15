@@ -32,6 +32,7 @@ namespace {
 
 using content::NavigationHandle;
 using content::NavigationThrottle;
+using content::NavigationThrottleRegistry;
 using content::WebContents;
 using password_manager::IsWellKnownChangePasswordUrl;
 using password_manager::WellKnownChangePasswordResult;
@@ -63,44 +64,46 @@ bool IsTriggeredByGoogleOwnedUI(NavigationHandle* handle) {
 }  // namespace
 
 // static
-std::unique_ptr<WellKnownChangePasswordNavigationThrottle>
-WellKnownChangePasswordNavigationThrottle::MaybeCreateThrottleFor(
-    NavigationHandle* handle) {
-  auto* profile = Profile::FromBrowserContext(
-      handle->GetWebContents()->GetBrowserContext());
+void WellKnownChangePasswordNavigationThrottle::MaybeCreateAndAdd(
+    NavigationThrottleRegistry& registry) {
+  auto& handle = registry.GetNavigationHandle();
+  auto* profile =
+      Profile::FromBrowserContext(handle.GetWebContents()->GetBrowserContext());
   // Create WellKnownChangePasswordNavigationThrottle only for regular or
   // incognito profiles.
   if (!profile->IsRegularProfile() && !profile->IsIncognitoProfile()) {
-    return nullptr;
+    return;
   }
 
   // Don't handle navigations in subframes or main frames that are in a nested
   // frame tree (e.g. fenced frames)
-  if (handle->IsInOutermostMainFrame() &&
-      IsWellKnownChangePasswordUrl(handle->GetURL()) &&
-      IsTriggeredByGoogleOwnedUI(handle)) {
-    return std::make_unique<WellKnownChangePasswordNavigationThrottle>(handle);
+  if (handle.IsInOutermostMainFrame() &&
+      IsWellKnownChangePasswordUrl(handle.GetURL()) &&
+      IsTriggeredByGoogleOwnedUI(&handle)) {
+    registry.AddThrottle(
+        std::make_unique<WellKnownChangePasswordNavigationThrottle>(registry));
   }
-
-  return nullptr;
 }
 
 WellKnownChangePasswordNavigationThrottle::
-    WellKnownChangePasswordNavigationThrottle(NavigationHandle* handle)
-    : NavigationThrottle(handle),
-      request_url_(handle->GetURL()),
-      source_id_(handle->GetWebContents()
+    WellKnownChangePasswordNavigationThrottle(
+        NavigationThrottleRegistry& registry)
+    : NavigationThrottle(registry),
+      request_url_(registry.GetNavigationHandle().GetURL()),
+      source_id_(registry.GetNavigationHandle()
+                     .GetWebContents()
                      ->GetPrimaryMainFrame()
                      ->GetPageUkmSourceId()) {
   // If this is a prerender navigation, we're only constructing the throttle
   // so it can cancel the prerender.
-  if (handle->IsInPrerenderedMainFrame()) {
+  auto& handle = registry.GetNavigationHandle();
+  if (handle.IsInPrerenderedMainFrame()) {
     return;
   }
 
   affiliation_service_ =
       AffiliationServiceFactory::GetForProfile(Profile::FromBrowserContext(
-          handle->GetWebContents()->GetBrowserContext()));
+          handle.GetWebContents()->GetBrowserContext()));
   CHECK(affiliation_service_);
   if (affiliation_service_->GetChangePasswordURL(request_url_).is_empty()) {
     well_known_change_password_state_.PrefetchChangePasswordURL(

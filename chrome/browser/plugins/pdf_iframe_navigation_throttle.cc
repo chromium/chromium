@@ -73,8 +73,8 @@ bool IsPDFPluginEnabled(content::NavigationHandle* navigation_handle,
 }  // namespace
 
 PDFIFrameNavigationThrottle::PDFIFrameNavigationThrottle(
-    content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 PDFIFrameNavigationThrottle::~PDFIFrameNavigationThrottle() = default;
 
@@ -83,13 +83,12 @@ const char* PDFIFrameNavigationThrottle::GetNameForLogging() {
 }
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-PDFIFrameNavigationThrottle::MaybeCreateThrottleFor(
-    content::NavigationHandle* handle) {
-  if (handle->IsInMainFrame())
-    return nullptr;
+void PDFIFrameNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
+  if (registry.GetNavigationHandle().IsInMainFrame())
+    return;
 
-  return std::make_unique<PDFIFrameNavigationThrottle>(handle);
+  registry.AddThrottle(std::make_unique<PDFIFrameNavigationThrottle>(registry));
 }
 
 content::NavigationThrottle::ThrottleCheckResult

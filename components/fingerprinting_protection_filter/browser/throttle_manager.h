@@ -142,7 +142,7 @@ class ThrottleManager : public base::SupportsUserData::Data,
   // navigation is a root frame navigation, or if the parent frame is activated.
   //
   // Note that there are currently no constraints on the ordering of throttles.
-  void MaybeAppendNavigationThrottles(
+  void MaybeCreateAndAddNavigationThrottles(
       content::NavigationThrottleRegistry& registry);
 
   // On a DISALLOW or WOULD_DISALLOW load policy decision, notify the throttle

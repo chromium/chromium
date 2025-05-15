@@ -11,12 +11,12 @@
 // and referrer matches defined requirements.
 class PasswordManagerNavigationThrottle : public content::NavigationThrottle {
  public:
-  explicit PasswordManagerNavigationThrottle(content::NavigationHandle* handle);
+  explicit PasswordManagerNavigationThrottle(
+      content::NavigationThrottleRegistry& registry);
 
   ~PasswordManagerNavigationThrottle() override;
 
-  static std::unique_ptr<PasswordManagerNavigationThrottle>
-  MaybeCreateThrottleFor(content::NavigationHandle* handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
  private:
   ThrottleCheckResult WillStartRequest() override;

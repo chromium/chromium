@@ -9,6 +9,7 @@
 #include "components/url_formatter/spoof_checks/idn_spoof_checker.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_navigation_throttle_registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace lookalikes {
@@ -71,9 +72,15 @@ TEST_F(LookalikeThrottleTest, SpoofsBlocked) {
     ::testing::NiceMock<content::MockNavigationHandle> handle(url, main_rfh());
     handle.set_redirect_chain({url});
     handle.set_page_transition(ui::PAGE_TRANSITION_TYPED);
+    ::testing::NiceMock<content::MockNavigationThrottleRegistry> registry(
+        &handle,
+        content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
 
-    auto throttle =
-        LookalikeUrlNavigationThrottle::MaybeCreateNavigationThrottle(&handle);
+    LookalikeUrlNavigationThrottle::MaybeCreateAndAdd(registry);
+    CHECK_EQ(1u, registry.throttles().size());
+    raw_ptr<LookalikeUrlNavigationThrottle> throttle =
+        static_cast<LookalikeUrlNavigationThrottle*>(
+            registry.throttles().back().get());
     ASSERT_TRUE(throttle);
     throttle->SetUseTestProfileForTesting();
 

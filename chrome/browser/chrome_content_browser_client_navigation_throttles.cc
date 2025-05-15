@@ -371,37 +371,30 @@ void CreateAndAddChromeThrottlesForNavigation(
     throttle_manager->MaybeCreateAndAddNavigationThrottles(registry);
   }
 
-  // TODO(https://crbug.com/412524375): Needs a NavigationThrottle ctor
-  // migration follow-up of https://crrev.com/c/6510776 below.
-
   if (fingerprinting_protection_filter::features::
           IsFingerprintingProtectionEnabledForIncognitoState(
               profile ? profile->IsIncognitoProfile() : false)) {
     if (auto* throttle_manager = fingerprinting_protection_filter::
             ThrottleManager::FromNavigationHandle(handle)) {
-      throttle_manager->MaybeAppendNavigationThrottles(registry);
+      throttle_manager->MaybeCreateAndAddNavigationThrottles(registry);
     }
   }
 
-  registry.MaybeAddThrottle(
-      LookalikeUrlNavigationThrottle::MaybeCreateNavigationThrottle(&handle));
+  LookalikeUrlNavigationThrottle::MaybeCreateAndAdd(registry);
 
-  registry.MaybeAddThrottle(
-      PDFIFrameNavigationThrottle::MaybeCreateThrottleFor(&handle));
+  PDFIFrameNavigationThrottle::MaybeCreateAndAdd(registry);
 
 #if BUILDFLAG(ENABLE_PDF)
   registry.AddThrottle(std::make_unique<pdf::PdfNavigationThrottle>(
-      &handle, std::make_unique<ChromePdfStreamDelegate>()));
+      registry, std::make_unique<ChromePdfStreamDelegate>()));
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-  registry.MaybeAddThrottle(TabUnderNavigationThrottle::MaybeCreate(&handle));
 
-  registry.MaybeAddThrottle(
-      WellKnownChangePasswordNavigationThrottle::MaybeCreateThrottleFor(
-          &handle));
+  TabUnderNavigationThrottle::MaybeCreateAndAdd(registry);
 
-  registry.MaybeAddThrottle(
-      PasswordManagerNavigationThrottle::MaybeCreateThrottleFor(&handle));
+  WellKnownChangePasswordNavigationThrottle::MaybeCreateAndAdd(registry);
+
+  PasswordManagerNavigationThrottle::MaybeCreateAndAdd(registry);
 
   registry.AddThrottle(std::make_unique<PolicyBlocklistNavigationThrottle>(
       registry, handle.GetWebContents()->GetBrowserContext()));
@@ -411,12 +404,15 @@ void CreateAndAddChromeThrottlesForNavigation(
   SSLErrorHandler::SetClientCallbackOnInterstitialsShown(
       base::BindRepeating(&MaybeTriggerSecurityInterstitialShownEvent));
   registry.AddThrottle(std::make_unique<SSLErrorNavigationThrottle>(
-      &handle, base::BindOnce(&HandleSSLErrorWrapper),
+      registry, base::BindOnce(&HandleSSLErrorWrapper),
       base::BindOnce(&IsInHostedApp),
       base::BindOnce(
           &ShouldIgnoreSslInterstitialBecauseNavigationDefaultedToHttps)));
 
-  registry.AddThrottle(std::make_unique<LoginNavigationThrottle>(&handle));
+  registry.AddThrottle(std::make_unique<LoginNavigationThrottle>(registry));
+
+  // TODO(https://crbug.com/412524375): Needs a NavigationThrottle ctor
+  // migration follow-up of https://crrev.com/c/6510776 below. (33)
 
   if (base::FeatureList::IsEnabled(omnibox::kDefaultTypedNavigationsToHttps)) {
     registry.MaybeAddThrottle(

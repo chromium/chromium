@@ -45,13 +45,13 @@ bool WebContentsUsesInterstitials(content::NavigationHandle* handle) {
 }  // namespace
 
 SSLErrorNavigationThrottle::SSLErrorNavigationThrottle(
-    content::NavigationHandle* navigation_handle,
+    content::NavigationThrottleRegistry& registry,
     SSLErrorNavigationThrottle::HandleSSLErrorCallback
         handle_ssl_error_callback,
     IsInHostedAppCallback is_in_hosted_app_callback,
     ShouldIgnoreInterstitialBecauseNavigationDefaultedToHttpsCallback
         should_ignore_interstitial_because_navigation_defaulted_to_https_callback)
-    : content::NavigationThrottle(navigation_handle),
+    : content::NavigationThrottle(registry),
       handle_ssl_error_callback_(std::move(handle_ssl_error_callback)),
       is_in_hosted_app_callback_(std::move(is_in_hosted_app_callback)),
       should_ignore_interstitial_because_navigation_defaulted_to_https_callback_(

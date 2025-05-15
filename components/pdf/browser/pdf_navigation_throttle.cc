@@ -61,9 +61,9 @@ PdfNavigationThrottle::WillProcessResponse() {
 }
 
 PdfNavigationThrottle::PdfNavigationThrottle(
-    content::NavigationHandle* navigation_handle,
+    content::NavigationThrottleRegistry& registry,
     std::unique_ptr<PdfStreamDelegate> stream_delegate)
-    : content::NavigationThrottle(navigation_handle),
+    : content::NavigationThrottle(registry),
       stream_delegate_(std::move(stream_delegate)) {
   DCHECK(stream_delegate_);
 }

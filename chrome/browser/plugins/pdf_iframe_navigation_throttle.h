@@ -13,16 +13,16 @@
 #include "ppapi/buildflags/buildflags.h"
 
 namespace content {
-class NavigationHandle;
+class NavigationThrottleRegistry;
 struct WebPluginInfo;
 }  // namespace content
 
 class PDFIFrameNavigationThrottle : public content::NavigationThrottle {
  public:
-  static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
-      content::NavigationHandle* handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
-  explicit PDFIFrameNavigationThrottle(content::NavigationHandle* handle);
+  explicit PDFIFrameNavigationThrottle(
+      content::NavigationThrottleRegistry& registry);
   ~PDFIFrameNavigationThrottle() override;
 
   // content::NavigationThrottle:

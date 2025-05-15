@@ -155,7 +155,7 @@ ThrottleManager* ThrottleManager::FromNavigationHandle(
       navigation_handle);
 }
 
-void ThrottleManager::MaybeAppendNavigationThrottles(
+void ThrottleManager::MaybeCreateAndAddNavigationThrottles(
     content::NavigationThrottleRegistry& registry) {
   content::NavigationHandle& navigation_handle = registry.GetNavigationHandle();
   CHECK(!navigation_handle.IsSameDocument());

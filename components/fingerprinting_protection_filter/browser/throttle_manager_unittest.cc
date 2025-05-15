@@ -389,7 +389,8 @@ class ThrottleManagerTest
     auto* navigation_throttle_manager =
         ThrottleManager::FromNavigationHandle(*navigation_handle);
     if (navigation_throttle_manager) {
-      navigation_throttle_manager->MaybeAppendNavigationThrottles(registry);
+      navigation_throttle_manager->MaybeCreateAndAddNavigationThrottles(
+          registry);
     }
 
     created_fp_throttle_for_last_navigation_ = false;

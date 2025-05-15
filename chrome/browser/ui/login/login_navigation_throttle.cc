@@ -12,8 +12,8 @@
 #include "net/http/http_status_code.h"
 
 LoginNavigationThrottle::LoginNavigationThrottle(
-    content::NavigationHandle* handle)
-    : content::NavigationThrottle(handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 LoginNavigationThrottle::~LoginNavigationThrottle() = default;
 

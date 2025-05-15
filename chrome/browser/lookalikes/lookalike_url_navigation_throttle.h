@@ -19,7 +19,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace content {
-class NavigationHandle;
+class NavigationThrottleRegistry;
 }  // namespace content
 
 class Profile;
@@ -45,7 +45,8 @@ bool IsSafeRedirect(const std::string& safe_url_host,
 // This throttle assumes that two navigations never share the same throttle.
 class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
  public:
-  explicit LookalikeUrlNavigationThrottle(content::NavigationHandle* handle);
+  explicit LookalikeUrlNavigationThrottle(
+      content::NavigationThrottleRegistry& registry);
   ~LookalikeUrlNavigationThrottle() override;
 
   // content::NavigationThrottle:
@@ -54,8 +55,7 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
   ThrottleCheckResult WillRedirectRequest() override;
   const char* GetNameForLogging() override;
 
-  static std::unique_ptr<LookalikeUrlNavigationThrottle>
-  MaybeCreateNavigationThrottle(content::NavigationHandle* navigation_handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
   // The throttle normally ignores testing profiles and returns PROCEED. This
   // function forces unit tests to not ignore them .

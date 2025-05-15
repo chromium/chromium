@@ -101,21 +101,24 @@ bool IsLookalikeUrl(Profile* profile,
 }  // namespace
 
 LookalikeUrlNavigationThrottle::LookalikeUrlNavigationThrottle(
-    content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle),
-      profile_(Profile::FromBrowserContext(
-          navigation_handle->GetWebContents()->GetBrowserContext())) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry),
+      profile_(Profile::FromBrowserContext(registry.GetNavigationHandle()
+                                               .GetWebContents()
+                                               ->GetBrowserContext())) {}
 
 LookalikeUrlNavigationThrottle::~LookalikeUrlNavigationThrottle() = default;
 
 ThrottleCheckResult LookalikeUrlNavigationThrottle::WillStartRequest() {
-  if (profile_->AsTestingProfile())
+  if (profile_->AsTestingProfile()) {
     return content::NavigationThrottle::PROCEED;
+  }
 
 #if BUILDFLAG(IS_ANDROID)
   auto* service = LookalikeUrlServiceFactory::GetForProfile(profile_);
-  if (service->EngagedSitesNeedUpdating())
+  if (service->EngagedSitesNeedUpdating()) {
     service->ForceUpdateEngagedSites(base::DoNothing());
+  }
 #endif
   PrewarmLookalikeCheckAsync();
   return content::NavigationThrottle::PROCEED;
@@ -132,8 +135,9 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::WillRedirectRequest() {
 
 void LookalikeUrlNavigationThrottle::PrewarmLookalikeCheckAsync() {
   constexpr base::TimeDelta kDelayBeforeTaskStart = base::Milliseconds(50);
-  if (lookup_timer_.IsRunning())
+  if (lookup_timer_.IsRunning()) {
     return;
+  }
   lookup_timer_.Start(
       FROM_HERE, kDelayBeforeTaskStart,
       base::BindOnce(&LookalikeUrlNavigationThrottle::PrewarmLookalikeCheckSync,
@@ -297,31 +301,34 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::ShowInterstitial(
                              net::ERR_BLOCKED_BY_CLIENT, error_page_contents);
 }
 
-std::unique_ptr<LookalikeUrlNavigationThrottle>
-LookalikeUrlNavigationThrottle::MaybeCreateNavigationThrottle(
-    content::NavigationHandle* navigation_handle) {
+// static
+void LookalikeUrlNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
   // If the tab is being no-state prefetched, stop here before it breaks
   // metrics.
-  content::WebContents* web_contents = navigation_handle->GetWebContents();
+  auto& navigation_handle = registry.GetNavigationHandle();
+  content::WebContents* web_contents = navigation_handle.GetWebContents();
   if (prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
-          web_contents))
-    return nullptr;
+          web_contents)) {
+    return;
+  }
 
   // Stop creating NavitationThrottle for System Profiles. It needs some
   // KeyedServices that are not available for the System Profile.
   if (AreKeyedServicesDisabledForProfileByDefault(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
-    return nullptr;
+    return;
   }
 
   // Don't handle navigations in subframe or fenced frame which shouldn't
   // show an interstitial and record metrics.
-  if (!navigation_handle->IsInOutermostMainFrame()) {
-    return nullptr;
+  if (!navigation_handle.IsInOutermostMainFrame()) {
+    return;
   }
 
   // Otherwise, always insert the throttle for metrics recording.
-  return std::make_unique<LookalikeUrlNavigationThrottle>(navigation_handle);
+  registry.AddThrottle(
+      std::make_unique<LookalikeUrlNavigationThrottle>(registry));
 }
 
 ThrottleCheckResult

@@ -15,6 +15,7 @@
 #include "components/pdf/common/constants.h"
 #include "components/pdf/common/pdf_util.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_navigation_throttle_registry.h"
 #include "net/http/http_util.h"
 #include "ppapi/buildflags/buildflags.h"
 
@@ -103,13 +104,16 @@ TEST_F(PDFIFrameNavigationThrottleTest, OnlyCreateThrottleForSubframes) {
   // Never create throttle for main frames.
   content::MockNavigationHandle handle(GURL(kExampleURL), main_rfh());
   handle.set_response_headers(GetHeaderWithMimeType(""));
-  ASSERT_EQ(nullptr,
-            PDFIFrameNavigationThrottle::MaybeCreateThrottleFor(&handle));
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  PDFIFrameNavigationThrottle::MaybeCreateAndAdd(registry);
+  ASSERT_EQ(0u, registry.throttles().size());
 
   // Create a throttle for subframes.
   handle.set_render_frame_host(subframe());
-  ASSERT_NE(nullptr,
-            PDFIFrameNavigationThrottle::MaybeCreateThrottleFor(&handle));
+  PDFIFrameNavigationThrottle::MaybeCreateAndAdd(registry);
+  ASSERT_EQ(1u, registry.throttles().size());
 }
 
 TEST_F(PDFIFrameNavigationThrottleTest, InterceptPDFOnly) {
@@ -119,11 +123,15 @@ TEST_F(PDFIFrameNavigationThrottleTest, InterceptPDFOnly) {
 
   NiceMock<content::MockNavigationHandle> handle(GURL(kExampleURL), subframe());
   handle.set_response_headers(GetHeaderWithMimeType("application/pdf"));
+  NiceMock<content::MockNavigationThrottleRegistry> registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
 
   // Verify that we CANCEL for PDF mime type.
-  std::unique_ptr<content::NavigationThrottle> throttle =
-      PDFIFrameNavigationThrottle::MaybeCreateThrottleFor(&handle);
-  ASSERT_NE(nullptr, throttle);
+  PDFIFrameNavigationThrottle::MaybeCreateAndAdd(registry);
+  ASSERT_EQ(1u, registry.throttles().size());
+  auto* throttle = static_cast<PDFIFrameNavigationThrottle*>(
+      registry.throttles().back().get());
   ASSERT_EQ(content::NavigationThrottle::CANCEL_AND_IGNORE,
             throttle->WillProcessResponse().action());
 
@@ -158,48 +166,59 @@ TEST_F(PDFIFrameNavigationThrottleTest, AllowPDFAttachments) {
       new net::HttpResponseHeaders(raw_response_headers);
   content::MockNavigationHandle handle(GURL(kExampleURL), subframe());
   handle.set_response_headers(headers.get());
-  std::unique_ptr<content::NavigationThrottle> throttle =
-      PDFIFrameNavigationThrottle::MaybeCreateThrottleFor(&handle);
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  PDFIFrameNavigationThrottle::MaybeCreateAndAdd(registry);
 
-  ASSERT_NE(nullptr, throttle);
+  ASSERT_EQ(1u, registry.throttles().size());
   ASSERT_EQ(content::NavigationThrottle::PROCEED,
-            throttle->WillProcessResponse().action());
+            registry.throttles().back()->WillProcessResponse().action());
 }
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 TEST_F(PDFIFrameNavigationThrottleTest, ProceedIfPDFViewerIsEnabled) {
   content::MockNavigationHandle handle(GURL(kExampleURL), subframe());
   handle.set_response_headers(GetHeaderWithMimeType("application/pdf"));
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
 
   SetAlwaysOpenPdfExternallyForTests(false);
 
   // First time should asynchronously Resume the navigation.
-  std::unique_ptr<content::NavigationThrottle> throttle =
-      PDFIFrameNavigationThrottle::MaybeCreateThrottleFor(&handle);
-  ASSERT_NE(nullptr, throttle);
+  PDFIFrameNavigationThrottle::MaybeCreateAndAdd(registry);
+  ASSERT_EQ(1u, registry.throttles().size());
+  auto* throttle = static_cast<PDFIFrameNavigationThrottle*>(
+      registry.throttles().back().get());
   ASSERT_EQ(content::NavigationThrottle::DEFER,
             throttle->WillProcessResponse().action());
   base::RunLoop run_loop;
   throttle->set_resume_callback_for_testing(run_loop.QuitClosure());
   run_loop.Run();
+  registry.throttles().clear();
 
   // Subsequent times should synchronously PROCEED the navigation.
-  throttle = PDFIFrameNavigationThrottle::MaybeCreateThrottleFor(&handle);
-  ASSERT_NE(nullptr, throttle);
+  PDFIFrameNavigationThrottle::MaybeCreateAndAdd(registry);
+  ASSERT_EQ(1u, registry.throttles().size());
   ASSERT_EQ(content::NavigationThrottle::PROCEED,
-            throttle->WillProcessResponse().action());
+            registry.throttles().back()->WillProcessResponse().action());
 }
 
 TEST_F(PDFIFrameNavigationThrottleTest, CancelIfPDFViewerIsDisabled) {
   NiceMock<content::MockNavigationHandle> handle(GURL(kExampleURL), subframe());
   handle.set_response_headers(GetHeaderWithMimeType("application/pdf"));
+  NiceMock<content::MockNavigationThrottleRegistry> registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
 
   SetAlwaysOpenPdfExternallyForTests(true);
 
   // First time should asynchronously Cancel the navigation.
-  std::unique_ptr<content::NavigationThrottle> throttle =
-      PDFIFrameNavigationThrottle::MaybeCreateThrottleFor(&handle);
-  ASSERT_NE(nullptr, throttle);
+  PDFIFrameNavigationThrottle::MaybeCreateAndAdd(registry);
+  ASSERT_EQ(1u, registry.throttles().size());
+  auto* throttle = static_cast<PDFIFrameNavigationThrottle*>(
+      registry.throttles().back().get());
   ASSERT_EQ(content::NavigationThrottle::DEFER,
             throttle->WillProcessResponse().action());
   base::RunLoop run_loop;
@@ -212,12 +231,13 @@ TEST_F(PDFIFrameNavigationThrottleTest, CancelIfPDFViewerIsDisabled) {
           },
           base::Unretained(&run_loop)));
   run_loop.Run();
+  registry.throttles().clear();
 
   // Subsequent times should synchronously CANCEL the navigation.
-  throttle = PDFIFrameNavigationThrottle::MaybeCreateThrottleFor(&handle);
-  ASSERT_NE(nullptr, throttle);
+  PDFIFrameNavigationThrottle::MaybeCreateAndAdd(registry);
+  ASSERT_EQ(1u, registry.throttles().size());
   ASSERT_EQ(content::NavigationThrottle::CANCEL_AND_IGNORE,
-            throttle->WillProcessResponse().action());
+            registry.throttles().back()->WillProcessResponse().action());
 }
 
 TEST_F(PDFIFrameNavigationThrottleTest, MetricsPDFLoadStatus) {
@@ -232,13 +252,15 @@ TEST_F(PDFIFrameNavigationThrottleTest, MetricsPDFLoadStatus) {
 
   NiceMock<content::MockNavigationHandle> handle(GURL(kExampleURL), subframe());
   handle.set_response_headers(GetHeaderWithMimeType("application/pdf"));
+  NiceMock<content::MockNavigationThrottleRegistry> registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
 
   // Verify that we CANCEL for PDF mime type.
-  std::unique_ptr<content::NavigationThrottle> throttle =
-      PDFIFrameNavigationThrottle::MaybeCreateThrottleFor(&handle);
-  ASSERT_NE(nullptr, throttle);
+  PDFIFrameNavigationThrottle::MaybeCreateAndAdd(registry);
+  ASSERT_EQ(1u, registry.throttles().size());
   ASSERT_EQ(content::NavigationThrottle::CANCEL_AND_IGNORE,
-            throttle->WillProcessResponse().action());
+            registry.throttles().back()->WillProcessResponse().action());
 
   histograms.ExpectUniqueSample(kPdfLoadStatusMetric,
                                 PDFLoadStatus::kLoadedIframePdfWithNoPdfViewer,
