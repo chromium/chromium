@@ -203,7 +203,13 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ToolbarOverflow) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LinksToggledIntegration) {
+// TODO(crbug.com/417847367): Deflake on Linux.
+#if defined(IS_LINUX)
+#define MAYBE_LinksToggledIntegration DISABLED_LinksToggledIntegration
+#else
+#define MAYBE_LinksToggledIntegration LinksToggledIntegration
+#endif
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, MAYBE_LinksToggledIntegration) {
   RunSidePanelTest("side_panel/read_anything/links_toggled_integration_test.js",
                    "mocha.run()");
 }
