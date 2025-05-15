@@ -1290,6 +1290,8 @@ source_set("browser") {
     "interest_group/subresource_url_authorizations.h",
     "interest_group/subresource_url_builder.cc",
     "interest_group/subresource_url_builder.h",
+    "interest_group/trusted_bidding_signals_kvv1_requester.cc",
+    "interest_group/trusted_bidding_signals_kvv1_requester.h",
     "interest_group/trusted_signals_cache_impl.cc",
     "interest_group/trusted_signals_cache_impl.h",
     "interest_group/trusted_signals_fetcher.cc",
