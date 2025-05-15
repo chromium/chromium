@@ -135,50 +135,10 @@ suite('ReadAloudHighlight', () => {
     assertEquals(sentence1, previousHighlight!.textContent);
   });
 
-  test('on update content after pause, keeps reading position', () => {
-    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
-    emitNextGranularity();
-    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
-
-    app.updateContent();
-    const currentHighlight =
-        app.$.container.querySelector('.current-read-highlight');
-    const previousHighlight =
-        app.$.container.querySelector('.previous-read-highlight');
-
-    assertEquals(sentence2, currentHighlight?.textContent, 'current');
-    assertEquals(sentence1, previousHighlight?.textContent, 'previous');
-  });
-
-  test('on new page after pause, ignores reading position', () => {
-    const newTree = {
-      rootId: 1,
-      nodes: [
-        {
-          id: 1,
-          role: 'rootWebArea',
-          htmlTag: '#document',
-          childIds: [2],
-        },
-        {
-          id: 2,
-          role: 'staticText',
-          name: sentence1,
-        },
-      ],
-    };
-    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
-    emitNextGranularity();
-    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
-
-    chrome.readingMode.setContentForTesting(newTree, [2]);
-    const currentHighlight =
-        app.$.container.querySelector('.current-read-highlight');
-    const previousHighlight =
-        app.$.container.querySelector('.previous-read-highlight');
-    assertFalse(!!currentHighlight);
-    assertFalse(!!previousHighlight);
-  });
+  // TODO: crbug.com/411198154- After refactoring is complete, ensure
+  // there are proper unit tests for keeping the reading position. Until the
+  // refactoring is complete, there isn't a great way to test this due to how
+  // distillation is managed in tests.
 
   suite('on finish speaking', () => {
     let currentHighlight: HTMLElement|null;

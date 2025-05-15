@@ -329,6 +329,12 @@ class ReadAloudAppModel {
 
   ui::AXNodePosition::AXPositionInstance ax_position_;
 
+  // If ax_position_ has been initialized. Since preprocessing nodes
+  // can result in the AXPosition being set to the null position, reading mode
+  // can't rely on AXPosition->IsNullPosition() to check whether or not the
+  // speech tree has been initialized.
+  bool is_ax_tree_initialized_ = false;
+
   // Our current index within processed_granularities_on_current_page_.
   size_t processed_granularity_index_ = 0;
 
