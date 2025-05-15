@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_quota_exceeded_error_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 
 namespace blink {
 
@@ -34,6 +35,25 @@ v8::Local<v8::Value> QuotaExceededError::Create(
   }
   auto* exception = MakeGarbageCollected<QuotaExceededError>(message, options);
   return V8ThrowDOMException::AttachStackProperty(isolate, exception);
+}
+
+// static
+void QuotaExceededError::Throw(ExceptionState& exception_state,
+                               const String& message,
+                               std::optional<double> quota,
+                               std::optional<double> requested) {
+  if (RuntimeEnabledFeatures::QuotaExceededErrorUpdateEnabled()) {
+    v8::Isolate* isolate = exception_state.GetIsolate();
+    if (!isolate) {
+      return;
+    }
+    v8::Local<v8::Value> exception = Create(isolate, message, quota, requested);
+    exception_state.ThrowDOMException(
+        exception, DOMExceptionCode::kQuotaExceededError, message);
+  } else {
+    exception_state.ThrowDOMException(DOMExceptionCode::kQuotaExceededError,
+                                      message);
+  }
 }
 
 QuotaExceededError::QuotaExceededError(const String& message,

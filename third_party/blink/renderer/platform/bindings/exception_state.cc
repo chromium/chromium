@@ -113,6 +113,19 @@ void ExceptionState::ThrowDOMException(DOMExceptionCode exception_code,
   }
 }
 
+void ExceptionState::ThrowDOMException(v8::Local<v8::Value> exception,
+                                       DOMExceptionCode code,
+                                       const String& message) {
+#if DCHECK_IS_ON()
+  DCHECK_AT(!assert_no_exceptions_, location_)
+      << "DOMException should not be thrown.";
+#endif
+  SetExceptionInfo(ToExceptionCode(code), message);
+  if (isolate_) {
+    V8ThrowException::ThrowException(isolate_, exception);
+  }
+}
+
 void ExceptionState::ThrowSecurityError(const String& sanitized_message,
                                         const String& unsanitized_message) {
 #if DCHECK_IS_ON()
