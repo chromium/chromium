@@ -60,6 +60,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/first_run/ui_bundled/best_features/coordinator",
     "//ios/chrome/browser/first_run/ui_bundled/default_browser",
+    "//ios/chrome/browser/first_run/ui_bundled/interactive_lens/coordinator",
     "//ios/chrome/browser/first_run/ui_bundled/resources",
     "//ios/chrome/browser/first_run/ui_bundled/tos",
     "//ios/chrome/browser/main/model",

@@ -1067,6 +1067,9 @@ bool IsBestOfAppFREEnabled();
 // Whether the Guided Tour variant of `kBestOfAppFRE` is enabled.
 bool IsBestOfAppGuidedTourEnabled();
 
+// Whether the Lens Interactive Promo variant of `kBestOfAppFRE` is enabled.
+bool IsBestOfAppLensInteractivePromoEnabled();
+
 // Feature flag to include GWS variations in feedback.
 BASE_DECLARE_FEATURE(kFeedbackIncludeGWSVariations);
 

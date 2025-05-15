@@ -1282,6 +1282,13 @@ bool IsBestOfAppGuidedTourEnabled() {
          "4";
 }
 
+bool IsBestOfAppLensInteractivePromoEnabled() {
+  return (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) &&
+         IsBestOfAppFREEnabled() &&
+         (base::GetFieldTrialParamValueByFeature(kBestOfAppFRE, "variant") ==
+          "1");
+}
+
 BASE_FEATURE(kFeedbackIncludeGWSVariations,
              "FeedbackIncludeGWSVariations",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -200,6 +200,7 @@ using base::UserMetricsAction;
     case kChoice:
     case kDockingPromo:
     case kBestFeatures:
+    case kLensInteractivePromo:
     case kStepsCompleted:
       break;
   }

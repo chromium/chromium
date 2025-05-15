@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/first_run/ui_bundled/features.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
+#import "ios/chrome/browser/first_run/ui_bundled/interactive_lens/coordinator/interactive_lens_promo_coordinator.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_type.h"
 #import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_coordinator.h"
@@ -199,6 +200,14 @@ class FirstRunCoordinatorMetricsHelper final {
           initWithBaseNavigationController:self.navigationController
                                    browser:self.browser
                                   delegate:self];
+    case kLensInteractivePromo: {
+      InteractiveLensPromoCoordinator* lensInteractivePromoCoordinator =
+          [[InteractiveLensPromoCoordinator alloc]
+              initWithBaseNavigationController:self.navigationController
+                                       browser:self.browser];
+      lensInteractivePromoCoordinator.firstRunDelegate = self;
+      return lensInteractivePromoCoordinator;
+    }
     case kStepsCompleted:
       NOTREACHED() << "Reaches kStepsCompleted unexpectedly.";
   }

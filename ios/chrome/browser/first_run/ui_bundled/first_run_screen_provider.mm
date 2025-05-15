@@ -68,9 +68,12 @@ NSArray* FirstRunScreenSequenceForProfile(ProfileIOS* profile) {
               /*app_started_via_external_intent=*/false)) {
         [screens addObject:@(kChoice)];
       }
-      // Only add best features screen if feature kUpdatedFirstRunSequence is
-      // disabled for now.
+      // Only add best features screen and lens interactive promo if feature
+      // kUpdatedFirstRunSequence is disabled for now.
       AddDBPromoAndBestFeaturesScreens(screens);
+      if (IsBestOfAppLensInteractivePromoEnabled()) {
+        [screens addObject:@(kLensInteractivePromo)];
+      }
       break;
     case first_run::UpdatedFRESequenceVariationType::kDBPromoFirst:
       [screens addObject:@(kDefaultBrowserPromo)];
