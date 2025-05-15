@@ -39,5 +39,9 @@ Dumping inline style:
 Dumping matched rules: 
 *#commented-out-property* {    regular
 }
+@supports (display: flex)
+     {    regular
+        color: red; @[20:6-20:23]
+    }
 Dumping inherited rules: 
 
