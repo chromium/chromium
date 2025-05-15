@@ -12,6 +12,9 @@ struct ManagementNotice {
   // is managed and the entity managing the browser, which is  customizable via
   // the `EnterpriseCustomLabel` policy.
   string text;
+  // Url to the management icon. This will be a default business icon or custom
+  // icon set by policy.
+  url.mojom.Url bitmap_data_url;
 };
 
 // Used by the WebUI document to bootstrap bidirectional communication.

@@ -37,6 +37,10 @@ class NewTabFooterHandler : public new_tab_footer::mojom::NewTabFooterHandler,
   void UpdateManagementNotice() override;
   void OpenExtensionOptionsPageWithFallback() override;
 
+  // Returns the bitmap representation of the management logo.
+  // Exposed for testing only.
+  SkBitmap GetManagementNoticeIconBitmap();
+
  private:
   void OpenUrlInCurrentTab(const GURL& url);
   std::string GetManagementNoticeText();
@@ -47,6 +51,7 @@ class NewTabFooterHandler : public new_tab_footer::mojom::NewTabFooterHandler,
                            extensions::UnloadedExtensionReason reason) override;
   void OnExtensionReady(content::BrowserContext* browser_context,
                         const extensions::Extension* extension) override;
+  std::string GetManagementNoticeIconDataUrl();
 
   std::string curr_ntp_extension_id_;
   const raw_ptr<Profile> profile_;

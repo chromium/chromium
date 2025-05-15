@@ -15,7 +15,11 @@ separated from each other by a divider.
 -->
 <div id="centerContainer">
   ${this.managementNotice_ ?
-      html`<div id="managementNoticeText"><p>${this.managementNotice_.text}</p></div>` : ''}
+      html`<div id="managementNoticeContainer">
+      <img id="managementNoticeLogo" alt=""
+          src="${this.managementNotice_.bitmapDataUrl.url}">
+      <div id="managementNnoticeText"><p>${this.managementNotice_.text}</p></div>
+      </div>` : ''}
   ${this.extensionName_ ?
       html`<div id="extensionName">
         <button @click="${this.onExtensionNameClick_}" role="link"

@@ -79,18 +79,29 @@ suite('NewTabFooterAppTest', () => {
     test('Get management notice', async () => {
       // Arrange.
       await initializeElement();
-      const managementNotice:
-          ManagementNotice = {text: 'Managed by your organization'};
+      const managementNotice: ManagementNotice = {
+        text: 'Managed by your organization',
+        bitmapDataUrl: {url: 'chrome://resources/images/chrome_logo_dark.svg'},
+      };
 
       // Act.
       callbackRouter.setManagementNotice(managementNotice);
       await callbackRouter.$.flushForTesting();
 
       // Assert.
-      let managementNoticeText = $$(element, '#managementNoticeText');
+      const managementNoticeContainer =
+          element.shadowRoot.querySelector('#managementNoticeContainer');
+      assertTrue(!!managementNoticeContainer);
+      let managementNoticeText = managementNoticeContainer.querySelector('p');
       assertTrue(!!managementNoticeText);
       assertEquals(
           managementNoticeText.textContent, 'Managed by your organization');
+      let managementNoticeLogo =
+          managementNoticeContainer.querySelector<HTMLImageElement>('img');
+      assertTrue(!!managementNoticeLogo);
+      assertEquals(
+          managementNoticeLogo.src,
+          'chrome://resources/images/chrome_logo_dark.svg');
 
       // Act.
       callbackRouter.setManagementNotice(null);
@@ -98,7 +109,9 @@ suite('NewTabFooterAppTest', () => {
 
       // Assert.
       managementNoticeText = $$(element, '#managementNoticeText');
+      managementNoticeLogo = $$(element, '#managementNoticeLogo');
       assertFalse(!!managementNoticeText);
+      assertFalse(!!managementNoticeLogo);
     });
   });
 });

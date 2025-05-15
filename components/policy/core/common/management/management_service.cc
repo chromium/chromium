@@ -119,6 +119,10 @@ ui::ImageModel* ManagementService::GetManagementIconForProfile() {
   return nullptr;
 }
 
+gfx::Image* ManagementService::GetManagementIconForBrowser() {
+  return nullptr;
+}
+
 bool ManagementService::HasManagementAuthority(
     EnterpriseManagementAuthority authority) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -37,8 +37,14 @@ class BrowserManagementService : public ManagementService,
 
   // Returns the management icon used to indicate profile level management.
   ui::ImageModel* GetManagementIconForProfile() override;
+  gfx::Image* GetManagementIconForBrowser() override;
 
   void TriggerPolicyStatusChangedForTesting() override;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  void SetBrowserManagementIconForTesting(
+      const gfx::Image& management_icon) override;
+#endif
 
  private:
   // PolicyStatusProvider::Observer:
@@ -51,7 +57,9 @@ class BrowserManagementService : public ManagementService,
 
   // Updates the management icon used to indicate profile level management.
   void UpdateManagementIconForProfile(Profile* profile);
+  void UpdateManagementIconForBrowser(Profile* profile);
   void SetManagementIconForProfile(const gfx::Image& management_icon);
+  void SetManagementIconForBrowser(const gfx::Image& management_icon);
 
   // Sets the enterprise label in the profile attribute storage and notifies
   // observers of the change.
@@ -60,6 +68,7 @@ class BrowserManagementService : public ManagementService,
   std::unique_ptr<UserCloudPolicyStatusProvider> provider_;
   PrefChangeRegistrar pref_change_registrar_;
   ui::ImageModel management_icon_for_profile_;
+  gfx::Image management_icon_for_browser_;
   base::ScopedObservation<PolicyStatusProvider, PolicyStatusProvider::Observer>
       policy_status_provider_observations_{this};
   base::WeakPtrFactory<BrowserManagementService> weak_ptr_factory_{this};

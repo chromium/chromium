@@ -24,6 +24,10 @@
 class PrefService;
 class PrefRegistrySimple;
 
+namespace gfx {
+class Image;
+}
+
 namespace ui {
 class ImageModel;
 }
@@ -124,6 +128,7 @@ class POLICY_EXPORT ManagementService {
   virtual void RefreshCache(CacheRefreshCallback callback);
 
   virtual ui::ImageModel* GetManagementIconForProfile();
+  virtual gfx::Image* GetManagementIconForBrowser();
 
   // Returns true if `authority` is are actively managed.
   bool HasManagementAuthority(EnterpriseManagementAuthority authority);
@@ -155,6 +160,8 @@ class POLICY_EXPORT ManagementService {
   void SetManagementStatusProviderForTesting(
       std::vector<std::unique_ptr<ManagementStatusProvider>> providers);
   virtual void TriggerPolicyStatusChangedForTesting() {}
+  virtual void SetBrowserManagementIconForTesting(
+      const gfx::Image& management_icon) {}
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 

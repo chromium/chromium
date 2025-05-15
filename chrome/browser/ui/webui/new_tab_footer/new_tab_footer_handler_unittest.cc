@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/strings/string_util.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -30,7 +31,12 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_task_environment.h"
+#include "ui/color/color_provider.h"
+#include "ui/gfx/image/image_skia_rep_default.h"
+#include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/paint_vector_icon.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 using testing::_;
@@ -274,5 +280,54 @@ TEST_F(NewTabFooterHandlerEnterpriseTest, SetManagementNotice_DomainText) {
   handler().UpdateManagementNotice();
 
   document_.FlushForTesting();
+}
+
+TEST_F(NewTabFooterHandlerEnterpriseTest, SetNtpManagementNotice_CustomLogo) {
+  // Simulate that the browser is managed.
+  policy::ScopedManagementServiceOverrideForTesting profile_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+  gfx::Image custom_logo = gfx::test::CreateImage(256, 256);
+  policy::ManagementServiceFactory::GetForProfile(profile())
+      ->SetBrowserManagementIconForTesting(custom_logo);
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
+      custom_logo.AsBitmap(), handler_->GetManagementNoticeIconBitmap()));
+  EXPECT_CALL(document_, SetManagementNotice)
+      .WillOnce([](new_tab_footer::mojom::ManagementNoticePtr notice) {
+        EXPECT_EQ("Managed by your organization", notice->text);
+        // We only test the base URL as the data is very long and not readable.
+        EXPECT_TRUE(base::StartsWith(notice->bitmap_data_url.spec(),
+                                     "data:image/png;base64,"));
+      });
+  handler().UpdateManagementNotice();
+
+  document_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&document_);
+}
+
+TEST_F(NewTabFooterHandlerEnterpriseTest, SetNtpManagementNotice_DefaultLogo) {
+  // Simulate that the browser is managed.
+  policy::ScopedManagementServiceOverrideForTesting profile_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+
+  const gfx::ImageSkia default_logo =
+      gfx::CreateVectorIcon(gfx::IconDescription(
+          vector_icons::kBusinessIcon, 20,
+          web_contents_->GetColorProvider().GetColor(ui::kColorIcon)));
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
+      default_logo.GetRepresentation(1.0f).GetBitmap(),
+      handler_->GetManagementNoticeIconBitmap()));
+  EXPECT_CALL(document_, SetManagementNotice)
+      .WillOnce([](new_tab_footer::mojom::ManagementNoticePtr notice) {
+        EXPECT_EQ("Managed by your organization", notice->text);
+        // We only test the base URL as the data is very long and not readable.
+        EXPECT_TRUE(base::StartsWith(notice->bitmap_data_url.spec(),
+                                     "data:image/png;base64,"));
+      });
+  handler().UpdateManagementNotice();
+
+  document_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&document_);
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

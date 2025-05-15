@@ -26,6 +26,7 @@
   line-height: 20px;
   margin: 0;
   padding: 6px 0;
+  text-align: center;
 }
 
 [role="link"] {
@@ -50,4 +51,16 @@
   right: 0;
   top: calc(50% - 6px);
   width: 1px;
+}
+
+#managementNoticeContainer {
+  display: inline-flex;
+}
+
+#managementNoticeLogo {
+  padding-right: 16px;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  transform: translateY(+25%);
 }

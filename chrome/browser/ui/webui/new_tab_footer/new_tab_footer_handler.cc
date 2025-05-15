@@ -8,6 +8,8 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/browser_management_service.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,12 +24,16 @@
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/color/color_provider.h"
+#include "ui/gfx/image/image_skia_rep_default.h"
+#include "ui/gfx/paint_vector_icon.h"
 
 NewTabFooterHandler::NewTabFooterHandler(
     mojo::PendingReceiver<new_tab_footer::mojom::NewTabFooterHandler>
@@ -75,6 +81,8 @@ void NewTabFooterHandler::UpdateManagementNotice() {
 
   auto notice = new_tab_footer::mojom::ManagementNotice::New();
   notice->text = GetManagementNoticeText();
+  notice->bitmap_data_url =
+      GURL(webui::GetBitmapDataUrl(GetManagementNoticeIconBitmap()));
   document_->SetManagementNotice(std::move(notice));
 }
 
@@ -108,6 +116,24 @@ std::string NewTabFooterHandler::GetManagementNoticeText() {
              ? l10n_util::GetStringFUTF8(
                    IDS_MANAGED_BY, base::UTF8ToUTF16(*cloud_policy_manager))
              : l10n_util::GetStringUTF8(IDS_MANAGED);
+}
+
+SkBitmap NewTabFooterHandler::GetManagementNoticeIconBitmap() {
+  CHECK(enterprise_util::CanShowEnterpriseBadgingForNTPFooter(profile_));
+
+  // Return custom icon if set by policy.
+  gfx::Image* custom_icon =
+      policy::ManagementServiceFactory::GetForProfile(profile_)
+          ->GetManagementIconForBrowser();
+  if (custom_icon && !custom_icon->IsEmpty()) {
+    return custom_icon->AsBitmap();
+  }
+
+  const gfx::ImageSkia default_management_icon =
+      gfx::CreateVectorIcon(gfx::IconDescription(
+          vector_icons::kBusinessIcon, 20,
+          web_contents_->GetColorProvider().GetColor(ui::kColorIcon)));
+  return default_management_icon.GetRepresentation(1.0f).GetBitmap();
 }
 
 void NewTabFooterHandler::OnExtensionReady(
