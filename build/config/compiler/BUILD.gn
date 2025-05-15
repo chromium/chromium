@@ -2092,6 +2092,13 @@ config("default_warnings") {
         # annotation completeness, this warning exception can be removed.
         "-Wno-nullability-completeness",
       ]
+
+      if (llvm_force_head_revision) {
+        cflags_cc += [
+          # TODO(crbug.com/417996267): Fix and re-enable
+          "-Wno-character-conversion",
+        ]
+      }
     }
 
     if (is_wasm) {
