@@ -35,6 +35,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/mouse_watcher.h"
 #include "ui/views/mouse_watcher_view_host.h"
@@ -469,6 +470,9 @@ void TabStripActionContainer::OnGlicButtonClicked() {
 
   ExecuteHideTabStripNudge(glic_button_);
   glic_button_->SetText(std::u16string());
+  // Reset state manually since there wont be a mouse up event as the animation
+  // moves the button out of the way.
+  glic_button_->SetState(views::Button::ButtonState::STATE_NORMAL);
 }
 
 void TabStripActionContainer::OnGlicButtonDismissed() {
