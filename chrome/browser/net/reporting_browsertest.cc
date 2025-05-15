@@ -737,7 +737,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestMoreContextData,
   const std::string* url = report.FindString("url");
   const base::Value::Dict* body = report.FindDict("body");
   const std::string* reason = body->FindString("reason");
-  const std::string* is_top_level = body->FindString("is_top_level");
+  const std::optional<bool> is_top_level = body->FindBool("is_top_level");
   const std::string* visibility_state = body->FindString("visibility_state");
 
   EXPECT_EQ("crash", *type);
@@ -746,10 +746,10 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestMoreContextData,
   // When the `kCrashReportingAPIMoreContextData` flag is enabled, expect the
   // extra CrashReportBody context bits to be present.
   if (GetParam()) {
-    EXPECT_EQ("true", *is_top_level);
+    EXPECT_TRUE(*is_top_level);
     EXPECT_EQ("visible", *visibility_state);
   } else {
-    EXPECT_EQ(nullptr, is_top_level);
+    EXPECT_EQ(std::nullopt, is_top_level);
     EXPECT_EQ(nullptr, visibility_state);
   }
 }
@@ -830,15 +830,15 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestMoreContextData,
   const std::string* url = report.FindString("url");
   const base::Value::Dict* body = report.FindDict("body");
   const std::string* reason = body->FindString("reason");
-  const std::string* is_top_level = body->FindString("is_top_level");
+  const std::optional<bool> is_top_level = body->FindBool("is_top_level");
 
   EXPECT_EQ("crash", *type);
   EXPECT_EQ(*url, iframe_url);
   EXPECT_EQ("unresponsive", *reason);
   if (GetParam()) {
-    EXPECT_EQ("false", *is_top_level);
+    EXPECT_FALSE(*is_top_level);
   } else {
-    EXPECT_EQ(nullptr, is_top_level);
+    EXPECT_EQ(std::nullopt, is_top_level);
   }
 }
 
