@@ -113,33 +113,6 @@ base::Time TimeFromWindowsEpochMicros(int64_t time_windows_epoch_micros) {
       base::Microseconds(time_windows_epoch_micros));
 }
 
-sync_pb::SharedTabGroupDataSpecifics SharedTabGroupToSpecifics(
-    const SavedTabGroup& group) {
-  CHECK(group.is_shared_tab_group());
-  sync_pb::SharedTabGroupDataSpecifics pb_specifics;
-  pb_specifics.set_guid(group.saved_guid().AsLowercaseString());
-  pb_specifics.set_update_time_windows_epoch_micros(
-      group.update_time_windows_epoch_micros()
-          .ToDeltaSinceWindowsEpoch()
-          .InMicroseconds());
-
-  sync_pb::SharedTabGroup* pb_group = pb_specifics.mutable_tab_group();
-  pb_group->set_color(TabGroupColorToSyncColor(group.color()));
-  pb_group->set_title(base::UTF16ToUTF8(group.title()));
-
-  // Force returning originating tab group GUID for specifics (both local and
-  // network).
-  if (group.GetOriginatingTabGroupGuid(/*for_sync=*/true).has_value()) {
-    pb_group->set_originating_tab_group_guid(
-        group.GetOriginatingTabGroupGuid(/*for_sync=*/true)
-            .value()
-            .AsLowercaseString());
-  }
-
-  pb_specifics.set_version(kCurrentSharedTabGroupDataSpecificsProtoVersion);
-  return pb_specifics;
-}
-
 SavedTabGroup SpecificsToSharedTabGroup(
     const sync_pb::SharedTabGroupDataSpecifics& specifics,
     const syncer::CollaborationMetadata& collaboration_metadata,
@@ -217,27 +190,6 @@ SavedTabGroupTab SpecificsToSharedTabGroupTab(
   tab.SetUpdatedByAttribution(collaboration_metadata.last_updated_by());
   tab.SetUpdateTimeWindowsEpochMicros(update_time);
   return tab;
-}
-
-sync_pb::SharedTabGroupDataSpecifics SharedTabGroupTabToSpecifics(
-    const SavedTabGroupTab& tab,
-    sync_pb::UniquePosition unique_position) {
-  sync_pb::SharedTabGroupDataSpecifics specifics;
-
-  specifics.set_guid(tab.saved_tab_guid().AsLowercaseString());
-  specifics.set_update_time_windows_epoch_micros(
-      tab.update_time_windows_epoch_micros()
-          .ToDeltaSinceWindowsEpoch()
-          .InMicroseconds());
-
-  sync_pb::SharedTab* pb_tab = specifics.mutable_tab();
-  pb_tab->set_url(tab.url().spec());
-  pb_tab->set_shared_tab_group_guid(tab.saved_group_guid().AsLowercaseString());
-  pb_tab->set_title(base::UTF16ToUTF8(tab.title()));
-  *pb_tab->mutable_unique_position() = std::move(unique_position);
-
-  specifics.set_version(kCurrentSharedTabGroupDataSpecificsProtoVersion);
-  return specifics;
 }
 
 std::unique_ptr<syncer::EntityData> CreateEntityData(
@@ -1132,13 +1084,6 @@ void SharedTabGroupDataSyncBridge::UntrackEntitiesForCollaboration(
   }
 }
 
-// static
-sync_pb::SharedTabGroupDataSpecifics
-SharedTabGroupDataSyncBridge::SharedTabGroupTabToSpecificsForTest(
-    const SavedTabGroupTab& tab) {
-  return SharedTabGroupTabToSpecifics(tab, sync_pb::UniquePosition());
-}
-
 void SharedTabGroupDataSyncBridge::OnStoreCreated(
     const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::DataTypeStore> store) {
@@ -1648,6 +1593,72 @@ SharedTabGroupDataSyncBridge::ResolveTabsMissingGroups(
     }
   }
   return std::nullopt;
+}
+
+sync_pb::SharedTabGroupDataSpecifics
+SharedTabGroupDataSyncBridge::SharedTabGroupToSpecifics(
+    const SavedTabGroup& group) const {
+  CHECK(group.is_shared_tab_group());
+  // WARNING: all fields need to be set or cleared explicitly.
+  // WARNING: if you are adding support for new `SharedTabGroupDataSpecifics`
+  // fields, you need to update the following functions accordingly:
+  // `TrimAllSupportedFieldsFromRemoteSpecifics`.
+  sync_pb::SharedTabGroupDataSpecifics pb_specifics =
+      change_processor()
+          ->GetPossiblyTrimmedRemoteSpecifics(StorageKeyForGroup(group))
+          .shared_tab_group_data();
+  pb_specifics.set_guid(group.saved_guid().AsLowercaseString());
+  pb_specifics.set_update_time_windows_epoch_micros(
+      group.update_time_windows_epoch_micros()
+          .ToDeltaSinceWindowsEpoch()
+          .InMicroseconds());
+
+  sync_pb::SharedTabGroup* pb_group = pb_specifics.mutable_tab_group();
+  pb_group->set_color(TabGroupColorToSyncColor(group.color()));
+  pb_group->set_title(base::UTF16ToUTF8(group.title()));
+
+  // Force returning originating tab group GUID for specifics (both local and
+  // network).
+  if (group.GetOriginatingTabGroupGuid(/*for_sync=*/true).has_value()) {
+    pb_group->set_originating_tab_group_guid(
+        group.GetOriginatingTabGroupGuid(/*for_sync=*/true)
+            .value()
+            .AsLowercaseString());
+  } else {
+    pb_group->clear_originating_tab_group_guid();
+  }
+
+  pb_specifics.set_version(kCurrentSharedTabGroupDataSpecificsProtoVersion);
+  return pb_specifics;
+}
+
+sync_pb::SharedTabGroupDataSpecifics
+SharedTabGroupDataSyncBridge::SharedTabGroupTabToSpecifics(
+    const SavedTabGroupTab& tab,
+    sync_pb::UniquePosition unique_position) const {
+  // WARNING: all fields need to be set or cleared explicitly.
+  // WARNING: if you are adding support for new `SharedTabGroupDataSpecifics`
+  // fields, you need to update the following functions accordingly:
+  // `TrimAllSupportedFieldsFromRemoteSpecifics`.
+  sync_pb::SharedTabGroupDataSpecifics specifics =
+      change_processor()
+          ->GetPossiblyTrimmedRemoteSpecifics(StorageKeyForTab(tab))
+          .shared_tab_group_data();
+
+  specifics.set_guid(tab.saved_tab_guid().AsLowercaseString());
+  specifics.set_update_time_windows_epoch_micros(
+      tab.update_time_windows_epoch_micros()
+          .ToDeltaSinceWindowsEpoch()
+          .InMicroseconds());
+
+  sync_pb::SharedTab* pb_tab = specifics.mutable_tab();
+  pb_tab->set_url(tab.url().spec());
+  pb_tab->set_shared_tab_group_guid(tab.saved_group_guid().AsLowercaseString());
+  pb_tab->set_title(base::UTF16ToUTF8(tab.title()));
+  *pb_tab->mutable_unique_position() = std::move(unique_position);
+
+  specifics.set_version(kCurrentSharedTabGroupDataSpecificsProtoVersion);
+  return specifics;
 }
 
 SharedTabGroupDataSyncBridge::TabMissingGroup::TabMissingGroup(
