@@ -18,16 +18,18 @@ constexpr char kInvalidId[] = "";
 
 constexpr char kValidProgramLogo[] = "http://foobar.com/logo.png";
 constexpr char kInvalidProgramLogo[] = "logo.png";
+constexpr char kValidCardNumber[] = "80974934820245";
 
 LoyaltyCard TestLoyaltyCard(std::string_view id = kId1) {
   return LoyaltyCard(ValuableId(std::string(id)), "merchant_name",
                      "program_name", GURL("http://foobar.com/logo.png"),
-                     "number", {GURL("https://domain.example")});
+                     kValidCardNumber, {GURL("https://domain.example")});
 }
 
 sync_pb::AutofillValuableSpecifics TestLoyaltyCardSpecifics(
     std::string_view id = kId1,
-    std::string_view program_logo = kValidProgramLogo) {
+    std::string_view program_logo = kValidProgramLogo,
+    std::string_view number = kValidCardNumber) {
   sync_pb::AutofillValuableSpecifics specifics =
       sync_pb::AutofillValuableSpecifics();
   specifics.set_id(std::string(id));
@@ -37,7 +39,7 @@ sync_pb::AutofillValuableSpecifics TestLoyaltyCardSpecifics(
   loyalty_card->set_merchant_name("merchant_name");
   loyalty_card->set_program_name("program_name");
   loyalty_card->set_program_logo(std::string(program_logo));
-  loyalty_card->set_loyalty_card_number("number");
+  loyalty_card->set_loyalty_card_number(number);
   *loyalty_card->add_merchant_domains() = "https://domain.example";
   return specifics;
 }
@@ -99,6 +101,10 @@ TEST_F(LoyaltyCardSyncUtilTest, AreAutofillLoyaltyCardSpecificsValid) {
       TestLoyaltyCardSpecifics(kInvalidId)));
   EXPECT_FALSE(AreAutofillLoyaltyCardSpecificsValid(
       TestLoyaltyCardSpecifics(kId1, kInvalidProgramLogo)));
+  EXPECT_FALSE(AreAutofillLoyaltyCardSpecificsValid(
+      TestLoyaltyCardSpecifics(kId1, kInvalidProgramLogo)));
+  EXPECT_FALSE(AreAutofillLoyaltyCardSpecificsValid(
+      TestLoyaltyCardSpecifics(kId1, kValidProgramLogo, /*number=*/"")));
   EXPECT_TRUE(
       AreAutofillLoyaltyCardSpecificsValid(TestLoyaltyCardSpecifics(kId1)));
 }

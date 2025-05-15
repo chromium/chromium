@@ -29,7 +29,7 @@ LoyaltyCard::LoyaltyCard(LoyaltyCard&&) = default;
 LoyaltyCard::~LoyaltyCard() = default;
 
 bool LoyaltyCard::IsValid() const {
-  return !id_->empty() &&
+  return !id_->empty() && !loyalty_card_number_.empty() &&
          (program_logo_.is_empty() || program_logo_.is_valid());
 }
 
