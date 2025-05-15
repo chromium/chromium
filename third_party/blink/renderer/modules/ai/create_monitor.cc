@@ -42,18 +42,26 @@ ExecutionContext* CreateMonitor::GetExecutionContext() const {
 void CreateMonitor::OnDownloadProgressUpdate(uint64_t downloaded_bytes,
                                              uint64_t total_bytes) {
   CHECK_EQ(total_bytes, kNormalizedDownloadProgressMax);
-  // Dispatch a synthetic start event, as needed, for spec compliance.
-  if (!(dispatched_start_ |= (downloaded_bytes == 0))) {
-    OnDownloadProgressUpdate(0, total_bytes);
+  CHECK_LE(downloaded_bytes, kNormalizedDownloadProgressMax);
+  CHECK_GE(downloaded_bytes, 0u);
+
+  bool first_update = !last_downloaded_bytes_.has_value();
+
+  if (!first_update && downloaded_bytes <= last_downloaded_bytes_) {
+    return;
   }
-  // Refrain from dispatching events after the end event.
-  if (!dispatched_end_) {
-    const double normalized_downloaded_bytes =
-        std::min(downloaded_bytes / static_cast<double>(total_bytes), 1.0);
-    DispatchEvent(*ProgressEvent::Create(event_type_names::kDownloadprogress,
-                                         true, normalized_downloaded_bytes, 1));
+
+  last_downloaded_bytes_ = downloaded_bytes;
+
+  if (first_update) {
+    // The first update should always be zero.
+    CHECK_EQ(downloaded_bytes, 0u);
   }
-  dispatched_end_ |= (downloaded_bytes >= total_bytes);
+
+  const double normalized_downloaded_bytes =
+      std::min(downloaded_bytes / static_cast<double>(total_bytes), 1.0);
+  DispatchEvent(*ProgressEvent::Create(event_type_names::kDownloadprogress,
+                                       true, normalized_downloaded_bytes, 1));
 }
 
 mojo::PendingRemote<mojom::blink::ModelDownloadProgressObserver>

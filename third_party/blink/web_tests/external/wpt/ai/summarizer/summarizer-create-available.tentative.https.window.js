@@ -33,6 +33,10 @@ promise_test(async () => {
   assert_equals(typeof summarizer, 'object');
 }, 'Summarizer.create() notifies its monitor on downloadprogress');
 
+promise_test(async t => {
+  await testCreateMonitorWithAbort(t, Summarizer.create);
+}, 'Progress events are not emitted after aborted.');
+
 promise_test(async () => {
   const sharedContext = 'This is a shared context string';
   const summarizer = await Summarizer.create({sharedContext: sharedContext});
@@ -55,23 +59,18 @@ promise_test(async () => {
 }, 'Summarizer.length');
 
 promise_test(async () => {
-  const summarizer = await Summarizer.create({
-    expectedInputLanguages: ['en']
-  });
+  const summarizer = await Summarizer.create({expectedInputLanguages: ['en']});
   assert_array_equals(summarizer.expectedInputLanguages, ['en']);
 }, 'Summarizer.expectedInputLanguages');
 
 promise_test(async () => {
-  const summarizer = await Summarizer.create({
-    expectedContextLanguages: ['en']
-  });
+  const summarizer =
+      await Summarizer.create({expectedContextLanguages: ['en']});
   assert_array_equals(summarizer.expectedContextLanguages, ['en']);
 }, 'Summarizer.expectedContextLanguages');
 
 promise_test(async () => {
-  const summarizer = await Summarizer.create({
-    outputLanguage: 'en'
-  });
+  const summarizer = await Summarizer.create({outputLanguage: 'en'});
   assert_equals(summarizer.outputLanguage, 'en');
 }, 'Summarizer.outputLanguage');
 

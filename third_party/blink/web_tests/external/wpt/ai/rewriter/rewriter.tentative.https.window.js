@@ -11,7 +11,8 @@ promise_test(async () => {
 promise_test(async () => {
   // TODO(crbug.com/382615217): Test availability with various options.
   assert_equals(await Rewriter.availability(), 'available');
-  assert_equals(await Rewriter.availability({ outputLanguage: 'en' }), 'available');
+  assert_equals(
+      await Rewriter.availability({outputLanguage: 'en'}), 'available');
 }, 'Rewriter.availability');
 
 promise_test(async () => {
@@ -22,6 +23,10 @@ promise_test(async () => {
 promise_test(async () => {
   await testMonitor(Rewriter.create);
 }, 'Rewriter.create() notifies its monitor on downloadprogress');
+
+promise_test(async t => {
+  await testCreateMonitorWithAbort(t, Rewriter.create);
+}, 'Progress events are not emitted after aborted.');
 
 promise_test(async () => {
   const rewriter = await Rewriter.create();
@@ -68,23 +73,17 @@ promise_test(async () => {
 }, 'Creating a Rewriter with "longer" length');
 
 promise_test(async () => {
-  const rewriter = await Rewriter.create({
-    expectedInputLanguages: ['en']
-  });
+  const rewriter = await Rewriter.create({expectedInputLanguages: ['en']});
   assert_array_equals(rewriter.expectedInputLanguages, ['en']);
 }, 'Creating a Rewriter with expectedInputLanguages');
 
 promise_test(async () => {
-  const rewriter = await Rewriter.create({
-    expectedContextLanguages: ['en']
-  });
+  const rewriter = await Rewriter.create({expectedContextLanguages: ['en']});
   assert_array_equals(rewriter.expectedContextLanguages, ['en']);
 }, 'Creating a Rewriter with expectedContextLanguages');
 
 promise_test(async () => {
-  const rewriter = await Rewriter.create({
-    outputLanguage: 'en'
-  });
+  const rewriter = await Rewriter.create({outputLanguage: 'en'});
   assert_equals(rewriter.outputLanguage, 'en');
 }, 'Creating a Rewriter with outputLanguage');
 
@@ -95,14 +94,16 @@ promise_test(async () => {
   assert_equals(rewriter.outputLanguage, null);
 }, 'Creating a Rewriter without optional attributes');
 
-promise_test(async (t) => {
-  const rewriter = await Rewriter.create();
-  let result = await rewriter.rewrite('');
-  assert_equals(result, '');
-  result = await rewriter.rewrite(' ');
-  assert_equals(result, ' ');
-}, 'Rewriter.rewrite() with an empty input or whitespace returns the ' +
-    'original input');
+promise_test(
+    async (t) => {
+      const rewriter = await Rewriter.create();
+      let result = await rewriter.rewrite('');
+      assert_equals(result, '');
+      result = await rewriter.rewrite(' ');
+      assert_equals(result, ' ');
+    },
+    'Rewriter.rewrite() with an empty input or whitespace returns the ' +
+        'original input');
 
 promise_test(async (t) => {
   const rewriter = await Rewriter.create();
@@ -119,7 +120,8 @@ promise_test(async (t) => {
 promise_test(async (t) => {
   const rewriter = await Rewriter.create();
   rewriter.destroy();
-  assert_throws_dom('InvalidStateError', () => rewriter.rewriteStreaming('hello'));
+  assert_throws_dom(
+      'InvalidStateError', () => rewriter.rewriteStreaming('hello'));
 }, 'Rewriter.rewriteStreaming() fails after destroyed');
 
 promise_test(async () => {
@@ -130,15 +132,14 @@ promise_test(async () => {
 
 promise_test(async () => {
   const rewriter = await Rewriter.create();
-  const result =
-      await rewriter.rewrite(kTestPrompt, {context: kTestContext});
+  const result = await rewriter.rewrite(kTestPrompt, {context: kTestContext});
   assert_equals(typeof result, 'string');
 }, 'Simple Rewriter.rewrite() call');
 
 promise_test(async () => {
   const rewriter = await Rewriter.create();
-  const streamingResponse = rewriter.rewriteStreaming(
-      kTestPrompt, {context: kTestContext});
+  const streamingResponse =
+      rewriter.rewriteStreaming(kTestPrompt, {context: kTestContext});
   assert_equals(
       Object.prototype.toString.call(streamingResponse),
       '[object ReadableStream]');
@@ -151,10 +152,8 @@ promise_test(async () => {
 
 promise_test(async () => {
   const rewriter = await Rewriter.create();
-  await Promise.all([
-    rewriter.rewrite(kTestPrompt),
-    rewriter.rewrite(kTestPrompt)
-  ]);
+  await Promise.all(
+      [rewriter.rewrite(kTestPrompt), rewriter.rewrite(kTestPrompt)]);
 }, 'Multiple Rewriter.rewrite() calls are resolved successfully.');
 
 promise_test(async () => {

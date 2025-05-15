@@ -11,7 +11,7 @@ promise_test(async () => {
 promise_test(async () => {
   // TODO(crbug.com/382596381): Test availability with various options.
   assert_equals(await Writer.availability(), 'available');
-  assert_equals(await Writer.availability({ outputLanguage: 'en' }), 'available');
+  assert_equals(await Writer.availability({outputLanguage: 'en'}), 'available');
 }, 'Writer.availability');
 
 promise_test(async () => {
@@ -22,6 +22,10 @@ promise_test(async () => {
 promise_test(async () => {
   await testMonitor(Writer.create);
 }, 'Writer.create() notifies its monitor on downloadprogress');
+
+promise_test(async t => {
+  await testCreateMonitorWithAbort(t, Writer.create);
+}, 'Progress events are not emitted after aborted.');
 
 promise_test(async () => {
   const writer = await Writer.create();
@@ -70,9 +74,7 @@ promise_test(async () => {
 }, 'Creating a Writer with "long" length');
 
 promise_test(async () => {
-  const writer = await Writer.create({
-    expectedInputLanguages: ['en']
-  });
+  const writer = await Writer.create({expectedInputLanguages: ['en']});
   assert_array_equals(writer.expectedInputLanguages, ['en']);
 }, 'Creating a Writer with expectedInputLanguages');
 
@@ -85,16 +87,12 @@ promise_test(async (t) => {
 
 
 promise_test(async () => {
-  const writer = await Writer.create({
-    expectedContextLanguages: ['en']
-  });
+  const writer = await Writer.create({expectedContextLanguages: ['en']});
   assert_array_equals(writer.expectedContextLanguages, ['en']);
 }, 'Creating a Writer with expectedContextLanguages');
 
 promise_test(async () => {
-  const writer = await Writer.create({
-    outputLanguage: 'en'
-  });
+  const writer = await Writer.create({outputLanguage: 'en'});
   assert_equals(writer.outputLanguage, 'en');
 }, 'Creating a Writer with outputLanguage');
 
@@ -139,8 +137,7 @@ promise_test(async () => {
 
 promise_test(async () => {
   const writer = await Writer.create();
-  const result =
-      await writer.write(kTestPrompt, {context: kTestContext});
+  const result = await writer.write(kTestPrompt, {context: kTestContext});
   assert_equals(typeof result, 'string');
 }, 'Simple Writer.write() call');
 
@@ -160,16 +157,11 @@ promise_test(async () => {
 
 promise_test(async () => {
   const writer = await Writer.create();
-  await Promise.all([
-    writer.write(kTestPrompt),
-    writer.write(kTestPrompt)
-  ]);
+  await Promise.all([writer.write(kTestPrompt), writer.write(kTestPrompt)]);
 }, 'Multiple Writer.write() calls are resolved successfully.');
 
 promise_test(async () => {
   const writer = await Writer.create();
-  await Promise.all([
-    writer.writeStreaming(kTestPrompt),
-    writer.writeStreaming(kTestPrompt)
-  ]);
+  await Promise.all(
+      [writer.writeStreaming(kTestPrompt), writer.writeStreaming(kTestPrompt)]);
 }, 'Multiple Writer.writeStreaming() calls are resolved successfully.');

@@ -108,6 +108,11 @@ promise_test(async t => {
 }, 'Translator.create() notifies its monitor on downloadprogress');
 
 promise_test(async t => {
+  await testCreateMonitorWithAbort(
+      t, createTranslator, {sourceLanguage: 'en', targetLanguage: 'ja'});
+}, 'Progress events are not emitted after aborted.');
+
+promise_test(async t => {
   const translator =
       await createTranslator({sourceLanguage: 'en', targetLanguage: 'ja'});
 

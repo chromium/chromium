@@ -39,8 +39,8 @@ class CreateMonitor final : public EventTarget,
   DEFINE_ATTRIBUTE_EVENT_LISTENER(downloadprogress, kDownloadprogress)
 
  private:
-  bool dispatched_start_ = false;
-  bool dispatched_end_ = false;
+  std::optional<uint64_t> last_downloaded_bytes_;
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoReceiver<mojom::blink::ModelDownloadProgressObserver, CreateMonitor>
       receiver_;
