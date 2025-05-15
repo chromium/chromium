@@ -349,7 +349,8 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
          socket_tag == request.socket_tag &&
          allows_device_bound_session_registration ==
              request.allows_device_bound_session_registration &&
-         permissions_policy == request.permissions_policy;
+         permissions_policy == request.permissions_policy &&
+         fetch_retry_options == request.fetch_retry_options;
 }
 
 bool ResourceRequest::SendsCookies() const {

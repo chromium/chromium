@@ -26,6 +26,7 @@
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
+#include "services/network/public/mojom/fetch_retry_options.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/trust_token_access_observer.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
@@ -139,7 +140,8 @@ bool StructTraits<
       !data.ReadKeepaliveToken(&out->keepalive_token) ||
       !data.ReadStorageAccessApiStatus(&out->storage_access_api_status) ||
       !data.ReadSocketTag(&out->socket_tag) ||
-      !data.ReadPermissionsPolicy(&out->permissions_policy)) {
+      !data.ReadPermissionsPolicy(&out->permissions_policy) ||
+      !data.ReadFetchRetryOptions(&out->fetch_retry_options)) {
     // Note that data.ReadTrustTokenParams is temporarily handled below.
     return false;
   }
@@ -311,6 +313,21 @@ bool StructTraits<network::mojom::SocketTagDataView, net::SocketTag>::Read(
 #else
   *out = net::SocketTag();
 #endif  // BUILDFLAG(IS_ANDROID)
+  return true;
+}
+
+bool StructTraits<network::mojom::FetchRetryOptionsDataView,
+                  network::FetchRetryOptions>::
+    Read(network::mojom::FetchRetryOptionsDataView data,
+         FetchRetryOptions* out) {
+  out->max_attempts = data.max_attempts();
+  if (!data.ReadInitialDelay(&out->initial_delay) ||
+      !data.ReadMaxAge(&out->max_age)) {
+    return false;
+  }
+  out->backoff_factor = data.backoff_factor();
+  out->retry_after_unload = data.retry_after_unload();
+  out->retry_non_idempotent = data.retry_non_idempotent();
   return true;
 }
 

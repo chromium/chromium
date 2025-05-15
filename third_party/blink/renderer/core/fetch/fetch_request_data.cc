@@ -247,6 +247,7 @@ FetchRequestData* FetchRequestData::CloneExceptBody() {
   request->attribution_reporting_support_ = attribution_reporting_support_;
   request->service_worker_race_network_request_token_ =
       service_worker_race_network_request_token_;
+  request->retry_options_ = retry_options_;
   return request;
 }
 

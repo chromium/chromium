@@ -2066,6 +2066,10 @@
       status: "stable",
     },
     {
+      name: "FetchRetry",
+      status: "experimental",
+    },
+    {
       name: "FetchUploadStreaming",
       status: "stable",
     },

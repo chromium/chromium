@@ -24,6 +24,7 @@
 #include "net/socket/socket_tag.h"
 #include "net/storage_access_api/status.h"
 #include "net/url_request/referrer_policy.h"
+#include "services/network/public/cpp/fetch_retry_options.h"
 #include "services/network/public/cpp/optional_trust_token_params.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/resource_request_body.h"
@@ -252,6 +253,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   bool allows_device_bound_session_registration = false;
 
   std::optional<network::PermissionsPolicy> permissions_policy;
+
+  std::optional<network::FetchRetryOptions> fetch_retry_options;
 };
 // LINT.ThenChange(//services/network/prefetch_matches.cc)
 

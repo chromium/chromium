@@ -248,6 +248,18 @@ component("integrity_policy") {
   defines = [ "IS_NETWORK_CPP_INTEGRITY_POLICY_IMPL" ]
 }
 
+component("fetch_retry_options") {
+  sources = [
+    "fetch_retry_options.cc",
+    "fetch_retry_options.h",
+  ]
+  deps = [
+    "//net",
+    "//services/network/public/mojom:url_loader_base_shared",
+  ]
+  defines = [ "IS_NETWORK_CPP_FETCH_RETRY_OPTIONS_IMPL" ]
+}
+
 component("cookies_mojom_support") {
   sources = [
     "cookie_manager_shared_mojom_traits.cc",
@@ -597,6 +609,7 @@ component("cpp_base") {
     ":crash_keys",
     ":cross_origin_embedder_policy",
     ":document_isolation_policy",
+    ":fetch_retry_options",
     ":integrity_policy",
     ":ip_address_mojom_support",
     ":network_param_mojom_support",

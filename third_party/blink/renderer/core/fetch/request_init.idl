@@ -33,6 +33,7 @@ dictionary RequestInit {
     // because the SecureContext IDL attribute doesn't affect dictionary members.
     [RuntimeEnabled=PrivateStateTokens] PrivateToken privateToken;
     [RuntimeEnabled=AttributionReporting] AttributionReportingRequestOptions attributionReporting;
+    [RuntimeEnabled=FetchRetry] RetryOptions retryOptions;
     // TODO(domfarolino): add support for RequestInit window member.
     //any window; // can only be set to null
 };

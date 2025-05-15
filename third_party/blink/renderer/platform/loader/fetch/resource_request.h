@@ -38,6 +38,7 @@
 #include "net/filter/source_stream_type.h"
 #include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/fetch_retry_options.h"
 #include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom-blink-forward.h"
 #include "services/network/public/mojom/cors.mojom-blink-forward.h"
@@ -290,6 +291,16 @@ class PLATFORM_EXPORT ResourceRequestHead {
     keepalive_token_ =
         keepalive_ ? std::make_optional(base::UnguessableToken::Create())
                    : std::nullopt;
+  }
+
+  bool HasFetchRetryOptions() const { return fetch_retry_options_.has_value(); }
+  const std::optional<network::FetchRetryOptions>& FetchRetryOptions() const {
+    return fetch_retry_options_;
+  }
+
+  void SetFetchRetryOptions(
+      const network::FetchRetryOptions& fetch_retry_options) {
+    fetch_retry_options_ = fetch_retry_options;
   }
 
   // True if the request should be considered for computing and attaching the
@@ -833,6 +844,8 @@ class PLATFORM_EXPORT ResourceRequestHead {
   // The unique identifier set when this request's `keepalive_` is true.
   // TODO(crbug.com/382527001): Consider merge this field with `keepalive_`.
   std::optional<base::UnguessableToken> keepalive_token_;
+
+  std::optional<network::FetchRetryOptions> fetch_retry_options_;
 
 #if DCHECK_IS_ON()
   bool is_set_url_allowed_ = true;

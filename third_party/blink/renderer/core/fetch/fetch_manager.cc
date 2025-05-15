@@ -1159,6 +1159,10 @@ void FetchLoaderBase::PerformHTTPFetch(ExceptionState& exception_state) {
     UseCounter::Count(execution_context_, mojom::WebFeature::kFetchKeepalive);
   }
 
+  if (fetch_request_data_->HasRetryOptions()) {
+    request.SetFetchRetryOptions(fetch_request_data_->RetryOptions().value());
+  }
+
   request.SetBrowsingTopics(fetch_request_data_->BrowsingTopics());
   request.SetAdAuctionHeaders(fetch_request_data_->AdAuctionHeaders());
   request.SetAttributionReportingEligibility(

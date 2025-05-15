@@ -396,6 +396,8 @@ generated_dictionary_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_resize_observer_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_response_init.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_response_init.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_retry_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_retry_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sanitizer_attribute_namespace.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sanitizer_attribute_namespace.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sanitizer_config.cc",

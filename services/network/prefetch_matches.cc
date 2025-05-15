@@ -123,7 +123,8 @@ namespace {
   DO_FIELD(socket_tag) __VA_ARGS__                                 \
   DO_FIELD(keepalive_token) __VA_ARGS__                            \
   DO_FIELD(allows_device_bound_session_registration) __VA_ARGS__   \
-  DO_FIELD(permissions_policy)
+  DO_FIELD(permissions_policy) __VA_ARGS__   \
+  DO_FIELD(fetch_retry_options)
 
 // clang-format on
 

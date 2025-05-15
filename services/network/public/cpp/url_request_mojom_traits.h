@@ -36,6 +36,7 @@
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom-forward.h"
 #include "services/network/public/mojom/devtools_observer.mojom-forward.h"
+#include "services/network/public/mojom/fetch_retry_options.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/trust_token_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/trust_tokens.mojom-forward.h"
@@ -424,6 +425,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.permissions_policy;
   }
+  static const std::optional<network::FetchRetryOptions>& fetch_retry_options(
+      const network::ResourceRequest& request) {
+    return request.fetch_retry_options;
+  }
 
   static bool Read(network::mojom::URLRequestDataView data,
                    network::ResourceRequest* out);
@@ -568,6 +573,38 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static uid_t uid(const net::SocketTag& params) { return params.uid(); }
 #endif  // BUILDFLAG(IS_ANDROID)
   static bool Read(network::mojom::SocketTagDataView data, net::SocketTag* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+    StructTraits<network::mojom::FetchRetryOptionsDataView,
+                 network::FetchRetryOptions> {
+  using FetchRetryOptions = network::FetchRetryOptions;
+
+  static uint32_t max_attempts(const FetchRetryOptions& options) {
+    return options.max_attempts;
+  }
+  static std::optional<base::TimeDelta> initial_delay(
+      const FetchRetryOptions& options) {
+    return options.initial_delay;
+  }
+  static std::optional<base::TimeDelta> max_age(
+      const FetchRetryOptions& options) {
+    return options.max_age;
+  }
+  static const std::optional<double>& backoff_factor(
+      const FetchRetryOptions& options) {
+    return options.backoff_factor;
+  }
+  static bool retry_after_unload(const FetchRetryOptions& options) {
+    return options.retry_after_unload;
+  }
+  static bool retry_non_idempotent(const FetchRetryOptions& options) {
+    return options.retry_non_idempotent;
+  }
+
+  static bool Read(network::mojom::FetchRetryOptionsDataView data,
+                   network::FetchRetryOptions* out);
 };
 
 }  // namespace mojo
