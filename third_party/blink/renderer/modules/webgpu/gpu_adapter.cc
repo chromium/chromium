@@ -58,9 +58,6 @@ GPUAdapter::GPUAdapter(
     : DawnObject(dawn_control_client, std::move(handle), String()), gpu_(gpu) {
   wgpu::AdapterInfo info = {};
   wgpu::ChainedStructOut** propertiesChain = &info.nextInChain;
-  wgpu::AdapterPropertiesSubgroups subgroupsProperties = {};
-  *propertiesChain = &subgroupsProperties;
-  propertiesChain = &(*propertiesChain)->nextInChain;
   if (GetHandle().HasFeature(wgpu::FeatureName::AdapterPropertiesMemoryHeaps)) {
     *propertiesChain = &memory_heaps_;
     propertiesChain = &(*propertiesChain)->nextInChain;
@@ -111,8 +108,8 @@ GPUAdapter::GPUAdapter(
   if (supportsPropertiesVk) {
     vk_driver_version_ = vkProperties.driverVersion;
   }
-  subgroup_min_size_ = subgroupsProperties.subgroupMinSize;
-  subgroup_max_size_ = subgroupsProperties.subgroupMaxSize;
+  subgroup_min_size_ = info.subgroupMinSize;
+  subgroup_max_size_ = info.subgroupMaxSize;
   power_preference_ = powerProperties.powerPreference;
 
   features_ = MakeFeatureNameSet(GetHandle());
