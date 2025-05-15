@@ -28,7 +28,7 @@ source_set("password_store_interface") {
 
 source_set("password_store_impl") {
   sources = [
-    "encrypt_decrypt_intrface.h",
+    "encrypt_decrypt_interface.h",
     "get_logins_with_affiliations_request_handler.cc",
     "get_logins_with_affiliations_request_handler.h",
     "insecure_credentials_table.cc",
