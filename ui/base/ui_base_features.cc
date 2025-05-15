@@ -135,7 +135,7 @@ BASE_FEATURE(kWaylandTextInputV3,
 // scaling is enabled.
 BASE_FEATURE(kWaylandUiScale,
              "WaylandUiScale",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether Wayland session management protocol is enabled.
 BASE_FEATURE(kWaylandSessionManagement,
