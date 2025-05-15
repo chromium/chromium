@@ -473,18 +473,33 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         tds[15]?.innerText === '14.000' &&
         // Trigger Data Matching
         tds[16]?.innerText === 'modulus' &&
+        // Trigger Data
+        tds[17]?.children[0]?.children[0]?.innerText === '0' &&
+        tds[17]?.children[0]?.children[1]?.innerText === '1' &&
+        tds[17]?.children[0]?.children[2]?.innerText === '2' &&
+        tds[17]?.children[0]?.children[3]?.innerText === '3' &&
+        tds[17]?.children[0]?.children[4]?.innerText === '4' &&
+        tds[17]?.children[0]?.children[5]?.innerText === '5' &&
+        tds[17]?.children[0]?.children[6]?.innerText === '6' &&
+        tds[17]?.children[0]?.children[7]?.innerText === '7' &&
+        // Report Start
+        tds[18]?.innerText === '0' &&
+        // Report Windows
+        tds[19]?.children[0]?.children[0]?.innerText === '2592000' &&
+        // Max Event-Level Reports
+        tds[20]?.innerText === '3' &&
         // Event-Level Dedup Keys
-        tds[18]?.children[0]?.children[0]?.innerText === '13' &&
-        tds[18]?.children[0]?.children[1]?.innerText === '17' &&
+        tds[21]?.children[0]?.children[0]?.innerText === '13' &&
+        tds[21]?.children[0]?.children[1]?.innerText === '17' &&
         // Remaining Aggregatable Attribution Budget
-        tds[20]?.innerText === '1300 / 65536' &&
+        tds[23]?.innerText === '1300 / 65536' &&
         // Aggregatable Named Budgets
-        tds[21]?.innerText === '{\n   \"a\": {\n      \"original_budget\": 65536,\n      \"remaining_budget\": 65536\n   }\n}\n' &&
+        tds[24]?.innerText === '{\n   \"a\": {\n      \"original_budget\": 65536,\n      \"remaining_budget\": 65536\n   }\n}\n' &&
         // Aggregation Keys
-        tds[22]?.innerText === '{\n "a": "0x1"\n}' &&
+        tds[25]?.innerText === '{\n "a": "0x1"\n}' &&
         // Aggregatable Dedup Keys
-        tds[23]?.children[0]?.children[0]?.innerText === '14' &&
-        tds[23]?.children[0]?.children[1]?.innerText === '18'
+        tds[26]?.children[0]?.children[0]?.innerText === '14' &&
+        tds[26]?.children[0]?.children[1]?.innerText === '18'
       ) {
         if (obs) {
           obs.disconnect();

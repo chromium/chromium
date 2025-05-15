@@ -190,7 +190,10 @@ interface Source {
   reportingOrigin: string;
   sourceTime: Date;
   expiryTime: Date;
-  triggerSpecs: string;
+  triggerData: number[];
+  eventReportWindowsStart: bigint;
+  eventReportWindowsEnds: bigint[];
+  maxEventLevelReports: number;
   aggregatableReportWindowTime: Date;
   sourceType: string;
   filterData: string;
@@ -221,7 +224,12 @@ function newSource(mojo: WebUISource): Source {
     reportingOrigin: originToText(mojo.reportingOrigin),
     sourceTime: new Date(mojo.sourceTime),
     expiryTime: new Date(mojo.expiryTime),
-    triggerSpecs: mojo.triggerSpecsJson,
+    triggerData: mojo.triggerData,
+    eventReportWindowsStart:
+        mojo.eventReportWindows.startTime.microseconds / 1000000n,
+    eventReportWindowsEnds:
+        mojo.eventReportWindows.endTimes.map(t => t.microseconds / 1000000n),
+    maxEventLevelReports: mojo.maxEventLevelReports,
     aggregatableReportWindowTime: new Date(mojo.aggregatableReportWindowTime),
     sourceType: sourceTypeText[mojo.sourceType],
     priority: mojo.priority,
@@ -283,7 +291,11 @@ function initSourceTable(panel: HTMLElement):
             asCustomNumber((v: number) => v.toFixed(3))),
         valueColumn(
             'Trigger Data Matching', 'triggerDataMatching', asStringOrBool),
-        valueColumn('Trigger Specs', 'triggerSpecs', asCode),
+        valueColumn('Trigger Data', 'triggerData', asList(asNumber)),
+        valueColumn('Report Start', 'eventReportWindowsStart', asNumber),
+        valueColumn(
+            'Report Windows', 'eventReportWindowsEnds', asList(asNumber)),
+        valueColumn('Max Reports', 'maxEventLevelReports', asNumber),
         valueColumn('Dedup Keys', 'dedupKeys', asList(asNumber)),
         'Aggregatable Fields',
         valueColumn(
@@ -292,8 +304,7 @@ function initSourceTable(panel: HTMLElement):
             'Remaining Aggregatable Attribution Budget',
             'remainingAggregatableAttributionBudget',
             asCustomNumber((v) => `${v} / ${BUDGET_PER_SOURCE}`)),
-        valueColumn(
-            'Named Budgets', 'aggregatableNamedBudgets', asCode),
+        valueColumn('Named Budgets', 'aggregatableNamedBudgets', asCode),
         valueColumn('Aggregation Keys', 'aggregationKeys', asCode),
         valueColumn('Dedup Keys', 'aggregatableDedupKeys', asList(asNumber)),
       ]);
