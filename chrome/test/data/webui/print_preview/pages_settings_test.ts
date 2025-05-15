@@ -124,6 +124,25 @@ suite('PagesSettingsTest', function() {
     validateState([1, 2, 3, 4, 5], [], '', false);
   });
 
+  test('PagesDropdownDisabled', async () => {
+    const select = pagesSection.shadowRoot.querySelector('select');
+    assertTrue(!!select);
+
+    // Check initial state.
+    assertFalse(pagesSection.disabled);
+    assertFalse(select.disabled);
+
+    // Disable pagesSection and check <select> is also disabled.
+    pagesSection.disabled = true;
+    await microtasksFinished();
+    assertTrue(select.disabled);
+
+    // Re-enable pagesSection and check <select> is also enabled.
+    pagesSection.disabled = false;
+    await microtasksFinished();
+    assertFalse(select.disabled);
+  });
+
   // Tests that the odd-only and even-only options are hidden when the document
   // has only one page.
   test('NoParityOptions', async () => {
