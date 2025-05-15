@@ -107,22 +107,24 @@ int GtkDialogSelectedFilterIndex(GtkWidget* dialog) {
 }
 
 std::string GtkFileChooserGetFilename(GtkWidget* dialog) {
-  const char* filename = nullptr;
   struct GFreeDeleter {
     void operator()(gchar* ptr) const { g_free(ptr); }
   };
-  std::unique_ptr<gchar, GFreeDeleter> gchar_filename;
   if (GtkCheckVersion(4)) {
     if (auto file =
             TakeGObject(gtk_file_chooser_get_file(GTK_FILE_CHOOSER(dialog)))) {
-      filename = g_file_peek_path(file);
+      if (const char* filename = g_file_peek_path(file)) {
+        return std::string(filename);
+      }
     }
   } else {
-    gchar_filename = std::unique_ptr<gchar, GFreeDeleter>(
+    auto gchar_filename = std::unique_ptr<gchar, GFreeDeleter>(
         gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog)));
-    filename = gchar_filename.get();
+    if (const char* filename = gchar_filename.get()) {
+      return std::string(filename);
+    }
   }
-  return filename ? std::string(filename) : std::string();
+  return std::string();
 }
 
 std::vector<base::FilePath> GtkFileChooserGetFilenames(GtkWidget* dialog) {
