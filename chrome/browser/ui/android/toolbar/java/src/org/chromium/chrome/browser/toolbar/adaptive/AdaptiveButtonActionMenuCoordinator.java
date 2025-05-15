@@ -27,6 +27,7 @@ import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.RectProvider;
+import org.chromium.ui.widget.Toast;
 
 /** Coordinator for the Adaptive Button action menu, responsible for creating a popup menu. */
 @NullMarked
@@ -56,18 +57,33 @@ public class AdaptiveButtonActionMenuCoordinator {
                         (ListMenuButton) view,
                         buildMenuItems(),
                         id -> onItemClicked.onResult(id));
+            } else {
+                // TODO(crbug.com/414373110): Align the displayed text with UI work once finalized.
+                return showAnchoredToastInternal(view, view.getContentDescription());
             }
             return true;
         };
     }
 
     /**
+     * Shows an anchored toast.
+     *
+     * @param anchorView The view to anchor the toast to.
+     * @param text The text to show in the toast.
+     * @return True if the toast was shown, false otherwise.
+     */
+    @VisibleForTesting
+    public boolean showAnchoredToastInternal(View anchorView, CharSequence text) {
+        return Toast.showAnchoredToast(anchorView.getContext(), anchorView, text);
+    }
+
+    /**
      * Created and display the tab switcher action menu anchored to the specified view.
      *
-     * @param context        The context of the adaptive button.
-     * @param anchorView     The anchor {@link View} of the {@link PopupWindow}.
-     * @param listItems      The menu item models.
-     * @param onItemClicked  The clicked listener handling clicks on TabSwitcherActionMenu.
+     * @param context The context of the adaptive button.
+     * @param anchorView The anchor {@link View} of the {@link PopupWindow}.
+     * @param listItems The menu item models.
+     * @param onItemClicked The clicked listener handling clicks on TabSwitcherActionMenu.
      */
     @VisibleForTesting
     public void displayMenu(

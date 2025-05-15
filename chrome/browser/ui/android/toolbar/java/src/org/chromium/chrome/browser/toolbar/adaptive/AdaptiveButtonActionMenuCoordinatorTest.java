@@ -105,8 +105,8 @@ public class AdaptiveButtonActionMenuCoordinatorTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
-    public void testCreateOnLongClickListener_noPopupMenu() {
-        var coordinator = new AdaptiveButtonActionMenuCoordinator(/* showMenu= */ false);
+    public void testCreateOnLongClickListener_showsToast() {
+        var coordinator = spy(new AdaptiveButtonActionMenuCoordinator(/* showMenu= */ false));
         View.OnLongClickListener listener = coordinator.createOnLongClickListener(mCallback);
 
         ListMenuButton menuView =
@@ -117,9 +117,12 @@ public class AdaptiveButtonActionMenuCoordinatorTest {
         doReturn(ApplicationProvider.getApplicationContext().getResources())
                 .when(menuView)
                 .getResources();
+        String contentDescription = "Test Content Description";
+        menuView.setContentDescription(contentDescription);
 
-        // Long click menuView, nothing should happen.
         listener.onLongClick(menuView);
+
+        verify(coordinator).showAnchoredToastInternal(menuView, contentDescription);
         verify(menuView, never()).showMenu();
     }
 }
