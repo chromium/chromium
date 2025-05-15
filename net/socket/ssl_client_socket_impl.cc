@@ -906,16 +906,6 @@ int SSLClientSocketImpl::DoHandshakeComplete(int result) {
 
   RecordNegotiatedProtocol();
 
-  const uint8_t* ocsp_response_raw;
-  size_t ocsp_response_len;
-  SSL_get0_ocsp_response(ssl_.get(), &ocsp_response_raw, &ocsp_response_len);
-  set_stapled_ocsp_response_received(ocsp_response_len != 0);
-
-  const uint8_t* sct_list;
-  size_t sct_list_len;
-  SSL_get0_signed_cert_timestamp_list(ssl_.get(), &sct_list, &sct_list_len);
-  set_signed_cert_timestamps_received(sct_list_len != 0);
-
   if (!IsRenegotiationAllowed())
     SSL_set_renegotiate_mode(ssl_.get(), ssl_renegotiate_never);
 
@@ -1070,21 +1060,20 @@ ssl_verify_result_t SSLClientSocketImpl::VerifyCert() {
   const uint8_t* ocsp_response_raw;
   size_t ocsp_response_len;
   SSL_get0_ocsp_response(ssl_.get(), &ocsp_response_raw, &ocsp_response_len);
-  std::string_view ocsp_response(
-      reinterpret_cast<const char*>(ocsp_response_raw), ocsp_response_len);
+  base::span ocsp_response(ocsp_response_raw, ocsp_response_len);
 
   const uint8_t* sct_list_raw;
   size_t sct_list_len;
   SSL_get0_signed_cert_timestamp_list(ssl_.get(), &sct_list_raw, &sct_list_len);
-  std::string_view sct_list(reinterpret_cast<const char*>(sct_list_raw),
-                            sct_list_len);
+  base::span sct_list(sct_list_raw, sct_list_len);
 
   cert_verification_result_ = context_->cert_verifier()->Verify(
       CertVerifier::RequestParams(
           server_cert_,
           ech_name_override.empty() ? host_and_port_.host() : ech_name_override,
-          ssl_config_.GetCertVerifyFlags(), std::string(ocsp_response),
-          std::string(sct_list)),
+          ssl_config_.GetCertVerifyFlags(),
+          std::string(base::as_string_view(ocsp_response)),
+          std::string(base::as_string_view(sct_list))),
       &server_cert_verify_result_,
       base::BindOnce(&SSLClientSocketImpl::OnVerifyComplete,
                      base::Unretained(this)),

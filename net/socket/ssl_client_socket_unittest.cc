@@ -2724,8 +2724,6 @@ TEST_P(SSLClientSocketVersionTest, ConnectSignedCertTimestampsTLSExtension) {
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
   EXPECT_THAT(rv, IsOk());
 
-  EXPECT_TRUE(sock_->signed_cert_timestamps_received_);
-
   ASSERT_EQ(cert_verifier_->GetVerifyParams().size(), 1u);
   const auto& params = cert_verifier_->GetVerifyParams().front();
   EXPECT_TRUE(params.certificate()->EqualsIncludingChain(
@@ -2756,7 +2754,12 @@ TEST_P(SSLClientSocketVersionTest, ConnectSignedCertTimestampsEnablesOCSP) {
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
   EXPECT_THAT(rv, IsOk());
 
-  EXPECT_TRUE(sock_->stapled_ocsp_response_received_);
+  ASSERT_EQ(cert_verifier_->GetVerifyParams().size(), 1u);
+  const auto& params = cert_verifier_->GetVerifyParams().front();
+  EXPECT_TRUE(params.certificate()->EqualsIncludingChain(
+      embedded_test_server()->GetCertificate().get()));
+  EXPECT_EQ(params.hostname(), embedded_test_server()->host_port_pair().host());
+  EXPECT_FALSE(params.ocsp_response().empty());
 }
 
 // Tests that IsConnectedAndIdle and WasEverUsed behave as expected.
