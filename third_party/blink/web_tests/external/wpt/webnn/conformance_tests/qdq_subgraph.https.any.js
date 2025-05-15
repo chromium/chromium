@@ -1471,6 +1471,132 @@ const subgraphTests = [
       }
     }
   },
+  {
+    'name': 'quantized split',
+    'graph': {
+      'inputs': {
+        'input': {
+          'data': [
+            1.6811466217041016, 0.0479511022567749, 0.33355462551116943,
+            -0.1988269537687301, -0.0041167140007019, -0.0634240251779556,
+          ],
+          'descriptor': {shape: [2, 3], dataType: 'float32'},
+          'constant': false
+        },
+        'inputScale': {
+          'data': [0.003921568859368563],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'inputZeroPoint': {
+          'data': [16],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+        'outputScale': {
+          'data': [0.003921568859368563],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'outputZeroPoint': {
+          'data': [16],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+      },
+      'operators': [
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'input'},
+            {'scale': 'inputScale', 'zeroPoint': 'inputZeroPoint'}
+          ],
+          'outputs': 'quantizedInput'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedInput'},
+            {'scale': 'inputScale', 'zeroPoint': 'inputZeroPoint'}
+          ],
+          'outputs': 'dequantizedInput'
+        },
+        {
+          'name': 'split',
+          'arguments': [{'input': 'dequantizedInput'}, {'splits': 3}, {'options': {'axis': 1}}],
+          'outputs': ['splitOutput 1', 'splitOutput 2', 'splitOutput 3'],
+        },
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'splitOutput 1'},
+            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
+          ],
+          'outputs': 'quantizedSplitOutput 1'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedSplitOutput 1'},
+            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
+          ],
+          'outputs': 'output 1'
+        },
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'splitOutput 2'},
+            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
+          ],
+          'outputs': 'quantizedSplitOutput 2'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedSplitOutput 2'},
+            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
+          ],
+          'outputs': 'output 2'
+        },
+                {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'splitOutput 3'},
+            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
+          ],
+          'outputs': 'quantizedSplitOutput 3'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedSplitOutput 3'},
+            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
+          ],
+          'outputs': 'output 3'
+        }
+      ],
+      'expectedOutputs': {
+        'output 1': {
+          'data': [
+            0.43529415130615234, -0.20000001788139343,
+          ],
+          'descriptor': {shape: [2, 1], dataType: 'float32'}
+        },
+        'output 2': {
+          'data': [
+            0.0470588281750679, -0.003921568859368563,
+          ],
+          'descriptor': {shape: [2, 1], dataType: 'float32'}
+        },
+        'output 3': {
+          'data': [
+            0.3333333432674408, -0.062745101749897,
+          ],
+          'descriptor': {shape: [2, 1], dataType: 'float32'}
+        }
+      }
+    }
+  },
 ];
 
 if (navigator.ml) {
