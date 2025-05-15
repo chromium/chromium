@@ -587,7 +587,8 @@ class TabListEditorCoordinator {
                             new GridLayoutManager.SpanSizeLookup() {
                                 @Override
                                 public int getSpanSize(int i) {
-                                    return 1;
+                                    return mTabListCoordinator.getSpanCountForItem(
+                                            (GridLayoutManager) layoutManager, i);
                                 }
                             });
         }

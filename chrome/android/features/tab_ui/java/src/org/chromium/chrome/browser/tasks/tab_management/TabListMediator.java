@@ -1750,14 +1750,7 @@ class TabListMediator implements TabListNotificationHandler {
                 new GridLayoutManager.SpanSizeLookup() {
                     @Override
                     public int getSpanSize(int position) {
-                        int itemType = mModelList.get(position).type;
-
-                        if (itemType == TabProperties.UiType.MESSAGE
-                                || itemType == TabProperties.UiType.LARGE_MESSAGE
-                                || itemType == TabProperties.UiType.CUSTOM_MESSAGE) {
-                            return manager.getSpanCount();
-                        }
-                        return 1;
+                        return getSpanCountForItem(manager, position);
                     }
                 });
         mCurrentSpanCount = newSpanCount;
@@ -2429,6 +2422,23 @@ class TabListMediator implements TabListNotificationHandler {
 
         if (index == TabModel.INVALID_TAB_INDEX) return;
         mModelList.removeAt(index);
+    }
+
+    /**
+     * Retrieves the span count in the GridLayoutManager for the item at a given index.
+     *
+     * @param manager The GridLayoutManager the span count is retrieved from.
+     * @param index The index of the item in the model list.
+     */
+    int getSpanCountForItem(GridLayoutManager manager, int index) {
+        int itemType = mModelList.get(index).type;
+
+        if (itemType == TabProperties.UiType.MESSAGE
+                || itemType == TabProperties.UiType.LARGE_MESSAGE
+                || itemType == TabProperties.UiType.CUSTOM_MESSAGE) {
+            return manager.getSpanCount();
+        }
+        return 1;
     }
 
     private boolean validateItemAt(

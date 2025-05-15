@@ -819,6 +819,16 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         mMediator.removeListItemFromModelList(uiType, itemId);
     }
 
+    /**
+     * Retrieves the span count in the GridLayoutManager for the item at a given index.
+     *
+     * @param manager The GridLayoutManager the span count is retrieved from.
+     * @param index The index of the item in the model list.
+     */
+    int getSpanCountForItem(GridLayoutManager manager, int index) {
+        return mMediator.getSpanCountForItem(manager, index);
+    }
+
     // PriceWelcomeMessageService.PriceWelcomeMessageProvider implementation.
     @Override
     public int getTabIndexFromTabId(int tabId) {
