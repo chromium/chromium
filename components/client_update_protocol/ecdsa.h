@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_CLIENT_UPDATE_PROTOCOL_ECDSA_H_
 #define COMPONENTS_CLIENT_UPDATE_PROTOCOL_ECDSA_H_
 
+#include <array>
 #include <cstdint>
 #include <memory>
 #include <string>
