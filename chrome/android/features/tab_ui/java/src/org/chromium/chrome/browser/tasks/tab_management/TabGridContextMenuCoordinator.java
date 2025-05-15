@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
@@ -187,8 +188,11 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                 showTabListEditor.show(tab.getId());
                 recordUserActionWithPrefix("SelectTabs");
             } else if (menuId == R.id.close_tab) {
+                boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(listViewTouchTracker);
                 tabModel.getTabRemover()
-                        .closeTabs(TabClosureParams.closeTab(tab).build(), /* allowDialog= */ true);
+                        .closeTabs(
+                                TabClosureParams.closeTab(tab).allowUndo(allowUndo).build(),
+                                /* allowDialog= */ true);
                 recordUserActionWithPrefix("CloseTab");
             }
         };

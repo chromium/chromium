@@ -114,8 +114,25 @@ public class MotionEventUtils {
 
     /** Returns true if a {@link MotionEvent} is detected to be a mouse event. */
     public static boolean isMouseEvent(MotionEvent event) {
-        return (event.getSource() & InputDevice.SOURCE_CLASS_POINTER) != 0
-                && event.getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE;
+        return isMouseEvent(event.getSource(), event.getToolType(0));
+    }
+
+    /**
+     * Same as {@link #isMouseEvent(MotionEvent)}, but this method accepts individual properties of
+     * a {@link MotionEvent}.
+     *
+     * <p>This is useful when you only have information about a {@link MotionEvent}, but not a
+     * reference to the {@link MotionEvent} itself, such as when you need to keep motion information
+     * after a {@link MotionEvent} gets recycled.
+     *
+     * @param source same as {@link MotionEvent#getSource()}
+     * @param toolType same as {@code MotionEvent#getToolType(0)} (the first pointer that is down).
+     * @return true if the parameters match a mouse motion event.
+     * @see MotionEvent#recycle()
+     */
+    public static boolean isMouseEvent(int source, int toolType) {
+        return (source & InputDevice.SOURCE_CLASS_POINTER) != 0
+                && toolType == MotionEvent.TOOL_TYPE_MOUSE;
     }
 
     /**

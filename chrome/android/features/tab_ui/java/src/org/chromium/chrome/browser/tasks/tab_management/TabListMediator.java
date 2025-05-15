@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
@@ -2847,14 +2848,13 @@ class TabListMediator implements TabListNotificationHandler {
             } else {
                 RecordUserAction.record("TabGroupItemMenu.Delete");
             }
+
+            boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(listViewTouchTracker);
+
             setUseShrinkCloseAnimation(tabId, /* useShrinkCloseAnimation= */ true);
             onGroupClosedFrom(tabId);
             TabUiUtils.closeTabGroup(
-                    filter,
-                    tabId,
-                    /* allowUndo= */ true,
-                    hideTabGroups,
-                    getOnMaybeTabClosedCallback(tabId));
+                    filter, tabId, allowUndo, hideTabGroups, getOnMaybeTabClosedCallback(tabId));
         } else if (menuId == R.id.edit_group_name) {
             RecordUserAction.record("TabGroupItemMenu.Rename");
             renameTabGroup(tabId);

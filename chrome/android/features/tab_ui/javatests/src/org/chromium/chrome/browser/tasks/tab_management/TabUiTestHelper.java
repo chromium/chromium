@@ -356,15 +356,49 @@ public class TabUiTestHelper {
     }
 
     /**
+     * Creates a {@link MotionEvent} that matches one from a touch screen.
+     *
+     * @see #createMotionEvent(long, long, int, float, float, int, int)
+     */
+    public static MotionEvent createTouchMotionEvent(
+            long downTime, long eventTime, int action, float x, float y) {
+        return createMotionEvent(
+                downTime,
+                eventTime,
+                action,
+                x,
+                y,
+                InputDevice.SOURCE_TOUCHSCREEN,
+                MotionEvent.TOOL_TYPE_FINGER);
+    }
+
+    /**
      * Creates a {@link MotionEvent} that matches one from a mouse.
+     *
+     * @see #createMotionEvent(long, long, int, float, float, int, int)
+     */
+    public static MotionEvent createMouseMotionEvent(
+            long downTime, long eventTime, int action, float x, float y) {
+        return createMotionEvent(
+                downTime,
+                eventTime,
+                action,
+                x,
+                y,
+                InputDevice.SOURCE_MOUSE,
+                MotionEvent.TOOL_TYPE_MOUSE);
+    }
+
+    /**
+     * Creates a {@link MotionEvent}.
      *
      * <p>All parameters are for {@link MotionEvent#obtain}.
      */
-    static MotionEvent createMouseMotionEvent(
-            long downTime, long eventTime, int action, float x, float y) {
+    private static MotionEvent createMotionEvent(
+            long downTime, long eventTime, int action, float x, float y, int source, int toolType) {
         PointerProperties pointerProperties = new MotionEvent.PointerProperties();
         pointerProperties.id = 0;
-        pointerProperties.toolType = MotionEvent.TOOL_TYPE_MOUSE;
+        pointerProperties.toolType = toolType;
 
         PointerCoords pointerCoords = new PointerCoords();
         pointerCoords.x = x;
@@ -383,7 +417,7 @@ public class TabUiTestHelper {
                 /* yPrecision= */ 1.0f,
                 /* deviceId= */ 0,
                 /* edgeFlags= */ 0,
-                InputDevice.SOURCE_MOUSE,
+                source,
                 /* flags= */ 0);
     }
 

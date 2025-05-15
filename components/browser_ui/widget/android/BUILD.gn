@@ -339,6 +339,7 @@ android_library("test_support_java") {
   sources = [
     "test/java/src/org/chromium/components/browser_ui/widget/RecyclerViewTestUtils.java",
     "test/java/src/org/chromium/components/browser_ui/widget/highlight/ViewHighlighterTestUtils.java",
+    "test/java/src/org/chromium/components/browser_ui/widget/list_view/FakeListViewTouchTracker.java",
   ]
   deps = [
     ":java",

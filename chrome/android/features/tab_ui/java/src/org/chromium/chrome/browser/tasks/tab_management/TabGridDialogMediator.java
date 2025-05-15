@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
+import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
@@ -1085,10 +1086,13 @@ public class TabGridDialogMediator
             } else {
                 RecordUserAction.record("TabGridDialogMenu.Delete");
             }
+
+            boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(listViewTouchTracker);
+
             TabUiUtils.closeTabGroup(
                     mCurrentTabGroupModelFilterSupplier.get(),
                     tabId,
-                    /* allowUndo= */ true,
+                    allowUndo,
                     hideTabGroups,
                     /* didCloseCallback= */ null);
         } else if (menuId == R.id.delete_shared_group) {

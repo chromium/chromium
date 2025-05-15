@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadataExtractor;
@@ -190,18 +191,20 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 TabUiUtils.ungroupTabGroup(tabGroupModelFilter, tabGroupId);
                 recordUserAction("Ungroup");
             } else if (menuId == org.chromium.chrome.R.id.close_tab_group) {
+                boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(listViewTouchTracker);
                 TabUiUtils.closeTabGroup(
                         tabGroupModelFilter,
                         tabId,
-                        /* allowUndo= */ true,
+                        allowUndo,
                         /* hideTabGroups= */ true,
                         /* didCloseCallback= */ null);
                 recordUserAction("CloseGroup");
             } else if (menuId == org.chromium.chrome.R.id.delete_tab_group) {
+                boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(listViewTouchTracker);
                 TabUiUtils.closeTabGroup(
                         tabGroupModelFilter,
                         tabId,
-                        /* allowUndo= */ true,
+                        allowUndo,
                         /* hideTabGroups= */ false,
                         /* didCloseCallback= */ null);
                 recordUserAction("DeleteGroup");

@@ -20,6 +20,8 @@ import static org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin.TAB_ST
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.os.SystemClock;
+import android.view.MotionEvent;
 
 import androidx.core.content.res.ResourcesCompat;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -28,6 +30,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -37,6 +40,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -44,11 +48,15 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridContextMenuCoordinator.ShowTabListEditor;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
+import org.chromium.components.browser_ui.widget.list_view.FakeListViewTouchTracker;
+import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker;
+import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker.ListViewTouchInfo;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.TestActivity;
@@ -283,7 +291,46 @@ public class TabGridContextMenuCoordinatorUnitTest {
     }
 
     @Test
-    public void testGetMenuItemClickedCallback_closeTab() {
+    public void testGetMenuItemClickedCallback_closeTab_nullListViewTouchTracker() {
+        testGetMenuItemClickedCallback_closeTab(
+                /* listViewTouchTracker= */ null, /* shouldAllowUndo= */ true);
+    }
+
+    @Test
+    public void testGetMenuItemClickedCallback_closeTab_withTouch() {
+        long downMotionTime = SystemClock.uptimeMillis();
+        FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
+        listViewTouchTracker.setLastSingleTapUpInfo(
+                ListViewTouchInfo.fromMotionEvent(
+                        TabUiTestHelper.createTouchMotionEvent(
+                                downMotionTime,
+                                /* eventTime= */ downMotionTime + 50,
+                                MotionEvent.ACTION_UP,
+                                /* x= */ 0,
+                                /* y= */ 0)));
+
+        testGetMenuItemClickedCallback_closeTab(listViewTouchTracker, /* shouldAllowUndo= */ true);
+    }
+
+    @Test
+    public void testGetMenuItemClickedCallback_closeTab_withMouse() {
+        long downMotionTime = SystemClock.uptimeMillis();
+        FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
+        listViewTouchTracker.setLastSingleTapUpInfo(
+                ListViewTouchInfo.fromMotionEvent(
+                        TabUiTestHelper.createMouseMotionEvent(
+                                downMotionTime,
+                                /* eventTime= */ downMotionTime + 50,
+                                MotionEvent.ACTION_UP,
+                                /* x= */ 0,
+                                /* y= */ 0)));
+
+        testGetMenuItemClickedCallback_closeTab(listViewTouchTracker, /* shouldAllowUndo= */ false);
+    }
+
+    private void testGetMenuItemClickedCallback_closeTab(
+            @Nullable ListViewTouchTracker listViewTouchTracker, boolean shouldAllowUndo) {
+        // Setup
         TabGridContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
@@ -292,12 +339,16 @@ public class TabGridContextMenuCoordinatorUnitTest {
                         mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
                         mShowTabListEditor);
-        callback.onClick(
-                R.id.close_tab,
-                TAB_ID,
-                /* collaborationId= */ null,
-                /* listViewTouchTracker= */ null);
-        verify(mTabRemover).closeTabs(any(), eq(true));
+
+        // Act
+        callback.onClick(R.id.close_tab, TAB_ID, /* collaborationId= */ null, listViewTouchTracker);
+
+        // Assert
+        ArgumentCaptor<TabClosureParams> tabClosureParamsCaptor =
+                ArgumentCaptor.forClass(TabClosureParams.class);
+        verify(mTabRemover)
+                .closeTabs(tabClosureParamsCaptor.capture(), /* allowDialog= */ eq(true));
+        assertEquals(shouldAllowUndo, tabClosureParamsCaptor.getValue().allowUndo);
     }
 
     @Test

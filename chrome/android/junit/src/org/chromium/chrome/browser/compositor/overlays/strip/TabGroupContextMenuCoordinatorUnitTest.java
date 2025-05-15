@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -15,10 +16,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 
+import androidx.annotation.IdRes;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -35,6 +39,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
@@ -53,7 +58,11 @@ import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator.OnItemClickedCallback;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.components.browser_ui.widget.list_view.FakeListViewTouchTracker;
+import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker;
+import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker.ListViewTouchInfo;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.member_role.MemberRole;
@@ -335,48 +344,130 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    public void testItemClicked_CloseGroup() {
+    public void testMenuItemClicked_CloseGroup_NullListViewTouchTracker() {
+        testItemClicked_CloseOrDeleteGroup(
+                R.id.close_tab_group,
+                /* listViewTouchTracker= */ null,
+                /* shouldAllowUndo= */ true,
+                /* shouldHideTabGroups= */ true);
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    public void testMenuItemClicked_CloseGroup_ClickWithTouch() {
+        long downMotionTime = SystemClock.uptimeMillis();
+        FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
+        listViewTouchTracker.setLastSingleTapUpInfo(
+                ListViewTouchInfo.fromMotionEvent(
+                        TabUiTestHelper.createTouchMotionEvent(
+                                downMotionTime,
+                                /* eventTime= */ downMotionTime + 50,
+                                MotionEvent.ACTION_UP,
+                                /* x= */ 0,
+                                /* y= */ 0)));
+
+        testItemClicked_CloseOrDeleteGroup(
+                R.id.close_tab_group,
+                listViewTouchTracker,
+                /* shouldAllowUndo= */ true,
+                /* shouldHideTabGroups= */ true);
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    public void testMenuItemClicked_CloseGroup_ClickWithMouse() {
+        long downMotionTime = SystemClock.uptimeMillis();
+        FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
+        listViewTouchTracker.setLastSingleTapUpInfo(
+                ListViewTouchInfo.fromMotionEvent(
+                        TabUiTestHelper.createMouseMotionEvent(
+                                downMotionTime,
+                                /* eventTime= */ downMotionTime + 50,
+                                MotionEvent.ACTION_UP,
+                                /* x= */ 0,
+                                /* y= */ 0)));
+
+        testItemClicked_CloseOrDeleteGroup(
+                R.id.close_tab_group,
+                listViewTouchTracker,
+                /* shouldAllowUndo= */ false,
+                /* shouldHideTabGroups= */ true);
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    public void testMenuItemClicked_DeleteGroup_NullListViewTouchTracker() {
+        testItemClicked_CloseOrDeleteGroup(
+                R.id.delete_tab_group,
+                /* listViewTouchTracker= */ null,
+                /* shouldAllowUndo= */ true,
+                /* shouldHideTabGroups= */ false);
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    public void testMenuItemClicked_DeleteGroup_ClickWithTouch() {
+        long downMotionTime = SystemClock.uptimeMillis();
+        FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
+        listViewTouchTracker.setLastSingleTapUpInfo(
+                ListViewTouchInfo.fromMotionEvent(
+                        TabUiTestHelper.createTouchMotionEvent(
+                                downMotionTime,
+                                /* eventTime= */ downMotionTime + 50,
+                                MotionEvent.ACTION_UP,
+                                /* x= */ 0,
+                                /* y= */ 0)));
+
+        testItemClicked_CloseOrDeleteGroup(
+                R.id.delete_tab_group,
+                listViewTouchTracker,
+                /* shouldAllowUndo= */ true,
+                /* shouldHideTabGroups= */ false);
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    public void testMenuItemClicked_DeleteGroup_ClickWithMouse() {
+        long downMotionTime = SystemClock.uptimeMillis();
+        FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
+        listViewTouchTracker.setLastSingleTapUpInfo(
+                ListViewTouchInfo.fromMotionEvent(
+                        TabUiTestHelper.createMouseMotionEvent(
+                                downMotionTime,
+                                /* eventTime= */ downMotionTime + 50,
+                                MotionEvent.ACTION_UP,
+                                /* x= */ 0,
+                                /* y= */ 0)));
+
+        testItemClicked_CloseOrDeleteGroup(
+                R.id.delete_tab_group,
+                listViewTouchTracker,
+                /* shouldAllowUndo= */ false,
+                /* shouldHideTabGroups= */ false);
+    }
+
+    private void testItemClicked_CloseOrDeleteGroup(
+            @IdRes int menuId,
+            @Nullable ListViewTouchTracker listViewTouchTracker,
+            boolean shouldAllowUndo,
+            boolean shouldHideTabGroups) {
+        assertTrue(menuId == R.id.close_tab_group || menuId == R.id.delete_tab_group);
+
         // Initialize.
         List<Tab> tabsInGroup = setUpTabGroupModelFilter();
 
         // Verify tab group closed.
         mOnItemClickedCallback.onClick(
-                R.id.close_tab_group,
-                TAB_GROUP_ID,
-                /* collaborationId= */ null,
-                /* listViewTouchTracker= */ null);
+                menuId, TAB_GROUP_ID, /* collaborationId= */ null, listViewTouchTracker);
         verify(mTabRemover)
                 .closeTabs(
                         argThat(
                                 params ->
                                         params.tabs.get(0) == tabsInGroup.get(0)
-                                                && params.allowUndo
-                                                && params.hideTabGroups),
-                        eq(true),
-                        any());
-    }
-
-    @Test
-    @Feature("Tab Strip Group Context Menu")
-    public void testMenuItemClicked_DeleteGroup() {
-        // Initialize.
-        List<Tab> tabsInGroup = setUpTabGroupModelFilter();
-
-        // Verify tab group deleted.
-        mOnItemClickedCallback.onClick(
-                R.id.delete_tab_group,
-                TAB_GROUP_ID,
-                /* collaborationId= */ null,
-                /* listViewTouchTracker= */ null);
-        verify(mTabRemover)
-                .closeTabs(
-                        argThat(
-                                params ->
-                                        params.tabs.get(0) == tabsInGroup.get(0)
-                                                && params.allowUndo
-                                                && !params.hideTabGroups),
-                        eq(true),
-                        any());
+                                                && (params.allowUndo == shouldAllowUndo)
+                                                && (params.hideTabGroups == shouldHideTabGroups)),
+                        /* allowDialog= */ eq(true),
+                        /* listener= */ any());
     }
 
     @Test

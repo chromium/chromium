@@ -16,6 +16,8 @@ import static org.chromium.ui.listmenu.ListSectionDividerProperties.COLOR_ID;
 
 import android.app.Activity;
 import android.graphics.Rect;
+import android.os.SystemClock;
+import android.view.MotionEvent;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -32,6 +34,7 @@ import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -48,7 +51,11 @@ import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator.OnItemClickedCallback;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.components.browser_ui.widget.list_view.FakeListViewTouchTracker;
+import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker;
+import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker.ListViewTouchInfo;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -445,10 +452,52 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Context Menu")
-    public void testCloseTab() {
+    public void testCloseTab_nullListViewTouchTracker() {
+        testCloseTab(/* listViewTouchTracker= */ null, /* shouldAllowUndo= */ true);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testCloseTab_clickWithTouch() {
+        long downMotionTime = SystemClock.uptimeMillis();
+        FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
+        listViewTouchTracker.setLastSingleTapUpInfo(
+                ListViewTouchInfo.fromMotionEvent(
+                        TabUiTestHelper.createTouchMotionEvent(
+                                downMotionTime,
+                                /* eventTime= */ downMotionTime + 50,
+                                MotionEvent.ACTION_UP,
+                                /* x= */ 0,
+                                /* y= */ 0)));
+
+        testCloseTab(listViewTouchTracker, /* shouldAllowUndo= */ true);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testCloseTab_clickWithMouse() {
+        long downMotionTime = SystemClock.uptimeMillis();
+        FakeListViewTouchTracker listViewTouchTracker = new FakeListViewTouchTracker();
+        listViewTouchTracker.setLastSingleTapUpInfo(
+                ListViewTouchInfo.fromMotionEvent(
+                        TabUiTestHelper.createMouseMotionEvent(
+                                downMotionTime,
+                                /* eventTime= */ downMotionTime + 50,
+                                MotionEvent.ACTION_UP,
+                                /* x= */ 0,
+                                /* y= */ 0)));
+
+        testCloseTab(listViewTouchTracker, /* shouldAllowUndo= */ false);
+    }
+
+    private void testCloseTab(
+            @Nullable ListViewTouchTracker listViewTouchTracker, boolean shouldAllowUndo) {
         mOnItemClickedCallback.onClick(
-                R.id.close_tab, TAB_ID, COLLABORATION_ID, /* listViewTouchTracker= */ null);
-        verify(mTabRemover, times(1)).closeTabs(TabClosureParams.closeTab(mTab1).build(), true);
+                R.id.close_tab, TAB_ID, COLLABORATION_ID, listViewTouchTracker);
+        verify(mTabRemover, times(1))
+                .closeTabs(
+                        TabClosureParams.closeTab(mTab1).allowUndo(shouldAllowUndo).build(),
+                        /* allowDialog= */ true);
     }
 
     @Test
