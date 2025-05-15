@@ -1,8 +1,8 @@
 Name: sqlite
 URL: https://github.com/sqlite/sqlite
-Revision: DEPS
-Version: 3.49.1
-CPEPrefix: cpe:/a:sqlite:sqlite:3.49.1
+Revision: 0a1397d274701c5d39e661e948160da2b9a8db1e
+Version: 3.49.2
+CPEPrefix: cpe:/a:sqlite:sqlite:3.49.2
 Security Critical: yes
 Shipped: yes
 License: blessing
