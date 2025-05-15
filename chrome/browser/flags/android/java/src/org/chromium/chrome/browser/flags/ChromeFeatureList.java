@@ -571,6 +571,7 @@ public abstract class ChromeFeatureList {
     public static final String TAB_GROUP_SYNC_ANDROID = "TabGroupSyncAndroid";
     public static final String TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH =
             "TabGroupSyncAutoOpenKillSwitch";
+    public static final String TABLET_TAB_STRIP_ANIMATION = "TabletTabStripAnimation";
     public static final String TAB_RESUMPTION_MODULE_ANDROID = "TabResumptionModuleAndroid";
     public static final String TAB_STATE_FLAT_BUFFER = "TabStateFlatBuffer";
     public static final String TAB_STRIP_CONTEXT_MENU = "TabStripContextMenuAndroid";
@@ -838,6 +839,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(START_SURFACE_RETURN_TIME, true);
     public static final CachedFlag sTabClosureMethodRefactor =
             newCachedFlag(TAB_CLOSURE_METHOD_REFACTOR, false);
+    public static final CachedFlag sTabletTabStripAnimation =
+            newCachedFlag(TABLET_TAB_STRIP_ANIMATION, false);
     public static final CachedFlag sTabStateFlatBuffer =
             newCachedFlag(
                     TAB_STATE_FLAT_BUFFER,
@@ -972,6 +975,7 @@ public abstract class ChromeFeatureList {
                     sSmallerTabStripTitleLimit,
                     sStartSurfaceReturnTime,
                     sTabClosureMethodRefactor,
+                    sTabletTabStripAnimation,
                     sTabStateFlatBuffer,
                     sTabStripIncognitoMigration,
                     sTabStripLayoutOptimization,

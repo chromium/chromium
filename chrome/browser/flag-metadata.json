@@ -9203,6 +9203,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "tablet-tab-strip-animation",
+    "owners": [ "jtanaristy@google.org", "wenyufu@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "tabstrip-combo-button",
     "owners": [ "emshack@chromium.org", "top-chrome-desktop-ui@google.com" ],
     "expiry_milestone": 150

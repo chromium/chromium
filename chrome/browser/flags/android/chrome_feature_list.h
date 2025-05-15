@@ -206,6 +206,7 @@ BASE_DECLARE_FEATURE(kSuppressToolbarCapturesAtGestureEnd);
 BASE_DECLARE_FEATURE(kSwapNewTabAndNewTabInGroupAndroid);
 BASE_DECLARE_FEATURE(kTabGroupEntryPointsAndroid);
 BASE_DECLARE_FEATURE(kTabGroupParityBottomSheetAndroid);
+BASE_DECLARE_FEATURE(kTabletTabStripAnimation);
 BASE_DECLARE_FEATURE(kToolbarPhoneCleanup);
 BASE_DECLARE_FEATURE(kTabStateFlatBuffer);
 BASE_DECLARE_FEATURE(kTabStripContextMenuAndroid);

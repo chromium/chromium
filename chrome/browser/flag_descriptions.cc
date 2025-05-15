@@ -3908,6 +3908,10 @@ const char kTabGroupParityBottomSheetAndroidName[] =
 const char kTabGroupParityBottomSheetAndroidDescription[] =
     "Enables adding Tabs to Tab Groups via the Tab Group Parity Bottom Sheet";
 
+const char kTabletTabStripAnimationName[] = "Tablet Tab Strip Animation";
+const char kTabletTabStripAnimationDescription[] =
+    "Enables new tablet tab strip animations.";
+
 const char kToolbarPhoneCleanupName[] = "Toolbar Phone cleanup";
 const char kToolbarPhoneCleanupDescription[] =
     "Enables cleanup on toolbar phone class.";

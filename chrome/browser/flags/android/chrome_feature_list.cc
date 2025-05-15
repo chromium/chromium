@@ -360,6 +360,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSwapNewTabAndNewTabInGroupAndroid,
     &kTabGroupEntryPointsAndroid,
     &kTabGroupParityBottomSheetAndroid,
+    &kTabletTabStripAnimation,
     &kToolbarPhoneCleanup,
     &kTabStateFlatBuffer,
     &kTabStripContextMenuAndroid,
@@ -1193,6 +1194,10 @@ BASE_FEATURE(kTabGroupEntryPointsAndroid,
 
 BASE_FEATURE(kTabGroupParityBottomSheetAndroid,
              "TabGroupParityBottomSheetAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabletTabStripAnimation,
+             "TabletTabStripAnimation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kToolbarPhoneCleanup,

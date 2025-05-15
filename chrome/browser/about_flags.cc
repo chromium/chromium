@@ -12400,6 +12400,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kNotebookLmAppShelfPinReset)},
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"tablet-tab-strip-animation",
+     flag_descriptions::kTabletTabStripAnimationName,
+     flag_descriptions::kTabletTabStripAnimationDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabletTabStripAnimation)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
