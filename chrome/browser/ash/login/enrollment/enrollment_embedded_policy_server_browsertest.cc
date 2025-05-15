@@ -1297,7 +1297,12 @@ IN_PROC_BROWSER_TEST_F(KioskEnrollmentPolicyServerTest,
 
 class KioskEnrollmentTest : public EnrollmentEmbeddedPolicyServerBase {
  public:
-  KioskEnrollmentTest() = default;
+  KioskEnrollmentTest() {
+    // Force allow Chrome Apps in Kiosk, since they are default disabled since
+    // M138.
+    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
+                                             "");
+  }
 
   // EnrollmentEmbeddedPolicyServerBase:
   void SetUp() override {
@@ -1317,6 +1322,7 @@ class KioskEnrollmentTest : public EnrollmentEmbeddedPolicyServerBase {
   KioskAppsMixin kiosk_apps_{&mixin_host_, embedded_test_server()};
   base::AutoReset<bool> skip_splash_wait_override_ =
       KioskTestHelper::SkipSplashScreenWait();
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(KioskEnrollmentTest,

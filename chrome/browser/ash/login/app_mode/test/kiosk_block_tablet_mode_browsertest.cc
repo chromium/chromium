@@ -30,7 +30,13 @@ class KioskBlockTabletModeTest
     : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<KioskMixin::Config> {
  public:
-  KioskBlockTabletModeTest() = default;
+  KioskBlockTabletModeTest() {
+    // Force allow Chrome Apps in Kiosk, since they are default disabled since
+    // M138.
+    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
+                                             "");
+  }
+
   KioskBlockTabletModeTest(const KioskBlockTabletModeTest&) = delete;
   KioskBlockTabletModeTest& operator=(const KioskBlockTabletModeTest&) = delete;
   ~KioskBlockTabletModeTest() override = default;
@@ -49,6 +55,7 @@ class KioskBlockTabletModeTest
   std::unique_ptr<TabletModeControllerTestApi> tablet_test_api_;
   KioskMixin kiosk_{&mixin_host_,
                     /*cached_configuration=*/GetParam()};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(KioskBlockTabletModeTest, TabletModeIsBlocked) {

@@ -182,7 +182,12 @@ class KioskChromeAppUsbUpdateTest
     : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<TestParam> {
  public:
-  KioskChromeAppUsbUpdateTest() = default;
+  KioskChromeAppUsbUpdateTest() {
+    // Force allow Chrome Apps in Kiosk, since they are default disabled since
+    // M138.
+    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
+                                             "");
+  }
 
   KioskChromeAppUsbUpdateTest(const KioskChromeAppUsbUpdateTest&) = delete;
   KioskChromeAppUsbUpdateTest& operator=(const KioskChromeAppUsbUpdateTest&) =
@@ -199,6 +204,8 @@ class KioskChromeAppUsbUpdateTest
 
   KioskMixin kiosk_{&mixin_host_,
                     /*cached_configuration=*/ToKioskConfig(GetParam())};
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(KioskChromeAppUsbUpdateTest, UpdatesViaUsb) {

@@ -115,8 +115,12 @@ class KioskRemoteCommandTest
     : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<KioskMixin::Config> {
  public:
-  KioskRemoteCommandTest() = default;
-
+  KioskRemoteCommandTest() {
+    // Force allow Chrome Apps in Kiosk, since they are default disabled since
+    // M138.
+    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
+                                             "");
+  }
   KioskRemoteCommandTest(const KioskRemoteCommandTest&) = delete;
   KioskRemoteCommandTest& operator=(const KioskRemoteCommandTest&) = delete;
 
@@ -145,6 +149,7 @@ class KioskRemoteCommandTest
   EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   policy::RemoteCommandsServiceMixin remote_commands_service_mixin_{
       mixin_host_, policy_test_server_mixin_};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(KioskRemoteCommandTest, SetVolumeWithRemoteCommand) {

@@ -91,7 +91,12 @@ class KioskGuestViewTest
     : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<KioskMixin::Config> {
  public:
-  KioskGuestViewTest() = default;
+  KioskGuestViewTest() {
+    // Force allow Chrome Apps in Kiosk, since they are default disabled since
+    // M138.
+    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
+                                             "");
+  }
   KioskGuestViewTest(const KioskGuestViewTest&) = delete;
   KioskGuestViewTest& operator=(const KioskGuestViewTest&) = delete;
 
@@ -112,6 +117,7 @@ class KioskGuestViewTest
 
  private:
   guest_view::TestGuestViewManagerFactory factory_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(KioskGuestViewTest, AddingWebViewGuestViewDoesNotCrash) {

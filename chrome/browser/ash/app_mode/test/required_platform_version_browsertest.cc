@@ -59,7 +59,12 @@ bool HasPendingUpdate(Profile& profile, const KioskApp& app) {
 // Kiosk.
 class RequiredPlatformVersionTest : public MixinBasedInProcessBrowserTest {
  public:
-  RequiredPlatformVersionTest() = default;
+  RequiredPlatformVersionTest() {
+    // Force allow Chrome Apps in Kiosk, since they are default disabled since
+    // M138.
+    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
+                                             "");
+  }
   RequiredPlatformVersionTest(const RequiredPlatformVersionTest&) = delete;
   RequiredPlatformVersionTest& operator=(const RequiredPlatformVersionTest&) =
       delete;
@@ -71,6 +76,7 @@ class RequiredPlatformVersionTest : public MixinBasedInProcessBrowserTest {
           /*name=*/"ChromeApp",
           KioskMixin::AutoLaunchAccount{OfflineEnabledChromeAppV1().account_id},
           {OfflineEnabledChromeAppV1()}}};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(RequiredPlatformVersionTest,

@@ -146,7 +146,12 @@ class EphemeralKioskTest : public MixinBasedInProcessBrowserTest,
   EphemeralKioskTest(const EphemeralKioskTest&) = delete;
   EphemeralKioskTest& operator=(const EphemeralKioskTest&) = delete;
 
-  EphemeralKioskTest() = default;
+  EphemeralKioskTest() {
+    // Force allow Chrome Apps in Kiosk, since they are default disabled since
+    // M138.
+    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
+                                             "");
+  }
 
   DeviceEphemeralUsersPolicy DeviceEphemeralUsersParam() const {
     return std::get<DeviceEphemeralUsersPolicy>(GetParam());
@@ -179,6 +184,7 @@ class EphemeralKioskTest : public MixinBasedInProcessBrowserTest,
 
   KioskMixin kiosk_{&mixin_host_,
                     /*cached_configuration=*/ConfigParam()};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(EphemeralKioskTest,

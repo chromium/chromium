@@ -74,7 +74,12 @@ class KioskInstalledAppsTest
     : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<KioskMixin::Config> {
  public:
-  KioskInstalledAppsTest() = default;
+  KioskInstalledAppsTest() {
+    // Force allow Chrome Apps in Kiosk, since they are default disabled since
+    // M138.
+    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
+                                             "");
+  }
 
   KioskInstalledAppsTest(const KioskInstalledAppsTest&) = delete;
   KioskInstalledAppsTest& operator=(const KioskInstalledAppsTest&) = delete;
@@ -88,6 +93,7 @@ class KioskInstalledAppsTest
 
  private:
   KioskMixin kiosk_{&mixin_host_, GetParam()};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(KioskInstalledAppsTest, InstallsNoAdditionalApps) {

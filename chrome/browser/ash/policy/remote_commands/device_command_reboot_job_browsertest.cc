@@ -66,6 +66,13 @@ class DeviceCommandRebootJobKioskBrowserTest
     : public DeviceCommandRebootBaseTest<MixinBasedInProcessBrowserTest>,
       public testing::WithParamInterface<ash::KioskMixin::Config> {
  public:
+  DeviceCommandRebootJobKioskBrowserTest() {
+    // Force allow Chrome Apps in Kiosk, since they are default disabled since
+    // M138.
+    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
+                                             "");
+  }
+
   void SetUpOnMainThread() override {
     DeviceCommandRebootBaseTest<
         MixinBasedInProcessBrowserTest>::SetUpOnMainThread();
@@ -82,6 +89,7 @@ class DeviceCommandRebootJobKioskBrowserTest
 
   ash::KioskMixin kiosk_{&mixin_host_,
                          /*cached_configuration=*/GetParam()};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(DeviceCommandRebootJobKioskBrowserTest,
