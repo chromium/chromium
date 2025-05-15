@@ -65,6 +65,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
       const IdentityRequestAccountPtr& account) override;
 
   std::string GetDialogTitle() const override;
+  std::optional<std::string> GetDialogSubtitle() const override;
 
   // views::BubbleDialogDelegateView:
   gfx::Rect GetBubbleBounds() override;
@@ -119,6 +120,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // cropped on the backend, so they should not be cropped here.
   void UpdateHeader(const gfx::Image& idp_image,
                     const std::u16string& title,
+                    const std::u16string& subtitle,
                     bool show_back_button,
                     bool should_circle_crop_header_icon);
 
@@ -134,6 +136,9 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // The current title for the dialog.
   std::u16string title_;
 
+  // The current subtitle for the dialog.
+  std::u16string subtitle_;
+
   // The relying party context to show in the title.
   blink::mojom::RpContext rp_context_;
 
@@ -148,6 +153,9 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
 
   // View containing the bubble title.
   raw_ptr<views::Label> title_label_ = nullptr;
+
+  // View containing the bubble subtitle.
+  raw_ptr<views::Label> subtitle_label_ = nullptr;
 
   // Used to ensure that callbacks are not run if the AccountSelectionBubbleView
   // is destroyed.

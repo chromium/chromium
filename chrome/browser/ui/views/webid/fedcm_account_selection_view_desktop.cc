@@ -470,7 +470,7 @@ std::string FedCmAccountSelectionView::GetTitle() const {
 }
 
 std::optional<std::string> FedCmAccountSelectionView::GetSubtitle() const {
-  return std::nullopt;
+  return account_selection_view_->GetDialogSubtitle();
 }
 
 void FedCmAccountSelectionView::PrimaryPageChanged(content::Page& page) {

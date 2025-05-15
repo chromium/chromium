@@ -190,7 +190,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
   SetShowCloseButton(false);
   set_close_on_deactivate(false);
 
-  title_ = GetTitle(rp_data_.rp_for_display, idp_title, rp_context);
+  title_ = GetTitle(rp_data_, idp_title, rp_context);
   SetAccessibleTitle(title_);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -208,14 +208,14 @@ void AccountSelectionBubbleView::ShowMultiAccountPicker(
     bool show_back_button) {
   bool is_multi_idp = idp_list.size() > 1u;
   std::u16string title = GetTitle(
-      rp_data_.rp_for_display,
+      rp_data_,
       is_multi_idp ? std::nullopt
                    : std::make_optional<std::u16string>(
                          base::UTF8ToUTF16(idp_list[0]->idp_for_display)),
       rp_context_);
   UpdateHeader(
       is_multi_idp ? rp_icon : idp_list[0]->idp_metadata.brand_decoded_icon,
-      title, show_back_button,
+      title, webid::GetSubtitle(rp_data_), show_back_button,
       /*should_circle_crop_header_icon=*/!is_multi_idp);
 
   RemoveNonHeaderChildViews();
@@ -228,7 +228,7 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
     const IdentityRequestAccountPtr& account,
     const std::u16string& title) {
   UpdateHeader(account->identity_provider->idp_metadata.brand_decoded_icon,
-               title,
+               title, webid::GetSubtitle(rp_data_),
                /*show_back_button=*/false,
                /*should_circle_crop_header_icon=*/true);
 
@@ -255,12 +255,11 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
 void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
     const IdentityRequestAccountPtr& account,
     bool show_back_button) {
-  std::u16string title =
-      GetTitle(rp_data_.rp_for_display,
-               base::UTF8ToUTF16(account->identity_provider->idp_for_display),
-               rp_context_);
+  std::u16string title = GetTitle(
+      rp_data_, base::UTF8ToUTF16(account->identity_provider->idp_for_display),
+      rp_context_);
   UpdateHeader(account->identity_provider->idp_metadata.brand_decoded_icon,
-               title, show_back_button,
+               title, webid::GetSubtitle(rp_data_), show_back_button,
                /*should_circle_crop_header_icon=*/true);
 
   RemoveNonHeaderChildViews();
@@ -274,7 +273,8 @@ void AccountSelectionBubbleView::ShowFailureDialog(
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata) {
   UpdateHeader(idp_metadata.brand_decoded_icon,
-               GetTitle(rp_data_.rp_for_display, idp_for_display, rp_context_),
+               GetTitle(rp_data_, idp_for_display, rp_context_),
+               webid::GetSubtitle(rp_data_),
                /*show_back_button=*/false,
                /*should_circle_crop_header_icon=*/true);
 
@@ -318,9 +318,9 @@ void AccountSelectionBubbleView::ShowErrorDialog(
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata,
     const std::optional<TokenError>& error) {
-  std::u16string title =
-      GetTitle(rp_data_.rp_for_display, idp_for_display, rp_context_);
+  std::u16string title = GetTitle(rp_data_, idp_for_display, rp_context_);
   UpdateHeader(idp_metadata.brand_decoded_icon, title,
+               webid::GetSubtitle(rp_data_),
                /*show_back_button=*/false,
                /*should_circle_crop_header_icon=*/true);
 
@@ -396,6 +396,14 @@ void AccountSelectionBubbleView::ShowRequestPermissionDialog(
 
 std::string AccountSelectionBubbleView::GetDialogTitle() const {
   return base::UTF16ToUTF8(title_);
+}
+
+std::optional<std::string> AccountSelectionBubbleView::GetDialogSubtitle()
+    const {
+  if (subtitle_.empty()) {
+    return std::nullopt;
+  }
+  return base::UTF16ToUTF8(subtitle_);
 }
 
 gfx::Rect AccountSelectionBubbleView::GetBubbleBounds() {
@@ -486,11 +494,23 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView() {
   back_button_->SetProperty(views::kMarginsKey,
                             gfx::Insets().set_right(back_button_right_margin));
 
+  auto* titles_container =
+      header->AddChildView(std::make_unique<views::View>());
+  titles_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
   // Add the title.
-  title_label_ = header->AddChildView(std::make_unique<views::Label>(
+  title_label_ = titles_container->AddChildView(std::make_unique<views::Label>(
       title_, views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_PRIMARY));
   SetLabelProperties(title_label_);
+
+  // Add the subtitle.
+  subtitle_label_ =
+      titles_container->AddChildView(std::make_unique<views::Label>(
+          subtitle_, views::style::CONTEXT_DIALOG_BODY_TEXT,
+          views::style::STYLE_SECONDARY));
+  SetLabelProperties(subtitle_label_);
+  subtitle_label_->SetVisible(!subtitle_.empty());
 
   // Add the close button.
   std::unique_ptr<views::Button> close_button =
@@ -499,6 +519,7 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView() {
                               base::Unretained(owner_)));
   close_button->SetVisible(true);
   header->AddChildView(std::move(close_button));
+
   return header;
 }
 
@@ -713,6 +734,7 @@ AccountSelectionBubbleView::CreateSingleIdpUseOtherAccountButton(
 void AccountSelectionBubbleView::UpdateHeader(
     const gfx::Image& idp_image,
     const std::u16string& title,
+    const std::u16string& subtitle,
     bool show_back_button,
     bool should_circle_crop_header_icon) {
   back_button_->SetVisible(show_back_button);
@@ -727,12 +749,18 @@ void AccountSelectionBubbleView::UpdateHeader(
                                          should_circle_crop_header_icon);
     header_icon_view_->SetVisible(true);
   }
-  if (title.compare(title_) != 0) {
+  if (title != title_) {
     title_ = title;
     title_label_->SetText(title_);
+    // TODO(crbug.com/390581529): Make this work properly with subtitles.
     SetAccessibleTitle(title_);
     // The title label is not destroyed, so announce it manually.
     SendAccessibilityEvent(GetWidget(), title_);
+  }
+  if (subtitle != subtitle_) {
+    subtitle_ = subtitle;
+    subtitle_label_->SetText(subtitle_);
+    subtitle_label_->SetVisible(!subtitle_.empty());
   }
 }
 

@@ -159,7 +159,8 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
     return account;
   }
 
-  void CreateAccountSelectionBubble() {
+  void CreateAccountSelectionBubble(
+      const std::u16string& iframe_for_display = u"") {
     Reset();
     views::Widget::InitParams params =
         CreateParams(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
@@ -181,8 +182,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
       idp_list = {idp_data_};
     }
     account_selection_view_->Show(
-        content::RelyingPartyData(kTopFrameEtldPlusOne,
-                                  /*iframe_for_display=*/u""),
+        content::RelyingPartyData(kTopFrameEtldPlusOne, iframe_for_display),
         idp_list, accounts_, Account::SignInMode::kExplicit,
         blink::mojom::RpMode::kPassive, new_accounts);
     dialog_ = static_cast<AccountSelectionBubbleView*>(
@@ -191,14 +191,15 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
 
   void CreateAndShowSingleAccountPicker(
       bool has_display_identifier,
-      LoginState login_state = LoginState::kSignUp) {
+      LoginState login_state = LoginState::kSignUp,
+      const std::u16string& iframe_for_display = u"") {
     IdentityRequestAccountPtr account = CreateTestIdentityRequestAccount(
         kAccountSuffix, idp_data_, login_state);
     if (!has_display_identifier) {
       account->display_identifier = "";
     }
 
-    CreateAccountSelectionBubble();
+    CreateAccountSelectionBubble(iframe_for_display);
     account->identity_provider = idp_data_;
     dialog_->ShowSingleAccountConfirmDialog(account,
                                             /*show_back_button=*/false);
@@ -227,7 +228,8 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
 
   void PerformHeaderChecks(views::View* header,
                            const std::u16string& expected_title,
-                           bool expected_icon_visibility) {
+                           bool expected_icon_visibility,
+                           const std::u16string& expected_subtitle = u"") {
     // Perform some basic dialog checks.
     EXPECT_FALSE(dialog()->ShouldShowCloseButton());
     EXPECT_FALSE(dialog()->ShouldShowWindowTitle());
@@ -236,19 +238,34 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
     EXPECT_FALSE(dialog()->GetCancelButton());
 
     // Order: Potentially hidden IDP brand icon, potentially hidden back button,
-    // title, close button.
-    std::vector<std::string> expected_class_names = {"ImageButton", "Label",
+    // titles, close button.
+    std::vector<std::string> expected_class_names = {"ImageButton", "View",
                                                      "ImageButton"};
     expected_class_names.insert(expected_class_names.begin(),
                                 "BrandIconImageView");
     EXPECT_THAT(GetChildClassNames(header),
                 testing::ElementsAreArray(expected_class_names));
 
+    views::View* titles_container = GetViewWithClassName(header, "View");
+
     // Check title text.
     views::Label* title_view =
-        static_cast<views::Label*>(GetViewWithClassName(header, "Label"));
+        static_cast<views::Label*>(titles_container->children()[0]);
     ASSERT_TRUE(title_view);
     EXPECT_EQ(title_view->GetText(), expected_title);
+
+    views::Label* subtitle_view =
+        static_cast<views::Label*>(titles_container->children()[1]);
+    ASSERT_TRUE(subtitle_view);
+    if (expected_subtitle.empty()) {
+      EXPECT_FALSE(subtitle_view->GetVisible());
+      EXPECT_EQ(dialog()->GetDialogSubtitle(), std::nullopt);
+    } else {
+      EXPECT_TRUE(subtitle_view->GetVisible());
+      EXPECT_EQ(subtitle_view->GetText(), expected_subtitle);
+      EXPECT_EQ(dialog()->GetDialogSubtitle(),
+                base::UTF16ToUTF8(expected_subtitle));
+    }
 
     views::ImageView* idp_brand_icon = static_cast<views::ImageView*>(
         GetViewWithClassName(header, "BrandIconImageView"));
@@ -307,11 +324,13 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
   void PerformSingleAccountConfirmDialogChecks(
       const std::u16string expected_title,
       bool expected_icon_visibility,
-      bool has_display_identifier) {
+      bool has_display_identifier,
+      const std::u16string& expected_subtitle = u"") {
     std::vector<raw_ptr<views::View, VectorExperimental>> children =
         dialog()->children();
     ASSERT_EQ(children.size(), 3u);
-    PerformHeaderChecks(children[0], expected_title, expected_icon_visibility);
+    PerformHeaderChecks(children[0], expected_title, expected_icon_visibility,
+                        expected_subtitle);
     EXPECT_TRUE(IsViewClass<views::Separator>(children[1]));
 
     views::View* single_account_chooser = children[2];
@@ -342,12 +361,15 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
 
   void TestSingleAccount(const std::u16string expected_title,
                          bool expected_icon_visibility,
-                         bool has_display_identifier) {
+                         bool has_display_identifier,
+                         const std::u16string& iframe_for_display = u"",
+                         const std::u16string& expected_subtitle = u"") {
     CreateAndShowSingleAccountPicker(has_display_identifier,
-                                     LoginState::kSignUp);
+                                     LoginState::kSignUp, iframe_for_display);
 
     PerformSingleAccountConfirmDialogChecks(
-        expected_title, expected_icon_visibility, has_display_identifier);
+        expected_title, expected_icon_visibility, has_display_identifier,
+        expected_subtitle);
   }
 
   void TestMultipleAccounts(const std::u16string& expected_title,
@@ -1480,6 +1502,13 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
                     /*has_display_identifier=*/false);
 }
 
+TEST_F(AccountSelectionBubbleViewTest, IframeTitle) {
+  TestSingleAccount(kTitleIframeSignIn,
+                    /*expected_icon_visibility=*/true,
+                    /*has_display_identifier=*/false, kIframeETLDPlusOne,
+                    kSubtitleIframeSignIn);
+}
+
 // Test interaction of AccountHoverButton & FedCmAccountSelectionView via
 // FakeFedCmAccountSelectionView when AccountHoverButton OnPressed() is
 // called.
@@ -1521,5 +1550,4 @@ TEST_F(AccountSelectionInteractionTest,
                                           /*expected_icon_visibility=*/true,
                                           /*has_display_identifier=*/true);
 }
-
 }  //  namespace webid

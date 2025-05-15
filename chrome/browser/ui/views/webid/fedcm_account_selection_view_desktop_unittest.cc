@@ -114,6 +114,9 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
   }
 
   std::string GetDialogTitle() const override { return std::string(); }
+  std::optional<std::string> GetDialogSubtitle() const override {
+    return std::nullopt;
+  }
 
   bool show_back_button_{false};
   std::optional<SheetType> sheet_type_{SheetType::kLoading};

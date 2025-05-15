@@ -10,11 +10,18 @@
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/views/widget/widget.h"
 
+namespace content {
+struct RelyingPartyData;
+}  // namespace content
+
 namespace webid {
 int SelectSingleIdpTitleResourceId(blink::mojom::RpContext rp_context);
-std::u16string GetTitle(const std::u16string& rp_for_display,
+// Returns the title to be shown in the dialog. This does not include the
+// subtitle. For screen reader purposes, GetAccessibleTitle() is used instead.
+std::u16string GetTitle(const content::RelyingPartyData& rp_data,
                         const std::optional<std::u16string>& idp_title,
                         blink::mojom::RpContext rp_context);
+std::u16string GetSubtitle(const content::RelyingPartyData& rp_data);
 
 // Sends an accessibility event to make an announcement of the passed in
 // `announcement` if available, otherwise the text in the currently focused
