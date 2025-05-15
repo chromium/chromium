@@ -100,6 +100,7 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   String GetPlaceholderValue() const final;
   HTMLElement* UpdatePlaceholderText() override;
   bool IsInnerEditorValueEmpty() const final;
+  String EditingValue() const override;
   void CreateInnerEditorElementIfNecessary() const final;
 
   bool IsOptionalFormControl() const override {

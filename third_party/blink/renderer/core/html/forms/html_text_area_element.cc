@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
@@ -364,6 +365,7 @@ void HTMLTextAreaElement::DefaultEventHandler(Event& event) {
 }
 
 void HTMLTextAreaElement::SubtreeHasChanged() {
+  TRACE_EVENT0("blink", "HTMLTextAreaElement::SubtreeHasChanged");
   AdjustPlaceholderBreakElement();
 #if DCHECK_IS_ON()
   // The innerEditor should have either Text nodes or a placeholder break
@@ -400,7 +402,7 @@ void HTMLTextAreaElement::SubtreeHasChanged() {
     return;
 
   DCHECK(GetDocument().IsActive());
-  if (InnerEditorValue().empty()) {
+  if (value_.empty()) {
     GetDocument().GetPage()->GetChromeClient().DidClearValueInTextField(*this);
   }
   GetDocument().GetPage()->GetChromeClient().DidChangeValueInTextField(*this);
@@ -727,7 +729,11 @@ void HTMLTextAreaElement::CreateInnerEditorElementIfNecessary() const {
 }
 
 bool HTMLTextAreaElement::IsInnerEditorValueEmpty() const {
-  return InnerEditorValue().empty();
+  return Value().empty();
+}
+
+String HTMLTextAreaElement::EditingValue() const {
+  return Value();
 }
 
 HTMLElement* HTMLTextAreaElement::UpdatePlaceholderText() {

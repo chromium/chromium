@@ -1027,6 +1027,11 @@ String TextControlElement::InnerEditorValue() const {
     return g_empty_string;
   }
 
+  if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
+    auto [length, is_8bit] = ComputeValueLengthAndUpdateOffsetMap(nullptr);
+    return ComputeValue(length, is_8bit);
+  }
+
   StringBuilder result;
   for (Node& node : NodeTraversal::InclusiveDescendantsOf(*inner_editor)) {
     if (IsA<HTMLBRElement>(node)) {
@@ -1111,6 +1116,10 @@ String TextControlElement::ComputeValue(wtf_size_t length, bool is_8bit) const {
     }
   }
   return buffer.Release();
+}
+
+String TextControlElement::EditingValue() const {
+  return InnerEditorValue();
 }
 
 String TextControlElement::ValueWithHardLineBreaks() const {

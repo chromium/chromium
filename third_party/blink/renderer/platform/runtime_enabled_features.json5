@@ -1965,6 +1965,7 @@
       // crbug.com/414112253
       name: "FastSelectionSync",
       status: "stable",
+      depends_on: ["SelectionDeleteFromDocumentUaShadowFix"],
     },
     {
       name: "FedCm",
