@@ -45,14 +45,6 @@
 
 namespace {
 
-Tab* GetLeftTab(const Tab* tab) {
-  return tab->controller()->GetAdjacentTab(tab, base::i18n::IsRTL() ? 1 : -1);
-}
-
-Tab* GetRightTab(const Tab* tab) {
-  return tab->controller()->GetAdjacentTab(tab, base::i18n::IsRTL() ? -1 : 1);
-}
-
 // Updates a target value, returning true if it changed.
 template <class T>
 bool UpdateValue(T* dest, const T& src) {
@@ -290,17 +282,13 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
       const int right_separator_overlap =
           tab_style()->GetSeparatorSize().width() - left_separator_overlap;
 
-      // If there is a tab before this one, then expand into its overlap.
-      const Tab* const previous_tab = GetLeftTab(tab());
-      if (expand_into_previous_separator && previous_tab) {
+      if (expand_into_previous_separator) {
         left -= (tab_style()->GetSeparatorMargins().right() +
                  left_separator_overlap) *
                 scale;
       }
 
-      // If there is a tab after this one, then expand into its overlap.
-      const Tab* const next_tab = GetRightTab(tab());
-      if (expand_into_next_separator && next_tab) {
+      if (expand_into_next_separator) {
         right += (tab_style()->GetSeparatorMargins().left() +
                   right_separator_overlap) *
                  scale;
