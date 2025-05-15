@@ -139,8 +139,11 @@ LensOverlaySidePanelCoordinator::~LensOverlaySidePanelCoordinator() {
   }
 }
 
-std::unique_ptr<SidePanelInUse>
-LensOverlaySidePanelCoordinator::RegisterEntryAndShow() {
+void LensOverlaySidePanelCoordinator::RegisterEntryAndShow() {
+  if (state_ != State::kOff) {
+    // Exit early if the side panel is already registered or opening.
+    return;
+  }
   state_ = State::kOpeningSidePanel;
   RegisterEntry();
   GetSidePanelUI(GetLensOverlayController())
@@ -156,8 +159,6 @@ LensOverlaySidePanelCoordinator::RegisterEntryAndShow() {
                                 ->GetFeatures()
                                 .side_panel_coordinator();
   CHECK(side_panel_coordinator_);
-
-  return std::make_unique<SidePanelInUseImpl>(this);
 }
 
 void LensOverlaySidePanelCoordinator::RecordAndShowSidePanelErrorPage() {
@@ -632,21 +633,6 @@ LensOverlaySidePanelCoordinator::SidePanelInitializationData::
     SidePanelInitializationData() = default;
 LensOverlaySidePanelCoordinator::SidePanelInitializationData::
     ~SidePanelInitializationData() = default;
-
-LensOverlaySidePanelCoordinator::SidePanelInUseImpl::SidePanelInUseImpl(
-    LensOverlaySidePanelCoordinator* coordinator)
-    : coordinator_(coordinator->weak_ptr_factory_.GetWeakPtr()) {
-  coordinator_->side_panel_in_use_count_++;
-}
-
-LensOverlaySidePanelCoordinator::SidePanelInUseImpl::~SidePanelInUseImpl() {
-  if (coordinator_) {
-    coordinator_->side_panel_in_use_count_--;
-    if (coordinator_->side_panel_in_use_count_ == 0) {
-      coordinator_->DeregisterEntryAndCleanup();
-    }
-  }
-}
 
 void LensOverlaySidePanelCoordinator::DeregisterEntryAndCleanup() {
   auto* registry = lens_search_controller_->GetTabInterface()

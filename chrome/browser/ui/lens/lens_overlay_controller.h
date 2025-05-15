@@ -1270,10 +1270,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   std::unique_ptr<lens::LensOverlayBlurLayerDelegate>
       lens_overlay_blur_layer_delegate_;
 
-  // Keeps alive an instance of the side panel while it is open. This is
-  // necessary to prevent the side panel from closing when the overlay is open.
-  std::unique_ptr<lens::SidePanelInUse> side_panel_in_use_;
-
   // Pointer to the view that houses our overlay as a child of the tab
   // contents web view.
   raw_ptr<views::View> overlay_view_;

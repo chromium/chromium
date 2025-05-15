@@ -540,6 +540,7 @@ void LensSearchController::CloseLensPart2(
   lens_searchbox_controller_->CloseUI();
   lens_permission_bubble_controller_.reset();
   lens_contextualization_controller_->ResetState();
+  lens_overlay_side_panel_coordinator_->DeregisterEntryAndCleanup();
 
   // Cleanup the query controller after the overlay controller to prevent
   // dangling ptrs.

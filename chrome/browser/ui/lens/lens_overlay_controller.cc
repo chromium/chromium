@@ -408,7 +408,6 @@ void LensOverlayController::CloseUI(
   }
 
   results_side_panel_coordinator_ = nullptr;
-  side_panel_in_use_.reset();
   pre_initialization_suggest_inputs_.reset();
   pre_initialization_objects_.reset();
   pre_initialization_text_.reset();
@@ -1941,11 +1940,7 @@ void LensOverlayController::MaybeHideSharedOverlayView() {
 }
 
 void LensOverlayController::MaybeOpenSidePanel() {
-  if (side_panel_in_use_) {
-    // Exit early if this class has already requested access to the side panel.
-    return;
-  }
-  side_panel_in_use_ = results_side_panel_coordinator_->RegisterEntryAndShow();
+  results_side_panel_coordinator_->RegisterEntryAndShow();
 }
 
 void LensOverlayController::InitializeOverlay(
