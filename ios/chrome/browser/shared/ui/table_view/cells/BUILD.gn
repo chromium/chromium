@@ -111,8 +111,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
-    "//net:net",
+    "//net",
     "//testing/gtest",
-    "//third_party/ocmock:ocmock",
+    "//third_party/ocmock",
   ]
 }

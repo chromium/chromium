@@ -56,7 +56,7 @@ source_set("util") {
     "//ios/chrome/common/ui/util:dynamic_type_util",
     "//ios/web:threads",
     "//ios/web/common:uikit",
-    "//ios/web/public/thread:thread",
+    "//ios/web/public/thread",
     "//ios/web/thread",
     "//net",
     "//ui/base",

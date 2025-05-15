@@ -180,7 +180,7 @@ source_set("scene") {
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list:utils",
-    "//ios/chrome/browser/shared/public/commands:commands",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:snackbar_util",
@@ -213,7 +213,7 @@ source_set("scene") {
     "//ios/web/public/js_image_transcoder",
     "//ios/web/public/session",
     "//ios/web/public/session/proto",
-    "//ui/base:base",
+    "//ui/base",
   ]
   public_deps = [ ":scene_state_header" ]
   allow_circular_includes_from = [
