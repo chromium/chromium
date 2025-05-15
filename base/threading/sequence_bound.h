@@ -546,11 +546,53 @@ class SequenceBound {
   // factories don't need to handle raw method pointers, since everything has
   // already been packaged into a base::OnceCallback.
   template <typename ReturnType>
-  class AsyncCallWithBoundArgsBuilderBase {
-   protected:
-    AsyncCallWithBoundArgsBuilderBase(const SequenceBound* sequence_bound,
-                                      const Location* location,
-                                      CrossThreadTask<ReturnType()> callback)
+  class AsyncCallWithBoundArgsBuilder {
+   public:
+    // Subtle: the internal helpers rely on move elision. Preventing move
+    // elision (e.g. using `std::move()` when returning the temporary) will
+    // trigger a `CHECK()` since `sequence_bound_` is not reset to nullptr on
+    // move.
+    AsyncCallWithBoundArgsBuilder(AsyncCallWithBoundArgsBuilder&&) noexcept =
+        default;
+    AsyncCallWithBoundArgsBuilder& operator=(
+        AsyncCallWithBoundArgsBuilder&&) noexcept = default;
+
+    ~AsyncCallWithBoundArgsBuilder() {
+      if constexpr (std::is_void_v<ReturnType>) {
+        if (sequence_bound_) {
+          CrossThreadTraits::PostTask(*sequence_bound_->impl_task_runner_,
+                                      *location_, std::move(callback_));
+        }
+      } else {
+        // Must use Then() since the method's return type is not void to avoid
+        // silently dropping the return value. Hopefully optimized out if the
+        // code is bug-free.
+        CHECK(!sequence_bound_)
+            << "Then() not invoked for a method that returns a non-void type; "
+            << "make sure to invoke Then() or use base::IgnoreResult()";
+      }
+    }
+
+    template <template <typename> class CallbackType>
+      requires(std::is_void_v<ReturnType> && IsCrossThreadTask<CallbackType>)
+    void Then(CallbackType<void()> then_callback) && {
+      std::exchange(sequence_bound_, nullptr)
+          ->PostTaskAndThenHelper(*location_, std::move(callback_),
+                                  std::move(then_callback));
+    }
+
+    template <template <typename> class CallbackType, typename ThenArg>
+      requires(!std::is_void_v<ReturnType> && IsCrossThreadTask<CallbackType>)
+    void Then(CallbackType<void(ThenArg)> then_callback) && {
+      std::exchange(sequence_bound_, nullptr)
+          ->PostTaskAndThenHelper(*location_, std::move(callback_),
+                                  std::move(then_callback));
+    }
+
+   private:
+    AsyncCallWithBoundArgsBuilder(const SequenceBound* sequence_bound,
+                                  const Location* location,
+                                  CrossThreadTask<ReturnType()> callback)
         : sequence_bound_(sequence_bound),
           location_(location),
           callback_(std::move(callback)) {
@@ -558,93 +600,12 @@ class SequenceBound {
       DCHECK(!sequence_bound_->storage_.is_null());
     }
 
-    // Subtle: the internal helpers rely on move elision. Preventing move
-    // elision (e.g. using `std::move()` when returning the temporary) will
-    // trigger a `CHECK()` since `sequence_bound_` is not reset to nullptr on
-    // move.
-    AsyncCallWithBoundArgsBuilderBase(
-        AsyncCallWithBoundArgsBuilderBase&&) noexcept = default;
-    AsyncCallWithBoundArgsBuilderBase& operator=(
-        AsyncCallWithBoundArgsBuilderBase&&) noexcept = default;
+    friend SequenceBound;
 
     raw_ptr<const SequenceBound<T, CrossThreadTraits>> sequence_bound_;
     const raw_ptr<const Location> location_;
     CrossThreadTask<ReturnType()> callback_;
   };
-
-  // Note: this doesn't handle a void return type, which has an explicit
-  // specialization below.
-  template <typename ReturnType>
-  class AsyncCallWithBoundArgsBuilderDefault
-      : public AsyncCallWithBoundArgsBuilderBase<ReturnType> {
-   public:
-    ~AsyncCallWithBoundArgsBuilderDefault() {
-      // Must use Then() since the method's return type is not void.
-      // Should be optimized out if the code is bug-free.
-      CHECK(!this->sequence_bound_)
-          << "Then() not invoked for a method that returns a non-void type; "
-          << "make sure to invoke Then() or use base::IgnoreResult()";
-    }
-
-    template <template <typename> class CallbackType, typename ThenArg>
-      requires(IsCrossThreadTask<CallbackType>)
-    void Then(CallbackType<void(ThenArg)> then_callback) && {
-      this->sequence_bound_->PostTaskAndThenHelper(*this->location_,
-                                                   std::move(this->callback_),
-                                                   std::move(then_callback));
-      this->sequence_bound_ = nullptr;
-    }
-
-   protected:
-    using AsyncCallWithBoundArgsBuilderBase<
-        ReturnType>::AsyncCallWithBoundArgsBuilderBase;
-
-   private:
-    friend SequenceBound;
-
-    AsyncCallWithBoundArgsBuilderDefault(
-        AsyncCallWithBoundArgsBuilderDefault&&) = default;
-    AsyncCallWithBoundArgsBuilderDefault& operator=(
-        AsyncCallWithBoundArgsBuilderDefault&&) = default;
-  };
-
-  class AsyncCallWithBoundArgsBuilderVoid
-      : public AsyncCallWithBoundArgsBuilderBase<void> {
-   public:
-    // Note: despite being here, this is actually still protected, since it is
-    // protected on the base class.
-    using AsyncCallWithBoundArgsBuilderBase<
-        void>::AsyncCallWithBoundArgsBuilderBase;
-
-    ~AsyncCallWithBoundArgsBuilderVoid() {
-      if (this->sequence_bound_) {
-        CrossThreadTraits::PostTask(*this->sequence_bound_->impl_task_runner_,
-                                    *this->location_,
-                                    std::move(this->callback_));
-      }
-    }
-
-    void Then(CrossThreadTask<void()> then_callback) && {
-      this->sequence_bound_->PostTaskAndThenHelper(*this->location_,
-                                                   std::move(this->callback_),
-                                                   std::move(then_callback));
-      this->sequence_bound_ = nullptr;
-    }
-
-   private:
-    friend SequenceBound;
-
-    AsyncCallWithBoundArgsBuilderVoid(AsyncCallWithBoundArgsBuilderVoid&&) =
-        default;
-    AsyncCallWithBoundArgsBuilderVoid& operator=(
-        AsyncCallWithBoundArgsBuilderVoid&&) = default;
-  };
-
-  template <typename ReturnType>
-  using AsyncCallWithBoundArgsBuilder = typename std::conditional<
-      std::is_void_v<ReturnType>,
-      AsyncCallWithBoundArgsBuilderVoid,
-      AsyncCallWithBoundArgsBuilderDefault<ReturnType>>::type;
 
   void PostTaskAndThenHelper(const Location& location,
                              CrossThreadTask<void()> callback,
