@@ -17,6 +17,11 @@
 namespace {
 constexpr CGFloat kCustomSpacingAtTopIfNoNavigationBar = 24;
 constexpr CGFloat kCustomSpacingAfterImageWithoutAnimation = 0;
+// The image resource used in this promo has lots of blank space around it,
+// and a subtle drop shadow. Setting the spacing after the image to a negative
+// value reduces the extra padding allowing all the content to fit on the
+// screen.
+constexpr CGFloat kCustomSpacingAfterImageWithAnimation = -8;
 constexpr CGFloat kPreferredCornerRadius = 20;
 NSString* const kDarkModeAnimationSuffix = @"_darkmode";
 NSString* const kPasswordOptionsKeypath = @"text_password_options";
@@ -135,15 +140,15 @@ NSString* const kCredentialProviderPromoAccessibilityId =
   self.alertScreen.titleTextStyle = UIFontTextStyleTitle2;
   self.alertScreen.topAlignedLayout = YES;
 
-  if (self.shouldShowAnimation || IOSPasskeysM2Enabled()) {
+  if ((!self.alertScreen.image && self.shouldShowAnimation) ||
+      (!self.shouldShowAnimation && IOSPasskeysM2Enabled())) {
     self.alertScreen.customSpacingBeforeImageIfNoNavigationBar =
         kCustomSpacingAtTopIfNoNavigationBar;
   }
 
-  if (!self.shouldShowAnimation) {
-    self.alertScreen.customSpacingAfterImage =
-        kCustomSpacingAfterImageWithoutAnimation;
-  }
+  self.alertScreen.customSpacingAfterImage =
+      self.shouldShowAnimation ? kCustomSpacingAfterImageWithAnimation
+                               : kCustomSpacingAfterImageWithoutAnimation;
 
   [self addChildViewController:self.alertScreen];
   [self.view addSubview:self.alertScreen.view];
