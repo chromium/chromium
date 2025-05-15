@@ -1664,7 +1664,7 @@ TEST_F(SunfishTest, SendMultimodalSearch) {
   // Mock getting a new response from the server. Test the panel is updated.
   EXPECT_CALL(*search_results_panel, Navigate(testing::_));
 
-  controller->ShowSearchResultsPanel(gfx::ImageSkia());
+  controller->ShowSearchResultsPanel();
   controller->NavigateSearchResultsPanel(GURL("kTestUrl2"));
 }
 
@@ -2743,41 +2743,6 @@ TEST_F(SunfishTest, PanelCreationWithMenuObserved) {
       ActionButtonViewID::kSearchButton);
   ASSERT_TRUE(search_button);
   LeftClickOn(search_button);
-}
-
-// TODO: crbug.com/398259275 - Remove this class and remove or integrate each
-// test when the Lens Web API implementation is enabled by default.
-class SunfishLensWebTest : public SunfishTestBase {
- public:
-  SunfishLensWebTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSunfishFeature,
-                              features::kSunfishLensWeb},
-        /*disabled_features=*/{{}});
-  }
-  SunfishLensWebTest(const SunfishLensWebTest&) = delete;
-  SunfishLensWebTest& operator=(const SunfishLensWebTest&) = delete;
-  ~SunfishLensWebTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Tests that the native search box is removed from the search results panel
-// when the Lens Web API implementation is enabled.
-TEST_F(SunfishLensWebTest, NoNativeSearchBox) {
-  views::Widget::InitParams params(
-      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
-      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.bounds = gfx::Rect{capture_mode::kSearchResultsPanelTotalWidth,
-                            capture_mode::kSearchResultsPanelTotalHeight};
-  params.parent =
-      Shell::GetContainer(Shell::GetPrimaryRootWindow(),
-                          kShellWindowId_CaptureModeSearchResultsPanel);
-  auto widget = std::make_unique<views::Widget>(std::move(params));
-  auto* search_results_panel =
-      widget->SetContentsView(std::make_unique<SearchResultsPanel>());
-  EXPECT_FALSE(search_results_panel->GetSearchBoxTextfield());
 }
 
 using SunfishDisplayMetricsTest = SunfishTest;

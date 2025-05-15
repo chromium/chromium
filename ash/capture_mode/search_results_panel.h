@@ -19,13 +19,11 @@
 
 namespace views {
 class Button;
-class Textfield;
 }  // namespace views
 
 namespace ash {
 
 class AshWebView;
-class SunfishSearchBoxView;
 
 // Container for the search results view and other UI such as the search box,
 // close button, etc.
@@ -49,8 +47,6 @@ class ASH_EXPORT SearchResultsPanel : public SystemPanelView,
     return GetViewByID(capture_mode::kLoadingAnimationViewId);
   }
 
-  views::Textfield* GetSearchBoxTextfield() const;
-
   // Gets the highlightable views for the search results panel, which may
   // include the close button and the search box textfield. Does not include
   // the web contents or animation as they need to be handled separately.
@@ -68,17 +64,11 @@ class ASH_EXPORT SearchResultsPanel : public SystemPanelView,
 
   // Sets the search box URL, image thumbnail, and text.
   virtual void Navigate(const GURL& url);
-  virtual void SetSearchBoxImage(const gfx::ImageSkia& image);
-  void SetSearchBoxText(const std::u16string& text);
 
   // Refreshes the panel z-order. If `new_root` is not null, capture mode
   // session is active and will be used to determine the panel root. Else the
   // panel will be re-stacked on its native window's root window.
   void RefreshStackingOrder(aura::Window* new_root);
-
-  // Returns true if the `CaptureModeSessionFocusCycler::HighlightHelper` for
-  // this view has focus, otherwise returns false.
-  bool IsTextfieldPseudoFocused() const;
 
   // Shows and plays a loading animation in place of the web contents.
   void ShowLoadingAnimation();
@@ -106,7 +96,6 @@ class ASH_EXPORT SearchResultsPanel : public SystemPanelView,
   void RefreshPanelBounds();
 
   // Owned by the views hierarchy.
-  raw_ptr<SunfishSearchBoxView> search_box_view_ = nullptr;
   raw_ptr<AshWebView> search_results_view_ = nullptr;
   raw_ptr<views::Button> close_button_;
 

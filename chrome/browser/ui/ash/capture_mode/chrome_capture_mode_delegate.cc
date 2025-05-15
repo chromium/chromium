@@ -1312,12 +1312,6 @@ void ChromeCaptureModeDelegate::OnDispatchCompleteForImageSearch(
     std::move(on_search_url_fetched_callback_).Run(final_url);
   }
 
-  // No other actions to take if we are not using the Lens Web API for Copy
-  // Text.
-  if (!ash::features::IsSunfishLensWebCopyTextEnabled()) {
-    return;
-  }
-
   // Get the vsr ID from the redirect URL so it can be used again in the
   // /qfmetadata request.
   std::string vsr_id;

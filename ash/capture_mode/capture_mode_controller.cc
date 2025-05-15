@@ -711,8 +711,7 @@ SearchResultsPanel* CaptureModeController::GetSearchResultsPanel() const {
              : nullptr;
 }
 
-void CaptureModeController::ShowSearchResultsPanel(
-    const gfx::ImageSkia& image) {
+void CaptureModeController::ShowSearchResultsPanel() {
   // We should not use `CanShowSunfishUi` here, as that could change between
   // sending the region and receiving a URL (for example, if the Sunfish policy
   // changes).
@@ -759,13 +758,6 @@ void CaptureModeController::ShowSearchResultsPanel(
   }
 
   // Note at this point the session may no longer be active.
-  auto* search_results_panel = GetSearchResultsPanel();
-  // The Lens Web API implementation has its own searchbox, so there's no need
-  // to set the thumbnail image.
-  if (!features::IsSunfishLensWebEnabled()) {
-    search_results_panel->SetSearchBoxImage(image);
-  }
-
   if (should_end_session) {
     Stop();
   }
@@ -807,13 +799,6 @@ void CaptureModeController::MaybeUpdateSearchResultsPanelBounds() {
 
 void CaptureModeController::OnLocatedEventDragged() {
   if (IsSearchResultsPanelVisible()) {
-    // Clear the search box text for the next time the panel is opened. Note we
-    // don't need to reset the image or URL since the panel will always be
-    // re-opened with those. Only necessary if the Lens Web API implementation
-    // is not enabled and we are still using the native search box.
-    if (!features::IsSunfishLensWebEnabled()) {
-      GetSearchResultsPanel()->SetSearchBoxText(std::u16string());
-    }
     search_results_panel_widget_->Hide();
   }
 }
@@ -2070,8 +2055,6 @@ void CaptureModeController::OnImageCapturedForSearch(
     return;
   }
 
-  gfx::ImageSkia image_skia = gfx::ImageSkia();
-  if (features::IsSunfishLensWebEnabled()) {
     const gfx::Image image = gfx::Image::CreateFrom1xBitmap(bitmap);
     const bool is_standalone_session =
         capture_mode_session_->active_behavior()->behavior_type() ==
@@ -2086,24 +2069,11 @@ void CaptureModeController::OnImageCapturedForSearch(
         base::BindRepeating(&CaptureModeController::OnLensWebError,
                             weak_ptr_factory_.GetWeakPtr(),
                             image_search_token));
-  } else {
-    image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
-    // `OnSearchUrlFetched()` will be invoked with `image` when the server
-    // response is fetched.
-    delegate_->SendRegionSearch(
-        bitmap, user_capture_region_,
-        base::BindRepeating(&CaptureModeController::OnSearchUrlFetched,
-                            weak_ptr_factory_.GetWeakPtr(),
-                            user_capture_region_, image_skia),
-        base::BindRepeating(&CaptureModeController::OnLensTextDetectionComplete,
-                            weak_ptr_factory_.GetWeakPtr(),
-                            image_search_token));
-  }
 
   // Immediately show the search results panel, with a loading animation in
   // place of the web contents. We will replace it once we receive the URL from
   // the server.
-  ShowSearchResultsPanel(image_skia);
+    ShowSearchResultsPanel();
 }
 
 void CaptureModeController::OnTextDetectionComplete(

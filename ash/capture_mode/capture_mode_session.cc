@@ -1801,16 +1801,14 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
     return;
   }
 
-  // If the search results panel is visible, and the textfield has
-  // pseudo focus or the panel is actually focused, we will let the search
-  // results panel handle key events (i.e., pressing Enter/Return to make a
-  // multimodal search) until it calls `TakeFocus` to return focus back to the
-  // focus cycler. As an exception, pressing ESC can still be used to exit the
-  // session.
+  // If the search results panel is visible, and the panel is actually focused,
+  // we will let the search results panel handle key events (i.e., pressing
+  // Enter/Return to make a multimodal search) until it calls `TakeFocus` to
+  // return focus back to the focus cycler. As an exception, pressing ESC can
+  // still be used to exit the session.
   ui::KeyboardCode key_code = event->key_code();
   if (controller_->IsSearchResultsPanelVisible() &&
-      (controller_->GetSearchResultsPanel()->IsTextfieldPseudoFocused() ||
-       controller_->GetSearchResultsPanel()->HasFocus()) &&
+      controller_->GetSearchResultsPanel()->HasFocus() &&
       key_code != ui::VKEY_ESCAPE) {
     return;
   }

@@ -34,8 +34,6 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -50,16 +48,8 @@ inline constexpr int kPanelCornerRadius = 16;
 const std::u16string kSearchBoxPlaceholderText = u"Add to your search";
 inline constexpr gfx::Insets kPanelPadding =
     gfx::Insets(capture_mode::kPanelPaddingSize);
-inline constexpr int kSearchBoxHeight = 48;
-inline constexpr int kSearchBoxRadius = 24;
-inline constexpr int kSearchBoxImageRadius = 8;
-inline constexpr gfx::Insets kSearchBoxViewSpacing = gfx::Insets::VH(12, 0);
 inline constexpr gfx::Insets kSearchResultsViewSpacing =
     gfx::Insets::TLBR(12, 0, 0, 0);
-inline constexpr gfx::Insets kSearchImageSpacing =
-    gfx::Insets::TLBR(8, 16, 8, 12);
-inline constexpr gfx::Insets kSearchTextfieldSpacing =
-    gfx::Insets::TLBR(14, 0, 14, 16);
 
 // Returns the target container window for the panel widget.
 aura::Window* GetParentContainer(aura::Window* root, bool is_active) {
@@ -74,104 +64,6 @@ std::u16string GetSearchResultsPanelTitle() {
 }
 
 }  // namespace
-
-// TODO: crbug.com/377764351 - Fix the textfield being too far to the left when
-// the region is very narrow (height >> width).
-// `SunfishSearchBoxView` contains an image thumbnail and a textfield.
-class SunfishSearchBoxView : public views::View,
-                             public views::TextfieldController {
-  METADATA_HEADER(SunfishSearchBoxView, views::View)
-
- public:
-  SunfishSearchBoxView() {
-    SetLayoutManager(std::make_unique<views::FlexLayout>())
-        ->SetOrientation(views::LayoutOrientation::kHorizontal)
-        .SetMainAxisAlignment(views::LayoutAlignment::kStart)
-        .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
-        .SetCollapseMargins(true);
-    // TODO(b/356878705): Replace with the captured region screenshot when the
-    // backend is hooked up. Currently using the search icon as a placeholder.
-    AddChildView(views::Builder<views::ImageView>()
-                     .CopyAddressTo(&image_view_)
-                     .SetImage(ui::ImageModel::FromVectorIcon(
-                         vector_icons::kGoogleColorIcon))
-                     .SetProperty(views::kMarginsKey, kSearchImageSpacing)
-                     .Build());
-    AddChildView(
-        views::Builder<views::Textfield>()
-            .CopyAddressTo(&textfield_)
-            .SetController(this)
-            .SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT)
-            .SetPlaceholderText(kSearchBoxPlaceholderText)
-            .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
-                TypographyToken::kCrosBody2))
-            .SetProperty(views::kMarginsKey, kSearchTextfieldSpacing)
-            .SetProperty(views::kFlexBehaviorKey,
-                         views::FlexSpecification(
-                             views::LayoutOrientation::kHorizontal,
-                             views::MinimumFlexSizeRule::kPreferred,
-                             views::MaximumFlexSizeRule::kUnbounded))
-            .SetBackgroundEnabled(false)
-            .SetBorder(nullptr)
-            .Build());
-
-    SetBackground(views::CreateRoundedRectBackground(
-        cros_tokens::kCrosSysSystemOnBase1, kSearchBoxRadius));
-
-    SetPreferredSize(gfx::Size(capture_mode::kSearchResultsPanelWebViewWidth,
-                               kSearchBoxHeight));
-
-    image_view_->SetPaintToLayer();
-    image_view_->layer()->SetFillsBoundsOpaquely(false);
-    image_view_->layer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF(kSearchBoxImageRadius));
-  }
-  SunfishSearchBoxView(const SunfishSearchBoxView&) = delete;
-  SunfishSearchBoxView& operator=(const SunfishSearchBoxView&) = delete;
-  ~SunfishSearchBoxView() override = default;
-
-  void SetImage(const gfx::ImageSkia& image) {
-    if (image.isNull()) {
-      return;
-    }
-    // Resize the image to fit in the searchbox, keeping the same aspect ratio.
-    const int target_height = height();
-    const int target_width = (image.width() * target_height) / image.height();
-    image_view_->SetImage(ui::ImageModel::FromImageSkia(image));
-    image_view_->SetImageSize(gfx::Size(target_width, target_height));
-  }
-
-  // views::TextfieldController:
-  bool HandleKeyEvent(views::Textfield* sender,
-                      const ui::KeyEvent& event) override {
-    if (sender->GetText().empty()) {
-      return false;
-    }
-
-    if (!textfield_->HasFocus()) {
-      return false;
-    }
-
-    if (event.type() == ui::EventType::kKeyPressed &&
-        event.key_code() == ui::VKEY_RETURN) {
-      CaptureModeController::Get()->SendMultimodalSearch(
-          image_view_->GetImage(), base::UTF16ToUTF8(sender->GetText()));
-      return true;
-    }
-
-    return false;
-  }
-
- private:
-  friend class SearchResultsPanel;
-
-  // Owned by the views hierarchy.
-  raw_ptr<views::ImageView> image_view_;
-  raw_ptr<views::Textfield> textfield_;
-};
-
-BEGIN_METADATA(SunfishSearchBoxView)
-END_METADATA
 
 SearchResultsPanel::SearchResultsPanel() {
   // We should not use `CanShowSunfishUi` here, as that could change between
@@ -222,13 +114,6 @@ SearchResultsPanel::SearchResultsPanel() {
                           .WithAlignment(views::LayoutAlignment::kEnd)))
           .Build());
 
-  // Lens Web API uses its own sticky search box, so there's no need to create a
-  // native one.
-  if (!features::IsSunfishLensWebEnabled()) {
-    search_box_view_ = AddChildView(std::make_unique<SunfishSearchBoxView>());
-    search_box_view_->SetProperty(views::kMarginsKey, kSearchBoxViewSpacing);
-  }
-
   SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated, kPanelCornerRadius));
   SetPaintToLayer();
@@ -254,14 +139,6 @@ SearchResultsPanel::SearchResultsPanel() {
   CaptureModeSessionFocusCycler::HighlightHelper::Install(animation_view);
   CaptureModeSessionFocusCycler::HighlightHelper::Get(animation_view)
       ->SetUpFocusPredicate();
-
-  if (!features::IsSunfishLensWebEnabled()) {
-    CaptureModeSessionFocusCycler::HighlightHelper::Install(
-        search_box_view_->textfield_);
-    CaptureModeSessionFocusCycler::HighlightHelper::Get(
-        search_box_view_->textfield_)
-        ->SetUpFocusPredicate();
-  }
 }
 
 SearchResultsPanel::~SearchResultsPanel() = default;
@@ -285,10 +162,6 @@ views::UniqueWidgetPtr SearchResultsPanel::CreateWidget(aura::Window* root,
   return widget;
 }
 
-views::Textfield* SearchResultsPanel::GetSearchBoxTextfield() const {
-  return search_box_view_ ? search_box_view_->textfield_ : nullptr;
-}
-
 std::vector<CaptureModeSessionFocusCycler::HighlightableView*>
 SearchResultsPanel::GetHighlightableItems() const {
   std::vector<CaptureModeSessionFocusCycler::HighlightableView*>
@@ -296,12 +169,6 @@ SearchResultsPanel::GetHighlightableItems() const {
   CHECK(close_button_);
   highlightable_items.push_back(
       CaptureModeSessionFocusCycler::HighlightHelper::Get(close_button_.get()));
-  if (!features::IsSunfishLensWebEnabled()) {
-    CHECK(search_box_view_);
-    highlightable_items.push_back(
-        CaptureModeSessionFocusCycler::HighlightHelper::Get(
-            search_box_view_->textfield_.get()));
-  }
   return highlightable_items;
 }
 
@@ -337,16 +204,6 @@ void SearchResultsPanel::Navigate(const GURL& url) {
   search_results_view_->Navigate(url);
 }
 
-void SearchResultsPanel::SetSearchBoxImage(const gfx::ImageSkia& image) {
-  CHECK(search_box_view_);
-  search_box_view_->SetImage(image);
-}
-
-void SearchResultsPanel::SetSearchBoxText(const std::u16string& text) {
-  CHECK(search_box_view_);
-  search_box_view_->textfield_->SetText(text);
-}
-
 void SearchResultsPanel::RefreshStackingOrder(aura::Window* new_root) {
   aura::Window* native_window = GetWidget()->GetNativeWindow();
   // While the capture mode session is active, we parent the panel to its own
@@ -354,17 +211,6 @@ void SearchResultsPanel::RefreshStackingOrder(aura::Window* new_root) {
   aura::Window* new_parent = GetParentContainer(
       new_root ? new_root : native_window->GetRootWindow(), !!new_root);
   views::Widget::ReparentNativeView(native_window, new_parent);
-}
-
-bool SearchResultsPanel::IsTextfieldPseudoFocused() const {
-  if (features::IsSunfishLensWebEnabled()) {
-    return false;
-  }
-
-  CHECK(search_box_view_);
-  return CaptureModeSessionFocusCycler::HighlightHelper::Get(
-             search_box_view_->textfield_)
-      ->has_focus();
 }
 
 void SearchResultsPanel::ShowLoadingAnimation() {

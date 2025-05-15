@@ -151,9 +151,8 @@ class ASH_EXPORT CaptureModeController
   // Returns the search results panel, or nullptr if none exists.
   SearchResultsPanel* GetSearchResultsPanel() const;
 
-  // Shows the results panel. `image` is only needed for the thumbnail if the
-  // Lens Web feature flag is disabled.
-  void ShowSearchResultsPanel(const gfx::ImageSkia& image);
+  // Shows the results panel.
+  void ShowSearchResultsPanel();
 
   // Navigates the Sunfish search results panel to the given URL, if the panel
   // is available.

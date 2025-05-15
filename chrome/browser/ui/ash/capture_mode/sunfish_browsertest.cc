@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(SunfishBrowserTest, OpenLinksInNewTabs) {
   VerifyActiveBehavior(BehaviorType::kSunfish);
 
   // Simulate showing the panel while the session is active.
-  controller->ShowSearchResultsPanel(gfx::ImageSkia());
+  controller->ShowSearchResultsPanel();
   controller->NavigateSearchResultsPanel(GURL("kTestUrl1"));
   ASSERT_TRUE(controller->IsActive());
   auto* search_results_view =
@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(SunfishBrowserTest, OpensLinksOffTheRecord) {
   VerifyActiveBehavior(BehaviorType::kSunfish);
 
   // Simulate showing the panel while the session is active.
-  controller->ShowSearchResultsPanel(gfx::ImageSkia());
+  controller->ShowSearchResultsPanel();
   controller->NavigateSearchResultsPanel(GURL("kTestUrl1"));
   ASSERT_TRUE(controller->IsActive());
   auto* search_results_view =
