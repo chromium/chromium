@@ -126,16 +126,21 @@ BASE_FEATURE(kBorealis, "Borealis", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+// WARNING: These features are launched and the old code paths are in the
+// process of being removed. Attempting to run Chrome with the features
+// disabled will likely break.
+// TODO(crbug.com/390333881): Remove the flags once all references have been
+// cleaned up.
 BASE_FEATURE(kEnableCertManagementUIV2,
-             "EnableCertManagementUIV2",
+             "EnableCertManagementUIV2_LAUNCHED",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableCertManagementUIV2Write,
-             "EnableCertManagementUIV2Write",
+             "EnableCertManagementUIV2Write_LAUNCHED",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableCertManagementUIV2EditCerts,
-             "EnableCertManagementUIV2EditCerts",
+             "EnableCertManagementUIV2EditCerts_LAUNCHED",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
