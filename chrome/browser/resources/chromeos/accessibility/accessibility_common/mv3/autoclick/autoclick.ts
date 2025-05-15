@@ -9,6 +9,9 @@
 import '/common/array_util.js';
 // Required for AccessibilityExtensionAutomationTreeWalkerTest.
 import '/common/tree_walker.js';
+// Required for AccessibilityExtensionAutomationUtilE2ETest.
+import '/common/automation_util.js';
+import '/common/rect_util.js';
 
 import {EventHandler} from '/common/event_handler.js';
 
