@@ -2831,6 +2831,12 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
             module_target.header_libs.update(dep_module.header_libs)
           elif module.type in ('rust_ffi_static', 'rust_bindgen'):
             module_target.shared_libs.update(dep_module.shared_libs)
+          elif module.type == 'rust_proc_macro' and dep_module.type == 'cc_library_static':
+            # rust_proc_macro cannot depend on cc_library_static. Having said
+            # that, we still need these dependencies to further bubble them up
+            # to rust_proc_macro targets dependencies, so simply ignore them.
+            # See https:/crbug.com/417429009.
+            pass
           else:
             raise Exception(
                 f"Cannot add {dep_module.name} ({dep_module.type}) to {module.name} ({module.type})"
