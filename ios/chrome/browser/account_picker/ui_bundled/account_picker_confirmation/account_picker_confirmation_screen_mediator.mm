@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/signin/model/system_identity_util.h"
 
 @interface AccountPickerConfirmationScreenMediator () <
     IdentityManagerObserverBridgeDelegate> {
@@ -89,16 +90,13 @@
     return;
   }
 
-  id<SystemIdentity> identity = signin::GetDefaultIdentityOnDevice(
-      _identityManager, _accountManagerService);
-
-  // If the user is signed-in, present the signed-in account.
-  if (_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    const CoreAccountInfo primaryAccountInfo =
-        _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-    id<SystemIdentity> primaryAccount =
-        _accountManagerService->GetIdentityWithGaiaID(primaryAccountInfo.gaia);
-    identity = primaryAccount;
+  // If the user is signed-in, present the signed-in account, otherwise the
+  // default account on the device.
+  id<SystemIdentity> identity = GetPrimarySystemIdentity(
+      signin::ConsentLevel::kSignin, _identityManager, _accountManagerService);
+  if (!identity) {
+    identity = signin::GetDefaultIdentityOnDevice(_identityManager,
+                                                  _accountManagerService);
   }
 
   // Here, default identity may be nil.

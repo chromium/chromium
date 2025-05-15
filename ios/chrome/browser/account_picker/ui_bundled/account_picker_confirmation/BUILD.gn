@@ -39,6 +39,7 @@ source_set("account_picker_confirmation") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/signin/model:system_identity_util",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
