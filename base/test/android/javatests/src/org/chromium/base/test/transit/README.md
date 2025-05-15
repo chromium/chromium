@@ -337,8 +337,8 @@ mostly full) window view. Only one `Station` can be active at any time.
 For each screen in the app, a concrete implementation of `Station` should be
 created in the Transit Layer, implementing:
 
-* **`declareElements()`** declaring the `Views` and other enter/exit conditions
-  define this `Station`.
+* **constructor** and/or **`declareExtraElements()`** declaring the `Views` and
+  other enter/exit conditions define this `Station`.
 * **transition methods** to travel to other `Stations` or to enter `Facilities`.
   These methods are synchronous and return a handle to the entered
   `ConditionalState` only after the transition is done and the new
@@ -352,12 +352,9 @@ public class TabSwitcherStation extends Station<ChromeTabbedActivity> {
     public ViewElement<View> newTabButtonElement;
     public ViewElement<View> incognitoToggleTabsElement;
 
-    @Override
-    public void declareElements(Elements.Builder elements) {
-        newTabButtonElement =
-                elements.declareView(viewSpec(withId(R.id.new_tab_button)));
-        incognitoToggleTabsElement =
-                elements.declareView(viewSpec(withId(R.id.incognito_toggle_tabs)));
+    public TabSwitcherStation() {
+        newTabButtonElement = declareView(withId(R.id.new_tab_button));
+        incognitoToggleTabsElement = declareView(withId(R.id.incognito_toggle_tabs));
     }
 
     public NewTabPageStation openNewTabFromButton() {
@@ -378,7 +375,7 @@ Multiple `Facilities` may be active at one time besides the active Station that
 contains them.
 
 As with `Stations`, concrete, app-specific implementations of Facility should be
-created in the Transit Layer overriding **`declareElements()`** and **transition
+created in the Transit Layer declaring **Elements** and **transition
 methods**.
 
 [**`Facility`**]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.Facility&ss=chromium
@@ -391,8 +388,8 @@ to disk, or a popup that persists through different `Stations`.
 Multiple `CarryOns` may be active at one time.
 
 As with `Stations`, concrete, app-specific implementations of CarryOn should be
-created in the Transit Layer overriding **`declareElements()`**. It often won't
-have any transition methods.
+created in the Transit Layer declaring **Elements**. It usually won't have any
+transition methods.
 
 ### ConditionalStates
 

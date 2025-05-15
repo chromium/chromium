@@ -144,24 +144,23 @@ public class MyPTTest {
     @Feature({"RenderTest"})
     public void testOneTab_I_render() throws IOException {
         PageStation page = mCtaTestRule.start();
-        mRenderTestRule.render(page.getTabSwitcherButton(), "1_tab");
+        mRenderTestRule.render(page.tabSwitcherButtonElement.get(), "1_tab");
         TransitAsserts.assertFinalDestination(page);
     }
 }
 ```
 
 We need the View instance to pass to `mRenderTestRule.render()`. The View can be
-retrieved from the Element already declared in `PageStation#declareElements()`:
+retrieved from the Element already declared in `PageStation`:
 
 ```java
 public class PageStation extends Station {
     public ViewElement<ToggleTabStackButton> tabSwitcherButtonElement;
 
-    public void declareElements(Elements.Builder elements) {
+    public PageStation() {
         [...]
         tabSwitcherButtonElement =
-                elements.declareView(
-                    viewSpec(ToggleTabStackButton.class, withId(R.id.tab_switcher_button)));
+                declareView(ToggleTabStackButton.class, withId(R.id.tab_switcher_button));
         [...]
     }
 }
@@ -311,18 +310,16 @@ package org.chromium.chrome.test.transit;
 [imports]
 
 public class TabSwitcherButtonFacility extends Facility<PageStation> {
-    public ViewElement<ToggleTabStackButton> tabSwitcherButtonElement;
+    public ViewElement<ToggleTabStackButton> buttonElement;
 
-    @Override
-    public void declareElements(Elements.Builder elements) {
-        tabSwitcherButtonElement =
-                elements.declareView(
-                    viewSpec(ToggleTabStackButton.class, withId(R.id.tab_switcher_button)));
+    public TabSwitcherButtonFacility() {
+        buttonElement =
+                declareView(ToggleTabStackButton.class, withId(R.id.tab_switcher_button)));
     }
 
     public String getTextRendered() {
         TabSwitcherDrawable tabSwitcherDrawable =
-                (TabSwitcherDrawable) tabSwitcherButtonElement.get().getDrawable();
+                (TabSwitcherDrawable) buttonElement.get().getDrawable();
         return tabSwitcherDrawable.getTextRenderedForTesting();
     }
 }
@@ -330,9 +327,9 @@ public class TabSwitcherButtonFacility extends Facility<PageStation> {
 
 ### Create a Transition Method
 
-`TabSwitcherButtonFacility` declares a ViewElement in `declareElements()`, which
-means the Facility is considered active only after a View
-`withId(R.id.tab_switcher_button)` is fully displayed.
+`TabSwitcherButtonFacility` declares a ViewElement, which means the Facility is
+considered active only after a View `withId(R.id.tab_switcher_button)` is fully
+displayed.
 
 We then change PageStation to connect it to TabSwitcherButtonFacility through a
 synchronous transition method `focusOnTabSwitcherButton()`, which creates the
@@ -375,31 +372,26 @@ subclass, which is recommended for more complex Conditions:
 
 ```java
 public class TabSwitcherButtonFacility extends Facility<PageStation> {
-    public ViewElement<ToggleTabStackButton> tabSwitcherButtonElement;
+    public ViewElement<ToggleTabStackButton> buttonElement;
 
-+   private final String mExpectedText;
-
-+   public TabSwitcherButtonFacility(String expectedText) {
-+       mExpectedText = expectedText;
-    }
-
-    @Override
-    public void declareElements(Elements.Builder elements) {
-        tabSwitcherButtonElement =
-                elements.declareView(
-                    viewSpec(ToggleTabStackButton.class, withId(R.id.tab_switcher_button)));
-+       elements.declareEnterCondition(new TextRenderedCondition());
+    public TabSwitcherButtonFacility(String expectedText) {
+        buttonElement =
+                declareView(ToggleTabStackButton.class, withId(R.id.tab_switcher_button));
++       declareEnterCondition(new TextRenderedCondition(expectedText));
     }
 
 +   private class TextRenderedCondition extends Condition {
-+       public TextRenderedCondition() {
++       private final String mExpectedText;
++
++       public TextRenderedCondition(String expectedText) {
 +           super(/* isRunOnUiThread= */ true);
-+           dependOnSupplier(tabSwitcherButtonElement, "ButtonView");
++           dependOnSupplier(buttonElement, "ButtonView");
++           mExpectedText = expectedText;
 +       }
 +
 +       @Override
 +       protected ConditionStatus checkWithSuppliers() {
-+           ImageButton button = (ImageButton) tabSwitcherButtonElement.get();
++           ImageButton button = (ImageButton) buttonElement.get();
 +           TabSwitcherDrawable tabSwitcherDrawable = (TabSwitcherDrawable) button.getDrawable();
 +           String renderedText = tabSwitcherDrawable.getTextRenderedForTesting();
 +           return whetherEquals(mExpectedText, renderedText);
@@ -455,12 +447,12 @@ case where Facilities have transition methods:
 public class TabSwitcherButtonFacility extends Facility<PageStation> {
 +   public HubTabSwitcherStation clickToOpenHub() {
 +       return mHostStation.travelToSync(
-+               new HubTabSwitcherStation(), tabSwitcherButtonElement.getClickTrigger());
++               new HubTabSwitcherStation(), buttonElement.getClickTrigger());
 +   }
 +
 +   public TabSwitcherActionMenuFacility longClickToOpenActionMenu() {
 +       return mHostStation.enterFacilitySync(
-+               new TabSwitcherActionMenuFacility(), tabSwitcherButtonElement.getLongPressTrigger());
++               new TabSwitcherActionMenuFacility(), buttonElement.getLongPressTrigger());
 +   }
 }
 ```
@@ -472,12 +464,12 @@ operation, so I won't cover it in this guide. The steps are analogous to a
 Facility:
 
 1. Create a concrete class `MyStation` the extends `Station`.
-2. Fill `declareElements()` in `MyStation` with the Elements/Conditions to
-   recognize it's active and ready to be interacted with.
+2. Use `declareView()`, `declareCondition()`, etc. in `MyStation`'s constructor
+   with the Elements/Conditions to recognize it's active and ready to be
+   interacted with.
 3. Create a transition method from somewhere in the Transit Layer to navigate to
    `MyStation` that returns an instance of `MyStation`.
-4. Add accessors for its Elements and transition methods to other
-   Stations/Facilities as necessary for tests.
+4. Add transition methods to other Stations/Facilities as necessary for tests.
 
 ## More on Public Transit
 
