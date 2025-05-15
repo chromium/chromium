@@ -29,7 +29,7 @@ mojom("mojom") {
         },
         {
           mojom = "tabs_api.mojom.TabAlertState"
-          cpp = "::TabAlertState"
+          cpp = "::tabs::TabAlert"
         },
         {
           mojom = "tabs_api.mojom.TabNetworkState"
@@ -40,6 +40,7 @@ mojom("mojom") {
         "//chrome/browser/ui/tabs/tab_strip_api/tab_id.h",
         "//chrome/browser/ui/tabs/tab_strip_api/tab_id_traits.h",
         "//chrome/browser/ui/tabs/tab_strip_api/tab_enum_traits.h",
+        "//chrome/browser/ui/tabs/alert/tab_alert.h",
       ]
       traits_sources = [
         "//chrome/browser/ui/tabs/tab_strip_api/tab_enum_traits.cc",

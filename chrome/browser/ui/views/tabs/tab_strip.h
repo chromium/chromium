@@ -16,7 +16,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
@@ -57,6 +56,10 @@ class TabGroupId;
 namespace ui {
 class ListSelectionModel;
 }
+
+namespace tabs {
+enum class TabAlert;
+}  // namespace tabs
 
 // A View that represents the TabStripModel. The TabStrip has the
 // following responsibilities:
@@ -120,7 +123,7 @@ class TabStrip : public views::View,
   // Returns information about tabs at given indices.
   bool IsTabCrashed(int tab_index) const;
   bool TabHasNetworkError(int tab_index) const;
-  std::optional<TabAlertState> GetTabAlertState(int tab_index) const;
+  std::optional<tabs::TabAlert> GetTabAlertState(int tab_index) const;
 
   // Updates the loading animations displayed by tabs in the tabstrip to the
   // next frame. The `elapsed_time` parameter is shared between tabs and used to

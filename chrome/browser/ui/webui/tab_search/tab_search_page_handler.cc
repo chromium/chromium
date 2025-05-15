@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
@@ -1440,18 +1441,18 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
           ? custom_last_active_text
           : GetLastActiveElapsedText(last_active_time_ticks);
 
-  std::vector<TabAlertState> alert_states =
+  std::vector<tabs::TabAlert> alert_states =
       GetTabAlertStatesForContents(contents);
   // Currently, we only report media alert states.
   std::ranges::copy_if(alert_states.begin(), alert_states.end(),
                        std::back_inserter(tab_data->alert_states),
-                       [](TabAlertState alert) {
-                         return alert == TabAlertState::MEDIA_RECORDING ||
-                                alert == TabAlertState::AUDIO_RECORDING ||
-                                alert == TabAlertState::VIDEO_RECORDING ||
-                                alert == TabAlertState::AUDIO_PLAYING ||
-                                alert == TabAlertState::AUDIO_MUTING ||
-                                alert == TabAlertState::GLIC_ACCESSING;
+                       [](tabs::TabAlert alert) {
+                         return alert == tabs::TabAlert::MEDIA_RECORDING ||
+                                alert == tabs::TabAlert::AUDIO_RECORDING ||
+                                alert == tabs::TabAlert::VIDEO_RECORDING ||
+                                alert == tabs::TabAlert::AUDIO_PLAYING ||
+                                alert == tabs::TabAlert::AUDIO_MUTING ||
+                                alert == tabs::TabAlert::GLIC_ACCESSING;
                        });
 
   return tab_data;

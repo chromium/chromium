@@ -8,6 +8,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -124,7 +125,7 @@ template class FooterRow<CollaborationMessagingRowData>;
 // -----------------------------------------------------------------------
 
 void FadeAlertFooterRow::SetData(const AlertFooterRowData& data) {
-  std::optional<TabAlertState> alert_state = data.alert_state;
+  std::optional<tabs::TabAlert> alert_state = data.alert_state;
   if (data.should_show_discard_status) {
     std::u16string row_text;
     if (data.memory_savings_in_bytes > 0) {

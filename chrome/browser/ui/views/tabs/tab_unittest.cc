@@ -14,8 +14,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
-#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
@@ -387,12 +387,12 @@ TEST_F(TabTest, HitTest) {
 }
 
 TEST_F(TabTest, LayoutAndVisibilityOfElements) {
-  static const std::optional<TabAlertState> kAlertStatesToTest[] = {
+  static const std::optional<tabs::TabAlert> kAlertStatesToTest[] = {
       std::nullopt,
-      TabAlertState::TAB_CAPTURING,
-      TabAlertState::AUDIO_PLAYING,
-      TabAlertState::AUDIO_MUTING,
-      TabAlertState::PIP_PLAYING,
+      tabs::TabAlert::TAB_CAPTURING,
+      tabs::TabAlert::AUDIO_PLAYING,
+      tabs::TabAlert::AUDIO_MUTING,
+      tabs::TabAlert::PIP_PLAYING,
   };
 
   auto controller = std::make_unique<FakeTabSlotController>();
@@ -410,7 +410,7 @@ TEST_F(TabTest, LayoutAndVisibilityOfElements) {
   // results.
   for (bool is_pinned_tab : {false, true}) {
     for (bool is_active_tab : {false, true}) {
-      for (std::optional<TabAlertState> alert_state : kAlertStatesToTest) {
+      for (std::optional<tabs::TabAlert> alert_state : kAlertStatesToTest) {
         SCOPED_TRACE(
             ::testing::Message()
             << (is_active_tab ? "Active " : "Inactive ")
@@ -632,7 +632,7 @@ TEST_F(TabTest, FaviconDoesntMoveWhenShowingAlertIndicator) {
     views::View* icon = GetTabIcon(tab);
     int icon_x = icon->x();
     TabRendererData data;
-    data.alert_state = {TabAlertState::AUDIO_PLAYING};
+    data.alert_state = {tabs::TabAlert::AUDIO_PLAYING};
     tab->SetData(data);
     EXPECT_EQ(icon_x, icon->x());
   }
@@ -681,7 +681,7 @@ TEST_F(TabTest, ExtraAlertPaddingNotShownOnSmallActiveTab) {
   Tab* tab = widget->SetContentsView(std::make_unique<Tab>(controller.get()));
   controller->set_active_tab(tab);
   TabRendererData data;
-  data.alert_state = {TabAlertState::AUDIO_PLAYING};
+  data.alert_state = {tabs::TabAlert::AUDIO_PLAYING};
   tab->SetData(data);
 
   tab->SetBounds(0, 0, 200, 50);
@@ -779,7 +779,7 @@ TEST_F(TabContentsTest, ShowsAndHidesAlertIndicator) {
   EXPECT_FALSE(showing_close_button(media_tab));
 
   TabRendererData start_media;
-  start_media.alert_state = {TabAlertState::AUDIO_PLAYING};
+  start_media.alert_state = {tabs::TabAlert::AUDIO_PLAYING};
   start_media.pinned = media_tab->data().pinned;
   media_tab->SetData(std::move(start_media));
 
@@ -820,7 +820,7 @@ TEST_F(TabContentsTest, MinHoldDurationTest) {
   EXPECT_EQ(base::Time(), get_camera_mic_indicator_start_time(media_tab));
 
   TabRendererData start_media;
-  start_media.alert_state = {TabAlertState::MEDIA_RECORDING};
+  start_media.alert_state = {tabs::TabAlert::MEDIA_RECORDING};
   start_media.pinned = media_tab->data().pinned;
   media_tab->SetData(std::move(start_media));
 
@@ -851,7 +851,7 @@ TEST_F(TabContentsTest, 1SecondFadeoutAnimationTest) {
   EXPECT_EQ(base::Time(), get_camera_mic_indicator_start_time(media_tab));
 
   TabRendererData start_media;
-  start_media.alert_state = {TabAlertState::MEDIA_RECORDING};
+  start_media.alert_state = {tabs::TabAlert::MEDIA_RECORDING};
   start_media.pinned = media_tab->data().pinned;
   media_tab->SetData(std::move(start_media));
 

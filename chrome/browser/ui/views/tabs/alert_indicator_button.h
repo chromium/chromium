@@ -23,6 +23,10 @@ class Animation;
 class AnimationDelegate;
 }  // namespace gfx
 
+namespace tabs {
+enum class TabAlert;
+}  // namespace tabs
+
 // This is an ImageButton subclass that serves as both the alert indicator icon
 // (audio, tab capture, etc.), and as a mute button.  It is meant to only be
 // used as a child view of Tab.
@@ -41,26 +45,26 @@ class AlertIndicatorButton : public views::ImageButton,
   AlertIndicatorButton& operator=(const AlertIndicatorButton&) = delete;
   ~AlertIndicatorButton() override;
 
-  static ui::ImageModel GetTabAlertIndicatorImage(TabAlertState alert_state,
+  static ui::ImageModel GetTabAlertIndicatorImage(tabs::TabAlert alert_state,
                                                   ui::ColorId button_color);
 
   static ui::ImageModel GetTabAlertIndicatorImageForHoverCard(
-      TabAlertState alert_state);
+      tabs::TabAlert alert_state);
 
-  // Returns the current TabAlertState except, while the indicator image is
-  // fading out, returns the prior TabAlertState.
-  std::optional<TabAlertState> showing_alert_state() const {
+  // Returns the current TabAlert except, while the indicator image is
+  // fading out, returns the prior TabAlert.
+  std::optional<tabs::TabAlert> showing_alert_state() const {
     return showing_alert_state_;
   }
 
   // Calls ResetImages(), starts fade animations, and activates/deactivates
   // button functionality as appropriate.
-  void TransitionToAlertState(std::optional<TabAlertState> next_state);
+  void TransitionToAlertState(std::optional<tabs::TabAlert> next_state);
 
   // Determines whether the AlertIndicatorButton will be clickable for toggling
   // muting.  This should be called whenever the active/inactive state of a tab
   // has changed.  Internally, TransitionToAlertState() and OnBoundsChanged()
-  // calls this when the TabAlertState or the bounds have changed.
+  // calls this when the TabAlert or the bounds have changed.
   void UpdateEnabledForMuteToggle();
 
   // Called when the parent tab's button color changes.  Determines whether
@@ -97,24 +101,24 @@ class AlertIndicatorButton : public views::ImageButton,
   // indicator to alert the user that recording, tab capture, or audio playback
   // has started/stopped.
   std::unique_ptr<gfx::Animation> CreateTabAlertIndicatorFadeAnimation(
-      std::optional<TabAlertState> alert_state);
+      std::optional<tabs::TabAlert> alert_state);
 
   // Returns the tab (parent view) of this AlertIndicatorButton.
   Tab* GetTab();
 
   // Resets the images to display on the button to reflect `state` and the
   // parent tab's button color.  Should be called when either of these changes.
-  void UpdateIconForAlertState(TabAlertState state);
+  void UpdateIconForAlertState(tabs::TabAlert state);
 
   const raw_ptr<Tab> parent_tab_;
 
-  std::optional<TabAlertState> alert_state_;
+  std::optional<tabs::TabAlert> alert_state_;
 
   // Alert indicator fade-in/out animation (i.e., only on show/hide, not a
   // continuous animation).
   std::unique_ptr<gfx::AnimationDelegate> fade_animation_delegate_;
   std::unique_ptr<gfx::Animation> fade_animation_;
-  std::optional<TabAlertState> showing_alert_state_;
+  std::optional<tabs::TabAlert> showing_alert_state_;
 
   // The time when the alert indicator is displayed when a camera and/or a
   // microphone are captured.

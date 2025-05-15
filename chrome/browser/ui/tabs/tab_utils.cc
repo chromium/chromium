@@ -12,6 +12,7 @@
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
@@ -29,9 +30,9 @@
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #endif
 
-std::vector<TabAlertState> GetTabAlertStatesForContents(
+std::vector<tabs::TabAlert> GetTabAlertStatesForContents(
     content::WebContents* contents) {
-  std::vector<TabAlertState> states;
+  std::vector<tabs::TabAlert> states;
   if (!contents) {
     return states;
   }
@@ -46,50 +47,50 @@ std::vector<TabAlertState> GetTabAlertStatesForContents(
     // with tooltip that notes all the states in play.
     if (indicator->IsCapturingWindow(contents) ||
         indicator->IsCapturingDisplay(contents)) {
-      states.push_back(TabAlertState::DESKTOP_CAPTURING);
+      states.push_back(tabs::TabAlert::DESKTOP_CAPTURING);
     }
     if (indicator->IsBeingMirrored(contents)) {
-      states.push_back(TabAlertState::TAB_CAPTURING);
+      states.push_back(tabs::TabAlert::TAB_CAPTURING);
     }
 
     if (indicator->IsCapturingAudio(contents) &&
         indicator->IsCapturingVideo(contents)) {
-      states.push_back(TabAlertState::MEDIA_RECORDING);
+      states.push_back(tabs::TabAlert::MEDIA_RECORDING);
     } else if (indicator->IsCapturingAudio(contents)) {
-      states.push_back(TabAlertState::AUDIO_RECORDING);
+      states.push_back(tabs::TabAlert::AUDIO_RECORDING);
     } else if (indicator->IsCapturingVideo(contents)) {
-      states.push_back(TabAlertState::VIDEO_RECORDING);
+      states.push_back(tabs::TabAlert::VIDEO_RECORDING);
     }
   }
 
   if (contents->IsCapabilityActive(
           content::WebContentsCapabilityType::kBluetoothConnected)) {
-    states.push_back(TabAlertState::BLUETOOTH_CONNECTED);
+    states.push_back(tabs::TabAlert::BLUETOOTH_CONNECTED);
   }
 
   if (contents->IsCapabilityActive(
           content::WebContentsCapabilityType::kBluetoothScanning)) {
-    states.push_back(TabAlertState::BLUETOOTH_SCAN_ACTIVE);
+    states.push_back(tabs::TabAlert::BLUETOOTH_SCAN_ACTIVE);
   }
 
   if (contents->IsCapabilityActive(content::WebContentsCapabilityType::kUSB)) {
-    states.push_back(TabAlertState::USB_CONNECTED);
+    states.push_back(tabs::TabAlert::USB_CONNECTED);
   }
 
   if (contents->IsCapabilityActive(content::WebContentsCapabilityType::kHID)) {
-    states.push_back(TabAlertState::HID_CONNECTED);
+    states.push_back(tabs::TabAlert::HID_CONNECTED);
   }
 
   if (contents->IsCapabilityActive(
           content::WebContentsCapabilityType::kSerial)) {
-    states.push_back(TabAlertState::SERIAL_CONNECTED);
+    states.push_back(tabs::TabAlert::SERIAL_CONNECTED);
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
   glic::GlicKeyedService* glic_service = glic::GlicKeyedService::Get(
       Profile::FromBrowserContext(contents->GetBrowserContext()));
   if (glic_service && glic_service->IsContextAccessIndicatorShown(contents)) {
-    states.push_back(TabAlertState::GLIC_ACCESSING);
+    states.push_back(tabs::TabAlert::GLIC_ACCESSING);
   }
 #endif
 
@@ -98,12 +99,12 @@ std::vector<TabAlertState> GetTabAlertStatesForContents(
   // because most VR content has audio and its usage is implied by the VR
   // icon.
   if (vr::VrTabHelper::IsContentDisplayedInHeadset(contents)) {
-    states.push_back(TabAlertState::VR_PRESENTING_IN_HEADSET);
+    states.push_back(tabs::TabAlert::VR_PRESENTING_IN_HEADSET);
   }
 
   if (contents->HasPictureInPictureVideo() ||
       contents->HasPictureInPictureDocument()) {
-    states.push_back(TabAlertState::PIP_PLAYING);
+    states.push_back(tabs::TabAlert::PIP_PLAYING);
   }
 
   // Only tabs have a RecentlyAudibleHelper, but this function is abused for
@@ -116,58 +117,58 @@ std::vector<TabAlertState> GetTabAlertStatesForContents(
   }
   if (audible) {
     if (contents->IsAudioMuted()) {
-      states.push_back(TabAlertState::AUDIO_MUTING);
+      states.push_back(tabs::TabAlert::AUDIO_MUTING);
     }
-    states.push_back(TabAlertState::AUDIO_PLAYING);
+    states.push_back(tabs::TabAlert::AUDIO_PLAYING);
   }
 
   return states;
 }
 
-std::u16string GetTabAlertStateText(const TabAlertState alert_state) {
+std::u16string GetTabAlertStateText(const tabs::TabAlert alert_state) {
   switch (alert_state) {
-    case TabAlertState::AUDIO_PLAYING:
+    case tabs::TabAlert::AUDIO_PLAYING:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_AUDIO_PLAYING);
-    case TabAlertState::AUDIO_MUTING:
+    case tabs::TabAlert::AUDIO_MUTING:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_AUDIO_MUTING);
-    case TabAlertState::MEDIA_RECORDING:
+    case tabs::TabAlert::MEDIA_RECORDING:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_MEDIA_RECORDING);
-    case TabAlertState::AUDIO_RECORDING:
+    case tabs::TabAlert::AUDIO_RECORDING:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_AUDIO_RECORDING);
-    case TabAlertState::VIDEO_RECORDING:
+    case tabs::TabAlert::VIDEO_RECORDING:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_VIDEO_RECORDING);
-    case TabAlertState::TAB_CAPTURING:
+    case tabs::TabAlert::TAB_CAPTURING:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_TAB_CAPTURING);
-    case TabAlertState::BLUETOOTH_CONNECTED:
+    case tabs::TabAlert::BLUETOOTH_CONNECTED:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_BLUETOOTH_CONNECTED);
-    case TabAlertState::BLUETOOTH_SCAN_ACTIVE:
+    case tabs::TabAlert::BLUETOOTH_SCAN_ACTIVE:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_BLUETOOTH_SCAN_ACTIVE);
-    case TabAlertState::USB_CONNECTED:
+    case tabs::TabAlert::USB_CONNECTED:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_USB_CONNECTED);
-    case TabAlertState::HID_CONNECTED:
+    case tabs::TabAlert::HID_CONNECTED:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_HID_CONNECTED);
-    case TabAlertState::SERIAL_CONNECTED:
+    case tabs::TabAlert::SERIAL_CONNECTED:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_SERIAL_CONNECTED);
-    case TabAlertState::PIP_PLAYING:
+    case tabs::TabAlert::PIP_PLAYING:
       return l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ALERT_STATE_PIP_PLAYING);
-    case TabAlertState::DESKTOP_CAPTURING:
+    case tabs::TabAlert::DESKTOP_CAPTURING:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_DESKTOP_CAPTURING);
-    case TabAlertState::VR_PRESENTING_IN_HEADSET:
+    case tabs::TabAlert::VR_PRESENTING_IN_HEADSET:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_VR_PRESENTING);
-    case TabAlertState::GLIC_ACCESSING:
+    case tabs::TabAlert::GLIC_ACCESSING:
 #if BUILDFLAG(ENABLE_GLIC)
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_ACCESSING);

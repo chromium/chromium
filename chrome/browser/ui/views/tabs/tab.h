@@ -43,6 +43,10 @@ class Label;
 class View;
 }  // namespace views
 
+namespace tabs {
+enum class TabAlert;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  A View that renders a Tab in a TabStrip.
@@ -116,7 +120,7 @@ class Tab : public gfx::AnimationDelegate,
   std::optional<SkColor> GetGroupColor() const;
 
   // Returns the color used for the alert indicator icon.
-  ui::ColorId GetAlertIndicatorColor(TabAlertState state) const;
+  ui::ColorId GetAlertIndicatorColor(tabs::TabAlert state) const;
 
   // Returns true if this tab is the active tab.
   bool IsActive() const;
@@ -179,11 +183,11 @@ class Tab : public gfx::AnimationDelegate,
   // Exposed publicly for tests.
   static std::u16string GetTooltipText(
       const std::u16string& title,
-      std::optional<TabAlertState> alert_state);
+      std::optional<tabs::TabAlert> alert_state);
 
   // Returns an alert state to be shown among given alert states.
-  static std::optional<TabAlertState> GetAlertStateToShow(
-      const std::vector<TabAlertState>& alert_states);
+  static std::optional<tabs::TabAlert> GetAlertStateToShow(
+      const std::vector<tabs::TabAlert>& alert_states);
 
   bool showing_close_button_for_testing() const {
     return showing_close_button_;

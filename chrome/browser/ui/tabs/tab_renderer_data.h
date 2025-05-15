@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "ui/base/models/image_model.h"
@@ -63,7 +64,7 @@ struct TabRendererData {
   bool show_icon = true;
   bool pinned = false;
   bool blocked = false;
-  std::vector<TabAlertState> alert_state;
+  std::vector<tabs::TabAlert> alert_state;
   bool should_hide_throbber = false;
   bool should_render_empty_title = false;
   bool should_themify_favicon = false;

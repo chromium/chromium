@@ -31,6 +31,10 @@ namespace gfx {
 class ImageSkia;
 }
 
+namespace tabs {
+enum class TabAlert;
+}
+
 class Tab;
 class TabStyle;
 class FadeLabelView;
@@ -104,7 +108,7 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   raw_ptr<FadeLabelView> domain_label_ = nullptr;
   raw_ptr<ThumbnailView> thumbnail_view_ = nullptr;
   raw_ptr<FooterView> footer_view_ = nullptr;
-  std::optional<TabAlertState> alert_state_;
+  std::optional<tabs::TabAlert> alert_state_;
   const raw_ptr<const TabStyle> tab_style_;
 
   const InitParams bubble_params_;

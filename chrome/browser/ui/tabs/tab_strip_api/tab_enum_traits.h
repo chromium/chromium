@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TAB_ENUM_TRAITS_H_
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TAB_ENUM_TRAITS_H_
 
+#include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
@@ -22,7 +23,7 @@ struct mojo::EnumTraits<MojoTabNetworkState, NativeTabNetworkState> {
 };
 
 using MojoTabAlertState = tabs_api::mojom::TabAlertState;
-using NativeTabAlertState = enum TabAlertState;
+using NativeTabAlertState = enum tabs::TabAlert;
 
 // TabAlertState Enum mapping.
 template <>

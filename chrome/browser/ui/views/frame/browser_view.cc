@@ -88,6 +88,7 @@
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
 #include "chrome/browser/ui/sync/one_click_signin_links_delegate_impl.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/shared_tab_group_feedback_controller.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -4263,66 +4264,66 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
   }
 
   // Alert tab states.
-  std::optional<TabAlertState> alert = tabstrip_->GetTabAlertState(index);
+  std::optional<tabs::TabAlert> alert = tabstrip_->GetTabAlertState(index);
   if (alert.has_value()) {
     switch (alert.value()) {
-      case TabAlertState::AUDIO_PLAYING:
+      case tabs::TabAlert::AUDIO_PLAYING:
         title = l10n_util::GetStringFUTF16(
             IDS_TAB_AX_LABEL_AUDIO_PLAYING_FORMAT, title);
         break;
-      case TabAlertState::USB_CONNECTED:
+      case tabs::TabAlert::USB_CONNECTED:
         title = l10n_util::GetStringFUTF16(
             IDS_TAB_AX_LABEL_USB_CONNECTED_FORMAT, title);
         break;
-      case TabAlertState::BLUETOOTH_CONNECTED:
+      case tabs::TabAlert::BLUETOOTH_CONNECTED:
         title = l10n_util::GetStringFUTF16(
             IDS_TAB_AX_LABEL_BLUETOOTH_CONNECTED_FORMAT, title);
         break;
-      case TabAlertState::BLUETOOTH_SCAN_ACTIVE:
+      case tabs::TabAlert::BLUETOOTH_SCAN_ACTIVE:
         title = l10n_util::GetStringFUTF16(
             IDS_TAB_AX_LABEL_BLUETOOTH_SCAN_ACTIVE_FORMAT, title);
         break;
-      case TabAlertState::HID_CONNECTED:
+      case tabs::TabAlert::HID_CONNECTED:
         title = l10n_util::GetStringFUTF16(
             IDS_TAB_AX_LABEL_HID_CONNECTED_FORMAT, title);
         break;
-      case TabAlertState::SERIAL_CONNECTED:
+      case tabs::TabAlert::SERIAL_CONNECTED:
         title = l10n_util::GetStringFUTF16(
             IDS_TAB_AX_LABEL_SERIAL_CONNECTED_FORMAT, title);
         break;
-      case TabAlertState::MEDIA_RECORDING:
+      case tabs::TabAlert::MEDIA_RECORDING:
         title = l10n_util::GetStringFUTF16(
             IDS_TAB_AX_LABEL_MEDIA_RECORDING_FORMAT, title);
         break;
-      case TabAlertState::AUDIO_RECORDING:
+      case tabs::TabAlert::AUDIO_RECORDING:
         title = l10n_util::GetStringFUTF16(
             IDS_TAB_AX_LABEL_AUDIO_RECORDING_FORMAT, title);
         break;
-      case TabAlertState::VIDEO_RECORDING:
+      case tabs::TabAlert::VIDEO_RECORDING:
         title = l10n_util::GetStringFUTF16(
             IDS_TAB_AX_LABEL_VIDEO_RECORDING_FORMAT, title);
         break;
-      case TabAlertState::AUDIO_MUTING:
+      case tabs::TabAlert::AUDIO_MUTING:
         title = l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_AUDIO_MUTING_FORMAT,
                                            title);
         break;
-      case TabAlertState::TAB_CAPTURING:
+      case tabs::TabAlert::TAB_CAPTURING:
         title = l10n_util::GetStringFUTF16(
             IDS_TAB_AX_LABEL_TAB_CAPTURING_FORMAT, title);
         break;
-      case TabAlertState::PIP_PLAYING:
+      case tabs::TabAlert::PIP_PLAYING:
         title = l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_PIP_PLAYING_FORMAT,
                                            title);
         break;
-      case TabAlertState::DESKTOP_CAPTURING:
+      case tabs::TabAlert::DESKTOP_CAPTURING:
         title = l10n_util::GetStringFUTF16(
             IDS_TAB_AX_LABEL_DESKTOP_CAPTURING_FORMAT, title);
         break;
-      case TabAlertState::VR_PRESENTING_IN_HEADSET:
+      case tabs::TabAlert::VR_PRESENTING_IN_HEADSET:
         title =
             l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_VR_PRESENTING, title);
         break;
-      case TabAlertState::GLIC_ACCESSING:
+      case tabs::TabAlert::GLIC_ACCESSING:
 #if BUILDFLAG(ENABLE_GLIC)
         title =
             l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_GLIC_ACCESSING, title);

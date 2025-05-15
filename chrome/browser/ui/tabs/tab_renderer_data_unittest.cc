@@ -12,6 +12,7 @@
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/test_util.h"
@@ -288,7 +289,7 @@ TEST_F(TabRendererDataTest, AlertStateAudioPlaying) {
       TabRendererData::FromTabInModel(&tab_strip_model_, index);
   EXPECT_NE(data.alert_state.end(),
             std::find(data.alert_state.begin(), data.alert_state.end(),
-                      TabAlertState::AUDIO_PLAYING));
+                      tabs::TabAlert::AUDIO_PLAYING));
 }
 
 TEST_F(TabRendererDataTest, ShouldHideThrobber) {

@@ -8,7 +8,7 @@
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -28,7 +28,7 @@ namespace glic {
 namespace {
 
 class TabAlertStateObserver
-    : public ui::test::PollingStateObserver<std::vector<TabAlertState>> {
+    : public ui::test::PollingStateObserver<std::vector<tabs::TabAlert>> {
  public:
   TabAlertStateObserver(Browser* browser, int tab_index)
       : PollingStateObserver([browser, tab_index]() {
@@ -39,7 +39,7 @@ class TabAlertStateObserver
             auto* const tab = tab_strip->tab_at(tab_index);
             return tab->data().alert_state;
           }
-          return std::vector<TabAlertState>();
+          return std::vector<tabs::TabAlert>();
         }) {}
   ~TabAlertStateObserver() override = default;
 };
@@ -60,12 +60,12 @@ class GlicTabIndicatorHelperUiTest : public test::InteractiveGlicTest {
   ~GlicTabIndicatorHelperUiTest() override = default;
 
   static auto IsAccessing() {
-    return testing::Matcher<std::vector<TabAlertState>>(
-        testing::Contains(TabAlertState::GLIC_ACCESSING));
+    return testing::Matcher<std::vector<tabs::TabAlert>>(
+        testing::Contains(tabs::TabAlert::GLIC_ACCESSING));
   }
   static auto IsNotAccessing() {
-    return testing::Matcher<std::vector<TabAlertState>>(
-        testing::Not(testing::Contains(TabAlertState::GLIC_ACCESSING)));
+    return testing::Matcher<std::vector<tabs::TabAlert>>(
+        testing::Not(testing::Contains(tabs::TabAlert::GLIC_ACCESSING)));
   }
 
   GURL GetTestUrl() const {

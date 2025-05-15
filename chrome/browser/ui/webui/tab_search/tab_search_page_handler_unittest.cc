@@ -22,8 +22,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
-#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/test_util.h"
@@ -445,7 +445,7 @@ TEST_F(TabSearchPageHandlerTest, MediaTabsTest) {
           [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
             auto* window1 = profile_tabs->windows[0].get();
             auto* tab1 = window1->tabs[0].get();
-            EXPECT_EQ(TabAlertState::AUDIO_PLAYING, tab1->alert_states[0]);
+            EXPECT_EQ(tabs::TabAlert::AUDIO_PLAYING, tab1->alert_states[0]);
           });
   handler()->GetProfileData(std::move(callback));
 
