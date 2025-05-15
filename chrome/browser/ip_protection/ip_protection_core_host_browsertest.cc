@@ -353,9 +353,6 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
   ASSERT_EQ(getter->receivers_for_testing().size(), 2U);
 }
 
-// We don't rely on managed device detection for ChromeOS so skip these tests
-// on that platform.
-#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
                        NotDisabledForManagedDevice) {
   IpProtectionCoreHost* getter =
@@ -371,7 +368,6 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
     EXPECT_TRUE(getter->IsIpProtectionEnabled());
   }
 }
-#endif
 
 class IpProtectionBrowserTestEnterpriseKillSwitchEnabled
     : public IpProtectionCoreHostBrowserTest {
@@ -382,7 +378,6 @@ class IpProtectionBrowserTestEnterpriseKillSwitchEnabled
             /*enterprise_killswitch_enabled=*/true) {}
 };
 
-#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(IpProtectionBrowserTestEnterpriseKillSwitchEnabled,
                        DisabledForManagedDevice) {
   IpProtectionCoreHost* getter =
@@ -405,7 +400,6 @@ IN_PROC_BROWSER_TEST_F(IpProtectionBrowserTestEnterpriseKillSwitchEnabled,
     EXPECT_FALSE(getter->IsIpProtectionEnabled());
   }
 }
-#endif
 
 class IpProtectionBrowserTestIncognitoOnlyModeDisabled
     : public IpProtectionCoreHostBrowserTest {
@@ -766,14 +760,6 @@ class IpProtectionCoreHostPolicyBrowserTest : public policy::PolicyTest {
     provider_.UpdateChromePolicy(policies);
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
-  void SetChromeOSEnterpriseUserDefaults() {
-    policy::PolicyMap policies;
-    policy::SetEnterpriseUsersDefaults(&policies);
-    provider_.UpdateChromePolicy(policies);
-  }
-#endif
-
   void UnsetPolicyValues() {
     policy::PolicyMap policies;
     provider_.UpdateChromePolicy(policies);
@@ -825,11 +811,17 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostPolicyBrowserTest,
   EXPECT_EQ(provider->IsIpProtectionEnabled(), initial_state);
 }
 
-// For ChromeOS, setting a user policy isn't enough to make the profile/device
-// be considered managed.
-#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostPolicyBrowserTest,
                        NotDisabledForManagedBrowser) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS this is required for the unrelated policy enabled below to
+  // cause the profile `policy::ManagementService` to reflect that the profile
+  // is managed.
+  policy::ScopedManagementServiceOverrideForTesting browser_management{
+      policy::ManagementServiceFactory::GetForProfile(GetProfile()),
+      policy::EnterpriseManagementAuthority::COMPUTER_LOCAL};
+#endif
+
   IpProtectionCoreHost* provider =
       IpProtectionCoreHostFactory::GetForProfile(GetProfile());
   ASSERT_TRUE(provider);
@@ -842,21 +834,6 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostPolicyBrowserTest,
   UnsetPolicyValues();
   EXPECT_TRUE(provider->IsIpProtectionEnabled());
 }
-#else
-IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostPolicyBrowserTest,
-                       NotDisabledForEnterpriseUser) {
-  IpProtectionCoreHost* provider =
-      IpProtectionCoreHostFactory::GetForProfile(GetProfile());
-  ASSERT_TRUE(provider);
-  ASSERT_TRUE(provider->IsIpProtectionEnabled());
-
-  SetChromeOSEnterpriseUserDefaults();
-  EXPECT_TRUE(provider->IsIpProtectionEnabled());
-
-  UnsetPolicyValues();
-  ASSERT_TRUE(provider->IsIpProtectionEnabled());
-}
-#endif
 
 class IpProtectionPolicyBrowserTestEnterpriseKillSwitchEnabled
     : public IpProtectionCoreHostPolicyBrowserTest {
@@ -868,12 +845,18 @@ class IpProtectionPolicyBrowserTestEnterpriseKillSwitchEnabled
 };
 
 // With the killswitch, if the browser is considered managed and IP Protection
-// isn't enabled via enterprise policy, IP Protection should be disabled on all
-// platforms except ChromeOS (where it's challenging to do managed device
-// detection without using `default_for_enterprise_users`).
-#if !BUILDFLAG(IS_CHROMEOS)
+// isn't enabled via enterprise policy, IP Protection should be disabled.
 IN_PROC_BROWSER_TEST_F(IpProtectionPolicyBrowserTestEnterpriseKillSwitchEnabled,
                        DisabledForManagedBrowser) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS this is required for the unrelated policy enabled below to
+  // cause the profile `policy::ManagementService` to reflect that the profile
+  // is managed.
+  policy::ScopedManagementServiceOverrideForTesting browser_management{
+      policy::ManagementServiceFactory::GetForProfile(GetProfile()),
+      policy::EnterpriseManagementAuthority::COMPUTER_LOCAL};
+#endif
+
   IpProtectionCoreHost* provider =
       IpProtectionCoreHostFactory::GetForProfile(GetProfile());
   ASSERT_TRUE(provider);
@@ -893,18 +876,3 @@ IN_PROC_BROWSER_TEST_F(IpProtectionPolicyBrowserTestEnterpriseKillSwitchEnabled,
   UnsetPolicyValues();
   EXPECT_TRUE(provider->IsIpProtectionEnabled());
 }
-#else
-IN_PROC_BROWSER_TEST_F(IpProtectionPolicyBrowserTestEnterpriseKillSwitchEnabled,
-                       NotDisabledForEnterpriseUser) {
-  IpProtectionCoreHost* provider =
-      IpProtectionCoreHostFactory::GetForProfile(GetProfile());
-  ASSERT_TRUE(provider);
-  ASSERT_TRUE(provider->IsIpProtectionEnabled());
-
-  SetChromeOSEnterpriseUserDefaults();
-  EXPECT_TRUE(provider->IsIpProtectionEnabled());
-
-  UnsetPolicyValues();
-  ASSERT_TRUE(provider->IsIpProtectionEnabled());
-}
-#endif

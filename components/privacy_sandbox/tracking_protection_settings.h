@@ -75,7 +75,7 @@ class TrackingProtectionSettings : public KeyedService {
   // policy has been set that disables the feature or, when the
   // `kIpPrivacyDisableForEnterpriseByDefault` feature is enabled, because no
   // policy value has been set via enterprise policy and this is a managed
-  // device or client (for all platforms except ChromeOS).
+  // profile or client.
   bool IsIpProtectionDisabledForEnterprise();
 
  private:

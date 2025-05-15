@@ -153,16 +153,12 @@ bool TrackingProtectionSettings::IsIpProtectionDisabledForEnterprise() {
   if (pref_service_->IsManagedPreference(prefs::kIpProtectionEnabled)) {
     return !pref_service_->GetBoolean(prefs::kIpProtectionEnabled);
   }
-#if !BUILDFLAG(IS_CHROMEOS)
-  // On ChromeOS, managed device detection isn't supported via the
-  // ManagementService, so just treat all devices as unmanaged.
   if (net::features::kIpPrivacyDisableForEnterpriseByDefault.Get()) {
-    // Disable IP Protection for managed browsers and managed devices when the
+    // Disable IP Protection for managed profiles and managed devices when the
     // admins haven't explicitly opted in to it via enterprise policy.
     return management_service_->IsManaged() ||
            policy::PlatformManagementService::GetInstance()->IsManaged();
   }
-#endif
   return false;
 }
 
