@@ -385,8 +385,6 @@
   [self.widgetPromoInstructionsCoordinator start];
 }
 
-// TODO(crbug.com/407605858): Adjust this code to handle interaction with
-// `reauthenticationCoordinator` properly.
 - (void)performReauthenticationForRetrievingTrustedVaultKey {
   trusted_vault::SecurityDomainId securityDomainID =
       trusted_vault::SecurityDomainId::kChromeSync;
@@ -503,6 +501,7 @@
 
 - (void)willPushReauthenticationViewController {
   [self dismissActionSheetCoordinator];
+  [self dismissTrustedVaultReauthenticationCoordinator];
 }
 
 #pragma mark - WidgetPromoInstructionsCoordinatorDelegate
@@ -522,12 +521,30 @@
     (TrustedVaultReauthenticationCoordinator*)coordinator {
   CHECK_EQ(coordinator, _trustedVaultReauthenticationCoordinator);
   [self.mediator displayOrHideTrustedVaultPasswordManagerWidgetPromo];
-  [_trustedVaultReauthenticationCoordinator stop];
-  _trustedVaultReauthenticationCoordinator.delegate = nil;
-  _trustedVaultReauthenticationCoordinator = nil;
+  [self dismissTrustedVaultReauthenticationCoordinator];
 }
 
 #pragma mark - Private
+
+// Returns a coordinator that displays the Trusted Vault reauthentication
+// dialog. This method is being used for the testing purposes.
+// TODO(crbug.com/417667093): Remove this after adding EarlGrey tests of the
+// Trusted Vault GPM management UI widget.
+- (TrustedVaultReauthenticationCoordinator*)
+    trustedVaultReauthenticationCoordinator {
+  return _trustedVaultReauthenticationCoordinator;
+}
+
+// Sets a coordinator for displaying the Trusted Vault reauthentication
+// dialog. This method is being used for the testing purposes.
+// TODO(crbug.com/417667093): Remove this after adding EarlGrey tests of the
+// Trusted Vault GPM management UI widget.
+- (void)setTrustedVaultReauthenticationCoordinator:
+    (TrustedVaultReauthenticationCoordinator*)
+        trustedVaultReauthenticationCoordinator {
+  _trustedVaultReauthenticationCoordinator =
+      trustedVaultReauthenticationCoordinator;
+}
 
 // Starts reauthCoordinator.
 // - authOnStart: Pass `YES` to cover password manager with an empty view
@@ -584,6 +601,12 @@
 - (void)dismissActionSheetCoordinator {
   [self.actionSheetCoordinator stop];
   self.actionSheetCoordinator = nil;
+}
+
+- (void)dismissTrustedVaultReauthenticationCoordinator {
+  [_trustedVaultReauthenticationCoordinator stop];
+  _trustedVaultReauthenticationCoordinator.delegate = nil;
+  _trustedVaultReauthenticationCoordinator = nil;
 }
 
 @end

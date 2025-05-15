@@ -4,6 +4,7 @@
 
 source_set("password") {
   sources = [
+    "passwords_coordinator+Testing.h",
     "passwords_coordinator.h",
     "passwords_coordinator.mm",
     "passwords_mediator+Testing.h",
@@ -186,6 +187,7 @@ source_set("unit_tests") {
   sources = [
     "password_exporter_unittest.mm",
     "password_manager_view_controller_unittest.mm",
+    "passwords_coordinator_unittest.mm",
     "passwords_mediator_unittest.mm",
   ]
   deps = [
@@ -208,6 +210,7 @@ source_set("unit_tests") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/affiliations/model",
+    "//ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/net/model:crurl",
@@ -216,6 +219,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/passwords/model:store_factory",
     "//ios/chrome/browser/settings/ui_bundled/cells",
     "//ios/chrome/browser/settings/ui_bundled/password:features",
+    "//ios/chrome/browser/settings/ui_bundled/password/reauthentication",
     "//ios/chrome/browser/settings/ui_bundled/utils",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
@@ -232,6 +236,7 @@ source_set("unit_tests") {
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/app:test_support",
+    "//ios/chrome/test/fakes",
     "//ios/web/public/test",
     "//testing/gmock",
     "//testing/gtest",
