@@ -593,15 +593,13 @@ ScrollOffset GetScrollOffsetToExpose(
       Intersection(non_zero_visible_rect, expose_rect_x).Width();
   if (intersect_width == expose_rect_no_margin.Width()) {
     // If the rectangle is fully visible, use the specified visible behavior.
-    // If the rectangle is partially visible, but over a certain threshold,
-    // then treat it as fully visible to avoid unnecessary horizontal scrolling
     scroll_x = align_x.rect_visible;
   } else if (intersect_width == non_zero_visible_rect.Width()) {
     // The rect is bigger than the visible area.
     scroll_x = align_x.rect_visible;
   } else if (intersect_width > 0) {
-    // If the rectangle is partially visible, but not above the minimum
-    // threshold, use the specified partial behavior
+    // If the rectangle is partially visible, use the specified partial
+    // behavior.
     scroll_x = align_x.rect_partial;
   } else {
     scroll_x = align_x.rect_hidden;
@@ -635,7 +633,8 @@ ScrollOffset GetScrollOffsetToExpose(
     // The rect is bigger than the visible area.
     scroll_y = align_y.rect_visible;
   } else if (intersect_height > 0) {
-    // If the rectangle is partially visible, use the specified partial behavior
+    // If the rectangle is partially visible, use the specified partial
+    // behavior.
     scroll_y = align_y.rect_partial;
   } else {
     scroll_y = align_y.rect_hidden;
