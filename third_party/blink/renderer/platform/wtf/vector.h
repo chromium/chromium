@@ -51,7 +51,6 @@
 #include "third_party/blink/renderer/platform/wtf/container_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"  // For default Vector template parameters.
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
-#include "third_party/blink/renderer/platform/wtf/stack_util.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
@@ -673,16 +672,10 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
  public:
   using OffsetRange = typename Base::OffsetRange;
 
-  VectorBuffer() : Base(InlineBuffer(), InlineCapacity) {
-#if DCHECK_IS_ON()
-    VerifyInlinedBuffer();
-#endif
-  }
+  VectorBuffer() : Base(InlineBuffer(), InlineCapacity) { InitInlinedBuffer(); }
 
   explicit VectorBuffer(HashTableDeletedValueType value) : Base(value) {
-#if DCHECK_IS_ON()
-    VerifyInlinedBuffer();
-#endif
+    InitInlinedBuffer();
   }
   bool IsHashTableDeletedValue() const {
     return Base::IsHashTableDeletedValue();
@@ -690,9 +683,7 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
 
   explicit VectorBuffer(wtf_size_t capacity)
       : Base(InlineBuffer(), InlineCapacity) {
-#if DCHECK_IS_ON()
-    VerifyInlinedBuffer();
-#endif
+    InitInlinedBuffer();
     if (capacity > InlineCapacity) {
       Base::AllocateBuffer(capacity, VectorOperationOrigin::kConstruction);
     }
@@ -984,14 +975,9 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
     return unsafe_reinterpret_cast_ptr<const T*>(inline_buffer_);
   }
 
-  void VerifyInlinedBuffer() {
-    // On heap allocations are always zero-initialized. Stack is anyway scanned
-    // conservatively, stack-to-stack pointers are filtered out, so no need to
-    // clear out the inlined buffer.
-    if constexpr (Allocator::kIsGarbageCollected) {
-      const bool is_zeroed =
-          std::ranges::all_of(inline_buffer_, [](char c) { return c == 0; });
-      DCHECK(is_zeroed || WTF::IsOnStack(inline_buffer_));
+  void InitInlinedBuffer() {
+    if (Allocator::kIsGarbageCollected) {
+      memset(&inline_buffer_, 0, kInlineBufferSize);
     }
   }
 

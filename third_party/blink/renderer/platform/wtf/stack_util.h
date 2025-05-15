@@ -15,7 +15,6 @@ namespace WTF {
 
 WTF_EXPORT size_t GetUnderestimatedStackSize();
 WTF_EXPORT void* GetStackStart();
-WTF_EXPORT bool IsOnStack(void* address);
 
 // Returns the current stack position such that it works correctly with ASAN and
 // SafeStack. Must be marked noinline because it relies on compiler intrinsics
