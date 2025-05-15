@@ -167,6 +167,8 @@ std::optional<SourceType> DeserializeSourceType(int val) {
   }
 }
 
+namespace {
+
 void SetReadOnlySourceData(
     const EventReportWindows* event_report_windows,
     attribution_reporting::MaxEventLevelReports max_event_level_reports,
@@ -182,6 +184,8 @@ void SetReadOnlySourceData(
     }
   }
 }
+
+}  // namespace
 
 std::string SerializeReadOnlySourceData(
     const TriggerSpecs& trigger_specs,

@@ -27,7 +27,6 @@ namespace attribution_reporting {
 class AggregatableTriggerConfig;
 class AggregationKeys;
 class AttributionScopesData;
-class EventReportWindows;
 class FilterData;
 class MaxEventLevelReports;
 class SuitableOrigin;
@@ -58,12 +57,6 @@ url::Origin DeserializeOrigin(std::string_view origin);
 
 std::optional<attribution_reporting::mojom::SourceType> DeserializeSourceType(
     int val);
-
-// Exposed for use with earlier DB migrations that only contained a subset of
-// fields.
-void SetReadOnlySourceData(const attribution_reporting::EventReportWindows*,
-                           attribution_reporting::MaxEventLevelReports,
-                           proto::AttributionReadOnlySourceData&);
 
 std::string SerializeReadOnlySourceData(
     const attribution_reporting::TriggerSpecs&,

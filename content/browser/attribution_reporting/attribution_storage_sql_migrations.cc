@@ -4,16 +4,9 @@
 
 #include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
 
-#include <string_view>
-#include <vector>
-
 #include "base/functional/function_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "components/attribution_reporting/event_report_windows.h"
-#include "components/attribution_reporting/max_event_level_reports.h"
-#include "components/attribution_reporting/source_type.mojom.h"
-#include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
 #include "sql/database.h"
@@ -54,144 +47,6 @@ namespace {
          migrate(db) &&                                     //
          SetVersionNumbers(meta_table, old_version + 1) &&  //
          transaction.Commit();
-}
-
-bool To55(sql::Database& db) {
-  if (!db.Execute("DROP INDEX rate_limit_source_site_reporting_site_idx")) {
-    return false;
-  }
-
-  if (!db.Execute("DROP INDEX rate_limit_reporting_origin_idx")) {
-    return false;
-  }
-
-  static constexpr char kRateLimitReportingOriginIndexSql[] =
-      "CREATE INDEX rate_limit_reporting_origin_idx "
-      "ON rate_limits(scope,source_site,destination_site)";
-  return db.Execute(kRateLimitReportingOriginIndexSql);
-}
-
-bool To56(sql::Database& db) {
-  static constexpr char kNewSourcesTableSql[] =
-      "CREATE TABLE new_sources("
-      "source_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-      "source_event_id INTEGER NOT NULL,"
-      "source_origin TEXT NOT NULL,"
-      "reporting_origin TEXT NOT NULL,"
-      "source_time INTEGER NOT NULL,"
-      "expiry_time INTEGER NOT NULL,"
-      "aggregatable_report_window_time INTEGER NOT NULL,"
-      "num_attributions INTEGER NOT NULL,"
-      "event_level_active INTEGER NOT NULL,"
-      "aggregatable_active INTEGER NOT NULL,"
-      "source_type INTEGER NOT NULL,"
-      "attribution_logic INTEGER NOT NULL,"
-      "priority INTEGER NOT NULL,"
-      "source_site TEXT NOT NULL,"
-      "debug_key INTEGER,"
-      "aggregatable_budget_consumed INTEGER NOT NULL,"
-      "num_aggregatable_reports INTEGER NOT NULL,"
-      "aggregatable_source BLOB NOT NULL,"
-      "filter_data BLOB NOT NULL,"
-      "read_only_source_data BLOB NOT NULL)";
-  if (!db.Execute(kNewSourcesTableSql)) {
-    return false;
-  }
-
-  // Transfer the existing rows to the new table. Set a value of
-  // `read_only_source_data` as '' to be replaced.
-  static constexpr char kPopulateNewSourcesTableSql[] =
-      "INSERT INTO new_sources SELECT "
-      "source_id,source_event_id,source_origin,"
-      "reporting_origin,source_time,expiry_time,"
-      "aggregatable_report_window_time,"
-      "num_attributions,event_level_active,aggregatable_active,"
-      "source_type,attribution_logic,priority,source_site,debug_key,"
-      "aggregatable_budget_consumed,"
-      "num_aggregatable_reports,aggregatable_source,"
-      "filter_data,'' FROM sources";
-  if (!db.Execute(kPopulateNewSourcesTableSql)) {
-    return false;
-  }
-
-  static constexpr char kGetEventReportWindowTime[] =
-      "SELECT source_id,source_time,event_report_window_time,source_type FROM "
-      "sources";
-  sql::Statement get_statement(
-      db.GetUniqueStatement(kGetEventReportWindowTime));
-
-  static constexpr char kSetFlexEventConfig[] =
-      "UPDATE new_sources SET read_only_source_data=? WHERE source_id=?";
-  sql::Statement set_statement(db.GetUniqueStatement(kSetFlexEventConfig));
-
-  while (get_statement.Step()) {
-    int64_t id = get_statement.ColumnInt64(0);
-    base::Time source_time = get_statement.ColumnTime(1);
-    base::Time event_report_window_time = get_statement.ColumnTime(2);
-    auto source_type = DeserializeSourceType(get_statement.ColumnInt(3));
-    if (!source_type.has_value()) {
-      continue;
-    }
-
-    auto event_report_windows =
-        attribution_reporting::EventReportWindows::FromDefaults(
-            event_report_window_time - source_time, *source_type);
-    if (!event_report_windows.has_value()) {
-      continue;
-    }
-
-    proto::AttributionReadOnlySourceData msg;
-    SetReadOnlySourceData(
-        &*event_report_windows,
-        attribution_reporting::MaxEventLevelReports(*source_type), msg);
-
-    set_statement.Reset(/*clear_bound_vars=*/true);
-    set_statement.BindBlob(0, msg.SerializeAsString());
-    set_statement.BindInt64(1, id);
-    if (!set_statement.Run()) {
-      return false;
-    }
-  }
-
-  if (!db.Execute("DROP TABLE sources")) {
-    return false;
-  }
-
-  if (!db.Execute("ALTER TABLE new_sources RENAME TO sources")) {
-    return false;
-  }
-
-  // Create the sources table indices on the new table.
-  static constexpr char kSourcesByActiveReportingOriginIndexSql[] =
-      "CREATE INDEX sources_by_active_reporting_origin "
-      "ON sources(event_level_active,"
-      "aggregatable_active,reporting_origin)";
-  if (!db.Execute(kSourcesByActiveReportingOriginIndexSql)) {
-    return false;
-  }
-
-  static constexpr char kImpressionExpiryIndexSql[] =
-      "CREATE INDEX sources_by_expiry_time "
-      "ON sources(expiry_time)";
-  if (!db.Execute(kImpressionExpiryIndexSql)) {
-    return false;
-  }
-
-  static constexpr char kImpressionOriginIndexSql[] =
-      "CREATE INDEX active_sources_by_source_origin "
-      "ON sources(source_origin)"
-      "WHERE event_level_active=1 OR aggregatable_active=1";
-  if (!db.Execute(kImpressionOriginIndexSql)) {
-    return false;
-  }
-
-  static constexpr char kSourcesSourceTimeIndexSql[] =
-      "CREATE INDEX sources_by_source_time "
-      "ON sources(source_time)";
-  if (!db.Execute(kSourcesSourceTimeIndexSql)) {
-    return false;
-  }
-  return true;
 }
 
 void DeleteCorruptedReports(AttributionStorageSql& storage) {
@@ -672,12 +527,10 @@ bool UpgradeAttributionStorageSqlSchema(AttributionStorageSql& storage,
     start_timestamp = base::ThreadTicks::Now();
   }
 
-  static_assert(AttributionStorageSql::kDeprecatedVersionNumber + 1 == 54,
+  static_assert(AttributionStorageSql::kDeprecatedVersionNumber + 1 == 56,
                 "Remove migration(s) below.");
 
-  bool ok = MaybeMigrate(db, meta_table, 54, &To55) &&  //
-            MaybeMigrate(db, meta_table, 55, &To56) &&  //
-            MaybeMigrate(db, meta_table, 56, &To57) &&
+  bool ok = MaybeMigrate(db, meta_table, 56, &To57) &&
             MaybeMigrate(db, meta_table, 57, &To58) &&
             MaybeMigrate(db, meta_table, 58, &To59) &&
             MaybeMigrate(db, meta_table, 59, &To60) &&
