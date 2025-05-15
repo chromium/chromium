@@ -362,6 +362,7 @@ void PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified(bool result) {
     submission_verifier_->SavePassword(username_);
     UpdateState(State::kPasswordSuccessfullyChanged);
   }
+  // TODO(crbug.com/407503334): Upload final log on destructor.
   logs_uploader_->UploadFinalLog();
   submission_verifier_.reset();
 }

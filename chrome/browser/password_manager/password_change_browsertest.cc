@@ -69,6 +69,9 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::WithArg;
 using SubmissionOutcome = PasswordChangeSubmissionVerifier::SubmissionOutcome;
+using QualityStatus = optimization_guide::proto::
+    PasswordChangeQuality_StepQuality_SubmissionStatus;
+using SubmissionOutcome = PasswordChangeSubmissionVerifier::SubmissionOutcome;
 using optimization_guide::TestModelQualityLogsUploaderService;
 using FinalModelStatus = optimization_guide::proto::FinalModelStatus;
 
@@ -145,7 +148,8 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
     ASSERT_TRUE(observer.Wait());
   }
 
-  void VerifyUniqueQualityLog(FinalModelStatus final_status) {
+  void VerifyUniqueQualityLog(FinalModelStatus final_status,
+                              QualityStatus quality_status) {
     const std::vector<
         std::unique_ptr<optimization_guide::proto::LogAiDataRequest>>& logs =
         logs_uploader().uploaded_logs();
@@ -155,6 +159,12 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
                   ->mutable_quality()
                   ->final_model_status(),
               final_status);
+    EXPECT_EQ(logs[0]
+                  ->mutable_password_change_submission()
+                  ->mutable_quality()
+                  ->verify_submission()
+                  .status(),
+              quality_status);
   }
 
   void SetPrivacyNoticeAcceptedPref() {
@@ -497,7 +507,10 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
       ukm::builders::PasswordManager_PasswordChangeSubmissionOutcome::
           kPasswordChangeSubmissionOutcomeName,
       static_cast<int>(SubmissionOutcome::kSuccess));
-  VerifyUniqueQualityLog(FinalModelStatus::FINAL_MODEL_STATUS_SUCCESS);
+  VerifyUniqueQualityLog(
+      FinalModelStatus::FINAL_MODEL_STATUS_SUCCESS,
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
@@ -668,7 +681,10 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       ukm::builders::PasswordManager_PasswordChangeSubmissionOutcome::
           kPasswordChangeSubmissionOutcomeName,
       static_cast<int>(SubmissionOutcome::kPageError));
-  VerifyUniqueQualityLog(FinalModelStatus::FINAL_MODEL_STATUS_FAILURE);
+  VerifyUniqueQualityLog(
+      FinalModelStatus::FINAL_MODEL_STATUS_FAILURE,
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_FAILURE_STATUS);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,

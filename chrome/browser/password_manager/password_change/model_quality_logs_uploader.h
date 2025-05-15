@@ -14,41 +14,46 @@ class Profile;
 // logs to the Server.
 class ModelQualityLogsUploader {
  public:
+  using LoggingData =
+      optimization_guide::proto::PasswordChangeSubmissionLoggingData;
+
   explicit ModelQualityLogsUploader(Profile* profile);
   ~ModelQualityLogsUploader();
   ModelQualityLogsUploader(const ModelQualityLogsUploader&) = delete;
   ModelQualityLogsUploader& operator=(const ModelQualityLogsUploader&) = delete;
+
   // As we only want to record one log per flow, this is to be called just
-  // once. It will merge all existing LogAiDataRequest and upload a single
+  // once. It will merge the 3 LogAiDataRequest and upload a single
   // log entry to the model quality logging service.
   void UploadFinalLog();
-  // Merges the logging data with the response given by
-  // optimization service call.
-  void MergeData(
+
+  // Sets quality data for Step=OPEN_FORM_STEP.
+  void SetOpenFormQuality(
       const optimization_guide::proto::PasswordChangeResponse& response,
-      std::unique_ptr<
-          optimization_guide::proto::PasswordChangeSubmissionLoggingData>
-          logging_data);
+      std::unique_ptr<LoggingData> logging_data);
+
+  // Sets quality data for Step=SUBMIT_FORM_STEP.
+  void SetSubmitFormQuality(
+      const optimization_guide::proto::PasswordChangeResponse& response,
+      std::unique_ptr<LoggingData> logging_data);
+
+  // Sets quality data for Step=VERIFY_SUBMISSION_STEP.
+  void SetVerifySubmissionQuality(
+      const std::optional<optimization_guide::proto::PasswordChangeResponse>&
+          response,
+      std::unique_ptr<LoggingData> logging_data);
+
 #if defined(UNIT_TEST)
   // Used for testing only.
-  const std::vector<optimization_guide::proto::LogAiDataRequest>&
-  GetLogEntryRequestsForTesting() const {
-    return log_entries_requests_;
+  const optimization_guide::proto::LogAiDataRequest& GetFinalLog() const {
+    return final_log_data_;
   }
 #endif
 
  private:
   std::unique_ptr<optimization_guide::ModelQualityLogEntry> CreateNewLogEntry();
-  void AddFinalModelStatusLog(
-      optimization_guide::proto::FinalModelStatus final_model_status,
-      std::unique_ptr<
-          optimization_guide::proto::PasswordChangeSubmissionLoggingData>
-          logging_data);
+  optimization_guide::proto::LogAiDataRequest final_log_data_;
 
-  // Holds all feature's logging data request to at the end of the
-  // flow merge them in a single log entry.
-  std::vector<optimization_guide::proto::LogAiDataRequest>
-      log_entries_requests_;
   const raw_ptr<Profile> profile_;
   base::WeakPtrFactory<ModelQualityLogsUploader> weak_ptr_factory_{this};
 };

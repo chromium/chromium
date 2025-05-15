@@ -212,24 +212,31 @@ void PasswordChangeSubmissionVerifier::OnExecutionResponseCallback(
   ukm::SourceId source_id =
       web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId();
 
+  std::optional<optimization_guide::proto::PasswordChangeResponse> response =
+      std::nullopt;
+
   if (!execution_result.response.has_value()) {
     LogSubmissionOutcome(SubmissionOutcome::kNoResponse, source_id);
-    std::move(callback_).Run(false);
-    return;
-  }
-  std::optional<optimization_guide::proto::PasswordChangeResponse> response =
-      optimization_guide::ParsedAnyMetadata<
-          optimization_guide::proto::PasswordChangeResponse>(
-          execution_result.response.value());
-  if (!response) {
-    LogSubmissionOutcome(SubmissionOutcome::kCouldNotParse, source_id);
-    std::move(callback_).Run(false);
-    return;
+  } else {
+    response = optimization_guide::ParsedAnyMetadata<
+        optimization_guide::proto::PasswordChangeResponse>(
+        execution_result.response.value());
+
+    if (!response) {
+      LogSubmissionOutcome(SubmissionOutcome::kCouldNotParse, source_id);
+    }
   }
 
   if (logging_data) {
-    // There is data to log, meaning this is a complete response.
-    logs_uploader_->MergeData(response.value(), std::move(logging_data));
+    logs_uploader_->SetVerifySubmissionQuality(response,
+                                               std::move(logging_data));
+  }
+
+  if (!response) {
+    // Password change failed as the response was empty or
+    // unable to be parsed.
+    std::move(callback_).Run(false);
+    return;
   }
 
   RecordOutcomeMetrics(response.value().outcome_data(), source_id);
@@ -241,8 +248,10 @@ void PasswordChangeSubmissionVerifier::OnExecutionResponseCallback(
       outcome !=
           PasswordChangeOutcome::
               PasswordChangeSubmissionData_PasswordChangeOutcome_UNKNOWN_OUTCOME) {
+    // Password change was unsuccessful.
     std::move(callback_).Run(false);
     return;
   }
+  // Password change was successfully completed.
   std::move(callback_).Run(true);
 }
