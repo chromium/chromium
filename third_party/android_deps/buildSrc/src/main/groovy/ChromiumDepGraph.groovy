@@ -93,7 +93,6 @@ class ChromiumDepGraph {
                     url: 'https://github.com/google/guava',
                     licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
                     licenseName: 'Apache 2.0',
-                    supportsAndroid: false,
                     // Both -jre and -android versions are listed. Filter to only the -jre ones.
                     versionFilter: '-jre'),
             com_google_guava_guava_android: new PropertyOverride(

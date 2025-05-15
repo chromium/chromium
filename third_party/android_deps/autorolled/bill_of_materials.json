@@ -22,7 +22,7 @@
     {
         "name": "annotation-experimental",
         "group": "androidx.annotation",
-        "version": "1.5.0-rc01"
+        "version": "1.5.0"
     },
     {
         "name": "annotation-jvm",
@@ -382,7 +382,7 @@
     {
         "name": "credentials",
         "group": "androidx.credentials",
-        "version": "1.6.0-SNAPSHOT"
+        "version": "1.6.0-alpha01"
     },
     {
         "name": "credentials-play-services-auth",
@@ -432,7 +432,7 @@
     {
         "name": "documentfile",
         "group": "androidx.documentfile",
-        "version": "1.1.0-rc01"
+        "version": "1.1.0"
     },
     {
         "name": "drawerlayout",
@@ -717,7 +717,7 @@
     {
         "name": "mediarouter",
         "group": "androidx.mediarouter",
-        "version": "1.8.0-alpha04"
+        "version": "1.8.0-beta01"
     },
     {
         "name": "multidex",
@@ -753,6 +753,16 @@
         "name": "navigation-runtime-android",
         "group": "androidx.navigation",
         "version": "2.10.0-SNAPSHOT"
+    },
+    {
+        "name": "navigationevent",
+        "group": "androidx.navigationevent",
+        "version": "1.0.0-SNAPSHOT"
+    },
+    {
+        "name": "navigationevent-android",
+        "group": "androidx.navigationevent",
+        "version": "1.0.0-SNAPSHOT"
     },
     {
         "name": "paging-common",
@@ -1022,7 +1032,7 @@
     {
         "name": "tvprovider",
         "group": "androidx.tvprovider",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.1.0"
     },
     {
         "name": "vectordrawable",
@@ -1177,12 +1187,12 @@
     {
         "name": "play-services-cast",
         "group": "com.google.android.gms",
-        "version": "22.0.0"
+        "version": "22.1.0"
     },
     {
         "name": "play-services-cast-framework",
         "group": "com.google.android.gms",
-        "version": "22.0.0"
+        "version": "22.1.0"
     },
     {
         "name": "play-services-clearcut",
@@ -1212,7 +1222,7 @@
     {
         "name": "play-services-identity-credentials",
         "group": "com.google.android.gms",
-        "version": "16.0.0-alpha06"
+        "version": "16.0.0-alpha07"
     },
     {
         "name": "play-services-iid",
@@ -1392,7 +1402,7 @@
     {
         "name": "guava",
         "group": "com.google.guava",
-        "version": "33.3.1-android"
+        "version": "31.1-android"
     },
     {
         "name": "guava",
@@ -1412,7 +1422,7 @@
     {
         "name": "protobuf-javalite",
         "group": "com.google.protobuf",
-        "version": "4.31.0-RC2"
+        "version": "4.31.0"
     },
     {
         "name": "protobuf-lite",
@@ -1537,7 +1547,7 @@
     {
         "name": "checker-qual",
         "group": "org.checkerframework",
-        "version": "3.43.0"
+        "version": "3.25.0"
     },
     {
         "name": "checker-util",

@@ -969,10 +969,13 @@
 # Can be removed after transport-api exposes this in their proguard rule.
 -dontwarn com.google.auto.value.**
 
+# Don't warn about the VMStack class in Cast SDK Proguard.
+-dontwarn dalvik.system.VMStack
+
 # We keep all fields for every generated proto file as the runtime uses
 # reflection over them that ProGuard cannot detect. Without this keep
 # rule, fields may be removed that would cause runtime failures.
--keepclassmembers class * extends com.google.android.gms.internal.cast.zztx {
+-keepclassmembers class * extends com.google.android.gms.internal.cast.zzxi {
   <fields>;
 }
 
@@ -980,7 +983,7 @@
 # We keep all fields for every generated proto file as the runtime uses
 # reflection over them that ProGuard cannot detect. Without this keep
 # rule, fields may be removed that would cause runtime failures.
--keepclassmembers class * extends com.google.android.gms.internal.cast.zztx {
+-keepclassmembers class * extends com.google.android.gms.internal.cast.zzxi {
   <fields>;
 }
 
