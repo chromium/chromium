@@ -201,10 +201,26 @@ BookmarkBridge::BookmarkBridge(
 
   profile_observation_.Observe(profile_);
   bookmark_model_observation_.Observe(bookmark_model_);
+  if (bookmark_model_->loaded()) {
+    BookmarkModelLoaded(false);
+  }
+
   partner_bookmarks_shim_observation_.Observe(partner_bookmarks_shim_);
+  if (partner_bookmarks_shim_->IsLoaded()) {
+    PartnerShimLoaded(partner_bookmarks_shim_);
+  }
+
   reading_list_manager_observations_.AddObservation(
       local_or_syncable_reading_list_manager_.get());
+  if (local_or_syncable_reading_list_manager_->IsLoaded()) {
+    ReadingListLoaded();
+  }
+
   dual_reading_list_model_observation_.Observe(dual_reading_list_model_);
+  if (dual_reading_list_model_->loaded()) {
+    ReadingListModelLoaded(dual_reading_list_model_);
+  }
+
   identity_manager_observation_.Observe(identity_manager_);
 
   pref_change_registrar_.Init(profile_->GetPrefs());
