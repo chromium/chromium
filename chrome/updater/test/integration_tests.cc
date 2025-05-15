@@ -5148,6 +5148,24 @@ TEST_F(IntegrationTest, OfflineInstallAndWake) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
+TEST_F(IntegrationTest, OfflineOverInstall) {
+  ScopedServer test_server(test_commands_);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
+  ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+
+  ExpectInstallEvent(test_server, "{CDABE316-39CD-43BA-8440-6D1E0547AEE6}");
+  ASSERT_NO_FATAL_FAILURE(RunOfflineInstall(/*is_legacy_install=*/false,
+                                            /*is_silent_install=*/false));
+
+  ExpectInstallEvent(test_server, "{CDABE316-39CD-43BA-8440-6D1E0547AEE6}");
+  ASSERT_NO_FATAL_FAILURE(RunOfflineInstall(/*is_legacy_install=*/false,
+                                            /*is_silent_install=*/false));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
 TEST_F(IntegrationTest, OfflineInstallOsNotSupported) {
   ScopedServer test_server(test_commands_);
   ExpectInstallEvent(test_server, kUpdaterAppId);
