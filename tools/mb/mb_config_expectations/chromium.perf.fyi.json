@@ -67,6 +67,28 @@
       "use_remoteexec": true
     }
   },
+  "fuchsia-builder-perf-arm64-pgo": {
+    "args_file": "//build/config/fuchsia/perf_optimized_cast_receiver_args_internal.gn",
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "fuchsia_additional_boot_images": [
+        "//third_party/fuchsia-sdk/images-internal/astro-release/",
+        "//third_party/fuchsia-sdk/images-internal/sherlock-release/",
+        "//third_party/fuchsia-sdk/images-internal/nelson-release/"
+      ],
+      "is_chrome_branded": true,
+      "is_debug": false,
+      "is_official_build": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "fuchsia",
+      "test_isolate_uses_emulator": false,
+      "use_reclient": false,
+      "use_remoteexec": true
+    }
+  },
   "win-arm64-builder-perf": {
     "gn_args": {
       "chrome_pgo_phase": 0,
