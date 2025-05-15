@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -198,6 +199,13 @@ DownloadRequestMaker::DownloadRequestMaker(
 DownloadRequestMaker::~DownloadRequestMaker() = default;
 
 void DownloadRequestMaker::Start(DownloadRequestMaker::Callback callback) {
+  CallbackWithDetails callback_adapter =
+      base::IgnoreArgs<RequestCreationDetails>(std::move(callback));
+  Start(std::move(callback_adapter));
+}
+
+void DownloadRequestMaker::Start(
+    DownloadRequestMaker::CallbackWithDetails callback) {
   callback_ = std::move(callback);
 
   Profile* profile = Profile::FromBrowserContext(browser_context_);
@@ -234,6 +242,8 @@ void DownloadRequestMaker::Start(DownloadRequestMaker::Callback callback) {
 void DownloadRequestMaker::OnFileFeatureExtractionDone(
     FileAnalyzer::Results results) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  details_.inspection_type = results.inspection_performed;
 
   request_->set_download_type(results.type);
   request_->mutable_archived_binary()->CopyFrom(results.archived_binaries);
@@ -307,7 +317,7 @@ void DownloadRequestMaker::OnGotTabRedirects(
     }
   }
 
-  std::move(callback_).Run(std::move(request_));
+  std::move(callback_).Run(details_, std::move(request_));
 }
 
 void DownloadRequestMaker::PopulateTailoredInfo() {

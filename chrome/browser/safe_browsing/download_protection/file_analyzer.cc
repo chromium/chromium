@@ -16,6 +16,7 @@
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/common/safe_browsing/download_type_util.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
@@ -126,6 +127,7 @@ void FileAnalyzer::StartExtractFileFeatures() {
 void FileAnalyzer::OnFileAnalysisFinished(FileAnalyzer::Results results) {
   LogAnalysisDurationWithAndWithoutSuffix("Executable");
   results.type = download_type_util::GetDownloadType(target_file_name_);
+  results.inspection_performed = DownloadFileType::NONE;
   std::move(callback_).Run(results);
 }
 
@@ -191,6 +193,7 @@ void FileAnalyzer::OnZipAnalysisFinished(
       archive_results.encryption_info.is_encrypted);
   results_.encryption_info = archive_results.encryption_info;
 
+  results_.inspection_performed = DownloadFileType::ZIP;
   std::move(callback_).Run(std::move(results_));
 }
 
@@ -249,6 +252,7 @@ void FileAnalyzer::OnRarAnalysisFinished(
       archive_results.encryption_info.is_encrypted);
   results_.encryption_info = archive_results.encryption_info;
 
+  results_.inspection_performed = DownloadFileType::RAR;
   std::move(callback_).Run(std::move(results_));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -325,6 +329,7 @@ void FileAnalyzer::OnDmgAnalysisFinished(
       archive_results.encryption_info.is_encrypted);
   results_.encryption_info = archive_results.encryption_info;
 
+  results_.inspection_performed = DownloadFileType::DMG;
   std::move(callback_).Run(std::move(results_));
 }
 #endif  // BUILDFLAG(IS_MAC)
@@ -388,6 +393,7 @@ void FileAnalyzer::OnSevenZipAnalysisFinished(
       archive_results.encryption_info.is_encrypted);
   results_.encryption_info = archive_results.encryption_info;
 
+  results_.inspection_performed = DownloadFileType::SEVEN_ZIP;
   std::move(callback_).Run(std::move(results_));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

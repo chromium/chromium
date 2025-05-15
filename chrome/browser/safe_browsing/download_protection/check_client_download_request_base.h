@@ -85,7 +85,8 @@ class CheckClientDownloadRequestBase {
   bool IsDownloadManuallyBlocklisted(const ClientDownloadRequest& request);
 
   void OnUrlAllowlistCheckDone(bool is_allowlisted);
-  void OnRequestBuilt(std::unique_ptr<ClientDownloadRequest> request_proto);
+  void OnRequestBuilt(DownloadRequestMaker::RequestCreationDetails details,
+                      std::unique_ptr<ClientDownloadRequest> request_proto);
 
   void StartTimeout();
   void SendRequest();
@@ -213,7 +214,6 @@ class CheckClientDownloadRequestBase {
   const raw_ptr<DownloadProtectionService> service_;
   const scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
   const bool pingback_enabled_;
-  base::CancelableTaskTracker request_tracker_;  // For HistoryService lookup.
   base::TimeTicks start_time_ = base::TimeTicks::Now();  // Used for stats.
   base::TimeTicks timeout_start_time_;
   base::TimeTicks request_start_time_;
@@ -236,6 +236,8 @@ class CheckClientDownloadRequestBase {
 
   // Used to create the download request proto.
   std::unique_ptr<DownloadRequestMaker> download_request_maker_;
+  // Records details about the DownloadRequestMaker run.
+  DownloadRequestMaker::RequestCreationDetails request_creation_details_;
 };  // namespace safe_browsing
 
 }  // namespace safe_browsing

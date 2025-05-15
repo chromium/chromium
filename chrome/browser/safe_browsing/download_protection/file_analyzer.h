@@ -43,6 +43,10 @@ class FileAnalyzer {
     Results(const Results& other);
     ~Results();
 
+    // What type of inspection was performed to yield the results here.
+    DownloadFileType::InspectionType inspection_performed =
+        DownloadFileType::NONE;
+
     // When analyzing a ZIP or RAR, the type becomes clarified by content
     // inspection (does it contain binaries/archives?). So we return a type.
     ClientDownloadRequest::DownloadType type;

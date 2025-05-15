@@ -17,6 +17,7 @@
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/common/safe_browsing/mock_binary_feature_extractor.h"
 #include "components/safe_browsing/content/common/file_type_policies_test_util.h"
+#include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -84,6 +85,7 @@ TEST_F(FileAnalyzerTest, TypeWinExecutable) {
 
   ASSERT_TRUE(has_result_);
   EXPECT_EQ(result_.type, ClientDownloadRequest::WIN_EXECUTABLE);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::NONE);
 }
 
 TEST_F(FileAnalyzerTest, TypeChromeExtension) {
@@ -108,6 +110,7 @@ TEST_F(FileAnalyzerTest, TypeChromeExtension) {
 
   ASSERT_TRUE(has_result_);
   EXPECT_EQ(result_.type, ClientDownloadRequest::CHROME_EXTENSION);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::NONE);
 }
 
 TEST_F(FileAnalyzerTest, TypeAndroidApk) {
@@ -132,6 +135,7 @@ TEST_F(FileAnalyzerTest, TypeAndroidApk) {
 
   ASSERT_TRUE(has_result_);
   EXPECT_EQ(result_.type, ClientDownloadRequest::ANDROID_APK);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::NONE);
 }
 
 // Archive file analysis is not supported on Android.
@@ -163,6 +167,7 @@ TEST_F(FileAnalyzerTest, TypeZippedExecutable) {
 
   ASSERT_TRUE(has_result_);
   EXPECT_EQ(result_.type, ClientDownloadRequest::ZIPPED_EXECUTABLE);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::ZIP);
 }
 #endif
 
@@ -188,6 +193,7 @@ TEST_F(FileAnalyzerTest, TypeMacExecutable) {
 
   ASSERT_TRUE(has_result_);
   EXPECT_EQ(result_.type, ClientDownloadRequest::MAC_EXECUTABLE);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::NONE);
 }
 
 // Archive file analysis is not supported on Android.
@@ -219,6 +225,7 @@ TEST_F(FileAnalyzerTest, TypeZippedArchive) {
 
   ASSERT_TRUE(has_result_);
   EXPECT_EQ(result_.type, ClientDownloadRequest::ZIPPED_ARCHIVE);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::ZIP);
 }
 
 TEST_F(FileAnalyzerTest, TypeInvalidZip) {
@@ -244,6 +251,7 @@ TEST_F(FileAnalyzerTest, TypeInvalidZip) {
   EXPECT_EQ(result_.type, ClientDownloadRequest::INVALID_ZIP);
   EXPECT_EQ(result_.archive_summary.parser_status(),
             ClientDownloadRequest::ArchiveSummary::UNKNOWN);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::ZIP);
 }
 
 // Since we only inspect contents of DMGs on OS X, we only get
@@ -272,6 +280,7 @@ TEST_F(FileAnalyzerTest, TypeInvalidDmg) {
   EXPECT_EQ(result_.type, ClientDownloadRequest::MAC_ARCHIVE_FAILED_PARSING);
   EXPECT_EQ(result_.archive_summary.parser_status(),
             ClientDownloadRequest::ArchiveSummary::UNKNOWN);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::DMG);
 }
 #endif
 
@@ -305,6 +314,7 @@ TEST_F(FileAnalyzerTest, ArchiveIsValidSetForValidArchive) {
   ASSERT_TRUE(has_result_);
   EXPECT_EQ(result_.archive_summary.parser_status(),
             ClientDownloadRequest::ArchiveSummary::VALID);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::ZIP);
 }
 
 TEST_F(FileAnalyzerTest, ArchiveIsValidSetForInvalidArchive) {
@@ -329,6 +339,7 @@ TEST_F(FileAnalyzerTest, ArchiveIsValidSetForInvalidArchive) {
   ASSERT_TRUE(has_result_);
   EXPECT_EQ(result_.archive_summary.parser_status(),
             ClientDownloadRequest::ArchiveSummary::UNKNOWN);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::ZIP);
 }
 
 TEST_F(FileAnalyzerTest, ArchivedExecutableSetForZipWithExecutable) {
@@ -358,6 +369,7 @@ TEST_F(FileAnalyzerTest, ArchivedExecutableSetForZipWithExecutable) {
 
   ASSERT_TRUE(has_result_);
   EXPECT_TRUE(result_.archived_executable);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::ZIP);
 }
 
 TEST_F(FileAnalyzerTest, ArchivedExecutableFalseForZipNoExecutable) {
@@ -387,6 +399,7 @@ TEST_F(FileAnalyzerTest, ArchivedExecutableFalseForZipNoExecutable) {
 
   ASSERT_TRUE(has_result_);
   EXPECT_FALSE(result_.archived_executable);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::ZIP);
 }
 
 TEST_F(FileAnalyzerTest, ArchivedArchiveSetForZipWithArchive) {
@@ -416,6 +429,7 @@ TEST_F(FileAnalyzerTest, ArchivedArchiveSetForZipWithArchive) {
 
   ASSERT_TRUE(has_result_);
   EXPECT_TRUE(result_.archived_archive);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::ZIP);
 }
 
 TEST_F(FileAnalyzerTest, ArchivedArchiveSetForZipNoArchive) {
@@ -445,6 +459,7 @@ TEST_F(FileAnalyzerTest, ArchivedArchiveSetForZipNoArchive) {
 
   ASSERT_TRUE(has_result_);
   EXPECT_FALSE(result_.archived_archive);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::ZIP);
 }
 
 TEST_F(FileAnalyzerTest, ArchivedBinariesHasArchiveAndExecutable) {
@@ -477,6 +492,7 @@ TEST_F(FileAnalyzerTest, ArchivedBinariesHasArchiveAndExecutable) {
 
   ASSERT_TRUE(has_result_);
   EXPECT_THAT(result_.archived_binaries, SizeIs(2));
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::ZIP);
 }
 
 TEST_F(FileAnalyzerTest, ArchivedBinariesSkipsSafeFiles) {
@@ -506,6 +522,7 @@ TEST_F(FileAnalyzerTest, ArchivedBinariesSkipsSafeFiles) {
 
   ASSERT_TRUE(has_result_);
   EXPECT_THAT(result_.archived_binaries, IsEmpty());
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::ZIP);
 }
 
 TEST_F(FileAnalyzerTest, ArchivedBinariesRespectsPolicyMaximum) {
@@ -545,6 +562,7 @@ TEST_F(FileAnalyzerTest, ArchivedBinariesRespectsPolicyMaximum) {
 
   ASSERT_TRUE(has_result_);
   EXPECT_THAT(result_.archived_binaries, SizeIs(1));
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::ZIP);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -575,6 +593,7 @@ TEST_F(FileAnalyzerTest, ExtractsFileSignatureForExe) {
   ASSERT_TRUE(has_result_);
   EXPECT_THAT(result_.signature_info.signed_data(), SizeIs(1));
   EXPECT_THAT(result_.signature_info.signed_data(0), StrEq("signature"));
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::NONE);
 }
 
 TEST_F(FileAnalyzerTest, ExtractsImageHeadersForExe) {
@@ -602,6 +621,7 @@ TEST_F(FileAnalyzerTest, ExtractsImageHeadersForExe) {
   ASSERT_TRUE(has_result_);
   EXPECT_TRUE(result_.image_headers.has_pe_headers());
   EXPECT_EQ(result_.image_headers.pe_headers().file_header(), "image header");
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::NONE);
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -627,6 +647,7 @@ TEST_F(FileAnalyzerTest, ExtractsSignatureForDmg) {
 
   ASSERT_TRUE(has_result_);
   EXPECT_EQ(2215u, result_.disk_image_signature.size());
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::DMG);
 
   base::FilePath signed_dmg_signature;
   EXPECT_TRUE(
@@ -666,6 +687,7 @@ TEST_F(FileAnalyzerTest, TypeSniffsDmgWithoutExtension) {
   EXPECT_EQ(result_.type, ClientDownloadRequest::MAC_EXECUTABLE);
   EXPECT_EQ(result_.archive_summary.parser_status(),
             ClientDownloadRequest::ArchiveSummary::VALID);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::DMG);
 }
 
 #endif
@@ -694,6 +716,7 @@ TEST_F(FileAnalyzerTest, SmallRarHasContentInspection) {
 
   ASSERT_TRUE(has_result_);
   EXPECT_EQ(result_.type, ClientDownloadRequest::RAR_COMPRESSED_EXECUTABLE);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::RAR);
   EXPECT_EQ(result_.archive_summary.parser_status(),
             ClientDownloadRequest::ArchiveSummary::VALID);
   ASSERT_EQ(1, result_.archived_binaries.size());
@@ -735,6 +758,7 @@ TEST_F(FileAnalyzerTest, LargeRarSkipsContentInspection) {
 
   ASSERT_TRUE(has_result_);
   EXPECT_EQ(result_.type, ClientDownloadRequest::INVALID_RAR);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::RAR);
   ASSERT_EQ(0, result_.archived_binaries.size());
   EXPECT_EQ(result_.archive_summary.parser_status(),
             ClientDownloadRequest::ArchiveSummary::TOO_LARGE);
@@ -769,6 +793,7 @@ TEST_F(FileAnalyzerTest, ZipFilesGetFileCount) {
   ASSERT_TRUE(has_result_);
   EXPECT_EQ(1, result_.archive_summary.file_count());
   EXPECT_EQ(0, result_.archive_summary.directory_count());
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::ZIP);
 }
 
 TEST_F(FileAnalyzerTest, ZipFilesGetDirectoryCount) {
@@ -798,6 +823,7 @@ TEST_F(FileAnalyzerTest, ZipFilesGetDirectoryCount) {
   ASSERT_TRUE(has_result_);
   EXPECT_EQ(0, result_.archive_summary.file_count());
   EXPECT_EQ(1, result_.archive_summary.directory_count());
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::ZIP);
 }
 
 TEST_F(FileAnalyzerTest, RarFilesGetFileCount) {
@@ -822,6 +848,7 @@ TEST_F(FileAnalyzerTest, RarFilesGetFileCount) {
   ASSERT_TRUE(has_result_);
   EXPECT_EQ(1, result_.archive_summary.file_count());
   EXPECT_EQ(0, result_.archive_summary.directory_count());
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::RAR);
 }
 
 TEST_F(FileAnalyzerTest, RarFilesGetDirectoryCount) {
@@ -846,6 +873,7 @@ TEST_F(FileAnalyzerTest, RarFilesGetDirectoryCount) {
   ASSERT_TRUE(has_result_);
   EXPECT_EQ(0, result_.archive_summary.file_count());
   EXPECT_EQ(1, result_.archive_summary.directory_count());
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::RAR);
 }
 
 TEST_F(FileAnalyzerTest, LargeZipSkipsContentInspection) {
@@ -889,6 +917,7 @@ TEST_F(FileAnalyzerTest, LargeZipSkipsContentInspection) {
   ASSERT_EQ(0, result_.archived_binaries.size());
   EXPECT_EQ(result_.archive_summary.parser_status(),
             ClientDownloadRequest::ArchiveSummary::TOO_LARGE);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::ZIP);
 }
 
 TEST_F(FileAnalyzerTest, ZipAnalysisResultMetric) {
@@ -918,6 +947,7 @@ TEST_F(FileAnalyzerTest, ZipAnalysisResultMetric) {
   run_loop.Run();
 
   ASSERT_TRUE(has_result_);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::ZIP);
   histogram_tester.ExpectBucketCount(
       "SBClientDownload.ZipArchiveAnalysisResult",
       ArchiveAnalysisResult::kValid, 1);
@@ -945,6 +975,7 @@ TEST_F(FileAnalyzerTest, RarAnalysisResultMetric) {
   run_loop.Run();
 
   ASSERT_TRUE(has_result_);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::RAR);
   histogram_tester.ExpectBucketCount(
       "SBClientDownload.RarArchiveAnalysisResult",
       ArchiveAnalysisResult::kValid, 1);
@@ -973,6 +1004,7 @@ TEST_F(FileAnalyzerTest, DmgAnalysisResultMetric) {
   run_loop.Run();
 
   ASSERT_TRUE(has_result_);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::DMG);
   histogram_tester.ExpectBucketCount(
       "SBClientDownload.DmgArchiveAnalysisResult",
       ArchiveAnalysisResult::kValid, 1);
@@ -1000,6 +1032,7 @@ TEST_F(FileAnalyzerTest, EncryptedEntriesDoNotHaveHashOrLength) {
 
   ASSERT_TRUE(has_result_);
   EXPECT_EQ(result_.type, ClientDownloadRequest::ZIPPED_EXECUTABLE);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::ZIP);
   ASSERT_EQ(1, result_.archived_binaries.size());
   EXPECT_TRUE(result_.archived_binaries.Get(0).digests().sha256().empty());
   EXPECT_FALSE(result_.archived_binaries.Get(0).has_length());
@@ -1029,6 +1062,7 @@ TEST_F(FileAnalyzerTest, RarDirectoriesNotReported) {
   ASSERT_EQ(result_.archived_binaries.size(), 1);
   EXPECT_EQ(result_.archived_binaries[0].file_path(), "file.exe");
   EXPECT_EQ(result_.archived_binaries[0].length(), 24);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::RAR);
 }
 
 TEST_F(FileAnalyzerTest, ZeroLengthSevenZipEntriesSupported) {
@@ -1056,6 +1090,7 @@ TEST_F(FileAnalyzerTest, ZeroLengthSevenZipEntriesSupported) {
   EXPECT_EQ(result_.archived_binaries[0].length(), 21);
   EXPECT_EQ(result_.archived_binaries[1].file_path(), "empty");
   EXPECT_EQ(result_.archived_binaries[1].length(), 0);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::SEVEN_ZIP);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

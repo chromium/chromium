@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#include "chrome/browser/safe_browsing/download_protection/download_request_maker.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
@@ -313,6 +314,7 @@ void CheckClientDownloadRequestBase::GetAdditionalPromptResult(
 }
 
 void CheckClientDownloadRequestBase::OnRequestBuilt(
+    DownloadRequestMaker::RequestCreationDetails details,
     std::unique_ptr<ClientDownloadRequest> request) {
   if (ShouldPromptForIncorrectPassword()) {
     LogLocalDecryptionEvent(safe_browsing::DeepScanEvent::kIncorrectPassword);
@@ -328,6 +330,7 @@ void CheckClientDownloadRequestBase::OnRequestBuilt(
   }
 
   client_download_request_ = std::move(request);
+  request_creation_details_ = details;
   SanitizeRequest();
 
   // If it's an archive with no archives or executables, finish early.
@@ -614,16 +617,11 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
   // We don't need the loader anymore.
   loader_.reset();
 
-  DownloadFileType::InspectionType inspection_type =
-      FileTypePolicies::GetInstance()
-          ->PolicyForFile(target_file_path_, GURL{}, nullptr)
-          .inspection_type();
   std::string histogram_name = "SBClientDownload.DownloadRequestDuration";
   base::TimeDelta duration = base::TimeTicks::Now() - start_time_;
   base::UmaHistogramTimes("SBClientDownload.DownloadRequestDuration", duration);
 
-  std::string metrics_suffix = "";
-  switch (inspection_type) {
+  switch (request_creation_details_.inspection_type) {
     case DownloadFileType::NONE:
       base::StrAppend(&histogram_name, {".None"});
       break;

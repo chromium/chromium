@@ -23,8 +23,17 @@ namespace safe_browsing {
 // Browsing download ping.
 class DownloadRequestMaker {
  public:
+  // Details about a DownloadRequestMaker run, to pass back to the caller.
+  struct RequestCreationDetails {
+    // What type of file inspection was performed.
+    DownloadFileType::InspectionType inspection_type = DownloadFileType::NONE;
+  };
+
   using Callback =
       base::OnceCallback<void(std::unique_ptr<ClientDownloadRequest>)>;
+  using CallbackWithDetails =
+      base::OnceCallback<void(RequestCreationDetails,
+                              std::unique_ptr<ClientDownloadRequest>)>;
 
   // URL and referrer of the window the download was started from.
   struct TabUrls {
@@ -67,6 +76,9 @@ class DownloadRequestMaker {
   // the fully-populated ping.
   void Start(Callback callback);
 
+  // Same as above but also returns a RequestCreationDetails to the caller.
+  void Start(CallbackWithDetails callback);
+
  private:
   // Callback when |file_analyzer_| is done analyzing the download.
   void OnFileFeatureExtractionDone(FileAnalyzer::Results results);
@@ -108,7 +120,9 @@ class DownloadRequestMaker {
   // system accesses.
   base::OnceCallback<void(const FileAnalyzer::Results&)> on_results_callback_;
 
-  Callback callback_;
+  CallbackWithDetails callback_;
+
+  RequestCreationDetails details_;
 
   base::WeakPtrFactory<DownloadRequestMaker> weakptr_factory_{this};
 };
