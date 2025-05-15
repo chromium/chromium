@@ -20,7 +20,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -130,7 +129,6 @@ public class TabGroupDialogPTTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/415799207")
     public void testTabGroupNameChange() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation pageStation =
