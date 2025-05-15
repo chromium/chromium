@@ -844,6 +844,58 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   EXPECT_THAT(GetUpdateNotificationFunctionCalledWith(), ElementsAre(1));
 }
 
+TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
+       SetIgnoreOnContentSettingsChanged) {
+  for (auto [initial_state, new_content_setting, expected_state] :
+       std::initializer_list<
+           std::tuple<RevocationState, ContentSetting, RevocationState>>{
+           {RevocationState::kRevoked, ContentSetting::CONTENT_SETTING_ALLOW,
+            RevocationState::kIgnore},
+           {RevocationState::kRevoked, ContentSetting::CONTENT_SETTING_BLOCK,
+            RevocationState::kRevoked},
+           {RevocationState::kRevoked, ContentSetting::CONTENT_SETTING_ASK,
+            RevocationState::kRevoked},
+           {RevocationState::kProposed, ContentSetting::CONTENT_SETTING_ALLOW,
+            RevocationState::kProposed},
+           {RevocationState::kProposed, ContentSetting::CONTENT_SETTING_BLOCK,
+            RevocationState::kProposed},
+           {RevocationState::kProposed, ContentSetting::CONTENT_SETTING_ASK,
+            RevocationState::kProposed},
+           {RevocationState::kIgnore, ContentSetting::CONTENT_SETTING_ALLOW,
+            RevocationState::kIgnore},
+           {RevocationState::kIgnore, ContentSetting::CONTENT_SETTING_BLOCK,
+            RevocationState::kIgnore},
+           {RevocationState::kIgnore, ContentSetting::CONTENT_SETTING_ASK,
+            RevocationState::kIgnore},
+       }) {
+    GURL url("https://www.example1.com");
+    ContentSettingHelper(*hcsm()).PersistRevocationEntry(
+        url, RevocationEntry{
+                 .revocation_state = initial_state,
+                 .site_engagement = 0.0,
+                 .daily_notification_count = 3,
+                 .timestamp = base::Time::Now(),
+                 .lifetime = initial_state == RevocationState::kIgnore
+                                 ? base::TimeDelta()
+                                 : base::Days(14),
+             });
+    SetNotificationPermission(url, new_content_setting);
+    std::optional revocation_entry =
+        ContentSettingHelper(*hcsm()).GetRevocationEntry(url);
+    EXPECT_THAT(
+        revocation_entry,
+        Optional(Field(&RevocationEntry::revocation_state, expected_state)));
+    EXPECT_THAT(revocation_entry,
+                Optional(Field(&RevocationEntry::lifetime,
+                               expected_state == RevocationState::kIgnore
+                                   ? base::TimeDelta()
+                                   : base::Days(14))));
+
+    // Clean up.
+    ContentSettingHelper(*hcsm()).DeleteRevocationEntry(url);
+  }
+}
+
 class DisruptiveNotificationPermissionsManagerShadowRunTest
     : public DisruptiveNotificationPermissionsManagerTest {
  public:
