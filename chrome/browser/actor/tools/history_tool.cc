@@ -6,12 +6,14 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
+#include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/net_errors.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace {
@@ -36,18 +38,21 @@ HistoryTool::HistoryTool(TabInterface& tab, Direction direction)
 HistoryTool::~HistoryTool() = default;
 
 void HistoryTool::Validate(ValidateCallback callback) {
-  // TODO(crbug.com/409558980): Add distinct error codes.
   NavigationController& controller = web_contents()->GetController();
-  if ((direction_ == kBack && !controller.CanGoBack()) ||
-      (direction_ == kForward && !controller.CanGoForward())) {
-    PostResponseTask(std::move(callback), MakeErrorResult());
-    return;
+  mojom::ActionResultPtr result;
+
+  if (direction_ == kBack && !controller.CanGoBack()) {
+    result = MakeResult(mojom::ActionResultCode::kHistoryNoBackEntries);
+  } else if (direction_ == kForward && !controller.CanGoForward()) {
+    result = MakeResult(mojom::ActionResultCode::kHistoryNoForwardEntries);
+  } else {
+    result = MakeOkResult();
   }
 
   // TODO(crbug.com/402731599): Additional validation here (e.g. is URL in
   // allowlist).
 
-  PostResponseTask(std::move(callback), MakeOkResult());
+  PostResponseTask(std::move(callback), std::move(result));
 }
 
 void HistoryTool::Invoke(InvokeCallback callback) {
@@ -120,12 +125,31 @@ void HistoryTool::DidFinishNavigation(NavigationHandle* navigation_handle) {
     return;
   }
 
-  // TODO(crbug.com/409558980): Add distinct error codes.
   if (in_flight_navigation_ids_.erase(navigation_handle->GetNavigationId())) {
-    auto result =
-        (navigation_handle->HasCommitted() && !navigation_handle->IsErrorPage())
-            ? MakeOkResult()
-            : MakeErrorResult();
+    mojom::ActionResultPtr result;
+    auto details_msg = [](NavigationHandle* handle) {
+      std::string msg;
+      if (handle->GetNavigationDiscardReason()) {
+        msg = absl::StrFormat("DiscardReason[%d] ",
+                              handle->GetNavigationDiscardReason().value());
+      }
+      if (handle->GetNetErrorCode() != net::OK) {
+        msg +=
+            absl::StrFormat("ErrorCode[%s]",
+                            net::ErrorToShortString(handle->GetNetErrorCode()));
+      }
+      return msg;
+    };
+
+    if (!navigation_handle->HasCommitted()) {
+      result = MakeResult(mojom::ActionResultCode::kHistoryFailedBeforeCommit,
+                          details_msg(navigation_handle));
+    } else if (navigation_handle->IsErrorPage()) {
+      result = MakeResult(mojom::ActionResultCode::kHistoryErrorPage,
+                          details_msg(navigation_handle));
+    } else {
+      result = MakeOkResult();
+    }
     FinishToolInvocationIfNeeded(std::move(result));
   }
 }

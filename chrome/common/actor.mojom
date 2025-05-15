@@ -207,6 +207,17 @@ enum ActionResultCode {
   // Navigations were created but asynchronously cancelled before being started.
   kHistoryCancelledBeforeStart = 801,
 
+  // Back traversal was requested when at beginning of session history.
+  kHistoryNoBackEntries = 802,
+
+  // Forward traversal was requested when at end of session history.
+  kHistoryNoForwardEntries = 803,
+
+  // History navigation was aborted before commit.
+  kHistoryFailedBeforeCommit = 804,
+
+  // History navigation committed to an error page.
+  kHistoryErrorPage = 805,
 };
 
 // All information required to invoke a tool in the renderer.

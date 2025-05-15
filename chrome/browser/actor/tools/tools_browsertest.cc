@@ -1126,7 +1126,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_FailNoSessionHistory) {
   {
     TestFuture<mojom::ActionResultPtr> result;
     actor_coordinator().Act(MakeHistoryForward(), result.GetCallback());
-    ExpectErrorResult(result, mojom::ActionResultCode::kError);
+    ExpectErrorResult(result,
+                      mojom::ActionResultCode::kHistoryNoForwardEntries);
     EXPECT_EQ(web_contents()->GetURL(), url_second);
   }
 
@@ -1139,7 +1140,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_FailNoSessionHistory) {
   {
     TestFuture<mojom::ActionResultPtr> result;
     actor_coordinator().Act(MakeHistoryBack(), result.GetCallback());
-    ExpectErrorResult(result, mojom::ActionResultCode::kError);
+    ExpectErrorResult(result, mojom::ActionResultCode::kHistoryNoBackEntries);
     EXPECT_EQ(web_contents()->GetURL(), url_second);
   }
 }
