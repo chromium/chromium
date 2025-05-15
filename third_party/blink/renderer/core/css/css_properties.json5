@@ -8021,13 +8021,11 @@
       name: "navigation",
       is_descriptor: true,
       is_property: false,
-      runtime_flag: "ViewTransitionOnNavigation",
     },
     {
       name: "types",
       is_descriptor: true,
       is_property: false,
-      runtime_flag: "ViewTransitionOnNavigation",
     },
     {
       name: "result",

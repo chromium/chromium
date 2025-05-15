@@ -9126,8 +9126,6 @@ class RenderFrameHostImplBrowserTestWithBFCacheAndViewTransition
     std::vector<base::test::FeatureRefAndParams> enabled_features =
         GetDefaultEnabledBackForwardCacheFeaturesForTesting(
             /*ignore_outstanding_network_request=*/false);
-    enabled_features.push_back(
-        {blink::features::kViewTransitionOnNavigation, {{}}});
     enabled_features.push_back({blink::features::kPageSwapEvent, {{}}});
     scoped_feature_list_.InitWithFeaturesAndParameters(
         enabled_features,

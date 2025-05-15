@@ -1521,12 +1521,6 @@
       // https://chromestatus.com/feature/4850737974345728
       name: "CSSViewTransitionAutoName",
       status: "experimental",
-      depends_on: ["CSSViewTransitionMatchElement"],
-    },
-    {
-      // https://chromestatus.com/feature/5098745710247936
-      name: "CSSViewTransitionMatchElement",
-      status: "stable"
     },
     {
       // Adds the appearance:base-select CSS value which makes <select>
@@ -5048,23 +5042,8 @@
       status: "stable",
     },
     {
-      name: "ViewTransitionDisableSnapBrowserControlsOnHidden",
-      status: "stable",
-    },
-    {
       name: "ViewTransitionLongCallbackTimeoutForTesting",
       status: "test",
-    },
-    {
-      // If enabled, ViewTransition API is supported for navigations including
-      // cross-document transitions.
-      // See https://drafts.csswg.org/css-view-transitions-1/.
-      name: "ViewTransitionOnNavigation",
-      status: "stable",
-    },
-    {
-      name: "ViewTransitionOnNavigationForIframes",
-      status: "stable",
     },
     {
       name: "VisibilityCollapseColumn",

@@ -189,13 +189,11 @@ void PageAnimator::ServiceScriptedAnimations(
           CHECK(window->document());
           CHECK(!window->HasBeenRevealed());
 
-          if (RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled()) {
-            if (auto* supplement = ViewTransitionSupplement::FromIfExists(
-                    *window->document())) {
-              DOMViewTransition* view_transition =
-                  supplement->ResolveCrossDocumentViewTransition();
-              page_reveal->SetViewTransition(view_transition);
-            }
+          if (auto* supplement =
+                  ViewTransitionSupplement::FromIfExists(*window->document())) {
+            DOMViewTransition* view_transition =
+                supplement->ResolveCrossDocumentViewTransition();
+            page_reveal->SetViewTransition(view_transition);
           }
 
           return true;
@@ -208,12 +206,10 @@ void PageAnimator::ServiceScriptedAnimations(
 
       if (pagereveal_dispatched) {
         window->SetHasBeenRevealed(true);
-        if (RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled()) {
-          if (ViewTransition* transition =
-                  ViewTransitionUtils::GetTransition(*window->document());
-              transition && transition->IsForNavigationOnNewDocument()) {
-            transition->ActivateFromSnapshot();
-          }
+        if (ViewTransition* transition =
+                ViewTransitionUtils::GetTransition(*window->document());
+            transition && transition->IsForNavigationOnNewDocument()) {
+          transition->ActivateFromSnapshot();
         }
       }
     });

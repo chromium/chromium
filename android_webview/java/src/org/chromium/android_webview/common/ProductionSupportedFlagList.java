@@ -460,10 +460,6 @@ public final class ProductionSupportedFlagList {
                 "If enabled, avoids calling the clock for every token in the HTML parser."),
         Flag.baseFeature(BaseFeatures.ALIGN_WAKE_UPS, "Align delayed wake ups at 125 Hz"),
         Flag.baseFeature(
-                BlinkFeatures.VIEW_TRANSITION_ON_NAVIGATION,
-                "Enables the experimental View Transitions API for navigations."
-                        + " See https://github.com/WICG/view-transitions/blob/main/explainer.md."),
-        Flag.baseFeature(
                 GpuFeatures.INCREASED_CMD_BUFFER_PARSE_SLICE,
                 "Enable the use of an increased parse slice size per command buffer before"
                         + " each forced context switch."),

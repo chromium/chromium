@@ -53,8 +53,7 @@ class ViewTransitionBrowserTest : public ContentBrowserTest {
   ViewTransitionBrowserTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kViewTransitionOnNavigation,
-         viz::mojom::EnableVizTestApis},
+        {viz::mojom::EnableVizTestApis},
         /*disabled_features=*/{});
   }
 

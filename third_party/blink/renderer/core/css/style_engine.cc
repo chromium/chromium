@@ -3398,9 +3398,6 @@ bool StyleEngine::UserKeyframeStyleShouldOverride(
 }
 
 void StyleEngine::AddViewTransitionRules(const ActiveStyleSheetVector& sheets) {
-  if (!RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled()) {
-    return;
-  }
   view_transition_rule_.Clear();
 
   for (const ActiveStyleSheet& active_sheet : sheets) {

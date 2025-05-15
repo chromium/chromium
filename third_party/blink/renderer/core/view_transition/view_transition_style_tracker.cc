@@ -713,9 +713,6 @@ AtomicString ViewTransitionStyleTracker::GenerateAutoName(
     Element& element,
     const TreeScope* scope,
     bool allow_from_id) {
-  // The flag should be checked much earlier than this, in the CSS parser.
-  CHECK(RuntimeEnabledFeatures::CSSViewTransitionMatchElementEnabled());
-
   // For "auto" we generate a random name that is consistent for the same id, so
   // we store it in a map and look it up first.
   if (allow_from_id && element.HasID() && scope &&

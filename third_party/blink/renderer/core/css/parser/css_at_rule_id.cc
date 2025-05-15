@@ -14,8 +14,7 @@
 namespace blink {
 
 CSSAtRuleID CssAtRuleID(StringView name) {
-  if (RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled() &&
-      EqualIgnoringASCIICase(name, "view-transition")) {
+  if (EqualIgnoringASCIICase(name, "view-transition")) {
     return CSSAtRuleID::kCSSAtRuleViewTransition;
   }
   if (EqualIgnoringASCIICase(name, "charset")) {

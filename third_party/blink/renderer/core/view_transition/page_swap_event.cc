@@ -43,8 +43,6 @@ PageSwapEvent::PageSwapEvent(
     : Event(event_type_names::kPageswap, Bubbles::kNo, Cancelable::kNo),
       dom_view_transition_(view_transition) {
   CHECK(RuntimeEnabledFeatures::PageSwapEventEnabled());
-  CHECK(!view_transition ||
-        RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled());
   CHECK(!view_transition || page_swap_event_params);
 
   if (page_swap_event_params) {

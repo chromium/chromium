@@ -201,7 +201,6 @@ void ViewTransitionSupplement::SnapshotDocumentForNavigation(
     const blink::ViewTransitionToken& navigation_id,
     mojom::blink::PageSwapEventParamsPtr params,
     ViewTransition::ViewTransitionStateCallback callback) {
-  DCHECK(RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled());
   auto* supplement = From(document);
   supplement->StartTransition(document, navigation_id, std::move(params),
                               std::move(callback));
@@ -237,7 +236,6 @@ void ViewTransitionSupplement::StartTransition(
 void ViewTransitionSupplement::CreateFromSnapshotForNavigation(
     Document& document,
     ViewTransitionState transition_state) {
-  DCHECK(RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled());
   auto* supplement = From(document);
   supplement->StartTransition(document, std::move(transition_state));
 }
@@ -368,7 +366,6 @@ ViewTransitionSupplement::TakePendingRequests() {
 void ViewTransitionSupplement::OnViewTransitionsStyleUpdated(
     bool cross_document_enabled,
     const Vector<String>& types) {
-  CHECK(RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled());
   SetCrossDocumentOptIn(
       cross_document_enabled
           ? mojom::blink::ViewTransitionSameOriginOptIn::kEnabled
@@ -381,8 +378,6 @@ void ViewTransitionSupplement::WillInsertBody() {
       !document_transition_->IsForNavigationOnNewDocument()) {
     return;
   }
-
-  CHECK(RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled());
 
   auto* document = GetSupplementable();
   CHECK(document);

@@ -5886,15 +5886,6 @@ const FeatureEntry kFeatureEntries[] = {
          "disallowFetchForDocWrittenScriptsInMainFrame=true",
          blink::switches::kBlinkSettings,
          "disallowFetchForDocWrittenScriptsInMainFrame=false")},
-    {"view-transition-on-navigation",
-     flag_descriptions::kViewTransitionOnNavigationName,
-     flag_descriptions::kViewTransitionOnNavigationDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kViewTransitionOnNavigation)},
-    {"view-transition-on-navigation-iframe",
-     flag_descriptions::kViewTransitionOnNavigationIframeName,
-     flag_descriptions::kViewTransitionOnNavigationIframeDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         blink::features::kViewTransitionOnNavigationForIframes)},
 #if BUILDFLAG(IS_WIN)
     {"use-winrt-midi-api", flag_descriptions::kUseWinrtMidiApiName,
      flag_descriptions::kUseWinrtMidiApiDescription, kOsWin,

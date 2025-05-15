@@ -2010,7 +2010,6 @@ StyleRuleBase* CSSParserImpl::ConsumeScopeRule(
 
 StyleRuleViewTransition* CSSParserImpl::ConsumeViewTransitionRule(
     CSSParserTokenStream& stream) {
-  CHECK(RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled());
   // NOTE: @view-transition prelude should be empty.
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
   wtf_size_t prelude_offset_end = stream.LookAheadOffset();
