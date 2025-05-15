@@ -55,6 +55,7 @@
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/memory_entry_data_hints.h"
 #include "net/http/http_cache.h"
+#include "net/http/http_cache_util.h"
 #include "net/http/http_cache_writers.h"
 #include "net/http/http_log_util.h"
 #include "net/http/http_network_session.h"
@@ -101,21 +102,6 @@ bool ShouldByPassCacheForFirstPartySets(
           written_at_run_id.value() < clear_at_run_id.value());
 }
 
-// If the request includes one of these request headers, then avoid caching
-// to avoid getting confused.
-struct HeaderNameAndValue {
-  std::string_view name;
-  std::optional<std::string_view> value;
-};
-
-// If the request includes one of these request headers, then avoid caching
-// to avoid getting confused.
-constexpr auto kPassThroughHeaders = std::to_array(
-    {HeaderNameAndValue{"if-unmodified-since",
-                        std::nullopt},              // causes unexpected 412s
-     HeaderNameAndValue{"if-match", std::nullopt},  // causes unexpected 412s
-     HeaderNameAndValue{"if-range", std::nullopt}});
-
 struct ValidationHeaderInfo {
   std::string_view request_header_name;
   std::string_view related_response_header_name;
@@ -123,40 +109,6 @@ struct ValidationHeaderInfo {
 
 constexpr auto kValidationHeaders = std::to_array<ValidationHeaderInfo>(
     {{"if-modified-since", "last-modified"}, {"if-none-match", "etag"}});
-
-// If the request includes one of these request headers, then avoid reusing
-// our cached copy if any.
-constexpr auto kForceFetchHeaders =
-    std::to_array({HeaderNameAndValue{"cache-control", "no-cache"},
-                   HeaderNameAndValue{"pragma", "no-cache"}});
-
-// If the request includes one of these request headers, then force our
-// cached copy (if any) to be revalidated before reusing it.
-constexpr auto kForceValidateHeaders =
-    std::to_array({HeaderNameAndValue{"cache-control", "max-age=0"}});
-
-bool HeaderMatches(const HttpRequestHeaders& headers,
-                   base::span<const HeaderNameAndValue> search_headers) {
-  for (const auto& search_header : search_headers) {
-    std::optional<std::string> header_value =
-        headers.GetHeader(search_header.name);
-    if (!header_value) {
-      continue;
-    }
-
-    if (!search_header.value) {
-      return true;
-    }
-
-    HttpUtil::ValuesIterator v(*header_value, ',');
-    while (v.GetNext()) {
-      if (base::EqualsCaseInsensitiveASCII(v.value(), *search_header.value)) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
 
 // Methods other than "GET" or "HEAD" can have request bodies, which causes
 // problems for the request matching.
@@ -2622,41 +2574,13 @@ void HttpCache::Transaction::SetRequest(const NetLogWithSource& net_log) {
     effective_load_flags_ |= LOAD_DISABLE_CACHE;
   }
 
-  // Some headers imply load flags.  The order here is significant.
-  //
-  //   LOAD_DISABLE_CACHE   : no cache read or write
-  //   LOAD_BYPASS_CACHE    : no cache read
-  //   LOAD_VALIDATE_CACHE  : no cache read unless validation
-  //
-  // The former modes trump latter modes, so if we find a matching header we
-  // can stop iterating kSpecialHeaders.
-  static const struct {
-    // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always points to
-    // constexpr tables), so there is no benefit to using a raw_ptr, only cost.
-    RAW_PTR_EXCLUSION const base::span<const HeaderNameAndValue> search;
-    int load_flag;
-  } kSpecialHeaders[] = {
-      {kPassThroughHeaders, LOAD_DISABLE_CACHE},
-      {kForceFetchHeaders, LOAD_BYPASS_CACHE},
-      {kForceValidateHeaders, LOAD_VALIDATE_CACHE},
-  };
+  bool range_found =
+      request_->extra_headers.HasHeader(HttpRequestHeaders::kRange);
+  int load_flags_for_extra_headers =
+      http_cache_util::GetLoadFlagsForExtraHeaders(request_->extra_headers);
+  effective_load_flags_ |= load_flags_for_extra_headers;
 
-  bool range_found = false;
   bool external_validation_error = false;
-  bool special_headers = false;
-
-  if (request_->extra_headers.HasHeader(HttpRequestHeaders::kRange)) {
-    range_found = true;
-  }
-
-  for (const auto& special_header : kSpecialHeaders) {
-    if (HeaderMatches(request_->extra_headers, special_header.search)) {
-      effective_load_flags_ |= special_header.load_flag;
-      special_headers = true;
-      break;
-    }
-  }
-
   // Check for conditionalization headers which may correspond with a
   // cache validation request.
   for (size_t i = 0; i < std::size(kValidationHeaders); ++i) {
@@ -2673,7 +2597,8 @@ void HttpCache::Transaction::SetRequest(const NetLogWithSource& net_log) {
     }
   }
 
-  if (range_found || special_headers || external_validation_.initialized) {
+  if (range_found || load_flags_for_extra_headers ||
+      external_validation_.initialized) {
     // Log the headers before request_ is modified.
     std::string empty;
     NetLogRequestHeaders(net_log_,
