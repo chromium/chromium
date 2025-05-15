@@ -61,17 +61,16 @@ def _FindGNFromBinaryDir(binary_dir):
     return None
 
 
-def _BinaryDirTargetOS(binary_dir):
-    """Returns the apparent target OS of binary_dir, or None if none appear to
-    be explicitly specified."""
+def _GetGNArgument(argument_name, binary_dir):
+    """Returns the value of a given GN argument, or None if it is not
+    explicitly specified."""
 
     gn_path = _FindGNFromBinaryDir(binary_dir)
-
     if gn_path:
         # Look for a GN “target_os”.
         popen = subprocess.Popen([
             gn_path, '--root=' + CRASHPAD_DIR, 'args', binary_dir,
-            '--list=target_os', '--short'
+            '--list=%s' % argument_name, '--short'
         ],
                                  shell=IS_WINDOWS_HOST,
                                  stdout=subprocess.PIPE,
@@ -79,22 +78,9 @@ def _BinaryDirTargetOS(binary_dir):
                                  text=True)
         value = popen.communicate()[0]
         if popen.returncode == 0:
-            match = re.match(r'target_os = "(.*)"$', value)
+            match = re.match(r'%s = "(.*)"$' % argument_name, value)
             if match:
                 return match.group(1)
-
-    # For GYP with Ninja, look for the appearance of “linux-android” in the path
-    # to ar. This path is configured by gyp_crashpad_android.py.
-    build_ninja_path = os.path.join(binary_dir, 'build.ninja')
-    if os.path.exists(build_ninja_path):
-        with open(build_ninja_path) as build_ninja_file:
-            build_ninja_content = build_ninja_file.read()
-            match = re.search(r'-linux-android(eabi)?-ar$',
-                              build_ninja_content,
-                              flags=re.MULTILINE)
-            if match:
-                return 'android'
-
     return None
 
 
@@ -313,8 +299,31 @@ def _RunOnAndroidTarget(binary_dir, test, android_device, extra_command_line):
         _adb_shell(['rm', '-rf', device_temp_dir])
 
 
-def _RunOnIOSTarget(binary_dir, test, is_xcuitest=False, gtest_filter=None):
+def _RunOnIOSTarget(binary_dir,
+                    test,
+                    target_platform,
+                    is_xcuitest=False,
+                    gtest_filter=None):
     """Runs the given iOS |test| app on a simulator with the default OS version."""
+
+    target_platform = target_platform or 'iphoneos'
+    if target_platform == 'iphoneos':
+        dyld_insert_libraries = (
+            '__PLATFORMS__/iPhoneSimulator.platform/Developer/usr/lib/'
+            'libXCTestBundleInject.dylib')
+        xcodebuild_platform = 'iOS Simulator'
+        xcodebuild_device_name = 'iPhone 15'
+    elif target_platform == 'tvos':
+        dyld_insert_libraries = (
+            '__PLATFORMS__/AppleTVSimulator.platform/Developer/usr/lib/'
+            'libXCTestBundleInject.dylib')
+        xcodebuild_platform = 'tvOS Simulator'
+        xcodebuild_device_name = 'Apple TV 4K (3rd generation)'
+    else:
+        raise ValueError(f'Unexpected target_platform: {target_platform}')
+
+    # E.g. __TESTROOT__/Debug-iphonesimulator.
+    dyld_framework_path = '__TESTROOT__/%s' % os.path.basename(binary_dir)
 
     def xctest(binary_dir, test, gtest_filter=None):
         """Returns a dict containing the xctestrun data needed to run an
@@ -324,11 +333,9 @@ def _RunOnIOSTarget(binary_dir, test, is_xcuitest=False, gtest_filter=None):
             'TestBundlePath': os.path.join(test_path, test + '_module.xctest'),
             'TestHostPath': os.path.join(test_path, test + '.app'),
             'TestingEnvironmentVariables': {
-                'DYLD_FRAMEWORK_PATH': '__TESTROOT__/Debug-iphonesimulator:',
-                'DYLD_INSERT_LIBRARIES':
-                    ('__PLATFORMS__/iPhoneSimulator.platform/Developer/'
-                     'usr/lib/libXCTestBundleInject.dylib'),
-                'DYLD_LIBRARY_PATH': '__TESTROOT__/Debug-iphonesimulator',
+                'DYLD_FRAMEWORK_PATH': dyld_framework_path + ':',
+                'DYLD_INSERT_LIBRARIES': dyld_insert_libraries,
+                'DYLD_LIBRARY_PATH': dyld_framework_path,
                 'IDEiPhoneInternalTestBundleName': test + '.app',
                 'XCInjectBundleInto': '__TESTHOST__/' + test,
             }
@@ -359,11 +366,9 @@ def _RunOnIOSTarget(binary_dir, test, is_xcuitest=False, gtest_filter=None):
                 bundle_path, runner_path, target_app_path
             ],
             'TestingEnvironmentVariables': {
-                'DYLD_FRAMEWORK_PATH': '__TESTROOT__/Debug-iphonesimulator:',
-                'DYLD_INSERT_LIBRARIES':
-                    ('__PLATFORMS__/iPhoneSimulator.platform/Developer/'
-                     'usr/lib/libXCTestBundleInject.dylib'),
-                'DYLD_LIBRARY_PATH': '__TESTROOT__/Debug-iphonesimulator',
+                'DYLD_FRAMEWORK_PATH': dyld_framework_path + ':',
+                'DYLD_INSERT_LIBRARIES': dyld_insert_libraries,
+                'DYLD_LIBRARY_PATH': dyld_framework_path,
                 'XCInjectBundleInto': '__TESTHOST__/' + test + '_module-Runner',
             },
         }
@@ -380,7 +385,7 @@ def _RunOnIOSTarget(binary_dir, test, is_xcuitest=False, gtest_filter=None):
             '-xctestrun',
             xctestrun_path,
             '-destination',
-            'platform=iOS Simulator,name=iPhone 15',
+            f'platform={xcodebuild_platform},name={xcodebuild_device_name}',
         ]
         with open(xctestrun_path, 'wb') as fp:
             if is_xcuitest:
@@ -416,9 +421,11 @@ def main(args):
         if os.path.isdir(binary_dir_32):
             os.environ['CRASHPAD_TEST_32_BIT_OUTPUT'] = binary_dir_32
 
-    target_os = _BinaryDirTargetOS(args.binary_dir)
+    target_os = _GetGNArgument('target_os', args.binary_dir)
     is_android = target_os == 'android'
     is_ios = target_os == 'ios'
+    # |target_platform| is only set for iOS-based platforms.
+    target_platform = _GetGNArgument('target_platform', args.binary_dir)
 
     tests = [
         'crashpad_client_test',
@@ -480,6 +487,7 @@ def main(args):
             elif is_ios:
                 _RunOnIOSTarget(args.binary_dir,
                                 test,
+                                target_platform,
                                 is_xcuitest=test.startswith('ios'),
                                 gtest_filter=args.gtest_filter)
             else:
