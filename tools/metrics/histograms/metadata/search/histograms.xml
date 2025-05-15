@@ -288,6 +288,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.AuxiliarySearch.TimeToCreateControllerInCustomTab"
+    units="ms" expires_after="2025-11-15">
+  <owner>hanxi@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the time from CustomTabActivity is created until the
+    AuxiliarySearchController is created in the deferred startup. The histogram
+    is logged when the AuxiliarySearchController is created in the
+    CustomTabActivity. Android-only.
+  </summary>
+</histogram>
+
 <histogram name="Search.AuxiliarySearch.TopSites.ExpirationDuration" units="ms"
     expires_after="2025-09-15">
   <owner>hanxi@chromium.org</owner>

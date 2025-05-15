@@ -14,8 +14,6 @@ import static org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchMetric
 import android.content.Intent;
 import android.text.TextUtils;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -29,7 +27,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 public class AuxiliarySearchMetricsUnitTest {
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE})
     public void testRecordDonationCount() {
         int[] counts = new int[AuxiliarySearchEntryType.MAX_VALUE + 1];
@@ -48,7 +45,6 @@ public class AuxiliarySearchMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetEntryTypeString() {
         assertTrue(
                 TextUtils.equals(
@@ -67,7 +63,6 @@ public class AuxiliarySearchMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testMaybeRecordExternalAppClickInfo() {
         int position = 3;
         Intent intent = new Intent();
@@ -101,7 +96,6 @@ public class AuxiliarySearchMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testMaybeRecordExternalAppClickInfo_Failed() {
         int position = 3;
         Intent intent = new Intent();
@@ -126,5 +120,19 @@ public class AuxiliarySearchMetricsUnitTest {
         // Verifies a successful case.
         intent.putExtra(CLICKED_ENTRY_POSITION, position);
         assertTrue(AuxiliarySearchMetrics.maybeRecordExternalAppClickInfo(externalAppName, intent));
+    }
+
+    @Test
+    public void testRecordTimeToCreateControllerInCustomTab() {
+        long timeToCreateControllerMs = 1000L;
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Search.AuxiliarySearch.TimeToCreateControllerInCustomTab",
+                                (int) timeToCreateControllerMs)
+                        .build();
+
+        AuxiliarySearchMetrics.recordTimeToCreateControllerInCustomTab(timeToCreateControllerMs);
+        histogramWatcher.assertExpected();
     }
 }
