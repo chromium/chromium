@@ -11236,13 +11236,15 @@
                     "name": "Enabled_NVS_Omnibox_Prefetch",
                     "enable_features": [
                         "HttpCacheNoVarySearch",
+                        "LogDuplicateRequests",
                         "SearchPrefetchWithNoVarySearchDiskCache"
                     ]
                 },
                 {
                     "name": "Enabled_NVS_HttpCache_Only",
                     "enable_features": [
-                        "HttpCacheNoVarySearch"
+                        "HttpCacheNoVarySearch",
+                        "LogDuplicateRequests"
                     ]
                 }
             ]
