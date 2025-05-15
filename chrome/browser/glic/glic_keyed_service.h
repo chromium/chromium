@@ -267,7 +267,6 @@ class GlicKeyedService : public KeyedService {
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 
   // Unowned
-  raw_ptr<GlicProfileManager> glic_profile_manager_;
   raw_ptr<contextual_cueing::ContextualCueingService>
       contextual_cueing_service_;
 

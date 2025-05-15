@@ -100,6 +100,10 @@ void GlobalFeatures::Shutdown() {
     glic_background_mode_manager_->Shutdown();
     glic_background_mode_manager_.reset();
   }
+  if (glic_profile_manager_) {
+    glic_profile_manager_->Shutdown();
+    glic_profile_manager_.reset();
+  }
   synthetic_trial_manager_.reset();
 #endif
 }

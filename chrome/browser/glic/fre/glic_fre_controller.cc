@@ -224,8 +224,11 @@ void GlicFreController::DismissFre() {
   source_browser_ = nullptr;
   if (fre_view_ || fre_widget_) {
     auto* service = GlicKeyedServiceFactory::GetGlicKeyedService(profile_);
-    glic::GlicProfileManager::GetInstance()->OnUnloadingClientForService(
-        service);
+    glic::GlicProfileManager* glic_profile_manager =
+        glic::GlicProfileManager::GetInstance();
+    if (glic_profile_manager) {
+      glic_profile_manager->OnUnloadingClientForService(service);
+    }
   }
   if (fre_widget_) {
     fre_widget_.reset();

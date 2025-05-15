@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 class Profile;
@@ -19,10 +20,10 @@ namespace glic {
 // GlicProfileManager is a GlobalFeature that manages multi-profile Glic state.
 // Among other things it is used for determining which profile to launch from an
 // OS Entry point and ensuring that just one panel is shown across all profiles.
-class GlicProfileManager {
+class GlicProfileManager : public ProfileManagerObserver {
  public:
   GlicProfileManager();
-  ~GlicProfileManager();
+  ~GlicProfileManager() override;
 
   class Observer : public base::CheckedObserver {
    public:
@@ -44,6 +45,9 @@ class GlicProfileManager {
 
   // Called by GlicKeyedService.
   void OnServiceShutdown(GlicKeyedService* glic);
+
+  // Called by GlobalFeatures.
+  void Shutdown();
 
   // Called when the web client for the GlicWindowController or the FRE
   // controller will be torn down.
@@ -78,6 +82,9 @@ class GlicProfileManager {
   void RemoveObserver(Observer* observer);
 
   bool IsShowing() const;
+
+  // ProfileManagerObserver:
+  void OnProfileMarkedForPermanentDeletion(Profile* profile) override;
 
   // Static in order to permit setting forced values before the manager is
   // constructed.

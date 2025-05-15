@@ -34,6 +34,7 @@
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_controller_impl.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -94,7 +95,6 @@ GlicKeyedService::GlicKeyedService(
       auth_controller_(std::make_unique<AuthController>(profile,
                                                         identity_manager,
                                                         /*use_for_fre=*/false)),
-      glic_profile_manager_(glic_profile_manager),
       contextual_cueing_service_(contextual_cueing_service) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
   host_->Initialize(window_controller_.get());
@@ -123,7 +123,7 @@ GlicKeyedService::GlicKeyedService(
   }
 
   // This is only used by automation for tests.
-  glic_profile_manager_->MaybeAutoOpenGlicPanel();
+  glic_profile_manager->MaybeAutoOpenGlicPanel();
 }
 
 GlicKeyedService::~GlicKeyedService() {
@@ -138,7 +138,10 @@ GlicKeyedService* GlicKeyedService::Get(content::BrowserContext* context) {
 
 void GlicKeyedService::Shutdown() {
   CloseUI();
-  glic_profile_manager_->OnServiceShutdown(this);
+  GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
+  if (glic_profile_manager) {
+    glic_profile_manager->OnServiceShutdown(this);
+  }
 }
 
 void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
@@ -149,7 +152,10 @@ void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
   // this method should already have been removed.
   CHECK(GlicEnabling::IsEnabledForProfile(profile_));
 
-  glic_profile_manager_->SetActiveGlic(this);
+  GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
+  if (glic_profile_manager) {
+    glic_profile_manager->SetActiveGlic(this);
+  }
   window_controller_->Toggle(bwi, prevent_close, source);
 }
 
@@ -159,7 +165,10 @@ void GlicKeyedService::OpenFreDialogInNewTab(BrowserWindowInterface* bwi) {
   // this method should already have been removed.
   CHECK(GlicEnabling::IsEnabledForProfile(profile_));
 
-  glic_profile_manager_->SetActiveGlic(this);
+  GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
+  if (glic_profile_manager) {
+    glic_profile_manager->SetActiveGlic(this);
+  }
   window_controller_->fre_controller()->OpenFreDialogInNewTab(bwi);
 }
 
@@ -415,14 +424,15 @@ bool GlicKeyedService::IsContextAccessIndicatorShown(
 }
 
 void GlicKeyedService::TryPreload() {
-  CHECK(glic_profile_manager_);
+  GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
+  CHECK(glic_profile_manager);
   base::TimeDelta delay = GetWarmingDelay();
 
   // TODO(b/411100559): Ideally we'd use post delayed task in all cases,
   // but this requires a refactor of tests that are currently brittle. For now,
   // just synchronously call ShouldPreloadForProfile if there is no delay.
   if (delay.is_zero()) {
-    glic_profile_manager_->ShouldPreloadForProfile(
+    glic_profile_manager->ShouldPreloadForProfile(
         profile_,
         base::BindOnce(&GlicKeyedService::FinishPreload, GetWeakPtr()));
   } else {
@@ -430,16 +440,17 @@ void GlicKeyedService::TryPreload() {
         FROM_HERE,
         base::BindOnce(
             &GlicProfileManager::ShouldPreloadForProfile,
-            glic_profile_manager_->GetWeakPtr(), profile_,
+            glic_profile_manager->GetWeakPtr(), profile_,
             base::BindOnce(&GlicKeyedService::FinishPreload, GetWeakPtr())),
         delay);
   }
 }
 
 void GlicKeyedService::TryPreloadFre() {
-  CHECK(glic_profile_manager_);
+  GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
+  CHECK(glic_profile_manager);
 
-  glic_profile_manager_->ShouldPreloadFreForProfile(
+  glic_profile_manager->ShouldPreloadFreForProfile(
       profile_,
       base::BindOnce(&GlicKeyedService::FinishPreloadFre, GetWeakPtr()));
 }

@@ -65,7 +65,12 @@ GlicProfileManager* GlicProfileManager::GetInstance() {
   return g_browser_process->GetFeatures()->glic_profile_manager();
 }
 
-GlicProfileManager::GlicProfileManager() = default;
+GlicProfileManager::GlicProfileManager() {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  if (profile_manager) {
+    profile_manager->AddObserver(this);
+  }
+}
 
 GlicProfileManager::~GlicProfileManager() = default;
 
@@ -122,6 +127,10 @@ void GlicProfileManager::OnServiceShutdown(GlicKeyedService* glic) {
   if (last_active_glic_ && last_active_glic_.get() == glic) {
     SetActiveGlic(nullptr);
   }
+}
+
+void GlicProfileManager::Shutdown() {
+  g_browser_process->profile_manager()->RemoveObserver(this);
 }
 
 void GlicProfileManager::OnLoadingClientForService(GlicKeyedService* glic) {
@@ -236,6 +245,15 @@ bool GlicProfileManager::IsShowing() const {
     return false;
   }
   return last_active_glic_->window_controller().IsPanelOrFreShowing();
+}
+
+void GlicProfileManager::OnProfileMarkedForPermanentDeletion(Profile* profile) {
+  GlicKeyedService* glic_keyed_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+  if (!glic_keyed_service) {
+    return;
+  }
+  glic_keyed_service->Shutdown();
 }
 
 // static

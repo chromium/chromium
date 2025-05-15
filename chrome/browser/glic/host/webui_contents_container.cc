@@ -39,9 +39,13 @@ WebUIContentsContainer::WebUIContentsContainer(
 
 WebUIContentsContainer::~WebUIContentsContainer() {
   web_contents_->ClosePage();
+  GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
+  if (!glic_profile_manager) {
+    return;
+  }
   auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
       glic_window_controller_->profile());
-  GlicProfileManager::GetInstance()->OnUnloadingClientForService(glic_service);
+  glic_profile_manager->OnUnloadingClientForService(glic_service);
 }
 
 bool WebUIContentsContainer::HandleKeyboardEvent(

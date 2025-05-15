@@ -12,6 +12,7 @@
 #include "build/buildflag.h"
 #include "chrome/browser/background/glic/glic_controller.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -23,6 +24,8 @@
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -443,6 +446,33 @@ class GlicWindowControllerWithPreviousPostionUiTest
     test::InteractiveGlicTest::SetUpBrowserContextKeyedServices(context);
   }
 };
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, PermanentlyDeleteProfile) {
+  ProfileManager* const profile_manager = g_browser_process->profile_manager();
+  Profile& profile1 = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
+  Browser* const browser1 = CreateBrowser(&profile1);
+  SigninWithPrimaryAccount(&profile1);
+  SetModelExecutionCapability(&profile1, true);
+  GlicKeyedService* const service1 =
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser1->profile());
+  service1->window_controller().fre_controller()->AcceptFre();
+  EXPECT_TRUE(service1->enabling().HasConsented());
+
+  // Open glic
+  g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
+                                               true);
+  service1->ToggleUI(nullptr, false, mojom::InvocationSource::kOsHotkey);
+  EXPECT_TRUE(service1->IsWindowShowing());
+
+  // Delete the second profile
+  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+      browser1->profile()->GetPath(), base::DoNothing(),
+      ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
+  ui_test_utils::WaitForBrowserToClose(browser1);
+
+  EXPECT_FALSE(service1->IsWindowShowing());
+}
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerWithPreviousPostionUiTest,
                        TestInitialBounds) {
