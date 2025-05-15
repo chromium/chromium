@@ -300,14 +300,6 @@ AutocompleteMatch OmniboxEditModelIOS::CurrentMatch(
 bool OmniboxEditModelIOS::ResetDisplayTexts() {
   const std::u16string old_display_text = GetPermanentDisplayText();
   url_for_editing_ = controller_->client()->GetFormattedFullURL();
-#if BUILDFLAG(IS_IOS)
-  // iOS is unusual in that it uses a separate LocationView to show the
-  // LocationBarModel's display-only URL. The actual OmniboxViewBaseIOS widget
-  // is hidden in the defocused state, and always contains the URL for editing.
-  display_text_ = url_for_editing_;
-#else
-  display_text_ = controller_->client()->GetURLForDisplay();
-#endif
   // When there's new permanent text, and the user isn't interacting with the
   // omnibox, we want to revert the edit to show the new text.  We could simply
   // define "interacting" as "the omnibox has focus", but we still allow updates
@@ -323,7 +315,7 @@ bool OmniboxEditModelIOS::ResetDisplayTexts() {
 }
 
 std::u16string OmniboxEditModelIOS::GetPermanentDisplayText() const {
-  return display_text_;
+  return url_for_editing_;
 }
 
 void OmniboxEditModelIOS::SetUserText(const std::u16string& text) {
@@ -332,31 +324,6 @@ void OmniboxEditModelIOS::SetUserText(const std::u16string& text) {
   GetInfoForCurrentText(&current_match_, nullptr);
   paste_state_ = NONE;
   has_temporary_text_ = false;
-}
-
-bool OmniboxEditModelIOS::Unelide() {
-  // Unelision should not occur if the user has already inputted text.
-  if (user_input_in_progress()) {
-    return false;
-  }
-
-  // No need to unelide if we are already displaying the full URL.
-  if (GetText() == controller_->client()->GetFormattedFullURL()) {
-    return false;
-  }
-
-  // Set the user text to the unelided URL, but don't change
-  // `user_input_in_progress_`. This is to save the unelided URL on tab switch.
-  InternalSetUserText(url_for_editing_);
-
-  if (view_) {
-    view_->SetWindowTextAndCaretPos(url_for_editing_, 0, false, false);
-
-    // Select all in reverse to ensure the beginning of the URL is shown.
-    view_->SelectAll(true /* reversed */);
-  }
-
-  return true;
 }
 
 void OmniboxEditModelIOS::OnChanged() {
@@ -404,10 +371,8 @@ void OmniboxEditModelIOS::AdjustTextForCopy(int sel_min,
   }
 
   // If the user has not modified the display text and is copying the whole URL
-  // text (whether it's in the elided or unelided form), copy the omnibox
-  // contents as a hyperlink to the current page.
-  if (!user_input_in_progress_ &&
-      (*text == display_text_ || *text == url_for_editing_)) {
+  // text, copy the omnibox contents as a hyperlink to the current page.
+  if (!user_input_in_progress_ && *text == url_for_editing_) {
     *url_from_text = controller_->client()->GetNavigationEntryURL();
     *write_url = true;
 

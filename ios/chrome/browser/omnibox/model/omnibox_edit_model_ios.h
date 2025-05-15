@@ -103,10 +103,10 @@ class OmniboxEditModelIOS {
   // StartAutocomplete, so that the result is only updated once.
   void UpdateInput(bool has_selected_text, bool prevent_inline_autocomplete);
 
-  // Resets the permanent display texts (display_text_ and url_for_editing_)
-  // to those provided by the controller. Returns true if the display texts
-  // have changed and the change should be immediately user-visible, because
-  // either the user is not editing or the edit does not have focus.
+  // Resets the permanent display texts `url_for_editing_` to those provided by
+  // the controller. Returns true if the display text shave changed and the
+  // change should be immediately user-visible, because either the user is not
+  // editing or the edit does not have focus.
   bool ResetDisplayTexts();
 
   // Returns the permanent display text for the current page and Omnibox state.
@@ -115,14 +115,6 @@ class OmniboxEditModelIOS {
   // Sets the user_text_ to `text`. Also enters user-input-in-progress mode.
   // Virtual for testing.
   virtual void SetUserText(const std::u16string& text);
-
-  // If the omnibox is currently displaying elided text, this method will
-  // restore the full URL into the user text. After unelision, this selects-all,
-  // enters user-input-in-progress mode, and then returns true.
-  //
-  // If the omnibox is not currently displaying elided text, this method will
-  // no-op and return false.
-  bool Unelide();
 
   // Invoked any time the text may have changed in the edit. Notifies the
   // controller.
@@ -425,17 +417,7 @@ class OmniboxEditModelIOS {
 
   OmniboxFocusState focus_state_ = OMNIBOX_FOCUS_NONE;
 
-  // Display-only text representing the current page. This could either:
-  //  - The same as `url_for_editing_` if Steady State Elisions is OFF.
-  //  - A simplified version of `url_for_editing_` with some destructive
-  //    elisions applied. This is the case if Steady State Elisions is ON.
-  //
-  // This should not be considered suitable for editing.
-  std::u16string display_text_;
-
   // The initial text representing the current URL suitable for editing.
-  // This should fully represent the current URL without any meaning-changing
-  // elisions applied - and is suitable for user editing.
   std::u16string url_for_editing_;
 
   // This flag is true when the user has modified the contents of the edit, but
@@ -449,8 +431,6 @@ class OmniboxEditModelIOS {
   // The text that the user has entered.  This does not include inline
   // autocomplete text that has not yet been accepted.  `user_text_` can
   // contain a string without `user_input_in_progress_` being true.
-  // For instance, this is the case when the user has unelided a URL without
-  // modifying its contents.
   std::u16string user_text_;
 
   // Used to know what should be displayed. Updated when e.g. the popup
