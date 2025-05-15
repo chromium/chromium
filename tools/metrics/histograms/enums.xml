@@ -4028,6 +4028,16 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h:FalsePositiveReason) -->
 
+<!-- LINT.IfChange(DisruptiveNotificationRevocationState) -->
+
+<enum name="DisruptiveNotificationRevocationState">
+  <summary>The current state of a disruptive notification revocation.</summary>
+  <int value="1" label="Proposed"/>
+  <int value="2" label="Revoked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h:RevocationState) -->
+
 <enum name="DlcInstallResult">
   <int value="0" label="Success"/>
   <int value="1" label="Internal error"/>

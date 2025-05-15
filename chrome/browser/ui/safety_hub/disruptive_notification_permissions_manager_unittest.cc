@@ -131,13 +131,15 @@ class DisruptiveNotificationPermissionsManagerTest : public ::testing::Test {
     return update_notification_function_called_with_;
   }
 
-  void SetupFalsePositiveRevocation(GURL url, int days_since_revocation) {
+  void SetupFalsePositiveRevocation(GURL url,
+                                    int days_since_revocation,
+                                    RevocationState revocation_state) {
     const int kDailyNotificationCount = 4;
 
     ContentSettingHelper(*hcsm()).PersistRevocationEntry(
         url,
         RevocationEntry{
-            .revocation_state = RevocationState::kProposed,
+            .revocation_state = revocation_state,
             .site_engagement = 0.0,
             .daily_notification_count = kDailyNotificationCount,
             .timestamp = base::Time::Now() - base::Days(days_since_revocation),
@@ -952,11 +954,13 @@ TEST_F(DisruptiveNotificationPermissionsManagerShadowRunTest,
   EXPECT_THAT(GetDisplayNotificationFunctionCalledWith(), IsEmpty());
 }
 
-TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest, FalsePositive) {
+TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
+       ProposedFalsePositive) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL url("https://chrome.test/");
 
-  SetupFalsePositiveRevocation(url, /*days_since_revocation=*/5);
+  SetupFalsePositiveRevocation(url, /*days_since_revocation=*/5,
+                               RevocationState::kProposed);
   site_engagement_service()->ResetBaseScoreForURL(url, 5.0);
 
   ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
@@ -973,6 +977,38 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest, FalsePositive) {
   ukm_recorder.ExpectEntryMetric(entries[0], "DaysSinceRevocation", 5);
   ukm_recorder.ExpectEntryMetric(
       entries[0], "Reason", static_cast<int>(FalsePositiveReason::kPageVisit));
+  ukm_recorder.ExpectEntryMetric(entries[0], "RevocationState",
+                                 static_cast<int>(RevocationState::kProposed));
+  ukm_recorder.ExpectEntryMetric(entries[0], "NewSiteEngagement", 5.0);
+  ukm_recorder.ExpectEntryMetric(entries[0], "OldSiteEngagement", 0.0);
+  ukm_recorder.ExpectEntryMetric(entries[0], "DailyAverageVolume", 4);
+}
+
+TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
+       RevokedFalsePositive) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  GURL url("https://chrome.test/");
+
+  SetupFalsePositiveRevocation(url, /*days_since_revocation=*/5,
+                               RevocationState::kRevoked);
+  site_engagement_service()->ResetBaseScoreForURL(url, 5.0);
+
+  ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
+  ukm_recorder.UpdateSourceURL(source_id, url);
+
+  DisruptiveNotificationPermissionsManager::MaybeReportFalsePositive(
+      profile(), url, FalsePositiveReason::kPageVisit, source_id);
+
+  // Check that the correct metric is reported.
+  auto entries = ukm_recorder.GetEntriesByName(
+      "SafetyHub.DisruptiveNotificationRevocations.FalsePositive");
+  EXPECT_EQ(1u, entries.size());
+  ukm_recorder.ExpectEntrySourceHasUrl(entries[0], url);
+  ukm_recorder.ExpectEntryMetric(entries[0], "DaysSinceRevocation", 5);
+  ukm_recorder.ExpectEntryMetric(
+      entries[0], "Reason", static_cast<int>(FalsePositiveReason::kPageVisit));
+  ukm_recorder.ExpectEntryMetric(entries[0], "RevocationState",
+                                 static_cast<int>(RevocationState::kRevoked));
   ukm_recorder.ExpectEntryMetric(entries[0], "NewSiteEngagement", 5.0);
   ukm_recorder.ExpectEntryMetric(entries[0], "OldSiteEngagement", 0.0);
   ukm_recorder.ExpectEntryMetric(entries[0], "DailyAverageVolume", 4);
@@ -983,7 +1019,8 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL url("https://chrome.test/");
 
-  SetupFalsePositiveRevocation(url, /*days_since_revocation=*/1);
+  SetupFalsePositiveRevocation(url, /*days_since_revocation=*/1,
+                               RevocationState::kProposed);
   site_engagement_service()->ResetBaseScoreForURL(url, 5);
 
   ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
@@ -1003,7 +1040,8 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL url("https://chrome.test/");
 
-  SetupFalsePositiveRevocation(url, /*days_since_revocation=*/13);
+  SetupFalsePositiveRevocation(url, /*days_since_revocation=*/13,
+                               RevocationState::kProposed);
   site_engagement_service()->ResetBaseScoreForURL(url, 5);
 
   ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
@@ -1023,7 +1061,8 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL url("https://chrome.test/");
 
-  SetupFalsePositiveRevocation(url, /*days_since_revocation=*/5);
+  SetupFalsePositiveRevocation(url, /*days_since_revocation=*/5,
+                               RevocationState::kProposed);
   site_engagement_service()->ResetBaseScoreForURL(url, 1);
 
   ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();

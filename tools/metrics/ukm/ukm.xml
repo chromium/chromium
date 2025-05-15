@@ -21075,6 +21075,11 @@ be describing additional metrics about the same event.
       site visit or a notification click.
     </summary>
   </metric>
+  <metric name="RevocationState" enum="DisruptiveNotificationRevocationState">
+    <summary>
+      The revocation state (either proposed or actually revoked).
+    </summary>
+  </metric>
 </event>
 
 <event name="SafetyHub.DisruptiveNotificationRevocations.Proposed">

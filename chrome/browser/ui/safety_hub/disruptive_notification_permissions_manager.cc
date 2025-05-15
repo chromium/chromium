@@ -601,6 +601,7 @@ void DisruptiveNotificationPermissionsManager::MaybeReportFalsePositive(
       source_id)
       .SetDaysSinceRevocation(days_since_proposed_revocation)
       .SetReason(static_cast<int>(reason))
+      .SetRevocationState(static_cast<int>(revocation_entry->revocation_state))
       .SetNewSiteEngagement(new_site_engagement_score)
       .SetOldSiteEngagement(old_site_engagement_score)
       .SetDailyAverageVolume(revocation_entry->daily_notification_count)

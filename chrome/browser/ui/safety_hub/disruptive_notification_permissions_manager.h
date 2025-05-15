@@ -84,6 +84,7 @@ class DisruptiveNotificationPermissionsManager
   };
   // LINT.ThenChange(//tools/metrics/histograms/enums.xml:DisruptiveNotificationFalsePositiveReason)
 
+  // LINT.IfChange(RevocationState)
   enum class RevocationState {
     kNone = 0,
     kProposed = 1,
@@ -92,6 +93,7 @@ class DisruptiveNotificationPermissionsManager
     kUnknown = 4,
     kMaxValue = kUnknown,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:DisruptiveNotificationRevocationState)
 
   class SafetyHubNotificationWrapper {
    public:
