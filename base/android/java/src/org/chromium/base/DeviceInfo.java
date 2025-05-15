@@ -159,7 +159,9 @@ public final class DeviceInfo {
                 Build.VERSION.SDK_INT >= VERSION_CODES.R
                         && pm.hasSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE);
 
-        mIDeviceInfo.isDesktop = pm.hasSystemFeature(PackageManager.FEATURE_PC);
+        mIDeviceInfo.isDesktop =
+                pm.hasSystemFeature(PackageManager.FEATURE_PC)
+                        || CommandLine.getInstance().hasSwitch(BaseSwitches.FORCE_DESKTOP_ANDROID);
 
         int vulkanLevel = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
