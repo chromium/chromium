@@ -577,6 +577,12 @@ void IOSChromeMetricsServiceClient::OnUkmAllowedStateChanged(
   UpdateRunningServices();
 }
 
+void IOSChromeMetricsServiceClient::OnProfileManagerWillBeDestroyed(
+    ProfileManagerIOS* manager) {
+  // Nothing to do, IOSChromeMetricsServiceClient does not keep any profile
+  // alive.
+}
+
 void IOSChromeMetricsServiceClient::OnProfileManagerDestroyed(
     ProfileManagerIOS* manager) {
   profile_manager_observation_.Reset();

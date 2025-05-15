@@ -23,6 +23,11 @@ class ProfileManagerIOS;
 // To get a new instance of ScopedProfileKeepAliveIOS, use the methods
 // LoadProfileAsync(...) or CreateProfileAsync(...) which can be called
 // for an already loaded profile.
+//
+// The ScopedProfileKeepAliveIOS instances must be dropped before the
+// ProfileManagerIOS is destroyed. A good way to ensure this happen is
+// to implement ProfileManagerObserverIOS API and to reset the objects
+// when `OnProfileManagerWillBeDestroyed(...)` is called.
 class ScopedProfileKeepAliveIOS {
  public:
   using Cleanup = base::OnceClosure;

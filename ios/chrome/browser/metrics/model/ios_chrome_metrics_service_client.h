@@ -113,6 +113,7 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   void OnUkmAllowedStateChanged(bool must_purge, ukm::UkmConsentState) override;
 
   // ProfileManagerObserverIOS:
+  void OnProfileManagerWillBeDestroyed(ProfileManagerIOS* manager) override;
   void OnProfileManagerDestroyed(ProfileManagerIOS* manager) override;
   void OnProfileCreated(ProfileManagerIOS* manager,
                         ProfileIOS* profile) override;

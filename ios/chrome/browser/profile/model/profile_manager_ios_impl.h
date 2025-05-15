@@ -44,6 +44,7 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
   ~ProfileManagerIOSImpl() override;
 
   // ProfileManagerIOS:
+  void PrepareForDestruction() override;
   void AddObserver(ProfileManagerObserverIOS* observer) override;
   void RemoveObserver(ProfileManagerObserverIOS* observer) override;
   ProfileIOS* GetProfileWithName(std::string_view name) override;
@@ -58,8 +59,6 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
   bool CreateProfileAsync(std::string_view name,
                           ProfileLoadedCallback initialized_callback,
                           ProfileLoadedCallback created_callback) override;
-  void UnloadProfile(std::string_view name) override;
-  void UnloadAllProfiles() override;
   void MarkProfileForDeletion(std::string_view name) override;
   bool IsProfileMarkedForDeletion(std::string_view name) const override;
   void PurgeProfilesMarkedForDeletion(base::OnceClosure callback) override;
@@ -108,6 +107,10 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
   // the profile could not be loaded).
   ScopedProfileKeepAliveIOS CreateScopedProfileKeepAlive(ProfileInfo* info);
 
+  // Called when a ScopedProfileKeepAliveIOS is destroyed. Will unload the
+  // profile if no other ScopedProfileKeepAliveIOS reference it.
+  void MaybeUnloadProfile(std::string_view name);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The PrefService storing the local state.
@@ -127,6 +130,10 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
 
   // The list of registered observers.
   base::ObserverList<ProfileManagerObserverIOS, true> observers_;
+
+  // Record whether the manager will soon be destroyed and loading
+  // profile is now forbidden.
+  bool will_be_destroyed_ = false;
 
   // Factory for weak pointers.
   base::WeakPtrFactory<ProfileManagerIOSImpl> weak_ptr_factory_{this};

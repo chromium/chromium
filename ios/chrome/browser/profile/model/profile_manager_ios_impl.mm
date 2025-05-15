@@ -125,10 +125,25 @@ class ProfileManagerIOSImpl::ProfileInfo {
     return std::exchange(callbacks_, {});
   }
 
+  // Increment the keep alive counter and return its value.
+  uint32_t IncrementKeepAliveCounter() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK_LT(keep_alive_counter_, std::numeric_limits<uint32_t>::max());
+    return ++keep_alive_counter_;
+  }
+
+  // Decrement the keep alive counter and return its value.
+  uint32_t DecrementKeepAliveCounter() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK_GT(keep_alive_counter_, 0u);
+    return --keep_alive_counter_;
+  }
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
   std::unique_ptr<ProfileIOS> profile_;
   std::vector<ProfileLoadedCallback> callbacks_;
+  uint32_t keep_alive_counter_ = 1;
   bool is_loaded_ = false;
 };
 
@@ -160,9 +175,30 @@ ProfileManagerIOSImpl::ProfileManagerIOSImpl(PrefService* local_state,
 
 ProfileManagerIOSImpl::~ProfileManagerIOSImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(will_be_destroyed_);
   for (auto& observer : observers_) {
     observer.OnProfileManagerDestroyed(this);
   }
+}
+
+void ProfileManagerIOSImpl::PrepareForDestruction() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  will_be_destroyed_ = true;
+  for (auto& observer : observers_) {
+    observer.OnProfileManagerWillBeDestroyed(this);
+  }
+
+  // If a profile has not been fully loaded, then the ProfileManagerIOSImpl
+  // will have kept an implicit reference (via the keep alive counter being
+  // initialized to 1). This should only be the case for profiles still in
+  // the loading stage. Unload them now.
+  while (!profiles_map_.empty()) {
+    auto iter = profiles_map_.begin();
+    CHECK(!iter->second.is_loaded());
+    MaybeUnloadProfile(iter->first);
+  }
+
+  CHECK(profiles_map_.empty());
 }
 
 void ProfileManagerIOSImpl::AddObserver(ProfileManagerObserverIOS* observer) {
@@ -268,56 +304,6 @@ bool ProfileManagerIOSImpl::CreateProfileAsync(
                              std::move(created_callback));
 }
 
-void ProfileManagerIOSImpl::UnloadProfile(std::string_view name) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // If the profile is not loaded, nor loading, return.
-  auto iter = profiles_map_.find(name);
-  if (iter == profiles_map_.end()) {
-    return;
-  }
-
-  // Use std::map::extract(...) to take ownership of the node after
-  // removing it from the map. Do not use `name` from this point as
-  // it may be invalidated by the removal -- e.g. UnloadAllProfiles
-  // pass a reference to the key as a parameter. Using the node key
-  // is fine though.
-  auto node = profiles_map_.extract(iter);
-  ProfileInfo& info = node.mapped();
-
-  // If the profile is still loading, pretend that the loading failed
-  // by calling the ProfileLoadedCallbacks with nullptr.
-  if (!info.is_loaded()) {
-    for (auto& callback : info.TakeCallbacks()) {
-      std::move(callback).Run(CreateScopedProfileKeepAlive(nullptr));
-    }
-  } else {
-    // If profile is loaded, notify all observers that it is unloaded.
-    ProfileIOS* profile = info.profile();
-    for (auto& observer : observers_) {
-      observer.OnProfileUnloaded(this, profile);
-    }
-  }
-
-  // If the profile has been marked for deletion, then try to delete it
-  // after notifying all observers that it has been unloaded.
-  if (IsProfileMarkedForDeletion(node.key())) {
-    profile_deleter_.DeleteProfile(
-        node.key(), profile_data_dir_,
-        base::BindOnce(&ProfileManagerIOSImpl::OnProfileDeletionComplete,
-                       weak_ptr_factory_.GetWeakPtr(), base::DoNothing(),
-                       std::string(node.key())));
-  }
-}
-
-void ProfileManagerIOSImpl::UnloadAllProfiles() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  while (!profiles_map_.empty()) {
-    const std::string& name = profiles_map_.begin()->first;
-    UnloadProfile(name);
-  }
-}
-
 void ProfileManagerIOSImpl::MarkProfileForDeletion(std::string_view name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(CanDeleteProfileWithName(name));
@@ -415,9 +401,8 @@ void ProfileManagerIOSImpl::OnProfileCreationFinished(
   const std::string& name = profile->GetProfileName();
   auto iter = profiles_map_.find(name);
   DCHECK(iter != profiles_map_.end());
-
-  ProfileInfo* profile_info = &(iter->second);
-  auto callbacks = profile_info->TakeCallbacks();
+  ProfileInfo& profile_info = iter->second;
+  auto callbacks = profile_info.TakeCallbacks();
 
   // Update the ProfileAttributesStorageIOS before notifying the observers
   // and callbacks of the success or failure of the operation.
@@ -432,34 +417,18 @@ void ProfileManagerIOSImpl::OnProfileCreationFinished(
     }
   }
 
-  // If the profile is marked for deletion, then try to delete it and
-  // return (the callback would have been called with nullptr when it
-  // was marked for deletion, so there is no need to call them again).
-  if (IsProfileMarkedForDeletion(name)) {
-    ProfileInfo profile_info_copy = std::move(*profile_info);
-    profiles_map_.erase(iter);
-    profile_info = nullptr;
-
-    profile_deleter_.DeleteProfile(
-        name, profile_data_dir_,
-        base::BindOnce(&ProfileManagerIOSImpl::OnProfileDeletionComplete,
-                       weak_ptr_factory_.GetWeakPtr(), base::DoNothing(),
-                       name));
-    return;
-  }
-
-  if (success) {
+  // If the profile is marked for deletion, consider the load as failed
+  // even in case of success.
+  if (success && !IsProfileMarkedForDeletion(name)) {
     DoFinalInit(profile);
     iter->second.SetIsLoaded();
   } else {
     profile = nullptr;
-    profile_info = nullptr;
-    profiles_map_.erase(iter);
   }
 
   // Invoke the callbacks, if the load failed, `profile` will be null.
   for (auto& callback : callbacks) {
-    std::move(callback).Run(CreateScopedProfileKeepAlive(profile_info));
+    std::move(callback).Run(CreateScopedProfileKeepAlive(&profile_info));
   }
 
   // Notify the observers after invoking the callbacks in case of success.
@@ -469,6 +438,12 @@ void ProfileManagerIOSImpl::OnProfileCreationFinished(
       observer.OnProfileLoaded(this, profile);
     }
   }
+
+  // The ProfileInfo is initialized with a keep alive counter of 1.
+  // Decrement the counter now that the load has completed (this will
+  // unload the profile unless one of the invoked callback stored the
+  // ScopedProfileKeepAliveIOS object).
+  MaybeUnloadProfile(name);
 }
 
 bool ProfileManagerIOSImpl::CreateOrLoadProfile(
@@ -477,19 +452,20 @@ bool ProfileManagerIOSImpl::CreateOrLoadProfile(
     ProfileLoadedCallback initialized_callback,
     ProfileLoadedCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  bool inserted = false;
-  bool existing = HasProfileWithName(name);
-
   // Profile creation is forbiden for profiles that have been marked for
   // deletion. Fail even if the profile is already loaded, to avoid new
   // usages after the deletion.
-  if (IsProfileMarkedForDeletion(name)) {
+  if (will_be_destroyed_ || IsProfileMarkedForDeletion(name)) {
     if (!initialized_callback.is_null()) {
       std::move(initialized_callback)
           .Run(CreateScopedProfileKeepAlive(nullptr));
     }
     return false;
   }
+
+  // Need to track whether the profile is already reserved, and/or loaded.
+  bool inserted = false;
+  bool existing = HasProfileWithName(name);
 
   // As the name may have been registered with ProfileAttributesStorageIOS,
   // a profile is considered as a new profile if the storage does not know
@@ -600,7 +576,60 @@ void ProfileManagerIOSImpl::OnProfileDeletionComplete(
 ScopedProfileKeepAliveIOS ProfileManagerIOSImpl::CreateScopedProfileKeepAlive(
     ProfileInfo* info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!info || info->profile());
-  ProfileIOS* profile = info ? info->profile() : nullptr;
-  return ScopedProfileKeepAliveIOS(CreatePassKey(), profile, {});
+
+  //  If the info is null or the current instance is being destroyed, then
+  // the ScopedProfileKeepAlive is a no-op.
+  if (!info || will_be_destroyed_) {
+    return ScopedProfileKeepAliveIOS(CreatePassKey(), nullptr, {});
+  }
+
+  ProfileIOS* profile = info->profile();
+  CHECK(info->profile());
+
+  info->IncrementKeepAliveCounter();
+  return ScopedProfileKeepAliveIOS(
+      CreatePassKey(), profile,
+      base::BindOnce(&ProfileManagerIOSImpl::MaybeUnloadProfile,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     profile->GetProfileName()));
+}
+
+void ProfileManagerIOSImpl::MaybeUnloadProfile(std::string_view name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto iter = profiles_map_.find(name);
+  CHECK(iter != profiles_map_.end());
+
+  // If there are other ScopedProfileKeepAliveIOS referencing this profile,
+  // then return as there is nothing more to do.
+  if (iter->second.DecrementKeepAliveCounter() > 0u) {
+    return;
+  }
+
+  // Extract the profile from the storage before notifying the observers.
+  auto node = profiles_map_.extract(iter);
+  ProfileInfo& info = node.mapped();
+
+  // If the profile is still loading, pretend that the loading failed
+  // by calling the ProfileLoadedCallbacks with nullptr.
+  if (!info.is_loaded()) {
+    for (auto& callback : info.TakeCallbacks()) {
+      std::move(callback).Run(CreateScopedProfileKeepAlive(nullptr));
+    }
+  } else {
+    // If profile is loaded, notify all observers that it is unloaded.
+    ProfileIOS* profile = info.profile();
+    for (auto& observer : observers_) {
+      observer.OnProfileUnloaded(this, profile);
+    }
+  }
+
+  // If the profile has been marked for deletion, then try to delete it
+  // after notifying all observers that it has been unloaded.
+  if (IsProfileMarkedForDeletion(node.key())) {
+    profile_deleter_.DeleteProfile(
+        node.key(), profile_data_dir_,
+        base::BindOnce(&ProfileManagerIOSImpl::OnProfileDeletionComplete,
+                       weak_ptr_factory_.GetWeakPtr(), base::DoNothing(),
+                       node.key()));
+  }
 }

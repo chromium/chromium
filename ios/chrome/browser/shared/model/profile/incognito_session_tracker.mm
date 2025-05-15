@@ -187,6 +187,12 @@ base::CallbackListSubscription IncognitoSessionTracker::RegisterCallback(
   return callbacks_.Add(std::move(callback));
 }
 
+void IncognitoSessionTracker::OnProfileManagerWillBeDestroyed(
+    ProfileManagerIOS* manager) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Nothing to do, IncognitoSessionTracker does not keep any profile alive.
+}
+
 void IncognitoSessionTracker::OnProfileManagerDestroyed(
     ProfileManagerIOS* manager) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

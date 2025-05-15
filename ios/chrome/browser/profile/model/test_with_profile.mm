@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/profile/model/test_with_profile.h"
 
+#import "base/check_op.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
@@ -98,10 +99,11 @@ TestWithProfile::~TestWithProfile() {
   optimization_guide::IOSChromePredictionModelStore::GetInstance()
       ->ResetForTesting();
 
-  // The profiles must be unloaded before the AccountProfileMapper gets
-  // unregistered from the ApplicationContext, because keyed services may
-  // depend on the AccountProfileMapper.
-  profile_manager_.UnloadAllProfiles();
+  // The profiles must have been unloaded by this point. This is because
+  // their KeyedService may depends on the AccountProfileMapper when the
+  // AccountProfileMapper depends on the ProfileManagerIOS.
+  profile_manager_.PrepareForDestruction();
+  CHECK_EQ(profile_manager_.GetLoadedProfiles().size(), 0u);
 
   application_context->GetBrowserPolicyConnector()->Shutdown();
   application_context->GetIOSChromeIOThread()->NetworkTearDown();

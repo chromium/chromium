@@ -13,6 +13,13 @@ class ProfileManagerIOS;
 // An observer that can be registered with a ProfileManagerIOS.
 class ProfileManagerObserverIOS : public base::CheckedObserver {
  public:
+  // Called before the ProfileManagerIOS is destroyed. The observer must
+  // drop any ScopedProfileKeepAliveIOS that it owns (or propagates the
+  // event if the ScopedProfileKeepAliveIOS is owned indirectly). The
+  // application will terminate if any ScopedProfileKeepAliveIOS is not
+  // destroyed after this method is called.
+  virtual void OnProfileManagerWillBeDestroyed(ProfileManagerIOS* manager) = 0;
+
   // Called when the ProfileManagerIOS is destroyed. The observer must
   // unregister itself. This is called as part of the shutdown of the
   // application.

@@ -201,6 +201,8 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
   }
   ~FakeProfileManagerIOS() override = default;
 
+  void PrepareForDestruction() override { NOTREACHED(); }
+
   void AddObserver(ProfileManagerObserverIOS* observer) override {
     NOTREACHED();
   }
@@ -277,9 +279,6 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
     }
     return true;
   }
-
-  void UnloadProfile(std::string_view name) override { NOTREACHED(); }
-  void UnloadAllProfiles() override { NOTREACHED(); }
 
   void MarkProfileForDeletion(std::string_view name) override {
     DCHECK(CanDeleteProfileWithName(name));

@@ -40,6 +40,7 @@ class IncognitoSessionTracker final : public ProfileManagerObserverIOS {
       SessionStateChangedCallback callback);
 
   // ProfileManagerObserverIOS:
+  void OnProfileManagerWillBeDestroyed(ProfileManagerIOS* manager) override;
   void OnProfileManagerDestroyed(ProfileManagerIOS* manager) override;
   void OnProfileCreated(ProfileManagerIOS* manager,
                         ProfileIOS* profile) override;

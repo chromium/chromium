@@ -33,6 +33,10 @@ class ProfileManagerIOS {
 
   virtual ~ProfileManagerIOS() {}
 
+  // Informs the ProfileManager that it will be destroyed and should ensure
+  // that all profiles are unloaded.
+  virtual void PrepareForDestruction() = 0;
+
   // Registers/unregisters observers.
   virtual void AddObserver(ProfileManagerObserverIOS* observer) = 0;
   virtual void RemoveObserver(ProfileManagerObserverIOS* observer) = 0;
@@ -93,13 +97,6 @@ class ProfileManagerIOS {
       std::string_view name,
       ProfileLoadedCallback initialized_callback,
       ProfileLoadedCallback created_callback = {}) = 0;
-
-  // Unloads the given loaded Profile objects, if loaded.
-  virtual void UnloadProfile(std::string_view name) = 0;
-
-  // Unloads all loaded Profile objects. Meant to be called right before the
-  // ProfileManagerIOS itself is destroyed.
-  virtual void UnloadAllProfiles() = 0;
 
   // Marks the given Profile for deletion. This must not be called if the
   // profile can not be deleted (for example, personal profile cannot be

@@ -31,6 +31,7 @@ class TestProfileManagerIOS : public ProfileManagerIOS {
   ~TestProfileManagerIOS() override;
 
   // ProfileManagerIOS:
+  void PrepareForDestruction() override;
   void AddObserver(ProfileManagerObserverIOS* observer) override;
   void RemoveObserver(ProfileManagerObserverIOS* observer) override;
   ProfileIOS* GetProfileWithName(std::string_view name) override;
@@ -45,8 +46,6 @@ class TestProfileManagerIOS : public ProfileManagerIOS {
   bool CreateProfileAsync(std::string_view name,
                           ProfileLoadedCallback initialized_callback,
                           ProfileLoadedCallback created_callback) override;
-  void UnloadProfile(std::string_view name) override;
-  void UnloadAllProfiles() override;
   void MarkProfileForDeletion(std::string_view name) override;
   bool IsProfileMarkedForDeletion(std::string_view name) const override;
   void PurgeProfilesMarkedForDeletion(base::OnceClosure callback) override;

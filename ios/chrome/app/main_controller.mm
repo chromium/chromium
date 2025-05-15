@@ -995,7 +995,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 - (void)profileState:(ProfileState*)profileState
     sceneDisconnected:(SceneState*)sceneState {
   if (profileState.connectedScenes.count == 0) {
-    [self scheduleUnloadUnusedProfiles];
+    [self scheduleDropUnusedProfileControllers];
   }
 }
 
@@ -1755,12 +1755,12 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
       manager->GetProfileAttributesStorage()->GetPersonalProfileName();
   DCHECK_GT(personalProfile.size(), 0u);
 
-  // Mark the profile for deletion, and then if there is no UI elements
-  // attached, immediately request it to be unloaded.
+  // Mark the profile for deletion. If there is no UI attached for the
+  // profile, there is nothing else to do (it may be loaded by another
+  // part of the code, and will be unloaded when no longer used).
   manager->MarkProfileForDeletion(profileName);
   auto iter = _profileControllers.find(profileName);
   if (iter == _profileControllers.end()) {
-    manager->UnloadProfile(profileName);
     return;
   }
 
@@ -1768,11 +1768,11 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   NSArray<SceneState*>* scenes = controller.state.connectedScenes;
 
   // If there are no connected scenes, then there is no need to change
-  // the profile for the scene. Do not immediately unload the profile,
-  // as there may still be objects that are shutting down. Schedule a
-  // call to -unloadUnusedProfiles to unload it at the next run loop.
+  // the profile for the scene. Do not immediately drop the profile as
+  // there may still be objects that are shutting down. Schedules a
+  // call to -dropUnusedProfileControllers to drop it in the next loop.
   if (scenes.count == 0) {
-    [self scheduleUnloadUnusedProfiles];
+    [self scheduleDropUnusedProfileControllers];
     return;
   }
 
@@ -1872,8 +1872,9 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   [sceneState.controller setProfileState:state];
 }
 
-// Unload all unused profiles.
-- (void)unloadUnusedProfiles {
+// Drops all unused profile controllers. This will cause the corresponding
+// Profile to be unloaded unless another code keep them alive.
+- (void)dropUnusedProfileControllers {
   std::vector<std::string> profilesToUnload;
   for (const auto& [name, controller] : _profileControllers) {
     if (controller.state.connectedScenes.count == 0) {
@@ -1885,8 +1886,6 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
     return;
   }
 
-  ProfileManagerIOS* manager = GetApplicationContext()->GetProfileManager();
-
   for (const auto& name : profilesToUnload) {
     auto iter = _profileControllers.find(name);
     CHECK(iter != _profileControllers.end());
@@ -1895,10 +1894,10 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
     CHECK_EQ(controller.state.connectedScenes.count, 0u);
     [controller.state removeObserver:self];
 
-    // Call -shutdown before deleting the object.
+    // Call -shutdown before deleting the object. This will unload the
+    // profile if the keep alive refcount reaches zero.
     [controller shutdown];
     _profileControllers.erase(iter);
-    manager->UnloadProfile(name);
   }
 
   [self updateLastUsedProfilePref];
@@ -1932,12 +1931,12 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   }
 }
 
-// Schedule a call to -unloadUnusedProfiles at the next run loop iteration.
-- (void)scheduleUnloadUnusedProfiles {
+// Schedule a call to -dropUnusedProfileControllers at the next run loop.
+- (void)scheduleDropUnusedProfileControllers {
   if (!_timer.IsRunning()) {
     __weak __typeof(self) weakSelf = self;
     _timer.Start(FROM_HERE, base::Seconds(0), base::BindOnce(^{
-                   [weakSelf unloadUnusedProfiles];
+                   [weakSelf dropUnusedProfileControllers];
                  }));
   }
 }

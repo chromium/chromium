@@ -50,6 +50,10 @@ class ScopedTestProfileManagerObserverIOS final
   }
 
   // ProfileManagerObserverIOS implementation:
+  void OnProfileManagerWillBeDestroyed(ProfileManagerIOS* manager) final {
+    // Nothing to do.
+  }
+
   void OnProfileManagerDestroyed(ProfileManagerIOS* manager) final {
     DCHECK(scoped_observation_.IsObservingSource(manager));
     scoped_observation_.Reset();
@@ -326,7 +330,6 @@ TEST_F(ProfileManagerIOSImplTest, CreateProfile_MarkedForDeletion) {
   EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName2));
 
   profile_manager().MarkProfileForDeletion(kProfileName2);
-  profile_manager().UnloadProfile(kProfileName2);
   keep_alive2.Reset();
 
   EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));
@@ -516,7 +519,6 @@ TEST_F(ProfileManagerIOSImplTest, UnloadProfile) {
 
   // Unload a profile, it should not longer be accessible and the
   // observer must have been notified of that.
-  profile_manager().UnloadProfile(kProfileName1);
   keep_alive1.Reset();
 
   EXPECT_FALSE(profile_manager().GetProfileWithName(kProfileName1));
@@ -542,44 +544,12 @@ TEST_F(ProfileManagerIOSImplTest, UnloadAllProfiles) {
 
   // Unload all profiles, they should not longer be accessible and the
   // observer must have been notified of that.
-  profile_manager().UnloadAllProfiles();
   keep_alive2.Reset();
   keep_alive1.Reset();
 
   EXPECT_FALSE(profile_manager().GetProfileWithName(kProfileName1));
   EXPECT_FALSE(profile_manager().GetProfileWithName(kProfileName2));
   EXPECT_TRUE(observer.on_profile_unloaded_called());
-}
-
-// Tests that OnProfileUnloaded(...) is not called if a profile in unloaded
-// while still loading.
-TEST_F(ProfileManagerIOSImplTest, UnloadAllProfiles_LoadPending) {
-  // Load a profile asynchronously.
-  base::RunLoop run_loop;
-  ScopedProfileKeepAliveIOS loaded_keep_alive;
-  ScopedProfileKeepAliveIOS created_keep_alive;
-  const bool success = profile_manager().CreateProfileAsync(
-      kProfileName1,
-      CaptureParam(&loaded_keep_alive).Then(run_loop.QuitClosure()),
-      CaptureParam(&created_keep_alive));
-
-  EXPECT_TRUE(created_keep_alive.profile());
-  EXPECT_TRUE(success);
-
-  ScopedTestProfileManagerObserverIOS observer(profile_manager());
-  EXPECT_FALSE(observer.on_profile_unloaded_called());
-
-  // Unload all profiles. The profile whose load is pending should no longer
-  // be loading, and the load should be considered as failed.
-  profile_manager().UnloadAllProfiles();
-
-  // The callback should be called from UnloadAllProfiles(), so the RunLoop
-  // should be considered as having quit called, and thus Run() should return
-  // immediately.
-  run_loop.Run();
-
-  EXPECT_FALSE(observer.on_profile_unloaded_called());
-  EXPECT_FALSE(loaded_keep_alive.profile());
 }
 
 // Tests that ReserveNewProfileName(...) returns a new profile name that is
@@ -645,7 +615,6 @@ TEST_F(ProfileManagerIOSImplTest,
 
   // Unload a profile, it should not longer be accessible and the
   // observer must have been notified of that.
-  profile_manager().UnloadProfile(kProfileName2);
   keep_alive2.Reset();
 
   EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));

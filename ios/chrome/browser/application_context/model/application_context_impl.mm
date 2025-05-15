@@ -189,15 +189,14 @@ void ApplicationContextImpl::StartTearDown() {
     safe_browsing_service_->ShutDown();
   }
 
-  // Need to clear profiles before the IO thread. In detail:
-  // - First unload the profiles (which deallocate them), including their
-  // keyed services, which may depend on the AccountProfileMapper.
-  // - Then destroy the AccountProfileMapper, which depends on the
-  //   ProfileManagerIOS.
-  // - Finally destroy the ProfileManagerIOS.
-  if (profile_manager_) {
-    profile_manager_->UnloadAllProfiles();
-  }
+  // Ensure that the profiles have all be unloaded. This is required because
+  // the profiles' KeyedService may use the AccountProfileMapper, and thus
+  // they have to be destroyed before the ProfileManagerIOS. However since
+  // the AccountProfileMapper depends on the ProfileManagerIOS, it must be
+  // destroyed before.
+  profile_manager_->PrepareForDestruction();
+  CHECK_EQ(profile_manager_->GetLoadedProfiles().size(), 0u);
+
   account_profile_mapper_.reset();
   profile_manager_.reset();
 

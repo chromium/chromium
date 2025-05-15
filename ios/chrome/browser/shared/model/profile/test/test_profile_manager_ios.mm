@@ -37,14 +37,25 @@ TestProfileManagerIOS::~TestProfileManagerIOS() {
     observer.OnProfileManagerDestroyed(this);
   }
 
-  // The profiles must be unloaded before the AccountProfileMapper is removed
-  // from the ApplicationContext, since some keyed services (owned by the
-  // profiles) might access the AccountProfileMapper during their destruction.
-  UnloadAllProfiles();
+  // Unload all the profiles. This ensure that all their KeyedServices
+  // (which may be using the AccountProfileMapper) are destroyed before
+  // the AccountProfileMapper becomes unaccessible.
+  ProfileMap profiles_map = std::exchange(profiles_map_, {});
+  for (auto& [_, profile] : profiles_map) {
+    for (auto& observer : observers_) {
+      observer.OnProfileUnloaded(this, profile.get());
+    }
+  }
 
   TestingApplicationContext* app_context =
       TestingApplicationContext::GetGlobal();
   app_context->SetProfileManagerAndAccountProfileMapper(nullptr, nullptr);
+}
+
+void TestProfileManagerIOS::PrepareForDestruction() {
+  for (auto& observer : observers_) {
+    observer.OnProfileManagerWillBeDestroyed(this);
+  }
 }
 
 void TestProfileManagerIOS::AddObserver(ProfileManagerObserverIOS* observer) {
@@ -120,25 +131,6 @@ bool TestProfileManagerIOS::CreateProfileAsync(
   }
 
   return true;
-}
-
-void TestProfileManagerIOS::UnloadProfile(std::string_view name) {
-  auto iter = profiles_map_.find(name);
-  DCHECK(iter != profiles_map_.end());
-  std::unique_ptr<ProfileIOS> profile = std::move(iter->second);
-  profiles_map_.erase(iter);
-  for (auto& observer : observers_) {
-    observer.OnProfileUnloaded(this, profile.get());
-  }
-}
-
-void TestProfileManagerIOS::UnloadAllProfiles() {
-  ProfileMap profiles_map = std::exchange(profiles_map_, {});
-  for (auto& [_, profile] : profiles_map) {
-    for (auto& observer : observers_) {
-      observer.OnProfileUnloaded(this, profile.get());
-    }
-  }
 }
 
 void TestProfileManagerIOS::MarkProfileForDeletion(std::string_view name) {
