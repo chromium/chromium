@@ -18,6 +18,7 @@ namespace actor {
 
 using ::optimization_guide::proto::BrowserAction;
 using ::optimization_guide::proto::ClickAction;
+using ::optimization_guide::proto::Coordinate;
 using ::optimization_guide::proto::DragAndReleaseAction;
 using ::optimization_guide::proto::MoveMouseAction;
 using ::optimization_guide::proto::NavigateAction;
@@ -30,6 +31,17 @@ BrowserAction MakeClick(int content_node_id) {
   BrowserAction action;
   ClickAction* click = action.add_action_information()->mutable_click();
   click->mutable_target()->set_content_node_id(content_node_id);
+  click->set_click_type(ClickAction::LEFT);
+  click->set_click_count(ClickAction::SINGLE);
+  return action;
+}
+
+BrowserAction MakeClick(const gfx::Point& click_point) {
+  BrowserAction action;
+  ClickAction* click = action.add_action_information()->mutable_click();
+  Coordinate* coordinate = click->mutable_target()->mutable_coordinate();
+  coordinate->set_x(click_point.x());
+  coordinate->set_y(click_point.y());
   click->set_click_type(ClickAction::LEFT);
   click->set_click_count(ClickAction::SINGLE);
   return action;

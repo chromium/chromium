@@ -137,10 +137,14 @@ std::optional<gfx::PointF> ClickTool::ValidateAndGetClickPoint() const {
     return std::nullopt;
   }
 
-  // Currently only support DOMNodeId as target.
   if (action_->target->is_coordinate()) {
-    NOTIMPLEMENTED() << "Coordinate-based target not yet supported.";
-    return std::nullopt;
+    gfx::PointF click_point(action_->target->get_coordinate());
+
+    if (!IsPointWithinViewport(click_point, frame_.get())) {
+      ACTOR_LOG() << "Coordinate is offscreen.";
+      return std::nullopt;
+    }
+    return click_point;
   }
 
   int32_t dom_node_id = action_->target->get_dom_node_id();
