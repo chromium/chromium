@@ -233,30 +233,6 @@ mojom("mojo_bindings") {
   ]
 }
 
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "test_support/glic_test_environment.cc",
-    "test_support/glic_test_environment.h",
-    "test_support/glic_test_util.cc",
-    "test_support/glic_test_util.h",
-    "test_support/interactive_glic_test.cc",
-    "test_support/interactive_glic_test.h",
-    "test_support/interactive_test_util.cc",
-    "test_support/interactive_test_util.h",
-    "test_support/mock_glic_window_controller.cc",
-    "test_support/mock_glic_window_controller.h",
-  ]
-  deps = [
-    ":glic",
-    ":impl",
-    "//chrome/browser/ui:ui_features",
-    "//components/signin/public/identity_manager:test_support",
-    "//ui/events:test_support",
-  ]
-  public_deps = [ "//chrome/test:test_support" ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -274,11 +250,11 @@ source_set("unit_tests") {
   deps = [
     ":glic",
     ":impl",
-    ":test_support",
     "//base/test:test_support",
     "//chrome/browser:global_features",
     "//chrome/browser/background:background",
     "//chrome/browser/background/glic",
+    "//chrome/browser/glic/test_support",
     "//chrome/browser/prefs:prefs",
     "//chrome/browser/status_icons:status_icons",
     "//chrome/browser/ui",
@@ -309,12 +285,12 @@ source_set("browser_tests") {
   deps = [
     ":glic",
     ":impl",
-    ":test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/background/glic",
     "//chrome/browser/extensions:extensions",
+    "//chrome/browser/glic/test_support",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/prefs:prefs",
@@ -352,13 +328,13 @@ source_set("interactive_ui_tests") {
   deps = [
     ":glic",
     ":impl",
-    ":test_support",
     "//chrome/browser",
     "//chrome/browser:global_features",
     "//chrome/browser/actor:test_support",
     "//chrome/browser/background/glic",
     "//chrome/browser/contextual_cueing",
     "//chrome/browser/contextual_cueing:test_support",
+    "//chrome/browser/glic/test_support",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/permissions:test_support",
     "//chrome/browser/ui",
