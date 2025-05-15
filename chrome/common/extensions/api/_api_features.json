@@ -1099,7 +1099,8 @@
     "contexts": ["webui_untrusted"],
     "matches": [
       "chrome-untrusted://crosh/*",
-      "chrome-untrusted://terminal/*"
+      "chrome-untrusted://terminal/*",
+      "chrome-untrusted://boca-app/*"
     ],
     "platforms": ["chromeos"]
   }],
