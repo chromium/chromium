@@ -4421,6 +4421,11 @@
       name: "SkipTouchEventFilter",
       status: "stable",
     },
+    // Fix for crbug.com/41393366
+    {
+      name: "SkipUnselectableContentInSerialization",
+      status: "stable",
+    },
     {
       name: "SmartCard",
       status: {"Android": "", "default": "test"},

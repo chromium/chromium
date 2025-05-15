@@ -1,0 +1,25 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+selection_test(
+    [
+      '^A<span style="user-select:none">B<span style="user-select:all">C',
+      '<span style="user-select:none">D</span>E</span>F</span>G|'
+    ],
+    selection => {
+      assert_own_property(window, 'internals',
+        'This test requires window.internals');
+      assert_equals(selection.window.internals.selectedTextForClipboard(), 'ACEG');
+      assert_equals(selection.window.internals.selectedHTMLForClipboard()
+        .replace(/ style=".+?"/g, ' style="..."'),
+          '<span style=\"...\">A</span><span style=\"...\">' +
+          '<span style=\"...\">CE</span></span><span style=\"...\">G</span>');
+    },
+    [
+      '^A<span style="user-select:none">B<span style="user-select:all">C',
+      '<span style="user-select:none">D</span>E</span>F</span>G|'
+    ],
+    'Copy selection that contains unselectable elements.');
+</script>

@@ -1165,6 +1165,7 @@ String FrameSelection::SelectedHTMLForClipboard() const {
                           .SetShouldAnnotateForInterchange(true)
                           .SetShouldResolveURLs(kResolveNonLocalURLs)
                           .SetIgnoresCSSTextTransformsForRenderedText(true)
+                          .SetShouldSkipUnselectableContent(true)
                           .Build());
 }
 

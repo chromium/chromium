@@ -30,6 +30,12 @@ class StyledMarkupSerializerTest : public EditingTestBase {
         .Build();
   }
 
+  CreateMarkupOptions ShouldSkipUnselectableContentOptions() const {
+    return CreateMarkupOptions::Builder()
+        .SetShouldSkipUnselectableContent(true)
+        .Build();
+  }
+
   template <typename Strategy>
   std::string Serialize(
       const CreateMarkupOptions& options = CreateMarkupOptions());
@@ -327,6 +333,52 @@ TEST_F(StyledMarkupSerializerTest, DisplayContentsStyle) {
   SetBodyContent(body_content);
   EXPECT_EQ(expected_result, Serialize<EditingStrategy>());
   EXPECT_EQ(expected_result, Serialize<EditingInFlatTreeStrategy>());
+}
+
+TEST_F(StyledMarkupSerializerTest, SkipUnselectableContent) {
+  const char* body_content =
+      "<span style=\"user-select: all;\">SELECTABLE_1<span "
+      "style=\"user-select: none;\">NON_SELECTABLE_1<span style=\"user-select: "
+      "all;\">SELECTABLE_2</span></span></span>";
+  const char* expected_result =
+      "<span style=\"user-select: all;\">SELECTABLE_1<span "
+      "style=\"user-select: none;\"><span style=\"user-select: "
+      "all;\">SELECTABLE_2</span></span></span>";
+  SetBodyContent(body_content);
+  EXPECT_EQ(expected_result,
+            Serialize<EditingStrategy>(ShouldSkipUnselectableContentOptions()));
+  EXPECT_EQ(expected_result, Serialize<EditingInFlatTreeStrategy>(
+                                 ShouldSkipUnselectableContentOptions()));
+}
+
+TEST_F(StyledMarkupSerializerTest, SkipUnselectableContentInShadowDOM) {
+  const char* body_content =
+      "<span style=\"user-select: all;\">SELECTABLE_1<span "
+      "style=\"user-select: none;\">NON_SELECTABLE_1<span style=\"user-select: "
+      "all;\">SELECTABLE_2</span></span><span style=\"user-select: "
+      "none;\">NON_SELECTABLE_2<span "
+      "id=\"shadow-root\"></span></span>SELECTABLE_3</span>";
+  const char* shadow_content =
+      "NON_SELECTABLE_INSIDE_SHADOW<span style=\"user-select: "
+      "all;\">SELECTABLE_INSIDE_SHADOW</span>";
+  const char* expected_result =
+      "<span style=\"user-select: all;\">SELECTABLE_1<span "
+      "style=\"user-select: none;\"><span style=\"user-select: "
+      "all;\">SELECTABLE_2</span></span>SELECTABLE_3</span>";
+  const char* flat_tree_expected_result =
+      "<span style=\"user-select: all;\">SELECTABLE_1<span "
+      "style=\"user-select: none;\"><span style=\"user-select: "
+      "all;\">SELECTABLE_2</span></span><span style=\"user-select: "
+      "none;\"><span id=\"shadow-root\"><span style=\"user-select: "
+      "all;\">SELECTABLE_INSIDE_SHADOW</span></span></span>SELECTABLE_3</span>";
+  SetBodyContent(body_content);
+  SetShadowContent(shadow_content, "shadow-root");
+
+  EXPECT_EQ(expected_result,
+            Serialize<EditingStrategy>(ShouldSkipUnselectableContentOptions()));
+  EXPECT_EQ(flat_tree_expected_result,
+            Serialize<EditingInFlatTreeStrategy>(
+                ShouldSkipUnselectableContentOptions()));
 }
 
 }  // namespace blink
