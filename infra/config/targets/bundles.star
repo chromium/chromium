@@ -6707,6 +6707,20 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "trees_in_viz_fyi_blink_web_tests",
+    targets = [
+        "blink_web_tests",
+    ],
+    mixins = [
+        targets.mixin(
+            args = [
+                "--flag-specific=trees-in-viz",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
     name = "trees_in_viz_fyi_gtests",
     targets = [
         "blink_unittests",

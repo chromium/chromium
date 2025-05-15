@@ -242,6 +242,7 @@ ci.builder(
     targets = targets.bundle(
         targets = [
             "trees_in_viz_fyi_gtests",
+            "trees_in_viz_fyi_blink_web_tests",
         ],
         mixins = [
             "linux-jammy",
