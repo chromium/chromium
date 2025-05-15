@@ -1476,6 +1476,9 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
   AtomicString var_name = ConsumeVariableName(stream);
   DCHECK(stream.AtEnd() || (stream.Peek().GetType() == kCommaToken));
 
+  // TODO(crbug.com/416640817): All of this fallback handling can be removed
+  // when the CSSShortCircuitVarAttr flag is removed:
+  //
   // If we have a fallback, we must process it to look for cycles,
   // even if we are not going to use the fallback.
   //
@@ -1488,7 +1491,8 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
   // TODO(crbug.com/372475301): Remove this, if possible.
   bool has_comma = false;
   bool fallback_caused_cycle = false;  // For use-counting.
-  if (ConsumeComma(stream)) {
+  if (!RuntimeEnabledFeatures::CSSShortCircuitVarAttrEnabled() &&
+      ConsumeComma(stream)) {
     has_comma = true;
     stream.ConsumeWhitespace();
     // Note that we can enter this function while in a cycle.
@@ -1526,6 +1530,15 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
       LookupAndApplyLocalVariable(var_name, resolver, context, *frame);
       if (std::optional<CSSVariableData*> local_variable =
               FindOrNullopt(frame->locals, var_name)) {
+        if (RuntimeEnabledFeatures::CSSShortCircuitVarAttrEnabled()) {
+          // Note that we should indeed pass `function_context` here,
+          // and not `frame`. This is because the `function_context
+          // is only used to resolve the fallback, which must be interpreted
+          // in the function context holding the var() function.
+          return AppendDataWithFallback(local_variable.value(), stream,
+                                        tree_scope, resolver, context,
+                                        function_context, out);
+        }
         return ResolveArgumentOrLocalInto(
             local_variable.value(), (has_fallback ? &fallback : nullptr), out);
       }
@@ -1533,6 +1546,11 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
       // argument cannot reference another using var() or similar.
       if (std::optional<CSSVariableData*> argument =
               FindOrNullopt(frame->arguments, var_name)) {
+        if (RuntimeEnabledFeatures::CSSShortCircuitVarAttrEnabled()) {
+          return AppendDataWithFallback(argument.value(), stream, tree_scope,
+                                        resolver, context, function_context,
+                                        out);
+        }
         return ResolveArgumentOrLocalInto(
             argument.value(), (has_fallback ? &fallback : nullptr), out);
       }
@@ -1565,6 +1583,15 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
   // https://drafts.csswg.org/css-variables/#animation-tainted
   if (!resolver.AllowSubstitution(data)) {
     data = nullptr;
+  }
+
+  if (RuntimeEnabledFeatures::CSSShortCircuitVarAttrEnabled()) {
+    if (resolver.InCycle()) {
+      // Either DetectCycle() or LookupAndApply() caused a cycle.
+      return false;
+    }
+    return AppendDataWithFallback(data, stream, tree_scope, resolver, context,
+                                  function_context, out);
   }
 
   // Note that this check catches cycles detected by the DetectCycle call above,
@@ -1824,6 +1851,8 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
 bool StyleCascade::ResolveArgumentOrLocalInto(CSSVariableData* data,
                                               const TokenSequence* fallback,
                                               TokenSequence& out) {
+  CHECK(!RuntimeEnabledFeatures::CSSShortCircuitVarAttrEnabled());
+
   // Note: `data` may be nullptr when a local variable became invalid
   // due to e.g. failed substitutions.
   if (data) {
@@ -1835,6 +1864,36 @@ bool StyleCascade::ResolveArgumentOrLocalInto(CSSVariableData* data,
     return out.AppendFallback(*fallback,
                               !fallback->GetAttrTaintedRanges()->empty(),
                               CSSVariableData::kMaxVariableBytes);
+  }
+  return false;
+}
+
+bool StyleCascade::AppendDataWithFallback(CSSVariableData* data,
+                                          CSSParserTokenStream& stream,
+                                          const TreeScope* tree_scope,
+                                          CascadeResolver& resolver,
+                                          const CSSParserContext& context,
+                                          FunctionContext* function_context,
+                                          TokenSequence& out) {
+  CHECK(RuntimeEnabledFeatures::CSSShortCircuitVarAttrEnabled());
+
+  if (data) {
+    DCHECK(!data->NeedsVariableResolution());
+    return out.Append(data, data->IsAttrTainted(),
+                      CSSVariableData::kMaxVariableBytes);
+  }
+  // Empty/invalid data; try fallback:
+  if (ConsumeComma(stream)) {
+    stream.ConsumeWhitespace();
+    TokenSequence fallback;
+    if (ResolveTokensInto(stream, tree_scope, resolver, context,
+                          function_context,
+                          /*stop_type=*/kEOFToken, fallback)) {
+      return out.AppendFallback(
+          fallback,
+          /*is_attr_tainted=*/!fallback.GetAttrTaintedRanges()->empty(),
+          CSSVariableData::kMaxVariableBytes);
+    }
   }
   return false;
 }
@@ -2113,6 +2172,36 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
       (substituted_attribute_value.IsNull())
           ? nullptr
           : attr_type->Parse(substituted_attribute_value, context);
+
+  if (RuntimeEnabledFeatures::CSSShortCircuitVarAttrEnabled()) {
+    if (substitution_value) {
+      return out.Append(substitution_value, /*is_attr_tainted=*/true,
+                        CSSVariableData::kMaxVariableBytes);
+    }
+
+    TokenSequence fallback;
+    if (ConsumeComma(stream)) {
+      stream.ConsumeWhitespace();
+      if (!ResolveTokensInto(stream, tree_scope, resolver, context,
+                             function_context,
+                             /*stop_type=*/kEOFToken, fallback)) {
+        return false;
+      }
+    } else if (missing_attr_type) {
+      // If the <attr-type> argument is omitted, the fallback defaults to the
+      // empty string if omitted.
+      // https://drafts.csswg.org/css-values-5/#attr-notation
+      if (!fallback.Append("''", /*is_attr_tainted=*/true,
+                           CSSVariableData::kMaxVariableBytes)) {
+        return false;
+      }
+    } else {
+      return false;
+    }
+
+    return out.AppendFallback(fallback, /*is_attr_tainted=*/true,
+                              CSSVariableData::kMaxVariableBytes);
+  };
 
   // Resolve fallback
   if (ConsumeComma(stream)) {

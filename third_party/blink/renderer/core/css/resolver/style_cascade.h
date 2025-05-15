@@ -558,9 +558,25 @@ class CORE_EXPORT StyleCascade {
                            const CSSParserContext& context,
                            FunctionContext* function_context,
                            TokenSequence& out);
+
+  // TODO(crbug.com/416640817): Remove this function.
   bool ResolveArgumentOrLocalInto(CSSVariableData* data,
                                   const TokenSequence* fallback,
                                   TokenSequence& out);
+
+  // If `data` is non-nullptr, append that to `out`. Otherwise, consume
+  // a fallback from the stream (starting with a kCommaToken),
+  // resolve it, and (if successful) append that to `out` instead.
+  //
+  // Note that `data` (if present) must already be resolved, i.e. it must not
+  // contain any substitution functions.
+  bool AppendDataWithFallback(CSSVariableData* data,
+                              CSSParserTokenStream&,
+                              const TreeScope*,
+                              CascadeResolver&,
+                              const CSSParserContext&,
+                              FunctionContext*,
+                              TokenSequence& out);
 
   CSSVariableData* ResolveFunctionExpression(CSSVariableData& unresolved,
                                              const TreeScope*,

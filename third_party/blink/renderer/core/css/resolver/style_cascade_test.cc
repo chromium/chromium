@@ -1038,7 +1038,8 @@ TEST_F(StyleCascadeTest, SelfCycleInUnusedFallback) {
   cascade.Add("--b", "10px");
   cascade.Apply();
 
-  EXPECT_FALSE(cascade.ComputedValue("--a"));
+  // No longer a cycle after https://github.com/w3c/csswg-drafts/issues/11500.
+  EXPECT_EQ("10px", cascade.ComputedValue("--a"));
   EXPECT_EQ("10px", cascade.ComputedValue("--b"));
 }
 
@@ -1210,40 +1211,46 @@ TEST_F(StyleCascadeTest, CycleMultipleFallback) {
   // Cycle:
   cascade.Add("--a", "var(--b, red)");
   cascade.Add("--b", "var(--a, var(--c, red))");
-  cascade.Add("--c", "var(--b, red)");
+  // Formerly part of a cycle, but no longer after Issue 11500 [1]:
+  cascade.Add("--c", "var(--b, pink)");
   // References to cycle:
   cascade.Add("--d", "var(--a,green)");
   cascade.Add("--e", "var(--b,green)");
+  // References to former cycle:
   cascade.Add("--f", "var(--c,green)");
   cascade.Apply();
 
   EXPECT_FALSE(cascade.ComputedValue("--a"));
   EXPECT_FALSE(cascade.ComputedValue("--b"));
-  EXPECT_FALSE(cascade.ComputedValue("--c"));
+  EXPECT_EQ("pink", cascade.ComputedValue("--c"));
   EXPECT_EQ("green", cascade.ComputedValue("--d"));
   EXPECT_EQ("green", cascade.ComputedValue("--e"));
-  EXPECT_EQ("green", cascade.ComputedValue("--f"));
+  EXPECT_EQ("pink", cascade.ComputedValue("--f"));
+
+  // [1] https://github.com/w3c/csswg-drafts/issues/11500
 }
 
 TEST_F(StyleCascadeTest, CycleMultipleUnusedFallback) {
   TestCascade cascade(GetDocument());
-  cascade.Add("--a", "red");
-  // Cycle:
+  cascade.Add("--a", "pink");
+  // Formerly a cycle, but no longer after Issue 11500 [1]:
   cascade.Add("--b", "var(--c, red)");
   cascade.Add("--c", "var(--a, var(--b, red) var(--d, red))");
   cascade.Add("--d", "var(--c, red)");
-  // References to cycle:
-  cascade.Add("--e", "var(--b,green)");
-  cascade.Add("--f", "var(--c,green)");
-  cascade.Add("--g", "var(--d,green)");
+  // References to former cycle:
+  cascade.Add("--e", "var(--b,red)");
+  cascade.Add("--f", "var(--c,red)");
+  cascade.Add("--g", "var(--d,red)");
   cascade.Apply();
 
-  EXPECT_FALSE(cascade.ComputedValue("--b"));
-  EXPECT_FALSE(cascade.ComputedValue("--c"));
-  EXPECT_FALSE(cascade.ComputedValue("--d"));
-  EXPECT_EQ("green", cascade.ComputedValue("--e"));
-  EXPECT_EQ("green", cascade.ComputedValue("--f"));
-  EXPECT_EQ("green", cascade.ComputedValue("--g"));
+  EXPECT_EQ("pink", cascade.ComputedValue("--b"));
+  EXPECT_EQ("pink", cascade.ComputedValue("--c"));
+  EXPECT_EQ("pink", cascade.ComputedValue("--d"));
+  EXPECT_EQ("pink", cascade.ComputedValue("--e"));
+  EXPECT_EQ("pink", cascade.ComputedValue("--f"));
+  EXPECT_EQ("pink", cascade.ComputedValue("--g"));
+
+  // [1] https://github.com/w3c/csswg-drafts/issues/11500
 }
 
 TEST_F(StyleCascadeTest, CycleReferencedFromStandardProperty) {
@@ -1344,10 +1351,11 @@ TEST_F(StyleCascadeTest, CycleAttrNotUsedFallback) {
                         AtomicString("attr(data-foo type(*))"));
 
   cascade.Reset();
+  // No longer a cycle after https://github.com/w3c/csswg-drafts/issues/11500.
   cascade.Add("--x", "attr(data-foo type(*), attr(data-bar type(*))");
   cascade.Apply();
 
-  EXPECT_FALSE(cascade.ComputedValue("--x"));
+  EXPECT_EQ("3", cascade.ComputedValue("--x"));
 }
 
 TEST_F(StyleCascadeTest, CycleAttrWithVar) {

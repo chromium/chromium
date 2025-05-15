@@ -7435,6 +7435,8 @@ TEST_F(StyleEngineTest, ScrollStateUseCounter) {
 }
 
 TEST_F(StyleEngineTest, CSSVarFallbackCycleCounter) {
+  ScopedCSSShortCircuitVarAttrForTest scoped_feature(false);
+
   // No fallback.
   ClearUseCounter(WebFeature::kCSSVarFallbackCycle);
   GetDocument().body()->setInnerHTML(R"HTML(
@@ -7490,6 +7492,8 @@ TEST_F(StyleEngineTest, CSSVarFallbackCycleCounter) {
 }
 
 TEST_F(StyleEngineTest, CSSAttrFallbackCycleCounter) {
+  ScopedCSSShortCircuitVarAttrForTest scoped_feature(false);
+
   // No fallback.
   ClearUseCounter(WebFeature::kCSSAttrFallbackCycle);
   GetDocument().body()->setInnerHTML(R"HTML(
