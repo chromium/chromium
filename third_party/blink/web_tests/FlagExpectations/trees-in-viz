@@ -22,8 +22,8 @@
 
 # TODO(crbug.com/401453196): Resolve failing layout tests. Refine into child
 # bugs if/as it becomes clear that tests are failing due to distinct issues.
-crbug.com/401453196 fast/canvas/canvas-filter-width-height-hidpi-scale.html [ Timeout Failure ]
-crbug.com/401453196 fast/canvas/canvas-filter-width-height-hidpi.html [ Timeout Failure ]
-crbug.com/401453196 fast/canvas/canvas-hidpi-blurry.html [ Timeout Failure ]
+crbug.com/401453196 fast/canvas/canvas-filter-width-height-hidpi-scale.html [ Failure Timeout ]
+crbug.com/401453196 fast/canvas/canvas-filter-width-height-hidpi.html [ Failure Timeout ]
+crbug.com/401453196 fast/canvas/canvas-hidpi-blurry.html [ Failure Timeout ]
 crbug.com/401453196 fast/dom/focus-contenteditable.html [ Failure ]
 crbug.com/401453196 fast/dom/inert/inert-node-is-uneditable.html [ Timeout ]

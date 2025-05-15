@@ -157,7 +157,8 @@ const test_noopener_navigating_away = (popup_coop) => {
     `);
     assert_equals(await receive(reply_token), 'popup navigated away');
 
-    assert_equals(popup.window, null);
+    // There's an open question if we should check that popup.window is null here.
+    // See https://github.com/whatwg/html/issues/10457
     assert_true(popup.closed, 'popup.closed');
   },
   'noopener-allow-popups ensures that the opener cannot script the openee,' +

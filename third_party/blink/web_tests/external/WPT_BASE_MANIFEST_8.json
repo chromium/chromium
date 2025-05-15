@@ -305334,21 +305334,6 @@
      ]
     ]
    },
-   "lifecycle": {
-    "set-composited-layer-position.html": [
-     "f1a3807d81a7961189feed041ae62a1ffda08f7f",
-     [
-      null,
-      [
-       [
-        "/lifecycle/set-composited-layer-position-ref.html",
-        "=="
-       ]
-      ],
-      {}
-     ]
-    ]
-   },
    "mathml": {
     "presentation-markup": {
      "direction": {
@@ -308926,6 +308911,21 @@
       ]
      }
     }
+   },
+   "page-lifecycle": {
+    "set-composited-layer-position.html": [
+     "f1a3807d81a7961189feed041ae62a1ffda08f7f",
+     [
+      null,
+      [
+       [
+        "/page-lifecycle/set-composited-layer-position-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ]
    },
    "permissions-policy": {
     "experimental-features": {
@@ -323073,7 +323073,7 @@
       []
      ],
      "worker-support.js": [
-      "39caeb6192f6fee2a9b71d8ea78a1cf9e64e512d",
+      "72e1fbfb20478ea550504a7af9b84bf63ff1e40c",
       []
      ]
     }
@@ -340430,8 +340430,16 @@
       "d5b9ad0f1fc400882f3d3438a5bc33fc1c861f38",
       []
      ],
+     "flex-container-max-content-002.tentative-expected.txt": [
+      "3d93c1b5d6e9a36f4756746e964bf62276ce10e7",
+      []
+     ],
      "flex-container-min-content-001-ref.html": [
       "9ecfe8a003858429a5cb5b74989031c5c1fe5744",
+      []
+     ],
+     "flex-container-min-content-002.tentative-expected.txt": [
+      "33aad7e353b09c1cdf6808317e0d485b99b8d3be",
       []
      ],
      "flex-direction-row-vertical-ref.html": [
@@ -369285,10 +369293,6 @@
        "0dd93d3f7b5e967c98589394f3a5d8dfd129fdc7",
        []
       ],
-      "rotate-interpolation-math-functions-tentative-expected.txt": [
-       "53c67b659581fcba33cc29e2fcd4cd2a63191337",
-       []
-      ],
       "rotate-transform-equivalent-ref.html": [
        "e95e62be888216d9bcd2487c54c1da602973de75",
        []
@@ -397202,7 +397206,7 @@
        []
       ],
       "noopener-helper.js": [
-       "ead0ef3b34370bc4fc805ab72595beb3dea3deee",
+       "9a4097b21e4528fb8491392ddbf4b54c27343098",
        []
       ],
       "popup-test.js": [
@@ -412754,46 +412758,6 @@
      ]
     }
    },
-   "lifecycle": {
-    "META.yml": [
-     "abd5e0f6ed6cc07042968abb4465f1c84d0e83d4",
-     []
-    ],
-    "resources": {
-     "beacon.py": [
-      "09915ffbcf045ad65d69d564b72736dc5a20365c",
-      []
-     ],
-     "child.html": [
-      "708bbfe02dcefb1173a5b15df7627d01739a5e43",
-      []
-     ],
-     "subframe.html": [
-      "2f1d70a80a792401891d93f6ddebaea0876400b3",
-      []
-     ],
-     "subframe_worker.html": [
-      "350d27437a6465644b3c3149c9e2ad86ff8d806e",
-      []
-     ],
-     "subframe_worker1.js": [
-      "2d13e89065af224f08e2749b1150937c244db7a2",
-      []
-     ],
-     "subframe_worker2.js": [
-      "32d2741331e5cfed0c4492a55b2b7085d2c52603",
-      []
-     ],
-     "window.html": [
-      "58181f32da7337773a0c420ff929631d2ba9ad1d",
-      []
-     ]
-    },
-    "set-composited-layer-position-ref.html": [
-     "600de56d608e8090849f62ab1c346c33ead33ac5",
-     []
-    ]
-   },
    "lint.ignore": [
     "955e5df49077cab63e762988714e1319d551089d",
     []
@@ -416558,7 +416522,45 @@
    },
    "page-lifecycle": {
     "META.yml": [
-     "8036af19bb9df20e30872a6c954ca4f23dbe9c8c",
+     "abd5e0f6ed6cc07042968abb4465f1c84d0e83d4",
+     []
+    ],
+    "freeze-expected.txt": [
+     "497d579718bebbc294a348d841930a99a9106eac",
+     []
+    ],
+    "resources": {
+     "beacon.py": [
+      "09915ffbcf045ad65d69d564b72736dc5a20365c",
+      []
+     ],
+     "child.html": [
+      "708bbfe02dcefb1173a5b15df7627d01739a5e43",
+      []
+     ],
+     "subframe.html": [
+      "2f1d70a80a792401891d93f6ddebaea0876400b3",
+      []
+     ],
+     "subframe_worker.html": [
+      "350d27437a6465644b3c3149c9e2ad86ff8d806e",
+      []
+     ],
+     "subframe_worker1.js": [
+      "2d13e89065af224f08e2749b1150937c244db7a2",
+      []
+     ],
+     "subframe_worker2.js": [
+      "32d2741331e5cfed0c4492a55b2b7085d2c52603",
+      []
+     ],
+     "window.html": [
+      "58181f32da7337773a0c420ff929631d2ba9ad1d",
+      []
+     ]
+    },
+    "set-composited-layer-position-ref.html": [
+     "600de56d608e8090849f62ab1c346c33ead33ac5",
      []
     ]
    },
@@ -480265,7 +480267,7 @@
    },
    "compute-pressure": {
     "compute_pressure_basic.https.window.js": [
-     "a120f97a403621c9baa6c2769f5989f7bfadd43d",
+     "a13d1766c533604a60dbb42b9c528104047ce119",
      [
       "compute-pressure/compute_pressure_basic.https.window.html?globalScope=dedicated_worker",
       {
@@ -480606,7 +480608,7 @@
      ]
     ],
     "compute_pressure_duplicate_updates.https.window.js": [
-     "231d4afc345d50e59a2612fc3c343af3a5a5a8c2",
+     "abf53854b40637d17102132d39e8a5e0aeaa438d",
      [
       "compute-pressure/compute_pressure_duplicate_updates.https.window.html?globalScope=dedicated_worker",
       {
@@ -502316,6 +502318,20 @@
      ],
      "flex-column-relayout-assert.html": [
       "b116987ad3ae6b130dd708fef2df83b17a5e117f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "flex-container-max-content-002.tentative.html": [
+      "77a074b153a3b3fcb47c5665bab614c1720a73d2",
+      [
+       null,
+       {}
+      ]
+     ],
+     "flex-container-min-content-002.tentative.html": [
+      "92d37e3b9d8db7b57b813b49c26a3e9cd03b5179",
       [
        null,
        {}
@@ -529831,8 +529847,15 @@
         {}
        ]
       ],
+      "sibling-index-keyframe-rotate-dynamic.html": [
+       "67df9c01d196fd8e80f80efaca8b02520aaf2a8f",
+       [
+        null,
+        {}
+       ]
+      ],
       "sibling-index-keyframe-scale-dynamic.html": [
-       "5f8a64e49577257c37ed2770525705b242f4aea4",
+       "8b3fe6f7532ccbc9c647ffa703329da52c813d33",
        [
         null,
         {}
@@ -667302,36 +667325,6 @@
      ]
     ]
    },
-   "lifecycle": {
-    "child-display-none.tentative.html": [
-     "d4ca6dab1e068703c1b5e94e22b8cb31f786879f",
-     [
-      null,
-      {}
-     ]
-    ],
-    "child-out-of-viewport.tentative.html": [
-     "4d8f868bfb55043b4b65a93cd7f8e282dcf12f79",
-     [
-      null,
-      {}
-     ]
-    ],
-    "freeze.html": [
-     "a2a9a7d3f147da9069bde019ec5940a213fbae79",
-     [
-      null,
-      {}
-     ]
-    ],
-    "worker-dispay-none.tentative.html": [
-     "0bcfde6d179bb5573ce78fa46827211e7c38dc35",
-     [
-      null,
-      {}
-     ]
-    ]
-   },
    "loading": {
     "early-hints": {
      "404-with-early-hints.h2.window.js": [
@@ -679027,6 +679020,27 @@
     ]
    },
    "page-lifecycle": {
+    "child-display-none.tentative.html": [
+     "d4ca6dab1e068703c1b5e94e22b8cb31f786879f",
+     [
+      null,
+      {}
+     ]
+    ],
+    "child-out-of-viewport.tentative.html": [
+     "4d8f868bfb55043b4b65a93cd7f8e282dcf12f79",
+     [
+      null,
+      {}
+     ]
+    ],
+    "freeze.html": [
+     "a2a9a7d3f147da9069bde019ec5940a213fbae79",
+     [
+      null,
+      {}
+     ]
+    ],
     "idlharness.html": [
      "55a7cbc2429c81a182c1373780f4bba457060a50",
      [
@@ -679034,6 +679048,13 @@
       {
        "timeout": "long"
       }
+     ]
+    ],
+    "worker-dispay-none.tentative.html": [
+     "0bcfde6d179bb5573ce78fa46827211e7c38dc35",
+     [
+      null,
+      {}
      ]
     ]
    },
@@ -774258,7 +774279,7 @@
       ]
      ],
      "qdq_subgraph.https.any.js": [
-      "80a53edf6c8b92c9f89da47b085fe017dc22c357",
+      "9369fcede8da9cb4fc4862c71632696db2d5c929",
       [
        "webnn/conformance_tests/qdq_subgraph.https.any.html?cpu",
        {
@@ -838957,7 +838978,7 @@
      },
      "interop": {
       "beforeunload_prompt.py": [
-       "1e47f6906761bc614575cb061a8d57cc23a2cde1",
+       "68a025ef38cb67c0a06de93a5b51939235e9bf8a",
        [
         null,
         {}
