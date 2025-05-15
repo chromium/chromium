@@ -227,13 +227,6 @@ class OmniboxEditModelIOS {
   // Returns true if pasting is in progress.
   bool is_pasting() const { return paste_state_ == PASTING; }
 
-  // Called when the user presses arrow up, arrow down, page up, or page down.
-  void OnUpOrDownPressed(bool down, bool page);
-
-  // Called when the user presses tab or shift+tab. The latter will traverse up
-  // the selections instead of down.
-  void OnTabPressed(bool shift);
-
   // Called when any relevant data changes.  This rolls together several
   // separate pieces of data into one call so we can update all the UI
   // efficiently. Specifically, it's invoked for temporary text, autocompletion.
@@ -300,52 +293,8 @@ class OmniboxEditModelIOS {
   // Returns true if the popup exists and is open. Virtual for testing.
   virtual bool PopupIsOpen() const;
 
-  // Called when the user hits escape after arrowing around the popup.  This
-  // will reset the popup to the initial state.
-  void ResetPopupToInitialState();
-
   // Gets popup's current selection.
   OmniboxPopupSelection GetPopupSelection() const;
-
-  // Sets the current popup selection to `new_selection`. Caller is responsible
-  // for making sure `new_selection` is valid. This assumes the popup is open.
-  // This will update all state and repaint the necessary parts of the window,
-  // as well as updating the textfield with the new temporary text.
-  // `reset_to_default` restores the original inline autocompletion.
-  // `force_update_ui` updates the UI even if the selection has not changed.
-  void SetPopupSelection(OmniboxPopupSelection new_selection,
-                         bool reset_to_default = false,
-                         bool force_update_ui = false);
-
-  // Returns true if popup selection is on the initial line, which is usually
-  // the default match (except in the no-default-match case).
-  bool IsPopupSelectionOnInitialLine() const;
-
-  // Returns true if the control represented by `selection.state` is present on
-  // the match in `selection.line`. This is the source-of-truth the UI code
-  // should query to decide whether or not to draw the control.
-  bool IsPopupControlPresentOnMatch(OmniboxPopupSelection selection) const;
-
-  // From popup, tries to erase the suggestion at `line`. This should determine
-  // if the item at `line` can be removed from history, and if so, remove it
-  // and update the popup.
-  void TryDeletingPopupLine(size_t line);
-
-  // Returns the popup's accessibility label for current selection. This is an
-  // extended version of AutocompleteMatchType::ToAccessibilityLabel() which
-  // also returns narration about the any focused secondary button.
-  // Never call this when the current selection is kNoMatch.
-  std::u16string GetPopupAccessibilityLabelForCurrentSelection(
-      const std::u16string& match_text,
-      bool include_positional_info,
-      int* label_prefix_length = nullptr);
-
-  // The IPH message that sometimes appears at the bottom of the Omnibox is
-  // informational only and cannot be selected/focused. Its a11y label therefore
-  // has to be read at the end of the last suggestion.  Returns the label for
-  // the IPH row if the current selection is the one right before the IPH row.
-  // Otherwise, returns an empty string.
-  std::u16string MaybeGetPopupAccessibilityLabelForIPHSuggestion();
 
   // Invoked any time the result set of the controller changes.
   // This method seems like a good candidate for removal; it is
@@ -353,12 +302,6 @@ class OmniboxEditModelIOS {
   void OnPopupResultChanged();
 
   void SetAutocompleteInput(AutocompleteInput input);
-
-  // Called to indicate a navigation may occur based on
-  // `navigation_predictor` to the suggestion on `line`.
-  void OnNavigationLikely(
-      size_t line,
-      omnibox::mojom::NavigationPredictor navigation_predictor);
 
   // This calls `OpenMatch` directly for the few remaining `OmniboxEditModelIOS`
   // test cases that require explicit control over match content. For new
@@ -413,10 +356,6 @@ class OmniboxEditModelIOS {
   // Returns true if started; false otherwise.
   bool MaybeStartQueryForPopup();
 
-  // Changes the popup selection to the next available selection.
-  void StepPopupSelection(OmniboxPopupSelection::Direction direction,
-                          OmniboxPopupSelection::Step step);
-
   // Asks the browser to load the popup's currently selected item, using the
   // supplied disposition.  This may close the popup.
   void AcceptInput(
@@ -447,11 +386,6 @@ class OmniboxEditModelIOS {
                  const GURL& alternate_nav_url,
                  const std::u16string& pasted_text,
                  base::TimeTicks match_selection_timestamp = base::TimeTicks());
-
-  // Updates the feedback type on the match at the given index and schedules a
-  // repaint to update the suggestion view. On negative feedback, also shows the
-  // feedback form.
-  void UpdateFeedbackOnMatch(size_t match_index, FeedbackType feedback_type);
 
   // An internal method to set the user text. Notably, this differs from
   // SetUserText because it does not change the user-input-in-progress state.

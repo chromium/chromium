@@ -66,18 +66,6 @@ class OmniboxControllerIOS : public AutocompleteController::Observer {
     autocomplete_controller_ = std::move(autocomplete_controller);
   }
 
-  // Returns the header string associated with `suggestion_group_id`, or an
-  // empty string if `suggestion_group_id` is not found in the results.
-  std::u16string GetHeaderForSuggestionGroup(
-      omnibox::GroupId suggestion_group_id) const;
-
-  // Returns whether or not the row for a particular match should be hidden in
-  // the UI. This is currently used to hide suggestions in the 'Gemini' scope
-  // when the starter pack expansion feature is enabled.
-  bool IsSuggestionHidden(const AutocompleteMatch& match) const;
-
- private:
-
   std::unique_ptr<OmniboxClient> client_;
 
   std::unique_ptr<AutocompleteController> autocomplete_controller_;

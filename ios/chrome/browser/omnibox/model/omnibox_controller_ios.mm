@@ -139,23 +139,3 @@ void OmniboxControllerIOS::OnResultChanged(AutocompleteController* controller,
                            /*should_preload=*/controller->done(),
                            /*on_bitmap_fetched=*/base::DoNothing());
 }
-
-std::u16string OmniboxControllerIOS::GetHeaderForSuggestionGroup(
-    omnibox::GroupId suggestion_group_id) const {
-  return autocomplete_controller_->result().GetHeaderForSuggestionGroup(
-      suggestion_group_id);
-}
-
-bool OmniboxControllerIOS::IsSuggestionHidden(
-    const AutocompleteMatch& match) const {
-  if (OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
-      match.from_keyword) {
-    const TemplateURL* turl =
-        match.GetTemplateURL(client_->GetTemplateURLService(), false);
-    if (turl &&
-        turl->starter_pack_id() == TemplateURLStarterPackData::kGemini) {
-      return true;
-    }
-  }
-  return false;
-}

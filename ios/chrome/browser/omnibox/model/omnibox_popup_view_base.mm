@@ -33,11 +33,6 @@ const OmniboxControllerIOS* OmniboxPopupViewBase::controller() const {
   return controller_;
 }
 
-std::u16string_view OmniboxPopupViewBase::GetAccessibleButtonTextForResult(
-    size_t line) const {
-  return {};
-}
-
 base::CallbackListSubscription OmniboxPopupViewBase::AddOpenListener(
     base::RepeatingClosure callback) {
   return on_popup_callbacks_.Add(std::move(callback));
