@@ -173,12 +173,6 @@ void MemorySaverChipTabHelper::UpdatePageActionState() {
   }
   memory_saver::MemorySaverChipController* controller =
       tab_features->memory_saver_chip_controller();
-  if (!controller) {
-    // Tab features can be faked in tests.
-    CHECK_IS_TEST();
-    return;
-  }
-
   switch (chip_state_) {
     case memory_saver::ChipState::HIDDEN:
       controller->Hide();
