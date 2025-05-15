@@ -238,7 +238,7 @@ BASE_FEATURE(kSecretPortalKeyProviderUseForEncryption,
 // FreedesktopSecretKeyProvider. Otherwise, it will only decrypt existing data.
 BASE_FEATURE(kUseFreedesktopSecretKeyProviderForEncryption,
              "UseFreedesktopSecretKeyProviderForEncryption",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX)
 
 // Enables migration of the network context data from `unsandboxed_data_path` to
