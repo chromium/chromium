@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 import org.chromium.components.omnibox.GroupsProto.GroupId;
 import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
+import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.url.GURL;
 
@@ -69,6 +70,7 @@ public class AutocompleteMatch {
     private final int mType;
     private final Set<Integer> mSubtypes;
     private final boolean mIsSearchType;
+    private final int /* SuggestTemplateInfo.IconType */ mIconType;
     private String mDisplayText;
     private final List<MatchClassification> mDisplayTextClassifications;
     private String mDescription;
@@ -97,6 +99,7 @@ public class AutocompleteMatch {
             int nativeType,
             Set<Integer> subtypes,
             boolean isSearchType,
+            int iconType,
             int transition,
             String displayText,
             List<MatchClassification> displayTextClassifications,
@@ -125,6 +128,7 @@ public class AutocompleteMatch {
         mType = nativeType;
         mSubtypes = subtypes;
         mIsSearchType = isSearchType;
+        mIconType = iconType;
         mTransition = transition;
         mDisplayText = displayText;
         mDisplayTextClassifications = displayTextClassifications;
@@ -163,6 +167,7 @@ public class AutocompleteMatch {
             int nativeType,
             int[] nativeSubtypes,
             boolean isSearchType,
+            int iconType,
             int transition,
             String contents,
             int[] contentClassificationOffsets,
@@ -205,6 +210,7 @@ public class AutocompleteMatch {
                         nativeType,
                         subtypes,
                         isSearchType,
+                        iconType,
                         transition,
                         contents,
                         contentClassifications,
@@ -402,6 +408,10 @@ public class AutocompleteMatch {
         return mAdditionalText;
     }
 
+    public /* SuggestTemplateInfo.IconType */ int getIconType() {
+        return mIconType;
+    }
+
     /**
      * @return The image data for the image clipbaord suggestion. This data has already been
      *     validated in C++ and is safe to use in the browser process.
@@ -557,6 +567,7 @@ public class AutocompleteMatch {
                 input.getType(),
                 new ArraySet(input.getSubtypeList()),
                 input.getIsSearchType(),
+                SuggestTemplateInfo.IconType.ICON_TYPE_UNSPECIFIED_VALUE,
                 input.getTransition(),
                 input.getDisplayText(),
                 displayTextClassifications,

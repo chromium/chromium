@@ -19,6 +19,7 @@
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_bridge.h"
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_utils.h"
+#include "third_party/omnibox_proto/suggest_template_info.pb.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -95,11 +96,18 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
     actions_list = ToJavaOmniboxActionsList(env, actions);
   }
 
+  int icon_type = omnibox::SuggestTemplateInfo::IconType::
+      SuggestTemplateInfo_IconType_ICON_TYPE_UNSPECIFIED;
+
+  if (suggest_template.has_value()) {
+    icon_type = suggest_template.value().type_icon();
+  }
+
   java_match_ = std::make_unique<ScopedJavaGlobalRef<jobject>>(
       Java_AutocompleteMatch_build(
           env, reinterpret_cast<intptr_t>(this), type,
-          ToJavaIntArray(env, temp_subtypes), IsSearchType(type), transition,
-          ConvertUTF16ToJavaString(env, contents),
+          ToJavaIntArray(env, temp_subtypes), IsSearchType(type), icon_type,
+          transition, ConvertUTF16ToJavaString(env, contents),
           ToJavaIntArray(env, contents_class_offsets),
           ToJavaIntArray(env, contents_class_styles),
           ConvertUTF16ToJavaString(env, description),
