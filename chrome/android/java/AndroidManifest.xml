@@ -628,8 +628,13 @@ by a child template that "extends" this file.
             android:theme="@style/Theme.AppCompat.NoActionBar">
         </activity>
         {% endif %}
+        <!--
+         The windowSoftInputMode is set to adjustNothing to avoid visual glitch when the
+         fullscreen sign-in is started when a keyboard is shown on the screen. See https://crbug.com/414419626
+        -->
         <activity android:name="org.chromium.chrome.browser.signin.SigninAndHistorySyncActivity"
             android:theme="@style/Theme.Chromium.SigninAndHistorySyncActivity"
+            android:windowSoftInputMode="adjustNothing"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
             android:exported="false">
         </activity>
