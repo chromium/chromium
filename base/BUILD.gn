@@ -4343,23 +4343,27 @@ if (is_win && toolchain_has_rust) {
 }
 
 if (current_toolchain == default_toolchain) {
+  # Without guarding this, we would run write_build_date_header.py once per
+  # toolchain, while getting the same output. This is expensive, so expose
+  # the per-toolchain one via :build_date, which is a cheap copy.
   import("//build/timestamp.gni")
-  action("build_date") {
+  _build_date_header_internal =
+      "$target_gen_dir/generated_build_date_internal.h"
+
+  action("build_date_internal") {
     script = "write_build_date_header.py"
-
-    outputs = [ _build_date_header ]
-
+    outputs = [ _build_date_header_internal ]
     args = [
-      rebase_path(_build_date_header, root_build_dir),
+      rebase_path(_build_date_header_internal, root_build_dir),
       build_timestamp,
     ]
   }
-} else {
-  copy("build_date") {
-    sources = [ "$root_build_dir/gen/base/generated_build_date.h" ]
-    outputs = [ _build_date_header ]
-    deps = [ ":build_date($default_toolchain)" ]
-  }
+}
+
+copy("build_date") {
+  sources = [ "$root_build_dir/gen/base/generated_build_date_internal.h" ]
+  outputs = [ _build_date_header ]
+  deps = [ ":build_date_internal($default_toolchain)" ]
 }
 
 if (enable_nocompile_tests) {
