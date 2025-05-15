@@ -79,10 +79,7 @@ public class TouchDevice {
             if (isFinePointer) {
                 pointerTypes |= PointerType.FINE;
             }
-            if (hasSource(sources, InputDevice.SOURCE_TOUCHSCREEN)
-                    && (UiAndroidFeatureMap.isEnabled(
-                                    UiAndroidFeatures.REPORT_ALL_AVAILABLE_POINTER_TYPES)
-                            || !isFinePointer)) {
+            if (hasSource(sources, InputDevice.SOURCE_TOUCHSCREEN)) {
                 pointerTypes |= PointerType.COARSE;
             }
 

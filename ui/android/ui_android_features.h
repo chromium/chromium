@@ -33,10 +33,6 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kDeprecatedExternalPickerFunction);
 // is an RTL language.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kMirrorBackForwardGesturesInRTL);
 
-// Reports all of the available pointer types (i.e. coarse, fine) to content
-// rather than just the first one detected.
-UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kReportAllAvailablePointerTypes);
-
 // Reports bottom overscrolls on the web page.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kReportBottomOverscrolls);
 
