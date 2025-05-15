@@ -202,6 +202,27 @@
   E_CPONLY(kColorSysShadow) \
   E_CPONLY(kColorSysGradientPrimary) \
   E_CPONLY(kColorSysGradientTertiary) \
+  /* Illustration */ \
+  E_CPONLY(kColorSysIlloPrimaryMin) \
+  E_CPONLY(kColorSysIlloPrimaryLow) \
+  E_CPONLY(kColorSysIlloPrimaryMid) \
+  E_CPONLY(kColorSysIlloPrimaryHigh) \
+  E_CPONLY(kColorSysIlloPrimaryMax) \
+  E_CPONLY(kColorSysIlloSecondaryMin) \
+  E_CPONLY(kColorSysIlloSecondaryLow) \
+  E_CPONLY(kColorSysIlloSecondaryMid) \
+  E_CPONLY(kColorSysIlloSecondaryHigh) \
+  E_CPONLY(kColorSysIlloSecondaryMax) \
+  E_CPONLY(kColorSysIlloTertiaryMin) \
+  E_CPONLY(kColorSysIlloTertiaryLow) \
+  E_CPONLY(kColorSysIlloTertiaryMid) \
+  E_CPONLY(kColorSysIlloTertiaryHigh) \
+  E_CPONLY(kColorSysIlloTertiaryMax) \
+  E_CPONLY(kColorSysIlloNeutralMin) \
+  E_CPONLY(kColorSysIlloNeutralLow) \
+  E_CPONLY(kColorSysIlloNeutralMid) \
+  E_CPONLY(kColorSysIlloNeutralHigh) \
+  E_CPONLY(kColorSysIlloNeutralMax) \
   /* AI. */ \
   E_CPONLY(kColorSysAiIllustrationShapeSurface1) \
   E_CPONLY(kColorSysAiIllustrationShapeSurface2) \

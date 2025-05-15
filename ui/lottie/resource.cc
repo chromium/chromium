@@ -66,8 +66,8 @@ gfx::ImageSkia CreateImageSkia(Animation* content) {
 
 // Creates a |cc::SkottieColorMap| with theme colors from a |ui::ColorProvider|.
 cc::SkottieColorMap CreateColorMap(const ui::ColorProvider* color_provider) {
-#if BUILDFLAG(IS_CHROMEOS)
   return {
+#if BUILDFLAG(IS_CHROMEOS)
       cc::SkottieMapColor("cros.sys.illo.color1",
                           color_provider->GetColor(ui::kColorNativeColor1)),
       cc::SkottieMapColor(
@@ -130,11 +130,68 @@ cc::SkottieColorMap CreateColorMap(const ui::ColorProvider* color_provider) {
                           color_provider->GetColor(ui::kColorNativeBaseColor)),
       cc::SkottieMapColor(
           "_CrOS_SecondaryColor",
-          color_provider->GetColor(ui::kColorNativeSecondaryColor))};
-#else
-  // TODO(crbug.com/414416729): Add color mapping for other platform.
-  return {};
+          color_provider->GetColor(ui::kColorNativeSecondaryColor)),
 #endif
+      cc::SkottieMapColor(
+          "cdds.sys.color.illo-primary-min",
+          color_provider->GetColor(ui::kColorSysIlloPrimaryMin)),
+      cc::SkottieMapColor(
+          "cdds.sys.color.illo-primary-low",
+          color_provider->GetColor(ui::kColorSysIlloPrimaryLow)),
+      cc::SkottieMapColor(
+          "cdds.sys.color.illo-primary-mid",
+          color_provider->GetColor(ui::kColorSysIlloPrimaryMid)),
+      cc::SkottieMapColor(
+          "cdds.sys.color.illo-primary-high",
+          color_provider->GetColor(ui::kColorSysIlloPrimaryHigh)),
+      cc::SkottieMapColor(
+          "cdds.sys.color.illo-primary-max",
+          color_provider->GetColor(ui::kColorSysIlloPrimaryMax)),
+      cc::SkottieMapColor(
+          "cdds.sys.color.illo-secondary-min",
+          color_provider->GetColor(ui::kColorSysIlloSecondaryMin)),
+      cc::SkottieMapColor(
+          "cdds.sys.color.illo-secondary-low",
+          color_provider->GetColor(ui::kColorSysIlloSecondaryLow)),
+      cc::SkottieMapColor(
+          "cdds.sys.color.illo-secondary-mid",
+          color_provider->GetColor(ui::kColorSysIlloSecondaryMid)),
+      cc::SkottieMapColor(
+          "cdds.sys.color.illo-secondary-high",
+          color_provider->GetColor(ui::kColorSysIlloSecondaryHigh)),
+      cc::SkottieMapColor(
+          "cdds.sys.color.illo-secondary-max",
+          color_provider->GetColor(ui::kColorSysIlloSecondaryMax)),
+      cc::SkottieMapColor(
+          "cdds.sys.color.illo-tertiary-min",
+          color_provider->GetColor(ui::kColorSysIlloTertiaryMin)),
+      cc::SkottieMapColor(
+          "cdds.sys.color.illo-tertiary-low",
+          color_provider->GetColor(ui::kColorSysIlloTertiaryLow)),
+      cc::SkottieMapColor(
+          "cdds.sys.color.illo-tertiary-mid",
+          color_provider->GetColor(ui::kColorSysIlloTertiaryMid)),
+      cc::SkottieMapColor(
+          "cdds.sys.color.illo-tertiary-high",
+          color_provider->GetColor(ui::kColorSysIlloTertiaryHigh)),
+      cc::SkottieMapColor(
+          "cdds.sys.color.illo-tertiary-max",
+          color_provider->GetColor(ui::kColorSysIlloTertiaryMax)),
+      cc::SkottieMapColor(
+          "cdds.sys.color.illo-neutral-min",
+          color_provider->GetColor(ui::kColorSysIlloNeutralMin)),
+      cc::SkottieMapColor(
+          "cdds.sys.color.illo-neutral-low",
+          color_provider->GetColor(ui::kColorSysIlloNeutralLow)),
+      cc::SkottieMapColor(
+          "cdds.sys.color.illo-neutral-mid",
+          color_provider->GetColor(ui::kColorSysIlloNeutralMid)),
+      cc::SkottieMapColor(
+          "cdds.sys.color.illo-neutral-high",
+          color_provider->GetColor(ui::kColorSysIlloNeutralHigh)),
+      cc::SkottieMapColor(
+          "cdds.sys.color.illo-neutral-max",
+          color_provider->GetColor(ui::kColorSysIlloNeutralMax))};
 }
 
 // Used for a |ui::ImageModel::ImageGenerator|.
