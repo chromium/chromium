@@ -89,6 +89,9 @@ constexpr CGFloat kEnterpriseIconPointSize = 20;
   UIView* _statusContainerView;
 
   UIImageView* _managementIconView;
+
+  NSLayoutConstraint* _managementIconTrailingNoStatusMarginConstraint;
+  NSLayoutConstraint* _managementIconTrailingWithStatusMarginConstraint;
 }
 
 @synthesize imageView = _imageView;
@@ -162,6 +165,14 @@ constexpr CGFloat kEnterpriseIconPointSize = 20;
   verticalCenteringView.translatesAutoresizingMaskIntoConstraints = NO;
   [contentView addSubview:verticalCenteringView];
 
+  _managementIconTrailingNoStatusMarginConstraint =
+      [_managementIconView.trailingAnchor
+          constraintEqualToAnchor:contentView.trailingAnchor
+                         constant:-kTableViewHorizontalSpacing];
+  _managementIconTrailingWithStatusMarginConstraint =
+      [_managementIconView.trailingAnchor
+          constraintEqualToAnchor:_statusContainerView.leadingAnchor
+                         constant:-kTableViewVerticalSpacing];
   [NSLayoutConstraint activateConstraints:@[
     // Set leading anchors.
     [_imageView.leadingAnchor
@@ -214,9 +225,7 @@ constexpr CGFloat kEnterpriseIconPointSize = 20;
     [_statusContainerView.trailingAnchor
         constraintEqualToAnchor:contentView.trailingAnchor
                        constant:-kTableViewHorizontalSpacing],
-    [_managementIconView.trailingAnchor
-        constraintEqualToAnchor:_statusContainerView.leadingAnchor
-                       constant:-kTableViewHorizontalSpacing],
+    _managementIconTrailingNoStatusMarginConstraint,
     [_detailTextLabel.trailingAnchor
         constraintLessThanOrEqualToAnchor:_managementIconView.leadingAnchor
                                  constant:
@@ -246,10 +255,14 @@ constexpr CGFloat kEnterpriseIconPointSize = 20;
 - (void)setStatusView:(UIView*)statusView {
   _statusContainerView.hidden = statusView == nil;
   if (statusView == nil) {
+    _managementIconTrailingWithStatusMarginConstraint.active = NO;
+    _managementIconTrailingNoStatusMarginConstraint.active = YES;
     _statusView = nil;
     // Hide the status view but don’t delete it so that constraints still holds.
     return;
   }
+  _managementIconTrailingWithStatusMarginConstraint.active = YES;
+  _managementIconTrailingNoStatusMarginConstraint.active = NO;
   [_statusView removeFromSuperview];
   _statusView = statusView;
   [_statusContainerView addSubview:statusView];

@@ -45,7 +45,11 @@ const CGFloat kSeparatorMargin = 80;
                        managed:(BOOL)managed
              identityViewStyle:(IdentityViewStyle)identityViewStyle
                     titleColor:(UIColor*)titleColor {
-  self.identityView.style = identityViewStyle;
+  self.identityView.style =
+      checked && identityViewStyle == IdentityViewStyleConsistency
+          ? IdentityViewStyleConsistencyContained
+          : identityViewStyle;
+
   [self.identityView setTitle:title subtitle:subtitle managed:managed];
   [self.identityView setAvatar:image];
   self.identityView.titleColor = titleColor;

@@ -22,6 +22,12 @@ typedef NS_ENUM(NSInteger, IdentityViewStyle) {
   IdentityViewStyleIdentityChooser,
   // Style for the consistency view.
   IdentityViewStyleConsistency,
+  // Style for the consistency view with a small trailing margin, used when a
+  // contained in a container with a status activity.
+  IdentityViewStyleConsistencyContained,
+  // Style for the consistency view with no trailing margin when showing the
+  // default identity selected.
+  IdentityViewStyleConsistencyDefaultIdentity,
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_VIEWS_VIEWS_CONSTANTS_H_

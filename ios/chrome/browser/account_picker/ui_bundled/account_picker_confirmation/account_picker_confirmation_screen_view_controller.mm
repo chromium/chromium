@@ -308,7 +308,8 @@ UILabel* CreateGooglePhotosTitleLabel(NSString* title) {
   _identityButtonControl =
       [[IdentityButtonControl alloc] initWithFrame:CGRectZero];
   _identityButtonControl.arrowDirection = IdentityButtonControlArrowRight;
-  _identityButtonControl.identityViewStyle = IdentityViewStyleConsistency;
+  _identityButtonControl.identityViewStyle =
+      IdentityViewStyleConsistencyDefaultIdentity;
   [_identityButtonControl addTarget:self
                              action:@selector(identityButtonControlAction:
                                                                  forEvent:)

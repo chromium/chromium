@@ -140,6 +140,8 @@ const CGFloat kArrowDownMargin = 12.;
       self.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
       break;
     case IdentityViewStyleConsistency:
+    case IdentityViewStyleConsistencyContained:
+    case IdentityViewStyleConsistencyDefaultIdentity:
       self.backgroundColor =
           [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
       break;

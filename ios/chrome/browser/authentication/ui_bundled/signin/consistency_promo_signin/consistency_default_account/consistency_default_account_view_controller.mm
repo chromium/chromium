@@ -204,7 +204,8 @@ UIFont* GetNavigationBarTitleFont() {
   self.identityButtonControl =
       [[IdentityButtonControl alloc] initWithFrame:CGRectZero];
   self.identityButtonControl.arrowDirection = IdentityButtonControlArrowRight;
-  self.identityButtonControl.identityViewStyle = IdentityViewStyleConsistency;
+  self.identityButtonControl.identityViewStyle =
+      IdentityViewStyleConsistencyDefaultIdentity;
   [self.identityButtonControl addTarget:self
                                  action:@selector(identityButtonControlAction:
                                                                      forEvent:)
