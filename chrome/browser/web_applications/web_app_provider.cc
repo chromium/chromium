@@ -86,7 +86,7 @@ namespace web_app {
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kDiyAppIconsMaskedOnMacUpdate,
              "DiyAppIconsMaskedOnMacUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // static
