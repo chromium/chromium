@@ -32,6 +32,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -1882,6 +1883,10 @@ class MODULES_EXPORT WebGLRenderingContextBase
                                       const TexImageParams& params,
                                       HTMLImageElement*,
                                       ExceptionState&);
+
+  void DrawElementImage(scoped_refptr<Image> image,
+                        TexImageParams params,
+                        ExceptionState& exception_state);
 
   void TexImageHelperCanvasRenderingContextHost(const SecurityOrigin*,
                                                 TexImageParams params,

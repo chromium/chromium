@@ -32,6 +32,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/checked_math.h"
@@ -5869,6 +5870,32 @@ void WebGLRenderingContextBase::TexImageHelperHTMLImageElement(
     SynthesizeGLError(GL_INVALID_VALUE, func_name, "bad image data");
     return;
   }
+  TexImageSkImage(params, std::move(sk_image));
+}
+
+void WebGLRenderingContextBase::DrawElementImage(
+    scoped_refptr<Image> image,
+    TexImageParams params,
+    ExceptionState& exception_state) {
+  if (!ValidateTexImageBinding(params)) {
+    exception_state.ThrowTypeError("ValidateTexImageBinding failure");
+    return;
+  }
+  if (!image || !ValidateTexFunc(params, image->width(), image->height())) {
+    exception_state.ThrowTypeError("ValidateTexFunc failure");
+    return;
+  }
+  ImageExtractor image_extractor(
+      image.get(), params.GetDestinationAlphaType(),
+      params.unpack_colorspace_conversion
+          ? PredefinedColorSpaceToSkColorSpace(unpack_color_space_)
+          : nullptr);
+  auto sk_image = image_extractor.GetSkImage();
+  if (!sk_image) {
+    exception_state.ThrowTypeError("GetSkImage failure");
+    return;
+  }
+
   TexImageSkImage(params, std::move(sk_image));
 }
 
