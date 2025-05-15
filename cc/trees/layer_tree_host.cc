@@ -1914,6 +1914,10 @@ void LayerTreeHost::QueueImageDecode(const DrawImage& image,
   SetNeedsCommit();
 }
 
+bool LayerTreeHost::SpeculativeDecodeRequestInFlight() const {
+  return proxy_->SpeculativeDecodeRequestInFlight();
+}
+
 LayerListIterator LayerTreeHost::begin() {
   return LayerListIterator(root_layer());
 }

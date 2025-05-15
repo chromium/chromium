@@ -101,6 +101,8 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void QueueImageDecodeOnImpl(int request_id,
                               std::unique_ptr<DrawImage> image,
                               bool speculative);
+  bool SpeculativeDecodeRequestInFlight() const;
+  void SetSpeculativeDecodeRequestInFlight(bool value);
   void SetSourceURL(ukm::SourceId source_id, const GURL& url);
   void SetUkmSmoothnessDestination(
       base::WritableSharedMemoryMapping ukm_smoothness_data);
@@ -152,6 +154,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void SetNeedsImplSideInvalidation(
       bool needs_first_draw_on_activation) override;
   void NotifyImageDecodeRequestFinished(int request_id,
+                                        bool speculative,
                                         bool decode_succeeded) override;
   void NotifyTransitionRequestFinished(
       uint32_t sequence_id,
@@ -242,6 +245,9 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   bool next_frame_is_newly_committed_frame_;
 
   bool inside_draw_;
+
+  // Only one speculative decode request may be in flight at a time.
+  std::atomic<bool> speculative_decode_request_in_flight_{false};
 
   raw_ptr<TaskRunnerProvider> task_runner_provider_;
 

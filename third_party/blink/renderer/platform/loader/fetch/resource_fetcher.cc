@@ -821,8 +821,7 @@ ResourceFetcher::ResourceFetcher(const ResourceFetcherInit& init)
       context_lifecycle_notifier_(init.context_lifecycle_notifier),
       auto_load_images_(true),
       allow_stale_resources_(false),
-      image_fetched_(false),
-      speculative_decode_in_flight_(false) {
+      image_fetched_(false) {
   InstanceCounters::IncrementCounter(InstanceCounters::kResourceFetcherCounter);
 
   // Determine the number of images that should get a boosted priority and the
@@ -3217,10 +3216,10 @@ void ResourceFetcher::MaybeSaveResourceToStrongReference(Resource* resource) {
 
 void ResourceFetcher::MaybeStartSpeculativeImageDecode() {
   CHECK(base::FeatureList::IsEnabled(features::kSpeculativeImageDecodes) ||
-        !speculative_decode_in_flight_);
+        !Context().SpeculativeDecodeRequestInFlight());
   CHECK(base::FeatureList::IsEnabled(features::kSpeculativeImageDecodes) ||
         speculative_decode_candidate_images_.empty());
-  if (speculative_decode_in_flight_) {
+  if (Context().SpeculativeDecodeRequestInFlight()) {
     return;
   }
   // Find the highest priority image to decode.
@@ -3234,14 +3233,12 @@ void ResourceFetcher::MaybeStartSpeculativeImageDecode() {
             image_to_decode,
             WTF::BindOnce(&ResourceFetcher::SpeculativeImageDecodeFinished,
                           WrapWeakPersistent(this)))) {
-      speculative_decode_in_flight_ = true;
       break;
     }
   }
 }
 
 void ResourceFetcher::SpeculativeImageDecodeFinished() {
-  speculative_decode_in_flight_ = false;
   MaybeStartSpeculativeImageDecode();
 }
 

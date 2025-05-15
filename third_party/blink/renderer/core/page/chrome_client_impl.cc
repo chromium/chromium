@@ -1079,6 +1079,11 @@ void ChromeClientImpl::RequestDecode(LocalFrame* frame,
   widget->RequestDecode(image, std::move(callback), speculative);
 }
 
+bool ChromeClientImpl::SpeculativeDecodeRequestInFlight(
+    LocalFrame* frame) const {
+  return frame->GetWidgetForLocalRoot()->SpeculativeDecodeRequestInFlight();
+}
+
 void ChromeClientImpl::NotifyPresentationTime(LocalFrame& frame,
                                               ReportTimeCallback callback) {
   FrameWidget* widget = frame.GetWidgetForLocalRoot();

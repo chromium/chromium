@@ -4311,12 +4311,13 @@ void LayerTreeHostImpl::QueueImageDecode(int request_id,
   tile_manager_.decoded_image_tracker().QueueImageDecode(
       image_copy,
       base::BindOnce(&LayerTreeHostImpl::ImageDecodeFinished,
-                     weak_factory_.GetWeakPtr(), request_id),
+                     weak_factory_.GetWeakPtr(), request_id, speculative),
       speculative);
   tile_manager_.checker_image_tracker().DisallowCheckeringForImage(paint_image);
 }
 
 void LayerTreeHostImpl::ImageDecodeFinished(int request_id,
+                                            bool speculative,
                                             bool decode_succeeded) {
   DCHECK(!settings_.trees_in_viz_in_viz_process);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
@@ -4325,7 +4326,8 @@ void LayerTreeHostImpl::ImageDecodeFinished(int request_id,
           features::kSendExplicitDecodeRequestsImmediately)) {
     completed_image_decode_requests_.emplace_back(request_id, decode_succeeded);
   }
-  client_->NotifyImageDecodeRequestFinished(request_id, decode_succeeded);
+  client_->NotifyImageDecodeRequestFinished(request_id, speculative,
+                                            decode_succeeded);
 }
 
 std::vector<std::pair<int, bool>>

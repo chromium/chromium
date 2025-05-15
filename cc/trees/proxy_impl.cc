@@ -617,10 +617,14 @@ void ProxyImpl::SetNeedsImplSideInvalidation(
 }
 
 void ProxyImpl::NotifyImageDecodeRequestFinished(int request_id,
+                                                 bool speculative,
                                                  bool decode_succeeded) {
   DCHECK(IsImplThread());
   if (base::FeatureList::IsEnabled(
           features::kSendExplicitDecodeRequestsImmediately)) {
+    if (speculative) {
+      SetSpeculativeDecodeRequestInFlight(false);
+    }
     MainThreadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(&ProxyMain::NotifyImageDecodeRequestFinished,
@@ -996,6 +1000,15 @@ void ProxyImpl::QueueImageDecodeOnImpl(int request_id,
                                        std::unique_ptr<DrawImage> image,
                                        bool speculative) {
   host_impl_->QueueImageDecode(request_id, *image, speculative);
+}
+
+bool ProxyImpl::SpeculativeDecodeRequestInFlight() const {
+  return speculative_decode_request_in_flight_.load();
+}
+
+void ProxyImpl::SetSpeculativeDecodeRequestInFlight(bool value) {
+  CHECK(value != speculative_decode_request_in_flight_.load());
+  speculative_decode_request_in_flight_.store(value);
 }
 
 void ProxyImpl::SetSourceURL(ukm::SourceId source_id, const GURL& url) {

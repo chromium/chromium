@@ -1235,6 +1235,7 @@ void LayerContextImpl::SetNeedsImplSideInvalidation(
     bool needs_first_draw_on_activation) {}
 
 void LayerContextImpl::NotifyImageDecodeRequestFinished(int request_id,
+                                                        bool speculative,
                                                         bool decode_succeeded) {
 }
 

@@ -63,6 +63,7 @@ class LayerTreeHostImplClient {
       bool needs_first_draw_on_activation) = 0;
 
   virtual void NotifyImageDecodeRequestFinished(int request_id,
+                                                bool speculative,
                                                 bool decode_succeeded) = 0;
   virtual void NotifyTransitionRequestFinished(
       uint32_t sequence_id,

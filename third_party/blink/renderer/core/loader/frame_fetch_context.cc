@@ -950,6 +950,15 @@ bool FrameFetchContext::StartSpeculativeImageDecode(
   return false;
 }
 
+bool FrameFetchContext::SpeculativeDecodeRequestInFlight() const {
+  if (GetResourceFetcherProperties().IsDetached()) {
+    return false;
+  }
+  return document_->GetFrame()
+      ->GetChromeClient()
+      .SpeculativeDecodeRequestInFlight(document_->GetFrame());
+}
+
 bool FrameFetchContext::IsPrerendering() const {
   if (GetResourceFetcherProperties().IsDetached()) {
     return frozen_state_->is_prerendering;

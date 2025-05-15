@@ -63,4 +63,8 @@ bool FetchContext::StartSpeculativeImageDecode(Resource* resource,
   return false;
 }
 
+bool FetchContext::SpeculativeDecodeRequestInFlight() const {
+  return false;
+}
+
 }  // namespace blink
