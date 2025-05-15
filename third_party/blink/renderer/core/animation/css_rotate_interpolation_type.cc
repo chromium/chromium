@@ -7,7 +7,9 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/core/animation/tree_counting_checker.h"
 #include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
+#include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -209,27 +211,37 @@ InterpolationValue CSSRotateInterpolationType::MaybeConvertInherit(
 InterpolationValue CSSRotateInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState& state,
-    ConversionCheckers&) const {
-  if (!value.IsBaseValueList()) {
+    ConversionCheckers& conversion_checkers) const {
+  if (value.IsIdentifierValue()) {
+    // 'none'
     return ConvertRotation(OptionalRotation());
   }
 
-  if (auto* primitive = DynamicTo<CSSPrimitiveValue>(value)) {
-    if (!primitive->IsComputationallyIndependent()) {
-      return nullptr;
+  const CSSLengthResolver& length_resolver = state.CssToLengthConversionData();
+  const CSSValueList& list = To<CSSValueList>(value);
+  bool needs_tree_counting_checker = false;
+  if (list.length() == 2) {
+    for (const CSSValue* axis_component :
+         To<cssvalue::CSSAxisValue>(list.Item(0))) {
+      if (To<CSSPrimitiveValue>(axis_component)->IsElementDependent()) {
+        needs_tree_counting_checker = true;
+        break;
+      }
     }
+  }
+  if (needs_tree_counting_checker ||
+      To<CSSPrimitiveValue>(list.Item(list.length() - 1))
+          .IsElementDependent()) {
+    conversion_checkers.push_back(TreeCountingChecker::Create(length_resolver));
   }
 
   // TODO(crbug.com/328182246): we should not use the resolved angle
   // here, but doing it for now, since proper fix would require
   // rewriting Quaternion and Rotation to have unresolved versions.
-  // TODO(crbug.com/415626999): Create a TreeCountingChecker for sibling-index()
-  // and sibling-count() if necessary.
   // TODO(crbug.com/415572412): Create a LengthUnitsChecker for relative units
   // if necessary.
-  return ConvertRotation(
-      OptionalRotation(StyleBuilderConverter::ConvertRotation(
-          CSSToLengthConversionData(&state.GetElement()), value)));
+  return ConvertRotation(OptionalRotation(
+      StyleBuilderConverter::ConvertRotation(length_resolver, value)));
 }
 
 InterpolationValue

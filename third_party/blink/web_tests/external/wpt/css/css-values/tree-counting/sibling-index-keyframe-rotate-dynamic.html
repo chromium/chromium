@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<title>CSS Values and Units Test: sibling-index() changing scale during @keyframes animation</title>
+<title>CSS Values and Units Test: sibling-index() changing rotate during @keyframes animation</title>
 <link rel="help" href="https://drafts.csswg.org/css-values-5/#tree-counting">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
   @keyframes --anim {
     from {
-      scale: 0.7 calc(0.2 * sibling-index());
+      rotate: x calc(10deg * sibling-index());
     }
     to {
-      scale: 0.3 2;
+      rotate: x 90deg;
     }
   }
   #target {
@@ -23,12 +23,12 @@
 </div>
 <script>
   test(() => {
-    assert_equals(getComputedStyle(target).scale, "0.7 0.6");
+    assert_equals(getComputedStyle(target).rotate, "x 30deg");
   }, "Initially, the sibling-index() is 3 for #target");
 
   test(() => {
     rm.remove();
-    assert_equals(getComputedStyle(target).scale, "0.7 0.4");
+    assert_equals(getComputedStyle(target).rotate, "x 20deg");
   }, "Removing a preceding sibling of #target reduces the sibling-index()");
 
 </script>
