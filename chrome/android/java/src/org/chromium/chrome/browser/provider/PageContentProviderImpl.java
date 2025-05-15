@@ -8,6 +8,8 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.UriMatcher;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
@@ -22,6 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
@@ -354,9 +357,21 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
     }
 
     private static void grantAccessToUri(Uri uri) {
+
         for (String packageName : AUTHORIZED_PACKAGE_NAMES) {
             ContextUtils.getApplicationContext()
                     .grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
+
+        var intent = new Intent(Intent.ACTION_VOICE_COMMAND);
+        var intentActivities =
+                PackageManagerUtils.queryIntentActivities(intent, PackageManager.MATCH_ALL);
+        for (ResolveInfo packageInfo : intentActivities) {
+            ContextUtils.getApplicationContext()
+                    .grantUriPermission(
+                            packageInfo.activityInfo.packageName,
+                            uri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION);
         }
     }
 
