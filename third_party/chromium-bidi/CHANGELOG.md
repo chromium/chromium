@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.2.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v5.1.0...chromium-bidi-v5.2.0) (2025-05-15)
+
+
+### Features
+
+* create the main entrypoint module ([#3376](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3376)) ([421892a](https://github.com/GoogleChromeLabs/chromium-bidi/commit/421892a84e5182062bab1a922b8dce65752eb345))
+* support `acceptInsecureCerts` per user context ([#3399](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3399)) ([a00309f](https://github.com/GoogleChromeLabs/chromium-bidi/commit/a00309f94825fed5e65e28617782ee197ab0d140))
+* support GATT characteristic and descriptor simulation ([#3385](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3385)) ([89bff5e](https://github.com/GoogleChromeLabs/chromium-bidi/commit/89bff5ee603f4c705792e3215d51ff854d9d6944))
+* support GATT disconnection and service simulation ([#3383](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3383)) ([d201788](https://github.com/GoogleChromeLabs/chromium-bidi/commit/d2017887389f3e1a0cf94c4ca868c4791def5ca4))
+
 ## [5.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v5.0.0...chromium-bidi-v5.1.0) (2025-05-06)
 
 
