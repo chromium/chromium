@@ -403,7 +403,10 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
         // Fake a click on the move group action.
         mOnItemClickedCallback.onClick(
-                R.id.move_to_other_window_menu_id, TAB_GROUP_ID, /* collaborationId= */ null);
+                R.id.move_to_other_window_menu_id,
+                TAB_GROUP_ID,
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
 
         // Verify.
         verify(mMultiInstanceManager).moveTabGroupToOtherWindow(any(TabGroupMetadata.class));
