@@ -9,7 +9,6 @@
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/android/scoped_hardware_buffer_handle.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
@@ -437,10 +436,6 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
     if (shared_texture_memory_.BeginAccess(texture_, &begin_access_desc) !=
         wgpu::Status::Success) {
       LOG(ERROR) << "Failed to begin access for texture";
-      // TODO(crbug.com/377489264): Remove after ensuring that all samsung
-      // devices which are failing AHB size vs VkImage size checks have the
-      // check disabled.
-      base::debug::DumpWithoutCrashing();
       ResetStorage();
       return {};
     }
