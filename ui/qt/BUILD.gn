@@ -39,6 +39,9 @@ source_set("qt_interface") {
   # target instead.
   public = [ "qt_interface.h" ]
   sources = [ "qt_interface.cc" ]
+
+  # Don't use libc++ modules as this depends on libstdc++.
+  use_libcxx_modules = false
 }
 
 template("qt_shim") {
@@ -103,7 +106,6 @@ template("qt_shim") {
     # Don't depend on libcxx modules. This binary doesn't depend on the standard
     # library in libcxx. Instead it depends on the libcxx in the sysroot, so
     # using libcxx will just confuse it with duplicate definitions.
-    configs -= [ "//build/config/compiler:libcxx_module", ]
     use_libcxx_modules = false
   }
 }
