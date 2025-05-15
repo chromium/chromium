@@ -6,20 +6,17 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_AUTOFILL_AI_SAVE_OR_UPDATE_AUTOFILL_AI_DATA_BUBBLE_VIEW_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ui/autofill/autofill_ai/save_or_update_autofill_ai_data_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/view_observer.h"
 
 namespace autofill_ai {
 
 // This class displays a bubble to prompt the user whether they want save or
 // update an AutofillAi entity.
 class SaveOrUpdateAutofillAiDataBubbleView
-    : public autofill::AutofillLocationBarBubble,
-      public views::ViewObserver {
+    : public autofill::AutofillLocationBarBubble {
   METADATA_HEADER(SaveOrUpdateAutofillAiDataBubbleView, views::View)
 
  public:
@@ -56,15 +53,8 @@ class SaveOrUpdateAutofillAiDataBubbleView
       const SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails&
           detail);
 
-  // views::ViewObserver
-  void OnViewBoundsChanged(View* observed_view) override;
-
   void OnDialogAccepted();
 
-  // Used to observer `attribute_values_`, reacting to their preferred size
-  // updated to properly align the text depending on whether they break line.
-  base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
-      attribute_values_observation_{this};
   base::WeakPtr<SaveOrUpdateAutofillAiDataController> controller_;
 };
 
