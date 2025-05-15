@@ -6,7 +6,9 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/expected_macros.h"
 #include "base/types/pass_key.h"
@@ -127,21 +129,24 @@ class CloneLanguageModelClient
 };
 
 class AppendClient : public GarbageCollected<AppendClient>,
-                     public mojom::blink::AILanguageModelAppendClient,
+                     public mojom::blink::ModelStreamingResponder,
                      public AIContextObserver<IDLUndefined> {
  public:
-  AppendClient(ScriptState* script_state,
-               LanguageModel* language_model,
-               ScriptPromiseResolver<IDLUndefined>* resolver,
-               WTF::Vector<mojom::blink::AILanguageModelPromptPtr> prompts,
-               AbortSignal* signal,
-               base::RepeatingClosure overflow_callback)
+  AppendClient(
+      ScriptState* script_state,
+      LanguageModel* language_model,
+      ScriptPromiseResolver<IDLUndefined>* resolver,
+      WTF::Vector<mojom::blink::AILanguageModelPromptPtr> prompts,
+      AbortSignal* signal,
+      base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
+          complete_callback,
+      base::RepeatingClosure overflow_callback)
       : AIContextObserver(script_state, language_model, resolver, signal),
         language_model_(language_model),
+        complete_callback_(std::move(complete_callback)),
         overflow_callback_(overflow_callback),
         receiver_(this, language_model->GetExecutionContext()) {
-    mojo::PendingRemote<mojom::blink::AILanguageModelAppendClient>
-        client_remote;
+    mojo::PendingRemote<mojom::blink::ModelStreamingResponder> client_remote;
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
                    language_model->GetTaskRunner());
     language_model_->GetAILanguageModelRemote()->Append(
@@ -158,11 +163,14 @@ class AppendClient : public GarbageCollected<AppendClient>,
       LanguageModel* language_model,
       ScriptPromiseResolver<IDLUndefined>* resolver,
       AbortSignal* signal,
+      base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
+          complete_callback,
       base::RepeatingClosure overflow_callback,
       WTF::Vector<mojom::blink::AILanguageModelPromptPtr> input) {
     MakeGarbageCollected<AppendClient>(
         std::move(script_state), std::move(language_model), std::move(resolver),
-        std::move(input), std::move(signal), std::move(overflow_callback));
+        std::move(input), std::move(signal), std::move(complete_callback),
+        std::move(overflow_callback));
   }
 
   void Trace(Visitor* visitor) const override {
@@ -171,20 +179,19 @@ class AppendClient : public GarbageCollected<AppendClient>,
     visitor->Trace(receiver_);
   }
 
-  // mojom::blink::AILanguageModelAppendClient implementation.
-  void OnAppendComplete() override {
+  // mojom::blink::ModelStreamingResponder implementation.
+  void OnCompletion(
+      mojom::blink::ModelExecutionContextInfoPtr context_info) override {
     if (!GetResolver()) {
       return;
     }
 
+    if (complete_callback_) {
+      std::move(complete_callback_).Run(std::move(context_info));
+    }
+
     GetResolver()->Resolve();
     Cleanup();
-  }
-
-  void OnQuotaOverflow() override {
-    if (overflow_callback_) {
-      overflow_callback_.Run();
-    }
   }
 
   void OnError(ModelStreamingResponseStatus status) override {
@@ -195,12 +202,24 @@ class AppendClient : public GarbageCollected<AppendClient>,
     Cleanup();
   }
 
+  void OnStreaming(const WTF::String& text) override {
+    NOTREACHED() << "Append() should not invoke `OnStreaming()`";
+  }
+
+  void OnQuotaOverflow() override {
+    if (overflow_callback_) {
+      overflow_callback_.Run();
+    }
+  }
+
   void ResetReceiver() override { receiver_.reset(); }
 
  private:
   Member<LanguageModel> language_model_;
+  base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
+      complete_callback_;
   base::RepeatingClosure overflow_callback_;
-  HeapMojoReceiver<mojom::blink::AILanguageModelAppendClient, AppendClient>
+  HeapMojoReceiver<mojom::blink::ModelStreamingResponder, AppendClient>
       receiver_;
 };
 
@@ -617,10 +636,11 @@ ScriptPromise<IDLUndefined> LanguageModel::append(
       WTF::BindOnce(&AppendClient::Create, WrapPersistent(script_state),
                     WrapPersistent(this), WrapPersistent(resolver),
                     WrapPersistent(signal),
+                    WTF::BindOnce(&LanguageModel::OnResponseComplete,
+                                  WrapWeakPersistent(this)),
                     WTF::BindRepeating(&LanguageModel::OnQuotaOverflow,
                                        WrapWeakPersistent(this))),
       WTF::BindOnce(&RejectResolver, WrapPersistent(resolver)));
-
   return promise;
 }
 

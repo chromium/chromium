@@ -151,20 +151,13 @@ std::string GetContextString(AILanguageModel::Context& ctx) {
   return FormatInput(*ctx.GetNonInitialPrompts());
 }
 
-class TestStreamingResponder
-    : public blink::mojom::ModelStreamingResponder,
-      public blink::mojom::AILanguageModelAppendClient {
+class TestStreamingResponder : public blink::mojom::ModelStreamingResponder {
  public:
   TestStreamingResponder() = default;
   ~TestStreamingResponder() override = default;
 
   mojo::PendingRemote<blink::mojom::ModelStreamingResponder> BindRemote() {
     return receiver_.BindNewPipeAndPassRemote();
-  }
-
-  mojo::PendingRemote<blink::mojom::AILanguageModelAppendClient>
-  BindAppendRemote() {
-    return append_receiver_.BindNewPipeAndPassRemote();
   }
 
   // Returns true on successful completion and false on error.
@@ -200,9 +193,6 @@ class TestStreamingResponder
     run_loop_.Quit();
   }
 
-  // blink::mojom::AILanguageModelAppendClient:
-  void OnAppendComplete() override { run_loop_.Quit(); }
-
   void OnQuotaOverflow() override { quota_overflow_run_loop_.Quit(); }
 
   std::optional<blink::mojom::ModelStreamingResponseStatus> error_status_;
@@ -211,8 +201,6 @@ class TestStreamingResponder
   base::RunLoop run_loop_;
   base::RunLoop quota_overflow_run_loop_;
   mojo::Receiver<blink::mojom::ModelStreamingResponder> receiver_{this};
-  mojo::Receiver<blink::mojom::AILanguageModelAppendClient> append_receiver_{
-      this};
 };
 
 optimization_guide::proto::OnDeviceModelExecutionFeatureConfig CreateConfig() {
@@ -341,7 +329,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
   void Append(blink::mojom::AILanguageModel& model,
               std::vector<blink::mojom::AILanguageModelPromptPtr> input) {
     TestStreamingResponder responder;
-    model.Append(std::move(input), responder.BindAppendRemote());
+    model.Append(std::move(input), responder.BindRemote());
     EXPECT_TRUE(responder.WaitForCompletion());
   }
 
@@ -408,6 +396,33 @@ TEST_F(AILanguageModelTest, PromptTokenCounts) {
   {
     TestStreamingResponder responder;
     fork->Prompt(MakeInput("baz"), nullptr, responder.BindRemote());
+    EXPECT_TRUE(responder.WaitForCompletion());
+    EXPECT_EQ(responder.current_tokens(), expected_tokens.size());
+  }
+}
+
+TEST_F(AILanguageModelTest, AppendTokenCounts) {
+  auto session = CreateSession();
+
+  std::string expected_tokens = "UfooE";
+  {
+    TestStreamingResponder responder;
+    session->Append(MakeInput("foo"), responder.BindRemote());
+    EXPECT_TRUE(responder.WaitForCompletion());
+    EXPECT_EQ(responder.current_tokens(), expected_tokens.size());
+  }
+  expected_tokens += "UbarE";
+  {
+    TestStreamingResponder responder;
+    session->Append(MakeInput("bar"), responder.BindRemote());
+    EXPECT_TRUE(responder.WaitForCompletion());
+    EXPECT_EQ(responder.current_tokens(), expected_tokens.size());
+  }
+  auto fork = Fork(*session);
+  expected_tokens += "UbazE";
+  {
+    TestStreamingResponder responder;
+    fork->Append(MakeInput("baz"), responder.BindRemote());
     EXPECT_TRUE(responder.WaitForCompletion());
     EXPECT_EQ(responder.current_tokens(), expected_tokens.size());
   }
@@ -603,7 +618,7 @@ TEST_F(AILanguageModelTest, QuotaOverflowOnAppend) {
 
   std::string long_prompt(kTestMaxTokens / 3, 'a');
   TestStreamingResponder responder;
-  session->Append(MakeInput(long_prompt), responder.BindAppendRemote());
+  session->Append(MakeInput(long_prompt), responder.BindRemote());
   responder.WaitForQuotaOverflow();
   EXPECT_TRUE(responder.WaitForCompletion());
 
@@ -719,7 +734,7 @@ TEST_F(AILanguageModelTest, MultimodalInputImageNotSpecified) {
   }
   {
     TestStreamingResponder responder;
-    session->Append(make_input(), responder.BindAppendRemote());
+    session->Append(make_input(), responder.BindRemote());
     EXPECT_FALSE(responder.WaitForCompletion());
     EXPECT_EQ(responder.error_status(),
               blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest);
@@ -754,7 +769,7 @@ TEST_F(AILanguageModelTest, MultimodalInputAudioNotSpecified) {
   }
   {
     TestStreamingResponder responder;
-    session->Append(make_input(), responder.BindAppendRemote());
+    session->Append(make_input(), responder.BindRemote());
     EXPECT_FALSE(responder.WaitForCompletion());
     EXPECT_EQ(responder.error_status(),
               blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest);

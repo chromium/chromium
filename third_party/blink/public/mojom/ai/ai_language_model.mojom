@@ -111,25 +111,6 @@ interface AIManagerCreateLanguageModelClient {
   OnError(AIManagerCreateClientError error);
 };
 
-// The client interface that receives the state update of the appended prompt.
-// The append operation is only considered finished when `OnAppendComplete()`
-// or `OnError()` is called. After that, there won't be any request sent
-// through this interface and the remote should close the connection.
-interface AILanguageModelAppendClient {
-  // Called when the append operation is completed, this will be called at
-  // most once.
-  OnAppendComplete();
-  // Called when error happens during the append.
-  OnError(ModelStreamingResponseStatus status);
-  // Called when the context overflowed when reserving the space for the prompt
-  // to be appended, so it does not indicate a failure or guarantee the
-  // success.
-  // The behavior is the same as the `OnQuotaOverflow()` from
-  // `ModelStreamingResponder`, no more `OnQuotaOverflow` will happen after
-  // `OnAppendComplete()` or `OnError()`.
-  OnQuotaOverflow();
-};
-
 // A session for prompting a model with inputs to obtain streaming responses.
 interface AILanguageModel {
   // Prompts the model with arbitrary content provided via the JavaScript API.
@@ -143,10 +124,8 @@ interface AILanguageModel {
   // Appends the prompts to the context, but they won't be processed yet until
   // `Prompt()` is called. This method can be called multiple times before the
   // `Prompt()`.
-  // TODO(crbug.com/409355678): return the response in an asynchronous callback
-  // instead of through the client (same for `Fork` and `MeasureInputUsage`).
   Append(array<AILanguageModelPrompt> prompts,
-         pending_remote<AILanguageModelAppendClient> client);
+         pending_remote<ModelStreamingResponder> client);
 
   // Creates a new session with the same configuration and existing context
   // as the current session.

@@ -38,16 +38,6 @@ AITestUtils::MockCreateLanguageModelClient::BindNewPipeAndPassRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }
 
-AITestUtils::MockLanguageModelAppendClient::MockLanguageModelAppendClient() =
-    default;
-AITestUtils::MockLanguageModelAppendClient::~MockLanguageModelAppendClient() =
-    default;
-
-mojo::PendingRemote<blink::mojom::AILanguageModelAppendClient>
-AITestUtils::MockLanguageModelAppendClient::BindNewPipeAndPassRemote() {
-  return receiver_.BindNewPipeAndPassRemote();
-}
-
 mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
 AITestUtils::FakeMonitor::BindNewPipeAndPassRemote() {
   return mock_monitor_.BindNewPipeAndPassRemote();

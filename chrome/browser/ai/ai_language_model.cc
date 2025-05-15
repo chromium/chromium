@@ -121,29 +121,27 @@ class AILanguageModel::PromptState
     : public on_device_model::mojom::StreamingResponder,
       public on_device_model::mojom::ContextClient {
  public:
-  // Constructor used for input+output generation.
+  enum class Mode {
+    // Only input will be added, no output will be generated. The completion
+    // callback will be called when ContextClient has signaled completion.
+    kAppendOnly,
+    // Input will be appended and then output will be generated. The completion
+    // callback will be called when StreamingResponder has signaled completion
+    // and the output has been checked for safety.
+    kAppendAndGenerate,
+  };
   PromptState(
       mojo::PendingRemote<blink::mojom::ModelStreamingResponder> responder,
       on_device_model::mojom::InputPtr input,
       on_device_model::mojom::ResponseConstraintPtr constraint,
-      optimization_guide::SafetyChecker& safety_checker)
+      optimization_guide::SafetyChecker& safety_checker,
+      Mode mode)
       : responder_(std::move(responder)),
         input_(std::move(input)),
         constraint_(std::move(constraint)),
-        safety_checker_(safety_checker) {
+        safety_checker_(safety_checker),
+        mode_(mode) {
     responder_.set_disconnect_handler(
-        base::BindOnce(&PromptState::OnDisconnect, base::Unretained(this)));
-  }
-
-  // Constructor used for just input processing.
-  PromptState(mojo::PendingRemote<blink::mojom::AILanguageModelAppendClient>
-                  append_client,
-              on_device_model::mojom::InputPtr input,
-              optimization_guide::SafetyChecker& safety_checker)
-      : append_client_(std::move(append_client)),
-        input_(std::move(input)),
-        safety_checker_(safety_checker) {
-    append_client_.set_disconnect_handler(
         base::BindOnce(&PromptState::OnDisconnect, base::Unretained(this)));
   }
 
@@ -168,9 +166,6 @@ class AILanguageModel::PromptState
     if (responder_) {
       responder_->OnError(error);
     }
-    if (append_client_) {
-      append_client_->OnError(error);
-    }
     session_.reset();
     responder_.reset();
     context_receiver_.reset();
@@ -185,9 +180,6 @@ class AILanguageModel::PromptState
     if (responder_) {
       responder_->OnQuotaOverflow();
     }
-    if (append_client_) {
-      append_client_->OnQuotaOverflow();
-    }
   }
 
   void SetPriority(on_device_model::mojom::Priority priority) {
@@ -196,7 +188,7 @@ class AILanguageModel::PromptState
     }
   }
 
-  bool IsValid() const { return responder_ || append_client_; }
+  bool IsValid() const { return !!responder_; }
 
   mojo::Remote<on_device_model::mojom::Session> TakeSession() {
     return std::move(session_);
@@ -210,6 +202,7 @@ class AILanguageModel::PromptState
   const std::string& response() const { return full_response_; }
   // The total token count for this request including input and output tokens.
   uint32_t token_count() const { return token_count_; }
+  Mode mode() const { return mode_; }
 
  private:
   void OnDisconnect() {
@@ -220,12 +213,9 @@ class AILanguageModel::PromptState
   void OnComplete(uint32_t tokens_processed) override {
     context_receiver_.reset();
     token_count_ = tokens_processed;
-    if (append_client_) {
-      append_client_->OnAppendComplete();
-      if (callback_) {
-        std::move(callback_).Run();
-        // `this` may be deleted.
-      }
+    if (mode_ == Mode::kAppendOnly) {
+      std::move(callback_).Run();
+      // `this` may be deleted.
     }
   }
 
@@ -252,7 +242,7 @@ class AILanguageModel::PromptState
 
   void OnComplete(on_device_model::mojom::ResponseSummaryPtr summary) override {
     // The `OnComplete()` method on `responder_` will be called in
-    // `AILanguageModel::PromptOutputComplete()` after adding the response to
+    // `AILanguageModel::OnPromptOutputComplete()` after adding the response to
     // the session and handling overflow.
     response_receiver_.reset();
     safety_checker_->RunRawOutputCheck(
@@ -276,7 +266,7 @@ class AILanguageModel::PromptState
     context_receiver_.set_disconnect_handler(
         base::BindOnce(&PromptState::OnDisconnect, base::Unretained(this)));
 
-    if (responder_) {
+    if (mode_ == Mode::kAppendAndGenerate) {
       auto generate_options = on_device_model::mojom::GenerateOptions::New();
       generate_options->constraint = std::move(constraint_);
       session_->Generate(std::move(generate_options),
@@ -302,9 +292,7 @@ class AILanguageModel::PromptState
       return;
     }
     token_count_ += summary->output_token_count;
-    if (callback_) {
-      std::move(callback_).Run();
-    }
+    std::move(callback_).Run();
     // `this` may be deleted.
   }
 
@@ -327,10 +315,7 @@ class AILanguageModel::PromptState
     return false;
   }
 
-  // One of `responder_` or `append_client_` will be set. If `append_client_` is
-  // set, output will not be generated.
   mojo::Remote<blink::mojom::ModelStreamingResponder> responder_;
-  mojo::Remote<blink::mojom::AILanguageModelAppendClient> append_client_;
 
   mojo::Remote<on_device_model::mojom::Session> session_;
   mojo::Receiver<on_device_model::mojom::ContextClient> context_receiver_{this};
@@ -353,6 +338,8 @@ class AILanguageModel::PromptState
   std::string unchecked_response_;
   // Number of tokens since safety check was last run.
   uint32_t unchecked_output_tokens_ = 0;
+
+  Mode mode_;
 
   base::WeakPtrFactory<PromptState> weak_factory_{this};
 };
@@ -491,10 +478,11 @@ void AILanguageModel::Prompt(
 
 void AILanguageModel::Append(
     std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
-    mojo::PendingRemote<blink::mojom::AILanguageModelAppendClient> client) {
+    mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
+        pending_responder) {
   AddToQueue(base::BindOnce(&AILanguageModel::AppendInternal,
                             weak_ptr_factory_.GetWeakPtr(), std::move(prompts),
-                            std::move(client)));
+                            std::move(pending_responder)));
 }
 
 void AILanguageModel::Fork(
@@ -686,14 +674,14 @@ void AILanguageModel::PromptInternal(
             blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest);
     return;
   }
-  prompt_state_ =
-      std::make_unique<PromptState>(std::move(pending_responder), input.Clone(),
-                                    std::move(constraint), *safety_checker_);
+  prompt_state_ = std::make_unique<PromptState>(
+      std::move(pending_responder), input.Clone(), std::move(constraint),
+      *safety_checker_, PromptState::Mode::kAppendAndGenerate);
   GetSizeInTokens(
       std::move(input),
       base::BindOnce(&AILanguageModel::PromptGetInputSizeComplete,
                      weak_ptr_factory_.GetWeakPtr(),
-                     base::BindOnce(&AILanguageModel::PromptOutputComplete,
+                     base::BindOnce(&AILanguageModel::OnPromptOutputComplete,
                                     weak_ptr_factory_.GetWeakPtr())
                          .Then(std::move(on_complete))));
 }
@@ -730,7 +718,7 @@ void AILanguageModel::PromptGetInputSizeComplete(
   prompt_state_->AppendAndGenerate(std::move(session), std::move(on_complete));
 }
 
-void AILanguageModel::PromptOutputComplete() {
+void AILanguageModel::OnPromptOutputComplete() {
   if (!prompt_state_ || !prompt_state_->IsValid()) {
     return;
   }
@@ -741,23 +729,26 @@ void AILanguageModel::PromptOutputComplete() {
     return;
   }
 
-  auto model_output = on_device_model::mojom::Input::New();
-  model_output->pieces = {prompt_state_->response(), ml::Token::kEnd};
-
   // The prompt has completed successfully, replace the current session.
   current_session_ = prompt_state_->TakeSession();
-  // Add the output to the session since this is not added automatically from
-  // the Generate() call. The previous token will be a kModel token from
-  // ConvertToInputForExecute().
-  current_session_->Append(MakeAppendOptions(model_output.Clone()), {});
 
   Context::ContextItem item;
-  // One extra token for the end token on the model output.
-  item.tokens = prompt_state_->token_count() + 1;
+  item.tokens = prompt_state_->token_count();
   item.input = prompt_state_->TakeInput();
-  item.input->pieces.insert(item.input->pieces.end(),
-                            model_output->pieces.begin(),
-                            model_output->pieces.end());
+
+  if (prompt_state_->mode() == PromptState::Mode::kAppendAndGenerate) {
+    auto model_output = on_device_model::mojom::Input::New();
+    model_output->pieces = {prompt_state_->response(), ml::Token::kEnd};
+    item.input->pieces.insert(item.input->pieces.end(),
+                              model_output->pieces.begin(),
+                              model_output->pieces.end());
+    // Add the output to the session since this is not added automatically from
+    // the Generate() call. The previous token will be a kModel token from
+    // ConvertToInputForExecute().
+    current_session_->Append(MakeAppendOptions(std::move(model_output)), {});
+    // One extra token for the end token on the model output.
+    item.tokens++;
+  }
 
   auto responder = prompt_state_->TakeResponder();
   // The context's session history may be modified when adding a new item. In
@@ -775,29 +766,14 @@ void AILanguageModel::PromptOutputComplete() {
   }
 }
 
-void AILanguageModel::AppendComplete() {
-  if (!prompt_state_ || !prompt_state_->IsValid()) {
-    return;
-  }
-
-  current_session_ = prompt_state_->TakeSession();
-
-  Context::ContextItem item;
-  item.tokens = prompt_state_->token_count();
-  item.input = prompt_state_->TakeInput();
-  if (context_->AddContextItem(std::move(item)) ==
-      Context::SpaceReservationResult::kSpaceMadeAvailable) {
-    HandleOverflow();
-    prompt_state_->OnQuotaOverflow();
-  }
-}
-
 void AILanguageModel::AppendInternal(
     std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
-    mojo::PendingRemote<blink::mojom::AILanguageModelAppendClient> client,
+    mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
+        pending_responder,
     base::OnceClosure on_complete) {
   if (!initial_session_) {
-    mojo::Remote<blink::mojom::AILanguageModelAppendClient>(std::move(client))
+    mojo::Remote<blink::mojom::ModelStreamingResponder>(
+        std::move(pending_responder))
         ->OnError(
             blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
     return;
@@ -805,21 +781,22 @@ void AILanguageModel::AppendInternal(
 
   auto input = ConvertToInput(prompts, session_params_->capabilities);
   if (!input) {
-    mojo::Remote<blink::mojom::AILanguageModelAppendClient>(std::move(client))
+    mojo::Remote<blink::mojom::ModelStreamingResponder>(
+        std::move(pending_responder))
         ->OnError(
             blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest);
     return;
   }
   prompt_state_ = std::make_unique<PromptState>(
-      std::move(client), input.Clone(), *safety_checker_);
+      std::move(pending_responder), input.Clone(), /*constraint=*/nullptr,
+      *safety_checker_, PromptState::Mode::kAppendOnly);
   // The rest of the logic can be shared with Prompt() since PromptState() will
-  // handle correctly calling the append client.
-  // TODO(crbug.com/409355678): Can this share more logic with Prompt()?
+  // handle correctly calling this for append mode.
   GetSizeInTokens(
       std::move(input),
       base::BindOnce(&AILanguageModel::PromptGetInputSizeComplete,
                      weak_ptr_factory_.GetWeakPtr(),
-                     base::BindOnce(&AILanguageModel::AppendComplete,
+                     base::BindOnce(&AILanguageModel::OnPromptOutputComplete,
                                     weak_ptr_factory_.GetWeakPtr())
                          .Then(std::move(on_complete))));
 }
