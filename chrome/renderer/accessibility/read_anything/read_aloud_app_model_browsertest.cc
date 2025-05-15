@@ -880,3 +880,127 @@ TEST_F(
   ExpectPhraseHighlightAtIndexEmpty(535);
   ExpectPhraseHighlightAtIndexEmpty(-10);
 }
+
+TEST_F(ReadAnythingReadAloudAppModelTest, GetNextValidPosition) {
+  std::u16string sentence1 = u"This is a sentence.";
+  std::u16string sentence2 = u"This is another sentence.";
+  std::u16string sentence3 = u"And this is yet another sentence.";
+
+  static constexpr ui::AXNodeID kId1 = 2;
+  static constexpr ui::AXNodeID kId2 = 3;
+  static constexpr ui::AXNodeID kId3 = 4;
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
+
+  const std::set<ui::AXNodeID> current_nodes = InitializeWithAndProcessNodes(
+      {std::move(static_text1), std::move(static_text2),
+       std::move(static_text3)});
+
+  ui::AXNodePosition::AXPositionInstance new_position =
+      GetNextNodePosition(&current_nodes);
+  EXPECT_EQ(new_position->anchor_id(), kId2);
+  EXPECT_EQ(new_position->GetText(), sentence2);
+
+  // Getting the next node position shouldn't update the current AXPosition.
+  new_position = GetNextNodePosition(&current_nodes);
+  EXPECT_EQ(new_position->anchor_id(), kId2);
+  EXPECT_EQ(new_position->GetText(), sentence2);
+}
+
+TEST_F(ReadAnythingReadAloudAppModelTest,
+       GetNextValidPosition_SkipsNonTextNode) {
+  std::u16string sentence1 = u"This is a sentence.";
+  std::u16string sentence2 = u"This is another sentence.";
+
+  static constexpr ui::AXNodeID kId1 = 2;
+  static constexpr ui::AXNodeID kId2 = 4;
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+
+  ui::AXNodeData empty_node;
+  empty_node.role = ax::mojom::Role::kNone;
+  empty_node.id = 3;
+
+  const std::set<ui::AXNodeID> current_nodes = InitializeWithAndProcessNodes(
+      {std::move(static_text1), std::move(empty_node),
+       std::move(static_text2)});
+
+  ui::AXNodePosition::AXPositionInstance new_position =
+      GetNextNodePosition(&current_nodes);
+  EXPECT_EQ(new_position->anchor_id(), kId2);
+  EXPECT_EQ(new_position->GetText(), sentence2);
+}
+
+TEST_F(ReadAnythingReadAloudAppModelTest,
+       GetNextValidPosition_SkipsNonDistilledNode) {
+  std::u16string sentence1 = u"This is a sentence.";
+  std::u16string sentence2 = u"This is another sentence.";
+  std::u16string sentence3 = u"And this is yet another sentence.";
+
+  static constexpr ui::AXNodeID kId1 = 2;
+  static constexpr ui::AXNodeID kId2 = 3;
+  static constexpr ui::AXNodeID kId3 = 4;
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
+
+  InitializeWithAndProcessNodes({std::move(static_text1),
+                                 std::move(static_text2),
+                                 std::move(static_text3)});
+  // Don't distill the node with id 3.
+  std::set<ui::AXNodeID> current_nodes;
+  current_nodes.insert(kId1);
+  current_nodes.insert(kId3);
+  InitAXPositionWithNode(kId1);
+  ui::AXNodePosition::AXPositionInstance new_position =
+      GetNextNodePosition(&current_nodes);
+  EXPECT_EQ(new_position->anchor_id(), kId3);
+  EXPECT_EQ(new_position->GetText(), sentence3);
+}
+
+TEST_F(ReadAnythingReadAloudAppModelTest,
+       GetNextValidPosition_SkipsNodeWithHTMLTag) {
+  std::u16string sentence1 = u"This is a sentence.";
+  std::u16string sentence2 = u"This is another sentence.";
+  std::u16string sentence3 = u"And this is yet another sentence.";
+
+  static constexpr ui::AXNodeID kId1 = 2;
+  static constexpr ui::AXNodeID kId2 = 3;
+  static constexpr ui::AXNodeID kId3 = 4;
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
+  static_text2.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "h1");
+
+  const std::set<ui::AXNodeID> current_nodes = InitializeWithAndProcessNodes(
+      {std::move(static_text1), std::move(static_text2),
+       std::move(static_text3)});
+
+  ui::AXNodePosition::AXPositionInstance new_position =
+      GetNextNodePosition(&current_nodes);
+  EXPECT_EQ(new_position->anchor_id(), kId3);
+  EXPECT_EQ(new_position->GetText(), sentence3);
+}
+
+TEST_F(ReadAnythingReadAloudAppModelTest,
+       GetNextValidPosition_ReturnsNullPositionAtEndOfTree) {
+  std::u16string sentence1 = u"This is a sentence.";
+  ui::AXNodeData static_text = test::TextNode(/* id= */ 2, sentence1);
+  ui::AXNodeData empty_node1;
+  empty_node1.role = ax::mojom::Role::kNone;
+  empty_node1.id = 3;
+  ui::AXNodeData empty_node2;
+  empty_node2.role = ax::mojom::Role::kNone;
+  empty_node2.id = 4;
+  const std::set<ui::AXNodeID> current_nodes = InitializeWithAndProcessNodes(
+      {std::move(static_text), std::move(empty_node1), std::move(empty_node2)});
+
+  a11y::ReadAloudCurrentGranularity current_granularity =
+      a11y::ReadAloudCurrentGranularity();
+  current_granularity.AddText(static_text.id, 0, sentence1.length(), sentence1);
+
+  ui::AXNodePosition::AXPositionInstance new_position =
+      GetNextNodePosition(&current_nodes, current_granularity);
+  EXPECT_TRUE(new_position->IsNullPosition());
+}

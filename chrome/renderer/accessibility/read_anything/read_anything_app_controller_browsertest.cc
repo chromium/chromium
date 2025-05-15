@@ -242,14 +242,6 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     return controller().GetCurrentText();
   }
 
-  ui::AXNodePosition::AXPositionInstance GetNextNodePosition(
-      a11y::ReadAloudCurrentGranularity granularity =
-          a11y::ReadAloudCurrentGranularity()) {
-    return read_aloud_model().GetNextValidPositionFromCurrentPosition(
-        granularity, model().is_pdf(), model().IsDocs(),
-        &model().display_node_ids());
-  }
-
   void ProcessDisplayNodes(const std::vector<ui::AXNodeID>& content_node_ids) {
     model().Reset(content_node_ids);
     model().ComputeDisplayNodeIdsForDistilledTree();
@@ -3739,120 +3731,6 @@ TEST_F(
   size_t index = controller().GetAccessibleBoundary(sentence, 12);
   EXPECT_TRUE(index < sentence.length());
   EXPECT_EQ(sentence.substr(0, index), u"Hello, ");
-}
-
-TEST_F(ReadAnythingAppControllerTest, GetNextValidPosition) {
-  std::u16string sentence1 = u"This is a sentence.";
-  std::u16string sentence2 = u"This is another sentence.";
-  std::u16string sentence3 = u"And this is yet another sentence.";
-
-  static constexpr ui::AXNodeID kId1 = 2;
-  static constexpr ui::AXNodeID kId2 = 3;
-  static constexpr ui::AXNodeID kId3 = 4;
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
-  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
-
-  SendUpdateAndDistillNodes({std::move(static_text1), std::move(static_text2),
-                             std::move(static_text3)});
-
-  ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
-  EXPECT_EQ(new_position->anchor_id(), kId2);
-  EXPECT_EQ(new_position->GetText(), sentence2);
-
-  // Getting the next node position shouldn't update the current AXPosition.
-  new_position = GetNextNodePosition();
-  EXPECT_EQ(new_position->anchor_id(), kId2);
-  EXPECT_EQ(new_position->GetText(), sentence2);
-}
-
-TEST_F(ReadAnythingAppControllerTest, GetNextValidPosition_SkipsNonTextNode) {
-  std::u16string sentence1 = u"This is a sentence.";
-  std::u16string sentence2 = u"This is another sentence.";
-
-  static constexpr ui::AXNodeID kId1 = 2;
-  static constexpr ui::AXNodeID kId2 = 4;
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
-
-  ui::AXNodeData empty_node;
-  empty_node.role = ax::mojom::Role::kNone;
-  empty_node.id = 3;
-
-  InitializeWithAndProcessNodes({std::move(static_text1), std::move(empty_node),
-                                 std::move(static_text2)});
-
-  ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
-  EXPECT_EQ(new_position->anchor_id(), kId2);
-  EXPECT_EQ(new_position->GetText(), sentence2);
-}
-
-TEST_F(ReadAnythingAppControllerTest,
-       GetNextValidPosition_SkipsNonDistilledNode) {
-  std::u16string sentence1 = u"This is a sentence.";
-  std::u16string sentence2 = u"This is another sentence.";
-  std::u16string sentence3 = u"And this is yet another sentence.";
-
-  static constexpr ui::AXNodeID kId1 = 2;
-  static constexpr ui::AXNodeID kId2 = 3;
-  static constexpr ui::AXNodeID kId3 = 4;
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
-  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
-
-  SendUpdateWithNodes({std::move(static_text1), std::move(static_text2),
-                       std::move(static_text3)});
-  // Don't distill the node with id 3.
-  ProcessDisplayNodes({kId1, kId3});
-  controller().InitAXPositionWithNode(kId1);
-  ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
-  EXPECT_EQ(new_position->anchor_id(), kId3);
-  EXPECT_EQ(new_position->GetText(), sentence3);
-}
-
-TEST_F(ReadAnythingAppControllerTest,
-       GetNextValidPosition_SkipsNodeWithHTMLTag) {
-  std::u16string sentence1 = u"This is a sentence.";
-  std::u16string sentence2 = u"This is another sentence.";
-  std::u16string sentence3 = u"And this is yet another sentence.";
-
-  static constexpr ui::AXNodeID kId1 = 2;
-  static constexpr ui::AXNodeID kId2 = 3;
-  static constexpr ui::AXNodeID kId3 = 4;
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
-  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
-  static_text2.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "h1");
-
-  InitializeWithAndProcessNodes({std::move(static_text1),
-                                 std::move(static_text2),
-                                 std::move(static_text3)});
-
-  ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
-  EXPECT_EQ(new_position->anchor_id(), kId3);
-  EXPECT_EQ(new_position->GetText(), sentence3);
-}
-
-TEST_F(ReadAnythingAppControllerTest,
-       GetNextValidPosition_ReturnsNullPositionAtEndOfTree) {
-  std::u16string sentence1 = u"This is a sentence.";
-  ui::AXNodeData static_text = test::TextNode(/* id= */ 2, sentence1);
-  ui::AXNodeData empty_node1;
-  empty_node1.role = ax::mojom::Role::kNone;
-  empty_node1.id = 3;
-  ui::AXNodeData empty_node2;
-  empty_node2.role = ax::mojom::Role::kNone;
-  empty_node2.id = 4;
-  InitializeWithAndProcessNodes(
-      {std::move(static_text), std::move(empty_node1), std::move(empty_node2)});
-
-  a11y::ReadAloudCurrentGranularity current_granularity =
-      a11y::ReadAloudCurrentGranularity();
-  current_granularity.AddText(static_text.id, 0, sentence1.length(), sentence1);
-
-  ui::AXNodePosition::AXPositionInstance new_position =
-      GetNextNodePosition(current_granularity);
-  EXPECT_TRUE(new_position->IsNullPosition());
 }
 
 TEST_F(ReadAnythingAppControllerTest,
