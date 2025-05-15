@@ -1,4 +1,5 @@
 include_rules = [
+  "+aidl/org/chromium/base",
   "+third_party/ashmem",
   "+third_party/apple_apsl",
   "+third_party/boringssl/src/include",

@@ -35,26 +35,7 @@ public final class DeviceInfo {
 
     private static @Nullable String sGmsVersionCodeForTesting;
     private static boolean sInitialized;
-
-    /** The versionCode of Play Services. Can be overridden in tests. */
-    private final String mGmsVersionCode;
-
-    /** Whether we're running on Android TV or not */
-    private final boolean mIsTv;
-
-    /** Whether we're running on an Android Automotive OS device or not. */
-    private final boolean mIsAutomotive;
-
-    /** Whether we're running on an Android Foldable OS device or not. */
-    private final boolean mIsFoldable;
-
-    /** Whether we're running on an Android Desktop OS device or not. */
-    private final boolean mIsDesktop;
-
-    /**
-     * version of the FEATURE_VULKAN_DEQP_LEVEL, if available. Queried only on Android T or above
-     */
-    private final int mVulkanDeqpLevel;
+    private final IDeviceInfo mIDeviceInfo;
 
     @GuardedBy("CREATION_LOCK")
     private static @Nullable DeviceInfo sInstance;
@@ -68,19 +49,20 @@ public final class DeviceInfo {
     // function.
     @CalledByNative
     private static void nativeReadyForFields() {
+        IDeviceInfo info = getInstance().mIDeviceInfo;
         DeviceInfoJni.get()
                 .fillFields(
                         /* gmsVersionCode= */ getGmsVersionCode(),
-                        /* isTV= */ isTV(),
-                        /* isAutomotive= */ isAutomotive(),
-                        /* isFoldable= */ isFoldable(),
-                        /* isDesktop= */ isDesktop(),
-                        /* vulkanDeqpLevel= */ getVulkanDeqpLevel());
+                        /* isTV= */ info.isTv,
+                        /* isAutomotive= */ info.isAutomotive,
+                        /* isFoldable= */ info.isFoldable,
+                        /* isDesktop= */ info.isDesktop,
+                        /* vulkanDeqpLevel= */ info.vulkanDeqpLevel);
     }
 
     public static String getGmsVersionCode() {
         return sGmsVersionCodeForTesting == null
-                ? getInstance().mGmsVersionCode
+                ? getInstance().mIDeviceInfo.gmsVersionCode
                 : sGmsVersionCodeForTesting;
     }
 
@@ -91,23 +73,23 @@ public final class DeviceInfo {
     }
 
     public static boolean isTV() {
-        return getInstance().mIsTv;
+        return getInstance().mIDeviceInfo.isTv;
     }
 
     public static boolean isAutomotive() {
-        return getInstance().mIsAutomotive;
+        return getInstance().mIDeviceInfo.isAutomotive;
     }
 
     public static boolean isFoldable() {
-        return getInstance().mIsFoldable;
+        return getInstance().mIDeviceInfo.isFoldable;
     }
 
     public static boolean isDesktop() {
-        return getInstance().mIsDesktop;
+        return getInstance().mIDeviceInfo.isDesktop;
     }
 
     public static int getVulkanDeqpLevel() {
-        return getInstance().mVulkanDeqpLevel;
+        return getInstance().mIDeviceInfo.vulkanDeqpLevel;
     }
 
     public static boolean isInitializedForTesting() {
@@ -142,9 +124,10 @@ public final class DeviceInfo {
     }
 
     private DeviceInfo() {
+        mIDeviceInfo = new IDeviceInfo();
         sInitialized = true;
         PackageInfo gmsPackageInfo = PackageUtils.getPackageInfo("com.google.android.gms", 0);
-        mGmsVersionCode =
+        mIDeviceInfo.gmsVersionCode =
                 gmsPackageInfo != null
                         ? String.valueOf(packageVersionCode(gmsPackageInfo))
                         : "gms versionCode not available.";
@@ -153,7 +136,7 @@ public final class DeviceInfo {
         PackageManager pm = appContext.getPackageManager();
         // See https://developer.android.com/training/tv/start/hardware.html#runtime-check.
         UiModeManager uiModeManager = (UiModeManager) appContext.getSystemService(UI_MODE_SERVICE);
-        mIsTv =
+        mIDeviceInfo.isTv =
                 uiModeManager != null
                         && uiModeManager.getCurrentModeType()
                                 == Configuration.UI_MODE_TYPE_TELEVISION;
@@ -169,14 +152,14 @@ public final class DeviceInfo {
             // should not have such a modification.
             isAutomotive = false;
         }
-        mIsAutomotive = isAutomotive;
+        mIDeviceInfo.isAutomotive = isAutomotive;
 
         // Detect whether device is foldable.
-        mIsFoldable =
+        mIDeviceInfo.isFoldable =
                 Build.VERSION.SDK_INT >= VERSION_CODES.R
                         && pm.hasSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE);
 
-        mIsDesktop = pm.hasSystemFeature(PackageManager.FEATURE_PC);
+        mIDeviceInfo.isDesktop = pm.hasSystemFeature(PackageManager.FEATURE_PC);
 
         int vulkanLevel = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -190,7 +173,7 @@ public final class DeviceInfo {
                 }
             }
         }
-        mVulkanDeqpLevel = vulkanLevel;
+        mIDeviceInfo.vulkanDeqpLevel = vulkanLevel;
     }
 
     @NativeMethods

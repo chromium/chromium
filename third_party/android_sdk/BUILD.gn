@@ -79,7 +79,7 @@ if (enable_java_templates) {
   }
 }
 
-if (enable_javaless_renderers) {
+if (android_ndk_api_level >= 29) {
   config("libbinder_include") {
     include_dirs = [ "$android_sdk/optional/libbinder_ndk_cpp/" ]
   }
