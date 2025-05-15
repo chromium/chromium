@@ -21,11 +21,6 @@ const char kDisableInputEventActivationProtectionForTesting[] =
 // GetLocalBounds().
 const char kDrawViewBoundsRects[] = "draw-view-bounds-rects";
 
-// Force the use of a WUC tree as the window backdrop when the redirection
-// bitmap is removed on Windows. This will cause the backdrop to take the
-// frame color.
-const char kUseWUCForWindowBackdrop[] = "use-wuc-for-window-backdrop";
-
 // Captures stack traces on View construction to provide better debug info.
 const char kViewStackTraces[] = "view-stack-traces";
 

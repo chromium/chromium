@@ -14,7 +14,6 @@ namespace views::switches {
 VIEWS_EXPORT extern const char
     kDisableInputEventActivationProtectionForTesting[];
 VIEWS_EXPORT extern const char kDrawViewBoundsRects[];
-VIEWS_EXPORT extern const char kUseWUCForWindowBackdrop[];
 VIEWS_EXPORT extern const char kViewStackTraces[];
 
 }  // namespace views::switches
