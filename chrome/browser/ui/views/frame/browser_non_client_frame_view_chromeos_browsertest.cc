@@ -30,6 +30,7 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/multi_user/test_multi_user_window_manager.h"
@@ -42,6 +43,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -56,8 +58,10 @@
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
+#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -573,7 +577,16 @@ class WebAppNonClientFrameViewChromeOSTest
     return web_app_frame_toolbar_->paint_as_active_;
   }
 
-  PageActionIconView* GetPageActionIcon(PageActionIconType type) {
+  // Returns a PageActionIconView specified by `type` if it hasn't been migrated
+  // yet (or the migration is disabled). Otherwise returns the PageActionView
+  // specified by `action_id`
+  IconLabelBubbleView* GetPageActionView(
+      PageActionIconType type,
+      std::optional<actions::ActionId> action_id = std::nullopt) {
+    if (IsPageActionMigrated(type)) {
+      return browser_view_->toolbar_button_provider()->GetPageActionView(
+          action_id.value());
+    }
     return browser_view_->toolbar_button_provider()->GetPageActionIconView(
         type);
   }
@@ -697,8 +710,8 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
   SetUpWebApp();
   content::WebContents* web_contents =
       app_browser_->tab_strip_model()->GetActiveWebContents();
-  PageActionIconView* manage_passwords_icon =
-      GetPageActionIcon(PageActionIconType::kManagePasswords);
+  IconLabelBubbleView* manage_passwords_icon =
+      GetPageActionView(PageActionIconType::kManagePasswords);
 
   EXPECT_TRUE(manage_passwords_icon);
   EXPECT_FALSE(manage_passwords_icon->GetVisible());
@@ -720,7 +733,8 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest, ShowZoomIcon) {
       app_browser_->tab_strip_model()->GetActiveWebContents();
   zoom::ZoomController* zoom_controller =
       zoom::ZoomController::FromWebContents(web_contents);
-  PageActionIconView* zoom_icon = GetPageActionIcon(PageActionIconType::kZoom);
+  IconLabelBubbleView* zoom_icon =
+      GetPageActionView(PageActionIconType::kZoom, kActionZoomNormal);
 
   EXPECT_TRUE(zoom_icon);
   EXPECT_FALSE(zoom_icon->GetVisible());
@@ -733,7 +747,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest, ShowZoomIcon) {
 
 IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest, ShowFindIcon) {
   SetUpWebApp();
-  PageActionIconView* find_icon = GetPageActionIcon(PageActionIconType::kFind);
+  IconLabelBubbleView* find_icon = GetPageActionView(PageActionIconType::kFind);
 
   EXPECT_TRUE(find_icon);
   EXPECT_FALSE(find_icon->GetVisible());
@@ -746,8 +760,8 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest, ShowFindIcon) {
 IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
                        ShowTranslateIcon) {
   SetUpWebApp();
-  PageActionIconView* translate_icon =
-      GetPageActionIcon(PageActionIconType::kTranslate);
+  IconLabelBubbleView* translate_icon =
+      GetPageActionView(PageActionIconType::kTranslate, kActionShowTranslate);
 
   ASSERT_TRUE(translate_icon);
   EXPECT_FALSE(translate_icon->GetVisible());
