@@ -19,6 +19,8 @@ import android.widget.TextView.BufferType;
 import androidx.core.text.TextUtilsCompat;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -28,6 +30,7 @@ import org.chromium.ui.text.EmptyTextWatcher;
 import java.util.Locale;
 
 /** Prompt that asks users to confirm user's name before saving card to Google. */
+@NullMarked
 public class AutofillNameFixFlowPrompt extends AutofillSaveCardPromptBase
         implements EmptyTextWatcher {
     /**
@@ -69,7 +72,7 @@ public class AutofillNameFixFlowPrompt extends AutofillSaveCardPromptBase
 
     private final EditText mUserNameInput;
     private final ImageView mNameFixFlowTooltipIcon;
-    private PopupWindow mNameFixFlowTooltipPopup;
+    private @Nullable PopupWindow mNameFixFlowTooltipPopup;
 
     /** Fix flow prompt to confirm user name before saving the card to Google. */
     private AutofillNameFixFlowPrompt(

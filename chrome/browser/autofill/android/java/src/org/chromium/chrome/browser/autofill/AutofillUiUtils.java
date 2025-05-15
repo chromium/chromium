@@ -514,7 +514,7 @@ public class AutofillUiUtils {
      * Applies the error filter to the invalid fields based on the errorType.
      *
      * @param errorType The ErrorType value representing the type of error found for the unmask
-     *                  fields.
+     *     fields.
      * @param context Context required to get resources,
      * @param monthInput EditText for the month field.
      * @param yearInput EditText for the year field.
@@ -525,7 +525,7 @@ public class AutofillUiUtils {
             Context context,
             EditText monthInput,
             EditText yearInput,
-            EditText cvcInput) {
+            @Nullable EditText cvcInput) {
         ColorFilter filter =
                 new PorterDuffColorFilter(
                         context.getColor(R.color.input_underline_error_color),

@@ -12,6 +12,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.CardUnmaskPrompt.CardUnmaskPromptDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.WindowAndroid;
@@ -20,9 +22,10 @@ import org.chromium.url.GURL;
 
 /** JNI call glue for CardUnmaskPrompt C++ and Java objects. */
 @JNINamespace("autofill")
+@NullMarked
 public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
     private final long mNativeCardUnmaskPromptViewAndroid;
-    private final CardUnmaskPrompt mCardUnmaskPrompt;
+    private final @Nullable CardUnmaskPrompt mCardUnmaskPrompt;
 
     private CardUnmaskBridge(
             long nativeCardUnmaskPromptViewAndroid,

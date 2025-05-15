@@ -5,13 +5,15 @@
 package org.chromium.chrome.browser.app.download.home;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.OfflineContentAvailabilityStatusProvider;
 
 /**
- * Helper class to determine whether or not the prefetch setting is enabled for Chrome.
- * This class does not require an explicit destroy call, but needs all observers to be
- * unregistered for full clean up.
+ * Helper class to determine whether or not the prefetch setting is enabled for Chrome. This class
+ * does not require an explicit destroy call, but needs all observers to be unregistered for full
+ * clean up.
  */
+@NullMarked
 class PrefetchEnabledSupplier implements Supplier<Boolean> {
     // Supplier implementation.
     @Override

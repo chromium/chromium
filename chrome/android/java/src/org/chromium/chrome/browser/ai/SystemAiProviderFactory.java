@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.ai;
 
+import org.chromium.build.annotations.NullMarked;
+
+@NullMarked
 public abstract class SystemAiProviderFactory {
 
     public abstract SystemAiProvider createSystemAiProvider();

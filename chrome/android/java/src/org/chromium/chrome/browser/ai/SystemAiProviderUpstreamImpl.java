@@ -9,6 +9,7 @@ import android.content.Context;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.AvailabilityRequest;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.AvailabilityResponse;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.LaunchRequest;
@@ -19,6 +20,7 @@ import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.ServiceNotAv
  * Instantiable version of {@link SystemAiProvider}, don't add anything to this class. Downstream
  * provides an actual implementation via ServiceLoader/@ServiceImpl.
  */
+@NullMarked
 class SystemAiProviderUpstreamImpl extends SystemAiProvider {
 
     @Override

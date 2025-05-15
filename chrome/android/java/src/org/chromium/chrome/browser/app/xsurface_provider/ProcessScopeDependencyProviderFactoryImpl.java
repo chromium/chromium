@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.app.xsurface_provider;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.ServiceImpl;
 import org.chromium.chrome.GoogleAPIKeys;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -13,6 +14,7 @@ import org.chromium.chrome.browser.xsurface_provider.ProcessScopeDependencyProvi
 
 /** Implements the provider factory. */
 @ServiceImpl(ProcessScopeDependencyProviderFactory.class)
+@NullMarked
 public class ProcessScopeDependencyProviderFactoryImpl
         implements ProcessScopeDependencyProviderFactory {
 
