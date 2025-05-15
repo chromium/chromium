@@ -392,4 +392,9 @@ HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     "sanity/window-open-popup-placement.js",
     "--screen-info={1600x1200} --disable-popup-blocking")
 
+HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    WindowSizeSwitchHandling,
+    "sanity/window-size-switch-handling.js",
+    "--screen-info={1600x1200} --window-size=700,500")
+
 }  // namespace headless
