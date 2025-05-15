@@ -375,12 +375,8 @@
   if (self.userInteractionsBlocked) {
     return;
   }
-  __weak __typeof(self) weakSelf = self;
   self.userInteractionsBlocked = YES;
-  [self.delegate didTapAddAccountWithCompletion:^(SigninCoordinatorResult,
-                                                  id<SystemIdentity>) {
-    [weakSelf accountAddedIsDone];
-  }];
+  [self.delegate didTapAddAccount];
 }
 
 - (void)didTapSettingsButton {

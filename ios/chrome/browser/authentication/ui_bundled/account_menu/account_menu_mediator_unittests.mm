@@ -639,17 +639,12 @@ TEST_P(AccountMenuMediatorTest, TestDidTapAddAccount) {
     }
   }
   IgnoreAccountListUpdatesWithNoAdditionsOrRemovals();
-  __block SigninCoordinatorCompletionCallback completion = nil;
-  OCMExpect([delegate_mock_
-      didTapAddAccountWithCompletion:[OCMArg checkWithBlock:^BOOL(id value) {
-        completion = value;
-        return true;
-      }]]);
+  OCMExpect([delegate_mock_ didTapAddAccount]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);
   [mediator_ didTapAddAccount];
   OCMExpect([consumer_mock_ switchingStopped]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:YES]);
-  completion(SigninCoordinatorResult::SigninCoordinatorResultInterrupted, nil);
+  [mediator_ accountAddedIsDone];
 }
 
 // Tests the effect of signOutFromTargetRect.

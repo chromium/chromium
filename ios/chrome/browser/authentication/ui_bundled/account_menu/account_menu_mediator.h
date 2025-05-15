@@ -55,6 +55,9 @@ class SyncService;
 // Disconnects the mediator.
 - (void)disconnect;
 
+// Informs the mediator that the Add Account process is done.
+- (void)accountAddedIsDone;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_ACCOUNT_MENU_ACCOUNT_MENU_MEDIATOR_H_

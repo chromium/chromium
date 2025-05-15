@@ -316,8 +316,7 @@ void maybeShowSettingsIPH(Browser* browser) {
   [_signoutActionSheetCoordinator start];
 }
 
-- (void)didTapAddAccountWithCompletion:
-    (SigninCoordinatorCompletionCallback)completion {
+- (void)didTapAddAccount {
   auto style = SigninContextStyle::kDefault;
   auto accessPoint = signin_metrics::AccessPoint::kAccountMenu;
   _addAccountSigninCoordinator = [SigninCoordinator
@@ -331,10 +330,7 @@ void maybeShowSettingsIPH(Browser* browser) {
   _addAccountSigninCoordinator.signinCompletion =
       ^(SigninCoordinatorResult signinResult,
         id<SystemIdentity> signinCompletionIdentity) {
-        [weakSelf
-            signinCoordinatorCompletionWithSigninResult:signinResult
-                                     completionIdentity:signinCompletionIdentity
-                                             completion:completion];
+        [weakSelf signinCoordinatorCompletion];
       };
   [_addAccountSigninCoordinator start];
 }
@@ -471,61 +467,15 @@ void maybeShowSettingsIPH(Browser* browser) {
   _trustedVaultReauthenticationCoordinator = nil;
 }
 
-- (void)stopSigninCoordinatorAnimated:(BOOL)animated {
-  [_addAccountSigninCoordinator stopAnimated:animated];
-  _addAccountSigninCoordinator = nil;
-}
-
-- (void)startSigninCoordinatorWithCompletion:
-    (SigninCoordinatorCompletionCallback)completion {
-  CHECK(_addAccountSigninCoordinator);
-  __weak __typeof(self) weakSelf = self;
-  _addAccountSigninCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult signinResult,
-        id<SystemIdentity> signinCompletionIdentity) {
-        [weakSelf
-            signinCoordinatorCompletionWithSigninResult:signinResult
-                                     completionIdentity:signinCompletionIdentity
-                                             completion:completion];
-      };
-  [_addAccountSigninCoordinator start];
-}
-
-// Opens the add account coordinator on top of `baseViewController`.
-- (void)openAddAccountWithBaseViewController:baseViewController
-                                  completion:
-                                      (SigninCoordinatorCompletionCallback)
-                                          completion {
-  auto style = SigninContextStyle::kDefault;
-  auto accessPoint = signin_metrics::AccessPoint::kAccountMenu;
-  _addAccountSigninCoordinator = [SigninCoordinator
-      addAccountCoordinatorWithBaseViewController:baseViewController
-                                          browser:self.browser
-                                     contextStyle:style
-                                      accessPoint:accessPoint
-                             continuationProvider:
-                                 DoNothingContinuationProvider()];
-  [self startSigninCoordinatorWithCompletion:completion];
-}
-
 - (void)stopAddAccountCoordinator {
   [_addAccountSigninCoordinator stop];
   _addAccountSigninCoordinator = nil;
 }
 
 // Clean up the add account coordinator.
-- (void)
-    signinCoordinatorCompletionWithSigninResult:
-        (SigninCoordinatorResult)signinResult
-                             completionIdentity:
-                                 (id<SystemIdentity>)completionIdentity
-                                     completion:
-                                         (SigninCoordinatorCompletionCallback)
-                                             completion {
+- (void)signinCoordinatorCompletion {
+  [self.mediator accountAddedIsDone];
   [self stopAddAccountCoordinator];
-  if (completion) {
-    completion(signinResult, completionIdentity);
-  }
 }
 
 - (void)stopManageAccountsCoordinator {

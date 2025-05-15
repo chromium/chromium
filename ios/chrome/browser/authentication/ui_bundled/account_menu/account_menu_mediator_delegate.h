@@ -44,8 +44,7 @@
 - (void)didTapManageAccounts;
 
 // The user tapped on "Add account…".
-- (void)didTapAddAccountWithCompletion:
-    (SigninCoordinatorCompletionCallback)completion;
+- (void)didTapAddAccount;
 
 // The user tapped to open Settings page.
 - (void)didTapSettingsButton;
