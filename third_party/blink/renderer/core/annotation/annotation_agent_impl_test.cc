@@ -2337,12 +2337,13 @@ class AnnotationAgentImplTestWithScrollingBehavior
   ~AnnotationAgentImplTestWithScrollingBehavior() override = default;
 };
 
+// Assert that there are highlight animations when prefers-reduced-motion is
+// enabled, and SmoothScroll becomes instant.
 TEST_P(AnnotationAgentImplTestWithScrollingBehavior,
-       NoHighlightAnimationWithPrefersReducedMotion) {
+       NoAnimationWithPrefersReducedMotion) {
   GlicScrollBehaviorConfig config = GetParam();
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
-  // clang-format off
   request.Complete(String::Format(R"HTML(
       <!DOCTYPE html>
       <style>
@@ -2358,7 +2359,6 @@ TEST_P(AnnotationAgentImplTestWithScrollingBehavior,
       <p id='foo'>FOO<p>
     )HTML", config.element_top, config.body_height)
   );
-  // clang-format on
 
   Compositor().BeginFrame();
 
@@ -2393,26 +2393,9 @@ TEST_P(AnnotationAgentImplTestWithScrollingBehavior,
       EXPECT_TRUE(ExpectInViewport(*foo_element));
       break;
     }
-    case ScrollType::kSmoothScroll: {
-      // We need to scroll.
-      EXPECT_TRUE(ExpectNotInViewport(*foo_element));
-      host.agent_->ScrollIntoView(/*applies_focus=*/false);
-      host.FlushForTesting();
-
-      Compositor().BeginFrame();
-      Compositor().BeginFrame();
-      EXPECT_TRUE(GlicAnimationNotStarted());
-
-      // Guarantee the smooth scrolling has finished. The max smooth scrolling
-      // animation duration is 0.7s. We can't possibly play any highlight
-      // animation during the 0.05s because we never call BeginFrame() after
-      // the scroll animation has finished (the animation is played via
-      // RequestAnimationFrame).
-      task_environment().FastForwardBy(base::Milliseconds(750));
-      Compositor().BeginFrame(0.75);
-      EXPECT_TRUE(ExpectInViewport(*foo_element));
-      break;
-    }
+    case ScrollType::kSmoothScroll:
+      // We would ordinarily smooth scroll here. Since prefers-reduced-motion is
+      // enabled, the scroll is instant.
     case ScrollType::kInstantScroll: {
       // We need to scroll.
       EXPECT_TRUE(ExpectNotInViewport(*foo_element));

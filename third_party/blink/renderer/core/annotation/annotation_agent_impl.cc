@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/highlight/highlight_style_utils.h"
 #include "third_party/blink/renderer/core/html/html_details_element.h"
@@ -625,6 +626,14 @@ mojom::blink::ScrollBehavior AnnotationAgentImpl::ComputeScrollIntoViewBehavior(
     const mojom::blink::ScrollIntoViewParams& params) const {
   using mojom::blink::AnnotationType;
   using mojom::blink::ScrollBehavior;
+
+  CHECK(owning_container_->GetSupplementable());
+  Document* document = owning_container_->GetSupplementable();
+  if (document->GetSettings() &&
+      document->GetSettings()->GetPrefersReducedMotion()) {
+    return ScrollBehavior::kInstant;
+  }
+
   switch (type_) {
     case AnnotationType::kSharedHighlight:
     case AnnotationType::kTextFinder:
@@ -632,8 +641,7 @@ mojom::blink::ScrollBehavior AnnotationAgentImpl::ComputeScrollIntoViewBehavior(
       return ScrollBehavior::kAuto;
     case AnnotationType::kGlic:
       // Use kInstant for long scroll distances, kSmooth otherwise.
-      if (LocalFrameView* view =
-              owning_container_->GetSupplementable()->GetFrame()->View()) {
+      if (LocalFrameView* view = document->GetFrame()->View()) {
         ScrollOffset scroll_offset =
             scroll_into_view_util::GetScrollOffsetToExpose(
                 *view->GetScrollableArea(), bounding_box, PhysicalBoxStrut(),
