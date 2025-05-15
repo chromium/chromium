@@ -13,6 +13,8 @@
 #include "ash/shell_observer.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "ui/base/ime/input_method.h"
 #include "ui/base/ime/input_method_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_constants.h"
@@ -115,6 +117,9 @@ class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
 
   // Whether the cursor and focus is currently in a text input field.
   bool in_text_input_ = false;
+
+  base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
+      input_method_observation_{this};
 };
 
 }  // namespace ash

@@ -94,7 +94,6 @@ DictationButtonTray::DictationButtonTray(
   shell->AddShellObserver(this);
   shell->accessibility_controller()->AddObserver(this);
   shell->session_controller()->AddObserver(this);
-  shell->window_tree_host_manager()->input_method()->AddObserver(this);
 
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ASH_DICTATION_BUTTON_ACCESSIBLE_NAME));
@@ -116,13 +115,7 @@ DictationButtonTray::~DictationButtonTray() {
   if (session_controller) {
     session_controller->RemoveObserver(this);
   }
-  auto* window_tree_host_manager = shell->window_tree_host_manager();
-  if (window_tree_host_manager) {
-    auto* input_method = window_tree_host_manager->input_method();
-    if (input_method) {
-      input_method->RemoveObserver(this);
-    }
-  }
+  input_method_observation_.Reset();
 }
 
 void DictationButtonTray::OnDictationStarted() {
@@ -248,8 +241,15 @@ void DictationButtonTray::UpdateProgressIndicatorBounds() {
 }
 
 void DictationButtonTray::UpdateVisibility() {
-  bool is_visible =
+  const bool is_visible =
       Shell::Get()->accessibility_controller()->dictation().enabled();
+  if (is_visible && !input_method_observation_.IsObserving()) {
+    input_method_observation_.Observe(
+        Shell::Get()->window_tree_host_manager()->input_method());
+  } else if (!is_visible) {
+    input_method_observation_.Reset();
+  }
+
   SetVisiblePreferred(is_visible);
 }
 
