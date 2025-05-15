@@ -43,6 +43,7 @@ class MockAutofillAiDelegate : public AutofillAiDelegate {
               (const base::Uuid& guid,
                const FormStructure&,
                const AutofillField&,
+               base::span<const autofill::AutofillField* const>,
                ukm::SourceId),
               (override));
   MOCK_METHOD(void,

@@ -292,6 +292,7 @@ TEST_P(AutofillAiFunnelMetricsTest, Manager) {
   }
   if (user_filled_suggestion()) {
     manager().OnDidFillSuggestion(passport.guid(), *form, *form->field(0),
+                                  {form->field(0)},
                                   /*ukm_source_id=*/{});
   }
   if (user_corrected_filling()) {
@@ -357,6 +358,8 @@ class AutofillAiMqlsMetricsTest : public BaseAutofillAiTest {
           return "EventType: SuggestionFilled";
         case AutofillAiUkmLogger::EventType::kEditedAutofilledValue:
           return "EventType: EditedAutofilledValue";
+        case AutofillAiUkmLogger::EventType::kFieldFilled:
+          return "EventType: FieldFilled";
       }
     }();
 
@@ -440,13 +443,20 @@ TEST_F(AutofillAiMqlsMetricsTest, FieldEvent) {
       GetLastFieldEventLogs(), *form, *form->field(0),
       AutofillAiUkmLogger::EventType::kSuggestionFilled, /*event_order=*/1);
 
-  test_api(manager()).logger().OnEditedAutofilledField(*form, *form->field(0),
-                                                       /*ukm_source_id=*/{});
+  test_api(manager()).logger().OnDidFillField(*form, *form->field(0),
+                                              /*ukm_source_id=*/{});
   ASSERT_EQ(mqls_logs().size(), 3u);
   ExpectCorrectMqlsFieldEventLogging(
       GetLastFieldEventLogs(), *form, *form->field(0),
+      AutofillAiUkmLogger::EventType::kFieldFilled, /*event_order=*/2);
+
+  test_api(manager()).logger().OnEditedAutofilledField(*form, *form->field(0),
+                                                       /*ukm_source_id=*/{});
+  ASSERT_EQ(mqls_logs().size(), 4u);
+  ExpectCorrectMqlsFieldEventLogging(
+      GetLastFieldEventLogs(), *form, *form->field(0),
       AutofillAiUkmLogger::EventType::kEditedAutofilledValue,
-      /*event_order=*/2);
+      /*event_order=*/3);
 }
 
 TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics) {

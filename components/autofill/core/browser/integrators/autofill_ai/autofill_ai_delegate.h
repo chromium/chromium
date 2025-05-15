@@ -53,10 +53,12 @@ class AutofillAiDelegate {
                                   const AutofillField& field,
                                   ukm::SourceId ukm_source_id) = 0;
   virtual void OnFormSeen(const FormStructure& form) = 0;
-  virtual void OnDidFillSuggestion(const base::Uuid& guid,
-                                   const FormStructure& form,
-                                   const AutofillField& field,
-                                   ukm::SourceId ukm_source_id) = 0;
+  virtual void OnDidFillSuggestion(
+      const base::Uuid& guid,
+      const FormStructure& form,
+      const AutofillField& field,
+      base::span<const autofill::AutofillField* const> filled_fields,
+      ukm::SourceId ukm_source_id) = 0;
   virtual void OnEditedAutofilledField(const FormStructure& form,
                                        const AutofillField& field,
                                        ukm::SourceId ukm_source_id) = 0;

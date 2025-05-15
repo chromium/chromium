@@ -235,9 +235,13 @@ void AutofillAiManager::OnFormSeen(const FormStructure& form) {
 void AutofillAiManager::OnDidFillSuggestion(
     const base::Uuid& guid,
     const autofill::FormStructure& form,
-    const autofill::AutofillField& field,
+    const autofill::AutofillField& trigger_field,
+    base::span<const autofill::AutofillField* const> filled_fields,
     ukm::SourceId ukm_source_id) {
-  logger_.OnDidFillSuggestion(form, field, ukm_source_id);
+  logger_.OnDidFillSuggestion(form, trigger_field, ukm_source_id);
+  for (const autofill::AutofillField* const field : filled_fields) {
+    logger_.OnDidFillField(form, CHECK_DEREF(field), ukm_source_id);
+  }
   autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
   if (!entity_manager) {
     return;

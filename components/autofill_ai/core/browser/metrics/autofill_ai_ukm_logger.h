@@ -40,7 +40,8 @@ class AutofillAiUkmLogger {
     kSuggestionShown = 0,
     kSuggestionFilled = 1,
     kEditedAutofilledValue = 2,
-    kMaxValue = kEditedAutofilledValue
+    kFieldFilled = 3,
+    kMaxValue = kFieldFilled
   };
   void LogFieldEvent(ukm::SourceId ukm_source_id,
                      const autofill::FormStructure& form,

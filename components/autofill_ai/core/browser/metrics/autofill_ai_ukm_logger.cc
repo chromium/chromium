@@ -90,6 +90,9 @@ optimization_guide::proto::AutofillAiFieldEventType GetFieldEventType(
     case AutofillAiUkmLogger::EventType::kEditedAutofilledValue:
       return optimization_guide::proto::
           AUTOFILL_AI_FIELD_EVENT_TYPE_EDITED_AUTOFILLED_FIELD;
+    case AutofillAiUkmLogger::EventType::kFieldFilled:
+      return optimization_guide::proto::
+          AUTOFILL_AI_FIELD_EVENT_TYPE_FIELD_FILLED;
   }
   NOTREACHED();
 }
