@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ToolbarOverflow) {
 }
 
 // TODO(crbug.com/417847367): Deflake on Linux.
-#if defined(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_LinksToggledIntegration DISABLED_LinksToggledIntegration
 #else
 #define MAYBE_LinksToggledIntegration LinksToggledIntegration
