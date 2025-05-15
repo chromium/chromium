@@ -7,6 +7,10 @@
  */
 import {constants} from './constants.js';
 import {TestImportManager} from './testing/test_import_manager.js';
+// Required for AccessibilityExtensionAutomationPredicateTest
+import {createMockNode} from './testing/test_node_generator.js';
+
+TestImportManager.exportForTesting(createMockNode);
 
 import ActionType = chrome.automation.ActionType;
 import AutomationNode = chrome.automation.AutomationNode;

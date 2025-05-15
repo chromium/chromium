@@ -7,6 +7,8 @@
 
 // Required for AccessibilityExtensionArrayUtilTest.
 import '/common/array_util.js';
+// Required for AccessibilityExtensionAutomationPredicateTest.
+import '/common/automation_predicate.js';
 // Required for AccessibilityExtensionAutomationTreeWalkerTest.
 import '/common/tree_walker.js';
 // Required for AccessibilityExtensionAutomationUtilE2ETest.
