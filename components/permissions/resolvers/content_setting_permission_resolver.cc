@@ -4,6 +4,8 @@
 
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
 
+#include "base/notimplemented.h"
+#include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -29,25 +31,27 @@ ContentSettingPermissionResolver::ContentSettingPermissionResolver(
 
 blink::mojom::PermissionStatus
 ContentSettingPermissionResolver::DeterminePermissionStatus(
-    PermissionSetting setting) {
-  CHECK(setting.options.is_none());
+    const base::Value& value) const {
   return PermissionUtil::ContentSettingToPermissionStatus(
-      setting.content_setting == CONTENT_SETTING_DEFAULT
-          ? default_value_
-          : setting.content_setting);
+      value.is_none() ? default_value_
+                      : content_settings::ValueToContentSetting(value));
 }
 
-ContentSettingPermissionResolver::PermissionSetting
-ContentSettingPermissionResolver::ComputePermissionDecisionResult(
-    PermissionSetting previous_setting,
+base::Value ContentSettingPermissionResolver::ComputePermissionDecisionResult(
+    const base::Value& previous_value,
     ContentSetting decision,
-    std::optional<base::Value> prompt_options) {
-  // Pure content settings don't have or set any options
-  CHECK(previous_setting.options.is_none());
-  CHECK(!prompt_options.has_value() || prompt_options->is_none());
-  return PermissionSetting(
-      decision == CONTENT_SETTING_DEFAULT ? default_value_ : decision,
-      base::Value());
+    std::optional<base::Value> prompt_options) const {
+  return decision == CONTENT_SETTING_DEFAULT ? base::Value(default_value_)
+                                             : base::Value(decision);
+}
+
+ContentSettingPermissionResolver::PromptParameters
+ContentSettingPermissionResolver::GetPromptParameters(
+    const base::Value& current_setting_state) const {
+  // TODO(crbug.com/417916654): Migrate PermissionRequest prompt parameters into
+  // PermissionResolvers.
+  NOTIMPLEMENTED();
+  return PromptParameters();
 }
 
 }  // namespace permissions

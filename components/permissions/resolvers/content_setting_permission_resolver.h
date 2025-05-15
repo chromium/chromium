@@ -20,13 +20,15 @@ class ContentSettingPermissionResolver : public PermissionResolver {
   explicit ContentSettingPermissionResolver(RequestType request_type);
 
   blink::mojom::PermissionStatus DeterminePermissionStatus(
-      PermissionSetting setting) override;
+      const base::Value& value) const override;
 
-  PermissionSetting ComputePermissionDecisionResult(
-      PermissionSetting previous_setting,
+  base::Value ComputePermissionDecisionResult(
+      const base::Value& previous_value,
       ContentSetting decision,
-      std::optional<base::Value> prompt_options) override;
+      std::optional<base::Value> prompt_options) const override;
 
+  PromptParameters GetPromptParameters(
+      const base::Value& current_setting_state) const override;
   ContentSetting default_value_;
 };
 

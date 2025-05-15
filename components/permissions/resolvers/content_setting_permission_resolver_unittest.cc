@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/permission_util.h"
@@ -43,42 +44,40 @@ TEST_P(ContentSettingPermissionResolverTest, TestDeterminePermissionStatus) {
   EXPECT_EQ(resolver.GetContentSettingsType(), type);
   EXPECT_EQ(resolver.default_value_, default_value);
 
-  EXPECT_EQ(
-      resolver.DeterminePermissionStatus(PermissionResolver::PermissionSetting(
-          ContentSetting::CONTENT_SETTING_ALLOW)),
-      blink::mojom::PermissionStatus::GRANTED);
+  EXPECT_EQ(resolver.DeterminePermissionStatus(
+                content_settings::ContentSettingToValue(
+                    ContentSetting::CONTENT_SETTING_ALLOW)),
+            blink::mojom::PermissionStatus::GRANTED);
 
-  EXPECT_EQ(
-      resolver.DeterminePermissionStatus(PermissionResolver::PermissionSetting(
-          ContentSetting::CONTENT_SETTING_BLOCK)),
-      blink::mojom::PermissionStatus::DENIED);
+  EXPECT_EQ(resolver.DeterminePermissionStatus(
+                content_settings::ContentSettingToValue(
+                    ContentSetting::CONTENT_SETTING_BLOCK)),
+            blink::mojom::PermissionStatus::DENIED);
 
-  EXPECT_EQ(
-      resolver.DeterminePermissionStatus(PermissionResolver::PermissionSetting(
-          ContentSetting::CONTENT_SETTING_ASK)),
-      blink::mojom::PermissionStatus::ASK);
+  EXPECT_EQ(resolver.DeterminePermissionStatus(
+                content_settings::ContentSettingToValue(
+                    ContentSetting::CONTENT_SETTING_ASK)),
+            blink::mojom::PermissionStatus::ASK);
 
-  EXPECT_EQ(
-      resolver.DeterminePermissionStatus(PermissionResolver::PermissionSetting(
-          ContentSetting::CONTENT_SETTING_DEFAULT)),
-      PermissionUtil::ContentSettingToPermissionStatus(default_value));
+  EXPECT_EQ(resolver.DeterminePermissionStatus(
+                content_settings::ContentSettingToValue(
+                    ContentSetting::CONTENT_SETTING_DEFAULT)),
+            PermissionUtil::ContentSettingToPermissionStatus(default_value));
 
-  PermissionResolver::PermissionSetting previous_setting(
-      CONTENT_SETTING_DEFAULT);
+  base::Value previous_setting(
+      content_settings::ContentSettingToValue(CONTENT_SETTING_DEFAULT));
 
   EXPECT_EQ(resolver.ComputePermissionDecisionResult(
                 previous_setting, CONTENT_SETTING_ALLOW, std::nullopt),
-            ContentSettingPermissionResolver::PermissionSetting(
-                CONTENT_SETTING_ALLOW));
+            CONTENT_SETTING_ALLOW);
 
   EXPECT_EQ(resolver.ComputePermissionDecisionResult(
                 previous_setting, CONTENT_SETTING_BLOCK, std::nullopt),
-            ContentSettingPermissionResolver::PermissionSetting(
-                CONTENT_SETTING_BLOCK));
+            CONTENT_SETTING_BLOCK);
 
   EXPECT_EQ(resolver.ComputePermissionDecisionResult(
                 previous_setting, CONTENT_SETTING_DEFAULT, std::nullopt),
-            ContentSettingPermissionResolver::PermissionSetting(default_value));
+            default_value);
 }
 
 TEST_P(ContentSettingPermissionResolverTest,
@@ -87,22 +86,20 @@ TEST_P(ContentSettingPermissionResolverTest,
   ContentSetting default_value = GetParam().second;
 
   ContentSettingPermissionResolver resolver(type);
-  PermissionResolver::PermissionSetting previous_setting(
-      CONTENT_SETTING_DEFAULT);
+  base::Value previous_setting(CONTENT_SETTING_DEFAULT);
 
   EXPECT_EQ(resolver.ComputePermissionDecisionResult(
                 previous_setting, CONTENT_SETTING_ALLOW, std::nullopt),
-            ContentSettingPermissionResolver::PermissionSetting(
-                CONTENT_SETTING_ALLOW));
+            CONTENT_SETTING_ALLOW);
 
   EXPECT_EQ(resolver.ComputePermissionDecisionResult(
                 previous_setting, CONTENT_SETTING_BLOCK, std::nullopt),
-            ContentSettingPermissionResolver::PermissionSetting(
-                CONTENT_SETTING_BLOCK));
+            CONTENT_SETTING_BLOCK);
 
   EXPECT_EQ(resolver.ComputePermissionDecisionResult(
                 previous_setting, CONTENT_SETTING_DEFAULT, std::nullopt),
-            ContentSettingPermissionResolver::PermissionSetting(default_value));
+
+            default_value);
 }
 
 }  // namespace permissions
