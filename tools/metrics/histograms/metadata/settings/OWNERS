@@ -5,3 +5,4 @@ per-file OWNERS=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
 harrisonsean@chromium.org
 boujane@google.com # For PrivacySandbox Metrics only
 dullweber@chromium.org # For Privacy Metrics only
+antoniosartori@chromium.org # For DisruptiveNotificationRevocations metrics
