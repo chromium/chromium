@@ -5,6 +5,7 @@
 #ifndef MEDIA_AUDIO_ANDROID_AUDIO_DEVICE_ID_H_
 #define MEDIA_AUDIO_ANDROID_AUDIO_DEVICE_ID_H_
 
+#include <compare>
 #include <optional>
 #include <string_view>
 
@@ -18,8 +19,12 @@ class MEDIA_EXPORT AudioDeviceId {
  public:
   static AudioDeviceId Default();
 
+  // Creates an `AudioDeviceId` representing the ID of a non-default device.
+  // Returns `std::nullopt` if the default device ID is provided.
+  static std::optional<AudioDeviceId> NonDefault(int id);
+
   // Parses a string representation of a device ID to an `AudioDeviceId`.
-  // Returns std::nullopt if parsing fails.
+  // Returns `std::nullopt` if parsing fails.
   static std::optional<AudioDeviceId> Parse(std::string_view device_id_string);
 
   bool IsDefault() const;
@@ -27,6 +32,8 @@ class MEDIA_EXPORT AudioDeviceId {
   // Converts the device ID to a value compatible with
   // `AAudioStreamBuilder_setDeviceId`.
   int32_t ToAAudioDeviceId() const;
+
+  std::strong_ordering operator<=>(const AudioDeviceId& other) const = default;
 
  private:
   explicit AudioDeviceId(int32_t id);

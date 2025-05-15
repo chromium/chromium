@@ -47,20 +47,27 @@ class AudioManagerAndroid {
     public static class AudioDevice {
         private final int mId;
         private final @Nullable String mName;
+        private final int mType;
 
-        public AudioDevice(int id, @Nullable String name) {
+        public AudioDevice(int id, @Nullable String name, int type) {
             mId = id;
             mName = name;
+            mType = type;
         }
 
         @CalledByNative("AudioDevice")
-        private String id() {
-            return String.valueOf(mId);
+        private int id() {
+            return mId;
         }
 
         @CalledByNative("AudioDevice")
         private @Nullable String name() {
             return mName;
+        }
+
+        @CalledByNative("AudioDevice")
+        private int type() {
+            return mType;
         }
     }
 
@@ -294,12 +301,12 @@ class AudioManagerAndroid {
 
             int id = deviceInfo.getId();
             String name = deviceInfo.getProductName().toString();
-            if (name.equals(android.os.Build.MODEL)) {
+            if (name.equals(Build.MODEL)) {
                 // Undo the Android framework's substitution of a missing name with
                 // `android.os.Build.MODEL` to facilitate providing a custom fallback name instead.
                 name = null;
             }
-            devices.add(new AudioDevice(id, name));
+            devices.add(new AudioDevice(id, name, type));
         }
         return devices.toArray(new AudioDevice[0]);
     }

@@ -4,6 +4,7 @@
 
 package org.chromium.media;
 
+import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
 
 import org.chromium.base.Log;
@@ -285,8 +286,12 @@ abstract class CommunicationDeviceSelector {
             int i = 0;
             for (int id = 0; id < devices.length; ++id) {
                 if (devices[id]) {
+                    // Device type information is not used for communication devices
                     array[i] =
-                            new AudioManagerAndroid.AudioDevice(id, DeviceHelpers.DEVICE_NAMES[id]);
+                            new AudioManagerAndroid.AudioDevice(
+                                    id,
+                                    DeviceHelpers.DEVICE_NAMES[id],
+                                    AudioDeviceInfo.TYPE_UNKNOWN);
                     list.add(DeviceHelpers.DEVICE_NAMES[id]);
                     i++;
                 }

@@ -8,9 +8,12 @@
 #include <set>
 
 #include "base/android/jni_android.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "media/audio/android/audio_device.h"
+#include "media/audio/android/audio_device_id.h"
 #include "media/audio/audio_manager_base.h"
 
 namespace media {
@@ -106,6 +109,15 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
   bool HasNoAudioInputStreams();
   void GetDeviceNames(AudioDeviceNames* device_names,
                       AudioDeviceDirection direction);
+
+  // Utility for `Make(...)Stream` methods which retrieves an appropriate
+  // `android::AudioDevice` based on the provided device ID string. Returns
+  // `std::nullopt` if the device ID is valid but its corresponding device is
+  // not available, which usually indicates that the device was disconnected.
+  std::optional<android::AudioDevice> GetDeviceForAAudioStream(
+      std::string_view id_string,
+      AudioDeviceDirection direction);
+
   void SetCommunicationAudioModeOn(bool on);
   bool SetCommunicationDevice(const std::string& device_id);
   int GetNativeOutputSampleRate();
@@ -124,6 +136,14 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
 
   // Java AudioManager instance.
   base::android::ScopedJavaGlobalRef<jobject> j_audio_manager_;
+
+  // Mappings from device IDs to devices. Exclusively contain information about
+  // devices which were present during the most recent call to
+  // `GetDeviceNames()` for the respective direction (input or output). Only
+  // updated when `UseAAudioPerStreamDeviceSelection()` is `true`.
+  using Devices = base::flat_map<android::AudioDeviceId, android::AudioDevice>;
+  Devices input_devices_;
+  Devices output_devices_;
 
   typedef std::set<raw_ptr<MuteableAudioOutputStream, SetExperimental>>
       OutputStreams;

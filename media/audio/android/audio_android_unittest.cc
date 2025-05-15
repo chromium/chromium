@@ -843,6 +843,9 @@ class AudioAndroidInputTest : public AudioAndroidOutputTest {
   AudioParameters audio_input_parameters_;
 };
 
+// TODO(crbug.com/417671787): Add test doubles for the device list fetch path
+// and enhance and expand device list-dependent tests.
+
 // Get the default audio input parameters.
 TEST_F(AudioAndroidInputTest, GetDefaultInputStreamParameters) {
   AudioParameters params = GetDefaultInputStreamParametersOnAudioThread();

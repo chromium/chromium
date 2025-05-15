@@ -15,6 +15,19 @@ TEST(AudioAndroidAudioDeviceIdTest, CreateDefaultDeviceId) {
   EXPECT_TRUE(id.IsDefault());
 }
 
+TEST(AudioAndroidAudioDeviceIdTest, ConvertDefaultDeviceIdToAAudioDeviceId) {
+  const AudioDeviceId id = AudioDeviceId::Default();
+  EXPECT_EQ(id.ToAAudioDeviceId(), AAUDIO_UNSPECIFIED);
+}
+
+TEST(AudioAndroidAudioDeviceIdTest,
+     CreateNonDefaultDeviceIdAndConvertToAAudioDeviceId) {
+  const std::optional<AudioDeviceId> id = AudioDeviceId::NonDefault(100);
+  ASSERT_TRUE(id.has_value());
+  EXPECT_FALSE(id->IsDefault());
+  EXPECT_EQ(id->ToAAudioDeviceId(), 100);
+}
+
 TEST(AudioAndroidAudioDeviceIdTest, ParseDefaultDeviceId) {
   for (std::string id_string : {"", "default"}) {
     const std::optional<AudioDeviceId> id = AudioDeviceId::Parse(id_string);
@@ -23,7 +36,8 @@ TEST(AudioAndroidAudioDeviceIdTest, ParseDefaultDeviceId) {
   }
 }
 
-TEST(AudioAndroidAudioDeviceIdTest, ParseValidNonDefaultDeviceId) {
+TEST(AudioAndroidAudioDeviceIdTest,
+     ParseValidNonDefaultDeviceIdAndConvertToAAudioDeviceId) {
   const std::optional<AudioDeviceId> id = AudioDeviceId::Parse("100");
   ASSERT_TRUE(id.has_value());
   EXPECT_FALSE(id->IsDefault());
@@ -35,17 +49,6 @@ TEST(AudioAndroidAudioDeviceIdTest, ParseInvalidNonDefaultDeviceId) {
     const std::optional<AudioDeviceId> id = AudioDeviceId::Parse(id_string);
     EXPECT_FALSE(id.has_value());
   }
-}
-
-TEST(AudioAndroidAudioDeviceIdTest, ConvertDefaultDeviceIdToAAudioDeviceId) {
-  const AudioDeviceId id = AudioDeviceId::Default();
-  EXPECT_EQ(id.ToAAudioDeviceId(), AAUDIO_UNSPECIFIED);
-}
-
-TEST(AudioAndroidAudioDeviceIdTest, ConvertNonDefaultDeviceIdToAAudioDeviceId) {
-  const std::optional<AudioDeviceId> id = AudioDeviceId::Parse("123");
-  ASSERT_TRUE(id.has_value());
-  EXPECT_EQ(id->ToAAudioDeviceId(), 123);
 }
 
 }  // namespace media::android

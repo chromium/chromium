@@ -5,6 +5,7 @@
 #include "media/audio/android/audio_manager_android.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/android/build_info.h"
 #include "base/android/jni_array.h"
@@ -18,6 +19,9 @@
 #include "build/android_buildflags.h"
 #include "media/audio/android/aaudio_input.h"
 #include "media/audio/android/aaudio_output.h"
+#include "media/audio/android/audio_device.h"
+#include "media/audio/android/audio_device_id.h"
+#include "media/audio/android/audio_device_type.h"
 #include "media/audio/android/audio_track_output_stream.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_features.h"
@@ -42,7 +46,10 @@ using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
+using media::android::AudioDevice;
 using media::android::AudioDeviceId;
+using media::android::AudioDeviceType;
+using media::android::IntToAudioDeviceType;
 
 namespace media {
 namespace {
@@ -223,7 +230,7 @@ void AudioManagerAndroid::GetDeviceNames(AudioDeviceNames* device_names,
     case AudioDeviceDirection::kOutput:
       j_device_array = Java_AudioManagerAndroid_getDevices(
           env, GetJavaAudioManager(),
-          /*inputs=*/direction == AudioDeviceDirection::kInput);
+          /* inputs= */ direction == AudioDeviceDirection::kInput);
       break;
     case AudioDeviceDirection::kCommunication:
       j_device_array = Java_AudioManagerAndroid_getCommunicationDevices(
@@ -235,30 +242,90 @@ void AudioManagerAndroid::GetDeviceNames(AudioDeviceNames* device_names,
     // MODIFY_AUDIO_SETTINGS or RECORD_AUDIO permissions.
     return;
   }
-  AudioDeviceName device;
+
+  std::vector<std::pair<AudioDeviceId, AudioDevice>> devices;
   for (auto j_device : j_device_array.ReadElements<jobject>()) {
+    jint j_device_id = Java_AudioDevice_id(env, j_device);
     ScopedJavaLocalRef<jstring> j_device_name =
         Java_AudioDevice_name(env, j_device);
-    if (!j_device_name.is_null()) {
-      ConvertJavaStringToUTF8(env, j_device_name.obj(), &device.device_name);
-    } else {
-      device.device_name =
-          "Audio device";  // TODO(crbug.com/409028970): Also return the device
-                           // type and provide a localized, type-specific
-                           // fallback string.
+    jint j_device_type = Java_AudioDevice_type(env, j_device);
+
+    if (direction == AudioDeviceDirection::kInput ||
+        direction == AudioDeviceDirection::kOutput) {
+      std::optional<AudioDeviceId> device_id =
+          AudioDeviceId::NonDefault(j_device_id);
+      if (!device_id.has_value()) {
+        LOG(WARNING) << "Unexpectedly received device with default ID";
+        continue;
+      }
+
+      std::optional<AudioDeviceType> device_type =
+          IntToAudioDeviceType(j_device_type);
+      if (!device_type.has_value()) {
+        LOG(WARNING) << "No device type matching integer value: "
+                     << j_device_type;
+        device_type = AudioDeviceType::kUnknown;
+      }
+
+      AudioDevice device(device_id.value(), device_type.value());
+      devices.emplace_back(std::move(device_id).value(), std::move(device));
     }
 
-    ScopedJavaLocalRef<jstring> j_device_id =
-        Java_AudioDevice_id(env, j_device);
-    ConvertJavaStringToUTF8(env, j_device_id.obj(), &device.unique_id);
+    std::string device_name;
+    if (!j_device_name.is_null()) {
+      ConvertJavaStringToUTF8(env, j_device_name.obj(), &device_name);
+    } else {
+      device_name = "Audio device";  // TODO(crbug.com/409028970): Also return
+                                     // the device type and provide a localized,
+                                     // type-specific fallback string.
+    }
 
-    device_names->push_back(device);
+    std::string device_id_string = base::NumberToString(j_device_id);
+    device_names->emplace_back(std::move(device_name),
+                               std::move(device_id_string));
   }
 
-  for (auto d : *device_names) {
+  if (direction == AudioDeviceDirection::kInput) {
+    input_devices_ = base::flat_map(devices);
+  } else if (direction == AudioDeviceDirection::kOutput) {
+    output_devices_ = base::flat_map(devices);
+  }
+
+  for (const AudioDeviceName& d : *device_names) {
     DVLOG(1) << "device_name: " << d.device_name;
     DVLOG(1) << "unique_id: " << d.unique_id;
   }
+}
+
+std::optional<AudioDevice> AudioManagerAndroid::GetDeviceForAAudioStream(
+    std::string_view id_string,
+    AudioDeviceDirection direction) {
+  if (!UseAAudioPerStreamDeviceSelection()) {
+    return AudioDevice::Default();
+  }
+
+  AudioDeviceId id =
+      AudioDeviceId::Parse(id_string).value_or(AudioDeviceId::Default());
+  if (id.IsDefault()) {
+    return AudioDevice::Default();
+  }
+
+  Devices devices;
+  switch (direction) {
+    case AudioDeviceDirection::kInput:
+      devices = input_devices_;
+      break;
+    case AudioDeviceDirection::kOutput:
+      devices = output_devices_;
+      break;
+    case AudioDeviceDirection::kCommunication:
+      NOTREACHED();
+  }
+  auto device = devices.find(id);
+  if (device == devices.end()) {
+    return std::nullopt;
+  }
+  return device->second;
 }
 
 AudioParameters AudioManagerAndroid::GetInputStreamParameters(
@@ -372,7 +439,7 @@ AudioOutputStream* AudioManagerAndroid::MakeLinearOutputStream(
 
   if (__builtin_available(android AAUDIO_MIN_API, *)) {
     if (UseAAudioOutput()) {
-      return new AAudioOutputStream(this, params, AudioDeviceId::Default(),
+      return new AAudioOutputStream(this, params, AudioDevice::Default(),
                                     AAUDIO_USAGE_MEDIA);
     }
   }
@@ -391,17 +458,21 @@ AudioOutputStream* AudioManagerAndroid::MakeLowLatencyOutputStream(
 
   if (__builtin_available(android AAUDIO_MIN_API, *)) {
     if (UseAAudioOutput()) {
-      AudioDeviceId parsed_device_id =
-          AudioDeviceId::Parse(device_id).value_or(AudioDeviceId::Default());
       DCHECK(UseAAudioPerStreamDeviceSelection() ||
-             parsed_device_id.IsDefault())
-          << "Non-default output device chosen for output communication "
+             AudioDeviceDescription::IsDefaultDevice(device_id))
+          << "Non-default output device requested for output communication "
              "stream.";
+
+      std::optional<AudioDevice> device =
+          GetDeviceForAAudioStream(device_id, AudioDeviceDirection::kOutput);
+      if (!device.has_value()) {
+        return nullptr;
+      }
 
       const aaudio_usage_t usage = communication_mode_is_on_
                                        ? AAUDIO_USAGE_VOICE_COMMUNICATION
                                        : AAUDIO_USAGE_MEDIA;
-      return new AAudioOutputStream(this, params, std::move(parsed_device_id),
+      return new AAudioOutputStream(this, params, std::move(device).value(),
                                     usage);
     }
   }
@@ -435,12 +506,12 @@ AudioInputStream* AudioManagerAndroid::MakeLinearInputStream(
 
   if (__builtin_available(android AAUDIO_MIN_API, *)) {
     if (UseAAudioInput()) {
-      AudioDeviceId parsed_device_id =
-          UseAAudioPerStreamDeviceSelection()
-              ? AudioDeviceId::Parse(device_id).value_or(
-                    AudioDeviceId::Default())
-              : AudioDeviceId::Default();
-      return new AAudioInputStream(this, params, std::move(parsed_device_id));
+      std::optional<AudioDevice> device =
+          GetDeviceForAAudioStream(device_id, AudioDeviceDirection::kInput);
+      if (!device.has_value()) {
+        return nullptr;
+      }
+      return new AAudioInputStream(this, params, std::move(device).value());
     }
   }
 
@@ -475,12 +546,12 @@ AudioInputStream* AudioManagerAndroid::MakeLowLatencyInputStream(
 
   if (__builtin_available(android AAUDIO_MIN_API, *)) {
     if (UseAAudioInput()) {
-      AudioDeviceId parsed_device_id =
-          UseAAudioPerStreamDeviceSelection()
-              ? AudioDeviceId::Parse(device_id).value_or(
-                    AudioDeviceId::Default())
-              : AudioDeviceId::Default();
-      return new AAudioInputStream(this, params, std::move(parsed_device_id));
+      std::optional<AudioDevice> device =
+          GetDeviceForAAudioStream(device_id, AudioDeviceDirection::kInput);
+      if (!device.has_value()) {
+        return nullptr;
+      }
+      return new AAudioInputStream(this, params, std::move(device).value());
     }
   }
 

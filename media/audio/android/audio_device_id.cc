@@ -21,6 +21,13 @@ AudioDeviceId AudioDeviceId::Default() {
   return AudioDeviceId(AAUDIO_UNSPECIFIED);
 }
 
+std::optional<AudioDeviceId> AudioDeviceId::NonDefault(int id) {
+  if (id == AAUDIO_UNSPECIFIED) {
+    return std::nullopt;
+  }
+  return AudioDeviceId(id);
+}
+
 std::optional<AudioDeviceId> AudioDeviceId::Parse(
     const std::string_view device_id_string) {
   if (AudioDeviceDescription::IsDefaultDevice(device_id_string)) {
