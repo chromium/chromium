@@ -123,6 +123,12 @@
 namespace content {
 namespace {
 
+// Feature to skip a redundant NavigationRequest creation for bfcache
+// activations, per https://crbug.com/417251428.
+BASE_FEATURE(kSkipExtraBfcacheNavigationRequest,
+             "SkipExtraBfcacheNavigationRequest",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Invoked when entries have been pruned, or removed. For example, if the
 // current entries are [google, digg, yahoo], with the current entry google,
 // and the user types in cnet, then digg and yahoo are pruned.
@@ -3317,29 +3323,49 @@ NavigationControllerImpl::NavigateToExistingPendingEntry(
   // Navigate immediately if the document is in the BackForwardCache.
   if (back_forward_cache_.GetOrEvictEntry(nav_entry_id).has_value()) {
     TRACE_EVENT0("navigation", "BackForwardCache_CreateNavigationRequest");
-    DCHECK_EQ(reload_type, ReloadType::NONE);
-    auto navigation_request = CreateNavigationRequestFromEntry(
-        root, pending_entry_, pending_entry_->GetFrameEntry(root),
-        ReloadType::NONE, false /* is_same_document_history_load */,
-        false /* is_history_navigation_in_new_child */, initiator_frame_token,
-        initiator_process_id);
-    base::WeakPtr<NavigationRequest> request = navigation_request->GetWeakPtr();
-    root->navigator().Navigate(std::move(navigation_request), ReloadType::NONE);
+    CHECK_EQ(reload_type, ReloadType::NONE);
+    base::WeakPtr<NavigationRequest> request;
 
-    for (auto& unused_request : same_document_loads) {
-      unused_request->set_navigation_discard_reason(
-          NavigationDiscardReason::kNeverStarted);
-    }
-    for (auto& unused_request : different_document_loads) {
-      unused_request->set_navigation_discard_reason(
-          NavigationDiscardReason::kNeverStarted);
+    // Skip a redundant NavigationRequest creation, per
+    // https://crbug.com/417251428.
+    if (base::FeatureList::IsEnabled(kSkipExtraBfcacheNavigationRequest)) {
+      // If the BackForwardCache can handle this request, it must be for a main
+      // frame, cross-document, non-reload request. This means there is only one
+      // item in `different_document_loads` and no `same_document_loads`.
+      CHECK_EQ(different_document_loads.size(), 1u);
+      CHECK(same_document_loads.empty());
+      request = different_document_loads.at(0)->GetWeakPtr();
+      root->navigator().Navigate(std::move(different_document_loads.at(0)),
+                                 ReloadType::NONE);
+    } else {
+      // The legacy approach creates a new NavigationRequest for the entry and
+      // discards any previously created NavigationRequests, even though the new
+      // request is identical to the sole existing request.
+      // TODO(crbug.com/417251428): Remove this path once we measure the impact.
+      auto navigation_request = CreateNavigationRequestFromEntry(
+          root, pending_entry_, pending_entry_->GetFrameEntry(root),
+          ReloadType::NONE, false /* is_same_document_history_load */,
+          false /* is_history_navigation_in_new_child */, initiator_frame_token,
+          initiator_process_id);
+      request = navigation_request->GetWeakPtr();
+      root->navigator().Navigate(std::move(navigation_request),
+                                 ReloadType::NONE);
+
+      for (auto& unused_request : same_document_loads) {
+        unused_request->set_navigation_discard_reason(
+            NavigationDiscardReason::kNeverStarted);
+      }
+      for (auto& unused_request : different_document_loads) {
+        unused_request->set_navigation_discard_reason(
+            NavigationDiscardReason::kNeverStarted);
+      }
     }
 
-    std::vector<base::WeakPtr<NavigationRequest>> bf_cache_request;
+    std::vector<base::WeakPtr<NavigationRequest>> bf_cache_requests;
     if (request) {
-      bf_cache_request.push_back(std::move(request));
+      bf_cache_requests.push_back(std::move(request));
     }
-    return bf_cache_request;
+    return bf_cache_requests;
   }
 
   // History navigation might try to reuse a specific BrowsingInstance, already
