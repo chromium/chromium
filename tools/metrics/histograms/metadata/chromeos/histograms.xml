@@ -2036,8 +2036,8 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Inputs.AutoRepeatUsage" units="key_event"
-    expires_after="2025-06-22">
-  <owner>dpad@chromium.org</owner>
+    expires_after="2026-06-22">
+  <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records a hash of a keycode + modifier keys pressed everytime a user event
