@@ -118,6 +118,9 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
                             const GaiaId& member_gaia_id,
                             const base::Time& event_time) override;
 
+  static std::u16string GetTruncatedTabTitleForTesting(
+      const std::u16string& original_title);
+
  private:
   void OnStoreInitialized(bool success);
 
