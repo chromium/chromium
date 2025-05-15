@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ENTERPRISE_BROWSER_REPORTING_REPORT_GENERATION_CONFIG_H_
 #define COMPONENTS_ENTERPRISE_BROWSER_REPORTING_REPORT_GENERATION_CONFIG_H_
 
+#include <cstdint>
 #include <string>
 
 #include "components/enterprise/browser/reporting/report_type.h"
