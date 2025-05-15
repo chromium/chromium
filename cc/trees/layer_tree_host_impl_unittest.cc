@@ -6650,7 +6650,8 @@ TEST_P(LayerTreeHostImplTest, WillDrawReturningFalseDoesNotCall) {
 
   DrawFrame();
   EXPECT_TRUE(layer->will_draw_returned_true());
-  EXPECT_TRUE(layer->append_quads_called());
+  EXPECT_EQ(layer->append_quads_called(),
+            !host_impl_->GetSettings().TreesInVizInClientProcess());
   EXPECT_TRUE(layer->did_draw_called());
 
   host_impl_->SetViewportDamage(gfx::Rect(10, 10));

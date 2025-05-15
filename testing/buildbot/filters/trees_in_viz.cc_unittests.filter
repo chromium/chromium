@@ -42,10 +42,6 @@
 -LayerTreeHostImplTest.ScrollCheckerboardsIncompleteRecording/CommitToActiveTree
 -LayerTreeHostImplTest.ScrollCheckerboardsIncompleteRecording/CommitToPendingTree
 
-# TODO(crbug.com/401567193) LayerImpl WillDraw and DidDraw implementation for TreesInViz mode.
--LayerTreeHostImplTest.WillDrawReturningFalseDoesNotCall/CommitToActiveTree
--LayerTreeHostImplTest.WillDrawReturningFalseDoesNotCall/CommitToPendingTree
-
 # TODO (crbug.com/404940328) Fix LayerTreeHostTestInvisibleLayersSkipRenderPass
 -LayerTreeHostTestInvisibleLayersSkipRenderPass.RunSingleThread_DelegatingRenderer
 -LayerTreeHostTestInvisibleLayersSkipRenderPass.RunMultiThread_DelegatingRenderer
