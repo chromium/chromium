@@ -38,7 +38,7 @@ public class ShoppingAccessoryView extends FrameLayout {
     private @Nullable PriceInfo mInfo;
 
     /** Constructor for inflating from XML. */
-    public ShoppingAccessoryView(Context context, AttributeSet attrs) {
+    public ShoppingAccessoryView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 

@@ -18,9 +18,10 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListUtils;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -33,6 +34,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Common logic for improved bookmark and folder rows. */
+@NullMarked
 public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
         implements CancelableAnimator {
     /**
@@ -100,7 +102,7 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
     }
 
     /** Constructor for inflating from XML. */
-    public ImprovedBookmarkRow(Context context, AttributeSet attrs) {
+    public ImprovedBookmarkRow(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 

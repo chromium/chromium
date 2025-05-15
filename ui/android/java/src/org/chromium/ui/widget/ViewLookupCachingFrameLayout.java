@@ -59,8 +59,8 @@ public class ViewLookupCachingFrameLayout extends OptimizedFrameLayout {
             };
 
     /** Default constructor for use in XML. */
-    public ViewLookupCachingFrameLayout(Context context, AttributeSet atts) {
-        super(context, atts);
+    public ViewLookupCachingFrameLayout(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
         setOnHierarchyChangeListener(mListener);
     }
 

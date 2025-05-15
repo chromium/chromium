@@ -4,19 +4,21 @@
 
 package org.chromium.chrome.browser.bookmarks.bar;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.view.KeyEvent;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -43,6 +45,7 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 
 /** Mediator for the bookmark bar which provides users with bookmark access from top chrome. */
+@NullMarked
 class BookmarkBarMediator
         implements BookmarkBarItemsProvider.Observer, BrowserControlsStateProvider.Observer {
 
@@ -60,8 +63,8 @@ class BookmarkBarMediator
     private final PropertyModel mModel;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileSupplierObserver;
-    private final @NonNull BookmarkOpener mBookmarkOpener;
-    private final @NonNull ObservableSupplier<BookmarkManagerOpener> mBookmarkManagerOpenerSupplier;
+    private final BookmarkOpener mBookmarkOpener;
+    private final ObservableSupplier<BookmarkManagerOpener> mBookmarkManagerOpenerSupplier;
 
     private @Nullable BookmarkImageFetcher mImageFetcher;
     private @Nullable BookmarkBarItemsProvider mItemsProvider;
@@ -81,18 +84,18 @@ class BookmarkBarMediator
      * @param profileSupplier The supplier for the currently active profile.
      */
     public BookmarkBarMediator(
-            @NonNull Activity activity,
-            @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            @NonNull PropertyModel allBookmarksButtonModel,
-            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull Callback<Integer> heightChangeCallback,
-            @NonNull ModelList itemsModel,
-            @NonNull ObservableSupplier<Boolean> itemsOverflowSupplier,
-            @NonNull Callback<Integer> itemMaxWidthChangeCallback,
-            @NonNull PropertyModel model,
-            @NonNull ObservableSupplier<Profile> profileSupplier,
-            @NonNull BookmarkOpener bookmarkOpener,
-            @NonNull ObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier) {
+            Activity activity,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            PropertyModel allBookmarksButtonModel,
+            BrowserControlsStateProvider browserControlsStateProvider,
+            Callback<Integer> heightChangeCallback,
+            ModelList itemsModel,
+            ObservableSupplier<Boolean> itemsOverflowSupplier,
+            Callback<Integer> itemMaxWidthChangeCallback,
+            PropertyModel model,
+            ObservableSupplier<Profile> profileSupplier,
+            BookmarkOpener bookmarkOpener,
+            ObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier) {
         mActivity = activity;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
 
@@ -182,7 +185,7 @@ class BookmarkBarMediator
     @Override
     public void onBookmarkItemAdded(
             @BookmarkBarItemsProvider.ObservationId int observationId,
-            @NonNull BookmarkItem item,
+            BookmarkItem item,
             int index) {
         mItemsModel.add(
                 index,
@@ -205,7 +208,7 @@ class BookmarkBarMediator
     @Override
     public void onBookmarkItemUpdated(
             @BookmarkBarItemsProvider.ObservationId int observationId,
-            @NonNull BookmarkItem item,
+            BookmarkItem item,
             int index) {
         mItemsModel.update(
                 index,
@@ -216,7 +219,7 @@ class BookmarkBarMediator
     @Override
     public void onBookmarkItemsAdded(
             @BookmarkBarItemsProvider.ObservationId int observationId,
-            @NonNull List<BookmarkItem> items,
+            List<BookmarkItem> items,
             int index) {
         final List<ListItem> batch = new ArrayList<>();
         for (int i = 0; i < items.size(); i++) {
@@ -271,7 +274,7 @@ class BookmarkBarMediator
     }
 
     // TODO(crbug.com/394614166): Handle shift-click to open in new window.
-    private void onBookmarkItemClick(@NonNull BookmarkItem item, int metaState) {
+    private void onBookmarkItemClick(BookmarkItem item, int metaState) {
         final Profile profile = mProfileSupplier.get();
 
         // TODO(crbug.com/394614779): Open in popup window instead of bookmark manager.
@@ -294,7 +297,7 @@ class BookmarkBarMediator
         mBookmarkOpener.openBookmarkInCurrentTab(item.getId(), profile.isOffTheRecord());
     }
 
-    private void onConfigurationChange(@NonNull Configuration newConfig) {
+    private void onConfigurationChange(Configuration newConfig) {
         updateItemMaxWidth();
     }
 
@@ -357,7 +360,7 @@ class BookmarkBarMediator
     }
 
     private void runIfStillRelevantAfterFinishLoadingBookmarkModel(
-            @NonNull BiConsumer<Profile, BookmarkModel> callback) {
+            BiConsumer<Profile, BookmarkModel> callback) {
         final var profile = mProfileSupplier.get();
         if (profile == null) return;
 
@@ -393,7 +396,8 @@ class BookmarkBarMediator
         // top browser controls.
         mModel.set(
                 BookmarkBarProperties.TOP_MARGIN,
-                mBrowserControlsStateProvider.getTopControlsHeight() - mHeightSupplier.get());
+                mBrowserControlsStateProvider.getTopControlsHeight()
+                        - assumeNonNull(mHeightSupplier.get()));
     }
 
     private void updateVisibility() {

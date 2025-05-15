@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.bookmarks.ShoppingAccessoryViewProperties.PriceInfo;
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.ShoppingService;
@@ -22,6 +23,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import java.util.Locale;
 
 /** Business logic for the price-tracking chip accessory view. */
+@NullMarked
 public class ShoppingAccessoryCoordinator {
     private final ShoppingAccessoryView mView;
     private final PropertyModel mModel;

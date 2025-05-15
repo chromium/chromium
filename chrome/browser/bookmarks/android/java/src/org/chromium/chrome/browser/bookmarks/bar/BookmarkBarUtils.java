@@ -181,24 +181,25 @@ public class BookmarkBarUtils {
     static ListItem createListItemFor(
             BiConsumer<BookmarkItem, Integer> clickCallback,
             Context context,
-            BookmarkImageFetcher imageFetcher,
+            @Nullable BookmarkImageFetcher imageFetcher,
             BookmarkItem item) {
-        return new ListItem(
-                ViewType.ITEM,
+        PropertyModel.Builder modelBuilder =
                 new PropertyModel.Builder(BookmarkBarButtonProperties.ALL_KEYS)
                         .with(
                                 BookmarkBarButtonProperties.CLICK_CALLBACK,
                                 (metaState) -> clickCallback.accept(item, metaState))
                         .with(
-                                BookmarkBarButtonProperties.ICON_SUPPLIER,
-                                createIconSupplierFor(context, imageFetcher, item))
-                        .with(
                                 BookmarkBarButtonProperties.ICON_TINT_LIST_ID,
                                 item.isFolder()
                                         ? R.color.default_icon_color_tint_list
                                         : Resources.ID_NULL)
-                        .with(BookmarkBarButtonProperties.TITLE, item.getTitle())
-                        .build());
+                        .with(BookmarkBarButtonProperties.TITLE, item.getTitle());
+        if (imageFetcher != null) {
+            modelBuilder.with(
+                    BookmarkBarButtonProperties.ICON_SUPPLIER,
+                    createIconSupplierFor(context, imageFetcher, item));
+        }
+        return new ListItem(ViewType.ITEM, modelBuilder.build());
     }
 
     private static LazyOneshotSupplier<Drawable> createIconSupplierFor(
