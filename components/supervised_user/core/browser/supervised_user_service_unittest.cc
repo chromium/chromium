@@ -67,7 +67,7 @@ class SupervisedUserServiceTestBase : public ::testing::Test {
   explicit SupervisedUserServiceTestBase(bool is_supervised) {
     settings_service_.Init(syncable_pref_service_.user_prefs_store());
     supervised_user::RegisterProfilePrefs(syncable_pref_service_.registry());
-    supervised_user_sync_data_fake_.Init(syncable_pref_service_);
+    supervised_user_sync_data_fake_.Init();
 
     if (is_supervised) {
       syncable_pref_service_.SetString(prefs::kSupervisedUserId,
@@ -104,7 +104,8 @@ class SupervisedUserServiceTestBase : public ::testing::Test {
 
   syncer::MockSyncService sync_service_;
   sync_preferences::TestingPrefServiceSyncable syncable_pref_service_;
-  SupervisedUserSyncDataFake supervised_user_sync_data_fake_;
+  SupervisedUserSyncDataFake<sync_preferences::TestingPrefServiceSyncable>
+      supervised_user_sync_data_fake_{syncable_pref_service_};
   SupervisedUserSettingsService settings_service_;
   std::unique_ptr<SupervisedUserService> service_;
   std::unique_ptr<SupervisedUserMetricsService> metrics_service_;

@@ -51,7 +51,7 @@ class SupervisedUserMetricsServiceTest : public testing::Test {
     RegisterProfilePrefs(pref_service_.registry());
     SupervisedUserMetricsService::RegisterProfilePrefs(
         pref_service_.registry());
-    supervised_user_sync_data_fake_.Init(pref_service_);
+    supervised_user_sync_data_fake_.Init();
     settings_service_.Init(pref_service_.user_prefs_store());
     supervised_user_service_ = std::make_unique<SupervisedUserService>(
         identity_test_env_.identity_manager(),
@@ -99,7 +99,8 @@ class SupervisedUserMetricsServiceTest : public testing::Test {
 
   SupervisedUserSettingsService settings_service_;
   syncer::MockSyncService sync_service_;
-  SupervisedUserSyncDataFake supervised_user_sync_data_fake_;
+  SupervisedUserSyncDataFake<sync_preferences::TestingPrefServiceSyncable>
+      supervised_user_sync_data_fake_{pref_service_};
 
   std::unique_ptr<SupervisedUserMetricsService>
       supervised_user_metrics_service_;

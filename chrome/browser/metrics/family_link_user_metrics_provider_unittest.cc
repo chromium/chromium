@@ -23,6 +23,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_sync_data_fake.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/pref_names.h"
@@ -108,10 +109,14 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
   }
 
   void RestrictAllSitesForSupervisedUser(Profile* profile) {
-    supervised_user::SupervisedUserService* supervised_user_service =
-        SupervisedUserServiceFactory::GetForProfile(profile);
-    supervised_user_service->GetURLFilter()->SetDefaultFilteringBehavior(
-        supervised_user::FilteringBehavior::kBlock);
+    supervised_user::SupervisedUserSyncDataFake<
+        sync_preferences::TestingPrefServiceSyncable>
+        sync_data_fake(
+            *static_cast<sync_preferences::TestingPrefServiceSyncable*>(
+                profile->GetPrefs()));
+    sync_data_fake.Init();
+    sync_data_fake.SetWebFilterType(
+        supervised_user::WebFilterType::kCertainSites);
   }
 
   void AllowUnsafeSitesForSupervisedUser(Profile* profile) {

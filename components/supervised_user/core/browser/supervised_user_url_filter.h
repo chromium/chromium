@@ -158,8 +158,6 @@ class SupervisedUserURLFilter {
   static const char* GetManagedSiteListConflictHistogramNameForTest();
   static const char* GetManagedSiteListConflictTypeHistogramNameForTest();
 
-  static FilteringBehavior BehaviorFromInt(int behavior_value);
-
   // Returns true if the |host| matches the pattern. A pattern is a hostname
   // with one or both of the following modifications:
   // - If the pattern starts with "*.", it matches the host or any subdomain
@@ -207,11 +205,6 @@ class SupervisedUserURLFilter {
       ResultCallback callback,
       FilteringContext filtering_context = FilteringContext::kDefault,
       std::optional<ui::PageTransition> transition_type = std::nullopt);
-
-  // Sets the filtering behavior for pages not on a list (default is ALLOW).
-  void SetDefaultFilteringBehavior(FilteringBehavior behavior);
-
-  FilteringBehavior GetDefaultFilteringBehavior() const;
 
   // Sets the set of manually allowed or blocked hosts.
   void SetManualHosts(std::map<std::string, bool> host_map);
@@ -263,8 +256,6 @@ class SupervisedUserURLFilter {
   void NotifyCallerAndObservers(ResultCallback callback, Result result) const;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  FilteringBehavior default_behavior_;
 
   // Maps from a URL to whether it is manually allowed (true) or blocked
   // (false).

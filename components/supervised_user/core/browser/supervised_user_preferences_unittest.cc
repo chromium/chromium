@@ -25,14 +25,14 @@ using ::testing::Not;
 class SupervisedUserPreferencesTest : public ::testing::Test {
  public:
   void SetUp() override {
-    auto* registry = pref_service_.registry();
-    RegisterProfilePrefs(registry);
-    supervised_user_sync_data_fake_.Init(pref_service_);
+    RegisterProfilePrefs(pref_service_.registry());
+    supervised_user_sync_data_fake_.Init();
   }
 
  protected:
   TestingPrefServiceSimple pref_service_;
-  SupervisedUserSyncDataFake supervised_user_sync_data_fake_;
+  SupervisedUserSyncDataFake<TestingPrefServiceSimple>
+      supervised_user_sync_data_fake_{pref_service_};
 };
 
 TEST_F(SupervisedUserPreferencesTest, RegisterProfilePrefsAndCheckDefaults) {

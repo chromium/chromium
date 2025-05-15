@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/metrics/model/ios_family_link_user_metrics_provider.h"
 
 #import "base/test/metrics/histogram_tester.h"
+#import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
@@ -87,16 +88,21 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
   }
 
   void RestrictAllSitesForSupervisedUser(ProfileIOS* profile) {
-    supervised_user::SupervisedUserService* supervised_user_service =
-        SupervisedUserServiceFactory::GetForProfile(profile);
-    supervised_user_service->GetURLFilter()->SetDefaultFilteringBehavior(
-        supervised_user::FilteringBehavior::kBlock);
+    // Note: overrides the setting in the user pref store in the context of user
+    // managed by family link. In true environment, for these users, this
+    // happens in the supervised user pref store.
+    profile->GetPrefs()->SetInteger(
+        prefs::kDefaultSupervisedUserFilteringBehavior,
+        static_cast<int>(supervised_user::FilteringBehavior::kBlock));
   }
 
   void AllowUnsafeSitesForSupervisedUser(ProfileIOS* profile) {
     // Note: overrides the setting in the user pref store in the context of user
     // managed by family link. In true environment, for these users, this
     // happens in the supervised user pref store.
+    profile->GetPrefs()->SetInteger(
+        prefs::kDefaultSupervisedUserFilteringBehavior,
+        static_cast<int>(supervised_user::FilteringBehavior::kAllow));
     profile->GetPrefs()->SetBoolean(prefs::kSupervisedUserSafeSites, false);
   }
 

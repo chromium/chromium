@@ -7,12 +7,14 @@
 #import "base/memory/scoped_refptr.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
+#import "components/supervised_user/core/common/pref_names.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -113,15 +115,17 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
     std::map<std::string, bool> hosts;
     hosts["example.com"] = true;
     supervised_user_service->GetURLFilter()->SetManualHosts(hosts);
-    supervised_user_service->GetURLFilter()->SetDefaultFilteringBehavior(
-        supervised_user::FilteringBehavior::kAllow);
+
+    profile_->GetPrefs()->SetInteger(
+        prefs::kDefaultSupervisedUserFilteringBehavior,
+        static_cast<int>(supervised_user::FilteringBehavior::kAllow));
+    profile_->GetPrefs()->SetBoolean(prefs::kSupervisedUserSafeSites, false);
   }
 
   void RestrictAllSitesForSupervisedUser() {
-    supervised_user::SupervisedUserService* supervised_user_service =
-        SupervisedUserServiceFactory::GetForProfile(profile_.get());
-    supervised_user_service->GetURLFilter()->SetDefaultFilteringBehavior(
-        supervised_user::FilteringBehavior::kBlock);
+    profile_->GetPrefs()->SetInteger(
+        prefs::kDefaultSupervisedUserFilteringBehavior,
+        static_cast<int>(supervised_user::FilteringBehavior::kBlock));
   }
 
  private:

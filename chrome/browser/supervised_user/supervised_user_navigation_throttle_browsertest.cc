@@ -31,7 +31,6 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/supervised_user/supervision_mixin.h"
-#include "classify_url_navigation_throttle.h"
 #include "components/supervised_user/core/browser/permission_request_creator_mock.h"
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
@@ -327,14 +326,8 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserNavigationThrottleWithPrerenderingTest,
 IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
                        NoNavigationObserverBlock) {
   Profile* profile = browser()->profile();
-  supervised_user::SupervisedUserSettingsService*
-      supervised_user_settings_service =
-          SupervisedUserSettingsServiceFactory::GetForKey(
-              profile->GetProfileKey());
-  supervised_user_settings_service->SetLocalSetting(
-      supervised_user::kContentPackDefaultFilteringBehavior,
-      base::Value(
-          static_cast<int>(supervised_user::FilteringBehavior::kBlock)));
+  supervised_user_test_util::SetWebFilterType(
+      profile, supervised_user::WebFilterType::kCertainSites);
 
   std::unique_ptr<WebContents> web_contents(
       WebContents::Create(WebContents::CreateParams(profile)));
@@ -1006,13 +999,8 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
                        IFramesWithSameDomainAsMainFrameAllowed) {
-  supervised_user::SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(browser()->profile());
-  supervised_user::SupervisedUserURLFilter* filter = service->GetURLFilter();
-
-  // Set the default behavior to block.
-  filter->SetDefaultFilteringBehavior(
-      supervised_user::FilteringBehavior::kBlock);
+  supervised_user_test_util::SetWebFilterType(
+      browser()->profile(), supervised_user::WebFilterType::kCertainSites);
 
   base::RunLoop().RunUntilIdle();
 

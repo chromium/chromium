@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "components/supervised_user/core/common/supervised_user_constants.h"
+
 struct AccountInfo;
 class Profile;
 
@@ -42,6 +44,11 @@ void PopulateAccountInfoWithName(AccountInfo& info,
 void SetManualFilterForHost(Profile* profile,
                             const std::string& host,
                             bool allowlist);
+
+// Convenience method for browser tests emulating parent changes to web
+// filtering.
+void SetWebFilterType(const Profile* profile,
+                      supervised_user::WebFilterType web_filter_type);
 
 }  // namespace supervised_user_test_util
 

@@ -27,6 +27,7 @@
 #include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/url_matcher/url_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -163,7 +164,16 @@ bool ContainersAreEqual(const OrderedContainer& lhs,
          std::equal(lhs.begin(), lhs.end(), rhs.begin());
 }
 
-supervised_user::FilteringBehavior GetBehaviorFromSafeSearchClassification(
+FilteringBehavior GetDefaultFilteringBehavior(const PrefService& pref_service) {
+  int behavior_value =
+      pref_service.GetInteger(prefs::kDefaultSupervisedUserFilteringBehavior);
+  DCHECK(behavior_value == static_cast<int>(FilteringBehavior::kAllow) ||
+         behavior_value == static_cast<int>(FilteringBehavior::kBlock))
+      << "SupervisedUserURLFilter value not supported: " << behavior_value;
+  return static_cast<FilteringBehavior>(behavior_value);
+}
+
+FilteringBehavior GetBehaviorFromSafeSearchClassification(
     safe_search_api::Classification classification) {
   switch (classification) {
     case safe_search_api::Classification::SAFE:
@@ -334,9 +344,7 @@ std::optional<FilteringSubdomainConflictType> AddConflict(
 SupervisedUserURLFilter::SupervisedUserURLFilter(
     PrefService& user_prefs,
     std::unique_ptr<Delegate> delegate)
-    : default_behavior_(FilteringBehavior::kAllow),
-      user_prefs_(user_prefs),
-      delegate_(std::move(delegate)) {}
+    : user_prefs_(user_prefs), delegate_(std::move(delegate)) {}
 
 SupervisedUserURLFilter::~SupervisedUserURLFilter() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -354,17 +362,6 @@ SupervisedUserURLFilter::GetManagedSiteListConflictTypeHistogramNameForTest() {
   return kManagedSiteListSubdomainConflictTypeHistogramName;
 }
 
-// static
-supervised_user::FilteringBehavior SupervisedUserURLFilter::BehaviorFromInt(
-    int behavior_value) {
-  // `behavior_value` is external input (from the server) - do not turn
-  // DCHECK into CHECK as it might lead to real crashes if the server ever
-  // supplies an unsupported value.
-  DCHECK(behavior_value == static_cast<int>(FilteringBehavior::kAllow) ||
-         behavior_value == static_cast<int>(FilteringBehavior::kBlock))
-      << "SupervisedUserURLFilter value not supported: " << behavior_value;
-  return static_cast<FilteringBehavior>(behavior_value);
-}
 SupervisedUserURLFilter::ManagedSiteList
 SupervisedUserURLFilter::Statistics::GetManagedSiteList() const {
   if (allowed_hosts_count + blocked_hosts_count + allowed_urls_count +
@@ -473,7 +470,8 @@ SupervisedUserURLFilter::Result SupervisedUserURLFilter::GetFilteringBehavior(
   }
 
   // Fall back to the default behavior.
-  return {url, default_behavior_, FilteringBehaviorReason::DEFAULT};
+  return {url, GetDefaultFilteringBehavior(user_prefs_.get()),
+          FilteringBehaviorReason::DEFAULT};
 }
 
 // There may be conflicting patterns, say, "allow *.google.com" and "block
@@ -608,17 +606,6 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForSubFrameWithAsyncChecks(
   return RunAsyncChecker(url, std::move(callback));
 }
 
-void SupervisedUserURLFilter::SetDefaultFilteringBehavior(
-    FilteringBehavior behavior) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  default_behavior_ = behavior;
-}
-
-supervised_user::FilteringBehavior
-SupervisedUserURLFilter::GetDefaultFilteringBehavior() const {
-  return default_behavior_;
-}
-
 void SupervisedUserURLFilter::SetManualHosts(
     std::map<std::string, bool> host_map) {
   // TODO(b/305229682): Update this method to received the two
@@ -664,7 +651,6 @@ SupervisedUserURLFilter::GetFilteringStatistics() const {
 }
 
 void SupervisedUserURLFilter::Clear() {
-  default_behavior_ = FilteringBehavior::kAllow;
   url_map_.clear();
   allowed_host_list_.clear();
   blocked_host_list_.clear();
@@ -683,7 +669,8 @@ void SupervisedUserURLFilter::RemoveObserver(Observer* observer) {
 WebFilterType SupervisedUserURLFilter::GetWebFilterType() const {
   // If the default filtering behavior is not block, it means the web filter
   // was set to either "allow all sites" or "try to block mature sites".
-  if (default_behavior_ == FilteringBehavior::kBlock) {
+  if (GetDefaultFilteringBehavior(user_prefs_.get()) ==
+      FilteringBehavior::kBlock) {
     return WebFilterType::kCertainSites;
   }
 

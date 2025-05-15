@@ -19,6 +19,7 @@
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "supervised_user_sync_data_fake.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace supervised_user {
@@ -32,6 +33,7 @@ class FamilyLinkUserLogRecordTest : public ::testing::Test {
   FamilyLinkUserLogRecordTest() {
     PrefRegistrySimple* registry = pref_service_.registry();
     supervised_user::RegisterProfilePrefs(registry);
+    sync_data_fake_.Init();
     registry->RegisterBooleanPref(
         prefs::kSupervisedUserExtensionsMayRequestPermissions, false);
     registry->RegisterBooleanPref(prefs::kSkipParentApprovalToInstallExtensions,
@@ -108,23 +110,7 @@ class FamilyLinkUserLogRecordTest : public ::testing::Test {
                                    std::make_unique<FakeURLFilterDelegate>());
     filter.SetURLCheckerClient(
         std::make_unique<safe_search_api::FakeURLCheckerClient>());
-
-    switch (web_filter_type) {
-      case WebFilterType::kAllowAllSites:
-        pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
-                                            base::Value(false));
-        break;
-      case WebFilterType::kTryToBlockMatureSites:
-        pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
-                                            base::Value(true));
-        break;
-      case WebFilterType::kCertainSites:
-        filter.SetDefaultFilteringBehavior(
-            supervised_user::FilteringBehavior::kBlock);
-        break;
-      case WebFilterType::kMixed:
-        NOTREACHED();
-    }
+    sync_data_fake_.SetWebFilterType(web_filter_type);
 
     return std::make_unique<FamilyLinkUserLogRecord>(
         FamilyLinkUserLogRecord::Create(identity_test_env_.identity_manager(),
@@ -136,6 +122,9 @@ class FamilyLinkUserLogRecordTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
+  supervised_user::SupervisedUserSyncDataFake<
+      sync_preferences::TestingPrefServiceSyncable>
+      sync_data_fake_{pref_service_};
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
 };
 

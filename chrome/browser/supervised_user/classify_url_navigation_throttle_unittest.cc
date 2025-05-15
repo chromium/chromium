@@ -12,8 +12,10 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
@@ -68,9 +70,25 @@ class ClassifyUrlNavigationThrottleTest
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    SupervisedUserServiceFactory::GetForProfile(profile())
-        ->SetURLFilterForTesting(std::make_unique<MockSupervisedUserURLFilter>(
-            *profile()->GetPrefs()));
+
+    SupervisedUserService* service =
+        SupervisedUserServiceFactory::GetForProfile(profile());
+    service->SetURLFilterForTesting(
+        std::make_unique<MockSupervisedUserURLFilter>(*profile()->GetPrefs()));
+    // In unit tests, the service is not automatically initialized but is
+    // required to ensure proper flow of preference values.
+    service->Init();
+    EnableParentalControls(*profile()->GetPrefs());
+  }
+
+  std::unique_ptr<TestingProfile> CreateTestingProfile() override {
+    TestingProfile::Builder builder;
+    builder.AddTestingFactories(GetTestingFactories());
+    // Important. Testing profile must be of supervised user, otherwise the
+    // supervised user settings service stack won't be fully initialized (the
+    // pref service will lack supervised user pref store).
+    builder.SetIsSupervisedProfile();
+    return builder.Build();
   }
 
   std::unique_ptr<content::NavigationThrottle> CreateNavigationThrottle(
@@ -190,8 +208,8 @@ TEST_F(ClassifyUrlNavigationThrottleTest,
 
 TEST_F(ClassifyUrlNavigationThrottleTest,
        AllSitesBlockedRecordedInBlockNotInAllowlistBucket) {
-  GetSupervisedUserURLFilter()->SetDefaultFilteringBehavior(
-      FilteringBehavior::kBlock);
+  supervised_user_test_util::SetWebFilterType(profile(),
+                                              WebFilterType::kCertainSites);
 
   std::unique_ptr<content::NavigationThrottle> throttle =
       CreateNavigationThrottle(GURL(kExampleURL));

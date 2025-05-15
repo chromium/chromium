@@ -140,15 +140,7 @@ inline void AddWebsiteException(
 }
 
 bool AreSafeSitesConfigured(const FamilyLinkSettingsState::Services& services) {
-  if (!IsSafeSitesEnabled(services.pref_service.get())) {
-    return false;
-  }
-
-  SupervisedUserURLFilter* url_filter =
-      services.supervised_user_service->GetURLFilter();
-  CHECK(url_filter);
-
-  return url_filter->GetDefaultFilteringBehavior() == FilteringBehavior::kAllow;
+  return IsSafeSitesEnabled(services.pref_service.get());
 }
 
 bool IsUrlConfigured(SupervisedUserURLFilter& url_filter,

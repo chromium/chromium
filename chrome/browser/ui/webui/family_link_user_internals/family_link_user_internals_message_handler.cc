@@ -89,6 +89,23 @@ std::string FilteringBehaviorToString(
   return "Unknown";
 }
 
+std::string WebFilterTypeToString(
+    supervised_user::WebFilterType web_filter_type) {
+  switch (web_filter_type) {
+    case supervised_user::WebFilterType::kAllowAllSites:
+      return "Allow all sites";
+    case supervised_user::WebFilterType::kTryToBlockMatureSites:
+      return "Try to block mature sites";
+    case supervised_user::WebFilterType::kCertainSites:
+      return "Only certain sites";
+    case supervised_user::WebFilterType::kMixed:
+      NOTREACHED()
+          << "That value is not intended to be set, but is rather "
+             "used to indicate multiple settings used in profiles in metrics.";
+  }
+  return "Unknown";
+}
+
 std::string FilteringResultToString(
     supervised_user::SupervisedUserURLFilter::Result result) {
   std::string return_value = FilteringBehaviorToString(result.behavior);
@@ -368,9 +385,8 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
   base::Value::List* section_filter = AddSection(&section_list, "Filter");
   AddSectionEntry(section_filter, "SafeSites enabled",
                   supervised_user::IsSafeSitesEnabled(*profile->GetPrefs()));
-  AddSectionEntry(
-      section_filter, "Default behavior",
-      FilteringBehaviorToString(filter->GetDefaultFilteringBehavior()));
+  AddSectionEntry(section_filter, "Web filter type",
+                  WebFilterTypeToString(filter->GetWebFilterType()));
 
   base::Value::List* section_search =
       AddSection(&section_list, "Google search");

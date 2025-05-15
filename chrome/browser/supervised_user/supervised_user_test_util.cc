@@ -16,6 +16,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
@@ -118,6 +119,48 @@ void SetManualFilterForHost(Profile* profile,
   settings_service->SetLocalSetting(
       supervised_user::kContentPackManualBehaviorHosts,
       std::move(dict_to_insert));
+}
+
+void SetWebFilterType(const Profile* profile,
+                      supervised_user::WebFilterType web_filter_type) {
+  supervised_user::SupervisedUserSettingsService* service =
+      SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
+  CHECK(service) << "Missing settings service might indicate misconfigured "
+                    "test environment. If this is a unittest, consider using "
+                    "SupervisedUserSyncDataFake";
+  CHECK(service->IsReady())
+      << "If settings service is not ready, the change will not be successful";
+
+  switch (web_filter_type) {
+    case supervised_user::WebFilterType::kAllowAllSites:
+      service->SetLocalSetting(
+          supervised_user::kContentPackDefaultFilteringBehavior,
+          base::Value(
+              static_cast<int>(supervised_user::FilteringBehavior::kAllow)));
+      service->SetLocalSetting(supervised_user::kSafeSitesEnabled,
+                               base::Value(false));
+      break;
+    case supervised_user::WebFilterType::kTryToBlockMatureSites:
+      service->SetLocalSetting(
+          supervised_user::kContentPackDefaultFilteringBehavior,
+          base::Value(
+              static_cast<int>(supervised_user::FilteringBehavior::kAllow)));
+      service->SetLocalSetting(supervised_user::kSafeSitesEnabled,
+                               base::Value(true));
+      break;
+    case supervised_user::WebFilterType::kCertainSites:
+      service->SetLocalSetting(
+          supervised_user::kContentPackDefaultFilteringBehavior,
+          base::Value(
+              static_cast<int>(supervised_user::FilteringBehavior::kBlock)));
+
+      // Value of kSupervisedUserSafeSites is not important here.
+      break;
+    case supervised_user::WebFilterType::kMixed:
+      NOTREACHED() << "That value is not intended to be set, but is rather "
+                      "used to indicate multiple settings used in profiles "
+                      "in metrics.";
+  }
 }
 
 }  // namespace supervised_user_test_util

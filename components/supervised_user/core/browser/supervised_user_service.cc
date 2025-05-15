@@ -289,12 +289,6 @@ void SupervisedUserService::OnIncognitoModeAvailabilityChanged() {
 }
 
 void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
-  int behavior_value =
-      user_prefs_->GetInteger(prefs::kDefaultSupervisedUserFilteringBehavior);
-  FilteringBehavior behavior =
-      SupervisedUserURLFilter::BehaviorFromInt(behavior_value);
-  url_filter_->SetDefaultFilteringBehavior(behavior);
-
   for (SupervisedUserServiceObserver& observer : observer_list_) {
     observer.OnURLFilterChanged();
   }
