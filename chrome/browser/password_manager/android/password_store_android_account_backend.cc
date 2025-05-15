@@ -306,20 +306,6 @@ void PasswordStoreAndroidAccountBackend::OnSyncServiceInitialized(
 }
 
 void PasswordStoreAndroidAccountBackend::
-    RecordAddLoginAsyncCalledFromTheStore() {
-  base::UmaHistogramBoolean(
-      "PasswordManager.PasswordStore.AccountBackend.AddLoginCalledOnStore",
-      true);
-}
-
-void PasswordStoreAndroidAccountBackend::
-    RecordUpdateLoginAsyncCalledFromTheStore() {
-  base::UmaHistogramBoolean(
-      "PasswordManager.PasswordStore.AccountBackend.UpdateLoginCalledOnStore",
-      true);
-}
-
-void PasswordStoreAndroidAccountBackend::
     InjectAffiliationAndBrandingInformation(
         LoginsOrErrorReply callback,
         LoginsResultOrError forms_or_error) {

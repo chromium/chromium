@@ -91,8 +91,6 @@ class MockPasswordStoreBackend : public PasswordStoreBackend {
               OnSyncServiceInitialized,
               (syncer::SyncService*),
               (override));
-  MOCK_METHOD(void, RecordAddLoginAsyncCalledFromTheStore, (), (override));
-  MOCK_METHOD(void, RecordUpdateLoginAsyncCalledFromTheStore, (), (override));
 
   base::WeakPtr<PasswordStoreBackend> AsWeakPtr() override;
 

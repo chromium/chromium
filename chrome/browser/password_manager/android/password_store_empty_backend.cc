@@ -116,10 +116,6 @@ PasswordStoreEmptyBackend::CreateSyncControllerDelegate() {
 void PasswordStoreEmptyBackend::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {}
 
-void PasswordStoreEmptyBackend::RecordAddLoginAsyncCalledFromTheStore() {}
-
-void PasswordStoreEmptyBackend::RecordUpdateLoginAsyncCalledFromTheStore() {}
-
 base::WeakPtr<PasswordStoreBackend> PasswordStoreEmptyBackend::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

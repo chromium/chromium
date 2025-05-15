@@ -227,14 +227,6 @@ void PasswordStoreProxyBackend::OnSyncServiceInitialized(
   }
 }
 
-void PasswordStoreProxyBackend::RecordAddLoginAsyncCalledFromTheStore() {
-  main_backend()->RecordAddLoginAsyncCalledFromTheStore();
-}
-
-void PasswordStoreProxyBackend::RecordUpdateLoginAsyncCalledFromTheStore() {
-  main_backend()->RecordUpdateLoginAsyncCalledFromTheStore();
-}
-
 base::WeakPtr<PasswordStoreBackend> PasswordStoreProxyBackend::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

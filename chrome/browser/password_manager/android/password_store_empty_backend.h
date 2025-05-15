@@ -57,8 +57,6 @@ class PasswordStoreEmptyBackend
   std::unique_ptr<syncer::DataTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
-  void RecordAddLoginAsyncCalledFromTheStore() override;
-  void RecordUpdateLoginAsyncCalledFromTheStore() override;
   base::WeakPtr<PasswordStoreBackend> AsWeakPtr() override;
 
   base::WeakPtrFactory<PasswordStoreEmptyBackend> weak_ptr_factory_{this};

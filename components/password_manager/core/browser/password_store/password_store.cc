@@ -122,7 +122,6 @@ void PasswordStore::AddLogins(const std::vector<PasswordForm>& forms,
     CHECK(!form.blocked_by_user ||
           (form.username_value.empty() && form.password_value.empty()));
     backend_->AddLoginAsync(form, barrier_callback);
-    backend_->RecordAddLoginAsyncCalledFromTheStore();
   }
 }
 
@@ -158,7 +157,6 @@ void PasswordStore::UpdateLogins(const std::vector<PasswordForm>& forms,
     CHECK(!form.blocked_by_user ||
           (form.username_value.empty() && form.password_value.empty()));
     backend_->UpdateLoginAsync(form, barrier_callback);
-    backend_->RecordUpdateLoginAsyncCalledFromTheStore();
   }
 }
 
@@ -206,7 +204,6 @@ void PasswordStore::UpdateLoginWithPrimaryKey(
   backend_->RemoveLoginAsync(FROM_HERE, old_primary_key, barrier_callback);
   backend_->AddLoginAsync(new_form_with_correct_password_issues,
                           barrier_callback);
-  backend_->RecordAddLoginAsyncCalledFromTheStore();
 }
 
 void PasswordStore::RemoveLogin(const base::Location& location,

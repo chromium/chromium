@@ -411,18 +411,6 @@ PasswordStoreBuiltInBackend::CreateSyncControllerDelegate() {
 void PasswordStoreBuiltInBackend::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {}
 
-void PasswordStoreBuiltInBackend::RecordAddLoginAsyncCalledFromTheStore() {
-  base::UmaHistogramBoolean(
-      "PasswordManager.PasswordStore.BuiltInBackend.AddLoginCalledOnStore",
-      true);
-}
-
-void PasswordStoreBuiltInBackend::RecordUpdateLoginAsyncCalledFromTheStore() {
-  base::UmaHistogramBoolean(
-      "PasswordManager.PasswordStore.BuiltInBackend.UpdateLoginCalledOnStore",
-      true);
-}
-
 base::WeakPtr<PasswordStoreBackend> PasswordStoreBuiltInBackend::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

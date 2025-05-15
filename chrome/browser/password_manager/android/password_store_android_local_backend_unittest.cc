@@ -307,24 +307,6 @@ TEST_F(PasswordStoreAndroidLocalBackendTest,
       prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
 }
 
-TEST_F(PasswordStoreAndroidLocalBackendTest, RecordPasswordStoreMetrics) {
-  base::HistogramTester histogram_tester;
-  backend().InitBackend(
-      /*affiliated_match_helper=*/nullptr,
-      PasswordStoreAndroidLocalBackend::RemoteChangesReceived(),
-      base::NullCallback(), base::DoNothing());
-
-  backend().RecordAddLoginAsyncCalledFromTheStore();
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordStore.LocalBackend.AddLoginCalledOnStore", true,
-      1);
-
-  backend().RecordUpdateLoginAsyncCalledFromTheStore();
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordStore.LocalBackend.UpdateLoginCalledOnStore",
-      true, 1);
-}
-
 TEST_F(PasswordStoreAndroidLocalBackendTest,
        ResetTemporarySavingSuspensionAfterSuccessfulLogin) {
   backend().InitBackend(

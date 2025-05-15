@@ -3276,30 +3276,6 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram
-    name="PasswordManager.PasswordStore.{PasswordStoreBackendType}.AddLoginCalledOnStore"
-    enum="BooleanCalled" expires_after="2025-08-10">
-  <owner>sygiet@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Records calls to AddLoginAsync made from the PasswordStore. Recorded after
-    the call to AddLoginAsync() on the backend.
-  </summary>
-  <token key="PasswordStoreBackendType" variants="PasswordStoreBackendType"/>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordStore.{PasswordStoreBackendType}.UpdateLoginCalledOnStore"
-    enum="BooleanCalled" expires_after="2025-06-08">
-  <owner>sygiet@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Records calls to UpdateLoginAsync made from the PasswordStore. Recorded
-    after the call to UpdateLoginAsync() on the backend.
-  </summary>
-  <token key="PasswordStoreBackendType" variants="PasswordStoreBackendType"/>
-</histogram>
-
-<histogram
     name="PasswordManager.PasswordStoreAndroidBackend.Retry{Operation}.APIError"
     enum="PasswordStoreAndroidBackendAPIError" expires_after="2025-06-08">
   <owner>izuzic@google.com</owner>

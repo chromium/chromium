@@ -149,14 +149,6 @@ class PasswordStoreBackend {
   // Propagates sync initialization event.
   virtual void OnSyncServiceInitialized(syncer::SyncService* sync_service) = 0;
 
-  // Records calls to the `AddLoginAsync()` from the password store.
-  // TODO: crbug.com/327126704 - Remove this method after UPM is launched.
-  virtual void RecordAddLoginAsyncCalledFromTheStore() = 0;
-
-  // Records calls to the `UpdateLoginAsync()` from the password store.
-  // TODO: crbug.com/327126704 - Remove this method after UPM is launched.
-  virtual void RecordUpdateLoginAsyncCalledFromTheStore() = 0;
-
   // Get a WeakPtr to the instance.
   virtual base::WeakPtr<PasswordStoreBackend> AsWeakPtr() = 0;
 };

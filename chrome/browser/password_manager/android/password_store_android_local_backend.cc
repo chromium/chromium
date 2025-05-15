@@ -129,18 +129,6 @@ PasswordStoreAndroidLocalBackend::CreateSyncControllerDelegate() {
 void PasswordStoreAndroidLocalBackend::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {}
 
-void PasswordStoreAndroidLocalBackend::RecordAddLoginAsyncCalledFromTheStore() {
-  base::UmaHistogramBoolean(
-      "PasswordManager.PasswordStore.LocalBackend.AddLoginCalledOnStore", true);
-}
-
-void PasswordStoreAndroidLocalBackend::
-    RecordUpdateLoginAsyncCalledFromTheStore() {
-  base::UmaHistogramBoolean(
-      "PasswordManager.PasswordStore.LocalBackend.UpdateLoginCalledOnStore",
-      true);
-}
-
 SmartBubbleStatsStore*
 PasswordStoreAndroidLocalBackend::GetSmartBubbleStatsStore() {
   return nullptr;

@@ -285,9 +285,6 @@ TEST_F(PasswordStoreTest, UpdateLoginPrimaryKeyFields) {
   old_primary_key.password_element = old_form->password_element;
   store->UpdateLoginWithPrimaryKey(*new_form, old_primary_key);
   WaitForPasswordStore();
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordStore.BuiltInBackend.AddLoginCalledOnStore",
-      true, 2);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   MockPasswordStoreConsumer mock_consumer;
@@ -325,9 +322,6 @@ TEST_F(PasswordStoreTest, AddLogins) {
   EXPECT_CALL(mock_observer, OnLoginsChanged(_, testing::SizeIs(2u)));
   store->AddLogins({all_credentials[0], all_credentials[1]});
   WaitForPasswordStore();
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordStore.BuiltInBackend.AddLoginCalledOnStore",
-      true, all_credentials.size());
 
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
@@ -346,8 +340,6 @@ TEST_F(PasswordStoreTest, AddLogins) {
 }
 
 TEST_F(PasswordStoreTest, UpdateLogins) {
-  base::HistogramTester histogram_tester;
-
   PasswordFormData form_data_1 =
       CreateTestPasswordFormDataByOrigin(kTestWebRealm1);
   PasswordFormData form_data_2 =
@@ -360,11 +352,7 @@ TEST_F(PasswordStoreTest, UpdateLogins) {
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
 
   store->AddLogins(all_credentials);
-
   WaitForPasswordStore();
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordStore.BuiltInBackend.AddLoginCalledOnStore",
-      true, all_credentials.size());
 
   form_data_1.password_value = u"new_password1";
   form_data_2.password_value = u"new_password2";
@@ -383,9 +371,6 @@ TEST_F(PasswordStoreTest, UpdateLogins) {
   EXPECT_CALL(mock_observer, OnLoginsChanged(_, testing::SizeIs(2u)));
   store->UpdateLogins(updated_credentials);
   WaitForPasswordStore();
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordStore.BuiltInBackend.UpdateLoginCalledOnStore",
-      true, all_credentials.size());
 
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
