@@ -22696,7 +22696,7 @@ Called by update_net_error_codes.py.-->
   <int value="7" label="kInProgressNavigation (obsoleted)"/>
   <int value="8" label="kNavigationRequestFailure (obsoleted)"/>
   <int value="9" label="kNavigationRequestBlockedByCsp"/>
-  <int value="10" label="kMainFrameNavigation"/>
+  <int value="10" label="kMainFrameNavigation (obsoleted)"/>
   <int value="11" label="kMojoBinderPolicy"/>
   <int value="12" label="kPlugin"/>
   <int value="13" label="kRendererProcessCrashed"/>

@@ -51,8 +51,6 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::LoginAuthRequested;
     case PrerenderFinalStatus::kLowEndDevice:
       return Preload::PrerenderFinalStatusEnum::LowEndDevice;
-    case PrerenderFinalStatus::kMainFrameNavigation:
-      return Preload::PrerenderFinalStatusEnum::MainFrameNavigation;
     case PrerenderFinalStatus::kMemoryLimitExceeded:
       return Preload::PrerenderFinalStatusEnum::MemoryLimitExceeded;
     case PrerenderFinalStatus::kMixedContent:

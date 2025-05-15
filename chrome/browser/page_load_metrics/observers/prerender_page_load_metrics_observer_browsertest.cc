@@ -21,7 +21,6 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/base/page_transition_types.h"
 
 using PrerenderPageLoad = ukm::builders::PrerenderPageLoad;
@@ -43,10 +42,6 @@ class PrerenderPageLoadMetricsObserverBrowserTest
       : prerender_helper_(base::BindRepeating(
             &PrerenderPageLoadMetricsObserverBrowserTest::web_contents,
             base::Unretained(this))) {
-    // TODO(crbug.com/40193792): Remove this once kPrerender2MainFrameNavigation
-    // is enabled by default.
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kPrerender2MainFrameNavigation);
   }
   ~PrerenderPageLoadMetricsObserverBrowserTest() override = default;
 
@@ -177,9 +172,6 @@ class PrerenderPageLoadMetricsObserverBrowserTest
   }
 
   content::test::PrerenderTestHelper prerender_helper_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,

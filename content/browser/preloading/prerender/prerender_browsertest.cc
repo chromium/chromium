@@ -352,8 +352,7 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     // dispatches to top frames.  Disabling kDropInputEventsWhilePaintHolding
     // because the tests here are not about top frame paintholding.
     feature_list_.InitWithFeatures(
-        {blink::features::kPrerender2MainFrameNavigation,
-         ::features::kSuppressesPrerenderingOnSlowNetwork,
+        {::features::kSuppressesPrerenderingOnSlowNetwork,
          blink::features::kFetchLaterAPI},
         {blink::features::kDropInputEventsWhilePaintHolding});
   }

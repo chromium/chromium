@@ -37,7 +37,7 @@ enum class PrerenderFinalStatus {
   // kInProgressNavigation = 7,  // No longer used.
   // kNavigationRequestFailure = 8,  // No longer used.
   kNavigationRequestBlockedByCsp = 9,
-  kMainFrameNavigation = 10,
+  // kMainFrameNavigation = 10, // No longer used.
   kMojoBinderPolicy = 11,
   // kPlugin = 12,  // No longer used.
   kRendererProcessCrashed = 13,
@@ -180,7 +180,7 @@ enum class PrerenderFinalStatus {
 
   kMaxValue = kBrowsingDataRemoved,
 };
-// LINT.ThenChange()
+// LINT.ThenChange(//third_party/blink/public/devtools_protocol/browser_protocol.pdl)
 
 // Helper method to convert PrerenderFinalStatus to PreloadingFailureReason.
 PreloadingFailureReason CONTENT_EXPORT

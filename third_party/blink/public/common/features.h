@@ -1424,9 +1424,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // purposes.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPreloadingViewportHeuristics);
 
-// Enables the same-origin main frame navigation in a prerendered page.
-// See https://crbug.com/1239281.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrerender2MainFrameNavigation);
 // The number of prerenderings that can run concurrently. This only applies for
 // prerenderings triggered by speculation rules.
 BLINK_COMMON_EXPORT extern const char

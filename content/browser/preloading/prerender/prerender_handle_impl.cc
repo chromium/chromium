@@ -39,7 +39,6 @@ bool ShouldFireErrorCallback(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kInvalidSchemeRedirect:
     case PrerenderFinalStatus::kInvalidSchemeNavigation:
     case PrerenderFinalStatus::kNavigationRequestBlockedByCsp:
-    case PrerenderFinalStatus::kMainFrameNavigation:
     case PrerenderFinalStatus::kMojoBinderPolicy:
     case PrerenderFinalStatus::kRendererProcessCrashed:
     case PrerenderFinalStatus::kRendererProcessKilled:

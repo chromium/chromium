@@ -7,7 +7,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
-#include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
@@ -18,9 +17,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/public/browser/preloading_trigger_type.h"
-#include "content/public/common/content_features.h"
 #include "services/network/public/mojom/parsed_headers.mojom.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
 
@@ -203,14 +200,6 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
     // the initial prerendering navigation in a prerendered page. Compare the
     // origin of the initial prerendering URL to the origin of navigation
     // (redirection) URL.
-
-    if (!base::FeatureList::IsEnabled(
-            blink::features::kPrerender2MainFrameNavigation)) {
-      // Navigations after the initial prerendering navigation are disallowed
-      // when the kPrerender2MainFrameNavigation feature is disabled.
-      CancelPrerendering(PrerenderFinalStatus::kMainFrameNavigation);
-      return CANCEL;
-    }
 
     // Cross-site navigations after the initial prerendering navigation are
     // disallowed.

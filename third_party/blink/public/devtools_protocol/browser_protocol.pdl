@@ -13060,7 +13060,6 @@ experimental domain Preload
       InvalidSchemeRedirect
       InvalidSchemeNavigation
       NavigationRequestBlockedByCsp
-      MainFrameNavigation
       MojoBinderPolicy
       RendererProcessCrashed
       RendererProcessKilled

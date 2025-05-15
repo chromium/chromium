@@ -43,7 +43,6 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "url/origin.h"
 
@@ -522,9 +521,6 @@ bool PrerenderHost::StartPrerendering() {
 }
 
 void PrerenderHost::DidStartNavigation(NavigationHandle* navigation_handle) {
-  CHECK(base::FeatureList::IsEnabled(
-      blink::features::kPrerender2MainFrameNavigation));
-
   auto* navigation_request = NavigationRequest::From(navigation_handle);
   CHECK(navigation_request->IsInPrerenderedMainFrame());
 
@@ -1228,7 +1224,6 @@ void PrerenderHost::SetFailureReason(
     case PrerenderFinalStatus::kInvalidSchemeRedirect:
     case PrerenderFinalStatus::kInvalidSchemeNavigation:
     case PrerenderFinalStatus::kNavigationRequestBlockedByCsp:
-    case PrerenderFinalStatus::kMainFrameNavigation:
     case PrerenderFinalStatus::kMojoBinderPolicy:
     case PrerenderFinalStatus::kRendererProcessCrashed:
     case PrerenderFinalStatus::kRendererProcessKilled:

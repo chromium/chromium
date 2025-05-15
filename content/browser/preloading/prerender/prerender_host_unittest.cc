@@ -10,13 +10,11 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/preloading/preload_pipeline_info_impl.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/prerender/prerender_attributes.h"
-#include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
@@ -257,11 +255,6 @@ std::unique_ptr<NavigationSimulatorImpl> CreateActivation(
 
 class PrerenderHostTest : public RenderViewHostImplTestHarness {
  public:
-  PrerenderHostTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kPrerender2MainFrameNavigation);
-  }
-
   ~PrerenderHostTest() override = default;
 
   void SetUp() override {
@@ -328,7 +321,6 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
       web_contents_delegate_;
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(PrerenderHostTest, IsNoVarySearchHeaderSet) {

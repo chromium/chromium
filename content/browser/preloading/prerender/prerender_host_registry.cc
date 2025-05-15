@@ -247,7 +247,6 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kInvalidSchemeNavigation:
       return PreloadingEligibility::kHttpOrHttpsOnly;
     case PrerenderFinalStatus::kNavigationRequestBlockedByCsp:
-    case PrerenderFinalStatus::kMainFrameNavigation:
     case PrerenderFinalStatus::kMojoBinderPolicy:
     case PrerenderFinalStatus::kRendererProcessCrashed:
     case PrerenderFinalStatus::kRendererProcessKilled:
@@ -1552,11 +1551,6 @@ base::WeakPtr<PrerenderHostRegistry> PrerenderHostRegistry::GetWeakPtr() {
 
 void PrerenderHostRegistry::DidStartNavigation(
     NavigationHandle* navigation_handle) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kPrerender2MainFrameNavigation)) {
-    return;
-  }
-
   // DidStartNavigation is used for monitoring the main frame navigation in a
   // prerendered page so do nothing for other navigations.
   auto* navigation_request = NavigationRequest::From(navigation_handle);
