@@ -96,8 +96,6 @@ inline std::ostream& operator<<(std::ostream& stream,
 }
 
 class ImageContentData final : public ContentData {
-  friend class ContentData;
-
  public:
   explicit ImageContentData(StyleImage* image) : image_(image) {
     DCHECK(image_);
@@ -167,8 +165,6 @@ struct DowncastTraits<ImageContentData> {
 };
 
 class TextContentData final : public ContentData {
-  friend class ContentData;
-
  public:
   explicit TextContentData(const String& text) : text_(text) {}
 
@@ -201,8 +197,6 @@ struct DowncastTraits<TextContentData> {
 };
 
 class AltTextContentData final : public ContentData {
-  friend class ContentData;
-
  public:
   explicit AltTextContentData(const String& text) : text_(text) {}
 
@@ -244,8 +238,6 @@ struct DowncastTraits<AltTextContentData> {
 };
 
 class CounterContentData final : public ContentData {
-  friend class ContentData;
-
  public:
   explicit CounterContentData(const AtomicString& identifier,
                               const AtomicString& style,
@@ -300,8 +292,6 @@ struct DowncastTraits<CounterContentData> {
 };
 
 class QuoteContentData final : public ContentData {
-  friend class ContentData;
-
  public:
   explicit QuoteContentData(QuoteType quote) : quote_(quote) {}
 
@@ -336,8 +326,6 @@ struct DowncastTraits<QuoteContentData> {
 };
 
 class NoneContentData final : public ContentData {
-  friend class ContentData;
-
  public:
   explicit NoneContentData() {}
 
