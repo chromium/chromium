@@ -104,6 +104,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -150,13 +151,8 @@ const char kShadowDelegatesFocusAttributeName[] = "shadowdelegatesfocus";
 using mojom::blink::FormControlType;
 
 KURL MakePseudoUrl(StringView type) {
-  StringBuilder pseudo_sheet_url_builder;
-  pseudo_sheet_url_builder.Append("cid:");
-  pseudo_sheet_url_builder.Append(type);
-  pseudo_sheet_url_builder.Append("-");
-  pseudo_sheet_url_builder.Append(WTF::CreateCanonicalUUIDString());
-  pseudo_sheet_url_builder.Append("@mhtml.blink");
-  return KURL(pseudo_sheet_url_builder.ToString());
+  return KURL(WTF::StrCat(
+      {"cid:", type, "-", WTF::CreateCanonicalUUIDString(), "@mhtml.blink"}));
 }
 
 KURL MakePseudoCSSUrl() {
@@ -1096,10 +1092,8 @@ function main(metadata) {
     // tag.
     return blink::internal::ReplaceAllCaseInsensitive(
         css_text.ToString(), "</style", [](const String& text) {
-          StringBuilder builder;
-          builder.Append("\\3C/");  // \3C = '<'.
-          builder.Append(text.Substring(2));
-          return builder.ReleaseString();
+          // \3C = '<'.
+          return WTF::StrCat({"\\3C/", text.Substring(2)});
         });
   }
 
@@ -1403,8 +1397,8 @@ String FrameSerializer::MarkOfTheWebDeclaration(const KURL& url) {
 // static
 String FrameSerializer::GetContentID(Frame* frame) {
   DCHECK(frame);
-  const String& frame_id = frame->GetFrameIdForTracing();
-  return "<frame-" + frame_id + "@mhtml.blink>";
+  return WTF::StrCat(
+      {"<frame-", frame->GetFrameIdForTracing(), "@mhtml.blink>"});
 }
 
 }  // namespace blink

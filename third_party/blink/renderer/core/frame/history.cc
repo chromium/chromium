@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
@@ -367,11 +368,11 @@ void History::StateObjectAdded(scoped_refptr<SerializedScriptValue> data,
     // We can safely expose the URL to JavaScript, as a) no redirection takes
     // place: JavaScript already had this URL, b) JavaScript can only access a
     // same-origin History object.
-    exception_state.ThrowSecurityError(
-        "A history state object with URL '" + full_url.ElidedString() +
-        "' cannot be created in a document with origin '" +
-        window->GetSecurityOrigin()->ToString() + "' and URL '" +
-        window->Url().ElidedString() + "'.");
+    exception_state.ThrowSecurityError(WTF::StrCat(
+        {"A history state object with URL '", full_url.ElidedString(),
+         "' cannot be created in a document with origin '",
+         window->GetSecurityOrigin()->ToString(), "' and URL '",
+         window->Url().ElidedString(), "'."}));
     return;
   }
 

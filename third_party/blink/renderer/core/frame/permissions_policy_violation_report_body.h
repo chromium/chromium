@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/location_report_body.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -25,12 +26,12 @@ class CORE_EXPORT PermissionsPolicyViolationReportBody
       const String& allow_attribute = WTF::g_empty_string,
       const String& src_attribute = WTF::g_empty_string)
       : feature_id_(feature_id),
-        message_((allow_attribute.empty()
-                      ? "Permissions policy violation: "
-                      : "Potential permissions policy violation: ") +
-                 (message.empty()
-                      ? feature_id + " is not allowed in this document."
-                      : message)),
+        message_(WTF::StrCat(
+            {(allow_attribute.empty()
+                  ? "Permissions policy violation: "
+                  : "Potential permissions policy violation: "),
+             message.empty() ? feature_id : message,
+             message.empty() ? " is not allowed in this document." : ""})),
         disposition_(disposition),
         allow_attribute_(allow_attribute),
         src_attribute_(src_attribute) {}

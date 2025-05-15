@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/platform/text/date_components.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -37,9 +38,10 @@ void DeprecationReportBody::BuildJSONValue(V8ObjectBuilder& builder) const {
       // Adding extra 'Z' here to ensure that the string gives the same result
       // as JSON.stringify(anticipatedRemoval) in javascript. Note here
       // anticipatedRemoval will become a Date object in javascript.
-      String iso8601_date = anticipated_removal_date.ToString(
-                                DateComponents::SecondFormat::kMillisecond) +
-                            "Z";
+      String iso8601_date =
+          WTF::StrCat({anticipated_removal_date.ToString(
+                           DateComponents::SecondFormat::kMillisecond),
+                       "Z"});
       builder.AddString("anticipatedRemoval", iso8601_date);
     }
   }

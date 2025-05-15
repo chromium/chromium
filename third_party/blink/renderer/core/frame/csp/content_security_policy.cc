@@ -82,6 +82,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -1361,15 +1362,17 @@ void ContentSecurityPolicy::ReportMixedContent(const KURL& blocked_url,
 }
 
 void ContentSecurityPolicy::ReportReportOnlyInMeta(const String& header) {
-  LogToConsole("The report-only Content Security Policy '" + header +
-               "' was delivered via a <meta> element, which is disallowed. The "
-               "policy has been ignored.");
+  LogToConsole(WTF::StrCat(
+      {"The report-only Content Security Policy '", header,
+       "' was delivered via a <meta> element, which is disallowed. The "
+       "policy has been ignored."}));
 }
 
 void ContentSecurityPolicy::ReportMetaOutsideHead(const String& header) {
-  LogToConsole("The Content Security Policy '" + header +
-               "' was delivered via a <meta> element outside the document's "
-               "<head>, which is disallowed. The policy has been ignored.");
+  LogToConsole(WTF::StrCat(
+      {"The Content Security Policy '", header,
+       "' was delivered via a <meta> element outside the document's "
+       "<head>, which is disallowed. The policy has been ignored."}));
 }
 
 void ContentSecurityPolicy::LogToConsole(const String& message,

@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -156,7 +157,7 @@ void Location::setProtocol(v8::Isolate* isolate,
   if (!url.SetProtocol(protocol)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "'" + protocol + "' is an invalid protocol.");
+        WTF::StrCat({"'", protocol, "' is an invalid protocol."}));
     return;
   }
 
@@ -281,15 +282,16 @@ void Location::SetLocation(const String& url,
                                                  completed_url)) {
     if (exception_state) {
       exception_state->ThrowSecurityError(
-          "The current window does not have permission to navigate the target "
-          "frame to '" +
-          url + "'.");
+          WTF::StrCat({"The current window does not have permission to "
+                       "navigate the target frame to '",
+                       url, "'."}));
     }
     return;
   }
   if (exception_state && !completed_url.IsValid()) {
-    exception_state->ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                       "'" + url + "' is not a valid URL.");
+    exception_state->ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        WTF::StrCat({"'", url, "' is not a valid URL."}));
     return;
   }
 

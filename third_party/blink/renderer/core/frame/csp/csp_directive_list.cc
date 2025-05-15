@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -44,11 +44,8 @@ namespace {
 String GetRawDirectiveForMessage(
     const HashMap<CSPDirectiveName, String> raw_directives,
     CSPDirectiveName directive_name) {
-  StringBuilder builder;
-  builder.Append(ContentSecurityPolicy::GetDirectiveName(directive_name));
-  builder.Append(" ");
-  builder.Append(raw_directives.at(directive_name));
-  return builder.ToString();
+  return WTF::StrCat({ContentSecurityPolicy::GetDirectiveName(directive_name),
+                      " ", raw_directives.at(directive_name)});
 }
 
 String GetSha256String(const String& content) {
@@ -60,7 +57,7 @@ String GetSha256String(const String& content) {
     return "sha256-...";
   }
 
-  return "sha256-" + Base64Encode(digest);
+  return WTF::StrCat({"sha256-", Base64Encode(digest)});
 }
 
 // IntegrityMetadata (from SRI) has base64-encoded digest values, but CSP uses
@@ -143,7 +140,7 @@ void ReportViolation(
     const String& sample_prefix = String(),
     std::optional<base::UnguessableToken> issue_id = std::nullopt) {
   String message = CSPDirectiveListIsReportOnly(csp)
-                       ? "[Report Only] " + console_message
+                       ? WTF::StrCat({"[Report Only] ", console_message})
                        : console_message;
   auto error_level = CSPDirectiveListIsReportOnly(csp)
                          ? mojom::blink::ConsoleMessageLevel::kInfo
@@ -171,7 +168,7 @@ void ReportViolationWithLocation(
     Element* element,
     const String& source) {
   String message = CSPDirectiveListIsReportOnly(csp)
-                       ? "[Report Only] " + console_message
+                       ? WTF::StrCat({"[Report Only] ", console_message})
                        : console_message;
   auto error_level = CSPDirectiveListIsReportOnly(csp)
                          ? mojom::blink::ConsoleMessageLevel::kInfo
@@ -198,8 +195,9 @@ void ReportEvalViolation(
     const KURL& blocked_url,
     const ContentSecurityPolicy::ExceptionStatus exception_status,
     const String& content) {
-  String report_message =
-      CSPDirectiveListIsReportOnly(csp) ? "[Report Only] " + message : message;
+  String report_message = CSPDirectiveListIsReportOnly(csp)
+                              ? WTF::StrCat({"[Report Only] ", message})
+                              : message;
   auto error_level = CSPDirectiveListIsReportOnly(csp)
                          ? mojom::blink::ConsoleMessageLevel::kInfo
                          : mojom::blink::ConsoleMessageLevel::kError;
@@ -229,8 +227,9 @@ void ReportWasmEvalViolation(
     const KURL& blocked_url,
     const ContentSecurityPolicy::ExceptionStatus exception_status,
     const String& content) {
-  String report_message =
-      CSPDirectiveListIsReportOnly(csp) ? "[Report Only] " + message : message;
+  String report_message = CSPDirectiveListIsReportOnly(csp)
+                              ? WTF::StrCat({"[Report Only] ", message})
+                              : message;
   auto error_level = CSPDirectiveListIsReportOnly(csp)
                          ? mojom::blink::ConsoleMessageLevel::kInfo
                          : mojom::blink::ConsoleMessageLevel::kError;
@@ -379,8 +378,8 @@ bool CheckEvalAndReportViolation(
       GetRawDirectiveForMessage(csp.raw_directives, directive.type);
   ReportEvalViolation(
       csp, policy, raw_directive, CSPDirectiveName::ScriptSrc,
-      console_message + "\"" + raw_directive + "\"." + suffix + "\n", KURL(),
-      exception_status,
+      WTF::StrCat({console_message, "\"", raw_directive, "\".", suffix, "\n"}),
+      KURL(), exception_status,
       directive.source_list->report_sample ? content : g_empty_string);
   if (!CSPDirectiveListIsReportOnly(csp)) {
     policy->ReportBlockedScriptExecutionToInspector(raw_directive);
@@ -585,10 +584,10 @@ void ReportViolationForCheckSource(
   String raw_directive =
       GetRawDirectiveForMessage(csp.raw_directives, directive.type);
   ReportViolation(csp, policy, raw_directive, effective_type,
-                  prefix + url.ElidedString() +
-                      "' because it violates the following Content Security "
-                      "Policy directive: \"" +
-                      raw_directive + "\"." + suffix + "\n",
+                  WTF::StrCat({prefix, url.ElidedString(),
+                               "' because it violates the following Content "
+                               "Security Policy directive: \"",
+                               raw_directive, "\".", suffix, "\n"}),
                   url_before_redirects);
 }
 
@@ -734,9 +733,9 @@ bool CSPDirectiveListAllowInline(
 
     return CheckInlineAndReportViolation(
         csp, policy, directive,
-        "Refused to " + message +
-            " because it violates the following Content Security Policy "
-            "directive: ",
+        WTF::StrCat({"Refused to ", message,
+                     " because it violates the following Content Security "
+                     "Policy directive: "}),
         element, content, context_url, context_line, inline_type, hash_value,
         type);
   }
@@ -784,10 +783,11 @@ bool CSPDirectiveListAllowWasmCodeGeneration(
                        : "'unsafe-eval' is not";
     return CheckWasmEvalAndReportViolation(
         csp, policy,
-        "Refused to compile or instantiate WebAssembly module because " +
-            infix +
-            " an allowed source of script in the following "
-            "Content Security Policy directive: ",
+        WTF::StrCat(
+            {"Refused to compile or instantiate WebAssembly module because ",
+             infix,
+             " an allowed source of script in the following Content Security "
+             "Policy directive: "}),
         exception_status, content);
   }
   return CSPDirectiveListIsReportOnly(csp) || CheckWasmEval(csp, policy);
@@ -799,11 +799,12 @@ bool CSPDirectiveListShouldDisableEval(
   CSPOperativeDirective directive =
       OperativeDirective(csp, CSPDirectiveName::ScriptSrc);
   if (!CheckEval(directive.source_list)) {
-    error_message =
-        "Refused to evaluate a string as JavaScript because 'unsafe-eval' is "
-        "not an allowed source of script in the following Content Security "
-        "Policy directive: \"" +
-        GetRawDirectiveForMessage(csp.raw_directives, directive.type) + "\".\n";
+    error_message = WTF::StrCat(
+        {"Refused to evaluate a string as JavaScript because 'unsafe-eval' is "
+         "not an allowed source of script in the following Content Security "
+         "Policy directive: \"",
+         GetRawDirectiveForMessage(csp.raw_directives, directive.type),
+         "\".\n"});
     return true;
   } else if (CSPDirectiveListRequiresTrustedTypes(csp)) {
     error_message =
@@ -822,21 +823,22 @@ bool CSPDirectiveListShouldDisableWasmEval(
     return false;
   }
 
-  const char* format =
-      SupportsWasmEval(csp, policy)
-          ? "Refused to compile or instantiate WebAssembly module because "
-            "neither 'wasm-eval' nor 'unsafe-eval' is an allowed source of "
-            "script in the following Content Security Policy directive: \"%s\""
-          : "Refused to compile or instantiate WebAssembly module because "
-            "'unsafe-eval' is not an allowed source of script in the following "
-            "Content Security Policy directive: \"%s\"";
-
   CSPOperativeDirective directive =
       OperativeDirective(csp, CSPDirectiveName::ScriptSrc);
-  error_message = String::Format(
-      format, GetRawDirectiveForMessage(csp.raw_directives, directive.type)
-                  .Ascii()
-                  .c_str());
+  String raw_directive =
+      GetRawDirectiveForMessage(csp.raw_directives, directive.type);
+  error_message =
+      SupportsWasmEval(csp, policy)
+          ? WTF::StrCat({"Refused to compile or instantiate WebAssembly module "
+                         "because neither 'wasm-eval' nor 'unsafe-eval' is an "
+                         "allowed source of script in the following Content "
+                         "Security Policy directive: \"",
+                         raw_directive, "\""})
+          : WTF::StrCat(
+                {"Refused to compile or instantiate WebAssembly module because "
+                 "'unsafe-eval' is not an allowed source of script in the "
+                 "following Content Security Policy directive: \"",
+                 raw_directive, "\""});
   return true;
 }
 
@@ -920,18 +922,21 @@ bool CSPDirectiveListAllowTrustedTypePolicy(
   String raw_directive = GetRawDirectiveForMessage(
       csp.raw_directives,
       network::mojom::blink::CSPDirectiveName::TrustedTypes);
-  const char* message =
+  String message =
       (violation_details == ContentSecurityPolicy::kDisallowedDuplicateName)
-          ? "Refused to create a TrustedTypePolicy named '%s' because a "
-            "policy with that name already exists and the Content Security "
-            "Policy directive does not 'allow-duplicates': \"%s\"."
-          : "Refused to create a TrustedTypePolicy named '%s' because "
-            "it violates the following Content Security Policy directive: "
-            "\"%s\".";
+          ? WTF::StrCat({"Refused to create a TrustedTypePolicy named '",
+                         policy_name,
+                         "' because a policy with that name already exists and "
+                         "the Content Security Policy directive does not "
+                         "'allow-duplicates': \"",
+                         raw_directive, "\"."})
+          : WTF::StrCat({"Refused to create a TrustedTypePolicy named '",
+                         policy_name,
+                         "' because it violates the following Content Security "
+                         "Policy directive: \"",
+                         raw_directive, "\"."});
   ReportViolation(
-      csp, policy, "trusted-types", CSPDirectiveName::TrustedTypes,
-      String::Format(message, policy_name.Utf8().c_str(),
-                     raw_directive.Utf8().c_str()),
+      csp, policy, "trusted-types", CSPDirectiveName::TrustedTypes, message,
       KURL(), ContentSecurityPolicyViolationType::kTrustedTypesPolicyViolation,
       policy_name, String(), issue_id);
 

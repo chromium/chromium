@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/frame/document_policy_violation_report_body.h"
+
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -15,10 +17,10 @@ DocumentPolicyViolationReportBody::DocumentPolicyViolationReportBody(
     const String& resource_url)
     : LocationReportBody(resource_url),
       feature_id_(feature_id),
-      message_("Document policy violation: " +
-               (message.empty()
-                    ? feature_id + " is not allowed in this document."
-                    : message)),
+      message_(message.empty()
+                   ? WTF::StrCat({"Document policy violation: ", feature_id,
+                                  " is not allowed in this document."})
+                   : WTF::StrCat({"Document policy violation: ", message})),
       disposition_(disposition) {
   DCHECK(!feature_id.empty());
   DCHECK(!disposition.empty());
