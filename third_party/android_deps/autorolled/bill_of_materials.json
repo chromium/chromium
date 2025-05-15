@@ -802,17 +802,17 @@
     {
         "name": "pdf-document-service",
         "group": "androidx.pdf",
-        "version": "1.0.0-SNAPSHOT"
+        "version": "1.0.0-alpha06"
     },
     {
         "name": "pdf-viewer",
         "group": "androidx.pdf",
-        "version": "1.0.0-SNAPSHOT"
+        "version": "1.0.0-alpha06"
     },
     {
         "name": "pdf-viewer-fragment",
         "group": "androidx.pdf",
-        "version": "1.0.0-SNAPSHOT"
+        "version": "1.0.0-alpha06"
     },
     {
         "name": "preference",
@@ -1272,7 +1272,7 @@
     {
         "name": "material",
         "group": "com.google.android.material",
-        "version": "1.13.0-alpha13"
+        "version": "1.14.0-alpha01"
     },
     {
         "name": "core-common",
