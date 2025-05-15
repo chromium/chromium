@@ -9412,3 +9412,6 @@ crbug.com/416123241 [ Linux ] fast/forms/select/customizable-select/disallowed-s
 
 # Gardener 2025-05-14
 crbug.com/417479566 [ Mac ] external/wpt/css/css-transitions/transitioncancel-003.html [ Failure Pass ]
+
+# Gardener 2025-05-15
+crbug.com/417921517 [ Win11-arm64 ] external/wpt/css/css-ruby/ruby-text-combine-upright-002a.html [ Failure Pass ]
