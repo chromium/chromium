@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_model_identity_data_source.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_mutator.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_table_view_controller_constants.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/constants.h"
@@ -137,7 +138,12 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
 - (void)updateAccountItem:(TableViewAccountItem*)item
      withIdentityViewItem:(IdentityViewItem*)identityViewItem {
   item.image = identityViewItem.avatar;
-  item.text = identityViewItem.userEmail;
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    item.detailText = identityViewItem.userEmail;
+    item.text = identityViewItem.userFullName;
+  } else {
+    item.text = identityViewItem.userEmail;
+  }
   item.accessibilityIdentifier = identityViewItem.accessibilityIdentifier;
   item.mode = TableViewAccountModeNonTappable;
   item.accessoryType = UITableViewCellAccessoryNone;
