@@ -41,6 +41,8 @@ source_set("toolbars_ui") {
     "tab_grid_page_control.mm",
     "tab_grid_toolbar_background.h",
     "tab_grid_toolbar_background.mm",
+    "tab_grid_toolbar_scrolling_background.h",
+    "tab_grid_toolbar_scrolling_background.mm",
     "tab_grid_toolbars_grid_delegate.h",
     "tab_grid_toolbars_main_tab_grid_delegate.h",
     "tab_grid_toolbars_utils.h",
@@ -52,6 +54,7 @@ source_set("toolbars_ui") {
   deps = [
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/incognito_reauth/ui_bundled:features",
     "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",

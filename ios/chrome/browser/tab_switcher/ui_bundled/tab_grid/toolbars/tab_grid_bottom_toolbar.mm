@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -17,6 +18,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_new_tab_button.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbar_background.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbar_scrolling_background.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_utils.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -41,6 +43,7 @@
   BOOL _undoActive;
   BOOL _scrolledToEdge;
   TabGridToolbarBackground* _backgroundView;
+  TabGridToolbarScrollingBackground* _scrollBackgroundView;
   // Configures the responder following the receiver in the responder chain.
   UIResponder* _followingNextResponder;
 
@@ -66,10 +69,18 @@
 #pragma mark - UIView
 
 - (void)didMoveToSuperview {
-  if (_backgroundView) {
-    [self.superview.bottomAnchor
-        constraintEqualToAnchor:_backgroundView.bottomAnchor]
-        .active = YES;
+  if (IsIOSSoftLockEnabled()) {
+    if (_scrollBackgroundView) {
+      [self.superview.bottomAnchor
+          constraintEqualToAnchor:_scrollBackgroundView.bottomAnchor]
+          .active = YES;
+    }
+  } else {
+    if (_backgroundView) {
+      [self.superview.bottomAnchor
+          constraintEqualToAnchor:_backgroundView.bottomAnchor]
+          .active = YES;
+    }
   }
   [super didMoveToSuperview];
 }
@@ -212,6 +223,12 @@
   _scrolledToEdge = scrolledToEdge;
 
   [self updateBackgroundVisibility];
+}
+
+- (void)setBackgroundContentOffset:(CGPoint)backgroundContentOffset
+                          animated:(BOOL)animated {
+  [_scrollBackgroundView setContentOffset:backgroundContentOffset
+                                 animated:animated];
 }
 
 #pragma mark Close Tabs
@@ -466,13 +483,22 @@
 // middle/scrolled to the top states.
 - (void)createScrolledBackgrounds {
   _scrolledToEdge = YES;
-
-  _backgroundView = [[TabGridToolbarBackground alloc] initWithFrame:self.frame];
-  _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-  [self addSubview:_backgroundView];
-  AddSameConstraintsToSides(
-      self, _backgroundView,
-      LayoutSides::kLeading | LayoutSides::kTop | LayoutSides::kTrailing);
+  if (IsIOSSoftLockEnabled()) {
+    _scrollBackgroundView = [[TabGridToolbarScrollingBackground alloc] init];
+    _scrollBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:_scrollBackgroundView];
+    AddSameConstraintsToSides(
+        self, _scrollBackgroundView,
+        LayoutSides::kLeading | LayoutSides::kTop | LayoutSides::kTrailing);
+  } else {
+    _backgroundView =
+        [[TabGridToolbarBackground alloc] initWithFrame:self.frame];
+    _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:_backgroundView];
+    AddSameConstraintsToSides(
+        self, _backgroundView,
+        LayoutSides::kLeading | LayoutSides::kTop | LayoutSides::kTrailing);
+  }
 
   // A non-nil UIImage has to be added in the background of the toolbar to avoid
   // having an additional blur effect.
@@ -488,10 +514,17 @@
       ([self isShowingFloatingButton] || !_scrolledToEdge);
   BOOL scrolledBackgroundViewHidden =
       [self isShowingFloatingButton] || _scrolledToEdge;
-  [_backgroundView
-      setScrolledOverContentBackgroundViewHidden:scrolledBackgroundViewHidden];
-  [_backgroundView
-      setScrolledToEdgeBackgroundViewHidden:scrolledToBottomHidden];
+  if (IsIOSSoftLockEnabled()) {
+    [_scrollBackgroundView
+            updateBackgroundsForPage:self.page
+                scrolledToEdgeHidden:scrolledToBottomHidden
+        scrolledBackgroundViewHidden:scrolledBackgroundViewHidden];
+  } else {
+    [_backgroundView setScrolledOverContentBackgroundViewHidden:
+                         scrolledBackgroundViewHidden];
+    [_backgroundView
+        setScrolledToEdgeBackgroundViewHidden:scrolledToBottomHidden];
+  }
 }
 
 #pragma mark - Public

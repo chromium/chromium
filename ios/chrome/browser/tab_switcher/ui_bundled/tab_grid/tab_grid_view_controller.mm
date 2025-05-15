@@ -302,6 +302,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       offset = 1.0 - offset;
     }
     self.topToolbar.pageControl.sliderPosition = offset;
+    [self.topToolbar setBackgroundContentOffset:scrollView.contentOffset
+                                       animated:NO];
+    [self.bottomToolbar setBackgroundContentOffset:scrollView.contentOffset
+                                          animated:NO];
 
     TabGridPage page = GetPageFromScrollView(scrollView);
     if (page != self.currentPage) {

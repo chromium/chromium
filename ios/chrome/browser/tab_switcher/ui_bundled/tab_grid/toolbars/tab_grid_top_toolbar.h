@@ -85,6 +85,10 @@
 - (void)unfocusSearchBar;
 // Sets the text of the UISearchBar.
 - (void)setSearchBarText:(NSString*)text;
+// Sets the toolbar background offset to match the content scroll view offset.
+- (void)setBackgroundContentOffset:(CGPoint)backgroundContentOffset
+                          animated:(BOOL)animated;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TOOLBARS_TAB_GRID_TOP_TOOLBAR_H_
