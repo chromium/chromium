@@ -21,8 +21,25 @@ import toml
 from dataclasses import dataclass
 from typing import List, Set, Dict
 
-# Throughout the script, the following naming conventions are used (illustrated
-# with a crate named `syn` and published as version `2.0.50`):
+THIS_DIR = os.path.dirname(__file__)
+CHROMIUM_DIR = os.path.normpath(os.path.join(THIS_DIR, '..', '..'))
+THIRD_PARTY_RUST = os.path.join(CHROMIUM_DIR, "third_party", "rust")
+CRATES_DIR = os.path.join(THIRD_PARTY_RUST, "chromium_crates_io")
+VENDOR_DIR = os.path.join(CRATES_DIR, "vendor")
+INCLUSIVE_LANG_SCRIPT = os.path.join(
+    CHROMIUM_DIR, "infra", "update_inclusive_language_presubmit_exempt_dirs.sh")
+INCLUSIVE_LANG_CONFIG = os.path.join(
+    CHROMIUM_DIR, "infra", "inclusive_language_presubmit_exempt_dirs.txt")
+RUN_GNRT = os.path.join(THIS_DIR, "run_gnrt.py")
+UPDATE_RUST_SCRIPT = os.path.join(CHROMIUM_DIR, "tools", "rust",
+                                  "update_rust.py")
+
+sys.path.append(CRATES_DIR)
+import crate_utils
+
+# As in `third_party/rust/chromium_crates_io/crate_utils.py`, the following
+# naming conventions are used in this script (illustrated with a crate named
+# `syn` and published as version `2.0.50`):
 #
 # * `crate_name`   : "syn" string
 # * `crate_version`: "2.0.50" string
@@ -34,20 +51,6 @@ from typing import List, Set, Dict
 # and `syn@2.0.50`).  Also note that f`{crate_name}@{crate_epoch}` doesn't
 # change during a minor version update (such as the one that this script
 # produces in `auto` and `single` modes).
-
-THIS_DIR = os.path.dirname(__file__)
-CHROMIUM_DIR = os.path.normpath(os.path.join(THIS_DIR, '..', '..'))
-THIRD_PARTY_RUST = os.path.join(CHROMIUM_DIR, "third_party", "rust")
-CRATES_DIR = os.path.join(THIRD_PARTY_RUST, "chromium_crates_io")
-VENDOR_DIR = os.path.join(CRATES_DIR, "vendor")
-CARGO_LOCK = os.path.join(CRATES_DIR, "Cargo.lock")
-INCLUSIVE_LANG_SCRIPT = os.path.join(
-    CHROMIUM_DIR, "infra", "update_inclusive_language_presubmit_exempt_dirs.sh")
-INCLUSIVE_LANG_CONFIG = os.path.join(
-    CHROMIUM_DIR, "infra", "inclusive_language_presubmit_exempt_dirs.txt")
-RUN_GNRT = os.path.join(THIS_DIR, "run_gnrt.py")
-UPDATE_RUST_SCRIPT = os.path.join(CHROMIUM_DIR, "tools", "rust",
-                                  "update_rust.py")
 
 g_is_verbose = False
 
@@ -121,10 +124,10 @@ def GnrtUpdate(args: List[str], check_stdout: bool,
 
 def GnrtUpdateCrate(old_crate_id: str, new_crate_id: str, check_stdout: bool,
                     check_exitcode: bool):
-    old_crate_version = ConvertCrateIdToCrateVersion(old_crate_id)
-    new_crate_version = ConvertCrateIdToCrateVersion(new_crate_id)
-    old_epoch = GetEpoch(old_crate_version)
-    new_epoch = GetEpoch(new_crate_version)
+    old_crate_version = crate_utils.ConvertCrateIdToCrateVersion(old_crate_id)
+    new_crate_version = crate_utils.ConvertCrateIdToCrateVersion(new_crate_id)
+    old_epoch = crate_utils.ConvertCrateIdToCrateEpoch(old_crate_id)
+    new_epoch = crate_utils.ConvertCrateIdToCrateEpoch(new_crate_id)
     is_major_update = (old_epoch != new_epoch)
 
     cargo_update_args = [old_crate_id, "--precise", f"{new_crate_version}"]
@@ -136,31 +139,19 @@ def GnrtUpdateCrate(old_crate_id: str, new_crate_id: str, check_stdout: bool,
                       check_exitcode=check_exitcode)
 
 
-def GetCurrentCrateIds() -> Set[str]:
-    """Parses Cargo.lock and returns a set of crate ids
-    (e.g. "serde@1.0.197", "syn@2.0.50", ...)."""
-    t = toml.load(open(CARGO_LOCK))
-    result = set()
-    for p in t["package"]:
-        name = p["name"]
-        version = p["version"]
-        crate_id = f"{name}@{version}"
-        assert crate_id not in result
-        result.add(crate_id)
-    return result
-
-
 @dataclass(eq=True, order=True)
 class UpdatedCrate:
     old_crate_id: str
     new_crate_id: str
 
     def __str__(self):
-        name = ConvertCrateIdToCrateName(self.old_crate_id)
-        assert name == ConvertCrateIdToCrateName(self.new_crate_id)
+        name = crate_utils.ConvertCrateIdToCrateName(self.old_crate_id)
+        assert name == crate_utils.ConvertCrateIdToCrateName(self.new_crate_id)
 
-        old_version = ConvertCrateIdToCrateVersion(self.old_crate_id)
-        new_version = ConvertCrateIdToCrateVersion(self.new_crate_id)
+        old_version = crate_utils.ConvertCrateIdToCrateVersion(
+            self.old_crate_id)
+        new_version = crate_utils.ConvertCrateIdToCrateVersion(
+            self.new_crate_id)
 
         return f"{name}: {old_version} => {new_version}"
 
@@ -193,10 +184,10 @@ def DiffCrateIds(old_crate_ids: Set[str], new_crate_ids: Set[str],
         that it will be stable for tracking a crate version across updates."""
         result = dict()
         for crate_id in crate_ids:
-            name = ConvertCrateIdToCrateName(crate_id)
-            version = ConvertCrateIdToCrateVersion(crate_id)
+            name = crate_utils.ConvertCrateIdToCrateName(crate_id)
+            version = crate_utils.ConvertCrateIdToCrateVersion(crate_id)
             if only_minor_updates:
-                epoch = GetEpoch(version)
+                epoch = crate_utils.ConvertCrateIdToCrateEpoch(crate_id)
                 key = f'{name}@{epoch}'
             else:
                 key = name
@@ -236,62 +227,6 @@ def DiffCrateIds(old_crate_ids: Set[str], new_crate_ids: Set[str],
                       sorted(added_crate_ids))
 
 
-def GetEpoch(crate_version: str) -> str:
-    v = crate_version.split('.')
-    if v[0] == '0':
-        return f'v0_{v[1]}'
-    return f'v{v[0]}'
-
-
-def ConvertCrateIdToCrateName(crate_id: str) -> str:
-    """ Converts a `crate_id` into a `crate_name`."""
-    return crate_id[:crate_id.find("@")]
-
-
-def ConvertCrateIdToCrateVersion(crate_id: str) -> str:
-    """ Converts a `crate_id` into a `crate_version`."""
-    crate_version = crate_id[crate_id.find("@") + 1:]
-    return crate_version
-
-
-def _ConvertCrateIdToEpochDirRelativeToChromiumRoot(crate_id: str) -> str:
-    """ Converts a `crate_id` (e.g. "foo@1.2.3") into an epoch dir
-    (e.g. "third_party/rust/foo/v_1").  The returned dir is relative
-    to Chromium root. """
-    crate_name = ConvertCrateIdToCrateName(crate_id)
-    crate_name = crate_name.replace("-", "_")
-    epoch = GetEpoch(ConvertCrateIdToCrateVersion(crate_id))
-    target = os.path.join("third_party", "rust", crate_name, epoch)
-    return target
-
-
-def ConvertCrateIdToEpochDir(crate_id: str) -> str:
-    """ Converts a `crate_id` (e.g. "foo@1.2.3") into a path to an epoch dir
-    (e.g. on Windows: "<path to chromium root>\\third_party\\rust\\foo\\v_1").
-    """
-    return os.path.join(
-        CHROMIUM_DIR, _ConvertCrateIdToEpochDirRelativeToChromiumRoot(crate_id))
-
-
-def ConvertCrateIdToVendorDir(crate_id: str) -> str:
-    """ Converts a `crate_id` (e.g. "foo@1.2.3") into a path to a target dir
-    (e.g. on Windows: "<path to chromium root>\\third_party\\rust\\foo\\v_1").
-    """
-    crate_name = ConvertCrateIdToCrateName(crate_id)
-    crate_epoch = GetEpoch(ConvertCrateIdToCrateVersion(crate_id))
-    crate_vendor_dir = os.path.join(VENDOR_DIR, f"{crate_name}-{crate_epoch}")
-    return crate_vendor_dir
-
-
-def ConvertCrateIdToGnLabel(crate_id: str) -> str:
-    """ Converts a `crate_id` (e.g. "foo@1.2.3") into
-    [a GN label](https://gn.googlesource.com/gn/+/main/docs/reference.md#labels)
-    (e.g. "//third_party/rust/foo/v_1:lib").  """
-    dir_name = _ConvertCrateIdToEpochDirRelativeToChromiumRoot(crate_id)
-    dir_name = dir_name.replace(os.sep, "/")  # GN uses `/` as a path separator.
-    return f"//{dir_name}:lib"
-
-
 def DoArgsAskForBreakingChanges(cargo_update_args) -> bool:
     # Hardcoding implementation details of `cargo update` is a bit icky, but it
     # helps to ensure that `DiffCrateIds` won't see dictionary key conflicts.
@@ -304,17 +239,19 @@ def FindUpdateableCrates(args) -> List[str]:
     (Idempotent - afterwards it runs `git reset --hard` to undo any changes.)"""
     print("Checking which crates can be updated...")
     assert not IsGitDirty()  # No local changes expected here.
-    old_crate_ids = GetCurrentCrateIds()
+    old_crate_ids = crate_utils.GetCurrentCrateIds()
     GnrtUpdate(args.remaining_args, check_stdout=False, check_exitcode=False)
-    new_crate_ids = GetCurrentCrateIds()
+    new_crate_ids = crate_utils.GetCurrentCrateIds()
     Git("reset", "--hard")
     only_minor_updates = not DoArgsAskForBreakingChanges(args.remaining_args)
     diff = DiffCrateIds(old_crate_ids, new_crate_ids, only_minor_updates)
     crate_updates = [(update.old_crate_id, update.new_crate_id)
                      for update in diff.updates]
     if crate_updates:
-        names = sorted(
-            [ConvertCrateIdToCrateName(id) for (id, _) in crate_updates])
+        names = sorted([
+            crate_utils.ConvertCrateIdToCrateName(id)
+            for (id, _) in crate_updates
+        ])
         names = f"{', '.join(names)}"
         text = f"Found updates for {len(crate_updates)} crates: {names}"
         print("\n".join(textwrap.wrap(text, 80)))
@@ -330,12 +267,12 @@ def FindSizeOfCrateUpdate(old_crate_id: str, new_crate_id: str,
     print(
         f"Measuring the delta of updating {old_crate_id} => {new_crate_id}...")
     assert not IsGitDirty()  # No local changes expected here.
-    old_crate_ids = GetCurrentCrateIds()
+    old_crate_ids = crate_utils.GetCurrentCrateIds()
     GnrtUpdateCrate(old_crate_id,
                     new_crate_id,
                     check_stdout=False,
                     check_exitcode=False)
-    new_crate_ids = GetCurrentCrateIds()
+    new_crate_ids = crate_utils.GetCurrentCrateIds()
     Git("reset", "--hard")
     diff = DiffCrateIds(old_crate_ids, new_crate_ids, only_minor_updates)
     return diff.size()
@@ -355,9 +292,9 @@ def SortedMarkdownList(input_list: List[str]) -> str:
 
 
 def CreateCommitTitle(old_crate_id: str, new_crate_id: str) -> str:
-    crate_name = ConvertCrateIdToCrateName(old_crate_id)
-    old_version = ConvertCrateIdToCrateVersion(old_crate_id)
-    new_version = ConvertCrateIdToCrateVersion(new_crate_id)
+    crate_name = crate_utils.ConvertCrateIdToCrateName(old_crate_id)
+    old_version = crate_utils.ConvertCrateIdToCrateVersion(old_crate_id)
+    new_version = crate_utils.ConvertCrateIdToCrateVersion(new_crate_id)
     roll_summary = f"{crate_name}: " + \
         f"{old_version} => {new_version}"
     title = f"Roll {roll_summary} in //third_party/rust."
@@ -421,13 +358,13 @@ def UpdateCrate(args, old_crate_id: str, new_crate_id: str,
     assert not IsGitDirty()  # No local changes expected here.
 
     # gnrt update
-    old_crate_ids = GetCurrentCrateIds()
+    old_crate_ids = crate_utils.GetCurrentCrateIds()
     print(f"  Running `gnrt update` for {old_crate_id} => {new_crate_id} ...")
     GnrtUpdateCrate(old_crate_id,
                     new_crate_id,
                     check_stdout=True,
                     check_exitcode=True)
-    new_crate_ids = GetCurrentCrateIds()
+    new_crate_ids = crate_utils.GetCurrentCrateIds()
     if old_crate_ids == new_crate_ids:
         print("  `gnrt update` resulted in no changes - "\
               "maybe other steps will handle this crate...")
@@ -461,13 +398,15 @@ def FinishUpdatingCrate(args, title: str, diff: CratesDiff):
     for update in diff.updates:
         updated_old_crate_ids.add(update.old_crate_id)
 
-        old_dir = ConvertCrateIdToVendorDir(update.old_crate_id)
-        new_dir = ConvertCrateIdToVendorDir(update.new_crate_id)
+        old_dir = crate_utils.ConvertCrateIdToVendorDir(update.old_crate_id)
+        new_dir = crate_utils.ConvertCrateIdToVendorDir(update.new_crate_id)
         if old_dir != new_dir:
             Git("mv", "--force", f"{old_dir}", f"{new_dir}")
 
-            old_target_dir = ConvertCrateIdToEpochDir(update.old_crate_id)
-            new_target_dir = ConvertCrateIdToEpochDir(update.new_crate_id)
+            old_target_dir = crate_utils.ConvertCrateIdToBuildDir(
+                update.old_crate_id)
+            new_target_dir = crate_utils.ConvertCrateIdToBuildDir(
+                update.new_crate_id)
             if old_target_dir != new_target_dir:
                 Git("mv", "--force", old_target_dir, new_target_dir)
     GitAddRustFiles()
@@ -504,8 +443,10 @@ def FinishUpdatingCrate(args, title: str, diff: CratesDiff):
     # (in case this is a major version update)
     print(f"  Removing //third_party/rust/.../<old_epoch> ...")
     for update in diff.updates:
-        old_target_dir = ConvertCrateIdToEpochDir(update.old_crate_id)
-        new_target_dir = ConvertCrateIdToEpochDir(update.new_crate_id)
+        old_target_dir = crate_utils.ConvertCrateIdToBuildDir(
+            update.old_crate_id)
+        new_target_dir = crate_utils.ConvertCrateIdToBuildDir(
+            update.new_crate_id)
         if old_target_dir == new_target_dir:
             continue  # Skip minor crate updates
 
@@ -532,8 +473,8 @@ def FinishUpdatingCrate(args, title: str, diff: CratesDiff):
     # (in case this is a major version update)
     print(f"  Updating the target name in BUILD.gn files...")
     for update in diff.updates:
-        old_target = ConvertCrateIdToGnLabel(update.old_crate_id)
-        new_target = ConvertCrateIdToGnLabel(update.new_crate_id)
+        old_target = crate_utils.ConvertCrateIdToGnLabel(update.old_crate_id)
+        new_target = crate_utils.ConvertCrateIdToGnLabel(update.new_crate_id)
         if old_target == new_target: continue
         # `check_exitcode=False` to gracefully handle no hits.
         grep = RunCommandAndCheckForErrors(
@@ -601,8 +542,10 @@ def CheckoutInitialBranch(branch):
 
 
 def GitClUpload(*args):
-    # TODO(https://crbug.com/405980483): Remove `--bypass-hooks`, or document
-    # why this is still needed.
+    # `--bypass-hooks` to avoid disrupting the process of creating update CLs by
+    # `//third_party/rust/PRESUBMIT.py` (e.g. it's okay to add
+    # `multiversion_cleanup_bug` to `gnrt_config.toml` later, before landing the
+    # CLs).
     #
     # `-o banned-words-skip` is used, because the CL is auto-generated and only
     # modifies third-party libraries (where any banned words would be purely
@@ -632,45 +575,16 @@ def GitCommit(args, title, error_if_no_changes=True):
             return False
 
 
-def ResolveCrateNameToCrateId(crate_name):
-    """Parses `Cargo.toml` to resolve `crate_name` into "crate-name@1.2.3".
-    Throws if `crate_name` can't be resolved.
-
-    Parameters:
-      crate_name: Either "crate-name" or already "crate-name@1.2.3"
-    """
-    t = toml.load(open(CARGO_LOCK))
-    if '@' in crate_name:
-        resolved_crate_version = ConvertCrateIdToCrateVersion(crate_name)
-        resolved_crate_name = ConvertCrateIdToCrateName(crate_name)
-    else:
-        same_name = [p for p in t["package"] if p["name"] == crate_name]
-        if len(same_name) == 0:
-            raise RuntimeError(
-                f"`Cargo.toml` has no crates matching `{crate_name}`")
-        elif len(same_name) > 1:
-            ver1 = same_name[0]["version"]
-            ver2 = same_name[1]["version"]
-            raise RuntimeError(
-                f"Ambiguous argument - specify which old version to update, "\
-                f"e.g. `{crate_name}@{ver1}` or `{crate_name}@{ver2}")
-        resolved_crate_name = crate_name
-        resolved_crate_version = same_name[0]["version"]
-
-    crate_id = f"{resolved_crate_name}@{resolved_crate_version}"
-    return crate_id
-
-
 def BreakingUpdate(args):
     only_minor_updates = False
 
     # gnrt update
-    old_crate_ids = GetCurrentCrateIds()
+    old_crate_ids = crate_utils.GetCurrentCrateIds()
     print(f"Creating a major version update CL...")
     joined_remaining_args = ' '.join(args.remaining_args)
     print(f"  Running `gnrt update -- {joined_remaining_args}` ...")
     GnrtUpdate(args.remaining_args, check_stdout=True, check_exitcode=True)
-    new_crate_ids = GetCurrentCrateIds()
+    new_crate_ids = crate_utils.GetCurrentCrateIds()
     if old_crate_ids == new_crate_ids:
         print("  `gnrt update` resulted in no changes...")
         return
@@ -707,7 +621,7 @@ def AutoUpdate(args):
     if args.skip:
         todo_crate_updates_without_skips = []
         for old_crate_id, new_crate_id in todo_crate_updates:
-            crate_name = ConvertCrateIdToCrateName(old_crate_id)
+            crate_name = crate_utils.ConvertCrateIdToCrateName(old_crate_id)
             if not any(
                     fnmatch.fnmatch(crate_name, pattern)
                     for pattern in args.skip):
@@ -740,13 +654,13 @@ def AutoUpdate(args):
 
     branch_number = 1
     while todo_crate_updates:
-        old_crate_ids = GetCurrentCrateIds()
+        old_crate_ids = crate_utils.GetCurrentCrateIds()
         for (old_crate_id, new_crate_id) in todo_crate_updates:
             upstream_branch = UpdateCrate(args, old_crate_id, new_crate_id,
                                           upstream_branch, branch_number)
             branch_number += 1
 
-        new_crate_ids = GetCurrentCrateIds()
+        new_crate_ids = crate_utils.GetCurrentCrateIds()
         diff = DiffCrateIds(old_crate_ids, new_crate_ids, only_minor_updates)
         actually_updated_crate_ids = set([u.old_crate_id for u in diff.updates])
         missed_crate_updates = [
@@ -772,9 +686,9 @@ def ManualUpdate(args):
     print(f"Post-processing a manual edit of `Cargo.toml`...")
 
     print(f"  Running `gnrt vendor` to detect `Cargo.lock` changes...")
-    old_crate_ids = GetCurrentCrateIds()
+    old_crate_ids = crate_utils.GetCurrentCrateIds()
     Gnrt("vendor")
-    new_crate_ids = GetCurrentCrateIds()
+    new_crate_ids = crate_utils.GetCurrentCrateIds()
     Git("reset", "--hard")
     Git("clean", "-d", "--force", "--", f"{THIRD_PARTY_RUST}")
     diff = DiffCrateIds(old_crate_ids, new_crate_ids, False)

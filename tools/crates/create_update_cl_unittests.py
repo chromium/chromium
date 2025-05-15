@@ -8,17 +8,10 @@ import os
 import unittest
 
 from create_update_cl import (
-    CHROMIUM_DIR,
-    ConvertCrateIdToCrateName,
-    ConvertCrateIdToCrateVersion,
-    ConvertCrateIdToEpochDir,
-    ConvertCrateIdToGnLabel,
-    ConvertCrateIdToVendorDir,
     CreateCommitDescription,
     CreateCommitTitle,
     CreateCommitTitleForBreakingUpdate,
     DiffCrateIds,
-    GetEpoch,
     SortedMarkdownList,
 )
 
@@ -133,49 +126,6 @@ Disable-Rts: True
 
 
 class OtherTests(unittest.TestCase):
-
-    def testGetEpoch(self):
-        self.assertEqual(GetEpoch("0.1.2"), "v0_1")
-        self.assertEqual(GetEpoch("1.2.3"), "v1")
-
-    def testConvertCrateIdToEpochDir(self):
-        actual_dir = ConvertCrateIdToEpochDir("foo-bar@1.2.3")
-        expected_suffix = os.path.join("third_party", "rust", "foo_bar", "v1")
-        self.assertEqual(actual_dir, os.path.join(CHROMIUM_DIR,
-                                                  expected_suffix))
-
-        actual_dir = ConvertCrateIdToEpochDir("bar_baz@0.12.3")
-        expected_suffix = os.path.join("third_party", "rust", "bar_baz",
-                                       "v0_12")
-        self.assertEqual(actual_dir, os.path.join(CHROMIUM_DIR,
-                                                  expected_suffix))
-
-    def testConvertCrateIdToGnLabel(self):
-        self.assertEqual(ConvertCrateIdToGnLabel("foo-bar@1.2.3"),
-                         "//third_party/rust/foo_bar/v1:lib")
-        self.assertEqual(ConvertCrateIdToGnLabel("bar_baz@0.12.3"),
-                         "//third_party/rust/bar_baz/v0_12:lib")
-
-    def testConvertCrateIdToVendorDir(self):
-        actual_dir = ConvertCrateIdToVendorDir("foo-bar@1.2.3")
-        expected_suffix = os.path.join("third_party", "rust",
-                                       "chromium_crates_io", "vendor",
-                                       "foo-bar-v1")
-        self.assertEqual(actual_dir, os.path.join(CHROMIUM_DIR,
-                                                  expected_suffix))
-
-        actual_dir = ConvertCrateIdToVendorDir("bar_baz@0.12.3")
-        expected_suffix = os.path.join("third_party", "rust",
-                                       "chromium_crates_io", "vendor",
-                                       "bar_baz-v0_12")
-        self.assertEqual(actual_dir, os.path.join(CHROMIUM_DIR,
-                                                  expected_suffix))
-
-    def testConvertCrateIdToCrateName(self):
-        self.assertEqual(ConvertCrateIdToCrateName("foo-bar@1.2.3"), "foo-bar")
-
-    def testConvertCrateIdToCrateVersion(self):
-        self.assertEqual(ConvertCrateIdToCrateVersion("foo-bar@1.2.3"), "1.2.3")
 
     def testSortedMarkdownList(self):
         input = ["bbb " * 25, "aaa " * 30, "ccc " * 35]
