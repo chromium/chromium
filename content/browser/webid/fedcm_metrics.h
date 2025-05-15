@@ -502,11 +502,11 @@ class CONTENT_EXPORT FedCmMetrics {
   // Records whether the RP's URL has a path.
   void RecordRpUrlHasPath(bool rp_url_has_path);
 
-  // Records the page scroll Y-axis position upon account selection.
-  void RecordAccountSelectionScrollPosition(const gfx::Point& scroll_position);
-
   // Records the count of identity providers in the request
   void RecordIdentityProvidersCount(int count);
+
+  // Returns the session ID.
+  int GetSessionID() const;
 
  private:
   ukm::SourceId GetOrCreateProviderSourceId(const GURL& provider);
@@ -524,6 +524,9 @@ class CONTENT_EXPORT FedCmMetrics {
 
   // The page's SourceId. Used to log the UKM event Blink.FedCm.
   ukm::SourceId page_source_id_;
+
+  // Session ID associated with this request to include in metrics recorded.
+  int session_id_;
 
   // The SourceId to be used to log the UKM event Blink.FedCmIdp. Maps a
   // provider's config URL to its UKM SourceId.
@@ -548,6 +551,11 @@ class CONTENT_EXPORT FedCmMetrics {
 void RecordPreventSilentAccess(
     const FedCmRequesterFrameType& requester_frame_type,
     int source_id);
+
+// Records the page scroll Y-axis position upon account selection.
+void RecordAccountSelectionScrollPosition(int source_id,
+                                          int session_id,
+                                          const gfx::Point& scroll_position);
 
 // The following are UMA-only recordings, hence do not need to be in the
 // FedCmMetrics class.
