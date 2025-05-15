@@ -2428,10 +2428,6 @@ const char kSkipTouchEventFilterFilteringProcessParamValueBrowser[] = "browser";
 const char kSkipTouchEventFilterFilteringProcessParamValueBrowserAndRenderer[] =
     "browser_and_renderer";
 
-BASE_FEATURE(kSpeculationRulesPrefetchFuture,
-             "SpeculationRulesPrefetchFuture",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSpeculativeImageDecodes,
              "SpeculativeImageDecodes",
              base::FEATURE_DISABLED_BY_DEFAULT);

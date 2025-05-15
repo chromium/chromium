@@ -1667,10 +1667,6 @@ BLINK_COMMON_EXPORT
 extern const char
     kSkipTouchEventFilterFilteringProcessParamValueBrowserAndRenderer[];
 
-// Controls whether the SpeculationRulesPrefetchFuture origin trial can be
-// enabled.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSpeculationRulesPrefetchFuture);
-
 // When enabled, some in-viewport images will initiate image decode immediately
 // upon load, rather than waiting for the next BeginMainFrame to trigger decode
 // as part of rasterization.

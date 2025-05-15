@@ -529,11 +529,6 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
         network::features::kInterestGroupStorage);
   }
 
-  if (trial_name == "SpeculationRulesPrefetchFuture") {
-    return base::FeatureList::IsEnabled(
-        features::kSpeculationRulesPrefetchFuture);
-  }
-
   if (trial_name == "BackForwardCacheSendNotRestoredReasons") {
     return base::FeatureList::IsEnabled(
         features::kBackForwardCacheSendNotRestoredReasons);

@@ -633,23 +633,28 @@ class OriginTrialContextDevtoolsTest : public OriginTrialContextTest {
 };
 
 TEST_F(OriginTrialContextDevtoolsTest, DependentFeatureNotEnabled) {
+  // This tests that for features which are tied together by
+  // `OriginTrialContext::CanEnableTrialFromName()`, disabling the base feature
+  // will disable the origin trial. If you delete the following trial or
+  // `base::Feature`, update these to another case that appears inside
+  // `OriginTrialContext::CanEnableTrialFromName()`.
+  static constexpr char kTrialName[] = "SoftNavigationHeuristics";
+  const base::Feature& feature = blink::features::kSoftNavigationDetection;
+  auto ot_feature = mojom::blink::OriginTrialFeature::kSoftNavigationHeuristics;
+
   UpdateSecurityOrigin(kFrobulateEnabledOrigin);
 
   base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndDisableFeature(
-      blink::features::kSpeculationRulesPrefetchFuture);
+  feature_list_.InitAndDisableFeature(feature);
 
-  AddTokenWithResponse("SpeculationRulesPrefetchFuture",
-                       OriginTrialTokenStatus::kSuccess);
+  AddTokenWithResponse(kTrialName, OriginTrialTokenStatus::kSuccess);
 
-  EXPECT_FALSE(IsFeatureEnabled(
-      mojom::blink::OriginTrialFeature::kSpeculationRulesPrefetchFuture));
+  EXPECT_FALSE(IsFeatureEnabled(ot_feature));
   HashMap<String, OriginTrialResult> origin_trial_results =
       GetOriginTrialResultsForDevtools();
   EXPECT_EQ(origin_trial_results.size(), 1u);
   ExpectTrialResultContains(
-      origin_trial_results, "SpeculationRulesPrefetchFuture",
-      OriginTrialStatus::kTrialNotAllowed,
+      origin_trial_results, kTrialName, OriginTrialStatus::kTrialNotAllowed,
       {{OriginTrialTokenStatus::kSuccess, /* token_parsable */ true}});
 }
 

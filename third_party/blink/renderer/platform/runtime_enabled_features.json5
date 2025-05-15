@@ -4467,18 +4467,6 @@
       name: "SpeculationRulesPointerHoverHeuristics",
       base_feature_status: "enabled",
     },
-    // This feature exists solely to be the target of implied_by for features
-    // that are part of this trial but which may also be enabled another way.
-    // Otherwise, runtime-enabled features can be added to the origin trial
-    // with the following:
-    //   origin_trial_feature_name: "SpeculationRulesPrefetchFuture",
-    //   origin_trial_allows_third_party: true,
-    {
-      name: "SpeculationRulesPrefetchFuture",
-      base_feature: "none",
-      origin_trial_feature_name: "SpeculationRulesPrefetchFuture",
-      origin_trial_allows_third_party: true,
-    },
     {
       name: "SpeculationRulesPrefetchWithSubresources",
     },
