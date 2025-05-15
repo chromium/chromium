@@ -53,26 +53,34 @@ FedCmAccountsFetcher::IdentityProviderGetInfo::operator=(
   return *this;
 }
 
+FedCmAccountsFetcher::FedCmFetchingParams::FedCmFetchingParams(
+    blink::mojom::RpMode rp_mode,
+    int icon_ideal_size,
+    int icon_minimum_size)
+    : rp_mode(rp_mode),
+      icon_ideal_size(icon_ideal_size),
+      icon_minimum_size(icon_minimum_size) {}
+
+FedCmAccountsFetcher::FedCmFetchingParams::~FedCmFetchingParams() = default;
+
 FedCmAccountsFetcher::FedCmAccountsFetcher(
     RenderFrameHost& render_frame_host,
     IdpNetworkRequestManager* network_manager,
     FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
     FederatedIdentityPermissionContextDelegate* permission_delegate,
-    RpMode rp_mode,
+    FedCmFetchingParams params,
     FederatedAuthRequestImpl* federated_auth_request_impl)
     : render_frame_host_(render_frame_host),
       network_manager_(network_manager),
       api_permission_delegate_(api_permission_delegate),
       permission_delegate_(permission_delegate),
-      rp_mode_(rp_mode),
+      params_(params),
       federated_auth_request_impl_(federated_auth_request_impl) {}
 
 FedCmAccountsFetcher::~FedCmAccountsFetcher() = default;
 
 void FedCmAccountsFetcher::FetchEndpointsForIdps(
-    const std::set<GURL>& idp_config_urls,
-    int icon_ideal_size,
-    int icon_minimum_size) {
+    const std::set<GURL>& idp_config_urls) {
   std::vector<FedCmConfigFetcher::FetchRequest> idps;
   base::flat_map<GURL, IdentityProviderGetInfo>& token_request_get_infos =
       federated_auth_request_impl_->GetTokenRequestGetInfos();
@@ -86,7 +94,7 @@ void FedCmAccountsFetcher::FetchEndpointsForIdps(
   config_fetcher_ = std::make_unique<FedCmConfigFetcher>(*render_frame_host_,
                                                          network_manager_);
   config_fetcher_->Start(
-      idps, rp_mode_, icon_ideal_size, icon_minimum_size,
+      idps, params_.rp_mode, params_.icon_ideal_size, params_.icon_minimum_size,
       base::BindOnce(&FedCmAccountsFetcher::OnAllConfigAndWellKnownFetched,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -128,7 +136,7 @@ void FedCmAccountsFetcher::OnAllConfigAndWellKnownFetched(
       }
       federated_auth_request_impl_->OnFetchDataForIdpFailed(
           std::move(idp_info), fetch_error.result, fetch_error.token_status,
-          /*should_delay_callback=*/rp_mode_ == RpMode::kPassive);
+          /*should_delay_callback=*/params_.rp_mode == RpMode::kPassive);
       continue;
     }
 
@@ -178,7 +186,7 @@ void FedCmAccountsFetcher::OnAllConfigAndWellKnownFetched(
     if (idp_info->has_failing_idp_signin_status) {
       // If the user is logged out and we are in a active-mode, allow the user
       // to sign-in to the IdP and return early.
-      if (rp_mode_ == blink::mojom::RpMode::kActive) {
+      if (params_.rp_mode == blink::mojom::RpMode::kActive) {
         federated_auth_request_impl_->MaybeShowActiveModeModalDialog(
             identity_provider_config_url, idp_info->metadata.idp_login_url);
         return;
@@ -316,8 +324,95 @@ void FedCmAccountsFetcher::OnAccountsResponseReceived(
   RecordReadyToShowAccountsSize(accounts.size());
   ComputeLoginStates(idp_info->provider->config->config_url, accounts);
 
-  federated_auth_request_impl_->OnAccountsFetched(std::move(idp_info), status,
-                                                  std::move(accounts));
+  OnAccountsFetchSucceeded(std::move(idp_info), status, std::move(accounts));
+}
+
+void FedCmAccountsFetcher::OnAccountsFetchSucceeded(
+    std::unique_ptr<IdentityProviderInfo> idp_info,
+    IdpNetworkRequestManager::FetchStatus status,
+    std::vector<IdentityRequestAccountPtr> accounts) {
+  bool need_client_metadata = false;
+  if (!idp_info->provider->config->from_idp_registration_api &&
+      !GetDisclosureFields(idp_info->provider->fields).empty()) {
+    for (const auto& account : accounts) {
+      // ComputeLoginStates() should have populated the login_state.
+      DCHECK(account->login_state);
+      if (*account->login_state == LoginState::kSignUp) {
+        need_client_metadata = true;
+        break;
+      }
+    }
+  }
+
+  if (need_client_metadata &&
+      webid::IsEndpointSameOrigin(idp_info->provider->config->config_url,
+                                  idp_info->endpoints.client_metadata)) {
+    // Copy OnClientMetadataResponseReceived() parameters because `idp_info`
+    // is moved.
+    GURL client_metadata_endpoint = idp_info->endpoints.client_metadata;
+    std::string client_id = idp_info->provider->config->client_id;
+    network_manager_->FetchClientMetadata(
+        client_metadata_endpoint, client_id, params_.icon_ideal_size,
+        params_.icon_minimum_size,
+        base::BindOnce(&FedCmAccountsFetcher::OnClientMetadataResponseReceived,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(idp_info),
+                       std::move(accounts)));
+  } else {
+    GURL idp_brand_icon_url = idp_info->metadata.brand_icon_url;
+    network_manager_->FetchAccountPicturesAndBrandIcons(
+        std::move(accounts), std::move(idp_info), /*rp_brand_icon_url=*/GURL(),
+        base::BindOnce(&FedCmAccountsFetcher::OnFetchDataForIdpSucceeded,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       IdpNetworkRequestManager::ClientMetadata()));
+  }
+}
+
+void FedCmAccountsFetcher::OnClientMetadataResponseReceived(
+    std::unique_ptr<IdentityProviderInfo> idp_info,
+    std::vector<IdentityRequestAccountPtr>&& accounts,
+    IdpNetworkRequestManager::FetchStatus status,
+    IdpNetworkRequestManager::ClientMetadata client_metadata) {
+  federated_auth_request_impl_->SetClientMetadataFetchedTime(
+      base::TimeTicks::Now());
+
+  // TODO(yigu): Clean up the client metadata related errors for metrics and
+  // console logs.
+
+  GURL rp_brand_icon_url = client_metadata.brand_icon_url;
+  network_manager_->FetchAccountPicturesAndBrandIcons(
+      std::move(accounts), std::move(idp_info), rp_brand_icon_url,
+      base::BindOnce(&FedCmAccountsFetcher::OnFetchDataForIdpSucceeded,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(client_metadata)));
+}
+
+void FedCmAccountsFetcher::OnFetchDataForIdpSucceeded(
+    const IdpNetworkRequestManager::ClientMetadata& client_metadata,
+    std::vector<IdentityRequestAccountPtr> accounts,
+    std::unique_ptr<IdentityProviderInfo> idp_info,
+    const gfx::Image& rp_brand_icon) {
+  const GURL& idp_config_url = idp_info->provider->config->config_url;
+
+  std::vector<IdentityRequestDialogDisclosureField> disclosure_fields =
+      GetDisclosureFields(idp_info->provider->fields);
+
+  const std::string idp_for_display =
+      webid::FormatUrlForDisplay(idp_config_url);
+  idp_info->data = base::MakeRefCounted<IdentityProviderData>(
+      idp_for_display, idp_info->metadata,
+      ClientMetadata{client_metadata.terms_of_service_url,
+                     client_metadata.privacy_policy_url,
+                     client_metadata.brand_icon_url, rp_brand_icon},
+      idp_info->rp_context, idp_info->format, disclosure_fields,
+      /*has_login_status_mismatch=*/false);
+  idp_info->client_matches_top_frame_origin =
+      client_metadata.client_matches_top_frame_origin;
+  for (auto& account : accounts) {
+    account->identity_provider = idp_info->data;
+  }
+
+  federated_auth_request_impl_->OnFetchDataForIdpSucceeded(std::move(accounts),
+                                                           std::move(idp_info));
 }
 
 bool FedCmAccountsFetcher::FilterAccountsWithLabel(

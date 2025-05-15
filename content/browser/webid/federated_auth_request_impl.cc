@@ -750,9 +750,11 @@ void FederatedAuthRequestImpl::FetchEndpointsForIdps(
 
   fedcm_accounts_fetcher_ = std::make_unique<FedCmAccountsFetcher>(
       render_frame_host(), network_manager_.get(), api_permission_delegate_,
-      permission_delegate_, rp_mode_, this);
-  fedcm_accounts_fetcher_->FetchEndpointsForIdps(
-      idp_config_urls, icon_ideal_size, icon_minimum_size);
+      permission_delegate_,
+      FedCmAccountsFetcher::FedCmFetchingParams(rp_mode_, icon_ideal_size,
+                                                icon_minimum_size),
+      this);
+  fedcm_accounts_fetcher_->FetchEndpointsForIdps(idp_config_urls);
 }
 
 void FederatedAuthRequestImpl::CompleteDisconnectRequest(
@@ -769,24 +771,6 @@ void FederatedAuthRequestImpl::CompleteDisconnectRequest(
   std::move(callback).Run(status);
   disconnect_request_.reset();
   HandleMetricsForPotentialConcurrentRequests();
-}
-
-void FederatedAuthRequestImpl::OnClientMetadataResponseReceived(
-    std::unique_ptr<IdentityProviderInfo> idp_info,
-    std::vector<IdentityRequestAccountPtr>&& accounts,
-    IdpNetworkRequestManager::FetchStatus status,
-    IdpNetworkRequestManager::ClientMetadata client_metadata) {
-  client_metadata_fetched_time_ = base::TimeTicks::Now();
-
-  // TODO(yigu): Clean up the client metadata related errors for metrics and
-  // console logs.
-
-  GURL rp_brand_icon_url = client_metadata.brand_icon_url;
-  network_manager_->FetchAccountPicturesAndBrandIcons(
-      std::move(accounts), std::move(idp_info), rp_brand_icon_url,
-      base::BindOnce(&FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(client_metadata)));
 }
 
 bool FederatedAuthRequestImpl::CanShowContinueOnPopup() const {
@@ -829,45 +813,12 @@ FederatedAuthRequestImpl::ComputeUseOtherAccountResult(
   return FedCmUseOtherAccountResult::kUserSignsInWithExistingAccount;
 }
 
-void FederatedAuthRequestImpl::SetIdpLoginInfo(const GURL& idp_login_url,
-                                               const std::string& login_hint,
-                                               const std::string& domain_hint) {
-  idp_login_infos_[idp_login_url] = {login_hint, domain_hint};
-}
-
-void FederatedAuthRequestImpl::SetWellKnownAndConfigFetchedTime(
-    base::TimeTicks time) {
-  well_known_and_config_fetched_time_ = time;
-  fedcm_metrics_->RecordWellKnownAndConfigFetchTime(
-      well_known_and_config_fetched_time_ - start_time_);
-}
-
 void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
-    const IdpNetworkRequestManager::ClientMetadata& client_metadata,
     std::vector<IdentityRequestAccountPtr> accounts,
-    std::unique_ptr<IdentityProviderInfo> idp_info,
-    const gfx::Image& rp_brand_icon) {
+    std::unique_ptr<IdentityProviderInfo> idp_info) {
   fetch_data_.did_succeed_for_at_least_one_idp = true;
 
   const GURL& idp_config_url = idp_info->provider->config->config_url;
-
-  std::vector<IdentityRequestDialogDisclosureField> disclosure_fields =
-      GetDisclosureFields(idp_info->provider->fields);
-
-  const std::string idp_for_display =
-      webid::FormatUrlForDisplay(idp_config_url);
-  idp_info->data = base::MakeRefCounted<IdentityProviderData>(
-      idp_for_display, idp_info->metadata,
-      ClientMetadata{client_metadata.terms_of_service_url,
-                     client_metadata.privacy_policy_url,
-                     client_metadata.brand_icon_url, rp_brand_icon},
-      idp_info->rp_context, idp_info->format, disclosure_fields,
-      /*has_login_status_mismatch=*/false);
-  idp_info->client_matches_top_frame_origin =
-      client_metadata.client_matches_top_frame_origin;
-  for (auto& account : accounts) {
-    account->identity_provider = idp_info->data;
-  }
   // If the IDP data existed before, we need to remove the old accounts data.
   // This can happen with the 'use other account' feature.
   if (idp_infos_.find(idp_config_url) != idp_infos_.end()) {
@@ -881,6 +832,19 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
 
   fetch_data_.pending_idps.erase(idp_config_url);
   MaybeShowAccountsDialog();
+}
+
+void FederatedAuthRequestImpl::SetIdpLoginInfo(const GURL& idp_login_url,
+                                               const std::string& login_hint,
+                                               const std::string& domain_hint) {
+  idp_login_infos_[idp_login_url] = {login_hint, domain_hint};
+}
+
+void FederatedAuthRequestImpl::SetWellKnownAndConfigFetchedTime(
+    base::TimeTicks time) {
+  well_known_and_config_fetched_time_ = time;
+  fedcm_metrics_->RecordWellKnownAndConfigFetchTime(
+      well_known_and_config_fetched_time_ - start_time_);
 }
 
 void FederatedAuthRequestImpl::OnFetchDataForIdpFailed(
@@ -1429,51 +1393,6 @@ void FederatedAuthRequestImpl::CloseModalDialogView() {
   // Invoke OnClose on the opener.
   if (identity_registry_) {
     identity_registry_->NotifyClose(origin());
-  }
-}
-
-void FederatedAuthRequestImpl::OnAccountsFetched(
-    std::unique_ptr<IdentityProviderInfo> idp_info,
-    IdpNetworkRequestManager::FetchStatus status,
-    std::vector<IdentityRequestAccountPtr> accounts) {
-  bool need_client_metadata = false;
-  if (!idp_info->provider->config->from_idp_registration_api &&
-      !GetDisclosureFields(idp_info->provider->fields).empty()) {
-    for (const auto& account : accounts) {
-      // ComputeLoginStates() should have populated
-      // IdentityRequestAccount::login_state.
-      DCHECK(account->login_state);
-      if (*account->login_state == LoginState::kSignUp) {
-        need_client_metadata = true;
-        break;
-      }
-    }
-  }
-
-  if (need_client_metadata &&
-      webid::IsEndpointSameOrigin(idp_info->provider->config->config_url,
-                                  idp_info->endpoints.client_metadata)) {
-    // Copy OnClientMetadataResponseReceived() parameters because `idp_info`
-    // is moved.
-    GURL client_metadata_endpoint = idp_info->endpoints.client_metadata;
-    std::string client_id = idp_info->provider->config->client_id;
-    int icon_ideal_size =
-        request_dialog_controller_->GetBrandIconIdealSize(rp_mode_);
-    int icon_minimum_size =
-        request_dialog_controller_->GetBrandIconMinimumSize(rp_mode_);
-    network_manager_->FetchClientMetadata(
-        client_metadata_endpoint, client_id, icon_ideal_size, icon_minimum_size,
-        base::BindOnce(
-            &FederatedAuthRequestImpl::OnClientMetadataResponseReceived,
-            weak_ptr_factory_.GetWeakPtr(), std::move(idp_info),
-            std::move(accounts)));
-  } else {
-    GURL idp_brand_icon_url = idp_info->metadata.brand_icon_url;
-    network_manager_->FetchAccountPicturesAndBrandIcons(
-        std::move(accounts), std::move(idp_info), /*rp_brand_icon_url=*/GURL(),
-        base::BindOnce(&FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       IdpNetworkRequestManager::ClientMetadata()));
   }
 }
 

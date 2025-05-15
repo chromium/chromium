@@ -238,11 +238,21 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       std::optional<content::FedCmRequestIdTokenStatus> token_status,
       bool should_delay_callback);
 
+  // Called when all of the data needed to display the FedCM prompt has been
+  // fetched for `idp_info`. Accounts should be moved instead of copied to this
+  // function.
+  void OnFetchDataForIdpSucceeded(
+      std::vector<IdentityRequestAccountPtr> accounts,
+      std::unique_ptr<IdentityProviderInfo> idp_info);
+
   void MaybeShowActiveModeModalDialog(const GURL& idp_config_url,
                                       const GURL& idp_login_url);
 
   void SetAccountsFetchedTime(base::TimeTicks time) {
     accounts_fetched_time_ = time;
+  }
+  void SetClientMetadataFetchedTime(base::TimeTicks time) {
+    client_metadata_fetched_time_ = time;
   }
 
   // Updates the IdpSigninStatus in case of accounts fetch failure and shows a
@@ -268,9 +278,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   bool HadAccoundIdBeforeLogin(const std::string& account_id) {
     return account_ids_before_login_.contains(account_id);
   }
-  void OnAccountsFetched(std::unique_ptr<IdentityProviderInfo> idp_info,
-                         IdpNetworkRequestManager::FetchStatus status,
-                         std::vector<IdentityRequestAccountPtr> accounts);
   // Return the FedCmMetrics for use by FedCmAccountsFetcher.
   // TODO(crbug.com/417784830): Remove this once code has been refactored and
   // FedCmAccountsFetcher can hold a raw pointer to FedCmMetrics.
@@ -303,21 +310,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Fetch well-known, config, accounts and client metadata endpoints for
   // passed-in IdPs. Uses parameters from `token_request_get_infos_`.
   void FetchEndpointsForIdps(const std::set<GURL>& idp_config_urls);
-
-  void OnClientMetadataResponseReceived(
-      std::unique_ptr<IdentityProviderInfo> idp_info,
-      std::vector<IdentityRequestAccountPtr>&& accounts,
-      IdpNetworkRequestManager::FetchStatus status,
-      IdpNetworkRequestManager::ClientMetadata client_metadata);
-
-  // Called when all of the data needed to display the FedCM prompt has been
-  // fetched for `idp_info`. Accounts should be moved instead of copied to this
-  // function.
-  void OnFetchDataForIdpSucceeded(
-      const IdpNetworkRequestManager::ClientMetadata& client_metadata,
-      std::vector<IdentityRequestAccountPtr> accounts,
-      std::unique_ptr<IdentityProviderInfo> idp_info,
-      const gfx::Image& rp_brand_icon);
 
   // Called when there is an error fetching information to show the prompt for a
   // given IDP, and because of the mismatch this IDP must be present in the

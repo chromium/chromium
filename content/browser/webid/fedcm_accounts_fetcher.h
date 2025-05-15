@@ -39,20 +39,29 @@ class FedCmAccountsFetcher {
     std::optional<blink::mojom::Format> format;
   };
 
+  struct FedCmFetchingParams {
+    FedCmFetchingParams(blink::mojom::RpMode rp_mode,
+                        int icon_ideal_size,
+                        int icon_minimum_size);
+    ~FedCmFetchingParams();
+
+    blink::mojom::RpMode rp_mode;
+    int icon_ideal_size;
+    int icon_minimum_size;
+  };
+
   FedCmAccountsFetcher(
       RenderFrameHost& render_frame_host,
       IdpNetworkRequestManager* network_manager,
       FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
       FederatedIdentityPermissionContextDelegate* permission_delegate,
-      RpMode rp_mode,
+      FedCmFetchingParams fetching_params,
       FederatedAuthRequestImpl* federated_auth_request_impl);
   ~FedCmAccountsFetcher();
 
   // Fetch well-known, config, accounts and client metadata endpoints for
   // passed-in IdPs. Uses parameters from `token_request_get_infos_`.
-  void FetchEndpointsForIdps(const std::set<GURL>& idp_config_urls,
-                             int icon_ideal_size,
-                             int icon_minimum_size);
+  void FetchEndpointsForIdps(const std::set<GURL>& idp_config_urls);
 
  private:
   void OnAllConfigAndWellKnownFetched(
@@ -62,6 +71,23 @@ class FedCmAccountsFetcher {
       std::unique_ptr<IdentityProviderInfo> idp_info,
       IdpNetworkRequestManager::FetchStatus status,
       std::vector<IdentityRequestAccountPtr> accounts);
+
+  void OnAccountsFetchSucceeded(
+      std::unique_ptr<IdentityProviderInfo> idp_info,
+      IdpNetworkRequestManager::FetchStatus status,
+      std::vector<IdentityRequestAccountPtr> accounts);
+
+  void OnClientMetadataResponseReceived(
+      std::unique_ptr<IdentityProviderInfo> idp_info,
+      std::vector<IdentityRequestAccountPtr>&& accounts,
+      IdpNetworkRequestManager::FetchStatus status,
+      IdpNetworkRequestManager::ClientMetadata client_metadata);
+
+  void OnFetchDataForIdpSucceeded(
+      const IdpNetworkRequestManager::ClientMetadata& client_metadata,
+      std::vector<IdentityRequestAccountPtr> accounts,
+      std::unique_ptr<IdentityProviderInfo> idp_info,
+      const gfx::Image& rp_brand_icon);
 
   // Returns whether the algorithm should terminate after applying the account
   // label filter.
@@ -94,7 +120,7 @@ class FedCmAccountsFetcher {
       api_permission_delegate_;
   raw_ptr<FederatedIdentityPermissionContextDelegate> permission_delegate_;
 
-  RpMode rp_mode_;
+  FedCmFetchingParams params_;
 
   raw_ptr<FederatedAuthRequestImpl> federated_auth_request_impl_;
 
