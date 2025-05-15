@@ -94,6 +94,8 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/widget/image_tiles/TileViewHolderFactory.java",
     "java/src/org/chromium/components/browser_ui/widget/impression/ImpressionTracker.java",
     "java/src/org/chromium/components/browser_ui/widget/impression/OneShotImpressionListener.java",
+    "java/src/org/chromium/components/browser_ui/widget/list_view/ListViewTouchTracker.java",
+    "java/src/org/chromium/components/browser_ui/widget/list_view/TouchTrackingListView.java",
     "java/src/org/chromium/components/browser_ui/widget/loading/LoadingFullscreenCoordinator.java",
     "java/src/org/chromium/components/browser_ui/widget/promo/PromoCardCoordinator.java",
     "java/src/org/chromium/components/browser_ui/widget/promo/PromoCardProperties.java",
@@ -374,6 +376,7 @@ android_library("unit_device_javatests") {
     "java/src/org/chromium/components/browser_ui/widget/WrappingLayoutTest.java",
     "java/src/org/chromium/components/browser_ui/widget/dragreorder/DragReorderableRecyclerViewAdapterTest.java",
     "java/src/org/chromium/components/browser_ui/widget/highlight/ViewHighlighterTest.java",
+    "java/src/org/chromium/components/browser_ui/widget/list_view/TouchTrackingListViewTest.java",
     "java/src/org/chromium/components/browser_ui/widget/listmenu/BrowserUiListMenuRenderTest.java",
     "java/src/org/chromium/components/browser_ui/widget/promo/PromoCardImpressionTest.java",
     "java/src/org/chromium/components/browser_ui/widget/promo/PromoCardViewRenderTest.java",
@@ -434,6 +437,8 @@ android_resources("java_test_resources") {
     "test/java/res/layout/radio_button_with_description_layout_test.xml",
     "test/java/res/layout/radio_button_with_edit_text_test.xml",
     "test/java/res/layout/radio_button_with_icon_render_test.xml",
+    "test/java/res/layout/touch_tracking_list_view_test.xml",
+    "test/java/res/layout/touch_tracking_list_view_test_item.xml",
     "test/java/res/values/strings.xml",
   ]
   deps = [

@@ -14,7 +14,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ListView;
 
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
@@ -32,6 +31,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabGroupContextMenuCoordinator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.list_view.TouchTrackingListView;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -108,7 +108,8 @@ public abstract class TabOverflowMenuCoordinator<T> {
 
             mContentView = LayoutInflater.from(mContext).inflate(menuLayout, null);
 
-            ListView listView = mContentView.findViewById(R.id.tab_group_action_menu_list);
+            TouchTrackingListView touchTrackingListView =
+                    mContentView.findViewById(R.id.tab_group_action_menu_list);
             ListMenuItemAdapter adapter =
                     new ListMenuItemAdapter(modelList) {
                         @Override
@@ -129,8 +130,8 @@ public abstract class TabOverflowMenuCoordinator<T> {
                     ListMenuItemType.DIVIDER,
                     new LayoutViewBuilder(R.layout.list_section_divider),
                     ListSectionDividerViewBinder::bind);
-            listView.setAdapter(adapter);
-            listView.setOnItemClickListener(
+            touchTrackingListView.setAdapter(adapter);
+            touchTrackingListView.setOnItemClickListener(
                     (p, v, pos, menuId) -> {
                         onItemClickedCallback.onClick((int) menuId, id, collaborationId);
                         mMenuWindow.dismiss();
