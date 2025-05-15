@@ -23,6 +23,7 @@
 #include "content/public/browser/service_worker_context_observer.h"
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/lazy_context_task_queue.h"
+#include "extensions/browser/service_worker/service_worker_state.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
@@ -36,7 +37,6 @@ struct ServiceWorkerRunningInfo;
 
 namespace extensions {
 class Extension;
-class ProcessManager;
 
 // A service worker implementation of `LazyContextTaskQueue`. For an overview of
 // service workers on the web see https://web.dev/learn/pwa/service-workers.
@@ -172,45 +172,6 @@ class ServiceWorkerTaskQueue
     kNotActive,
     // Worker thread has started and it's running.
     kActive,
-  };
-
-  // The current worker related state of an activated extension.
-  class WorkerState {
-   public:
-    WorkerState();
-    ~WorkerState();
-
-    WorkerState(const WorkerState&) = delete;
-    WorkerState& operator=(const WorkerState&) = delete;
-
-    void SetWorkerId(const WorkerId& worker_id,
-                     ProcessManager* process_manager);
-    void SetBrowserState(BrowserState browser_state) {
-      browser_state_ = browser_state;
-    }
-    void SetRendererState(RendererState renderer_state) {
-      renderer_state_ = renderer_state;
-    }
-    void Reset() {
-      worker_id_.reset();
-      browser_state_ = BrowserState::kNotStarted;
-      renderer_state_ = RendererState::kNotActive;
-    }
-
-    bool ready() const;
-
-    BrowserState browser_state() const { return browser_state_; }
-    RendererState renderer_state() const { return renderer_state_; }
-
-    const std::optional<WorkerId>& worker_id() const { return worker_id_; }
-
-   private:
-    BrowserState browser_state_ = BrowserState::kNotStarted;
-    RendererState renderer_state_ = RendererState::kNotActive;
-
-    // Contains the worker's WorkerId associated with this WorkerState, once we
-    // have discovered info about the worker.
-    std::optional<WorkerId> worker_id_;
   };
 
   // Convenience method to return the ServiceWorkerTaskQueue for a given
@@ -408,7 +369,8 @@ class ServiceWorkerTaskQueue
 
   size_t GetNumPendingTasksForTest(const LazyContextId& lazy_context_id);
 
-  WorkerState* GetWorkerStateForTesting(const SequencedContextId& context_id) {
+  ServiceWorkerState* GetWorkerStateForTesting(
+      const SequencedContextId& context_id) {
     return GetWorkerState(context_id);
   }
 
@@ -493,8 +455,9 @@ class ServiceWorkerTaskQueue
       const ExtensionId& extension_id,
       const base::UnguessableToken& activation_token) const;
 
-  const WorkerState* GetWorkerState(const SequencedContextId& context_id) const;
-  WorkerState* GetWorkerState(const SequencedContextId& context_id);
+  const ServiceWorkerState* GetWorkerState(
+      const SequencedContextId& context_id) const;
+  ServiceWorkerState* GetWorkerState(const SequencedContextId& context_id);
 
   content::ServiceWorkerContext* GetServiceWorkerContext(
       const ExtensionId& extension_id);
@@ -551,7 +514,7 @@ class ServiceWorkerTaskQueue
   std::map<content::ServiceWorkerContext*, int> observing_worker_contexts_;
 
   // The state of worker of each activated extension.
-  std::map<SequencedContextId, WorkerState> worker_state_map_;
+  std::map<SequencedContextId, ServiceWorkerState> worker_state_map_;
 
   // TODO(crbug.com/40276609): Do we need to track this by `SequencedContextId`
   // or could we use `ExtensionId` instead?

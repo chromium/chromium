@@ -473,6 +473,8 @@ source_set("browser_sources") {
     "service_worker/service_worker_host.h",
     "service_worker/service_worker_keepalive.cc",
     "service_worker/service_worker_keepalive.h",
+    "service_worker/service_worker_state.cc",
+    "service_worker/service_worker_state.h",
     "service_worker/service_worker_task_queue.cc",
     "service_worker/service_worker_task_queue.h",
     "service_worker/service_worker_task_queue_factory.cc",
