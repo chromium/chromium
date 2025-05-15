@@ -773,6 +773,8 @@
   self.feedWrapperViewController = [self.componentFactory
       feedWrapperViewControllerWithDelegate:self
                          feedViewController:self.feedViewController];
+  self.NTPMediator.contentCollectionView =
+      self.feedWrapperViewController.contentCollectionView;
 
   if ([self isFeedVisible]) {
     self.NTPViewController.feedTopSectionViewController =
