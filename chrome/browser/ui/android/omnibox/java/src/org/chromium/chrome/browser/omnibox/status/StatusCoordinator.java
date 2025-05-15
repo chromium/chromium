@@ -259,11 +259,6 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     }
 
     @Override
-    public void onPageLoadStopped() {
-        mMediator.onPageLoadStopped();
-    }
-
-    @Override
     public void onTabCrashed() {
         mMediator.onTabCrashed();
     }

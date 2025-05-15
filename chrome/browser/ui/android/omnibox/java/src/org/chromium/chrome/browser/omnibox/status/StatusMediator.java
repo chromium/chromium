@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconRes
 import org.chromium.chrome.browser.omnibox.status.StatusView.IconTransitionType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -51,7 +50,6 @@ import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -113,8 +111,6 @@ public class StatusMediator
     private float mUrlFocusPercent;
 
     private @Nullable CookieControlsBridge mCookieControlsBridge;
-    private boolean mCookieControlsVisible;
-    private boolean mThirdPartyCookiesBlocked;
     private int mBlockingStatus3pcd;
     private int mLastTabId;
     private boolean mCurrentTabCrashed;
@@ -697,8 +693,6 @@ public class StatusMediator
             int enforcement,
             int blockingStatus,
             long expiration) {
-        mCookieControlsVisible = controlsVisible;
-        mThirdPartyCookiesBlocked = protectionsOn;
         mBlockingStatus3pcd = blockingStatus;
     }
 
@@ -873,26 +867,6 @@ public class StatusMediator
                 }
             }
             mLastTabId = currentTab.getId();
-        }
-    }
-
-    public void onPageLoadStopped() {
-        Profile profile = mProfileSupplier.get();
-        if (profile == null) {
-            return;
-        }
-        if (mPageSecurityLevel != ConnectionSecurityLevel.SECURE) {
-            return;
-        }
-        if (mBlockingStatus3pcd != CookieBlocking3pcdStatus.NOT_IN3PCD) {
-            if (!mCookieControlsVisible || !mThirdPartyCookiesBlocked) return;
-
-            if (UserPrefs.get(profile).getInteger(Pref.TRACKING_PROTECTION_ONBOARDING_ACK_ACTION)
-                    == 0) {
-                return;
-            }
-
-            animateCookieControlsIcon(() -> {});
         }
     }
 
