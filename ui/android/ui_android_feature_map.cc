@@ -20,7 +20,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &ui::kAndroidWindowManagementWebApi,
     &ui::kAndroidWindowOcclusion,
     &ui::kCheckIntentCallerPermission,
-    &ui::kConvertTrackpadEventsToMouse,
     &ui::kDeprecatedExternalPickerFunction,
     &ui::kDisablePhotoPickerForVideoCapture,
     &ui::kMirrorBackForwardGesturesInRTL,

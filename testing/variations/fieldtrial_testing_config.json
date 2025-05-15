@@ -23713,21 +23713,6 @@
             ]
         }
     ],
-    "TrackpadGestureSupport": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230829",
-                    "enable_features": [
-                        "ConvertTrackpadEventsToMouse"
-                    ]
-                }
-            ]
-        }
-    ],
     "TranslateBubbleOpenSettings": [
         {
             "platforms": [
@@ -26133,7 +26118,6 @@
                 {
                     "name": "Enabled_20240424",
                     "enable_features": [
-                        "ConvertTrackpadEventsToMouse",
                         "MouseAndTrackpadDropdownMenu"
                     ]
                 }

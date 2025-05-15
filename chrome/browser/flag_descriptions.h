@@ -2792,9 +2792,6 @@ extern const char kTabStateFlatBufferDescription[];
 extern const char kContextualSearchSuppressShortViewName[];
 extern const char kContextualSearchSuppressShortViewDescription[];
 
-extern const char kConvertTrackpadEventsToMouseName[];
-extern const char kConvertTrackpadEventsToMouseDescription[];
-
 extern const char kCpaSpecUpdateName[];
 extern const char kCpaSpecUpdateDescription[];
 

@@ -4754,11 +4754,6 @@ const char kContextualSearchSuppressShortViewName[] =
 const char kContextualSearchSuppressShortViewDescription[] =
     "Contextual Search suppress when the base page view is too short";
 
-const char kConvertTrackpadEventsToMouseName[] =
-    "Convert trackpad events to mouse events";
-const char kConvertTrackpadEventsToMouseDescription[] =
-    "Convert trackpad events to mouse events to improve gesture support";
-
 const char kCpaSpecUpdateName[] = "CpaSpecUpdate";
 const char kCpaSpecUpdateDescription[] =
     "Updates the Cpa button animation and changes the shape of the checked "

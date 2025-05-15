@@ -579,11 +579,6 @@ public final class ProductionSupportedFlagList {
                 TracingServiceFeatures.ENABLE_PERFETTO_SYSTEM_TRACING,
                 "When enabled, WebView exports trace events to the Android Perfetto service."
                         + " This works only for Android Q+."),
-        Flag.baseFeature(
-                UiAndroidFeatures.CONVERT_TRACKPAD_EVENTS_TO_MOUSE,
-                "Enables converting trackpad click gestures to mouse events"
-                        + " in order for them to be interpreted similar to a desktop"
-                        + " experience (i.e. double-click to select word.)"),
         Flag.baseFeature(UiAndroidFeatures.ANDROID_HDR, "Enables HDR support"),
         Flag.baseFeature(
                 UiAndroidFeatures.DEPRECATED_EXTERNAL_PICKER_FUNCTION,

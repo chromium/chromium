@@ -13,10 +13,6 @@ BASE_FEATURE(kAndroidWindowManagementWebApi,
              "AndroidWindowManagementWebApi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kConvertTrackpadEventsToMouse,
-             "ConvertTrackpadEventsToMouse",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDeprecatedExternalPickerFunction,
              "DeprecatedExternalPickerFunction",
              base::FEATURE_DISABLED_BY_DEFAULT);

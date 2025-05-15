@@ -95,11 +95,8 @@ public class EventForwarder {
 
     @CalledByNative
     private static EventForwarder create(long nativeEventForwarder, boolean isDragDropEnabled) {
-        final boolean isAtLeastU = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
         final boolean convertTrackpadEventsToMouse =
-                isAtLeastU
-                        && UiAndroidFeatureMap.isEnabled(
-                                UiAndroidFeatures.CONVERT_TRACKPAD_EVENTS_TO_MOUSE);
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
         final boolean useBufferedInput =
                 InputFeatureMap.isEnabled(InputFeatureMap.USE_ANDROID_BUFFERED_INPUT_DISPATCH);
         return new EventForwarder(
