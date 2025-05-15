@@ -112,7 +112,6 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
   void ResetLayer();
   void ClearLayerTexture();
   void SetNeedsPushProperties();
-  cc::TextureLayer* CcLayer() { return cc_layer_.get(); }
   void DoPaintInvalidation(const gfx::Rect& dirty_rect);
   void SetOpacityMode(OpacityMode opacity_mode);
 

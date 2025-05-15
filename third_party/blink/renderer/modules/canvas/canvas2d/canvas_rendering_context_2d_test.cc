@@ -1907,7 +1907,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // TransferableResource without modifying the canvas in between. This new call
   // should not generate a new TransferableResource as the canvas' resource is
   // already present in the CC layer.
-  CanvasElement().CcLayer()->SetTransferableResource(
+  CanvasElement().GetCcLayerForTesting()->SetTransferableResource(
       resource, std::move(release_callback));
   viz::ReleaseCallback release_callback2;
   EXPECT_FALSE(CanvasElement().PrepareTransferableResource(&resource,
@@ -2781,10 +2781,12 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   ASSERT_TRUE(SetUpFullAccelerationAndCcLayer(CanvasElement()));
 
   SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
-  EXPECT_FALSE(CanvasElement().CcLayer()->needs_set_resource_for_testing());
+  EXPECT_FALSE(
+      CanvasElement().GetCcLayerForTesting()->needs_set_resource_for_testing());
 
   SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
-  EXPECT_TRUE(CanvasElement().CcLayer()->needs_set_resource_for_testing());
+  EXPECT_TRUE(
+      CanvasElement().GetCcLayerForTesting()->needs_set_resource_for_testing());
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
