@@ -1639,40 +1639,26 @@ void GpuServiceImpl::GetDawnInfo(bool collect_metrics,
                      collect_metrics, std::move(callback)));
 }
 
-BASE_FEATURE(kPauseWatchdogDuringDawnInfoCollection,
-             "PauseWatchdogDuringDawnInfoCollection",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableDawnInfoCollectionWatchdogReportOnlyMode,
-             "EnableDawnInfoCollectionWatchdogReportOnlyMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 void GpuServiceImpl::GetDawnInfoOnMain(bool collect_metrics,
                                        GetDawnInfoCallback callback) {
   DCHECK(main_runner_->BelongsToCurrentThread());
-  static const bool pause_watchdog =
-      base::FeatureList::IsEnabled(kPauseWatchdogDuringDawnInfoCollection);
-  static const bool report_only_mode = base::FeatureList::IsEnabled(
-      kEnableDawnInfoCollectionWatchdogReportOnlyMode);
 
   std::vector<std::string> dawn_info_list;
   // Pause the watchdog around Dawn info collection since it is known to be
   // slow loading GPU drivers.
-  if (watchdog_thread_ && pause_watchdog) {
+  if (watchdog_thread_) {
     watchdog_thread_->PauseWatchdog();
   }
 
-  if (report_only_mode) {
+  // Don't collect metrics if gpu watchdog is still running. Otherwise fast
+  // timings will be recorded, and very-slow timings will crash and not
+  // record, skewing the results.
+  {
     SCOPED_UMA_HISTOGRAM_TIMER("GPU.Dawn.InfoCollectionTimeMS");
-    gpu::CollectDawnInfo(gpu_preferences_, collect_metrics, &dawn_info_list);
-  } else {
-    // Don't collect metrics if not in report only mode. Otherwise fast timings
-    // will be recorded, and very-slow timings will crash and not record,
-    // skewing the results.
     gpu::CollectDawnInfo(gpu_preferences_, collect_metrics, &dawn_info_list);
   }
 
-  if (watchdog_thread_ && pause_watchdog) {
+  if (watchdog_thread_) {
     watchdog_thread_->ResumeWatchdog();
   }
 
