@@ -13,6 +13,7 @@
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -63,12 +64,9 @@ class WebContentsIsolationInfo
 };
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsIsolationInfo);
 
-std::optional<url::SchemeHostPort> GetTupleFromOptionalOrigin(
-    const std::optional<url::Origin>& origin) {
-  if (origin.has_value()) {
-    return origin->GetTupleOrPrecursorTupleIfOpaque();
-  }
-  return std::nullopt;
+bool IsNavigatingToIsolatedApplication(NavigationHandle* handle) {
+  return SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
+      handle->GetWebContents()->GetBrowserContext(), handle->GetURL());
 }
 
 }  // namespace
@@ -96,7 +94,8 @@ IsolatedWebAppThrottle::~IsolatedWebAppThrottle() = default;
 
 NavigationThrottle::ThrottleCheckResult
 IsolatedWebAppThrottle::WillStartRequest() {
-  bool requests_app_isolation = embedder_requests_app_isolation();
+  bool requests_app_isolation =
+      IsNavigatingToIsolatedApplication(navigation_handle());
   auto* navigation_request = NavigationRequest::From(navigation_handle());
   dest_origin_ = navigation_request->GetTentativeOriginAtRequestTime();
 
@@ -116,7 +115,8 @@ IsolatedWebAppThrottle::WillStartRequest() {
     prev_origin_ = frame_tree_node->current_origin();
   }
 
-  return DoThrottle(requests_app_isolation, NavigationThrottle::BLOCK_REQUEST);
+  return MaybeThrottleNavigationTransition(requests_app_isolation,
+                                           ThrottleAction::BLOCK_REQUEST);
 }
 
 NavigationThrottle::ThrottleCheckResult
@@ -126,18 +126,18 @@ IsolatedWebAppThrottle::WillRedirectRequest() {
   prev_origin_ = dest_origin_;
   dest_origin_ = navigation_request->GetTentativeOriginAtRequestTime();
 
-  return DoThrottle(embedder_requests_app_isolation(),
-                    NavigationThrottle::BLOCK_REQUEST);
+  return MaybeThrottleNavigationTransition(
+      IsNavigatingToIsolatedApplication(navigation_handle()),
+      ThrottleAction::BLOCK_REQUEST);
 }
 
 NavigationThrottle::ThrottleCheckResult
 IsolatedWebAppThrottle::WillProcessResponse() {
   auto* navigation_request = NavigationRequest::From(navigation_handle());
-  auto* assigned_rfh = static_cast<RenderFrameHostImpl*>(
-      navigation_request->GetRenderFrameHost());
+  auto* assigned_rfh = navigation_request->GetRenderFrameHost();
   // Allow downloads and 204s (for these GetOriginToCommit returns nullopt).
   if (!assigned_rfh) {
-    return NavigationThrottle::PROCEED;
+    return ThrottleAction::PROCEED;
   }
 
   // Update |dest_origin_| to point to the final origin, which may have changed
@@ -145,8 +145,9 @@ IsolatedWebAppThrottle::WillProcessResponse() {
   dest_origin_ = navigation_request->GetOriginToCommit().value();
   const WebExposedIsolationInfo& assigned_isolation_info =
       assigned_rfh->GetSiteInstance()->GetWebExposedIsolationInfo();
-  return DoThrottle(assigned_isolation_info.is_isolated_application(),
-                    NavigationThrottle::BLOCK_RESPONSE);
+  return MaybeThrottleNavigationTransition(
+      assigned_isolation_info.is_isolated_application(),
+      ThrottleAction::BLOCK_RESPONSE);
 }
 
 bool IsolatedWebAppThrottle::OpenUrlExternal(const GURL& url) {
@@ -189,16 +190,18 @@ bool IsolatedWebAppThrottle::OpenUrlExternal(const GURL& url) {
 #endif
 }
 
-NavigationThrottle::ThrottleCheckResult IsolatedWebAppThrottle::DoThrottle(
-    bool needs_app_isolation,
-    NavigationThrottle::ThrottleAction block_action) {
+NavigationThrottle::ThrottleCheckResult
+IsolatedWebAppThrottle::MaybeThrottleNavigationTransition(
+    bool dest_needs_apps_isolation,
+    ThrottleAction block_action) {
   auto* web_contents_isolation_info = WebContentsIsolationInfo::FromWebContents(
       navigation_handle()->GetWebContents());
   DCHECK(web_contents_isolation_info);
 
   // Block navigations into Isolated Web Apps (IWA) from non-IWA contexts.
   if (!web_contents_isolation_info->is_isolated_application()) {
-    return needs_app_isolation ? block_action : NavigationThrottle::PROCEED;
+    // non-IWA => non-IWA is ok, but non-IWA => IWA is not.
+    return dest_needs_apps_isolation ? block_action : ThrottleAction::PROCEED;
   }
 
   // We want the following origin checks to be a bit more permissive than
@@ -212,60 +215,66 @@ NavigationThrottle::ThrottleCheckResult IsolatedWebAppThrottle::DoThrottle(
       web_contents_isolation_info->origin().GetTupleOrPrecursorTupleIfOpaque();
   const url::SchemeHostPort& dest_tuple =
       dest_origin_.GetTupleOrPrecursorTupleIfOpaque();
-  DCHECK(web_contents_isolation_tuple.IsValid());
 
-  // If the main frame tries to leave the app's origin, cancel the
-  // navigation and open the URL in the systems' default application.
-  // Iframes are allowed to leave the app's origin.
-  if (dest_tuple != web_contents_isolation_tuple) {
-    if (navigation_handle()->IsInMainFrame()) {
+  // Invariant: we're currently in an IWA Web Contents.
+  CHECK(web_contents_isolation_info->is_isolated_application());
+
+  // Handle main frame navigations.
+  if (navigation_handle()->IsInMainFrame()) {
+    // If the main frame tries to leave the app's origin, cancel the
+    // navigation and open the URL in the systems' default application.
+    if (dest_tuple != web_contents_isolation_tuple) {
       OpenUrlExternal(navigation_handle()->GetURL());
-      return NavigationThrottle::CANCEL;
+      return ThrottleAction::CANCEL;
     }
-    return NavigationThrottle::PROCEED;
-  }
 
-  // Block renderer-initiated iframe navigations into the app that were
-  // initiated by a non-app frame. This ensures that all iframe navigations into
-  // the app come from the app itself.
-  std::optional<url::SchemeHostPort> prev_tuple =
-      GetTupleFromOptionalOrigin(prev_origin_);
-  if (prev_tuple.has_value() &&
-      prev_tuple.value() != web_contents_isolation_tuple &&
-      navigation_handle()->IsRendererInitiated()) {
-    // Main frames shouldn't have been allowed to leave the app's origin.
+    // It's very unlikely that `dest_needs_apps_isolation` is false at this
+    // stage. However, to gracefully handle this, the navigation will be aborted
+    // if that's the case.
+    // TODO(crbug.com/417403902): Investigate this.
+    return dest_needs_apps_isolation ? ThrottleAction::PROCEED : block_action;
+  } else {
+    // Handle iframe navigations.
     CHECK(!navigation_handle()->IsInMainFrame());
 
-    // Allow the navigation if it was initiated by the app, meaning it has a
-    // trusted destination URL. This only applies to the initial request, as
-    // redirect locations come from outside the app.
-    if (navigation_handle()->GetRedirectChain().size() == 1 &&
-        navigation_handle()->GetInitiatorOrigin().has_value()) {
-      const url::SchemeHostPort& initiator_tuple =
-          navigation_handle()
-              ->GetInitiatorOrigin()
-              .value()
-              .GetTupleOrPrecursorTupleIfOpaque();
-      if (initiator_tuple == web_contents_isolation_tuple) {
-        return NavigationThrottle::PROCEED;
-      }
+    // Iframes are allowed to leave the app's origin.
+    if (dest_tuple != web_contents_isolation_tuple) {
+      return ThrottleAction::PROCEED;
     }
-    return block_action;
-  }
 
-  if (!navigation_handle()->IsInMainFrame()) {
-    {
-      // Block iframe navigations to the app's origin if the parent frame
-      // doesn't belong to the app. This prevents non-app frames from having
-      // access to an app frame.
-      const url::SchemeHostPort& parent_tuple =
-          navigation_handle()
-              ->GetParentFrame()
-              ->GetLastCommittedOrigin()
-              .GetTupleOrPrecursorTupleIfOpaque();
-      if (parent_tuple != web_contents_isolation_tuple) {
-        return block_action;
+    // Block renderer-initiated iframe navigations into the app that were
+    // initiated by a non-app frame. This ensures that all iframe navigations
+    // into the app come from the app itself.
+    if (navigation_handle()->IsRendererInitiated() && prev_origin_ &&
+        prev_origin_->GetTupleOrPrecursorTupleIfOpaque() !=
+            web_contents_isolation_tuple) {
+      // Allow the navigation if it was initiated by the app, meaning it has a
+      // trusted destination URL. This only applies to the initial request, as
+      // redirect locations come from outside the app.
+      if (navigation_handle()->GetRedirectChain().size() == 1 &&
+          navigation_handle()->GetInitiatorOrigin().has_value()) {
+        const url::SchemeHostPort& initiator_tuple =
+            navigation_handle()
+                ->GetInitiatorOrigin()
+                .value()
+                .GetTupleOrPrecursorTupleIfOpaque();
+        if (initiator_tuple == web_contents_isolation_tuple) {
+          return ThrottleAction::PROCEED;
+        }
       }
+      return block_action;
+    }
+
+    // Block iframe navigations to the app's origin if the parent frame
+    // doesn't belong to the app. This prevents non-app frames from having
+    // access to an app frame.
+    const url::SchemeHostPort& parent_tuple =
+        navigation_handle()
+            ->GetParentFrame()
+            ->GetLastCommittedOrigin()
+            .GetTupleOrPrecursorTupleIfOpaque();
+    if (parent_tuple != web_contents_isolation_tuple) {
+      return block_action;
     }
 
     // Allow iframe same-origin navigations to blob: and data: URLs
@@ -274,27 +283,15 @@ NavigationThrottle::ThrottleCheckResult IsolatedWebAppThrottle::DoThrottle(
     // condition).
     if (navigation_handle()->GetURL().SchemeIs(url::kDataScheme) ||
         navigation_handle()->GetURL().SchemeIsBlob()) {
-      return NavigationThrottle::PROCEED;
+      return ThrottleAction::PROCEED;
     }
+
+    // It's very unlikely that `dest_needs_apps_isolation` is false at this
+    // stage. However, to gracefully handle this, the navigation will be aborted
+    // if that's the case.
+    // TODO(crbug.com/417403902): Investigate this.
+    return dest_needs_apps_isolation ? ThrottleAction::PROCEED : block_action;
   }
-
-  // At this point we know the navigation is same-tuple within an Isolated Web
-  // App. If the new page isn't isolated, block the navigation.
-  if (!needs_app_isolation) {
-    return block_action;
-  }
-
-  return NavigationThrottle::PROCEED;
-}
-
-bool IsolatedWebAppThrottle::embedder_requests_app_isolation() {
-  BrowserContext* browser_context = NavigationRequest::From(navigation_handle())
-                                        ->frame_tree_node()
-                                        ->navigator()
-                                        .controller()
-                                        .GetBrowserContext();
-  return SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
-      browser_context, navigation_handle()->GetURL());
 }
 
 const char* IsolatedWebAppThrottle::GetNameForLogging() {
