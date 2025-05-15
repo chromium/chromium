@@ -73,6 +73,10 @@ class LensSearchboxController : public LensSearchboxClient {
   // Gets whether this is currently a contextual searchbox.
   bool IsContextualSearchbox() const;
 
+  // Gets whether this searchbox is currently in the side panel. False if it is
+  // in the overlay.
+  bool IsSidePanelSearchbox() const;
+
   // Returns whether the searchbox is in contextual mode by passing the result
   // of IsContextualSearchbox() to the callback.
   void GetIsContextualSearchbox(GetIsContextualSearchboxCallback callback);

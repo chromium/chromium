@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -89,6 +90,10 @@ bool LensSearchboxController::IsContextualSearchbox() const {
   // if there is no overlay, so it should be moved to a shared location.
   return GetPageClassification() ==
          metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX;
+}
+
+bool LensSearchboxController::IsSidePanelSearchbox() const {
+  return side_panel_searchbox_handler_ != nullptr;
 }
 
 void LensSearchboxController::GetIsContextualSearchbox(
@@ -202,9 +207,13 @@ void LensSearchboxController::ShowGhostLoaderErrorState() {
 }
 
 void LensSearchboxController::OnZeroSuggestShown() {
-  // TODO(crbug.com/413138792): Move the OnZeroSuggestShown() logic to this
-  // class.
-  lens_search_controller_->lens_overlay_controller()->OnZeroSuggestShown();
+  if (!IsContextualSearchbox()) {
+    return;
+  }
+
+  // If this is in the side panel, it is not the initial query.
+  lens_search_controller_->lens_session_metrics_logger()->OnZeroSuggestShown(
+      /*is_initial_query=*/!IsSidePanelSearchbox());
 }
 
 content::WebContents* LensSearchboxController::GetTabWebContents() const {
