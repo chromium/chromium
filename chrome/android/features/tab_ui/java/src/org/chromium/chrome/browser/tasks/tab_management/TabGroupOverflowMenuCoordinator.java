@@ -6,11 +6,10 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -20,6 +19,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
  * and tab group cards on GTS. It is responsible for creating a list of menu items, setting up the
  * menu and displaying the menu.
  */
+@NullMarked
 public abstract class TabGroupOverflowMenuCoordinator extends TabOverflowMenuCoordinator<Token> {
 
     /**
@@ -35,8 +35,8 @@ public abstract class TabGroupOverflowMenuCoordinator extends TabOverflowMenuCoo
             OnItemClickedCallback<Token> onItemClickedCallback,
             Supplier<TabModel> tabModelSupplier,
             @Nullable TabGroupSyncService tabGroupSyncService,
-            @NonNull CollaborationService collaborationService,
-            @NonNull Context context) {
+            CollaborationService collaborationService,
+            Context context) {
         super(
                 menuLayout,
                 onItemClickedCallback,

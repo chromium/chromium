@@ -91,16 +91,15 @@ public class AsyncImageView extends ForegroundRoundedCornerImageView {
     }
 
     /**
-     * Starts loading a {@link Drawable} from {@code factory}.  This will automatically clear out
-     * any outstanding request state and start a new one.
+     * Starts loading a {@link Drawable} from {@code factory}. This will automatically clear out any
+     * outstanding request state and start a new one.
      *
-     * @param factory    The {@link Factory} to use that will provide the {@link Drawable}.
+     * @param factory The {@link Factory} to use that will provide the {@link Drawable}.
      * @param identifier An identification for this particular request. Subsequent calls with the
-     *                   same {@link Object} will be ignored until either {@code null} or a
-     *                   different {@link Object} are passed in.  This lets us ignore redundant
-     *                   calls.
+     *     same {@link Object} will be ignored until either {@code null} or a different {@link
+     *     Object} are passed in. This lets us ignore redundant calls.
      */
-    public void setAsyncImageDrawable(Factory factory, @Nullable Object identifier) {
+    public void setAsyncImageDrawable(@Nullable Factory factory, @Nullable Object identifier) {
         if (mIdentifier != null && identifier != null && mIdentifier.equals(identifier)) return;
 
         // This will clear out any outstanding request.
@@ -114,9 +113,9 @@ public class AsyncImageView extends ForegroundRoundedCornerImageView {
 
     /**
      * @param unavailableDrawable Sets the {@link Drawable} to use when there is no thumbnail
-     *                            available.
+     *     available.
      */
-    public void setUnavailableDrawable(Drawable unavailableDrawable) {
+    public void setUnavailableDrawable(@Nullable Drawable unavailableDrawable) {
         boolean showUnavailable =
                 getForegroundDrawableCompat() == mUnavailableDrawable && !mWaitingForResponse;
         mUnavailableDrawable = AutoAnimatorDrawable.wrap(unavailableDrawable);
@@ -125,9 +124,9 @@ public class AsyncImageView extends ForegroundRoundedCornerImageView {
 
     /**
      * @param waitingDrawable Sets the {@link Drawable} to use when waiting for an outstanding
-     *                        asynchronous thumbnail request.
+     *     asynchronous thumbnail request.
      */
-    public void setWaitingDrawable(Drawable waitingDrawable) {
+    public void setWaitingDrawable(@Nullable Drawable waitingDrawable) {
         mWaitingDrawable = AutoAnimatorDrawable.wrap(waitingDrawable);
         if (mWaitingForResponse) setForegroundDrawableCompat(mWaitingDrawable);
     }

@@ -4,14 +4,15 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupMember;
@@ -30,14 +31,16 @@ import java.util.Objects;
  * id needs to be observed. See {@link TransitiveObservableSupplier} for details on how the
  * underlying observer chaining works.
  */
+@NullMarked
 public class TransitiveSharedGroupObserver implements Destroyable {
-    private final ObservableSupplierImpl<SharedGroupObserver> mCurrentSharedGroupObserverSupplier =
-            new ObservableSupplierImpl<>();
-    private final TransitiveObservableSupplier<SharedGroupObserver, Integer>
+    private final ObservableSupplierImpl<@Nullable SharedGroupObserver>
+            mCurrentSharedGroupObserverSupplier = new ObservableSupplierImpl<>();
+    private final TransitiveObservableSupplier<@Nullable SharedGroupObserver, @Nullable Integer>
             mGroupSharedStateSupplier;
-    private final TransitiveObservableSupplier<SharedGroupObserver, List<GroupMember>>
+    private final TransitiveObservableSupplier<
+                    @Nullable SharedGroupObserver, @Nullable List<GroupMember>>
             mGroupMembersSupplier;
-    private final TransitiveObservableSupplier<SharedGroupObserver, String>
+    private final TransitiveObservableSupplier<@Nullable SharedGroupObserver, @Nullable String>
             mCollaborationIdSupplier;
     private final TabGroupSyncService mTabGroupSyncService;
     private final DataSharingService mDataSharingService;
@@ -50,10 +53,11 @@ public class TransitiveSharedGroupObserver implements Destroyable {
      * @param dataSharingService Used to observe current share data.
      * @param collaborationService Used to fetch current shared data.
      */
+    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1128
     public TransitiveSharedGroupObserver(
-            @NonNull TabGroupSyncService tabGroupSyncService,
-            @NonNull DataSharingService dataSharingService,
-            @NonNull CollaborationService collaborationService) {
+            TabGroupSyncService tabGroupSyncService,
+            DataSharingService dataSharingService,
+            CollaborationService collaborationService) {
         mTabGroupSyncService = tabGroupSyncService;
         mDataSharingService = dataSharingService;
         mCollaborationService = collaborationService;
@@ -61,18 +65,15 @@ public class TransitiveSharedGroupObserver implements Destroyable {
         mGroupSharedStateSupplier =
                 new TransitiveObservableSupplier<>(
                         mCurrentSharedGroupObserverSupplier,
-                        sharedGroupStateObserver ->
-                                sharedGroupStateObserver.getGroupSharedStateSupplier());
+                        SharedGroupObserver::getGroupSharedStateSupplier);
         mGroupMembersSupplier =
                 new TransitiveObservableSupplier<>(
                         mCurrentSharedGroupObserverSupplier,
-                        sharedGroupStateObserver ->
-                                sharedGroupStateObserver.getGroupMembersSupplier());
+                        SharedGroupObserver::getGroupMembersSupplier);
         mCollaborationIdSupplier =
                 new TransitiveObservableSupplier<>(
                         mCurrentSharedGroupObserverSupplier,
-                        sharedGroupStateObserver ->
-                                sharedGroupStateObserver.getCollaborationIdSupplier());
+                        SharedGroupObserver::getCollaborationIdSupplier);
     }
 
     @Override
@@ -87,8 +88,7 @@ public class TransitiveSharedGroupObserver implements Destroyable {
 
         mCurrentTabGroupId = tabGroupId;
 
-        @Nullable
-        SharedGroupObserver newObserver =
+        @Nullable SharedGroupObserver newObserver =
                 tabGroupId == null
                         ? null
                         : new SharedGroupObserver(
@@ -101,23 +101,23 @@ public class TransitiveSharedGroupObserver implements Destroyable {
     }
 
     /** The held value corresponds to {@link GroupSharedState}. */
-    public ObservableSupplier<Integer> getGroupSharedStateSupplier() {
+    public ObservableSupplier<@Nullable Integer> getGroupSharedStateSupplier() {
         return mGroupSharedStateSupplier;
     }
 
     /** The held value corresponds to the list of {@link GroupMember} for the group. */
-    public ObservableSupplier<List<GroupMember>> getGroupMembersSupplier() {
+    public ObservableSupplier<@Nullable List<GroupMember>> getGroupMembersSupplier() {
         return mGroupMembersSupplier;
     }
 
     /** The held value corresponds to the collaboration id for the group. */
-    public ObservableSupplier<String> getCollaborationIdSupplier() {
+    public ObservableSupplier<@Nullable String> getCollaborationIdSupplier() {
         return mCollaborationIdSupplier;
     }
 
     private void swapSharedGroupObserver(@Nullable SharedGroupObserver newObserver) {
         if (mCurrentSharedGroupObserverSupplier.hasValue()) {
-            mCurrentSharedGroupObserverSupplier.get().destroy();
+            assumeNonNull(mCurrentSharedGroupObserverSupplier.get()).destroy();
         }
 
         mCurrentSharedGroupObserverSupplier.set(newObserver);

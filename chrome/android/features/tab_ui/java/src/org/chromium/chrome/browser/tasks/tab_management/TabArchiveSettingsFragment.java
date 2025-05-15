@@ -9,6 +9,8 @@ import android.os.Bundle;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -19,6 +21,7 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 /** Fragment for tab archive configurations to Chrome. */
+@NullMarked
 public class TabArchiveSettingsFragment extends ChromeBaseSettingsFragment {
     // Must match key in tab_archive_settings.xml
     static final String PREF_TAB_ARCHIVE_ALLOW_AUTODELETE = "tab_archive_allow_autodelete";
@@ -39,7 +42,7 @@ public class TabArchiveSettingsFragment extends ChromeBaseSettingsFragment {
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         mArchiveSettings = new TabArchiveSettings(ChromeSharedPreferences.getInstance());
         mArchiveSettings.addObserver(mTabArchiveSettingsObserver);
         SettingsUtils.addPreferencesFromResource(this, R.xml.tab_archive_settings);

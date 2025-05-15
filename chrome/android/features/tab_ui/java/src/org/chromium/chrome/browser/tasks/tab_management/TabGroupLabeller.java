@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 /** Pushes label updates to UI for tab groups. */
+@NullMarked
 public class TabGroupLabeller extends TabObjectLabeller {
     private final ObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
 

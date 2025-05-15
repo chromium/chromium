@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Token;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.data_sharing.GroupData;
@@ -20,6 +20,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import java.util.List;
 
 /** Static utilities for interacting with shared tab groups. */
+@NullMarked
 public class TabShareUtils {
 
     /**
@@ -69,7 +70,7 @@ public class TabShareUtils {
      * @param collaborationId The collaboration id for the tab group in question.
      * @return Whether the provided collaboration id is valid or not.
      */
-    public static boolean isCollaborationIdValid(String collaborationId) {
+    public static boolean isCollaborationIdValid(@Nullable String collaborationId) {
         return !TextUtils.isEmpty(collaborationId);
     }
 

@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.collaboration.messaging.MessageUtils;
@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /** Pushes bubble/dot notifications for tabs. */
+@NullMarked
 public class TabBubbler extends TabObjectNotificationUpdater {
     private final ObservableSupplier<Token> mTabGroupIdSupplier;
 

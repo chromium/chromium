@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.BACKGROUND_COLOR;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.IMAGE_TILES_CONTAINER_VISIBLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupUiProperties.INITIAL_SCROLL_INDEX;
@@ -19,10 +20,12 @@ import android.view.View;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** ViewBinder for TabGroupUi component. */
+@NullMarked
 class TabGroupUiViewBinder {
     /** ViewHolder class to get access to all {@link View}s inside the TabGroupUi. */
     public static class ViewHolder {
@@ -92,7 +95,7 @@ class TabGroupUiViewBinder {
                         }
                         int index = model.get(INITIAL_SCROLL_INDEX);
                         LinearLayoutManager manager =
-                                (LinearLayoutManager) contentView.getLayoutManager();
+                                (LinearLayoutManager) assumeNonNull(contentView.getLayoutManager());
                         int showingItemsCount =
                                 manager.findLastVisibleItemPosition()
                                         - manager.findFirstVisibleItemPosition();

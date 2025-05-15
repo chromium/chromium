@@ -43,7 +43,7 @@ public class TabClosureParams {
      * @return A TabClosureParams for the tab group or null if the group is not found.
      */
     public static TabClosureParams.@Nullable CloseTabsBuilder forCloseTabGroup(
-            TabGroupModelFilter filter, Token tabGroupId) {
+            TabGroupModelFilter filter, @Nullable Token tabGroupId) {
         List<Tab> relatedTabs = filter.getTabsInGroup(tabGroupId);
         if (relatedTabs.isEmpty()) return null;
 

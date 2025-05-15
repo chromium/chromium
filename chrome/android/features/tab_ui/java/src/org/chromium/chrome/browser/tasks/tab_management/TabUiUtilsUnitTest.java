@@ -519,7 +519,7 @@ public class TabUiUtilsUnitTest {
         final String histogram = "SensitiveContent.TabSwitching.BottomTabStripGroupUI.Sensitivity";
 
         when(mTabModel.getCount()).thenAnswer(invocation -> 1);
-        when(mTabModel.getTabAt(0)).thenAnswer(invocation -> mTab);
+        when(mTabModel.getTabAtChecked(0)).thenAnswer(invocation -> mTab);
 
         HistogramWatcher histogramWatcherForTrueBucket =
                 HistogramWatcher.newSingleRecordWatcher(histogram, /* value= */ true);

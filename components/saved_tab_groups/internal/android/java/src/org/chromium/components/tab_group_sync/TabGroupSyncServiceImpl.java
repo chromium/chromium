@@ -217,11 +217,10 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     }
 
     @Override
-    public boolean isRemoteDevice(String syncCacheGuid) {
+    public boolean isRemoteDevice(@Nullable String syncCacheGuid) {
         if (mNativePtr == 0) return false;
         return TabGroupSyncServiceImplJni.get()
-                .isRemoteDevice(
-                        mNativePtr, this, syncCacheGuid == null ? new String() : syncCacheGuid);
+                .isRemoteDevice(mNativePtr, this, syncCacheGuid == null ? "" : syncCacheGuid);
     }
 
     @Override

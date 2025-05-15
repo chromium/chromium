@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneDrawableProperties.SHOW_NOTIFICATION_DOT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneDrawableProperties.TAB_COUNT;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** ViewBinder for the {@link TabSwitcherDrawable} for the {@link TabSwitcherPane}. */
+@NullMarked
 public class TabSwitcherPaneDrawableViewBinder {
     /** Bind method for the property model change processor. */
     public static void bind(

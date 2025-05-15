@@ -7,11 +7,11 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneDrawableProperties.SHOW_NOTIFICATION_DOT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneDrawableProperties.TAB_COUNT;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for the {@link TabSwitcherDrawable} for the {@link TabSwitcherPane}. */
+@NullMarked
 public class TabSwitcherPaneDrawableMediator {
     private final CallbackController mCallbackController = new CallbackController();
     private final Callback<TabModelDotInfo> mNotificationDotObserver = this::updateNotificationDot;
@@ -26,12 +27,12 @@ public class TabSwitcherPaneDrawableMediator {
     private final ObservableSupplier<TabModelDotInfo> mNotificationDotSupplier;
     private final PropertyModel mModel;
 
-    private ObservableSupplier<Integer> mTabCountSupplier;
+    private @Nullable ObservableSupplier<Integer> mTabCountSupplier;
 
     public TabSwitcherPaneDrawableMediator(
-            @NonNull TabModelSelector tabModelSelector,
-            @NonNull ObservableSupplier<TabModelDotInfo> notificationDotSupplier,
-            @NonNull PropertyModel model) {
+            TabModelSelector tabModelSelector,
+            ObservableSupplier<TabModelDotInfo> notificationDotSupplier,
+            PropertyModel model) {
         mNotificationDotSupplier = notificationDotSupplier;
         mModel = model;
 
@@ -51,7 +52,7 @@ public class TabSwitcherPaneDrawableMediator {
         }
     }
 
-    private void onTabStateInitializedInternal(@NonNull TabModelSelector tabModelSelector) {
+    private void onTabStateInitializedInternal(TabModelSelector tabModelSelector) {
         mTabCountSupplier = tabModelSelector.getModel(false).getTabCountSupplier();
         mTabCountSupplier.addObserver(mTabCountSupplierObserver);
     }

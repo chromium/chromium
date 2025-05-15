@@ -6,15 +6,16 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.async_image.AsyncImageView;
 
 /** Data for the {@link TabCardLabelView}. */
+@NullMarked
 public class TabCardLabelData {
     public final @TabCardLabelType int labelType;
     public final TextResolver textResolver;
-    public final @Nullable AsyncImageView.Factory asyncImageFactory;
+    public final AsyncImageView.@Nullable Factory asyncImageFactory;
     public final @Nullable TextResolver contentDescriptionResolver;
 
     /**
@@ -27,7 +28,7 @@ public class TabCardLabelData {
     public TabCardLabelData(
             @TabCardLabelType int labelType,
             TextResolver textResolver,
-            @Nullable AsyncImageView.Factory asyncImageFactory,
+            AsyncImageView.@Nullable Factory asyncImageFactory,
             @Nullable TextResolver contentDescriptionResolver) {
         this.labelType = labelType;
         this.textResolver = textResolver;

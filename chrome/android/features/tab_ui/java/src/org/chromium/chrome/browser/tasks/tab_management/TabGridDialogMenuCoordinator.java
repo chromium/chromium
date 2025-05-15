@@ -8,12 +8,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -27,6 +27,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
  * A coordinator for the menu in TabGridDialog toolbar. It is responsible for creating a list of
  * menu items, setting up the menu and displaying the menu.
  */
+@NullMarked
 public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinator {
     private final Supplier<Token> mTabGroupIdSupplier;
 
@@ -43,8 +44,8 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
             Supplier<TabModel> tabModelSupplier,
             Supplier<Token> tabGroupIdSupplier,
             @Nullable TabGroupSyncService tabGroupSyncService,
-            @NonNull CollaborationService collaborationService,
-            @NonNull Context context) {
+            CollaborationService collaborationService,
+            Context context) {
         super(
                 R.layout.tab_switcher_action_menu_layout,
                 onItemClicked,

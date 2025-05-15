@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
@@ -12,12 +14,12 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesConfig;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
@@ -37,20 +39,23 @@ import java.util.List;
  * cleanup this class {@link #destroy()} must be invoked in order to remove observers and prevent it
  * from living indefinitely.
  */
+@NullMarked
 public class TabGroupColorViewProvider implements Destroyable {
-    private final Callback<List<GroupMember>> mOnGroupMembersChanged = this::onGroupMembersChanged;
-    private final Callback<Integer> mOnGroupSharedStateChanged = this::onGroupSharedStateChanged;
-    private final @NonNull Context mContext;
+    private final Callback<@Nullable List<GroupMember>> mOnGroupMembersChanged =
+            this::onGroupMembersChanged;
+    private final Callback<@Nullable Integer> mOnGroupSharedStateChanged =
+            this::onGroupSharedStateChanged;
+    private final Context mContext;
     private final boolean mIsIncognito;
     private final @Nullable DataSharingService mDataSharingService;
-    private final @NonNull CollaborationService mCollaborationService;
+    private final CollaborationService mCollaborationService;
     private final @Nullable TransitiveSharedGroupObserver mTransitiveSharedGroupObserver;
 
-    private @NonNull EitherGroupId mGroupId;
+    private EitherGroupId mGroupId;
     private @TabGroupColorId int mColorId;
     private @Nullable FrameLayout mFrameLayout;
     private @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
-    private @Nullable SharedImageTilesConfig.Builder mSharedImageTilesConfigBuilder;
+    private SharedImageTilesConfig.@Nullable Builder mSharedImageTilesConfigBuilder;
 
     /**
      * @param context The context to use to use for creating the view.
@@ -62,13 +67,13 @@ public class TabGroupColorViewProvider implements Destroyable {
      * @param collaborationService Used to fetch current service status.
      */
     public TabGroupColorViewProvider(
-            @NonNull Context context,
-            @NonNull EitherGroupId groupId,
+            Context context,
+            EitherGroupId groupId,
             boolean isIncognito,
             @TabGroupColorId int colorId,
             @Nullable TabGroupSyncService tabGroupSyncService,
             @Nullable DataSharingService dataSharingService,
-            @Nullable CollaborationService collaborationService) {
+            CollaborationService collaborationService) {
         assert groupId != null : "Tab group id cannot be null.";
         mContext = context;
         mGroupId = groupId;
@@ -76,8 +81,8 @@ public class TabGroupColorViewProvider implements Destroyable {
         mColorId = colorId;
         mCollaborationService = collaborationService;
 
-        boolean servicesExist = tabGroupSyncService != null && dataSharingService != null;
-        if (servicesExist
+        if (tabGroupSyncService != null
+                && dataSharingService != null
                 && mCollaborationService.getServiceStatus().isAllowedToJoin()
                 && groupId.isLocalId()) {
             mDataSharingService = dataSharingService;
@@ -124,7 +129,7 @@ public class TabGroupColorViewProvider implements Destroyable {
      *
      * @param groupId The group id to use.
      */
-    public void setTabGroupId(@NonNull EitherGroupId groupId) {
+    public void setTabGroupId(EitherGroupId groupId) {
         mGroupId = groupId;
 
         if (mTransitiveSharedGroupObserver != null && groupId.isLocalId()) {
@@ -146,7 +151,7 @@ public class TabGroupColorViewProvider implements Destroyable {
     }
 
     /** Returns the color dot view, creating it if it does not exist. */
-    public @NonNull View getLazyView() {
+    public View getLazyView() {
         if (mFrameLayout == null) {
             mFrameLayout =
                     (FrameLayout)
@@ -179,7 +184,9 @@ public class TabGroupColorViewProvider implements Destroyable {
             radius = res.getDimension(R.dimen.tab_group_color_icon_item_radius);
         } else {
             SharedImageTilesConfig config =
-                    mSharedImageTilesConfigBuilder.setTabGroupColor(mContext, mColorId).build();
+                    assumeNonNull(mSharedImageTilesConfigBuilder)
+                            .setTabGroupColor(mContext, mColorId)
+                            .build();
 
             mSharedImageTilesCoordinator.updateConfig(config);
 
@@ -206,6 +213,7 @@ public class TabGroupColorViewProvider implements Destroyable {
 
     private void maybeCreateAndAttachSharedImageTiles() {
         if (mDataSharingService == null) return;
+        assumeNonNull(mTransitiveSharedGroupObserver);
 
         if (mSharedImageTilesCoordinator != null) {
             assert mFrameLayout != null : "SharedImageTiles should only exist if a view exists.";
@@ -214,13 +222,12 @@ public class TabGroupColorViewProvider implements Destroyable {
 
         if (mFrameLayout == null) return;
 
-        @Nullable
-        String collaborationId = mTransitiveSharedGroupObserver.getCollaborationIdSupplier().get();
+        @Nullable String collaborationId =
+                mTransitiveSharedGroupObserver.getCollaborationIdSupplier().get();
         if (!TabShareUtils.isCollaborationIdValid(collaborationId)) return;
 
-        @Nullable
         @GroupSharedState
-        Integer groupSharedState =
+        @Nullable Integer groupSharedState =
                 mTransitiveSharedGroupObserver.getGroupSharedStateSupplier().get();
         if (!shouldShowSharedImageTiles(groupSharedState)) return;
 
@@ -264,8 +271,9 @@ public class TabGroupColorViewProvider implements Destroyable {
     private void onGroupMembersChanged(@Nullable List<GroupMember> members) {
         if (mSharedImageTilesCoordinator == null) return;
 
-        @Nullable
-        String collaborationId = mTransitiveSharedGroupObserver.getCollaborationIdSupplier().get();
+        assumeNonNull(mTransitiveSharedGroupObserver);
+        @Nullable String collaborationId =
+                mTransitiveSharedGroupObserver.getCollaborationIdSupplier().get();
         if (members != null && TabShareUtils.isCollaborationIdValid(collaborationId)) {
             mSharedImageTilesCoordinator.onGroupMembersChanged(collaborationId, members);
         } else {
@@ -283,7 +291,7 @@ public class TabGroupColorViewProvider implements Destroyable {
     }
 
     private static boolean shouldShowSharedImageTiles(
-            @Nullable @GroupSharedState Integer groupSharedState) {
+            @GroupSharedState @Nullable Integer groupSharedState) {
         return groupSharedState != null
                 && groupSharedState != GroupSharedState.NOT_SHARED
                 && groupSharedState != GroupSharedState.COLLABORATION_ONLY;
@@ -294,7 +302,6 @@ public class TabGroupColorViewProvider implements Destroyable {
         return mColorId;
     }
 
-    @NonNull
     EitherGroupId getTabGroupIdForTesting() {
         return mGroupId;
     }

@@ -291,7 +291,7 @@ public interface TabGroupSyncService {
      * @param syncCacheGuid A sync cache guid. Typically obtained from a tab group or tab
      *     attribution metadata.
      */
-    boolean isRemoteDevice(String syncCacheGuid);
+    boolean isRemoteDevice(@Nullable String syncCacheGuid);
 
     /**
      * Returns whether a tab group with the given `sync_tab_group_id` was previously closed on this

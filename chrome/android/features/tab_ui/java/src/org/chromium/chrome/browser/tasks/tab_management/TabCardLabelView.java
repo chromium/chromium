@@ -13,20 +13,22 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.google.android.material.color.MaterialColors;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.async_image.AsyncImageView;
 import org.chromium.ui.UiUtils;
 
 /** Contains a label that overlays a tab card in the grid tab switcher. */
+@NullMarked
 public class TabCardLabelView extends LinearLayout {
     private static final String TAG = "TabCardLabelView";
 
-    private TabCardLabelData mLastData;
+    private @Nullable TabCardLabelData mLastData;
     private TextView mLabelText;
     private AsyncImageView mIconView;
 
@@ -83,7 +85,7 @@ public class TabCardLabelView extends LinearLayout {
                         : View.IMPORTANT_FOR_ACCESSIBILITY_NO);
     }
 
-    private void setAsyncImageFactory(@Nullable AsyncImageView.Factory factory) {
+    private void setAsyncImageFactory(AsyncImageView.@Nullable Factory factory) {
         mIconView.setVisibility(factory == null ? View.GONE : View.VISIBLE);
         mIconView.setAsyncImageDrawable(factory, null);
     }

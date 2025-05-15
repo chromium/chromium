@@ -9,6 +9,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -19,6 +20,7 @@ import java.lang.annotation.RetentionPolicy;
  * corresponding external service to a data structure that the TabGridMessageCardProvider
  * understands.
  */
+@NullMarked
 public class MessageService {
     @IntDef({
         MessageType.IPH,

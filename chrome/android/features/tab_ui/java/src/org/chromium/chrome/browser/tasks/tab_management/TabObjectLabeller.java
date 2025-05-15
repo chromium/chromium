@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.async_image.AsyncImageView;
 import org.chromium.components.collaboration.messaging.PersistentMessage;
@@ -21,6 +22,7 @@ import java.util.Map;
  * sort of tab object, like actual tabs or tab groups. Can be triggered by {{@link #showAll()}} or
  * concrete implementations may trigger of other observers.
  */
+@NullMarked
 public abstract class TabObjectLabeller extends TabObjectNotificationUpdater {
     public TabObjectLabeller(
             Profile profile, TabListNotificationHandler tabListNotificationHandler) {
@@ -72,7 +74,7 @@ public abstract class TabObjectLabeller extends TabObjectNotificationUpdater {
     protected abstract int getTabId(PersistentMessage message);
 
     /** Returns a fetcher for the avatar image if there is one, otherwise null. */
-    protected @Nullable AsyncImageView.Factory getAsyncImageFactory(PersistentMessage message) {
+    protected AsyncImageView.@Nullable Factory getAsyncImageFactory(PersistentMessage message) {
         return null;
     }
 

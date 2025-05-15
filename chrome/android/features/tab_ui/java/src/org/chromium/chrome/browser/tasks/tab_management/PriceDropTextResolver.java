@@ -11,12 +11,12 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.ui.base.LocalizationUtils;
 
 /** A {@link TextResolver} for the {@link TabCardLabelView} when showing a price drop. */
+@NullMarked
 public class PriceDropTextResolver implements TextResolver {
     private final String mPrice;
     private final String mPreviousPrice;
@@ -31,7 +31,7 @@ public class PriceDropTextResolver implements TextResolver {
     }
 
     @Override
-    public @Nullable CharSequence resolve(Context context) {
+    public CharSequence resolve(Context context) {
         boolean isRtl = LocalizationUtils.isLayoutRtl();
         String firstItem = isRtl ? mPreviousPrice : mPrice;
         String secondItem = isRtl ? mPrice : mPreviousPrice;

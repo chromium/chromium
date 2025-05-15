@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.ui.animation.AnimationHandler;
 import org.chromium.ui.animation.DrawableFadeInAnimatorFactory;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Manages animation for the Empty Tab List Illustration for Phones. */
+@NullMarked
 public class PhoneTabListEmptyIllustrationAnimationManager
         implements TabListEmptyIllustrationAnimationManager {
     private final int mDeltaPx;
