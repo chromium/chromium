@@ -243,7 +243,14 @@ void TabHandleLayer::SetProperties(
       close_keyboard_focus_ring_->SetIsDrawable(true);
       close_keyboard_focus_ring_->SetUIResourceId(
           close_button_keyboard_focus_ring_resource->ui_resource()->id());
-      close_keyboard_focus_ring_->SetPosition(gfx::PointF(close_x, close_y));
+      float to_int_offset_x = x - (int)x;
+      float to_int_offset_y = y - (int)y;
+      // We need to make sure that the keyboard focus ring's position is
+      // int-aligned. Because it is a child of "layer", at position (x, y) where
+      // x and y are floats, we subtract off the decimal places of "layer" to
+      // achieve int alignment. Do not round to ints here!
+      close_keyboard_focus_ring_->SetPosition(
+          gfx::PointF(close_x - to_int_offset_x, close_y - to_int_offset_y));
       close_keyboard_focus_ring_->SetBounds(gfx::Size(
           close_button_keyboard_focus_ring_resource->size().width(),
           close_button_keyboard_focus_ring_resource->size().height()));

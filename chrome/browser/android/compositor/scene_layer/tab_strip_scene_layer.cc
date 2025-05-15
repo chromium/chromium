@@ -319,13 +319,18 @@ void TabStripSceneLayer::UpdateCompositorButton(
   gfx::Size button_size = button_resource->size();
   float x_offset = (background_size.width() - button_size.width()) / 2;
   float y_offset = (background_size.height() - button_size.height()) / 2;
-  button->SetPosition(gfx::PointF(x + x_offset, y + y_offset));
+  // Round this so that the keyboard focus ring looks centered with respect to
+  // the rest of the button (see comment below).
+  button->SetPosition(
+      gfx::PointF(std::round(x + x_offset), std::round(y + y_offset)));
 
   if (!should_apply_hover_highlight) {
     background->SetHideLayerAndSubtree(true);
   } else {
     background->SetUIResourceId(background_resource->ui_resource()->id());
-    background->SetPosition(gfx::PointF(x, y));
+    // Round this so that the keyboard focus ring looks centered with respect to
+    // the rest of the button (see comment below).
+    background->SetPosition(gfx::PointF(std::round(x), std::round(y)));
     background->SetBounds(background_resource->size());
     background->SetHideLayerAndSubtree(!visible);
     background->SetOpacity(button_alpha);
@@ -339,8 +344,10 @@ void TabStripSceneLayer::UpdateCompositorButton(
 
     float ring_x_offset = (background_size.width() - ring_size.width()) / 2;
     float ring_y_offset = (background_size.height() - ring_size.height()) / 2;
-    keyboard_focus_ring_layer->SetPosition(
-        gfx::PointF(x + ring_x_offset, y + ring_y_offset));
+    // Make sure that the focus ring is int-aligned. Otherwise, the bitmap will
+    // look clipped/blurry.
+    keyboard_focus_ring_layer->SetPosition(gfx::PointF(
+        std::round(x + ring_x_offset), std::round(y + ring_y_offset)));
     keyboard_focus_ring_layer->SetBounds(ring_size);
   } else {
     // If the keyboard focus ring is already showing, make sure it stops
