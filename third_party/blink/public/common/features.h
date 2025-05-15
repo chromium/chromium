@@ -687,10 +687,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kGMSCoreEmoji);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kGetUserMediaDeferredDeviceSettingsSelection);
 #endif
-// Record the bounds of a selection even when there is no selection handle.
-// This allows providing more information to the IME, but was disabled because
-// of https://crbug.com/1441243.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kHiddenSelectionBounds);
 
 // When enabled all input arriving will be ignored, and the dispatcher will be
 // notified that the event was not consumed. With the exception of when there

@@ -1153,10 +1153,6 @@ BASE_FEATURE(kGetUserMediaDeferredDeviceSettingsSelection,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kHiddenSelectionBounds,
-             "HiddenSelectionBounds",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kIgnoreInputWhileHidden,
              "IgnoreInputWhileHidden",
              // TODO(crbug.com/407265465) Some Accessibility tools on Windows
