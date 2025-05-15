@@ -516,7 +516,9 @@ void PolicyUIHandler::HandleShouldShowPromotion(const base::Value::List& args) {
   std::string callback_id = args[0].GetString();
 
   if (!base::FeatureList::IsEnabled(features::kEnablePolicyPromotionBanner) ||
-      profile->IsIncognitoProfile() || profile->IsGuestSession()) {
+      profile->IsIncognitoProfile() || profile->IsGuestSession() ||
+      !profile->GetCloudPolicyManager() ||
+      !profile->GetCloudPolicyManager()->core()->client()) {
     OnPromotionEligibilityFetched(
         callback_id,
         enterprise_management::GetUserEligiblePromotionsResponse());
