@@ -14,10 +14,13 @@
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/video_stream_view.h"
 #include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "components/media_effects/test/fake_video_source.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_image_transport_factory.h"
+#include "content/public/test/test_renderer_host.h"
 #include "media/capture/video_capture_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,14 +51,14 @@ using testing::_;
 using testing::Mock;
 using testing::Sequence;
 
-class VideoStreamCoordinatorTest : public TestWithBrowserView {
+class VideoStreamCoordinatorTest : public testing::Test {
  protected:
-  VideoStreamCoordinatorTest()
-      : TestWithBrowserView(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        video_source_receiver_(&fake_video_source_) {}
+  VideoStreamCoordinatorTest() : video_source_receiver_(&fake_video_source_) {}
+  ~VideoStreamCoordinatorTest() override = default;
 
   void SetUp() override {
-    TestWithBrowserView::SetUp();
+    Test::SetUp();
+    layout_provider_ = ChromeLayoutProvider::CreateLayoutProvider();
     parent_view_ = std::make_unique<views::View>();
     coordinator_ = std::make_unique<VideoStreamCoordinator>(
         *parent_view_, media_preview_metrics::Context(
@@ -68,7 +71,7 @@ class VideoStreamCoordinatorTest : public TestWithBrowserView {
   void TearDown() override {
     coordinator_.reset();
     parent_view_.reset();
-    TestWithBrowserView::TearDown();
+    Test::TearDown();
   }
 
   static media::VideoCaptureDeviceInfo GetVideoCaptureDeviceInfo() {
@@ -102,6 +105,7 @@ class VideoStreamCoordinatorTest : public TestWithBrowserView {
     EXPECT_TRUE(got_error.WaitAndClear());
   }
 
+  std::unique_ptr<views::LayoutProvider> layout_provider_;
   std::unique_ptr<views::View> parent_view_;
   std::unique_ptr<VideoStreamCoordinator> coordinator_;
 
@@ -109,6 +113,10 @@ class VideoStreamCoordinatorTest : public TestWithBrowserView {
   mojo::Receiver<video_capture::mojom::VideoSource> video_source_receiver_;
 
   base::HistogramTester histogram_tester_;
+
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  content::RenderViewHostTestEnabler render_view_host_test_enabler_;
 };
 
 TEST_F(VideoStreamCoordinatorTest, ConnectToFrameHandlerAndReceiveFrames) {
@@ -129,7 +137,7 @@ TEST_F(VideoStreamCoordinatorTest, ConnectToFrameHandlerAndReceiveFrames) {
   // Send 18 frames over a simulated second
   for (size_t i = 0; i < 18; ++i) {
     fake_video_source_.SendFrame();
-    task_environment()->AdvanceClock(base::Milliseconds(55.8));
+    task_environment_.AdvanceClock(base::Milliseconds(55.8));
     EXPECT_TRUE(got_frame.WaitAndClear());
     // Paint every other frame.
     if (i % 2) {
@@ -178,7 +186,7 @@ TEST_F(VideoStreamCoordinatorTest, ConnectToFrameHandlerAndReceiveNoFrames) {
   EXPECT_TRUE(fake_video_source_.WaitForPushSubscriptionActivated());
 
   base::RunLoop().RunUntilIdle();
-  task_environment()->AdvanceClock(base::Milliseconds(130));
+  task_environment_.AdvanceClock(base::Milliseconds(130));
 
   const auto error = media::VideoCaptureError::
       kVideoCaptureControllerUnsupportedPixelFormat;  // any random error.
@@ -221,7 +229,7 @@ TEST_F(VideoStreamCoordinatorTest,
   coordinator_->GetVideoStreamView()->SizeToPreferredSize();
 
   base::RunLoop().RunUntilIdle();
-  task_environment()->AdvanceClock(base::Milliseconds(130));
+  task_environment_.AdvanceClock(base::Milliseconds(130));
 
   coordinator_->Stop();
   histogram_tester_.ExpectTotalCount(kVideoDelay, 0);
