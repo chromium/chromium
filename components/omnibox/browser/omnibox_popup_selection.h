@@ -124,7 +124,8 @@ struct OmniboxPopupSelection {
       const PrefService* pref_service,
       TemplateURLService* template_url_service,
       Direction direction,
-      Step step) const;
+      Step step,
+      bool force_hide_row_header = false) const;
 
  private:
   //  This is a utility function to support `GetNextSelection`.
@@ -133,7 +134,8 @@ struct OmniboxPopupSelection {
       const PrefService* pref_service,
       TemplateURLService* template_url_service,
       Direction direction,
-      Step step);
+      Step step,
+      bool force_hide_row_header);
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_POPUP_SELECTION_H_
