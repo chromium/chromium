@@ -4,6 +4,8 @@
 
 #include "components/policy/test_support/client_storage.h"
 
+#include <array>
+
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/not_fatal_until.h"
