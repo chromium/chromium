@@ -89,17 +89,19 @@ void StarView::OnWidgetDestroyed(views::Widget* widget) {
   }
 }
 
+void StarView::OnBubbleWidgetChanged(views::Widget* widget) {
+  CHECK(GetBubble() && widget);
+  UpdateTooltipText();
+  if (scoped_observation_.IsObserving()) {
+    scoped_observation_.Reset();
+  }
+
+  scoped_observation_.Observe(widget);
+}
+
 void StarView::UpdateImpl() {
   SetVisible(browser_defaults::bookmarks_enabled &&
              edit_bookmarks_enabled_.GetValue());
-
-  if (GetBubble() && GetBubble()->GetWidget()) {
-    if (scoped_observation_.IsObserving()) {
-      scoped_observation_.Reset();
-    }
-
-    scoped_observation_.Observe(GetBubble()->GetWidget());
-  }
 }
 
 void StarView::OnExecuting(PageActionIconView::ExecuteSource execute_source) {

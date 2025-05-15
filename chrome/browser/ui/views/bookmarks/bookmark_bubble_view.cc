@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/views/commerce/price_tracking_email_dialog_view.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_view.h"
 #include "chrome/browser/ui/views/commerce/shopping_collection_iph_view.h"
+#include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -332,7 +333,14 @@ void BookmarkBubbleView::ShowBubble(views::View* anchor_view,
                                     Browser* browser,
                                     const GURL& url,
                                     bool already_bookmarked) {
+  // The only point where the star view can properly observe the bubble dialog
+  // delegate's widget is in this function, that's why star view is observing
+  // the widget from here after its creation.
+  auto* star_view = static_cast<StarView*>(highlighted_button);
   if (bookmark_bubble_) {
+    if (star_view) {
+      star_view->OnBubbleWidgetChanged(bookmark_bubble_->GetWidget());
+    }
     return;
   }
   Profile* profile = browser->profile();
@@ -474,6 +482,10 @@ void BookmarkBubbleView::ShowBubble(views::View* anchor_view,
 
   bookmark_bubble_->GetBubbleFrameView()->SetProperty(
       views::kElementIdentifierKey, kBookmarkBubbleFrameViewId);
+
+  if (star_view) {
+    star_view->OnBubbleWidgetChanged(bookmark_bubble_->GetWidget());
+  }
 }
 
 // static

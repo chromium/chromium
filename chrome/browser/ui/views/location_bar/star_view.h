@@ -36,6 +36,8 @@ class StarView : public PageActionIconView, public views::WidgetObserver {
   // views::WidgetObserver overrides:
   void OnWidgetDestroyed(views::Widget* widget) override;
 
+  void OnBubbleWidgetChanged(views::Widget* widget);
+
  protected:
   // PageActionIconView:
   void UpdateImpl() override;
@@ -50,7 +52,6 @@ class StarView : public PageActionIconView, public views::WidgetObserver {
   BooleanPrefMember edit_bookmarks_enabled_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       scoped_observation_{this};
-  base::WeakPtrFactory<StarView> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_STAR_VIEW_H_
