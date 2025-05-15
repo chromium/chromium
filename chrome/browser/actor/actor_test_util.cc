@@ -66,6 +66,15 @@ BrowserAction MakeMouseMove(int content_node_id) {
   return action;
 }
 
+BrowserAction MakeMouseMove(const gfx::Point& move_point) {
+  BrowserAction action;
+  MoveMouseAction* move = action.add_action_information()->mutable_move_mouse();
+  Coordinate* coordinate = move->mutable_target()->mutable_coordinate();
+  coordinate->set_x(move_point.x());
+  coordinate->set_y(move_point.y());
+  return action;
+}
+
 BrowserAction MakeNavigate(std::string_view target_url) {
   BrowserAction action;
   NavigateAction* navigate =

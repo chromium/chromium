@@ -19,6 +19,8 @@ optimization_guide::proto::BrowserAction MakeClick(
 optimization_guide::proto::BrowserAction MakeHistoryBack();
 optimization_guide::proto::BrowserAction MakeHistoryForward();
 optimization_guide::proto::BrowserAction MakeMouseMove(int content_node_id);
+optimization_guide::proto::BrowserAction MakeMouseMove(
+    const gfx::Point& move_point);
 optimization_guide::proto::BrowserAction MakeNavigate(
     std::string_view target_url);
 optimization_guide::proto::BrowserAction MakeType(int content_node_id,

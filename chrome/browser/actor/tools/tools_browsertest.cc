@@ -717,6 +717,53 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_TargetOutsideViewport) {
             EvalJs(web_contents(), "event_log.join(',')"));
 }
 
+// Ensure mouse can be moved to a coordinate onscreen.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_MoveToCoordinate) {
+  const GURL url = embedded_test_server()->GetURL("/actor/mouse_log.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Log starts empty.
+  ASSERT_EQ("", EvalJs(web_contents(), "event_log.join(',')"));
+
+  // Move mouse over #first DIV
+  gfx::Point move_point = gfx::ToFlooredPoint(
+      GetCenterCoordinatesOfElementWithId(web_contents(), "first"));
+  BrowserAction action = MakeMouseMove(move_point);
+
+  TestFuture<mojom::ActionResultPtr> result;
+  actor_coordinator().Act(action, result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_EQ("mouseenter[DIV#first],mousemove[DIV#first]",
+            EvalJs(web_contents(), "event_log.join(',')"));
+}
+
+// Moving mouse to a coordinate not in the viewport should fail without
+// dispatching events.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest,
+                       MouseMoveTool_MoveToCoordinateOffScreen) {
+  const GURL url = embedded_test_server()->GetURL("/actor/mouse_log.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Log starts empty.
+  ASSERT_EQ("", EvalJs(web_contents(), "event_log.join(',')"));
+
+  // Move mouse over #offscreen DIV. This should fail since #offscreen is
+  // outside the viewport.
+  {
+    gfx::Point move_point = gfx::ToFlooredPoint(
+        GetCenterCoordinatesOfElementWithId(web_contents(), "offscreen"));
+    BrowserAction action = MakeMouseMove(move_point);
+
+    TestFuture<mojom::ActionResultPtr> result;
+    actor_coordinator().Act(action, result.GetCallback());
+    ExpectErrorResult(result, mojom::ActionResultCode::kError);
+  }
+
+  // The action should fail without generating any events.
+  EXPECT_EQ("", EvalJs(web_contents(), "event_log.join(',')"));
+}
+
 // ===============================================
 // Scroll Tool
 // ===============================================

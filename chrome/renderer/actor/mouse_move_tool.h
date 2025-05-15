@@ -30,6 +30,8 @@ class MouseMoveTool : public ToolBase {
   std::string DebugString() const override;
 
  private:
+  std::optional<gfx::PointF> ValidateAndGetMovePoint() const;
+
   // Raw ref since this is owned by ToolExecutor whose lifetime is tied to
   // RenderFrame.
   base::raw_ref<content::RenderFrame> frame_;
