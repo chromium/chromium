@@ -329,8 +329,10 @@ fn cfg_expr_to_condition(cfg_expr: &cargo_platform::CfgExpr) -> Condition {
 
 fn cfg_to_condition(cfg: &cargo_platform::Cfg) -> Condition {
     match cfg {
-        cargo_platform::Cfg::Name(name) => cfg_name_to_condition(name),
-        cargo_platform::Cfg::KeyPair(key, value) => cfg_key_value_pair_to_condition(key, value),
+        cargo_platform::Cfg::Name(name) => cfg_name_to_condition(name.as_str()),
+        cargo_platform::Cfg::KeyPair(key, value) => {
+            cfg_key_value_pair_to_condition(key.as_str(), value)
+        }
     }
 }
 
