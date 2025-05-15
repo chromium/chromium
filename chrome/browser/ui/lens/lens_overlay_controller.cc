@@ -990,7 +990,6 @@ void LensOverlayController::ShowUI(
   // Establish data required for session metrics.
   invocation_time_ = base::TimeTicks::Now();
   invocation_time_since_epoch_ = base::Time::Now();
-  hats_triggered_in_session_ = false;
   ocr_dom_similarity_recorded_in_session_ = false;
 
   // This should be the last thing called in ShowUI, so if something goes wrong
@@ -3057,27 +3056,7 @@ void LensOverlayController::RecordInnerHtmlSize(
 }
 
 void LensOverlayController::MaybeLaunchSurvey() {
-  if (!base::FeatureList::IsEnabled(lens::features::kLensOverlaySurvey)) {
-    return;
-  }
-  if (hats_triggered_in_session_) {
-    return;
-  }
-  HatsService* hats_service = HatsServiceFactory::GetForProfile(
-      tab_->GetBrowserWindowInterface()->GetProfile(),
-      /*create_if_necessary=*/true);
-  if (!hats_service) {
-    // HaTS may not be available in e.g. guest profile
-    return;
-  }
-  hats_triggered_in_session_ = true;
-  hats_service->LaunchDelayedSurveyForWebContents(
-      kHatsSurveyTriggerLensOverlayResults, tab_->GetContents(),
-      lens::features::GetLensOverlaySurveyResultsTime().InMilliseconds(),
-      /*product_specific_bits_data=*/{},
-      /*product_specific_string_data=*/
-      {{"ID that's tied to your Google Lens session",
-        base::NumberToString(lens_overlay_query_controller_->gen204_id())}});
+  lens_search_controller_->MaybeLaunchSurvey();
 }
 
 void LensOverlayController::InitializeTutorialIPHUrlMatcher() {

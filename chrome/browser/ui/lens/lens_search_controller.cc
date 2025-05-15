@@ -11,6 +11,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_event_handler.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
@@ -269,6 +271,30 @@ void LensSearchController::CloseLensSync(
   CloseLensPart2(dismissal_source);
 }
 
+void LensSearchController::MaybeLaunchSurvey() {
+  if (!base::FeatureList::IsEnabled(lens::features::kLensOverlaySurvey)) {
+    return;
+  }
+  if (hats_triggered_in_session_) {
+    return;
+  }
+  HatsService* hats_service = HatsServiceFactory::GetForProfile(
+      tab_->GetBrowserWindowInterface()->GetProfile(),
+      /*create_if_necessary=*/true);
+  if (!hats_service) {
+    // HaTS may not be available in e.g. guest profile
+    return;
+  }
+  hats_triggered_in_session_ = true;
+  hats_service->LaunchDelayedSurveyForWebContents(
+      kHatsSurveyTriggerLensOverlayResults, tab_->GetContents(),
+      lens::features::GetLensOverlaySurveyResultsTime().InMilliseconds(),
+      /*product_specific_bits_data=*/{},
+      /*product_specific_string_data=*/
+      {{"ID that's tied to your Google Lens session",
+        base::NumberToString(lens_overlay_query_controller_->gen204_id())}});
+}
+
 bool LensSearchController::IsActive() {
   return state_ == State::kActive;
 }
@@ -465,6 +491,9 @@ void LensSearchController::StartLensSession(
   // Start the current metrics logger session.
   lens_session_metrics_logger_->OnSessionStart(invocation_source,
                                                tab_->GetContents());
+
+  // Reset session state.
+  hats_triggered_in_session_ = false;
 }
 
 bool LensSearchController::RunLensEligibilityChecks(

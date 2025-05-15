@@ -1148,11 +1148,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // timeToWebUIReady on the WebUI side.
   base::Time invocation_time_since_epoch_;
 
-  // Indicates whether a trigger for the HaTS survey has occurred in the current
-  // session. Note that a trigger does not mean the survey will actually be
-  // shown.
-  bool hats_triggered_in_session_ = false;
-
   // Indicates whether this is the first upload handler event received. This is
   // used to determine whether to show the upload progress bar.
   bool is_first_upload_handler_event_ = true;

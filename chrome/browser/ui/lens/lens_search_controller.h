@@ -130,6 +130,9 @@ class LensSearchController {
   // nice if the overlay is visible when this is called.
   virtual void CloseLensSync(lens::LensOverlayDismissalSource dismissal_source);
 
+  // Launches the survey if the user has not already seen it.
+  void MaybeLaunchSurvey();
+
   // Returns true if Lens is currently active on this tab.
   bool IsActive();
 
@@ -360,6 +363,11 @@ class LensSearchController {
 
   // Tracks the internal state machine.
   State state_ = State::kOff;
+
+  // Indicates whether a trigger for the HaTS survey has occurred in the current
+  // session. Note that a trigger does not mean the survey will actually be
+  // shown.
+  bool hats_triggered_in_session_ = false;
 
   // If the side panel needed to be closed before dismissing Lens, this
   // stores the original dismissal_source so it is properly recorded when the
