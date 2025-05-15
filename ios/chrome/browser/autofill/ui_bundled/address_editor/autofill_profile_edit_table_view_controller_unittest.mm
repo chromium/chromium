@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/autofill_edit_profile_button_footer_item.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/autofill_profile_edit_item.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -101,10 +102,8 @@ class AutofillProfileEditTableViewControllerTest
         base::SysUTF16ToNSString(profile_->GetRawInfo(autofill::NAME_FULL));
     company_name_ =
         base::SysUTF16ToNSString(profile_->GetRawInfo(autofill::COMPANY_NAME));
-    address_home_line_1_ = base::SysUTF16ToNSString(
-        profile_->GetRawInfo(autofill::ADDRESS_HOME_LINE1));
-    address_home_line_2_ = base::SysUTF16ToNSString(
-        profile_->GetRawInfo(autofill::ADDRESS_HOME_LINE2));
+    street_address_ = base::SysUTF16ToNSString(
+        profile_->GetRawInfo(autofill::ADDRESS_HOME_STREET_ADDRESS));
     city_ = base::SysUTF16ToNSString(
         profile_->GetRawInfo(autofill::ADDRESS_HOME_CITY));
     state_ = base::SysUTF16ToNSString(
@@ -121,7 +120,7 @@ class AutofillProfileEditTableViewControllerTest
   }
 
   NSString* GetFieldValue(int section, int index) {
-    if (index == 7) {
+    if (section == 1 && index == 4) {
       return base::apple::ObjCCastStrict<TableViewMultiDetailTextItem>(
                  GetTableViewItem(section, index))
           .trailingDetailText;
@@ -175,8 +174,7 @@ class AutofillProfileEditTableViewControllerTest
   AutofillProfileEditMediator* autofill_profile_edit_mediator_;
   NSString* full_name_;
   NSString* company_name_;
-  NSString* address_home_line_1_;
-  NSString* address_home_line_2_;
+  NSString* street_address_;
   NSString* city_;
   NSString* state_;
   NSString* zip_;
@@ -232,44 +230,53 @@ INSTANTIATE_TEST_SUITE_P(
 }  // namespace
 
 // Tests the items present in the view.
-// TODO(crbug.com/416030990): Adapt test to
-// AutofillDynamicallyLoadsFieldsForAddressInput and re-enable the test.
-TEST_P(AutofillProfileEditTableViewControllerTest, DISABLED_TestItems) {
+TEST_P(AutofillProfileEditTableViewControllerTest, TestItems) {
   auto test_case = GetParam();
-  bool multiple_sections = (test_case.is_settings && test_case.account_profile);
-  EXPECT_EQ(NumberOfSections(), multiple_sections ? 2 : 1);
-  if (test_case.account_profile ||
-      test_case.prompt_mode == AutofillSaveProfilePromptMode::kMigrateProfile) {
-    EXPECT_EQ(NumberOfItemsInSection(0), test_case.is_settings ? 10 : 12);
+  int numOfSections;
+  if (test_case.is_settings) {
+    numOfSections = test_case.account_profile ? 4 : 3;
   } else {
-    EXPECT_EQ(NumberOfItemsInSection(0), test_case.is_settings ? 10 : 11);
+    numOfSections = test_case.account_profile ||
+                            test_case.prompt_mode ==
+                                AutofillSaveProfilePromptMode::kMigrateProfile
+                        ? 5
+                        : 4;
   }
+
+  EXPECT_EQ(NumberOfSections(), numOfSections);
+  EXPECT_EQ(NumberOfItemsInSection(0), 2);
+  EXPECT_EQ(NumberOfItemsInSection(1), 5);
+  EXPECT_EQ(NumberOfItemsInSection(2), 2);
 
   EXPECT_NSEQ(GetFieldValue(0, 0), full_name_);
   EXPECT_NSEQ(GetFieldValue(0, 1), company_name_);
-  EXPECT_NSEQ(GetFieldValue(0, 2), address_home_line_1_);
-  EXPECT_NSEQ(GetFieldValue(0, 3), address_home_line_2_);
-  EXPECT_NSEQ(GetFieldValue(0, 4), city_);
-  EXPECT_NSEQ(GetFieldValue(0, 5), state_);
-  EXPECT_NSEQ(GetFieldValue(0, 6), zip_);
-  EXPECT_NSEQ(GetFieldValue(0, 7), country_);
-  EXPECT_NSEQ(GetFieldValue(0, 8), phone_home_whole_number_);
-  EXPECT_NSEQ(GetFieldValue(0, 9), email_);
+  EXPECT_NSEQ(GetFieldValue(1, 0), street_address_);
+  EXPECT_NSEQ(GetFieldValue(1, 1), city_);
+  EXPECT_NSEQ(GetFieldValue(1, 2), state_);
+  EXPECT_NSEQ(GetFieldValue(1, 3), zip_);
+  EXPECT_NSEQ(GetFieldValue(1, 4), country_);
+  EXPECT_NSEQ(GetFieldValue(2, 0), phone_home_whole_number_);
+  EXPECT_NSEQ(GetFieldValue(2, 1), email_);
 
-  if (!test_case.is_settings) {
-    int index = 10;
+  if (test_case.is_settings) {
+    if (test_case.account_profile) {
+      EXPECT_EQ(NumberOfItemsInSection(3), 0);
+      NSString* expected_footer_text = l10n_util::GetNSStringF(
+          IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT,
+          kTestSyncingEmail);
+      CheckSectionFooter(expected_footer_text, 3);
+    }
+  } else {
     if (test_case.account_profile ||
         test_case.prompt_mode ==
             AutofillSaveProfilePromptMode::kMigrateProfile) {
-      int expected_text_id =
-          (test_case.prompt_mode ==
-                   AutofillSaveProfilePromptMode::kUpdateProfile
-               ? IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT
-               : IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER);
       // Check footer text in the save prompt.
-      EXPECT_NSEQ(GetFooterTextForModal(),
-                  l10n_util::GetNSStringF(expected_text_id, kTestSyncingEmail));
-      index = 11;
+      CheckSectionFooter(
+          l10n_util::GetNSStringF(
+              IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT,
+              kTestSyncingEmail),
+          numOfSections - 2);
+      EXPECT_EQ(NumberOfItemsInSection(4), 0);
     }
 
     int button_id = IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL;
@@ -282,17 +289,13 @@ TEST_P(AutofillProfileEditTableViewControllerTest, DISABLED_TestItems) {
           IDS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_OK_BUTTON_LABEL;
     }
 
-    // Check button in the save prompt.
-    CheckTextButtonCellButtonTextWithId(button_id, 0, index);
-  }
+    AutofillEditProfileButtonFooterItem* footer =
+        static_cast<AutofillEditProfileButtonFooterItem*>([[controller()
+            tableViewModel] footerForSectionIndex:numOfSections - 1]);
 
-  // Check contents of the other section if present.
-  if (multiple_sections) {
-    EXPECT_EQ(NumberOfItemsInSection(1), 0);
-    NSString* expected_footer_text = l10n_util::GetNSStringF(
-        IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT,
-        kTestSyncingEmail);
-    CheckSectionFooter(expected_footer_text, 1);
+    // Check button in the save prompt.
+    EXPECT_NSEQ(footer.buttonText, l10n_util::GetNSString(button_id));
+    EXPECT_EQ(NumberOfItemsInSection(3), 0);
   }
 }
 
