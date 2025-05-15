@@ -21,26 +21,6 @@ suite('SpeechModel', () => {
     speechModel = new SpeechModel();
   });
 
-  test('reset', () => {
-    speechModel.setState({
-      isSpeechActive: true,
-      isSpeechTreeInitialized: true,
-      pauseSource: PauseActionSource.BUTTON_CLICK,
-      isAudioCurrentlyPlaying: true,
-      hasSpeechBeenTriggered: true,
-      isSpeechBeingRepositioned: true,
-    });
-
-    speechModel.reset();
-
-    assertFalse(speechModel.isSpeechActive());
-    assertFalse(speechModel.isSpeechTreeInitialized());
-    assertEquals(PauseActionSource.DEFAULT, speechModel.getPauseSource());
-    assertFalse(speechModel.isAudioCurrentlyPlaying());
-    assertFalse(speechModel.hasSpeechBeenTriggered());
-    assertFalse(speechModel.isSpeechBeingRepositioned());
-  });
-
   test('setState makes a copy', () => {
     const pauseSource = PauseActionSource.ENGINE_INTERRUPT;
     const state = {

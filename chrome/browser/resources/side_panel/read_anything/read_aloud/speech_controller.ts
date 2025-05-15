@@ -50,14 +50,15 @@ export class SpeechController {
   }
 
   private setState_(state: SpeechPlayingState) {
-    if (state.isSpeechActive !== this.isSpeechActive()) {
+    const wasSpeechActive = this.isSpeechActive();
+    const wasAudioPlaying = this.isAudioCurrentlyPlaying();
+    this.model_.setState(state);
+    if (state.isSpeechActive !== wasSpeechActive) {
       this.isSpeechActiveChanged(state.isSpeechActive);
     }
-    if (state.isAudioCurrentlyPlaying !== this.isAudioCurrentlyPlaying()) {
+    if (state.isAudioCurrentlyPlaying !== wasAudioPlaying) {
       this.listeners_.forEach(l => l.onIsAudioCurrentlyPlayingChange());
     }
-
-    this.model_.setState(state);
   }
 
   isSpeechActive(): boolean {
@@ -776,11 +777,22 @@ export class SpeechController {
 
   clearReadAloudState() {
     this.speech_.cancel();
-    this.model_.reset();
-    this.listeners_.forEach(l => l.onIsSpeechActiveChange());
-    this.listeners_.forEach(l => l.onIsAudioCurrentlyPlayingChange());
     this.highlighter_.clearHighlightFormatting();
     this.wordBoundaries_.resetToDefaultState();
+
+    const speechPlayingState = {
+      isSpeechTreeInitialized: false,
+      isSpeechActive: false,
+      pauseSource: PauseActionSource.DEFAULT,
+      isAudioCurrentlyPlaying: false,
+      hasSpeechBeenTriggered: false,
+      isSpeechBeingRepositioned: false,
+    };
+    this.setState_(speechPlayingState);
+    this.setEngineState_(SpeechEngineState.NONE);
+    this.setPreviewVoicePlaying_(null);
+    this.model_.setFirstTextNode(null);
+    this.model_.setResumeSpeechOnVoiceMenuClose(false);
   }
 
   saveReadAloudState() {

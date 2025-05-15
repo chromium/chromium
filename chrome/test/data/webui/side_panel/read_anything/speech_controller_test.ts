@@ -87,7 +87,6 @@ suite('SpeechController', () => {
     speechController.clearReadAloudState();
 
     assertTrue(isSpeechActiveChanged);
-    assertTrue(isAudioCurrentlyPlayingChanged);
     assertEquals(1, speech.getCallCount('cancel'));
     assertFalse(speechController.isSpeechActive());
     assertFalse(speechController.isPausedFromButton());

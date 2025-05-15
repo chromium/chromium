@@ -81,21 +81,6 @@ export class SpeechModel {
 
   private resumeSpeechOnVoiceMenuClose_: boolean = false;
 
-  reset(): void {
-    this.speechPlayingState_ = {
-      isSpeechTreeInitialized: false,
-      isSpeechActive: false,
-      pauseSource: PauseActionSource.DEFAULT,
-      isAudioCurrentlyPlaying: false,
-      hasSpeechBeenTriggered: false,
-      isSpeechBeingRepositioned: false,
-    };
-    this.speechEngineState_ = SpeechEngineState.NONE;
-    this.previewVoicePlaying_ = null;
-    this.firstTextNodeSetForReadAloud_ = null;
-    this.resumeSpeechOnVoiceMenuClose_ = false;
-  }
-
   getSavedSpeechPlayingState(): SpeechPlayingState|null {
     return this.savedSpeechPlayingState_;
   }
