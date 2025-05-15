@@ -298,10 +298,11 @@ base::FilePath GetBundleResourcePath(
 
   const base::FilePath request_relative_path =
       extensions::file_util::ExtensionURLToRelativeFilePath(request.url);
-  if (!ExtensionsBrowserClient::Get()
-           ->GetComponentExtensionResourceManager()
-           ->IsComponentExtensionResource(extension_resources_path,
-                                          request_relative_path, resource_id)) {
+  auto* manager =
+      ExtensionsBrowserClient::Get()->GetComponentExtensionResourceManager();
+  CHECK(manager);
+  if (!manager->IsComponentExtensionResource(
+          extension_resources_path, request_relative_path, resource_id)) {
     return base::FilePath();
   }
   DCHECK_NE(0, *resource_id);

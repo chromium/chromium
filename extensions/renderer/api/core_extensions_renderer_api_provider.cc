@@ -164,7 +164,6 @@ void CoreExtensionsRendererAPIProvider::PopulateSourceMap(
   } js_resources[] = {
       {"appView", IDR_APP_VIEW_JS},
       {"appViewElement", IDR_APP_VIEW_ELEMENT_JS},
-      {"appViewDeny", IDR_APP_VIEW_DENY_JS},
       {"entryIdManager", IDR_ENTRY_ID_MANAGER},
       {"extensionOptions", IDR_EXTENSION_OPTIONS_JS},
       {"extensionOptionsElement", IDR_EXTENSION_OPTIONS_ELEMENT_JS},
@@ -174,6 +173,10 @@ void CoreExtensionsRendererAPIProvider::PopulateSourceMap(
       {"feedbackPrivate", IDR_FEEDBACK_PRIVATE_CUSTOM_BINDINGS_JS},
       {"fileEntryBindingUtil", IDR_FILE_ENTRY_BINDING_UTIL_JS},
       {"fileSystem", IDR_FILE_SYSTEM_CUSTOM_BINDINGS_JS},
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+      {"appViewDeny", IDR_APP_VIEW_DENY_JS},
+#endif
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
       {"guestView", IDR_GUEST_VIEW_JS},
