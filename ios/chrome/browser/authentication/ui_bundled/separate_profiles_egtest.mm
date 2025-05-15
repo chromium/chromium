@@ -913,6 +913,10 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
                                    IDS_IOS_REMOVE_ACCOUNT_LABEL)]
       performAction:grey_tap()];
 
+  // Wait for the profile switch to complete.
+  // TODO(crbug.com/399033938): Find a better way to wait for this.
+  GREYWaitForAppToIdle(@"App failed to idle");
+
   // Verify that the profile was actually switched back to personal.
   GREYAssert(
       [[ChromeEarlGrey currentProfileName] isEqualToString:personalProfileName],
