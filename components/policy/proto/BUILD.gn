@@ -39,6 +39,7 @@ proto_library("proto_internal") {
   visibility = [
     ":proto",
     "//chrome/browser/ash/policy/tools:*",
+    "//components/policy/test_support:*",
   ]
 
   sources = [
