@@ -114,8 +114,9 @@ class MockDelegate : public StandaloneTrustedVaultBackend::Delegate {
 class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
  public:
   FakeLocalRecoveryFactor(StandaloneTrustedVaultStorage* storage,
-                          std::optional<CoreAccountInfo> account)
-      : storage_(storage), account_(account) {}
+                          TrustedVaultThrottlingConnection* connection,
+                          CoreAccountInfo account)
+      : storage_(storage), connection_(connection), account_(account) {}
   FakeLocalRecoveryFactor(const FakeLocalRecoveryFactor&) = delete;
   FakeLocalRecoveryFactor& operator=(const FakeLocalRecoveryFactor&) = delete;
   ~FakeLocalRecoveryFactor() override = default;
@@ -124,8 +125,8 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
     return LocalRecoveryFactorType::kPhysicalDevice;
   }
 
-  void AttemptRecovery(TrustedVaultThrottlingConnection* connection,
-                       AttemptRecoveryCallback callback) override {
+  void AttemptRecovery(AttemptRecoveryCallback callback) override {
+    CHECK(connection_);
     CHECK(recovery_callback_.is_null());
     attempt_recovery_was_called_ = true;
 
@@ -135,7 +136,7 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
                               /*last_vault_key_version=*/0);
       return;
     }
-    if (connection->AreRequestsThrottled(*account_)) {
+    if (connection_->AreRequestsThrottled(account_)) {
       std::move(callback).Run(RecoveryStatus::kFailure,
                               /*new_vault_keys=*/{},
                               /*last_vault_key_version=*/0);
@@ -150,13 +151,12 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
   void MarkAsNotRegistered() override { is_registered_ = false; }
 
   TrustedVaultRecoveryFactorRegistrationStateForUMA MaybeRegister(
-      TrustedVaultThrottlingConnection* connection,
       RegisterCallback callback) override {
+    CHECK(connection_);
     CHECK(register_callback_.is_null());
     maybe_register_was_called_ = true;
 
-    CHECK(account_);
-    auto* per_user_vault = storage_->FindUserVault(account_->gaia);
+    auto* per_user_vault = storage_->FindUserVault(account_.gaia);
     CHECK(per_user_vault);
 
     if (is_registered_) {
@@ -167,7 +167,7 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
       return TrustedVaultRecoveryFactorRegistrationStateForUMA::
           kLocalKeysAreStale;
     }
-    if (connection->AreRequestsThrottled(*account_)) {
+    if (connection_->AreRequestsThrottled(account_)) {
       return TrustedVaultRecoveryFactorRegistrationStateForUMA::
           kThrottledClientSide;
     }
@@ -224,6 +224,10 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
     storage_ = storage;
   }
 
+  void SetConnection(TrustedVaultThrottlingConnection* new_connection) {
+    connection_ = new_connection;
+  }
+
   void ResetCallInfo() {
     recovery_callback_.Reset();
     register_callback_.Reset();
@@ -233,7 +237,8 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
 
  private:
   raw_ptr<StandaloneTrustedVaultStorage> storage_;
-  const std::optional<CoreAccountInfo> account_;
+  raw_ptr<TrustedVaultThrottlingConnection> connection_;
+  const CoreAccountInfo account_;
 
   bool is_registered_ = false;
   bool key_pair_exists_ = false;
@@ -263,16 +268,14 @@ class ForwardingLocalRecoveryFactor : public LocalRecoveryFactor {
   LocalRecoveryFactorType GetRecoveryFactorType() const override {
     return delegate_->GetRecoveryFactorType();
   }
-  void AttemptRecovery(TrustedVaultThrottlingConnection* connection,
-                       AttemptRecoveryCallback callback) override {
-    delegate_->AttemptRecovery(connection, std::move(callback));
+  void AttemptRecovery(AttemptRecoveryCallback callback) override {
+    delegate_->AttemptRecovery(std::move(callback));
   }
   bool IsRegistered() override { return delegate_->IsRegistered(); }
   void MarkAsNotRegistered() override { delegate_->MarkAsNotRegistered(); }
   TrustedVaultRecoveryFactorRegistrationStateForUMA MaybeRegister(
-      TrustedVaultThrottlingConnection* connection,
       RegisterCallback callback) override {
-    return delegate_->MaybeRegister(connection, std::move(callback));
+    return delegate_->MaybeRegister(std::move(callback));
   }
 
  private:
@@ -295,9 +298,10 @@ class TestLocalRecoveryFactorsFactory
   std::vector<std::unique_ptr<LocalRecoveryFactor>> CreateLocalRecoveryFactors(
       SecurityDomainId security_domain_id,
       StandaloneTrustedVaultStorage* storage,
-      const std::optional<CoreAccountInfo>& account) override {
+      TrustedVaultThrottlingConnection* connection,
+      const CoreAccountInfo& account) override {
     std::vector<FakeLocalRecoveryFactor*> fake_recovery_factors =
-        GetOrCreateRecoveryFactors(storage, account);
+        GetOrCreateRecoveryFactors(storage, connection, account);
 
     std::vector<std::unique_ptr<LocalRecoveryFactor>> local_recovery_factors;
     for (auto* fake_recovery_factor : fake_recovery_factors) {
@@ -317,37 +321,38 @@ class TestLocalRecoveryFactorsFactory
 
   void SetRecoveryFactors(
       StandaloneTrustedVaultStorage* new_storage,
+      TrustedVaultThrottlingConnection* new_connection,
       std::map<std::optional<GaiaId>,
                std::vector<std::unique_ptr<FakeLocalRecoveryFactor>>>&&
           recovery_factors) {
     recovery_factors_ = std::move(recovery_factors);
-
-    // Storage might have changed, make sure to update all fake recovery
-    // factors to point to the new one.
+    // Storage and the connection might have changed, make sure to update all
+    // fake recovery factors to point to the new one.
     // Note: FakeLocalRecoveryFactor does not store any recovery factor related
     // state in storage, but needs it to access per user information.
     for (auto& user_recovery_factors : recovery_factors_) {
       for (auto& recovery_factor : user_recovery_factors.second) {
         recovery_factor->SetStorage(new_storage);
+        recovery_factor->SetConnection(new_connection);
       }
     }
   }
 
   std::vector<FakeLocalRecoveryFactor*> GetOrCreateRecoveryFactors(
       StandaloneTrustedVaultStorage* storage,
-      const std::optional<CoreAccountInfo>& account) {
-    const auto gaia = account ? std::optional(account->gaia) : std::nullopt;
-    if (!recovery_factors_.contains(gaia)) {
+      TrustedVaultThrottlingConnection* connection,
+      const CoreAccountInfo& account) {
+    if (!recovery_factors_.contains(account.gaia)) {
       std::vector<std::unique_ptr<FakeLocalRecoveryFactor>> recovery_factors;
       for (size_t i = 0; i < num_local_recovery_factors_; ++i) {
-        recovery_factors.emplace_back(
-            std::make_unique<FakeLocalRecoveryFactor>(storage, account));
+        recovery_factors.emplace_back(std::make_unique<FakeLocalRecoveryFactor>(
+            storage, connection, account));
       }
-      recovery_factors_.emplace(gaia, std::move(recovery_factors));
+      recovery_factors_.emplace(account.gaia, std::move(recovery_factors));
     }
 
     std::vector<FakeLocalRecoveryFactor*> ret;
-    for (const auto& it : recovery_factors_[gaia]) {
+    for (const auto& it : recovery_factors_[account.gaia]) {
       ret.push_back(it.get());
     }
     return ret;
@@ -393,7 +398,8 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
       // We only want to reset the backend, not the underlying faked recovery
       // factors incl. their state.
       local_recovery_factors_factory->SetRecoveryFactors(
-          storage.get(), local_recovery_factors_factory_->GetRecoveryFactors());
+          storage.get(), connection.get(),
+          local_recovery_factors_factory_->GetRecoveryFactors());
     }
     local_recovery_factors_factory_ = local_recovery_factors_factory.get();
 
@@ -419,14 +425,14 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
   MockTrustedVaultThrottlingConnection* connection() { return connection_; }
 
   std::vector<FakeLocalRecoveryFactor*> GetOrCreateRecoveryFactors(
-      const std::optional<CoreAccountInfo>& account) {
-    return local_recovery_factors_factory_->GetOrCreateRecoveryFactors(storage_,
-                                                                       account);
+      const CoreAccountInfo& account) {
+    return local_recovery_factors_factory_->GetOrCreateRecoveryFactors(
+        storage_, connection_, account);
   }
 
   // Shorthand to get/create the first recovery factor.
   FakeLocalRecoveryFactor* GetOrCreateRecoveryFactor(
-      const std::optional<CoreAccountInfo>& account) {
+      const CoreAccountInfo& account) {
     return GetOrCreateRecoveryFactors(account)[0];
   }
 

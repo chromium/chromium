@@ -65,12 +65,12 @@ class StandaloneTrustedVaultBackend
 
     // Creates LocalRecoveryFactor's for |primary_account|.
     // Note that the returned LocalRecoveryFactor's will keep a reference to
-    // |storage_|.
+    // |storage| and |connection|.
     virtual std::vector<std::unique_ptr<LocalRecoveryFactor>>
-    CreateLocalRecoveryFactors(
-        SecurityDomainId security_domain_id,
-        StandaloneTrustedVaultStorage* storage,
-        const std::optional<CoreAccountInfo>& primary_account) = 0;
+    CreateLocalRecoveryFactors(SecurityDomainId security_domain_id,
+                               StandaloneTrustedVaultStorage* storage,
+                               TrustedVaultThrottlingConnection* connection,
+                               const CoreAccountInfo& primary_account) = 0;
   };
 
   enum class RefreshTokenErrorState {
@@ -187,9 +187,6 @@ class StandaloneTrustedVaultBackend
       TrustedVaultDownloadKeysStatus response_status);
 
   ~StandaloneTrustedVaultBackend() override;
-
-  // Initializes |local_recovery_factors_| with the current |primary_account_|.
-  void ResetLocalRecoveryFactors();
 
   // Attempts to register local recovery factors in case they're not yet
   // registered and currently available local data is sufficient to do it. Also

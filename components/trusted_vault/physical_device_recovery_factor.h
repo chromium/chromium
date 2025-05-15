@@ -26,14 +26,15 @@ namespace trusted_vault {
 // StandaloneTrustedVaultBackendTest).
 class PhysicalDeviceRecoveryFactor : public LocalRecoveryFactor {
  public:
-  // `storage` must not be null and must outlive this object.
-  // If `primary_account` is present, then `storage` must contain a vault for
-  // that account when calling any method of this class.
+  // `storage` and `connection` must not be null and must outlive this object.
+  // `storage` must contain a vault for `primary_account` when calling any
+  // method of this class.
   // TODO(crbug.com/405381481): Refactor / remove the usage of
   // StandaloneTrustedVaultStorage in this class.
   PhysicalDeviceRecoveryFactor(SecurityDomainId security_domain_id,
                                StandaloneTrustedVaultStorage* storage,
-                               std::optional<CoreAccountInfo> primary_account);
+                               TrustedVaultThrottlingConnection* connection,
+                               CoreAccountInfo primary_account);
   PhysicalDeviceRecoveryFactor(const PhysicalDeviceRecoveryFactor&) = delete;
   PhysicalDeviceRecoveryFactor& operator=(PhysicalDeviceRecoveryFactor&) =
       delete;
@@ -41,21 +42,18 @@ class PhysicalDeviceRecoveryFactor : public LocalRecoveryFactor {
 
   LocalRecoveryFactorType GetRecoveryFactorType() const override;
 
-  void AttemptRecovery(TrustedVaultThrottlingConnection* connection,
-                       AttemptRecoveryCallback cb) override;
+  void AttemptRecovery(AttemptRecoveryCallback cb) override;
 
   bool IsRegistered() override;
   void MarkAsNotRegistered() override;
 
   TrustedVaultRecoveryFactorRegistrationStateForUMA MaybeRegister(
-      TrustedVaultThrottlingConnection* connection,
       RegisterCallback cb) override;
 
  private:
   trusted_vault_pb::LocalTrustedVaultPerUser* GetPrimaryAccountVault();
 
-  void OnKeysDownloaded(TrustedVaultThrottlingConnection* connection,
-                        AttemptRecoveryCallback cb,
+  void OnKeysDownloaded(AttemptRecoveryCallback cb,
                         TrustedVaultDownloadKeysStatus status,
                         const std::vector<std::vector<uint8_t>>& new_vault_keys,
                         int last_vault_key_version);
@@ -70,7 +68,8 @@ class PhysicalDeviceRecoveryFactor : public LocalRecoveryFactor {
 
   const SecurityDomainId security_domain_id_;
   const raw_ptr<StandaloneTrustedVaultStorage> storage_;
-  const std::optional<CoreAccountInfo> primary_account_;
+  const raw_ptr<TrustedVaultThrottlingConnection> connection_;
+  const CoreAccountInfo primary_account_;
 
   // Destroying this will cancel the ongoing request.
   std::unique_ptr<TrustedVaultConnection::Request> ongoing_request_;

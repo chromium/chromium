@@ -137,11 +137,12 @@ class LocalRecoveryFactorsFactoryImpl
   std::vector<std::unique_ptr<LocalRecoveryFactor>> CreateLocalRecoveryFactors(
       SecurityDomainId security_domain_id,
       StandaloneTrustedVaultStorage* storage,
-      const std::optional<CoreAccountInfo>& primary_account) override {
+      TrustedVaultThrottlingConnection* connection,
+      const CoreAccountInfo& primary_account) override {
     std::vector<std::unique_ptr<LocalRecoveryFactor>> local_recovery_factors;
     local_recovery_factors.emplace_back(
         std::make_unique<PhysicalDeviceRecoveryFactor>(
-            security_domain_id, storage, primary_account));
+            security_domain_id, storage, connection, primary_account));
 #if BUILDFLAG(IS_MAC)
     if (base::FeatureList::IsEnabled(kEnableICloudKeychainRecoveryFactor)) {
       // Note: The iCloud Keychain recovery factor needs to come after the
@@ -153,7 +154,7 @@ class LocalRecoveryFactorsFactoryImpl
       local_recovery_factors.emplace_back(
           std::make_unique<ICloudKeychainRecoveryFactor>(
               icloud_keychain_access_group_prefix_, security_domain_id, storage,
-              primary_account));
+              connection, primary_account));
     }
 #endif
 
@@ -279,7 +280,6 @@ void StandaloneTrustedVaultBackend::OnDegradedRecoverabilityChanged() {
 
 void StandaloneTrustedVaultBackend::ReadDataFromDisk() {
   storage_->ReadDataFromDisk();
-  ResetLocalRecoveryFactors();
 }
 
 void StandaloneTrustedVaultBackend::FetchKeys(
@@ -329,6 +329,8 @@ void StandaloneTrustedVaultBackend::FetchKeys(
   ongoing_fetch_keys_->gaia_id = account_info.gaia;
   ongoing_fetch_keys_->callbacks.emplace_back(std::move(callback));
 
+  // |connection_| and |primary_account_| are checked to be present above, so
+  // |local_recovery_factors| can't be empty.
   CHECK(!local_recovery_factors_.empty());
   AttemptRecoveryFactor(0);
 }
@@ -338,7 +340,6 @@ void StandaloneTrustedVaultBackend::AttemptRecoveryFactor(
   CHECK(local_recovery_factor >= 0 &&
         local_recovery_factor < local_recovery_factors_.size());
   local_recovery_factors_[local_recovery_factor]->AttemptRecovery(
-      connection_.get(),
       // |this| outlives |local_recovery_factors_|, and destroying
       // |local_recovery_factors_| guarantees cancellation of all callbacks.
       base::BindOnce(&StandaloneTrustedVaultBackend::OnKeysRecovered,
@@ -405,7 +406,7 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
   degraded_recoverability_handler_ = nullptr;
   ongoing_add_recovery_method_request_.reset();
   // This aborts all ongoing recoveries / registrations.
-  ResetLocalRecoveryFactors();
+  local_recovery_factors_.clear();
   RemoveNonPrimaryAccountKeysIfMarkedForDeletion();
   // Make sure to call pending callbacks, now that ongoing recoveries were
   // aborted.
@@ -419,6 +420,15 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
       storage_->FindUserVault(primary_account->gaia);
   if (!per_user_vault) {
     per_user_vault = storage_->AddUserVault(primary_account->gaia);
+  }
+
+  if (connection_) {
+    // |storage_| and |connection_| outlive |local_recovery_factors_|, so
+    // passing raw pointers is ok.
+    local_recovery_factors_ =
+        local_recovery_factors_factory_->CreateLocalRecoveryFactors(
+            security_domain_id_, storage_.get(), connection_.get(),
+            *primary_account_);
   }
 
   degraded_recoverability_handler_ =
@@ -636,26 +646,9 @@ bool StandaloneTrustedVaultBackend::HasPendingTrustedRecoveryMethodForTesting()
   return pending_trusted_recovery_method_.has_value();
 }
 
-void StandaloneTrustedVaultBackend::ResetLocalRecoveryFactors() {
-  // |storage_| outlives |local_recovery_factors_|, so passing a raw pointer is
-  // ok.
-  local_recovery_factors_ =
-      local_recovery_factors_factory_->CreateLocalRecoveryFactors(
-          security_domain_id_, storage_.get(), primary_account_);
-}
-
 void StandaloneTrustedVaultBackend::MaybeRegisterLocalRecoveryFactors() {
   // TODO(crbug.com/40255601): in case of transient failure this function is
   // likely to be not called until the browser restart; implement retry logic.
-  if (!connection_) {
-    // Feature disabled.
-    return;
-  }
-
-  if (!primary_account_.has_value()) {
-    // Recovery factor registration is supported only for |primary_account_|.
-    return;
-  }
 
   const bool should_record_metrics =
       !recovery_factor_registration_state_recorded_to_uma_;
@@ -663,11 +656,9 @@ void StandaloneTrustedVaultBackend::MaybeRegisterLocalRecoveryFactors() {
     // Unretained because |this| outlives |local_recovery_factors_| (and
     // destroying |local_recovery_factors_| cancels all callbacks).
     const std::optional<TrustedVaultRecoveryFactorRegistrationStateForUMA>
-        registration_state = factor->MaybeRegister(
-            connection_.get(),
-            base::BindOnce(
-                &StandaloneTrustedVaultBackend::OnRecoveryFactorRegistered,
-                base::Unretained(this), factor->GetRecoveryFactorType()));
+        registration_state = factor->MaybeRegister(base::BindOnce(
+            &StandaloneTrustedVaultBackend::OnRecoveryFactorRegistered,
+            base::Unretained(this), factor->GetRecoveryFactorType()));
 
     if (registration_state.has_value() && should_record_metrics) {
       recovery_factor_registration_state_recorded_to_uma_ = true;

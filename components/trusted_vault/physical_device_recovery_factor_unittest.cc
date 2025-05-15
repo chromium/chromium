@@ -65,7 +65,7 @@ class PhysicalDeviceRecoveryFactorTest : public testing::Test {
   PhysicalDeviceRecoveryFactorTest() { ResetRecoveryFactor(account_info()); }
   ~PhysicalDeviceRecoveryFactorTest() override = default;
 
-  void ResetRecoveryFactor(const std::optional<CoreAccountInfo> account_info) {
+  void ResetRecoveryFactor(const CoreAccountInfo account_info) {
     // Destroy `recovery_factor_`, otherwise it would hold a reference to
     // `storage_` which is destroyed before `recovery_factor_` below.
     recovery_factor_ = nullptr;
@@ -81,9 +81,8 @@ class PhysicalDeviceRecoveryFactorTest : public testing::Test {
     storage_ =
         StandaloneTrustedVaultStorage::CreateForTesting(std::move(file_access));
     storage_->ReadDataFromDisk();
-    if (account_info &&
-        storage_->FindUserVault(account_info->gaia) == nullptr) {
-      storage_->AddUserVault(account_info->gaia);
+    if (storage_->FindUserVault(account_info.gaia) == nullptr) {
+      storage_->AddUserVault(account_info.gaia);
       storage_->WriteDataToDisk();
     }
 
@@ -91,7 +90,8 @@ class PhysicalDeviceRecoveryFactorTest : public testing::Test {
         std::make_unique<NiceMock<MockTrustedVaultThrottlingConnection>>();
 
     recovery_factor_ = std::make_unique<PhysicalDeviceRecoveryFactor>(
-        SecurityDomainId::kChromeSync, storage_.get(), account_info);
+        SecurityDomainId::kChromeSync, storage_.get(), connection_.get(),
+        account_info);
   }
 
   CoreAccountInfo account_info() {
@@ -165,7 +165,7 @@ class PhysicalDeviceRecoveryFactorTest : public testing::Test {
               return std::make_unique<TrustedVaultConnection::Request>();
             });
 
-    recovery_factor_->MaybeRegister(connection(), base::DoNothing());
+    recovery_factor_->MaybeRegister(base::DoNothing());
     Mock::VerifyAndClearExpectations(connection());
     EXPECT_FALSE(device_registration_callback.is_null());
 
@@ -225,7 +225,7 @@ TEST_F(PhysicalDeviceRecoveryFactorTest, ShouldRegisterDevice) {
   // Register the device.
   base::MockCallback<LocalRecoveryFactor::RegisterCallback> register_callback;
   TrustedVaultRecoveryFactorRegistrationStateForUMA status =
-      recovery_factor()->MaybeRegister(connection(), register_callback.Get());
+      recovery_factor()->MaybeRegister(register_callback.Get());
   EXPECT_EQ(status, TrustedVaultRecoveryFactorRegistrationStateForUMA::
                         kAttemptingRegistrationWithNewKeyPair);
   ASSERT_FALSE(device_registration_callback.is_null());
@@ -262,7 +262,7 @@ TEST_F(PhysicalDeviceRecoveryFactorTest, ShouldNotRegisterIfAlreadyRegistered) {
   EXPECT_CALL(*connection(), RegisterLocalDeviceWithoutKeys).Times(0);
 
   TrustedVaultRecoveryFactorRegistrationStateForUMA status =
-      recovery_factor()->MaybeRegister(connection(), base::DoNothing());
+      recovery_factor()->MaybeRegister(base::DoNothing());
   EXPECT_EQ(
       status,
       TrustedVaultRecoveryFactorRegistrationStateForUMA::kAlreadyRegisteredV1);
@@ -284,7 +284,7 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
   EXPECT_CALL(*connection(), RegisterLocalDeviceWithoutKeys).Times(0);
 
   TrustedVaultRecoveryFactorRegistrationStateForUMA status =
-      recovery_factor()->MaybeRegister(connection(), base::DoNothing());
+      recovery_factor()->MaybeRegister(base::DoNothing());
   EXPECT_EQ(
       status,
       TrustedVaultRecoveryFactorRegistrationStateForUMA::kAlreadyRegisteredV1);
@@ -319,7 +319,7 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
   // Register the device.
   base::MockCallback<LocalRecoveryFactor::RegisterCallback> register_callback;
   TrustedVaultRecoveryFactorRegistrationStateForUMA status =
-      recovery_factor()->MaybeRegister(connection(), register_callback.Get());
+      recovery_factor()->MaybeRegister(register_callback.Get());
   EXPECT_EQ(status, TrustedVaultRecoveryFactorRegistrationStateForUMA::
                         kAttemptingRegistrationWithNewKeyPair);
   ASSERT_FALSE(device_registration_callback.is_null());
@@ -378,7 +378,7 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
   EXPECT_CALL(*connection(), RegisterLocalDeviceWithoutKeys).Times(0);
 
   TrustedVaultRecoveryFactorRegistrationStateForUMA status =
-      recovery_factor()->MaybeRegister(connection(), base::DoNothing());
+      recovery_factor()->MaybeRegister(base::DoNothing());
 
   EXPECT_EQ(
       status,
@@ -392,7 +392,7 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
   EXPECT_CALL(*connection(), RegisterLocalDeviceWithoutKeys).Times(0);
 
   TrustedVaultRecoveryFactorRegistrationStateForUMA status =
-      recovery_factor()->MaybeRegister(connection(), base::DoNothing());
+      recovery_factor()->MaybeRegister(base::DoNothing());
 
   EXPECT_EQ(
       status,
@@ -412,7 +412,7 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
 
   base::RunLoop run_loop;
   recovery_factor()->AttemptRecovery(
-      connection(), recovery_callback.Get().Then(run_loop.QuitClosure()));
+      recovery_callback.Get().Then(run_loop.QuitClosure()));
   run_loop.Run();
 
   histogram_tester.ExpectUniqueSample(
@@ -442,7 +442,7 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
 
   base::RunLoop run_loop;
   recovery_factor()->AttemptRecovery(
-      connection(), recovery_callback.Get().Then(run_loop.QuitClosure()));
+      recovery_callback.Get().Then(run_loop.QuitClosure()));
   run_loop.Run();
 
   histogram_tester.ExpectUniqueSample(
@@ -472,7 +472,7 @@ TEST_F(PhysicalDeviceRecoveryFactorTest, ShouldThrottleKeysDownloading) {
       recovery_callback;
   base::HistogramTester histogram_tester;
 
-  recovery_factor()->AttemptRecovery(connection(), recovery_callback.Get());
+  recovery_factor()->AttemptRecovery(recovery_callback.Get());
 
   ASSERT_FALSE(download_keys_callback.is_null());
 
@@ -510,7 +510,7 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
 
   base::HistogramTester histogram_tester;
 
-  recovery_factor()->AttemptRecovery(connection(), base::DoNothing());
+  recovery_factor()->AttemptRecovery(base::DoNothing());
 
   ASSERT_FALSE(download_keys_callback.is_null());
 
@@ -556,7 +556,7 @@ TEST_F(PhysicalDeviceRecoveryFactorTest, ShouldDownloadNewKeys) {
       recovery_callback;
   base::HistogramTester histogram_tester;
 
-  recovery_factor()->AttemptRecovery(connection(), recovery_callback.Get());
+  recovery_factor()->AttemptRecovery(recovery_callback.Get());
 
   ASSERT_FALSE(download_keys_callback.is_null());
 
@@ -602,7 +602,7 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
   // Attempt device registration.
   base::MockCallback<LocalRecoveryFactor::RegisterCallback> register_callback;
   TrustedVaultRecoveryFactorRegistrationStateForUMA status =
-      recovery_factor()->MaybeRegister(connection(), register_callback.Get());
+      recovery_factor()->MaybeRegister(register_callback.Get());
   EXPECT_EQ(status, TrustedVaultRecoveryFactorRegistrationStateForUMA::
                         kAttemptingRegistrationWithNewKeyPair);
 
@@ -634,7 +634,7 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
 
   base::MockCallback<LocalRecoveryFactor::AttemptRecoveryCallback>
       recovery_callback;
-  recovery_factor()->AttemptRecovery(connection(), recovery_callback.Get());
+  recovery_factor()->AttemptRecovery(recovery_callback.Get());
 
   ASSERT_FALSE(download_keys_callback.is_null());
 

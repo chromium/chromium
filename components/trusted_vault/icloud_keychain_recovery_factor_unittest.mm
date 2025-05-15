@@ -107,7 +107,7 @@ class ICloudKeychainRecoveryFactorTest : public testing::Test {
   ICloudKeychainRecoveryFactorTest() { ResetRecoveryFactor(account_info()); }
   ~ICloudKeychainRecoveryFactorTest() override = default;
 
-  void ResetRecoveryFactor(const std::optional<CoreAccountInfo> account_info) {
+  void ResetRecoveryFactor(const CoreAccountInfo account_info) {
     // Destroy `recovery_factor_`, otherwise it would hold a reference to
     // `storage_` which is destroyed before `recovery_factor_` below.
     recovery_factor_ = nullptr;
@@ -123,9 +123,8 @@ class ICloudKeychainRecoveryFactorTest : public testing::Test {
     storage_ =
         StandaloneTrustedVaultStorage::CreateForTesting(std::move(file_access));
     storage_->ReadDataFromDisk();
-    if (account_info &&
-        storage_->FindUserVault(account_info->gaia) == nullptr) {
-      storage_->AddUserVault(account_info->gaia);
+    if (storage_->FindUserVault(account_info.gaia) == nullptr) {
+      storage_->AddUserVault(account_info.gaia);
       storage_->WriteDataToDisk();
     }
 
@@ -134,7 +133,7 @@ class ICloudKeychainRecoveryFactorTest : public testing::Test {
 
     recovery_factor_ = std::make_unique<ICloudKeychainRecoveryFactor>(
         kKeychainAccessGroupPrefix, SecurityDomainId::kChromeSync,
-        storage_.get(), account_info);
+        storage_.get(), connection_.get(), account_info);
   }
 
   CoreAccountInfo account_info() {
@@ -234,7 +233,6 @@ class ICloudKeychainRecoveryFactorTest : public testing::Test {
               });
 
       recovery_factor()->AttemptRecovery(
-          connection(),
           std::move(recovery_callback).Then(run_loop.QuitClosure()));
       fetch_icloud_key_run_loop.Run();
 
@@ -274,8 +272,7 @@ class ICloudKeychainRecoveryFactorTest : public testing::Test {
               return std::make_unique<TrustedVaultConnection::Request>();
             });
     TrustedVaultDeviceRegistrationStateForUMA status =
-        recovery_factor()->MaybeRegister(connection(),
-                                         std::move(registration_callback));
+        recovery_factor()->MaybeRegister(std::move(registration_callback));
     CHECK(status == TrustedVaultDeviceRegistrationStateForUMA::
                         kAttemptingRegistrationWithNewKeyPair);
     fetch_icloud_key_run_loop.Run();
@@ -411,7 +408,6 @@ class ICloudKeychainRecoveryFactorTest : public testing::Test {
 
       TrustedVaultDeviceRegistrationStateForUMA status =
           recovery_factor()->MaybeRegister(
-              connection(),
               std::move(registration_callback).Then(run_loop.QuitClosure()));
       CHECK_EQ(status, TrustedVaultDeviceRegistrationStateForUMA::
                            kAttemptingRegistrationWithNewKeyPair);
@@ -461,7 +457,7 @@ TEST_F(ICloudKeychainRecoveryFactorTest,
 
   base::RunLoop run_loop;
   recovery_factor()->AttemptRecovery(
-      connection(), recovery_callback.Get().Then(run_loop.QuitClosure()));
+      recovery_callback.Get().Then(run_loop.QuitClosure()));
   run_loop.Run();
 
   histogram_tester.ExpectUniqueSample(
@@ -488,7 +484,7 @@ TEST_F(ICloudKeychainRecoveryFactorTest,
 
   base::RunLoop run_loop;
   recovery_factor()->AttemptRecovery(
-      connection(), recovery_callback.Get().Then(run_loop.QuitClosure()));
+      recovery_callback.Get().Then(run_loop.QuitClosure()));
   run_loop.Run();
 
   histogram_tester.ExpectUniqueSample(
@@ -518,7 +514,7 @@ TEST_F(ICloudKeychainRecoveryFactorTest,
 
   base::RunLoop run_loop;
   recovery_factor()->AttemptRecovery(
-      connection(), recovery_callback.Get().Then(run_loop.QuitClosure()));
+      recovery_callback.Get().Then(run_loop.QuitClosure()));
   run_loop.Run();
 
   histogram_tester.ExpectUniqueSample(
@@ -711,7 +707,7 @@ TEST_F(ICloudKeychainRecoveryFactorTest,
   EXPECT_CALL(register_callback, Run).Times(0);
 
   TrustedVaultDeviceRegistrationStateForUMA status =
-      recovery_factor()->MaybeRegister(connection(), register_callback.Get());
+      recovery_factor()->MaybeRegister(register_callback.Get());
   EXPECT_THAT(
       status,
       Eq(TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV1));
@@ -728,7 +724,7 @@ TEST_F(ICloudKeychainRecoveryFactorTest,
   EXPECT_CALL(register_callback, Run).Times(0);
 
   TrustedVaultDeviceRegistrationStateForUMA status =
-      recovery_factor()->MaybeRegister(connection(), register_callback.Get());
+      recovery_factor()->MaybeRegister(register_callback.Get());
   EXPECT_THAT(
       status,
       Eq(TrustedVaultDeviceRegistrationStateForUMA::kLocalKeysAreStale));
@@ -741,7 +737,7 @@ TEST_F(ICloudKeychainRecoveryFactorTest, ShouldNotRegisterWhenThrottled) {
   EXPECT_CALL(register_callback, Run).Times(0);
 
   TrustedVaultDeviceRegistrationStateForUMA status =
-      recovery_factor()->MaybeRegister(connection(), register_callback.Get());
+      recovery_factor()->MaybeRegister(register_callback.Get());
   EXPECT_THAT(
       status,
       Eq(TrustedVaultDeviceRegistrationStateForUMA::kThrottledClientSide));
@@ -752,7 +748,7 @@ TEST_F(ICloudKeychainRecoveryFactorTest, ShouldNotRegisterWithoutKeys) {
   EXPECT_CALL(register_callback, Run).Times(0);
 
   TrustedVaultDeviceRegistrationStateForUMA status =
-      recovery_factor()->MaybeRegister(connection(), register_callback.Get());
+      recovery_factor()->MaybeRegister(register_callback.Get());
   EXPECT_THAT(status, Eq(TrustedVaultDeviceRegistrationStateForUMA::
                              kRegistrationWithConstantKeyNotSupported));
 }
@@ -764,7 +760,7 @@ TEST_F(ICloudKeychainRecoveryFactorTest, ShouldNotRegisterWithConstantKeys) {
   EXPECT_CALL(register_callback, Run).Times(0);
 
   TrustedVaultDeviceRegistrationStateForUMA status =
-      recovery_factor()->MaybeRegister(connection(), register_callback.Get());
+      recovery_factor()->MaybeRegister(register_callback.Get());
   EXPECT_THAT(status, Eq(TrustedVaultDeviceRegistrationStateForUMA::
                              kRegistrationWithConstantKeyNotSupported));
 }
