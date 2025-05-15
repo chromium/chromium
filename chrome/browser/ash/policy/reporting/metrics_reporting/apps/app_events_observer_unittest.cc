@@ -40,8 +40,6 @@ namespace {
 
 constexpr char kTestAppId[] = "TestApp";
 constexpr char kTestAppPublisherId[] = "com.google.test";
-constexpr char kAppInstallTrackerDiskConsumptionMetric[] =
-    "Browser.ERP.AppInstallTrackerDiskConsumption";
 
 // Fake `AppPublisher` used by the test to simulate app launches.
 class FakePublisher : public ::apps::AppPublisher {
@@ -119,8 +117,6 @@ class AppEventsObserverTest : public ::apps::AppPlatformMetricsServiceTestBase,
     // sessions are covered by browser tests.
     InstallOneApp(kTestAppId, ::apps::AppType::kArc, kTestAppPublisherId,
                   ::apps::Readiness::kReady, ::apps::InstallSource::kPlayStore);
-      histogram_tester().ExpectTotalCount(
-          kAppInstallTrackerDiskConsumptionMetric, 1);
   }
 
   void TearDown() override {
@@ -188,11 +184,8 @@ TEST_F(AppEventsObserverTest, OnAppInstalled) {
       Eq(::apps::ApplicationInstallTime::APPLICATION_INSTALL_TIME_RUNNING));
 
   // Also verify that the app install is being tracked.
-    EXPECT_THAT(
-        profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
-        Contains(kAppId).Times(1));
-    histogram_tester().ExpectTotalCount(kAppInstallTrackerDiskConsumptionMetric,
-                                        2);
+  EXPECT_THAT(profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
+              Contains(kAppId).Times(1));
 }
 
 TEST_F(AppEventsObserverTest, OnAppInstalled_UnsetPolicy) {
@@ -210,11 +203,8 @@ TEST_F(AppEventsObserverTest, OnAppInstalled_UnsetPolicy) {
 
   // Verify no data is being reported and the app install is being tracked.
   ASSERT_FALSE(test_future.IsReady());
-    EXPECT_THAT(
-        profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
-        Contains(kAppId).Times(1));
-    histogram_tester().ExpectTotalCount(kAppInstallTrackerDiskConsumptionMetric,
-                                        2);
+  EXPECT_THAT(profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
+              Contains(kAppId).Times(1));
 }
 
 TEST_F(AppEventsObserverTest, OnAppInstalled_DisallowedAppType) {
@@ -235,11 +225,8 @@ TEST_F(AppEventsObserverTest, OnAppInstalled_DisallowedAppType) {
 
   // Verify no data is being reported and the app install is being tracked.
   ASSERT_FALSE(test_future.IsReady());
-    EXPECT_THAT(
-        profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
-        Contains(kAppId).Times(1));
-    histogram_tester().ExpectTotalCount(kAppInstallTrackerDiskConsumptionMetric,
-                                        2);
+  EXPECT_THAT(profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
+              Contains(kAppId).Times(1));
 }
 
 TEST_F(AppEventsObserverTest, OnAppInstalledWithPublisherId) {
@@ -280,11 +267,8 @@ TEST_F(AppEventsObserverTest, OnAppInstalledWithPublisherId) {
       Eq(::apps::ApplicationInstallTime::APPLICATION_INSTALL_TIME_RUNNING));
 
   // Also verify the app install is being tracked.
-    EXPECT_THAT(
-        profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
-        Contains(kNewAppId).Times(1));
-    histogram_tester().ExpectTotalCount(kAppInstallTrackerDiskConsumptionMetric,
-                                        2);
+  EXPECT_THAT(profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
+              Contains(kNewAppId).Times(1));
 }
 
 TEST_F(AppEventsObserverTest, OnAppInstalled_PreinstalledApp) {
@@ -311,13 +295,8 @@ TEST_F(AppEventsObserverTest, OnAppInstalled_PreinstalledApp) {
 
   // Verify that no data is being reported.
   ASSERT_FALSE(test_future.IsReady());
-    EXPECT_THAT(
-        profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
-        Contains(kAppId).Times(1));
-    // Since the app is already being tracked, there will be no additional UMA
-    // reports from the tracker.
-    histogram_tester().ExpectTotalCount(kAppInstallTrackerDiskConsumptionMetric,
-                                        1);
+  EXPECT_THAT(profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
+              Contains(kAppId).Times(1));
 }
 
 TEST_F(AppEventsObserverTest, OnAppLaunched) {
@@ -420,11 +399,8 @@ TEST_F(AppEventsObserverTest, OnAppUninstalled) {
                      APPLICATION_UNINSTALL_SOURCE_APP_LIST));
 
   // Also verify the app is no longer being tracked.
-    EXPECT_THAT(
-        profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
-        Contains(kTestAppId).Times(0));
-    histogram_tester().ExpectTotalCount(kAppInstallTrackerDiskConsumptionMetric,
-                                        2);
+  EXPECT_THAT(profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
+              Contains(kTestAppId).Times(0));
 }
 
 TEST_F(AppEventsObserverTest, OnAppUninstalled_UnsetPolicy) {
@@ -445,20 +421,16 @@ TEST_F(AppEventsObserverTest, OnAppUninstalled_UnsetPolicy) {
 
   // Verify no data is being reported and the app is no longer being tracked.
   ASSERT_FALSE(test_future.IsReady());
-    EXPECT_THAT(
-        profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
-        Contains(kTestAppId).Times(0));
-    histogram_tester().ExpectTotalCount(kAppInstallTrackerDiskConsumptionMetric,
-                                        2);
+  EXPECT_THAT(profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
+              Contains(kTestAppId).Times(0));
 }
 
 TEST_F(AppEventsObserverTest, OnAppUninstalled_DisallowedAppType) {
   // Set policy to enable reporting for a different app type than the one being
   // tested.
   SetAllowedAppReportingTypes({::ash::reporting::kAppCategoryGames});
-    ASSERT_THAT(
-        profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
-        Contains(kTestAppId).Times(1));
+  ASSERT_THAT(profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
+              Contains(kTestAppId).Times(1));
 
   base::test::TestFuture<MetricData> test_future;
   app_events_observer_->SetOnEventObservedCallback(
@@ -472,11 +444,8 @@ TEST_F(AppEventsObserverTest, OnAppUninstalled_DisallowedAppType) {
 
   // Verify no data is being reported and the app is no longer being tracked.
   ASSERT_FALSE(test_future.IsReady());
-    EXPECT_THAT(
-        profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
-        Contains(kTestAppId).Times(0));
-    histogram_tester().ExpectTotalCount(kAppInstallTrackerDiskConsumptionMetric,
-                                        2);
+  EXPECT_THAT(profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
+              Contains(kTestAppId).Times(0));
 }
 
 TEST_F(AppEventsObserverTest, OnAppPlatformMetricsDestroyed) {
