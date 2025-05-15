@@ -21,6 +21,10 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kAAudioPerStreamDeviceSelection);
 
 namespace media {
 
+#if BUILDFLAG(IS_MAC)
+MEDIA_EXPORT bool IsMacCatapSystemAudioLoopbackCaptureEnabled();
+#endif
+
 // Returns true if system audio loopback capture is implemented for the current
 // OS.
 MEDIA_EXPORT bool IsSystemLoopbackCaptureSupported();

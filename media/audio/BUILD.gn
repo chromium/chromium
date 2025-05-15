@@ -188,6 +188,10 @@ source_set("audio") {
       "mac/audio_loopback_input_mac_impl.mm",
       "mac/audio_manager_mac.cc",
       "mac/audio_manager_mac.h",
+      "mac/catap_api.h",
+      "mac/catap_api.mm",
+      "mac/catap_audio_input_stream.h",
+      "mac/catap_audio_input_stream.mm",
       "mac/core_audio_util_mac.cc",
       "mac/core_audio_util_mac.h",
       "mac/screen_capture_kit_swizzler.h",
@@ -483,6 +487,7 @@ source_set("unit_tests") {
       "mac/audio_device_listener_mac_unittest.cc",
       "mac/audio_loopback_input_mac_unittest.mm",
       "mac/audio_manager_mac_unittest.cc",
+      "mac/catap_audio_input_stream_unittest.mm",
     ]
     deps += [ "//third_party/ocmock" ]
     frameworks = [ "CoreMedia.framework" ]

@@ -39,6 +39,7 @@
 #include "media/audio/apple/audio_low_latency_input.h"
 #include "media/audio/apple/scoped_audio_unit.h"
 #include "media/audio/audio_device_description.h"
+#include "media/audio/audio_features.h"
 #include "media/audio/mac/audio_loopback_input_mac.h"
 #include "media/audio/mac/core_audio_util_mac.h"
 #include "media/audio/mac/screen_capture_kit_swizzler.h"
@@ -668,9 +669,20 @@ AudioParameters AudioManagerMac::GetInputStreamParameters(
     const std::string& device_id) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   if (AudioDeviceDescription::IsLoopbackDevice(device_id)) {
-    return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                           ChannelLayoutConfig::Stereo(), kLoopbackSampleRate,
-                           kLoopbackFramesPerBuffer);
+    if (IsMacCatapSystemAudioLoopbackCaptureEnabled()) {
+      AudioDeviceID default_output_device;
+      GetDefaultOutputDevice(&default_output_device);
+      const int loopback_sample_rate =
+          HardwareSampleRateForDevice(default_output_device);
+      return AudioParameters(
+          AudioParameters::AUDIO_PCM_LOW_LATENCY, ChannelLayoutConfig::Stereo(),
+          loopback_sample_rate, kCatapLoopbackFramesPerBuffer);
+
+    } else {
+      return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                             ChannelLayoutConfig::Stereo(), kLoopbackSampleRate,
+                             kSckLoopbackFramesPerBuffer);
+    }
   }
 
   AudioDeviceID device = GetAudioDeviceIdByUId(true, device_id);
@@ -874,8 +886,15 @@ AudioInputStream* AudioManagerMac::MakeLowLatencyInputStream(
   DCHECK_EQ(AudioParameters::AUDIO_PCM_LOW_LATENCY, params.format());
 
   if (AudioDeviceDescription::IsLoopbackDevice(device_id)) {
-    screen_capture_kit_swizzler_ = SwizzleScreenCaptureKit();
+    if (IsMacCatapSystemAudioLoopbackCaptureEnabled()) {
+      return CreateCatapAudioInputStream(
+          params, device_id, log_callback,
+          base::BindOnce(&AudioManagerBase::ReleaseInputStream,
+                         base::Unretained(this)),
+          GetDefaultOutputDeviceID());
+    }
 
+    screen_capture_kit_swizzler_ = SwizzleScreenCaptureKit();
     return CreateSCKAudioInputStream(
         params, device_id, log_callback,
         base::BindRepeating(&AudioManagerBase::ReleaseInputStream,

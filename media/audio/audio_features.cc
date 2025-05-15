@@ -17,6 +17,11 @@ namespace {
 BASE_FEATURE(kMacSystemAudioLoopbackOverride,
              "MacSystemAudioLoopbackOverride",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// TODO(crbug.com/415953612): Make this into a Chrome flag.
+BASE_FEATURE(kMacCatapSystemAudioLoopbackCapture,
+             "MacCatapSystemAudioLoopbackCapture",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 }  // namespace
 
@@ -52,6 +57,12 @@ BASE_FEATURE(kAAudioPerStreamDeviceSelection,
 }  // namespace features
 
 namespace media {
+#if BUILDFLAG(IS_MAC)
+bool IsMacCatapSystemAudioLoopbackCaptureEnabled() {
+  return (base::mac::MacOSVersion() >= 14'02'00 &&
+          base::FeatureList::IsEnabled(kMacCatapSystemAudioLoopbackCapture));
+}
+#endif
 
 bool IsSystemLoopbackCaptureSupported() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(USE_CRAS)
@@ -64,7 +75,8 @@ bool IsSystemLoopbackCaptureSupported() {
   // for MacOS 15.
   return (base::mac::MacOSVersion() >= 13'00'00 &&
           base::mac::MacOSVersion() < 15'00'00) ||
-         base::FeatureList::IsEnabled(kMacSystemAudioLoopbackOverride);
+         base::FeatureList::IsEnabled(kMacSystemAudioLoopbackOverride) ||
+         IsMacCatapSystemAudioLoopbackCaptureEnabled();
 #elif BUILDFLAG(IS_LINUX) && defined(USE_PULSEAUDIO)
   return true;
 #else
