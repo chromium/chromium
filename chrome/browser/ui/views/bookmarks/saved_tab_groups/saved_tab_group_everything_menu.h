@@ -67,11 +67,11 @@ class STGEverythingMenu : public views::MenuDelegate,
 
  private:
   class AppMenuSubMenuModelDelegate;
-  friend class STGEverythingMenuUnitTest;
 
   int GenerateTabGroupCommandID(int idx_in_sorted_tab_groups);
   base::Uuid GetTabGroupIdFromCommandId(int command_id);
-  std::unique_ptr<ui::SimpleMenuModel> CreateMenuModel();
+  std::unique_ptr<ui::SimpleMenuModel> CreateMenuModel(
+      TabGroupSyncService* tab_group_service);
 
   // Returns sorted saved tab groups with the most recently created as the
   // first, filtering out empty groups.
@@ -125,8 +125,9 @@ class STGEverythingMenu : public views::MenuDelegate,
   std::unique_ptr<ui::SimpleMenuModel> groups_model_;
 
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
-  std::unique_ptr<STGTabsMenuModel> tabs_model_;
+  std::map<base::Uuid, std::unique_ptr<STGTabsMenuModel>> tabs_models_;
   std::unique_ptr<AppMenuSubMenuModelDelegate> submenu_delegate_;
+  std::optional<base::Uuid> latest_group_id_;
 
   raw_ptr<Browser> browser_;
   raw_ptr<views::Widget> widget_;
