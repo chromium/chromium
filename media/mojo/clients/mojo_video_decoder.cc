@@ -199,7 +199,8 @@ void MojoVideoDecoder::InitializeRemoteDecoder(
   }
 
   remote_decoder_->Initialize(
-      config, low_delay, cdm_id,
+      config, low_delay,
+      cdm_id ? mojom::Cdm::NewCdmId(cdm_id.value()) : nullptr,
       base::BindOnce(&MojoVideoDecoder::OnInitializeDone,
                      base::Unretained(this)));
 }
@@ -207,7 +208,8 @@ void MojoVideoDecoder::InitializeRemoteDecoder(
 void MojoVideoDecoder::OnInitializeDone(const DecoderStatus& status,
                                         bool needs_bitstream_conversion,
                                         int32_t max_decode_requests,
-                                        VideoDecoderType decoder_type) {
+                                        VideoDecoderType decoder_type,
+                                        bool needs_transcryption) {
   DVLOG(1) << __func__ << ": status = " << status.group() << ":"
            << static_cast<int>(status.code());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

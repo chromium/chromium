@@ -61,18 +61,11 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
       const gfx::ColorSpace& target_color_space) final;
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
-                  const std::optional<base::UnguessableToken>& cdm_id,
+                  mojom::CdmPtr cdm,
                   InitializeCallback callback) final;
   void Decode(mojom::DecoderBufferPtr buffer, DecodeCallback callback) final;
   void Reset(ResetCallback callback) final;
   void OnOverlayInfoChanged(const OverlayInfo& overlay_info) final;
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  void InitializeWithCdmContext(
-      const VideoDecoderConfig& config,
-      bool low_delay,
-      mojo::PendingRemote<mojom::CdmContextForOOPVD> cdm_context,
-      InitializeWithCdmContextCallback callback) final;
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
  private:
   // Helper methods so that we can bind them with a weak pointer to avoid

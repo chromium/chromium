@@ -542,10 +542,13 @@ void OOPVideoDecoder::Initialize(const VideoDecoderConfig& config,
   output_cb_ = output_cb;
   waiting_cb_ = waiting_cb;
 
-  remote_decoder_->InitializeWithCdmContext(
-      config, low_delay, std::move(pending_remote_cdm_context_for_oopvd),
-      base::BindOnce(&OOPVideoDecoder::OnInitializeDone,
-                     weak_this_factory_.GetWeakPtr()));
+  remote_decoder_->Initialize(config, low_delay,
+                              pending_remote_cdm_context_for_oopvd
+                                  ? mojom::Cdm::NewCdmContext(std::move(
+                                        pending_remote_cdm_context_for_oopvd))
+                                  : nullptr,
+                              base::BindOnce(&OOPVideoDecoder::OnInitializeDone,
+                                             weak_this_factory_.GetWeakPtr()));
 }
 
 void OOPVideoDecoder::OnInitializeDone(const DecoderStatus& status,

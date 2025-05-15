@@ -73,15 +73,8 @@ class MEDIA_MOJO_EXPORT OOPVideoDecoderService
                  const gfx::ColorSpace& target_color_space) final;
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
-                  const std::optional<base::UnguessableToken>& cdm_id,
+                  mojom::CdmPtr cdm,
                   InitializeCallback callback) final;
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  void InitializeWithCdmContext(
-      const VideoDecoderConfig& config,
-      bool low_delay,
-      mojo::PendingRemote<mojom::CdmContextForOOPVD> cdm_context,
-      InitializeWithCdmContextCallback callback) final;
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   void Decode(mojom::DecoderBufferPtr buffer, DecodeCallback callback) final;
   void Reset(ResetCallback callback) final;
   void OnOverlayInfoChanged(const OverlayInfo& overlay_info) final;
@@ -103,12 +96,12 @@ class MEDIA_MOJO_EXPORT OOPVideoDecoderService
   void AddLogRecord(const MediaLogRecord& event) final;
 
  private:
-  void OnInitializeDone(InitializeWithCdmContextCallback init_cb,
-                        bool needs_transcryption,
+  void OnInitializeDone(InitializeCallback init_cb,
                         const DecoderStatus& status,
                         bool needs_bitstream_conversion,
                         int32_t max_decode_requests,
-                        VideoDecoderType decoder_type);
+                        VideoDecoderType decoder_type,
+                        bool needs_transcryption);
 
   mojo::Remote<mojom::VideoDecoderTracker> tracker_remote_
       GUARDED_BY_CONTEXT(sequence_checker_);

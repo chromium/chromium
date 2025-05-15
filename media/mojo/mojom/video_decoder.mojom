@@ -60,6 +60,14 @@ interface VideoFrameHandleReleaser {
                     gpu.mojom.SyncToken? release_sync_token);
 };
 
+// Refers to a valid CDM used for encrypted streams.
+union Cdm {
+  mojo_base.mojom.UnguessableToken cdm_id;
+
+  [EnableIf=allow_oop_video_decoder]
+  pending_remote<CdmContextForOOPVD> cdm_context;
+};
+
 // A Mojo equivalent of media::VideoDecoder. In practice, this is used for
 // hardware decode offloading; in this case the client is a <video> tag running
 // in a renderer, and the implementation is running in the GPU process. With
@@ -68,8 +76,8 @@ interface VideoFrameHandleReleaser {
 interface VideoDecoder {
   // Returns a list of supported configs as well as the decoder ID for the
   // decoder which supports them. It is expected that
-  // Initialize()/InitializeWithCdmContext() will fail for any config that does
-  // not match an entry in this list.
+  // Initialize() will fail for any config that does not match an entry in this
+  // list.
   //
   // May be called before Construct().
   [Sync]
@@ -96,8 +104,7 @@ interface VideoDecoder {
   //
   // |command_buffer_id|, when present, identifies a CommandBufferStub that
   // the VideoDecoder can use for GL operations. Implementations that require GL
-  // will fail Initialize()/InitializeWithCdmContext() if |command_buffer_id| is
-  // not provided.
+  // will fail Initialize() if |command_buffer_id| is not provided.
   //
   // TODO(sandersd): Rename to Initialize() if/when
   // media::VideoDecoder::Initialize() is renamed to Configure().
@@ -121,33 +128,16 @@ interface VideoDecoder {
   // |max_decode_requests|, the maximum number of concurrent Decode() requests
   // the implementation supports.
   //
-  // |cdm_id| must refer to a valid CDM if |config.is_encrypted()|.  It is not
-  // used for unencrypted streams.
-  //
-  // Note about configuration:
-  //
-  // A VideoDecoder implementation should provide exactly one way to be
-  // configured, either Initialize() or InitializeWithCdmContext() but not
-  // both. The one that's not provided should be either rejected or a no-op.
-  // Regardless of which way is provided, the VideoDecoder must be configured
-  // before decoding any frames, and it should not be re-configured while there
-  // are pending Initialize()/InitializeWithCdmContext(), Decode(), or Reset()
-  // requests.
-  Initialize(VideoDecoderConfig config, bool low_delay,
-             mojo_base.mojom.UnguessableToken? cdm_id)
-      => (DecoderStatus status,
-          bool needs_bitstream_conversion,
-          int32 max_decode_requests,
-          VideoDecoderType decoder_type);
-
-  // Like Initialize() with two differences to address the requirements of the
-  // intended use case (out-of-process video decoding):
+  // |cdm| must refer to a valid CDM if |config.is_encrypted()|. It is not
+  // used for unencrypted streams. |cdm| can be a |cdm_id| or a |cdm_context|
+  // defined in the Cdm union above. In the use case of out-of-process video
+  // decoding:
   //
   // - Accepts a |cdm_context| instead of a |cdm_id|. This allows the
   //   VideoDecoder implementation to talk to a CdmContext that lives in a
   //   different process. Note that |cdm_context| is required for the first
-  //   InitializeWithCdmContext() call that sets up encryption and is ignored on
-  //   subsequent calls.
+  //   Initialize() call that sets up encryption and is ignored on subsequent
+  //   calls.
   //
   // - As part of the reply callback, returns |needs_transcryption| which tells
   //   the client whether it needs to do transcryption for encrypted content
@@ -155,20 +145,11 @@ interface VideoDecoder {
   //
   // Note about configuration:
   //
-  // A VideoDecoder implementation should provide exactly one way to be
-  // configured, either Initialize() or InitializeWithCdmContext() but not
-  // both. The one that's not provided should be either rejected or a no-op.
-  // Regardless of which way is provided, the VideoDecoder must be configured
-  // before decoding any frames, and it should not be re-configured while there
-  // are pending Initialize()/InitializeWithCdmContext(), Decode(), or Reset()
-  // requests.
-  //
-  // TODO(crbug.com/195769334): consider passing |cdm_context| in Construct()
-  // instead of InitializeWithCdmContext().
-  // TODO(crbug.com/347331029): merge with the Initialize() method.
-  [EnableIf=allow_oop_video_decoder]
-  InitializeWithCdmContext(VideoDecoderConfig config, bool low_delay,
-             pending_remote<CdmContextForOOPVD>? cdm_context)
+  // The VideoDecoder must be configured before decoding any frames, and it
+  // should not be re-configured while there are pending Initialize(),
+  // Decode(), or Reset() requests.
+  Initialize(VideoDecoderConfig config, bool low_delay,
+             Cdm? cdm)
       => (DecoderStatus status,
           bool needs_bitstream_conversion,
           int32 max_decode_requests,
@@ -176,8 +157,8 @@ interface VideoDecoder {
           bool needs_transcryption);
 
   // Request decoding of exactly one frame or an EOS buffer. This must not be
-  // called while there are pending Initialize()/InitializeWithCdmContext(),
-  // Reset(), or Decode(EOS) requests.
+  // called while there are pending Initialize(), Reset(), or Decode(EOS)
+  // requests.
   //
   // Implementations must eventually execute the callback, even if Decode() is
   // not called again. It is not required that the decode status match the
@@ -191,7 +172,7 @@ interface VideoDecoder {
 
   // Reset the decoder. All ongoing Decode() requests must be completed or
   // aborted before executing the callback. This must not be called while there
-  // is a pending Initialize()/InitializeWithCdmContext() request.
+  // is a pending Initialize() request.
   Reset() => ();
 
   // Inform the decoder that new OverlayInfo is available.

@@ -209,11 +209,35 @@ void MojoVideoDecoderService::Construct(
       target_color_space, std::move(oop_video_decoder_pending_remote_));
 }
 
-void MojoVideoDecoderService::Initialize(
-    const VideoDecoderConfig& config,
-    bool low_delay,
-    const std::optional<base::UnguessableToken>& cdm_id,
-    InitializeCallback callback) {
+void MojoVideoDecoderService::Initialize(const VideoDecoderConfig& config,
+                                         bool low_delay,
+                                         mojom::CdmPtr cdm,
+                                         InitializeCallback callback) {
+  // There are two cases:
+  //
+  // a) This MojoVideoDecoderService lives in the GPU process, in which case, it
+  //    receives messages from renderer processes. Such processes are not
+  //    supposed to use Initialize() with a cdm context. They should use
+  //    Initialize() with a cdm id.
+  //
+  // b) This MojoVideoDecoderService lives in the utility process, in which
+  //    case, it receives messages from the in-process OOPVideoDecoderService.
+  //    The latter handles the Initialize() calls with a cdm context and
+  //    transforms them into Initialize() calls with a cdm id.
+  //
+  // In either case, MojoVideoDecoderService is not supposed to handle
+  // Initialize() calls with a cdm context.
+  std::optional<base::UnguessableToken> cdm_id = std::nullopt;
+  if (cdm) {
+    if (!cdm->is_cdm_id()) {
+      CHECK(mojo::IsInMessageDispatch());
+      mojo::ReportBadMessage(
+          "Unexpected call to Initialize with a cdm context");
+      return;
+    }
+    cdm_id = cdm->get_cdm_id();
+  }
+
   DVLOG(1) << __func__ << " config = " << config.AsHumanReadableString()
            << ", cdm_id = "
            << CdmContext::CdmIdToString(base::OptionalToPtr(cdm_id));
@@ -369,12 +393,14 @@ void MojoVideoDecoderService::OnDecoderInitialized(DecoderStatus status) {
   if (!status.is_ok()) {
     std::move(init_cb_).Run(
         status, false, 1,
-        decoder_ ? decoder_->GetDecoderType() : VideoDecoderType::kUnknown);
+        decoder_ ? decoder_->GetDecoderType() : VideoDecoderType::kUnknown,
+        /*needs_transcryption=*/false);
     return;
   }
   std::move(init_cb_).Run(status, decoder_->NeedsBitstreamConversion(),
                           decoder_->GetMaxDecodeRequests(),
-                          decoder_->GetDecoderType());
+                          decoder_->GetDecoderType(),
+                          /*needs_transcryption=*/false);
 }
 
 void MojoVideoDecoderService::OnReaderRead(
@@ -480,31 +506,6 @@ void MojoVideoDecoderService::OnOverlayInfoChanged(
   TRACE_EVENT0("media", "MojoVideoDecoderService::OnOverlayInfoChanged");
   provide_overlay_info_cb_.Run(overlay_info);
 }
-
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-void MojoVideoDecoderService::InitializeWithCdmContext(
-    const VideoDecoderConfig& config,
-    bool low_delay,
-    mojo::PendingRemote<mojom::CdmContextForOOPVD> cdm_context,
-    InitializeWithCdmContextCallback callback) {
-  // There are two cases:
-  //
-  // a) This MojoVideoDecoderService lives in the GPU process, in which case, it
-  //    receives messages from renderer processes. Such processes are not
-  //    supposed to use InitializeWithCdmContext(). They should use
-  //    Initialize().
-  //
-  // b) This MojoVideoDecoderService lives in the utility process, in which
-  //    case, it receives messages from the in-process OOPVideoDecoderService.
-  //    The latter handles the InitializeWithCdmContext() calls and transforms
-  //    them into Initialize() calls.
-  //
-  // In either case, MojoVideoDecoderService is not supposed to handle
-  // InitializeWithCdmContext() calls.
-  CHECK(mojo::IsInMessageDispatch());
-  mojo::ReportBadMessage("Unexpected call to InitializeWithCdmContext()");
-}
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 void MojoVideoDecoderService::OnDecoderRequestedOverlayInfo(
     bool restart_for_transitions,

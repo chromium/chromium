@@ -2285,15 +2285,8 @@ class FakeOOPVideoDecoderFactoryService
         const gfx::ColorSpace& target_color_space) final {}
     void Initialize(const media::VideoDecoderConfig& config,
                     bool low_delay,
-                    const std::optional<base::UnguessableToken>& cdm_id,
+                    media::mojom::CdmPtr cdm,
                     InitializeCallback callback) final {}
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-    void InitializeWithCdmContext(
-        const media::VideoDecoderConfig& config,
-        bool low_delay,
-        mojo::PendingRemote<media::mojom::CdmContextForOOPVD> cdm_context,
-        InitializeWithCdmContextCallback callback) final {}
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
     void Decode(media::mojom::DecoderBufferPtr buffer,
                 DecodeCallback callback) final {}
     void Reset(ResetCallback callback) final {}

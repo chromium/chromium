@@ -24,7 +24,9 @@
 
 using testing::_;
 using testing::ByMove;
+using testing::IsTrue;
 using testing::Mock;
+using testing::Property;
 using testing::Return;
 using testing::SaveArg;
 using testing::StrictMock;
@@ -171,15 +173,8 @@ class MockVideoDecoder : public mojom::VideoDecoder {
   MOCK_METHOD4(Initialize,
                void(const VideoDecoderConfig& config,
                     bool low_delay,
-                    const std::optional<base::UnguessableToken>& cdm_id,
+                    mojom::CdmPtr cdm,
                     InitializeCallback callback));
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  MOCK_METHOD4(InitializeWithCdmContext,
-               void(const VideoDecoderConfig& config,
-                    bool low_delay,
-                    mojo::PendingRemote<mojom::CdmContextForOOPVD> cdm_context,
-                    InitializeWithCdmContextCallback callback));
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   MOCK_METHOD2(Decode,
                void(mojom::DecoderBufferPtr buffer, DecodeCallback callback));
   MOCK_METHOD1(Reset, void(ResetCallback callback));
@@ -501,7 +496,7 @@ TEST_F(OOPVideoDecoderServiceTest, VideoDecoderCanGetSupportedConfigs) {
   EXPECT_EQ(received_supported_configs, supported_configs_to_reply_with);
 }
 
-// Tests that a call to mojom::VideoDecoder::InitializeWithCdmContext() gets
+// Tests that a call to mojom::VideoDecoder::Initialize() gets
 // routed correctly to the underlying mojom::VideoDecoder as an Initialize()
 // call. Also tests that when the underlying mojom::VideoDecoder calls the
 // initialization callback, the call gets routed to the client.
@@ -520,7 +515,6 @@ TEST_F(OOPVideoDecoderServiceTest, VideoDecoderCanBeInitialized) {
   const VideoDecoderConfig config_to_send = CreateValidVideoDecoderConfig();
   VideoDecoderConfig received_config;
   constexpr bool kLowDelay = true;
-  constexpr std::optional<base::UnguessableToken> kCdmId = std::nullopt;
   StrictMock<base::MockOnceCallback<void(
       const media::DecoderStatus& status, bool needs_bitstream_conversion,
       int32_t max_decode_requests, VideoDecoderType decoder_type,
@@ -533,10 +527,11 @@ TEST_F(OOPVideoDecoderServiceTest, VideoDecoderCanBeInitialized) {
   constexpr VideoDecoderType kDecoderType = VideoDecoderType::kVda;
 
   EXPECT_CALL(*mock_video_decoder_raw,
-              Initialize(/*config=*/_, kLowDelay, kCdmId,
+              Initialize(/*config=*/_, kLowDelay,
+                         /*cdm=*/Property(&mojom::CdmPtr::is_null, IsTrue()),
                          /*callback=*/_))
       .WillOnce([&](const VideoDecoderConfig& config, bool low_delay,
-                    const std::optional<base::UnguessableToken>& cdm_id,
+                    mojom::CdmPtr cdm,
                     mojom::VideoDecoder::InitializeCallback callback) {
         received_config = config;
         received_initialize_cb = std::move(callback);
@@ -544,22 +539,20 @@ TEST_F(OOPVideoDecoderServiceTest, VideoDecoderCanBeInitialized) {
   EXPECT_CALL(initialize_cb_to_send,
               Run(kDecoderStatus, kNeedsBitstreamConversion, kMaxDecodeRequests,
                   kDecoderType, /*needs_transcryption=*/false));
-  video_decoder_remote->InitializeWithCdmContext(
-      config_to_send, kLowDelay,
-      mojo::PendingRemote<mojom::CdmContextForOOPVD>(),
-      initialize_cb_to_send.Get());
+  video_decoder_remote->Initialize(config_to_send, kLowDelay, nullptr,
+                                   initialize_cb_to_send.Get());
   video_decoder_remote.FlushForTesting();
   ASSERT_TRUE(Mock::VerifyAndClearExpectations(mock_video_decoder_raw));
 
   std::move(received_initialize_cb)
       .Run(kDecoderStatus, kNeedsBitstreamConversion, kMaxDecodeRequests,
-           kDecoderType);
+           kDecoderType, /*needs_transcryption=*/false);
   task_environment_.RunUntilIdle();
 }
 
 // Tests that the OOPVideoDecoderService rejects a call to
-// mojom::VideoDecoder::InitializeWithCdmContext() before
-// mojom::VideoDecoder::Construct() gets called.
+// mojom::VideoDecoder::Initialize() before mojom::VideoDecoder::Construct()
+// gets called.
 TEST_F(OOPVideoDecoderServiceTest,
        VideoDecoderCannotBeInitializedBeforeConstruction) {
   auto mock_video_decoder = std::make_unique<StrictMock<MockVideoDecoder>>();
@@ -581,10 +574,8 @@ TEST_F(OOPVideoDecoderServiceTest,
                   /*needs_bitstream_conversion=*/false,
                   /*max_decode_requests=*/1, VideoDecoderType::kUnknown,
                   /*needs_transcryption=*/false));
-  video_decoder_remote->InitializeWithCdmContext(
-      config_to_send, kLowDelay,
-      mojo::PendingRemote<mojom::CdmContextForOOPVD>(),
-      initialize_cb_to_send.Get());
+  video_decoder_remote->Initialize(config_to_send, kLowDelay, nullptr,
+                                   initialize_cb_to_send.Get());
   video_decoder_remote.FlushForTesting();
 }
 

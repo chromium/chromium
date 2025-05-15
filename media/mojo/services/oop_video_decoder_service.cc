@@ -88,25 +88,19 @@ void OOPVideoDecoderService::Construct(
       target_color_space);
 }
 
-void OOPVideoDecoderService::Initialize(
-    const VideoDecoderConfig& config,
-    bool low_delay,
-    const std::optional<base::UnguessableToken>& cdm_id,
-    InitializeCallback callback) {
+void OOPVideoDecoderService::Initialize(const VideoDecoderConfig& config,
+                                        bool low_delay,
+                                        mojom::CdmPtr cdm,
+                                        InitializeCallback callback) {
   // The client of the OOPVideoDecoderService is the OOPVideoDecoder which lives
   // in the GPU process and is therefore up the trust gradient. The
-  // OOPVideoDecoder doesn't call Initialize() (it calls
-  // InitializeWithCdmContext() instead). Thus, it's appropriate to crash here
-  // via a NOTREACHED().
-  NOTREACHED();
-}
+  // OOPVideoDecoder doesn't call Initialize() with a cdm id (it calls
+  // Initialize() with a cdm context instead). Thus, it's appropriate to crash
+  // here via a NOTREACHED().
+  if (cdm && !cdm->is_cdm_context()) {
+    NOTREACHED();
+  }
 
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-void OOPVideoDecoderService::InitializeWithCdmContext(
-    const VideoDecoderConfig& config,
-    bool low_delay,
-    mojo::PendingRemote<mojom::CdmContextForOOPVD> cdm_context,
-    InitializeWithCdmContextCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!video_decoder_client_receiver_.is_bound()) {
     DVLOG(2) << __func__ << " Construct() must be called first";
@@ -118,14 +112,12 @@ void OOPVideoDecoderService::InitializeWithCdmContext(
     return;
   }
 
-  bool needs_transcryption = false;
-
   // The |config| should have been validated at deserialization time.
   DCHECK(config.IsValidConfig());
   if (config.is_encrypted()) {
 #if BUILDFLAG(IS_CHROMEOS)
     if (!cdm_id_) {
-      if (!cdm_context) {
+      if (!cdm) {
         std::move(callback).Run(DecoderStatus::Codes::kMissingCDM,
                                 /*needs_bitstream_conversion=*/false,
                                 /*max_decode_requests=*/1,
@@ -133,15 +125,18 @@ void OOPVideoDecoderService::InitializeWithCdmContext(
                                 /*needs_transcryption=*/false);
         return;
       }
+      // We have already validated above that if a |cdm| is  provided, it must
+      // be a cdm context.
+      CHECK(cdm->is_cdm_context());
+      mojo::PendingRemote<mojom::CdmContextForOOPVD> cdm_context =
+          std::move(cdm->get_cdm_context());
+      // The cdm context is non-nullable inside the |cdm| union.
+      CHECK(!!cdm_context);
       remote_cdm_context_ = base::WrapRefCounted(
           new chromeos::RemoteCdmContext(std::move(cdm_context)));
       cdm_id_ = cdm_service_context_->RegisterRemoteCdmContext(
           remote_cdm_context_.get());
     }
-#if BUILDFLAG(USE_VAAPI)
-    needs_transcryption = (VaapiWrapper::GetImplementationType() ==
-                           VAImplementation::kMesaGallium);
-#endif
 #else
     std::move(callback).Run(DecoderStatus::Codes::kUnsupportedConfig,
                             /*needs_bitstream_conversion=*/false,
@@ -160,21 +155,26 @@ void OOPVideoDecoderService::InitializeWithCdmContext(
   // |dst_video_decoder_remote_|, so the response callback will never run beyond
   // the lifetime of *|this|.
   dst_video_decoder_remote_->Initialize(
-      config, low_delay, cdm_id_,
+      config, low_delay,
+      cdm_id_ ? mojom::Cdm::NewCdmId(cdm_id_.value()) : nullptr,
       base::BindOnce(&OOPVideoDecoderService::OnInitializeDone,
-                     base::Unretained(this), std::move(callback),
-                     needs_transcryption));
+                     base::Unretained(this), std::move(callback)));
 }
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
-void OOPVideoDecoderService::OnInitializeDone(
-    InitializeWithCdmContextCallback init_cb,
-    bool needs_transcryption,
-    const DecoderStatus& status,
-    bool needs_bitstream_conversion,
-    int32_t max_decode_requests,
-    VideoDecoderType decoder_type) {
+void OOPVideoDecoderService::OnInitializeDone(InitializeCallback init_cb,
+                                              const DecoderStatus& status,
+                                              bool needs_bitstream_conversion,
+                                              int32_t max_decode_requests,
+                                              VideoDecoderType decoder_type,
+                                              bool needs_transcryption) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  needs_transcryption = false;
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_VAAPI)
+  if (cdm_id_) {
+    needs_transcryption = (VaapiWrapper::GetImplementationType() ==
+                           VAImplementation::kMesaGallium);
+  }
+#endif
   std::move(init_cb).Run(status, needs_bitstream_conversion,
                          max_decode_requests, decoder_type,
                          needs_transcryption);
