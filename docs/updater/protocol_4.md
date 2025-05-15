@@ -751,12 +751,24 @@ For `type == "puff"`: Apply a differential Puffin patch produced by a previous
     field is required.
 
 For `type == "crx3"`: Decompress a CRX3 package produced by the previous
-    operation and install it.
+    operation and install it. The precise handling of the installation varies
+    depending on the updater and the operating system.
  *  `in`: A `hash` object containing the expected hash of the CRX3 to be
     installed. This field is required.
- *  `path`: The path to a payload or directory, relative to the root of the CRX
-    archive. This may be left blank in cases where execution after install is
-    not necessary.
+ *  `path`: The path to the installer executable(s), relative to the root of the
+    CRX. Clients that install content without running an embedded executable
+    (such as the Chrome extension updater) should ignore this value. Otherwise,
+    on Windows this value indicates a single executable that the updater should
+    run to complete the installation. On macOS, this value indicates a directory
+    where install executables (`.preinstall`, `.install`, `.postinstall`, and
+    their [Keystone equivalents](installer_api_mac.md)) are located.
+    Additionally, some values have special handling on macOS:
+     *  A value in the form `path/to/basename.dmg` indicates a disk image file
+        whose root directory contains the install executables.
+     *  A value in the form `path/to/basename.app` indicates a application
+        bundle that shares a parent directory with the install executables.
+     *  Since 138.0.7182.0, any other values that have no file extension,
+        including `.`, indicate a directory containing the install executables.
  *  `arguments`: A string indicating command-line arguments that should be
     passed to the identified binary to execute.
 

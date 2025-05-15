@@ -39,9 +39,6 @@
 namespace updater {
 namespace {
 
-constexpr base::FilePath::CharType kZipExePath[] =
-    FILE_PATH_LITERAL("/usr/bin/unzip");
-
 constexpr base::FilePath::CharType kGkToolPath[] =
     FILE_PATH_LITERAL("/usr/bin/gktool");
 
@@ -210,31 +207,6 @@ bool RemoveWakeJobFromLaunchd(UpdaterScope scope) {
     VLOG(2) << "launchctl bootout exited " << exit_code << ": " << output;
   }
   return base::DeleteFile(*path);
-}
-
-bool UnzipWithExe(const base::FilePath& src_path,
-                  const base::FilePath& dest_path) {
-  base::FilePath file_path(kZipExePath);
-  base::CommandLine command(file_path);
-  command.AppendArg(src_path.value());
-  command.AppendArg("-d");
-  command.AppendArg(dest_path.value());
-
-  std::string output;
-  int exit_code = 0;
-  if (!base::GetAppOutputWithExitCode(command, &output, &exit_code)) {
-    VLOG(0) << "Something went wrong while running the unzipping with "
-            << kZipExePath;
-    return false;
-  }
-
-  // Unzip utility having 0 is success and 1 is a warning.
-  if (exit_code > 1) {
-    VLOG(0) << "Output from unzipping: " << output;
-    VLOG(0) << "Exit code: " << exit_code;
-  }
-
-  return exit_code <= 1;
 }
 
 std::optional<base::FilePath> GetExecutableFolderPathForVersion(

@@ -344,30 +344,15 @@ int InstallFromDMG(const base::FilePath& dmg_file_path,
   return result;
 }
 
-// Unzips the zip using the existing unzip utility in Mac. Path to the zip is
-// specified by the `zip_file_path`. The install executable located at
-// "/.install" in the contents of the zip is executed, and then the zip is
-// deleted. Returns an error code if unzipping the archive or executing the
-// executable failed.
-int InstallFromZip(const base::FilePath& zip_file_path,
+// Installs by running the install scripts in the specified directory.
+int InstallFromDir(const base::FilePath& dir,
                    base::OnceCallback<int(const base::FilePath&)> install) {
-  const base::FilePath dest_path = zip_file_path.DirName();
-
-  if (!UnzipWithExe(zip_file_path, dest_path)) {
-    VLOG(1) << "Failed to unzip zip file.";
-    return static_cast<int>(InstallErrors::kFailedToExpandZip);
-  }
-
-  if (!SetFilePermissionsRecursive(dest_path)) {
+  // Update permissions on files in the directory.
+  if (!SetFilePermissionsRecursive(dir)) {
     return static_cast<int>(InstallErrors::kCouldNotConfirmAppPermissions);
   }
 
-  const int result = std::move(install).Run(dest_path);
-
-  // Remove the zip file, keep the expanded.
-  base::DeleteFile(zip_file_path);
-
-  return result;
+  return std::move(install).Run(dir);
 }
 
 // Installs with a path to the app specified by the `app_file_path`. The install
@@ -406,8 +391,8 @@ int InstallFromArchive(const base::FilePath& file_path,
                          base::OnceCallback<int(const base::FilePath&)>)>
       handlers = {
           {".dmg", &InstallFromDMG},
-          {".zip", &InstallFromZip},
           {".app", &InstallFromApp},
+          {"", &InstallFromDir},
       };
   auto handler = handlers.find(file_path.Extension());
   if (handler == handlers.end()) {

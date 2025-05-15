@@ -203,9 +203,7 @@ if (is_win) {
 } else {
   copy("test_installer") {
     testonly = true
-
     sources = [ "test_app_setup.sh" ]
-
     outputs = [ "$root_build_dir/test_installer/{{source_file_part}}" ]
   }
 
@@ -216,13 +214,13 @@ if (is_win) {
     copy(script_target) {
       sources = [ invoker.script ]
       outputs =
-          [ "$target_gen_dir/" + app_name + "/zip_contents/" + invoker.script ]
+          [ "$target_gen_dir/" + app_name + "/crx_contents/" + invoker.script ]
     }
     install_target = "install_script_" + app_name
     action(install_target) {
       script = "generate_install_script.py"
       inputs = [ script ]
-      outputs = [ "$target_gen_dir/" + app_name + "/zip_contents/.install" ]
+      outputs = [ "$target_gen_dir/" + app_name + "/crx_contents/.install" ]
       args = [
         "--command",
         invoker.script,
@@ -237,24 +235,17 @@ if (is_win) {
       ]
     }
 
-    zip("test_installer_zip_" + app_name) {
+    crx3("test_installer_" + app_name) {
+      base_dir = "$target_gen_dir/" + app_name + "/crx_contents/"
+      key = "//chrome/updater/test/data/selfupdate_test_key.der"
       inputs = get_target_outputs(":" + script_target) +
                get_target_outputs(":" + install_target)
-      base_dir = "$target_gen_dir/" + app_name + "/zip_contents/"
-      output = "$target_gen_dir/" + app_name + "/crx_contents/test_installer_" +
-               app_name + ".zip"
+      output =
+          "$root_build_dir/test_installer/test_installer_" + app_name + ".crx3"
       deps = [
         ":" + script_target,
         ":" + install_target,
       ]
-    }
-    crx3("test_installer_" + app_name) {
-      base_dir = "$target_gen_dir/" + app_name + "/crx_contents/"
-      key = "//chrome/updater/test/data/selfupdate_test_key.der"
-      inputs = get_target_outputs(":test_installer_zip_" + app_name)
-      output =
-          "$root_build_dir/test_installer/test_installer_" + app_name + ".crx3"
-      deps = [ ":test_installer_zip_" + app_name ]
     }
   }
 

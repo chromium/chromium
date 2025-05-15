@@ -165,14 +165,6 @@ GURL AppendQueryParameter(const GURL& url,
                           const std::string& value);
 
 #if BUILDFLAG(IS_MAC)
-// Uses the builtin unzip utility within macOS /usr/bin/unzip to unzip instead
-// of using the configurator's UnzipperFactory. The UnzipperFactory utilizes the
-// //third_party/zlib/google, which has a bug that does not preserve the
-// permissions when it extracts the contents. For updates via zip or
-// differentials, use UnzipWithExe.
-bool UnzipWithExe(const base::FilePath& src_path,
-                  const base::FilePath& dest_path);
-
 // Recursively update the permissions of a path to 0755 or 0644, depending on
 // whether the file is already executable (by any user) or is a directory.
 // Returns false if and only if there is a failure lstating or setting a

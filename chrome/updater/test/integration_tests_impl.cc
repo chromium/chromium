@@ -100,7 +100,10 @@ constexpr char kSelfUpdateCRXName[] = "updater_selfupdate.crx3";
 constexpr char kSelfUpdateCRXRun[] = PRODUCT_FULLNAME_STRING "_test.app";
 constexpr char kDoNothingCRXName[] = "updater_qualification_app_dmg.crx";
 constexpr char kDoNothingCRXRun[] = "updater_qualification_app_dmg.dmg";
-constexpr char kEnterpriseCompanionCRXRun[] = "enterprise_companion_test.zip";
+
+// On Mac, the install scripts are in the root ('.') directory of the CRX.
+constexpr char kEnterpriseCompanionCRXRun[] = ".";
+
 // On Mac, the test companion app does not have a different name.
 constexpr base::FilePath::CharType kCompanionAppTestExecutableName[] =
     BROWSER_NAME_STRING "EnterpriseCompanion";
@@ -800,12 +803,6 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
                               const base::Value::Dict& request_attributes,
                               const std::vector<AppUpdateExpectation>& apps,
                               const base::Version& updater_version) {
-#if BUILDFLAG(IS_WIN)
-  const base::FilePath::StringType kExeExtension = FILE_PATH_LITERAL(".exe");
-#else
-  const base::FilePath::StringType kExeExtension = FILE_PATH_LITERAL(".zip");
-#endif  // BUILDFLAG(IS_WIN)
-
   base::FilePath exe_path;
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
 
@@ -840,9 +837,16 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
     }
     const base::FilePath crx_path = exe_path.Append(app.crx_relative_path);
     const base::FilePath base_name = crx_path.BaseName().RemoveExtension();
+
+#if BUILDFLAG(IS_WIN)
     const base::FilePath run_action =
-        base_name.Extension().empty() ? base_name.AddExtension(kExeExtension)
-                                      : base_name;
+        base_name.Extension().empty()
+            ? base_name.AddExtension(FILE_PATH_LITERAL(".exe"))
+            : base_name;
+#else
+    const base::FilePath run_action =
+        base_name.Extension().empty() ? base::FilePath(".") : base_name;
+#endif  // BUILDFLAG(IS_WIN)
     app_response_providers.push_back(base::BindRepeating(
         [](const std::string& app_id, const std::string& url,
            const base::Version& to_version, const base::FilePath& crx_path,

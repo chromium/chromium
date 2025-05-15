@@ -782,27 +782,6 @@ if (is_win || is_mac || is_linux) {
           deps = [ "//chrome/enterprise_companion/mac:enterprise_companion_bundle_test" ]
         }
       }
-      zip("enterprise_companion_test_crx_contents_zip") {
-        inputs = get_target_outputs(
-                     ":enterprise_companion_test_crx_install_script") +
-                 get_target_outputs(":enterprise_companion_test_crx_exe") +
-                 get_target_outputs(":enterprise_companion_test_crx_pkginfo") +
-                 get_target_outputs(":enterprise_companion_test_crx_plist")
-        base_dir = "$target_gen_dir/enterprise_companion_test_crx_contents/"
-        output = "$target_gen_dir/enterprise_companion_test.zip"
-        deps = [
-          ":enterprise_companion_test_crx_exe",
-          ":enterprise_companion_test_crx_install_script",
-          ":enterprise_companion_test_crx_pkginfo",
-          ":enterprise_companion_test_crx_plist",
-        ]
-
-        if (is_asan) {
-          inputs +=
-              get_target_outputs(":enterprise_companion_test_crx_asan_dylib")
-          deps += [ ":enterprise_companion_test_crx_asan_dylib" ]
-        }
-      }
     }
 
     crx3("enterprise_companion_test_crx") {
@@ -811,10 +790,23 @@ if (is_win || is_mac || is_linux) {
         inputs = [ "$root_build_dir/enterprise_companion_test" ]
         deps = [ "//chrome/enterprise_companion:enterprise_companion_test" ]
       } else if (is_mac) {
-        inputs =
-            get_target_outputs(":enterprise_companion_test_crx_contents_zip")
-        deps = [ ":enterprise_companion_test_crx_contents_zip" ]
-        base_dir = "$target_gen_dir"
+        inputs = get_target_outputs(
+                     ":enterprise_companion_test_crx_install_script") +
+                 get_target_outputs(":enterprise_companion_test_crx_exe") +
+                 get_target_outputs(":enterprise_companion_test_crx_pkginfo") +
+                 get_target_outputs(":enterprise_companion_test_crx_plist")
+        deps = [
+          ":enterprise_companion_test_crx_exe",
+          ":enterprise_companion_test_crx_install_script",
+          ":enterprise_companion_test_crx_pkginfo",
+          ":enterprise_companion_test_crx_plist",
+        ]
+        base_dir = "$target_gen_dir/enterprise_companion_test_crx_contents/"
+        if (is_asan) {
+          inputs +=
+              get_target_outputs(":enterprise_companion_test_crx_asan_dylib")
+          deps += [ ":enterprise_companion_test_crx_asan_dylib" ]
+        }
       } else if (is_win) {
         inputs = [ "$root_build_dir/enterprise_companion_test.exe" ]
         deps = [ "//chrome/enterprise_companion:enterprise_companion_test" ]
