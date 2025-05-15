@@ -2777,7 +2777,7 @@ BASE_FEATURE(kShimlessRMAHardwareValidationSkip,
 // RMA device information page.
 BASE_FEATURE(kShimlessRMADynamicDeviceInfoInputs,
              "ShimlessRMADynamicDeviceInfoInputs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, system shortcuts will utilize state machiens instead of
 // keeping track of entire history of keys pressed.
