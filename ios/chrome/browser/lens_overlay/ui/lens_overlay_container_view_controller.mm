@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_container_view_controller.h"
 
+#import "base/i18n/rtl.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
@@ -163,12 +164,12 @@ const CGFloat kSelectionUICornerRadius = 14.0;
 
   _splitViewLayoutGuide = [[UILayoutGuide alloc] init];
   [self.view addLayoutGuide:_splitViewLayoutGuide];
-  _splitViewConstraint = [self.view.rightAnchor
-      constraintEqualToAnchor:_splitViewLayoutGuide.leftAnchor];
+  _splitViewConstraint = [self.view.trailingAnchor
+      constraintEqualToAnchor:_splitViewLayoutGuide.leadingAnchor];
   [NSLayoutConstraint activateConstraints:@[
     _splitViewConstraint,
-    [_splitViewLayoutGuide.rightAnchor
-        constraintEqualToAnchor:_splitViewLayoutGuide.leftAnchor],
+    [_splitViewLayoutGuide.trailingAnchor
+        constraintEqualToAnchor:_splitViewLayoutGuide.leadingAnchor],
     [_splitViewLayoutGuide.topAnchor
         constraintEqualToAnchor:self.view.topAnchor],
     [_splitViewLayoutGuide.bottomAnchor
@@ -184,8 +185,8 @@ const CGFloat kSelectionUICornerRadius = 14.0;
       self.selectionViewController.view, self.view,
       (LayoutSides::kLeading | LayoutSides::kTop | LayoutSides::kBottom));
   [NSLayoutConstraint activateConstraints:@[
-    [self.selectionViewController.view.rightAnchor
-        constraintEqualToAnchor:_splitViewLayoutGuide.leftAnchor],
+    [self.selectionViewController.view.trailingAnchor
+        constraintEqualToAnchor:_splitViewLayoutGuide.leadingAnchor],
   ]];
 
   if (@available(iOS 17, *)) {
@@ -238,8 +239,12 @@ const CGFloat kSelectionUICornerRadius = 14.0;
 }
 
 - (UIEdgeInsets)sidePanelOcclusionInsets {
-  return UIEdgeInsetsMake(0, 0, 0,
-                          kSidePanelWidth + kSidePannelSelectionPadding);
+  CGFloat sideInset = kSidePanelWidth + kSidePannelSelectionPadding;
+  if (base::i18n::IsRTL()) {
+    return UIEdgeInsetsMake(0, sideInset, 0, 0);
+  } else {
+    return UIEdgeInsetsMake(0, 0, 0, sideInset);
+  }
 }
 
 - (void)setSelectionInteractionDisabled:(BOOL)selectionInteractionDisabled {
@@ -287,14 +292,14 @@ const CGFloat kSelectionUICornerRadius = 14.0;
   AddSameConstraintsToSides(_sidePanel.view, _splitViewLayoutGuide,
                             (LayoutSides::kTop | LayoutSides::kBottom));
   [NSLayoutConstraint activateConstraints:@[
-    [_sidePanel.view.leftAnchor
-        constraintEqualToAnchor:_splitViewLayoutGuide.rightAnchor],
+    [_sidePanel.view.leadingAnchor
+        constraintEqualToAnchor:_splitViewLayoutGuide.trailingAnchor],
     [_sidePanel.view.widthAnchor constraintEqualToConstant:kSidePanelWidth],
   ]];
 
   self.selectionViewController.view.clipsToBounds = YES;
   self.selectionViewController.view.layer.maskedCorners =
-      kCALayerMaxXMinYCorner | kCALayerMaxXMaxYCorner;
+      [self selectionUICornerMask];
 
   [self.selectionViewController setOcclusionInsets:self.sidePanelOcclusionInsets
                                         reposition:YES
@@ -410,6 +415,15 @@ const CGFloat kSelectionUICornerRadius = 14.0;
 
 - (void)escapeButtonPressed {
   [self closeOverlayRequested];
+}
+
+#pragma mark - Private
+- (CACornerMask)selectionUICornerMask {
+  if (base::i18n::IsRTL()) {
+    return kCALayerMinXMinYCorner | kCALayerMinXMaxYCorner;
+  } else {
+    return kCALayerMaxXMinYCorner | kCALayerMaxXMaxYCorner;
+  }
 }
 
 @end
