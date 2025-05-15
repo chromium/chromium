@@ -6,8 +6,6 @@ package org.chromium.chrome.test.transit.context_menu;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
-
 import android.view.View;
 
 import androidx.annotation.CallSuper;
@@ -29,7 +27,7 @@ public class ContextMenuFacility extends ScrollableFacility<WebPageStation> {
     public ViewElement<View> menuListElement;
 
     public ContextMenuFacility() {
-        menuListElement = declareView(viewSpec(withId(R.id.context_menu_list_view)));
+        menuListElement = declareView(withId(R.id.context_menu_list_view));
     }
 
     @CallSuper

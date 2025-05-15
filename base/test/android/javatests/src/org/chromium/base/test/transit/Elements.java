@@ -4,6 +4,8 @@
 
 package org.chromium.base.test.transit;
 
+import static org.chromium.base.test.transit.ViewSpec.viewSpec;
+
 import android.app.Activity;
 import android.view.View;
 
@@ -73,6 +75,29 @@ public class Elements extends BaseElements {
                 ViewSpec<ViewT> viewSpec, ViewElement.Options options) {
             ViewElement<ViewT> element = new ViewElement<>(viewSpec, options);
             return declareElement(element);
+        }
+
+        /** See {@link ConditionalState#declareView(Matcher)}. */
+        public ViewElement<View> declareView(Matcher<View> viewMatcher) {
+            return declareView(viewSpec(viewMatcher), ViewElement.Options.DEFAULT);
+        }
+
+        /** See {@link ConditionalState#declareView(Matcher, ViewElement.Options)}. */
+        public ViewElement<View> declareView(
+                Matcher<View> viewMatcher, ViewElement.Options options) {
+            return declareView(viewSpec(viewMatcher), options);
+        }
+
+        /** See {@link ConditionalState#declareView(Class, Matcher)}. */
+        public <ViewT extends View> ViewElement<ViewT> declareView(
+                Class<ViewT> viewClass, Matcher<View> viewMatcher) {
+            return declareView(viewSpec(viewClass, viewMatcher), ViewElement.Options.DEFAULT);
+        }
+
+        /** See {@link ConditionalState#declareView(Class, Matcher, ViewElement.Options)}. */
+        public <ViewT extends View> ViewElement<ViewT> declareView(
+                Class<ViewT> viewClass, Matcher<View> viewMatcher, ViewElement.Options options) {
+            return declareView(viewSpec(viewClass, viewMatcher), options);
         }
 
         /** See {@link ConditionalState#declareElementFactory(Element, Callback)}. */

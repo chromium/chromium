@@ -26,7 +26,7 @@ import org.chromium.build.annotations.Nullable;
  * Represents a {@link ViewSpec} added to a {@link ConditionalState}.
  *
  * <p>{@link ViewSpec}s should be declared as constants, while {@link ViewElement}s are created by
- * calling {@link Elements.Builder#declareView(ViewSpec)}.
+ * calling {@link ConditionalState#declareView(Matcher)}.
  *
  * <p>Generates ENTER and EXIT Conditions for the ConditionalState to ensure the ViewElement is in
  * the right state.

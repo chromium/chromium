@@ -7,7 +7,6 @@ package org.chromium.chrome.test.transit.ntp;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.chromium.base.test.transit.Condition.whether;
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.util.Pair;
 import android.view.View;
@@ -51,8 +50,8 @@ public class RegularNewTabPageStation extends PageStation {
                     }
                 });
 
-        logoElement = declareView(viewSpec(withId(R.id.search_provider_logo)));
-        searchBoxElement = declareView(viewSpec(withId(R.id.search_box)));
+        logoElement = declareView(withId(R.id.search_provider_logo));
+        searchBoxElement = declareView(withId(R.id.search_box));
 
         nativePageElement =
                 declareEnterConditionAsElement(

@@ -11,8 +11,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
-
 import android.view.View;
 
 import org.chromium.base.test.transit.Condition;
@@ -40,7 +38,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
 
     @Override
     public void declareExtraElements() {
-        appMenuListElement = declareView(viewSpec(withId(R.id.app_menu_list)));
+        appMenuListElement = declareView(withId(R.id.app_menu_list));
         closeTabMenuItemElement =
                 declareView(appMenuListElement.descendant(withText(R.string.close_tab)));
         newTabMenuItemElement =

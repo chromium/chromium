@@ -48,10 +48,8 @@ public class MessageFacility<HostStationT extends PageStation> extends Facility<
 
     public MessageFacility() {
         // Unscoped because other messages can appear and fail the exit condition.
-        bannerElement =
-                declareView(viewSpec(withId(R.id.message_banner)), ViewElement.unscopedOption());
-        iconElement =
-                declareView(viewSpec(withId(R.id.message_icon)), ViewElement.unscopedOption());
+        bannerElement = declareView(withId(R.id.message_banner), ViewElement.unscopedOption());
+        iconElement = declareView(withId(R.id.message_icon), ViewElement.unscopedOption());
     }
 
     /** Dismiss the message banner. */

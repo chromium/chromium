@@ -48,7 +48,7 @@ public class OmniboxFacility extends Facility<PageStation> {
 
     @Override
     public void declareExtraElements() {
-        declareView(viewSpec(instanceOf(ScrimView.class)));
+        declareView(instanceOf(ScrimView.class));
 
         // Unscoped elements exist in PageStations too.
         // Action buttons are 71% displayed in tablets (though the actual image is fully displayed).

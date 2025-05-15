@@ -19,7 +19,6 @@ import androidx.test.espresso.Espresso;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElement;
-import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.base.test.util.ViewActionOnDescendant;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
@@ -37,6 +36,7 @@ public class TabSwitcherListEditorFacility<HostStationT extends TabSwitcherStati
         extends Facility<HostStationT> {
     private final List<Integer> mTabIdsSelected;
     private final List<List<Integer>> mTabGroupsSelected;
+    public final ViewElement<View> editorLayoutElement;
     public final ViewElement<RecyclerView> tabListRecyclerViewElement;
     public final ViewElement<View> selectionTitleElement;
 
@@ -45,11 +45,10 @@ public class TabSwitcherListEditorFacility<HostStationT extends TabSwitcherStati
         mTabIdsSelected = tabIdsSelected;
         mTabGroupsSelected = tabGroupsSelected;
 
-        ViewSpec<View> tabListEditorLayout = viewSpec(withId(R.id.selectable_list));
-        declareView(tabListEditorLayout);
+        editorLayoutElement = declareView(withId(R.id.selectable_list));
         tabListRecyclerViewElement =
                 declareView(
-                        tabListEditorLayout.descendant(
+                        editorLayoutElement.descendant(
                                 RecyclerView.class, withId(R.id.tab_list_recycler_view)));
         selectionTitleElement =
                 declareView(

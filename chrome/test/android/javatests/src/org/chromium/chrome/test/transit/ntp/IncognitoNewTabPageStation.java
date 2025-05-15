@@ -8,7 +8,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.chromium.base.test.transit.Condition.whether;
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.util.Pair;
 import android.view.View;
@@ -40,8 +39,8 @@ public class IncognitoNewTabPageStation extends PageStation {
         super(builder.withIncognito(true).withExpectedUrlSubstring(UrlConstants.NTP_URL));
 
         urlBarElement = declareView(URL_BAR);
-        iconElement = declareView(viewSpec(withId(R.id.new_tab_incognito_icon)));
-        goneIncognitoTextElement = declareView(viewSpec(withText("You’ve gone Incognito")));
+        iconElement = declareView(withId(R.id.new_tab_incognito_icon));
+        goneIncognitoTextElement = declareView(withText("You’ve gone Incognito"));
         nativePageElement =
                 declareEnterConditionAsElement(
                         new NativePageCondition<>(IncognitoNewTabPage.class, loadedTabElement));

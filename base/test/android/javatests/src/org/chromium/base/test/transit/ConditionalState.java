@@ -236,13 +236,35 @@ public abstract class ConditionalState {
     }
 
     /** Declare as an element a View that matches |viewMatcher| with extra Options. */
+    public ViewElement<View> declareView(Matcher<View> viewMatcher, ViewElement.Options options) {
+        return mElements.declareView(viewMatcher, options);
+    }
+
+    /** Declare as an element a |viewClass| that matches |viewMatcher|. */
+    public <ViewT extends View> ViewElement<ViewT> declareView(
+            Class<ViewT> viewClass, Matcher<View> viewMatcher) {
+        return mElements.declareView(viewClass, viewMatcher);
+    }
+
+    /** Declare as an element a |viewClass| that matches |viewMatcher| with extra Options. */
+    public <ViewT extends View> ViewElement<ViewT> declareView(
+            Class<ViewT> viewClass, Matcher<View> viewMatcher, ViewElement.Options options) {
+        return mElements.declareView(viewClass, viewMatcher, options);
+    }
+
+    /** Declare as an element a View that matches |viewSpec| with extra Options. */
     protected <ViewT extends View> ViewElement<ViewT> declareView(
             ViewSpec<ViewT> viewSpec, ViewElement.Options options) {
         return mElements.declareView(viewSpec, options);
     }
 
+    /** Declare as an element a View that matches |viewSpec|. */
+    public ViewElement<View> declareView(Matcher<View> viewMatcher) {
+        return mElements.declareView(viewMatcher);
+    }
+
     /** Declare as a Condition that a View is not displayed. */
-    protected void declareNoView(ViewSpec viewSpec) {
+    protected void declareNoView(ViewSpec<?> viewSpec) {
         mElements.declareNoView(viewSpec);
     }
 

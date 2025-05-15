@@ -11,8 +11,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
-
 import android.view.View;
 import android.widget.EditText;
 
@@ -48,13 +46,12 @@ public class HistoryPaneStation extends HubBaseStation {
     /** Empty state of the history pane. */
     public static class EmptyHistoryFacility extends Facility<HistoryPaneStation> {
         public EmptyHistoryFacility() {
-            declareView(viewSpec(withText("You’ll find your history here")));
+            declareView(withText("You’ll find your history here"));
             declareView(
-                    viewSpec(
-                            withText(
-                                    "You can see the pages you’ve visited or delete them from your"
-                                            + " history")));
-            declareNoView(viewSpec(withId(R.id.history_page_recycler_view)));
+                    withText(
+                            "You can see the pages you’ve visited or delete them from your"
+                                    + " history"));
+            declareNoView(withId(R.id.history_page_recycler_view));
         }
     }
 
@@ -64,8 +61,8 @@ public class HistoryPaneStation extends HubBaseStation {
         public final ViewElement<View> searchButtonElement;
 
         public HistoryWithEntriesFacility() {
-            recyclerViewElement = declareView(viewSpec(withId(R.id.history_page_recycler_view)));
-            searchButtonElement = declareView(viewSpec(withId(R.id.search_menu_id)));
+            recyclerViewElement = declareView(withId(R.id.history_page_recycler_view));
+            searchButtonElement = declareView(withId(R.id.search_menu_id));
         }
 
         /** Expect an entry to be displayed in the history pane. */
@@ -122,7 +119,7 @@ public class HistoryPaneStation extends HubBaseStation {
         public final ViewElement<EditText> editTextElement;
 
         public HistorySearchFacility() {
-            editTextElement = declareView(viewSpec(EditText.class, withId(R.id.search_text)));
+            editTextElement = declareView(EditText.class, withId(R.id.search_text));
         }
 
         public void typeSearchTerm(String text) {

@@ -9,8 +9,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
-
 import android.view.View;
 import android.widget.ListView;
 
@@ -56,7 +54,7 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
     public ViewElement<ListView> menuListElement;
 
     public AppMenuFacility() {
-        menuListElement = declareView(viewSpec(ListView.class, withId(R.id.app_menu_list)));
+        menuListElement = declareView(ListView.class, withId(R.id.app_menu_list));
     }
 
     /** Create a new app menu item stub which throws UnsupportedOperationException if selected. */

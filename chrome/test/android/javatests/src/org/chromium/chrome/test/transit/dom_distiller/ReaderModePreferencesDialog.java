@@ -7,8 +7,6 @@ package org.chromium.chrome.test.transit.dom_distiller;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
-
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -62,11 +60,11 @@ public class ReaderModePreferencesDialog extends CarryOn {
                                             ├── @id/font_size | AppCompatSeekBar
                                             ╰── "A" | MaterialTextView
         */
-        darkButtonElement = declareView(viewSpec(Button.class, withText("Dark")));
-        sepiaButtonElement = declareView(viewSpec(Button.class, withText("Sepia")));
-        lightButtonElement = declareView(viewSpec(Button.class, withText("Light")));
-        fontFamilySpinnerElement = declareView(viewSpec(Spinner.class, withId(R.id.font_family)));
-        fontSizeSliderElement = declareView(viewSpec(SeekBar.class, withId(R.id.font_size)));
+        darkButtonElement = declareView(Button.class, withText("Dark"));
+        sepiaButtonElement = declareView(Button.class, withText("Sepia"));
+        lightButtonElement = declareView(Button.class, withText("Light"));
+        fontFamilySpinnerElement = declareView(Spinner.class, withId(R.id.font_family));
+        fontSizeSliderElement = declareView(SeekBar.class, withId(R.id.font_size));
     }
 
     public void pickColorLight(Condition condition) {

@@ -53,9 +53,7 @@ public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
         // 1% visibility is enough because this layout is clipped by being inside scroll view in
         // tablets.
         tilesLayoutElement =
-                declareView(
-                        viewSpec(withId(R.id.mv_tiles_layout)),
-                        ViewElement.displayingAtLeastOption(1));
+                declareView(withId(R.id.mv_tiles_layout), ViewElement.displayingAtLeastOption(1));
         declareEnterCondition(
                 new ViewHasChildrenCountCondition(tilesLayoutElement, mSiteSuggestions.size()));
 

@@ -100,21 +100,19 @@ public class TabSwitcherPanePublicTransitTest {
         assertTrue(cta.getCurrentTabModel().isIncognito());
 
         IncognitoTabSwitcherStation incognitoTabSwitcher = incognitoNtp.openIncognitoTabSwitcher();
-        onView(RegularTabSwitcherStation.EMPTY_STATE_TEXT.getViewMatcher()).check(doesNotExist());
+        onView(RegularTabSwitcherStation.EMPTY_STATE_TEXT).check(doesNotExist());
 
         RegularTabSwitcherStation regularTabSwitcher = incognitoTabSwitcher.selectRegularTabsPane();
 
         regularTabSwitcher = regularTabSwitcher.closeTabAtIndex(0, RegularTabSwitcherStation.class);
-        onView(RegularTabSwitcherStation.EMPTY_STATE_TEXT.getViewMatcher())
-                .check(matches(isDisplayed()));
+        onView(RegularTabSwitcherStation.EMPTY_STATE_TEXT).check(matches(isDisplayed()));
 
         incognitoTabSwitcher = regularTabSwitcher.selectIncognitoTabsPane();
-        onView(RegularTabSwitcherStation.EMPTY_STATE_TEXT.getViewMatcher()).check(doesNotExist());
+        onView(RegularTabSwitcherStation.EMPTY_STATE_TEXT).check(doesNotExist());
 
         regularTabSwitcher =
                 incognitoTabSwitcher.closeTabAtIndex(0, RegularTabSwitcherStation.class);
-        onView(RegularTabSwitcherStation.EMPTY_STATE_TEXT.getViewMatcher())
-                .check(matches(isDisplayed()));
+        onView(RegularTabSwitcherStation.EMPTY_STATE_TEXT).check(matches(isDisplayed()));
 
         // Go back to a tab to cleanup tab state
         regularTabSwitcher.openAppMenu().openNewTab();

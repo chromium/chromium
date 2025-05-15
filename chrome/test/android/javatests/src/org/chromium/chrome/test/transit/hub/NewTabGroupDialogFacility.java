@@ -102,15 +102,13 @@ public class NewTabGroupDialogFacility<HostStationT extends Station<ChromeTabbed
 
         dialogElement =
                 declareView(
-                        viewSpec(withId(R.id.visual_data_dialog_layout)),
+                        withId(R.id.visual_data_dialog_layout),
                         ViewElement.displayingAtLeastOption(80));
         declareView(
                 viewSpec(allOf(withId(R.id.visual_data_dialog_title), withText("New tab group"))));
 
         // TODO(crbug.com/346377124): Partially cut off in android_30_google_apis_x86.textpb
-        declareView(
-                viewSpec(withId(R.id.color_picker_container)),
-                ViewElement.displayingAtLeastOption(50));
+        declareView(withId(R.id.color_picker_container), ViewElement.displayingAtLeastOption(50));
         @TabGroupColorId List<Integer> colors = TabGroupColorUtils.getTabGroupColorIdList();
         // Only the first 5 colors are displayed reliably when the soft keyboard opens.
         colorElements = new ViewElement[5];
@@ -129,7 +127,7 @@ public class NewTabGroupDialogFacility<HostStationT extends Station<ChromeTabbed
             }
         }
 
-        doneButtonElement = declareView(viewSpec(withId(R.id.positive_button)));
+        doneButtonElement = declareView(withId(R.id.positive_button));
     }
 
     @NonNull
@@ -174,7 +172,7 @@ public class NewTabGroupDialogFacility<HostStationT extends Station<ChromeTabbed
         } else {
             contentDescriptionMatcher = withContentDescription(startsWith(colorName));
         }
-        return viewSpec(allOf(withId(R.id.color_picker_icon), contentDescriptionMatcher));
+        return viewSpec(withId(R.id.color_picker_icon), contentDescriptionMatcher);
     }
 
     /** Input a new tab group name. */

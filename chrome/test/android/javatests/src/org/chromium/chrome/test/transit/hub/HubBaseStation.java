@@ -56,7 +56,7 @@ public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
                 declareEnterConditionAsElement(new TabModelSelectorCondition(mActivityElement));
 
         toolbarElement = declareView(viewSpec(HubToolbarView.class, withId(R.id.hub_toolbar)));
-        paneHostElement = declareView(viewSpec(withId(R.id.hub_pane_host)));
+        paneHostElement = declareView(withId(R.id.hub_pane_host));
         menuButtonElement =
                 hasMenuButton
                         ? declareView(toolbarElement.descendant(withId(R.id.menu_button)))
@@ -69,13 +69,12 @@ public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
         // The non-regular toggle tab button contentDescription is a substring found in the string:
         // R.string.accessibility_tab_switcher_standard_stack.
         regularTabsButtonElement =
-                declareView(viewSpec(withContentDescription(containsString("standard tab"))));
+                declareView(withContentDescription(containsString("standard tab")));
         if (mIncognitoTabsExist) {
             incognitoTabsButtonElement =
                     declareView(
-                            viewSpec(
-                                    withContentDescription(
-                                            R.string.accessibility_tab_switcher_incognito_stack)));
+                            withContentDescription(
+                                    R.string.accessibility_tab_switcher_incognito_stack));
         } else {
             incognitoTabsButtonElement = null;
         }

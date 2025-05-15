@@ -7,8 +7,6 @@ package org.chromium.chrome.test.transit.hub;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
-
 import android.view.View;
 
 import org.chromium.base.test.transit.ScrollableFacility;
@@ -26,7 +24,7 @@ public class TabSwitcherGroupCardAppMenuFacility extends ScrollableFacility<TabS
     public TabSwitcherGroupCardAppMenuFacility(boolean isIncognito, String title) {
         mIsIncognito = isIncognito;
         mTitle = title;
-        menuListElement = declareView(viewSpec(withId(R.id.tab_group_action_menu_list)));
+        menuListElement = declareView(withId(R.id.tab_group_action_menu_list));
     }
 
     @Override

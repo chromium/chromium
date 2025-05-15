@@ -84,18 +84,18 @@ public class PageStation extends BasePageStation<ChromeTabbedActivity> {
         // visible.
         toolbarElement =
                 declareView(
-                        viewSpec(ToolbarControlContainer.class, withId(R.id.control_container)),
+                        ToolbarControlContainer.class,
+                        withId(R.id.control_container),
                         ViewElement.unscopedOption());
-        declareView(
-                viewSpec(HomeButton.class, withId(R.id.home_button)), ViewElement.unscopedOption());
+        declareView(HomeButton.class, withId(R.id.home_button), ViewElement.unscopedOption());
         tabSwitcherButtonElement =
                 declareView(
-                        viewSpec(ToggleTabStackButton.class, withId(R.id.tab_switcher_button)),
+                        ToggleTabStackButton.class,
+                        withId(R.id.tab_switcher_button),
                         ViewElement.unscopedOption());
         menuButtonElement =
                 declareView(
-                        viewSpec(ImageButton.class, withId(R.id.menu_button)),
-                        ViewElement.unscopedOption());
+                        ImageButton.class, withId(R.id.menu_button), ViewElement.unscopedOption());
     }
 
     /** Long presses the tab switcher button to open the action menu. */

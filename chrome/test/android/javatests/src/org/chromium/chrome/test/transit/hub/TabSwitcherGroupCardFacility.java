@@ -9,7 +9,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 
 import static org.chromium.base.test.transit.Condition.whetherEquals;
 import static org.chromium.base.test.transit.SimpleConditions.uiThreadCondition;
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.content.res.ColorStateList;
 import android.graphics.drawable.GradientDrawable;
@@ -113,10 +112,7 @@ public class TabSwitcherGroupCardFacility extends TabSwitcherCardFacility {
             ViewSpec<View> colorContainerSpec =
                     cardViewElement.descendant(withId(R.id.tab_group_color_view_container));
             colorViewElement =
-                    declareView(
-                            viewSpec(
-                                    FrameLayout.class,
-                                    withParent(colorContainerSpec.getViewMatcher())));
+                    declareView(FrameLayout.class, withParent(colorContainerSpec.getViewMatcher()));
             declareEnterCondition(
                     uiThreadCondition(
                             "Tab group color should be " + expectedColor,

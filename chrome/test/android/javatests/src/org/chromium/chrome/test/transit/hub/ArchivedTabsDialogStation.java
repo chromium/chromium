@@ -9,7 +9,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.view.View;
 
@@ -40,15 +39,12 @@ public class ArchivedTabsDialogStation extends Station<ChromeTabbedActivity> {
         mTabArchiveSettings =
                 runOnUiThreadBlocking(
                         () -> new TabArchiveSettings(ChromeSharedPreferences.getInstance()));
-        dialogElement = declareView(viewSpec(withId(R.id.archived_tabs_dialog)));
+        dialogElement = declareView(withId(R.id.archived_tabs_dialog));
         recyclerViewElement =
                 declareView(
-                        dialogElement
-                                .getViewSpec()
-                                .descendant(
-                                        RecyclerView.class, withId(R.id.tab_list_recycler_view)));
-        closeButtonElement =
-                declareView(viewSpec(withContentDescription("Hide inactive tabs dialog")));
+                        dialogElement.descendant(
+                                RecyclerView.class, withId(R.id.tab_list_recycler_view)));
+        closeButtonElement = declareView(withContentDescription("Hide inactive tabs dialog"));
         if (mTabArchiveSettings.shouldShowDialogIph()) {
             declareElementFactory(
                     mActivityElement,

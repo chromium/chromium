@@ -9,17 +9,16 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.containsString;
 
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
-
 import android.view.View;
 
 import androidx.annotation.Nullable;
+
+import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewElementMatchesCondition;
-import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.test.R;
 
 /**
@@ -35,14 +34,14 @@ public class SnackbarFacility<HostStationT extends Station<?>> extends Facility<
 
     public SnackbarFacility(
             @Nullable String expectedMessageSubstring, @Nullable String expectedButtonText) {
-        messageElement = declareView(viewSpec(withId(R.id.snackbar_message)));
+        messageElement = declareView(withId(R.id.snackbar_message));
         if (expectedMessageSubstring != null) {
             declareEnterCondition(
                     new ViewElementMatchesCondition(
                             messageElement, withText(containsString(expectedMessageSubstring))));
         }
 
-        ViewSpec<View> buttonSpec = viewSpec(withId(R.id.snackbar_button));
+        Matcher<View> buttonSpec = withId(R.id.snackbar_button);
         if (NO_BUTTON.equals(expectedButtonText)) {
             declareNoView(buttonSpec);
         } else {

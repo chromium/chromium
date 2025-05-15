@@ -16,8 +16,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
-
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -78,7 +76,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
             declareElementFactory(
                     mActivityElement,
                     delayedElements -> {
-                        ViewSpec<View> searchBox = viewSpec(withId(R.id.search_box));
+                        Matcher<View> searchBox = withId(R.id.search_box);
                         ViewSpec<View> searchLoupe =
                                 toolbarElement.descendant(withId(R.id.search_loupe));
                         if (shouldHubSearchBoxBeVisible()) {

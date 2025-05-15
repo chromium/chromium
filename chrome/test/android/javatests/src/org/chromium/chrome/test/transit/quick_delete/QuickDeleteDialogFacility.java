@@ -193,7 +193,7 @@ public class QuickDeleteDialogFacility extends Facility<Station<ChromeTabbedActi
 
     public class SitesSubtitleFacility extends Facility<Station<ChromeTabbedActivity>> {
         public SitesSubtitleFacility(boolean expectPresent) {
-            ViewSpec spec =
+            ViewSpec<View> spec =
                     dialogElement.descendant(withId(R.id.quick_delete_history_row_subtitle));
             if (expectPresent) {
                 declareView(spec);

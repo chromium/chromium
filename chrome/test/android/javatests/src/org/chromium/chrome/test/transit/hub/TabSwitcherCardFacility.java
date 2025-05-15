@@ -45,7 +45,7 @@ public abstract class TabSwitcherCardFacility extends Facility<TabSwitcherStatio
     public void declareExtraElements() {
         Matcher<View> cardTitleMatcher =
                 allOf(withText(mTitle), withId(R.id.tab_title), withParent(withId(R.id.card_view)));
-        titleElement = declareView(viewSpec(cardTitleMatcher));
+        titleElement = declareView(cardTitleMatcher);
 
         ViewSpec<View> cardSpec =
                 viewSpec(isAssignableFrom(TabGridView.class), hasDescendant(cardTitleMatcher));

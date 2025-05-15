@@ -84,7 +84,7 @@ public class TabGroupDialogFacility<HostStationT extends Station<ChromeTabbedAct
         mSelectedColor = selectedColor;
         mIsIncognito = isIncognito;
 
-        toolbarElement = declareView(viewSpec(withId(R.id.tab_group_toolbar)));
+        toolbarElement = declareView(withId(R.id.tab_group_toolbar));
         tabsListElement = declareView(TABS_LIST);
         colorIconElement =
                 declareView(toolbarElement.descendant(withId(R.id.tab_group_color_icon_container)));
