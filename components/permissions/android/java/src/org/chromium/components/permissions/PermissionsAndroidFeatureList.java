@@ -24,4 +24,7 @@ public abstract class PermissionsAndroidFeatureList {
 
     public static final String OS_ADDITIONAL_SECURITY_PERMISSION_KILL_SWITCH =
             "OsAdditionalSecurityPermissionKillSwitch";
+
+    public static final String APPROXIMATE_GEOLOCATION_PERMISSION =
+            "ApproximateGeolocationPermission";
 }
