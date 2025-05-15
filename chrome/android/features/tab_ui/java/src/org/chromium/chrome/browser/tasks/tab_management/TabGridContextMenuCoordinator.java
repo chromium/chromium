@@ -156,7 +156,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
             TabGroupCreationDialogManager dialogManager,
             Supplier<ShareDelegate> shareDelegateSupplier,
             ShowTabListEditor showTabListEditor) {
-        return (menuId, tabId, collaborationId) -> {
+        return (menuId, tabId, collaborationId, listViewTouchTracker) -> {
             if (tabId == Tab.INVALID_TAB_ID) return;
             TabModel tabModel = tabGroupModelFilter.getTabModel();
             TabBookmarker tabBookmarker = tabBookmarkerSupplier.get();

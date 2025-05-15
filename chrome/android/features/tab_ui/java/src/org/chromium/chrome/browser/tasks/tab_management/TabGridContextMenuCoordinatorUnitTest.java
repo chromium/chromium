@@ -179,7 +179,11 @@ public class TabGridContextMenuCoordinatorUnitTest {
                         mShareDelegateSupplier,
                         mShowTabListEditor);
 
-        callback.onClick(R.id.share_tab, TAB_ID, null);
+        callback.onClick(
+                R.id.share_tab,
+                TAB_ID,
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
         verify(mShareDelegate).share(mTab, false, TAB_STRIP_CONTEXT_MENU);
     }
 
@@ -194,7 +198,11 @@ public class TabGridContextMenuCoordinatorUnitTest {
                         mShareDelegateSupplier,
                         mShowTabListEditor);
 
-        callback.onClick(R.id.add_to_tab_group, TAB_ID, null);
+        callback.onClick(
+                R.id.add_to_tab_group,
+                TAB_ID,
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
         verify(mTabGroupListBottomSheetCoordinator).showBottomSheet(List.of(mTab));
     }
 
@@ -209,7 +217,11 @@ public class TabGridContextMenuCoordinatorUnitTest {
                         mShareDelegateSupplier,
                         mShowTabListEditor);
 
-        callback.onClick(R.id.add_to_new_tab_group, TAB_ID, null);
+        callback.onClick(
+                R.id.add_to_new_tab_group,
+                TAB_ID,
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
         verify(mTabGroupCreationDialogManager).showDialog(mTabGroupId, mTabGroupModelFilter);
     }
 
@@ -224,7 +236,11 @@ public class TabGridContextMenuCoordinatorUnitTest {
                         mShareDelegateSupplier,
                         mShowTabListEditor);
 
-        callback.onClick(R.id.add_to_bookmarks, TAB_ID, null);
+        callback.onClick(
+                R.id.add_to_bookmarks,
+                TAB_ID,
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
         verify(mTabBookmarker).addOrEditBookmark(mTab);
     }
 
@@ -239,7 +255,11 @@ public class TabGridContextMenuCoordinatorUnitTest {
                         mShareDelegateSupplier,
                         mShowTabListEditor);
 
-        callback.onClick(R.id.edit_bookmark, TAB_ID, null);
+        callback.onClick(
+                R.id.edit_bookmark,
+                TAB_ID,
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
         verify(mTabBookmarker).addOrEditBookmark(mTab);
     }
 
@@ -254,7 +274,11 @@ public class TabGridContextMenuCoordinatorUnitTest {
                         mShareDelegateSupplier,
                         mShowTabListEditor);
 
-        callback.onClick(R.id.select_tabs, TAB_ID, null);
+        callback.onClick(
+                R.id.select_tabs,
+                TAB_ID,
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
         verify(mShowTabListEditor).show(TAB_ID);
     }
 
@@ -268,7 +292,11 @@ public class TabGridContextMenuCoordinatorUnitTest {
                         mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
                         mShowTabListEditor);
-        callback.onClick(R.id.close_tab, TAB_ID, null);
+        callback.onClick(
+                R.id.close_tab,
+                TAB_ID,
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
         verify(mTabRemover).closeTabs(any(), eq(true));
     }
 
@@ -283,7 +311,11 @@ public class TabGridContextMenuCoordinatorUnitTest {
                         mShareDelegateSupplier,
                         mShowTabListEditor);
 
-        callback.onClick(R.id.share_tab, Tab.INVALID_TAB_ID, null);
+        callback.onClick(
+                R.id.share_tab,
+                Tab.INVALID_TAB_ID,
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
         verify(mShareDelegate, never()).share(any(), anyBoolean(), anyInt());
     }
 
@@ -299,7 +331,11 @@ public class TabGridContextMenuCoordinatorUnitTest {
                         mShareDelegateSupplier,
                         mShowTabListEditor);
 
-        callback.onClick(R.id.share_tab, TAB_ID, null);
+        callback.onClick(
+                R.id.share_tab,
+                TAB_ID,
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
         verify(mShareDelegate, never()).share(any(), anyBoolean(), anyInt());
     }
 

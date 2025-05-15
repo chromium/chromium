@@ -31,6 +31,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabGroupContextMenuCoordinator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker;
 import org.chromium.components.browser_ui.widget.list_view.TouchTrackingListView;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.member_role.MemberRole;
@@ -66,7 +67,11 @@ public abstract class TabOverflowMenuCoordinator<T> {
      */
     @FunctionalInterface
     public interface OnItemClickedCallback<T> {
-        void onClick(@IdRes int menuId, T id, @Nullable String collaborationId);
+        void onClick(
+                @IdRes int menuId,
+                T id,
+                @Nullable String collaborationId,
+                @Nullable ListViewTouchTracker listViewTouchTracker);
     }
 
     private static class OverflowMenuHolder<T> {
@@ -133,7 +138,11 @@ public abstract class TabOverflowMenuCoordinator<T> {
             touchTrackingListView.setAdapter(adapter);
             touchTrackingListView.setOnItemClickListener(
                     (p, v, pos, menuId) -> {
-                        onItemClickedCallback.onClick((int) menuId, id, collaborationId);
+                        onItemClickedCallback.onClick(
+                                (int) menuId,
+                                id,
+                                collaborationId,
+                                /* listViewTouchTracker= */ touchTrackingListView);
                         mMenuWindow.dismiss();
                     });
 

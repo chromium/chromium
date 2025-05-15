@@ -79,6 +79,7 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.CollaborationServiceLeaveOrDeleteEntryPoint;
 import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
@@ -1036,7 +1037,11 @@ public class TabGridDialogMediator
     }
 
     @VisibleForTesting
-    public void onToolbarMenuItemClick(int menuId, Token tabGroupId, String collaborationId) {
+    public void onToolbarMenuItemClick(
+            int menuId,
+            Token tabGroupId,
+            @Nullable String collaborationId,
+            @Nullable ListViewTouchTracker listViewTouchTracker) {
         // Collaboration IDs will not change without the menu somehow being dismissed. This assert
         // should always hold.
         assert mTransitiveSharedGroupObserver == null

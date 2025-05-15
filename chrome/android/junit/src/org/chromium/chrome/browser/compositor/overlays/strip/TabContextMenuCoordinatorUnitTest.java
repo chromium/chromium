@@ -427,28 +427,35 @@ public class TabContextMenuCoordinatorUnitTest {
     @Test
     @Feature("Tab Strip Context Menu")
     public void testRemoveFromGroup() {
-        mOnItemClickedCallback.onClick(R.id.remove_from_tab_group, TAB_ID, COLLABORATION_ID);
+        mOnItemClickedCallback.onClick(
+                R.id.remove_from_tab_group,
+                TAB_ID,
+                COLLABORATION_ID,
+                /* listViewTouchTracker= */ null);
         verify(mTabUngrouper, times(1)).ungroupTabs(List.of(mTab1), true, true);
     }
 
     @Test
     @Feature("Tab Strip Context Menu")
     public void testShareUrl() {
-        mOnItemClickedCallback.onClick(R.id.share_tab, TAB_ID, COLLABORATION_ID);
+        mOnItemClickedCallback.onClick(
+                R.id.share_tab, TAB_ID, COLLABORATION_ID, /* listViewTouchTracker= */ null);
         verify(mShareDelegate, times(1)).share(mTab1, false, TAB_STRIP_CONTEXT_MENU);
     }
 
     @Test
     @Feature("Tab Strip Context Menu")
     public void testCloseTab() {
-        mOnItemClickedCallback.onClick(R.id.close_tab, TAB_ID, COLLABORATION_ID);
+        mOnItemClickedCallback.onClick(
+                R.id.close_tab, TAB_ID, COLLABORATION_ID, /* listViewTouchTracker= */ null);
         verify(mTabRemover, times(1)).closeTabs(TabClosureParams.closeTab(mTab1).build(), true);
     }
 
     @Test
     @Feature("Tab Strip Context Menu")
     public void testAddToTabGroup_newTabGroup() {
-        mOnItemClickedCallback.onClick(R.id.add_to_tab_group, TAB_ID, COLLABORATION_ID);
+        mOnItemClickedCallback.onClick(
+                R.id.add_to_tab_group, TAB_ID, COLLABORATION_ID, /* listViewTouchTracker= */ null);
         verify(mBottomSheetCoordinator, times(1)).showBottomSheet(List.of(mTab1));
     }
 
@@ -517,7 +524,11 @@ public class TabContextMenuCoordinatorUnitTest {
     @Test
     @Feature("Tab Strip Context Menu")
     public void testMoveToAnotherWindow() {
-        mOnItemClickedCallback.onClick(R.id.move_to_other_window_menu_id, TAB_ID, COLLABORATION_ID);
+        mOnItemClickedCallback.onClick(
+                R.id.move_to_other_window_menu_id,
+                TAB_ID,
+                COLLABORATION_ID,
+                /* listViewTouchTracker= */ null);
         verify(mMultiInstanceManager, times(1)).moveTabToOtherWindow(mTab1);
     }
 }

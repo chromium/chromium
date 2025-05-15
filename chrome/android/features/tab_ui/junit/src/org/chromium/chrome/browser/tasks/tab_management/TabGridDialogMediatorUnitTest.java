@@ -367,7 +367,10 @@ public class TabGridDialogMediatorUnitTest {
                 ArgumentCaptor.forClass((Class) List.class);
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
         mMediator.onToolbarMenuItemClick(
-                R.id.select_tabs, TAB_GROUP_ID, /* collaborationId= */ null);
+                R.id.select_tabs,
+                TAB_GROUP_ID,
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
         verify(mTabListEditorController).configureToolbarWithMenuItems(captor.capture());
         verify(mRecyclerViewPositionSupplier, times(1)).get();
         verify(mTabListEditorController).show(any(), eq(new ArrayList<>()), eq(null));
@@ -1442,7 +1445,10 @@ public class TabGridDialogMediatorUnitTest {
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
         mMediator.onToolbarMenuItemClick(
-                R.id.select_tabs, TAB_GROUP_ID, /* collaborationId= */ null);
+                R.id.select_tabs,
+                TAB_GROUP_ID,
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
 
         assertThat(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED), equalTo(false));
         verify(mRecyclerViewPositionSupplier, times(1)).get();
@@ -1459,7 +1465,10 @@ public class TabGridDialogMediatorUnitTest {
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
         mMediator.onToolbarMenuItemClick(
-                R.id.edit_group_name, TAB_GROUP_ID, /* collaborationId= */ null);
+                R.id.edit_group_name,
+                TAB_GROUP_ID,
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
         assertTrue(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED));
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.Rename"));
     }
@@ -1471,7 +1480,10 @@ public class TabGridDialogMediatorUnitTest {
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
         mMediator.onToolbarMenuItemClick(
-                R.id.edit_group_color, TAB_GROUP_ID, /* collaborationId= */ null);
+                R.id.edit_group_color,
+                TAB_GROUP_ID,
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
         verify(mShowColorPickerPopupRunnable).run();
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.EditColor"));
     }
@@ -1483,7 +1495,10 @@ public class TabGridDialogMediatorUnitTest {
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
         mMediator.onToolbarMenuItemClick(
-                R.id.close_tab_group, TAB_GROUP_ID, /* collaborationId= */ null);
+                R.id.close_tab_group,
+                TAB_GROUP_ID,
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
         verify(mTabRemover)
                 .closeTabs(
                         eq(
@@ -1505,7 +1520,10 @@ public class TabGridDialogMediatorUnitTest {
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
         mMediator.onToolbarMenuItemClick(
-                R.id.delete_tab_group, TAB_GROUP_ID, /* collaborationId= */ null);
+                R.id.delete_tab_group,
+                TAB_GROUP_ID,
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
         verify(mTabRemover)
                 .closeTabs(
                         eq(
@@ -1523,7 +1541,11 @@ public class TabGridDialogMediatorUnitTest {
     public void testDialogToolbarMenu_ManageSharing() {
         resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1);
 
-        mMediator.onToolbarMenuItemClick(R.id.manage_sharing, TAB_GROUP_ID, COLLABORATION_ID1);
+        mMediator.onToolbarMenuItemClick(
+                R.id.manage_sharing,
+                TAB_GROUP_ID,
+                COLLABORATION_ID1,
+                /* listViewTouchTracker= */ null);
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.ManageSharing"));
         verify(mDataSharingTabManager)
                 .createOrManageFlow(eq(EITHER_LOCAL_TAB_GROUP_ID), anyInt(), eq(null));
@@ -1533,7 +1555,11 @@ public class TabGridDialogMediatorUnitTest {
     public void testDialogToolbarMenu_RecentActivity() {
         resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1);
 
-        mMediator.onToolbarMenuItemClick(R.id.recent_activity, TAB_GROUP_ID, COLLABORATION_ID1);
+        mMediator.onToolbarMenuItemClick(
+                R.id.recent_activity,
+                TAB_GROUP_ID,
+                COLLABORATION_ID1,
+                /* listViewTouchTracker= */ null);
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.RecentActivity"));
         verify(mDataSharingTabManager).showRecentActivity(mActivity, COLLABORATION_ID1);
         verifyClearDirtyMessagesForGroup();
@@ -1550,7 +1576,11 @@ public class TabGridDialogMediatorUnitTest {
         when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
                 .thenReturn(MemberRole.OWNER);
 
-        mMediator.onToolbarMenuItemClick(R.id.delete_shared_group, TAB_GROUP_ID, COLLABORATION_ID1);
+        mMediator.onToolbarMenuItemClick(
+                R.id.delete_shared_group,
+                TAB_GROUP_ID,
+                COLLABORATION_ID1,
+                /* listViewTouchTracker= */ null);
         verify(mDataSharingTabManager).leaveOrDeleteFlow(eq(EITHER_LOCAL_TAB_GROUP_ID), anyInt());
     }
 
@@ -1565,7 +1595,11 @@ public class TabGridDialogMediatorUnitTest {
         when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
                 .thenReturn(MemberRole.MEMBER);
 
-        mMediator.onToolbarMenuItemClick(R.id.leave_group, TAB_GROUP_ID, COLLABORATION_ID1);
+        mMediator.onToolbarMenuItemClick(
+                R.id.leave_group,
+                TAB_GROUP_ID,
+                COLLABORATION_ID1,
+                /* listViewTouchTracker= */ null);
         verify(mDataSharingTabManager).leaveOrDeleteFlow(eq(EITHER_LOCAL_TAB_GROUP_ID), anyInt());
     }
 

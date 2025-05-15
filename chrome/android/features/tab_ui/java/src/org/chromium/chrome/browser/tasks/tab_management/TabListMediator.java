@@ -93,6 +93,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionS
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.CollaborationServiceLeaveOrDeleteEntryPoint;
@@ -2829,7 +2830,11 @@ class TabListMediator implements TabListNotificationHandler {
     }
 
     @VisibleForTesting
-    void onMenuItemClicked(@IdRes int menuId, Token tabGroupId, @Nullable String collaborationId) {
+    void onMenuItemClicked(
+            @IdRes int menuId,
+            Token tabGroupId,
+            @Nullable String collaborationId,
+            @Nullable ListViewTouchTracker listViewTouchTracker) {
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         int tabId = filter.getGroupLastShownTabId(tabGroupId);
         EitherGroupId eitherId = EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId));

@@ -122,7 +122,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
             MultiInstanceManager multiInstanceManager,
             Supplier<ShareDelegate> shareDelegateSupplier) {
-        return (menuId, tabId, collaborationId) -> {
+        return (menuId, tabId, collaborationId, listViewTouchTracker) -> {
             if (tabId == Tab.INVALID_TAB_ID) return;
             TabModel tabModel = tabModelSupplier.get();
             Tab tab = tabModel.getTabById(tabId);

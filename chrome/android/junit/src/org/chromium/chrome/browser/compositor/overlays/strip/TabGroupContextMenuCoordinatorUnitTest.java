@@ -324,7 +324,11 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         setUpTabGroupModelFilter();
 
         // Verify tab group is ungrouped.
-        mOnItemClickedCallback.onClick(R.id.ungroup_tab, TAB_GROUP_ID, /* collaborationId= */ null);
+        mOnItemClickedCallback.onClick(
+                R.id.ungroup_tab,
+                TAB_GROUP_ID,
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
         verify(mTabUngrouper)
                 .ungroupTabs(TAB_GROUP_ID, /* trailing= */ true, /* allowDialog= */ true);
     }
@@ -337,7 +341,10 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
         // Verify tab group closed.
         mOnItemClickedCallback.onClick(
-                R.id.close_tab_group, TAB_GROUP_ID, /* collaborationId= */ null);
+                R.id.close_tab_group,
+                TAB_GROUP_ID,
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
         verify(mTabRemover)
                 .closeTabs(
                         argThat(
@@ -357,7 +364,10 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
         // Verify tab group deleted.
         mOnItemClickedCallback.onClick(
-                R.id.delete_tab_group, TAB_GROUP_ID, /* collaborationId= */ null);
+                R.id.delete_tab_group,
+                TAB_GROUP_ID,
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
         verify(mTabRemover)
                 .closeTabs(
                         argThat(
@@ -377,7 +387,10 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
         // Verify new tab opened in group.
         mOnItemClickedCallback.onClick(
-                R.id.open_new_tab_in_group, TAB_GROUP_ID, /* collaborationId= */ null);
+                R.id.open_new_tab_in_group,
+                TAB_GROUP_ID,
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
         verify(mTabCreator)
                 .createNewTab(any(), eq(TabLaunchType.FROM_TAB_GROUP_UI), eq(tabsInGroup.get(0)));
     }

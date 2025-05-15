@@ -180,7 +180,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             TabGroupModelFilter tabGroupModelFilter,
             MultiInstanceManager multiInstanceManager,
             DataSharingTabManager dataSharingTabManager) {
-        return (menuId, tabGroupId, collaborationId) -> {
+        return (menuId, tabGroupId, collaborationId, listViewTouchTracker) -> {
             int tabId = tabGroupModelFilter.getGroupLastShownTabId(tabGroupId);
             EitherGroupId eitherId = EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId));
 
