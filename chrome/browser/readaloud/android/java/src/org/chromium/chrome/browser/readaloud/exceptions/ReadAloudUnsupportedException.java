@@ -24,9 +24,10 @@ public class ReadAloudUnsupportedException extends ReadAloudException {
                 RejectionReason.CONTENT_TOO_LARGE, RejectionReason.INVALID_URL,
                 RejectionReason.DISALLOWED_FOR_READOUT, RejectionReason.BAD_REQUEST,
         RejectionReason.EXPIRED_CONTENT_VERSION, RejectionReason.UNSUPPORTED_EMAIL_FORMAT,
-                RejectionReason.UNSUPPORTED_TUPLE_DATA_EXTRACTION,
+        RejectionReason.UNSUPPORTED_TUPLE_DATA_EXTRACTION,
                 RejectionReason.UNSUPPORTED_LATTICE_REVIEW_DATA_EXTRACTION,
-                RejectionReason.DISALLOWED_FOR_TRANSLATION, RejectionReason.COUNT
+                RejectionReason.DISALLOWED_FOR_TRANSLATION, RejectionReason.COUNT,
+                RejectionReason.NOT_SUITABLE_FOR_OVERVIEW
     })
     // This must be kept in sync with readaloud/enums.xml values
     public @interface RejectionReason {
@@ -74,7 +75,9 @@ public class ReadAloudUnsupportedException extends ReadAloudException {
         int UNSUPPORTED_LATTICE_REVIEW_DATA_EXTRACTION = 19;
         // The content is not allowed to be translated.
         int DISALLOWED_FOR_TRANSLATION = 20;
-        int COUNT = 21;
+        // Content is not suitable for audio overview.
+        int NOT_SUITABLE_FOR_OVERVIEW = 21;
+        int COUNT = 22;
     }
 
     private final @RejectionReason int mRejectionReason;
