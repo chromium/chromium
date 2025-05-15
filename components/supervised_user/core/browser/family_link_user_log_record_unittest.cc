@@ -122,7 +122,7 @@ class FamilyLinkUserLogRecordTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
-  supervised_user::SupervisedUserSyncDataFake<
+  supervised_user::test::SupervisedUserSyncDataFake<
       sync_preferences::TestingPrefServiceSyncable>
       sync_data_fake_{pref_service_};
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;

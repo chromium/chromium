@@ -45,7 +45,7 @@ class SupervisedUserURLFilterExtensionsTest : public ::testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
-  SupervisedUserSyncDataFake<TestingPrefServiceSimple> sync_data_fake_{
+  test::SupervisedUserSyncDataFake<TestingPrefServiceSimple> sync_data_fake_{
       pref_service_};
 
   SupervisedUserURLFilter filter_ =

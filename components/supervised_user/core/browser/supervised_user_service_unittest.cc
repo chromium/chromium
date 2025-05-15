@@ -104,7 +104,7 @@ class SupervisedUserServiceTestBase : public ::testing::Test {
 
   syncer::MockSyncService sync_service_;
   sync_preferences::TestingPrefServiceSyncable syncable_pref_service_;
-  SupervisedUserSyncDataFake<sync_preferences::TestingPrefServiceSyncable>
+  test::SupervisedUserSyncDataFake<sync_preferences::TestingPrefServiceSyncable>
       supervised_user_sync_data_fake_{syncable_pref_service_};
   SupervisedUserSettingsService settings_service_;
   std::unique_ptr<SupervisedUserService> service_;

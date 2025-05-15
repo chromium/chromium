@@ -316,15 +316,7 @@ void SupervisedUserService::UpdateManualHosts() {
 }
 
 void SupervisedUserService::UpdateManualURLs() {
-  const base::Value::Dict& dict =
-      user_prefs_->GetDict(prefs::kSupervisedUserManualURLs);
-  std::map<GURL, bool> url_map;
-  for (auto&& [url, value] : dict) {
-    DCHECK(value.is_bool());
-    url_map[GURL(url)] = value.GetIfBool().value_or(false);
-  }
-
-  url_filter_->SetManualURLs(std::move(url_map));
+  url_filter_->UpdateManualUrls();
   for (SupervisedUserServiceObserver& observer : observer_list_) {
     observer.OnURLFilterChanged();
   }

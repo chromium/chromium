@@ -5,6 +5,11 @@
 #ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_SYNC_DATA_FAKE_H_
 #define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_SYNC_DATA_FAKE_H_
 
+#include <map>
+#include <memory>
+#include <string>
+
+#include "base/containers/flat_map.h"
 #include "base/test/bind.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/supervised_user/core/browser/supervised_user_pref_store.h"
@@ -21,6 +26,11 @@
 // is not necessarily implementing the entirety of features.
 // https://www.chromium.org/developers/design-documents/preferences/#prefstores-and-precedences
 namespace supervised_user {
+namespace test {
+enum class UrlStatus : bool {
+  kAllowed = true,
+  kBlocked = false,
+};
 
 // This class fakes the interaction between SupervisedUserService,
 // SupervisedUserSettingsService and SupervisedUserPrefStore that is enabling or
@@ -40,10 +50,11 @@ namespace supervised_user {
 //   TestingPrefServiceSimple pref_service_;
 //   SupervisedUserSyncDataFake fake_{pref_service_}
 // }
+
 template <typename TestingPrefService>
 class SupervisedUserSyncDataFake {
  public:
-  explicit SupervisedUserSyncDataFake(TestingPrefService& pref_service)
+  SupervisedUserSyncDataFake(TestingPrefService& pref_service)
       : pref_service_(&pref_service) {}
   // Must be initialized after pref_service_ registers prefs. Supports any
   // flavor of testing pref service that can alter managed user pref store (has
@@ -97,10 +108,21 @@ class SupervisedUserSyncDataFake {
     }
   }
 
+  // Updates manual url list of a url filter.
+  void SetManualUrls(const std::map<std::string, test::UrlStatus>& exceptions) {
+    base::Value::Dict dict;
+    for (auto& [url, status] : exceptions) {
+      dict.Set(url, base::Value(static_cast<bool>(status)));
+    }
+    pref_service_->SetSupervisedUserPref(prefs::kSupervisedUserManualURLs,
+                                         dict.Clone());
+  }
+
  private:
   raw_ptr<TestingPrefService> pref_service_;
   PrefChangeRegistrar registrar_;
 };
+}  // namespace test
 }  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_SYNC_DATA_FAKE_H_

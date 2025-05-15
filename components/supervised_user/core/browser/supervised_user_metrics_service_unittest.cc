@@ -99,7 +99,7 @@ class SupervisedUserMetricsServiceTest : public testing::Test {
 
   SupervisedUserSettingsService settings_service_;
   syncer::MockSyncService sync_service_;
-  SupervisedUserSyncDataFake<sync_preferences::TestingPrefServiceSyncable>
+  test::SupervisedUserSyncDataFake<sync_preferences::TestingPrefServiceSyncable>
       supervised_user_sync_data_fake_{pref_service_};
 
   std::unique_ptr<SupervisedUserMetricsService>

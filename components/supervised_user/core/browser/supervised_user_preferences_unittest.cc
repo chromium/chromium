@@ -31,7 +31,7 @@ class SupervisedUserPreferencesTest : public ::testing::Test {
 
  protected:
   TestingPrefServiceSimple pref_service_;
-  SupervisedUserSyncDataFake<TestingPrefServiceSimple>
+  test::SupervisedUserSyncDataFake<TestingPrefServiceSimple>
       supervised_user_sync_data_fake_{pref_service_};
 };
 

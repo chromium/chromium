@@ -630,13 +630,18 @@ void SupervisedUserURLFilter::SetManualHosts(
   statistics_.allowed_hosts_count = allowed_host_list_.size();
 }
 
-void SupervisedUserURLFilter::SetManualURLs(std::map<GURL, bool> url_map) {
+void SupervisedUserURLFilter::UpdateManualUrls() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  url_map_ = std::move(url_map);
-
+  url_map_.clear();
   statistics_.blocked_urls_count = 0;
   statistics_.allowed_urls_count = 0;
-  for (auto&& [gurl, is_allowed] : url_map_) {
+
+  for (auto&& [url, value] :
+       user_prefs_->GetDict(prefs::kSupervisedUserManualURLs)) {
+    DCHECK(value.is_bool());
+    // TODO(crbug.com/417951669): Remove overly defensive reads.
+    bool is_allowed = value.GetIfBool().value_or(false);
+    url_map_[GURL(url)] = is_allowed;
     if (is_allowed) {
       statistics_.allowed_urls_count++;
     } else {

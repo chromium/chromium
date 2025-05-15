@@ -109,7 +109,7 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
   }
 
   void RestrictAllSitesForSupervisedUser(Profile* profile) {
-    supervised_user::SupervisedUserSyncDataFake<
+    supervised_user::test::SupervisedUserSyncDataFake<
         sync_preferences::TestingPrefServiceSyncable>
         sync_data_fake(
             *static_cast<sync_preferences::TestingPrefServiceSyncable*>(

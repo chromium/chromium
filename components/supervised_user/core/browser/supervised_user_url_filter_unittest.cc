@@ -28,6 +28,7 @@ namespace supervised_user {
 namespace {
 
 using safe_search_api::ClassificationDetails;
+using test::UrlStatus;
 
 class SupervisedUserURLFilterTest : public ::testing::Test,
                                     public SupervisedUserURLFilter::Observer {
@@ -78,7 +79,7 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
   TestingPrefServiceSimple pref_service_;
   // This makes pref service behave as if SupervisedUserSettingsService and
   // SupervisedUserPrefStore were in action.
-  SupervisedUserSyncDataFake<TestingPrefServiceSimple> sync_data_fake_{
+  test::SupervisedUserSyncDataFake<TestingPrefServiceSimple> sync_data_fake_{
       pref_service_};
   SupervisedUserURLFilter filter_ =
       SupervisedUserURLFilter(pref_service_,
@@ -231,11 +232,12 @@ TEST_F(SupervisedUserURLFilterTest, Canonicalization) {
   std::map<std::string, bool> hosts;
   hosts["www.moose.org"] = true;
   hosts["www.xn--n3h.net"] = true;
-  std::map<GURL, bool> urls;
-  urls[GURL("http://www.example.com/foo/")] = true;
-  urls[GURL("http://www.example.com/%C3%85t%C3%B8mstr%C3%B6m")] = true;
   filter_.SetManualHosts(std::move(hosts));
-  filter_.SetManualURLs(std::move(urls));
+  sync_data_fake_.SetManualUrls(
+      {{"http://www.example.com/foo/", UrlStatus::kAllowed},
+       {"http://www.example.com/%C3%85t%C3%B8mstr%C3%B6m",
+        UrlStatus::kAllowed}});
+  filter_.UpdateManualUrls();
 
   // Base cases.
   EXPECT_TRUE(IsURLAllowlisted("http://www.example.com/foo/"));
@@ -444,14 +446,14 @@ TEST_F(SupervisedUserURLFilterTest, PatternsWithConflicts) {
 
 TEST_F(SupervisedUserURLFilterTest, Reason) {
   std::map<std::string, bool> hosts;
-  std::map<GURL, bool> urls;
   hosts["youtube.com"] = true;
   hosts["*.google.*"] = true;
-  urls[GURL("https://youtube.com/robots.txt")] = false;
-  urls[GURL("https://google.co.uk/robots.txt")] = false;
-
   filter_.SetManualHosts(std::move(hosts));
-  filter_.SetManualURLs(std::move(urls));
+
+  sync_data_fake_.SetManualUrls(
+      {{"https://youtube.com/robots.txt", UrlStatus::kBlocked},
+       {"https://google.co.uk/robots.txt", UrlStatus::kBlocked}});
+  filter_.UpdateManualUrls();
 
   sync_data_fake_.SetWebFilterType(WebFilterType::kCertainSites);
 
@@ -541,7 +543,7 @@ class SupervisedUserURLFilteringWithConflictsTest
   TestingPrefServiceSimple pref_service_;
   // This makes pref service behave as if SupervisedUserSettingsService and
   // SupervisedUserPrefStore were in action.
-  SupervisedUserSyncDataFake<TestingPrefServiceSimple> sync_data_fake_{
+  test::SupervisedUserSyncDataFake<TestingPrefServiceSimple> sync_data_fake_{
       pref_service_};
   SupervisedUserURLFilter filter_ =
       SupervisedUserURLFilter(pref_service_,
@@ -581,10 +583,10 @@ TEST_F(SupervisedUserURLFilteringWithConflictsTest,
   base::HistogramTester histogram_tester;
   // The host map is empty but the url map contains an exact match.
   std::map<std::string, bool> host_map;
-  std::map<GURL, bool> url_map =
-      std::map<GURL, bool>({{GURL("https://www.google.com"), true}});
   filter_.SetManualHosts(std::move(host_map));
-  filter_.SetManualURLs(std::move(url_map));
+  sync_data_fake_.SetManualUrls(
+      {{"https://www.google.com", UrlStatus::kAllowed}});
+  filter_.UpdateManualUrls();
 
   EXPECT_TRUE(IsURLAllowlisted("https://www.google.com"));
 
@@ -728,7 +730,7 @@ class SupervisedUserURLFilterMetricsTest
   TestingPrefServiceSimple pref_service_;
   // This makes pref service behave as if SupervisedUserSettingsService and
   // SupervisedUserPrefStore were in action.
-  SupervisedUserSyncDataFake<TestingPrefServiceSimple> sync_data_fake_{
+  test::SupervisedUserSyncDataFake<TestingPrefServiceSimple> sync_data_fake_{
       pref_service_};
   SupervisedUserURLFilter filter_{pref_service_,
                                   std::make_unique<FakeURLFilterDelegate>()};
