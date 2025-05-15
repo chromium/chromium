@@ -538,6 +538,39 @@ BASE_FEATURE(kGlicUnloadOnClose,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
+BASE_FEATURE(kTabstripComboButton,
+             "TabstripComboButton",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsTabSearchMoving() {
+  return base::FeatureList::IsEnabled(features::kTabstripComboButton);
+}
+
+const base::FeatureParam<bool> kTabstripComboButtonHasBackground{
+    &kTabstripComboButton, "has_background", false};
+
+const base::FeatureParam<bool> kTabstripComboButtonHasReverseButtonOrder{
+    &kTabstripComboButton, "reverse_button_order", false};
+
+const base::FeatureParam<bool> kTabSearchToolbarButton{
+    &kTabstripComboButton, "tab_search_toolbar_button", false};
+
+bool HasTabstripComboButtonWithBackground() {
+  return IsTabSearchMoving() &&
+         features::kTabstripComboButtonHasBackground.Get() &&
+         !features::kTabSearchToolbarButton.Get();
+}
+
+bool HasTabstripComboButtonWithReverseButtonOrder() {
+  return IsTabSearchMoving() &&
+         features::kTabstripComboButtonHasReverseButtonOrder.Get() &&
+         !features::kTabSearchToolbarButton.Get();
+}
+
+bool HasTabSearchToolbarButton() {
+  return IsTabSearchMoving() && features::kTabSearchToolbarButton.Get();
+}
+
 // Force Privacy Guide to be available even if it would be unavailable
 // otherwise. This is meant for development and test purposes only.
 BASE_FEATURE(kPrivacyGuideForceAvailable,

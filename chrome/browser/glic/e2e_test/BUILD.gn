@@ -32,7 +32,6 @@ source_set("e2e_test_support") {
     "//chrome/browser/glic:impl",
     "//chrome/browser/glic:test_support",
     "//chrome/browser/signin/e2e_tests:test_support",
-    "//chrome/browser/ui:ui_features",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",

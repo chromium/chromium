@@ -180,7 +180,6 @@ source_set("impl") {
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui:browser_navigator_params_headers",
-    "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/user_education",
@@ -250,7 +249,6 @@ source_set("test_support") {
   deps = [
     ":glic",
     ":impl",
-    "//chrome/browser/ui:ui_features",
     "//components/signin/public/identity_manager:test_support",
     "//ui/events:test_support",
   ]
@@ -282,7 +280,6 @@ source_set("unit_tests") {
     "//chrome/browser/prefs:prefs",
     "//chrome/browser/status_icons:status_icons",
     "//chrome/browser/ui",
-    "//chrome/browser/ui:ui_features",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
     "//components/live_caption:constants",
@@ -319,7 +316,6 @@ source_set("browser_tests") {
     "//chrome/browser/policy:test_support",
     "//chrome/browser/prefs:prefs",
     "//chrome/browser/ui",
-    "//chrome/browser/ui:ui_features",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",

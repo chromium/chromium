@@ -8,9 +8,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
 #include "components/search/ntp_features.h"
-#include "components/variations/service/variations_service.h"
 #include "components/webui/flags/feature_entry.h"
 #include "ui/base/ui_base_features.h"
 
@@ -414,38 +412,5 @@ BASE_FEATURE(kByDateHistoryInSidePanel,
 BASE_FEATURE(kTabStripBrowserApi,
              "TabStripBrowserApi",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabstripComboButton,
-             "TabstripComboButton",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<bool> kTabstripComboButtonHasBackground{
-    &kTabstripComboButton, "has_background", false};
-
-const base::FeatureParam<bool> kTabstripComboButtonHasReverseButtonOrder{
-    &kTabstripComboButton, "reverse_button_order", false};
-
-const base::FeatureParam<bool> kTabSearchToolbarButton{
-    &kTabstripComboButton, "tab_search_toolbar_button", false};
-
-bool IsTabSearchMoving() {
-  return base::FeatureList::IsEnabled(features::kTabstripComboButton);
-}
-
-bool HasTabstripComboButtonWithBackground() {
-  return IsTabSearchMoving() &&
-         features::kTabstripComboButtonHasBackground.Get() &&
-         !features::kTabSearchToolbarButton.Get();
-}
-
-bool HasTabstripComboButtonWithReverseButtonOrder() {
-  return IsTabSearchMoving() &&
-         features::kTabstripComboButtonHasReverseButtonOrder.Get() &&
-         !features::kTabSearchToolbarButton.Get();
-}
-
-bool HasTabSearchToolbarButton() {
-  return IsTabSearchMoving() && features::kTabSearchToolbarButton.Get();
-}
 
 }  // namespace features

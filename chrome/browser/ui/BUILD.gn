@@ -5834,9 +5834,7 @@ source_set("ui_features") {
   public_deps = [
     "//base",
     "//build:branding_buildflags",
-    "//chrome/browser:browser_process",
     "//chrome/common:buildflags",
-    "//components/variations/service:service",
     "//extensions/buildflags",
   ]
   deps = [

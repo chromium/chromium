@@ -2012,10 +2012,7 @@ if (is_android) {
         "${target_gen_dir}/android_browsertests_manifest/AndroidManifest.xml"
     android_manifest_dep = ":android_browsertests_manifest"
 
-    deps = android_sync_integration_tests_deps + [
-             "//chrome/browser/sync",
-             "//chrome/browser/ui:ui_features",
-           ]
+    deps = android_sync_integration_tests_deps + [ "//chrome/browser/sync" ]
     sources = sync_integration_tests_sources
     data = android_sync_integration_tests_data
   }
