@@ -403,7 +403,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
   void SetTestIdentityRequestDialogController(
       std::optional<std::string> dialog_selected_account) {
     auto controller = std::make_unique<FakeIdentityRequestDialogController>(
-        dialog_selected_account);
+        std::move(dialog_selected_account), /*web_contents=*/nullptr);
     test_browser_client_->SetIdentityRequestDialogController(
         std::move(controller));
   }

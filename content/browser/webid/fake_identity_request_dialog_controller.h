@@ -12,11 +12,6 @@
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 
-using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
-using IdentityRequestAccountPtr =
-    scoped_refptr<content::IdentityRequestAccount>;
-using TokenError = content::IdentityCredentialTokenError;
-
 namespace base {
 class Location;
 }  // namespace base
@@ -31,9 +26,14 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
     : public IdentityRequestDialogController,
       public WebContentsObserver {
  public:
-  explicit FakeIdentityRequestDialogController(
+  using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
+  using IdentityRequestAccountPtr =
+      scoped_refptr<content::IdentityRequestAccount>;
+  using TokenError = content::IdentityCredentialTokenError;
+
+  FakeIdentityRequestDialogController(
       std::optional<std::string> selected_account,
-      WebContents* web_contents = nullptr);
+      WebContents* web_contents);
   ~FakeIdentityRequestDialogController() override;
 
   bool ShowAccountsDialog(
