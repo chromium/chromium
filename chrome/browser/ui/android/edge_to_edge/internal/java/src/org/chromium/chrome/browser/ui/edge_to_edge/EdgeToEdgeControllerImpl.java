@@ -27,6 +27,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -417,13 +418,18 @@ public class EdgeToEdgeControllerImpl
      */
     @VisibleForTesting
     void drawToEdge(boolean pageOptedIntoEdgeToEdge, boolean changedWindowState) {
-        if (!EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity)) {
+        final boolean isSupportedConfiguration =
+                EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity);
+
+        if (!isSupportedConfiguration) {
             RecordHistogram.recordBooleanHistogram(
                     DRAW_TO_EDGE_UNSUPPORTED_CONFIG_HISTOGRAM, changedWindowState);
         }
+
         // Exit early if there is a tappable navbar (3-button) as the controller should not function
         // when 3-button nav is enabled.
-        if (EdgeToEdgeUtils.hasTappableNavigationBar(mActivity.getWindow())) {
+        if (!shouldMonitorConfigurationChanges()
+                && EdgeToEdgeUtils.hasTappableNavigationBar(mActivity.getWindow())) {
             return;
         }
 
@@ -433,6 +439,10 @@ public class EdgeToEdgeControllerImpl
         boolean shouldDrawToEdge =
                 EdgeToEdgeUtils.shouldDrawToEdge(
                         pageOptedIntoEdgeToEdge, currentLayoutType, mSystemInsets.bottom);
+        if (shouldMonitorConfigurationChanges()) {
+            shouldDrawToEdge &= isSupportedConfiguration;
+            pageOptedIntoEdgeToEdge &= isSupportedConfiguration;
+        }
         // Refresh the mHasSafeAreaConstraint to ensure the boolean stays fresh (e.g. when
         // #drawToEdge is called due to tab switching)
         boolean hasSafeAreaConstraint = EdgeToEdgeUtils.hasSafeAreaConstraintForTab(mCurrentTab);
@@ -477,6 +487,7 @@ public class EdgeToEdgeControllerImpl
 
     @VisibleForTesting
     WindowInsetsCompat handleWindowInsets(View rootView, WindowInsetsCompat windowInsets) {
+        boolean changedWindowState = false;
         if (mIsSupportedConfiguration
                 != EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity)) {
             Log.v(
@@ -493,11 +504,13 @@ public class EdgeToEdgeControllerImpl
                     SupportedConfigurationSwitch.NUM_ENTRIES);
             mIsSupportedConfiguration =
                     EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity);
+            changedWindowState = true;
         }
 
         // Exit early if there is a tappable navbar (3-button) as the controller should not function
         // when 3-button nav is enabled.
-        if (EdgeToEdgeUtils.hasTappableNavigationBar(mActivity.getWindow())) {
+        if (!shouldMonitorConfigurationChanges()
+                && EdgeToEdgeUtils.hasTappableNavigationBar(mActivity.getWindow())) {
             return windowInsets;
         }
 
@@ -515,8 +528,13 @@ public class EdgeToEdgeControllerImpl
             mIsPageOptedIntoEdgeToEdge =
                     mIsPageOptedIntoEdgeToEdge
                             && EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity);
-            // Note that we cannot #drawToEdge earlier since we need the system
-            // insets.
+
+            changedWindowState = true;
+        }
+
+        // Note that we cannot call #drawToEdge earlier since we need the system
+        // insets.
+        if (changedWindowState) {
             drawToEdge(mIsPageOptedIntoEdgeToEdge, /* changedWindowState= */ true);
         }
 
@@ -683,6 +701,10 @@ public class EdgeToEdgeControllerImpl
     @VisibleForTesting
     @Nullable WebContentsObserver getWebContentsObserver() {
         return mWebContentsObserver;
+    }
+
+    private static boolean shouldMonitorConfigurationChanges() {
+        return ChromeFeatureList.sEdgeToEdgeMonitorConfigurations.isEnabled();
     }
 
     TabObserver getTabObserverForTesting() {

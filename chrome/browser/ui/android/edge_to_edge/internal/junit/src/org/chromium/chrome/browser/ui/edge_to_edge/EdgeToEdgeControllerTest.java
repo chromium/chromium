@@ -135,6 +135,14 @@ public class EdgeToEdgeControllerTest {
                     .setInsets(WindowInsetsCompat.Type.systemBars(), STATUS_BAR_INSETS)
                     .build();
 
+    private static final WindowInsetsCompat SYSTEM_BARS_WITH_TAPPABLE_NAVBAR =
+            new WindowInsetsCompat.Builder()
+                    .setInsets(WindowInsetsCompat.Type.statusBars(), STATUS_BAR_INSETS)
+                    .setInsets(WindowInsetsCompat.Type.navigationBars(), NAVIGATION_BAR_INSETS)
+                    .setInsets(WindowInsetsCompat.Type.tappableElement(), NAVIGATION_BAR_INSETS)
+                    .setInsets(WindowInsetsCompat.Type.systemBars(), SYSTEM_INSETS)
+                    .build();
+
     private Activity mActivity;
     private EdgeToEdgeControllerImpl mEdgeToEdgeControllerImpl;
 
@@ -1055,6 +1063,33 @@ public class EdgeToEdgeControllerTest {
                 /* pageOptedIntoEdgeToEdge= */ false, /* changedWindowState= */ true);
         // #setContentFitsWindowInsets should be called once when EdgeToEdgeEverywhere is disabled.
         verify(mEdgeToEdgeManager, times(1)).setContentFitsWindowInsets(anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_MONITOR_CONFIGURATIONS)
+    public void drawToEdge_configurationChanges() {
+        assertTrue(EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity));
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        when(mTab.isNativePage()).thenReturn(false);
+        mTabProvider.set(mTab);
+
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToEdge());
+
+        // Simulate a tappable navigation bar.
+        EdgeToEdgeControllerFactory.setHas3ButtonNavBar(true);
+        assertFalse(EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity));
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WITH_TAPPABLE_NAVBAR);
+        assertFalse(
+                "Drawing to edge should be false when the configuration is not supported.",
+                mEdgeToEdgeControllerImpl.isDrawingToEdge());
+        assertFalse(
+                "Page opted into edge-to-edge should be false when the configuration is not"
+                        + " supported.",
+                mEdgeToEdgeControllerImpl.isPageOptedIntoEdgeToEdge());
+        assertEquals(
+                Insets.of(0, TOP_INSET, 0, BOTTOM_INSET),
+                mEdgeToEdgeControllerImpl.getAppliedContentViewPaddingForTesting());
     }
 
     void assertToEdgeExpectations() {
