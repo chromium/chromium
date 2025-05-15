@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill.iban;
 
 import android.view.View.OnClickListener;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
@@ -14,6 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import java.util.List;
 import java.util.function.Consumer;
 
+@NullMarked
 /*package*/ class AutofillSaveIbanBottomSheetProperties {
     /** Legal messages. */
     static class LegalMessage {

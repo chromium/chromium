@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill.iban;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -30,6 +31,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
  *
  * <p>This mediator sends UI events (OnUiCanceled, OnUiAccepted, etc.) to the bridge.
  */
+@NullMarked
 /*package*/ class AutofillSaveIbanBottomSheetMediator extends EmptyBottomSheetObserver
         implements TabModelObserver, LayoutStateObserver {
     @VisibleForTesting

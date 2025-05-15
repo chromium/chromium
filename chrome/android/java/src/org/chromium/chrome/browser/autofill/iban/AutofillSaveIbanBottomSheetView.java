@@ -13,9 +13,11 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 
 /** This class inflates the layout for the Autofill save IBAN bottom sheet. */
+@NullMarked
 /*package*/ class AutofillSaveIbanBottomSheetView {
     /** The view that contains all other views. */
     final ViewGroup mContentView;

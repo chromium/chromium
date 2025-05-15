@@ -8,13 +8,15 @@ import android.content.Context;
 import android.view.View;
 import android.widget.ScrollView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** This class is responsible for rendering the content for the Autofill save IBAN bottomsheet. */
+@NullMarked
 /*package*/ class AutofillSaveIbanBottomSheetContent implements BottomSheetContent {
     private final ScrollView mScrollView;
     private final View mContentView;
@@ -30,7 +32,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
     }
 
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -74,7 +76,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         return context.getString(
                 R.string.autofill_save_iban_prompt_bottom_sheet_content_description);
     }
