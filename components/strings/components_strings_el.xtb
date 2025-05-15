@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Φίλτρα νερού</translation>
 <translation id="1036348656032585052">Απενεργοποίηση</translation>
 <translation id="1036881361735705143">Φάκελος C4</translation>
-<translation id="1038106730571050514">Εμφάνιση προτάσεων</translation>
 <translation id="1038842779957582377">άγνωστο όνομα</translation>
 <translation id="1041998700806130099">Μήνυμα φύλλου εργασίας</translation>
 <translation id="1044897699341250361">Τι σημαίνει αυτό</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">Παιχνίδια</translation>
 <translation id="2674170444375937751">Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτές τις σελίδες από το ιστορικό σας;</translation>
 <translation id="2674524144218093528">Βάψιμο και φινίρισμα σπιτιού</translation>
-<translation id="2674804415323431591">Απόκρυψη προτάσεων</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> ομάδες καρτελών δεν είναι πλέον διαθέσιμες</translation>
 <translation id="2677748264148917807">Αποχώρηση</translation>
 <translation id="2683195745483370038">Βρέθηκαν άλλα αποτελέσματα</translation>
@@ -2635,7 +2633,6 @@
 <translation id="55293785478302737">Ραφή στο άκρο</translation>
 <translation id="553377674408670169">Θέσεις εργασίας στην εκπαίδευση</translation>
 <translation id="5534785731327961487">Καλή προσφορά τώρα</translation>
-<translation id="5536214594743852365">Εμφάνιση της ενότητας "<ph name="SECTION" />"</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 ιστότοπος (επιπλέον στις συγχρονισμένες συσκευές)}other{# ιστότοποι (επιπλέον στις συγχρονισμένες συσκευές)}}</translation>
 <translation id="553782666181800029">Φάκελος Chou 2</translation>
 <translation id="5538270463355278784">αυτόματη πλήρης οθόνη</translation>
@@ -3661,7 +3658,6 @@
 <translation id="7316521168101843192">Αποθήκευση αρχείου στο Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Βοήθεια σύνδεσης</translation>
-<translation id="7323804146520582233">Απόκρυψη της ενότητας "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">Παράκαμψη τοπικού λογαριασμού συσκευής</translation>
 <translation id="7334320624316649418">&amp;Επανάληψη αναδιάταξης</translation>
 <translation id="7335157162773372339">Μπορεί να ζητά να χρησιμοποιεί την κάμερά σας.</translation>
@@ -3792,7 +3788,6 @@
 <translation id="7517414872996418597">Φάκελος C10</translation>
 <translation id="7518003948725431193">Δεν βρέθηκε καμία ιστοσελίδα για τη διεύθυνση ιστού:<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Η ενότητα <ph name="SECTION" /> δεν εμφανίζεται</translation>
 <translation id="752189128961566325">Μπορείτε να τη χρησιμοποιήσετε σε όλα τα προϊόντα Google</translation>
 <translation id="7523408071729642236">Κατασκευές</translation>
 <translation id="7525067979554623046">Δημιουργία</translation>
@@ -3869,6 +3864,7 @@
 <translation id="7639968568612851608">Σκούρο γκρι</translation>
 <translation id="7646681339175747202">Ο κωδικός πρόσβασης που μόλις χρησιμοποιήσατε έχει εντοπιστεί σε μια παραβίαση δεδομένων. Η Διαχείριση κωδικών πρόσβασης Google συνιστά να αλλάξετε άμεσα τον κωδικό πρόσβασής σας.</translation>
 <translation id="7647206758853451655">Ποιότητα εκτύπωσης</translation>
+<translation id="7648527891719919697">Αυτός ο ιστότοπος θα παραμείνει αποκλεισμένος, επειδή έχετε ενεργοποιήσει την Ενισχυμένη προστασία στις <ph name="BEGIN_ANDROID_SETTINGS_LINK" />ρυθμίσεις Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Μάθετε περισσότερα σχετικά με αυτή την ειδοποίηση<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Αποθήκευση αρχείων σε αυτήν τη συσκευή</translation>
 <translation id="7653957176542370971">Το φύλλο του δείκτη χειρισμού πληρωμής είναι κλειστό.</translation>
 <translation id="7654909834015434372">Όταν επεξεργάζεστε σχολιασμούς, αυτό το έγγραφο θα επιστρέφει στην αρχική του περιστροφή.</translation>
@@ -4244,7 +4240,6 @@
 <translation id="8297545700510100061">Τα cookie και άλλα δεδομένα ιστοτόπου χρησιμοποιούνται για την απομνημόνευσή σας. Για παράδειγμα, για τη σύνδεσή σας ή για την εξατομίκευση των διαφημίσεών σας. Για να διαχειριστείτε τα cookie για όλους τους ιστοτόπους, ανατρέξτε στις <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Το Wi-Fi που χρησιμοποιείτε (<ph name="WIFI_NAME" />) ενδέχεται να σας ζητήσει να επισκεφτείτε τη διεύθυνση <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Εισαγωγή κωδικού</translation>
-<translation id="8303854710873047864">Εμφανίζεται η ενότητα <ph name="SECTION" /></translation>
 <translation id="8304912090860925649">Νέος πίνακας σύγκρισης</translation>
 <translation id="830498451218851433">Δίπλωση στη μέση</translation>
 <translation id="8308653357438598313">Βίντεο ζωντανής ροής</translation>

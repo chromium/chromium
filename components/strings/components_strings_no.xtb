@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Vannfiltre og vannrensere</translation>
 <translation id="1036348656032585052">Slå av</translation>
 <translation id="1036881361735705143">C4-konvolutt</translation>
-<translation id="1038106730571050514">Vis forslag</translation>
 <translation id="1038842779957582377">ukjent navn</translation>
 <translation id="1041998700806130099">Jobbarkmelding</translation>
 <translation id="1044897699341250361">Hva betyr dette?</translation>
@@ -978,7 +977,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2673968385134502798">Spill</translation>
 <translation id="2674170444375937751">Er du sikker på at du vil slette disse sidene fra loggen?</translation>
 <translation id="2674524144218093528">Husmaling og -beising</translation>
-<translation id="2674804415323431591">Skjul forslag</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> fanegrupper er ikke tilgjengelige lenger</translation>
 <translation id="2677748264148917807">Gå ut</translation>
 <translation id="2683195745483370038">Fant andre resultater</translation>
@@ -2633,7 +2631,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="55293785478302737">Kantstifting</translation>
 <translation id="553377674408670169">Undervisningsjobber</translation>
 <translation id="5534785731327961487">Godt tilbud nå</translation>
-<translation id="5536214594743852365">Vis «<ph name="SECTION" />»-delen</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 nettsted (flere på synkroniserte enheter)}other{+ # nettsteder (flere på synkroniserte enheter)}}</translation>
 <translation id="553782666181800029">Chou 2-konvolutt</translation>
 <translation id="5538270463355278784">automatisk fullskjerm</translation>
@@ -3362,6 +3359,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6789062271869667677">Kontinuerlig (lang)</translation>
 <translation id="678982761784843853">ID-er for beskyttet innhold</translation>
 <translation id="6790428901817661496">Spill av</translation>
+<translation id="6792631792628412749">Passnøkkel • <ph name="PROVIDER_NAME" /></translation>
 <translation id="6793213097893210590">Kartong</translation>
 <translation id="679355240208270552">Ignorert fordi standardsøk ikke er aktivert av regel.</translation>
 <translation id="6794951432696553238">Bekreft kortene dine raskere ved å bruke Windows Hello fra nå av</translation>
@@ -3656,7 +3654,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7316521168101843192">Lagrer filen i Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Tilkoblingshjelp</translation>
-<translation id="7323804146520582233">Skjul «<ph name="SECTION" />»-delen</translation>
 <translation id="733354035281974745">Overstyrt av lokal konto på enheten</translation>
 <translation id="7334320624316649418">&amp;Omorganiser likevel</translation>
 <translation id="7335157162773372339">Kan be om å få bruke kameraet ditt</translation>
@@ -3787,7 +3784,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7517414872996418597">C10-konvolutt</translation>
 <translation id="7518003948725431193">Finner ingen nettside for denne nettadressen: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Delen «<ph name="SECTION" />» er skjult</translation>
 <translation id="752189128961566325">Du kan bruke den i alle Google-produkter</translation>
 <translation id="7523408071729642236">Produksjon</translation>
 <translation id="7525067979554623046">Opprett</translation>
@@ -4240,7 +4236,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8297545700510100061">Informasjonskapsler og andre nettstedsdata brukes til å huske deg, for eksempel for å logge deg på eller for å vise deg personlig tilpassede annonser. For å administrere informasjonskapsler for alle nettsteder, se <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Det kan hende at Wifi-nettverket du bruker (<ph name="WIFI_NAME" />), krever at du besøker <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Skriv inn koden</translation>
-<translation id="8303854710873047864">Delen «<ph name="SECTION" />» vises</translation>
 <translation id="8304912090860925649">Ny sammenligningstabell</translation>
 <translation id="830498451218851433">Halvfals</translation>
 <translation id="8308653357438598313">Direktesendt videostrøm</translation>

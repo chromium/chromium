@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Водни филтри и пречистватели</translation>
 <translation id="1036348656032585052">Изключване</translation>
 <translation id="1036881361735705143">Плик C4</translation>
-<translation id="1038106730571050514">Показване на предложения</translation>
 <translation id="1038842779957582377">неизвестно име</translation>
 <translation id="1041998700806130099">Съобщение за листа за заданието</translation>
 <translation id="1044897699341250361">Какво означава това</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">Игри</translation>
 <translation id="2674170444375937751">Наистина ли искате да изтриете тези страници от историята си?</translation>
 <translation id="2674524144218093528">Домашни бояджийски и довършителни работи</translation>
-<translation id="2674804415323431591">Скриване на предложенията</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> групи раздели вече не са налице</translation>
 <translation id="2677748264148917807">Излизане</translation>
 <translation id="2683195745483370038">Намерени са други резултати</translation>
@@ -2633,7 +2631,6 @@
 <translation id="55293785478302737">Зашиване на ръба</translation>
 <translation id="553377674408670169">Работни места в сферата на образованието</translation>
 <translation id="5534785731327961487">Текущата оферта е добра</translation>
-<translation id="5536214594743852365">Показване на секцията „<ph name="SECTION" />“</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 сайт (още на синхронизираните устройства)}other{+ # сайта (още на синхронизираните устройства)}}</translation>
 <translation id="553782666181800029">Плик Chou 2</translation>
 <translation id="5538270463355278784">автоматичен цял екран</translation>
@@ -3658,7 +3655,6 @@
 <translation id="7316521168101843192">Файлът се запазва в Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Помощ при проблеми с връзката</translation>
-<translation id="7323804146520582233">Скриване на секцията „<ph name="SECTION" />“</translation>
 <translation id="733354035281974745">Отменено от локалния профил на устройството</translation>
 <translation id="7334320624316649418">&amp;Възстановяване на пренареждането</translation>
 <translation id="7335157162773372339">Може да поиска разрешение да използва камерата ви</translation>
@@ -3789,7 +3785,6 @@
 <translation id="7517414872996418597">Плик C10</translation>
 <translation id="7518003948725431193">Не е намерена уеб страница за уеб адреса: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Секцията „<ph name="SECTION" />“ бе скрита</translation>
 <translation id="752189128961566325">Можете да го използвате в продуктите на Google</translation>
 <translation id="7523408071729642236">Производство</translation>
 <translation id="7525067979554623046">Създаване</translation>
@@ -4242,7 +4237,6 @@
 <translation id="8297545700510100061">„Бисквитките“ и другите данни за сайтовете се използват с цел да бъдете запомнени, като например за влизане в профила ви или за персонализиране на реклами. За да управлявате „бисквитките“ за всички сайтове, вижте <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Използваната от вас Wi-Fi мрежа (<ph name="WIFI_NAME" />) може да изисква да посетите <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Въвеждане на кодa</translation>
-<translation id="8303854710873047864">Секцията „<ph name="SECTION" />“ бе показана</translation>
 <translation id="8304912090860925649">Нова таблица за сравнение</translation>
 <translation id="830498451218851433">Сгъване в средата</translation>
 <translation id="8308653357438598313">Поточно видео на живо</translation>

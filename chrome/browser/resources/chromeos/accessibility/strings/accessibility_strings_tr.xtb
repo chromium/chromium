@@ -117,7 +117,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="1616111909442424068">Buğday</translation>
 <translation id="1618597272655350600">Mevcut konumun tam açıklamasını söyler</translation>
 <translation id="1627222324347828322">Kireç Beyazı</translation>
-<translation id="1639634871799530612">{COUNT,plural, =1{büyüktür işareti}other{# büyüktür işareti}}</translation>
 <translation id="1653266918374749391">Önceki 3. düzey başlık</translation>
 <translation id="1657616855184033958">Etkinlik akış filtrelerini göster</translation>
 <translation id="1659072772017912254">İşaretli değil</translation>
@@ -162,7 +161,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="1964135212174907577">Sonraki Nesne</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">ChromeVox menülerinde braille komutlarını göster</translation>
-<translation id="2007545860310005685">{COUNT,plural, =1{sol köşeli ayraç}other{# sol köşeli ayraç}}</translation>
 <translation id="2009187674653301682">Üst simge değil</translation>
 <translation id="2010555995361223825">ChromeVox Menüleri</translation>
 <translation id="203030071582665758">Önceki 4. düzey başlık yok</translation>
@@ -185,7 +183,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="2169714232367507776">Mevcut öğeyi tıkla</translation>
 <translation id="2179452035581866348">ChromeVox gerekli bilgilerin yanı sıra ek bilgiler sağlamak için sesleri kullanır. Hangi sesin ne anlama geldiğini öğrendiğinizde bu seslerden faydalanarak daha hızlı gezinebilirsiniz. Kullanmaya alıştıktan sonra konuşma formundaki ayrıntılı açıklamaları kapatabilir ve ses özelliğini, sayfayla ilgili gerekli bilgileri almak için kullanabilirsiniz. Aşağıda seslerin ve ne anlama geldiklerinin kapsamlı bir listesini bulabilirsiniz.</translation>
 <translation id="2183409941723714159">Sekmede Gezinme</translation>
-<translation id="2188751878842439466">{COUNT,plural, =1{kapa parantez}other{# kapa parantez}}</translation>
 <translation id="2197863150503783129">Kırmızımsı Kahverengi</translation>
 <translation id="2199994615414171367">Önceki matematik tuşu</translation>
 <translation id="2203046366315513658">Değeri azaltma</translation>
@@ -231,7 +228,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="2462626033734746142">Radyo düğmesi grubu</translation>
 <translation id="2467741090055146971">seçimi kaldır</translation>
 <translation id="2471138580042810658">Başlık 6</translation>
-<translation id="248982282205370495">{COUNT,plural, =1{yıldız işareti}other{# yıldız işareti}}</translation>
 <translation id="2490721194269245365">Pembemsi Kahverengi</translation>
 <translation id="249330843868392562">Metin okuma ayarlarını aç</translation>
 <translation id="2497706219848005458">Yeşile Dönük Sarı</translation>
@@ -266,7 +262,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="2692503699962701720">Öğe türlerini ve biçimlendirilmiş metni seslendirirken ses tonunu değiştirin</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">Metin dönüşüm adayı</translation>
-<translation id="2704429362613743330">{COUNT,plural, =1{aç parantez}other{# aç parantez}}</translation>
 <translation id="270523456882008230">İpucu: Geçerli öğeyi etkinleştirmek için bir parmağınızla ekrana iki kez dokunun.</translation>
 <translation id="2705875883745373140">Basılmadı</translation>
 <translation id="2708078563826046398">Şeftali</translation>
@@ -280,7 +275,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="2756452585631602151">Özel etiket girin</translation>
 <translation id="2766299274563946262">Solda hücre yok</translation>
 <translation id="2770947749427257887">Kaydırma moduna girin</translation>
-<translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Ayrıca bir parmağınızı sağdan sola kaydırarak önceki öğeye geçebilirsiniz. Şimdi deneyin.</translation>
 <translation id="280499067616661124">ChromeVox sayfada bul</translation>
 <translation id="2811204574343810641">Satır</translation>
@@ -299,9 +293,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="2876760662374103627">Yüzle kumanda etkin</translation>
 <translation id="2879867157561757640">Üç parmağınızı aşağı kaydırın</translation>
 <translation id="288178314850623291">Belirli öğe türlerine atlamak için atlama komutlarını kullanın. Başlıklar arasında ileriye atlamak için Arama + H tuşlarına, geriye atlamak için de Arama + Üst Karakter + H tuşlarına basın.</translation>
-<translation id="2885764457467528513">{COUNT,plural, =1{dakika}other{dakika}}</translation>
 <translation id="2894654529758326923">Bilgiler</translation>
-<translation id="2899328121302785497">{COUNT,plural, =1{sol küme parantezi}other{# sol küme parantezi}}</translation>
 <translation id="2909584066358367921">Sonraki düğme yok</translation>
 <translation id="2911433807131383493">ChromeVox eğitimini aç</translation>
 <translation id="2912405967290226587">Üç parmağınızı sağa kaydırın</translation>
@@ -311,7 +303,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="2943596527105977722">Koyu Altın Başak</translation>
 <translation id="2964026537669811554">Başlık grubu</translation>
 <translation id="2968634799764242930">Su Yeşili</translation>
-<translation id="296951647852255825">{COUNT,plural, =1{sekme}other{# sekme}}</translation>
 <translation id="2972205263822847197">İpucu</translation>
 <translation id="2976476721782829799">Bir parmağınızı sürükleyerek de ekranda gezinebilirsiniz. Buna, dokunarak keşfetme denir. Bu dersin geri kalanını okumak için parmağınızı ekranda sürüklemeyi deneyin.</translation>
 <translation id="297825089465017871">İki parmağınızı sola kaydırın</translation>
@@ -322,7 +313,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="3014130421870723208">@8nkt dz</translation>
 <translation id="3018210433491759145">ChromeVox yükleniyor</translation>
 <translation id="3030432017085518523">Menü öğesi radyo düğmesi</translation>
-<translation id="3037392361165431467">{COUNT,plural, =1{kesme işareti}other{# kesme işareti}}</translation>
 <translation id="3040901448410802366">İlerleme göstergesi</translation>
 <translation id="3046838483509668188">ChromeVox Seçenekleri</translation>
 <translation id="3060756054951570867"><ph name="TITLE" /> menüsü açıldı</translation>
@@ -358,7 +348,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="3159493096109238499">Bej</translation>
 <translation id="316542773973815724">Gezinme</translation>
 <translation id="3167446923957429259">Ağzınızı sola doğru hareket ettirin</translation>
-<translation id="3172700825913348768">{COUNT,plural, =1{boşluk}other{# boşluk}}</translation>
 <translation id="3179119189286472195">Bağlantı verilmemiş</translation>
 <translation id="3180990259147710757">Çenenizi sola kaydırın</translation>
 <translation id="320041337977930740">Görüntüleme stilini üst üste (interleave) olarak değiştir</translation>
@@ -395,7 +384,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="3359142382821736686">seprtr</translation>
 <translation id="3363015957057974366">Ekranda bir sonraki etkileşimli öğeye geçmek için Sekme tuşunu da kullanabilirsiniz. Arama tuşunun hemen üzerindeki Sekme tuşunu bulun. Devam etmek için Sekme tuşuna basın.</translation>
 <translation id="3366946046494222386"><ph name="TOPIC" /> Eğitimi, <ph name="LESSONS" /> Ders</translation>
-<translation id="3374537878095184207">{COUNT,plural, =1{artı işareti}other{# artı işareti}}</translation>
 <translation id="338583716107319301">Ayırıcı</translation>
 <translation id="3389259863310851658">Önceki form alanı</translation>
 <translation id="3390740059150071453">Sola bakın</translation>
@@ -414,12 +402,8 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="3469413619751135069">Uçuk Yeşil</translation>
 <translation id="3473744269398144689">Dikte etmeye başlayın</translation>
 <translation id="3490765818161916458">Liste tablosu</translation>
-<translation id="3492609944033322585">{COUNT,plural, =1{sağ köşeli ayraç}other{# sağ köşeli ayraç}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
-<translation id="3497063866483065785">{COUNT,plural, =1{soru işareti}other{# soru işareti}}</translation>
 <translation id="3505359110822747654">ChromeVox menülerini daralt</translation>
-<translation id="3514822174137761109">{COUNT,plural, =1{düzeltme işareti}other{# düzeltme işareti}}</translation>
-<translation id="3518600448524470129">{COUNT,plural, =1{beyaz madde işareti}other{# beyaz madde işareti}}</translation>
 <translation id="352577523970648069">Düzenlenebilir metin alanı</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152"><ph name="TEXT" />metnini kes.</translation>
@@ -436,9 +420,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="3616016838842055984">Tıklamak istediğiniz bir öğeye gelirseniz Arama + Boşluk tuşlarına basın. Devam etmek için şimdi bunu yapmayı deneyin.</translation>
 <translation id="3616113530831147358">Ses</translation>
 <translation id="3622350485154495700">Bir parmağınızla iki kez dokunun</translation>
-<translation id="3646890046000188562">{COUNT,plural, =1{aksan işareti}other{# aksan işareti}}</translation>
 <translation id="3650317109285159359">chkmnuitm</translation>
-<translation id="3655855170848725876">{COUNT,plural, =1{dolar işareti}other{# dolar işareti}}</translation>
 <translation id="3659787053479271466">alrt</translation>
 <translation id="366419593095697301">İpucu: Bu eğitimden çıkmak isterseniz Escape tuşuna basın.</translation>
 <translation id="3676062394766691318">Cihazınızı kurduktan sonra geri dönüp Arama + O tuşlarına, sonra da T tuşuna basarak diğer eğiticileri görüntüleyebilirsiniz.</translation>
@@ -497,16 +479,13 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="4054936709456751127">sts</translation>
 <translation id="4058278702844053247">Sayfa yükleme işlemi devam ediyor</translation>
 <translation id="4065205963140826639">Şimdi Arama + Sağ Ok tuşlarını kullanarak Sonraki düğmesini bulmayı deneyin, daha sonra düğmeyi tıklamak için Arama + Boşluk tuşlarına basın.</translation>
-<translation id="4081085052247739398">{COUNT,plural, =1{YAKLAŞIK İŞARETİ}other{# yaklaşık işareti}}</translation>
 <translation id="409334809956508737">Önceki Nesne</translation>
 <translation id="4099274309791143834">alt menü içerir</translation>
 <translation id="4101527861445851766">İşaretlenmiş onay kutusu</translation>
 <translation id="410225014223200513">Dudaklarınızı yuvarlak yapın</translation>
 <translation id="4115378294792113321">Macenta</translation>
 <translation id="4116415223832267137">Uyarı</translation>
-<translation id="4148180433151187540">{COUNT,plural, =1{sağ küme parantezi}other{# sağ küme parantezi}}</translation>
 <translation id="4159784952369912983">Mor</translation>
-<translation id="4161104397932142764">{COUNT,plural, =1{saniye}other{saniye}}</translation>
 <translation id="4161663686871496107">ChromeVox sesli geri bildirim hazır</translation>
 <translation id="4176463684765177261">Devre dışı</translation>
 <translation id="4187322598335821254">Satırlar arasında geçiş yapmak için yukarı veya aşağı doğru hızlıca kaydırın</translation>
@@ -518,7 +497,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="4204864733111726379">Çiçek Beyazı</translation>
 <translation id="42164919740161077">Camgöbeği</translation>
 <translation id="4217571870635786043">Dikte</translation>
-<translation id="4218529045364428769">{COUNT,plural, =1{kısa çizgi}other{# kısa çizgi}}</translation>
 <translation id="4220024144662591089"><ph name="START_PHRASE" /> ile <ph name="END_PHRASE" /> arasını seç</translation>
 <translation id="4221012616705981690">Önceki liste yok</translation>
 <translation id="4225355998815256469">Form Denetimleri</translation>
@@ -540,7 +518,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="4300318234632215983">Bir bağlantının arkasındaki URL'yi söyle</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Koyu Kahverengi</translation>
-<translation id="4342180618051828363">{COUNT,plural, =1{nokta}=3{üç nokta}other{# nokta}}</translation>
 <translation id="4352022650330571548"><ph name="PHRASE" /> yaz</translation>
 <translation id="4360738659108163902">Fareyi sağ tıkla</translation>
 <translation id="4372435075475052704">en az:<ph name="X" /></translation>
@@ -569,7 +546,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="4511186779140817916">Beyazlatılmış Badem</translation>
 <translation id="451510441928265982">Önceki 2. düzey başlık yok</translation>
 <translation id="4517854969512651305">Değeri artırma</translation>
-<translation id="4532633738839459153">{COUNT,plural, =1{eğik çizgi}other{# eğik çizgi}}</translation>
 <translation id="4537277403911487429">Sonraki benzer öğe</translation>
 <translation id="4547556996012970016">Sonraki 5. düzey başlık</translation>
 <translation id="4562381607973973258">Üst bilgi</translation>
@@ -678,7 +654,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="5310788376443009632">kaldırıldı:</translation>
 <translation id="5316825363044614340">sonraki satıra git</translation>
 <translation id="5320727453979144100">Yapışkan mod etkinleştirildi</translation>
-<translation id="5321085947096604457">{COUNT,plural, =1{virgül}other{# virgül}}</translation>
 <translation id="532485153932049746">Metin biçimlendirme
     <ph name="FONT_SIZE_STRING" />
     <ph name="COLOR_STRING" />
@@ -697,10 +672,8 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402791055281059602">Modal uyarı</translation>
 <translation id="5406272775687194041">Sürükle ve bırak işlemini başlatın</translation>
-<translation id="5407530583102765689">{COUNT,plural, =1{noktalı virgül}other{# noktalı virgül}}</translation>
 <translation id="5420259671171615858">Menülerde arama yapın</translation>
 <translation id="5435274640623994081">Ses sinyali günlük kaydını etkinleştir</translation>
-<translation id="5436105723448703439">{COUNT,plural, =1{küçüktür işareti}other{# küçüktür işareti}}</translation>
 <translation id="5444587279251314700">(etkin)</translation>
 <translation id="5451268436205074266">noktalar <ph name="DOT" /></translation>
 <translation id="5452267669091857717">Sonraki 1. düzey başlık yok</translation>
@@ -726,7 +699,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="5597170376237141345">Sonraki onay kutusu</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, radyo düğmesi seçili değil</translation>
 <translation id="5601172225407283979">Varsayılan işlemi gerçekleştir</translation>
-<translation id="5604302400025591178">{COUNT,plural, =1{kare madde işareti}other{# kare madde işareti}}</translation>
 <translation id="5608798115546226984">Satır içi otomatik tamamlama</translation>
 <translation id="5616029807486814372">Sonraki ders</translation>
 <translation id="561939826962581046">time</translation>
@@ -786,21 +758,18 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="5921587111466148855">Bölüm</translation>
 <translation id="5923780477617566089">Bugünün tarihi</translation>
 <translation id="5926889058434275234">Hareketlerin tam listesini yardım merkezinde bulabilirsiniz.</translation>
-<translation id="5937336320314038555">{COUNT,plural, =1{eşit işareti}other{# eşit işareti}}</translation>
 <translation id="5947651424015173580">Fareyi çift tıkla</translation>
 <translation id="5948123859135882163">Matematik ifadelerde yapısal ve anlamsal yorum arasında geçiş yap</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5956928062748260866">İletişim Kutusu</translation>
 <translation id="5963413905009737549">Bölüm</translation>
 <translation id="5968607524793740041">İçerik menüsünü göster</translation>
-<translation id="597121107011153418">{COUNT,plural, =1{# öğeli}other{# öğeli}}</translation>
 <translation id="5981446804259161541">Açık Camgöbeği</translation>
 <translation id="5983179082906765664">Gezinme hassasiyetini artır</translation>
 <translation id="5988563937187882754">Sağa bakın</translation>
 <translation id="5992285135956208197">Grafik dokümanı</translation>
 <translation id="5999630716831179808">Sesler</translation>
 <translation id="6006050241733874051">Form</translation>
-<translation id="6006064078185310784">{COUNT,plural, =1{ters eğik çizgi}other{# ters eğik çizgi}}</translation>
 <translation id="6010616110396250088">Azalan sıra</translation>
 <translation id="6017514345406065928">Yeşil</translation>
 <translation id="602001110135236999">Sola kaydır</translation>
@@ -840,7 +809,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="6325241889020214828"><ph name="TEXT" />metnini kopyala.</translation>
 <translation id="6348657800373377022">Birleşik giriş kutusu</translation>
 <translation id="6348869651006731065">Soluk Gri</translation>
-<translation id="6350358010104919766">{COUNT,plural, =1{madde işareti}other{# madde işareti}}</translation>
 <translation id="6357433033180746873">Sağda hücre yok</translation>
 <translation id="6364795331201459219">h6</translation>
 <translation id="6368143427468974988">Önceki başlık</translation>
@@ -852,7 +820,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="6406989068857078334">Fare hızı azaltıldı. Tıklamak için tekrar <ph name="GESTURE" /></translation>
 <translation id="6411569524720229058">Sonbahar</translation>
 <translation id="6417265370957905582">Google Asistan</translation>
-<translation id="641759969622533235">{COUNT,plural, =1{iki nokta}other{# iki nokta}}</translation>
 <translation id="6444046323172968959">Uyarı iletişim kutusu</translation>
 <translation id="6452403590345320472">İçindekiler</translation>
 <translation id="6468049171101508116">Sonraki düğmesi</translation>
@@ -881,7 +848,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="669617842401078250"><ph name="FILE_NAME" /> dosyasını indirme işlemi duraklatıldı</translation>
 <translation id="6696967141280706829">Önsöz</translation>
 <translation id="6697092096875747123">Önceki birleşik kutu</translation>
-<translation id="6702609185760332517">{COUNT,plural, =1{ünlem}other{# ünlem}}</translation>
 <translation id="670717715607710284">Ekran kapalı</translation>
 <translation id="6714813999819678458">Önceki 2. düzey başlık</translation>
 <translation id="6730312624811567147">Home veya End tuşunun işlevi için Ara Sol veya Sağ tuşlarını, Control Home veya End tuşunun işlevi için Ara Control Sol veya Sağ tuşlarını, Page Up veya Down tuşunun işlevi için Ara Yukarı veya Aşağı tuşlarını kullanın</translation>
@@ -978,7 +944,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="7344012264516629579">Bağlantılar, düğmeler ve onay kutuları arasında atlama, diğer atlama komutlarından bazılarıdır. Atlama komutlarının tam listesini ChromeVox menülerinde bulabilirsiniz. Bu menüleri açmak için Arama + Nokta tuşlarına basabilirsiniz.</translation>
 <translation id="7356165926712028380">8 noktalı braille'e geç</translation>
 <translation id="7356610683936413584">Açıklama listesi ayrıntısı</translation>
-<translation id="7370432716629432284">{COUNT,plural, =1{ve işareti}other{# ve işareti}}</translation>
 <translation id="737396357417333429">clk</translation>
 <translation id="738899727977260036">Kurşun Mavisi</translation>
 <translation id="7393979322571982935">Sesler ve ayarlar</translation>
@@ -1016,7 +981,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="7637342083105831460">Arama + Sağ ok tuşlarına basarak alıştırma alanını bulun veya Sonraki ders düğmesine basın. Ardından, Arama + Boşluk tuşlarına basarak öğeyi etkinleştirin.</translation>
 <translation id="7639968568612851608">Koyu Gri</translation>
 <translation id="7663318257180412551">Başlık 2</translation>
-<translation id="7668307052366682650">{COUNT,plural, =1{saat}other{saat}}</translation>
 <translation id="7674576868851035240">Sonraki bağlantı</translation>
 <translation id="7674768236845044097">mark</translation>
 <translation id="7676847077928500578">Metin okuma ayarlarını sıfırla</translation>
@@ -1052,7 +1016,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="7927711904086083099">Seçili değil</translation>
 <translation id="7935627501098484003">Zaman kontrolü</translation>
 <translation id="7939428177581522200">seçime eklendi</translation>
-<translation id="794091007957014205">{COUNT,plural, =1{kuyruklu a işareti}other{# kuyruklu a işareti}}</translation>
 <translation id="7942349550061667556">Kırmızı</translation>
 <translation id="7948364528129376623">Ziyaret edilmiş başka sonraki bağlantı yok</translation>
 <translation id="7952460583030260752">Komut referansları</translation>
@@ -1063,7 +1026,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="8004507136466386272">Kelime</translation>
 <translation id="8004512796067398576">Artır</translation>
 <translation id="8007540374018858731">h3</translation>
-<translation id="8009786657110126785">{COUNT,plural, =1{tırnak işareti}other{# tırnak işareti}}</translation>
 <translation id="8017588669690167134">Konuşma kapalı</translation>
 <translation id="801990297710781303">Dipnot</translation>
 <translation id="8028833145828956995">ChromeVox'u dokunmatik ekranla kullanabilirsiniz</translation>
@@ -1092,7 +1054,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="8158033275290782295">tümünü seç</translation>
 <translation id="816818801578874684">Bu ilk başlık. Bir sonraki başlığa geçmek için Arama + H tuşlarına basın.</translation>
 <translation id="8173092779156526980">Dört parmağınızı sola kaydırın</translation>
-<translation id="817440585505441544">{COUNT,plural, =1{alt çizgi}other{# alt çizgi}}</translation>
 <translation id="817529114347680055">Ekranı aç</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">satır</translation>
@@ -1117,7 +1078,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="8313653172105209786">dir</translation>
 <translation id="8316881042119029234">Eski İplik</translation>
 <translation id="8326783648485765113">Çimen Yeşili</translation>
-<translation id="8345569862449483843">{COUNT,plural, =1{pound işareti}other{# pound işareti}}</translation>
 <translation id="8351821207686449674">Altyazıları aç/kapat</translation>
 <translation id="8378855320830505539">Bölge</translation>
 <translation id="8382679411218029383">Satır içi ve liste otomatik tamamlama</translation>
@@ -1160,10 +1120,8 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="8659501358298941449">Açılır Listeler</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> sonu</translation>
 <translation id="867187640362843212">Başlık 5</translation>
-<translation id="8690400660839620419">{COUNT,plural, =1{}other{iç içe yerleştirilme seviyesi #}}</translation>
 <translation id="8693391540059827073">En sevdiğim mevsim</translation>
 <translation id="8696284982970258155">Kavun Rengi</translation>
-<translation id="8697111817566059991">{COUNT,plural, =1{dikey çizgi işareti}other{# dikey çizgi işareti}}</translation>
 <translation id="8741370088760768424">İpucu: Geçerli öğeyi etkinleştirmek için Arama + Boşluk tuşlarına basın.</translation>
 <translation id="8743786158317878347">tablo gibi yapısal içeriğe gir</translation>
 <translation id="8746846427395705317">önceki kelimeye git</translation>
@@ -1213,7 +1171,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="9099429023611373837">kes</translation>
 <translation id="9108370397979208512">math</translation>
 <translation id="9108589040018540527">scbr</translation>
-<translation id="911476240645808512">{COUNT,plural, =1{yüzde işareti}other{# yüzde işareti}}</translation>
 <translation id="9128414153595658330">dlg</translation>
 <translation id="9133928141873682933">Haki</translation>
 <translation id="9149560530563164529">sctn</translation>

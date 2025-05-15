@@ -3614,6 +3614,7 @@
 <translation id="3514681096978190000">اس آرکائیو فائل میں دوسری فائلیں شامل ہیں جو میلوئیر کو چھپا سکتی ہیں</translation>
 <translation id="3515983984924808886">‏دوبارہ ترتیب دینے کی تصدیق کرنے کے لیے اپنی سیکیورٹی کلید کو دوبارہ ٹچ کریں۔ سیکیورٹی کلید کے PIN سمیت اس میں اسٹور کردہ سبھی معلومات کو حذف کر دیا جائے گا۔</translation>
 <translation id="3518866566087677312">ان چیزوں کو بک مارکس کریں جن پر آپ بعد میں واپس آنا چاہتے ہیں</translation>
+<translation id="3519014757432845220">‏اطلاع کے مواد اور سائٹ کے URL کا Google کے ساتھ اشتراک کر کے اسپام سے تحفظ کو بہتر بنانے میں مدد کریں۔ مواد کا انسانوں کے ذریعے جائزہ لیا جا سکتا ہے۔</translation>
 <translation id="3519382402703204668">ٹیب منتخب کریں</translation>
 <translation id="3519564332031442870">پرنٹ بیک اینڈ سروس</translation>
 <translation id="3519938335881974273">صفحہ محفوظ کریں بطور…</translation>
@@ -5694,7 +5695,6 @@
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">اسکرین کاسٹ کریں</translation>
 <translation id="496185450405387901">یہ ایپ آپ کے منتظم نے انسٹال کی ہے۔</translation>
-<translation id="4963079328730030450">آپ کی تنظیم کنٹرول کرتی ہے کہ ان خصوصیات کے ذریعے جمع کردہ ڈیٹا کو کس طرح استعمال کیا جا سکتا ہے۔</translation>
 <translation id="4963603093937263654">یہ یقینی بنائیں کہ آپ کے <ph name="DEVICE_NAME" /> پر اطلاعات آن ہیں</translation>
 <translation id="4963789650715167449">موجودہ ٹیب ہٹائیں</translation>
 <translation id="4964455510556214366">انتظام</translation>
@@ -6620,6 +6620,7 @@
 <translation id="563371367637259496">موبائل</translation>
 <translation id="5635312199252507107">مخصوص سائٹس پر اجازت دیں</translation>
 <translation id="5636012309446422"><ph name="PRIMARY_EMAIL" /> سے <ph name="DEVICE" /> ہٹائیں؟</translation>
+<translation id="56360247219959198"><ph name="DICTIONARY" /> کو مستقل طور پر حذف کر دیا جائے گا۔ اس کارروائی کو کالعدم نہیں کیا جا سکتا۔</translation>
 <translation id="5636140764387862062">‏PIN کے لیے مزید کارروائیاں</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> کا استعمال کرنے کیلئے آپ کو سب سے پہلے <ph name="LINK_START" />نیٹ ورک کا سائن ان صفحہ ملاحظہ کرنے<ph name="LINK_END" /> کی ضرورت ہوگی، جو چند سیکنڈ میں خود بخود کھل جائے گا۔ اگر یہ نہیں کھلتا ہے تو نیٹ ورک استعمال نہیں کیا جا سکتا ہے۔</translation>
 <translation id="5637476008227280525">موبائل ڈیٹا فعال</translation>
@@ -7737,6 +7738,7 @@
 <translation id="6459799433792303855">فعال ونڈو کسی اور ڈسپلے میں منتقل کر دی گئی۔</translation>
 <translation id="6460601847208524483">اگلا تلاش کریں</translation>
 <translation id="6461170143930046705">نیٹ ورکس تلاش کیے جا رہے ہیں...</translation>
+<translation id="6463488491707167747">یہ لغت حذف کریں</translation>
 <translation id="6463596731306859179">‏ناپسندیدہ پاپ اپس یا دیگر غیر متوقع برتاؤ سامنا ہو رہا ہے؟ بعض اوقات، آپ کے انسٹال کردہ ایپس اور ایکسٹینشنز آپ کے علم میں لائے بغیر آپ کی ChromeOS ترتیبات کو تبدیل کر سکتی ہیں۔</translation>
 <translation id="6463668944631062248">اپنے <ph name="DEVICE_NAME" /> پر کاسٹ کرنے کی درخواست قبول کریں</translation>
 <translation id="6463795194797719782">&amp;ترمیم کریں</translation>

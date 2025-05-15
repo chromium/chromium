@@ -3164,6 +3164,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3188465121994729530">Mitjana variable</translation>
 <translation id="3189187154924005138">Cursor gran</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{1 contrasenya i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los als altres dispositius que fas servir, desa'ls al teu Compte de Google.}other{{PASSWORD_COUNT} contrasenyes i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los als altres dispositius que fas servir, desa'ls al teu Compte de Google.}}</translation>
+<translation id="319044078641740013">Per tornar fàcilment als llocs web que has visitat, sincronitza l'historial i les pestanyes amb <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3190558889382726167">S'ha desat la contrasenya</translation>
 <translation id="3192586965067888278">Descriu el problema detalladament. Els comentaris s'envien a Google per sotmetre's a una revisió humana i es poden utilitzar per millorar o desenvolupar els productes i serveis de Google.</translation>
 <translation id="3192947282887913208">Fitxers d'àudio</translation>
@@ -3270,6 +3271,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3269689705184377744">{COUNT,plural, =1{Fitxer}other{# fitxers}}</translation>
 <translation id="326999365752735949">S'està baixant la diferència.</translation>
 <translation id="3270965368676314374">Llegeix, modifica i suprimeix fotos, música i altres elements multimèdia de l'ordinador</translation>
+<translation id="3275464924531706548">Replega <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">En aquests moments la clau de seguretat interna no és segura. Suprimeix-la dels serveis en què l'hagis fet servir. Per resoldre aquest problema, restableix la clau de seguretat.</translation>
 <translation id="3275778913554317645">Obre com a finestra</translation>
 <translation id="3277214528693754078">Navega amb un cursor de text (navegació amb cursor de text)</translation>
@@ -3601,6 +3603,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3510471875518562537">Utilitza aquesta adreça a l'iPhone</translation>
 <translation id="3511200754045804813">Torna a cercar</translation>
 <translation id="3511307672085573050">Copia l'adr&amp;eça de l'enllaç</translation>
+<translation id="3511358375261756531">Desplega <ph name="HEADER" /></translation>
 <translation id="351152300840026870">Font d'amplada fixa</translation>
 <translation id="3511528412952710609">Curt</translation>
 <translation id="3513019849832307207">Uneix-me i obre</translation>
@@ -5690,7 +5693,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" />: <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Emet la pantalla</translation>
 <translation id="496185450405387901">L'administrador ha instal·lat aquesta aplicació.</translation>
-<translation id="4963079328730030450">La teva organització controla com es poden utilitzar les dades que recullen aquestes funcions.</translation>
 <translation id="4963603093937263654">Assegura't que les notificacions estiguin activades a <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Suprimeix la pestanya actual</translation>
 <translation id="4964455510556214366">Disposició</translation>
@@ -6153,6 +6155,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5296536303670088158">Tens la seguretat més efectiva de Chrome contra llocs web perjudicials</translation>
 <translation id="5297005732522718715">Actualitza la configuració de la compartició de xarxa</translation>
 <translation id="5297082477358294722">S'ha desat la contrasenya. Consulta i gestiona les contrasenyes desades al <ph name="SAVED_PASSWORDS_STORE" />.</translation>
+<translation id="5297548311167268289">Inicia la sessió a <ph name="RP_ID" /></translation>
 <translation id="5297946558563358707">Quan una altra persona miri la teva pantalla, mostra la icona de l'ull de privadesa a la part inferior dreta de la pantalla</translation>
 <translation id="5297984209202974345">Tema d'IA recent <ph name="INDEX" /> de <ph name="SUBJECT" />, d'estil <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Tema creat per</translation>
@@ -10337,6 +10340,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8280848878018088610">Onades del mar que xoquen, amb una ciutat fantàstica i un castell al fons, en un ambient fosc.</translation>
 <translation id="828180235270931531">Altres impressores disponibles</translation>
 <translation id="8281886186245836920">Omet</translation>
+<translation id="8283802069507225582">Per continuar des d'on ho has deixat en altres dispositius, sincronitza l'historial i les pestanyes amb <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">tots els llocs web de <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Subtítols</translation>
 <translation id="8286036467436129157">Inicia la sessió</translation>
@@ -11016,6 +11020,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8754200782896249056">&lt;p&gt;Quan <ph name="PRODUCT_NAME" /> s'executa en un entorn d'escriptori compatible, s'utilitza la configuració del servidor intermediari del sistema. No obstant això, o bé el vostre sistema no és compatible o bé s'ha produït un problema en iniciar la configuració del sistema.&lt;/p&gt;
 
           &lt;p&gt;Encara podeu configurar-lo mitjançant la línia d'ordres. Consulteu &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; per obtenir més informació sobre indicadors i sobre variables d'entorn.&lt;/p&gt;</translation>
+<translation id="8754810799862630650">Per veure les pestanyes obertes dels teus altres ordinadors i telèfons, sincronitza l'historial i les pestanyes amb <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">Realitza tasques relacionades amb la seguretat de la teva organització, com ara gestionar els certificats i les claus emmagatzemats al dispositiu</translation>
 <translation id="875532100880844232">Tria una acció per a cada tecla a <ph name="DEVICE_NAME" /></translation>
 <translation id="8755376271068075440">&amp;Més gran</translation>

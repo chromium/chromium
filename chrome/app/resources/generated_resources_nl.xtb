@@ -3164,6 +3164,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3188465121994729530">Voortschrijdend gemiddelde</translation>
 <translation id="3189187154924005138">Grote cursor</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{1 wachtwoord en andere items worden alleen op dit apparaat opgeslagen. Als je ze wilt gebruiken op je andere apparaten, sla je ze op in je Google-account.}other{{PASSWORD_COUNT} wachtwoorden en andere items worden alleen op dit apparaat opgeslagen. Als je ze wilt gebruiken op je andere apparaten, sla je ze op in je Google-account.}}</translation>
+<translation id="319044078641740013">Synchroniseer je geschiedenis en tabbladen met <ph name="ACCOUNT_EMAIL" /> om makkelijk terug te gaan naar sites die je hebt bezocht</translation>
 <translation id="3190558889382726167">Wachtwoord opgeslagen</translation>
 <translation id="3192586965067888278">Geef een gedetailleerde beschrijving van het probleem. Feedback wordt voor beoordeling door een medewerker naar Google gestuurd en kan worden gebruikt om producten en services van Google te verbeteren of te ontwikkelen.</translation>
 <translation id="3192947282887913208">Audiobestanden</translation>
@@ -5692,7 +5693,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Scherm casten</translation>
 <translation id="496185450405387901">Deze app is geïnstalleerd door je beheerder.</translation>
-<translation id="4963079328730030450">Je organisatie beheert hoe gegevens die door deze functies worden verzameld, mogen worden gebruikt.</translation>
 <translation id="4963603093937263654">Zorg dat meldingen aanstaan op je <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Huidig tabblad verwijderen</translation>
 <translation id="4964455510556214366">Indeling</translation>
@@ -10336,6 +10336,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8280848878018088610">Beukende golven in de zee, met een fantasiestad en -kasteel op de achtergrond, in een donkere sfeer.</translation>
 <translation id="828180235270931531">Andere beschikbare printers</translation>
 <translation id="8281886186245836920">Overslaan</translation>
+<translation id="8283802069507225582">Synchroniseer je geschiedenis en tabbladen met <ph name="ACCOUNT_EMAIL" /> om verder te gaan waar je gebleven was op andere apparaten</translation>
 <translation id="8284279544186306258">alle sites op <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Ondertiteling</translation>
 <translation id="8286036467436129157">Inloggen</translation>
@@ -11015,6 +11016,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 
 
         &lt;p&gt;Je kunt je instellingen configureren via de opdrachtprompt. Zie &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; voor meer informatie over markeringen en omgevingsvariabelen.&lt;/p&gt;</translation>
+<translation id="8754810799862630650">Synchroniseer je geschiedenis en tabbladen met <ph name="ACCOUNT_EMAIL" /> om geopende tabbladen van je andere computers en telefoons te bekijken</translation>
 <translation id="8755175579224030324">Aan beveiliging gerelateerde taken voor je organisatie uitvoeren, zoals certificaten en sleutels beheren die op het apparaat zijn opgeslagen</translation>
 <translation id="875532100880844232">Kies voor <ph name="DEVICE_NAME" /> een actie voor elke toets</translation>
 <translation id="8755376271068075440">&amp;Groter</translation>

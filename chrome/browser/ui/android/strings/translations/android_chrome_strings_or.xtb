@@ -183,6 +183,7 @@
 <translation id="1807709131360304325">ଏକ ନୂଆ ୱିଣ୍ଡୋ ଖୋଲନ୍ତୁ</translation>
 <translation id="1810845389119482123">ପ୍ରାରମ୍ଭିକ ସିଙ୍କ୍ ସେଟ୍‌ଅପ୍ ସମାପ୍ତ ହୋଇ ନାହିଁ</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />କୁ ବ୍ୟବହାର କରିବା ଜାରି ରଖିପାରିବ ନାହିଁ</translation>
+<translation id="1820408774134375111">ସାଇନ ଇନ ବଟମ ସିଟ</translation>
 <translation id="1825772852827001597">ପେମେଣ୍ଟ ପଦ୍ଧତି ଏବଂ Google Payରୁ ଠିକଣାଗୁଡ଼ିକୁ ଏନକ୍ରିପ୍ଟ କରାଯିବ ନାହିଁ। Chromeରୁ ବ୍ରାଉଜିଂ ଇତିହାସ ସିଙ୍କ କରାଯିବ ନାହିଁ।
 କେବଳ ଆପଣଙ୍କ ପାସଫ୍ରେଜ ଥିବା କେହି ଜଣେ ବ୍ୟକ୍ତି ଆପଣଙ୍କ ଏନକ୍ରିପ୍ଟ କରାଯାଇଥିବା ଡାଟାକୁ ପଢ଼ିପାରିବେ। ଏହି ପାସଫ୍ରେଜ Googleକୁ ପଠାଯାଏ ନାହିଁ କିମ୍ବା ଏହା ଦ୍ୱାରା ଷ୍ଟୋର କରାଯାଏ ନାହିଁ। ଯଦି ଆପଣଙ୍କ ପାସଫ୍ରେଜକୁ ଆପଣ ଭୁଲି ଯାଆନ୍ତି କିମ୍ବା ଏହି ସେଟିଂକୁ ପରିବର୍ତ୍ତନ କରିବାକୁ ଚାହାଁନ୍ତି, ତେବେ <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chrome ଡାଟାକୁ ଡିଲିଟ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="1829244130665387512">ପୃଷ୍ଠାରେ ଖୋଜି ପାଆନ୍ତୁ</translation>
@@ -191,6 +192,7 @@
 <translation id="1871098866036088250">Chrome ବ୍ରାଉଜରରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="1877026089748256423">Chromeର ସମୟସୀମା ଶେଷ ହୋଇଛି</translation>
 <translation id="1877073879466606884">ଆପଣ ସାଇନ ଇନ କରିଥିବା ପ୍ରୋଫାଇଲ ଏକ ପରିଚାଳିତ ପ୍ରୋଫାଇଲ ଅଟେ। ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ରିମୋଟ ଭାବେ ଆପଣଙ୍କର ପ୍ରୋଫାଇଲ ସେଟିଂସରେ ପରିବର୍ତ୍ତନ କରିପାରିବେ, ରିପୋର୍ଟିଂ ମାଧ୍ୟମରେ ବ୍ରାଉଜର ବିଷୟରେ ସୂଚନାକୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ଏବଂ ଅନ୍ୟ ଜରୁରୀ ଟାସ୍କଗୁଡ଼ିକୁ କରିପାରିବେ।</translation>
+<translation id="1879904908408734349">ସାଇନ ଇନ ବଟମ ସିଟ ବନ୍ଦ ଅଛି</translation>
 <translation id="1883903952484604915">ମୋ ଫାଇଲ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="189358972401248634">ଅନ୍ୟ ଭାଷାଗୁଡ଼ିକ</translation>
 <translation id="1899175549411605574">ମୂଲ୍ୟ ଇନସାଇଟ୍ସ ବଟମ ସିଟ</translation>
@@ -330,6 +332,7 @@
 <translation id="2527779675047087889">କ୍ଲିପବୋର୍ଡର ବିଷୟବସ୍ତୁଗୁଡ଼ିକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="2532336938189706096">ୱେବ୍ ଦୃଶ୍ୟ</translation>
 <translation id="253498598929009420">ଆପଣଙ୍କ ସ୍କ୍ରିନରେ ଥିବା ବିଷୟବସ୍ତୁକୁ ଦେଖିବାରେ ସାଇଟ ସକ୍ଷମ ହେବ</translation>
+<translation id="2535807170289627159">ସମସ୍ତ ଟାବ</translation>
 <translation id="2536728043171574184">ଏହି ପୃଷ୍ଠାର ଏକ ଅଫ୍‌ଲାଇନ୍‌ କପି ଦେଖୁଛି</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, ଟାବ</translation>
 <translation id="2546283357679194313">କୁକିସ୍ ଏବଂ ସାଇଟ୍ ଡାଟା</translation>
@@ -539,6 +542,7 @@
 <translation id="3516053221628030540">Google Playକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିନଥିବା ଗୋଟିଏ ସାଇଟରୁ ବିଜ୍ଞପ୍ତି ଅନୁମତିଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯାଇଛି}other{ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିନଥିବା # ସାଇଟରୁ ବିଜ୍ଞପ୍ତି ଅନୁମତିଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯାଇଛି}}</translation>
 <translation id="3518985090088779359">ସ୍ୱୀକାର କରନ୍ତୁ ଏବଂ ଜାରି ରଖନ୍ତୁ</translation>
+<translation id="3519014757432845220">Google ସହ ବିଜ୍ଞପ୍ତି ବିଷୟବସ୍ତୁ ଏବଂ ସାଇଟର URL ସେୟାର କରି ସ୍ପାମ ସୁରକ୍ଷାକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ। ବିଷୟବସ୍ତୁକୁ ମାନବଙ୍କ ଦ୍ୱାରା ସମୀକ୍ଷା କରାଯାଇପାରେ।</translation>
 <translation id="351952459507671940">ନୂତନ ଗୋଷ୍ଠୀରେ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ସହ ଜାରି ରଖାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="3522247891732774234">ଅପ୍‍‍‍‍‍ଡେଟ୍‌ ଉପଲବ୍ଧ ଅଟେ। ଅଧିକ ବିକଳ୍ପ</translation>
@@ -854,6 +858,7 @@
 <translation id="4943703118917034429">ଭର୍ଚୁଆଲ୍ ରିଅଲିଟି</translation>
 <translation id="4943872375798546930">କୌଣସି ଫଳାଫଳ ନାହିଁ</translation>
 <translation id="4957722034734105353">ଅଧିକ ଜାଣନ୍ତୁ...</translation>
+<translation id="4959115606310463263">ସାଇନ ଇନ ବଟମ ସିଟ ଅଧା ସ୍କ୍ରିନରେ ଖୋଲିଛି</translation>
 <translation id="4961107849584082341">ଏହି ପୃଷ୍ଠାକୁ ଯେକୌଣସି ଭାଷାରେ ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="4964614743143953889">ଅସୁରକ୍ଷିତ ସାଇଟ ଏବଂ ଡାଉନଲୋଡଗୁଡ଼ିକ ବିଷୟରେ Chrome ଆପଣଙ୍କୁ ଚେତାବନୀ ଦିଏ</translation>
 <translation id="496607651705915226">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ନୂଆ ପାସୱାର୍ଡଗୁଡ଼ିକ ସେଭ ଏବଂ ବ୍ୟବହାର କରିବା ପାଇଁ Google Play ସେବାଗୁଡ଼ିକୁ ଅପଡେଟ କରନ୍ତୁ</translation>
@@ -1146,6 +1151,7 @@
 <translation id="6277522088822131679">ପୃଷ୍ଟା ପ୍ରିଣ୍ଟ କରିବାରେ କିଛି ସମସ୍ୟା ଦେଖାଦେଇଛି। ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6278428485366576908">ଥିମ୍</translation>
 <translation id="6284472661216707937">ଆପଣଙ୍କ ସମସ୍ତ ଡିଭାଇସରେ ପାସୱାର୍ଡ ବନ୍ଦ ହୋଇଯାଇଛି</translation>
+<translation id="6291294824436685757">ବ୍ରାଉଜିଂ ଡାଟା ଡିଲିଟ କରନ୍ତୁ; ଡିଲିଟ କରିବାକୁ ଡାଟା ଚୟନ କରନ୍ତୁ</translation>
 <translation id="6295158916970320988">ସମସ୍ତ ସାଇଟ୍‍ଗୁଡ଼ିକ</translation>
 <translation id="6296366034485697675">ଏକ୍ସପୋର୍ଟ ଏବଂ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="629730747756840877">ଆକାଉଣ୍ଟ</translation>
@@ -1613,6 +1619,7 @@
 <translation id="8179976553408161302">ପ୍ରବେଶ</translation>
 <translation id="8186512483418048923"><ph name="FILES" />ଫାଇଲ୍‌ଗୁଡ଼ିକ ବାକି ଅଛି</translation>
 <translation id="8190358571722158785">1 ଦିନ ବାକି ଅଛି</translation>
+<translation id="8192765420340770300">ସାଇନ ଇନ ବଟମ ସିଟ ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଖୋଲିଛି</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />ଆପଣଙ୍କ ଡିଭାଇସଗୁଡ଼ିକ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="820568752112382238">ଅଧିକ ଦେଖାଯାଇଥିବା ସାଇଟ୍‍ଗୁଡ଼ିକ</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" /> ଏବଂ ଅନ୍ୟ <ph name="NUMBER_OF_OTHER_MEMBERS" /> ଜଣଙ୍କ ସହ ଟାବ ଗ୍ରୁପରେ ଯୋଗ ଦିଅନ୍ତୁ}other{<ph name="OWNER_FIRST_NAME" /> ଏବଂ ଅନ୍ୟ <ph name="NUMBER_OF_OTHER_MEMBERS" /> ଜଣଙ୍କ ସହ ଟାବ ଗ୍ରୁପରେ ଯୋଗ ଦିଅନ୍ତୁ}}</translation>
@@ -1809,6 +1816,7 @@
 <translation id="9050666287014529139">ପାସ୍‌ଫ୍ରେଜ୍</translation>
 <translation id="9055497320631373736">ସାଇଟକୁ ସମ୍ଭାବ୍ୟ ସାଇଟଗୁଡ଼ିକରେ ପୁଣି ଯୋଗ କରାଯାଇଛି</translation>
 <translation id="9057030985451135243">ସେୟାର କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପଗୁଡ଼ିକ ବିଷୟରେ ଜାଣନ୍ତୁ</translation>
+<translation id="9063400323119781058">ସଦସ୍ୟତା ତ୍ୟାଗ କରାଯାଇଛି</translation>
 <translation id="9063523880881406963">ଡେସ୍କଟପ୍ ସାଇଟ୍ ଅନୁରୋଧକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="9065203028668620118">ସମ୍ପାଦନ</translation>
 <translation id="9065383040763568503">Chrome ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ବୋଲି ମନେ କରୁନଥିବା ଷ୍ଟୋର୍ କରାଯାଇଥିବା ଡାଟା (ଉ.ଦା. ସେଭ୍ କରାଯାଇଥିବା କୌଣସି ସେଟିଂସ୍ ନଥିବା କିମ୍ବା ଆପଣ ପ୍ରାୟତଃ ଭିଜିଟ୍ କରୁନଥିବା ସାଇଟଗୁଡ଼ିକ)</translation>

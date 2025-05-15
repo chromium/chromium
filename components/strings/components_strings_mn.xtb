@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Ус шүүгч болон цэвэршүүлэгчид</translation>
 <translation id="1036348656032585052">Унтраа</translation>
 <translation id="1036881361735705143">Дугтуй C4</translation>
-<translation id="1038106730571050514">Зөвлөмжүүдийг харуулах</translation>
 <translation id="1038842779957582377">үл мэдэгдэх нэр</translation>
 <translation id="1041998700806130099">Ажлын хүснэгтийн мессеж</translation>
 <translation id="1044897699341250361">Энэ нь юу гэсэн үг вэ</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">Тоглоом</translation>
 <translation id="2674170444375937751">Та өөрийн түүхээс эдгээр хуудсыг устгахдаа итгэлтэй байна уу?</translation>
 <translation id="2674524144218093528">Байшин будах болон чимхлүүр засал</translation>
-<translation id="2674804415323431591">Зөвлөмжүүдийг нуух</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> табын бүлэг цаашид боломжгүй болсон</translation>
 <translation id="2677748264148917807">Үлдээх</translation>
 <translation id="2683195745483370038">Бусад илэрц олдлоо</translation>
@@ -2634,7 +2632,6 @@
 <translation id="55293785478302737">Ирмэгийг нь нийлүүлж үдэх</translation>
 <translation id="553377674408670169">Боловсролын ажлын байрууд</translation>
 <translation id="5534785731327961487">Одоогийн ашигтай тусгай санал</translation>
-<translation id="5536214594743852365">"<ph name="SECTION" />" хэсгийг харуулах</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 сайт (синк хийсэн төхөөрөмжүүд дээрх бусад)}other{+ # сайт (синк хийсэн төхөөрөмжүүд дээрх бусад)}}</translation>
 <translation id="553782666181800029">Чоу дугтуй 2</translation>
 <translation id="5538270463355278784">автомат бүтэн дэлгэц</translation>
@@ -3657,7 +3654,6 @@
 <translation id="7316521168101843192">Microsoft OneDrive-т файл хадгалж байна</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Холболтын тусламж</translation>
-<translation id="7323804146520582233">"<ph name="SECTION" />" хэсгийг нуух</translation>
 <translation id="733354035281974745">Төхөөрөмжийн дотоод бүртгэлийг дарж бичих</translation>
 <translation id="7334320624316649418">&amp; Дахин эрэмбэлэх үйлдлийг дахин хийх</translation>
 <translation id="7335157162773372339">Таны камерыг ашиглахыг хүсэх боломжтой</translation>
@@ -3788,7 +3784,6 @@
 <translation id="7517414872996418597">Дугтуй C10</translation>
 <translation id="7518003948725431193">Энэ веб хаягаар хайхад тохирох хуудас олдсонгүй: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">"<ph name="SECTION" />" хэсгийг нуусан</translation>
 <translation id="752189128961566325">Та үүнийг Google-н бүтээгдэхүүнүүдэд ашиглах боломжтой</translation>
 <translation id="7523408071729642236">Үйлдвэрлэл</translation>
 <translation id="7525067979554623046">Үүсгэх</translation>
@@ -4240,7 +4235,6 @@
 <translation id="8297545700510100061">Күүки болон сайтын бусад өгөгдлийг таныг нэвтрүүлэх эсвэл зарыг хувийн болгох зэргээр таныг санахад ашигладаг. Бүх сайтын күүкийг удирдахын тулд <ph name="SETTINGS" />-г харна уу.</translation>
 <translation id="8298115750975731693">Таны ашиглаж буй Wi-Fi сүлжээ (<ph name="WIFI_NAME" />) таныг <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> нэвтрэхийг шаардах магадлалтай.</translation>
 <translation id="8301894345671534559">Код оруулах</translation>
-<translation id="8303854710873047864">"<ph name="SECTION" />" хэсгийг харуулсан</translation>
 <translation id="8304912090860925649">Харьцуулалтын шинэ хүснэгт</translation>
 <translation id="830498451218851433">Хагас нугалаа</translation>
 <translation id="8308653357438598313">Шууд видео дамжуулалт</translation>

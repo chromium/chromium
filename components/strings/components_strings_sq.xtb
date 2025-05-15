@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Filtra dhe pastrues uji</translation>
 <translation id="1036348656032585052">Çaktivizo</translation>
 <translation id="1036881361735705143">Zarf C4</translation>
-<translation id="1038106730571050514">Shfaq sugjerimet</translation>
 <translation id="1038842779957582377">emër i panjohur</translation>
 <translation id="1041998700806130099">Mesazhi i fletës së punës</translation>
 <translation id="1044897699341250361">Çfarë do të thotë kjo</translation>
@@ -978,7 +977,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2673968385134502798">Lojëra</translation>
 <translation id="2674170444375937751">Je i sigurt se dëshiron t'i fshish këto faqe nga historiku?</translation>
 <translation id="2674524144218093528">Lyerje dhe finitura shtëpish</translation>
-<translation id="2674804415323431591">Fshih sugjerimet</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> grupe skedash nuk ofrohen më</translation>
 <translation id="2677748264148917807">Largohu</translation>
 <translation id="2683195745483370038">Rezultate të tjera të gjetura</translation>
@@ -2324,6 +2322,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4998950033665438990">Në një anë</translation>
 <translation id="5001526427543320409">Kukit e palëve të treta</translation>
 <translation id="5002932099480077015">Nëse aktivizohet, Chrome do të ruajë një kopje të kartës tënde në këtë pajisje për plotësim më të shpejtë të formularit.</translation>
+<translation id="5007344584818503324">Aktiviteti i grupeve të ndara të skedave</translation>
 <translation id="5007392906805964215">Rishiko</translation>
 <translation id="5010599530303458903">Paguaj çdo muaj ose në 4 këste pa interes (objekt i kualifikimit)</translation>
 <translation id="5011561501798487822">Gjuha e zbuluar</translation>
@@ -2632,7 +2631,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="55293785478302737">Qepje anësore</translation>
 <translation id="553377674408670169">Punë në arsim</translation>
 <translation id="5534785731327961487">Ofertë e mirë tani</translation>
-<translation id="5536214594743852365">Shfaq seksionin "<ph name="SECTION" />"</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 sajt (më shumë në pajisjet e sinkronizuara)}other{+ # sajte (më shumë në pajisjet e sinkronizuara)}}</translation>
 <translation id="553782666181800029">Zarf Chou 2</translation>
 <translation id="5538270463355278784">ekrani i plotë automatik</translation>
@@ -2751,6 +2749,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5732392974455271431">Prindërit e tu mund ta zhbllokojnë atë për ty</translation>
 <translation id="573555826359077410">Butoni "Krijo formular". Aktivizoje për të krijuar me shpejtësi një formular të ri te "Formularët e Google"</translation>
 <translation id="5738385766833540397">Menaxho se si i merr sinjalizimet për uljet e çmimeve për produktet që monitoron</translation>
+<translation id="5739619009927381786">Shkyç ekranin në hapin tjetër, zakonisht duke përdorur gjurmën tënde të gishtit. Ndryshe, mund të <ph name="BEGIN_LINK" />verifikohesh në një mënyrë tjetër<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Për të ndarë, për t'u bashkuar dhe për të bashkëpunuar në grupet e skedave, sinkronizo historikun dhe skedat e tua</translation>
 <translation id="5740911612628596808">Zarf C9</translation>
 <translation id="5742806904559466333">Bare, klube dhe jeta e natës</translation>
@@ -3359,6 +3358,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6789062271869667677">I vazhdueshëm (i gjatë)</translation>
 <translation id="678982761784843853">ID-të e përmbajtjeve të mbrojtura</translation>
 <translation id="6790428901817661496">Luaj</translation>
+<translation id="6792631792628412749">Çelësi i kalimit • <ph name="PROVIDER_NAME" /></translation>
 <translation id="6793213097893210590">Karton</translation>
 <translation id="679355240208270552">U shpërfill sepse kërkimi i parazgjedhur nuk është aktivizuar nga politika.</translation>
 <translation id="6794951432696553238">Konfirmo kartat e tua më shpejt duke përdorur Windows Hello nga tani e tutje</translation>
@@ -3653,7 +3653,6 @@ Detaje shtesë:
 <translation id="7316521168101843192">Skedari po ruhet te Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Ndihma e lidhjes</translation>
-<translation id="7323804146520582233">Fshihe seksionin "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">Anulimi i llogarisë lokale të pajisjes</translation>
 <translation id="7334320624316649418">&amp;Ribëj renditjen</translation>
 <translation id="7335157162773372339">Mund të kërkojë të përdorë kamerën tënde</translation>
@@ -3784,7 +3783,6 @@ Detaje shtesë:
 <translation id="7517414872996418597">Zarf C10</translation>
 <translation id="7518003948725431193">Nuk u gjet asnjë uebsajt për adresën: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Seksioni "<ph name="SECTION" />" është i fshehur</translation>
 <translation id="752189128961566325">Mund ta përdorësh atë nëpër produktet e Google</translation>
 <translation id="7523408071729642236">Prodhimtaria</translation>
 <translation id="7525067979554623046">Krijo</translation>
@@ -4236,7 +4234,6 @@ Detaje shtesë:
 <translation id="8297545700510100061">Kukit dhe të dhënat e tjera të sajtit përdoren për të të kujtuar ty, p.sh. për të të identifikuar ose për të personalizuar reklamat. Për të menaxhuar kukit për të gjitha sajtet, shiko <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Lidhja Wi-Fi që po përdor (<ph name="WIFI_NAME" />) mund të kërkojë që të vizitosh <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Fut kodin</translation>
-<translation id="8303854710873047864">Seksioni "<ph name="SECTION" />" është i shfaqur</translation>
 <translation id="8304912090860925649">Tabelë e re krahasimi</translation>
 <translation id="830498451218851433">Palosje në gjysmë</translation>
 <translation id="8308653357438598313">Transmetim i videove të drejtpërdrejta</translation>

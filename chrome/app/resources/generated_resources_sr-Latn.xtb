@@ -1162,6 +1162,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1796588414813960292">Funkcije kojima treba zvuk neće raditi</translation>
 <translation id="1797117170091578105">Igrajte pomoću Chromebook tastature. Možete da prilagodite tastere određenim radnjama.</translation>
 <translation id="1798335429200675510">Kliknite desnim tasterom u okvir za tekst da biste napravili radnu verziju ili poboljšali postojeći rad koji omogućava Google veštačka inteligencija. Trenutno ima ograničenu dostupnost.</translation>
+<translation id="1799852120691957794">Vraćanje prozora iz prethodne sesije nije uspelo</translation>
 <translation id="180203835522132923">Taster za pretragu + O, a zatim W</translation>
 <translation id="1802624026913571222">Pređi u stanje spavanja kada se poklopac zatvori</translation>
 <translation id="1802687198411089702">Stranica se ne odaziva. Možete da sačekate da počne da se odaziva ili da je zatvorite.</translation>
@@ -2352,6 +2353,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2610374175948698697">Fajlovi koji mogu da pregledaju fajlove ili foldere na uređaju</translation>
 <translation id="2610780100389066815">Potpisivanje Microsoft liste pouzdanih</translation>
 <translation id="261114180663074524">Prijavite se na Microsoft nalog i probajte ponovo</translation>
+<translation id="2611702650078660078">Došlo je do greške</translation>
 <translation id="2611776654555141051">Alatka za proavougaonike</translation>
 <translation id="2612676031748830579">Broj kartice</translation>
 <translation id="261305050785128654">Omogućite veb-sajtovima da znaju koje jezike govorite. Prikazivaće sadržaj na tim jezicima kada je to moguće.</translation>
@@ -2712,6 +2714,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2849936225196189499">Od presudne važnosti</translation>
 <translation id="285033512555869047">Zatvoreno</translation>
 <translation id="2850541429955027218">Dodaj temu</translation>
+<translation id="2852045827873867442">Treba vam internet veza.</translation>
 <translation id="285237063405807022">(učitavanje)</translation>
 <translation id="2853121255651601031">Lozinka je sačuvana</translation>
 <translation id="2855243985454069333">Briše istoriju sa svih sinhronizovanih uređaja</translation>
@@ -3164,6 +3167,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3188465121994729530">Pokretni prosek</translation>
 <translation id="3189187154924005138">Veliki kursor</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{1 lozinka i druge stavke su sačuvane samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu.}one{{PASSWORD_COUNT} lozinka i druge stavke su sačuvane samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu.}few{{PASSWORD_COUNT} lozinke i druge stavke su sačuvane samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu.}other{{PASSWORD_COUNT} lozinki i druge stavke su sačuvane samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu.}}</translation>
+<translation id="319044078641740013">Da biste lako vratili sajtove koje ste posetili, sinhronizujte istoriju i kartice sa <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3190558889382726167">Lozinka je sačuvana</translation>
 <translation id="3192586965067888278">Detaljno opišite problem. Povratne informacije se šalju Google-u na pregled od strane ljudi i mogu da se koriste za poboljšanje ili razvoj Google proizvoda i usluga.</translation>
 <translation id="3192947282887913208">Audio datoteke</translation>
@@ -5427,6 +5431,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4779855924282373274"><ph name="URL" /> • 1 duplikat</translation>
 <translation id="4780321648949301421">Sačuvaj stranicu kao...</translation>
 <translation id="4780558987886269159">Za posao</translation>
+<translation id="4781633367688946589">Pređi na novu sesiju</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> želi da koristi lične podatke iz digitalnog novčanika.</translation>
 <translation id="4785719467058219317">Koristite bezbednosni ključ koji nije registrovan za ovaj veb-sajt</translation>
 <translation id="4785914069240823137">Otkažite opsecanje</translation>
@@ -5694,7 +5699,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Prebacivanje ekrana</translation>
 <translation id="496185450405387901">Administrator je instalirao ovu aplikaciju.</translation>
-<translation id="4963079328730030450">Organizacija kontroliše kako podaci prikupljeni pomoću ovih funkcija mogu da se koriste.</translation>
 <translation id="4963603093937263654">Uverite se da su obaveštenja uključena na uređaju <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Ukloni aktuelnu karticu</translation>
 <translation id="4964455510556214366">Raspored</translation>
@@ -10347,6 +10351,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8280848878018088610">Morski talasi udaraju o obalu, sa fantastičnim gradom i zamkom u pozadini, u tamnom ambijentu.</translation>
 <translation id="828180235270931531">Drugi dostupni štampači</translation>
 <translation id="8281886186245836920">Preskoči</translation>
+<translation id="8283802069507225582">Da biste nastavili tamo gde ste stali na drugim uređajima, sinhronizujte istoriju i kartice sa <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">svi <ph name="WEBSITE_1" /> sajtovi</translation>
 <translation id="8284326494547611709">Titl</translation>
 <translation id="8286036467436129157">Prijavi me</translation>
@@ -11025,6 +11030,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8754200782896249056">&lt;p&gt;Kada koristite <ph name="PRODUCT_NAME" /> u podržanom računarskom okruženju, koristiće se podešavanja proksija sistema. Međutim, ili sistem nije podržan ili je došlo do problema pri pokretanju konfiguracije sistema.&lt;/p&gt;
 
         &lt;p&gt;Ali i dalje možete da konfigurišete preko komandne linije. Pogledajte &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; za više informacija o obeležjima i promenljivama okruženja.&lt;/p&gt;</translation>
+<translation id="8754810799862630650">Da biste videli otvorene kartice sa drugih računara i telefona, sinhronizujte istoriju i kartice sa <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">Obavljanje zadataka u vezi sa bezbednošću za organizaciju, poput upravljanja sertifikatima i ključevima koji se skladište na uređaju</translation>
 <translation id="875532100880844232">Za uređaj <ph name="DEVICE_NAME" /> odaberite radnju za svaki taster</translation>
 <translation id="8755376271068075440">&amp;Veće</translation>

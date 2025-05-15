@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">فلاتر مياه ومطهّرات</translation>
 <translation id="1036348656032585052">إيقاف</translation>
 <translation id="1036881361735705143">‏ظرف C4</translation>
-<translation id="1038106730571050514">عرض الاقتراحات</translation>
 <translation id="1038842779957582377">اسم غير معروف</translation>
 <translation id="1041998700806130099">رسالة ورقة المهمة</translation>
 <translation id="1044897699341250361">المقصود بذلك</translation>
@@ -979,7 +978,6 @@
 <translation id="2673968385134502798">الألعاب</translation>
 <translation id="2674170444375937751">هل تريد فعلًا حذف هذه الصفحات من السجل؟</translation>
 <translation id="2674524144218093528">دهان وتشطيبات منازل</translation>
-<translation id="2674804415323431591">إخفاء الاقتراحات</translation>
 <translation id="26774279487328902">لم تعُد مجموعات علامات التبويب البالغ عددها <ph name="GROUP_COUNT" /> متوفّرة</translation>
 <translation id="2677748264148917807">الخروج</translation>
 <translation id="2683195745483370038">النتائج الأخرى التي تم العثور عليها</translation>
@@ -2635,7 +2633,6 @@
 <translation id="55293785478302737">خزم الحواف</translation>
 <translation id="553377674408670169">وظائف تعليمية</translation>
 <translation id="5534785731327961487">صفقة جيدة الآن</translation>
-<translation id="5536214594743852365">عرض القسم "<ph name="SECTION" />"</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{بالإضافة إلى موقع إلكتروني واحد (المزيد على الأجهزة التي تمت مزامنتها)}zero{بالإضافة إلى # موقع إلكتروني (المزيد على الأجهزة التي تمت مزامنتها)}two{بالإضافة إلى موقعَين إلكترونيَين (المزيد على الأجهزة التي تمت مزامنتها)}few{بالإضافة إلى # مواقع إلكترونية (المزيد على الأجهزة التي تمت مزامنتها)}many{بالإضافة إلى # موقعًا إلكترونيًا (المزيد على الأجهزة التي تمت مزامنتها)}other{بالإضافة إلى # موقع إلكتروني (المزيد على الأجهزة التي تمت مزامنتها)}}</translation>
 <translation id="553782666181800029">‏ظرف Chou 2</translation>
 <translation id="5538270463355278784">وضع ملء الشاشة تلقائيًا</translation>
@@ -3660,7 +3657,6 @@
 <translation id="7316521168101843192">‏جارٍ حفظ الملف في Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">المساعدة بشأن الاتصال</translation>
-<translation id="7323804146520582233">إخفاء قسم "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">إلغاء حساب الجهاز المحلي</translation>
 <translation id="7334320624316649418">إعادة إ&amp;جراء الترتيب</translation>
 <translation id="7335157162773372339">السماح للموقع الإلكتروني بطلب استخدام الكاميرا</translation>
@@ -3791,7 +3787,6 @@
 <translation id="7517414872996418597">‏ظرف C10</translation>
 <translation id="7518003948725431193">لم يتم العثور على أي صفحة ويب لعنوان الويب:<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">تم إخفاء قسم "<ph name="SECTION" />"</translation>
 <translation id="752189128961566325">‏يمكنك استخدام هذا العنوان في جميع منتجات Google.</translation>
 <translation id="7523408071729642236">تصنيع</translation>
 <translation id="7525067979554623046">إنشاء</translation>
@@ -4245,7 +4240,6 @@
 <translation id="8297545700510100061">يتم استخدام ملفات تعريف الارتباط وبيانات المواقع الإلكترونية الأخرى لتذكُّر بياناتك، مثلاً بهدف تسجيل دخولك أو تقديم إعلانات مخصّصة لك. لإدارة ملفات تعريف الارتباط لجميع المواقع الإلكترونية، يمكنك الانتقال إلى <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">‏قد يتتطلب Wi-Fi الذي تستخدمه (<ph name="WIFI_NAME" />) زيارة <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">أدخِل الرمز</translation>
-<translation id="8303854710873047864">تم عرض قسم "<ph name="SECTION" />"</translation>
 <translation id="8304912090860925649">إضافة إلى "جدول مقارنة" جديد</translation>
 <translation id="830498451218851433">الطي إلى نصفَين</translation>
 <translation id="8308653357438598313">بث فيديوهات مباشرة</translation>

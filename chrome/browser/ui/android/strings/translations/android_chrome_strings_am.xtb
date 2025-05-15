@@ -332,6 +332,7 @@
 <translation id="2527779675047087889">የቅንጥብ ሰሌዳ ይዘቶችን ደብቅ</translation>
 <translation id="2532336938189706096">የድር ዕይታ</translation>
 <translation id="253498598929009420">ጣቢያው የማያ ገጽዎን ይዘቶች ማየት ይችላል</translation>
+<translation id="2535807170289627159">ሁሉም ትሮች</translation>
 <translation id="2536728043171574184">የዚህን ገፅ የመስመር ውጭ ቅጂ በመመልከት ላይ</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />፣ ትር</translation>
 <translation id="2546283357679194313">ኩኪዎች እና የጣቢያ ውሂብ</translation>
@@ -434,6 +435,7 @@
 <translation id="2979639724566107830">በአዲስ መስኮት ክፈት</translation>
 <translation id="2981364137500752533">እስከ 5 መስኮቶች ሊኖሩዎት ይችላሉ።</translation>
 <translation id="2983102365694924129">በአንድ ጣቢያ ላይ ባለዎት እንቅስቃሴ ላይ የተመሠረተ። ይህ ቅንብር ጠፍቷል።</translation>
+<translation id="2983398917942897288">ያልነቃ (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">በGoogle ፍለጋዎች ውስጥ በዙሪያው ያለውን ጽሁፍ ያካትቱ</translation>
 <translation id="2988638966064514052">የይለፍ ቃላትዎን ያጠናክሩ</translation>
 <translation id="2989523299700148168">በቅርብ ጊዜ የተጎበኙ</translation>
@@ -466,6 +468,7 @@
 <translation id="314939179385989105">የChrome መነሻ ገፅ</translation>
 <translation id="3158667104057012316">በእጅ ቅደም ተከተል በመደርደር ላይ</translation>
 <translation id="3159335509547415276">ስለ የታገዱ መለያዎች የበለጠ ይወቁ</translation>
+<translation id="3161699713309727585"><ph name="BUTTON_TEXT" />፣ በአዲስ ትር ውስጥ ይከፍታል</translation>
 <translation id="3166827708714933426">የትር እና የመስኮት አቋራጮች</translation>
 <translation id="316694332262407393">Chrome አስቀድሞ እዚህ በማሄድ ላይ ነው።</translation>
 <translation id="3167258285411721858">የ<ph name="HOST_NAME" />ን የተንቀሳቃሽ ስልክ ጣቢያ መጠየቅ ይችላሉ</translation>
@@ -790,6 +793,7 @@
 <translation id="469286762610133730">የተሻለ ይዘት ያግኙ</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ተጨማሪ}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ተጨማሪ}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ተጨማሪ}}</translation>
 <translation id="4698061626562952596">የቦዘኑ ትሮችዎን እዚህ ይገምግሙ</translation>
+<translation id="4698757800236023795">ገቢር (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">የተሸጎጡ ምስሎች እና ፋይሎች</translation>
 <translation id="4710167854527459075">በአዲሶች ደርድር</translation>
 <translation id="4718044610319080485">ሰው ሠራሽ አስተውሎት ረዳትን ይጠራል</translation>

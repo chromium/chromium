@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Vodní filtry a čističky</translation>
 <translation id="1036348656032585052">Vypnout</translation>
 <translation id="1036881361735705143">Obálka C4</translation>
-<translation id="1038106730571050514">Zobrazit návrhy</translation>
 <translation id="1038842779957582377">neznámé jméno</translation>
 <translation id="1041998700806130099">Zpráva listu úlohy</translation>
 <translation id="1044897699341250361">Co to znamená</translation>
@@ -978,7 +977,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2673968385134502798">Hry</translation>
 <translation id="2674170444375937751">Jste si jisti, že chcete tyto stránky odstranit ze své historie?</translation>
 <translation id="2674524144218093528">Obklady a malby</translation>
-<translation id="2674804415323431591">Skrýt návrhy</translation>
 <translation id="26774279487328902">Skupiny karet <ph name="GROUP_COUNT" /> už nejsou dostupné</translation>
 <translation id="2677748264148917807">Odejít</translation>
 <translation id="2683195745483370038">Byly nalezeny další výsledky</translation>
@@ -2320,6 +2318,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4998950033665438990">Jednostranné</translation>
 <translation id="5001526427543320409">Soubory cookie třetích stran</translation>
 <translation id="5002932099480077015">Pokud je tato možnost aktivována, Chrome do zařízení uloží kopii karty za účelem rychlejšího vyplňování formulářů.</translation>
+<translation id="5007344584818503324">Aktivita sdílených skupin karet</translation>
 <translation id="5007392906805964215">Zkontrolovat</translation>
 <translation id="5010599530303458903">Plaťte měsíčně nebo ve čtyřech splátkách bez úroků (platí podmínky způsobilosti)</translation>
 <translation id="5011561501798487822">Zjištěný jazyk</translation>
@@ -2628,7 +2627,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="55293785478302737">Sešití na okraji</translation>
 <translation id="553377674408670169">Zaměstnání v oblasti vzdělání</translation>
 <translation id="5534785731327961487">Nyní výhodná nabídka</translation>
-<translation id="5536214594743852365">Zobrazit sekci <ph name="SECTION" /></translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 web (další na synchronizovaných zařízeních)}few{+ # weby (další na synchronizovaných zařízeních)}many{+ # webu (další na synchronizovaných zařízeních)}other{+ # webů (další na synchronizovaných zařízeních)}}</translation>
 <translation id="553782666181800029">Obálka Chou 2</translation>
 <translation id="5538270463355278784">automatický režim celé obrazovky</translation>
@@ -2747,6 +2745,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5732392974455271431">Rodiče ti jej mohou odblokovat.</translation>
 <translation id="573555826359077410">Tlačítko Vytvořit formulář, aktivací rychle vytvoříte nový formulář ve Formulářích Google</translation>
 <translation id="5738385766833540397">Nastavte, jak chcete dostávat upozornění na pokles cen produktů, které sledujete</translation>
+<translation id="5739619009927381786">V dalším kroku odemkněte obrazovku, obvykle otiskem prstu. Nebo můžete <ph name="BEGIN_LINK" />ověření provést jiným způsobem<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Pokud chcete sdílet skupiny karet, připojovat se k nim a spolupracovat na nich, synchronizujte historii a karty</translation>
 <translation id="5740911612628596808">Obálka C9</translation>
 <translation id="5742806904559466333">Bary, kluby a noční život</translation>
@@ -3355,6 +3354,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6789062271869667677">Nepřetržité (spojené delšími okraji)</translation>
 <translation id="678982761784843853">Chráněná ID obsahu</translation>
 <translation id="6790428901817661496">Přehrát</translation>
+<translation id="6792631792628412749">Přístupový klíč • <ph name="PROVIDER_NAME" /></translation>
 <translation id="6793213097893210590">Lepenka</translation>
 <translation id="679355240208270552">Ignorováno, protože v zásadách výchozí vyhledávání není aktivováno.</translation>
 <translation id="6794951432696553238">Od teď karty potvrzujte rychleji pomocí technologie Windows Hello</translation>
@@ -3649,7 +3649,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7316521168101843192">Ukládání souboru na Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Pomoc s připojením</translation>
-<translation id="7323804146520582233">Skrýt sekci <ph name="SECTION" /></translation>
 <translation id="733354035281974745">Místní přepsání účtu na zařízení</translation>
 <translation id="7334320624316649418">&amp;Opakovat změnu uspořádání</translation>
 <translation id="7335157162773372339">Může žádat o použití kamery</translation>
@@ -3780,7 +3779,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7517414872996418597">Obálka C10</translation>
 <translation id="7518003948725431193">Na webové adrese <ph name="URL" /> se nepodařilo nalézt žádnou webovou stránku.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Sekce <ph name="SECTION" /> je skryta</translation>
 <translation id="752189128961566325">Můžete ji používat ve všech službách Google</translation>
 <translation id="7523408071729642236">Výroba</translation>
 <translation id="7525067979554623046">Vytvořit</translation>
@@ -4232,7 +4230,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8297545700510100061">Soubory cookie a další data webů slouží k tomu, aby si vás web zapamatoval, například pro účely přihlášení nebo personalizace reklam. Pokud chcete spravovat soubory cookie pro všechny weby, přejděte do <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Síť Wi-Fi, kterou používáte (<ph name="WIFI_NAME" />), může vyžadovat, abyste navštívili stránku <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Zadat kód</translation>
-<translation id="8303854710873047864">Je zobrazena sekce <ph name="SECTION" /></translation>
 <translation id="8304912090860925649">Nová srovnávací tabulka</translation>
 <translation id="830498451218851433">Přeložení napůl</translation>
 <translation id="8308653357438598313">Živé přenosy videí</translation>

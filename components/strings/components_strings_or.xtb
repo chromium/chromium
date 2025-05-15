@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">ୱାଟର ଫିଲ୍ଟର ଏବଂ ପ୍ୟୁରିଫାୟର</translation>
 <translation id="1036348656032585052">ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1036881361735705143">ଏନଭେଲପ C4</translation>
-<translation id="1038106730571050514">ପରାମର୍ଶଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="1038842779957582377">ଅଜ୍ଞାତ ନାମ</translation>
 <translation id="1041998700806130099">ଜବ୍ ସିଟ୍ ମେସେଜ୍</translation>
 <translation id="1044897699341250361">ଏହାର ଅର୍ଥ କ’ଣ</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">ଗେମଗୁଡ଼ିକ</translation>
 <translation id="2674170444375937751">ଆପଣଙ୍କ ଇତିବୃତ୍ତିରୁ ଏହି ପୃଷ୍ଠାଗୁଡିକ ଆପଣ ବିଲୋପ କରିବାକୁ ଚାହୁଁଥିବାର ନିଶ୍ଚିତ କି?</translation>
 <translation id="2674524144218093528">ହାଉସ ପେଣ୍ଟିଂ ଏବଂ ଫିନିସିଂ</translation>
-<translation id="2674804415323431591">ପ୍ରସ୍ତାବଗୁଡ଼ିକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> ଟାବ ଗ୍ରୁପ ଆଉ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="2677748264148917807">ଛାଡ଼ନ୍ତୁ</translation>
 <translation id="2683195745483370038">ଅନ୍ୟ ଫଳାଫଳ ମିଳିଲା</translation>
@@ -2321,6 +2319,7 @@
 <translation id="4998950033665438990">ସିଙ୍ଗଲ ଫେସ</translation>
 <translation id="5001526427543320409">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକ</translation>
 <translation id="5002932099480077015">ଯଦି ସକ୍ଷମ ଥାଏ, ତେବେ Chrome ଦ୍ରୁତତର ଫର୍ମ ପୂରଣ ପାଇଁ ଆପଣଙ୍କ କାର୍ଡର ଏକ କପି ଏହି ଡିଭାଇସ୍‌ରେ ଷ୍ଟୋର୍ କରିବ।</translation>
+<translation id="5007344584818503324">ସେୟାର କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପ କାର୍ଯ୍ୟକଳାପ</translation>
 <translation id="5007392906805964215">ସମୀକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="5010599530303458903">ମାସିକ କିମ୍ବା 4 ସୁଧ-ମୁକ୍ତ ଇନଷ୍ଟଲମେଣ୍ଟରେ ପେମେଣ୍ଟ କରନ୍ତୁ (ଯୋଗ୍ୟତା ଉପରେ ନିର୍ଭର କରେ)</translation>
 <translation id="5011561501798487822">ଚିହ୍ନଟ କରାଯାଇଥିବା ଭାଷା</translation>
@@ -2629,7 +2628,6 @@
 <translation id="55293785478302737">ଏଜ୍ ଷ୍ଟିଚ୍</translation>
 <translation id="553377674408670169">ଶିକ୍ଷାଭିତ୍ତିକ ଚାକିରି</translation>
 <translation id="5534785731327961487">ବର୍ତ୍ତମାନର ଭଲ ଡିଲ</translation>
-<translation id="5536214594743852365">"<ph name="SECTION" />" ବିଭାଗ ଦେଖାନ୍ତୁ</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 ସାଇଟ (ସିଙ୍କ ହୋଇଥିବା ଡିଭାଇସରେ ଅଧିକ)}other{+ # ସାଇଟ (ସିଙ୍କ ହୋଇଥିବା ଡିଭାଇସରେ ଅଧିକ)}}</translation>
 <translation id="553782666181800029">ଏନଭେଲପ ଚାଉ 2</translation>
 <translation id="5538270463355278784">ସ୍ୱତଃ ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ</translation>
@@ -2748,6 +2746,7 @@
 <translation id="5732392974455271431">ଆପଣଙ୍କ ଅଭିଭାବକ ଆପଣଙ୍କ ପାଇଁ ଏହାକୁ ଅନ୍‌ବ୍ଲକ୍ କରିପାରିବେ</translation>
 <translation id="573555826359077410">'ଫର୍ମ ତିଆରି କରନ୍ତୁ' ବଟନ, Google Formsରେ ଶୀଘ୍ର ଏକ ନୂଆ ଫର୍ମ ତିଆରି କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="5738385766833540397">ଆପଣ ଟ୍ରାକ କରୁଥିବା ପ୍ରଡକ୍ଟଗୁଡ଼ିକ ପାଇଁ କିପରି ମୂଲ୍ୟ ହ୍ରାସ ଆଲର୍ଟ ପାଇବେ ତାହା ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="5739619009927381786">ପରବର୍ତ୍ତୀ ଷ୍ଟେପରେ, ସାଧାରଣତଃ ଆପଣଙ୍କ ଟିପଚିହ୍ନ ବ୍ୟବହାର କରି ଆପଣଙ୍କ ସ୍କ୍ରିନକୁ ଅନଲକ କରନ୍ତୁ। କିମ୍ବା ଆପଣ <ph name="BEGIN_LINK" />ଅନ୍ୟ ଏକ ଉପାୟରେ ଯାଞ୍ଚ<ph name="END_LINK" /> କରିପାରିବେ।</translation>
 <translation id="573974402615125334">ଟାବ ଗ୍ରୁପଗୁଡ଼ିକରେ ସେୟାର କରିବା, ଯୋଗ ଦେବା ଏବଂ ସହଯୋଗ କରିବାକୁ ଆପଣଙ୍କ ଇତିହାସ ଏବଂ ଟାବ ଗ୍ରୁପଗୁଡ଼ିକୁ ସିଙ୍କ କରନ୍ତୁ</translation>
 <translation id="5740911612628596808">ଏନଭେଲପ C9</translation>
 <translation id="5742806904559466333">ବାର, କ୍ଲବ ଏବଂ ନାଇଟଲାଇଫ</translation>
@@ -3651,7 +3650,6 @@
 <translation id="7316521168101843192">Microsoft OneDriveରେ ଫାଇଲ ସେଭ କରାଯାଉଛି</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">ସଂଯୋଗ ସହାୟତା</translation>
-<translation id="7323804146520582233">"<ph name="SECTION" />" ବିଭାଗ ଲୁଚାନ୍ତୁ</translation>
 <translation id="733354035281974745">ସ୍ଥାନୀୟ ଡିଭାଇସ୍ ଆକାଉଣ୍ଟ ଓଭର୍‌ରାଇଡ୍</translation>
 <translation id="7334320624316649418">&amp;ରି-ଡୁକୁ ପୁନଃକ୍ରମରେ ରଖନ୍ତୁ</translation>
 <translation id="7335157162773372339">ଆପଣଙ୍କ କ୍ୟାମେରା ବ୍ୟବହାର କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
@@ -3782,7 +3780,6 @@
 <translation id="7517414872996418597">ଏନଭେଲପ C10</translation>
 <translation id="7518003948725431193">ଏହି ୱେବ୍ ଠିକଣା ପାଇଁ କୌଣସି ୱେବ୍‌ପୃଷ୍ଠା ମିଳିଲା ନାହିଁ: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">"<ph name="SECTION" />" ବିଭାଗ ଲୁଚାଯାଇଛି</translation>
 <translation id="752189128961566325">ଆପଣ ଏହାକୁ ସମଗ୍ର Google ପ୍ରଡକ୍ଟରେ ବ୍ୟବହାର କରିପାରିବେ</translation>
 <translation id="7523408071729642236">ଉତ୍ପାଦନ</translation>
 <translation id="7525067979554623046">ତିଆରି କରନ୍ତୁ</translation>
@@ -4234,7 +4231,6 @@
 <translation id="8297545700510100061">ଆପଣଙ୍କୁ ସାଇନ ଇନ କରିବା କିମ୍ବା ବିଜ୍ଞାପନଗୁଡ଼ିକୁ ପର୍ସନାଲାଇଜ କରିବା ପରି, ଆପଣଙ୍କୁ ମନେରଖିବା ପାଇଁ କୁକୀ ଏବଂ ଅନ୍ୟ ସାଇଟ ଡାଟା ବ୍ୟବହାର କରାଯାଏ। ସମସ୍ତ ସାଇଟ ପାଇଁ କୁକୀଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବାକୁ, <ph name="SETTINGS" /> ଦେଖନ୍ତୁ।</translation>
 <translation id="8298115750975731693">ଆପଣ ବ୍ୟବହାର କରୁଥିବା ୱାଇ-ଫାଇ(<ph name="WIFI_NAME" />) ପାଇଁ ଆପଣଙ୍କୁ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />କୁ ଯିବାର ଆବଶ୍ୟକତା ହୋଇପାରେ।</translation>
 <translation id="8301894345671534559">କୋଡ୍ ଲେଖନ୍ତୁ</translation>
-<translation id="8303854710873047864">"<ph name="SECTION" />" ବିଭାଗ ଦେଖାଯାଇଛି</translation>
 <translation id="8304912090860925649">ନୂଆ କମ୍ପାରିଜନ ଟେବୁଲ</translation>
 <translation id="830498451218851433">ଅଧା ଫୋଲ୍ଡ କରନ୍ତୁ</translation>
 <translation id="8308653357438598313">ଲାଇଭ ଭିଡିଓ ଷ୍ଟ୍ରିମିଂ</translation>

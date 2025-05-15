@@ -4630,6 +4630,7 @@ Se eliminó en la versión M112.</translation>
 Si se inhabilita, se abrirán los archivos PDF, a menos que los usuarios desactiven el complemento de PDF.
 
 Si se define esta política, los usuarios no podrán modificarla en <ph name="PRODUCT_NAME" />. Si no se define, los usuarios podrán elegir si se abren o no los PDFs de forma externa.</translation>
+<translation id="4413764344717830250">Controlar la visibilidad de la atribución de la extensión en la página Nueva pestaña de los navegadores gestionados</translation>
 <translation id="4415603335307944578">Si se asigna el valor "True" a esta política o no se configura, el navegador volverá a mostrar la página de bienvenida la primera vez que inicies el navegador después de actualizar el SO.
 
       Si se le asigna el valor "False", el navegador no volverá a mostrar la página de bienvenida la primera vez que inicies el navegador después de actualizar el SO.</translation>
@@ -6552,6 +6553,11 @@ Consulta <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIR
 <translation id="5670249935663090320">Si se habilita esta política o no se establece, se activará <ph name="PRODUCT_NAME" />. Los usuarios pueden iniciarlo desde el menú de la aplicación, los menús contextuales de páginas, los controles multimedia de sitios web compatibles con Google Cast y, si aparece, con el icono de Cast en la barra de herramientas.
 
 Si se inhabilita esta política, se desactivará <ph name="PRODUCT_NAME" />.</translation>
+<translation id="5671392367521500075">Esta política controla la visibilidad de la atribución de la extensión en el pie de página de la página Nueva pestaña (NTP) cuando la NTP está controlada por una extensión. De forma predeterminada, el pie de página de la NTP muestra información sobre la extensión que controla la NTP.
+
+Si no se define esta política o se le asigna el valor true, los navegadores con una NTP controlada por una extensión mostrarán el nombre de la extensión y un enlace a ella.
+
+Si se le asigna el valor false a esta política, se ocultará la atribución de la extensión.</translation>
 <translation id="5673254755365419402">Habilitar la función de protección contra la recogida de huellas digitales de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="567377007899266033">Si se le asigna el valor "True" a esta política, se enviarán a Google informes de los principales eventos de instalación de extensiones activados por la política. Si se le asigna el valor "False", no se enviará información de ninguno de estos eventos. Si no se le asigna ningún valor a esta política, el valor predeterminado será "True".</translation>
 <translation id="5673780539191375049">Define el intervalo de tiempo (en minutos) utilizado para volver a cargar automáticamente el flujo de autenticación del usuario en su dispositivo <ph name="PRODUCT_OS_NAME" />. Esta política se introduce para gestionar el vencimiento de algunos servicios utilizados en flujos de autenticación cuando el dispositivo permanece inactivo durante un tiempo.

@@ -3285,6 +3285,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3269689705184377744">{COUNT,plural, =1{Lêer}other{# lêers}}</translation>
 <translation id="326999365752735949">Laai tans verskilvergelyking af</translation>
 <translation id="3270965368676314374">Lees, verander en vee foto's, musiek en ander media van jou rekenaar af uit</translation>
+<translation id="3275464924531706548">Vou <ph name="HEADER" /> in</translation>
 <translation id="3275778809241512831">Jou interne sekuriteitsleutel is tans onveilig. Verwyder dit asseblief uit enige dienste waarmee jy dit gebruik het. Stel asseblief die sekuriteitsleutel terug om die kwessie op te los.</translation>
 <translation id="3275778913554317645">Maak as venster oop</translation>
 <translation id="3277214528693754078">Navigeer met teksskermpyltjie (karetblaai)</translation>
@@ -3616,6 +3617,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3510471875518562537">Gebruik hierdie adres op jou iPhone</translation>
 <translation id="3511200754045804813">Soek weer</translation>
 <translation id="3511307672085573050">Kopieer skakeladres</translation>
+<translation id="3511358375261756531">Vou <ph name="HEADER" /> uit</translation>
 <translation id="351152300840026870">Vastebreedte-lettertipe</translation>
 <translation id="3511528412952710609">Kort</translation>
 <translation id="3513019849832307207">Sluit aan en maak oop</translation>
@@ -3625,6 +3627,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3514681096978190000">Hierdie argieflêer sluit ander lêers in wat wanware kan versteek</translation>
 <translation id="3515983984924808886">Raak weer jou sekuriteitsleutel om terugstelling te bevestig. Alle inligting wat op die sekuriteitsleutel geberg is, insluitend sy PIN, sal uitgevee word.</translation>
 <translation id="3518866566087677312">Boekmerk dinge waarheen jy later wil terugkeer</translation>
+<translation id="3519014757432845220">Help om strooiposbeskerming te verbeter deur kennisgewinginhoud en die werf se URL met Google te deel. Inhoud kan deur mense gekontrolleer word.</translation>
 <translation id="3519382402703204668">Kies ’n oortjie</translation>
 <translation id="3519564332031442870">Drukbedienerkantdiens</translation>
 <translation id="3519938335881974273">Stoor bladsy as …</translation>
@@ -5706,7 +5709,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Saai skerm uit</translation>
 <translation id="496185450405387901">Jou administrateur het hierdie app geïnstalleer.</translation>
-<translation id="4963079328730030450">Jou organisasie beheer hoe data wat deur hierdie kenmerke ingesamel word, gebruik mag word.</translation>
 <translation id="4963603093937263654">Maak seker kennisgewings is aangeskakel op jou <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Verwyder huidige oortjie</translation>
 <translation id="4964455510556214366">Rangskikking</translation>
@@ -6169,6 +6171,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5296536303670088158">Jy het Chrome se sterkste sekuriteit teen skadelike webwerwe</translation>
 <translation id="5297005732522718715">Herlaai verbindingopstelling</translation>
 <translation id="5297082477358294722">Wagwoord is gestoor. Bekyk en bestuur gestoorde wagwoorde in jou <ph name="SAVED_PASSWORDS_STORE" />.</translation>
+<translation id="5297548311167268289">Meld by <ph name="RP_ID" /> aan</translation>
 <translation id="5297946558563358707">Wys die Privaatheid-oogikoon onder regs op jou skerm wanneer iemand anders na jou skerm kyk</translation>
 <translation id="5297984209202974345">Onlangse AI-tema <ph name="INDEX" /> van <ph name="SUBJECT" />, in <ph name="STYLE" />-styl</translation>
 <translation id="5298219193514155779">Tema geskep deur</translation>
@@ -6634,6 +6637,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="563371367637259496">Mobiel</translation>
 <translation id="5635312199252507107">Laat op spesifieke werwe toe</translation>
 <translation id="5636012309446422">Verwyder <ph name="DEVICE" /> van <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="56360247219959198"><ph name="DICTIONARY" /> sal permanent uitgevee word. Hierdie handeling kan nie ontdoen word nie.</translation>
 <translation id="5636140764387862062">Meer handelinge vir PIN</translation>
 <translation id="5636996382092289526">Om <ph name="NETWORK_ID" /> te gebruik, moet jy dalk eers <ph name="LINK_START" />die netwerk se aanmeldbladsy besoek <ph name="LINK_END" />, wat binne 'n paar sekondes outomaties sal oopmaak. As dit nie gebeur nie, kan die netwerk nie gebruik word nie.</translation>
 <translation id="5637476008227280525">Aktiveer mobiele data</translation>
@@ -7751,6 +7755,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6459799433792303855">Aktiewe venster is na 'n ander vertoonskerm geskuif.</translation>
 <translation id="6460601847208524483">Vind volgende</translation>
 <translation id="6461170143930046705">Soek tans na netwerke …</translation>
+<translation id="6463488491707167747">Vee hierdie woordeboek uit</translation>
 <translation id="6463596731306859179">Kry jy ongewenste opspringers of ander onverwagte gedrag? Soms kan apps en uitbreidings wat jy installeer jou ChromeOS-instellings verander sonder dat jy weet.</translation>
 <translation id="6463668944631062248">Aanvaar uitsaaiversoek op jou <ph name="DEVICE_NAME" /></translation>
 <translation id="6463795194797719782">Wysig</translation>

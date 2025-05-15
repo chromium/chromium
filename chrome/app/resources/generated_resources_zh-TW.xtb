@@ -3163,6 +3163,7 @@
 <translation id="3188465121994729530">移動平均</translation>
 <translation id="3189187154924005138">大型游標</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{這 1 組密碼和其他項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。}other{這 {PASSWORD_COUNT} 組密碼和其他項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。}}</translation>
+<translation id="319044078641740013">如要輕鬆重新造訪瀏覽過的網站，請將歷史記錄和分頁同步到 <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3190558889382726167">密碼已儲存</translation>
 <translation id="3192586965067888278">請詳細說明問題。你的意見將送交 Google 專人審查，並可能用於改善或開發 Google 產品和服務。</translation>
 <translation id="3192947282887913208">音訊檔</translation>
@@ -5691,7 +5692,6 @@
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">投放螢幕</translation>
 <translation id="496185450405387901">你的系統管理員已安裝此應用程式。</translation>
-<translation id="4963079328730030450">貴機構會控管如何使用這些功能收集的資料。</translation>
 <translation id="4963603093937263654">確認「<ph name="DEVICE_NAME" />」已開啟通知功能</translation>
 <translation id="4963789650715167449">移除目前的分頁</translation>
 <translation id="4964455510556214366">排列</translation>
@@ -9979,7 +9979,7 @@
 <translation id="8037117027592400564">讀取使用合成語音朗讀的所有文字</translation>
 <translation id="8037357227543935929">詢問 (預設)</translation>
 <translation id="803771048473350947">檔案</translation>
-<translation id="8037801708772278989">剛才已檢查</translation>
+<translation id="8037801708772278989">剛剛檢查</translation>
 <translation id="8038111231936746805">(預設)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{正在將 1 個檔案複製到「<ph name="CLOUD_PROVIDER" />」}other{正在將 {NUM_OF_FILES} 個檔案複製到「<ph name="CLOUD_PROVIDER" />」}}</translation>
 <translation id="8041089156583427627">提供意見</translation>
@@ -10335,6 +10335,7 @@
 <translation id="8280848878018088610">海浪洶湧，背景呈現奇幻的城市和城堡，色調偏暗。</translation>
 <translation id="828180235270931531">其他的可用印表機</translation>
 <translation id="8281886186245836920">略過</translation>
+<translation id="8283802069507225582">如要在其他裝置上接續瀏覽，請將歷史記錄和分頁同步到 <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">所有 <ph name="WEBSITE_1" /> 網站</translation>
 <translation id="8284326494547611709">字幕</translation>
 <translation id="8286036467436129157">登入</translation>
@@ -11013,6 +11014,7 @@
 <translation id="8754200782896249056">&lt;p&gt;在受支援的桌面環境下執行「<ph name="PRODUCT_NAME" />」時，瀏覽器會使用系統的 Proxy 設定。不過，您的系統可能不受支援，或在啟動系統設定時發生問題。&lt;/p&gt;
 
         &lt;p&gt;無論如何，您仍然可以透過命令列進行設定。如需標記及環境變數的詳細資訊，請參閱 &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;。&lt;/p&gt;</translation>
+<translation id="8754810799862630650">如要查看其他電腦和手機上開啟的分頁，請將歷史記錄和分頁同步到 <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">為貴機構執行與安全性相關的工作，例如管理儲存在裝置上的憑證和金鑰</translation>
 <translation id="875532100880844232">選擇 <ph name="DEVICE_NAME" /> 每個按鍵的動作</translation>
 <translation id="8755376271068075440">放大(&amp;L)</translation>

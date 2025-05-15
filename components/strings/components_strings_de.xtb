@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Wasserfilter und ‑reiniger</translation>
 <translation id="1036348656032585052">Deaktivieren</translation>
 <translation id="1036881361735705143">Umschlag C4</translation>
-<translation id="1038106730571050514">Vorschläge anzeigen</translation>
 <translation id="1038842779957582377">Unbekannter Name</translation>
 <translation id="1041998700806130099">Auftragsblattnachricht</translation>
 <translation id="1044897699341250361">Was das bedeutet</translation>
@@ -978,7 +977,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2673968385134502798">Spiele</translation>
 <translation id="2674170444375937751">Möchtest du diese Seiten wirklich aus dem Verlauf löschen?</translation>
 <translation id="2674524144218093528">Malern und Lackieren</translation>
-<translation id="2674804415323431591">Vorschläge ausblenden</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> Tabgruppen sind nicht mehr verfügbar</translation>
 <translation id="2677748264148917807">Verlassen</translation>
 <translation id="2683195745483370038">Andere Ergebnisse für die Suche</translation>
@@ -2322,6 +2320,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4998950033665438990">Einseitig</translation>
 <translation id="5001526427543320409">Drittanbieter-Cookies</translation>
 <translation id="5002932099480077015">Wenn diese Funktion aktiviert ist, speichert Chrome eine Kopie deiner Karte auf diesem Gerät, um ein Ausfüllen von Formularen zu beschleunigen.</translation>
+<translation id="5007344584818503324">Aktivitäten in geteilten Tabgruppen</translation>
 <translation id="5007392906805964215">Ansehen</translation>
 <translation id="5010599530303458903">Monatliche Zahlung oder in 4 zinsfreien Raten (es gelten bestimmte Voraussetzungen)</translation>
 <translation id="5011561501798487822">Erkannte Sprache</translation>
@@ -2630,7 +2629,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="55293785478302737">Mehrere Heftklammern</translation>
 <translation id="553377674408670169">Lehrtätigkeiten</translation>
 <translation id="5534785731327961487">Aktuell gutes Angebot</translation>
-<translation id="5536214594743852365">Abschnitt "<ph name="SECTION" />" einblenden</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{1 weitere Website (weitere auf synchronisierten Geräten)}other{# weitere Websites (weitere auf synchronisierten Geräten)}}</translation>
 <translation id="553782666181800029">Umschlag Chou 2</translation>
 <translation id="5538270463355278784">automatischer Vollbildmodus</translation>
@@ -2749,6 +2747,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5732392974455271431">Deine Eltern können die Blockierung aufheben</translation>
 <translation id="573555826359077410">Schaltfläche „Formular erstellen“ – aktivieren, um schnell ein neues Formular in Google Formulare zu erstellen</translation>
 <translation id="5738385766833540397">Lege fest, wie du über Preisnachlässe bei beobachteten Produkten benachrichtigt werden willst</translation>
+<translation id="5739619009927381786">Du kannst dein Display im nächsten Schritt auf gewohnte Weise per Fingerabdruck entsperren. Alternativ kannst du eine <ph name="BEGIN_LINK" />andere Bestätigungsmethode ausprobieren<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Wenn du Tabgruppen teilen, ihnen beitreten und gemeinsam mit anderen an ihnen arbeiten möchtest, synchronisiere deinen Verlauf und deine Tabs</translation>
 <translation id="5740911612628596808">Umschlag C9</translation>
 <translation id="5742806904559466333">Bars, Clubs und Nachtleben</translation>
@@ -3654,7 +3653,6 @@ Weitere Details:
 <translation id="7316521168101843192">Datei wird in Microsoft OneDrive gespeichert</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Hilfe bei der Verbindungsherstellung</translation>
-<translation id="7323804146520582233">Abschnitt "<ph name="SECTION" />" ausblenden</translation>
 <translation id="733354035281974745">Durch Sitzung mit einem lokalen Gerätekonto überschrieben</translation>
 <translation id="7334320624316649418">&amp;Neu anordnen wiederholen</translation>
 <translation id="7335157162773372339">Darf nachfragen, wenn sie meine Kamera verwenden möchte</translation>
@@ -3785,7 +3783,6 @@ Weitere Details:
 <translation id="7517414872996418597">Umschlag C10</translation>
 <translation id="7518003948725431193">Für folgende Webadresse wurde keine Webseite gefunden: <ph name="URL" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Abschnitt "<ph name="SECTION" />" ausgeblendet</translation>
 <translation id="752189128961566325">Du kannst sie in allen Google-Produkten verwenden</translation>
 <translation id="7523408071729642236">Produktion/Fertigung</translation>
 <translation id="7525067979554623046">Erstellen</translation>
@@ -3862,6 +3859,7 @@ Weitere Details:
 <translation id="7639968568612851608">Dunkelgrau</translation>
 <translation id="7646681339175747202">Das eingegebene Passwort wurde in einer Datenpanne gefunden. Der Google Passwortmanager empfiehlt, dieses Passwort jetzt zu ändern.</translation>
 <translation id="7647206758853451655">Druckqualität</translation>
+<translation id="7648527891719919697">Diese Website bleibt gesperrt, weil du das erweiterte Sicherheitsprogramm in den <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android-Einstellungen<ph name="END_ANDROID_SETTINGS_LINK" /> aktiviert hast. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Dateien auf diesem Gerät speichern</translation>
 <translation id="7653957176542370971">Das Dokument zur Zahlungsabwicklung ist geschlossen</translation>
 <translation id="7654909834015434372">Wenn du Anmerkungen bearbeitest, wechselt das Dokument zu seiner ursprünglichen Ausrichtung zurück</translation>
@@ -4237,7 +4235,6 @@ Weitere Details:
 <translation id="8297545700510100061">Durch Cookies und andere Websitedaten erinnert sich die Website an dich, z. B. für die Anmeldung oder personalisierte Werbung. Du kannst Cookies für alle Websites in den <ph name="SETTINGS" /> verwalten.</translation>
 <translation id="8298115750975731693">Unter Umständen erfordert das verwendete WLAN (<ph name="WIFI_NAME" />), dass du <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> aufrufst.</translation>
 <translation id="8301894345671534559">Code eingeben</translation>
-<translation id="8303854710873047864">Abschnitt "<ph name="SECTION" />" eingeblendet</translation>
 <translation id="8304912090860925649">Neue Vergleichstabelle</translation>
 <translation id="830498451218851433">Zur Hälfte falten</translation>
 <translation id="8308653357438598313">Live-Videostreaming</translation>

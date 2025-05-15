@@ -3270,6 +3270,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3269689705184377744">{COUNT,plural, =1{Fitxategia}other{# fitxategi}}</translation>
 <translation id="326999365752735949">Aldea deskargatzen</translation>
 <translation id="3270965368676314374">Ordenagailuko argazkiak, musika eta bestelako multimedia-edukia irakurri, aldatu eta ezabatu.</translation>
+<translation id="3275464924531706548">Tolestu <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Barneko segurtasun-giltza ez da segurua. Ken ezazu hura erabili duten zerbitzuetatik. Arazoa konpontzeko, berrezarri segurtasun-giltza.</translation>
 <translation id="3275778913554317645">Ireki leiho gisa</translation>
 <translation id="3277214528693754078">Nabigatu testu-kurtsorearekin (testu-kurtsorearen bidez arakatzeko eginbidea)</translation>
@@ -3601,6 +3602,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3510471875518562537">Erabili helbidea iPhone-an</translation>
 <translation id="3511200754045804813">Bilatu berriro</translation>
 <translation id="3511307672085573050">Kopiatu estekaren helbi&amp;dea</translation>
+<translation id="3511358375261756531">Zabaldu <ph name="HEADER" /></translation>
 <translation id="351152300840026870">Zabalera finkoko letra</translation>
 <translation id="3511528412952710609">Laburra</translation>
 <translation id="3513019849832307207">Sartu eta ireki</translation>
@@ -3610,6 +3612,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3514681096978190000">Artxibo-fitxategi honek beste fitxategi batzuk ditu, eta baliteke haietan malwarea egotea</translation>
 <translation id="3515983984924808886">Berrezarri nahi duzula berresteko, sakatu segurtasun-giltza. Ezabatu egingo da segurtasun-giltzan gordetako informazio guztia (PINa barne).</translation>
 <translation id="3518866566087677312">Ezarri laster-marka geroago ikusi nahi dituzun elementuei</translation>
+<translation id="3519014757432845220">Lagundu spamaren aurkako babesa hobetzen jakinarazpenen edukia eta webguneko URLa Google-rekin partekatuz. Baliteke edukia gizakiek berrikustea.</translation>
 <translation id="3519382402703204668">Aukeratu fitxa bat</translation>
 <translation id="3519564332031442870">Inprimatzeko backend zerbitzua</translation>
 <translation id="3519938335881974273">Gorde orria honela…</translation>
@@ -5690,7 +5693,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Igorri pantaila</translation>
 <translation id="496185450405387901">Administratzaileak instalatu du aplikazio hau.</translation>
-<translation id="4963079328730030450">Zure erakundeak kontrolatzen du nola erabil daitezkeen eginbide hauek biltzen dituzten datuak.</translation>
 <translation id="4963603093937263654">Ziurtatu jakinarazpenak aktibatuta daudela <ph name="DEVICE_NAME" /> gailuan</translation>
 <translation id="4963789650715167449">Kendu fitxa hau</translation>
 <translation id="4964455510556214366">Antolakuntza</translation>
@@ -6152,6 +6154,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5296536303670088158">Chrome-ren segurtasun-aukerarik sendoena darabilzu webgune kaltegarrien aurka</translation>
 <translation id="5297005732522718715">Freskatu konexioa partekatzeko aukeraren konfigurazioa</translation>
 <translation id="5297082477358294722">Gorde da pasahitza. Ikusi eta kudeatu gordetako pasahitzak hemen: <ph name="SAVED_PASSWORDS_STORE" />.</translation>
+<translation id="5297548311167268289">Hasi saioa <ph name="RP_ID" /> webgunean</translation>
 <translation id="5297946558563358707">Beste norbaitek pantailari begiratzen dionean, erakutsi Pribatutasun-begia ikonoa pantailaren behealdean, eskuinetara</translation>
 <translation id="5297984209202974345">Azkenaldiko AA bidez sortutako <ph name="INDEX" />garren gaia, <ph name="SUBJECT" /> erakusten duena, <ph name="STYLE" /> estiloan</translation>
 <translation id="5298219193514155779">Gaiaren sortzailea:</translation>
@@ -6614,6 +6617,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="563371367637259496">Sare mugikorra</translation>
 <translation id="5635312199252507107">Eman webgune jakin batzuetako datuak irakurri eta aldatzeko baimena</translation>
 <translation id="5636012309446422"><ph name="DEVICE" /> gailua <ph name="PRIMARY_EMAIL" /> kontutik kendu nahi duzu?</translation>
+<translation id="56360247219959198">Betiko ezabatuko da "<ph name="DICTIONARY" />". Ezin da desegin ekintza.</translation>
 <translation id="5636140764387862062">PINaren inguruko ekintza gehiago</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> erabiltzeko, agian <ph name="LINK_START" />sarearen saio-hasierako orrira<ph name="LINK_END" /> joan beharko zara; segundo gutxi barru irekiko da hori automatikoki. Hala ez bada, ezin izango duzu sarea erabili.</translation>
 <translation id="5637476008227280525">Gaitu datu-konexioa</translation>
@@ -7730,6 +7734,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6459799433792303855">Beste pantaila batera eraman da leiho aktiboa.</translation>
 <translation id="6460601847208524483">Bilatu hurrengoa</translation>
 <translation id="6461170143930046705">Sareak bilatzen…</translation>
+<translation id="6463488491707167747">Ezabatu hiztegia</translation>
 <translation id="6463596731306859179">Nahi ez dituzun leiho gainerakorrak agertzen dira, edo funtzionamendua ez da espero bezalakoa? Batzuetan, instalatzen dituzun aplikazioek eta luzapenek ChromeOS-en ezarpenak aldatzen dituzte zuk jakin gabe.</translation>
 <translation id="6463668944631062248">Onartu igortzeko eskaera <ph name="DEVICE_NAME" /> gailuan</translation>
 <translation id="6463795194797719782">&amp;Editatu</translation>

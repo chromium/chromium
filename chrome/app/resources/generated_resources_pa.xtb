@@ -3288,6 +3288,7 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{ਫ਼ਾਈਲ}one{# ਫ਼ਾਈਲ}other{# ਫ਼ਾਈਲਾਂ}}</translation>
 <translation id="326999365752735949">diff ਡਾਊਨਲੋਡ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="3270965368676314374">ਆਪਣੇ ਕੰਪਿਊਟਰ ਤੋਂ ਫ਼ੋਟੋਆਂ, ਸੰਗੀਤ ਅਤੇ ਹੋਰ ਮੀਡੀਆ ਪੜ੍ਹੋ, ਬਦਲੋ ਅਤੇ ਮਿਟਾਓ</translation>
+<translation id="3275464924531706548"><ph name="HEADER" /> ਨੂੰ ਸਮੇਟੋ</translation>
 <translation id="3275778809241512831">ਤੁਹਾਡੀ ਅੰਦਰੂਨੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਇਸ ਵੇਲੇ ਅਸੁਰੱਖਿਅਤ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਨੂੰ ਉਹਨਾਂ ਸਾਰੀਆਂ ਸੇਵਾਵਾਂ ਤੋਂ ਹਟਾ ਦਿਓ ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਸੀਂ ਇਸ ਨਾਲ ਵਰਤਿਆ ਸੀ। ਇਸ ਸਮੱਸਿਆ ਨੂੰ ਹੱਲ ਕਰਨ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ।</translation>
 <translation id="3275778913554317645">window ਦੇ ਤੌਰ ਤੇ ਖੋਲ੍ਹੋ</translation>
 <translation id="3277214528693754078">ਲਿਖਤ ਕਰਸਰ (ਕੈਰਟ ਬ੍ਰਾਊਜ਼ਿੰਗ) ਨਾਲ ਨੈਵੀਗੇਟ ਕਰੋ</translation>
@@ -3619,6 +3620,7 @@
 <translation id="3510471875518562537">ਇਸ ਪਤੇ ਨੂੰ ਆਪਣੇ iPhone 'ਤੇ ਵਰਤੋ</translation>
 <translation id="3511200754045804813">ਮੁੜ-ਸਕੈਨ ਕਰੋ</translation>
 <translation id="3511307672085573050">ਲਿੰਕ ਪ&amp;ਤਾ ਕਾਪੀ ਕਰੋ</translation>
+<translation id="3511358375261756531"><ph name="HEADER" /> ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
 <translation id="351152300840026870">ਫਿਕਸਡ-ਚੁੜਾਈ ਫੌਂਟ</translation>
 <translation id="3511528412952710609">ਛੋਟਾ</translation>
 <translation id="3513019849832307207">ਸ਼ਾਮਲ ਹੋਵੋ ਅਤੇ ਖੋਲ੍ਹੋ</translation>
@@ -3628,6 +3630,7 @@
 <translation id="3514681096978190000">ਇਹ ਪੁਰਾਲੇਖ ਫ਼ਾਈਲ ਵਿੱਚ ਹੋਰ ਫ਼ਾਈਲਾਂ ਸ਼ਾਮਲ ਹਨ ਜਿਨ੍ਹਾਂ ਵਿੱਚ ਮਾਲਵੇਅਰ ਲੁਕਿਆ ਹੋ ਸਕਦਾ ਹੈ</translation>
 <translation id="3515983984924808886">ਰੀਸੈੱਟ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਆਪਣੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਨੂੰ ਦੁਬਾਰਾ ਸਪਰਸ਼ ਕਰੋ। ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਦੇ ਪਿੰਨ ਸਮੇਤ ਉਸ 'ਤੇ ਸਟੋਰ ਕੀਤੀ ਸਾਰੀ ਜਾਣਕਾਰੀ ਨੂੰ ਮਿਟਾਇਆ ਜਾਵੇਗਾ।</translation>
 <translation id="3518866566087677312">ਉਨ੍ਹਾਂ ਚੀਜ਼ਾਂ ਨੂੰ ਬੁੱਕਮਾਰਕ ਕਰੋ ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਸੀਂ ਬਾਅਦ ਵਿੱਚ ਵਰਤਣਾ ਚਾਹੁੰਦੇ ਹੋ</translation>
+<translation id="3519014757432845220">ਸੂਚਨਾ ਸਮੱਗਰੀ ਅਤੇ ਸਾਈਟ ਦੇ URL ਨੂੰ Google ਨਾਲ ਸਾਂਝਾ ਕਰ ਕੇ ਸਪੈਮ ਸੁਰੱਖਿਆ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ। ਸਮੱਗਰੀ ਦੀ ਮਨੁੱਖਾਂ ਵੱਲੋਂ ਸਮੀਖਿਆ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ।</translation>
 <translation id="3519382402703204668">ਕੋਈ ਟੈਬ ਚੁਣੋ</translation>
 <translation id="3519564332031442870">ਬੈਕਐਂਡ ਸੇਵਾ ਪ੍ਰਿੰਟ ਕਰੋ</translation>
 <translation id="3519938335881974273">ਪੰਨੇ ਨੂੰ ਇਸ ਵਜੋਂ ਰੱਖਿਅਤ ਕਰੋ...</translation>
@@ -5708,7 +5711,6 @@
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">ਸਕ੍ਰੀਨ ਕਾਸਟ ਕਰੋ</translation>
 <translation id="496185450405387901">ਇਹ ਐਪ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਸਥਾਪਤ ਕੀਤੀ ਹੈ।</translation>
-<translation id="4963079328730030450">ਤੁਹਾਡੀ ਸੰਸਥਾ ਇਹ ਕੰਟਰੋਲ ਕਰਦੀ ਹੈ ਕਿ ਇਨ੍ਹਾਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਵੱਲੋਂ ਇਕੱਤਰ ਕੀਤੇ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਕਿਵੇਂ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ।</translation>
 <translation id="4963603093937263654">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ <ph name="DEVICE_NAME" /> 'ਤੇ ਸੂਚਨਾਵਾਂ ਚਾਲੂ ਹਨ</translation>
 <translation id="4963789650715167449">ਮੌਜੂਦਾ ਟੈਬ ਨੂੰ ਹਟਾਓ</translation>
 <translation id="4964455510556214366">ਤਰਤੀਬ</translation>
@@ -6171,6 +6173,7 @@
 <translation id="5296536303670088158">ਤੁਹਾਡੇ ਕੋਲ ਨੁਕਸਾਨਦੇਹ ਵੈੱਬਸਾਈਟਾਂ ਦੇ ਵਿਰੁੱਧ Chrome ਦੀ ਸਭ ਤੋਂ ਮਜ਼ਬੂਤ ਸੁਰੱਖਿਆ ਹੈ</translation>
 <translation id="5297005732522718715">ਟੈਦਰਿੰਗ ਸੰਰੂਪਣ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="5297082477358294722">ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ। ਆਪਣੇ <ph name="SAVED_PASSWORDS_STORE" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਦੇਖੋ ਅਤੇ ਉਹਨਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ।</translation>
+<translation id="5297548311167268289"><ph name="RP_ID" /> ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="5297946558563358707">ਜਦੋਂ ਕੋਈ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਵੱਲ ਦੇਖਦਾ ਹੈ, ਤਾਂ ਆਪਣੀ ਸਕ੍ਰੀਨ ਦੇ ਹੇਠਲੇ ਸੱਜੇ ਪਾਸੇ ਦਿੱਤਾ ਪਰਦੇਦਾਰੀ ਅੱਖ ਪ੍ਰਤੀਕ ਦਿਖਾਓ</translation>
 <translation id="5297984209202974345"><ph name="STYLE" /> ਸਟਾਈਲ ਵਿੱਚ <ph name="SUBJECT" /> ਦਾ ਹਾਲੀਆ ਬਣਾਇਆ ਗਿਆ AI ਥੀਮ <ph name="INDEX" /></translation>
 <translation id="5298219193514155779">ਵੱਲੋਂ ਬਣਾਇਆ ਗਿਆ ਥੀਮ</translation>
@@ -6635,6 +6638,7 @@
 <translation id="563371367637259496">ਮੋਬਾਈਲ</translation>
 <translation id="5635312199252507107">ਖਾਸ ਸਾਈਟਾਂ 'ਤੇ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="5636012309446422">ਕੀ <ph name="DEVICE" /> ਨੂੰ <ph name="PRIMARY_EMAIL" /> ਤੋਂ ਹਟਾਉਣਾ ਹੈ?</translation>
+<translation id="56360247219959198"><ph name="DICTIONARY" /> ਨੂੰ ਪੱਕੇ ਤੌਰ 'ਤੇ ਮਿਟਾਇਆ ਜਾਵੇਗਾ। ਇਸ ਕਾਰਵਾਈ ਨੂੰ ਅਣਕੀਤਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
 <translation id="5636140764387862062">ਪਿੰਨ ਲਈ ਹੋਰ ਕਾਰਵਾਈਆਂ</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> ਨੂੰ ਵਰਤਣ ਲਈ ਤੁਹਾਨੂੰ ਪਹਿਲਾਂ <ph name="LINK_START" />ਨੈੱਟਵਰਕ ਦੇ ਸਾਈਨ-ਇਨ ਪੰਨੇ 'ਤੇ ਜਾਣ<ph name="LINK_END" /> ਦੀ ਲੋੜ ਹੋ ਸਕਦੀ ਹੈ, ਜੋ ਕੁਝ ਸਕਿੰਟਾਂ ਵਿੱਚ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਖੁੁੱਲ੍ਹ ਜਾਵੇਗਾ। ਜੇਕਰ ਅਜਿਹਾ ਨਹੀਂ ਹੁੰਦਾ, ਤਾਂ ਨੈੱਟਵਰਕ ਨਹੀਂ ਵਰਤਿਆ ਜਾ ਸਕਦਾ।</translation>
 <translation id="5637476008227280525">ਮੋਬਾਈਲ ਡਾਟਾ ਚਾਲੂ</translation>
@@ -7752,6 +7756,7 @@
 <translation id="6459799433792303855">ਕਿਰਿਆਸ਼ੀਲ ਵਿੰਡੋ ਨੂੰ ਕਿਸੇ ਹੋਰ ਡਿਸਪਲੇ 'ਤੇ ਲਿਜਾਇਆ ਗਿਆ।</translation>
 <translation id="6460601847208524483">ਅਗਲਾ ਲੱਭੋ</translation>
 <translation id="6461170143930046705">ਨੈੱਟਵਰਕ ਖੋਜੇ ਜਾ ਰਹੇ ਹਨ...</translation>
+<translation id="6463488491707167747">ਇਸ ਸ਼ਬਦਕੋਸ਼ ਨੂੰ ਮਿਟਾਓ</translation>
 <translation id="6463596731306859179">ਕੀ ਅਣਚਾਹੇ ਪੌਪ-ਅੱਪ ਜਾਂ ਹੋਰ ਅਣਕਿਆਸਾ ਵਿਹਾਰ ਮਿਲ ਰਿਹਾ ਹੈ? ਕਦੇ-ਕਦਾਈਂ, ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਥਾਪਤ ਕੀਤੀਆਂ ਜਾਣ ਵਾਲੀਆਂ ਐਪਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਤੁਹਾਨੂੰ ਪਤਾ ਲੱਗੇ ਬਿਨਾਂ ਤੁਹਾਡੀਆਂ ChromeOS ਸੈਟਿੰਗਾਂ ਨੂੰ ਬਦਲ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="6463668944631062248">ਆਪਣੇ <ph name="DEVICE_NAME" /> 'ਤੇ ਕਾਸਟ ਕਰਨ ਦੀ ਬੇਨਤੀ ਨੂੰ ਸਵੀਕਾਰ ਕਰੋ</translation>
 <translation id="6463795194797719782">&amp;ਸੰਪਾਦਿਤ ਕਰੋ</translation>

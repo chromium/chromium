@@ -10486,6 +10486,25 @@ I certificati devono essere codificati in base64.</translation>
 <translation id="8381774264911275515">Disattiva il trasferimento dei cookie SSO SAML nella sessione utente durante l'accesso</translation>
 <translation id="8382184662529825177">Attiva l'utilizzo dell'attestazione remota per la protezione dei contenuti per il dispositivo</translation>
 <translation id="838870586332499308">Attiva roaming dati</translation>
+<translation id="8389925503559691525">Questa policy consente di stabilire se gli URL dei blob vengono partizionati durante il recupero e la navigazione.
+Se questa policy viene attivata o se non viene configurata, gli URL dei blob verranno partizionati.
+Se questa policy viene disattivata, gli URL dei blob non verranno partizionati.
+
+Se il partizionamento dello spazio di archiviazione viene disattivato per una determinata origine di primo livello da
+<ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" />
+o <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />,
+anche gli URL dei BLOB non verranno partizionati.
+
+Se devi usare la policy, invia una segnalazione di bug all'indirizzo
+<ph name="BUG_URL" />
+spiegando il tuo caso d'uso. La policy sarà valida fino alla versione 143 di
+<ph name="PRODUCT_NAME" />,
+dopodiché la vecchia implementazione verrà rimossa.
+
+NOTA: le modifiche apportate a questa policy verranno applicate soltanto ai processi del renderer appena avviati mentre il browser è in esecuzione.
+
+Visita la pagina https://developers.google.com/privacy-sandbox/cookies/storage-partitioning
+per informazioni dettagliate sul partizionamento dello spazio di archiviazione di terze parti.</translation>
 <translation id="8392478748777481636">Questa policy è stata deprecata e non è supportata. Utilizza la policy <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="8393850527597048037">Solo policy piattaforma</translation>
 <translation id="8395350646076131800">Timeout di inattività della schermata di blocco utente del salvaschermo.</translation>

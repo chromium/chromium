@@ -3612,6 +3612,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3514681096978190000">Questo file di archivio include altri file che potrebbero nascondere malware</translation>
 <translation id="3515983984924808886">Tocca nuovamente il token di sicurezza per confermare la reimpostazione. Tutte le informazioni memorizzate sul token di sicurezza, nonché il suo PIN, verranno eliminate.</translation>
 <translation id="3518866566087677312">Aggiungi ai preferiti i contenuti a cui vuoi tornare in un secondo momento</translation>
+<translation id="3519014757432845220">Contribuisci a migliorare la protezione antispam condividendo con Google i contenuti delle notifiche e l'URL del sito. I contenuti potrebbero essere esaminati da persone.</translation>
 <translation id="3519382402703204668">Scegli una scheda</translation>
 <translation id="3519564332031442870">Servizio di backend di stampa</translation>
 <translation id="3519938335881974273">Salva pagina come…</translation>
@@ -5692,7 +5693,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Trasmetti schermo</translation>
 <translation id="496185450405387901">Questa app è stata installata dall'amministratore.</translation>
-<translation id="4963079328730030450">La tua organizzazione controlla il modo in cui possono essere utilizzati i dati raccolti da queste funzionalità.</translation>
 <translation id="4963603093937263654">Assicurati che le notifiche siano attive su <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Rimuovi scheda corrente</translation>
 <translation id="4964455510556214366">Disposizione</translation>
@@ -6617,6 +6617,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="563371367637259496">Mobile</translation>
 <translation id="5635312199252507107">Consenti su siti specifici</translation>
 <translation id="5636012309446422">Vuoi rimuovere <ph name="DEVICE" /> da <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="56360247219959198">Il dizionario <ph name="DICTIONARY" /> verrà eliminato definitivamente. Questa azione non può essere annullata.</translation>
 <translation id="5636140764387862062">Altre azioni per il PIN</translation>
 <translation id="5636996382092289526">Per poter utilizzare la rete <ph name="NETWORK_ID" />, potrebbe essere necessario <ph name="LINK_START" />visitare la pagina di accesso della rete<ph name="LINK_END" />, che si aprirà automaticamente tra alcuni secondi. In caso contrario, non è possibile utilizzare la rete.</translation>
 <translation id="5637476008227280525">Attivazione dati mobili</translation>
@@ -7733,6 +7734,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6459799433792303855">Finestra attiva spostata in un altro schermo.</translation>
 <translation id="6460601847208524483">Trova successivo</translation>
 <translation id="6461170143930046705">Ricerca di reti...</translation>
+<translation id="6463488491707167747">Elimina questo dizionario</translation>
 <translation id="6463596731306859179">Ricevi popup indesiderati o altri comportamenti imprevisti? A volte, le app e le estensioni che installi possono modificare le impostazioni di ChromeOS a tua insaputa.</translation>
 <translation id="6463668944631062248">Accetta la richiesta di trasmissione su <ph name="DEVICE_NAME" /></translation>
 <translation id="6463795194797719782">&amp;Modifica</translation>

@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Su Filtreleri ve Arıtıcılar</translation>
 <translation id="1036348656032585052">Kapat</translation>
 <translation id="1036881361735705143">Zarf C4</translation>
-<translation id="1038106730571050514">Önerileri göster</translation>
 <translation id="1038842779957582377">bilinmeyen ad</translation>
 <translation id="1041998700806130099">İş sayfası mesajı</translation>
 <translation id="1044897699341250361">Bu ne anlama geliyor?</translation>
@@ -978,7 +977,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2673968385134502798">Oyunlar</translation>
 <translation id="2674170444375937751">Bu sayfaları geçmişinizden silmek istediğinizden emin misiniz?</translation>
 <translation id="2674524144218093528">Ev Boyama ve Perdahlama</translation>
-<translation id="2674804415323431591">Önerileri gizle</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> sekme grubu artık kullanılamıyor</translation>
 <translation id="2677748264148917807">Çık</translation>
 <translation id="2683195745483370038">Diğer sonuç bulundu</translation>
@@ -2324,6 +2322,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4998950033665438990">Tek Yüz</translation>
 <translation id="5001526427543320409">Üçüncü taraf çerezleri</translation>
 <translation id="5002932099480077015">Bu seçenek etkinleştirildiğinde Chrome, formları daha hızlı doldurmak için kartınızın bir kopyasını bu cihazda saklar.</translation>
+<translation id="5007344584818503324">Paylaşılan sekme grupları etkinliği</translation>
 <translation id="5007392906805964215">İncele</translation>
 <translation id="5010599530303458903">Vade farkı olmadan, aylık plana göre veya 4 taksitle ödeyin (Uygunluk koşullarına tabidir.)</translation>
 <translation id="5011561501798487822">Algılanan Dil</translation>
@@ -2632,7 +2631,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="55293785478302737">Kenar dikişi</translation>
 <translation id="553377674408670169">Eğitim İşleri</translation>
 <translation id="5534785731327961487">Cazip Fiyat</translation>
-<translation id="5536214594743852365">"<ph name="SECTION" />" bölümünü göster</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+1 site (senkronize edilmiş cihazlarda daha fazla)}other{+ # site (senkronize edilmiş cihazlarda daha fazla)}}</translation>
 <translation id="553782666181800029">Zarf Chou 2</translation>
 <translation id="5538270463355278784">otomatik tam ekran</translation>
@@ -2751,6 +2749,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5732392974455271431">Ebeveynleriniz engellemeyi kaldırabilir</translation>
 <translation id="573555826359077410">Form oluştur düğmesi, Google Formlar'da hızlıca yeni bir form oluşturmak için etkinleştirin</translation>
 <translation id="5738385766833540397">Takip ettiğiniz ürünlerle ilgili fiyat düşüşü uyarılarını nasıl alacağınızı yönetin</translation>
+<translation id="5739619009927381786">Sonraki adımda ekranınızın kilidini açın (genellikle parmak iziniz kullanılır). <ph name="BEGIN_LINK" />Başka bir doğrulama yöntemini<ph name="END_LINK" /> de kullanabilirsiniz.</translation>
 <translation id="573974402615125334">Sekme gruplarını paylaşmak, bunlara katılmak ve gruplarda ortak çalışma yapmak için geçmişinizi ve sekmelerinizi senkronize edin</translation>
 <translation id="5740911612628596808">Zarf C9</translation>
 <translation id="5742806904559466333">Barlar, Kulüpler ve Gece Hayatı</translation>
@@ -3360,6 +3359,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6789062271869667677">Kesintisiz (Uzun)</translation>
 <translation id="678982761784843853">Korumalı içerik kimlikleri</translation>
 <translation id="6790428901817661496">Oynat</translation>
+<translation id="6792631792628412749">Geçiş anahtarı • <ph name="PROVIDER_NAME" /></translation>
 <translation id="6793213097893210590">Karton</translation>
 <translation id="679355240208270552">Varsayılan arama motoru politika tarafından etkinleştirilmediği için yoksayıldı.</translation>
 <translation id="6794951432696553238">Bundan böyle Windows Hello'yu kullanarak kartlarınızı daha hızlı onaylayın</translation>
@@ -3655,7 +3655,6 @@ Ek ayrıntılar:
 <translation id="7316521168101843192">Dosya, Microsoft OneDrive'a kaydediliyor</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Bağlantı Yardımı</translation>
-<translation id="7323804146520582233">"<ph name="SECTION" />" bölümünü gizle</translation>
 <translation id="733354035281974745">Cihaz yerel hesabını geçersiz kıl</translation>
 <translation id="7334320624316649418">Sıralama değişikliğini &amp;yeniden yap</translation>
 <translation id="7335157162773372339">Kameranızı kullanmak isteyebilir</translation>
@@ -3786,7 +3785,6 @@ Ek ayrıntılar:
 <translation id="7517414872996418597">Zarf C10</translation>
 <translation id="7518003948725431193">Şu web adresi için web sayfası bulunamadı:<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">"<ph name="SECTION" />" bölümü gizlendi</translation>
 <translation id="752189128961566325">Bunu tüm Google ürünlerinde kullanabilirsiniz</translation>
 <translation id="7523408071729642236">İmalat</translation>
 <translation id="7525067979554623046">Oluştur</translation>
@@ -4238,7 +4236,6 @@ Ek ayrıntılar:
 <translation id="8297545700510100061">Çerezler ve diğer site verileri sizi hatırlamak için kullanılır, örneğin oturumunuzu açmak veya reklamları kişiselleştirmek için. Çerezlerin tüm siteler için nasıl yönetileceğini <ph name="SETTINGS" /> sayfasından öğrenebilirsiniz.</translation>
 <translation id="8298115750975731693">Kullandığınız kablosuz bağlantı ağı (<ph name="WIFI_NAME" />) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> adresini ziyaret etmenizi gerektiriyor olabilir.</translation>
 <translation id="8301894345671534559">Kodu girin</translation>
-<translation id="8303854710873047864">"<ph name="SECTION" />" bölümü gösterildi</translation>
 <translation id="8304912090860925649">Yeni Karşılaştırma Tablosu</translation>
 <translation id="830498451218851433">Ortadan katlama</translation>
 <translation id="8308653357438598313">Canlı Video Akışı</translation>

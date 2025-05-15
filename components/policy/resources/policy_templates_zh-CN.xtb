@@ -4596,6 +4596,7 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName 变体可控制是否为顶层
 如果此政策已停用，则意味着系统会使用 PDF 插件打开 PDF 文件，除非用户已关闭该插件。
 
 如果您已设置此政策，用户将无法在 <ph name="PRODUCT_NAME" /> 中更改相关设置。如果您未设置此政策，用户便可选择是否要在外部打开 PDF。</translation>
+<translation id="4413764344717830250">控制是否在受管浏览器的“新标签页”页面上显示扩展程序来源信息</translation>
 <translation id="4415603335307944578">如果将此政策设置为 true 或未配置，在操作系统升级后，该浏览器首次启动时将重新显示欢迎页面。
 
       如果将此政策设置为 false，在操作系统升级后，该浏览器首次启动时将不会重新显示欢迎页面。</translation>
@@ -6475,6 +6476,11 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName 变体可控制是否为顶层
 <translation id="5670249935663090320">如果此政策已启用或未设置，系统将会开启 <ph name="PRODUCT_NAME" /> 以供用户从以下位置启动：应用菜单、页面上下文菜单、支持 Cast 的网站上的媒体控件，以及（如果显示的话）Cast 工具栏图标。
 
 如果此政策已停用，系统会关闭 <ph name="PRODUCT_NAME" />。</translation>
+<translation id="5671392367521500075">如果“新标签页”页面 (NTP) 由扩展程序控制，此政策会控制是否在 NTP 页脚中显示扩展程序来源信息。默认情况下，NTP 页脚会显示有关控制 NTP 的扩展程序的信息。
+
+如果此政策未设置或设为 true，通过扩展程序控制 NTP 的浏览器将显示扩展程序名称和指向该扩展程序的链接。
+
+如果此政策设为 false，扩展程序来源信息将会隐藏。</translation>
 <translation id="5673254755365419402">启用 <ph name="PRIVACY_SANDBOX_NAME" /> 数字“指纹”收集保护功能。</translation>
 <translation id="567377007899266033">如果此政策设为 True，系统便会向 Google 报告由政策触发的主要扩展程序安装事件。将此政策设为 False 意味着系统不会记录任何事件。如果此政策未设置，系统会将默认值设为 True。</translation>
 <translation id="5673780539191375049">设置在 <ph name="PRODUCT_OS_NAME" /> 设备上自动重新加载用户身份验证流程的时间间隔（以分钟为单位）。我们引入此政策的目的是应对设备处于空闲状态一段时间后，身份验证流程中使用的某些服务的过期问题。

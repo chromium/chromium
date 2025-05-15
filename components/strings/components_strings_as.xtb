@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">পানীৰ ফিল্টাৰ আৰু পিউৰিফায়াৰ</translation>
 <translation id="1036348656032585052">অফ কৰক</translation>
 <translation id="1036881361735705143">এনভেল’প C4</translation>
-<translation id="1038106730571050514">পৰামৰ্শসমূহ দেখুৱাওক</translation>
 <translation id="1038842779957582377">অজ্ঞাত নাম</translation>
 <translation id="1041998700806130099">কামৰ শ্বীটৰ বাৰ্তা</translation>
 <translation id="1044897699341250361">ইয়ে কি বুজায়</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">গে’ম</translation>
 <translation id="2674170444375937751">আপুনি ব্ৰাউজিং ইতিহাসৰ পৰা এই পৃষ্ঠাসমূহ মচিবলৈ বিচাৰে বুলি নিশ্চিতনে?</translation>
 <translation id="2674524144218093528">হাউছ পেইণ্টিং আৰু ফিনিশ্বিং</translation>
-<translation id="2674804415323431591">পৰামৰ্শসমূহ লুকুৱাওক</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> টেবৰ গোট আৰু উপলব্ধ নহয়</translation>
 <translation id="2677748264148917807">ত্যাগ কৰক</translation>
 <translation id="2683195745483370038">অন্য ফলাফল পোৱা গৈছে</translation>
@@ -2629,7 +2627,6 @@
 <translation id="55293785478302737">কাষত চিলাওক</translation>
 <translation id="553377674408670169">শিক্ষা বিভাগৰ চাকৰি</translation>
 <translation id="5534785731327961487">এতিয়া উপলব্ধ বঢ়িয়া ডীল</translation>
-<translation id="5536214594743852365">"<ph name="SECTION" />" শাখাটো দেখুৱাওক</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{আৰু ১ টা ছাইট (ছিংক কৰি থোৱা ডিভাইচসমূহত অধিক)}one{আৰু # টা ছাইট (ছিংক কৰি থোৱা ডিভাইচসমূহত অধিক)}other{আৰু # টা ছাইট (ছিংক কৰি থোৱা ডিভাইচসমূহত অধিক)}}</translation>
 <translation id="553782666181800029">এনভেল’প শ্বু ২</translation>
 <translation id="5538270463355278784">স্বয়ংক্ৰিয় পূৰ্ণ স্ক্ৰীন</translation>
@@ -3357,6 +3354,7 @@
 <translation id="6789062271869667677">অবিৰত (দীঘলীয়া)</translation>
 <translation id="678982761784843853">সুৰক্ষিত সমল আইডি</translation>
 <translation id="6790428901817661496">প্লে’ কৰক</translation>
+<translation id="6792631792628412749">পাছকী • <ph name="PROVIDER_NAME" /></translation>
 <translation id="6793213097893210590">কাৰ্ডব’ৰ্ড</translation>
 <translation id="679355240208270552">নীতি অনুযায়ী ডিফ’ল্ট সন্ধান সক্ষম হৈ নথকাৰ কাৰণে উপেক্ষা কৰা হ’ল৷</translation>
 <translation id="6794951432696553238">এতিয়াৰ পৰা Windows Hello ব্যৱহাৰ কৰি আপোনাৰ কাৰ্ডসমূহ খৰতকীয়াকৈ নিশ্চিত কৰক</translation>
@@ -3651,7 +3649,6 @@
 <translation id="7316521168101843192">Microsoft OneDriveত ফাইল ছেভ কৰি থকা হৈছে</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">সংযোগ সম্পৰ্কীয় সহায়</translation>
-<translation id="7323804146520582233">"<ph name="SECTION" />" শাখাটো লুকুৱাওক</translation>
 <translation id="733354035281974745">ডিভাইচ ল’কেল একাউণ্ট অ’ভাৰৰাইড</translation>
 <translation id="7334320624316649418">&amp;পুনৰ ক্ৰমবদ্ধ কৰাটো ৰিডু কৰক</translation>
 <translation id="7335157162773372339">আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিবলৈ বিচাৰিব পাৰে</translation>
@@ -3782,7 +3779,6 @@
 <translation id="7517414872996418597">এনভেল’প C10</translation>
 <translation id="7518003948725431193">এই ৱেব ঠিকনাটোৰ বাবে কোনো ৱেবপৃষ্ঠা বিচাৰি পোৱা নাই: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">"<ph name="SECTION" />" শাখাটো লুকুওৱা হৈছে</translation>
 <translation id="752189128961566325">আপুনি এইটো সমগ্ৰ Google প্ৰ’ডাক্টত ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="7523408071729642236">নিৰ্মাণ কৰা</translation>
 <translation id="7525067979554623046">সৃষ্টি কৰক</translation>
@@ -4234,7 +4230,6 @@
 <translation id="8297545700510100061">কুকিসমূহ আৰু ছাইটৰ অন্য ডেটা আপোনাক মনত ৰাখিবলৈ ব্যৱহাৰ কৰা হয়, উদাহৰণস্বৰূপে, আপোনাক ছাইন ইন কৰাবলৈ অথবা বিজ্ঞাপনসমূহ ব্যক্তিগতকৰণ কৰিবলৈ। আটাইবোৰ ছাইটৰ বাবে কুকি পৰিচালনা কৰিবলৈ <ph name="SETTINGS" /> চাওক।</translation>
 <translation id="8298115750975731693">আপুনি ব্যৱহাৰ কৰি থকা ৱাই-ফাই (<ph name="WIFI_NAME" />)ৰ বাবে আপুনি <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />লৈ যাবলগীয়া হ'ব পাৰে।</translation>
 <translation id="8301894345671534559">ক’ড দিয়ক</translation>
-<translation id="8303854710873047864">"<ph name="SECTION" />" শাখাটো দেখুওৱা হৈছে</translation>
 <translation id="8304912090860925649">নতুন তুলনাৰ তালিকা</translation>
 <translation id="830498451218851433">আধা ফ'ল্ড কৰক</translation>
 <translation id="8308653357438598313">লাইভ ভিডিঅ’ ষ্ট্ৰীমিং</translation>

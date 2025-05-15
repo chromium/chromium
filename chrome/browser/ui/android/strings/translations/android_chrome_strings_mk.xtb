@@ -183,6 +183,7 @@
 <translation id="1807709131360304325">Отвори нов прозорец</translation>
 <translation id="1810845389119482123">Првичното поставување на синхронизацијата не е завршено</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> не може да продолжи со <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="1820408774134375111">Долен лист за најавување</translation>
 <translation id="1825772852827001597">Начините на плаќање и адресите од Google Pay нема да бидат шифрирани. Историјата на прелистувањето од Chrome нема да се синхронизира.
 Само лицата што ја имаат вашата лозинка може да ги прочитаат шифрираните податоци. Лозинката ниту се испраќа до Google ниту Google ја складира. Ако ја заборавите лозинката или сакате да ја промените поставкава, <ph name="BEGIN_LINK" />избришете ги податоците од Chrome во вашата сметка<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Најди на страница</translation>
@@ -191,6 +192,7 @@
 <translation id="1871098866036088250">Отворај во прелистувачот Chrome</translation>
 <translation id="1877026089748256423">Chrome е застарен</translation>
 <translation id="1877073879466606884">Профилот во којшто сте најавени е управуван профил. Администраторот може да врши промени во поставките за вашиот профил далечински, да ги анализира информациите за прелистувачот преку извештаите и да извршува други неопходни задачи.</translation>
+<translation id="1879904908408734349">Долниот лист за најавување е затворен</translation>
 <translation id="1883903952484604915">Мои датотеки</translation>
 <translation id="189358972401248634">Други јазици</translation>
 <translation id="1899175549411605574">Долен лист со увиди во цените</translation>
@@ -330,6 +332,7 @@
 <translation id="2527779675047087889">Скриј содржини од привремената меморија</translation>
 <translation id="2532336938189706096">Преглед на веб</translation>
 <translation id="253498598929009420">Сајтот ќе може да ги гледа содржините на вашиот екран</translation>
+<translation id="2535807170289627159">Сите картички</translation>
 <translation id="2536728043171574184">Се прикажува офлајн копија на страницата</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, картичка</translation>
 <translation id="2546283357679194313">Колачиња и податоци од сајтот</translation>
@@ -539,6 +542,7 @@
 <translation id="3516053221628030540">Одете во Google Play</translation>
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Отстранети се дозволите за известувања за еден сајт што не сте го посетиле неодамна}one{Отстранети се дозволите за известувања за # сајт што не сте ги посетиле неодамна}other{Отстранети се дозволите за известувања за # сајта што не сте ги посетиле неодамна}}</translation>
 <translation id="3518985090088779359">Прифати и продолжи</translation>
+<translation id="3519014757432845220">Помогнете да се подобри заштитата од спам така што ќе ги споделите содржините на известувањето и URL-адресата на сајтот со Google. Содржините може да ги прегледуваат луѓе.</translation>
 <translation id="351952459507671940">Додај во нова група</translation>
 <translation id="3521388823983121502">Не може да продолжите со <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Достапно е ажурирање. Повеќе опции</translation>
@@ -854,6 +858,7 @@
 <translation id="4943703118917034429">Виртуелна реалност</translation>
 <translation id="4943872375798546930">Нема резултати</translation>
 <translation id="4957722034734105353">Дознај повеќе...</translation>
+<translation id="4959115606310463263">Долниот лист за најавување е отворен на половина висина</translation>
 <translation id="4961107849584082341">Преведете ја страницава на кој било јазик</translation>
 <translation id="4964614743143953889">Chrome ве предупредува за небезбедни сајтови и преземања</translation>
 <translation id="496607651705915226">За да ги зачувувате и користите новите лозинки во вашата сметка на Google, ажурирајте ги „Услуги на Google Play“</translation>
@@ -1146,6 +1151,7 @@
 <translation id="6277522088822131679">Настана проблем при печатење на страницата. Обидете се повторно.</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6284472661216707937">Лозинките на сите ваши уреди се затворени</translation>
+<translation id="6291294824436685757">Бришење податоци од прелистување; изберете податоци за бришење</translation>
 <translation id="6295158916970320988">Сите локации</translation>
 <translation id="6296366034485697675">Извези и избриши</translation>
 <translation id="629730747756840877">Сметка</translation>
@@ -1613,6 +1619,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923">Преостануваат <ph name="FILES" /> датотеки</translation>
 <translation id="8190358571722158785">Остана 1 ден</translation>
+<translation id="8192765420340770300">Долниот лист за најавување е отворен на целосна висина</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашите уреди<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="820568752112382238">Најпосетувани веб-сајтови</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Придружете се во групата картички со <ph name="OWNER_FIRST_NAME" /> и уште <ph name="NUMBER_OF_OTHER_MEMBERS" />}one{Придружете се во групата картички со <ph name="OWNER_FIRST_NAME" /> и уште <ph name="NUMBER_OF_OTHER_MEMBERS" />}other{Придружете се во групата картички со <ph name="OWNER_FIRST_NAME" /> и уште <ph name="NUMBER_OF_OTHER_MEMBERS" />}}</translation>
@@ -1809,6 +1816,7 @@
 <translation id="9050666287014529139">Пристапна фраза</translation>
 <translation id="9055497320631373736">Сајтот е повторно додаден во потенцијални сајтови</translation>
 <translation id="9057030985451135243">Дознајте повеќе за споделените групи картички</translation>
+<translation id="9063400323119781058">Се отпишавте</translation>
 <translation id="9063523880881406963">Исклучи „Барај локација на работна површина“</translation>
 <translation id="9065203028668620118">Измени</translation>
 <translation id="9065383040763568503">Складирани податоци за кои Chrome смета дека не се важни (на пр., сајтови без зачувани поставки или коишто не ги посетувате често)</translation>

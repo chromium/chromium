@@ -3608,6 +3608,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3514681096978190000">Bu arşiv dosyası, kötü amaçlı yazılımın gizlenmiş olabileceği başka dosyalar içeriyor</translation>
 <translation id="3515983984924808886">Sıfırlamayı onaylamak için güvenlik anahtarınıza tekrar dokunun. PIN'i de dahil olmak üzere güvenlik anahtarında depolanan tüm bilgiler silinir.</translation>
 <translation id="3518866566087677312">Daha sonra geri dönmek istediğiniz öğelere yer işareti koyun</translation>
+<translation id="3519014757432845220">Bildirim içeriğini ve sitenin URL'sini Google ile paylaşarak spam korumasını iyileştirmeye yardımcı olun. İçerik, gerçek kişiler tarafından incelenebilir.</translation>
 <translation id="3519382402703204668">Sekme seçin</translation>
 <translation id="3519564332031442870">Yazdırma Arka Uç Hizmeti</translation>
 <translation id="3519938335881974273">Sayfayı farklı kaydet...</translation>
@@ -5689,7 +5690,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Ekranı yayınla</translation>
 <translation id="496185450405387901">Bu uygulama, yöneticiniz tarafından yüklendi.</translation>
-<translation id="4963079328730030450">Bu özelliklerin topladığı verilerin kullanılma şeklini kuruluşunuz kontrol eder.</translation>
 <translation id="4963603093937263654"><ph name="DEVICE_NAME" /> cihazınızda bildirimlerin etkinleştirildiğinden emin olun</translation>
 <translation id="4963789650715167449">Mevcut sekmeyi kaldır</translation>
 <translation id="4964455510556214366">Düzenleme</translation>
@@ -6616,6 +6616,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="563371367637259496">Mobil</translation>
 <translation id="5635312199252507107">Belirli sitelerde izin ver</translation>
 <translation id="5636012309446422"><ph name="DEVICE" />, <ph name="PRIMARY_EMAIL" /> hesabından kaldırılsın mı?</translation>
+<translation id="56360247219959198"><ph name="DICTIONARY" /> kalıcı olarak silinecek. Bu işlem geri alınamaz.</translation>
 <translation id="5636140764387862062">PIN ile ilgili diğer işlemler</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> ağını kullanabilmek için öncelikle <ph name="LINK_START" />ağın oturum açma sayfasını ziyaret etmeniz<ph name="LINK_END" /> gerekebilir. Söz konusu sayfa birkaç saniye içinde otomatik olarak açılacaktır. Açılmazsa, ağ kullanılamaz.</translation>
 <translation id="5637476008227280525">Mobil veriyi etkinleştir</translation>
@@ -7733,6 +7734,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6459799433792303855">Etkin pencere başka bir ekrana taşındı.</translation>
 <translation id="6460601847208524483">Sonrakini Bul</translation>
 <translation id="6461170143930046705">Ağ aranıyor...</translation>
+<translation id="6463488491707167747">Bu sözlüğü silin</translation>
 <translation id="6463596731306859179">İstenmeyen pop-up'lar veya beklenmedik başka davranışlar mı görüyorsunuz? Yüklediğiniz uygulamalar ve uzantılar bazen haberiniz olmadan ChromeOS ayarlarınızı değiştirebilir.</translation>
 <translation id="6463668944631062248"><ph name="DEVICE_NAME" /> cihazınızdaki yayın isteğini kabul etme</translation>
 <translation id="6463795194797719782">&amp;Düzenle</translation>

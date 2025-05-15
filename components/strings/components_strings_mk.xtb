@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Филтри и пречистувачи на вода</translation>
 <translation id="1036348656032585052">Исклучи</translation>
 <translation id="1036881361735705143">Плик C4</translation>
-<translation id="1038106730571050514">Прикажувај предлози</translation>
 <translation id="1038842779957582377">непознато име</translation>
 <translation id="1041998700806130099">Порака на работниот лист</translation>
 <translation id="1044897699341250361">Што значи ова</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">Игри</translation>
 <translation id="2674170444375937751">Дали сигурно сакате да ги избришете страниците од историјата?</translation>
 <translation id="2674524144218093528">Молерисување и довршување куќи</translation>
-<translation id="2674804415323431591">Скриј ги предлозите</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> групи картички веќе не се достапни</translation>
 <translation id="2677748264148917807">Напушти</translation>
 <translation id="2683195745483370038">Најдени се други резултати</translation>
@@ -2324,6 +2322,7 @@
 <translation id="4998950033665438990">Еднострано</translation>
 <translation id="5001526427543320409">Колачиња од трети страни</translation>
 <translation id="5002932099480077015">Ако е овозможено, Chrome ќе складира копија од картичката на уредот за побрзо пополнување формулари.</translation>
+<translation id="5007344584818503324">Активност на споделените групи картички</translation>
 <translation id="5007392906805964215">Прегледајте</translation>
 <translation id="5010599530303458903">Плаќајте месечно или на 4 рати без камата (зависи од подобност)</translation>
 <translation id="5011561501798487822">Откриен јазик</translation>
@@ -2632,7 +2631,6 @@
 <translation id="55293785478302737">Шиење на работ</translation>
 <translation id="553377674408670169">Работни места во образование</translation>
 <translation id="5534785731327961487">Добра понуда сега</translation>
-<translation id="5536214594743852365">Прикажи го делот „<ph name="SECTION" />“</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{и уште 1 сајт (повеќе на синхронизираните уреди)}one{и уште # сајт (повеќе на синхронизираните уреди)}other{и уште # сајта (повеќе на синхронизираните уреди)}}</translation>
 <translation id="553782666181800029">Плик Chou 2</translation>
 <translation id="5538270463355278784">автоматско отворање на цел екран</translation>
@@ -2751,6 +2749,7 @@
 <translation id="5732392974455271431">Родителите може да го одблокираат</translation>
 <translation id="573555826359077410">Копче за создавање формулар, активирајте го за да набрзина создадете нов формулар на Google Forms</translation>
 <translation id="5738385766833540397">Управувајте како ќе добивате известувања за намалени цени за производите што ги следите</translation>
+<translation id="5739619009927381786">Отклучете го екранот на следниот чекор, обично со отпечатокот. Или може да <ph name="BEGIN_LINK" />потврдите на друг начин<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">За да споделувате, да се придружувате и да соработувате во групи картички, синхронизирајте ги историјата и картичките</translation>
 <translation id="5740911612628596808">Плик C9</translation>
 <translation id="5742806904559466333">Барови, клубови и ноќен живот</translation>
@@ -3360,6 +3359,7 @@
 <translation id="6789062271869667677">Непрекинато (долго)</translation>
 <translation id="678982761784843853">ID на заштитени содржини</translation>
 <translation id="6790428901817661496">Репродуцирај</translation>
+<translation id="6792631792628412749">Криптографски клуч • <ph name="PROVIDER_NAME" /></translation>
 <translation id="6793213097893210590">Картон</translation>
 <translation id="679355240208270552">Игнорирано бидејќи правилото не овозможува стандардно пребарување.</translation>
 <translation id="6794951432696553238">Отсега, потврдувајте ги картичките побрзо со Windows Hello</translation>
@@ -3654,7 +3654,6 @@
 <translation id="7316521168101843192">Датотеката се зачувува во Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Помош за поврзување</translation>
-<translation id="7323804146520582233">Скриј го делот „<ph name="SECTION" />“</translation>
 <translation id="733354035281974745">Отфрлање на локалната сметка на уредот</translation>
 <translation id="7334320624316649418">&amp;Повтори преуредување</translation>
 <translation id="7335157162773372339">Може да прашува за да ја користи камерата</translation>
@@ -3785,7 +3784,6 @@
 <translation id="7517414872996418597">Плик C10</translation>
 <translation id="7518003948725431193">Не е пронајдена веб-страница за веб-адресата: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Делот „<ph name="SECTION" />“ е скриен</translation>
 <translation id="752189128961566325">Може да ја користите на производите на Google</translation>
 <translation id="7523408071729642236">Производство</translation>
 <translation id="7525067979554623046">Создај</translation>
@@ -4237,7 +4235,6 @@
 <translation id="8297545700510100061">Колачињата и другите сајтови се користат за да ве запомнат, на пр., за најавување или за персонализирање реклами. За да управувате со колачињата за сите сајтови, погледнете „<ph name="SETTINGS" />“.</translation>
 <translation id="8298115750975731693">Wi-Fi што го користите (<ph name="WIFI_NAME" />) може да бара да ја посетите страницата <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Внеси го кодот</translation>
-<translation id="8303854710873047864">Прикажан е делот „<ph name="SECTION" />“</translation>
 <translation id="8304912090860925649">Нова табела за споредба</translation>
 <translation id="830498451218851433">Превиткување на половина</translation>
 <translation id="8308653357438598313">Видеострим во живо</translation>

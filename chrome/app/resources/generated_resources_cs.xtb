@@ -3612,6 +3612,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3514681096978190000">Tento archivní soubor obsahuje další soubory, které mohou skrývat malware</translation>
 <translation id="3515983984924808886">Potvrďte reset tím, že se znovu dotknete bezpečnostního klíče. Všechny informace uložené na bezpečnostním klíči, včetně kódu PIN, se vymažou.</translation>
 <translation id="3518866566087677312">Uložte si záložky, ke kterým se chcete později vrátit</translation>
+<translation id="3519014757432845220">Pomozte zlepšit ochranu proti spamu tím, že obsah oznámení a adresu URL webu budete sdílet s Googlem. Obsah můžou zkontrolovat lidé.</translation>
 <translation id="3519382402703204668">Vyberte kartu</translation>
 <translation id="3519564332031442870">Tisková back-endová služba</translation>
 <translation id="3519938335881974273">Uložit stránku jako…</translation>
@@ -5691,7 +5692,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Odesílání obrazovky</translation>
 <translation id="496185450405387901">Tuto aplikaci nainstaloval administrátor.</translation>
-<translation id="4963079328730030450">Vaše organizace určuje, jak mohou být data shromážděná těmito funkcemi použita.</translation>
 <translation id="4963603093937263654">Na zařízení <ph name="DEVICE_NAME" /> musí být zapnutá oznámení</translation>
 <translation id="4963789650715167449">Odstranit aktuální kartu</translation>
 <translation id="4964455510556214366">Uspořádání</translation>
@@ -6615,6 +6615,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="563371367637259496">Mobilní</translation>
 <translation id="5635312199252507107">Povolit na konkrétních webech</translation>
 <translation id="5636012309446422">Odebrat zařízení <ph name="DEVICE" /> z účtu <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="56360247219959198">Šablona <ph name="DICTIONARY" /> bude trvale smazána. Tuto akci nebude možné vrátit.</translation>
 <translation id="5636140764387862062">Další akce pro PIN</translation>
 <translation id="5636996382092289526">Chcete-li používat síť <ph name="NETWORK_ID" />, je třeba nejdříve <ph name="LINK_START" />přejít na přihlašovací stránku sítě<ph name="LINK_END" />, která se za několik sekund automaticky otevře. Pokud se tak nestane, nelze síť použít.</translation>
 <translation id="5637476008227280525">Aktivovat mobilní data</translation>
@@ -7731,6 +7732,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6459799433792303855">Aktivní okno bylo přesunuto na jinou obrazovku.</translation>
 <translation id="6460601847208524483">Najít další</translation>
 <translation id="6461170143930046705">Vyhledávání sítí...</translation>
+<translation id="6463488491707167747">Smazat tento slovník</translation>
 <translation id="6463596731306859179">Máte problémy s nechtěnými vyskakovacími okny nebo jiným neočekávaným chováním? Někdy mohou aplikace a rozšíření, které nainstalujete, změnit nastavení systému ChromeOS, aniž byste o tom věděli.</translation>
 <translation id="6463668944631062248">Přijměte na zařízení <ph name="DEVICE_NAME" /> žádost o odesílání</translation>
 <translation id="6463795194797719782">&amp;Upravit</translation>

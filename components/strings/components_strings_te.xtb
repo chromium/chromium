@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">వాటర్ ఫిల్టర్‌లు &amp; ప్యూరిఫైయర్‌లు</translation>
 <translation id="1036348656032585052">ఆఫ్ చేయి</translation>
 <translation id="1036881361735705143">ఎన్వలప్ C4</translation>
-<translation id="1038106730571050514">సూచనలను చూపు</translation>
 <translation id="1038842779957582377">తెలియని పేరు</translation>
 <translation id="1041998700806130099">జాబ్ షీట్ మెసేజ్‌</translation>
 <translation id="1044897699341250361">దీని అర్థం ఏమిటి</translation>
@@ -973,7 +972,6 @@
 <translation id="2673968385134502798">గేమ్‌లు</translation>
 <translation id="2674170444375937751">మీ హిస్టరీ నుండి ఈ పేజీలను తొలగించదలిచారా?</translation>
 <translation id="2674524144218093528">ఇంటి పెయింటింగ్ &amp; ఫినిషింగ్</translation>
-<translation id="2674804415323431591">సూచనలను దాచు</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> ట్యాబ్ గ్రూప్‌లు ఇకపై అందుబాటులో ఉండవు</translation>
 <translation id="2677748264148917807">నిష్క్రమించండి</translation>
 <translation id="2683195745483370038">ఇతర ఫలితాలు కనుగొనబడ్డాయి</translation>
@@ -2628,7 +2626,6 @@
 <translation id="55293785478302737">కుట్టిన అంచులు</translation>
 <translation id="553377674408670169">విద్యా సంబంధిత ఉద్యోగాలు</translation>
 <translation id="5534785731327961487">ఇప్పుడు గొప్ప డీల్ అందుబాటులో ఉంది</translation>
-<translation id="5536214594743852365">"<ph name="SECTION" />" విభాగాన్ని చూపించు</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 సైట్ (సింక్ చేసిన పరికరాల్లో మరిన్ని)}other{+ # సైట్‌లు (సింక్ చేసిన పరికరాల్లో మరిన్ని)}}</translation>
 <translation id="553782666181800029">ఎన్వలప్ చౌ 2</translation>
 <translation id="5538270463355278784">ఆటోమేటిక్ ఫుల్ స్క్రీన్</translation>
@@ -3653,7 +3650,6 @@
 <translation id="7316521168101843192">ఫైల్‌ను Microsoft OneDriveకు సేవ్ చేస్తోంది</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">కనెక్షన్ సహాయం</translation>
-<translation id="7323804146520582233">"<ph name="SECTION" />" విభాగాన్ని దాచు</translation>
 <translation id="733354035281974745">పరికర స్థానిక ఖాతా భర్తీ</translation>
 <translation id="7334320624316649418">&amp;మళ్లీ క్రమం చేయడాన్ని రిపీట్‌ చేయి</translation>
 <translation id="7335157162773372339">మీ కెమెరాను ఉపయోగించడానికి సైట్ అనుమతి అడగవచ్చు</translation>
@@ -3784,7 +3780,6 @@
 <translation id="7517414872996418597">ఎన్వలప్ C10</translation>
 <translation id="7518003948725431193">వెబ్ అడ్రస్‌కు వెబ్‌పేజీ కనుగొనబడలేదు: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">"<ph name="SECTION" />" విభాగం దాచబడింది</translation>
 <translation id="752189128961566325">దీనిని Google ప్రోడక్ట్‌ల అంతటా మీరు ఉపయోగించవచ్చు</translation>
 <translation id="7523408071729642236">తయారీ</translation>
 <translation id="7525067979554623046">క్రియేట్ చేయండి</translation>
@@ -4237,7 +4232,6 @@
 <translation id="8297545700510100061">మీ సందర్శన సమాచారాన్ని గుర్తుంచుకోవడానికి కుక్కీలు, ఇతర సైట్ డేటా ఉపయోగించబడతాయి, ఉదాహరణకు, సైన్ ఇన్ చేయడానికి మిమ్మల్ని అనుమతించడం లేదా మీకు వ్యక్తిగతీకరించిన యాడ్‌లను చూపడం. అన్ని సైట్‌లకు కుక్కీలను మేనేజ్ చేయడానికి, <ph name="SETTINGS" />‌ను చూడండి.</translation>
 <translation id="8298115750975731693">మీరు ఉపయోగిస్తున్న Wi-Fi (<ph name="WIFI_NAME" />)కు మీరు<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />ను సందర్శించడం అవసరం.</translation>
 <translation id="8301894345671534559">కోడ్‌ను నమోదు చేయండి</translation>
-<translation id="8303854710873047864">"<ph name="SECTION" />" విభాగం చూపబడింది</translation>
 <translation id="8304912090860925649">కొత్త కంపారిజన్ టేబుల్</translation>
 <translation id="830498451218851433">సగం ఫోల్డ్</translation>
 <translation id="8308653357438598313">లైవ్ వీడియో స్ట్రీమింగ్</translation>

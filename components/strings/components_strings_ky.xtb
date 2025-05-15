@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Суу чыпкалары жана тазалагычтар</translation>
 <translation id="1036348656032585052">Өчүрүү</translation>
 <translation id="1036881361735705143">Конверт C4</translation>
-<translation id="1038106730571050514">Сунуштарды көрсөтүү</translation>
 <translation id="1038842779957582377">белгисиз ат</translation>
 <translation id="1041998700806130099">Жумуш барагынын билдирүүсү</translation>
 <translation id="1044897699341250361">Бул эмнени билдирет</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">Оюндар</translation>
 <translation id="2674170444375937751">Бул барактарды чын эле таржымалыңыздан өчүрөсүзбү?</translation>
 <translation id="2674524144218093528">Үйдү сырдоо жана жасалгалоо</translation>
-<translation id="2674804415323431591">Сунуштарды жашыруу</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> өтмөктөр тобу мындан ары жеткиликсиз</translation>
 <translation id="2677748264148917807">Чыгуу</translation>
 <translation id="2683195745483370038">Табылган башка натыйжалар</translation>
@@ -2632,7 +2630,6 @@
 <translation id="55293785478302737">Четин жамоо</translation>
 <translation id="553377674408670169">Билим берүү жумуштары</translation>
 <translation id="5534785731327961487">Пайдалуу сунуш</translation>
-<translation id="5536214594743852365">"<ph name="SECTION" />" бөлүгүн көрсөтүү</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{Дагы 1 сайт (шайкештирилген түзмөктөрдө көбүрөөк)}other{Дагы # сайт (шайкештирилген түзмөктөрдө көбүрөөк)}}</translation>
 <translation id="553782666181800029">Конверт Чоу 2</translation>
 <translation id="5538270463355278784">автоматтык толук экран</translation>
@@ -3656,7 +3653,6 @@
 <translation id="7316521168101843192">Файлды Microsoft OneDrive'га сактоо</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Туташуу боюнча жардам алуу</translation>
-<translation id="7323804146520582233">"<ph name="SECTION" />" бөлүгүн жашыруу</translation>
 <translation id="733354035281974745">Түзмөктөгү аккаунтту өзгөртүү</translation>
 <translation id="7334320624316649418">Иреттештирүүнү &amp;кайталоо</translation>
 <translation id="7335157162773372339">Камераңызды колдонууга уруксат сурай алат</translation>
@@ -3787,7 +3783,6 @@
 <translation id="7517414872996418597">Конверт C10</translation>
 <translation id="7518003948725431193">Бул веб даректин бир да веб-баракчасы табылган жок: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">"<ph name="SECTION" />" бөлүмү жашырылды</translation>
 <translation id="752189128961566325">Аны Google кызматтарында колдоно аласыз</translation>
 <translation id="7523408071729642236">Өндүрүш</translation>
 <translation id="7525067979554623046">Түзүү</translation>
@@ -4239,7 +4234,6 @@
 <translation id="8297545700510100061">Cookie файлдары жана башка маалымат сизди эстеп калып, аккаунтка кирүү же жарнамаларды жекелештирүү ж.б. үчүн колдонулат. Бардык сайттардын cookie файлдарын тескөө үчүн <ph name="SETTINGS" />бөлүмүнө өтүңүз.</translation>
 <translation id="8298115750975731693">Сиз колдонуп жаткан Wi-Fi (<ph name="WIFI_NAME" />), <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> дарегине өтүшүңүздү талап кылышы мүмкүн.</translation>
 <translation id="8301894345671534559">Кодду киргизиңиз</translation>
-<translation id="8303854710873047864">"<ph name="SECTION" />" бөлүмү көрсөтүлдү</translation>
 <translation id="8304912090860925649">Жаңы Салыштыруучу таблица</translation>
 <translation id="830498451218851433">Жарымынан бүктөө</translation>
 <translation id="8308653357438598313">Камерадан түз берүү</translation>

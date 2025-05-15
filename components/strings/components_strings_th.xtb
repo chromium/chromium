@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">เครื่องกรองน้ำ</translation>
 <translation id="1036348656032585052">ปิด</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
-<translation id="1038106730571050514">แสดงคำแนะนำ</translation>
 <translation id="1038842779957582377">ไม่ทราบชื่อ</translation>
 <translation id="1041998700806130099">ข้อความแผ่นงาน</translation>
 <translation id="1044897699341250361">หมายความว่าอะไร</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">เกม</translation>
 <translation id="2674170444375937751">คุณแน่ใจหรือไม่ว่าต้องการนำออกหน้าเหล่านี้ออกจากประวัติการเข้าชมของคุณ</translation>
 <translation id="2674524144218093528">การทาสีบ้านและการเก็บรายละเอียด</translation>
-<translation id="2674804415323431591">ซ่อนคำแนะนำ</translation>
 <translation id="26774279487328902">กลุ่มแท็บ <ph name="GROUP_COUNT" /> กลุ่มใช้งานไม่ได้อีกต่อไป</translation>
 <translation id="2677748264148917807">ออก</translation>
 <translation id="2683195745483370038">พบผลการค้นหาอื่นๆ</translation>
@@ -2632,7 +2630,6 @@
 <translation id="55293785478302737">เย็บขอบ</translation>
 <translation id="553377674408670169">งานด้านการศึกษา</translation>
 <translation id="5534785731327961487">ดีลดีตอนนี้</translation>
-<translation id="5536214594743852365">แสดงส่วน "<ph name="SECTION" />"</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{อีก 1 เว็บไซต์ (ดูเพิ่มเติมในอุปกรณ์ที่ซิงค์)}other{อีก # เว็บไซต์ (ดูเพิ่มเติมในอุปกรณ์ที่ซิงค์)}}</translation>
 <translation id="553782666181800029">Envelope Chou 2</translation>
 <translation id="5538270463355278784">เต็มหน้าจออัตโนมัติ</translation>
@@ -3657,7 +3654,6 @@
 <translation id="7316521168101843192">กำลังบันทึกไฟล์ไปยัง Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">ความช่วยเหลือในการเชื่อมต่อ</translation>
-<translation id="7323804146520582233">ซ่อนส่วน "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">ลบล้างบัญชีภายในอุปกรณ์</translation>
 <translation id="7334320624316649418">&amp;ทำซ้ำการจัดลำดับใหม่</translation>
 <translation id="7335157162773372339">สามารถขอใช้กล้องของคุณได้</translation>
@@ -3788,7 +3784,6 @@
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">ไม่พบหน้าเว็บสำหรับที่อยู่เว็บ: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">ส่วน "<ph name="SECTION" />" ซ่อนอยู่</translation>
 <translation id="752189128961566325">คุณจะใช้ที่อยู่นี้ในผลิตภัณฑ์ต่างๆ ของ Google ได้</translation>
 <translation id="7523408071729642236">การผลิต</translation>
 <translation id="7525067979554623046">สร้าง</translation>
@@ -4241,7 +4236,6 @@
 <translation id="8297545700510100061">ระบบจะใช้คุกกี้และข้อมูลอื่นของเว็บไซต์ในการจดจำคุณ เช่น เพื่อลงชื่อเข้าใช้หรือปรับโฆษณาตามโปรไฟล์ของคุณ ดู<ph name="SETTINGS" />เพื่อจัดการคุกกี้สำหรับทุกเว็บไซต์</translation>
 <translation id="8298115750975731693">Wi-Fi ที่คุณใช้ (<ph name="WIFI_NAME" />) อาจต้องการให้คุณไปที่ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /></translation>
 <translation id="8301894345671534559">ป้อนรหัส</translation>
-<translation id="8303854710873047864">แสดงส่วน "<ph name="SECTION" />"</translation>
 <translation id="8304912090860925649">ตารางเปรียบเทียบใหม่</translation>
 <translation id="830498451218851433">พับครึ่ง</translation>
 <translation id="8308653357438598313">สตรีมมิงวิดีโอสด</translation>

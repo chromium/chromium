@@ -3286,6 +3286,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3269689705184377744">{COUNT,plural, =1{File}one{# file}other{# na file}}</translation>
 <translation id="326999365752735949">Dina-download ang diff</translation>
 <translation id="3270965368676314374">Basahin, baguhin at i-delete ang mga larawan, musika at iba pang media sa iyong computer</translation>
+<translation id="3275464924531706548">I-collapse ang <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Kasalukuyang hindi secure ang iyong internal na security key. Pakialis ito sa anumang serbisyo kung saan mo ito ginamit. Para lutasin ang isyu, paki-reset ang security key.</translation>
 <translation id="3275778913554317645">Buksan bilang window</translation>
 <translation id="3277214528693754078">Mag-navigate gamit ang cursor ng text (caret browsing)</translation>
@@ -3617,6 +3618,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3510471875518562537">Gamitin Ang Address Na Ito Sa Iyong iPhone</translation>
 <translation id="3511200754045804813">Muling i-scan</translation>
 <translation id="3511307672085573050">Kopyahin ang Addr&amp;ess ng Link</translation>
+<translation id="3511358375261756531">I-expand ang <ph name="HEADER" /></translation>
 <translation id="351152300840026870">Fixed-width font</translation>
 <translation id="3511528412952710609">Maikli</translation>
 <translation id="3513019849832307207">Sumali at buksan</translation>
@@ -3626,6 +3628,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3514681096978190000">Ang archive file na ito ay may iba pang file na posibleng may itinatagong malware</translation>
 <translation id="3515983984924808886">Pindutin ulit ang iyong security key para kumpirmahin ang pag-reset. Made-delete ang lahat ng impormasyong naka-store sa security key, kabilang ang PIN nito.</translation>
 <translation id="3518866566087677312">I-bookmark ang mga bagay na gusto mong balikan sa ibang pagkakataon</translation>
+<translation id="3519014757432845220">Tumulong na pahusayin ang proteksyon sa spam sa pamamagitan ng pag-share ng content ng notification at URL ng site sa Google. Posibleng suriin ng mga tao ang content.</translation>
 <translation id="3519382402703204668">Pumili ng tab</translation>
 <translation id="3519564332031442870">Backend na Serbisyo sa Pag-print</translation>
 <translation id="3519938335881974273">I-save ang page bilang...</translation>
@@ -5707,7 +5710,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">I-cast ang screen</translation>
 <translation id="496185450405387901">Na-install ang app na ito ng iyong administrator.</translation>
-<translation id="4963079328730030450">Kinokontrol ng iyong organisasyon kung paano puwedeng gamitin ang data na kinokolekta ng mga feature na ito.</translation>
 <translation id="4963603093937263654">Tiyaking naka-on ang mga notification sa iyong <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Alisin ang kasalukuyang tab</translation>
 <translation id="4964455510556214366">Kaayusan</translation>
@@ -6170,6 +6172,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5296536303670088158">Nasa iyo ang pinakamaigting na seguridad ng Chrome laban sa mga mapaminsalang website</translation>
 <translation id="5297005732522718715">I-refresh ang Configuration ng Pag-tether</translation>
 <translation id="5297082477358294722">Na-save ang password. Tingnan at pamahalaan ang mga naka-save na password sa iyong <ph name="SAVED_PASSWORDS_STORE" />.</translation>
+<translation id="5297548311167268289">Mag-sign in sa <ph name="RP_ID" /></translation>
 <translation id="5297946558563358707">Kapag may ibang tumingin sa iyong screen, ipakita ang icon na mata ng Privacy sa kanang bahagi sa ibaba ng iyong screen</translation>
 <translation id="5297984209202974345">Kamakailang AI theme <ph name="INDEX" /> sa <ph name="SUBJECT" />, sa istilong <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Ang tema ay nilikha ni</translation>
@@ -6634,6 +6637,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="563371367637259496">Mobile</translation>
 <translation id="5635312199252507107">Payagan sa mga partikular na site</translation>
 <translation id="5636012309446422">Alisin ang <ph name="DEVICE" /> sa <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="56360247219959198">Permanenteng ide-delete ang <ph name="DICTIONARY" />. Hindi maa-undo ang aksyong ito.</translation>
 <translation id="5636140764387862062">Higit pang pagkilos para sa PIN</translation>
 <translation id="5636996382092289526">Upang gamitin ang <ph name="NETWORK_ID" />, maaaring kailangan mo munang <ph name="LINK_START" />bisitahin ang pahina sa pag-sign in ng network<ph name="LINK_END" />, na awtomatikong bubukas sa loob ng ilang segundo. Kung hindi ito mangyayari, hindi magagamit ang network.</translation>
 <translation id="5637476008227280525">Pag-enable sa mobile data</translation>
@@ -7751,6 +7755,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6459799433792303855">Inilipat ang aktibong window sa ibang display.</translation>
 <translation id="6460601847208524483">Find Next</translation>
 <translation id="6461170143930046705">Naghahanap ng mga network...</translation>
+<translation id="6463488491707167747">I-delete ang diksyunaryong ito</translation>
 <translation id="6463596731306859179">Nakakatanggap ng mga hindi gustong pop-up, o iba pang hindi inaasahang gawi? Kung minsan, puwedeng mabago ng mga app at extension na ini-install mo ang mga setting ng iyong ChromeOS nang hindi mo alam.</translation>
 <translation id="6463668944631062248">Tanggapin ang request sa pag-cast sa iyong <ph name="DEVICE_NAME" /></translation>
 <translation id="6463795194797719782">&amp;Mag-edit</translation>

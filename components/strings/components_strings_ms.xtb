@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Penapis &amp; Penulenan Air</translation>
 <translation id="1036348656032585052">Matikan</translation>
 <translation id="1036881361735705143">Sampul C4</translation>
-<translation id="1038106730571050514">Tunjukkan cadangan</translation>
 <translation id="1038842779957582377">nama tidak diketahui</translation>
 <translation id="1041998700806130099">Mesej helaian tugas</translation>
 <translation id="1044897699341250361">Maksudnya</translation>
@@ -978,7 +977,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2673968385134502798">Permainan</translation>
 <translation id="2674170444375937751">Adakah anda pasti anda mahu memadamkan halaman ini daripada sejarah anda?</translation>
 <translation id="2674524144218093528">Cat &amp; Kemasan Rumah</translation>
-<translation id="2674804415323431591">Sembunyikan cadangan</translation>
 <translation id="26774279487328902">Kumpulan tab <ph name="GROUP_COUNT" /> tidak tersedia lagi</translation>
 <translation id="2677748264148917807">Tinggalkan</translation>
 <translation id="2683195745483370038">Hasil carian lain yang ditemukan</translation>
@@ -2634,7 +2632,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="55293785478302737">Jahitan tepi</translation>
 <translation id="553377674408670169">Pekerjaan Pendidikan</translation>
 <translation id="5534785731327961487">Tawaran Berbaloi Sekarang</translation>
-<translation id="5536214594743852365">Tunjukkan bahagian "<ph name="SECTION" />"</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 laman (beberapa lagi pada peranti disegerakkan)}other{+ # laman (beberapa lagi pada peranti disegerakkan)}}</translation>
 <translation id="553782666181800029">Sampul Chou 2</translation>
 <translation id="5538270463355278784">skrin penuh automatik</translation>
@@ -3659,7 +3656,6 @@ Butiran tambahan:
 <translation id="7316521168101843192">Menyimpan fail pada Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Bantuan Sambungan</translation>
-<translation id="7323804146520582233">Sembunyikan bahagian "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">Pembatalan akaun setempat peranti</translation>
 <translation id="7334320624316649418">&amp;Buat semula susun semula</translation>
 <translation id="7335157162773372339">Boleh meminta untuk menggunakan kamera anda</translation>
@@ -3790,7 +3786,6 @@ Butiran tambahan:
 <translation id="7517414872996418597">Sampul C10</translation>
 <translation id="7518003948725431193">Tiada halaman web dijumpai untuk alamat web: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Bahagian "<ph name="SECTION" />" disembunyikan</translation>
 <translation id="752189128961566325">Anda boleh menggunakan alamat ini merentas produk Google</translation>
 <translation id="7523408071729642236">Pembuatan</translation>
 <translation id="7525067979554623046">Cipta</translation>
@@ -4243,7 +4238,6 @@ Butiran tambahan:
 <translation id="8297545700510100061">Kuki dan data laman lain digunakan untuk mengingat anda, misalnya untuk log anda masuk atau memperibadikan iklan. Untuk mengurus kuki bagi semua laman, lihat <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Wi-Fi yang anda gunakan (<ph name="WIFI_NAME" />) mungkin memerlukan anda untuk melawat <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Masukkan kod</translation>
-<translation id="8303854710873047864">Bahagian "<ph name="SECTION" />" ditunjukkan</translation>
 <translation id="8304912090860925649">Jadual Perbandingan Baharu</translation>
 <translation id="830498451218851433">Lipat dua</translation>
 <translation id="8308653357438598313">Penstriman Video Langsung</translation>

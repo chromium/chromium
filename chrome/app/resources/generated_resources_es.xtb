@@ -3274,6 +3274,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3269689705184377744">{COUNT,plural, =1{Archivo}other{# archivos}}</translation>
 <translation id="326999365752735949">Descargando archivo diff</translation>
 <translation id="3270965368676314374">Leer, modificar y eliminar fotos, música y otros archivos multimedia de tu ordenador</translation>
+<translation id="3275464924531706548">Ocultar <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Tu llave de seguridad interna es insegura actualmente. Elimínala de todos los servicios en los que la utilizabas. Para solucionar el problema, restablece la llave de seguridad.</translation>
 <translation id="3275778913554317645">Abrir como ventana</translation>
 <translation id="3277214528693754078">Desplazarse con el cursor de texto (navegación por cursor de texto)</translation>
@@ -3605,6 +3606,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3510471875518562537">Usa esta dirección en tu iPhone</translation>
 <translation id="3511200754045804813">Volver a buscar</translation>
 <translation id="3511307672085573050">Copiar dire&amp;cción de enlace</translation>
+<translation id="3511358375261756531">Mostrar <ph name="HEADER" /></translation>
 <translation id="351152300840026870">Fuente de ancho fijo</translation>
 <translation id="3511528412952710609">Breve</translation>
 <translation id="3513019849832307207">Unirme y abrir</translation>
@@ -5694,7 +5696,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Enviar pantalla</translation>
 <translation id="496185450405387901">Tu administrador ha instalado esta aplicación.</translation>
-<translation id="4963079328730030450">Tu organización controla cómo se pueden usar los datos recogidos por estas funciones.</translation>
 <translation id="4963603093937263654">Comprueba que las notificaciones estén activadas en tu <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Quitar pestaña actual</translation>
 <translation id="4964455510556214366">Disposición</translation>
@@ -6156,6 +6157,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5296536303670088158">Tienes el sistema de seguridad más potente de Chrome frente a sitios web dañinos</translation>
 <translation id="5297005732522718715">Actualizar configuración de conexión compartida</translation>
 <translation id="5297082477358294722">Se ha guardado la contraseña. Consulta y gestiona las contraseñas guardadas en tu <ph name="SAVED_PASSWORDS_STORE" />.</translation>
+<translation id="5297548311167268289">Iniciar sesión en <ph name="RP_ID" /></translation>
 <translation id="5297946558563358707">Cuando una persona que no seas tú mire tu pantalla, se mostrará el icono del ojo (visualización privada) en la parte inferior derecha de la pantalla</translation>
 <translation id="5297984209202974345">Tema reciente generado por IA n.º <ph name="INDEX" /> de <ph name="SUBJECT" />, con el estilo <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Tema creado por</translation>

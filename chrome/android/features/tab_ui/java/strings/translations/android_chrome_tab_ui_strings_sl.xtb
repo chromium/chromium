@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Cena tega izdelka je bila nedavno <ph name="PREVIOUS_PRICE" />, zdaj je <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Vsi podvojeni zavihki, razen nazadnje uporabljene kopije, bodo zdaj tudi arhivirani.</translation>
 <translation id="6193448654517602979">Izberite zavihke</translation>
+<translation id="6220820548421939212">Da. Sem za.</translation>
 <translation id="6228793724645064692">(ocena trgovine)</translation>
 <translation id="6271513594716432922">Zapiranje vseh neaktivnih zavihkov</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Dodaj zavihek novi skupini}one{Dodaj zavihke novi skupini}two{Dodaj zavihke novi skupini}few{Dodaj zavihke novi skupini}other{Dodaj zavihke novi skupini}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Dejavnost</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> mnenje}one{Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> mnenje}two{Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> mnenji}few{Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> mnenja}other{Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> mnenj}}</translation>
 <translation id="7885132941432959125">Premakni zavihek v desno</translation>
+<translation id="788914896430720926">Želite poskrbeti za urejenost neaktivnega razdelka?</translation>
 <translation id="7939917283308035850">Ni izbrano: <ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">Rdeča</translation>
 <translation id="7961015016161918242">Nikoli</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Vaša dejavnost na teh anonimnih zavihkih bo odstranjena iz te naprave</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Ustvarjeno pred <ph name="NUM_MONTHS_ONE" /> mesecem}one{Ustvarjeno pred <ph name="NUM_MONTHS_MANY" /> mesecem}two{Ustvarjeno pred <ph name="NUM_MONTHS_MANY" /> mesecema}few{Ustvarjeno pred <ph name="NUM_MONTHS_MANY" /> meseci}other{Ustvarjeno pred <ph name="NUM_MONTHS_MANY" /> meseci}}</translation>
 <translation id="8820741577754260431">Oglejte si znižanja cen na zavihkih.</translation>
+<translation id="883379923675618699">Chrome samodejno zapre elemente v neaktivnem razdelku, ki jih niste uporabljali 3 mesece. To lahko izklopite zdaj ali kadar koli v nastavitvah.</translation>
 <translation id="8887921976452567404">Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov.</translation>
 <translation id="8915916167043355778">Zapri vse</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Premik v novo okno}one{Premik v drugo okno}two{Premik v drugo okno}few{Premik v drugo okno}other{Premik v drugo okno}}</translation>

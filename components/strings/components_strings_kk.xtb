@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Су сүзгілері және тазартқыштар</translation>
 <translation id="1036348656032585052">Өшіру</translation>
 <translation id="1036881361735705143">C4 хатқалтасы</translation>
-<translation id="1038106730571050514">Ұсыныстарды көрсету</translation>
 <translation id="1038842779957582377">белгісіз ат</translation>
 <translation id="1041998700806130099">Тапсырма парағының хабарламасы</translation>
 <translation id="1044897699341250361">Бұл нені білдіреді?</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">Ойындар</translation>
 <translation id="2674170444375937751">Тарихыңыздан осы беттерді шынымен жою қажет пе?</translation>
 <translation id="2674524144218093528">Үйді бояу және әрлеу</translation>
-<translation id="2674804415323431591">Ұсыныстарды жасыру</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> қойындылар тобы бұдан былай қолжетімді емес.</translation>
 <translation id="2677748264148917807">Шығу</translation>
 <translation id="2683195745483370038">Басқа нәтижелер табылды</translation>
@@ -2323,6 +2321,7 @@
 <translation id="4998950033665438990">Жалғыз бет</translation>
 <translation id="5001526427543320409">Үшінші тарап cookie файлдары</translation>
 <translation id="5002932099480077015">Құсбелгі қойылса, Chrome нысанды жылдамырақ толтыру үшін картаңыздың көшірмесін осы құрылғыға сақтап қояды.</translation>
+<translation id="5007344584818503324">Ортақ қойындылар топтарындағы әрекет</translation>
 <translation id="5007392906805964215">Көру</translation>
 <translation id="5010599530303458903">Ай сайын төлеңіз немесе пайызсыз 4 бөлікпен (сәйкестік талаптарына байланысты) төлеңіз.</translation>
 <translation id="5011561501798487822">Анықталған тіл</translation>
@@ -2631,7 +2630,6 @@
 <translation id="55293785478302737">Жиекті тігу</translation>
 <translation id="553377674408670169">Білім беру жүйесіндегі жұмыстар</translation>
 <translation id="5534785731327961487">Қазіргі тиімді ұсыныс</translation>
-<translation id="5536214594743852365">"<ph name="SECTION" />" бөлімін көрсету</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 сайт (синхрондалған құрылғыларда тағы бар)}other{+ # сайт (синхрондалған құрылғыларда тағы бар)}}</translation>
 <translation id="553782666181800029">Chou 2 хатқалтасы</translation>
 <translation id="5538270463355278784">автоматты толық экран</translation>
@@ -2750,6 +2748,7 @@
 <translation id="5732392974455271431">Ата-анаңыз оны сіз үшін бөгеуден шығара алады</translation>
 <translation id="573555826359077410">"Үлгі жасау" түймесі, Google Forms-да жылдам жаңа үлгі жасау үшін белсендіріңіз</translation>
 <translation id="5738385766833540397">Қадағалайтын тауарлар бағасының түсуі туралы хабарландырулар алуды реттеңіз.</translation>
+<translation id="5739619009927381786">Келесі қадамда экран құлпын ашыңыз (әдетте саусақ ізі қолданылады). Болмаса <ph name="BEGIN_LINK" />басқа әдіспен растауға<ph name="END_LINK" /> болады.</translation>
 <translation id="573974402615125334">Қойындылар топтарын бөлісу, оларға қосылу және бірлесіп жұмыс істеу үшін тарих пен қойындыларды синхрондаңыз.</translation>
 <translation id="5740911612628596808">C9 хатқалтасы</translation>
 <translation id="5742806904559466333">Барлар, клубтар және түнгі өмір</translation>
@@ -3359,6 +3358,7 @@
 <translation id="6789062271869667677">Үздіксіз (ұзын)</translation>
 <translation id="678982761784843853">Қорғалған контент идентификаторлары</translation>
 <translation id="6790428901817661496">Ойнату</translation>
+<translation id="6792631792628412749">Кіру кілті • <ph name="PROVIDER_NAME" /></translation>
 <translation id="6793213097893210590">Картон</translation>
 <translation id="679355240208270552">Саясатта әдепкі іздеу мүмкіндігі қосылмағандықтан, еленбеді.</translation>
 <translation id="6794951432696553238">Қазірден бастап Windows Hello арқылы карталарыңызды жылдам растаңыз</translation>
@@ -3653,7 +3653,6 @@
 <translation id="7316521168101843192">Файл Microsoft OneDrive қызметіне сақталып жатыр.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Байланыс анықтамасы</translation>
-<translation id="7323804146520582233">"<ph name="SECTION" />" бөлімін жасыру</translation>
 <translation id="733354035281974745">Құрылғының жергілікті аккаунтын қайта анықтау</translation>
 <translation id="7334320624316649418">&amp;Қайта ретке келтіруді қайталау</translation>
 <translation id="7335157162773372339">Камераңызды қолдануға рұқсат сұрай алады</translation>
@@ -3784,7 +3783,6 @@
 <translation id="7517414872996418597">C10 хатқалтасы</translation>
 <translation id="7518003948725431193">Веб-мекенжай үшін веб-бет табылмады: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">"<ph name="SECTION" />" бөлімі жасырылды.</translation>
 <translation id="752189128961566325">Оны Google өнімдерінде пайдалана аласыз</translation>
 <translation id="7523408071729642236">Өндіріс</translation>
 <translation id="7525067979554623046">Жасау</translation>
@@ -4236,7 +4234,6 @@
 <translation id="8297545700510100061">Cookie файлдары мен басқа сайт деректері сізді есте сақтау, соның ішінде аккаунтыңызға кіруді жеңілдету не жарнамаларды жекелендіру үшін қолданылады. Барлық сайт бойынша cookie файлдарын басқару үшін "<ph name="SETTINGS" />" бөліміне кіріңіз.</translation>
 <translation id="8298115750975731693">Сіз пайдаланып жатқан Wi-Fi желісі (<ph name="WIFI_NAME" />) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> сілтемесіне кіруді сұрауы мүмкін.</translation>
 <translation id="8301894345671534559">Кодты енгізу</translation>
-<translation id="8303854710873047864">"<ph name="SECTION" />" бөлімі көрсетілді.</translation>
 <translation id="8304912090860925649">Жаңа салыстыру кестесі</translation>
 <translation id="830498451218851433">Жартылай бүктеу</translation>
 <translation id="8308653357438598313">Тікелей трансляция</translation>

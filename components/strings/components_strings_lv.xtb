@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Ūdens filtri un attīrītāji</translation>
 <translation id="1036348656032585052">Izslēgt</translation>
 <translation id="1036881361735705143">Aploksne C4</translation>
-<translation id="1038106730571050514">Rādīt ieteikumus</translation>
 <translation id="1038842779957582377">nezināms nosaukums</translation>
 <translation id="1041998700806130099">Uzdevuma lapas ziņojums</translation>
 <translation id="1044897699341250361">Ko tas nozīmē</translation>
@@ -978,7 +977,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2673968385134502798">Spēles</translation>
 <translation id="2674170444375937751">Vai tiešām vēlaties dzēst šīs lapas no savas vēstures?</translation>
 <translation id="2674524144218093528">Mājas krāsošana un apdare</translation>
-<translation id="2674804415323431591">Paslēpt ieteikumus</translation>
 <translation id="26774279487328902">Vairākas ciļņu grupas (<ph name="GROUP_COUNT" />) vairs nav pieejamas.</translation>
 <translation id="2677748264148917807">Iziet</translation>
 <translation id="2683195745483370038">Citi atrastie rezultāti</translation>
@@ -2631,7 +2629,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="55293785478302737">Malu sašuvums</translation>
 <translation id="553377674408670169">Darba piedāvājumi izglītības nozarē</translation>
 <translation id="5534785731327961487">Izdevīgs piedāvājums</translation>
-<translation id="5536214594743852365">Rādīt sadaļu “<ph name="SECTION" />”</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{un vēl 1 vietne (vairāk sinhronizētajās ierīcēs)}zero{un vēl # vietnes (vairāk sinhronizētajās ierīcēs)}one{un vēl # vietne (vairāk sinhronizētajās ierīcēs)}other{un vēl # vietnes (vairāk sinhronizētajās ierīcēs)}}</translation>
 <translation id="553782666181800029">Aploksne Chou 2</translation>
 <translation id="5538270463355278784">automātisks pilnekrāna režīms</translation>
@@ -3656,7 +3653,6 @@ Papildu informācija:
 <translation id="7316521168101843192">Notiek faila saglabāšana pakalpojumā Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Savienojuma palīdzība</translation>
-<translation id="7323804146520582233">Paslēpt sadaļu “<ph name="SECTION" />”</translation>
 <translation id="733354035281974745">Ierīces lokālā konta ignorēšana</translation>
 <translation id="7334320624316649418">&amp;Atcelt pārkārtošanas atsaukšanu</translation>
 <translation id="7335157162773372339">Var pieprasīt atļauju izmantot jūsu kameru</translation>
@@ -3787,7 +3783,6 @@ Papildu informācija:
 <translation id="7517414872996418597">Aploksne C10</translation>
 <translation id="7518003948725431193">Šādā tīmekļa adresē netika atrasta neviena tīmekļa lapa: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Sadaļa “<ph name="SECTION" />” ir paslēpta</translation>
 <translation id="752189128961566325">Varat to izmantot Google produktos.</translation>
 <translation id="7523408071729642236">Ražošana</translation>
 <translation id="7525067979554623046">Izveidot</translation>
@@ -4239,7 +4234,6 @@ Papildu informācija:
 <translation id="8297545700510100061">Sīkfaili un citi vietņu dati tiek izmantoti, lai saglabātu jūsu datus un tos izmantotu, piemēram, kad pierakstāties, vai reklāmu personalizēšanai. Lai pārvaldītu visu vietņu sīkfailus, pārejiet uz sadaļu <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Iespējams, izmantotajā Wi-Fi tīklā (<ph name="WIFI_NAME" />) tiks pieprasīts apmeklēt vietni <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Ievadīt kodu</translation>
-<translation id="8303854710873047864">Tiek rādīta sadaļa “<ph name="SECTION" />”</translation>
 <translation id="8304912090860925649">Jauna salīdzinājuma tabula</translation>
 <translation id="830498451218851433">Locījums uz pusēm</translation>
 <translation id="8308653357438598313">Video straumēšana tiešraidē</translation>

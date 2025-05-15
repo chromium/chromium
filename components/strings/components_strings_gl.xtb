@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Filtros e purificadores de auga</translation>
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1036881361735705143">Sobre C4</translation>
-<translation id="1038106730571050514">Mostrar suxestións</translation>
 <translation id="1038842779957582377">nome descoñecido</translation>
 <translation id="1041998700806130099">Mensaxe da folla do traballo</translation>
 <translation id="1044897699341250361">Que significa</translation>
@@ -978,7 +977,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2673968385134502798">Xogos</translation>
 <translation id="2674170444375937751">Seguro que queres eliminar estas páxinas do teu historial?</translation>
 <translation id="2674524144218093528">Pintura da casa e acabados</translation>
-<translation id="2674804415323431591">Ocultar suxestións</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> grupos de pestanas xa no están dispoñibles</translation>
 <translation id="2677748264148917807">Saír</translation>
 <translation id="2683195745483370038">Outros resultados atopados</translation>
@@ -2633,7 +2631,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="55293785478302737">Grampa no bordo</translation>
 <translation id="553377674408670169">Postos na educación</translation>
 <translation id="5534785731327961487">Boa oferta agora</translation>
-<translation id="5536214594743852365">Mostrar a sección <ph name="SECTION" /></translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{e 1 sitio (máis nos dispositivos sincronizados)}other{e # sitios (máis nos dispositivos sincronizados)}}</translation>
 <translation id="553782666181800029">Sobre Chou 2</translation>
 <translation id="5538270463355278784">pantalla completa automática</translation>
@@ -3657,7 +3654,6 @@ Detalles adicionais:
 <translation id="7316521168101843192">Gardando ficheiro en Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Axuda de conexión</translation>
-<translation id="7323804146520582233">Ocultar a sección <ph name="SECTION" /></translation>
 <translation id="733354035281974745">Anulación da conta local do dispositivo</translation>
 <translation id="7334320624316649418">&amp;Refacer de cambio de orde</translation>
 <translation id="7335157162773372339">Pode pedirche permiso para utilizar a cámara</translation>
@@ -3788,7 +3784,6 @@ Detalles adicionais:
 <translation id="7517414872996418597">Sobre C10</translation>
 <translation id="7518003948725431193">Non se atopou ningunha páxina web para o enderezo web: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Ocultouse a sección <ph name="SECTION" /></translation>
 <translation id="752189128961566325">Poderás usalo nos produtos de Google</translation>
 <translation id="7523408071729642236">Fabricación</translation>
 <translation id="7525067979554623046">Crear</translation>
@@ -3865,6 +3860,7 @@ Detalles adicionais:
 <translation id="7639968568612851608">Gris escuro</translation>
 <translation id="7646681339175747202">O contrasinal que acabas de utilizar viuse implicado nunha violación da seguranza dos datos. O xestor de contrasinais de Google recomenda que o cambies agora.</translation>
 <translation id="7647206758853451655">Calidade de impresión</translation>
+<translation id="7648527891719919697">Este sitio permanecerá bloqueado porque tes activada Protección avanzada na <ph name="BEGIN_ANDROID_SETTINGS_LINK" />configuración de Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Máis información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Almacenar ficheiros neste dispositivo</translation>
 <translation id="7653957176542370971">A folla do controlador de pagos está pechada</translation>
 <translation id="7654909834015434372">Ao editar as anotacións, este documento volverá á orientación orixinal</translation>
@@ -4240,7 +4236,6 @@ Detalles adicionais:
 <translation id="8297545700510100061">As cookies e outros datos do sitio utilízanse para lembrarte (por exemplo, á hora de iniciar sesión ou de personalizar anuncios). Se queres xestionar as cookies para todos os sitios, vai a <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">É posible que a rede wifi que utilizas (<ph name="WIFI_NAME" />) requira o acceso a <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Introducir código</translation>
-<translation id="8303854710873047864">Mostrouse a sección <ph name="SECTION" /></translation>
 <translation id="8304912090860925649">Nova táboa comparativa</translation>
 <translation id="830498451218851433">Dobrez á metade</translation>
 <translation id="8308653357438598313">Emisión de vídeo en directo</translation>

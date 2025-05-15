@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Su filtri və təmizləyicilər</translation>
 <translation id="1036348656032585052">Deaktiv edin</translation>
 <translation id="1036881361735705143">Zərf C4</translation>
-<translation id="1038106730571050514">Təklifləri göstərin</translation>
 <translation id="1038842779957582377">bilinməyən ad</translation>
 <translation id="1041998700806130099">İş vərəqi mesajı</translation>
 <translation id="1044897699341250361">Mənası nədir</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">Oyunlar</translation>
 <translation id="2674170444375937751">Siz tarixi bu pages silmək üçün əminsinizmi?</translation>
 <translation id="2674524144218093528">Ev boyama və tamamlama</translation>
-<translation id="2674804415323431591">Təklifləri gizlədin</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> tab qrupu artıq əlçatan deyil</translation>
 <translation id="2677748264148917807">Tərk edin</translation>
 <translation id="2683195745483370038">Digər nəticələr tapıldı</translation>
@@ -2629,7 +2627,6 @@
 <translation id="55293785478302737">Kənar tikişi vurun</translation>
 <translation id="553377674408670169">Təhsil işləri</translation>
 <translation id="5534785731327961487">Yaxşı təklif var</translation>
-<translation id="5536214594743852365">"<ph name="SECTION" />" bölməsini göstərin</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 sayt (sinxronlaşdırılmış cihazlarda daha çoxu)}other{+ # sayt (sinxronlaşdırılmış cihazlarda daha çoxu)}}</translation>
 <translation id="553782666181800029">Zərf Çou 2</translation>
 <translation id="5538270463355278784">avtomatik tam ekran</translation>
@@ -3653,7 +3650,6 @@
 <translation id="7316521168101843192">Fayl Microsoft OneDrive-da yadda saxlanılır</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Bağlantı Yardımı</translation>
-<translation id="7323804146520582233">"<ph name="SECTION" />" bölməsini gizlədin</translation>
 <translation id="733354035281974745">Cihazın lokal hesabı əvəz edilib</translation>
 <translation id="7334320624316649418">&amp;Yenidən yerbəyer edin</translation>
 <translation id="7335157162773372339">Saytlar kameranızdan istifadə üçün icazə tələb edə bilər</translation>
@@ -3784,7 +3780,6 @@
 <translation id="7517414872996418597">Zərf C10</translation>
 <translation id="7518003948725431193">Bu veb ünvan üçün heç bir səhifə tapılmadı: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">"<ph name="SECTION" />" bölməsi gizlədilib</translation>
 <translation id="752189128961566325">Onu Google məhsullarında istifadə edə bilərsiniz</translation>
 <translation id="7523408071729642236">İstehsalat</translation>
 <translation id="7525067979554623046">Yaradın</translation>
@@ -4236,7 +4231,6 @@
 <translation id="8297545700510100061">Kukilər və digər sayt datası sizin yadda saxlamaq üçün istifadə edilir, məsələn, daxil olmanıza və ya reklamları fərdiləşdirməyə imkan yaradır. Bütün saytlar üzrə kukiləri idarə etmək üçün baxın: <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">İstifadə etdiyiniz Wi-Fi (<ph name="WIFI_NAME" />) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> səhifəsinə daxil olmağınızı tələb edə bilər.</translation>
 <translation id="8301894345671534559">Kod daxil edin</translation>
-<translation id="8303854710873047864">"<ph name="SECTION" />" bölməsi göstərilir</translation>
 <translation id="8304912090860925649">Yeni müqayisə cədvəli</translation>
 <translation id="830498451218851433">Yarımçıq qatlayın</translation>
 <translation id="8308653357438598313">Canlı videoyayım</translation>

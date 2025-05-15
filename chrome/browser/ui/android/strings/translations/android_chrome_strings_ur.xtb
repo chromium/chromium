@@ -183,6 +183,7 @@
 <translation id="1807709131360304325">نئی ونڈو کھولیں</translation>
 <translation id="1810845389119482123">مطابقت پذیر بنانے کا ابتدائی سیٹ اپ مکمل نہیں ہوا</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کا استعمال جاری نہیں رکھ سکتا</translation>
+<translation id="1820408774134375111">سائن ان کرنے کیلئے نیچے کی شیٹ</translation>
 <translation id="1825772852827001597">‏Google Pay سے ادائیگی کے طریقے اور اس میں موجود پتے مرموز نہیں کیے جائیں گے۔ Chrome کی براؤزنگ کی سرگزشت مطابقت پذیر نہیں ہوگی۔
 صرف پاس فریز کا حامل شخص ہی آپ کے مرموز کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجا جاتا، نہ ہی وہ اسے اسٹور کرتا ہے۔ اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو حذف کریں<ph name="END_LINK" />۔</translation>
 <translation id="1829244130665387512">صفحہ پر تلاش کریں</translation>
@@ -191,6 +192,7 @@
 <translation id="1871098866036088250">‏Chrome براؤزر میں کھولیں</translation>
 <translation id="1877026089748256423">‏Chrome پرانا ہے</translation>
 <translation id="1877073879466606884">آپ جس پروفائل میں سائن ان ہیں وہ ایک منظم پروفائل ہے۔ آپ کا منتظم آپ کی پروفائل کی ترتیبات میں دور سے تبدیلیاں کر سکتا ہے، رپورٹنگ کے ذریعے براؤزر کے بارے میں معلومات کا تجزیہ کر سکتا ہے اور دیگر ضروری ٹاسکس انجام دے سکتا ہے۔</translation>
+<translation id="1879904908408734349">سائن ان کرنے کیلئے نیچے کی شیٹ بند ہے</translation>
 <translation id="1883903952484604915">میری فائلز</translation>
 <translation id="189358972401248634">دوسری زبانیں</translation>
 <translation id="1899175549411605574">قیمت سے متعلق حقائق کی نیچے کی شیٹ</translation>
@@ -330,6 +332,7 @@
 <translation id="2527779675047087889">کلپ بورڈ مواد چھپائیں</translation>
 <translation id="2532336938189706096">ویب منظر</translation>
 <translation id="253498598929009420">سائٹ آپ کی اسکرین کے مواد کو دیکھ سکے گی</translation>
+<translation id="2535807170289627159">سبھی ٹیبز</translation>
 <translation id="2536728043171574184">اس صفحہ کی ایک آف لائن کاپی دیکھی جا رہی ہے</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />، ٹیب</translation>
 <translation id="2546283357679194313">کوکیز اور سائٹ ڈیٹا</translation>
@@ -541,6 +544,7 @@
 <translation id="3516053221628030540">‏‫Google Play پر جائیں</translation>
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{ایسی ایک سائٹ سے اطلاع کی اجازتیں ہٹائی گئیں جسے آپ نے حال ہی میں ملاحظہ نہیں کیا ہے}other{ایسی # سائٹس سے اطلاع کی اجازتیں ہٹائی گئیں جنہیں آپ نے حال ہی میں ملاحظہ نہیں کیا ہے}}</translation>
 <translation id="3518985090088779359">قبول کرکے جاری رکھیں</translation>
+<translation id="3519014757432845220">‏اطلاع کے مواد اور سائٹ کے URL کا Google کے ساتھ اشتراک کر کے اسپام سے تحفظ کو بہتر بنانے میں مدد کریں۔ مواد کا انسانوں کے ذریعے جائزہ لیا جا سکتا ہے۔</translation>
 <translation id="351952459507671940">نئے گروپ میں شامل کریں</translation>
 <translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کے ساتھ جاری نہیں رکھ سکتے</translation>
 <translation id="3522247891732774234">اپ ڈیٹ دستیاب ہے۔ مزید اختیارات</translation>
@@ -857,6 +861,7 @@
 <translation id="4943703118917034429">ورچوئل رئیلٹی</translation>
 <translation id="4943872375798546930">کوئی نتائج نہیں ہیں</translation>
 <translation id="4957722034734105353">مزید جانیں…</translation>
+<translation id="4959115606310463263">سائن ان کرنے کیلئے نیچے کی شیٹ آدھی اونچائی پر کھلی ہوئی ہے</translation>
 <translation id="4961107849584082341">اس صفحہ کا کسی بھی زبان میں ترجمہ کریں</translation>
 <translation id="4964614743143953889">‏‫Chrome آپ کو غیر محفوظ سائٹس اور ڈاؤن لوڈز کے بارے میں خبردار کرتا ہے</translation>
 <translation id="496607651705915226">‏نئے پاس ورڈز کو اپنے Google اکاؤنٹ میں محفوظ کرنے اور ان کا استعمال کرنے کے لیے، Google Play سروسز کو اپ ڈیٹ کریں</translation>
@@ -1149,6 +1154,7 @@
 <translation id="6277522088822131679">صفحہ کو پرنٹ کرنے میں ایک مسئلہ تھا۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="6278428485366576908">تھیم</translation>
 <translation id="6284472661216707937">'آپ کے تمام آلات پر پاس ورڈز' کی شیٹ بند ہو گئی ہے</translation>
+<translation id="6291294824436685757">براؤزنگ ڈیٹا حذف کریں، حذف کرنے کیلئے ڈیٹا منتخب کریں</translation>
 <translation id="6295158916970320988">سبھی سائٹس</translation>
 <translation id="6296366034485697675">برآمد کریں اور حذف کریں</translation>
 <translation id="629730747756840877">اکاؤنٹ</translation>
@@ -1616,6 +1622,7 @@
 <translation id="8179976553408161302">انٹر</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> فائلیں باقی ہیں</translation>
 <translation id="8190358571722158785">1 دن باقی</translation>
+<translation id="8192765420340770300">سائن ان کرنے کیلئے نیچے کی شیٹ مکمل اونچائی پر کھلی ہوئی ہے</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />آپ کے آلات<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="820568752112382238">سب سے زیادہ ملاحظہ کردہ سائٹس</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{‫<ph name="OWNER_FIRST_NAME" /> اور <ph name="NUMBER_OF_OTHER_MEMBERS" /> دیگر کے ساتھ ٹیب گروپ میں شامل ہوں}other{‫<ph name="OWNER_FIRST_NAME" /> اور <ph name="NUMBER_OF_OTHER_MEMBERS" /> دیگر کے ساتھ ٹیب گروپ میں شامل ہوں}}</translation>
@@ -1812,6 +1819,7 @@
 <translation id="9050666287014529139">پاس فریز</translation>
 <translation id="9055497320631373736">سائٹ کو واپس ممکنہ سائٹس میں شامل کیا گیا</translation>
 <translation id="9057030985451135243">اشتراک کردہ ٹیب گروپس کے بارے میں جانیں</translation>
+<translation id="9063400323119781058">اَن سبسکرائب کر دیا گيا</translation>
 <translation id="9063523880881406963">ڈیسک ٹاپ سائٹ کی درخواست کو آف کریں</translation>
 <translation id="9065203028668620118">تبدیل کریں</translation>
 <translation id="9065383040763568503">‏اسٹور شدہ وہ ڈیٹا جسے Chrome اہم نہیں سمجھتا ہے (جیسے، بغیر محفوظ کردہ ترتیبات والی سائٹس یا وہ جنہیں آپ اکثر ملاحظہ نہیں کرتے ہیں)</translation>

@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Filteri i pročišćivači vode</translation>
 <translation id="1036348656032585052">Isključi</translation>
 <translation id="1036881361735705143">Koverta C4</translation>
-<translation id="1038106730571050514">Prikažite prijedloge</translation>
 <translation id="1038842779957582377">nepoznato ime</translation>
 <translation id="1041998700806130099">Poruka u tabeli za posao</translation>
 <translation id="1044897699341250361">Šta to znači</translation>
@@ -978,7 +977,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2673968385134502798">Igre</translation>
 <translation id="2674170444375937751">Jeste li sigurni da želite izbrisati ove stranice iz historije?</translation>
 <translation id="2674524144218093528">Krečenje i fasadni radovi kuće</translation>
-<translation id="2674804415323431591">Sakrijte prijedloge</translation>
 <translation id="26774279487328902">Više grupa kartica (<ph name="GROUP_COUNT" />) nije dostupno</translation>
 <translation id="2677748264148917807">Napusti</translation>
 <translation id="2683195745483370038">Pronađeni su drugi rezultati</translation>
@@ -2633,7 +2631,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="55293785478302737">Uvez uz rub</translation>
 <translation id="553377674408670169">Poslovi u obrazovanju</translation>
 <translation id="5534785731327961487">Dobra ponuda sada</translation>
-<translation id="5536214594743852365">Prikaži odjeljak "<ph name="SECTION" />"</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{i još 1 web lokacija (i druge na sinhroniziranim uređajima)}one{i još # web lokacija (i druge na sinhroniziranim uređajima)}few{i još # web lokacije (i druge na sinhroniziranim uređajima)}other{i još # web lokacija (i druge na sinhroniziranim uređajima)}}</translation>
 <translation id="553782666181800029">Koverta Chou 2</translation>
 <translation id="5538270463355278784">automatski prikaz preko cijelog ekrana</translation>
@@ -3658,7 +3655,6 @@ Dodatni detalji:
 <translation id="7316521168101843192">Pohranjivanje fajla na Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Pomoć s povezivanjem</translation>
-<translation id="7323804146520582233">Sakrij odjeljak "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">Zaobilaženje lokalnog računa uređaja</translation>
 <translation id="7334320624316649418">&amp;Ponovi preuređivanje</translation>
 <translation id="7335157162773372339">Može tražiti da koristi kameru</translation>
@@ -3789,7 +3785,6 @@ Dodatni detalji:
 <translation id="7517414872996418597">Koverta C10</translation>
 <translation id="7518003948725431193">Nije pronađena web stranica za web adresu: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Odjeljak "<ph name="SECTION" />" je skriven</translation>
 <translation id="752189128961566325">Možete je koristiti na svim Googleovim proizvodima</translation>
 <translation id="7523408071729642236">Proizvodnja</translation>
 <translation id="7525067979554623046">Kreiraj</translation>
@@ -3866,7 +3861,7 @@ Dodatni detalji:
 <translation id="7639968568612851608">Tamnosiva</translation>
 <translation id="7646681339175747202">Lozinka koju ste upravo upotrijebili je pronađena u narušavanju podataka. Google upravitelj lozinki preporučuje da odmah promijenite lozinku.</translation>
 <translation id="7647206758853451655">Kvalitet štampanja</translation>
-<translation id="7648527891719919697">Web-lokacija će ostati blokirana jer ste u <ph name="BEGIN_ANDROID_SETTINGS_LINK" />postavkama Androida<ph name="END_ANDROID_SETTINGS_LINK" /> uključili Naprednu zaštitu. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više o tom upozorenju<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="7648527891719919697">Ova web lokacija će ostati blokirana jer ste uključili Naprednu zaštitu u <ph name="BEGIN_ANDROID_SETTINGS_LINK" />postavkama Androida<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više o ovom upozorenju<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">pohraniti fajlove na ovom uređaju</translation>
 <translation id="7653957176542370971">Stranica obrađivača uplate je zatvorena</translation>
 <translation id="7654909834015434372">Kada uredite bilješke, ovaj dokument će se vratiti na svoju izvornu rotaciju</translation>
@@ -4242,7 +4237,6 @@ Dodatni detalji:
 <translation id="8297545700510100061">Kolačići i drugi podaci web lokacije se koriste da vas web lokacija zapamti, naprimjer radi vaše prijave ili personaliziranja oglasa. Da upravljate kolačićima za sve web lokacije, pogledajte <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">WiFi koji koristite (<ph name="WIFI_NAME" />) može tražiti da posjetite <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Unesite kôd</translation>
-<translation id="8303854710873047864">Prikazan je odjeljak "<ph name="SECTION" />"</translation>
 <translation id="8304912090860925649">Nova tabela poređenja</translation>
 <translation id="830498451218851433">Presavijanje napola</translation>
 <translation id="8308653357438598313">Prenos videozapisa uživo</translation>

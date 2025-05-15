@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Vízszűrők és víztisztítók</translation>
 <translation id="1036348656032585052">Kikapcsolás</translation>
 <translation id="1036881361735705143">C4 boríték</translation>
-<translation id="1038106730571050514">Javaslatok megjelenítése</translation>
 <translation id="1038842779957582377">Ismeretlen név</translation>
 <translation id="1041998700806130099">Munkalapi üzenet</translation>
 <translation id="1044897699341250361">Mit jelent ez?</translation>
@@ -978,7 +977,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2673968385134502798">Játékok</translation>
 <translation id="2674170444375937751">Biztosan törölni szeretné ezeket az oldalakat az előzmények közül?</translation>
 <translation id="2674524144218093528">Házfestés és dekoráció</translation>
-<translation id="2674804415323431591">Javaslatok elrejtése</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> lapcsoport már nem áll rendelkezésre</translation>
 <translation id="2677748264148917807">Lap elhagyása</translation>
 <translation id="2683195745483370038">További találatok vannak</translation>
@@ -2321,6 +2319,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4998950033665438990">Egyoldalú</translation>
 <translation id="5001526427543320409">Harmadik felektől származó cookie-k</translation>
 <translation id="5002932099480077015">Ha engedélyezi, a Chrome megőrzi a kártya másolatát ezen az eszközön a gyorsabb űrlapkitöltés érdekében.</translation>
+<translation id="5007344584818503324">Megosztott lapcsoportok tevékenységei</translation>
 <translation id="5007392906805964215">Áttekintés</translation>
 <translation id="5010599530303458903">Fizetés havonta vagy négy kamatmentes részletben (jogosultságtól függően)</translation>
 <translation id="5011561501798487822">Észlelt nyelv</translation>
@@ -2629,7 +2628,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="55293785478302737">Éltűzés</translation>
 <translation id="553377674408670169">Oktatási állások</translation>
 <translation id="5534785731327961487">Most jó üzlet</translation>
-<translation id="5536214594743852365">A(z) „<ph name="SECTION" />” szakasz megjelenítése</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{további 1 webhely (még több a szinkronizált eszközökön)}other{további # webhely (még több a szinkronizált eszközökön)}}</translation>
 <translation id="553782666181800029">Chou 2 boríték</translation>
 <translation id="5538270463355278784">automatikus teljes képernyő</translation>
@@ -2748,6 +2746,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5732392974455271431">A letiltást a szüleid oldhatják fel</translation>
 <translation id="573555826359077410">Űrlap létrehozása gomb. A gombot megnyomva gyorsan létrehozhat új űrlapot a Google Űrlapok szolgáltatással.</translation>
 <translation id="5738385766833540397">Kezelheti a nyomon követett termékekkel kapcsolatos árcsökkenési értesítések fogadásának módját</translation>
+<translation id="5739619009927381786">A következő lépésben oldja fel a képernyőt, például az ujjlenyomatával. Vagy próbálja <ph name="BEGIN_LINK" />másképp végrehajtani az igazolást<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Ha meg szeretne osztani lapcsoportokat, csatlakozni szeretne hozzájuk, illetve együtt szeretne dolgozni másokkal bennük, szinkronizálja az előzményeket és a lapokat</translation>
 <translation id="5740911612628596808">C9 boríték</translation>
 <translation id="5742806904559466333">Bárok, klubok és éjszakai élet</translation>
@@ -3357,6 +3356,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6789062271869667677">Folyamatos (hosszú)</translation>
 <translation id="678982761784843853">A védett tartalmak azonosítói</translation>
 <translation id="6790428901817661496">Lejátszás</translation>
+<translation id="6792631792628412749">Azonosítókulcs • <ph name="PROVIDER_NAME" /></translation>
 <translation id="6793213097893210590">Karton</translation>
 <translation id="679355240208270552">Figyelmen kívül hagyva, mert az alapértelmezett keresőmotort nem engedélyezi a házirend.</translation>
 <translation id="6794951432696553238">Mostantól gyorsabban igazolhatja kártyáit a Windows Hello használatával</translation>
@@ -3652,7 +3652,6 @@ További részletek:
 <translation id="7316521168101843192">Fájl mentése a Microsoft OneDrive szolgáltatásba</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Segítség a kapcsolódáshoz</translation>
-<translation id="7323804146520582233">A(z) „<ph name="SECTION" />” szakasz elrejtése</translation>
 <translation id="733354035281974745">Eszköz helyi fiókja általi felülbírálás</translation>
 <translation id="7334320624316649418">&amp;Átrendezés újra</translation>
 <translation id="7335157162773372339">Hozzáférést kérhet a kamerához</translation>
@@ -3783,7 +3782,6 @@ További részletek:
 <translation id="7517414872996418597">C10 boríték</translation>
 <translation id="7518003948725431193">Nem található weboldal az internetcímen:<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">A(z) „<ph name="SECTION" />” szakasz elrejtve</translation>
 <translation id="752189128961566325">Használhatja a Google-termékekben</translation>
 <translation id="7523408071729642236">Gyártás</translation>
 <translation id="7525067979554623046">Létrehozás</translation>
@@ -3860,6 +3858,7 @@ További részletek:
 <translation id="7639968568612851608">Sötétszürke</translation>
 <translation id="7646681339175747202">Kiderült, hogy a most használt jelszava adatvédelmi incidensben volt érintett. A Google Jelszókezelő a jelszó haladéktalan módosítását javasolja.</translation>
 <translation id="7647206758853451655">Nyomtatási minőség</translation>
+<translation id="7648527891719919697">Ez a webhely továbbra is le lesz tiltva, mert be van kapcsolva a Speciális védelem az <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android-beállításokban<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />További információ erről a figyelmeztetésről<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="7648992873808071793">Fájlok tárolása ezen az eszközön</translation>
 <translation id="7653957176542370971">A fizetési információk munkalapja zárva van</translation>
 <translation id="7654909834015434372">A jelölések szerkesztésekor a dokumentum visszaáll az eredeti tájolásba</translation>
@@ -4236,7 +4235,6 @@ További részletek:
 <translation id="8297545700510100061">A cookie-k és az egyéb webhelyadatok arra szolgálnak, hogy a webhelyek emlékezzenek Önre, és így például bejelentkeztessék, vagy személyre szabják a hirdetéseket. A <ph name="SETTINGS" /> szakaszban kezelheti a webhelyek cookie-jait.</translation>
 <translation id="8298115750975731693">Az Ön által használt Wi-Fi-hálózat (<ph name="WIFI_NAME" />) megkövetelheti a(z) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> felkeresését.</translation>
 <translation id="8301894345671534559">Kód megadása</translation>
-<translation id="8303854710873047864">A(z) „<ph name="SECTION" />” szakasz megjelenítve</translation>
 <translation id="8304912090860925649">Új összehasonlító táblázat</translation>
 <translation id="830498451218851433">Félbehajtás</translation>
 <translation id="8308653357438598313">Élő videóstreamelés</translation>

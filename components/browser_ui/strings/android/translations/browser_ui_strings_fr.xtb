@@ -102,7 +102,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="2231160360698766265">Les sites peuvent lire du contenu protégé</translation>
 <translation id="2235344399760031203">Cookies tiers bloqués</translation>
 <translation id="2238944249568001759">Suggestions de recherches basées sur votre dernier onglet</translation>
-<translation id="2241587408274973373">Cartes de la page "Nouvel onglet"</translation>
+<translation id="2241587408274973373">Cartes de "Nouvel onglet"</translation>
 <translation id="2241634353105152135">Une seule fois</translation>
 <translation id="2253414712144136228">Supprimer <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="228293613124499805">La plupart des sites que vous consultez enregistrent probablement des données sur votre appareil, comme vos préférences ou les informations que vous partagez avec le site, généralement pour améliorer votre expérience. Nous vous recommandons de laisser ce paramètre activé.</translation>
@@ -550,7 +550,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="7986741934819883144">Sélectionner un contact</translation>
 <translation id="7990211076305263060">Lorsque cette option est activée, les sites peuvent demander à utiliser votre micro. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser votre micro.</translation>
 <translation id="8007176423574883786">Désactivée pour cet appareil</translation>
-<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Masquer la fiche "Continuer avec cet onglet"}one{Masquer la fiche "Continuer avec cet onglet"}other{Masquer la fiche "Continuer avec ces onglets"}}</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Masquer la carte "Continuer avec cet onglet"}one{Masquer la carte "Continuer avec cet onglet"}other{Masquer la carte "Continuer avec ces onglets"}}</translation>
 <translation id="802154636333426148">Échec du téléchargement</translation>
 <translation id="8042586301629853791">Trier par :</translation>
 <translation id="8051193500142930381">Les fonctionnalités qui nécessitent une caméra ne seront pas disponibles</translation>

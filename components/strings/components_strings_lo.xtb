@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">ເຄື່ອງກອງນ້ຳ ແລະ ຟອກນ້ຳ</translation>
 <translation id="1036348656032585052">ປິດ</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
-<translation id="1038106730571050514">ສະແດງການແນະນຳ</translation>
 <translation id="1038842779957582377">ຊື່ບໍ່ຮູ້ຈັກ</translation>
 <translation id="1041998700806130099">ຂໍ້ຄວາມແຜ່ນວຽກ</translation>
 <translation id="1044897699341250361">ນີ້ຫມາຍຄວາມວ່າແນວໃດ</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">ເກມ</translation>
 <translation id="2674170444375937751">ທ່ານແນ່ໃຈບໍວ່າ ທ່ານຕ້ອງການລຶບໜ້າ​ເຫຼົ່າ​ນີ້​ຈາກປະ​ຫວັດຂອງ​ທ່ານ?</translation>
 <translation id="2674524144218093528">ການທາສີ ແລະ ຕົກແຕ່ງເຮືອນ</translation>
-<translation id="2674804415323431591">ເຊື່ອງການແນະນຳ</translation>
 <translation id="26774279487328902">ກຸ່ມແຖບ <ph name="GROUP_COUNT" /> ລາຍການບໍ່ສາມາດໃຊ້ໄດ້ອີກຕໍ່ໄປ</translation>
 <translation id="2677748264148917807">ອອກ​ໄປ</translation>
 <translation id="2683195745483370038">ພົບຜົນການຊອກຫາອື່ນໆ</translation>
@@ -2633,7 +2631,6 @@
 <translation id="55293785478302737">ຫຍິບຂອບ</translation>
 <translation id="553377674408670169">ວຽກການສຶກສາ</translation>
 <translation id="5534785731327961487">ຂໍ້ສະເໜີທີ່ດີຕອນນີ້</translation>
-<translation id="5536214594743852365">ສະແດງຂໍ້ "<ph name="SECTION" />"</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{ອີກ 1 ເວັບໄຊ (ເບິ່ງເພີ່ມເຕີມໃນອຸປະກອນທີ່ຊິ້ງ)}other{ອີກ # ເວັບໄຊ (ເບິ່ງເພີ່ມເຕີມໃນອຸປະກອນທີ່ຊິ້ງ)}}</translation>
 <translation id="553782666181800029">Envelope Chou 2</translation>
 <translation id="5538270463355278784">ເຕັມຈໍອັດຕະໂນມັດ</translation>
@@ -3657,7 +3654,6 @@
 <translation id="7316521168101843192">ກຳລັງບັນທຶກໄຟລ໌ໄປໃສ່ Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">ຄວາມຊ່ວຍເຫຼືອກ່ຽວກັບການເຊື່ອມຕໍ່</translation>
-<translation id="7323804146520582233">ເຊື່ອງຂໍ້ "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">ລົບລ້າງບັນຊີພາຍໃນອຸປະກອນ</translation>
 <translation id="7334320624316649418">ເຮັດຄືນຄໍາສັ່ງຈັດລໍາດັບຄືນ</translation>
 <translation id="7335157162773372339">ສາມາດຂໍໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານ</translation>
@@ -3788,7 +3784,6 @@
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">ບໍ່ພົບໜ້າ​​ເວັບສໍາລັບທີ່ຢູ່ເວັບ: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">ເຊື່ອງສ່ວນ "<ph name="SECTION" />" ໄວ້ແລ້ວ</translation>
 <translation id="752189128961566325">ເຊິ່ງທ່ານສາມາດໃຊ້ໄດ້ກັບທົ່ວທຸກຜະລິດຕະພັນ Google</translation>
 <translation id="7523408071729642236">ການຜະລິດ</translation>
 <translation id="7525067979554623046">ສ້າງຂຶ້ນ</translation>
@@ -4241,7 +4236,6 @@
 <translation id="8297545700510100061">ຄຸກກີ້ ແລະ ຂໍ້ມູນເວັບໄຊອື່ນໆແມ່ນຖືກໃຊ້ເພື່ອຈື່ທ່ານ, ຕົວຢ່າງ: ນຳທ່ານເຂົ້າສູ່ລະບົບ ຫຼື ເພື່ອປັບແຕ່ງໂຄສະນາເປັນແບບສ່ວນຕົວ. ເພື່ອຈັດການຄຸກກີ້ສຳລັບເວັບໄຊທັງໝົດ, ກະລຸນາເບິ່ງ <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Wi-Fi ທີ່​ທ່ານ​ກຳ​ລັງ​ໃຊ້​ຢູ່ (<ph name="WIFI_NAME" />) ອາດ​ຈະ​ຕ້ອງ​ການ​ໃຫ້​ທ່ານ​ເຂົ້າ​ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ຂອງ​ມັນ.</translation>
 <translation id="8301894345671534559">ປ້ອນລະຫັດ</translation>
-<translation id="8303854710873047864">ສະແດງ "<ph name="SECTION" />" ແລ້ວ</translation>
 <translation id="8304912090860925649">ຕາຕະລາງປຽບທຽບໃໝ່</translation>
 <translation id="830498451218851433">ພັບເຄິ່ງ</translation>
 <translation id="8308653357438598313">ການສະຕຣີມວິດີໂອສົດ</translation>

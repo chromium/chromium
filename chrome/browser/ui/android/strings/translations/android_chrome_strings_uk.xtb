@@ -183,6 +183,7 @@
 <translation id="1807709131360304325">Відкрити нове вікно</translation>
 <translation id="1810845389119482123">Початкове налаштування синхронізації не завершено</translation>
 <translation id="1812027881030482584">Не вдається ввійти на сайті <ph name="SITE_ETLD_PLUS_ONE" /> за допомогою сервісу "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />"</translation>
+<translation id="1820408774134375111">Нижній екран для входу</translation>
 <translation id="1825772852827001597">Способи оплати й адреси з Google Pay не шифруватимуться. Історія вебперегляду з Chrome не синхронізуватиметься.
 Зашифровані дані може читати лише користувач, який знає вашу парольну фразу. Парольна фраза не надсилається й не зберігається в Google. Якщо ви забули парольну фразу або хочете змінити це налаштування, <ph name="BEGIN_LINK" />видаліть дані Chrome у своєму обліковому записі<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Знайти на сторінці</translation>
@@ -191,6 +192,7 @@
 <translation id="1871098866036088250">Відкривати у веб-переглядачі Chrome</translation>
 <translation id="1877026089748256423">Версія Chrome застаріла</translation>
 <translation id="1877073879466606884">Ви ввійшли в керований профіль. Адміністратор може віддалено змінювати налаштування вашого профілю, аналізувати інформацію про вебпереглядач за допомогою звітів і виконувати інші необхідні дії.</translation>
+<translation id="1879904908408734349">Нижній екран для входу закрито</translation>
 <translation id="1883903952484604915">Мої файли</translation>
 <translation id="189358972401248634">Інші мови</translation>
 <translation id="1899175549411605574">Нижній екран із відомостями про ціни</translation>
@@ -330,6 +332,7 @@
 <translation id="2527779675047087889">Сховати вміст буфера обміну</translation>
 <translation id="2532336938189706096">Веб-версія</translation>
 <translation id="253498598929009420">Сайт зможе переглядати вміст вашого екрана</translation>
+<translation id="2535807170289627159">Усі вкладки</translation>
 <translation id="2536728043171574184">Перегляд копії сторінки в режимі офлайн</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" /> (вкладка)</translation>
 <translation id="2546283357679194313">Файли cookie й дані сайтів</translation>
@@ -539,6 +542,7 @@
 <translation id="3516053221628030540">Перейти в Google Play</translation>
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Скасовано дозволи на надсилання сповіщень для одного сайту, який ви не відвідували останнім часом}one{Скасовано дозволи на надсилання сповіщень для # сайту, який ви не відвідували останнім часом}few{Скасовано дозволи на надсилання сповіщень для # сайтів, які ви не відвідували останнім часом}many{Скасовано дозволи на надсилання сповіщень для # сайтів, які ви не відвідували останнім часом}other{Скасовано дозволи на надсилання сповіщень для # сайту, які ви не відвідували останнім часом}}</translation>
 <translation id="3518985090088779359">Продовжити</translation>
+<translation id="3519014757432845220">Допоможіть покращити захист від спаму, надіславши в Google вміст сповіщення і URL-адресу сайту. Цей контент можуть перевіряти наші спеціалісти.</translation>
 <translation id="351952459507671940">Додати в нову групу</translation>
 <translation id="3521388823983121502">Не вдається ввійти в сервісі "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />"</translation>
 <translation id="3522247891732774234">Доступне оновлення. Більше опцій</translation>
@@ -854,6 +858,7 @@
 <translation id="4943703118917034429">Віртуальна реальність</translation>
 <translation id="4943872375798546930">Не знайдено жодного результату</translation>
 <translation id="4957722034734105353">Докладніше...</translation>
+<translation id="4959115606310463263">Нижній екран для входу відкрито на половину висоти</translation>
 <translation id="4961107849584082341">Перекладіть цю сторінку будь-якою мовою</translation>
 <translation id="4964614743143953889">Chrome попереджає про небезпечні сайти й завантаження</translation>
 <translation id="496607651705915226">Щоб зберігати й використовувати нові паролі в обліковому записі Google, оновіть сервіси Google Play</translation>
@@ -1146,6 +1151,7 @@
 <translation id="6277522088822131679">Виникла проблема з друком цієї сторінки. Повторіть спробу.</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6284472661216707937">Екран "Паролі на всіх ваших пристроях" закрито</translation>
+<translation id="6291294824436685757">Видалити дані вебперегляду. Виберіть дані, які потрібно видалити.</translation>
 <translation id="6295158916970320988">Усі сайти</translation>
 <translation id="6296366034485697675">Експортувати й видалити</translation>
 <translation id="629730747756840877">Обліковий запис</translation>
@@ -1613,6 +1619,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923">Залишилося файлів: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Залишився 1 день</translation>
+<translation id="8192765420340770300">Нижній екран для входу відкрито на всю висоту</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ваші пристрої<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="820568752112382238">Сайти, які часто відвідуються</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще <ph name="NUMBER_OF_OTHER_MEMBERS" /> користувач}one{Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще <ph name="NUMBER_OF_OTHER_MEMBERS" /> користувач}few{Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще <ph name="NUMBER_OF_OTHER_MEMBERS" /> користувачі}many{Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще <ph name="NUMBER_OF_OTHER_MEMBERS" /> користувачів}other{Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще <ph name="NUMBER_OF_OTHER_MEMBERS" /> користувача}}</translation>
@@ -1809,6 +1816,7 @@
 <translation id="9050666287014529139">Парольна фраза</translation>
 <translation id="9055497320631373736">Сайт повторно додано до списку потенційних</translation>
 <translation id="9057030985451135243">Докладніше про спільні групи вкладок</translation>
+<translation id="9063400323119781058">Підписку скасовано</translation>
 <translation id="9063523880881406963">Вимкнути функцію "Запитувати версію сайту для комп’ютера"</translation>
 <translation id="9065203028668620118">Редагувати</translation>
 <translation id="9065383040763568503">Збережені дані, які Chrome визначає як неважливі (наприклад, дані сайтів із незбереженими налаштуваннями або тих, які ви рідко відвідуєте)</translation>

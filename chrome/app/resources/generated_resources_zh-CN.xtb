@@ -3156,6 +3156,7 @@
 <translation id="3188465121994729530">移动平均值</translation>
 <translation id="3189187154924005138">大号光标</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{有 1 个密码和其他内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。}other{有 {PASSWORD_COUNT} 个密码和其他内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。}}</translation>
+<translation id="319044078641740013">如需轻松重新访问浏览过的网站，请将历史记录和标签页同步到 <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3190558889382726167">密码已保存</translation>
 <translation id="3192586965067888278">详细描述问题。反馈将发送给 Google 进行人工审核，并可能会用于改进或开发 Google 产品和服务。</translation>
 <translation id="3192947282887913208">音频文件</translation>
@@ -5684,7 +5685,6 @@
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">投屏</translation>
 <translation id="496185450405387901">您的管理员已安装此应用。</translation>
-<translation id="4963079328730030450">您的组织可控制由这些功能收集的数据的使用方式。</translation>
 <translation id="4963603093937263654">请确保在您的“<ph name="DEVICE_NAME" />”上开启通知功能</translation>
 <translation id="4963789650715167449">移除当前标签页</translation>
 <translation id="4964455510556214366">排列方式</translation>
@@ -10330,6 +10330,7 @@
 <translation id="8280848878018088610">图片描绘了一种黑暗氛围，海中巨浪翻滚，背景中有一座奇幻的城市和城堡。</translation>
 <translation id="828180235270931531">其他可用打印机</translation>
 <translation id="8281886186245836920">跳过</translation>
+<translation id="8283802069507225582">如需在其他设备上继续浏览，请将历史记录和标签页同步到 <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">所有<ph name="WEBSITE_1" />网站</translation>
 <translation id="8284326494547611709">字幕</translation>
 <translation id="8286036467436129157">登录</translation>
@@ -11008,6 +11009,7 @@
 <translation id="8754200782896249056">&lt;p&gt;在受支持的桌面环境中运行<ph name="PRODUCT_NAME" />时，将使用系统代理设置。但您的系统不受支持，或启动系统配置时出现问题。&lt;/p&gt;
 
           &lt;p&gt;但您仍可通过命令行进行配置。如需详细了解各项实验功能和环境变量，请参见 &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;。&lt;/p&gt;</translation>
+<translation id="8754810799862630650">如需查看您在其他计算机和手机上打开的标签页，请将历史记录和标签页同步到 <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">为贵组织执行与安全性有关的任务，例如管理设备上存储的证书和密钥</translation>
 <translation id="875532100880844232">对于<ph name="DEVICE_NAME" />，请为每个按键选择一项操作</translation>
 <translation id="8755376271068075440">放大(&amp;L)</translation>

@@ -3282,6 +3282,7 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{فایل}one{# فایل}other{# فایل}}</translation>
 <translation id="326999365752735949">در حال بارگیری تفاوت</translation>
 <translation id="3270965368676314374">خواندن، تغییر و حذف عکس‌ها، موسیقی و سایر رسانه‌ها از رایانه‌تان</translation>
+<translation id="3275464924531706548">جمع کردن <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">کلید امنیتی توکار درحال‌حاضر امن نیست. لطفاً این کلید را از هرسرویسی که از آن با این کلید استفاده می‌کنید، بردارید. برای حل این مشکل، لطفاً کلید امنیتی را بازنشانی کنید.</translation>
 <translation id="3275778913554317645">باز کردن به‌عنوان پنجره</translation>
 <translation id="3277214528693754078">پیمایش با مکان‌نمای نوشتار (مرور با هشتک)</translation>
@@ -3613,6 +3614,7 @@
 <translation id="3510471875518562537">‏از این نشانی در iPhone خود استفاده کنید</translation>
 <translation id="3511200754045804813">جستجوی دوباره</translation>
 <translation id="3511307672085573050">کپی آدر&amp;س پیوند</translation>
+<translation id="3511358375261756531">ازهم بازکردن <ph name="HEADER" /></translation>
 <translation id="351152300840026870">قلم با عرض ثابت</translation>
 <translation id="3511528412952710609">کوتاه</translation>
 <translation id="3513019849832307207">پیوستن و باز کردن</translation>
@@ -5704,7 +5706,6 @@
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">فرستادن محتوای صفحه</translation>
 <translation id="496185450405387901">این برنامه را سرپرست نصب کرده است.</translation>
-<translation id="4963079328730030450">سازمان شما کنترل می‌کند که داده‌های جمع‌آوری‌شده توسط این ویژگی‌ها چگونه استفاده شوند.</translation>
 <translation id="4963603093937263654">مطمئن شوید اعلان‌ها در <ph name="DEVICE_NAME" /> شما روشن باشد</translation>
 <translation id="4963789650715167449">برداشتن برگه فعلی</translation>
 <translation id="4964455510556214366">ترتیب</translation>
@@ -6167,6 +6168,7 @@
 <translation id="5296536303670088158">‏از قوی‌ترین امنیت Chrome دربرابر وب‌سایت‌های مضر برخوردار هستید</translation>
 <translation id="5297005732522718715">بازآوری پیکربندی اشتراک‌گذاری اینترنت</translation>
 <translation id="5297082477358294722">گذرواژه ذخیره شد. گذرواژه‌های ذخیره‌شده‌تان را در <ph name="SAVED_PASSWORDS_STORE" /> مشاهده و مدیریت کنید.</translation>
+<translation id="5297548311167268289">ورود به سیستم <ph name="RP_ID" /></translation>
 <translation id="5297946558563358707">وقتی فرد دیگری به صفحه‌نمایشتان نگاه کند، نماد چشم «حریم خصوصی» در پایین سمت چپ صفحه‌نمایش نشان داده می‌شود</translation>
 <translation id="5297984209202974345">مضمون اخیر هوش مصنوعی <ph name="INDEX" /> از <ph name="SUBJECT" />، در سبک <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">ایحاد زمینه توسط</translation>

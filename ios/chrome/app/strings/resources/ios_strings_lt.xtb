@@ -304,6 +304,7 @@
 <translation id="2216366330550244277">Eikite į produkto puslapį</translation>
 <translation id="2220529011494928058">Pranešti apie problemą</translation>
 <translation id="2223461067862937305">Kurti QR kodą</translation>
+<translation id="2225701818156393674">Produktas pridėtas prie stebimų produktų sąrašo.</translation>
 <translation id="2229345671837147090">Nuotolinių skirtukų tinklelis</translation>
 <translation id="2230173723195178503">TInklalapis įkeltas</translation>
 <translation id="2236949375853147973">Mano veikla</translation>
@@ -533,6 +534,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3208260410153224535">Organizacija išjungė prisijungimą. Nauji slaptažodžiai, žymės ir kt. bus išsaugoti tik šiame įrenginyje.</translation>
 <translation id="3213807041830307252">Pirkite, verskite ir nustatykite, ką matote, naudodami fotoaparatą ir nuotraukų galeriją.</translation>
 <translation id="3214379938835224220">Buvote atjungti nustatant „iPad“ iš naujo. Toliau palieskite „Tęsti“, kad prisijungtumėte.</translation>
+<translation id="3218296450292600703">Prisijungus prie valdomos paskyros galima atskirti su organizacija susijusį naršymą (įskaitant skirtukus, istoriją ir slaptažodžius) nuo kitos naršymo veiklos</translation>
 <translation id="3224075676564434205">Skirtukai liks atidaryti šiame įrenginyje, bet grupė bus ištrinta iš visų įrenginių, kuriuose prisijungta prie <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Jei norite eksportuoti slaptažodžius, pirmiausia turite nustatyti įrenginio slaptažodį.</translation>
 <translation id="3227137524299004712">Mikrofonas</translation>
@@ -1386,6 +1388,7 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos sužinoti apie naršymo veiklą skirtingose svetainėse, pavyzdžiui, kad galėtų suasmeninti skelbimus.</translation>
 <translation id="6672697278890207089">Įveskite slaptafrazę</translation>
 <translation id="6674917187596384849">Galite lengvai perjungti paskyras</translation>
+<translation id="6676349090816247042">Prisijungimo parinktys.</translation>
 <translation id="667999046851023355">Dokumentas</translation>
 <translation id="6680416467695217368">Tinkinti meniu</translation>
 <translation id="6681586159478273915">Paieška balsu</translation>

@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">वॉटर फिल्टर आणि प्युरिफायर</translation>
 <translation id="1036348656032585052">बंद करा</translation>
 <translation id="1036881361735705143">एन्व्हलप सी४</translation>
-<translation id="1038106730571050514">सूचना दाखवा</translation>
 <translation id="1038842779957582377">अज्ञात नाव</translation>
 <translation id="1041998700806130099">जॉब पत्रकाचा मेसेज</translation>
 <translation id="1044897699341250361">याचा अर्थ काय</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">गेम</translation>
 <translation id="2674170444375937751">तुमची खात्री आहे की तुम्ही ही पेज आपल्‍या इतिहासातून हटवू इच्छिता?</translation>
 <translation id="2674524144218093528">घराला रंगवणे आणि फिनिशिंग</translation>
-<translation id="2674804415323431591">सूचना लपवा</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> हे टॅब गट आता उपलब्ध नाहीत</translation>
 <translation id="2677748264148917807">सोडा</translation>
 <translation id="2683195745483370038">इतर परिणाम सापडले आहेत</translation>
@@ -2323,6 +2321,7 @@
 <translation id="4998950033665438990">सिंगल फेस</translation>
 <translation id="5001526427543320409">तृतीय पक्ष कुकी</translation>
 <translation id="5002932099480077015">सक्षम केल्‍यास, Chrome जलदपणे फॉर्म भरण्‍यासाठी तुमच्या कार्डची एक प्रत या डिव्‍हाइसवर संग्रहित करेल.</translation>
+<translation id="5007344584818503324">शेअर केलेल्या टॅब गटांची अ‍ॅक्टिव्हिटी</translation>
 <translation id="5007392906805964215">पुनरावलोकन करा</translation>
 <translation id="5010599530303458903">मासिक किंवा ४ व्याजमुक्त हप्त्यांमध्ये पेमेंट करा (पात्रतेच्या अधीन आहे)</translation>
 <translation id="5011561501798487822">डिटेक्ट केलेली भाषा</translation>
@@ -2631,7 +2630,6 @@
 <translation id="55293785478302737">एज स्टिच</translation>
 <translation id="553377674408670169">शैक्षणिक नोकऱ्या</translation>
 <translation id="5534785731327961487">आता चांगली डील</translation>
-<translation id="5536214594743852365">"<ph name="SECTION" />" विभाग दाखवा</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{आणखी १ साइट (सिंक केलेल्या डिव्‍हाइसवर आणखी)}other{आणखी # साइट (सिंक केलेल्या डिव्‍हाइसवर आणखी)}}</translation>
 <translation id="553782666181800029">एन्व्हलप चोउ २</translation>
 <translation id="5538270463355278784">ऑटोमॅटिक फुल स्क्रीन</translation>
@@ -2750,6 +2748,7 @@
 <translation id="5732392974455271431">तुमचे पालक तुमच्यासाठी ती अनब्लॉक करू शकतात</translation>
 <translation id="573555826359077410">फॉर्म तयार करा बटण, Google Forms मध्ये नवीन फॉर्म झटपट तयार करण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
 <translation id="5738385766833540397">तुम्ही माग ठेवत असलेल्या उत्पादनांसाठी तुम्हाला किमतीमध्ये घट झाल्याच्या सूचना कशा मिळतात ते व्यवस्थापित करा</translation>
+<translation id="5739619009927381786">तुम्ही पुढील पायरीमध्ये साधारणपणे तुमची फिंगरप्रिंट वापरून तुमची स्क्रीन अनलॉक करा. किंवा तुम्ही <ph name="BEGIN_LINK" />वेगळ्या पद्धतीने पडताळणी करू शकता<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">टॅब गटांमध्ये शेअर करण्यासाठी, सामील होण्यासाठी आणि सहयोग करण्यासाठी, तुमचा इतिहास व टॅब सिंक करा</translation>
 <translation id="5740911612628596808">एन्व्हलप सी९</translation>
 <translation id="5742806904559466333">बार, क्लब आणि नाइटलाइफ</translation>
@@ -3656,7 +3655,6 @@
 <translation id="7316521168101843192">Microsoft OneDrive वर फाइल सेव्ह करत आहे</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">कनेक्शन मदत</translation>
-<translation id="7323804146520582233">"<ph name="SECTION" />" विभाग लपवा</translation>
 <translation id="733354035281974745">डिव्हाइसचे स्थानिक खाते ओव्हरराइड करा</translation>
 <translation id="7334320624316649418">&amp;पुनर्क्रमित करा पुन्हा करा</translation>
 <translation id="7335157162773372339">तुमचा कॅमेरा वापरण्याची विनंती करू शकते</translation>
@@ -3787,7 +3785,6 @@
 <translation id="7517414872996418597">एन्व्हलप सी१०</translation>
 <translation id="7518003948725431193">या वेबपत्त्यासाठी वेबपेज आढळले नाही: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">"<ph name="SECTION" />" विभाग लपवलेला आहे</translation>
 <translation id="752189128961566325">तुम्ही ते संपूर्ण Google उत्पादनांवर वापरू शकता</translation>
 <translation id="7523408071729642236">उत्पादन</translation>
 <translation id="7525067979554623046">तयार करा</translation>
@@ -4239,7 +4236,6 @@
 <translation id="8297545700510100061">कुकी आणि इतर साइट डेटा तुम्हाला लक्षात ठेवण्यासाठी वापरला जातो, उदाहरणार्थ, तुम्हाला साइन इन करण्याकरिता किंवा जाहिराती पर्सनलाइझ करण्याकरिता. सर्व साइटसाठी कुकी व्यवस्थापित करण्याकरिता, <ph name="SETTINGS" /> पहा.</translation>
 <translation id="8298115750975731693">तुम्ही वापरत असलेल्या (<ph name="WIFI_NAME" />) वाय-फाय ला तुम्ही <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ला भेट देण्याची आवश्यकता असू शकते.</translation>
 <translation id="8301894345671534559">कोड एंटर करा</translation>
-<translation id="8303854710873047864">"<ph name="SECTION" />" विभाग दाखवला आहे</translation>
 <translation id="8304912090860925649">नवीन तुलना सारणी</translation>
 <translation id="830498451218851433">फोल्ड हाफ</translation>
 <translation id="8308653357438598313">लाइव्ह व्हिडिओ स्ट्रीम करणे</translation>

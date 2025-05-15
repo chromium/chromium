@@ -162,6 +162,7 @@
 <translation id="6264365405983206840">모두 선택(&amp;A)</translation>
 <translation id="6346952829206698721">클립보드에서 붙여넣기</translation>
 <translation id="6364916375976753737">왼쪽으로 스크롤</translation>
+<translation id="63712816010840859">현재 디스플레이가 터치 스크린이 아닌 경우 Esc 키를 누르세요.</translation>
 <translation id="6394627529324717982">콤마</translation>
 <translation id="6397363302884558537">말하기 중지</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{1초 전}other{#초 전}}</translation>
@@ -173,6 +174,7 @@
 <translation id="6612467943526193239">보정을 종료하려면 Esc를 누르세요.</translation>
 <translation id="6620110761915583480">파일 저장</translation>
 <translation id="6699343763173986273">미디어 다음 트랙</translation>
+<translation id="6738856801552481343">이 디스플레이가 터치 스크린이 아닌 경우 Esc 키를 누르세요.</translation>
 <translation id="6807086321996342431"><ph name="COLUMN_NAME" /> 열</translation>
 <translation id="6808150112686056157">미디어 중지</translation>
 <translation id="6845383723252244143">폴더 선택</translation>

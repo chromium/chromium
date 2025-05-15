@@ -332,6 +332,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2527779675047087889">Skjul indhold i udklipsholderen</translation>
 <translation id="2532336938189706096">Webvisning</translation>
 <translation id="253498598929009420">Websitet vil kunne se indholdet på din skærm</translation>
+<translation id="2535807170289627159">Alle faner</translation>
 <translation id="2536728043171574184">Du ser en offlinekopi af denne side</translation>
 <translation id="2542548955756682219">Fane: <ph name="TAB_TITLE" /></translation>
 <translation id="2546283357679194313">Cookies og websitedata</translation>
@@ -434,6 +435,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2979639724566107830">Åbn i nyt vindue</translation>
 <translation id="2981364137500752533">Du kan have op til 5 vinduer.</translation>
 <translation id="2983102365694924129">Baseret på din aktivitet på et website. Denne indstilling er deaktiveret.</translation>
+<translation id="2983398917942897288">Inaktive (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Medtag omgivende tekst i Google-søgninger</translation>
 <translation id="2988638966064514052">Gør dine adgangskoder stærkere</translation>
 <translation id="2989523299700148168">Besøgt for nylig</translation>
@@ -466,6 +468,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="314939179385989105">Chromes startside</translation>
 <translation id="3158667104057012316">Sorteres i manuel rækkefølge</translation>
 <translation id="3159335509547415276">Få flere oplysninger om blokerede konti</translation>
+<translation id="3161699713309727585"><ph name="BUTTON_TEXT" /> – åbnes på en ny fane</translation>
 <translation id="3166827708714933426">Genveje på faner og i vinduer</translation>
 <translation id="316694332262407393">Chrome kører allerede her.</translation>
 <translation id="3167258285411721858">Du kan anmode om mobilwebsitet for <ph name="HOST_NAME" /></translation>
@@ -790,6 +793,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="469286762610133730">Få bedre indhold</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> mere}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> mere}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> mere}}</translation>
 <translation id="4698061626562952596">Se dine inaktive faner her</translation>
+<translation id="4698757800236023795">Aktive (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Billeder og filer, der er gemt i cache</translation>
 <translation id="4710167854527459075">Sortér efter nyeste</translation>
 <translation id="4718044610319080485">Aktiverer AI-assistent</translation>

@@ -332,6 +332,7 @@
 <translation id="2527779675047087889">پنهان کردن محتوای بریده‌دان</translation>
 <translation id="2532336938189706096">نمای وب</translation>
 <translation id="253498598929009420">این سایت می‌تواند محتوای صفحه‌تان را ببیند</translation>
+<translation id="2535807170289627159">همه برگه‌ها</translation>
 <translation id="2536728043171574184">مشاهده یک کپی آفلاین از این صفحه</translation>
 <translation id="2542548955756682219">‫<ph name="TAB_TITLE" />، برگه</translation>
 <translation id="2546283357679194313">کوکی‌ها و داده‌های سایت</translation>
@@ -434,6 +435,7 @@
 <translation id="2979639724566107830">باز کردن در پنجرهٔ جدید</translation>
 <translation id="2981364137500752533">حداکثر ۵ پنجره می‌توانید داشته باشید.</translation>
 <translation id="2983102365694924129">براساس فعالیت شما در سایت. این تنظیم خاموش است.</translation>
+<translation id="2983398917942897288">غیرفعال (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">‏گنجاندن نوشتار اطراف در جستجوهای Google</translation>
 <translation id="2988638966064514052">گذرواژه‌هایتان را تقویت کنید</translation>
 <translation id="2989523299700148168">اخیراً دیده‌شده</translation>
@@ -466,6 +468,7 @@
 <translation id="314939179385989105">‏صفحه اصلی Chrome</translation>
 <translation id="3158667104057012316">براساس ترتیب دستی</translation>
 <translation id="3159335509547415276">آشنایی با حساب‌های مسدودشده</translation>
+<translation id="3161699713309727585">‫<ph name="BUTTON_TEXT" />، در زبانه جدیدی باز می‌شود</translation>
 <translation id="3166827708714933426">میان‌برهای پنجره و برگه</translation>
 <translation id="316694332262407393">‏Chrome ازقبل درحال اجرا شدن است.</translation>
 <translation id="3167258285411721858">می‌توانید درخواست دهید از سایت ویژه تلفن همراه <ph name="HOST_NAME" /> استفاده کنید</translation>
@@ -790,6 +793,7 @@
 <translation id="469286762610133730">محتوای بهتری دریافت کنید</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}one{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}other{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}}</translation>
 <translation id="4698061626562952596">برگه‌های غیرفعال را اینجا بررسی کنید</translation>
+<translation id="4698757800236023795">فعال (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">تصاویر و فایل‌های ذخیره‌شده در حافظه نهان</translation>
 <translation id="4710167854527459075">ترتیب براساس جدیدترین</translation>
 <translation id="4718044610319080485">«دستیار هوش مصنوعی» را فراخوانی می‌کند</translation>

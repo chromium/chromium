@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Vodné filtre a čistiace zariadenia</translation>
 <translation id="1036348656032585052">Vypnúť</translation>
 <translation id="1036881361735705143">Obálka C4</translation>
-<translation id="1038106730571050514">Zobraziť návrhy</translation>
 <translation id="1038842779957582377">neznámy názov</translation>
 <translation id="1041998700806130099">Správa hárku úlohy</translation>
 <translation id="1044897699341250361">Čo to znamená</translation>
@@ -978,7 +977,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2673968385134502798">Hry</translation>
 <translation id="2674170444375937751">Naozaj chcete odstrániť tieto stránky zo svojej histórie?</translation>
 <translation id="2674524144218093528">Maľovanie a úprava interiérov</translation>
-<translation id="2674804415323431591">Skryť návrhy</translation>
 <translation id="26774279487328902">Skupiny kariet (<ph name="GROUP_COUNT" />) už nie sú k dispozícii</translation>
 <translation id="2677748264148917807">Odísť</translation>
 <translation id="2683195745483370038">Boli nájdené ďalšie výsledky</translation>
@@ -2629,7 +2627,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="55293785478302737">Zošiť hrebeňovou väzbou</translation>
 <translation id="553377674408670169">Práca v oblasti vzdelávania</translation>
 <translation id="5534785731327961487">Výhodná ponuka</translation>
-<translation id="5536214594743852365">Zobraziť sekciu <ph name="SECTION" /></translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{a 1 web (viac v synchronizovaných zariadeniach)}few{a # weby (viac v synchronizovaných zariadeniach)}many{+ # sites (more on synced devices)}other{a # webov (viac v synchronizovaných zariadeniach)}}</translation>
 <translation id="553782666181800029">Obálka Chou 2</translation>
 <translation id="5538270463355278784">automaticky na celú obrazovku</translation>
@@ -3357,6 +3354,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6789062271869667677">Nepretržité (dlhé)</translation>
 <translation id="678982761784843853">Identifikátory chráneného obsahu</translation>
 <translation id="6790428901817661496">Prehrať</translation>
+<translation id="6792631792628412749">Prístupový kľúč • <ph name="PROVIDER_NAME" /></translation>
 <translation id="6793213097893210590">Kartón</translation>
 <translation id="679355240208270552">Ignorované, pretože predvolené vyhľadávanie je zakázané pravidlom.</translation>
 <translation id="6794951432696553238">Odteraz môžete potvrdzovať karty rýchlejšie pomocou funkcie Windows Hello</translation>
@@ -3652,7 +3650,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7316521168101843192">Súbor sa ukladá do služby Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Pomocník s pripojením</translation>
-<translation id="7323804146520582233">Skryť sekciu <ph name="SECTION" /></translation>
 <translation id="733354035281974745">Prekonanie miestneho účtu zariadenia</translation>
 <translation id="7334320624316649418">&amp;Znova zmeniť poradie</translation>
 <translation id="7335157162773372339">Môže žiadať o povolenie používať kameru</translation>
@@ -3783,7 +3780,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7517414872996418597">Obálka C10</translation>
 <translation id="7518003948725431193">Na <ph name="URL" /> sa nenašla žiadna webová stránka</translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Sekcia <ph name="SECTION" /> bola skrytá</translation>
 <translation id="752189128961566325">Môžete ju používať v službách Googlu</translation>
 <translation id="7523408071729642236">Výroba</translation>
 <translation id="7525067979554623046">Vytvoriť</translation>
@@ -4235,7 +4231,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8297545700510100061">Stránky si vás pomocou súborov cookie a ďalších dát webov zapamätajú, napríklad vás pomocou nich prihlásia alebo prispôsobia reklamy. Ak chcete spravovať súbory cookie pre všetky weby, otvorte <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Sieť Wi‑Fi (<ph name="WIFI_NAME" />), ktorú používate, môže vyžadovať, aby ste navštívili stránku <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /></translation>
 <translation id="8301894345671534559">Zadať kód</translation>
-<translation id="8303854710873047864">Je zobrazená sekcia <ph name="SECTION" /></translation>
 <translation id="8304912090860925649">Nová porovnávacia tabuľka</translation>
 <translation id="830498451218851433">Zahnúť v polovici</translation>
 <translation id="8308653357438598313">Priame prenosy</translation>

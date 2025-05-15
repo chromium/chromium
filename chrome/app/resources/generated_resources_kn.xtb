@@ -3276,6 +3276,7 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{ಫೈಲ್}one{# ಫೈಲ್‌ಗಳು}other{# ಫೈಲ್‌ಗಳು}}</translation>
 <translation id="326999365752735949">ವ್ಯತ್ಯಾಸವನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3270965368676314374">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಿಂದ ಫೋಟೋಗಳು, ಸಂಗೀತ, ಮತ್ತು ಇತರ ಮಾಧ್ಯಮವನ್ನು ಓದಿ, ಬದಲಾಯಿಸಿ ಮತ್ತು ಅಳಿಸಿ</translation>
+<translation id="3275464924531706548"><ph name="HEADER" /> ಸಂಕುಚಿಸಿ</translation>
 <translation id="3275778809241512831">ಪ್ರಸ್ತುತ, ನಿಮ್ಮ ಆಂತರಿಕ ಭದ್ರತೆ ಕೀ ಅಸುರಕ್ಷಿತವಾಗಿದೆ. ಅದನ್ನು ಯಾವ ಸೇವೆಗಳಲ್ಲಿ ಬಳಸಿರುವಿರೋ, ಅವುಗಳಿಂದ ತೆಗೆದುಹಾಕಿ. ಸಮಸ್ಯೆಯನ್ನು ಬಗೆಹರಿಸಲು, ಭದ್ರತೆ ಕೀಯನ್ನು ಮರುಹೊಂದಿಸಿ.</translation>
 <translation id="3275778913554317645">ವಿಂಡೊ ಅಂತೆ ತೆರೆಯಿರಿ</translation>
 <translation id="3277214528693754078">ಪಠ್ಯ ಕರ್ಸರ್‌ನೊಂದಿಗೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ (ಕೆರೆಟ್ ಬ್ರೌಸಿಂಗ್)</translation>
@@ -3607,6 +3608,7 @@
 <translation id="3510471875518562537">ನಿಮ್ಮ iPhone ನಲ್ಲಿ ಈ ವಿಳಾಸವನ್ನು ಬಳಸಿ</translation>
 <translation id="3511200754045804813">ಮರು-ಸ್ಕ್ಯಾನ್</translation>
 <translation id="3511307672085573050">ಲಿಂಕ್ ವಿಳಾ&amp;ಸವನ್ನು ನಕಲಿಸಿ</translation>
+<translation id="3511358375261756531"><ph name="HEADER" /> ವಿಸ್ತರಿಸಿ</translation>
 <translation id="351152300840026870">ಸ್ಥಿರ-ಅಗಲ ಫಾಂಟ್</translation>
 <translation id="3511528412952710609">ಶಾರ್ಟ್‌</translation>
 <translation id="3513019849832307207">ಸೇರಿಕೊಳ್ಳಿ ಮತ್ತು ತೆರೆಯಿರಿ</translation>
@@ -5699,7 +5701,6 @@
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">ಪರದೆಯನ್ನು ಬಿತ್ತರಿಸಿ</translation>
 <translation id="496185450405387901">ಈ ಆ್ಯಪ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ್ದಾರೆ.</translation>
-<translation id="4963079328730030450">ಈ ಫೀಚರ್‌ಗಳು ಸಂಗ್ರಹಿಸುವ ಡೇಟಾವನ್ನು ಹೇಗೆ ಬಳಸಬಹುದು ಎಂಬುದನ್ನು ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿಯಂತ್ರಿಸುತ್ತದೆ.</translation>
 <translation id="4963603093937263654">ನಿಮ್ಮ <ph name="DEVICE_NAME" /> ನಲ್ಲಿ ನೋಟಿಫಿಕೇಶನ್‌ಗಳು ಆನ್ ಆಗಿರುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="4963789650715167449">ಪ್ರಸ್ತುತ ಟ್ಯಾಬ್ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="4964455510556214366">ಹೊಂದಾಣಿಕೆ</translation>
@@ -6161,6 +6162,7 @@
 <translation id="5296536303670088158">ಹಾನಿಕಾರಕ ವೆಬ್‌ಸೈಟ್‌ಗಳ ವಿರುದ್ಧ ನೀವು Chrome ನ ಪ್ರಬಲ ಭದ್ರತೆಯನ್ನು ಹೊಂದಿದ್ದೀರಿ</translation>
 <translation id="5297005732522718715">ಟೆಥರಿಂಗ್ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="5297082477358294722">ಪಾಸ್‌ವರ್ಡ್ ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ <ph name="SAVED_PASSWORDS_STORE" /> ನಲ್ಲಿ ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ.</translation>
+<translation id="5297548311167268289"><ph name="RP_ID" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="5297946558563358707">ಬೇರೊಬ್ಬರು ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ನೋಡಿದಾಗ, ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನ ಕೆಳಗಿನ ಬಲಭಾಗದಲ್ಲಿ ಗೌಪ್ಯತೆ ಕಣ್ಣಿನ ಐಕಾನ್ ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="5297984209202974345"><ph name="SUBJECT" /> ನ ಇತ್ತೀಚಿನ AI ಥೀಮ್ <ph name="INDEX" />, <ph name="STYLE" /> ಶೈಲಿಯಲ್ಲಿದೆ</translation>
 <translation id="5298219193514155779">ಇವರಿಂದ ಥೀಮ್ ರಚಿಸಲಾಗಿದೆ</translation>

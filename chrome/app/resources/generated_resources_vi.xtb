@@ -3179,6 +3179,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3188465121994729530">Trung bình động</translation>
 <translation id="3189187154924005138">Con trỏ lớn</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{Có 1 mật khẩu và các mục khác chỉ được lưu trên thiết bị này. Để sử dụng những dữ liệu này trên các thiết bị khác, hãy lưu dữ liệu vào Tài khoản Google của bạn.}other{Có {PASSWORD_COUNT} mật khẩu và các mục khác chỉ được lưu trên thiết bị này. Để sử dụng những dữ liệu này trên các thiết bị khác, hãy lưu dữ liệu vào Tài khoản Google của bạn.}}</translation>
+<translation id="319044078641740013">Để dễ dàng quay lại các trang web bạn đã truy cập, hãy đồng bộ hoá nhật ký và thẻ của bạn với <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3190558889382726167">Đã lưu mật khẩu</translation>
 <translation id="3192586965067888278">Mô tả chi tiết về vấn đề. Ý kiến phản hồi sẽ được gửi tới Google để nhân viên đánh giá và có thể được dùng để cải thiện hoặc phát triển các sản phẩm và dịch vụ của Google.</translation>
 <translation id="3192947282887913208">Tệp âm thanh</translation>
@@ -5709,7 +5710,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Truyền màn hình</translation>
 <translation id="496185450405387901">Quản trị viên của bạn đã cài đặt ứng dụng này.</translation>
-<translation id="4963079328730030450">Tổ chức của bạn kiểm soát cách sử dụng dữ liệu do các tính năng này thu thập.</translation>
 <translation id="4963603093937263654">Bạn cần bật thông báo trên <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Xóa thẻ hiện tại</translation>
 <translation id="4964455510556214366">Sắp xếp</translation>
@@ -10361,6 +10361,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8280848878018088610">Những con sóng xô trên biển, phía sau là khung cảnh thành phố và lâu đài kỳ ảo, trong bầu không khí u ám.</translation>
 <translation id="828180235270931531">Các máy in có sẵn khác</translation>
 <translation id="8281886186245836920">Bỏ qua</translation>
+<translation id="8283802069507225582">Để tiếp tục nội dung bạn đang xem dở trên các thiết bị khác, hãy đồng bộ hoá nhật ký và thẻ của bạn với <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">tất cả trang web <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Phụ đề</translation>
 <translation id="8286036467436129157">Đăng nhập</translation>
@@ -11039,6 +11040,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8754200782896249056">&lt;p&gt;Khi chạy <ph name="PRODUCT_NAME" /> trong môi trường màn hình được hỗ trợ, cài đặt proxy hệ thống sẽ được sử dụng.  Tuy nhiên, hệ thống của bạn không được hỗ trợ hoặc đã xảy ra sự cố khi khởi chạy cấu hình hệ thống của bạn.&lt;/p&gt;
 
           &lt;p&gt;Tuy nhiên, bạn vẫn có thể định cấu hình qua dòng lệnh.  Hãy xem  &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; để biết thêm thông tin về cờ và biến môi trường.&lt;/p&gt;</translation>
+<translation id="8754810799862630650">Để xem các thẻ đang mở từ máy tính và điện thoại khác, hãy đồng bộ hoá nhật ký và thẻ của bạn với <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">Thực hiện các nhiệm vụ liên quan đến bảo mật cho tổ chức bạn, chẳng hạn như quản lý các chứng chỉ và khóa lưu trữ trên thiết bị</translation>
 <translation id="875532100880844232">Đối với <ph name="DEVICE_NAME" />, hãy chọn một thao tác cho mỗi phím</translation>
 <translation id="8755376271068075440">&amp;Lớn hơn</translation>

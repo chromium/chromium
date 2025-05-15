@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">ဤပစ္စည်းမှာ မကြာမီက <ph name="PREVIOUS_PRICE" /> မှ <ph name="NEW_PRICE" /> သို့ ဈေးကျသွားသည်</translation>
 <translation id="6109251075362363230">နောက်ဆုံးသုံးထားသည့် မိတ္တူမှလွဲ၍ မိတ္တူပွားတဘ်အားလုံးကိုလည်း ယခုသိမ်းဆည်းပါမည်။</translation>
 <translation id="6193448654517602979">တဘ်ရွေးရန်</translation>
+<translation id="6220820548421939212">ဟုတ်ပါသည်။ ကျွန်ုပ်ပါဝင်ပါမည်</translation>
 <translation id="6228793724645064692">(ဆိုင်အဆင့်)</translation>
 <translation id="6271513594716432922">အသုံးမပြုသောတဘ်အားလုံး ပိတ်ရန်</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{တဘ်ကို အုပ်စုအသစ်တွင် ထည့်ရန်}other{တဘ်ကို အုပ်စုအသစ်တွင် ထည့်ရန်}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">လုပ်ဆောင်ချက်</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> အဆင့်သတ်မှတ်ချက်၊ သုံးသပ်ချက် <ph name="REVIEWS_COUNT_ONE" /> ခု}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> အဆင့်သတ်မှတ်ချက်၊ သုံးသပ်ချက် <ph name="REVIEWS_COUNT_MANY" /> ခု}}</translation>
 <translation id="7885132941432959125">တဘ်ကို ညာဘက်သို့ ရွှေ့ရန်</translation>
+<translation id="788914896430720926">အသုံးမပြုသောအပိုင်းကို သပ်ရပ်အောင်ထားမလား။</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> ရွေးမထားပါ</translation>
 <translation id="7942349550061667556">အနီရောင်</translation>
 <translation id="7961015016161918242">ဘယ်သောအခါမှ</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">ဤ ‘ရုပ်ဖျက်တဘ်များ’ ရှိ သင့်လုပ်ဆောင်ချက်ကို ဤစက်မှ ဖယ်ရှားပါမည်</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{ပြီးခဲ့သော <ph name="NUM_MONTHS_ONE" /> လက ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော <ph name="NUM_MONTHS_MANY" /> လက ပြုလုပ်ထားသည်}}</translation>
 <translation id="8820741577754260431">သင့်တဘ်များတွင် ဈေးကျသွားသည်များကို ကြည့်နိုင်သည်</translation>
+<translation id="883379923675618699">Chrome သည် ၃ လအတွင်း သင်အသုံးပြုမထားသောအပိုင်းများရှိ အရာများကို အလိုအလျောက်ပိတ်သည်။ ၎င်းကို ဆက်တင်များတွင် ယခု (သို့) အချိန်မရွေး ပိတ်နိုင်သည်။</translation>
 <translation id="8887921976452567404">ပိတ်ထားသောတဘ်နှင့် အုပ်စုများကို ‘လတ်တလောတဘ်’ နှင့် ‘တဘ်အုပ်စု’ ကဏ္ဍများမှ ပြန်ဖွင့်နိုင်သည်။</translation>
 <translation id="8915916167043355778">အားလုံးပိတ်ရန်</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{ဝင်းဒိုးအသစ်သို့ ရွှေ့ရန်}other{အခြားဝင်းဒိုးသို့ ရွှေ့ပါ}}</translation>

@@ -208,6 +208,7 @@
 <translation id="1928618076168182477">ရုပ်မြင်ပြကွက်ကို ပြနေသည်</translation>
 <translation id="1928696683969751773">အဆင့်မြှင့်မှုများ</translation>
 <translation id="1939549834451474504">Google Play ဝန်ဆောင်မှုများ မရနိုင်သဖြင့် စကားဝှက်များကို မကြာမီ သုံးနိုင်တော့မည် မဟုတ်ပါ။ ထိုသို့မဖြစ်မီ သိမ်းထားသော သင့်စကားဝှက်များ၏ မိတ္တူပြုလုပ်နိုင်သည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
+<translation id="1943398124995840148">XR တွင် ဖွင့်ထားသောတဘ်များသည် အသွင်အပြင်အသစ်ဖြစ်ပါပြီ</translation>
 <translation id="1943432128510653496">စကားဝှက်များကို သိမ်းဆည်းပါ</translation>
 <translation id="1944535645109964458">လျှို့ဝှက်ကီး မရနိုင်ပါ</translation>
 <translation id="1957557050935255529">PDF ဖွင့်နေသည်…</translation>
@@ -332,6 +333,7 @@
 <translation id="2527779675047087889">ကလစ်ဘုတ်အကြောင်းအရာများကို ဖျောက်ရန်</translation>
 <translation id="2532336938189706096">ဝဘ် မြင်ကွင်း</translation>
 <translation id="253498598929009420">ဤဝဘ်ဆိုက်သည် သင့်ဖန်သားပြင်ပေါ်ရှိ အကြောင်းအရာများကို မြင်နိုင်ပါမည်</translation>
+<translation id="2535807170289627159">တဘ်အားလုံး</translation>
 <translation id="2536728043171574184">ဤစာမျက်နှာ၏ အော့ဖ်လိုင်း မိတ္တူကို ကြည့်ရှုနေ</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />၊ တဘ်</translation>
 <translation id="2546283357679194313">ကူကီးများ နှင့် ဆိုက် ဒေတာ</translation>
@@ -434,6 +436,7 @@
 <translation id="2979639724566107830">ဝင်းဒိုးအသစ်တွင် ဖွင့်ပါ</translation>
 <translation id="2981364137500752533">ဝင်းဒိုး ၅ ခုအထိ ဖွင့်နိုင်သည်။</translation>
 <translation id="2983102365694924129">ဝဘ်ဆိုက်ရှိ သင့်လုပ်ဆောင်ချက်ပေါ် အခြေခံထားသည်။ ဤဆက်တင်ကို ပိတ်ထားသည်။</translation>
+<translation id="2983398917942897288">အသုံးမပြုသည်များ (<ph name="ITEM_COUNT" /> ခု)</translation>
 <translation id="2984978667043170458">Google ရှာဖွေမှုများတွင် ဝန်းကျင်ရှိစာသားကို ထည့်သွင်းရန်</translation>
 <translation id="2988638966064514052">သင့်စကားဝှက်များကို အားကောင်းအောင်လုပ်ပါ</translation>
 <translation id="2989523299700148168">လောလောလတ်လတ် ကြည့်ရှုခဲ့သော ဆိုက်များ</translation>
@@ -466,6 +469,7 @@
 <translation id="314939179385989105">Chrome ၏ ပင်မစာမျက်နှာ</translation>
 <translation id="3158667104057012316">ကိုယ်တိုင်အစဉ်ဖြင့် စီနေသည်</translation>
 <translation id="3159335509547415276">ပိတ်ဆို့ထားသည့် အကောင့်များအကြောင်း လေ့လာရန်</translation>
+<translation id="3161699713309727585"><ph name="BUTTON_TEXT" />၊ တဘ်အသစ်တွင် ဖွင့်သည်</translation>
 <translation id="3166827708714933426">တဘ်နှင့် ဝင်းဒိုးဖြတ်လမ်းလင့်ခ်များ</translation>
 <translation id="316694332262407393">Chrome ဖွင့်ထားပြီးသားဖြစ်သည်။</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" /> အတွက် မိုဘိုင်းဝဘ်ဆိုက်ကို တောင်းဆိုနိုင်သည်</translation>
@@ -790,6 +794,7 @@
 <translation id="469286762610133730">ပိုကောင်းသောအကြောင်းအရာများ ရယူခြင်း</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ခု}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ခု}}</translation>
 <translation id="4698061626562952596">မသုံးသောတဘ်များကို ဤနေရာတွင် ပြန်ကြည့်နိုင်သည်</translation>
+<translation id="4698757800236023795">သုံးနေသည်များ (<ph name="ITEM_COUNT" /> ခု)</translation>
 <translation id="4699172675775169585">ကက်ရှ်လုပ်ထားသည့် ပုံများနှင့် ဖိုင်များ</translation>
 <translation id="4710167854527459075">အသစ်ဆုံးဖြင့် စီရန်</translation>
 <translation id="4718044610319080485">AI အကူကို ညွှန်ကြားနိုင်သည်</translation>

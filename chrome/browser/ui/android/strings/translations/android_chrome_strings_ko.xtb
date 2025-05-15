@@ -332,6 +332,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2527779675047087889">클립보드 내용 숨기기</translation>
 <translation id="2532336938189706096">웹 보기</translation>
 <translation id="253498598929009420">사이트에서 화면의 콘텐츠를 볼 수 있습니다.</translation>
+<translation id="2535807170289627159">모든 탭</translation>
 <translation id="2536728043171574184">이 페이지의 오프라인 사본 보는 중</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, 탭</translation>
 <translation id="2546283357679194313">쿠키 및 사이트 데이터</translation>
@@ -434,6 +435,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2979639724566107830">새 창에서 열기</translation>
 <translation id="2981364137500752533">최대 5개의 창을 열 수 있습니다.</translation>
 <translation id="2983102365694924129">사이트 내 활동을 기반으로 추천됩니다. 설정이 사용 중지되어 있습니다.</translation>
+<translation id="2983398917942897288">비활성(<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Google 검색어에 주변 텍스트 포함</translation>
 <translation id="2988638966064514052">비밀번호 강화</translation>
 <translation id="2989523299700148168">최근 방문</translation>
@@ -466,6 +468,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="314939179385989105">Chrome 홈페이지</translation>
 <translation id="3158667104057012316">직접 정렬</translation>
 <translation id="3159335509547415276">차단된 계정에 관해 자세히 알아보기</translation>
+<translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, 새 탭에서 열기</translation>
 <translation id="3166827708714933426">탭 및 창 단축키</translation>
 <translation id="316694332262407393">Chrome이 이미 실행 중입니다.</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" />의 모바일 사이트를 요청할 수 있습니다.</translation>
@@ -790,6 +793,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="469286762610133730">더 나은 콘텐츠 받기</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />개}other{<ph name="SHIPPING_OPTION_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />개}}</translation>
 <translation id="4698061626562952596">여기에서 비활성 탭을 검토하세요</translation>
+<translation id="4698757800236023795">활성(<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">캐시된 이미지 및 파일</translation>
 <translation id="4710167854527459075">최신 기준 정렬</translation>
 <translation id="4718044610319080485">AI 어시스턴트 호출</translation>
@@ -1522,7 +1526,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7791543448312431591">추가</translation>
 <translation id="7792388396321542707">공유 중지</translation>
 <translation id="780287761701992588">모든 기기에 북마크, 비밀번호 등 가져오기</translation>
-<translation id="780301667611848630">사용 안함</translation>
+<translation id="780301667611848630">나중에</translation>
 <translation id="7808889146555843082">비밀번호를 삭제해도 <ph name="SITE" /> 계정은 삭제되지 않습니다. 비밀번호를 변경하거나 <ph name="SITE" /> 계정을 삭제하여 보안을 유지하세요.</translation>
 <translation id="7810647596859435254">연결 프로그램...</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{모든 파일, 목록에 있는 파일 1개}other{모든 파일, 목록에 있는 파일 #개}}</translation>

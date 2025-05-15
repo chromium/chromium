@@ -3166,6 +3166,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3188465121994729530">Medie mobilă</translation>
 <translation id="3189187154924005138">Cursor mare</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{O parolă și alte elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google.}few{{PASSWORD_COUNT} parole și alte elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google.}other{{PASSWORD_COUNT} de parole și alte elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google.}}</translation>
+<translation id="319044078641740013">Pentru a reveni cu ușurință la site-urile pe care le-ai accesat, sincronizează istoricul și filele cu <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3190558889382726167">Parola a fost salvată</translation>
 <translation id="3192586965067888278">Descrie problema detaliat. Feedbackul va fi trimis la Google pentru examinare manuală și poate fi folosit pentru a îmbunătăți sau a dezvolta produse și servicii Google.</translation>
 <translation id="3192947282887913208">Fișiere audio</translation>
@@ -3272,6 +3273,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Fișier}few{# fișiere}other{# de fișiere}}</translation>
 <translation id="326999365752735949">Se descarcă diferențele</translation>
 <translation id="3270965368676314374">Citește, modifică și șterge fotografii, muzică și alte tipuri de conținut media de pe computer</translation>
+<translation id="3275464924531706548">Restrânge <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Cheia de securitate internă nu este sigură. Elimină cheia din toate serviciile cu care ai folosit-o. Pentru a rezolva problema, resetează cheia de securitate.</translation>
 <translation id="3275778913554317645">Deschide ca fereastră</translation>
 <translation id="3277214528693754078">Navighează folosind cursorul de text (navigare cu tastatura)</translation>
@@ -3603,6 +3605,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3510471875518562537">Folosește această adresă pe iPhone</translation>
 <translation id="3511200754045804813">Rescanează</translation>
 <translation id="3511307672085573050">Copiază adre&amp;sa linkului</translation>
+<translation id="3511358375261756531">Extinde <ph name="HEADER" /></translation>
 <translation id="351152300840026870">Font cu lățime fixă</translation>
 <translation id="3511528412952710609">Scurtă</translation>
 <translation id="3513019849832307207">Alătură-te și deschide</translation>
@@ -5693,7 +5696,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Proiectează ecranul</translation>
 <translation id="496185450405387901">Aplicația a fost instalată de administrator.</translation>
-<translation id="4963079328730030450">Organizația ta stabilește modul în care pot fi folosite datele colectate de aceste funcții.</translation>
 <translation id="4963603093937263654">Asigură-te că notificările sunt activate pe <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Elimină fila actuală</translation>
 <translation id="4964455510556214366">Aranjare</translation>
@@ -6155,6 +6157,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5296536303670088158">Ai cea mai puternică securitate Chrome împotriva site-urilor dăunătoare</translation>
 <translation id="5297005732522718715">Actualizează configurația pentru tethering</translation>
 <translation id="5297082477358294722">Parola a fost salvată. Vezi și gestionează parolele salvate în <ph name="SAVED_PASSWORDS_STORE" />.</translation>
+<translation id="5297548311167268289">Conectează-te la <ph name="RP_ID" /></translation>
 <translation id="5297946558563358707">Când altcineva îți privește ecranul, afișează pictograma Confidențialitate în formă de ochi în dreapta ecranului</translation>
 <translation id="5297984209202974345">Tema recentă <ph name="INDEX" /> din <ph name="SUBJECT" /> creată cu AI, în stil <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Temă creată de</translation>
@@ -10343,6 +10346,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8280848878018088610">Valuri care se sparg în mare, cu un oraș și un castel fantastic în fundal, într-o atmosferă întunecată.</translation>
 <translation id="828180235270931531">Alte imprimante disponibile</translation>
 <translation id="8281886186245836920">Omite</translation>
+<translation id="8283802069507225582">Pentru a relua de unde ai rămas pe alte dispozitive, sincronizează istoricul și filele cu <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">toate site-urile <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Subtitrări</translation>
 <translation id="8286036467436129157">Conectați-vă</translation>
@@ -11021,6 +11025,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8754200782896249056">&lt;p&gt;Când rulezi <ph name="PRODUCT_NAME" /> într-un mediu de desktop acceptat, vor fi utilizate setările de proxy ale sistemului. Cu toate acestea, fie sistemul nu este acceptat, fie a existat o problemă la lansarea configurației sistemului.&lt;/p&gt;
 
         &lt;p&gt;Poți totuși să configurezi prin linia de comandă. Accesează &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; pentru mai multe informații despre semnalizatori și variabile de mediu.&lt;/p&gt;</translation>
+<translation id="8754810799862630650">Pentru a vedea filele deschise de pe alte computere și telefoane, sincronizează istoricul și filele cu <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">Realizează activități legate de securitate pentru organizație, cum ar fi gestionarea certificatelor și a cheilor stocate pe dispozitiv</translation>
 <translation id="875532100880844232">Pentru <ph name="DEVICE_NAME" />, alege o acțiune pentru fiecare tastă</translation>
 <translation id="8755376271068075440">&amp;Mai mare</translation>

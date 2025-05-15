@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">滤水器和净水器</translation>
 <translation id="1036348656032585052">关闭</translation>
 <translation id="1036881361735705143">C4 信封</translation>
-<translation id="1038106730571050514">显示搜索建议</translation>
 <translation id="1038842779957582377">未知名称</translation>
 <translation id="1041998700806130099">工作表消息</translation>
 <translation id="1044897699341250361">这意味着什么</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">游戏</translation>
 <translation id="2674170444375937751">确定要从历史记录中删除这些页吗？</translation>
 <translation id="2674524144218093528">房屋粉刷与修整</translation>
-<translation id="2674804415323431591">隐藏建议</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> 个标签页分组已不可用</translation>
 <translation id="2677748264148917807">离开</translation>
 <translation id="2683195745483370038">找到其他结果</translation>
@@ -2629,7 +2627,6 @@
 <translation id="55293785478302737">边缘装订</translation>
 <translation id="553377674408670169">教育职位</translation>
 <translation id="5534785731327961487">现在超值特惠</translation>
-<translation id="5536214594743852365">显示“<ph name="SECTION" />”部分</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{以及另外 1 个网站（在已同步的设备上还有更多网站）}other{以及另外 # 个网站（在已同步的设备上还有更多网站）}}</translation>
 <translation id="553782666181800029">Chou 2 信封</translation>
 <translation id="5538270463355278784">自动全屏</translation>
@@ -3653,7 +3650,6 @@
 <translation id="7316521168101843192">正在将文件保存到 Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">与连接相关的帮助</translation>
-<translation id="7323804146520582233">隐藏“<ph name="SECTION" />”部分</translation>
 <translation id="733354035281974745">设备本地账号替换</translation>
 <translation id="7334320624316649418">恢复顺序调整(&amp;R)</translation>
 <translation id="7335157162773372339">可以询问能否使用您的摄像头</translation>
@@ -3784,7 +3780,6 @@
 <translation id="7517414872996418597">C10 信封</translation>
 <translation id="7518003948725431193">找不到与以下网址对应的网页：<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">已隐藏“<ph name="SECTION" />”部分</translation>
 <translation id="752189128961566325">您可以在各种 Google 产品中使用该地址</translation>
 <translation id="7523408071729642236">制造</translation>
 <translation id="7525067979554623046">创建</translation>
@@ -4237,7 +4232,6 @@
 <translation id="8297545700510100061">系统会使用 Cookie 和其他网站数据来记住您，以便实现某些功能或目的（例如帮您登录或向您展示个性化广告）。如需管理所有网站的 Cookie，请查看<ph name="SETTINGS" />。</translation>
 <translation id="8298115750975731693">您要使用的 Wi-Fi 网络（<ph name="WIFI_NAME" />）可能需要您访问 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>
 <translation id="8301894345671534559">输入验证码</translation>
-<translation id="8303854710873047864">已显示“<ph name="SECTION" />”部分</translation>
 <translation id="8304912090860925649">新建比较表格</translation>
 <translation id="830498451218851433">对折</translation>
 <translation id="8308653357438598313">实时视频直播</translation>

@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">پانی کے فلٹرز اور پیوریفائرز</translation>
 <translation id="1036348656032585052">آف کریں</translation>
 <translation id="1036881361735705143">‏C4 لفافہ</translation>
-<translation id="1038106730571050514">تجاویز دکھائیں</translation>
 <translation id="1038842779957582377">نامعلوم نام</translation>
 <translation id="1041998700806130099">جاب شیٹ کا پیغام</translation>
 <translation id="1044897699341250361">اس کا کیا مطلب ہے</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">گیمز</translation>
 <translation id="2674170444375937751">کیا آپ واقعی ان صفحات کو اپنی سرگزشت سے حذف کرنا چاہتے ہیں؟</translation>
 <translation id="2674524144218093528">گھر کی پینٹنگ اور سجاوٹ</translation>
-<translation id="2674804415323431591">تجاویز چھپائیں</translation>
 <translation id="26774279487328902">‫<ph name="GROUP_COUNT" /> ٹیب گروپس اب مزید دستیاب نہیں ہیں</translation>
 <translation id="2677748264148917807">چھوڑیں</translation>
 <translation id="2683195745483370038">دوسرے نتائج ملے</translation>
@@ -2325,6 +2323,7 @@
 <translation id="4998950033665438990">سنگل فیس</translation>
 <translation id="5001526427543320409">فریق ثالث کوکیز</translation>
 <translation id="5002932099480077015">‏فعال ہونے پر، زیادہ تیزی سے فارم بھرنے کیلئے Chrome آپ کے کارڈ کی کاپی کو اس آلہ پر اسٹور کرے گا۔</translation>
+<translation id="5007344584818503324">اشتراک کردہ ٹیب گروپس کی سرگرمی</translation>
 <translation id="5007392906805964215">جائزہ لیں</translation>
 <translation id="5010599530303458903">ماہانہ یا بلا سود والی 4 قسطوں میں ادائیگی کریں (اہلیت کے ساتھ مشروط)</translation>
 <translation id="5011561501798487822">شناخت کردہ زبان</translation>
@@ -2633,7 +2632,6 @@
 <translation id="55293785478302737">کنارے کی سلائی</translation>
 <translation id="553377674408670169">تعلیمی نوکریاں</translation>
 <translation id="5534785731327961487">ابھی کے لیے ایک اچھی ڈیل ہے</translation>
-<translation id="5536214594743852365">"<ph name="SECTION" />" سیکشن دکھائیں</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{‫+ 1 سائٹ (مطابقت پذیر آلات پر مزید)}other{‫+ # سائٹس (مطابقت پذیر آلات پر مزید)}}</translation>
 <translation id="553782666181800029">‏Chou 2 لفافہ</translation>
 <translation id="5538270463355278784">خودکار مکمل اسکرین</translation>
@@ -2752,6 +2750,7 @@
 <translation id="5732392974455271431">آپ کے والدین آپ کیلئے اسے غیر مسدود کر سکتے ہیں</translation>
 <translation id="573555826359077410">‏فارم تخلیق کریں بٹن، Google Forms میں تیزی سے نیا فارم تخلیق کرنے کے لیے فعال کریں</translation>
 <translation id="5738385766833540397">اس بات کا نظم کریں کہ آپ کو ان پروڈکٹس کے لیے قیمتوں میں کمی کے الرٹس کیسے موصول ہوتے ہیں جنہیں آپ ٹریک کرتے ہیں</translation>
+<translation id="5739619009927381786">اگلے مرحلے میں، عام طور پر اپنے فنگر پرنٹ کا استعمال کر کے اپنی اسکرین کو غیر مقفل کریں۔ یا آپ <ph name="BEGIN_LINK" />دوسرے طریقے سے توثیق<ph name="END_LINK" /> کر سکتے ہیں۔</translation>
 <translation id="573974402615125334">ٹیب گروپس میں اشتراک، شمولیت اور تعاون کرنے کے لیے، اپنی سرگزشت اور ٹیبز کو ہم مطابقت پذیر کریں</translation>
 <translation id="5740911612628596808">‏C9 لفافہ</translation>
 <translation id="5742806904559466333">بارز، کلبز اور نائٹ لائف</translation>
@@ -3657,7 +3656,6 @@
 <translation id="7316521168101843192">‏‫Microsoft OneDrive میں فائل کو محفوظ کیا جا رہا ہے</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">کنکشن سے متعلق مدد</translation>
-<translation id="7323804146520582233">"<ph name="SECTION" />" سیکشن چھپائیں</translation>
 <translation id="733354035281974745">آلہ کے مقامی اکاؤنٹ کا اوور رائیڈ</translation>
 <translation id="7334320624316649418">دوبارہ ترتیب کو &amp;واپس لائیں</translation>
 <translation id="7335157162773372339">سائٹ آپ کا کیمرا استعمال کرنے کیلئے پوچھ سکتی ہے</translation>
@@ -3788,7 +3786,6 @@
 <translation id="7517414872996418597">‏C10 لفافہ</translation>
 <translation id="7518003948725431193">ویب پتہ کیلئے کوئی نیا ویب صفحہ نہیں ملا تھا: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">"<ph name="SECTION" />" سیکشن پوشیدہ ہے</translation>
 <translation id="752189128961566325">‏آپ اسے تمام Google پروڈکٹس میں استعمال کر سکتے ہیں</translation>
 <translation id="7523408071729642236">مینوفیکچرنگ</translation>
 <translation id="7525067979554623046">بنائیں</translation>
@@ -4241,7 +4238,6 @@
 <translation id="8297545700510100061">کوکیز اور سائٹ کا دیگر ڈیٹا آپ کو یاد رکھنے کے لئے استعمال ہوتا ہے، مثال کے طور پر آپ کو سائن ان کرنے یا اشتہارات کو ذاتی نوعیت کا بنانے کے لیے۔ سبھی سائٹس کی خاطر کوکیز کا نظم کرنے کے لیے <ph name="SETTINGS" /> دیکھیں۔</translation>
 <translation id="8298115750975731693">‏آپ جو Wi-Fi استعمال کر رہے ہیں (<ph name="WIFI_NAME" />) وہ آپ سے <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ملاحظہ کرنے کا تقاضہ کر سکتا ہے۔</translation>
 <translation id="8301894345671534559">کوڈ درج کریں</translation>
-<translation id="8303854710873047864">"<ph name="SECTION" />" دکھایا گیا سیکشن</translation>
 <translation id="8304912090860925649">نیا موازنہ ٹیبل</translation>
 <translation id="830498451218851433">آدھا فولڈ کریں</translation>
 <translation id="8308653357438598313">لائیو ویڈیو سلسلہ بندی</translation>

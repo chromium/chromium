@@ -3287,6 +3287,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3269689705184377744">{COUNT,plural, =1{Fil}one{# fil}other{# filer}}</translation>
 <translation id="326999365752735949">Downloader diff</translation>
 <translation id="3270965368676314374">Læs, rediger og slet billeder, musik og andre medier på din computer</translation>
+<translation id="3275464924531706548">Skjul <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Din interne sikkerhedsnøgle er i øjeblikket ikke sikker. Fjern den fra alle de enheder, som du har brugt den med. Nulstil sikkerhedsnøglen for at løse problemet.</translation>
 <translation id="3275778913554317645">Åbn som vindue</translation>
 <translation id="3277214528693754078">Naviger med tekstmarkør (tastenavigation)</translation>
@@ -3618,6 +3619,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3510471875518562537">Brug denne adresse på din iPhone</translation>
 <translation id="3511200754045804813">Scan igen</translation>
 <translation id="3511307672085573050">Kopier linkadr&amp;esse</translation>
+<translation id="3511358375261756531">Udvid <ph name="HEADER" /></translation>
 <translation id="351152300840026870">Skrifttype med fast bredde</translation>
 <translation id="3511528412952710609">Kort</translation>
 <translation id="3513019849832307207">Deltag og åbn</translation>
@@ -5709,7 +5711,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Cast skærm</translation>
 <translation id="496185450405387901">Denne app blev installeret af din administrator.</translation>
-<translation id="4963079328730030450">Din organisation administrerer, hvordan data, der indsamles af disse funktioner, må anvendes.</translation>
 <translation id="4963603093937263654">Sørg for, at notifikationer er aktiveret på din <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Fjern aktuel fane</translation>
 <translation id="4964455510556214366">Opstilling</translation>
@@ -6172,6 +6173,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5296536303670088158">Du har Chromes stærkeste beskyttelse mod skadelige websites</translation>
 <translation id="5297005732522718715">Opdater konfiguration af netdeling</translation>
 <translation id="5297082477358294722">Adgangskoden blev gemt. Se og administrer gemte adgangskoder på din <ph name="SAVED_PASSWORDS_STORE" />.</translation>
+<translation id="5297548311167268289">Log ind på <ph name="RP_ID" /></translation>
 <translation id="5297946558563358707">Vis øjeikonet for privatliv nederst til højre på din skærm, når en anden person kigger på din skærm</translation>
 <translation id="5297984209202974345">Seneste AI-tema <ph name="INDEX" /> af <ph name="SUBJECT" /> i stilen <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Tema oprettet af</translation>

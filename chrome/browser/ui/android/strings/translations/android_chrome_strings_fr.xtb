@@ -183,6 +183,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1807709131360304325">Ouvre une nouvelle fenêtre</translation>
 <translation id="1810845389119482123">Configuration de la synchronisation initiale non terminée</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ne peut pas poursuivre avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="1820408774134375111">Bottom sheet de connexion</translation>
 <translation id="1825772852827001597">Les adresses et les modes de paiement Google Pay ne seront pas chiffrés. L'historique de navigation de Chrome ne sera pas synchronisé.
 Seule une personne connaissant votre phrase secrète peut lire vos données chiffrées. Google ne reçoit pas ni n'enregistre votre phrase secrète. Si vous l'avez oubliée ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Rechercher sur la page</translation>
@@ -191,6 +192,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1871098866036088250">Ouvrir dans le navigateur Chrome</translation>
 <translation id="1877026089748256423">Version de Chrome obsolète</translation>
 <translation id="1877073879466606884">Le profil auquel vous êtes connecté est un profil géré. Votre administrateur peut modifier à distance les paramètres de votre profil, analyser les rapports d'informations sur le navigateur et effectuer d'autres tâches nécessaires.</translation>
+<translation id="1879904908408734349">La bottom sheet de connexion est fermée</translation>
 <translation id="1883903952484604915">Mes fichiers</translation>
 <translation id="189358972401248634">Autres langues</translation>
 <translation id="1899175549411605574">Bottom sheet des tendances de prix</translation>
@@ -330,6 +332,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2527779675047087889">Masquer le contenu du presse-papiers</translation>
 <translation id="2532336938189706096">Vue Web</translation>
 <translation id="253498598929009420">Le site pourra voir le contenu de votre écran</translation>
+<translation id="2535807170289627159">Tous les onglets</translation>
 <translation id="2536728043171574184">Affichage d'une copie hors connexion de la page</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, onglet</translation>
 <translation id="2546283357679194313">Cookies et données des sites</translation>
@@ -432,6 +435,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2979639724566107830">Ouvrir dans une nouvelle fenêtre</translation>
 <translation id="2981364137500752533">Vous pouvez ouvrir jusqu'à 5 fenêtres.</translation>
 <translation id="2983102365694924129">D'après votre activité sur un site. Ce paramètre est désactivé.</translation>
+<translation id="2983398917942897288">Inactives (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Inclure le texte à proximité dans les recherches Google</translation>
 <translation id="2988638966064514052">Renforcez vos mots de passe</translation>
 <translation id="2989523299700148168">Consultations récentes</translation>
@@ -464,6 +468,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="314939179385989105">Page d'accueil de Chrome</translation>
 <translation id="3158667104057012316">Tri par ordre manuel</translation>
 <translation id="3159335509547415276">En savoir plus sur les comptes bloqués</translation>
+<translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, s'ouvre dans un nouvel onglet</translation>
 <translation id="3166827708714933426">Raccourcis liés aux onglets et aux fenêtres</translation>
 <translation id="316694332262407393">Chrome est déjà en cours d'exécution ici.</translation>
 <translation id="3167258285411721858">Vous pouvez demander le site mobile de <ph name="HOST_NAME" /></translation>
@@ -539,6 +544,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3516053221628030540">Accéder à Google Play</translation>
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Autorisations de notification retirées pour un site que vous n'avez pas consulté récemment}one{Autorisations de notification retirées pour # site que vous n'avez pas consulté récemment}other{Autorisations de notification retirées pour # sites que vous n'avez pas consultés récemment}}</translation>
 <translation id="3518985090088779359">Accepter et continuer</translation>
+<translation id="3519014757432845220">Contribuez à améliorer la protection contre le spam en partageant le contenu de la notification et l'URL du site avec Google. Le contenu pourra être examiné manuellement.</translation>
 <translation id="351952459507671940">Ajouter à un nouveau groupe</translation>
 <translation id="3521388823983121502">Impossible de poursuivre avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3522247891732774234">Mise à jour disponible. Plus d'options</translation>
@@ -787,6 +793,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="469286762610133730">Pour de meilleurs contenus</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> de plus}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> de plus}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> de plus}}</translation>
 <translation id="4698061626562952596">Consultez ici vos onglets inactifs</translation>
+<translation id="4698757800236023795">Actives (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Images et fichiers en cache</translation>
 <translation id="4710167854527459075">Trier par le plus récent</translation>
 <translation id="4718044610319080485">Appelle l'assistant IA</translation>
@@ -854,6 +861,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4943703118917034429">Réalité virtuelle</translation>
 <translation id="4943872375798546930">Aucun résultat</translation>
 <translation id="4957722034734105353">En savoir plus…</translation>
+<translation id="4959115606310463263">Bottom sheet de connexion ouverte à mi-hauteur</translation>
 <translation id="4961107849584082341">Traduire cette page dans n'importe quelle langue</translation>
 <translation id="4964614743143953889">Chrome vous avertit en cas de sites et de téléchargements dangereux</translation>
 <translation id="496607651705915226">Pour enregistrer et utiliser de nouveaux mots de passe dans votre compte Google, mettez à jour les services Google Play</translation>
@@ -903,7 +911,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5167637873777016814">Appuyer deux fois de manière prolongée pour quitter la navigation privée</translation>
 <translation id="5169102789680486565">Le groupe d'onglets "<ph name="TAB_GROUP_TITLE" />" a une nouvelle activité</translation>
 <translation id="5170568018924773124">Afficher dans le dossier</translation>
-<translation id="5171045022955879922">Rechercher ou saisir une URL</translation>
+<translation id="5171045022955879922">Rechercher/Saisir une URL</translation>
 <translation id="5174700554036517242">L'onglet est revenu à sa hauteur initiale</translation>
 <translation id="5180063720319462041">Page traduite en <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5191251636205085390">Découvrez et contrôlez les nouvelles technologies qui visent à remplacer les cookies tiers</translation>
@@ -1146,6 +1154,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6277522088822131679">Un problème est survenu lors de l'impression de la page. Veuillez réessayer.</translation>
 <translation id="6278428485366576908">Thème</translation>
 <translation id="6284472661216707937">Mots de passe sur tous vos appareils (fiche fermée)</translation>
+<translation id="6291294824436685757">Supprimer les données de navigation : sélectionner les données à supprimer</translation>
 <translation id="6295158916970320988">Tous les sites</translation>
 <translation id="6296366034485697675">Exporter et supprimer</translation>
 <translation id="629730747756840877">Compte</translation>
@@ -1589,7 +1598,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8078096376109663956">Partagez uniquement le texte</translation>
 <translation id="8078348702936632821">Épingler ce raccourci</translation>
 <translation id="8084114998886531721">Mot de passe enregistré</translation>
-<translation id="8084285576995584326">Gérer les données de votre compte Google</translation>
+<translation id="8084285576995584326">Gérez les données de votre compte Google</translation>
 <translation id="8084864785646838999">Il est possible qu'une partie de votre historique ne soit pas affichée ici. Pour le voir en intégralité, sélectionnez "Ouvrir tout l'historique Chrome". En outre, votre compte Google conserve peut-être d'autres historiques de navigation sur <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8088176524274673045">Pour partager avec des personnes à proximité, laissez-les scanner ce QR code</translation>
 <translation id="8090732854597034573">Si tu as besoin d'aide, demande à ton parent</translation>
@@ -1613,6 +1622,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8179976553408161302">Entrée</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> fichiers restants</translation>
 <translation id="8190358571722158785">1 jour restant</translation>
+<translation id="8192765420340770300">Bottom sheet de connexion ouverte à pleine hauteur</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vos appareils<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="820568752112382238">Sites les plus consultés</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Rejoindre le groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /> et <ph name="NUMBER_OF_OTHER_MEMBERS" /> autre personne}one{Rejoindre le groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /> et <ph name="NUMBER_OF_OTHER_MEMBERS" /> autre personne}other{Rejoindre le groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /> et <ph name="NUMBER_OF_OTHER_MEMBERS" /> autres personnes}}</translation>
@@ -1809,6 +1819,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="9050666287014529139">Phrase secrète</translation>
 <translation id="9055497320631373736">Site ajouté de nouveau aux sites potentiels</translation>
 <translation id="9057030985451135243">En savoir plus sur les groupes d'onglets partagés</translation>
+<translation id="9063400323119781058">Désabonné</translation>
 <translation id="9063523880881406963">Désactiver "Voir version ordinateur"</translation>
 <translation id="9065203028668620118">Modifier</translation>
 <translation id="9065383040763568503">Données stockées que Chrome ne considère pas comme importantes (par exemple, pour des sites sans paramètres enregistrés ou que vous ne consultez pas souvent)</translation>

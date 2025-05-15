@@ -117,7 +117,6 @@
 <translation id="1616111909442424068">위트</translation>
 <translation id="1618597272655350600">현재 위치에 대한 자세한 설명을 들려줍니다.</translation>
 <translation id="1627222324347828322">고스트 화이트</translation>
-<translation id="1639634871799530612">{COUNT,plural, =1{큼 부호}other{큼 부호 #개}}</translation>
 <translation id="1653266918374749391">이전 수준 3 제목</translation>
 <translation id="1657616855184033958">이벤트 스트림 필터 표시</translation>
 <translation id="1659072772017912254">선택 안함</translation>
@@ -162,7 +161,6 @@
 <translation id="1964135212174907577">다음 객체</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">ChromeVox 메뉴에 점자 명령어 표시</translation>
-<translation id="2007545860310005685">{COUNT,plural, =1{왼쪽 꺾음 괄호}other{왼쪽 꺾음 괄호 #개}}</translation>
 <translation id="2009187674653301682">위 첨자 아님</translation>
 <translation id="2010555995361223825">ChromeVox 메뉴</translation>
 <translation id="203030071582665758">이전 수준 4 제목이 없습니다</translation>
@@ -185,7 +183,6 @@
 <translation id="2169714232367507776">현재 항목 클릭</translation>
 <translation id="2179452035581866348">ChromeVox는 사운드를 사용하여 필수 및 부가 정보를 제공합니다. 각 사운드가 무엇을 의미하는지 배우면 이러한 사운드를 사용하여 더 신속하게 탐색할 수 있습니다. 더 익숙해지면 상세한 음성 설명을 사용 중지하고 사운드로 페이지의 필수 정보를 파악할 수 있습니다. 다음은 사운드 전체 목록과 그 의미입니다.</translation>
 <translation id="2183409941723714159">탭 탐색</translation>
-<translation id="2188751878842439466">{COUNT,plural, =1{닫는 괄호}other{닫는 괄호 #개}}</translation>
 <translation id="2197863150503783129">새들 브라운</translation>
 <translation id="2199994615414171367">이전 수식</translation>
 <translation id="2203046366315513658">값 줄이기</translation>
@@ -231,7 +228,6 @@
 <translation id="2462626033734746142">라디오 버튼 그룹</translation>
 <translation id="2467741090055146971">선택 해제</translation>
 <translation id="2471138580042810658">제목 6</translation>
-<translation id="248982282205370495">{COUNT,plural, =1{별표}other{별표 #개}}</translation>
 <translation id="2490721194269245365">로지 브라운</translation>
 <translation id="249330843868392562">TTS(텍스트 음성 변환) 설정 열기</translation>
 <translation id="2497706219848005458">그린 옐로우</translation>
@@ -266,7 +262,6 @@
 <translation id="2692503699962701720">요소 유형 및 형식이 지정된 텍스트를 말할 때 음높이를 변경합니다.</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">텍스트 변환 대상</translation>
-<translation id="2704429362613743330">{COUNT,plural, =1{여는 괄호}other{여는 괄호 #개}}</translation>
 <translation id="270523456882008230">힌트: 현재 항목을 활성화하려면 한 손가락으로 두 번 탭하세요.</translation>
 <translation id="2705875883745373140">누르지 않음</translation>
 <translation id="2708078563826046398">피치 퍼프</translation>
@@ -280,7 +275,6 @@
 <translation id="2756452585631602151">맞춤 라벨을 입력하세요.</translation>
 <translation id="2766299274563946262">왼쪽에 셀이 없습니다</translation>
 <translation id="2770947749427257887">스크롤 모드 시작</translation>
-<translation id="2783001728278437613">{COUNT,plural, =1{#개 이상}other{#개 이상}}</translation>
 <translation id="2792200646155001340">또한 한 손가락을 오른쪽에서 왼쪽으로 스와이프하여 이전 항목으로 이동할 수 있습니다. 지금 해 보세요.</translation>
 <translation id="280499067616661124">ChromeVox 페이지에서 찾기</translation>
 <translation id="2811204574343810641">행</translation>
@@ -299,9 +293,7 @@
 <translation id="2876760662374103627">페이스 컨트롤 활성화됨</translation>
 <translation id="2879867157561757640">손가락 세 개를 사용하여 아래로 스와이프</translation>
 <translation id="288178314850623291">특정 유형의 요소로 건너뛰려면 이동 명령어를 사용합니다. 제목 간 이동하려면 검색+H를 눌러 앞으로 이동, 검색+Shift+H를 눌러 뒤로 이동합니다.</translation>
-<translation id="2885764457467528513">{COUNT,plural, =1{분}other{분}}</translation>
 <translation id="2894654529758326923">정보</translation>
-<translation id="2899328121302785497">{COUNT,plural, =1{왼쪽 중괄호}other{왼쪽 중괄호 #개}}</translation>
 <translation id="2909584066358367921">다음 버튼이 없습니다</translation>
 <translation id="2911433807131383493">ChromeVox 가이드 열기</translation>
 <translation id="2912405967290226587">손가락 세 개를 사용하여 오른쪽으로 스와이프</translation>
@@ -311,7 +303,6 @@
 <translation id="2943596527105977722">다크 골든로드</translation>
 <translation id="2964026537669811554">제목 그룹</translation>
 <translation id="2968634799764242930">씨 그린</translation>
-<translation id="296951647852255825">{COUNT,plural, =1{탭}other{탭 #개}}</translation>
 <translation id="2972205263822847197">툴팁</translation>
 <translation id="2976476721782829799">또한 한 손가락으로 화면을 드래그하여 이동할 수 있습니다. 이를 터치하여 탐색이라고 부릅니다. 손가락으로 드래그하여 이 과정의 남은 내용을 읽어 보세요.</translation>
 <translation id="297825089465017871">손가락 두 개를 사용하여 왼쪽으로 스와이프</translation>
@@ -322,7 +313,6 @@
 <translation id="3014130421870723208">@수정 입력란 8점</translation>
 <translation id="3018210433491759145">ChromeVox 로드 중</translation>
 <translation id="3030432017085518523">메뉴 항목 라디오 버튼</translation>
-<translation id="3037392361165431467">{COUNT,plural, =1{아포스트로피}other{아포스트로피 #개}}</translation>
 <translation id="3040901448410802366">진행률 표시기</translation>
 <translation id="3046838483509668188">ChromeVox 옵션</translation>
 <translation id="3060756054951570867"><ph name="TITLE" /> 메뉴 열림</translation>
@@ -358,7 +348,6 @@
 <translation id="3159493096109238499">베이지</translation>
 <translation id="316542773973815724">탐색</translation>
 <translation id="3167446923957429259">입을 왼쪽으로 움직이기</translation>
-<translation id="3172700825913348768">{COUNT,plural, =1{공백}other{공백 #개}}</translation>
 <translation id="3179119189286472195">링크 아님</translation>
 <translation id="3180990259147710757">턱을 왼쪽으로 움직이기</translation>
 <translation id="320041337977930740">디스플레이 스타일을 인터리브로 변경</translation>
@@ -395,7 +384,6 @@
 <translation id="3359142382821736686">seprtr</translation>
 <translation id="3363015957057974366">또한 Tab 키를 사용해 화면의 다음 대화형 항목으로 이동할 수 있습니다. 검색 키 바로 위에서 Tab 키를 찾으세요. 계속하려면 Tab 키를 누르세요.</translation>
 <translation id="3366946046494222386"><ph name="TOPIC" /> 가이드, 과정 <ph name="LESSONS" />개</translation>
-<translation id="3374537878095184207">{COUNT,plural, =1{더하기 기호}other{더하기 기호 #개}}</translation>
 <translation id="338583716107319301">구분자</translation>
 <translation id="3389259863310851658">이전 양식 입력란</translation>
 <translation id="3390740059150071453">왼쪽 보기</translation>
@@ -414,12 +402,8 @@
 <translation id="3469413619751135069">페일 그린</translation>
 <translation id="3473744269398144689">음성기록 시작</translation>
 <translation id="3490765818161916458">목록 그리드</translation>
-<translation id="3492609944033322585">{COUNT,plural, =1{오른쪽 꺾음 괄호}other{오른쪽 꺾음 괄호 #개}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
-<translation id="3497063866483065785">{COUNT,plural, =1{물음표}other{물음표 #개}}</translation>
 <translation id="3505359110822747654">ChromeVox 메뉴 접기</translation>
-<translation id="3514822174137761109">{COUNT,plural, =1{탈자 기호}other{탈자 기호 #개}}</translation>
-<translation id="3518600448524470129">{COUNT,plural, =1{흰색 글머리기호}other{흰색 글머리기호 #개}}</translation>
 <translation id="352577523970648069">수정할 수 있는 텍스트 입력란</translation>
 <translation id="3538907380453898475">설명목록</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> 잘라내기</translation>
@@ -436,9 +420,7 @@
 <translation id="3616016838842055984">클릭하고 싶은 항목에 도달하면 검색 키 + 스페이스바를 누르세요. 계속하려면 지금 시도해 보세요.</translation>
 <translation id="3616113530831147358">오디오</translation>
 <translation id="3622350485154495700">손가락 한 개로 두 번 탭</translation>
-<translation id="3646890046000188562">{COUNT,plural, =1{백틱 기호}other{백틱 기호 #개}}</translation>
 <translation id="3650317109285159359">chkmnuitm</translation>
-<translation id="3655855170848725876">{COUNT,plural, =1{달러 기호}other{달러 기호 #개}}</translation>
 <translation id="3659787053479271466">alrt</translation>
 <translation id="366419593095697301">힌트: 이 가이드를 종료하려면 Esc 키를 누르세요.</translation>
 <translation id="3676062394766691318">기기를 설정한 후 다시 돌아와 검색 키 + O 키를 누를 다음 T 키를 눌러 더 많은 가이드를 볼 수 있습니다.</translation>
@@ -497,16 +479,13 @@
 <translation id="4054936709456751127">sts</translation>
 <translation id="4058278702844053247">페이지 로드 진행 중</translation>
 <translation id="4065205963140826639">검색+오른쪽 화살표를 사용하여 다음 버튼을 찾은 후 검색+Space를 눌러 클릭하세요.</translation>
-<translation id="4081085052247739398">{COUNT,plural, =1{물결표}other{물결표 #개}}</translation>
 <translation id="409334809956508737">이전 객체</translation>
 <translation id="4099274309791143834">하위 메뉴 포함</translation>
 <translation id="4101527861445851766">선택된 체크박스</translation>
 <translation id="410225014223200513">'오'라고 말하는 입 모양 만들기</translation>
 <translation id="4115378294792113321">자홍색</translation>
 <translation id="4116415223832267137">알림</translation>
-<translation id="4148180433151187540">{COUNT,plural, =1{오른쪽 중괄호}other{오른쪽 중괄호 #개}}</translation>
 <translation id="4159784952369912983">보라색</translation>
-<translation id="4161104397932142764">{COUNT,plural, =1{초}other{초}}</translation>
 <translation id="4161663686871496107">ChromeVox 음성 피드백 사용할 수 있음</translation>
 <translation id="4176463684765177261">사용 중지됨</translation>
 <translation id="4187322598335821254">한 줄씩 이동하려면 위나 아래로 스와이프하세요.</translation>
@@ -518,7 +497,6 @@
 <translation id="4204864733111726379">플로럴 화이트</translation>
 <translation id="42164919740161077">카데트 블루</translation>
 <translation id="4217571870635786043">음성기록</translation>
-<translation id="4218529045364428769">{COUNT,plural, =1{대시}other{대시 #개}}</translation>
 <translation id="4220024144662591089"><ph name="START_PHRASE" />에서 <ph name="END_PHRASE" />까지 선택</translation>
 <translation id="4221012616705981690">이전 목록이 없습니다</translation>
 <translation id="4225355998815256469">양식 컨트롤</translation>
@@ -540,7 +518,6 @@
 <translation id="4300318234632215983">링크 이면의 URL 알림</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">시에나</translation>
-<translation id="4342180618051828363">{COUNT,plural, =1{마침표}=3{생략 부호}other{마침표 #개}}</translation>
 <translation id="4352022650330571548"><ph name="PHRASE" /> 입력</translation>
 <translation id="4360738659108163902">마우스 오른쪽 버튼으로 클릭</translation>
 <translation id="4372435075475052704">최소:<ph name="X" /></translation>
@@ -569,7 +546,6 @@
 <translation id="4511186779140817916">블렌치드 아몬드</translation>
 <translation id="451510441928265982">이전 수준 2 제목이 없습니다</translation>
 <translation id="4517854969512651305">값 늘리기</translation>
-<translation id="4532633738839459153">{COUNT,plural, =1{슬래시}other{슬래시 #개}}</translation>
 <translation id="4537277403911487429">다음 유사한 항목</translation>
 <translation id="4547556996012970016">다음 수준 5 제목</translation>
 <translation id="4562381607973973258">머리글</translation>
@@ -678,7 +654,6 @@
 <translation id="5310788376443009632">삭제됨:</translation>
 <translation id="5316825363044614340">다음 줄로 이동</translation>
 <translation id="5320727453979144100">고정 모드 사용함</translation>
-<translation id="5321085947096604457">{COUNT,plural, =1{쉼표}other{쉼표 #개}}</translation>
 <translation id="532485153932049746">텍스트 서식
     <ph name="FONT_SIZE_STRING" />
     <ph name="COLOR_STRING" />
@@ -697,10 +672,8 @@
 <translation id="5402367795255837559">점자</translation>
 <translation id="5402791055281059602">모달 알림</translation>
 <translation id="5406272775687194041">드래그 앤 드롭 시작</translation>
-<translation id="5407530583102765689">{COUNT,plural, =1{세미콜론}other{세미콜론 #개}}</translation>
 <translation id="5420259671171615858">메뉴 검색</translation>
 <translation id="5435274640623994081">이어콘 로깅 사용</translation>
-<translation id="5436105723448703439">{COUNT,plural, =1{작음 부호}other{작음 부호 #개}}</translation>
 <translation id="5444587279251314700">(활성)</translation>
 <translation id="5451268436205074266">점 <ph name="DOT" /></translation>
 <translation id="5452267669091857717">다음 수준 1 제목이 없습니다</translation>
@@ -726,7 +699,6 @@
 <translation id="5597170376237141345">다음 체크박스</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, 라디오 버튼 선택 안 됨</translation>
 <translation id="5601172225407283979">기본 작업 수행</translation>
-<translation id="5604302400025591178">{COUNT,plural, =1{정사각형 글머리기호}other{정사각형 글머리기호 #개}}</translation>
 <translation id="5608798115546226984">자동완성 본문</translation>
 <translation id="5616029807486814372">다음 과정</translation>
 <translation id="561939826962581046">time</translation>
@@ -786,21 +758,18 @@
 <translation id="5921587111466148855">장</translation>
 <translation id="5923780477617566089">현재 날짜</translation>
 <translation id="5926889058434275234">전체 동작 목록을 확인하려면 고객센터를 방문하세요.</translation>
-<translation id="5937336320314038555">{COUNT,plural, =1{등호}other{등호 #개}}</translation>
 <translation id="5947651424015173580">마우스 더블클릭</translation>
 <translation id="5948123859135882163">수식 해석을 구조 해석과 의미 해석 간에 전환</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5956928062748260866">대화상자</translation>
 <translation id="5963413905009737549">섹션</translation>
 <translation id="5968607524793740041">컨텍스트 메뉴 표시</translation>
-<translation id="597121107011153418">{COUNT,plural, =1{#개 항목 포함}other{#개 항목 포함}}</translation>
 <translation id="5981446804259161541">라이트 시안</translation>
 <translation id="5983179082906765664">탐색 세밀도 높이기</translation>
 <translation id="5988563937187882754">오른쪽 보기</translation>
 <translation id="5992285135956208197">그래픽 문서</translation>
 <translation id="5999630716831179808">음성</translation>
 <translation id="6006050241733874051">양식</translation>
-<translation id="6006064078185310784">{COUNT,plural, =1{역슬래시}other{역슬래시 #개}}</translation>
 <translation id="6010616110396250088">내림차순 정렬</translation>
 <translation id="6017514345406065928">녹색</translation>
 <translation id="602001110135236999">왼쪽으로 스크롤</translation>
@@ -840,7 +809,6 @@
 <translation id="6325241889020214828"><ph name="TEXT" /> 복사</translation>
 <translation id="6348657800373377022">콤보 상자</translation>
 <translation id="6348869651006731065">딤 그레이</translation>
-<translation id="6350358010104919766">{COUNT,plural, =1{글머리 기호}other{글머리 기호 #개}}</translation>
 <translation id="6357433033180746873">오른쪽에 셀이 없습니다</translation>
 <translation id="6364795331201459219">h6</translation>
 <translation id="6368143427468974988">이전 제목</translation>
@@ -852,7 +820,6 @@
 <translation id="6406989068857078334">마우스 속도가 감소했습니다. 다시 <ph name="GESTURE" /> 동작을 수행하여 클릭하세요.</translation>
 <translation id="6411569524720229058">가을</translation>
 <translation id="6417265370957905582">Google 어시스턴트</translation>
-<translation id="641759969622533235">{COUNT,plural, =1{콜론}other{콜론 #개}}</translation>
 <translation id="6444046323172968959">알림 대화상자</translation>
 <translation id="6452403590345320472">목차</translation>
 <translation id="6468049171101508116">다음 버튼</translation>
@@ -881,7 +848,6 @@
 <translation id="669617842401078250"><ph name="FILE_NAME" /> 다운로드가 일시중지되었습니다</translation>
 <translation id="6696967141280706829">머리말</translation>
 <translation id="6697092096875747123">이전 콤보 상자</translation>
-<translation id="6702609185760332517">{COUNT,plural, =1{느낌표}other{느낌표 #개}}</translation>
 <translation id="670717715607710284">화면 꺼짐</translation>
 <translation id="6714813999819678458">이전 수준 2 제목</translation>
 <translation id="6730312624811567147">Search와 왼쪽 또는 오른쪽 키가 Home 또는 End 키, Search와 Control 왼쪽 또는 오른쪽 키가 Control Home 또는 End 키, Search와 위쪽 또는 아래쪽 키가 Page Up 또는 Down 키 역할을 합니다</translation>
@@ -978,7 +944,6 @@
 <translation id="7344012264516629579">추가 점프 명령어에는 링크, 버튼, 체크박스 등을 이용한 점프가 포함됩니다. 점프 명령어의 전체 목록은 ChromeVox 메뉴에서 확인할 수 있으며, 검색 키 + 마침표 키를 눌러 메뉴를 열 수 있습니다.</translation>
 <translation id="7356165926712028380">8점 점자로 전환</translation>
 <translation id="7356610683936413584">설명 목록 세부정보</translation>
-<translation id="7370432716629432284">{COUNT,plural, =1{앰퍼샌드}other{앰퍼샌드 #개}}</translation>
 <translation id="737396357417333429">clk</translation>
 <translation id="738899727977260036">슬레이트 블루</translation>
 <translation id="7393979322571982935">소리 및 설정</translation>
@@ -1016,7 +981,6 @@
 <translation id="7637342083105831460">검색 키 + 오른쪽 화살표 키를 눌러 연습 영역 또는 다음 과정 버튼을 찾으세요. 그런 다음 검색 키 + 스페이스바를 눌러 활성화하세요.</translation>
 <translation id="7639968568612851608">짙은 회색</translation>
 <translation id="7663318257180412551">제목 2</translation>
-<translation id="7668307052366682650">{COUNT,plural, =1{시간}other{시간}}</translation>
 <translation id="7674576868851035240">다음 링크</translation>
 <translation id="7674768236845044097">mark</translation>
 <translation id="7676847077928500578">TTS(텍스트 음성 변환) 설정 재설정</translation>
@@ -1052,7 +1016,6 @@
 <translation id="7927711904086083099">선택되지 않음</translation>
 <translation id="7935627501098484003">시간 컨트롤</translation>
 <translation id="7939428177581522200">선택에 추가됨</translation>
-<translation id="794091007957014205">{COUNT,plural, =1{애트 기호}other{애트 기호 #개}}</translation>
 <translation id="7942349550061667556">빨간색</translation>
 <translation id="7948364528129376623">다음 방문한 링크가 없습니다</translation>
 <translation id="7952460583030260752">명령어 참조</translation>
@@ -1063,7 +1026,6 @@
 <translation id="8004507136466386272">단어</translation>
 <translation id="8004512796067398576">올리기</translation>
 <translation id="8007540374018858731">h3</translation>
-<translation id="8009786657110126785">{COUNT,plural, =1{따옴표}other{따옴표 #개}}</translation>
 <translation id="8017588669690167134">음성 사용 중지</translation>
 <translation id="801990297710781303">각주</translation>
 <translation id="8028833145828956995">터치스크린으로 ChromeVox를 사용할 수 있습니다.</translation>
@@ -1092,7 +1054,6 @@
 <translation id="8158033275290782295">전체 선택</translation>
 <translation id="816818801578874684">첫 번째 제목입니다. 다음 제목으로 이동하려면 검색 키 + H 키를 누르세요.</translation>
 <translation id="8173092779156526980">손가락 네 개를 사용하여 왼쪽으로 스와이프</translation>
-<translation id="817440585505441544">{COUNT,plural, =1{밑줄}other{밑줄 기호 #개}}</translation>
 <translation id="817529114347680055">화면 켜짐</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">행</translation>
@@ -1117,7 +1078,6 @@
 <translation id="8313653172105209786">dir</translation>
 <translation id="8316881042119029234">올드 레이스</translation>
 <translation id="8326783648485765113">잔디색</translation>
-<translation id="8345569862449483843">{COUNT,plural, =1{파운드 기호}other{파운드 기호 #개}}</translation>
 <translation id="8351821207686449674">자막 전환</translation>
 <translation id="8378855320830505539">지역</translation>
 <translation id="8382679411218029383">자동완성 본문 및 목록</translation>
@@ -1160,10 +1120,8 @@
 <translation id="8659501358298941449">드롭다운 목록</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> 끝</translation>
 <translation id="867187640362843212">제목 5</translation>
-<translation id="8690400660839620419">{COUNT,plural, =1{}other{#번째 하위 항목}}</translation>
 <translation id="8693391540059827073">내가 가장 좋아하는 계절</translation>
 <translation id="8696284982970258155">허니듀</translation>
-<translation id="8697111817566059991">{COUNT,plural, =1{수직 기호}other{수직 기호 #개}}</translation>
 <translation id="8741370088760768424">힌트: 현재 항목을 활성화하려면 검색 키 + 스페이스바를 누르세요.</translation>
 <translation id="8743786158317878347">구조화된 콘텐츠(예: 표) 입력</translation>
 <translation id="8746846427395705317">이전 단어로 이동</translation>
@@ -1213,7 +1171,6 @@
 <translation id="9099429023611373837">잘라내기</translation>
 <translation id="9108370397979208512">math</translation>
 <translation id="9108589040018540527">scbr</translation>
-<translation id="911476240645808512">{COUNT,plural, =1{퍼센트}other{#퍼센트}}</translation>
 <translation id="9128414153595658330">dlg</translation>
 <translation id="9133928141873682933">카키</translation>
 <translation id="9149560530563164529">sctn</translation>

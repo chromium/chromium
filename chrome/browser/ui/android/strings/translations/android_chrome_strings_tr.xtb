@@ -183,6 +183,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="1807709131360304325">Yeni pencere aç</translation>
 <translation id="1810845389119482123">İlk senkronizasyon kurulumu tamamlanmadı</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" />, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kullanarak devam edemiyor</translation>
+<translation id="1820408774134375111">Oturum açma alt sayfası</translation>
 <translation id="1825772852827001597">Google Pay'deki ödeme yöntemleri ve adresler şifrelenmez. Chrome'daki tarama geçmişi senkronize edilmez.
 Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Parola Google'a gönderilmez veya Google tarafından saklanmaz. Parolanızı unutursanız veya bu ayarı değiştirmek isterseniz <ph name="BEGIN_LINK" />hesabınızdaki Chrome verilerini silin<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Sayfada bul</translation>
@@ -191,6 +192,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="1871098866036088250">Chrome tarayıcıda aç</translation>
 <translation id="1877026089748256423">Chrome sürümü eski</translation>
 <translation id="1877073879466606884">Oturum açtığınız profil, yönetilen bir profildir. Yöneticiniz profil ayarlarınızda uzaktan değişiklik yapabilir, raporlama aracılığıyla tarayıcı hakkındaki bilgileri analiz edebilir ve diğer gerekli görevleri yerine getirebilir.</translation>
+<translation id="1879904908408734349">Oturum açma alt sayfası kapatıldı</translation>
 <translation id="1883903952484604915">Dosyalarım</translation>
 <translation id="189358972401248634">Diğer diller</translation>
 <translation id="1899175549411605574">Fiyat analizleri alt sayfası</translation>
@@ -330,6 +332,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2527779675047087889">Pano içeriklerini gizle</translation>
 <translation id="2532336938189706096">Web Görüntüleme</translation>
 <translation id="253498598929009420">Site, ekranınızın içeriğini görebilecek</translation>
+<translation id="2535807170289627159">Tüm sekmeler</translation>
 <translation id="2536728043171574184">Bu sayfanın çevrimdışı bir kopyası görüntüleniyor</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, Sekme</translation>
 <translation id="2546283357679194313">Çerezler ve site verileri</translation>
@@ -539,6 +542,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3516053221628030540">Google Play'e gidin</translation>
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Son zamanlarda ziyaret etmediğiniz bir sitenin bildirim izinleri kaldırıldı}other{Son zamanlarda ziyaret etmediğiniz # sitenin bildirim izinleri kaldırıldı}}</translation>
 <translation id="3518985090088779359">Kabul et ve devam et</translation>
+<translation id="3519014757432845220">Bildirim içeriğini ve sitenin URL'sini Google ile paylaşarak spam korumasını iyileştirmeye yardımcı olun. İçerik, gerçek kişiler tarafından incelenebilir.</translation>
 <translation id="351952459507671940">Yeni gruba ekle</translation>
 <translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ile devam edilemiyor</translation>
 <translation id="3522247891732774234">Güncelleme mevcut. Diğer seçenekler</translation>
@@ -854,6 +858,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="4943703118917034429">Sanal Gerçeklik</translation>
 <translation id="4943872375798546930">Sonuç yok</translation>
 <translation id="4957722034734105353">Daha fazla bilgi edinin...</translation>
+<translation id="4959115606310463263">Oturum açma alt sayfası ekranın yarısına kadar açıldı</translation>
 <translation id="4961107849584082341">Bu sayfayı istediğiniz dile çevirin</translation>
 <translation id="4964614743143953889">Chrome sizi uyararak güvenli olmayan sitelerden ve indirmelerden haberdar olmanızı sağlar</translation>
 <translation id="496607651705915226">Yeni şifreleri Google Hesabınıza kaydedip kullanmak için Google Play Hizmetleri'ni güncelleyin</translation>
@@ -1146,6 +1151,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="6277522088822131679">Sayfa yazdırılırken bir sorun oluştu. Lütfen tekrar deneyin.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6284472661216707937">Tüm cihazlarınızdaki şifreler kapatıldı</translation>
+<translation id="6291294824436685757">Tarama verilerini silin; silinecek verileri seçin</translation>
 <translation id="6295158916970320988">Tüm siteler</translation>
 <translation id="6296366034485697675">Dışa aktar ve sil</translation>
 <translation id="629730747756840877">Hesap</translation>
@@ -1613,6 +1619,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> dosya kaldı</translation>
 <translation id="8190358571722158785">1 gün kaldı</translation>
+<translation id="8192765420340770300">Oturum açma alt sayfası tam ekranda açıldı</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Cihazlarınız<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="820568752112382238">En çok ziyaret edilen siteler</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" /> ve diğer <ph name="NUMBER_OF_OTHER_MEMBERS" /> kullanıcının bulunduğu sekme grubuna katılın}other{<ph name="OWNER_FIRST_NAME" /> ve diğer <ph name="NUMBER_OF_OTHER_MEMBERS" /> kullanıcının bulunduğu sekme grubuna katılın}}</translation>
@@ -1809,6 +1816,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="9050666287014529139">Parola</translation>
 <translation id="9055497320631373736">Site, potansiyel sitelere geri eklendi</translation>
 <translation id="9057030985451135243">Ortak sekme grupları hakkında bilgi</translation>
+<translation id="9063400323119781058">E-posta listesinden çıkıldı</translation>
 <translation id="9063523880881406963">Masaüstü sitesi istemeyi devre dışı bırak</translation>
 <translation id="9065203028668620118">Düzenle</translation>
 <translation id="9065383040763568503">Chrome'un önemli olmadığını düşündüğü depolanmış veriler (ör. kayıtlı ayarları bulunmayan veya sık ziyaret etmediğiniz siteler)</translation>

@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">വാട്ടർ ഫിൽട്ടറുകളും പ്യൂരിഫയറുകളും</translation>
 <translation id="1036348656032585052">ഓഫാക്കുക</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
-<translation id="1038106730571050514">നിർദ്ദേശങ്ങൾ കാണിക്കുക</translation>
 <translation id="1038842779957582377">അജ്ഞാത നാമം</translation>
 <translation id="1041998700806130099">ജോബ് ഷീറ്റ് സന്ദേശം</translation>
 <translation id="1044897699341250361">എന്താണ് ഇതിനർത്ഥം</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">ഗെയിമുകൾ</translation>
 <translation id="2674170444375937751">നിങ്ങളുടെ ചരിത്രത്തില്‍ നിന്നും ഈ പേജുകള്‍ മായ്ക്കുന്നതിന് നിങ്ങള്‍ താല്പര്യമുണ്ടോ?</translation>
 <translation id="2674524144218093528">വീടിന്റെ പെയിന്റിംഗും ഫിനിഷിംഗും</translation>
-<translation id="2674804415323431591">നിർദ്ദേശങ്ങൾ മറയ്‌ക്കുക</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> ടാബ് ഗ്രൂപ്പുകൾ ഇനി ലഭ്യമല്ല</translation>
 <translation id="2677748264148917807">ഉപേക്ഷിക്കുക</translation>
 <translation id="2683195745483370038">മറ്റ് ഫലങ്ങൾ കണ്ടെത്തി</translation>
@@ -2632,7 +2630,6 @@
 <translation id="55293785478302737">അരിക് കൂട്ടിച്ചേർക്കൽ</translation>
 <translation id="553377674408670169">വിദ്യാഭ്യാസ സംബന്ധമായ ജോലികൾ</translation>
 <translation id="5534785731327961487">ഇപ്പോൾ നല്ല ഡീൽ</translation>
-<translation id="5536214594743852365">"<ph name="SECTION" />" വിഭാഗം കാണിക്കുക</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ ഒരു സൈറ്റ് (സമന്വയിപ്പിച്ച ഉപകരണങ്ങളിൽ ഇതിൽ കൂടുതൽ)}other{+ # സൈറ്റുകൾ (സമന്വയിപ്പിച്ച ഉപകരണങ്ങളിൽ ഇതിൽ കൂടുതൽ)}}</translation>
 <translation id="553782666181800029">Envelope Chou 2</translation>
 <translation id="5538270463355278784">സ്വയമേവയുള്ള പൂർണ്ണസ്ക്രീൻ</translation>
@@ -3657,7 +3654,6 @@
 <translation id="7316521168101843192">Microsoft OneDrive-ലേക്ക് ഫയൽ സംരക്ഷിക്കുന്നു</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">കണക്ഷൻ സഹായം</translation>
-<translation id="7323804146520582233">"<ph name="SECTION" />" വിഭാഗം മറയ്ക്കുക</translation>
 <translation id="733354035281974745">ഉപകരണ ലോക്കൽ അക്കൗണ്ട് അസാധുവാക്കുക</translation>
 <translation id="7334320624316649418">&amp;പുനഃക്രമീകരിക്കുന്നത് വീണ്ടും ചെയ്യുക</translation>
 <translation id="7335157162773372339">നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കാൻ ആവശ്യപ്പെടാം</translation>
@@ -3786,7 +3782,6 @@
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">വെബ് വിലാസത്തിനായി വെബ്‌പേജൊന്നും കണ്ടെത്തിയില്ല: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">"<ph name="SECTION" />" വിഭാഗം മറച്ചിരിക്കുന്നു</translation>
 <translation id="752189128961566325">Google ഉൽപ്പന്നങ്ങളിലുടനീളം നിങ്ങൾക്കിത് ഉപയോഗിക്കാം</translation>
 <translation id="7523408071729642236">ഉത്പാദനം</translation>
 <translation id="7525067979554623046">സൃഷ്‌ടിക്കുക</translation>
@@ -4239,7 +4234,6 @@
 <translation id="8297545700510100061">നിങ്ങളുടെ വിവരങ്ങൾ ഓർക്കാൻ കുക്കികളും മറ്റ് സൈറ്റ് ഡാറ്റയും ഉപയോഗിച്ചിരിക്കുന്നു, ഉദാഹരണത്തിന് നിങ്ങളെ സൈൻ ഇൻ ചെയ്യിക്കാൻ അല്ലെങ്കിൽ പരസ്യങ്ങൾ വ്യക്തിപരമാക്കാൻ. എല്ലാ സൈറ്റുകൾക്കുമുള്ള കുക്കികൾ മാനേജ് ചെയ്യാൻ <ph name="SETTINGS" /> കാണുക.</translation>
 <translation id="8298115750975731693">നിങ്ങൾ ഉപയോഗിക്കുന്ന Wi-Fi (<ph name="WIFI_NAME" />), <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> സന്ദർശിക്കാൻ നിങ്ങളോട് ആവശ്യപ്പെടാം.</translation>
 <translation id="8301894345671534559">കോഡ് നൽകുക</translation>
-<translation id="8303854710873047864">"<ph name="SECTION" />" വിഭാഗം കാണിച്ചിരിക്കുന്നു</translation>
 <translation id="8304912090860925649">പുതിയ താരതമ്യ പട്ടിക</translation>
 <translation id="830498451218851433">പകുതിയായി മടക്കുക</translation>
 <translation id="8308653357438598313">തത്സമയ വീഡിയോ സ്ട്രീമിംഗ്</translation>

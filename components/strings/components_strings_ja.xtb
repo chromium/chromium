@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">浄水器</translation>
 <translation id="1036348656032585052">オフにする</translation>
 <translation id="1036881361735705143">C4 封筒</translation>
-<translation id="1038106730571050514">候補を表示する</translation>
 <translation id="1038842779957582377">不明な名前</translation>
 <translation id="1041998700806130099">ジョブシート メッセージ</translation>
 <translation id="1044897699341250361">このメッセージの意味</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">ゲーム</translation>
 <translation id="2674170444375937751">履歴からこれらのページを削除してもよろしいですか？</translation>
 <translation id="2674524144218093528">家屋塗装、仕上げ</translation>
-<translation id="2674804415323431591">候補を非表示にする</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> 個のタブグループはご利用いただけなくなりました</translation>
 <translation id="2677748264148917807">このページを離れる</translation>
 <translation id="2683195745483370038">その他の結果が見つかりました</translation>
@@ -2633,7 +2631,6 @@
 <translation id="55293785478302737">端綴じ</translation>
 <translation id="553377674408670169">教育系の求人情報</translation>
 <translation id="5534785731327961487">買い時</translation>
-<translation id="5536214594743852365">「<ph name="SECTION" />」セクションを表示します</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{と 1 件のサイト（同期デバイスではそれ以上のサイト）}other{と # 件のサイト（同期デバイスではそれ以上のサイト）}}</translation>
 <translation id="553782666181800029">長形 2 号封筒</translation>
 <translation id="5538270463355278784">自動全画面表示</translation>
@@ -3658,7 +3655,6 @@
 <translation id="7316521168101843192">ファイルを Microsoft OneDrive に保存しています</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">接続に関するヘルプ</translation>
-<translation id="7323804146520582233">「<ph name="SECTION" />」セクションを非表示にする</translation>
 <translation id="733354035281974745">デバイスのローカル アカウントのオーバーライド</translation>
 <translation id="7334320624316649418">順序変更のやり直し（&amp;R）</translation>
 <translation id="7335157162773372339">カメラの使用を要求できる</translation>
@@ -3790,7 +3786,6 @@
 <translation id="7517414872996418597">C10 封筒</translation>
 <translation id="7518003948725431193">次の URL のウェブページは見つかりませんでした:<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">「<ph name="SECTION" />」セクションを非表示にしました</translation>
 <translation id="752189128961566325">Google サービス全体で使用できます</translation>
 <translation id="7523408071729642236">製造</translation>
 <translation id="7525067979554623046">作成</translation>
@@ -4243,7 +4238,6 @@
 <translation id="8297545700510100061">Cookie と他のサイトデータは、ログインや広告のパーソナライズなどでユーザーを覚えておくために使用されます。すべてのサイトの Cookie を管理するには、<ph name="SETTINGS" /> をご覧ください。</translation>
 <translation id="8298115750975731693">ご利用の Wi-Fi（<ph name="WIFI_NAME" />）では、<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> へのアクセスが必要な可能性があります。</translation>
 <translation id="8301894345671534559">コードの入力</translation>
-<translation id="8303854710873047864">「<ph name="SECTION" />」セクションを表示しています</translation>
 <translation id="8304912090860925649">新しい比較表</translation>
 <translation id="830498451218851433">2 つ折り</translation>
 <translation id="8308653357438598313">ライブ動画ストリーミング</translation>

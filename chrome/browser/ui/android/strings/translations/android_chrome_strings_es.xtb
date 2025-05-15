@@ -332,6 +332,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2527779675047087889">Oculta el contenido del portapapeles</translation>
 <translation id="2532336938189706096">Vista web</translation>
 <translation id="253498598929009420">El sitio podrá ver el contenido de tu pantalla</translation>
+<translation id="2535807170289627159">Todas las pestañas</translation>
 <translation id="2536728043171574184">Se muestra una copia sin conexión de esta página</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, pestaña</translation>
 <translation id="2546283357679194313">Cookies y datos de sitios</translation>
@@ -434,6 +435,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2979639724566107830">Abrir en una ventana nueva</translation>
 <translation id="2981364137500752533">Puedes tener hasta 5 ventanas.</translation>
 <translation id="2983102365694924129">Se basa en tu actividad en un sitio. Esta opción está desactivada.</translation>
+<translation id="2983398917942897288">Inactivas (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Incluir texto cercano en las búsquedas de Google</translation>
 <translation id="2988638966064514052">Refuerza tus contraseñas</translation>
 <translation id="2989523299700148168">Visitados recientemente</translation>
@@ -466,6 +468,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="314939179385989105">Página principal de Chrome</translation>
 <translation id="3158667104057012316">Ordenados manualmente</translation>
 <translation id="3159335509547415276">Más información sobre las cuentas bloqueadas</translation>
+<translation id="3161699713309727585"><ph name="BUTTON_TEXT" /> (se abre en otra pestaña)</translation>
 <translation id="3166827708714933426">Combinaciones de teclas de pestañas y ventanas</translation>
 <translation id="316694332262407393">Chrome ya se está ejecutando.</translation>
 <translation id="3167258285411721858">Puedes solicitar el sitio web móvil de <ph name="HOST_NAME" /></translation>
@@ -790,6 +793,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="469286762610133730">Disfruta de mejor contenido</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> más}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> más}}</translation>
 <translation id="4698061626562952596">Revisa tus pestañas inactivas aquí</translation>
+<translation id="4698757800236023795">Activas (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Archivos e imágenes en caché</translation>
 <translation id="4710167854527459075">Ordenar por más reciente</translation>
 <translation id="4718044610319080485">Invoca al asistente de IA</translation>

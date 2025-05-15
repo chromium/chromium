@@ -3161,6 +3161,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3188465121994729530">Gleitender Durchschnitt</translation>
 <translation id="3189187154924005138">Großer Cursor</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{1 Passwort und andere Elemente werden nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto.}other{{PASSWORD_COUNT} Passwörter und andere Elemente werden nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto.}}</translation>
+<translation id="319044078641740013">Wenn du deinen Verlauf und deine Tabs mit <ph name="ACCOUNT_EMAIL" /> synchronisierst, kannst du bereits besuchte Websites einfach wieder aufrufen</translation>
 <translation id="3190558889382726167">Passwort gespeichert</translation>
 <translation id="3192586965067888278">Beschreibe ausführlich das Problem. Das Feedback wird zur manuellen Überprüfung an Google gesendet und kann zur Verbesserung oder Entwicklung von Google-Produkten und -Diensten verwendet werden.</translation>
 <translation id="3192947282887913208">Audiodateien</translation>
@@ -3267,6 +3268,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Datei}other{# Dateien}}</translation>
 <translation id="326999365752735949">DIFF-Datei wird heruntergeladen.</translation>
 <translation id="3270965368676314374">Fotos, Musik und andere Medien auf deinem Computer lesen, ändern und löschen</translation>
+<translation id="3275464924531706548"><ph name="HEADER" /> minimieren</translation>
 <translation id="3275778809241512831">Dein interner Sicherheitsschlüssel ist momentan nicht sicher. Bitte entferne den Schlüssel aus allen Diensten, für die du ihn verwendet hast, und setze ihn zurück, um das Problem zu beheben.</translation>
 <translation id="3275778913554317645">In neuem Fenster öffnen</translation>
 <translation id="3277214528693754078">Textcursor verwenden (Tastaturnavigation)</translation>
@@ -3598,6 +3600,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3510471875518562537">Diese Adresse auf deinem iPhone verwenden</translation>
 <translation id="3511200754045804813">Noch einmal suchen</translation>
 <translation id="3511307672085573050">Adr&amp;esse des Links kopieren</translation>
+<translation id="3511358375261756531"><ph name="HEADER" /> maximieren</translation>
 <translation id="351152300840026870">Schriftart mit fester Breite</translation>
 <translation id="3511528412952710609">Kurz</translation>
 <translation id="3513019849832307207">Beitreten und öffnen</translation>
@@ -3607,6 +3610,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3514681096978190000">Diese Archivdatei enthält weitere Dateien, die möglicherweise Malware verstecken</translation>
 <translation id="3515983984924808886">Tippe noch einmal auf deinen Sicherheitsschlüssel, um das Zurücksetzen zu bestätigen. Damit werden alle auf dem Sicherheitsschlüssel gespeicherten Informationen und die zugehörige PIN gelöscht.</translation>
 <translation id="3518866566087677312">Versehe Dinge mit Lesezeichen, auf die du später zurückkommen möchtest</translation>
+<translation id="3519014757432845220">Du kannst uns bei der Verbesserung des Spamschutzes helfen, indem du den Inhalt von Benachrichtigungen zusammen mit der URL der jeweiligen Website an Google sendest. Inhalte werden möglicherweise von Prüfern gesehen.</translation>
 <translation id="3519382402703204668">Tab auswählen</translation>
 <translation id="3519564332031442870">Print Backend Service</translation>
 <translation id="3519938335881974273">Seite speichern unter…</translation>
@@ -5687,7 +5691,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Bildschirm streamen</translation>
 <translation id="496185450405387901">Diese App wurde von deinem Administrator installiert.</translation>
-<translation id="4963079328730030450">Deine Organisation legt fest, wie die von diesen Funktionen erhobenen Daten verwendet werden dürfen.</translation>
 <translation id="4963603093937263654">Die Benachrichtigungen müssen auf „<ph name="DEVICE_NAME" />“ aktiviert sein.</translation>
 <translation id="4963789650715167449">Aktuellen Tab entfernen</translation>
 <translation id="4964455510556214366">Anordnung</translation>
@@ -6149,6 +6152,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5296536303670088158">Du nutzt den stärksten Schutz von Chrome vor schädlichen Websites</translation>
 <translation id="5297005732522718715">Tethering-Konfiguration aktualisieren</translation>
 <translation id="5297082477358294722">Passwort gespeichert. Gespeicherte Passwörter kannst du in deinem <ph name="SAVED_PASSWORDS_STORE" /> aufrufen und verwalten</translation>
+<translation id="5297548311167268289">In <ph name="RP_ID" /> anmelden</translation>
 <translation id="5297946558563358707">Wenn andere auf deinen Bildschirm blicken, wird unten rechts das Augensymbol für die Privatsphäre angezeigt</translation>
 <translation id="5297984209202974345">Aktuelles KI-Design <ph name="INDEX" /> von <ph name="SUBJECT" /> im Stil „<ph name="STYLE" />“</translation>
 <translation id="5298219193514155779">Design von</translation>
@@ -6611,6 +6615,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="563371367637259496">Mobil</translation>
 <translation id="5635312199252507107">Auf bestimmten Websites zulassen</translation>
 <translation id="5636012309446422">Möchtest du das Gerät „<ph name="DEVICE" />“ aus dem Konto „<ph name="PRIMARY_EMAIL" />“ entfernen?</translation>
+<translation id="56360247219959198"><ph name="DICTIONARY" /> wird endgültig gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.</translation>
 <translation id="5636140764387862062">Weitere Aktionen für die PIN</translation>
 <translation id="5636996382092289526">Zur Verwendung von <ph name="NETWORK_ID" /> musst du eventuell zuerst die <ph name="LINK_START" />Anmeldeseite des Netzwerks besuchen<ph name="LINK_END" />. Diese wird in einigen Sekunden automatisch geöffnet. Anderenfalls kann das Netzwerk nicht verwendet werden.</translation>
 <translation id="5637476008227280525">Aktivierung der mobilen Daten</translation>
@@ -7727,6 +7732,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6459799433792303855">Aktives Fenster auf anderen Bildschirm verschoben.</translation>
 <translation id="6460601847208524483">Weitersuchen (vorwärts)</translation>
 <translation id="6461170143930046705">Netzwerke werden gesucht…</translation>
+<translation id="6463488491707167747">Dieses Wörterbuch löschen</translation>
 <translation id="6463596731306859179">Du erhältst unerwünschte Pop-ups oder es kommt zu anderem unerwarteten Verhalten? Manchmal können sich deine ChromeOS-Einstellungen durch Apps und Erweiterungen, die du installierst, ohne dein Wissen ändern.</translation>
 <translation id="6463668944631062248">Streaminganfrage auf „<ph name="DEVICE_NAME" />“ akzeptieren</translation>
 <translation id="6463795194797719782">B&amp;earbeiten</translation>
@@ -10330,6 +10336,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8280848878018088610">Bild mit düsterer Stimmung, das brechende Wellen, eine fantastische Stadt und ein Schloss im Hintergrund zeigt.</translation>
 <translation id="828180235270931531">Weitere verfügbare Drucker</translation>
 <translation id="8281886186245836920">Überspringen</translation>
+<translation id="8283802069507225582">Wenn du deinen Verlauf und deine Tabs mit <ph name="ACCOUNT_EMAIL" /> synchronisierst, kannst du einfach dort weiterzumachen, wo du auf einem anderen Gerät aufgehört hast</translation>
 <translation id="8284279544186306258">alle <ph name="WEBSITE_1" />-Websites</translation>
 <translation id="8284326494547611709">Untertitel</translation>
 <translation id="8286036467436129157">Anmelden</translation>
@@ -11008,6 +11015,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8754200782896249056">&lt;p&gt;Bei der Ausführung von <ph name="PRODUCT_NAME" /> in einer unterstützten Desktop-Umgebung werden die Proxy-Einstellungen des Systems verwendet. Allerdings wird entweder dein System nicht unterstützt oder deine Systemkonfiguration konnte nicht gestartet werden.&lt;/p&gt;
 
           &lt;p&gt;Du kannst die Konfiguration dennoch über die Befehlszeile vornehmen. Weitere Informationen zu Markierungen und Umgebungsvariablen findest du unter &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;.&lt;/p&gt;</translation>
+<translation id="8754810799862630650">Wenn du deinen Verlauf und deine Tabs mit <ph name="ACCOUNT_EMAIL" /> synchronisierst, kannst du Tabs sehen, die auf deinen anderen Computern und Smartphones geöffnet sind</translation>
 <translation id="8755175579224030324">Sicherheitsrelevante Aufgaben für deine Organisation durchführen, z. B. das Verwalten von auf dem Gerät gespeicherten Zertifikaten und Schlüsseln</translation>
 <translation id="875532100880844232">Wähle für <ph name="DEVICE_NAME" /> eine Aktion für jede Taste aus</translation>
 <translation id="8755376271068075440">&amp;Größer</translation>
@@ -11514,7 +11522,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9101691533782776290">App starten</translation>
 <translation id="9102610709270966160">Erweiterung aktivieren</translation>
 <translation id="9102864637938129124">Websites und Werbetreibende können die Leistung ihrer Werbung analysieren. Diese Einstellung ist aktiviert.</translation>
-<translation id="9103341231213089378">Zum Streamen von Inhalten gewähre Chrome über <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; „Lokales Netzwerk“ &gt; „Chrome“ Zugriff</translation>
+<translation id="9103341231213089378">Gewähre Chrome zum Streamen Zugriff über <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; „Lokales Netzwerk“ &gt; „Chrome“</translation>
 <translation id="9103868373786083162">Drücken, um zurückzugehen. Kontextmenü, um Verlauf aufzurufen</translation>
 <translation id="9107096627210171112">Übe&amp;rsetzen…</translation>
 <translation id="9107624673674616016">Buntstift</translation>

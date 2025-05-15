@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Filtre și purificatoare de apă</translation>
 <translation id="1036348656032585052">Dezactivează</translation>
 <translation id="1036881361735705143">Plic C4</translation>
-<translation id="1038106730571050514">Afișează sugestii</translation>
 <translation id="1038842779957582377">nume necunoscut</translation>
 <translation id="1041998700806130099">Mesajul din foaia sarcinii</translation>
 <translation id="1044897699341250361">Ce înseamnă aceasta</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">Jocuri</translation>
 <translation id="2674170444375937751">Sigur doriți să ștergeți aceste pagini din istoric?</translation>
 <translation id="2674524144218093528">Zugrăvirea și finisarea locuințelor</translation>
-<translation id="2674804415323431591">Ascunde sugestiile</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> grupuri de file nu mai sunt disponibile</translation>
 <translation id="2677748264148917807">Ieși</translation>
 <translation id="2683195745483370038">Alte rezultate găsite</translation>
@@ -2633,7 +2631,6 @@
 <translation id="55293785478302737">Broșare</translation>
 <translation id="553377674408670169">Locuri de muncă în educație</translation>
 <translation id="5534785731327961487">Ofertă bună acum</translation>
-<translation id="5536214594743852365">Afișează secțiunea „<ph name="SECTION" />”</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ Un site (mai multe pe dispozitivele sincronizate)}few{+ # site-uri (mai multe pe dispozitivele sincronizate)}other{+ # de site-uri (mai multe pe dispozitivele sincronizate)}}</translation>
 <translation id="553782666181800029">Plic Chou 2</translation>
 <translation id="5538270463355278784">ecran complet automat</translation>
@@ -3658,7 +3655,6 @@ Detalii suplimentare:
 <translation id="7316521168101843192">Se salvează fișierul în Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Ajutor pentru conectare</translation>
-<translation id="7323804146520582233">Ascunde secțiunea „<ph name="SECTION" />”</translation>
 <translation id="733354035281974745">Modificarea contului local al dispozitivului</translation>
 <translation id="7334320624316649418">&amp;Repetați reordonarea</translation>
 <translation id="7335157162773372339">Poate solicita permisiunea de a folosi camera</translation>
@@ -3789,7 +3785,6 @@ Detalii suplimentare:
 <translation id="7517414872996418597">Plic C10</translation>
 <translation id="7518003948725431193">Nu a fost găsită nicio pagină web pentru adresa: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Secțiunea „<ph name="SECTION" />” a fost ascunsă</translation>
 <translation id="752189128961566325">O poți folosi în produsele Google</translation>
 <translation id="7523408071729642236">Producție</translation>
 <translation id="7525067979554623046">Creați</translation>
@@ -3866,6 +3861,7 @@ Detalii suplimentare:
 <translation id="7639968568612851608">Gri închis</translation>
 <translation id="7646681339175747202">Parola pe care tocmai ai folosit-o a fost găsită într-o încălcare a securității datelor. Managerul de parole Google recomandă să schimbi parola acum.</translation>
 <translation id="7647206758853451655">Calitatea printării</translation>
+<translation id="7648527891719919697">Site-ul va rămâne blocat deoarece ai activat Protecția avansată în <ph name="BEGIN_ANDROID_SETTINGS_LINK" />setările Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe despre acest mesaj de avertisment<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Stocheze fișiere pe acest dispozitiv</translation>
 <translation id="7653957176542370971">Foaia handlerului pentru plăți este închisă</translation>
 <translation id="7654909834015434372">Când editezi adnotări, acest document va reveni la orientarea inițială</translation>
@@ -4241,7 +4237,6 @@ Detalii suplimentare:
 <translation id="8297545700510100061">Cookie-urile și alte date ale site-urilor sunt folosite pentru a te reține, de exemplu, pentru a te conecta sau pentru a personaliza anunțuri. Pentru a gestiona cookie-urile pentru toate site-urile, consultă <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Rețeaua Wi-Fi pe care o folosești (<ph name="WIFI_NAME" />) poate solicita accesarea adresei <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Introdu codul</translation>
-<translation id="8303854710873047864">Secțiunea „<ph name="SECTION" />” s-a afișat</translation>
 <translation id="8304912090860925649">Tabel de comparație nou</translation>
 <translation id="830498451218851433">Îndoire la jumătate</translation>
 <translation id="8308653357438598313">Streaming video live</translation>

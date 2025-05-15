@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">વૉટર ફિલ્ટર અને પ્યુરિફાયર</translation>
 <translation id="1036348656032585052">બંધ કરો</translation>
 <translation id="1036881361735705143">એન્વલપ C4</translation>
-<translation id="1038106730571050514">સૂચનો બતાવો</translation>
 <translation id="1038842779957582377">અજ્ઞાત નામ</translation>
 <translation id="1041998700806130099">જોબ શીટ મેસેજ</translation>
 <translation id="1044897699341250361">આનો અર્થ શું છે</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">ગેમ</translation>
 <translation id="2674170444375937751">શું તમે ખરેખર તમારા ઇતિહાસમાંથી આ પેજને ડિલીટ કરવા માંગો છો?</translation>
 <translation id="2674524144218093528">ઘરનું રંગકામ અને ફીનિશિંગ</translation>
-<translation id="2674804415323431591">સૂચનો છુપાવો</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> ટૅબના ગ્રૂપ હવે ઉપલબ્ધ નથી</translation>
 <translation id="2677748264148917807">છોડો</translation>
 <translation id="2683195745483370038">અન્ય પરિણામો મળ્યા</translation>
@@ -2633,7 +2631,6 @@
 <translation id="55293785478302737">કિનારી જોડવી</translation>
 <translation id="553377674408670169">શિક્ષણ ક્ષેત્રમાં નોકરીઓ</translation>
 <translation id="5534785731327961487">અત્યારે સારી ડીલ છે</translation>
-<translation id="5536214594743852365">"<ph name="SECTION" />" વિભાગ બતાવો</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 સાઇટ (સિંક કરેલા ડિવાઇસ પર બીજી ઘણી બધી)}one{+# સાઇટ (સિંક કરેલા ડિવાઇસ પર બીજી ઘણી બધી)}other{+# સાઇટ (સિંક કરેલા ડિવાઇસ પર બીજી ઘણી બધી)}}</translation>
 <translation id="553782666181800029">એન્વલપ ચોઉ 2</translation>
 <translation id="5538270463355278784">ઑટોમૅટિક પૂર્ણ સ્ક્રીન</translation>
@@ -3362,6 +3359,7 @@
 <translation id="6789062271869667677">સતત (લાંબુ)</translation>
 <translation id="678982761784843853">સંરક્ષિત કન્ટેન્ટ IDs</translation>
 <translation id="6790428901817661496">ચલાવો</translation>
+<translation id="6792631792628412749">પાસકી • <ph name="PROVIDER_NAME" /></translation>
 <translation id="6793213097893210590">કાર્ડબોર્ડ</translation>
 <translation id="679355240208270552">અવગણના કરી, કારણ કે પૉલિસીએ ડિફૉલ્ટ શોધ બંધ કરેલી છે.</translation>
 <translation id="6794951432696553238">હવેથી Windows Helloનો ઉપયોગ કરીને તમારા કાર્ડ વધુ ઝડપથી કન્ફર્મ કરો</translation>
@@ -3657,7 +3655,6 @@
 <translation id="7316521168101843192">ફાઇલને Microsoft OneDriveમાં સાચવી રહ્યાં છીએ</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">કનેક્શન સહાય</translation>
-<translation id="7323804146520582233">"<ph name="SECTION" />" વિભાગને છુપાવો</translation>
 <translation id="733354035281974745">ડિવાઇસ સ્થાનિક એકાઉન્ટ ઓવરરાઇડ</translation>
 <translation id="7334320624316649418">&amp;પુનઃક્રમાંકિત કરવું ફરી કરો</translation>
 <translation id="7335157162773372339">તમારા કૅમેરાનો ઉપયોગ કરવાનું પૂછી શકે છે</translation>
@@ -3788,7 +3785,6 @@
 <translation id="7517414872996418597">એન્વલપ C10</translation>
 <translation id="7518003948725431193">વેબ ઍડ્રેસ માટે કોઈ વેબપેજ મળ્યું નથી: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">"<ph name="SECTION" />" વિભાગ છુપાવ્યો</translation>
 <translation id="752189128961566325">તમે Googleની બધી પ્રોડક્ટમાં તેનો ઉપયોગ કરી શકો છો</translation>
 <translation id="7523408071729642236">ઉત્પાદન</translation>
 <translation id="7525067979554623046">બનાવો</translation>
@@ -4240,7 +4236,6 @@
 <translation id="8297545700510100061">કુકી અને અન્ય સાઇટ ડેટાનો ઉપયોગ તમને યાદ રાખવા માટે કરવામાં આવે છે, ઉદાહરણ તરીકે, તમને સાઇન ઇન કરવા માટે અથવા જાહેરાતો મનગમતી બનાવવા માટે. બધી સાઇટ માટે કુકી મેનેજ કરવા, <ph name="SETTINGS" /> જુઓ.</translation>
 <translation id="8298115750975731693">તમે વાપરી રહેલા વાઇ-ફાઇ (<ph name="WIFI_NAME" />)ના <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />ની જવું પડી શકે.</translation>
 <translation id="8301894345671534559">કોડ દાખલ કરો</translation>
-<translation id="8303854710873047864">"<ph name="SECTION" />" વિભાગ બતાવ્યો</translation>
 <translation id="8304912090860925649">નવું તુલનાત્મક ટેબલ</translation>
 <translation id="830498451218851433">અડધું વાળો</translation>
 <translation id="8308653357438598313">લાઇવ વીડિયો સ્ટ્રીમ</translation>

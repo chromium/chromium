@@ -3165,6 +3165,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3188465121994729530">Media de movemento</translation>
 <translation id="3189187154924005138">Cursor grande</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{Hai 1 contrasinal e outros elementos gardados só neste dispositivo. Para usalos noutros dispositivos, gárdaos na túa Conta de Google.}other{Hai {PASSWORD_COUNT} contrasinais e outros elementos gardados só neste dispositivo. Para usalos noutros dispositivos, gárdaos na túa Conta de Google.}}</translation>
+<translation id="319044078641740013">Para volver facilmente aos sitios que xa visitaches, sincroniza as pestanas e o historial con <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3190558889382726167">Gardouse o contrasinal</translation>
 <translation id="3192586965067888278">Describe detalladamente o problema. Os comentarios enviaranse a Google para unha revisión humana e poden usarse para mellorar ou desenvolver produtos e servizos de Google.</translation>
 <translation id="3192947282887913208">Ficheiros de audio</translation>
@@ -3271,6 +3272,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3269689705184377744">{COUNT,plural, =1{Ficheiro}other{# ficheiros}}</translation>
 <translation id="326999365752735949">Descargando ficheiro diff</translation>
 <translation id="3270965368676314374">Ler, cambiar e eliminar fotos, música e outros ficheiros multimedia do teu ordenador</translation>
+<translation id="3275464924531706548">Contraer <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Actualmente a túa chave de seguranza non é segura. Quítaa dos servizos cos que a utilizaches. Para resolver o problema, restablece a chave de seguranza.</translation>
 <translation id="3275778913554317645">Abrir como ventá</translation>
 <translation id="3277214528693754078">Navegar co cursor de texto (Navegación por cursor de texto)</translation>
@@ -3602,6 +3604,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3510471875518562537">Usa este enderezo no iPhone</translation>
 <translation id="3511200754045804813">Volver buscar</translation>
 <translation id="3511307672085573050">Copiar endere&amp;zo da ligazón</translation>
+<translation id="3511358375261756531">Despregar <ph name="HEADER" /></translation>
 <translation id="351152300840026870">Tipo de letra de largura fixa</translation>
 <translation id="3511528412952710609">Curto</translation>
 <translation id="3513019849832307207">Unirse e abrir</translation>
@@ -5696,7 +5699,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" />, <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Enviar pantalla</translation>
 <translation id="496185450405387901">O teu administrador instalou esta aplicación.</translation>
-<translation id="4963079328730030450">A túa organización controla como se poden usar os datos recompilados por estas funcións.</translation>
 <translation id="4963603093937263654">Asegúrate de ter as notificacións activadas no dispositivo (<ph name="DEVICE_NAME" />)</translation>
 <translation id="4963789650715167449">Quitar pestana actual</translation>
 <translation id="4964455510556214366">Disposición</translation>
@@ -6159,6 +6161,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5296536303670088158">Contas coa máxima seguranza de Chrome contra sitios web daniños</translation>
 <translation id="5297005732522718715">Actualizar configuración da conexión compartida</translation>
 <translation id="5297082477358294722">Gardouse o contrasinal. Para consultar e xestionar os contrasinais gardados, accede á túa <ph name="SAVED_PASSWORDS_STORE" />.</translation>
+<translation id="5297548311167268289">Iniciar sesión en <ph name="RP_ID" /></translation>
 <translation id="5297946558563358707">Cando outra persoa mira a túa pantalla, móstrase a icona do ollo de privacidade na esquina inferior dereita</translation>
 <translation id="5297984209202974345">Tema de IA recente <ph name="INDEX" /> de <ph name="SUBJECT" />. Estilo: <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Tema creado por</translation>
@@ -10340,6 +10343,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8280848878018088610">Ondas rompendo no mar, cun castelo e unha cidade fantásticos de fondo e un ambiente sombrío.</translation>
 <translation id="828180235270931531">Outras impresoras dispoñibles</translation>
 <translation id="8281886186245836920">Omitir</translation>
+<translation id="8283802069507225582">Para retomar a actividade onde a deixaches noutros dispositivos, sincroniza as pestanas e o historial con <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">todos os sitios de <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Subtítulos</translation>
 <translation id="8286036467436129157">Iniciar sesión</translation>
@@ -11018,6 +11022,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8754200782896249056">&lt;p&gt;Cando se execute <ph name="PRODUCT_NAME" /> nun contorno de escritorio compatible, utilizarase a configuración do proxy do sistema. Non obstante, ou o sistema non é compatible ou se produciu un problema ao iniciar a configuración do sistema.&lt;/p&gt;
 
         &lt;p&gt;Pero aínda así podes efectuar a configuración a través da liña de comandos. Consulta &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; para obter máis información acerca das marcas e das variables do contorno.&lt;/p&gt;</translation>
+<translation id="8754810799862630650">Para ver as pestanas abertas nos teus outros ordenadores e teléfonos, sincroniza as pestanas e o historial con <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">Realizar tarefas relacionadas coa seguranza para a túa organización, como a xestión de certificados e claves almacenados no dispositivo</translation>
 <translation id="875532100880844232">Selecciona unha acción para cada tecla de <ph name="DEVICE_NAME" /></translation>
 <translation id="8755376271068075440">&amp;Máis grande</translation>

@@ -10516,6 +10516,19 @@ Sertifikalar, base64 kodlu olmalıdır.</translation>
 <translation id="8381774264911275515">Oturum açma sırasında, SAML Tek Oturum Açma Çerezlerinin kullanıcı oturumuna aktarılmasını devre dışı bırak</translation>
 <translation id="8382184662529825177">Cihazda içerik koruma için uzak onay kullanımını etkinleştir</translation>
 <translation id="838870586332499308">Veri dolaşımını etkinleştir</translation>
+<translation id="8389925503559691525">Bu politika, blob URL'lerinin getirme ve gezinme işlemleri sırasında bölümlendirilip bölümlendirilmeyeceğini kontrol eder.
+Bu politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa blob URL'leri bölümlendirilir.
+Bu politika Devre Dışı değerine ayarlanırsa blob URL'leri bölümlendirilmez.
+
+Depolama bölümlendirme, <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> veya <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> tarafından belirli bir üst düzey kaynak için devre dışı bırakılırsa blob URL'leri de bölümlendirilmez.
+
+Bu politikayı kullanmanız gerekirse lütfen <ph name="BUG_URL" /> adresinden hata bildiriminde bulunun.
+Bildiriminizde, kullanım alanınızı açıklamayı unutmayın. Bu politikanın <ph name="PRODUCT_NAME" /> 143 sürümüyle sunulması planlanmıştır. Bu sürümden sonra eski uygulama kaldırılacaktır.
+
+NOT: Tarayıcı çalışırken bu politikada yapılan değişiklikleri yalnızca
+yeni başlatılan oluşturucu işlemleri yansıtır.
+
+Üçüncü taraf depolama bölümlendirmesi hakkında ayrıntılı bilgi için https://developers.google.com/privacy-sandbox/cookies/storage-partitioning adresine göz atabilirsiniz.</translation>
 <translation id="8392478748777481636">Bu politikanın desteği sonlandırıldığı için lütfen bunun yerine "<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />" politikasını kullanın.</translation>
 <translation id="8393850527597048037">Sadece Platform</translation>
 <translation id="8395350646076131800">Kullanıcı ekran koruyucusu kilit ekranı boşta kalma zaman aşımı.</translation>

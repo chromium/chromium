@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Filtros de água e purificadores</translation>
 <translation id="1036348656032585052">Desativar</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
-<translation id="1038106730571050514">Exibir sugestões</translation>
 <translation id="1038842779957582377">nome desconhecido</translation>
 <translation id="1041998700806130099">Mensagem de página de tarefa</translation>
 <translation id="1044897699341250361">O que isso significa</translation>
@@ -978,7 +977,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2673968385134502798">Jogos</translation>
 <translation id="2674170444375937751">Você quer mesmo excluir essas páginas do seu histórico?</translation>
 <translation id="2674524144218093528">Pintura e acabamento de casas</translation>
-<translation id="2674804415323431591">Ocultar sugestões</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> grupos de guias não estão mais disponíveis</translation>
 <translation id="2677748264148917807">Sair</translation>
 <translation id="2683195745483370038">Outros resultados encontrados</translation>
@@ -2324,6 +2322,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4998950033665438990">Uma página</translation>
 <translation id="5001526427543320409">Cookies de terceiros</translation>
 <translation id="5002932099480077015">Se ativado, o Chrome armazenará uma cópia do seu cartão neste dispositivo para preencher formulários mais rapidamente.</translation>
+<translation id="5007344584818503324">Atividade do grupo de guias compartilhado</translation>
 <translation id="5007392906805964215">Revisar</translation>
 <translation id="5010599530303458903">Pagar mensalmente ou em 4 parcelas sem juros (opção sujeita à qualificação)</translation>
 <translation id="5011561501798487822">Idioma detectado</translation>
@@ -2632,7 +2631,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="55293785478302737">Costurar borda</translation>
 <translation id="553377674408670169">Empregos na área de educação</translation>
 <translation id="5534785731327961487">Boa oferta agora</translation>
-<translation id="5536214594743852365">Mostrar a seção "<ph name="SECTION" />"</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{e mais 1 site (mais nos dispositivos sincronizados)}one{e mais # site (mais nos dispositivos sincronizados)}other{e mais # sites (mais nos dispositivos sincronizados)}}</translation>
 <translation id="553782666181800029">Envelope Chou 2</translation>
 <translation id="5538270463355278784">tela cheia automática</translation>
@@ -2751,6 +2749,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5732392974455271431">Seus responsáveis podem desbloqueá-lo para você</translation>
 <translation id="573555826359077410">Botão "Criar formulário". Ative para criar rapidamente um novo arquivo no Formulários Google</translation>
 <translation id="5738385766833540397">Gerencie como você recebe alertas de redução no preço de produtos monitorados.</translation>
+<translation id="5739619009927381786">Use a impressão digital para desbloquear a tela na próxima etapa. Ou <ph name="BEGIN_LINK" />verifique de outra maneira<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Para compartilhar, participar e colaborar em grupos de guias, sincronize o histórico e as guias</translation>
 <translation id="5740911612628596808">Envelope C9</translation>
 <translation id="5742806904559466333">Bares, danceterias e vida noturna</translation>
@@ -3360,6 +3359,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6789062271869667677">Contínua (longa)</translation>
 <translation id="678982761784843853">IDs de conteúdo protegido</translation>
 <translation id="6790428901817661496">Reproduzir</translation>
+<translation id="6792631792628412749">Chave de acesso • <ph name="PROVIDER_NAME" /></translation>
 <translation id="6793213097893210590">Papelão</translation>
 <translation id="679355240208270552">Ignorado porque a pesquisa padrão não foi ativada pela política.</translation>
 <translation id="6794951432696553238">Confirme seus cartões mais rapidamente usando o Windows Hello de agora em diante</translation>
@@ -3655,7 +3655,6 @@ Mais detalhes:
 <translation id="7316521168101843192">Salvando arquivo no Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Ajuda de conexão</translation>
-<translation id="7323804146520582233">Ocultar a seção "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">Substituição de conta local do dispositivo</translation>
 <translation id="7334320624316649418">&amp;Refazer reordenar</translation>
 <translation id="7335157162773372339">Pode pedir para usar a câmera</translation>
@@ -3786,7 +3785,6 @@ Mais detalhes:
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">Nenhuma página da web foi encontrada para o endereço da Web:<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Seção "<ph name="SECTION" />" oculta</translation>
 <translation id="752189128961566325">Ele pode ser usado em todos os produtos do Google</translation>
 <translation id="7523408071729642236">Indústria</translation>
 <translation id="7525067979554623046">Criar</translation>
@@ -4238,7 +4236,6 @@ Mais detalhes:
 <translation id="8297545700510100061">Os cookies e outros dados do site são usados para lembrar de você, por exemplo, para conectar sua conta ou personalizar anúncios. Se quiser gerenciar os cookies de todos os sites, acesse <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">O Wi-Fi que você está usando (<ph name="WIFI_NAME" />) pode exigir a visita a <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Inserir código</translation>
-<translation id="8303854710873047864">Seção "<ph name="SECTION" />" exibida</translation>
 <translation id="8304912090860925649">Nova tabela de comparação</translation>
 <translation id="830498451218851433">Dobra simples</translation>
 <translation id="8308653357438598313">Streaming de vídeo ao vivo</translation>

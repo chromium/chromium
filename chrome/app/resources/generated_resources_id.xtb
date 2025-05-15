@@ -3179,6 +3179,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3188465121994729530">Rata-rata Perpindahan</translation>
 <translation id="3189187154924005138">Kursor besar</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{1 sandi dan item lainnya hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di Akun Google Anda.}other{{PASSWORD_COUNT} sandi dan item lainnya hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di Akun Google Anda.}}</translation>
+<translation id="319044078641740013">Untuk kembali dengan mudah ke situs yang Anda buka, sinkronkan histori dan tab Anda ke <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3190558889382726167">Sandi tersimpan</translation>
 <translation id="3192586965067888278">Jelaskan masalahnya secara mendetail. Masukan akan dikirim ke Google untuk peninjauan manual dan dapat digunakan untuk meningkatkan kualitas atau mengembangkan produk dan layanan Google.</translation>
 <translation id="3192947282887913208">File Audio</translation>
@@ -3285,6 +3286,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3269689705184377744">{COUNT,plural, =1{File}other{# file}}</translation>
 <translation id="326999365752735949">Mendownload diff</translation>
 <translation id="3270965368676314374">Membaca, mengubah, dan menghapus foto, musik, serta media lain dari komputer Anda</translation>
+<translation id="3275464924531706548">Ciutkan <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Kunci keamanan internal Anda saat ini tidak aman. Harap hapus dari layanan apa pun tempat Anda menggunakannya. Harap reset kunci keamanan untuk memecahkan masalahnya.</translation>
 <translation id="3275778913554317645">Buka sebagai jendela</translation>
 <translation id="3277214528693754078">Navigasi dengan kursor teks (penjelajahan dengan keyboard)</translation>
@@ -3616,6 +3618,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3510471875518562537">Gunakan Alamat Ini Di iPhone Anda</translation>
 <translation id="3511200754045804813">Pindai ulang</translation>
 <translation id="3511307672085573050">Salin Ala&amp;mat Tautan</translation>
+<translation id="3511358375261756531">Luaskan <ph name="HEADER" /></translation>
 <translation id="351152300840026870">Font dengan lebar tetap</translation>
 <translation id="3511528412952710609">Sebentar</translation>
 <translation id="3513019849832307207">Gabung dan buka</translation>
@@ -3625,6 +3628,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3514681096978190000">File arsip ini mencakup file lain yang dapat menyembunyikan malware</translation>
 <translation id="3515983984924808886">Sentuh kunci keamanan Anda sekali lagi untuk mengonfirmasi peresetan. Semua informasi yang tersimpan di kunci keamanan, termasuk PIN-nya, akan dihapus.</translation>
 <translation id="3518866566087677312">Bookmark halaman yang ingin Anda lihat lagi nanti</translation>
+<translation id="3519014757432845220">Bantu tingkatkan kualitas perlindungan dari spam dengan membagikan konten notifikasi dan URL situs dengan Google. Konten mungkin akan ditinjau secara manual.</translation>
 <translation id="3519382402703204668">Pilih tab</translation>
 <translation id="3519564332031442870">Layanan Backend Pencetakan</translation>
 <translation id="3519938335881974273">Simpan halaman sebagai...</translation>
@@ -5706,7 +5710,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Transmisikan layar</translation>
 <translation id="496185450405387901">Aplikasi ini telah diinstal oleh administrator Anda.</translation>
-<translation id="4963079328730030450">Organisasi Anda mengontrol cara penggunaan data yang dikumpulkan oleh fitur ini.</translation>
 <translation id="4963603093937263654">Pastikan notifikasi diaktifkan di <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Hapus tab saat ini</translation>
 <translation id="4964455510556214366">Pengaturan</translation>
@@ -6169,6 +6172,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5296536303670088158">Anda memiliki keamanan terkuat Chrome terhadap situs berbahaya</translation>
 <translation id="5297005732522718715">Refresh Konfigurasi Tethering</translation>
 <translation id="5297082477358294722">Sandi disimpan. Lihat dan kelola sandi tersimpan di <ph name="SAVED_PASSWORDS_STORE" />.</translation>
+<translation id="5297548311167268289">Login ke <ph name="RP_ID" /></translation>
 <translation id="5297946558563358707">Jika seseorang melihat layar Anda, ikon mata Privasi akan ditampilkan di kanan bawah layar</translation>
 <translation id="5297984209202974345">Tema AI terbaru <ph name="INDEX" /> dari <ph name="SUBJECT" />, dengan gaya <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Tema dibuat oleh</translation>
@@ -6633,6 +6637,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="563371367637259496">Seluler</translation>
 <translation id="5635312199252507107">Izinkan di situs tertentu</translation>
 <translation id="5636012309446422">Hapus <ph name="DEVICE" /> dari <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="56360247219959198"><ph name="DICTIONARY" /> akan dihapus secara permanen. Tindakan ini tidak dapat diurungkan.</translation>
 <translation id="5636140764387862062">Tindakan lainnya untuk PIN</translation>
 <translation id="5636996382092289526">Untuk menggunakan <ph name="NETWORK_ID" />, pertama Anda harus <ph name="LINK_START" />mengunjungi halaman proses masuk jaringan<ph name="LINK_END" />, yang akan otomatis terbuka dalam beberapa detik. Jika hal itu tidak terjadi, jaringan tidak akan dapat digunakan.</translation>
 <translation id="5637476008227280525">Data seluler aktif</translation>
@@ -7750,6 +7755,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6459799433792303855">Jendela aktif dipindahkan ke layar lain.</translation>
 <translation id="6460601847208524483">Temukan Berikutnya</translation>
 <translation id="6461170143930046705">Mencari jaringan...</translation>
+<translation id="6463488491707167747">Hapus kamus ini</translation>
 <translation id="6463596731306859179">Mendapatkan pop-up yang tidak diinginkan atau perilaku tidak terduga lainnya? Terkadang, aplikasi dan ekstensi yang Anda instal dapat mengubah setelan ChromeOS Anda tanpa Anda sadari.</translation>
 <translation id="6463668944631062248">Terima permintaan transmisi di <ph name="DEVICE_NAME" /></translation>
 <translation id="6463795194797719782">&amp;Edit</translation>
@@ -10352,6 +10358,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8280848878018088610">Deburan ombak di laut, dengan latar belakang kota dan kastil yang mengagumkan, dalam suasana gelap.</translation>
 <translation id="828180235270931531">Printer lain yang tersedia</translation>
 <translation id="8281886186245836920">Lewati</translation>
+<translation id="8283802069507225582">Untuk melanjutkan dari halaman terakhir yang Anda buka di perangkat lain, sinkronkan histori dan tab Anda ke <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">semua situs <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Teks</translation>
 <translation id="8286036467436129157">Login</translation>
@@ -11030,6 +11037,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8754200782896249056">&lt;p&gt;Saat mengoperasikan <ph name="PRODUCT_NAME" /> pada lingkungan desktop yang didukung, setelan proxy sistem akan digunakan. Akan tetapi, tampaknya kami tidak dapat mendukung sistem Anda atau mungkin ada masalah saat meluncurkan konfigurasi sistem.&lt;/p&gt;
 
         &lt;p&gt;Namun demikian, Anda tetap dapat mengonfigurasi setelan melalui baris perintah.  Lihat &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; untuk informasi selengkapnya mengenai tanda dan variabel lingkungan.&lt;/p&gt;</translation>
+<translation id="8754810799862630650">Untuk melihat tab yang terbuka dari komputer dan ponsel lain, sinkronkan histori dan tab Anda ke <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">Melakukan tugas terkait keamanan untuk organisasi Anda, seperti mengelola sertifikat dan kunci yang disimpan di perangkat</translation>
 <translation id="875532100880844232">Untuk <ph name="DEVICE_NAME" />, pilih tindakan untuk setiap tombol</translation>
 <translation id="8755376271068075440">&amp;Lebih besar</translation>

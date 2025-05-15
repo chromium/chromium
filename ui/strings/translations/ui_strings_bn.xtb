@@ -162,6 +162,7 @@
 <translation id="6264365405983206840">&amp;সকল বেছে নিন</translation>
 <translation id="6346952829206698721">ক্লিপবোর্ড থেকে পেস্ট করুন</translation>
 <translation id="6364916375976753737">বাঁ দিকে স্ক্রল করুন</translation>
+<translation id="63712816010840859">বর্তমান ডিসপ্লেটি টাচস্ক্রিন না হলে, Esc 'কী' প্রেস করুন।</translation>
 <translation id="6394627529324717982">কমা</translation>
 <translation id="6397363302884558537">কথা বলা বন্ধ করুন</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{১ সেকেন্ড পূর্বে}one{# সেকেন্ড পূর্বে}other{# সেকেন্ড পূর্বে}}</translation>
@@ -173,6 +174,7 @@
 <translation id="6612467943526193239">ক্রমাঙ্কন থেকে বেরিয়ে যেতে Esc টিপুন।</translation>
 <translation id="6620110761915583480">ফাইল সেভ করুন</translation>
 <translation id="6699343763173986273">মিডিয়া পরবর্তী ট্র্যাক</translation>
+<translation id="6738856801552481343">এই ডিসপ্লেটি টাচস্ক্রিন না হলে, Esc 'কী' প্রেস করুন।</translation>
 <translation id="6807086321996342431">কলাম <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">মিডিয়া থামান</translation>
 <translation id="6845383723252244143">ফোল্ডার বেছে নিন</translation>

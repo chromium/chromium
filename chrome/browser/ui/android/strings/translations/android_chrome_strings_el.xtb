@@ -332,6 +332,7 @@
 <translation id="2527779675047087889">Απόκρυψη περιεχομένων πρόχειρου</translation>
 <translation id="2532336938189706096">Προβολή ιστού</translation>
 <translation id="253498598929009420">Ο ιστότοπος θα μπορεί να βλέπει τα περιεχόμενα της οθόνης</translation>
+<translation id="2535807170289627159">Όλες οι καρτέλες</translation>
 <translation id="2536728043171574184">Προβολή ενός αντιγράφου αυτής της σελίδας εκτός σύνδεσης</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, Καρτέλα</translation>
 <translation id="2546283357679194313">Cookie και δεδομένα ιστότοπου</translation>
@@ -434,6 +435,7 @@
 <translation id="2979639724566107830">Άνοιγμα σε νέο παράθυρο</translation>
 <translation id="2981364137500752533">Μπορείτε να έχετε έως 5 παράθυρα.</translation>
 <translation id="2983102365694924129">Βάσει της δραστηριότητάς σας σε έναν ιστότοπο. Αυτή η ρύθμιση είναι απενεργοποιημένη.</translation>
+<translation id="2983398917942897288">Ανενεργά στοιχεία (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Συμπερίληψη περιβάλλοντος κειμένου στις αναζητήσεις Google</translation>
 <translation id="2988638966064514052">Ενισχύστε τους κωδικούς πρόσβασης</translation>
 <translation id="2989523299700148168">Πραγματοποιήθηκε επίσκεψη πρόσφατα</translation>
@@ -466,6 +468,7 @@
 <translation id="314939179385989105">Αρχική σελίδα του Chrome</translation>
 <translation id="3158667104057012316">Ταξινόμηση κατά μη αυτόματη σειρά</translation>
 <translation id="3159335509547415276">Μάθετε σχετικά με τους λογαριασμούς που έχουν αποκλειστεί</translation>
+<translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, ανοίγει σε νέα καρτέλα</translation>
 <translation id="3166827708714933426">Συντομεύσεις καρτέλας και παραθύρου</translation>
 <translation id="316694332262407393">Το Chrome εκτελείται ήδη εδώ.</translation>
 <translation id="3167258285411721858">Μπορείτε να ζητήσετε τον ιστότοπο για κινητά του <ph name="HOST_NAME" /></translation>
@@ -790,6 +793,7 @@
 <translation id="469286762610133730">Λήψη καλύτερου περιεχομένου</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ακόμη}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ακόμη}}</translation>
 <translation id="4698061626562952596">Ελέγξτε τις ανενεργές καρτέλες σας εδώ</translation>
+<translation id="4698757800236023795">Ενεργά στοιχεία (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Εικόνες και αρχεία στην κρυφή μνήμη</translation>
 <translation id="4710167854527459075">Ταξινόμηση κατά νεότερο</translation>
 <translation id="4718044610319080485">Ενεργοποιεί τον Βοηθό AI</translation>

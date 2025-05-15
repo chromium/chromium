@@ -117,7 +117,6 @@
 <translation id="1616111909442424068">Wheat</translation>
 <translation id="1618597272655350600">Announces a complete description of the current position</translation>
 <translation id="1627222324347828322">Ghost White</translation>
-<translation id="1639634871799530612">{COUNT,plural, =1{greater than}other{# greater than signs}}</translation>
 <translation id="1653266918374749391">Previous level 3 heading</translation>
 <translation id="1657616855184033958">Show event stream filters</translation>
 <translation id="1659072772017912254">Not ticked</translation>
@@ -162,7 +161,6 @@
 <translation id="1964135212174907577">Next Object</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Show braille commands in the ChromeVox menus</translation>
-<translation id="2007545860310005685">{COUNT,plural, =1{left bracket}other{# left brackets}}</translation>
 <translation id="2009187674653301682">Not superscript</translation>
 <translation id="2010555995361223825">ChromeVox menus</translation>
 <translation id="203030071582665758">No previous level 4 heading</translation>
@@ -185,7 +183,6 @@
 <translation id="2169714232367507776">Click on current item</translation>
 <translation id="2179452035581866348">ChromeVox uses sounds to give you essential and additional information. You can use these sounds to navigate more quickly by learning what each sound means. Once you get more comfortable, you can turn off verbose descriptions in speech and rely on them for essential information about the page. Here's a complete list of sounds and what they mean.</translation>
 <translation id="2183409941723714159">Tab navigation</translation>
-<translation id="2188751878842439466">{COUNT,plural, =1{close paren}other{# close parens}}</translation>
 <translation id="2197863150503783129">Saddle Brown</translation>
 <translation id="2199994615414171367">Previous math</translation>
 <translation id="2203046366315513658">Decrease value</translation>
@@ -231,7 +228,6 @@
 <translation id="2462626033734746142">Radio button group</translation>
 <translation id="2467741090055146971">unselect</translation>
 <translation id="2471138580042810658">Heading 6</translation>
-<translation id="248982282205370495">{COUNT,plural, =1{asterisk}other{# asterisks}}</translation>
 <translation id="2490721194269245365">Rosy Brown</translation>
 <translation id="249330843868392562">Open text-to-speech settings</translation>
 <translation id="2497706219848005458">Green Yellow</translation>
@@ -266,7 +262,6 @@
 <translation id="2692503699962701720">Change pitch when speaking element types and formatted text</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">Text conversion candidate</translation>
-<translation id="2704429362613743330">{COUNT,plural, =1{open paren}other{# open parens}}</translation>
 <translation id="270523456882008230">Hint: Double-tap with one finger to activate the current item.</translation>
 <translation id="2705875883745373140">Not pressed</translation>
 <translation id="2708078563826046398">Peach Puff</translation>
@@ -280,7 +275,6 @@
 <translation id="2756452585631602151">Enter a custom label</translation>
 <translation id="2766299274563946262">No cell left</translation>
 <translation id="2770947749427257887">Enter scroll mode</translation>
-<translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">You can also swipe one finger from right to left to move to the previous item. Try it now.</translation>
 <translation id="280499067616661124">ChromeVox find in page</translation>
 <translation id="2811204574343810641">Row</translation>
@@ -299,9 +293,7 @@
 <translation id="2876760662374103627">Face control active</translation>
 <translation id="2879867157561757640">Swipe three fingers down</translation>
 <translation id="288178314850623291">Use jump commands to skip to specific types of elements. To jump forward between headings, press Search + H, or to jump backward, press Search + Shift + H.</translation>
-<translation id="2885764457467528513">{COUNT,plural, =1{minute}other{minutes}}</translation>
 <translation id="2894654529758326923">Information</translation>
-<translation id="2899328121302785497">{COUNT,plural, =1{left brace}other{# left braces}}</translation>
 <translation id="2909584066358367921">No next button</translation>
 <translation id="2911433807131383493">Open ChromeVox tutorial</translation>
 <translation id="2912405967290226587">Swipe three fingers right</translation>
@@ -311,7 +303,6 @@
 <translation id="2943596527105977722">Dark Goldenrod</translation>
 <translation id="2964026537669811554">Heading group</translation>
 <translation id="2968634799764242930">Sea Green</translation>
-<translation id="296951647852255825">{COUNT,plural, =1{tab}other{# tabs}}</translation>
 <translation id="2972205263822847197">Tool tip</translation>
 <translation id="2976476721782829799">You can also move around by dragging one finger around the screen. This is called exploring by touch. Try dragging your finger around to read the rest of this lesson.</translation>
 <translation id="297825089465017871">Swipe two fingers left</translation>
@@ -322,7 +313,6 @@
 <translation id="3014130421870723208">@ed 8dot</translation>
 <translation id="3018210433491759145">ChromeVox is loading</translation>
 <translation id="3030432017085518523">Menu item radio button</translation>
-<translation id="3037392361165431467">{COUNT,plural, =1{apostrophe}other{# apostrophes}}</translation>
 <translation id="3040901448410802366">Progress indicator</translation>
 <translation id="3046838483509668188">ChromeVox options</translation>
 <translation id="3060756054951570867"><ph name="TITLE" /> menu opened</translation>
@@ -358,7 +348,6 @@
 <translation id="3159493096109238499">Beige</translation>
 <translation id="316542773973815724">Navigation</translation>
 <translation id="3167446923957429259">Move your mouth left</translation>
-<translation id="3172700825913348768">{COUNT,plural, =1{space}other{# spaces}}</translation>
 <translation id="3179119189286472195">Not link</translation>
 <translation id="3180990259147710757">Shift jaw left</translation>
 <translation id="320041337977930740">Change display style to interleave</translation>
@@ -395,7 +384,6 @@
 <translation id="3359142382821736686">seprtr</translation>
 <translation id="3363015957057974366">You can also use the tab key to move to the next interactive item on the screen. Find the tab key, which is directly above the search key. To continue, press the tab key.</translation>
 <translation id="3366946046494222386"><ph name="TOPIC" /> Tutorial, <ph name="LESSONS" /> Lessons</translation>
-<translation id="3374537878095184207">{COUNT,plural, =1{plus}other{# plus signs}}</translation>
 <translation id="338583716107319301">Separator</translation>
 <translation id="3389259863310851658">Previous form field</translation>
 <translation id="3390740059150071453">Look left</translation>
@@ -414,12 +402,8 @@
 <translation id="3469413619751135069">Pale green</translation>
 <translation id="3473744269398144689">Start dictation</translation>
 <translation id="3490765818161916458">List grid</translation>
-<translation id="3492609944033322585">{COUNT,plural, =1{right bracket}other{# right brackets}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
-<translation id="3497063866483065785">{COUNT,plural, =1{question mark}other{# question marks}}</translation>
 <translation id="3505359110822747654">ChromeVox menus collapse</translation>
-<translation id="3514822174137761109">{COUNT,plural, =1{caret}other{# carets}}</translation>
-<translation id="3518600448524470129">{COUNT,plural, =1{white bullet}other{# white bullets}}</translation>
 <translation id="352577523970648069">An editable text field</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152">cut <ph name="TEXT" />.</translation>
@@ -436,9 +420,7 @@
 <translation id="3616016838842055984">If you reach an item that you want to click, press Search + Space. Try it now to continue.</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622350485154495700">Double tap with one finger</translation>
-<translation id="3646890046000188562">{COUNT,plural, =1{backtick}other{# backticks}}</translation>
 <translation id="3650317109285159359">chkmnuitm</translation>
-<translation id="3655855170848725876">{COUNT,plural, =1{dollar}other{# dollar signs}}</translation>
 <translation id="3659787053479271466">alrt</translation>
 <translation id="366419593095697301">Hint: Press Escape if you would like to exit this tutorial.</translation>
 <translation id="3676062394766691318">After you set up your device, you can come back and view more tutorials by pressing Search + O, then T.</translation>
@@ -497,16 +479,13 @@
 <translation id="4054936709456751127">sts</translation>
 <translation id="4058278702844053247">A page load in progress</translation>
 <translation id="4065205963140826639">Try using Search + Right Arrow now to find the Next button, then press Search + Space to click it.</translation>
-<translation id="4081085052247739398">{COUNT,plural, =1{TILDE}other{# tildes}}</translation>
 <translation id="409334809956508737">Previous Object</translation>
 <translation id="4099274309791143834">with submenu</translation>
 <translation id="4101527861445851766">A ticked tick box</translation>
 <translation id="410225014223200513">Make a circle with your lips</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4116415223832267137">Alert</translation>
-<translation id="4148180433151187540">{COUNT,plural, =1{right brace}other{# right braces}}</translation>
 <translation id="4159784952369912983">Purple</translation>
-<translation id="4161104397932142764">{COUNT,plural, =1{second}other{seconds}}</translation>
 <translation id="4161663686871496107">ChromeVox spoken feedback is ready</translation>
 <translation id="4176463684765177261">Disabled</translation>
 <translation id="4187322598335821254">Swipe up or down to move by line</translation>
@@ -518,7 +497,6 @@
 <translation id="4204864733111726379">Floral White</translation>
 <translation id="42164919740161077">Cadet Blue</translation>
 <translation id="4217571870635786043">Dictation</translation>
-<translation id="4218529045364428769">{COUNT,plural, =1{dash}other{# dashes}}</translation>
 <translation id="4220024144662591089">select from <ph name="START_PHRASE" /> to <ph name="END_PHRASE" /></translation>
 <translation id="4221012616705981690">No previous list</translation>
 <translation id="4225355998815256469">Form controls</translation>
@@ -540,7 +518,6 @@
 <translation id="4300318234632215983">Announce the URL behind a link</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Sienna</translation>
-<translation id="4342180618051828363">{COUNT,plural, =1{dot}=3{ellipsis}other{# dots}}</translation>
 <translation id="4352022650330571548">type <ph name="PHRASE" /></translation>
 <translation id="4360738659108163902">Right-click the mouse</translation>
 <translation id="4372435075475052704">min:<ph name="X" /></translation>
@@ -569,7 +546,6 @@
 <translation id="4511186779140817916">Blanched Almond</translation>
 <translation id="451510441928265982">No previous level 2 heading</translation>
 <translation id="4517854969512651305">Increase value</translation>
-<translation id="4532633738839459153">{COUNT,plural, =1{slash}other{# slashes}}</translation>
 <translation id="4537277403911487429">Next similar item</translation>
 <translation id="4547556996012970016">Next level 5 heading</translation>
 <translation id="4562381607973973258">Header</translation>
@@ -678,7 +654,6 @@
 <translation id="5310788376443009632">removed:</translation>
 <translation id="5316825363044614340">move to the next line</translation>
 <translation id="5320727453979144100">Sticky mode enabled</translation>
-<translation id="5321085947096604457">{COUNT,plural, =1{comma}other{# commas}}</translation>
 <translation id="532485153932049746">Text formatting
     <ph name="FONT_SIZE_STRING" />
     <ph name="COLOR_STRING" />
@@ -697,10 +672,8 @@
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402791055281059602">A modal alert</translation>
 <translation id="5406272775687194041">Start drag and drop</translation>
-<translation id="5407530583102765689">{COUNT,plural, =1{semicolon}other{# semicolons}}</translation>
 <translation id="5420259671171615858">Search the menus</translation>
 <translation id="5435274640623994081">Enable earcon logging</translation>
-<translation id="5436105723448703439">{COUNT,plural, =1{less than}other{# less than signs}}</translation>
 <translation id="5444587279251314700">(active)</translation>
 <translation id="5451268436205074266">dots <ph name="DOT" /></translation>
 <translation id="5452267669091857717">No next level 1 heading</translation>
@@ -726,7 +699,6 @@
 <translation id="5597170376237141345">Next tick box</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, radio button unselected</translation>
 <translation id="5601172225407283979">Perform default action</translation>
-<translation id="5604302400025591178">{COUNT,plural, =1{square bullet}other{# square bullets}}</translation>
 <translation id="5608798115546226984">Auto-completion inline</translation>
 <translation id="5616029807486814372">Next lesson</translation>
 <translation id="561939826962581046">time</translation>
@@ -786,21 +758,18 @@
 <translation id="5921587111466148855">Chapter</translation>
 <translation id="5923780477617566089">Current date</translation>
 <translation id="5926889058434275234">For a full list of gestures, visit the Help Centre.</translation>
-<translation id="5937336320314038555">{COUNT,plural, =1{equal}other{# equal signs}}</translation>
 <translation id="5947651424015173580">Double-click the mouse</translation>
 <translation id="5948123859135882163">Toggle interpretation of math expressions between structural and semantic</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5956928062748260866">Dialogue</translation>
 <translation id="5963413905009737549">Section</translation>
 <translation id="5968607524793740041">Show context menu</translation>
-<translation id="597121107011153418">{COUNT,plural, =1{with # item}other{with # items}}</translation>
 <translation id="5981446804259161541">Light Cyan</translation>
 <translation id="5983179082906765664">Increase navigation granularity</translation>
 <translation id="5988563937187882754">Look right</translation>
 <translation id="5992285135956208197">Graphics document</translation>
 <translation id="5999630716831179808">Voices</translation>
 <translation id="6006050241733874051">Form</translation>
-<translation id="6006064078185310784">{COUNT,plural, =1{backslash}other{# backslashes}}</translation>
 <translation id="6010616110396250088">Descending sort</translation>
 <translation id="6017514345406065928">Green</translation>
 <translation id="602001110135236999">Scroll left</translation>
@@ -840,7 +809,6 @@
 <translation id="6325241889020214828">copy <ph name="TEXT" />.</translation>
 <translation id="6348657800373377022">Combo box</translation>
 <translation id="6348869651006731065">Dim Grey</translation>
-<translation id="6350358010104919766">{COUNT,plural, =1{bullet}other{# bullets}}</translation>
 <translation id="6357433033180746873">No cell right</translation>
 <translation id="6364795331201459219">h6</translation>
 <translation id="6368143427468974988">Previous heading</translation>
@@ -852,7 +820,6 @@
 <translation id="6406989068857078334">Mouse speed reduced, <ph name="GESTURE" /> again to click</translation>
 <translation id="6411569524720229058">Autumn</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
-<translation id="641759969622533235">{COUNT,plural, =1{colon}other{# colons}}</translation>
 <translation id="6444046323172968959">Alert dialogue</translation>
 <translation id="6452403590345320472">Table of contents</translation>
 <translation id="6468049171101508116">Next button</translation>
@@ -881,7 +848,6 @@
 <translation id="669617842401078250">Download paused <ph name="FILE_NAME" /></translation>
 <translation id="6696967141280706829">Preface</translation>
 <translation id="6697092096875747123">Previous combo box</translation>
-<translation id="6702609185760332517">{COUNT,plural, =1{exclamation}other{# exclamations}}</translation>
 <translation id="670717715607710284">Screen off</translation>
 <translation id="6714813999819678458">Previous level 2 heading</translation>
 <translation id="6730312624811567147">Use search left or right for home or end, search control left or right for control home or end, search up or down for page up or down</translation>
@@ -978,7 +944,6 @@
 <translation id="7344012264516629579">Additional jump commands include jumping by link, button and tick box, to name a few. A full list of jump commands can be found in the ChromeVox menus, which can be opened by pressing Search + full-stop.</translation>
 <translation id="7356165926712028380">Switch to 8 dot braille</translation>
 <translation id="7356610683936413584">Description list detail</translation>
-<translation id="7370432716629432284">{COUNT,plural, =1{ampersand}other{# ampersands}}</translation>
 <translation id="737396357417333429">clk</translation>
 <translation id="738899727977260036">Slate Blue</translation>
 <translation id="7393979322571982935">Sounds and settings</translation>
@@ -1017,7 +982,6 @@
 <translation id="7637342083105831460">Press Search + right arrow to find the practice area or the Next lesson button. Then press Search + Space to activate.</translation>
 <translation id="7639968568612851608">Dark grey</translation>
 <translation id="7663318257180412551">Heading 2</translation>
-<translation id="7668307052366682650">{COUNT,plural, =1{hour}other{hours}}</translation>
 <translation id="7674576868851035240">Next link</translation>
 <translation id="7674768236845044097">mark</translation>
 <translation id="7676847077928500578">Reset text to speech settings</translation>
@@ -1053,7 +1017,6 @@
 <translation id="7927711904086083099">Not selected</translation>
 <translation id="7935627501098484003">Time control</translation>
 <translation id="7939428177581522200">added to selection</translation>
-<translation id="794091007957014205">{COUNT,plural, =1{at}other{# at signs}}</translation>
 <translation id="7942349550061667556">Red</translation>
 <translation id="7948364528129376623">No next visited link</translation>
 <translation id="7952460583030260752">Command references</translation>
@@ -1064,7 +1027,6 @@
 <translation id="8004507136466386272">Words</translation>
 <translation id="8004512796067398576">Increment</translation>
 <translation id="8007540374018858731">h3</translation>
-<translation id="8009786657110126785">{COUNT,plural, =1{quote}other{# quotes}}</translation>
 <translation id="8017588669690167134">Speech off</translation>
 <translation id="801990297710781303">Footnote</translation>
 <translation id="8028833145828956995">You can use ChromeVox with the touchscreen</translation>
@@ -1093,7 +1055,6 @@
 <translation id="8158033275290782295">select all</translation>
 <translation id="816818801578874684">This is the first heading. Press Search + H to go to the next heading.</translation>
 <translation id="8173092779156526980">Swipe four fingers left</translation>
-<translation id="817440585505441544">{COUNT,plural, =1{underscore}other{# underscores}}</translation>
 <translation id="817529114347680055">Screen on</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">row</translation>
@@ -1118,7 +1079,6 @@
 <translation id="8313653172105209786">dir</translation>
 <translation id="8316881042119029234">Old Lace</translation>
 <translation id="8326783648485765113">Lawn green</translation>
-<translation id="8345569862449483843">{COUNT,plural, =1{pound}other{# pound signs}}</translation>
 <translation id="8351821207686449674">Toggle captions</translation>
 <translation id="8378855320830505539">Region</translation>
 <translation id="8382679411218029383">Auto-completion inline and list</translation>
@@ -1161,10 +1121,8 @@
 <translation id="8659501358298941449">Drop-down lists</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> end</translation>
 <translation id="867187640362843212">Heading 5</translation>
-<translation id="8690400660839620419">{COUNT,plural, =1{}other{nested level #}}</translation>
 <translation id="8693391540059827073">My favourite season</translation>
 <translation id="8696284982970258155">Honeydew</translation>
-<translation id="8697111817566059991">{COUNT,plural, =1{pipe}other{# vertical pipes}}</translation>
 <translation id="8741370088760768424">Hint: Press Search + Space to activate the current item.</translation>
 <translation id="8743786158317878347">enter structured content, such as tables</translation>
 <translation id="8746846427395705317">move to the previous word</translation>
@@ -1214,7 +1172,6 @@
 <translation id="9099429023611373837">cut</translation>
 <translation id="9108370397979208512">math</translation>
 <translation id="9108589040018540527">scbr</translation>
-<translation id="911476240645808512">{COUNT,plural, =1{percent}other{# percent signs}}</translation>
 <translation id="9128414153595658330">dlg</translation>
 <translation id="9133928141873682933">Khaki</translation>
 <translation id="9149560530563164529">sctn</translation>

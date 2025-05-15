@@ -3179,6 +3179,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3188465121994729530">Moving Average</translation>
 <translation id="3189187154924005138">Large cursor</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{1 password and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}other{{PASSWORD_COUNT} passwords and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}}</translation>
+<translation id="319044078641740013">To easily get back to sites that you've visited, sync your history and tabs to <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3190558889382726167">Password saved</translation>
 <translation id="3192586965067888278">Describe the issue in detail. Feedback will be sent to Google for human review and may be used for improving or developing Google products and services.</translation>
 <translation id="3192947282887913208">Audio Files</translation>
@@ -5709,7 +5710,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Cast screen</translation>
 <translation id="496185450405387901">This app has been installed by your administrator.</translation>
-<translation id="4963079328730030450">Your organisation controls how data collected by these features may be used.</translation>
 <translation id="4963603093937263654">Make sure that notifications are turned on on your <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Remove current tab</translation>
 <translation id="4964455510556214366">Arrangement</translation>
@@ -10359,6 +10359,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8280848878018088610">Crashing waves in the sea, with a fantastical city and castle in the background, in a dark mood.</translation>
 <translation id="828180235270931531">Other available printers</translation>
 <translation id="8281886186245836920">Skip</translation>
+<translation id="8283802069507225582">To pick up where you left off on other devices, sync your history and tabs to <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">all <ph name="WEBSITE_1" /> sites</translation>
 <translation id="8284326494547611709">Captions</translation>
 <translation id="8286036467436129157">Sign In</translation>
@@ -11037,6 +11038,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8754200782896249056">&lt;p&gt;When running <ph name="PRODUCT_NAME" /> under a supported desktop environment, the system proxy settings will be used. However, either your system is not supported or there was a problem launching your system configuration.&lt;/p&gt;
 
           &lt;p&gt;But you can still configure via the command line. Please see &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; for more information on flags and environment variables.&lt;/p&gt;</translation>
+<translation id="8754810799862630650">To see open tabs from your other computers and phones, sync your history and tabs to <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">Perform security-related tasks for your organisation, such as managing certificates and keys stored on the device</translation>
 <translation id="875532100880844232">For <ph name="DEVICE_NAME" />, choose an action for each key</translation>
 <translation id="8755376271068075440">&amp;Larger</translation>

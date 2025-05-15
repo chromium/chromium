@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Purificateurs d'eau et filtres</translation>
 <translation id="1036348656032585052">Désactiver</translation>
 <translation id="1036881361735705143">Enveloppe C4</translation>
-<translation id="1038106730571050514">Afficher les suggestions</translation>
 <translation id="1038842779957582377">nom inconnu</translation>
 <translation id="1041998700806130099">Message de la feuille de travail</translation>
 <translation id="1044897699341250361">Qu'est-ce que cela signifie?</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">Jeux</translation>
 <translation id="2674170444375937751">Voulez-vous vraiment supprimer ces pages de votre historique?</translation>
 <translation id="2674524144218093528">Peinture et produits de finition pour la maison</translation>
-<translation id="2674804415323431591">Masquer les suggestions</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> groupes d'onglets ne sont plus accessibles</translation>
 <translation id="2677748264148917807">Quitter</translation>
 <translation id="2683195745483370038">Autres résultats trouvés</translation>
@@ -2633,7 +2631,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="55293785478302737">Agrafage par le bord</translation>
 <translation id="553377674408670169">Emplois dans le domaine de l'éducation</translation>
 <translation id="5534785731327961487">Bonne affaire</translation>
-<translation id="5536214594743852365">Afficher la section « <ph name="SECTION" /> »</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 site (et plus sur les appareils synchronisés)}one{+ # site (et plus sur les appareils synchronisés)}other{+ # sites (et plus sur les appareils synchronisés)}}</translation>
 <translation id="553782666181800029">Enveloppe Chou nᵒ 2</translation>
 <translation id="5538270463355278784">plein écran automatique</translation>
@@ -3657,7 +3654,6 @@ Détails supplémentaires :
 <translation id="7316521168101843192">Enregistrement du fichier sur Microsoft OneDrive en cours…</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Aide pour la connexion</translation>
-<translation id="7323804146520582233">Masquer la section « <ph name="SECTION" /> »</translation>
 <translation id="733354035281974745">Ignorer le compte local de l'appareil</translation>
 <translation id="7334320624316649418">&amp;Rétablir la réorganisation</translation>
 <translation id="7335157162773372339">Les sites peuvent demander à utiliser votre appareil photo</translation>
@@ -3788,7 +3784,6 @@ Détails supplémentaires :
 <translation id="7517414872996418597">Enveloppe C10</translation>
 <translation id="7518003948725431193">Aucune page Web trouvée à l'adresse : <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Section « <ph name="SECTION" /> » masquée</translation>
 <translation id="752189128961566325">Vous pouvez l'utiliser dans tous les produits Google</translation>
 <translation id="7523408071729642236">Fabrication</translation>
 <translation id="7525067979554623046">Créer</translation>
@@ -4240,7 +4235,6 @@ Détails supplémentaires :
 <translation id="8297545700510100061">Les témoins et d'autres données relatives aux sites sont utilisés pour se souvenir de vous, comme pour vous connecter à votre compte ou pour personnaliser les annonces. Pour gérer les témoins pour tous les sites, voir <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Le réseau Wi-Fi que vous utilisez (<ph name="WIFI_NAME" />) peut vous demander de visiter <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Entrer le code</translation>
-<translation id="8303854710873047864">Section « <ph name="SECTION" /> » affichée</translation>
 <translation id="8304912090860925649">Nouveau tableau de comparaison</translation>
 <translation id="830498451218851433">Plier en deux</translation>
 <translation id="8308653357438598313">Diffusion en direct de vidéos</translation>

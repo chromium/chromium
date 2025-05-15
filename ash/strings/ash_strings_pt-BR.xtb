@@ -424,7 +424,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2427507373259914951">Clicar com o botão esquerdo</translation>
 <translation id="2429753432712299108">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" deseja permissão para realizar o pareamento. Antes de aceitar, verifique se esta senha aparece no dispositivo: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Mostrar senha</translation>
-<translation id="2437771564543046790">Pouca bateria. A Economia de bateria está ativada</translation>
+<translation id="2437771564543046790">Pouca bateria. A economia de bateria está ativada</translation>
 <translation id="243878895369688216">Aberto ontem</translation>
 <translation id="2440978926514840421">Gravação de GIF concluída</translation>
 <translation id="2441427462554639370">A gravação foi encerrada porque há pouco espaço de armazenamento</translation>
@@ -666,7 +666,7 @@ Caso contrário, o touchpad integrado será reativado em <ph name="TIMEOUT_SECON
 <translation id="3217205077783620295">O som está ativado. Alterná-lo desativará o som.</translation>
 <translation id="3226991577105957773">Mais <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Microfone</translation>
-<translation id="3233611303007751344">"Economia de bateria" desativada</translation>
+<translation id="3233611303007751344">Economia de bateria desativada</translation>
 <translation id="3238409143297336341">Configure os controles da família para apps</translation>
 <translation id="324366796737464147">Cancelamento de ruído</translation>
 <translation id="3249513730522716925">A janela <ph name="WINDOW_TITLE" /> foi movida do espaço de trabalho <ph name="ACTIVE_DESK" /> para o <ph name="TARGET_DESK" /></translation>
@@ -1778,7 +1778,7 @@ Nova instalação</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Câmera e microfone em uso</translation>
 <translation id="6739144137573853180">IR PARA CONFIGURAÇÕES</translation>
-<translation id="6747985245839783873">Bateria em <ph name="PERCENTAGE" /> por cento. A Economia de bateria está ativada.</translation>
+<translation id="6747985245839783873">Bateria em <ph name="PERCENTAGE" /> por cento. A economia de bateria está ativada.</translation>
 <translation id="6751052314767925245">Aplicado pelo seu administrador</translation>
 <translation id="6751826523481687655">O acompanhamento de performance está ativado</translation>
 <translation id="6752912906630585008">Espaço de trabalho <ph name="REMOVED_DESK" /> removido e integrado ao <ph name="RECEIVE_DESK" /></translation>
@@ -1895,7 +1895,7 @@ Nova instalação</translation>
 <translation id="7131634465328662194">Você será automaticamente desconectado.</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144942256906679589">Status da bateria</translation>
-<translation id="7145639536026937076">Bateria em <ph name="PERCENTAGE" />% e carregando. A Economia de bateria está ativada.</translation>
+<translation id="7145639536026937076">Bateria em <ph name="PERCENTAGE" />% e carregando. A economia de bateria está ativada.</translation>
 <translation id="7147587499155271409">Não há histórico de navegação</translation>
 <translation id="7147657298465433425">Para acessar as teclas F, pressione a tecla Fn + as teclas da linha de cima</translation>
 <translation id="7149149900052329230">Gerencie seus arquivos locais e do Google Drive no app Arquivos.</translation>

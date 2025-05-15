@@ -3176,6 +3176,7 @@
 <translation id="3188465121994729530">移動平均</translation>
 <translation id="3189187154924005138">大型游標</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{1 個密碼和其他項目只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。}other{{PASSWORD_COUNT} 個密碼和其他項目只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。}}</translation>
+<translation id="319044078641740013">如想輕鬆重溫你瀏覽過的網站，可將記錄和分頁同步至 <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3190558889382726167">密碼已儲存</translation>
 <translation id="3192586965067888278">請詳細描述問題。意見將會傳送到 Google 以作人手審查，並可能用於改善或開發 Google 產品和服務。</translation>
 <translation id="3192947282887913208">音效檔案</translation>
@@ -5702,7 +5703,6 @@
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">投放螢幕</translation>
 <translation id="496185450405387901">您的管理員已安裝此應用程式。</translation>
-<translation id="4963079328730030450">你的機構會控制如何使用這些功能收集的資料。</translation>
 <translation id="4963603093937263654">確認「<ph name="DEVICE_NAME" />」已開啟通知功能</translation>
 <translation id="4963789650715167449">移除目前的分頁</translation>
 <translation id="4964455510556214366">排列方式</translation>
@@ -10345,6 +10345,7 @@
 <translation id="8280848878018088610">巨浪翻滾，背景是奇幻的城市和城堡，色調偏暗。</translation>
 <translation id="828180235270931531">其他可用的打印機</translation>
 <translation id="8281886186245836920">略過</translation>
+<translation id="8283802069507225582">如要在其他裝置上繼續瀏覽，可將記錄和分頁同步至 <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">所有 <ph name="WEBSITE_1" /> 網站</translation>
 <translation id="8284326494547611709">字幕</translation>
 <translation id="8286036467436129157">登入</translation>
@@ -11023,6 +11024,7 @@
 <translation id="8754200782896249056">&lt;p&gt;在受支援的桌面環境下執行 <ph name="PRODUCT_NAME" /> 時，瀏覽器會使用系統的 Proxy 設定。不過，您的系統可能不受支援，或在啟動系統設定時發生問題。&lt;/p&gt;
 
         &lt;p&gt;然而，您仍然可以透過命令列設定。如需標幟及環境變數的詳細資料，請參閱 &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;。&lt;/p&gt;</translation>
+<translation id="8754810799862630650">如要查看其他電腦和手機上開啟的分頁，可將記錄和分頁同步至 <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">為您的機構進行安全性相關的工作，例如管理儲存在裝置上的憑證和金鑰</translation>
 <translation id="875532100880844232">選擇「<ph name="DEVICE_NAME" />」每個按鍵的動作</translation>
 <translation id="8755376271068075440">放大(&amp;L)</translation>

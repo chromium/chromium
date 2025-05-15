@@ -3609,6 +3609,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3514681096978190000">Este archivo incluye otros archivos que pueden ocultar software malicioso</translation>
 <translation id="3515983984924808886">Vuelve a tocar tu llave de seguridad para confirmar el restablecimiento. Se borrará toda la información almacenada en la llave de seguridad, incluido su PIN.</translation>
 <translation id="3518866566087677312">Agrega a favoritos las cosas a las que quieras volver más tarde</translation>
+<translation id="3519014757432845220">Para ayudar a mejorar la protección contra spam, comparte el contenido de la notificación y la URL del sitio con Google. Es posible que una persona revise el contenido.</translation>
 <translation id="3519382402703204668">Elige una pestaña</translation>
 <translation id="3519564332031442870">Servicio de backend de impresión</translation>
 <translation id="3519938335881974273">Guardar la página como…</translation>
@@ -5690,7 +5691,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Transmitir pantalla</translation>
 <translation id="496185450405387901">Tu administrador instaló esta app.</translation>
-<translation id="4963079328730030450">Tu organización controla cómo se pueden usar los datos recopilados por estas funciones.</translation>
 <translation id="4963603093937263654">Asegúrate de que las notificaciones estén activadas en tu <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Quitar pestaña actual</translation>
 <translation id="4964455510556214366">Disposición</translation>
@@ -6617,6 +6617,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="563371367637259496">Móvil</translation>
 <translation id="5635312199252507107">Permitir en sitios específicos</translation>
 <translation id="5636012309446422">¿Deseas quitar tu <ph name="DEVICE" /> de <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="56360247219959198"><ph name="DICTIONARY" /> se borrará de forma permanente. No se puede deshacer esta acción.</translation>
 <translation id="5636140764387862062">Más acciones para el PIN</translation>
 <translation id="5636996382092289526">Para utilizar la red <ph name="NETWORK_ID" />, es posible que primero debas <ph name="LINK_START" />ingresar a la página de acceso a la red<ph name="LINK_END" />, que se abrirá de forma automática en unos segundos. Si no se abre, no podrás utilizar la red.</translation>
 <translation id="5637476008227280525">Habilitar o inhabilitar datos móviles</translation>
@@ -7734,6 +7735,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6459799433792303855">La ventana activa se movió a otra pantalla.</translation>
 <translation id="6460601847208524483">Buscar siguiente</translation>
 <translation id="6461170143930046705">Buscando redes…</translation>
+<translation id="6463488491707167747">Borra este diccionario</translation>
 <translation id="6463596731306859179">¿Aparecen ventanas emergentes no deseadas o notas algún otro comportamiento inesperado? A veces, las apps y extensiones que instalas pueden cambiar la configuración de ChromeOS sin que te des cuenta.</translation>
 <translation id="6463668944631062248">Acepta la solicitud de transmisión en tu <ph name="DEVICE_NAME" /></translation>
 <translation id="6463795194797719782">&amp;Edición</translation>

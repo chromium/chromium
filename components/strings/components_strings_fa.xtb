@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">فیلتر آب و تصفیه‌کننده</translation>
 <translation id="1036348656032585052">خاموش کردن</translation>
 <translation id="1036881361735705143">پاکت سی۴</translation>
-<translation id="1038106730571050514">نمایش پیشنهادها</translation>
 <translation id="1038842779957582377">نام ناشناس</translation>
 <translation id="1041998700806130099">پیام برگ کار</translation>
 <translation id="1044897699341250361">معنی این چیست</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">بازی‌ها</translation>
 <translation id="2674170444375937751">آیا مطمئن هستید می‌خواهید این صفحات را از سابقه خود حذف کنید؟</translation>
 <translation id="2674524144218093528">نقاشی خانه و نازک‌کاری</translation>
-<translation id="2674804415323431591">پنهان کردن پیشنهادها</translation>
 <translation id="26774279487328902">‫<ph name="GROUP_COUNT" /> گروه برگه دیگر دردسترس نیست</translation>
 <translation id="2677748264148917807">خروج</translation>
 <translation id="2683195745483370038">نتایج دیگری پیدا شد</translation>
@@ -2633,7 +2631,6 @@
 <translation id="55293785478302737">دوختن لبه</translation>
 <translation id="553377674408670169">مشاغل آموزشی</translation>
 <translation id="5534785731327961487">معامله خوب</translation>
-<translation id="5536214594743852365">نمایش بخش «<ph name="SECTION" />»</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{‫+ ۱ سایت (موارد بیشتر در دستگاه‌های همگام‌سازی‌شده)}one{‫+ # سایت (موارد بیشتر در دستگاه‌های همگام‌سازی‌شده)}other{‫+ # سایت (موارد بیشتر در دستگاه‌های همگام‌سازی‌شده)}}</translation>
 <translation id="553782666181800029">پاکت چو ۲</translation>
 <translation id="5538270463355278784">تمام‌صفحه خودکار</translation>
@@ -3658,7 +3655,6 @@
 <translation id="7316521168101843192">‏درحال ذخیره کردن فایل در Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">راهنمای اتصال</translation>
-<translation id="7323804146520582233">پنهان کردن بخش «<ph name="SECTION" />»</translation>
 <translation id="733354035281974745">لغو حساب محلی دستگاه</translation>
 <translation id="7334320624316649418">&amp;بازانجام تغییر ترتیب</translation>
 <translation id="7335157162773372339">می‌تواند برای استفاده از دوربین درخواست دهد</translation>
@@ -3789,7 +3785,6 @@
 <translation id="7517414872996418597">پاکت سی۱۰</translation>
 <translation id="7518003948725431193">صفحه وبی با این آدرس وب یافت نشد: <ph name="URL" /></translation>
 <translation id="7521387064766892559">جاوا اسکریپت</translation>
-<translation id="7521825010239864438">بخش «<ph name="SECTION" />» پنهان شد</translation>
 <translation id="752189128961566325">‏می‌توانید از آن در محصولات Google استفاده کنید</translation>
 <translation id="7523408071729642236">تولید</translation>
 <translation id="7525067979554623046">ایجاد</translation>
@@ -3866,6 +3861,7 @@
 <translation id="7639968568612851608">خاکستری تیره</translation>
 <translation id="7646681339175747202">‏گذرواژه‌ای که اکنون استفاده کردید در سرقت اطلاعات شبکه لو رفته است. «مدیر گذرواژه Google» توصیه می‌کند گذرواژه‌تان را همین‌حالا تغییر دهید.</translation>
 <translation id="7647206758853451655">کیفیت چاپ</translation>
+<translation id="7648527891719919697">‏این سایت مسدود خواهد ماند زیرا «محافظت پیشرفته» را در <ph name="BEGIN_ANDROID_SETTINGS_LINK" />تنظیمات Android<ph name="END_ANDROID_SETTINGS_LINK" /> روشن کرده‌اید. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">ذخیره کردن فایل در این دستگاه</translation>
 <translation id="7653957176542370971">برگ کنترل‌کننده پرداخت بسته است</translation>
 <translation id="7654909834015434372">وقتی یادداشت‌ها را ویرایش می‌کنید، این سند به وضعیت چرخش اصلی برمی‌گردد</translation>
@@ -4241,7 +4237,6 @@
 <translation id="8297545700510100061">از کوکی‌ها و دیگر داده‌های سایت برای به‌خاطر سپردن شما استفاده می‌شود؛ به‌عنوان مثال برای وارد کردن شما به سیستم یا شخصی کردن آگهی‌ها. برای مدیریت کوکی‌های همه سایت‌ها، به <ph name="SETTINGS" /> بروید.</translation>
 <translation id="8298115750975731693">‏شبکه Wi-Fi (<ph name="WIFI_NAME" />) مورد استفاده‌تان احتمالاً نیاز دارد که به صفحه <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> بروید.</translation>
 <translation id="8301894345671534559">کد را وارد کنید</translation>
-<translation id="8303854710873047864">بخش «<ph name="SECTION" />» نمایش داده شد</translation>
 <translation id="8304912090860925649">جدول مقایسه جدید</translation>
 <translation id="830498451218851433">تاخوردگی از وسط</translation>
 <translation id="8308653357438598313">جاری‌سازی ویدیویی زنده</translation>

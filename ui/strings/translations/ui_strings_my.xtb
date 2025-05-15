@@ -162,6 +162,7 @@
 <translation id="6264365405983206840">အားလုံး  &amp;ရွေးရန်</translation>
 <translation id="6346952829206698721">ကလစ်ဘုတ်မှ ကူးထည့်ရန်</translation>
 <translation id="6364916375976753737">ဘယ်သို့ လှိမ့်ရန်</translation>
+<translation id="63712816010840859">လက်ရှိဖန်သားပြင်သည် တို့ထိမျက်နှာပြင် မဟုတ်ပါက Esc ကို နှိပ်ပါ။</translation>
 <translation id="6394627529324717982">ကော်မာ</translation>
 <translation id="6397363302884558537">စကားပြောဆိုမှု ရပ်ရန်</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{၁ စက္ကန့်အကြာက}other{# စက္ကန့်အကြာက}}</translation>
@@ -173,6 +174,7 @@
 <translation id="6612467943526193239">တိုင်းတာချိန်ညှိမှုမှ ထွက်ရန် Esc ကို နှိပ်ပါ။</translation>
 <translation id="6620110761915583480">ဖိုင် သိမ်းရန်</translation>
 <translation id="6699343763173986273">နောက်ထပ်သီချင်းပုဒ် မီဒီယာ</translation>
+<translation id="6738856801552481343">ဤဖန်သားပြင်သည် တို့ထိမျက်နှာပြင် မဟုတ်ပါက Esc ကို နှိပ်ပါ။</translation>
 <translation id="6807086321996342431">ကော်လံ <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">Media Stop</translation>
 <translation id="6845383723252244143">ဖိုင်တွဲ ရွေးရန်</translation>

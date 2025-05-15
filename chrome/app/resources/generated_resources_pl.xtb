@@ -3150,6 +3150,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3188465121994729530">Średnia krocząca</translation>
 <translation id="3189187154924005138">Duży kursor</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{1 hasło i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}few{{PASSWORD_COUNT} hasła i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}many{{PASSWORD_COUNT} haseł i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}other{{PASSWORD_COUNT} hasła i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}}</translation>
+<translation id="319044078641740013">Aby łatwo wracać do odwiedzonych stron, zsynchronizuj historię i karty z kontem <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3190558889382726167">Hasło zostało zapisane</translation>
 <translation id="3192586965067888278">Opisz szczegółowo problem. Opinia zostanie przesłana do Google do sprawdzenia przez weryfikatora i może zostać użyta do ulepszania lub rozwijania produktów i usług Google.</translation>
 <translation id="3192947282887913208">Pliki dźwiękowe</translation>
@@ -5677,7 +5678,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Przesyłanie ekranu</translation>
 <translation id="496185450405387901">Tę aplikację zainstalował administrator.</translation>
-<translation id="4963079328730030450">Twoja organizacja określa, jak mogą być używane dane zbierane przez te funkcje.</translation>
 <translation id="4963603093937263654">Upewnij się, że na urządzeniu <ph name="DEVICE_NAME" /> są włączone powiadomienia</translation>
 <translation id="4963789650715167449">Usuń bieżącą kartę</translation>
 <translation id="4964455510556214366">Układ</translation>
@@ -10326,6 +10326,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8280848878018088610">Rozbijające się fale na morzu, a w tle fantastyczne miasto i zamek w ciemnej scenerii.</translation>
 <translation id="828180235270931531">Inne dostępne drukarki</translation>
 <translation id="8281886186245836920">Pomiń</translation>
+<translation id="8283802069507225582">Aby móc wracać do tego samego miejsca na innych urządzeniach, zsynchronizuj historię i karty z kontem <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">wszystkie strony <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Napisy</translation>
 <translation id="8286036467436129157">Zaloguj się</translation>
@@ -11000,6 +11001,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8754200782896249056">&lt;p&gt;Po uruchomieniu programu <ph name="PRODUCT_NAME" /> w obsługiwanym środowisku pulpitu są używane systemowe ustawienia serwera proxy. Jednak ten system nie jest obsługiwany lub wystąpił problem z zastosowaniem konfiguracji systemu.&lt;/p&gt;
 
           &lt;p&gt;Serwer proxy można jeszcze skonfigurować za pomocą wiersza poleceń. Więcej informacji na temat flag i zmiennych środowiskowych zawiera instrukcja &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;.&lt;/p&gt;</translation>
+<translation id="8754810799862630650">Aby móc widzieć otwarte karty z innych komputerów i telefonów, zsynchronizuj historię i karty z kontem <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">Wykonywanie na użytek Twojej organizacji zadań związanych z bezpieczeństwem, takich jak zarządzanie certyfikatami i kluczami zapisanymi na urządzeniu</translation>
 <translation id="875532100880844232">Wybierz działanie każdego klawisza urządzenia <ph name="DEVICE_NAME" /></translation>
 <translation id="8755376271068075440">&amp;Większy</translation>

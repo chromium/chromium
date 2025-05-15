@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Filtry i oczyszczacze wody</translation>
 <translation id="1036348656032585052">Wyłącz</translation>
 <translation id="1036881361735705143">Koperta C4</translation>
-<translation id="1038106730571050514">Pokaż sugestie</translation>
 <translation id="1038842779957582377">nieznana nazwa</translation>
 <translation id="1041998700806130099">Komunikat dotyczący arkusza zadań</translation>
 <translation id="1044897699341250361">Co to oznacza</translation>
@@ -978,7 +977,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2673968385134502798">Gry</translation>
 <translation id="2674170444375937751">Czy na pewno chcesz usunąć te strony z historii?</translation>
 <translation id="2674524144218093528">Malowanie i wykończenie domu</translation>
-<translation id="2674804415323431591">Ukryj sugestie</translation>
 <translation id="26774279487328902">Grupy kart (<ph name="GROUP_COUNT" />) nie są już dostępne</translation>
 <translation id="2677748264148917807">Wyjdź</translation>
 <translation id="2683195745483370038">Znaleziono inne wyniki</translation>
@@ -2633,7 +2631,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="55293785478302737">Zszywanie wzdłuż krawędzi</translation>
 <translation id="553377674408670169">Praca w sektorze edukacyjnym</translation>
 <translation id="5534785731327961487">Dobra okazja teraz</translation>
-<translation id="5536214594743852365">Pokaż sekcję „<ph name="SECTION" />”</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{i 1 witryna (więcej na zsynchronizowanych urządzeniach)}few{i # witryny (więcej na zsynchronizowanych urządzeniach)}many{i # witryn (więcej na zsynchronizowanych urządzeniach)}other{i # witryny (więcej na zsynchronizowanych urządzeniach)}}</translation>
 <translation id="553782666181800029">Koperta Chou 2</translation>
 <translation id="5538270463355278784">automatyczny pełny ekran</translation>
@@ -3658,7 +3655,6 @@ Dodatkowe informacje:
 <translation id="7316521168101843192">Zapisuję plik w Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Pomoc dotycząca połączeń</translation>
-<translation id="7323804146520582233">Ukryj sekcję „<ph name="SECTION" />”</translation>
 <translation id="733354035281974745">Zastąpienie przez konto lokalne na urządzeniu</translation>
 <translation id="7334320624316649418">&amp;Ponów zmianę kolejności</translation>
 <translation id="7335157162773372339">Może prosić o dostęp do kamery</translation>
@@ -3789,7 +3785,6 @@ Dodatkowe informacje:
 <translation id="7517414872996418597">Koperta C10</translation>
 <translation id="7518003948725431193">Nie znaleziono strony internetowej pod adresem <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Sekcja „<ph name="SECTION" />” została ukryta</translation>
 <translation id="752189128961566325">Możesz go używać w różnych usługach Google</translation>
 <translation id="7523408071729642236">Produkcja</translation>
 <translation id="7525067979554623046">Utwórz</translation>
@@ -4242,7 +4237,6 @@ Dodatkowe informacje:
 <translation id="8297545700510100061">Dzięki plikom cookie oraz innym danym witryn możemy Cię zapamiętać i na przykład ułatwić Ci logowanie lub personalizować reklamy. Aby zarządzać plikami cookie we wszystkich witrynach, sprawdź <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Sieć Wi-Fi (<ph name="WIFI_NAME" />), której używasz, może wymagać otwarcia strony <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Wpisz kod</translation>
-<translation id="8303854710873047864">Wyświetlam sekcję „<ph name="SECTION" />”</translation>
 <translation id="8304912090860925649">Nowa tabela porównawcza</translation>
 <translation id="830498451218851433">Składanie w połowie</translation>
 <translation id="8308653357438598313">Transmisje na żywo</translation>

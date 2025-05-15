@@ -183,6 +183,7 @@
 <translation id="1807709131360304325">একটি নতুন উইন্ডো খুলুন</translation>
 <translation id="1810845389119482123">প্রারম্ভিক সিঙ্ক সেট-আপ করা সম্পূর্ণ হয়নি</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" />-এ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ব্যবহার করা চালিয়ে যাওয়া যাচ্ছে না</translation>
+<translation id="1820408774134375111">স্ক্রিনের নিচে অ্যাটাচ করা শিটে সাইন-ইন করুন</translation>
 <translation id="1825772852827001597">Google Pay থেকে পাওয়া পেমেন্ট পদ্ধতি ও ঠিকানা এনক্রিপ্ট করা হবে না। Chrome-এর ব্রাউজিং ইতিহাস সিঙ্ক হবে না।
 এমন কোনও ব্যক্তি যার কাছে আপনার পাসফ্রেজ রয়েছে, শুধুমাত্র তিনিই আপনার এনক্রিপটেড ডেটা পড়তে পারবেন। পাসফ্রেজ, Google-এ পাঠানো বা তার মাধ্যমে সেভ করা হয় না। আপনি নিজের পাসফ্রেজ ভুলে গেলে অথবা এই সেটিং পরিবর্তন করতে চাইলে, <ph name="BEGIN_LINK" />আপনার অ্যাকাউন্টে থাকা Chrome ডেটা মুছে দিন<ph name="END_LINK" />।</translation>
 <translation id="1829244130665387512">পৃষ্ঠাতে খুঁজুন</translation>
@@ -191,6 +192,7 @@
 <translation id="1871098866036088250">Chrome ব্রাউজারে খুলুন</translation>
 <translation id="1877026089748256423">Chrome পুরানো হয়ে গেছে</translation>
 <translation id="1877073879466606884">আপনি ম্যানেজ করা প্রোফাইলে সাইন-ইন করেছেন। আপনার অ্যাডমিনিস্ট্রেটর রিমোট লোকেশন থেকে আপনার প্রোফাইল সেটিংসে পরিবর্তন, রিপোর্টিংয়ের সাহায্যে ব্রাউজার সম্পর্কিত তথ্য বিশ্লেষণ এবং অন্যান্য প্রয়োজনীয় কাজ করতে পারবে।</translation>
+<translation id="1879904908408734349">সাইন-ইন করার জন্য স্ক্রিনের নিচে অ্যাটাচ করা শিট বন্ধ করা হয়েছে</translation>
 <translation id="1883903952484604915">আমার ফাইল</translation>
 <translation id="189358972401248634">অন্যান্য ভাষা</translation>
 <translation id="1899175549411605574">প্রাইস ইনসাইট স্ক্রিনের নিচে অ্যাটাচ করা শিট</translation>
@@ -330,6 +332,7 @@
 <translation id="2527779675047087889">ক্লিপবোর্ডের কন্টেন্ট লুকান</translation>
 <translation id="2532336938189706096">ওয়েব দর্শন</translation>
 <translation id="253498598929009420">সাইটটি আপনার স্ক্রিনের কন্টেন্ট দেখতে পারবে</translation>
+<translation id="2535807170289627159">সব ট্য়াব</translation>
 <translation id="2536728043171574184">এই পৃষ্ঠার একটি অফলাইন কপি দেখছেন</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, ট্যাব</translation>
 <translation id="2546283357679194313">কুকিজ ও সাইট ডেটা</translation>
@@ -432,6 +435,7 @@
 <translation id="2979639724566107830">নতুন উইন্ডোতে খুলুন</translation>
 <translation id="2981364137500752533">আপনি ৫টির বেশি উইন্ডো খুলতে পারবেন না।</translation>
 <translation id="2983102365694924129">সাইটে আপনার অ্যাক্টিভিটির উপর ভিত্তি করে। এই সেটিংটি বন্ধ করা আছে।</translation>
+<translation id="2983398917942897288">চালু নেই (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Google searches-এ কোনও কিছু সার্চ করার সময় সার্চের সাথে মেলে এমন টেক্সট অন্তর্ভুক্ত করুন</translation>
 <translation id="2988638966064514052">আপনার পাসওয়ার্ড শক্তিশালী করুন</translation>
 <translation id="2989523299700148168">সাম্প্রতিক দেখা হয়েছে</translation>
@@ -464,6 +468,7 @@
 <translation id="314939179385989105">Chrome-এর হোমপেজ</translation>
 <translation id="3158667104057012316">ম্যানুয়াল অর্ডার অনুযায়ী সাজানো হচ্ছে</translation>
 <translation id="3159335509547415276">ব্লক করা অ্যাকাউন্ট সম্পর্কে জানুন</translation>
+<translation id="3161699713309727585"><ph name="BUTTON_TEXT" /> নতুন ট্যাবে খোলে</translation>
 <translation id="3166827708714933426">ট্যাব এবং উইন্ডোর শর্টকাটগুলি</translation>
 <translation id="316694332262407393">এখানে আগে থেকেই Chrome চলছে।</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" />-এর জন্য আপনি মোবাইল সাইটের অনুরোধ করতে পারেন</translation>
@@ -539,6 +544,7 @@
 <translation id="3516053221628030540">Google Play অ্যাপে যান</translation>
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{আপনি সম্প্রতি দেখেননি এমন একটি সাইট থেকে বিজ্ঞপ্তির অনুমতি সরিয়ে দেওয়া হয়েছে}one{আপনি সম্প্রতি দেখেননি এমন #টি সাইট থেকে বিজ্ঞপ্তির অনুমতি সরিয়ে দেওয়া হয়েছে}other{আপনি সম্প্রতি দেখেননি এমন #টি সাইট থেকে বিজ্ঞপ্তির অনুমতি সরিয়ে দেওয়া হয়েছে}}</translation>
 <translation id="3518985090088779359">স্বীকার করুন ও অবিরত রাখুন</translation>
+<translation id="3519014757432845220">Google-এর সাথে বিজ্ঞপ্তির কন্টেন্ট ও সাইটের URL শেয়ার করার মাধ্যমে স্প্যাম সংক্রান্ত সুরক্ষা উন্নত করতে সাহায্য করুন। কোনও ব্যক্তি কন্টেন্ট পর্যালোচনা করতে পারেন।</translation>
 <translation id="351952459507671940">নতুন গ্রুপে যোগ করুন</translation>
 <translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-এর মাধ্যমে চালিয়ে যাওয়া যাচ্ছে না</translation>
 <translation id="3522247891732774234">আপডেট উপলব্ধ। আরও বিকল্প</translation>
@@ -787,6 +793,7 @@
 <translation id="469286762610133730">আরও ভালো কন্টেন্ট পান</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> আরও অনেক}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> আরও অনেক}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> আরও অনেক}}</translation>
 <translation id="4698061626562952596">এখানে আপনার ইনঅ্যাক্টিভ ট্যাবের পর্যালোচনা করুন</translation>
+<translation id="4698757800236023795">চালু আছে (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">ক্যাশে করা ছবি এবং ফাইলগুলি</translation>
 <translation id="4710167854527459075">নতুন অনুযায়ী সাজান</translation>
 <translation id="4718044610319080485">AI অ্যাসিস্ট্যান্টকে চালু করে</translation>
@@ -854,6 +861,7 @@
 <translation id="4943703118917034429">ভার্চুয়াল রিয়ালিটি</translation>
 <translation id="4943872375798546930">কোন ফলাফল নেই</translation>
 <translation id="4957722034734105353">আরও জানুন...</translation>
+<translation id="4959115606310463263">সাইন-ইন করার জন্য স্ক্রিনের নিচে অ্যাটাচ করা শিট অর্ধেক স্ক্রিন জুড়ে খুলেছে</translation>
 <translation id="4961107849584082341">এই পৃষ্ঠাটি যেকোনও ভাষায় অনুবাদ করুন</translation>
 <translation id="4964614743143953889">নিরাপদ নয় এমন সাইট ও ডাউনলোড সম্পর্কে Chrome আপনাকে সতর্ক করে দেয়</translation>
 <translation id="496607651705915226">আপনার Google অ্যাকাউন্টে নতুন পাসওয়ার্ড সেভ ও ব্যবহার করতে, Google Play পরিষেবা আপডেট করুন</translation>
@@ -1146,6 +1154,7 @@
 <translation id="6277522088822131679">পৃষ্ঠাটি প্রিন্ট করার সময় একটি সমস্যা হয়েছিল৷ দয়া করে আবার চেষ্টা করুন৷</translation>
 <translation id="6278428485366576908">থীম</translation>
 <translation id="6284472661216707937">পাসওয়ার্ড আপনার সব ডিভাইসে বন্ধ আছে</translation>
+<translation id="6291294824436685757">ব্রাউজ করা ডেটা মুছে দিন, মুছে ফেলার জন্য ডেটা বেছে নিন</translation>
 <translation id="6295158916970320988">সমস্ত সাইট</translation>
 <translation id="6296366034485697675">এক্সপোর্ট করুন ও মুছে দিন</translation>
 <translation id="629730747756840877">অ্যাকাউন্ট</translation>
@@ -1613,6 +1622,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923"><ph name="FILES" />টি ফাইল বাকি</translation>
 <translation id="8190358571722158785">১ দিন বাকি আছে</translation>
+<translation id="8192765420340770300">সাইন-ইন করার জন্য স্ক্রিনের নিচে অ্যাটাচ করা শিট সম্পূর্ণ স্ক্রিন জুড়ে খুলেছে</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />আপনার ডিভাইস<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="820568752112382238">সবচেয়ে বেশিবার দেখা সাইট</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" /> এবং অন্য <ph name="NUMBER_OF_OTHER_MEMBERS" /> জনের সাথে ট্যাব গ্রুপে যোগ দিন}one{<ph name="OWNER_FIRST_NAME" /> এবং অন্য <ph name="NUMBER_OF_OTHER_MEMBERS" /> জনের সাথে ট্যাব গ্রুপে যোগ দিন}other{<ph name="OWNER_FIRST_NAME" /> এবং অন্য <ph name="NUMBER_OF_OTHER_MEMBERS" /> জনের সাথে ট্যাব গ্রুপে যোগ দিন}}</translation>
@@ -1809,6 +1819,7 @@
 <translation id="9050666287014529139">পাসফ্রেজ</translation>
 <translation id="9055497320631373736">সম্ভাব্য সাইটে আবার সাইট যোগ করা হয়েছে</translation>
 <translation id="9057030985451135243">শেয়ার করা ট্যাব গ্রুপ সম্পর্কে আরও জানুন</translation>
+<translation id="9063400323119781058">আনসাবস্ক্রাইব করা হয়েছে</translation>
 <translation id="9063523880881406963">ডেস্কটপ সাইটের অনুরোধ বন্ধ করুন</translation>
 <translation id="9065203028668620118">সম্পাদনা</translation>
 <translation id="9065383040763568503">Chrome গুরুত্বহীন বলে মনে করে এমন সেভ করা ডেটা (যেমন, সেটিংস সেভ করা নেই এমন সাইট অথবা আপনি ঘনঘন দেখেন না এমন সাইট)</translation>

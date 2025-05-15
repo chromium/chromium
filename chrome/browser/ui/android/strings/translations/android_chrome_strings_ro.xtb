@@ -332,6 +332,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2527779675047087889">Ascunde conținutul clipboardului</translation>
 <translation id="2532336938189706096">Vizualizare pe web</translation>
 <translation id="253498598929009420">Site-ul va putea să vadă conținutul ecranului</translation>
+<translation id="2535807170289627159">Toate filele</translation>
 <translation id="2536728043171574184">Se afișează o versiune offline a acestei pagini</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, filă</translation>
 <translation id="2546283357679194313">Cookie-uri și date privind site-ul</translation>
@@ -434,6 +435,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2979639724566107830">Deschide într-o fereastră nouă</translation>
 <translation id="2981364137500752533">Poți deschide maximum cinci ferestre.</translation>
 <translation id="2983102365694924129">Pe baza activității tale pe un site. Setarea este dezactivată.</translation>
+<translation id="2983398917942897288">Inactive (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Include text din jur în căutările de pe Google</translation>
 <translation id="2988638966064514052">Creează parole mai puternice</translation>
 <translation id="2989523299700148168">Accesate recent</translation>
@@ -466,6 +468,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="314939179385989105">Pagina de pornire Chrome</translation>
 <translation id="3158667104057012316">Se sortează după ordinea manuală</translation>
 <translation id="3159335509547415276">Află despre conturile blocate</translation>
+<translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, se deschide într-o filă nouă</translation>
 <translation id="3166827708714933426">Comenzi rapide pentru file și ferestre</translation>
 <translation id="316694332262407393">Chrome rulează deja aici.</translation>
 <translation id="3167258285411721858">Poți solicita site-ul mobil pentru <ph name="HOST_NAME" /></translation>
@@ -790,6 +793,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="469286762610133730">Primește conținut mai util</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4698061626562952596">Analizează filele inactive aici</translation>
+<translation id="4698757800236023795">Active (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Imaginile și fișierele memorate în cache</translation>
 <translation id="4710167854527459075">Sortează după noutate</translation>
 <translation id="4718044610319080485">Invocă Asistentul AI</translation>

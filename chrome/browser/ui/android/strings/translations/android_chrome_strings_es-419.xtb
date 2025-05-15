@@ -183,6 +183,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1807709131360304325">Abrir una ventana nueva</translation>
 <translation id="1810845389119482123">No se completó la configuración de la sincronización inicial</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> no puede seguir usando <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="1820408774134375111">Hoja inferior de acceso</translation>
 <translation id="1825772852827001597">No se encriptarán las formas de pago ni las direcciones de Google Pay. No se sincronizará el historial de navegación de Chrome.
 Solo alguien con tu frase de contraseña puede leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si olvidas tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Buscar en la página</translation>
@@ -191,6 +192,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1871098866036088250">Abrir en el navegador Chrome</translation>
 <translation id="1877026089748256423">Chrome no está actualizado.</translation>
 <translation id="1877073879466606884">El perfil al que accediste es un perfil administrado. El administrador puede realizar cambios en la configuración de tu perfil de forma remota, analizar información sobre el navegador a través de informes y realizar otras tareas necesarias.</translation>
+<translation id="1879904908408734349">La hoja inferior de acceso está cerrada</translation>
 <translation id="1883903952484604915">Mis archivos</translation>
 <translation id="189358972401248634">Otros idiomas</translation>
 <translation id="1899175549411605574">Hoja inferior de la información sobre precios</translation>
@@ -330,6 +332,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2527779675047087889">Oculta el contenido del portapapeles</translation>
 <translation id="2532336938189706096">Vista web</translation>
 <translation id="253498598929009420">El sitio podrá ver el contenido de tu pantalla</translation>
+<translation id="2535807170289627159">Todas las pestañas</translation>
 <translation id="2536728043171574184">Visualizando una copia sin conexión de la página</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, pestaña</translation>
 <translation id="2546283357679194313">Datos de sitios y cookies</translation>
@@ -539,6 +542,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3516053221628030540">Ir a Google Play</translation>
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Se quitaron los permisos de notificaciones de un sitio que no visitaste recientemente}other{Se quitaron los permisos de notificaciones de # sitios que no visitaste recientemente}}</translation>
 <translation id="3518985090088779359">Aceptar y continuar</translation>
+<translation id="3519014757432845220">Para ayudar a mejorar la protección contra spam, comparte el contenido de la notificación y la URL del sitio con Google. Es posible que una persona revise el contenido.</translation>
 <translation id="351952459507671940">Agregar a un nuevo grupo</translation>
 <translation id="3521388823983121502">No puedes continuar con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Actualización disponible. Mas opciones</translation>
@@ -854,6 +858,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4943703118917034429">Realidad virtual</translation>
 <translation id="4943872375798546930">Sin resultados</translation>
 <translation id="4957722034734105353">Más información...</translation>
+<translation id="4959115606310463263">La hoja inferior de acceso está abierta a media altura</translation>
 <translation id="4961107849584082341">Traducir esta página a cualquier idioma</translation>
 <translation id="4964614743143953889">Chrome te advierte sobre descargas y sitios no seguros</translation>
 <translation id="496607651705915226">Para guardar y usar nuevas contraseñas en tu Cuenta de Google, actualiza los Servicios de Google Play</translation>
@@ -1146,6 +1151,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6277522088822131679">Se produjo un error al imprimir la página. Vuelve a intentarlo.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6284472661216707937">La hoja Contraseñas en todos tus dispositivos está cerrada</translation>
+<translation id="6291294824436685757">Borrar datos de navegación; seleccionar datos para borrar</translation>
 <translation id="6295158916970320988">Todos los sitios</translation>
 <translation id="6296366034485697675">Exportar y borrar</translation>
 <translation id="629730747756840877">Cuenta</translation>
@@ -1589,7 +1595,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8078096376109663956">Comparte texto solamente.</translation>
 <translation id="8078348702936632821">Fijar este acceso directo</translation>
 <translation id="8084114998886531721">Se guardó la contraseña</translation>
-<translation id="8084285576995584326">Controla los datos de tu Cuenta de Google.</translation>
+<translation id="8084285576995584326">Controla los datos de tu Cuenta de Google</translation>
 <translation id="8084864785646838999">Es posible que parte de tu historial no aparezca aquí. Para ver todo tu historial de Chrome, abre el historial completo. También es posible que tu Cuenta de Google tenga otros formularios del historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8088176524274673045">Para compartir contenido con personas cercanas, permíteles escanear este código QR.</translation>
 <translation id="8090732854597034573">Si necesitas ayuda, pídele a tu madre o padre</translation>
@@ -1613,6 +1619,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8186512483418048923">Quedan <ph name="FILES" /> archivos</translation>
 <translation id="8190358571722158785">1 día restante</translation>
+<translation id="8192765420340770300">La hoja inferior de acceso está totalmente abierta</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Tus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="820568752112382238">Sitios más visitados</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Únete al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /> y <ph name="NUMBER_OF_OTHER_MEMBERS" /> persona más}other{Únete al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /> y <ph name="NUMBER_OF_OTHER_MEMBERS" /> personas más}}</translation>
@@ -1809,6 +1816,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="9050666287014529139">Frase de contraseña</translation>
 <translation id="9055497320631373736">Se volvió a agregar el sitio a los sitios potenciales</translation>
 <translation id="9057030985451135243">Más información sobre los grupos de pestañas compartidos</translation>
+<translation id="9063400323119781058">Suscripción anulada</translation>
 <translation id="9063523880881406963">Desactivar la opción para solicitar versión de escritorio</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9065383040763568503">Datos almacenados que Chrome no considera importantes (por ejemplo, sitios que no visitas a menudo o sin configuración guardada)</translation>

@@ -332,6 +332,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="2527779675047087889">Sakrijte sadržaj međumemorije</translation>
 <translation id="2532336938189706096">Web prikaz</translation>
 <translation id="253498598929009420">Web lokacija će moći vidjeti sadržaje ekrana</translation>
+<translation id="2535807170289627159">Sve kartice</translation>
 <translation id="2536728043171574184">Gledate kopiju ove stranice van mreže</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, kartica</translation>
 <translation id="2546283357679194313">Kolačići i podaci web lokacije</translation>
@@ -467,7 +468,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="314939179385989105">Početna stranica Chromea</translation>
 <translation id="3158667104057012316">Sortiranje ručnim redoslijedom</translation>
 <translation id="3159335509547415276">Saznajte više o blokiranim računima</translation>
-<translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, otvara se u novoj kartici</translation>
+<translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, otvara se na novoj kartici</translation>
 <translation id="3166827708714933426">Kartice i prečice prozora</translation>
 <translation id="316694332262407393">Chrome je već pokrenut ovdje.</translation>
 <translation id="3167258285411721858">Za <ph name="HOST_NAME" /> možete zatražiti web lokaciju za mobilne uređaje</translation>

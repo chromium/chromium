@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">የውሃ ማጣሪያዎች እና ማጽጃዎች</translation>
 <translation id="1036348656032585052">አጥፋ</translation>
 <translation id="1036881361735705143">ሲ4 ፖስታ</translation>
-<translation id="1038106730571050514">የአስተያየት ጥቆማዎችን አሳይ</translation>
 <translation id="1038842779957582377">ያልታወቀ ስም</translation>
 <translation id="1041998700806130099">የስራ ሉህ መልዕክት</translation>
 <translation id="1044897699341250361">ይህ ምን ማለት እንደሆነ</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">ጨዋታዎች</translation>
 <translation id="2674170444375937751">እርግጠኛ ነዎት እነዚህን ገጾች ከታሪክዎ መሰረዝ ይፈልጋሉ?</translation>
 <translation id="2674524144218093528">የቤት ቀለም እና ማስዋቢያዎች</translation>
-<translation id="2674804415323431591">የአስተያየት ጥቆማዎችን ደብቅ</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> የትር ቡድኖች ከእንግዲህ አይገኙም</translation>
 <translation id="2677748264148917807">ለቅቀህ ውጣ</translation>
 <translation id="2683195745483370038">ሌሎች ውጤቶች ተገኝተዋል</translation>
@@ -2632,7 +2630,6 @@
 <translation id="55293785478302737">ጫፍ ስፋ</translation>
 <translation id="553377674408670169">የትምህርት ስራዎች</translation>
 <translation id="5534785731327961487">አሁን ያለ ጥሩ የዋጋ ቅናሽ</translation>
-<translation id="5536214594743852365">የ«<ph name="SECTION" />» ክፍሉን አሳይ</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 ንጥል (የሠመሩ መሣሪያዎች ላይ ተጨማሪ)}one{+ # ንጥል (የሠመሩ መሣሪያዎች ላይ ተጨማሪ)}other{+ # ንጥሎች (የሠመሩ መሣሪያዎች ላይ ተጨማሪ)}}</translation>
 <translation id="553782666181800029">ቹው 2 ፖስታ</translation>
 <translation id="5538270463355278784">ራስ-ሰር ሙሉ ገጽ ዕይታ</translation>
@@ -3657,7 +3654,6 @@
 <translation id="7316521168101843192">ፋይል ወደ Microsoft OneDrive በማስቀመጥ ላይ</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">የግንኙነት እገዛ</translation>
-<translation id="7323804146520582233">የ«<ph name="SECTION" />» ክፍሉን ሰርዝ</translation>
 <translation id="733354035281974745">የመሣሪያ አካባቢያዊ መለያ መሻር</translation>
 <translation id="7334320624316649418">&amp;ማስተካከልን ድገም</translation>
 <translation id="7335157162773372339">ካሜራዎን ለመጠቀም መጠየቅ ይችላሉ</translation>
@@ -3788,7 +3784,6 @@
 <translation id="7517414872996418597">ሲ10 ፖስታ</translation>
 <translation id="7518003948725431193">ለዚህ የድር አድራሻ ምንም ድረ-ገፅ አልተገኘም፦ <ph name="URL" /></translation>
 <translation id="7521387064766892559">ጃቫስክሪፕት</translation>
-<translation id="7521825010239864438">የ«<ph name="SECTION" />» ክፍል ተደብቋል</translation>
 <translation id="752189128961566325">በሁሉም የGoogle ምርቶች ላይ ሊጠቀሙበት ይችላሉ</translation>
 <translation id="7523408071729642236">ማምረት</translation>
 <translation id="7525067979554623046">ፍጠር</translation>
@@ -3865,6 +3860,7 @@
 <translation id="7639968568612851608">ጠቆር ያለ ግራጫ</translation>
 <translation id="7646681339175747202">አሁን የተጠቀሙበት የይለፍ ቃል በውሂብ ጥሰት ውስጥ ተገኝቷል። Google የይለፍ ቃል አስተዳዳሪ የይለፍ ቃልዎን አሁን እንዲቀይሩ ይመክራል።</translation>
 <translation id="7647206758853451655">የህትመት ጥራት</translation>
+<translation id="7648527891719919697"><ph name="BEGIN_ANDROID_SETTINGS_LINK" />የAndroid ቅንብሮች<ph name="END_ANDROID_SETTINGS_LINK" /> ውስጥ የላቀ ጥበቃን ስላበሩ ይህ ጣቢያ እንደታገደ ይቆያል። <ph name="BEGIN_LEARN_MORE_LINK" />ስለዚህ ማስጠንቀቂያ የበለጠ ይወቁ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">በዚህ መሣሪያ ላይ ፋይሎችን አከማች</translation>
 <translation id="7653957176542370971">የክፍያ ተቆጣጣሪ ሉህ ተዘግቷል</translation>
 <translation id="7654909834015434372">ማብራሪያዎችን ሲያርትዑ ይህ ሰነድ ወደ መጀመሪያው ማዞር ይመለሳል</translation>
@@ -4240,7 +4236,6 @@
 <translation id="8297545700510100061">ኩኪዎች እና ሌላ የጣቢያ ውሂብ እርስዎን ለማስታወስ ሥራ ላይ ይውላሉ፣ ለምሳሌ እርስዎን በመለያ ለማስገባት ወይም ማስታወቂያዎችን ግላዊነት ለማላበስ። ለሁሉም ጣቢያዎች ኩኪዎችን ለማቀናበር <ph name="SETTINGS" />ን ይመልከቱ።</translation>
 <translation id="8298115750975731693">እየተጠቀሙበት ያለው Wi-Fi (<ph name="WIFI_NAME" />) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />ን እንዲጎበኙ ሊጠይቅዎት ይችላል።</translation>
 <translation id="8301894345671534559">ኮድ ያስገቡ</translation>
-<translation id="8303854710873047864">የ«<ph name="SECTION" />» ክፍሉ ታይቷል</translation>
 <translation id="8304912090860925649">አዲስ የንጽጽር ሰንጠረዥ</translation>
 <translation id="830498451218851433">ግማሽ እጠፍ</translation>
 <translation id="8308653357438598313">የቀጥታ ስርጭት የቪድዮ ዥረት</translation>

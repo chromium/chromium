@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Waterfilters en -suiweraars</translation>
 <translation id="1036348656032585052">Skakel af</translation>
 <translation id="1036881361735705143">Koevert C4</translation>
-<translation id="1038106730571050514">Wys voorstelle</translation>
 <translation id="1038842779957582377">onbekende naam</translation>
 <translation id="1041998700806130099">Taakbladsyboodskap</translation>
 <translation id="1044897699341250361">Wat dit beteken</translation>
@@ -978,7 +977,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2673968385134502798">Speletjies</translation>
 <translation id="2674170444375937751">Is jy seker jy wil hierdie bladsye uit jou geskiedenis uitvee?</translation>
 <translation id="2674524144218093528">Huisverf en -afwerking</translation>
-<translation id="2674804415323431591">Versteek voorstelle</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" />-oortjiegroepe is nie meer beskikbaar nie</translation>
 <translation id="2677748264148917807">Gaan uit</translation>
 <translation id="2683195745483370038">Ander resultate gevind</translation>
@@ -2324,6 +2322,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4998950033665438990">Enkelplatkant</translation>
 <translation id="5001526427543320409">Derdepartywebkoekies</translation>
 <translation id="5002932099480077015">As dit geaktiveer is, sal Chrome 'n kopie van jou kaart op hierdie toestel berg om vorms vinniger in te vul.</translation>
+<translation id="5007344584818503324">Aktiwiteit van gedeelde oortjiegroepe</translation>
 <translation id="5007392906805964215">Gaan na</translation>
 <translation id="5010599530303458903">Betaal maandeliks of in 4 rentevrye paaiemente (onderworpe aan geskiktheid)</translation>
 <translation id="5011561501798487822">Bespeurde taal</translation>
@@ -2632,7 +2631,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="55293785478302737">Randhegting</translation>
 <translation id="553377674408670169">Onderwysposte</translation>
 <translation id="5534785731327961487">Nou ’n goeie winskopie</translation>
-<translation id="5536214594743852365">Wys die "<ph name="SECTION" />"-afdeling</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 werf (meer op gesinkroniseerde toestelle)}other{+ # werwe (meer op gesinkroniseerde toestelle)}}</translation>
 <translation id="553782666181800029">Koevert Chou 2</translation>
 <translation id="5538270463355278784">outomatiese volskerm</translation>
@@ -2751,6 +2749,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5732392974455271431">Jou ouers kan dit vir jou deblokkeer</translation>
 <translation id="573555826359077410">Knoppie om vorm te skep; aktiveer om vinnig ’n nuwe vorm in Google Vorms te skep</translation>
 <translation id="5738385766833540397">Bestuur hoe jy opletberigte oor prysverlagings ontvang vir produkte wat jy naspoor</translation>
+<translation id="5739619009927381786">Ontsluit jou skerm tydens die volgende stap, gewoonlik met jou vingerafdruk. Of jy kan <ph name="BEGIN_LINK" />op 'n ander manier verifieer<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Sinkroniseer jou geskiedenis en oortjies om te deel, aan te sluit en saam te werk in oortjiegroepe</translation>
 <translation id="5740911612628596808">Koevert C9</translation>
 <translation id="5742806904559466333">Kroeë, klubs en naglewe</translation>
@@ -3655,7 +3654,6 @@ Bykomende besonderhede:
 <translation id="7316521168101843192">Stoor tans lêer na Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Verbindinghulp</translation>
-<translation id="7323804146520582233">Versteek die "<ph name="SECTION" />"-afdeling</translation>
 <translation id="733354035281974745">Toestel se plaaslike rekening is geïgnoreer</translation>
 <translation id="7334320624316649418">Herdoen herrangskikking</translation>
 <translation id="7335157162773372339">Kan vra om jou kamera te gebruik</translation>
@@ -3786,7 +3784,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7517414872996418597">Koevert C10</translation>
 <translation id="7518003948725431193">Geen webbladsy is vir die volgende webadres gevind nie: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">"<ph name="SECTION" />"-afdeling is versteek</translation>
 <translation id="752189128961566325">Jy kan dit in alle Google-produkte gebruik</translation>
 <translation id="7523408071729642236">Vervaardiging</translation>
 <translation id="7525067979554623046">Skep</translation>
@@ -3863,6 +3860,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7639968568612851608">Donkergrys</translation>
 <translation id="7646681339175747202">Die wagwoord wat jy sopas gebruik het, is in ’n dataskending gekry. Google Wagwoordbestuurder beveel aan dat jy jou wagwoord nou verander.</translation>
 <translation id="7647206758853451655">Drukgehalte</translation>
+<translation id="7648527891719919697">Hierdie werf sal geblokkeer bly want Gevorderde Beskerming is in <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android-instellings<ph name="END_ANDROID_SETTINGS_LINK" /> aangeskakel. <ph name="BEGIN_LEARN_MORE_LINK" />Kry meer inligting oor hierdie waarskuwing<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Berg lêers in hierdie toestel</translation>
 <translation id="7653957176542370971">Betalinghanteerdersigblad is toe</translation>
 <translation id="7654909834015434372">Hierdie dokument sal na die oorspronklike rotasie daarvan toe terugkeer wanneer jy aantekeninge redigeer</translation>
@@ -4238,7 +4236,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8297545700510100061">Webkoekies en ander werfdata word gebruik om jou te onthou, byvoorbeeld om jou aan te meld of om advertensies te personaliseer. Sien <ph name="SETTINGS" /> om webkoekies vir alle werwe te bestuur.</translation>
 <translation id="8298115750975731693">Die Wi-Fi wat jy gebruik (<ph name="WIFI_NAME" />), kan vereis dat jy <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> besoek.</translation>
 <translation id="8301894345671534559">Voer kode in</translation>
-<translation id="8303854710873047864">"<ph name="SECTION" />"-afdeling is gewys</translation>
 <translation id="8304912090860925649">Nuwe vergelykingtabel</translation>
 <translation id="830498451218851433">Halfgevou</translation>
 <translation id="8308653357438598313">Regstreekse videostroming</translation>

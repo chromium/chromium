@@ -304,6 +304,7 @@
 <translation id="2216366330550244277">Odprite stran izdelka</translation>
 <translation id="2220529011494928058">Prijavite težavo</translation>
 <translation id="2223461067862937305">Ustvari kodo QR</translation>
+<translation id="2225701818156393674">Izdelek je dodan na seznam spremljanih izdelkov.</translation>
 <translation id="2229345671837147090">Mreža oddaljenih zavihkov</translation>
 <translation id="2230173723195178503">Spletna stran je naložena</translation>
 <translation id="2236949375853147973">Moja dejavnost</translation>
@@ -533,6 +534,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3208260410153224535">Organizacija je izklopila prijavo. Novi zaznamki, gesla in drugo bodo shranjeni samo v tej napravi.</translation>
 <translation id="3213807041830307252">Uporabite fotoaparat in fotogalerijo, da boste lahko nakupovali, prevajali in prepoznavali, kaj je prikazano.</translation>
 <translation id="3214379938835224220">Bili ste odjavljeni zarad ponastavitve iPada. Spodaj se dotaknite gumba za nadaljevanje, če se želite prijaviti.</translation>
+<translation id="3218296450292600703">Če se prijavite z upravljanim računom, lahko ločite brskanje, povezano z organizacijo (vključno z zavihki, zgodovino in gesli), od drugega brskanja</translation>
 <translation id="3224075676564434205">Zavihki bodo ostali odprti v tej napravi, vendar bo skupina izbrisana iz vseh naprav, v katerih ste prijavljeni v račun <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Če želite izvoziti gesla, morate najprej nastaviti geslo v napravi.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -1386,6 +1388,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na različnih spletnih mestih, na primer za osebno prilagajanje oglasov.</translation>
 <translation id="6672697278890207089">Vnesite geslo</translation>
 <translation id="6674917187596384849">Preprosto lahko preklapljate med računi</translation>
+<translation id="6676349090816247042">Možnosti prijave.</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6680416467695217368">Prilagodi meni</translation>
 <translation id="6681586159478273915">Glasovno iskanje</translation>

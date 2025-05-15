@@ -10774,6 +10774,26 @@ Sertifikat harus dienkode dengan base64.</translation>
 <translation id="8381774264911275515">Nonaktifkan transfer Cookie SSO SAML ke sesi pengguna selama login</translation>
 <translation id="8382184662529825177">Mengaktifkan penggunaan pengesahan jarak jauh untuk perlindungan konten bagi perangkat</translation>
 <translation id="838870586332499308">Aktifkan roaming data</translation>
+<translation id="8389925503559691525">Kebijakan ini mengontrol apakah URL Blob akan dipartisi selama pengambilan dan navigasi.
+Jika kebijakan ini disetel ke Aktif atau tidak disetel, URL Blob akan dipartisi.
+Jika kebijakan ini disetel ke Nonaktif, URL Blob tidak akan dipartisi.
+
+Jika partisi penyimpanan dinonaktifkan untuk origin tingkat teratas tertentu oleh
+<ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" />
+atau <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />,
+URL Blob juga tidak akan dipartisi.
+
+Jika Anda harus menggunakan kebijakan ini, laporkan bug di
+<ph name="BUG_URL" />
+yang menjelaskan kasus penggunaan Anda. Kebijakan ini dijadwalkan untuk ditawarkan hingga
+<ph name="PRODUCT_NAME" /> versi 143, setelah itu
+implementasi lama akan dihapus.
+
+CATATAN: Hanya proses perender yang baru dimulai yang akan menunjukkan perubahan pada
+kebijakan ini saat browser berjalan.
+
+Untuk mengetahui informasi mendetail tentang partisi penyimpanan pihak ketiga, lihat
+https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="8392478748777481636">Kebijakan ini tidak digunakan lagi dan tidak didukung. Sebagai gantinya, gunakan kebijakan '<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />'.</translation>
 <translation id="8393850527597048037">Khusus Platform</translation>
 <translation id="8395350646076131800">Waktu tunggu tidak ada aktivitas untuk screensaver layar kunci pengguna.</translation>

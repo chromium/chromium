@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">குடிநீர் வடிகட்டிகள் &amp; சுத்திகரிப்பான்கள்</translation>
 <translation id="1036348656032585052">முடக்கு</translation>
 <translation id="1036881361735705143">என்வெலப் C4</translation>
-<translation id="1038106730571050514">பரிந்துரைகளைக் காட்டும்</translation>
 <translation id="1038842779957582377">அறியப்படாத பெயர்</translation>
 <translation id="1041998700806130099">பணித் தாள் மெசேஜ்</translation>
 <translation id="1044897699341250361">இதன் பொருள் என்ன?</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">கேம்கள்</translation>
 <translation id="2674170444375937751">உங்கள் வரலாற்றிலிருக்கும் பக்கங்களை நிச்சயமாக நீக்க விரும்புகிறீர்களா?</translation>
 <translation id="2674524144218093528">வீட்டிற்கு வண்ணம் பூசுதல் &amp; சீர்செய்தல்</translation>
-<translation id="2674804415323431591">பரிந்துரைகளை மறைக்கும்</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> பக்கக் குழுக்கள் கிடைக்கவில்லை</translation>
 <translation id="2677748264148917807">வெளியேறு</translation>
 <translation id="2683195745483370038">பிற முடிவுகள் உள்ளன</translation>
@@ -2320,6 +2318,7 @@
 <translation id="4998950033665438990">சிங்கிள் ஃபேஸ்</translation>
 <translation id="5001526427543320409">மூன்றாம் தரப்புக் குக்கீகள்</translation>
 <translation id="5002932099480077015">இயக்கப்பட்டால், விரைவாகப் படிவத்தை நிரப்ப உங்கள் கார்டின் நகலை இச்சாதனத்தில் Chrome சேமித்து வைக்கும்.</translation>
+<translation id="5007344584818503324">பகிர்ந்த பக்கக் குழுக்களின் செயல்பாடுகள்</translation>
 <translation id="5007392906805964215">சரிபார்</translation>
 <translation id="5010599530303458903">மாதாந்திர அடிப்படையிலோ வட்டி இல்லாத 4 தவணைகளிலோ பணம் செலுத்தலாம் (தகுதிநிலைக்கு உட்பட்டது)</translation>
 <translation id="5011561501798487822">கண்டறியப்பட்ட மொழி</translation>
@@ -2628,7 +2627,6 @@
 <translation id="55293785478302737">எட்ஜ் ஸ்டிட்ச்</translation>
 <translation id="553377674408670169">கல்வி சார்ந்த பணிகள்</translation>
 <translation id="5534785731327961487">தற்போது நல்ல டீல்</translation>
-<translation id="5536214594743852365">"<ph name="SECTION" />" பிரிவைக் காட்டும்</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{மேலும் 1 தளம் (ஒத்திசைக்கப்பட்ட சாதனங்களில் கூடுதலாக உள்ளன)}other{மேலும் # தளங்கள் (ஒத்திசைக்கப்பட்ட சாதனங்களில் கூடுதலாக உள்ளன)}}</translation>
 <translation id="553782666181800029">என்வெலப் சூ 2</translation>
 <translation id="5538270463355278784">தானியங்கு முழுத்திரை</translation>
@@ -2747,6 +2745,7 @@
 <translation id="5732392974455271431">உங்களுக்காக, தளத்தின் தடுப்பை உங்கள் பெற்றோர் நீக்க முடியும்</translation>
 <translation id="573555826359077410">படிவத்தை உருவாக்குவதற்கான பட்டன். Google Formsஸில் புதிய படிவத்தை விரைவாக உருவாக்க இதை இயக்குங்கள்</translation>
 <translation id="5738385766833540397">நீங்கள் கண்காணிக்கும் தயாரிப்புகளின் விலை குறைவது தொடர்பான விழிப்பூட்டல்களை எதில் பெற வேண்டும் என்பதை நிர்வகிக்கலாம்</translation>
+<translation id="5739619009927381786">அடுத்த படியில் உங்கள் கைரேகையைப் பயன்படுத்தி திரையை அன்லாக் செய்யலாம். இல்லையென்றால் <ph name="BEGIN_LINK" />வேறு சரிபார்ப்பு முறையைப்<ph name="END_LINK" /> பயன்படுத்தலாம்.</translation>
 <translation id="573974402615125334">பக்கக் குழுக்களைப் பகிர, அவற்றில் சேர மற்றும் கூட்டுப்பணி செய்ய, உங்கள் பக்கக் குழுக்களை ஒத்திசைக்கவும்</translation>
 <translation id="5740911612628596808">என்வெலப் C9</translation>
 <translation id="5742806904559466333">பார்கள், கிளப்கள் &amp; இரவுநேரக் கேளிக்கை</translation>
@@ -3651,7 +3650,6 @@
 <translation id="7316521168101843192">Microsoft OneDriveவில் ஃபைலைச் சேமிக்கிறது</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">இணைப்பிற்கான உதவி</translation>
-<translation id="7323804146520582233">"<ph name="SECTION" />" பிரிவை மறைக்கும்</translation>
 <translation id="733354035281974745">சாதனத்தின் அகக் கணக்கில் மீறிச் செயல்படுதல்</translation>
 <translation id="7334320624316649418">&amp;மறுவரிசைப்படுத்தலை மீண்டும் செய்</translation>
 <translation id="7335157162773372339">கேமராவைப் பயன்படுத்த அனுமதி கேட்க வேண்டும்</translation>
@@ -3782,7 +3780,6 @@
 <translation id="7517414872996418597">என்வெலப் C10</translation>
 <translation id="7518003948725431193">வலை முகவரிக்கான வலைப்பக்கங்கள் ஏதும் காணப்படவில்லை: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">"<ph name="SECTION" />" பிரிவு மறைக்கப்பட்டுள்ளது</translation>
 <translation id="752189128961566325">Google தயாரிப்புகள் முழுவதிலும் இதை நீங்கள் பயன்படுத்தலாம்</translation>
 <translation id="7523408071729642236">உற்பத்தி</translation>
 <translation id="7525067979554623046">உருவாக்கு</translation>
@@ -4234,7 +4231,6 @@
 <translation id="8297545700510100061">குக்கீகளும் பிற தளத் தரவும் உங்கள் செயல்பாட்டை நினைவில் வைத்துக்கொள்ளப் பயன்படுத்தப்படுகின்றன. உதாரணமாக உங்களின் உள்நுழைவுச் செயல்பாடு அல்லது விளம்பரங்களைப் பிரத்தியேகமாக்குவது. அனைத்துத் தளங்களுக்கான குக்கீகளையும் நிர்வகிக்க <ph name="SETTINGS" /> ஐப் பார்க்கவும்.</translation>
 <translation id="8298115750975731693">நீங்கள் பயன்படுத்திக் கொண்டிருக்கும் (<ph name="WIFI_NAME" />) வைஃபை, அதன் <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />ஐ நீங்கள் பார்க்கக் கோரலாம்.</translation>
 <translation id="8301894345671534559">குறியீட்டை உள்ளிடுக</translation>
-<translation id="8303854710873047864">"<ph name="SECTION" />" பிரிவு காட்டப்படுகிறது</translation>
 <translation id="8304912090860925649">புதிய ஒப்பீட்டு அட்டவணை</translation>
 <translation id="830498451218851433">ஃபோல்டு ஹாஃப்</translation>
 <translation id="8308653357438598313">நேரலை வீடியோ ஸ்ட்ரீமிங்</translation>

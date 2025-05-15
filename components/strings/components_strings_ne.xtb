@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">वाटर फिल्टर तथा प्युरिफायर</translation>
 <translation id="1036348656032585052">अफ गर्नुहोस्</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
-<translation id="1038106730571050514">सुझावहरू देखाउनुहोस्</translation>
 <translation id="1038842779957582377">अज्ञात नाम</translation>
 <translation id="1041998700806130099">कार्य पानासम्बन्धी सन्देश</translation>
 <translation id="1044897699341250361">यसको अर्थ:</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">गेमहरू</translation>
 <translation id="2674170444375937751">तपाईं आफ्नो इतिहासबाट यी पृष्ठहरू मेटाउन चाहनुहुन्छ भन्ने कुरामा सुनिश्चित हुनुहुन्छ?</translation>
 <translation id="2674524144218093528">घरको पेन्टिङ तथा फिनिसिङ</translation>
-<translation id="2674804415323431591">सुझावहरू लुकाउनुहोस्</translation>
 <translation id="26774279487328902">अबदेखि <ph name="GROUP_COUNT" /> वटा ट्याब समूह उपलब्ध छैनन्</translation>
 <translation id="2677748264148917807">छोड्नुहोस्</translation>
 <translation id="2683195745483370038">अन्य परिणामहरू भेटिए</translation>
@@ -2322,6 +2320,7 @@
 <translation id="4998950033665438990">सिङ्गल फेस</translation>
 <translation id="5001526427543320409">तेस्रो पक्षीय कुकीहरू</translation>
 <translation id="5002932099480077015">यदि सक्रिय भएको छ भने Chrome ले चाँडो फारम भर्नका लागि यो डिभाइसमा तपाईँको कार्डको प्रतिलिपि स्टोर गर्ने छ।</translation>
+<translation id="5007344584818503324">साझा ट्याब समूहहरूमा गरिएका गतिविधि</translation>
 <translation id="5007392906805964215">समीक्षा गर्नुहोस्</translation>
 <translation id="5010599530303458903">मासिक रूपमा वा ब्याज नलाग्ने गरी ४ किस्तामा भुक्तानी गर्नुहोस् (योग्यताका मापदण्ड पूरा गर्नु पर्ने हुन्छ)</translation>
 <translation id="5011561501798487822">पत्ता लागेको भाषा</translation>
@@ -2630,7 +2629,6 @@
 <translation id="55293785478302737">किनारमा स्टिच</translation>
 <translation id="553377674408670169">शिक्षासम्बन्धी रोजगारीहरू</translation>
 <translation id="5534785731327961487">अहिलेका लागि राम्रो अफर</translation>
-<translation id="5536214594743852365">"<ph name="SECTION" />" खण्ड देखाउनुहोस्</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{थप एउटा साइट (सिंक गरिएका डिभाइसमा थप साइटका ब्राउजिङ डेटा छन्)}other{थप # वटा साइट (सिंक गरिएका डिभाइसमा थप साइटका ब्राउजिङ डेटा छन्)}}</translation>
 <translation id="553782666181800029">Envelope Chou 2</translation>
 <translation id="5538270463355278784">स्वतः फुल स्क्रिन हुने मोड</translation>
@@ -2749,6 +2747,7 @@
 <translation id="5732392974455271431">तपाईंका अभिभावकहरूले तपाईंको रोक हटाउन सक्नुहुन्छ</translation>
 <translation id="573555826359077410">फारम बनाउने बटन, Google Forms प्रयोग गरी तुरुन्तै नयाँ फारम बनाउन यो बटन थिच्नुहोस्</translation>
 <translation id="5738385766833540397">तपाईं आफूले ट्र्याक गरेका उत्पादनको मूल्य घट्दा पठाइने अलर्टहरू कुन माध्यमबाट प्राप्त गर्न चाहनुहुन्छ भन्ने कुरा व्यवस्थापन गर्नुहोस्</translation>
+<translation id="5739619009927381786">अर्को चरणमा सामान्यतया आफ्नो फिंगरप्रिन्ट प्रयोग गरी आफ्नो स्क्रिन अनलक गर्नुहोस्। वा तपाईं <ph name="BEGIN_LINK" />पुष्टि गर्ने अर्कै विधि<ph name="END_LINK" /> प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="573974402615125334">ट्याब समूह सेयर गर्न, तिनमा सामेल हुन र सहकार्य गर्न आफ्ना हिस्ट्री र ट्याबहरू सिंक गर्नुहोस्</translation>
 <translation id="5740911612628596808">Envelope C9</translation>
 <translation id="5742806904559466333">बार, क्लब तथा नाइटलाइफ</translation>
@@ -3653,7 +3652,6 @@
 <translation id="7316521168101843192">यो फाइल Microsoft OneDrive मा सेभ गरिँदै छ</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">जडानसम्बन्धी मद्दत</translation>
-<translation id="7323804146520582233">"<ph name="SECTION" />" खण्ड लुकाउनुहोस्</translation>
 <translation id="733354035281974745">डिभाइसका स्थानीय खाताको ओभरराइड</translation>
 <translation id="7334320624316649418">क्रम परिवर्तन &amp;पुन: गर्नुहोस्</translation>
 <translation id="7335157162773372339">तपाईंको क्यामेरा प्रयोग गर्ने अनुमति माग्न सक्छ</translation>
@@ -3784,7 +3782,6 @@
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">निम्न वेब ठेगानाको लागि कुनैपनि वेबपृष्ठ फेला परेन: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">"<ph name="SECTION" />" नामक खण्ड लुकाइएको छ</translation>
 <translation id="752189128961566325">तपाईं सेभ गरिएको ठेगाना Google का विभिन्न उत्पादनमा प्रयोग गर्न सक्नुहुन्छ</translation>
 <translation id="7523408071729642236">उत्पादन</translation>
 <translation id="7525067979554623046">सिर्जना गर्नुहोस्</translation>
@@ -3861,6 +3858,7 @@
 <translation id="7639968568612851608">गाढा खैरो</translation>
 <translation id="7646681339175747202">तपाईंले भर्खरै प्रयोग गर्नुभएको पासवर्ड चोरी भएको डेटाको सङ्ग्रहमा भेटिएको छ। Google पासवर्ड म्यानेजर तपाईंलाई अहिले नै आफ्नो पासवर्ड परिवर्तन गर्न सिफारिस गर्छ।</translation>
 <translation id="7647206758853451655">मुद्रणको गुणस्तर</translation>
+<translation id="7648527891719919697">तपाईंले <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android का सेटिङ<ph name="END_ANDROID_SETTINGS_LINK" />मा सुरक्षासम्बन्धी उन्नत सुविधा अन गर्नुभएकाले यो साइट ब्लक गरिराखिने छ। <ph name="BEGIN_LEARN_MORE_LINK" />यो चेतावनीका बारेमा थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">यस यन्त्रमा फाइलहरू भण्डार गर्नुहोस्</translation>
 <translation id="7653957176542370971">भुक्तानी ह्यान्ड्लरसम्बन्धी पाना बन्द गरिएको छ</translation>
 <translation id="7654909834015434372">तपाईंले एनोटेसनहरू सम्पादन गर्दा यो कागजात सुरुमा जतातिर फर्केको थियो त्यतैतिर घुमाइने छ</translation>
@@ -4236,7 +4234,6 @@
 <translation id="8297545700510100061">कुकी र साइटका अन्य डेटा तपाईंको जानकारी याद राख्न प्रयोग गरिन्छन्। जस्तै, कुकी र साइटका अन्य डेटा तपाईंलाई साइन इन गराउने वा विज्ञापन पर्सनलाइज गर्ने प्रयोजनका लागि प्रयोग गरिन्छन्। सबै साइटका कुकीहरू व्यवस्थापन गर्न <ph name="SETTINGS" /> मा जानुहोस्।</translation>
 <translation id="8298115750975731693">तपाईँले प्रयोग गरिरहनु भएको Wi-Fi (<ph name="WIFI_NAME" />) लाई <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> भ्रमण गर्ने आवश्यकता हुन सक्छ।</translation>
 <translation id="8301894345671534559">कोड हाल्नुहोस्</translation>
-<translation id="8303854710873047864">"<ph name="SECTION" />" नामक खण्ड देखाइएको छ</translation>
 <translation id="8304912090860925649">तुलनात्मक जानकारी भएको नयाँ तालिका</translation>
 <translation id="830498451218851433">आधा फोल्ड</translation>
 <translation id="8308653357438598313">लाइभ भिडियो स्ट्रिमिङ</translation>

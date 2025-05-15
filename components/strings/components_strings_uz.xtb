@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Suv filtrlari va tozalagichlar</translation>
 <translation id="1036348656032585052">O‘chirib qo‘yish</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
-<translation id="1038106730571050514">Variantlar taklif qilish</translation>
 <translation id="1038842779957582377">noma’lum ism</translation>
 <translation id="1041998700806130099">Vazifa varagʻidagi xabar</translation>
 <translation id="1044897699341250361">Bu nima degani</translation>
@@ -977,7 +976,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2673968385134502798">Oʻyinlar</translation>
 <translation id="2674170444375937751">Ushbu sahifalar tarixdan butunlay o‘chirilsinmi?</translation>
 <translation id="2674524144218093528">Boʻyoqchilik va ishlov berish</translation>
-<translation id="2674804415323431591">Tavsiyalarni berkitish</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> ta varaqlar guruhi endi mavjud emas</translation>
 <translation id="2677748264148917807">Tark etish</translation>
 <translation id="2683195745483370038">Boshqa natijalar topildi</translation>
@@ -2319,6 +2317,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4998950033665438990">Karton (bir tomonlama)</translation>
 <translation id="5001526427543320409">Tashqi cookie fayllar</translation>
 <translation id="5002932099480077015">Chrome shakllarni tezroq to‘ldirish uchun karta ma’lumotlarini ushbu qurilmaga saqlaydi.</translation>
+<translation id="5007344584818503324">Umumiy varaqlar guruhi faolligi</translation>
 <translation id="5007392906805964215">Tekshirish</translation>
 <translation id="5010599530303458903">Oyiga yoki 4 qismda foizsiz toʻlash (muvofiqlik sharti bilan)</translation>
 <translation id="5011561501798487822">Til aniqlandi</translation>
@@ -2627,7 +2626,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="55293785478302737">Chekkasini tikish</translation>
 <translation id="553377674408670169">Taʼlim sohasidagi vakansiyalar</translation>
 <translation id="5534785731327961487">Hozir yaxshi narxda</translation>
-<translation id="5536214594743852365">“<ph name="SECTION" />” bandini ochish</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 ta sayt (qolgani sinxronlangan qurilmalarda)}other{+ # ta sayt (qolgani sinxronlangan qurilmalarda)}}</translation>
 <translation id="553782666181800029">Envelope Chou 2</translation>
 <translation id="5538270463355278784">avtomatik butun ekran</translation>
@@ -2746,6 +2744,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5732392974455271431">Blokdan chiqarish uchun ota-onangizga murojaat qiling</translation>
 <translation id="573555826359077410">Shakl yaratish tugmasi, Google Formsʼda yangi shaklni tez yaratish uchun faollashtiring</translation>
 <translation id="5738385766833540397">Siz kuzatayotgan mahsulotlar uchun narxlarning tushishi haqida ogohlantirishlarni qanday qabul qilishingizni boshqaring</translation>
+<translation id="5739619009927381786">Keyingi ekranda ekranni qulfdan chiqaring, odatda barmoq izi ishlatiladi. Yoki <ph name="BEGIN_LINK" />boshqa usuldan<ph name="END_LINK" /> foydalanishingiz mumkin.</translation>
 <translation id="573974402615125334">Varaqlar guruhini ulashish, ularga qoʻshilish va boshqalar bilan birga ishlash uchun varaqlar va tarixni sinxronlang</translation>
 <translation id="5740911612628596808">Envelope C9</translation>
 <translation id="5742806904559466333">Barlar, klublar va kechki hayot</translation>
@@ -3649,7 +3648,6 @@ Batafsil axborot:
 <translation id="7316521168101843192">Fayl Microsoft OneDrive omboriga saqlanmoqda</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Internetga ulanish yuzasidan yordam</translation>
-<translation id="7323804146520582233">“<ph name="SECTION" />” bandini yopish</translation>
 <translation id="733354035281974745">Qurilmadagi mahalliy hisob qayta tayinlanishi</translation>
 <translation id="7334320624316649418">&amp;Qayta tartiblashni qayta bajarish</translation>
 <translation id="7335157162773372339">Kameradan foydalanish uchun ruxsat soʻrashi mumkin</translation>
@@ -3780,7 +3778,6 @@ Batafsil axborot:
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">Bu manzilda hech qanday veb-sahifa topilmadi: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">“<ph name="SECTION" />” rukni yopildi</translation>
 <translation id="752189128961566325">Siz unda barcha Google mahsulotlaridan foydalanishingiz mumkin</translation>
 <translation id="7523408071729642236">Ishlab chiqarish</translation>
 <translation id="7525067979554623046">Yaratish</translation>
@@ -3857,6 +3854,7 @@ Batafsil axborot:
 <translation id="7639968568612851608">Toʻq kulrang</translation>
 <translation id="7646681339175747202">Hozirgina siz foydalangan parol oshkor qilingan. Google Parollar menejeri bu parolni hoziroq almashtirishni tavsiya etadi.</translation>
 <translation id="7647206758853451655">Bosma sifati</translation>
+<translation id="7648527891719919697"><ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android sozlamalarida<ph name="END_ANDROID_SETTINGS_LINK" /> Google Kuchaytirilgan himoya yoqilgani uchun bu sayt bloklangan holatda qoladi. <ph name="BEGIN_LEARN_MORE_LINK" />Bu ogohlantirish haqida batafsil<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Fayllarni bu qurilmada saqlash</translation>
 <translation id="7653957176542370971">Toʻlovlarni qayta ishlash vositasi yopildi</translation>
 <translation id="7654909834015434372">Izohlarni tahrirlash vaqtida bu hujjat asl holatiga qaytadi</translation>
@@ -4232,7 +4230,6 @@ Batafsil axborot:
 <translation id="8297545700510100061">Saytga kirish uchun yoki reklamani moslashtirish uchun ishlatiladigan cookie fayllari va boshqa sayt maʼlumotlari. Barcha saytlar uchun cookie fayllarini boshqarish uchun <ph name="SETTINGS" /> sahifasini oching.</translation>
 <translation id="8298115750975731693">Siz ulangan Wi-Fi (<ph name="WIFI_NAME" />) tarmog‘idan foydalanish uchun <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> sahifaga o‘tish talab qilinishi mumkin.</translation>
 <translation id="8301894345671534559">Kodni kiriting</translation>
-<translation id="8303854710873047864">“<ph name="SECTION" />” rukni ochildi</translation>
 <translation id="8304912090860925649">Yangi taqqoslash jadvali</translation>
 <translation id="830498451218851433">Yarim taxlash</translation>
 <translation id="8308653357438598313">Jonli video strimingi</translation>
@@ -4252,6 +4249,7 @@ Batafsil axborot:
 <translation id="833262891116910667">Ajratib belgilash</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> tilidagi sahifalar tarjima qilinmaydi</translation>
 <translation id="8339275256517065202">Xaridni Touch ID orqali yakunlang</translation>
+<translation id="833935588477667012"><ph name="FIELD_LABEL" />, majburiy</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Virtual kartani qayd qilish toʻliq hajmda ochildi</translation>

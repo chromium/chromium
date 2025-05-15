@@ -3178,7 +3178,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3188465121994729530">Prosjek premještanja</translation>
 <translation id="3189187154924005138">Veliki kursor</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{1 lozinka i druge stavke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu.}one{{PASSWORD_COUNT} lozinka i druge stavke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu.}few{{PASSWORD_COUNT} lozinke i druge stavke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu.}other{{PASSWORD_COUNT} lozinki i druge stavke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu.}}</translation>
-<translation id="319044078641740013">Da biste se lako vratili na web-lokacije koje ste posjetili, sinkronizirajte povijest i kartice s računom <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="319044078641740013">Da se lako vratite na web lokacije koje ste posjetili, sinhronizirajte historiju i kartice sa <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3190558889382726167">Lozinka je sačuvana</translation>
 <translation id="3192586965067888278">Detaljno opišite problem. Povratne informacije će se poslati Googleu za ručni pregled i mogu se koristiti za poboljšanje ili razvoj Googleovih proizvoda i usluga.</translation>
 <translation id="3192947282887913208">Audio fajlovi</translation>
@@ -3285,7 +3285,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3269689705184377744">{COUNT,plural, =1{Fajl}one{# fajl}few{# fajla}other{# fajlova}}</translation>
 <translation id="326999365752735949">Preuzimanje razlika</translation>
 <translation id="3270965368676314374">Čitanje, izmjena i brisanje fotografija, muzike i drugih medija na vašem računaru</translation>
-<translation id="3275464924531706548">Sažmi <ph name="HEADER" /></translation>
+<translation id="3275464924531706548">Sužavanje zaglavlja <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Vaš interni sigurnosni ključ trenutno nije siguran. Uklonite ga iz svih usluga za koje ste ga koristili. Vratite na zadano sigurnosni ključ da riješite problem.</translation>
 <translation id="3275778913554317645">Otvori kao prozor</translation>
 <translation id="3277214528693754078">Navigirajte kursorom teksta (navigacija kursorom)</translation>
@@ -3617,7 +3617,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3510471875518562537">Koristite ovu adresu na iPhoneu</translation>
 <translation id="3511200754045804813">Ponovo skeniraj</translation>
 <translation id="3511307672085573050">Kopiraj adr&amp;esu linka</translation>
-<translation id="3511358375261756531">Proširi <ph name="HEADER" /></translation>
+<translation id="3511358375261756531">Proširivanje zaglavlja <ph name="HEADER" /></translation>
 <translation id="351152300840026870">Font fiksne širine</translation>
 <translation id="3511528412952710609">Kratko</translation>
 <translation id="3513019849832307207">Pridružite se i otvorite</translation>
@@ -5709,7 +5709,6 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Emitiraj ekran</translation>
 <translation id="496185450405387901">Ovu aplikaciju je instalirao vaš administrator.</translation>
-<translation id="4963079328730030450">Vaša organizacija upravlja načinom korištenja podataka koje prikupljaju ove funkcije.</translation>
 <translation id="4963603093937263654">Provjerite jesu li uključena obavještenja na uređaju <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Ukloni trenutnu karticu</translation>
 <translation id="4964455510556214366">Uređivanje</translation>
@@ -10363,7 +10362,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8280848878018088610">Zapljuskujući valovi mora, s gradom i dvorcem iz fantazije u pozadini, s mračnom atmosferom.</translation>
 <translation id="828180235270931531">Drugi dostupni štampači</translation>
 <translation id="8281886186245836920">Preskoči</translation>
-<translation id="8283802069507225582">Da biste nastavili tamo gdje ste stali na drugim uređajima, sinkronizirajte povijest i kartice s računom <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="8283802069507225582">Da nastavite tamo gdje ste stali na drugim uređajima, sinhronizirajte historiju i kartice sa <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">sve web lokacije <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Titlovi</translation>
 <translation id="8286036467436129157">Prijava</translation>
@@ -11042,7 +11041,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8754200782896249056">&lt;p&gt;Kada je <ph name="PRODUCT_NAME" /> pokrenut u podržanom okruženju radne površine, koristit će se sistemske postavke proksi servera.  Međutim, vaš sistem nije podržan ili je došlo do problema prilikom pokretanja konfiguracije sistema.&lt;/p&gt;
 
           &lt;p&gt;Konfiguraciju i dalje možete izvršiti putem komandne linije.  Više informacija o oznakama i varijablama okruženja potražite u &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;.&lt;/p&gt;</translation>
-<translation id="8754810799862630650">Da biste vidjeli otvorene kartice s drugih računala i telefona, sinkronizirajte povijest i kartice s računom <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="8754810799862630650">Da vidite otvorene kartice s drugih računara i telefona, sinhronizirajte historiju i kartice sa <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">Izvršavajte zadatke u vezi sa sigurnošću za svoju organizaciju, kao što su upravljanje certifikatima i ključevima pohranjenim na uređaju</translation>
 <translation id="875532100880844232">Za uređaj <ph name="DEVICE_NAME" /> odaberite radnju za svaku tipku</translation>
 <translation id="8755376271068075440">&amp;Veće</translation>

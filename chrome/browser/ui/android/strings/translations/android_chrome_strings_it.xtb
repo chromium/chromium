@@ -183,6 +183,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1807709131360304325">Aprire una nuova finestra</translation>
 <translation id="1810845389119482123">Configurazione iniziale della sincronizzazione non terminata</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> non può continuare a utilizzare <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="1820408774134375111">Riquadro inferiore di accesso</translation>
 <translation id="1825772852827001597">I metodi di pagamento e gli indirizzi memorizzati su Google Pay non verranno criptati. La cronologia di navigazione di Chrome non verrà sincronizzata.
 Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphrase non viene inviata a Google o memorizzata da Google. Se dimentichi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Chrome nel tuo account<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Trova nella pagina</translation>
@@ -191,6 +192,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1871098866036088250">Apri nel browser Chrome</translation>
 <translation id="1877026089748256423">Chrome non è aggiornato</translation>
 <translation id="1877073879466606884">Il profilo a cui hai eseguito l'accesso è un profilo gestito. L'amministratore può apportare modifiche alle impostazioni del profilo da remoto, analizzare le informazioni sul browser tramite i report ed eseguire altre attività necessarie.</translation>
+<translation id="1879904908408734349">Riquadro inferiore di accesso chiuso</translation>
 <translation id="1883903952484604915">I miei file</translation>
 <translation id="189358972401248634">Altre lingue</translation>
 <translation id="1899175549411605574">Riquadro inferiore di approfondimenti sul prezzo</translation>
@@ -330,6 +332,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2527779675047087889">Nascondi contenuti degli appunti</translation>
 <translation id="2532336938189706096">Visualizzazione web</translation>
 <translation id="253498598929009420">Il sito potrà vedere i contenuti del tuo schermo</translation>
+<translation id="2535807170289627159">Tutte le schede</translation>
 <translation id="2536728043171574184">È visualizzata una copia offline della pagina</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, scheda</translation>
 <translation id="2546283357679194313">Cookie e dati dei siti</translation>
@@ -539,6 +542,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3516053221628030540">Vai su Google Play</translation>
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Le autorizzazioni alle notifiche sono state rimosse da un sito che non hai visitato di recente}other{Le autorizzazioni alle notifiche sono state rimosse da # siti che non hai visitato di recente}}</translation>
 <translation id="3518985090088779359">Accetta e continua</translation>
+<translation id="3519014757432845220">Contribuisci a migliorare la protezione antispam condividendo con Google i contenuti delle notifiche e l'URL del sito. I contenuti potrebbero essere esaminati da persone.</translation>
 <translation id="351952459507671940">Aggiungi a nuovo gruppo</translation>
 <translation id="3521388823983121502">Impossibile continuare con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Aggiornamento disponibile. Altre opzioni</translation>
@@ -854,6 +858,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4943703118917034429">Realtà virtuale</translation>
 <translation id="4943872375798546930">Nessun risultato</translation>
 <translation id="4957722034734105353">Scopri di più...</translation>
+<translation id="4959115606310463263">Riquadro inferiore di accesso aperto nella parte inferiore dello schermo</translation>
 <translation id="4961107849584082341">Traduci questa pagina in qualsiasi lingua</translation>
 <translation id="4964614743143953889">Chrome ti avvisa in caso di siti e download non sicuri</translation>
 <translation id="496607651705915226">Per salvare e usare nuove password nel tuo Account Google, aggiorna Google Play Services</translation>
@@ -1146,6 +1151,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6277522088822131679">Si è verificato un problema durante la stampa della pagina. Riprova.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6284472661216707937">Pagina Password su tutti i tuoi dispositivi chiusa</translation>
+<translation id="6291294824436685757">Elimina dati di navigazione; seleziona i dati da eliminare</translation>
 <translation id="6295158916970320988">Tutti i siti</translation>
 <translation id="6296366034485697675">Esporta ed elimina</translation>
 <translation id="629730747756840877">Account</translation>
@@ -1613,6 +1619,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8179976553408161302">Invio</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> file rimanenti</translation>
 <translation id="8190358571722158785">1 giorno rimanente</translation>
+<translation id="8192765420340770300">Riquadro inferiore di accesso aperto a schermo intero</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />I tuoi dispositivi<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="820568752112382238">Siti più visitati</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Partecipa al gruppo di schede con <ph name="OWNER_FIRST_NAME" /> e <ph name="NUMBER_OF_OTHER_MEMBERS" /> altra persona}other{Partecipa al gruppo di schede con <ph name="OWNER_FIRST_NAME" /> e <ph name="NUMBER_OF_OTHER_MEMBERS" /> altre persone}}</translation>
@@ -1809,6 +1816,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="9050666287014529139">Passphrase</translation>
 <translation id="9055497320631373736">Sito aggiunto di nuovo ai siti potenziali</translation>
 <translation id="9057030985451135243">Scopri di più sui gruppi di schede condivisi</translation>
+<translation id="9063400323119781058">Iscrizione annullata</translation>
 <translation id="9063523880881406963">Disattiva Richiedi sito desktop</translation>
 <translation id="9065203028668620118">Modifica</translation>
 <translation id="9065383040763568503">I dati memorizzati che Chrome non ritiene importanti (ad esempio siti senza impostazioni salvate o che non visiti spesso)</translation>

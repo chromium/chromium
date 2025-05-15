@@ -117,7 +117,6 @@
 <translation id="1616111909442424068">Kviešu</translation>
 <translation id="1618597272655350600">Sniedz pilnīgu aprakstu par pašreizējo pozīciju</translation>
 <translation id="1627222324347828322">Spoku balta</translation>
-<translation id="1639634871799530612">{COUNT,plural, =1{zīme “lielāks par”}zero{# zīmju “lielāks par”}one{# zīme “lielāks par”}other{# zīmes “lielāks par”}}</translation>
 <translation id="1653266918374749391">Iepriekšējais 3. līmeņa virsraksts</translation>
 <translation id="1657616855184033958">Rādīt notikumu plūsmas filtrus</translation>
 <translation id="1659072772017912254">Nav atzīmēts</translation>
@@ -162,7 +161,6 @@
 <translation id="1964135212174907577">Nākamais objekts</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Rādīt Braila raksta komandas ChromeVox izvēlnēs</translation>
-<translation id="2007545860310005685">{COUNT,plural, =1{atverošā kvadrātiekava}zero{# atverošo kvadrātiekavu}one{# atverošā kvadrātiekava}other{# atverošās kvadrātiekavas}}</translation>
 <translation id="2009187674653301682">Nav augšrakstā</translation>
 <translation id="2010555995361223825">ChromeVox izvēlnes</translation>
 <translation id="203030071582665758">Nav iepriekšējā 4. līmeņa virsraksta.</translation>
@@ -185,7 +183,6 @@
 <translation id="2169714232367507776">Noklikšķināt uz pašreizējā vienuma</translation>
 <translation id="2179452035581866348">ChromeVox izmanto signālus, lai sniegtu jums būtisku un plašāku informāciju. Varat šos signālus izmantot, lai varētu ātrāk pārvietoties saturā, iemācoties, ko katrs signāls nozīmē. Kad signālus esat apguvis, varat izslēgt izvērstos izrunātos aprakstus un izmantot tos tikai būtiskai informācijai par lapu. Šeit ir visu signālu saraksts un signālu nozīme.</translation>
 <translation id="2183409941723714159">Pārvietošanās ar taustiņu Tab</translation>
-<translation id="2188751878842439466">{COUNT,plural, =1{aizverošā iekava}zero{# aizverošo iekavu}one{# aizverošā iekava}other{# aizverošās iekavas}}</translation>
 <translation id="2197863150503783129">Seglu brūns</translation>
 <translation id="2199994615414171367">Iepriekšējā matemātiskā izteiksme</translation>
 <translation id="2203046366315513658">Samazināt vērtību</translation>
@@ -231,7 +228,6 @@
 <translation id="2462626033734746142">Radiopogu grupa</translation>
 <translation id="2467741090055146971">noņemt atlasi</translation>
 <translation id="2471138580042810658">6. līmeņa virsraksts</translation>
-<translation id="248982282205370495">{COUNT,plural, =1{zvaigznīte}zero{# zvaigznīšu}one{# zvaigznīte}other{# zvaigznītes}}</translation>
 <translation id="2490721194269245365">Sārti brūna</translation>
 <translation id="249330843868392562">Atvērt teksta pārvēršanas runā iestatījumus</translation>
 <translation id="2497706219848005458">Zaļdzeltena</translation>
@@ -266,7 +262,6 @@
 <translation id="2692503699962701720">Mainīt runas skaņas augstumu, izrunājot elementu tipus un formatētu tekstu</translation>
 <translation id="2697408785920771974">iekļautā automātiskā pabeigšana</translation>
 <translation id="2697786971245905543">Teksta pārveidošanas kandidāts</translation>
-<translation id="2704429362613743330">{COUNT,plural, =1{atverošā iekava}zero{# atverošo iekavu}one{# atverošā iekava}other{# atverošās iekavas}}</translation>
 <translation id="270523456882008230">Norāde: lai aktivizētu pašreizējo elementu, ar vienu pirkstu veiciet dubultskārienu.</translation>
 <translation id="2705875883745373140">Nav nospiests</translation>
 <translation id="2708078563826046398">Persiku</translation>
@@ -280,7 +275,6 @@
 <translation id="2756452585631602151">Ievadiet pielāgotu iezīmi.</translation>
 <translation id="2766299274563946262">Nav šūnas pa kreisi.</translation>
 <translation id="2770947749427257887">Ieslēgt ritināšanas režīmu</translation>
-<translation id="2783001728278437613">{COUNT,plural, =1{un vēl #}zero{un vēl #}one{un vēl #}other{un vēl #}}</translation>
 <translation id="2792200646155001340">Varat arī vilkt vienu pirkstu no labās puses uz kreiso, lai pārietu uz iepriekšējo vienumu. Izmēģiniet tūlīt!</translation>
 <translation id="280499067616661124">ChromeVox — atrast lapā</translation>
 <translation id="2811204574343810641">Rinda</translation>
@@ -299,9 +293,7 @@
 <translation id="2876760662374103627">Sejas kontrole ir ieslēgta</translation>
 <translation id="2879867157561757640">Velciet ar trim pirkstiem uz leju</translation>
 <translation id="288178314850623291">Izmantojiet pārejas komandas, lai izlaistu konkrētu veidu elementus. Lai pārietu uz priekšu pa virsrakstiem, vienlaikus nospiediet meklēšanas taustiņu un taustiņu H; lai pārietu atpakaļ — meklēšanas taustiņu, pārslēgšanas taustiņu un taustiņu H.</translation>
-<translation id="2885764457467528513">{COUNT,plural, =1{minūte}zero{minūtes}one{minūte}other{minūtes}}</translation>
 <translation id="2894654529758326923">Informācija</translation>
-<translation id="2899328121302785497">{COUNT,plural, =1{atverošā figūriekava}zero{# atverošo figūriekavu}one{# atverošā figūriekava}other{# atverošās figūriekavas}}</translation>
 <translation id="2909584066358367921">Nav nākamās pogas.</translation>
 <translation id="2911433807131383493">Atvērt ChromeVox mācības</translation>
 <translation id="2912405967290226587">Velciet ar trim pirkstiem pa labi</translation>
@@ -311,7 +303,6 @@
 <translation id="2943596527105977722">Tumši zeltgalvīšu dzeltena</translation>
 <translation id="2964026537669811554">Virsrakstu grupa</translation>
 <translation id="2968634799764242930">Jūraszaļa</translation>
-<translation id="296951647852255825">{COUNT,plural, =1{tabulēšanas rakstzīme}zero{# tabulēšanas rakstzīmju}one{# tabulēšanas rakstzīme}other{# tabulēšanas rakstzīmes}}</translation>
 <translation id="2972205263822847197">Rīka padoms</translation>
 <translation id="2976476721782829799">Varat arī pārvietoties, velkot vienu pirkstu pa ekrānu. Šī darbība tiek dēvēta par pārlūkošanu pieskaroties. Velciet pirkstu pa ekrānu, lai izlasītu nodarbības atlikušo informāciju.</translation>
 <translation id="297825089465017871">Velciet ar diviem pirkstiem pa kreisi</translation>
@@ -322,7 +313,6 @@
 <translation id="3014130421870723208">@red. 8 p-tu rakstu</translation>
 <translation id="3018210433491759145">Notiek ChromeVox ielāde</translation>
 <translation id="3030432017085518523">Izvēlnes vienuma radiopoga</translation>
-<translation id="3037392361165431467">{COUNT,plural, =1{apostrofs}zero{# apostrofu}one{# apostrofs}other{# apostrofi}}</translation>
 <translation id="3040901448410802366">Norises indikators</translation>
 <translation id="3046838483509668188">ChromeVox opcijas</translation>
 <translation id="3060756054951570867">Tika atvērta izvēlne <ph name="TITLE" /></translation>
@@ -358,7 +348,6 @@
 <translation id="3159493096109238499">Bēša</translation>
 <translation id="316542773973815724">Navigācija</translation>
 <translation id="3167446923957429259">Pakustiniet lūpas pa kreisi</translation>
-<translation id="3172700825913348768">{COUNT,plural, =1{atstarpe}zero{# atstarpju}one{# atstarpe}other{# atstarpes}}</translation>
 <translation id="3179119189286472195">Nav saite</translation>
 <translation id="3180990259147710757">Pārvietojiet apakšžokli pa kreisi</translation>
 <translation id="320041337977930740">Mainīt displeja veidu uz mijas attēlojumu</translation>
@@ -395,7 +384,6 @@
 <translation id="3359142382821736686">atdalītājs</translation>
 <translation id="3363015957057974366">Tabulēšanas taustiņu (Tab) var arī izmantot, lai pārvietotos uz nākamo interaktīvo elementu ekrānā. Atrodiet taustiņu Tab, kas atrodas tieši virs meklēšanas taustiņa. Lai turpinātu, nospiediet taustiņu Tab.</translation>
 <translation id="3366946046494222386"><ph name="TOPIC" />: mācības, <ph name="LESSONS" /> nodarbības</translation>
-<translation id="3374537878095184207">{COUNT,plural, =1{pluszīme}zero{# pluszīmju}one{# pluszīme}other{# pluszīmes}}</translation>
 <translation id="338583716107319301">Atdalītājs</translation>
 <translation id="3389259863310851658">Iepriekšējais veidlapas lauks</translation>
 <translation id="3390740059150071453">Paskatīties pa kreisi</translation>
@@ -414,12 +402,8 @@
 <translation id="3469413619751135069">Blāvi zaļa</translation>
 <translation id="3473744269398144689">Aktivizēt diktēšanas funkciju</translation>
 <translation id="3490765818161916458">Saraksta režģis</translation>
-<translation id="3492609944033322585">{COUNT,plural, =1{aizverošā kvadrātiekava}zero{# aizverošo kvadrātiekavu}one{# aizverošā kvadrātiekava}other{# aizverošās kvadrātiekavas}}</translation>
 <translation id="3494946239022273294">izvēlnes vienums</translation>
-<translation id="3497063866483065785">{COUNT,plural, =1{jautājuma zīme}zero{# jautājuma zīmju}one{# jautājuma zīme}other{# jautājuma zīmes}}</translation>
 <translation id="3505359110822747654">ChromeVox izvēlnes sakļautas</translation>
-<translation id="3514822174137761109">{COUNT,plural, =1{jumtiņš}zero{# jumtiņu}one{# jumtiņš}other{# jumtiņi}}</translation>
-<translation id="3518600448524470129">{COUNT,plural, =1{balta aizzīme}zero{# baltu aizzīmju}one{# balta aizzīme}other{# baltas aizzīmes}}</translation>
 <translation id="352577523970648069">Rediģējams teksta lauks</translation>
 <translation id="3538907380453898475">apraksti</translation>
 <translation id="3549141990712742152">izgriezt tekstu “<ph name="TEXT" />”.</translation>
@@ -436,9 +420,7 @@
 <translation id="3616016838842055984">Kad sasniedzat elementu, uz kura vēlaties noklikšķināt, nospiediet meklēšanas taustiņu un atstarpes taustiņu. Izmēģiniet to tūlīt, lai turpinātu.</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622350485154495700">Veiciet dubultskārienu ar vienu pirkstu</translation>
-<translation id="3646890046000188562">{COUNT,plural, =1{gravis}zero{# gravju}one{# gravis}other{# gravji}}</translation>
 <translation id="3650317109285159359">izvēlnes vienumu izvēles rūtiņa</translation>
-<translation id="3655855170848725876">{COUNT,plural, =1{dolāra zīme}zero{# dolāra zīmju}one{# dolāra zīme}other{# dolāra zīmes}}</translation>
 <translation id="3659787053479271466">brīdinājums</translation>
 <translation id="366419593095697301">Norāde: nospiediet atsoļa taustiņu (Esc), ja vēlaties iziet no šīm mācībām.</translation>
 <translation id="3676062394766691318">Kad būsiet iestatījis savu ierīci, varēsiet atgriezties un skatīt citas mācības, nospiežot meklēšanas taustiņu un O, pēc tam — T.</translation>
@@ -497,16 +479,13 @@
 <translation id="4054936709456751127">statuss</translation>
 <translation id="4058278702844053247">Notiek lapas ielāde</translation>
 <translation id="4065205963140826639">Lai atrastu pogu “Tālāk”, izmantojiet meklēšanas taustiņu un pa labi vērsto bultiņu, un pēc tam noklikšķiniet uz šīs pogas, vienlaikus nospiežot meklēšanas un atstarpes taustiņus.</translation>
-<translation id="4081085052247739398">{COUNT,plural, =1{TILDE}zero{# tilžu}one{# tilde}other{# tildes}}</translation>
 <translation id="409334809956508737">Iepriekšējais objekts</translation>
 <translation id="4099274309791143834">ietver apakšizvēlni</translation>
 <translation id="4101527861445851766">Atzīmēta izvēles rūtiņa</translation>
 <translation id="410225014223200513">Ar lūpām izveidojiet apli</translation>
 <translation id="4115378294792113321">Fuksīnsarkana</translation>
 <translation id="4116415223832267137">Brīdinājums</translation>
-<translation id="4148180433151187540">{COUNT,plural, =1{aizverošā figūriekava}zero{# aizverošo figūriekavu}one{# aizverošā figūriekava}other{# aizverošās figūriekavas}}</translation>
 <translation id="4159784952369912983">Violets</translation>
-<translation id="4161104397932142764">{COUNT,plural, =1{sekunde}zero{sekundes}one{sekunde}other{sekundes}}</translation>
 <translation id="4161663686871496107">ChromeVox izrunas funkcija ir gatava</translation>
 <translation id="4176463684765177261">Atspējota</translation>
 <translation id="4187322598335821254">Velciet augšup vai lejup, lai pārvietotos pa rindiņām</translation>
@@ -518,7 +497,6 @@
 <translation id="4204864733111726379">Ziedu balta</translation>
 <translation id="42164919740161077">Jūrskolas zila</translation>
 <translation id="4217571870635786043">Diktēšana</translation>
-<translation id="4218529045364428769">{COUNT,plural, =1{defise}zero{# defišu}one{# defise}other{# defises}}</translation>
 <translation id="4220024144662591089">atlasīt no “<ph name="START_PHRASE" />” līdz “<ph name="END_PHRASE" />”</translation>
 <translation id="4221012616705981690">Nav iepriekšējā saraksta.</translation>
 <translation id="4225355998815256469">Veidlapas vadīklas</translation>
@@ -540,7 +518,6 @@
 <translation id="4300318234632215983">Paziņot par saites URL</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Sarkanbrūna</translation>
-<translation id="4342180618051828363">{COUNT,plural, =1{punkts}=3{daudzpunkte}zero{# punktu}one{# punkts}other{# punkti}}</translation>
 <translation id="4352022650330571548">rakstīt “<ph name="PHRASE" />”</translation>
 <translation id="4360738659108163902">Noklikšķināt ar peles labo pogu</translation>
 <translation id="4372435075475052704">min.: <ph name="X" /></translation>
@@ -569,7 +546,6 @@
 <translation id="4511186779140817916">Lobītu mandeļu</translation>
 <translation id="451510441928265982">Nav iepriekšējā 2. līmeņa virsraksta.</translation>
 <translation id="4517854969512651305">Palielināt vērtību</translation>
-<translation id="4532633738839459153">{COUNT,plural, =1{slīpsvītra}zero{# slīpsvītru}one{# slīpsvītra}other{# slīpsvītras}}</translation>
 <translation id="4537277403911487429">Nākamais līdzīgais vienums</translation>
 <translation id="4547556996012970016">Nākamais 5. līmeņa virsraksts</translation>
 <translation id="4562381607973973258">Galvene</translation>
@@ -678,7 +654,6 @@
 <translation id="5310788376443009632">noņemts:</translation>
 <translation id="5316825363044614340">pāriet uz nākamo rindiņu</translation>
 <translation id="5320727453979144100">Saistošais režīms iespējots</translation>
-<translation id="5321085947096604457">{COUNT,plural, =1{komats}zero{# komatu}one{# komats}other{# komati}}</translation>
 <translation id="532485153932049746">Teksta formatējums
         <ph name="FONT_SIZE_STRING" />
         <ph name="COLOR_STRING" />
@@ -697,10 +672,8 @@
 <translation id="5402367795255837559">Braila raksts</translation>
 <translation id="5402791055281059602">Modālie brīdinājumi</translation>
 <translation id="5406272775687194041">Sākt vilkšanu un nomešanu</translation>
-<translation id="5407530583102765689">{COUNT,plural, =1{semikols}zero{# semikolu}one{# semikols}other{# semikoli}}</translation>
 <translation id="5420259671171615858">Meklēt izvēlnēs</translation>
 <translation id="5435274640623994081">Iespējot audio ikonas reģistrēšanu</translation>
-<translation id="5436105723448703439">{COUNT,plural, =1{zīme “mazāks par”}zero{# zīmju “mazāks par”}one{# zīme “mazāks par”}other{# zīmes “mazāks par”}}</translation>
 <translation id="5444587279251314700">(aktīva)</translation>
 <translation id="5451268436205074266">punkti <ph name="DOT" /></translation>
 <translation id="5452267669091857717">Nav nākamā 1. līmeņa virsraksta.</translation>
@@ -726,7 +699,6 @@
 <translation id="5597170376237141345">Nākamā izvēles rūtiņa</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, neatlasīta radiopoga</translation>
 <translation id="5601172225407283979">Veikt noklusējuma darbību</translation>
-<translation id="5604302400025591178">{COUNT,plural, =1{kvadrātveida aizzīme}zero{# kvadrātveida aizzīmju}one{# kvadrātveida aizzīme}other{# kvadrātveida aizzīmes}}</translation>
 <translation id="5608798115546226984">Automātiskā pabeigšana: iekļauta</translation>
 <translation id="5616029807486814372">Nākamā nodarbība</translation>
 <translation id="561939826962581046">laiks</translation>
@@ -786,21 +758,18 @@
 <translation id="5921587111466148855">Nodaļa</translation>
 <translation id="5923780477617566089">Pašreizējais datums</translation>
 <translation id="5926889058434275234">Pilns žestu saraksts ir pieejams palīdzības centrā.</translation>
-<translation id="5937336320314038555">{COUNT,plural, =1{vienādības zīme}zero{# vienādības zīmju}one{# vienādības zīme}other{# vienādības zīmes}}</translation>
 <translation id="5947651424015173580">Veikt dubultklikšķi ar peli</translation>
 <translation id="5948123859135882163">Pārslēgt matemātisko izteiksmju interpretāciju starp strukturālo un semantisko.</translation>
 <translation id="5955304353782037793">lietojumprogramma</translation>
 <translation id="5956928062748260866">Dialoglodziņš</translation>
 <translation id="5963413905009737549">Sadaļa</translation>
 <translation id="5968607524793740041">Rādīt kontekstizvēlni</translation>
-<translation id="597121107011153418">{COUNT,plural, =1{ar # vienumu}zero{ar # vienumiem}one{ar # vienumu}other{ar # vienumiem}}</translation>
 <translation id="5981446804259161541">Gaiši ciānzila</translation>
 <translation id="5983179082906765664">Palielināt navigācijas precizitāti</translation>
 <translation id="5988563937187882754">Paskatīties pa labi.</translation>
 <translation id="5992285135956208197">Grafikas dokuments</translation>
 <translation id="5999630716831179808">Balss veidi</translation>
 <translation id="6006050241733874051">Veidlapa</translation>
-<translation id="6006064078185310784">{COUNT,plural, =1{atpakaļvērstā slīpsvītra}zero{# atpakaļvērsto slīpsvītru}one{# atpakaļvērstā slīpsvītra}other{# atpakaļvērstās slīpsvītras}}</translation>
 <translation id="6010616110396250088">Kārtošana dilstošā secībā</translation>
 <translation id="6017514345406065928">Zaļa</translation>
 <translation id="602001110135236999">Ritināt pa kreisi</translation>
@@ -840,7 +809,6 @@
 <translation id="6325241889020214828">kopēt tekstu “<ph name="TEXT" />”.</translation>
 <translation id="6348657800373377022">Kombinētais lodziņš</translation>
 <translation id="6348869651006731065">Dūmakaini pelēka</translation>
-<translation id="6350358010104919766">{COUNT,plural, =1{aizzīme}zero{# aizzīmju}one{# aizzīme}other{# aizzīmes}}</translation>
 <translation id="6357433033180746873">Nav šūnas pa labi.</translation>
 <translation id="6364795331201459219">6. līmeņa virsraksts</translation>
 <translation id="6368143427468974988">Iepriekšējais virsraksts</translation>
@@ -852,7 +820,6 @@
 <translation id="6406989068857078334">Samazināts peles ātrums. Vēlreiz <ph name="GESTURE" />, lai noklikšķinātu</translation>
 <translation id="6411569524720229058">Rudens</translation>
 <translation id="6417265370957905582">Google asistents</translation>
-<translation id="641759969622533235">{COUNT,plural, =1{kols}zero{# kolu}one{# kols}other{# koli}}</translation>
 <translation id="6444046323172968959">Brīdinājuma dialoglodziņš</translation>
 <translation id="6452403590345320472">Satura rādītājs</translation>
 <translation id="6468049171101508116">Nākamā poga</translation>
@@ -881,7 +848,6 @@
 <translation id="669617842401078250">Faila “<ph name="FILE_NAME" />” lejupielāde pārtraukta</translation>
 <translation id="6696967141280706829">Ievadraksts</translation>
 <translation id="6697092096875747123">Iepriekšējais kombinētais lodziņš</translation>
-<translation id="6702609185760332517">{COUNT,plural, =1{izsaukuma zīme}zero{# izsaukuma zīmju}one{# izsaukuma zīme}other{# izsaukuma zīmes}}</translation>
 <translation id="670717715607710284">Izslēgt ekrānu</translation>
 <translation id="6714813999819678458">Iepriekšējais 2. līmeņa virsraksts</translation>
 <translation id="6730312624811567147">Lai pārietu uz lapas sākumu vai beigām, izmantojiet meklēšanas taustiņu un kreiso vai labo bultiņu. Lai pārietu uz rindiņas sākumu vai beigām, izmantojiet meklēšanas taustiņu, vadības taustiņu un kreiso vai labo bultiņu. Lai lapā pārietu uz augšu vai uz leju, izmantojiet meklēšanas taustiņu un augšupvērsto vai lejupvērsto bultiņu.</translation>
@@ -978,7 +944,6 @@
 <translation id="7344012264516629579">Varat izmantot citas pārejas komandas, piemēram, pāreju uz saitēm, pogām un izvēles rūtiņām. Pilns pārejas komandu saraksts atrodams ChromeVox izvēlnēs, ko var atvērt, nospiežot meklēšanas taustiņu un punktu.</translation>
 <translation id="7356165926712028380">Pāriet uz 8 punktu Braila rakstu</translation>
 <translation id="7356610683936413584">Detalizēta informācija par aprakstu sarakstu</translation>
-<translation id="7370432716629432284">{COUNT,plural, =1{ampersands}zero{# ampersandu}one{# ampersands}other{# ampersandi}}</translation>
 <translation id="737396357417333429">noklikšķināms elements</translation>
 <translation id="738899727977260036">Pelēkzila</translation>
 <translation id="7393979322571982935">Skaņas un iestatījumi</translation>
@@ -1017,7 +982,6 @@
 <translation id="7637342083105831460">Nospiediet meklēšanas taustiņu un labo bultiņu, lai atrastu vingrināšanās apgabalu, vai pogu Nākamā nodarbība. Pēc tam nospiediet meklēšanas taustiņu un atstarpes taustiņu, lai aktivizētu.</translation>
 <translation id="7639968568612851608">Tumši pelēka</translation>
 <translation id="7663318257180412551">2. līmeņa virsraksts</translation>
-<translation id="7668307052366682650">{COUNT,plural, =1{stunda}zero{stundas}one{stunda}other{stundas}}</translation>
 <translation id="7674576868851035240">Nākamā saite</translation>
 <translation id="7674768236845044097">iezīmēt</translation>
 <translation id="7676847077928500578">Atiestatīt teksta pārvēršanas runā iestatījumus</translation>
@@ -1053,7 +1017,6 @@
 <translation id="7927711904086083099">Nav atlasīts</translation>
 <translation id="7935627501098484003">Laika kontrole</translation>
 <translation id="7939428177581522200">pievienots atlasei</translation>
-<translation id="794091007957014205">{COUNT,plural, =1{“et” zīme}zero{# “et” zīmju}one{# “et” zīme}other{# “et” zīmes}}</translation>
 <translation id="7942349550061667556">Sarkana</translation>
 <translation id="7948364528129376623">Nav nākamās apmeklētās saites.</translation>
 <translation id="7952460583030260752">Komandu atsauces</translation>
@@ -1064,7 +1027,6 @@
 <translation id="8004507136466386272">Vārdi</translation>
 <translation id="8004512796067398576">Palielināt</translation>
 <translation id="8007540374018858731">3. līmeņa virsraksts</translation>
-<translation id="8009786657110126785">{COUNT,plural, =1{pēdiņu rakstzīme}zero{# pēdiņu rakstzīmju}one{# pēdiņu rakstzīme}other{# pēdiņu rakstzīmes}}</translation>
 <translation id="8017588669690167134">Runa izslēgta</translation>
 <translation id="801990297710781303">Vēre</translation>
 <translation id="8028833145828956995">ChromeVox var izmantot skārienekrānā.</translation>
@@ -1093,7 +1055,6 @@
 <translation id="8158033275290782295">atlasīt visu</translation>
 <translation id="816818801578874684">Šis ir pirmais virsraksts. Nospiediet meklēšanas taustiņu un H, lai pāriet uz nākamo virsrakstu.</translation>
 <translation id="8173092779156526980">Velciet ar četriem pirkstiem pa kreisi</translation>
-<translation id="817440585505441544">{COUNT,plural, =1{pasvītra}zero{# pasvītru}one{# pasvītra}other{# pasvītras}}</translation>
 <translation id="817529114347680055">Ieslēgt ekrānu</translation>
 <translation id="8179976553408161302">Ievadīt</translation>
 <translation id="8184828902145951186">rinda</translation>
@@ -1118,7 +1079,6 @@
 <translation id="8313653172105209786">direktorijs</translation>
 <translation id="8316881042119029234">Senu mežģīņu</translation>
 <translation id="8326783648485765113">Mauriņa zaļa</translation>
-<translation id="8345569862449483843">{COUNT,plural, =1{numura zīme}zero{# numura zīmju}one{# numura zīme}other{# numura zīmes}}</translation>
 <translation id="8351821207686449674">Pārslēgt subtitrus</translation>
 <translation id="8378855320830505539">Reģions</translation>
 <translation id="8382679411218029383">Automātiskā pabeigšana: iekļauta un sarakstā</translation>
@@ -1161,10 +1121,8 @@
 <translation id="8659501358298941449">Nolaižamie saraksti</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> beidzas</translation>
 <translation id="867187640362843212">5. līmeņa virsraksts</translation>
-<translation id="8690400660839620419">{COUNT,plural, =1{}zero{ligzdotais līmenis numur #}one{ligzdotais līmenis numur #}other{ligzdotais līmenis numur #}}</translation>
 <translation id="8693391540059827073">Mans mīļākais gadalaiks</translation>
 <translation id="8696284982970258155">Melones zaļa</translation>
-<translation id="8697111817566059991">{COUNT,plural, =1{vertikālā svītra}zero{# vertikālo svītru}one{# vertikālā svītra}other{# vertikālās svītras}}</translation>
 <translation id="8741370088760768424">Norāde: nospiediet meklēšanas taustiņu un atstarpes taustiņu, lai aktivizētu pašreizējo elementu.</translation>
 <translation id="8743786158317878347">ievadīt strukturētu saturu, piemēram, tabulas</translation>
 <translation id="8746846427395705317">pāriet uz iepriekšējo vārdu</translation>
@@ -1214,7 +1172,6 @@
 <translation id="9099429023611373837">izgriezt</translation>
 <translation id="9108370397979208512">matemātiska izteiksme</translation>
 <translation id="9108589040018540527">ritjosla</translation>
-<translation id="911476240645808512">{COUNT,plural, =1{procentu zīme}zero{# procentu zīmju}one{# procentu zīme}other{# procentu zīmes}}</translation>
 <translation id="9128414153595658330">dialoglodziņš</translation>
 <translation id="9133928141873682933">Haki</translation>
 <translation id="9149560530563164529">sadaļa</translation>

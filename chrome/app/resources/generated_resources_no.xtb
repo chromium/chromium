@@ -3173,6 +3173,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3188465121994729530">Glidende gjennomsnitt</translation>
 <translation id="3189187154924005138">Stor markør</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{1 passord og andre elementer er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din.}other{{PASSWORD_COUNT} passord og andre elementer er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din.}}</translation>
+<translation id="319044078641740013">For komme enkelt tilbake til nettsteder du har besøkt, synkroniser loggen og fanene dine til <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3190558889382726167">Passordet er lagret</translation>
 <translation id="3192586965067888278">Beskriv problemet i detalj. Tilbakemeldinger sendes til Google for menneskelig evaluering og kan brukes til å forbedre eller utvikle Googles produkter og tjenester.</translation>
 <translation id="3192947282887913208">Lydfiler</translation>
@@ -5700,7 +5701,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Cast skjermen</translation>
 <translation id="496185450405387901">Denne appen er installert av administratoren.</translation>
-<translation id="4963079328730030450">Organisasjonen din styrer hvordan dataene som samles inn av disse funksjonene, kan brukes.</translation>
 <translation id="4963603093937263654">Sørg for at varsler er påslått på <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Fjern gjeldende fane</translation>
 <translation id="4964455510556214366">Oppsett</translation>
@@ -10348,6 +10348,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8280848878018088610">Brusende bølger i havet, med en fantasiaktig by og borg i bakgrunnen, med en mørk stemning.</translation>
 <translation id="828180235270931531">Andre tilgjengelige skrivere</translation>
 <translation id="8281886186245836920">Hopp over</translation>
+<translation id="8283802069507225582">For å fortsette der du slapp på andre enheter, synkroniser loggen og fanene dine til <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">alle <ph name="WEBSITE_1" />-nettsteder</translation>
 <translation id="8284326494547611709">Teksting</translation>
 <translation id="8286036467436129157">Logg på</translation>
@@ -11026,6 +11027,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8754200782896249056">&lt;p&gt;Når <ph name="PRODUCT_NAME" /> kjører i et støttet skrivebordsmiljø, brukes systemets proxy-tjenerinnstillinger. Men enten støttes ikke systemet, eller så oppsto det et problem under oppstart av systemkonfigurasjonen.&lt;/p&gt;
 
         &lt;p&gt;Du kan likevel konfigurere via kommandolinjen. Les mer om flagg og miljøvariabler i &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;.&lt;/p&gt;</translation>
+<translation id="8754810799862630650">For å se åpne faner fra andre datamaskiner og telefoner, synkroniser loggen og fanene dine til <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">Utfør sikkerhetsrelaterte oppgaver for organisasjonen din, som å administrere sertifikater og nøkler som er lagret på enheten</translation>
 <translation id="875532100880844232">Velg en handling for hver tast for <ph name="DEVICE_NAME" /></translation>
 <translation id="8755376271068075440">&amp;Større</translation>

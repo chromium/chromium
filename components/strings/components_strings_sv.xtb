@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Vattenfilter och -renare</translation>
 <translation id="1036348656032585052">Inaktivera</translation>
 <translation id="1036881361735705143">C4-kuvert</translation>
-<translation id="1038106730571050514">Visa förslag</translation>
 <translation id="1038842779957582377">okänt namn</translation>
 <translation id="1041998700806130099">Meddelande på arbetsorder</translation>
 <translation id="1044897699341250361">Vad innebär det?</translation>
@@ -978,7 +977,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2673968385134502798">Spel</translation>
 <translation id="2674170444375937751">Vill du ta bort de här sidorna från historiken?</translation>
 <translation id="2674524144218093528">Målning av hus</translation>
-<translation id="2674804415323431591">Dölj förslag</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> flikgrupper är inte längre tillgängliga</translation>
 <translation id="2677748264148917807">Lämna</translation>
 <translation id="2683195745483370038">Andra resultat hittades</translation>
@@ -2633,7 +2631,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="55293785478302737">Kanthäftning</translation>
 <translation id="553377674408670169">Jobb inom utbildning</translation>
 <translation id="5534785731327961487">Bra erbjudande nu</translation>
-<translation id="5536214594743852365">Visa avsnittet <ph name="SECTION" /></translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 webbplats (fler på synkroniserade enheter)}other{+ # webbplatser (fler på synkroniserade enheter)}}</translation>
 <translation id="553782666181800029">Chou 2-kuvert</translation>
 <translation id="5538270463355278784">automatisk helskärm</translation>
@@ -3658,7 +3655,6 @@ Mer information.
 <translation id="7316521168101843192">Sparar filen i Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Anslutningshjälp</translation>
-<translation id="7323804146520582233">Dölj avsnittet <ph name="SECTION" /></translation>
 <translation id="733354035281974745">Åsidosätt enhetens lokala konto</translation>
 <translation id="7334320624316649418">&amp;Gör om Ändra ordning</translation>
 <translation id="7335157162773372339">Får begära åtkomst till kameran</translation>
@@ -3789,7 +3785,6 @@ Mer information.
 <translation id="7517414872996418597">C10-kuvert</translation>
 <translation id="7518003948725431193">Det fanns ingen webbsida på webbadressen: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Avsnittet <ph name="SECTION" /> har dolts</translation>
 <translation id="752189128961566325">Du kan använda den i olika produkter från Google</translation>
 <translation id="7523408071729642236">Tillverkning</translation>
 <translation id="7525067979554623046">Skapa</translation>
@@ -4242,7 +4237,6 @@ Mer information.
 <translation id="8297545700510100061">Cookies och annan webbplatsdata används för att komma ihåg dig, till exempel vid inloggning och annonsanpassning. Du kan hantera cookies för alla webbplatser i <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">wifi-nätverket du använder (<ph name="WIFI_NAME" />) kanske kräver att du besöker <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Ange koden</translation>
-<translation id="8303854710873047864">Avsnittet <ph name="SECTION" /> visades</translation>
 <translation id="8304912090860925649">Ny jämförelsetabell</translation>
 <translation id="830498451218851433">Enkelfalsning</translation>
 <translation id="8308653357438598313">Livestreaming</translation>

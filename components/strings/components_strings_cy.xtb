@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Hidlau Dŵr a Phurwyr</translation>
 <translation id="1036348656032585052">Diffodd</translation>
 <translation id="1036881361735705143">Amlen C4</translation>
-<translation id="1038106730571050514">Dangos awgrymiadau</translation>
 <translation id="1038842779957582377">enw anhysbys</translation>
 <translation id="1041998700806130099">Neges taflen swyddi</translation>
 <translation id="1044897699341250361">Beth mae hyn yn ei olygu</translation>
@@ -978,7 +977,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2673968385134502798">Gemau</translation>
 <translation id="2674170444375937751">Ydych chi'n siŵr eich bod chi am ddileu'r tudalennau hyn o'ch hanes?</translation>
 <translation id="2674524144218093528">Peintio a Gorffen Tai</translation>
-<translation id="2674804415323431591">Cuddio awgrymiadau</translation>
 <translation id="26774279487328902">Nid yw <ph name="GROUP_COUNT" /> o grwpiau tabiau ar gael mwyach</translation>
 <translation id="2677748264148917807">Gadael</translation>
 <translation id="2683195745483370038">Cafwyd canlyniadau eraill</translation>
@@ -2633,7 +2631,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="55293785478302737">Pwyth ymyl</translation>
 <translation id="553377674408670169">Swyddi Addysg</translation>
 <translation id="5534785731327961487">Bargen Dda Nawr</translation>
-<translation id="5536214594743852365">Dangos yr adran "<ph name="SECTION" />"</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+1 wefan (rhagor ar ddyfeisiau sydd wedi'u cysoni)}zero{+ # gwefannau (rhagor ar ddyfeisiau sydd wedi'u cysoni)}two{+ # wefan (rhagor ar ddyfeisiau sydd wedi'u cysoni)}few{+ # gwefan (rhagor ar ddyfeisiau sydd wedi'u cysoni)}many{+ # gwefan (rhagor ar ddyfeisiau sydd wedi'u cysoni)}other{+ # gwefan (rhagor ar ddyfeisiau sydd wedi'u cysoni)}}</translation>
 <translation id="553782666181800029">Amlen Chou 2</translation>
 <translation id="5538270463355278784">sgrîn lawn awtomatig</translation>
@@ -3657,7 +3654,6 @@ Manylion ychwanegol:
 <translation id="7316521168101843192">Wrthi'n cadw'r ffeil i Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Help gyda Chysylltu</translation>
-<translation id="7323804146520582233">Cuddio'r adran "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">Diystyru cyfrif lleol dyfais</translation>
 <translation id="7334320624316649418">&amp;Ail-wneud aildrefnu</translation>
 <translation id="7335157162773372339">Yn gallu gofyn am ddefnyddio eich camera</translation>
@@ -3788,7 +3784,6 @@ Manylion ychwanegol:
 <translation id="7517414872996418597">Amlen C10</translation>
 <translation id="7518003948725431193">Ni chanfuwyd tudalen we ar gyfer y cyfeiriad gwe: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Mae'r adran "<ph name="SECTION" />" wedi'i chuddio</translation>
 <translation id="752189128961566325">Gallwch ei ddefnyddio ar draws cynhyrchion Google</translation>
 <translation id="7523408071729642236">Cynhyrchu</translation>
 <translation id="7525067979554623046">Creu</translation>
@@ -3865,6 +3860,7 @@ Manylion ychwanegol:
 <translation id="7639968568612851608">Llwyd Tywyll</translation>
 <translation id="7646681339175747202">Canfuwyd y cyfrinair rydych newydd ei ddefnyddio mewn achos o dor data. Mae Rheolwr Cyfrineiriau Google yn argymell newid eich cyfrinair ar unwaith.</translation>
 <translation id="7647206758853451655">Ansawdd argraffu</translation>
+<translation id="7648527891719919697">Bydd y wefan hon yn parhau i fod wedi'i rhwystro oherwydd bod gennych Ddiogelwch Uwch wedi'i droi ymlaen yng <ph name="BEGIN_ANDROID_SETTINGS_LINK" />ngosodiadau Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Dysgu rhagor am y rhybudd hwn<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Storio ffeiliau ar y ddyfais hon</translation>
 <translation id="7653957176542370971">Mae'r ddalen trinyddion taliadau ar gau</translation>
 <translation id="7654909834015434372">Pan fyddwch yn golygu anodiadau, bydd y ddogfen hon yn dychwelyd i'w chylchroad gwreiddiol</translation>
@@ -4240,7 +4236,6 @@ Manylion ychwanegol:
 <translation id="8297545700510100061">Defnyddir cwcis a data gwefan eraill i'ch cofio, er enghraifft i'ch mewngofnodi neu i bersonoleiddio hysbysebion. I reoli cwcis ar gyfer pob gwefan, gweler <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Mae'n bosib y bydd y Wi-Fi rydych yn ei ddefnyddio (<ph name="WIFI_NAME" />) yn ei gwneud yn ofynnol i chi fynd i <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Rhowch y cod</translation>
-<translation id="8303854710873047864">Dangosir yr adran "<ph name="SECTION" />"</translation>
 <translation id="8304912090860925649">Tabl Cymharu Newydd</translation>
 <translation id="830498451218851433">Hanner Plyg</translation>
 <translation id="8308653357438598313">Ffrydio Fideo Byw</translation>

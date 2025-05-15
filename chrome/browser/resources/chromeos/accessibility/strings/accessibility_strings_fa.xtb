@@ -117,7 +117,6 @@
 <translation id="1616111909442424068">گندمی</translation>
 <translation id="1618597272655350600">شرح کاملی از موقعیت کنونی را اعلام می‌کند</translation>
 <translation id="1627222324347828322">سفید گچی</translation>
-<translation id="1639634871799530612">{COUNT,plural, =1{علامت بزرگ‌تر}one{# علامت بزرگ‌تر}other{# علامت بزرگ‌تر}}</translation>
 <translation id="1653266918374749391">عنوان قبلی سطح ۳</translation>
 <translation id="1657616855184033958">نمایش فیلترهای جریان رویداد</translation>
 <translation id="1659072772017912254">بررسی نشده</translation>
@@ -162,7 +161,6 @@
 <translation id="1964135212174907577">شیء بعدی</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">‏نمایش فرمان‌های بریل در منوهای ChromeVox</translation>
-<translation id="2007545860310005685">{COUNT,plural, =1{کروشه چپ}one{# کروشه چپ}other{# کروشه چپ}}</translation>
 <translation id="2009187674653301682">بالانگاشت نیست</translation>
 <translation id="2010555995361223825">‏منوهای ChromeVox</translation>
 <translation id="203030071582665758">عنوان سطح ۴ قبلی وجود ندارد</translation>
@@ -185,7 +183,6 @@
 <translation id="2169714232367507776">کلیک روی مورد کنونی</translation>
 <translation id="2179452035581866348">‏ChromeVox با استفاده از آواها اطلاعات ضروری و تکمیلی را به شما می‌دهد. با یادگیری معنای هر آوا، می‌توانید از این آواها برای پیمایش سریع‌تر استفاده کنید. همین‌که احساس راحتی کردید، می‌توانید توضیحات مفصل صوتی را خاموش کنید و برای کسب اطلاعات ضروری درباره صفحه به آنها تکیه کنید. اینجا فهرست کاملی از آواها و معنایشان آورده شده است.</translation>
 <translation id="2183409941723714159">پیمایش بااستفاده از کلید جهش</translation>
-<translation id="2188751878842439466">{COUNT,plural, =1{پرانتز بسته}one{# پرانتز بسته}other{# پرانتز بسته}}</translation>
 <translation id="2197863150503783129">کاکائویی</translation>
 <translation id="2199994615414171367">عبارت ریاضی قبلی</translation>
 <translation id="2203046366315513658">کاهش مقدار</translation>
@@ -231,7 +228,6 @@
 <translation id="2462626033734746142">گروه دکمه رادیویی</translation>
 <translation id="2467741090055146971">لغو انتخاب</translation>
 <translation id="2471138580042810658">عنوان ۶</translation>
-<translation id="248982282205370495">{COUNT,plural, =1{ستاره}one{# ستاره}other{# ستاره}}</translation>
 <translation id="2490721194269245365">بادمجانی</translation>
 <translation id="249330843868392562">باز کردن تنظیمات نوشتار به گفتار</translation>
 <translation id="2497706219848005458">مغز پسته‌ای</translation>
@@ -266,7 +262,6 @@
 <translation id="2692503699962701720">تغییر زیروبمی صدا هنگام خوانده شدن انواع عناصر و نوشتار قالب‌بندی‌شده</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">نوشتار پیشنهادی برای تبدیل</translation>
-<translation id="2704429362613743330">{COUNT,plural, =1{پرانتز باز}one{# پرانتز باز}other{# پرانتز باز}}</translation>
 <translation id="270523456882008230">نکات: برای فعال کردن مورد کنونی، با یک انگشت دو تک‌ضرب بزنید.</translation>
 <translation id="2705875883745373140">فشرده نشده</translation>
 <translation id="2708078563826046398">هلویی پررنگ</translation>
@@ -280,7 +275,6 @@
 <translation id="2756452585631602151">برچسبی سفارشی وارد کنید</translation>
 <translation id="2766299274563946262">سلولی در سمت چپ وجود ندارد</translation>
 <translation id="2770947749427257887">وارد شدن به حالت پیمایش</translation>
-<translation id="2783001728278437613">{COUNT,plural, =1{#+}one{#+}other{#+}}</translation>
 <translation id="2792200646155001340">همچنین می‌توانید با یک انگشت از راست به چپ بکشید تا به مورد قبلی بروید. امتحان کنید.</translation>
 <translation id="280499067616661124">‏«پیدا کردن در صفحه» ChromeVox</translation>
 <translation id="2811204574343810641">ردیف</translation>
@@ -299,9 +293,7 @@
 <translation id="2876760662374103627">«کنترل چهره» فعال است</translation>
 <translation id="2879867157561757640">تند کشیدن سه انگشت به پایین</translation>
 <translation id="288178314850623291">‏برای رد شدن و رفتن به انواع عناصر، از فرمان‌های پرش استفاه کنید. برای پرش به جلو بین عناوین، «جستجو» + H یا برای پرش به عقب «جستجو» + Shift + H را فشار دهید.</translation>
-<translation id="2885764457467528513">{COUNT,plural, =1{دقیقه}one{دقیقه}other{دقیقه}}</translation>
 <translation id="2894654529758326923">اطلاعات</translation>
-<translation id="2899328121302785497">{COUNT,plural, =1{آکولاد چپ}one{# آکولاد چپ}other{# آکولاد چپ}}</translation>
 <translation id="2909584066358367921">دکمه بعدی موجود نیست</translation>
 <translation id="2911433807131383493">‏باز کردن برنامه آموزشی ChromeVox</translation>
 <translation id="2912405967290226587">تند کشیدن سه انگشت به چپ</translation>
@@ -311,7 +303,6 @@
 <translation id="2943596527105977722">ماشی سیر</translation>
 <translation id="2964026537669811554">سرگروه</translation>
 <translation id="2968634799764242930">سبز لجنی</translation>
-<translation id="296951647852255825">{COUNT,plural, =1{علامت جهش}one{# علامت جهش}other{# علامت جهش}}</translation>
 <translation id="2972205263822847197">راهنمای ابزار</translation>
 <translation id="2976476721782829799">همچنین می‌توانید با کشیدن یک انگشت روی صفحه، در صفحه حرکت کنید. به این کار «کاوش با لمس» گفته می‌شود. برای خواندن مابقی این درس، انگشتتان روی صفحه بکشید.</translation>
 <translation id="297825089465017871">تند کشیدن دو انگشت به راست</translation>
@@ -322,7 +313,6 @@
 <translation id="3014130421870723208">‏‎@ویرایش ۸ نقطه‌ای</translation>
 <translation id="3018210433491759145">‏ChromeVox درحال بار شدن است</translation>
 <translation id="3030432017085518523">دکمه رادیویی مورد منو</translation>
-<translation id="3037392361165431467">{COUNT,plural, =1{آپاستروف}one{# آپاستروف}other{# آپاستروف}}</translation>
 <translation id="3040901448410802366">نشانگر پیشرفت</translation>
 <translation id="3046838483509668188">‏گزینه‌های ChromeVox</translation>
 <translation id="3060756054951570867">منوی <ph name="TITLE" /> باز شد</translation>
@@ -358,7 +348,6 @@
 <translation id="3159493096109238499">بژ</translation>
 <translation id="316542773973815724">پیمایش</translation>
 <translation id="3167446923957429259">حرکت دادن دهان به‌سمت چپ</translation>
-<translation id="3172700825913348768">{COUNT,plural, =1{فاصله}one{# فاصله}other{# فاصله}}</translation>
 <translation id="3179119189286472195">پیوند نیست</translation>
 <translation id="3180990259147710757">بردن فک به چپ</translation>
 <translation id="320041337977930740">تغییر سبک نمایش به حالت بین‌صفحه‌ای</translation>
@@ -395,7 +384,6 @@
 <translation id="3359142382821736686">seprtr</translation>
 <translation id="3363015957057974366">برای رفتن به مورد تعاملی بعدی در صفحه‌نمایش، از کلید «جهش» نیز می‌توانید استفاده کنید. کلید «جهش» را که درست در بالای کلید «جستجو» قرار دارد پیدا کنید. برای ادامه، کلید «جهش» را فشار دهید.</translation>
 <translation id="3366946046494222386">آموزش گام‌به‌گام <ph name="TOPIC" />، <ph name="LESSONS" /> درس</translation>
-<translation id="3374537878095184207">{COUNT,plural, =1{علامت به اضافه}one{# علامت به اضافه}other{# علامت به اضافه}}</translation>
 <translation id="338583716107319301">جداساز</translation>
 <translation id="3389259863310851658">فیلد قبلی فرم</translation>
 <translation id="3390740059150071453">نگاه کردن به چپ</translation>
@@ -414,12 +402,8 @@
 <translation id="3469413619751135069">سبز مات</translation>
 <translation id="3473744269398144689">شروع کردن دیکته</translation>
 <translation id="3490765818161916458">جدول فهرست</translation>
-<translation id="3492609944033322585">{COUNT,plural, =1{کروشه راست}one{# کروشه راست}other{# کروشه راست}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
-<translation id="3497063866483065785">{COUNT,plural, =1{علامت سؤال}one{# علامت سؤال}other{# علامت سؤال}}</translation>
 <translation id="3505359110822747654">‏جمع کردن منوهای ChromeVox</translation>
-<translation id="3514822174137761109">{COUNT,plural, =1{علامت هشتک}one{# علامت هشتک}other{# علامت هشتک}}</translation>
-<translation id="3518600448524470129">{COUNT,plural, =1{خالک سفید}one{# خالک سفید}other{# خالک سفید}}</translation>
 <translation id="352577523970648069">فیلد نوشتاری قابل ویرایش</translation>
 <translation id="3538907380453898475">فهرست شرح</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> را ببرید.</translation>
@@ -436,9 +420,7 @@
 <translation id="3616016838842055984">اگر به موردی رسیدید که می‌خواهید روی آن کلیک کنید، کلیدهای «جستجو» + «فاصله» را فشار دهید. برای ادامه، اکنون آن را امتحان کنید.</translation>
 <translation id="3616113530831147358">صوتی</translation>
 <translation id="3622350485154495700">دو ضربه سریع با یک انگشت</translation>
-<translation id="3646890046000188562">{COUNT,plural, =1{نقل قول وارونه}one{# نقل قول وارونه}other{# نقل قول وارونه}}</translation>
 <translation id="3650317109285159359">chkmnuitm</translation>
-<translation id="3655855170848725876">{COUNT,plural, =1{علامت دلار}one{# علامت دلار}other{# علامت دلار}}</translation>
 <translation id="3659787053479271466">هشدار</translation>
 <translation id="366419593095697301">نکته: اگر مایلید از این آموزش گام‌به‌گام خارج شوید، کلید «گریز» را فشار دهید.</translation>
 <translation id="3676062394766691318">‏پس‌از راه‌اندازی دستگاه، می‌توانید با فشار دادن کلیدهای «جستجو» + O و سپس T، برگردید و آموزش‌های گام‌به‌گام بیشتری را مشاهده کنید.</translation>
@@ -497,16 +479,13 @@
 <translation id="4054936709456751127">sts</translation>
 <translation id="4058278702844053247">صفحه در حال بارگیری</translation>
 <translation id="4065205963140826639">اکنون برای پیدا کردن دکمه «بعدی»، از :«جستجو» + پیکان راست استفاده کنید و سپس برای کلیک کردن روی آن روی «فاصله» + «جستجو» فشار دهید.</translation>
-<translation id="4081085052247739398">{COUNT,plural, =1{علامت مد}one{# علامت مد}other{# علامت مد}}</translation>
 <translation id="409334809956508737">شیء قبلی</translation>
 <translation id="4099274309791143834">دارای منوی فرعی</translation>
 <translation id="4101527861445851766">چارگوش انتخاب علامت‌خورده</translation>
 <translation id="410225014223200513">دایره ساختن با لب‌ها</translation>
 <translation id="4115378294792113321">سرخابی</translation>
 <translation id="4116415223832267137">هشدار</translation>
-<translation id="4148180433151187540">{COUNT,plural, =1{آکولاد راست}one{# پرانتز راست}other{# آکولاد راست}}</translation>
 <translation id="4159784952369912983">بنفش</translation>
-<translation id="4161104397932142764">{COUNT,plural, =1{ثانیه}one{ثانیه}other{ثانیه}}</translation>
 <translation id="4161663686871496107">‏بازخورد گفتاری ChromeVox آماده است</translation>
 <translation id="4176463684765177261">غیرفعال شد</translation>
 <translation id="4187322598335821254">برای جابه‌جایی بین خطوط، تند به‌بالا یا پایین بکشید</translation>
@@ -518,7 +497,6 @@
 <translation id="4204864733111726379">پوست پیازی</translation>
 <translation id="42164919740161077">آبی لجنی</translation>
 <translation id="4217571870635786043">املا</translation>
-<translation id="4218529045364428769">{COUNT,plural, =1{خط تیره}one{# خط تیره}other{# خط تیره}}</translation>
 <translation id="4220024144662591089">از <ph name="START_PHRASE" /> تا <ph name="END_PHRASE" /> را انتخاب کن</translation>
 <translation id="4221012616705981690">فهرست قبلی وجود ندارد</translation>
 <translation id="4225355998815256469">کنترل‌های فرم</translation>
@@ -540,7 +518,6 @@
 <translation id="4300318234632215983">اعلان نشانی وب پشت یک پیوند</translation>
 <translation id="4321179778687042513">مهار</translation>
 <translation id="4322625298640984693">قهوه‌ای مایل به زرد</translation>
-<translation id="4342180618051828363">{COUNT,plural, =1{نقطه}=3{سه نقطه}one{# نقطه}other{# نقطه}}</translation>
 <translation id="4352022650330571548"><ph name="PHRASE" /> را تایپ کنید</translation>
 <translation id="4360738659108163902">کلیک راست موشواره</translation>
 <translation id="4372435075475052704">حداقل: <ph name="X" /></translation>
@@ -569,7 +546,6 @@
 <translation id="4511186779140817916">کاهگلی</translation>
 <translation id="451510441928265982">عنوان سطح ۲ قبلی وجود ندارد</translation>
 <translation id="4517854969512651305">افزایش مقدار</translation>
-<translation id="4532633738839459153">{COUNT,plural, =1{ممیز}one{# ممیز}other{# ممیز}}</translation>
 <translation id="4537277403911487429">مورد مشابه بعدی</translation>
 <translation id="4547556996012970016">عنوان بعدی سطح ۵</translation>
 <translation id="4562381607973973258">Header</translation>
@@ -678,7 +654,6 @@
 <translation id="5310788376443009632">حذف شد:</translation>
 <translation id="5316825363044614340">رفتن به خط بعدی</translation>
 <translation id="5320727453979144100">حالت چسبان فعال شد</translation>
-<translation id="5321085947096604457">{COUNT,plural, =1{کاما}one{# کاما}other{# کاما}}</translation>
 <translation id="532485153932049746">قالب‌بندی نوشتار
     <ph name="FONT_SIZE_STRING" />
     <ph name="COLOR_STRING" />
@@ -697,10 +672,8 @@
 <translation id="5402367795255837559">بریل</translation>
 <translation id="5402791055281059602">هشدار کیفیتی</translation>
 <translation id="5406272775687194041">شروع کردن کشیدن و رها کردن</translation>
-<translation id="5407530583102765689">{COUNT,plural, =1{نقطه‌ویرگول}one{# نقطه‌ویرگول}other{# نقطه‌ویرگول}}</translation>
 <translation id="5420259671171615858">جستجوی منوها</translation>
 <translation id="5435274640623994081">فعال کردن گزارش‌گیری از نماد شنیداری</translation>
-<translation id="5436105723448703439">{COUNT,plural, =1{علامت کوچک‌تر}one{# علامت کوچک‌تر}other{# علامت کوچک‌تر}}</translation>
 <translation id="5444587279251314700">(فعال)</translation>
 <translation id="5451268436205074266">نقطه‌های <ph name="DOT" /></translation>
 <translation id="5452267669091857717">عنوان سطح ۱ بعدی وجود ندارد</translation>
@@ -726,7 +699,6 @@
 <translation id="5597170376237141345">کادر انتخاب بعدی</translation>
 <translation id="5598905979683743333"><ph name="NAME" />، دکمه رادیویی انتخاب نشد</translation>
 <translation id="5601172225407283979">انجام عملکرد پیش‌فرض</translation>
-<translation id="5604302400025591178">{COUNT,plural, =1{خالک مربعی}one{# خالک مربعی}other{# خالک مربعی}}</translation>
 <translation id="5608798115546226984">تکمیل خودکار به‌خط</translation>
 <translation id="5616029807486814372">درس بعدی</translation>
 <translation id="561939826962581046">زمان</translation>
@@ -786,21 +758,18 @@
 <translation id="5921587111466148855">فصل</translation>
 <translation id="5923780477617566089">تاریخ کنونی</translation>
 <translation id="5926889058434275234">برای فهرست کامل اشاره‌ها، به مرکز راهنمایی بروید.</translation>
-<translation id="5937336320314038555">{COUNT,plural, =1{علامت مساوی}one{# علامت مساوی}other{# علامت مساوی}}</translation>
 <translation id="5947651424015173580">دوکلیک با موشواره</translation>
 <translation id="5948123859135882163">جابه‌جایی بین تفسیر ساختاری و معنایی عبارات ریاضی</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5956928062748260866">گفتگو</translation>
 <translation id="5963413905009737549">بخش</translation>
 <translation id="5968607524793740041">نمایش منوی بافت</translation>
-<translation id="597121107011153418">{COUNT,plural, =1{شامل # مورد}one{شامل # مورد}other{شامل # مورد}}</translation>
 <translation id="5981446804259161541">فیروزه‌ای روشن</translation>
 <translation id="5983179082906765664">افزایش جزئیات پیمایش</translation>
 <translation id="5988563937187882754">نگاه کردن به راست</translation>
 <translation id="5992285135956208197">سند گرافیکی</translation>
 <translation id="5999630716831179808">صداها</translation>
 <translation id="6006050241733874051">فرم</translation>
-<translation id="6006064078185310784">{COUNT,plural, =1{اریب وارو}one{# اریب وارو}other{# اریب وارو}}</translation>
 <translation id="6010616110396250088">مرتب‌شده به‌صورت نزولی</translation>
 <translation id="6017514345406065928">سبز</translation>
 <translation id="602001110135236999">پیمایش به چپ</translation>
@@ -840,7 +809,6 @@
 <translation id="6325241889020214828"><ph name="TEXT" /> را کپی کنید.</translation>
 <translation id="6348657800373377022">کادر ترکیبی</translation>
 <translation id="6348869651006731065">خاکستری تیره</translation>
-<translation id="6350358010104919766">{COUNT,plural, =1{ گلوله}one{ # گلوله}other{ # گلوله}}</translation>
 <translation id="6357433033180746873">سلولی در سمت چپ وجود ندارد</translation>
 <translation id="6364795331201459219">h6</translation>
 <translation id="6368143427468974988">عنوان قبلی</translation>
@@ -852,7 +820,6 @@
 <translation id="6406989068857078334">سرعت موشواره کاهش یافت، برای کلیک کردن، دوباره <ph name="GESTURE" /></translation>
 <translation id="6411569524720229058">پاییز</translation>
 <translation id="6417265370957905582">‏دستیار Google</translation>
-<translation id="641759969622533235">{COUNT,plural, =1{دونقطه}one{# دونقطه}other{# دونقطه}}</translation>
 <translation id="6444046323172968959">گفتگوی هشدار</translation>
 <translation id="6452403590345320472">فهرست مطالب</translation>
 <translation id="6468049171101508116">دکمه بعدی</translation>
@@ -881,7 +848,6 @@
 <translation id="669617842401078250">بارگیری <ph name="FILE_NAME" /> موقتاً متوقف شد</translation>
 <translation id="6696967141280706829">پیش‌گفتار</translation>
 <translation id="6697092096875747123">کادر ترکیبی قبلی</translation>
-<translation id="6702609185760332517">{COUNT,plural, =1{علامت تعجب}one{ # علامت تعجب}other{ # علامت تعجب}}</translation>
 <translation id="670717715607710284">خاموش کردن صفحه‌نمایش</translation>
 <translation id="6714813999819678458">عنوان قبلی سطح ۲</translation>
 <translation id="6730312624811567147">‏از Search Left و Right برای Home یا End، از Search‏ Control Left یا Right برای Control Home یا End،‏ Search Up و Down برای Page Up یا Down استفاده کنید</translation>
@@ -978,7 +944,6 @@
 <translation id="7344012264516629579">‏برای نمونه، دستورات پرش دیگر شامل پرش بااستفاده از پیوند، دکمه، و مربع انتخاب می‌شود. فهرست کامل دستورات پرش را می‌توان در منوهای ChromeVox پیدا کرد، که با فشار دادن «جستجو» + «نقطه» باز می‌شود.</translation>
 <translation id="7356165926712028380">تغییر به بریل ۸ نقطه‌ای</translation>
 <translation id="7356610683936413584">شرح تفصیلی-فهرستی</translation>
-<translation id="7370432716629432284">{COUNT,plural, =1{امپرسند}one{# امپرسند}other{# امپرسند}}</translation>
 <translation id="737396357417333429">clk</translation>
 <translation id="738899727977260036">آبی کربنی</translation>
 <translation id="7393979322571982935">صداها و تنظیمات</translation>
@@ -1017,7 +982,6 @@
 <translation id="7637342083105831460">برای پیدا کردن قسمت تمرین یا دکمه درس «بعدی»، کلید «جستجو» + «پیکان روبه‌راست» را فشار دهید. سپس کلید «جستجو» + «فاصله» را فشار دهید تا فعال شود.</translation>
 <translation id="7639968568612851608">خاکستری تیره</translation>
 <translation id="7663318257180412551">عنوان ۲</translation>
-<translation id="7668307052366682650">{COUNT,plural, =1{ساعت}one{ساعت}other{ساعت}}</translation>
 <translation id="7674576868851035240">پیوند بعدی</translation>
 <translation id="7674768236845044097">mark</translation>
 <translation id="7676847077928500578">بازنشانی تنظیمات نوشتار به گفتار</translation>
@@ -1053,7 +1017,6 @@
 <translation id="7927711904086083099">انتخاب نشده</translation>
 <translation id="7935627501098484003">کنترل زمان</translation>
 <translation id="7939428177581522200">به موارد انتخابی اضافه شد</translation>
-<translation id="794091007957014205">{COUNT,plural, =1{علامت @}one{# علامت @}other{# علامت @}}</translation>
 <translation id="7942349550061667556">قرمز</translation>
 <translation id="7948364528129376623">پیوند بازدیدشده بعدی وجود ندارد</translation>
 <translation id="7952460583030260752">منابع فرمان</translation>
@@ -1064,7 +1027,6 @@
 <translation id="8004507136466386272">کلمه‌ها</translation>
 <translation id="8004512796067398576">افزایش</translation>
 <translation id="8007540374018858731">h3</translation>
-<translation id="8009786657110126785">{COUNT,plural, =1{نقل قول}one{# نقل قول}other{# نقل قول}}</translation>
 <translation id="8017588669690167134">خاموش کردن گفتار</translation>
 <translation id="801990297710781303">پانویس</translation>
 <translation id="8028833145828956995">‏می‌توانید با صفحه لمسی از ChromeVox استفاده کنید</translation>
@@ -1093,7 +1055,6 @@
 <translation id="8158033275290782295">انتخاب همه</translation>
 <translation id="816818801578874684">‏این اولین عنوان است. برای رفتن به عنوان بعدی، کلید «جستجو + H» را فشار دهید.</translation>
 <translation id="8173092779156526980">با چهار انگشت تند به‌چپ بکشید</translation>
-<translation id="817440585505441544">{COUNT,plural, =1{زیرخط}one{# زیرخط}other{# زیرخط}}</translation>
 <translation id="817529114347680055">صفحه‌نمایش روشن</translation>
 <translation id="8179976553408161302">ورود</translation>
 <translation id="8184828902145951186">ردیف</translation>
@@ -1118,7 +1079,6 @@
 <translation id="8313653172105209786">dir</translation>
 <translation id="8316881042119029234">بژ روشن</translation>
 <translation id="8326783648485765113">سبز چمنی</translation>
-<translation id="8345569862449483843">{COUNT,plural, =1{پوند}one{# علامت پوند}other{# علامت پوند}}</translation>
 <translation id="8351821207686449674">روشن/خاموش کردن زیرنویس ناشنوایان</translation>
 <translation id="8378855320830505539">منطقه</translation>
 <translation id="8382679411218029383">تکمیل خودکار به‌خط و فهرست</translation>
@@ -1161,10 +1121,8 @@
 <translation id="8659501358298941449">فهرست‌های کرکره‌ای</translation>
 <translation id="8666733765751421568">پایان<ph name="TYPE" /></translation>
 <translation id="867187640362843212">عنوان ۵</translation>
-<translation id="8690400660839620419">{COUNT,plural, =1{}one{سطح تودرتو #}other{سطح تودرتو #}}</translation>
 <translation id="8693391540059827073">فصل دلخواه من</translation>
 <translation id="8696284982970258155">یشمی محو</translation>
-<translation id="8697111817566059991">{COUNT,plural, =1{میله}one{# میله عمودی}other{# میله عمودی}}</translation>
 <translation id="8741370088760768424">نکته: برای فعال کردن مورد کنونی، کلیدهای «جستجو» + «فاصله» را فشار دهید.</translation>
 <translation id="8743786158317878347">ورود به محتوای سازمان یافته، مانند جداول</translation>
 <translation id="8746846427395705317">به کلمه قبلی برو</translation>
@@ -1214,7 +1172,6 @@
 <translation id="9099429023611373837">برش</translation>
 <translation id="9108370397979208512">حساب</translation>
 <translation id="9108589040018540527">scbr</translation>
-<translation id="911476240645808512">{COUNT,plural, =1{علامت درصد}one{# علامت درصد}other{# علامت درصد}}</translation>
 <translation id="9128414153595658330">dlg</translation>
 <translation id="9133928141873682933">خاکی</translation>
 <translation id="9149560530563164529">sctn</translation>

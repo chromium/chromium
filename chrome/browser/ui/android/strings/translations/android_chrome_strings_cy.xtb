@@ -332,6 +332,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2527779675047087889">Cuddio cynnwys y clipfwrdd</translation>
 <translation id="2532336938189706096">Gwedd We</translation>
 <translation id="253498598929009420">Bydd y wefan yn gallu gweld cynnwys eich sgrîn</translation>
+<translation id="2535807170289627159">Pob tab</translation>
 <translation id="2536728043171574184">Wrthi'n edrych ar gopi all-lein o'r dudalen hon</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, Tab</translation>
 <translation id="2546283357679194313">Cwcis a data gwefan</translation>
@@ -434,6 +435,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2979639724566107830">Agor mewn ffenestr newydd</translation>
 <translation id="2981364137500752533">Gallwch gael hyd at 5 ffenestr.</translation>
 <translation id="2983102365694924129">Yn seiliedig ar eich gweithgarwch ar wefan. Mae'r gosodiad hwn wedi'i ddiffodd.</translation>
+<translation id="2983398917942897288">Anweithredol (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Cynnwys testun o'i amgylch mewn chwiliadau Google</translation>
 <translation id="2988638966064514052">Cryfhau eich cyfrineiriau</translation>
 <translation id="2989523299700148168">Ymwelwyd yn ddiweddar</translation>
@@ -466,6 +468,8 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="314939179385989105">Tudalen hafan Chrome</translation>
 <translation id="3158667104057012316">Wrthi'n trefnu yn ôl trefn bwrpasol</translation>
 <translation id="3159335509547415276">Dysgu am gyfrifon sydd wedi'u rhwystro</translation>
+<translation id="3161699713309727585">Mae 
+<ph name="BUTTON_TEXT" /> yn agor mewn tab newydd</translation>
 <translation id="3166827708714933426">Llwybrau byr tabiau a ffenestri</translation>
 <translation id="316694332262407393">Mae Chrome eisoes yn rhedeg yma.</translation>
 <translation id="3167258285411721858">Gallwch ofyn am y wefan symudol ar gyfer <ph name="HOST_NAME" /></translation>
@@ -790,6 +794,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="469286762610133730">Cael gwell cynnwys</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ac <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> arall}zero{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> arall}two{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> arall}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> arall}many{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> arall}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> arall}}</translation>
 <translation id="4698061626562952596">Adolygwch eich tabiau anweithredol yma</translation>
+<translation id="4698757800236023795">Gweithredol (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Lluniau a ffeiliau sydd wedi'u storio dros dro</translation>
 <translation id="4710167854527459075">Trefnu yn ôl newydd</translation>
 <translation id="4718044610319080485">Yn galw ar Gymorth AI</translation>

@@ -3286,6 +3286,7 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{ফাইল}one{#টি ফাইল}other{#টি ফাইল}}</translation>
 <translation id="326999365752735949">ভিন্ন ডাউনলোড হচ্ছে</translation>
 <translation id="3270965368676314374">আপনার কম্পিউটার থেকে ফটো, সঙ্গীত ও অন্যান্য মিডিয়া পড়ুন, পরিবর্তন করুন এবং মুছুন</translation>
+<translation id="3275464924531706548"><ph name="HEADER" /> আড়াল করুন</translation>
 <translation id="3275778809241512831">ইন্টার্নাল নিরাপত্তা কী বর্তমানে নিরাপদ নয়। যে পরিষেবাগুলিতে এটি ব্যবহার করেছেন, সেগুলি থেকে সরিয়ে দিন। সমস্যার সমাধান করতে নিরাপত্তা কী রিসেট করুন।</translation>
 <translation id="3275778913554317645">উইন্ডো হিসাবে খুলুন</translation>
 <translation id="3277214528693754078">টেক্সট কার্সরের সাহায্যে নেভিগেট করা (ক্যারেট ব্রাউজিং)</translation>
@@ -3617,6 +3618,7 @@
 <translation id="3510471875518562537">আপনার iPhone-এ এই ঠিকানা ব্যবহার করুন</translation>
 <translation id="3511200754045804813">আবার স্ক্যান করুন</translation>
 <translation id="3511307672085573050">লিঙ্ক ঠিকানা কপি করুন</translation>
+<translation id="3511358375261756531"><ph name="HEADER" /> বড় করুন</translation>
 <translation id="351152300840026870">নির্দিষ্ট-চওড়া হরফ</translation>
 <translation id="3511528412952710609">স্বল্পস্থায়ী</translation>
 <translation id="3513019849832307207">যোগ দিন ও খুলুন</translation>
@@ -3626,6 +3628,7 @@
 <translation id="3514681096978190000">এই আর্কাইভে ম্যালওয়্যার লুকাতে পারে এমন অন্যান্য ফাইল আছে</translation>
 <translation id="3515983984924808886">রিসেট করা কনফার্ম করতে আপনার নিরাপত্তা কী আবার টাচ করুন। পিন সহ নিরাপত্তা কীয়ে সেভ করা সব তথ্য মুছে যাবে।</translation>
 <translation id="3518866566087677312">পরে ব্যবহার করতে চান এমন জিনিষ বুকমার্ক করুন</translation>
+<translation id="3519014757432845220">Google-এর সাথে বিজ্ঞপ্তির কন্টেন্ট ও সাইটের URL শেয়ার করার মাধ্যমে স্প্যাম সংক্রান্ত সুরক্ষা উন্নত করতে সাহায্য করুন। কোনও ব্যক্তি কন্টেন্ট পর্যালোচনা করতে পারেন।</translation>
 <translation id="3519382402703204668">কোনও একটি ট্যাব বেছে নিন</translation>
 <translation id="3519564332031442870">প্রিন্ট সম্পর্কিত ব্যাকএন্ড পরিষেবা</translation>
 <translation id="3519938335881974273">এই হিসেবে পৃষ্ঠা সেভ করুন...</translation>
@@ -5707,7 +5710,6 @@
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">স্ক্রিন কাস্ট করুন</translation>
 <translation id="496185450405387901">এই অ্যাপটি আপনার অ্যাডমিনিস্ট্রেটর ইনস্টল করে দিয়েছেন।</translation>
-<translation id="4963079328730030450">আপনার প্রতিষ্ঠান এই বিষয়টি কন্ট্রোল করে যে, এইসব ফিচারের মাধ্যমে সংগ্রহ করা ডেটা কীভাবে ব্যবহার করা হতে পারে।</translation>
 <translation id="4963603093937263654">আপনার <ph name="DEVICE_NAME" />-এ বিজ্ঞপ্তি পাওয়ার সুবিধা চালু করা আছে কিনা তা নিশ্চিত করুন</translation>
 <translation id="4963789650715167449">বর্তমান ট্যাব সরান</translation>
 <translation id="4964455510556214366">সাজানোর ব্যবস্থা</translation>
@@ -6170,6 +6172,7 @@
 <translation id="5296536303670088158">ক্ষতিকর ওয়েবসাইটের জন্য আপনার কাছে Chrome-এর সবচেয়ে শক্তিশালী নিরাপত্তা আছে</translation>
 <translation id="5297005732522718715">টেথারিং কনফিগারেশন রিফ্রেশ করুন</translation>
 <translation id="5297082477358294722">পাসওয়ার্ড সেভ করা হয়েছে। <ph name="SAVED_PASSWORDS_STORE" />-এ সেভ করা পাসওয়ার্ড দেখুন এবং ম্যানেজ করুন।</translation>
+<translation id="5297548311167268289"><ph name="RP_ID" />-এ সাইন-ইন করুন</translation>
 <translation id="5297946558563358707">যখন অন্য কেউ আপনার স্ক্রিনের দিকে তাকায়, তখন আপনার স্ক্রিনের নিচে ডানদিকে গোপনীয়তা আইকনটি দেখান</translation>
 <translation id="5297984209202974345"><ph name="STYLE" /> স্টাইলে <ph name="SUBJECT" />-এর <ph name="INDEX" />টি সাম্প্রতিক AI থিম</translation>
 <translation id="5298219193514155779">থিম তৈরি করেছেন</translation>
@@ -6635,6 +6638,7 @@
 <translation id="563371367637259496">মোবাইল</translation>
 <translation id="5635312199252507107">নির্দিষ্ট সাইটে অনুমতি দিন</translation>
 <translation id="5636012309446422"><ph name="PRIMARY_EMAIL" /> থেকে <ph name="DEVICE" /> সরাবেন?</translation>
+<translation id="56360247219959198"><ph name="DICTIONARY" /> স্থায়ীভাবে মুছে ফেলা হবে। এই অ্যাকশন আগের অবস্থায় ফেরানো যাবে না।</translation>
 <translation id="5636140764387862062">পিন সংক্রান্ত আরও অ্যাকশন</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> ব্যবহার করতে গেলে আপনাকে প্রথমে <ph name="LINK_START" />নেটওয়ার্কের সাইন-ইন পৃষ্ঠায় যেতে হবে<ph name="LINK_END" />, যা কয়েক সেকেন্ডের মধ্যে অটোমেটিকভাবে খুলবে৷ যদি এমন না হয়, তাহলে নেটওয়ার্কটি ব্যবহার করা যেতে পারে৷</translation>
 <translation id="5637476008227280525">মোবাইল ডেটা সক্ষম করুন</translation>
@@ -7752,6 +7756,7 @@
 <translation id="6459799433792303855">অন্য ডিসপ্লেতে সক্রিয় উইন্ডোটি সরিয়ে দেওয়া হয়েছে।</translation>
 <translation id="6460601847208524483">পরবর্তী খুঁজুন</translation>
 <translation id="6461170143930046705">নেটওয়ার্ক সার্চ করা হচ্ছে…</translation>
+<translation id="6463488491707167747">এই ডিকশনারি মুছে দিন</translation>
 <translation id="6463596731306859179">আপনি কি অবাঞ্ছিত পপ-আপ এবং অন্যদের অপ্রত্যাশিত ব্যবহার লক্ষ্য করছেন? কখনও কখনও আপনার ইনস্টল করা অ্যাপ এবং এক্সটেনশন, আপনার অজান্তেই ChromeOS সেটিংস পরিবর্তন করে দিতে পারে।</translation>
 <translation id="6463668944631062248">আপনার <ph name="DEVICE_NAME" />-এ কাস্ট করার অনুরোধ গ্রহণ করুন</translation>
 <translation id="6463795194797719782">&amp;সম্পাদনা</translation>

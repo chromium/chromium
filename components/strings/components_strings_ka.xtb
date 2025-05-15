@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">წყლის ფილტრები და გამწმენდები</translation>
 <translation id="1036348656032585052">გამორთვა</translation>
 <translation id="1036881361735705143">კონვერტი C4</translation>
-<translation id="1038106730571050514">შეთავაზებების ჩვენება</translation>
 <translation id="1038842779957582377">უცნობი სახელი</translation>
 <translation id="1041998700806130099">დავალებათა ფურცლის შეტყობინება</translation>
 <translation id="1044897699341250361">რას ნიშნავს ეს</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">თამაშები</translation>
 <translation id="2674170444375937751">დარწმუნებული ხართ, რომ გსურთ ამ გვერდების თქვენი ისტორიიდან წაშლა?</translation>
 <translation id="2674524144218093528">სახლის სამღებრო სამუშაოები და მოპირკეთება</translation>
-<translation id="2674804415323431591">შემოთავაზებების დამალვა</translation>
 <translation id="26774279487328902">ჩანართების <ph name="GROUP_COUNT" /> ჯგუფი აღარ არის ხელმისაწვდომი</translation>
 <translation id="2677748264148917807">დატოვება</translation>
 <translation id="2683195745483370038">ნაპოვნია სხვა შედეგები</translation>
@@ -2633,7 +2631,6 @@
 <translation id="55293785478302737">კიდეების მიკერება</translation>
 <translation id="553377674408670169">ვაკანსიები განათლების სფეროში</translation>
 <translation id="5534785731327961487">კარგი შეთავაზება</translation>
-<translation id="5536214594743852365">სექციის „<ph name="SECTION" />“ ჩვენება</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 საიტი (ვრცლად სინქრონიზებული მოწყობილობების შესახებ)}other{+ # საიტი (ვრცლად სინქრონიზებული მოწყობილობების შესახებ)}}</translation>
 <translation id="553782666181800029">კონვერტი Chou 2</translation>
 <translation id="5538270463355278784">ავტომატური სრულეკრანიანი რეჟიმი</translation>
@@ -3657,7 +3654,6 @@
 <translation id="7316521168101843192">ფაილი ინახება Microsoft OneDrive-ში</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">კავშირთან დაკავშირებული დახმარება</translation>
-<translation id="7323804146520582233">სექციის „<ph name="SECTION" />“ დამალვა</translation>
 <translation id="733354035281974745">მოწყობილობის ადგილობრივი ანგარიშის უგულებელყოფა</translation>
 <translation id="7334320624316649418">გადალაგების &amp;გამეორება</translation>
 <translation id="7335157162773372339">შეუძლია თქვენი კამერის გამოყენების თხოვნა</translation>
@@ -3788,7 +3784,6 @@
 <translation id="7517414872996418597">კონვერტი C10</translation>
 <translation id="7518003948725431193">ვებგვერდი ვერ მოიძებნა ვებ-მისამართისთვის: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">სექცია „<ph name="SECTION" />“ დამალულია</translation>
 <translation id="752189128961566325">მისი გამოყენება სხვადასხვა Google პროდუქტში შეგიძლიათ</translation>
 <translation id="7523408071729642236">წარმოება</translation>
 <translation id="7525067979554623046">შექმნა</translation>
@@ -4241,7 +4236,6 @@
 <translation id="8297545700510100061">ქუქი-ჩანაწერები და საიტების სხვა მონაცემები გამოიყენება თქვენ დასამახსოვრებლად, რომ, მაგალითად, შეგიყვანოთ სისტემაში ან რეკლამა მოგარგოთ. ყველა საიტისთვის ქუქი-ჩანაწერების სამართავად მოინახულეთ <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Wi-Fi-მ, რომელსაც თქვენ იყენებთ (<ph name="WIFI_NAME" />) შეიძლება მოითხოვოს თქვენი სტუმრობა <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">შეიყვანეთ კოდი</translation>
-<translation id="8303854710873047864">ნაჩვენებია სექცია „<ph name="SECTION" />“</translation>
 <translation id="8304912090860925649">შედარების ახალი ცხრილი</translation>
 <translation id="830498451218851433">დაკეცვა ნახევრად</translation>
 <translation id="8308653357438598313">პირდაპირი ვიდეოსტრიმინგი</translation>

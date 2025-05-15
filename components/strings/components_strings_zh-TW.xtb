@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">濾水器與淨水器</translation>
 <translation id="1036348656032585052">關閉</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
-<translation id="1038106730571050514">顯示搜尋建議</translation>
 <translation id="1038842779957582377">不明名稱</translation>
 <translation id="1041998700806130099">工作表訊息</translation>
 <translation id="1044897699341250361">說明</translation>
@@ -977,7 +976,6 @@
 <translation id="2673968385134502798">遊戲</translation>
 <translation id="2674170444375937751">確定要從你的記錄中刪除這些網頁嗎？</translation>
 <translation id="2674524144218093528">房屋粉刷與整修</translation>
-<translation id="2674804415323431591">隱藏建議項目</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> 個分頁群組已無法使用</translation>
 <translation id="2677748264148917807">離開</translation>
 <translation id="2683195745483370038">找到其他結果</translation>
@@ -2631,7 +2629,6 @@
 <translation id="55293785478302737">邊緣裝訂</translation>
 <translation id="553377674408670169">教育相關工作</translation>
 <translation id="5534785731327961487">目前是入手的好時機</translation>
-<translation id="5536214594743852365">顯示「<ph name="SECTION" />」部分</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{和另外 1 個網站 (已同步的裝置上還有其他網站)}other{和另外 # 個網站 (已同步的裝置上還有其他網站)}}</translation>
 <translation id="553782666181800029">Envelope Chou 2</translation>
 <translation id="5538270463355278784">自動進入全螢幕模式</translation>
@@ -3656,7 +3653,6 @@
 <translation id="7316521168101843192">正在將檔案儲存至 Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">連線說明</translation>
-<translation id="7323804146520582233">隱藏「<ph name="SECTION" />」部分</translation>
 <translation id="733354035281974745">裝置本機帳戶覆寫</translation>
 <translation id="7334320624316649418">重做重新排序(&amp;R)</translation>
 <translation id="7335157162773372339">可以要求使用你的攝影機</translation>
@@ -3787,7 +3783,6 @@
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">找不到此網址的網頁：<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">已隱藏「<ph name="SECTION" />」區段</translation>
 <translation id="752189128961566325">你可以在各項 Google 產品中使用這項資訊</translation>
 <translation id="7523408071729642236">製造業</translation>
 <translation id="7525067979554623046">建立</translation>
@@ -4240,7 +4235,6 @@
 <translation id="8297545700510100061">系統會使用 Cookie 和其他網站資料來記住你，用於登入帳戶或是放送個人化廣告等服務。如要管理所有網站的 Cookie，請查看<ph name="SETTINGS" />。</translation>
 <translation id="8298115750975731693">目前使用的 Wi-Fi 網路 (<ph name="WIFI_NAME" />) 可能會要求您造訪 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>
 <translation id="8301894345671534559">輸入驗證碼</translation>
-<translation id="8303854710873047864">已顯示「<ph name="SECTION" />」區段</translation>
 <translation id="8304912090860925649">新比較表</translation>
 <translation id="830498451218851433">對折</translation>
 <translation id="8308653357438598313">即時影片串流</translation>

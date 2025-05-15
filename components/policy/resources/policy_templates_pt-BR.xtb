@@ -584,12 +584,12 @@ atualizações estendidas automaticamente.
 
 Para mais detalhes, acesse
 https://support.google.com/chrome/a/?p=extended_updates_support.</translation>
-<translation id="1432834104376790711">Esta política ativa ou desativa a configuração do modo de Economia de bateria.
+<translation id="1432834104376790711">Esta política ativa ou desativa a configuração do modo de economia de bateria.
       No Chrome, essa configuração limita o frame rate para reduzir o consumo de energia. Se a política for deixada sem definição, o usuário final poderá controlar essa configuração em chrome://settings/performance.
-      No ChromeOS, essa configuração faz com que o frame rate e a frequência da CPU sejam limitados, as luzes de fundo fiquem esmaecidas e o Android seja colocado no modo de Economia de bateria. Em dispositivos com várias CPUs, algumas delas serão desativadas.
+      No ChromeOS, essa configuração faz com que o frame rate e a frequência da CPU sejam limitados, as luzes de fundo fiquem esmaecidas e o Android seja colocado no modo de economia de bateria. Em dispositivos com várias CPUs, algumas delas serão desativadas.
       Os diferentes níveis são:
       <ph name="BATTERY_SAVER_MODE_DISABLED" /> (0): o modo de economia de bateria será desativado.
-      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1): o modo Economia de bateria será ativado quando o dispositivo estiver usando a energia da bateria e o nível dela estiver baixo.
+      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1): o modo economia de bateria será ativado quando o dispositivo estiver usando a energia da bateria e o nível dela estiver baixo.
       <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): esse valor foi descontinuado na versão M121. Na versão M121 e mais recentes, os valores serão tratados como EnabledBelowThreshold.
       </translation>
 <translation id="1434300053894025056">Desativar verificação ortográfica</translation>
@@ -10748,6 +10748,26 @@ Os certificados precisam ser codificados em Base64.</translation>
 <translation id="8381774264911275515">Desativar a transferência de cookies do SSO SAML na sessão do usuário durante o login</translation>
 <translation id="8382184662529825177">Permitir o uso de declaração remota para proteção de conteúdo no dispositivo</translation>
 <translation id="838870586332499308">Ativa roaming de dados</translation>
+<translation id="8389925503559691525">Esta política controla se os URLs de blobs são particionados durante a busca e navegação.
+Se ela for ativada ou deixada sem definição, os URLs de blobs serão particionados.
+Se ela for desativada, os URLs de blobs não serão particionados.
+
+Se o particionamento de armazenamento for desativado para uma determinada origem de nível superior por
+<ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" />
+ou <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />,
+os URLs de blobs também não serão particionados.
+
+Se você precisar usar a política, informe um bug em
+<ph name="BUG_URL" />
+explicando seu caso de uso. A política está programada para ser oferecida até
+a versão 143 do <ph name="PRODUCT_NAME" />. Após essa versão,
+a implementação antiga será removida.
+
+OBSERVAÇÃO: somente processos de renderizador recém-iniciados vão refletir as mudanças nesta
+política enquanto o navegador estiver em execução.
+
+Para ver detalhes sobre o particionamento de armazenamento de terceiros, consulte
+https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="8392478748777481636">Essa política foi descontinuada e parou de ter suporte. Use a <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="8393850527597048037">Somente de plataforma</translation>
 <translation id="8395350646076131800">Tempo limite de inatividade do protetor da tela de bloqueio do usuário.</translation>

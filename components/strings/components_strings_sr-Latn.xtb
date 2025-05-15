@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Filteri i prečišćivači za vodu</translation>
 <translation id="1036348656032585052">Isključi</translation>
 <translation id="1036881361735705143">Koverta C4</translation>
-<translation id="1038106730571050514">Prikažite predloge</translation>
 <translation id="1038842779957582377">nepoznato ime</translation>
 <translation id="1041998700806130099">Poruka o radnom listu</translation>
 <translation id="1044897699341250361">Šta to znači</translation>
@@ -978,7 +977,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2673968385134502798">Igre</translation>
 <translation id="2674170444375937751">Želite li stvarno da izbrišete ove stranice iz istorije?</translation>
 <translation id="2674524144218093528">Krečenje i završni radovi</translation>
-<translation id="2674804415323431591">Sakrijte predloge</translation>
 <translation id="26774279487328902">Broj grupa kartica koje više nisu dostupne je <ph name="GROUP_COUNT" /></translation>
 <translation id="2677748264148917807">Zatvori</translation>
 <translation id="2683195745483370038">Pronađeni su drugi rezultati</translation>
@@ -2633,7 +2631,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="55293785478302737">Spajanje ivica šavom</translation>
 <translation id="553377674408670169">Poslovi u obrazovanju</translation>
 <translation id="5534785731327961487">Dobra ponuda sada</translation>
-<translation id="5536214594743852365">Prikaži odeljak <ph name="SECTION" /></translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{i još 1 sajt (više na sinhronizovanim uređajima)}one{i još # sajt (više na sinhronizovanim uređajima)}few{i još # sajta (više na sinhronizovanim uređajima)}other{i još # sajtova (više na sinhronizovanim uređajima)}}</translation>
 <translation id="553782666181800029">Koverta Chou 2</translation>
 <translation id="5538270463355278784">automatski prikaz preko celog ekrana</translation>
@@ -3657,7 +3654,6 @@ Dodatni detalji:
 <translation id="7316521168101843192">Fajl se čuva na Microsoft OneDrive-u</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Pomoć pri povezivanju</translation>
-<translation id="7323804146520582233">Sakrijte odeljak <ph name="SECTION" /></translation>
 <translation id="733354035281974745">Zamena lokalnog naloga na uređaju</translation>
 <translation id="7334320624316649418">&amp;Ponovi promenu redosleda</translation>
 <translation id="7335157162773372339">Može da traži da koristi kameru</translation>
@@ -3788,7 +3784,6 @@ Dodatni detalji:
 <translation id="7517414872996418597">Koverta C10</translation>
 <translation id="7518003948725431193">Nijedna veb-stranica nije pronađena za veb adresu: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Odeljak „<ph name="SECTION" />“ je sakriven</translation>
 <translation id="752189128961566325">Možete da je koristite u svim Google proizvodima</translation>
 <translation id="7523408071729642236">Proizvodnja</translation>
 <translation id="7525067979554623046">Napravi</translation>
@@ -4241,7 +4236,6 @@ Dodatni detalji:
 <translation id="8297545700510100061">Kolačići i drugi podaci o sajtovima se koriste da biste bili zapamćeni, na primer, radi prijavljivanja ili personalizovanja oglasa. Da biste upravljali kolačićima za sve sajtove, pogledajte <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">WiFi mreža koju koristite (<ph name="WIFI_NAME" />) će možda zahtevati da posetite <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Unesi kôd</translation>
-<translation id="8303854710873047864">Prikazuje se odeljak „<ph name="SECTION" />“</translation>
 <translation id="8304912090860925649">Nova tabela za poređenje</translation>
 <translation id="830498451218851433">Presavijanje napola</translation>
 <translation id="8308653357438598313">Video strimovanje uživo</translation>
@@ -4261,6 +4255,7 @@ Dodatni detalji:
 <translation id="833262891116910667">Isticanje</translation>
 <translation id="8339163506404995330">Stranice na jeziku <ph name="LANGUAGE" /> se neće prevoditi</translation>
 <translation id="8339275256517065202">Dovršite kupovinu uz Touch ID</translation>
+<translation id="833935588477667012"><ph name="FIELD_LABEL" />, obavezno</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Registracija za virtuelnu karticu je otvorena u punoj visini</translation>

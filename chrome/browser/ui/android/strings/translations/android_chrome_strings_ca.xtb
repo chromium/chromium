@@ -332,6 +332,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2527779675047087889">Amaga els continguts del porta-retalls</translation>
 <translation id="2532336938189706096">Visualització web</translation>
 <translation id="253498598929009420">El lloc web podrà veure el contingut de la teva pantalla</translation>
+<translation id="2535807170289627159">Totes les pestanyes</translation>
 <translation id="2536728043171574184">S'està mostrant una còpia sense connexió d'aquesta pàgina</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, pestanya</translation>
 <translation id="2546283357679194313">Dades de llocs web i galetes</translation>
@@ -434,6 +435,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2979639724566107830">Obre-ho en una finestra nova</translation>
 <translation id="2981364137500752533">Pots tenir fins a 5 finestres.</translation>
 <translation id="2983102365694924129">Segons la teva activitat en un lloc web. Aquesta opció de configuració està desactivada.</translation>
+<translation id="2983398917942897288">Inactives (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2984978667043170458">Inclou el text del voltant a les cerques de Google</translation>
 <translation id="2988638966064514052">Reforça les teves contrasenyes</translation>
 <translation id="2989523299700148168">Visitats últimament</translation>
@@ -466,6 +468,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="314939179385989105">Pàgina d'inici de Chrome</translation>
 <translation id="3158667104057012316">S'ordena manualment</translation>
 <translation id="3159335509547415276">Informació sobre els comptes bloquejats</translation>
+<translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, s'obre en una pestanya nova</translation>
 <translation id="3166827708714933426">Dreceres per a pestanyes i finestres</translation>
 <translation id="316694332262407393">Chrome ja s'està executant aquí.</translation>
 <translation id="3167258285411721858">Pots sol·licitar el lloc web per a mòbils de <ph name="HOST_NAME" /></translation>
@@ -790,6 +793,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="469286762610133730">Obtén contingut millor</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> més}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> més}}</translation>
 <translation id="4698061626562952596">Revisa les pestanyes inactives aquí</translation>
+<translation id="4698757800236023795">Actives (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Imatges i fitxers desats a la memòria cau</translation>
 <translation id="4710167854527459075">Ordena per més recent</translation>
 <translation id="4718044610319080485">Invoca l'assistent d'IA</translation>

@@ -117,7 +117,6 @@
 <translation id="1616111909442424068">ສີນໍ້າຕານເຂົ້າສາລີ</translation>
 <translation id="1618597272655350600">ປະ​ກາດ​ລາຍ​ລະ​ອຽດ​ຄົບ​ຖ້ວນ​ຂອງ​ຕໍາ​ແຫນ່ງ​​ປະ​ຈຸ​ບັນ</translation>
 <translation id="1627222324347828322">ສີຂາວໂກສໄວທ໌</translation>
-<translation id="1639634871799530612">{COUNT,plural, =1{ ໃຫຍ່ກ​່​ວາ}other{ # ເຄື່ອງໝາຍໃຫຍ່ກ່ວາ}}</translation>
 <translation id="1653266918374749391">ຫົວຂໍ້ລະ​ດັບ​ 3 ຜ່ານ​ມາ</translation>
 <translation id="1657616855184033958">ສະແດງຕົວກັ່ນຕອງການຖ່າຍທອດເຫດການ</translation>
 <translation id="1659072772017912254">ບໍ່​ໄດ້ໝາຍຕິກເອົາ</translation>
@@ -162,7 +161,6 @@
 <translation id="1964135212174907577">ເປົ້າ​ຫມາຍ​ຕໍ່​ໄປ</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">ສະແດງຄຳສັ່ງອັກສອນນູນໃນເມນູ ChromeVox</translation>
-<translation id="2007545860310005685">{COUNT,plural, =1{ວົງ​ເລັບ​ຊ້າຍ}other{# ວົງເລັບຊ້າຍ}}</translation>
 <translation id="2009187674653301682">ບໍ່ເປັນຕົວຍົກ</translation>
 <translation id="2010555995361223825">ເມນູ ChromeVox</translation>
 <translation id="203030071582665758">ບໍ່ມີຫົວຂໍ້ລະດັບ 4 ກ່ອນໜ້າ</translation>
@@ -185,7 +183,6 @@
 <translation id="2169714232367507776">ຄລິກໃສ່ລາຍການປະຈຸບັນ</translation>
 <translation id="2179452035581866348">ChromeVox ໃຊ້ສຽງເພື່ອໃຫ້ຂໍ້ມູນເພີ່ມເຕີມ ແລະ ສຳຄັນແກ່ທ່ານ. ທ່ານສາມາດໃຊ້ສຽງເຫຼົ່ານີ້ເພື່ອນຳທາງໄປມາໄດ້ໄວກວ່າ ໂດຍການຮຽນຮູ້ວ່າແຕ່ລະສຽງໝາຍເຖິງຫຍັງ. ເມື່ອທ່ານຊຳນານຫຼາຍແລ້ວ, ທ່ານສາມາດປິດຄຳອະທິບາຍການໃຊ້ຄຳເວົ້າຢູ່ໃນຄຳສັ່ງສຽງ ແລະ ອາໄສໃສ່ພວກມັນສຳລັບຂໍ້ມູນສຳຄັນກ່ຽວກັບໜ້ານັ້ນ. ນີ້ແມ່ນລາຍການຄົບຖ້ວນຂອງສຽງ ແລະ ສິ່ງທີ່ພວກມັນໝາຍເຖິງ.</translation>
 <translation id="2183409941723714159">ການໄປຍັງສ່ວນຕ່າງໆໂດຍໃຊ້ແຖບ</translation>
-<translation id="2188751878842439466">{COUNT,plural, =1{ ວົງເລັບປິດ}other{ # ວົງເລັບປິດ}}</translation>
 <translation id="2197863150503783129">ສີນໍ້າຕານແຊດເດິນບຣາວ</translation>
 <translation id="2199994615414171367">ຄະນິດສາດຜ່ານມາ</translation>
 <translation id="2203046366315513658">ຫຼຸດຄ່າລົງ</translation>
@@ -231,7 +228,6 @@
 <translation id="2462626033734746142">ກຸ່ມ​ປຸ່ມ​ວິ​ທະ​ຍຸ</translation>
 <translation id="2467741090055146971">ບໍ່ເລືອກ</translation>
 <translation id="2471138580042810658">ຫົວ​ຂໍ້ 6</translation>
-<translation id="248982282205370495">{COUNT,plural, =1{ ເຄື່ອງໝາຍດອກຈັນ}other{# ເຄື່ອງໝາຍດອກຈັນ}}</translation>
 <translation id="2490721194269245365">ສີນໍ້າຕານໂຣຊີບຣາວ</translation>
 <translation id="249330843868392562">ເປີດການຕັ້ງຄ່າການປ່ຽນຂໍ້ຄວາມເປັນສຽງເວົ້າ</translation>
 <translation id="2497706219848005458">ສີເຫຼືອງອົມຂຽວ</translation>
@@ -266,7 +262,6 @@
 <translation id="2692503699962701720">ປ່ຽນລະດັບສຽງເວົ້າໃນເວລາເວົ້າປະເພດອົງປະກອບ ແລະ ຂໍ້ຄວາມທີ່ມີການຈັດຮູບແບບ</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">ຕົວເລືອກການປ່ຽນແປງຂໍ້ຄວາມ</translation>
-<translation id="2704429362613743330">{COUNT,plural, =1{ ວົງເລັບເປີດ}other{ # ວົງເລັບເປີດ}}</translation>
 <translation id="270523456882008230">ຄຳແນະນຳ: ແຕະສອງເທື່ອດ້ວຍນິ້ວດຽວເພື່ອເປີດນຳໃຊ້ລາຍການປັດຈຸບັນ.</translation>
 <translation id="2705875883745373140">ບໍ່​ໄດ້​ກົດ​</translation>
 <translation id="2708078563826046398">ສີສົ້ມພີຈພັຟ</translation>
@@ -280,7 +275,6 @@
 <translation id="2756452585631602151">ປ້ອນປ້າຍກຳກັບແບບກຳນົດເອງ</translation>
 <translation id="2766299274563946262">ບໍ່ເຫຼືອເຊວໃດ</translation>
 <translation id="2770947749427257887">ເຂົ້າສູ່ໂໝດເລື່ອນ</translation>
-<translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">ນອກຈາກນັ້ນ, ທ່ານຍັງສາມາດປັດດ້ວຍນິ້ວດຽວຈາກຂວາຫາຊ້າຍເພື່ອເລື່ອນໄປລາຍການກ່ອນໜ້າໄດ້ນຳ. ລອງເຮັດຕອນນີ້.</translation>
 <translation id="280499067616661124">ໜ້າຊອກຫາໃນ ChromeVox</translation>
 <translation id="2811204574343810641">ແຖວ</translation>
@@ -299,9 +293,7 @@
 <translation id="2876760662374103627">ການຄວບຄຸມດ້ວຍໃບໜ້າເຮັດວຽກຢູ່</translation>
 <translation id="2879867157561757640">ປັດສາມນິ້ວມືລົງລຸ່ມ</translation>
 <translation id="288178314850623291">ໃຊ້ຄຳສັ່ງໂດດເພື່ອຂ້າມໄປຫາປະເພດສະເພາະຂອງອົງປະກອບຕ່າງໆ. ເພື່ອໂດດໄປໜ້າລະຫວ່າງຫົວຂໍ້ຕ່າງໆ, ໃຫ້ກົດ ຊອກຫາ + H, ເພື່ອໂດດກັບຫຼັງ, ໃຫ້ກົດ ຊອກຫາ + Shift + H.</translation>
-<translation id="2885764457467528513">{COUNT,plural, =1{ນາທີ}other{ນາທີ}}</translation>
 <translation id="2894654529758326923">ຂໍ້ມູນ</translation>
-<translation id="2899328121302785497">{COUNT,plural, =1{ວົງປີກກາຊ້າຍ}other{#ວົງປີກກາຊ້າຍ}}</translation>
 <translation id="2909584066358367921">ບໍ່ມີປຸ່ມຖັດໄປ</translation>
 <translation id="2911433807131383493">ເປີດການແນະນໍາ ChromeVox</translation>
 <translation id="2912405967290226587">ປັດສາມນິ້ວມືໄປຂວາ</translation>
@@ -311,7 +303,6 @@
 <translation id="2943596527105977722">ສີໂກນເດິນຣອດເຂັ້ມ</translation>
 <translation id="2964026537669811554">ກຸ່ມຫົວຂໍ້</translation>
 <translation id="2968634799764242930">ສີຂຽວທະເລ</translation>
-<translation id="296951647852255825">{COUNT,plural, =1{ແຖບ}other{# ແຖບ}}</translation>
 <translation id="2972205263822847197">ເຄັດລັບເຄື່ອງມື</translation>
 <translation id="2976476721782829799">ທ່ານສາມາດເລື່ອນໄປມາໄດ້ໂດຍການລາກນິ້ວດຽວຢູ່ໜ້າຈໍ. ນີ້ເອີ້ນວ່າການສຳຫຼວດໂດຍການສຳຜັດ. ລອງລາກນິ້ວຂອງທ່ານໄປມາເພື່ອອ່ານສ່ວນທີ່ເຫຼືອຂອງບົດຮຽນນີ້.</translation>
 <translation id="297825089465017871">ປັດສອງນິ້ວມືໄປຊ້າຍ</translation>
@@ -322,7 +313,6 @@
 <translation id="3014130421870723208">@ed 8dot</translation>
 <translation id="3018210433491759145">ກຳລັງໂຫຼດ ChromeVox</translation>
 <translation id="3030432017085518523">ປຸ່ມ​ວິ​ທະ​ຍຸ​ລາຍ​ການ​ເມ​ນູ</translation>
-<translation id="3037392361165431467">{COUNT,plural, =1{ເຄື່ອງໝາຍ (')}other{# ເຄື່ອງໝາຍ (')}}</translation>
 <translation id="3040901448410802366">ຕົວຊີ້ບອກຄວາມຄືບໜ້າ</translation>
 <translation id="3046838483509668188">ຕົວ​ເລືອກ ChromeVox</translation>
 <translation id="3060756054951570867"><ph name="TITLE" /> ເມ​ນູເປີດ​ແລ້ວ</translation>
@@ -358,7 +348,6 @@
 <translation id="3159493096109238499">ສີເບຈ</translation>
 <translation id="316542773973815724">ການນໍາ​ທາງ</translation>
 <translation id="3167446923957429259">ຫຍັບປາກຂອງທ່ານໄປທາງຊ້າຍ</translation>
-<translation id="3172700825913348768">{COUNT,plural, =1{ຍະຫວ່າງ}other{ # ຍະຫວ່າງ}}</translation>
 <translation id="3179119189286472195">ບໍ່ແມ່ນລິ້ງ</translation>
 <translation id="3180990259147710757">ເລື່ອນກາມໄປທາງຊ້າຍ</translation>
 <translation id="320041337977930740">ປ່ຽນຮູບແບບການສະແດງຜົນເປັນແບບຂໍ້ຄວາມແຊກ</translation>
@@ -395,7 +384,6 @@
 <translation id="3359142382821736686">seprtr</translation>
 <translation id="3363015957057974366">ທ່ານສາມາດໃຊ້ປຸ່ມ Tab ເພື່ອຍ້າຍໄປຍັງລາຍການໂຕ້ຕອບຕໍ່ໄປໃນໜ້າຈໍໄດ້. ຊອກຫາປຸ່ມ Tab, ເຊິ່ງຢູ່ເທິງປຸ່ມຊອກຫາໂດຍກົງ. ເພື່ອສືບຕໍ່, ກະລຸນາກົດປຸ່ມ Tab.</translation>
 <translation id="3366946046494222386">ການສອນການນຳໃຊ້ <ph name="TOPIC" />, ບົດຮຽນ <ph name="LESSONS" /></translation>
-<translation id="3374537878095184207">{COUNT,plural, =1{ບວກ}other{# ເຄື່ອງໝາຍບວກ}}</translation>
 <translation id="338583716107319301">ຕົວແຍກ</translation>
 <translation id="3389259863310851658">ບ່ອນໃສ່ຟອມ​ຜ່ານ​ມາ​.</translation>
 <translation id="3390740059150071453">ເບິ່ງທາງຊ້າຍ</translation>
@@ -414,12 +402,8 @@
 <translation id="3469413619751135069">ສີຂຽວອ່ອນ</translation>
 <translation id="3473744269398144689">ເລີ່ມການປ້ອນຂໍ້ມູນດ້ວຍສຽງ</translation>
 <translation id="3490765818161916458">ຕາໜ່າງລາຍການ</translation>
-<translation id="3492609944033322585">{COUNT,plural, =1{ວົງ​ເລັບຂວາ}other{# ວົງເລັບຂວາ}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
-<translation id="3497063866483065785">{COUNT,plural, =1{ ຫມາຍ​​ຖາມ}other{# ໝາຍຖາມ}}</translation>
 <translation id="3505359110822747654">ຫຍໍ້ເມນູ ChromeVox</translation>
-<translation id="3514822174137761109">{COUNT,plural, =1{ ໝາຍກຸບ}other{ # ໝາຍກຸບ}}</translation>
-<translation id="3518600448524470129">{COUNT,plural, =1{ສັນຍາລັກຫຍໍ້ໜ້າສີຂາວ}other{# ສັນຍາລັກຫຍໍ້ໜ້າສີຂາວ}}</translation>
 <translation id="352577523970648069">ຊ່ອງຕື່ມຂໍ້ມູນທີ່ສາມາດແກ້ໄຂໄດ້</translation>
 <translation id="3538907380453898475">ລາຍການຄຳອະທິບາຍ</translation>
 <translation id="3549141990712742152">ຕັດ <ph name="TEXT" />.</translation>
@@ -436,9 +420,7 @@
 <translation id="3616016838842055984">ຖ້າທ່ານຮອດລາຍການໃດໜຶ່ງທີ່ທ່ານຕ້ອງການຄລິກ, ກະລຸນາກົດຊອກຫາ + ຍະຫວ່າງ. ລອງມັນຕອນນີ້ເພື່ອສືບຕໍ່.</translation>
 <translation id="3616113530831147358">ສຽງ</translation>
 <translation id="3622350485154495700">ແຕະສອງຄັ້ງດ້ວຍໜຶ່ງນິ້ວ</translation>
-<translation id="3646890046000188562">{COUNT,plural, =1{ເຄື່ອງໝາຍ (`)}other{# ເຄື່ອງໝາຍ (`)}}</translation>
 <translation id="3650317109285159359">chkmnuitm</translation>
-<translation id="3655855170848725876">{COUNT,plural, =1{​ໂດ​ລາ}other{# ສັນຍາລັກໂດລາ}}</translation>
 <translation id="3659787053479271466">ການເຕືອນ</translation>
 <translation id="366419593095697301">ຄຳບອກໃບ້: ກົດ Escape ຖ້າທ່ານຕ້ອງການອອກຈາກການສອນການນຳໃຊ້ນີ້.</translation>
 <translation id="3676062394766691318">ຫຼັງຈາກທີ່ທ່ານຕັ້ງຄ່າອຸປະກອນຂອງທ່ານແລ້ວ, ທ່ານສາມາດກັບຄືນມາ ແລະ ເບິ່ງການສອນການນຳໃຊ້ເພີ່ມເຕີມໂດຍການກົດປຸ່ມຊອກຫາ + O, ແລ້ວກົດ T.</translation>
@@ -497,16 +479,13 @@
 <translation id="4054936709456751127">ສະຖານະ</translation>
 <translation id="4058278702844053247">ການໂຫຼດໜ້າພວມດຳເນີນຢູ່</translation>
 <translation id="4065205963140826639">ລອງໃຊ້ ຊອກຫາ + ລູກສອນຂວາ ຕອນນີ້ເພື່ອຊອກຫາປຸ່ມຕໍ່ໄປ, ຈາກນັ້ນ ກົດ ຊອກຫາ + ຍະຫວ່າງ ເພື່ອຄລິກມັນ.</translation>
-<translation id="4081085052247739398">{COUNT,plural, =1{ ເຄື່ອງໝາຍ ~}other{ # ເຄື່ອງໝາຍ ~}}</translation>
 <translation id="409334809956508737">ວັດຖຸຜ່ານ​ມາ</translation>
 <translation id="4099274309791143834">ດ້ວຍເມ​ນູ​ຍ່ອຍ</translation>
 <translation id="4101527861445851766">ກ່ອງທີ່ໝາຍເອົາແລ້ວ</translation>
 <translation id="410225014223200513">ເຮັດປາກຂອງທ່ານໃຫ້ເປັນວົງມົນ</translation>
 <translation id="4115378294792113321">ສີແດງມ່ວງ</translation>
 <translation id="4116415223832267137">ການເຕືອນ</translation>
-<translation id="4148180433151187540">{COUNT,plural, =1{ ວົງປີກກາເບື້ອງຂວາ}other{ # ວົງປີກກາເບື້ອງຂວາ}}</translation>
 <translation id="4159784952369912983">ສີມ່ວງ</translation>
-<translation id="4161104397932142764">{COUNT,plural, =1{ວິນາທີ}other{ວິນາທີ}}</translation>
 <translation id="4161663686871496107">ຄໍາ​ຄິດ​​ເຫັນທີ່ເວົ້າເຖິງ ChromeVox ພ້ອມແລ້ວ</translation>
 <translation id="4176463684765177261">ປິດໃຊ້ງານແລ້ວ</translation>
 <translation id="4187322598335821254">ປັດຂຶ້ນ ຫຼື ປັດລົງເພື່ອຍ້າຍຕາມແຖວ</translation>
@@ -518,7 +497,6 @@
 <translation id="4204864733111726379">ສີຂາວຟລໍຣັລໄວທ໌</translation>
 <translation id="42164919740161077">ສີຟ້າດຄາເດດບລູ</translation>
 <translation id="4217571870635786043">ການພິມຕາມຄຳບອກ</translation>
-<translation id="4218529045364428769">{COUNT,plural, =1{ ເຄື່ອງໝາຍ -}other{ # ເຄື່ອງໝາຍ -}}</translation>
 <translation id="4220024144662591089">ເລືອກຈາກ <ph name="START_PHRASE" /> ເຖິງ <ph name="END_PHRASE" /></translation>
 <translation id="4221012616705981690">ບໍ່ມີລາຍການກ່ອນໜ້າ</translation>
 <translation id="4225355998815256469">ການຄວບຄຸມຟອມ</translation>
@@ -540,7 +518,6 @@
 <translation id="4300318234632215983">ປະກາດ URL ເບື້ອງຫຼັງລິ້ງ</translation>
 <translation id="4321179778687042513">Ctrl</translation>
 <translation id="4322625298640984693">ສີນໍ້າຕານດິນ</translation>
-<translation id="4342180618051828363">{COUNT,plural, =1{ ຈໍ້າ}=3{ ສາມຈໍ້າ}other{ # ຈໍ້າ}}</translation>
 <translation id="4352022650330571548">ພິມ <ph name="PHRASE" /></translation>
 <translation id="4360738659108163902">ຄລິກຂວາໃສ່ເມົ້າ</translation>
 <translation id="4372435075475052704">ຕໍ່າສຸດ​: <ph name="X" /></translation>
@@ -569,7 +546,6 @@
 <translation id="4511186779140817916">ສີບລາເຈັດອາລມອນ</translation>
 <translation id="451510441928265982">ບໍ່ມີຫົວຂໍ້ລະດັບ 2 ກ່ອນໜ້າ</translation>
 <translation id="4517854969512651305">ເພີ່ມຄ່າຂຶ້ນ</translation>
-<translation id="4532633738839459153">{COUNT,plural, =1{ ຂີດທັບ}other{ # ຂີດທັບ}}</translation>
 <translation id="4537277403911487429">ລາຍການຄ້າຍຄືກັນຕໍ່ໄປ</translation>
 <translation id="4547556996012970016">ຫົວຂໍ້ລະ​ດັບ​ 5 ຕໍ່​ໄປ</translation>
 <translation id="4562381607973973258">ຫົວເຈ້ຍ</translation>
@@ -678,7 +654,6 @@
 <translation id="5310788376443009632">ເອົາອອກໄປແລ້ວ:</translation>
 <translation id="5316825363044614340">ຍ້າຍໄປແຖວຕໍ່ໄປ</translation>
 <translation id="5320727453979144100">ໂໝດ Sticky ເປີດໃຊ້ງານແລ້ວ</translation>
-<translation id="5321085947096604457">{COUNT,plural, =1{ ໝາຍຈຸດ}other{ # ໝາຍ​ຈຸດ}}</translation>
 <translation id="532485153932049746">ການຈັດຮູບແບບຂໍ້ຄວາມ
     <ph name="FONT_SIZE_STRING" />
     <ph name="COLOR_STRING" />
@@ -697,10 +672,8 @@
 <translation id="5402367795255837559">ຕົວໜັງສືນູນ</translation>
 <translation id="5402791055281059602">ການແຈ້ງເຕືອນແບບວິທີ</translation>
 <translation id="5406272775687194041">ເລີ່ມຕົ້ນລາກ ແລະ ວາງ</translation>
-<translation id="5407530583102765689">{COUNT,plural, =1{ ຈໍ້າຈຸດ}other{ # ຈໍ້າຈຸດ}}</translation>
 <translation id="5420259671171615858">ເລືອກເມນູ</translation>
 <translation id="5435274640623994081">ເປີດນຳໃຊ້ການບັນທຶກ earcon</translation>
-<translation id="5436105723448703439">{COUNT,plural, =1{ຫນ້ອຍ​ກ​່​ວາ}other{ # ເຄື່ອງໝາຍໃຫຍ່ກ່ວາ}}</translation>
 <translation id="5444587279251314700">(ເຮັດວຽຢູ່)</translation>
 <translation id="5451268436205074266">ຈໍ້າ <ph name="DOT" /></translation>
 <translation id="5452267669091857717">ບໍ່ມີຫົວຂໍ້ລະດັບ 1 ຖັດໄປ</translation>
@@ -726,7 +699,6 @@
 <translation id="5597170376237141345">ກ່ອງໝາຍຕິກຕໍ່ໄປ.</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, ຖອນເລືອກປຸ່ມວິທະຍຸແລ້ວ</translation>
 <translation id="5601172225407283979">ປະຕິບັດການກະທໍາມາດຕະຖານ</translation>
-<translation id="5604302400025591178">{COUNT,plural, =1{ສັນຍາລັກຫຍໍ້ໜ້າແບບສີ່ຫຼ່ຽມ}other{# ສັນຍາລັກຫຍໍ້ໜ້າແບບສີ່ຫຼ່ຽມ}}</translation>
 <translation id="5608798115546226984">ໃນແຖວການຕື່ມເຕັມອັດຕະໂນມັດ</translation>
 <translation id="5616029807486814372">ບົດຮຽນຕໍ່ໄປ</translation>
 <translation id="561939826962581046">ເວລາ</translation>
@@ -786,21 +758,18 @@
 <translation id="5921587111466148855">ພາກ</translation>
 <translation id="5923780477617566089">ວັນທີປັດຈຸບັນ</translation>
 <translation id="5926889058434275234">ສຳລັບລາຍຊື່ເຕັມຂອງທ່າທາງ, ກະລຸນາເຂົ້າໄປສູນຊ່ວຍເຫຼືອ.</translation>
-<translation id="5937336320314038555">{COUNT,plural, =1{ ເທົ່າ​​ກັບ}other{ # ໝາຍເທົ່າກັບ}}</translation>
 <translation id="5947651424015173580">ຄລິກເມົ້າສອງເທື່ອ</translation>
 <translation id="5948123859135882163">ສະຫຼັບການແປສໍານວນຄະນິດສາດລະຫວ່າງໂຄງຮ່າງ ແລະຄວາມໝາຍຂອງຄໍາສັບ</translation>
 <translation id="5955304353782037793">ແອັບ</translation>
 <translation id="5956928062748260866">ກ່ອງ</translation>
 <translation id="5963413905009737549">ຕອນ</translation>
 <translation id="5968607524793740041">ສະ​ແດງ​ເມນູຄລິກຂວາ</translation>
-<translation id="597121107011153418">{COUNT,plural, =1{ທີ່ມີ # ລາຍການ}other{ທີ່ມີ # ລາຍການ}}</translation>
 <translation id="5981446804259161541">ສີຟ້າອ່ອນ</translation>
 <translation id="5983179082906765664">ເພີ່ມ​ລະດັບການນໍາ​ທາງ</translation>
 <translation id="5988563937187882754">ເບິ່ງທາງຂວາ</translation>
 <translation id="5992285135956208197">ເອກະສານກຣາຟິກ</translation>
 <translation id="5999630716831179808">ສຽງ</translation>
 <translation id="6006050241733874051">ແບບ​ຟອມ</translation>
-<translation id="6006064078185310784">{COUNT,plural, =1{ ໝາຍ \}other{ # ໝາຍ \}}</translation>
 <translation id="6010616110396250088">ຈັດຮຽງແຕ່ໃຫຍ່ຫານ້ອຍ</translation>
 <translation id="6017514345406065928">ສີ​ຂຽວ</translation>
 <translation id="602001110135236999">ເລື່ອນໄປຊ້າຍ</translation>
@@ -840,7 +809,6 @@
 <translation id="6325241889020214828">ສຳເນົາ <ph name="TEXT" />.</translation>
 <translation id="6348657800373377022">ກ່ອງຄອມໂບ</translation>
 <translation id="6348869651006731065">ສີເທົາດິມເກຣ</translation>
-<translation id="6350358010104919766">{COUNT,plural, =1{ເຄື່ອງໝາຍຂໍ້ຍ່ອຍແບບຈໍ້າເມັດ}other{ເຄື່ອງໝາຍຂໍ້ຍ່ອຍແບບຈໍ້າເມັດ # ອັນ}}</translation>
 <translation id="6357433033180746873">ບໍ່ມີເຊວເບື້ອງຂວາ</translation>
 <translation id="6364795331201459219">h6</translation>
 <translation id="6368143427468974988">ຫົວ​ຂໍ້​ຜ່ານ​ມາ</translation>
@@ -852,7 +820,6 @@
 <translation id="6406989068857078334">ຫຼຸດຄວາມໄວເມົ້າແລ້ວ, ກະລຸນາ <ph name="GESTURE" /> ອີກຄັ້ງເພື່ອຄລິກ</translation>
 <translation id="6411569524720229058">ລະດູໃບໄມ້ຫຼົ່ນ</translation>
 <translation id="6417265370957905582">ຜູ້ຊ່ວຍ Google</translation>
-<translation id="641759969622533235">{COUNT,plural, =1{ ສອງຈໍ້າ​}other{# ສອງຈໍ້າ}}</translation>
 <translation id="6444046323172968959">ກ່ອງການເຕືອນ</translation>
 <translation id="6452403590345320472">ສາລະບານ</translation>
 <translation id="6468049171101508116">ປຸ່ມ​ຕໍ່​ໄປ</translation>
@@ -881,7 +848,6 @@
 <translation id="669617842401078250">ຢຸດການດາວໂຫລດຊົ່ວຄາວແລ້ວ <ph name="FILE_NAME" /></translation>
 <translation id="6696967141280706829">ຄຳນຳ</translation>
 <translation id="6697092096875747123">ກ່ອງຄອມໂບຜ່ານ​ມາ​</translation>
-<translation id="6702609185760332517">{COUNT,plural, =1{ເຄື່ອງໝາຍທ້ວງ}other{ເຄື່ອງໝາຍທ້ວງ # ອັນ}}</translation>
 <translation id="670717715607710284">ໜ້າຈໍປິດຢູ່</translation>
 <translation id="6714813999819678458">ຫົວຂໍ້ລະ​ດັບ​ 2 ຜ່ານ​ມາ</translation>
 <translation id="6730312624811567147">ໃຊ້ປຸ່ມຊອກຫາ ແລະ ລູກສອນຊ້າຍ ຫຼື ຂວາເພື່ອໄປຫາຈຸດເລີ່ມຕົ້ນ ຫຼື ຈຸດສິ້ນສຸດ, ໃຊ້ປຸ່ມຊອກຫາ ປຸ່ມ Control ແລະ ລູກສອນຊ້າຍ ຫຼື ຂວາເພື່ອຄວບຄຸມຈຸດເລີ່ມຕົ້ນ ຫຼື ຈຸດສິ້ນສຸດ, ໃຊ້ປຸ່ມຊອກຫາ ແລະ ລູກສອນຂຶ້ນ ຫຼື ລົງເພື່ອເລື່ອນໜ້າຂຶ້ນ ຫຼື ລົງ</translation>
@@ -978,7 +944,6 @@
 <translation id="7344012264516629579">ຄຳສັ່ງຂ້າມເພີ່ມເຕີມຮວມມີການຂ້າມລິ້ງ, ປຸ່ມ ແລະ ກ່ອງໝາຍ ເປັນຕົ້ນ. ສາມາດເບິ່ງລາຍຊື່ເຕັມຂອງຄຳສັ່ງຂ້າມໄດ້ໃນເມນູ ChromeVox, ເຊິ່ງສາມາດເປີດໄດ້ໂດຍການກົດຊອກຫາ + ໝາຍຈຸດ.</translation>
 <translation id="7356165926712028380">ປ່ຽນ​ເປັນຕົວໜັງສືນູນ 8 ຈຸດ</translation>
 <translation id="7356610683936413584">ລາຍລະອຽດລາຍການຄຳອະທິບາຍ</translation>
-<translation id="7370432716629432284">{COUNT,plural, =1{ ເຄື່ອງໝາຍ &amp;}other{ # ເຄື່ອງໝາຍ &amp;}}</translation>
 <translation id="737396357417333429">clk</translation>
 <translation id="738899727977260036">ສີຟ້າອົມເທົາ</translation>
 <translation id="7393979322571982935">ສຽງ ແລະ ການຕັ້ງຄ່າ</translation>
@@ -1016,7 +981,6 @@
 <translation id="7637342083105831460">ກົດຊອກຫາ + ລູກສອນຂວາເພື່ອຊອກຫາພື້ນທີ່ຝຶກປະຕິບັດ ຫຼື ປຸ່ມບົດຮຽນຕໍ່ໄປ. ຈາກນັ້ນກົດຊອກຫາ + ຍະຫວ່າງເພື່ອເປີດນຳໃຊ້.</translation>
 <translation id="7639968568612851608">ສີເທົາເຂັ້ມ</translation>
 <translation id="7663318257180412551">ຫົວຂໍ້ 2</translation>
-<translation id="7668307052366682650">{COUNT,plural, =1{ຊົ່ວໂມງ}other{ຊົ່ວໂມງ}}</translation>
 <translation id="7674576868851035240">ລິ້ງ​ຕໍ່​ໄປ</translation>
 <translation id="7674768236845044097">ເຄື່ອງໝາຍ</translation>
 <translation id="7676847077928500578">ຣີເຊັດການຕັ້ງຄ່າການປ່ຽນຂໍ້ຄວາມເປັນສຽງເວົ້າ</translation>
@@ -1052,7 +1016,6 @@
 <translation id="7927711904086083099">ບໍ່​ໄດ້ເລືອກ</translation>
 <translation id="7935627501098484003">ການ​ຄວບ​ຄຸມ​ເວ​ລາ</translation>
 <translation id="7939428177581522200">ເພີ່ມ​ໃສ່ການ​ເລືອກແລ້ວ</translation>
-<translation id="794091007957014205">{COUNT,plural, =1{ ຢູ່ທີ່}other{ # ຢູ່​ທີ່ເຄື່ອງໝາຍ}}</translation>
 <translation id="7942349550061667556">ສີ​ແດງ</translation>
 <translation id="7948364528129376623">ບໍ່ມີລິ້ງທີ່ເຂົ້າເບິ່ງແລ້ວຖັດໄປ</translation>
 <translation id="7952460583030260752">ການອ້າງອີງຄຳສັ່ງ</translation>
@@ -1063,7 +1026,6 @@
 <translation id="8004507136466386272">ຄຳສັບ</translation>
 <translation id="8004512796067398576">ການເພີ່ມ</translation>
 <translation id="8007540374018858731">h3</translation>
-<translation id="8009786657110126785">{COUNT,plural, =1{ ວົງຢືມ}other{# ວົງຢືມ}}</translation>
 <translation id="8017588669690167134">ປິດສຽງເວົ້າ</translation>
 <translation id="801990297710781303">ໝາຍເຫດຕີນເຈ້ຍ</translation>
 <translation id="8028833145828956995">ທ່ານສາມາດໃຊ້ ChromeVox ກັບໜ້າຈໍສຳພັດໄດ້</translation>
@@ -1092,7 +1054,6 @@
 <translation id="8158033275290782295">ເລືອກທັງໝົດ</translation>
 <translation id="816818801578874684">ນີ້ແມ່ນຫົວຂໍ້ທຳອິດ. ກົດປຸ່ມຊອກຫາ + H ເພື່ອໄປຍັງຫົວຂໍ້ຕໍ່ໄປ.</translation>
 <translation id="8173092779156526980">ປັດໄປຊ້າຍດ້ວຍສີ່ນິ້ວມື</translation>
-<translation id="817440585505441544">{COUNT,plural, =1{ ເສັ້ນຂີດຢູ່ກ້ອງ}other{ # ເສັ້ນຂີດຢູ່ກ້ອງ}}</translation>
 <translation id="817529114347680055">ເປີດໜ້າຈໍ</translation>
 <translation id="8179976553408161302">ປ້ອນເຂົ້າ</translation>
 <translation id="8184828902145951186">ແຖວ</translation>
@@ -1117,7 +1078,6 @@
 <translation id="8313653172105209786">ໄດເຣັກຕໍຣີ</translation>
 <translation id="8316881042119029234">ສີສົ້ມໂອນເລດ</translation>
 <translation id="8326783648485765113">ສີຂຽວໃບຫຍ້າ</translation>
-<translation id="8345569862449483843">{COUNT,plural, =1{ ປອນ}other{ # ສັນຍາລັກປອນ}}</translation>
 <translation id="8351821207686449674">ເປີດ/ປິດຄຳບັນຍາຍ</translation>
 <translation id="8378855320830505539">ພາກພື້ນ</translation>
 <translation id="8382679411218029383">ໃນແຖວ ແລະລາຍຊື່ການຕື່ມເຕັມອັດຕະໂນມັດ</translation>
@@ -1160,10 +1120,8 @@
 <translation id="8659501358298941449">ລາຍຊື່ແບບລົງລຸ່ມ</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> ສິ້ນສຸດ</translation>
 <translation id="867187640362843212">ຫົວຂໍ້ 5</translation>
-<translation id="8690400660839620419">{COUNT,plural, =1{}other{ລະດັບທີ່ຊ້ອນເຂົ້າໄປ #}}</translation>
 <translation id="8693391540059827073">ລະດູການທີ່ຂ້ອຍມັກ</translation>
 <translation id="8696284982970258155">ສີຂຽວຮັນນີດິວ</translation>
-<translation id="8697111817566059991">{COUNT,plural, =1{ ເຄື່ອງໝາຍ |}other{ # ເຄື່ອງໝາຍ | ລວງຕັ້ງ}}</translation>
 <translation id="8741370088760768424">ຄຳບອກໃບ້: ກົດຊອກຫາ + ຍະຫວ່າງເພື່ອເປີດໃຊ້ລາຍການປັດຈຸບັນ.</translation>
 <translation id="8743786158317878347">ເຂົ້າເນື້ອ​ໃນທີ່ເຮັດເປັນໂຄງຮ່າງໄວ້​, ເຊັ່ນ​: ຕາ​ຕະ​ລາງ</translation>
 <translation id="8746846427395705317">ຍ້າຍໄປຫາຄຳກ່ອນໜ້າ</translation>
@@ -1213,7 +1171,6 @@
 <translation id="9099429023611373837">ຕັດ</translation>
 <translation id="9108370397979208512">ຄະນິດສາດ</translation>
 <translation id="9108589040018540527">scbr</translation>
-<translation id="911476240645808512">{COUNT,plural, =1{ ສ່ວນ​ຮ້ອຍ}other{# ເຄື່ອງໝາຍສ່ວນ​ຮ້ອຍ}}</translation>
 <translation id="9128414153595658330">ກ່ອງ</translation>
 <translation id="9133928141873682933">ສີກາກີ</translation>
 <translation id="9149560530563164529">sctn</translation>

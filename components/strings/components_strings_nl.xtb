@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Waterfilters en -zuiveraars</translation>
 <translation id="1036348656032585052">Uitzetten</translation>
 <translation id="1036881361735705143">Envelop C4</translation>
-<translation id="1038106730571050514">Suggesties bekijken</translation>
 <translation id="1038842779957582377">onbekende naam</translation>
 <translation id="1041998700806130099">Bericht voor taakblad</translation>
 <translation id="1044897699341250361">Wat dit betekent</translation>
@@ -978,7 +977,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2673968385134502798">Games</translation>
 <translation id="2674170444375937751">Weet je zeker dat je deze pagina's uit je geschiedenis wilt verwijderen?</translation>
 <translation id="2674524144218093528">Schilderen en afwerken van huizen</translation>
-<translation id="2674804415323431591">Suggesties verbergen</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> tabbladgroepen zijn niet meer beschikbaar</translation>
 <translation id="2677748264148917807">Verlaten</translation>
 <translation id="2683195745483370038">Andere resultaten gevonden</translation>
@@ -2627,7 +2625,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="55293785478302737">Inbinden met nietjes</translation>
 <translation id="553377674408670169">Banen in het onderwijs</translation>
 <translation id="5534785731327961487">Nu mooie aanbieding</translation>
-<translation id="5536214594743852365">Gedeelte <ph name="SECTION" /> bekijken</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 site (meer op gesynchroniseerde apparaten)}other{+ # sites (meer op gesynchroniseerde apparaten)}}</translation>
 <translation id="553782666181800029">Envelop Chou 2</translation>
 <translation id="5538270463355278784">automatisch volledig scherm</translation>
@@ -3651,7 +3648,6 @@ Aanvullende informatie:
 <translation id="7316521168101843192">Bestand opslaan in Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Hulp bij verbinding maken</translation>
-<translation id="7323804146520582233">Het gedeelte '<ph name="SECTION" />' verbergen</translation>
 <translation id="733354035281974745">Lokaal account op apparaat overschrijven</translation>
 <translation id="7334320624316649418">&amp;Opnieuw volgorde wijzigen</translation>
 <translation id="7335157162773372339">Kan vragen of deze site je camera mag gebruiken</translation>
@@ -3782,7 +3778,6 @@ Aanvullende informatie:
 <translation id="7517414872996418597">Envelop C10</translation>
 <translation id="7518003948725431193">Er is geen webpagina gevonden voor het webadres: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Het gedeelte '<ph name="SECTION" />' is verborgen</translation>
 <translation id="752189128961566325">Je kunt het gebruiken in meerdere Google-producten</translation>
 <translation id="7523408071729642236">Productie</translation>
 <translation id="7525067979554623046">Maken</translation>
@@ -4235,7 +4230,6 @@ Aanvullende informatie:
 <translation id="8297545700510100061">Cookies en andere sitegegevens worden gebruikt om je te onthouden, bijvoorbeeld voor inloggen of gepersonaliseerde advertenties. Ga naar <ph name="SETTINGS" /> om de cookies voor alle sites te beheren.</translation>
 <translation id="8298115750975731693">Het is mogelijk dat je <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> moet bezoeken van het wifi-netwerk (<ph name="WIFI_NAME" />) dat je gebruikt.</translation>
 <translation id="8301894345671534559">Code opgeven</translation>
-<translation id="8303854710873047864">Het gedeelte <ph name="SECTION" /> is zichtbaar</translation>
 <translation id="8304912090860925649">Nieuwe vergelijkingstabel</translation>
 <translation id="830498451218851433">Enkele vouw</translation>
 <translation id="8308653357438598313">Live videostreaming</translation>

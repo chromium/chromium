@@ -123,6 +123,7 @@
 <translation id="6054741997831917303">Šios prekės kaina neseniai sumažėjo nuo <ph name="PREVIOUS_PRICE" /> iki <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Visos tikslios skirtukų kopijos dabar taip pat bus suarchyvuotos, išskyrus neseniai naudotą kopiją.</translation>
 <translation id="6193448654517602979">Pasirinkti skirtukus</translation>
+<translation id="6220820548421939212">Taip. Sutinku</translation>
 <translation id="6228793724645064692">(parduotuvės įvertinimas)</translation>
 <translation id="6271513594716432922">Uždaryti visus neaktyvius skirtukus</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Pridėti skirtuką prie naujos grupės}one{Pridėti skirtukų prie naujos grupės}few{Pridėti skirtukų prie naujos grupės}many{Pridėti skirtukų prie naujos grupės}other{Pridėti skirtukų prie naujos grupės}}</translation>
@@ -171,6 +172,7 @@
 <translation id="7853202427316060426">Veikla</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Įvertinimas: <ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> atsiliepimas}one{Įvertinimas: <ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> atsiliepimas}few{Įvertinimas: <ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> atsiliepimai}many{Įvertinimas: <ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> atsiliepimo}other{Įvertinimas: <ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> atsiliepimų}}</translation>
 <translation id="7885132941432959125">Perkelti skirtuką į dešinę</translation>
+<translation id="788914896430720926">Išvalyti neaktyvių elementų skiltį?</translation>
 <translation id="7939917283308035850">Nepasirinkta: <ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">Raudona</translation>
 <translation id="7961015016161918242">Niekada</translation>
@@ -197,6 +199,7 @@
 <translation id="8730999928494395583">Jūsų veikla šiuose inkognito skirtukuose bus pašalinta iš šio įrenginio</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Sukurta prieš <ph name="NUM_MONTHS_ONE" /> mėnesį}one{Sukurta prieš <ph name="NUM_MONTHS_MANY" /> mėnesį}few{Sukurta prieš <ph name="NUM_MONTHS_MANY" /> mėnesius}many{Sukurta prieš <ph name="NUM_MONTHS_MANY" /> mėnesio}other{Sukurta prieš <ph name="NUM_MONTHS_MANY" /> mėnesių}}</translation>
 <translation id="8820741577754260431">Žr. sumažintas kainas skirtukuose</translation>
+<translation id="883379923675618699">„Chrome“ automatiškai uždaro elementus neaktyvių elementų, kurių nenaudojote tris mėnesius, skiltyje. Galite tai išjungti dabar arba bet kada skiltyje „Nustatymai“.</translation>
 <translation id="8887921976452567404">Uždarytus skirtukus ir grupes galima iš naujo atidaryti skiltyse „Naujausi skirtukai“ ir „Skirtukų grupės“.</translation>
 <translation id="8915916167043355778">Uždaryti viską</translation>
 <translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Perkelti į naują langą}one{Perkelti į kitą langą}few{Perkelti į kitą langą}many{Perkelti į kitą langą}other{Perkelti į kitą langą}}</translation>

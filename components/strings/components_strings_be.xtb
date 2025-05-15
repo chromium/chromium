@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Фільтры і ачышчальнікі для вады</translation>
 <translation id="1036348656032585052">Выключыць</translation>
 <translation id="1036881361735705143">Канверт C4</translation>
-<translation id="1038106730571050514">Паказаць прапановы</translation>
 <translation id="1038842779957582377">невядомае імя</translation>
 <translation id="1041998700806130099">Паведамленне аркуша задання</translation>
 <translation id="1044897699341250361">Што гэта азначае</translation>
@@ -979,7 +978,6 @@
 <translation id="2673968385134502798">Гульні</translation>
 <translation id="2674170444375937751">Сапраўды выдаліць гэтыя старонкі з гісторыі?</translation>
 <translation id="2674524144218093528">Малярныя і аддзелачныя работы</translation>
-<translation id="2674804415323431591">Схаваць прапановы</translation>
 <translation id="26774279487328902">Групы ўкладак (<ph name="GROUP_COUNT" />) больш не даступныя</translation>
 <translation id="2677748264148917807">Выйсці</translation>
 <translation id="2683195745483370038">Іншыя знойдзеныя вынікі</translation>
@@ -2324,6 +2322,7 @@
 <translation id="4998950033665438990">Аднабаковы гафрыраваны кардон</translation>
 <translation id="5001526427543320409">Староннія файлы cookie</translation>
 <translation id="5002932099480077015">Пры ўключэнні гэтага параметра Chrome будзе захоўваць копію вашай карткі на гэтай прыладзе ў мэтах хутчэйшага запаўнення форм.</translation>
+<translation id="5007344584818503324">Дзеянні ў абагуленых групах укладак</translation>
 <translation id="5007392906805964215">Праглядзець</translation>
 <translation id="5010599530303458903">Плаціце штомесячнымі плацяжамі або 4 часткамі без працэнтаў (пры адпаведнасці патрабаванням)</translation>
 <translation id="5011561501798487822">Выяўленая мова</translation>
@@ -2631,7 +2630,6 @@
 <translation id="55293785478302737">Сшыванне па краі</translation>
 <translation id="553377674408670169">Вакансіі ў сферы адукацыі</translation>
 <translation id="5534785731327961487">Выгадная цяпер прапанова</translation>
-<translation id="5536214594743852365">Паказаць раздзел "<ph name="SECTION" />"</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{і яшчэ 1 сайт (больш на сінхранізаваных прыладах)}one{і яшчэ # сайт (больш на сінхранізаваных прыладах)}few{і яшчэ # сайты (больш на сінхранізаваных прыладах)}many{і яшчэ # сайтаў (больш на сінхранізаваных прыладах)}other{і яшчэ # сайта (больш на сінхранізаваных прыладах)}}</translation>
 <translation id="553782666181800029">Канверт Chou 2</translation>
 <translation id="5538270463355278784">аўтаматычны поўнаэкранны рэжым</translation>
@@ -2750,6 +2748,7 @@
 <translation id="5732392974455271431">Разблакіраваць сайт для вас могуць бацькі</translation>
 <translation id="573555826359077410">Кнопка "Стварыць форму". Каб хутка стварыць новую форму ў Формах Google, націсніце яе.</translation>
 <translation id="5738385766833540397">Выберыце, куды павінны прыходзіць абвесткі пра зніжэнне цэн на тавары, за якімі вы сочыце</translation>
+<translation id="5739619009927381786">На наступным кроку разблакіруйце экран. Звычайна гэта можна зрабіць з дапамогай адбітка пальца. Таксама можна здзейсніць <ph name="BEGIN_LINK" />спраўджанне іншым спосабам<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Каб абагульваць групы ўкладак, далучацца да іх і сумесна працаваць з імі, уключыце сінхранізацыю гісторыі і ўкладак</translation>
 <translation id="5740911612628596808">Канверт C9</translation>
 <translation id="5742806904559466333">Бары, клубы і начныя забавы</translation>
@@ -3654,7 +3653,6 @@
 <translation id="7316521168101843192">Файл захоўваецца ў Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Даведка па падключэнні</translation>
-<translation id="7323804146520582233">Схаваць раздзел "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">Перавызначэнне лакальнага ўліковага запісу прылады</translation>
 <translation id="7334320624316649418">&amp;Паўтарыць змяненне парадку</translation>
 <translation id="7335157162773372339">Сайт можа запытваць дазвол на выкарыстанне мікрафона</translation>
@@ -3786,7 +3784,6 @@
 <translation id="7517414872996418597">Канверт C10</translation>
 <translation id="7518003948725431193">Не знойдзена вэб-старонкі па вэб-адрасе <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Раздзел "<ph name="SECTION" />" схаваны</translation>
 <translation id="752189128961566325">Вы можаце выкарыстоўваць яго ў прадуктах Google.</translation>
 <translation id="7523408071729642236">Вытворчасць</translation>
 <translation id="7525067979554623046">Стварыць</translation>
@@ -3863,6 +3860,7 @@
 <translation id="7639968568612851608">Цёмна-шэры</translation>
 <translation id="7646681339175747202">Выкарыстаны вамі пароль трапіў у спіс узламаных даных. Рэкамендуем змяніць яго зараз жа ў Менеджары пароляў Google.</translation>
 <translation id="7647206758853451655">Якасць друку</translation>
+<translation id="7648527891719919697">Гэты сайт застанецца заблакіраваным, бо вы ўключылі Палепшаную абарону ў <ph name="BEGIN_ANDROID_SETTINGS_LINK" />наладах Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш пра гэта папярэджанне.<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Захоўваць файлы на гэтай прыладзе</translation>
 <translation id="7653957176542370971">Аркуш апрацоўшчыка плацяжоў закрыты</translation>
 <translation id="7654909834015434372">Калі вы будзеце змяняць анатацыі, гэты дакумент прыме першапачатковую пазіцыю</translation>
@@ -4238,7 +4236,6 @@
 <translation id="8297545700510100061">Файлы cookie і іншыя даныя сайтаў выкарыстоўваюцца, каб захоўваць звесткі пра вас, у тым ліку для ўваходу ва ўліковы запіс і персаналізацыі рэкламы. Кіраваць файламі cookie для ўсіх сайтаў можна ў раздзеле <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Сетка Wi-Fi, якую вы выкарыстоўваеце (<ph name="WIFI_NAME" />), можа запатрабаваць ад вас наведаць старонку <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Увядзіце код</translation>
-<translation id="8303854710873047864">Паказваецца раздзел "<ph name="SECTION" />"</translation>
 <translation id="8304912090860925649">Новая табліца параўнання</translation>
 <translation id="830498451218851433">Згіб напалову</translation>
 <translation id="8308653357438598313">Жывыя відэатрансляцыі</translation>

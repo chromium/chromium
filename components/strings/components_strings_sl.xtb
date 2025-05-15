@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Vodni filtri in čistilniki</translation>
 <translation id="1036348656032585052">Izklop</translation>
 <translation id="1036881361735705143">Kuverta C4</translation>
-<translation id="1038106730571050514">Prikaz predlogov</translation>
 <translation id="1038842779957582377">neznano ime</translation>
 <translation id="1041998700806130099">Sporočilo glede delovnega lista</translation>
 <translation id="1044897699341250361">Kaj to pomeni</translation>
@@ -978,7 +977,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2673968385134502798">Igre</translation>
 <translation id="2674170444375937751">Ali ste prepričani, da želite te strani izbrisati iz svoje zgodovine?</translation>
 <translation id="2674524144218093528">Pleskanje in zaključna oprema</translation>
-<translation id="2674804415323431591">Skrivanje predlogov</translation>
 <translation id="26774279487328902">Skupine zavihkov (<ph name="GROUP_COUNT" />) niso več na voljo</translation>
 <translation id="2677748264148917807">Zapusti</translation>
 <translation id="2683195745483370038">Najdeni so bili drugi rezultati</translation>
@@ -2324,6 +2322,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4998950033665438990">Single Face</translation>
 <translation id="5001526427543320409">Piškotki tretjih oseb</translation>
 <translation id="5002932099480077015">Če je to omogočeno, Chrome shrani kopijo kartice v tej napravi zaradi hitrejšega izpolnjevanja obrazcev.</translation>
+<translation id="5007344584818503324">Dejavnost v deljenih skupinah zavihkov</translation>
 <translation id="5007392906805964215">Pregled</translation>
 <translation id="5010599530303458903">Plačajte mesečno ali v štirih brezobrestnih obrokih (odvisno od primernosti)</translation>
 <translation id="5011561501798487822">Zaznan jezik</translation>
@@ -2632,7 +2631,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="55293785478302737">Robni šiv</translation>
 <translation id="553377674408670169">Zaposlitev na področju izobraževanja</translation>
 <translation id="5534785731327961487">Odlična ponudba</translation>
-<translation id="5536214594743852365">Pokaži razdelek »<ph name="SECTION" />«</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{in še 1 spletno mesto (več v sinhroniziranih napravah)}one{in še # spletno mesto (več v sinhroniziranih napravah)}two{in še # spletni mesti (več v sinhroniziranih napravah)}few{in še # spletna mesta (več v sinhroniziranih napravah)}other{in še # spletnih mest (več v sinhroniziranih napravah)}}</translation>
 <translation id="553782666181800029">Kuverta Chou 2</translation>
 <translation id="5538270463355278784">samodejni celozaslonski način</translation>
@@ -2751,6 +2749,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5732392974455271431">Starši ga lahko odblokirajo</translation>
 <translation id="573555826359077410">Gumb za ustvarjanje obrazca, aktivirajte, če želite hitro ustvariti nov obrazec v Google Obrazcih</translation>
 <translation id="5738385766833540397">Upravljanje načina prejemanja opozoril o znižanju cen za izdelke, ki jih spremljate.</translation>
+<translation id="5739619009927381786">V naslednjem koraku odklenite zaslon, običajno s prstnim odtisom. Kodo lahko <ph name="BEGIN_LINK" />preverite tudi na drug način<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Če želite deliti, se pridružiti in sodelovati v skupinah zavihkov, sinhronizirajte zgodovino in zavihke</translation>
 <translation id="5740911612628596808">Kuverta C9</translation>
 <translation id="5742806904559466333">Bari, klubi in nočno življenje</translation>
@@ -3656,7 +3655,6 @@ Dodatne podrobnosti:
 <translation id="7316521168101843192">Shranjevanje datoteke v storitvi Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Pomoč pri povezavi</translation>
-<translation id="7323804146520582233">Skrij razdelek »<ph name="SECTION" />«</translation>
 <translation id="733354035281974745">Preglasitev lokalnega računa v napravi</translation>
 <translation id="7334320624316649418">&amp;Uveljavi razvrstitev</translation>
 <translation id="7335157162773372339">Lahko zahteva uporabo fotoaparata.</translation>
@@ -3787,7 +3785,6 @@ Dodatne podrobnosti:
 <translation id="7517414872996418597">Kuverta C10</translation>
 <translation id="7518003948725431193">Za ta spletni naslov in bilo mogoče najti nobene spletne strani:<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Razdelek »<ph name="SECTION" />« je skrit</translation>
 <translation id="752189128961566325">Uporabljate ga lahko v Googlovih izdelkih</translation>
 <translation id="7523408071729642236">Proizvodnja</translation>
 <translation id="7525067979554623046">Ustvari</translation>
@@ -3864,6 +3861,7 @@ Dodatne podrobnosti:
 <translation id="7639968568612851608">Temno siva</translation>
 <translation id="7646681339175747202">Geslo, ki ste ga pravkar uporabili, je bilo najdeno v podatkovni kršitvi. Googlov upravitelj gesel priporoča, da geslo spremenite takoj.</translation>
 <translation id="7647206758853451655">Kakovost tiskanja</translation>
+<translation id="7648527891719919697">To spletno mesto bo ostalo blokirano, ker je v <ph name="BEGIN_ANDROID_SETTINGS_LINK" />nastavitvah za Android<ph name="END_ANDROID_SETTINGS_LINK" /> vklopljena dodatna zaščita. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem opozorilu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Shranjevanje datotek v tej napravi</translation>
 <translation id="7653957176542370971">List rutine za obravnavo plačil je zaprt</translation>
 <translation id="7654909834015434372">Če boste urejali pripise, se bo ta dokument vrnil v prvotno usmerjenost.</translation>
@@ -4239,7 +4237,6 @@ Dodatne podrobnosti:
 <translation id="8297545700510100061">Piškotke in druge podatke spletnega mesta uporabljamo, da si zapomnimo vaše podatke, na primer za prijavo ali osebno prilagajanje oglasov. Če želite upravljati piškotke za vsa spletna mesta, si oglejte <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Omrežje Wi-Fi, ki ga uporabljate (<ph name="WIFI_NAME" />), morda zahteva, da obiščete <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Vnos kode</translation>
-<translation id="8303854710873047864">Razdelek »<ph name="SECTION" />« je prikazan</translation>
 <translation id="8304912090860925649">Nova primerjalna tabela</translation>
 <translation id="830498451218851433">Prepogibanje na pol</translation>
 <translation id="8308653357438598313">Oddajanje prek videa v živo</translation>
@@ -4259,6 +4256,7 @@ Dodatne podrobnosti:
 <translation id="833262891116910667">Označevanje</translation>
 <translation id="8339163506404995330">Strani v jeziku <ph name="LANGUAGE" /> ne bodo prevedene</translation>
 <translation id="8339275256517065202">Dokončanje nakupa s funkcijo Touch ID</translation>
+<translation id="833935588477667012">Obvezno: <ph name="FIELD_LABEL" /></translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Včlanitev navidezne kartice je odprta pri polni višini</translation>

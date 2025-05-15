@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Ur-iragazleak eta -araztaileak</translation>
 <translation id="1036348656032585052">Desaktibatu</translation>
 <translation id="1036881361735705143">C4 gutun-azala</translation>
-<translation id="1038106730571050514">Erakutsi iradokizunak</translation>
 <translation id="1038842779957582377">izen ezezaguna</translation>
 <translation id="1041998700806130099">Lan-orriko mezua</translation>
 <translation id="1044897699341250361">Zer esan nahi du horrek?</translation>
@@ -978,7 +977,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2673968385134502798">Jokoak</translation>
 <translation id="2674170444375937751">Ziur historiako orri hauek ezabatu nahi dituzula?</translation>
 <translation id="2674524144218093528">Etxea pintatzea eta amaitzea</translation>
-<translation id="2674804415323431591">Ezkutatu iradokizunak</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> fitxa talde jadanik ez daude erabilgarri</translation>
 <translation id="2677748264148917807">Irten</translation>
 <translation id="2683195745483370038">Beste emaitza batzuk aurkitu dira</translation>
@@ -2320,6 +2318,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4998950033665438990">Aurpegi bakarrekoa</translation>
 <translation id="5001526427543320409">Hirugarrenen cookieak</translation>
 <translation id="5002932099480077015">Gaitzen bada, Chrome-k txartelaren kopia bat gordeko du gailuan, inprimakiak bizkorrago betetzeko.</translation>
+<translation id="5007344584818503324">Partekatutako fitxa taldearen jarduerak</translation>
 <translation id="5007392906805964215">Berrikusi</translation>
 <translation id="5010599530303458903">Ordaindu hilero edo interesik gabeko 4 epetan (baldintzen arabera)</translation>
 <translation id="5011561501798487822">Hautemandako hizkuntza</translation>
@@ -2628,7 +2627,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="55293785478302737">Josi ertza</translation>
 <translation id="553377674408670169">Hezkuntza-lanpostuak</translation>
 <translation id="5534785731327961487">Eskaintza on bat dago orain</translation>
-<translation id="5536214594743852365">Erakutsi "<ph name="SECTION" />" atala</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 webgune (beste batzuk daude sinkronizatutako gailuetan)}other{+ # webgune (beste batzuk daude sinkronizatutako gailuetan)}}</translation>
 <translation id="553782666181800029">Chou 2 gutun-azala</translation>
 <translation id="5538270463355278784">pantaila oso automatikoa</translation>
@@ -2747,6 +2745,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5732392974455271431">Gurasoek desblokea diezazukete</translation>
 <translation id="573555826359077410">Inprimaki bat sortzeko botoia: aktiba ezazu Google Inprimakiak zerbitzuan inprimaki bat bizkor sortzeko</translation>
 <translation id="5738385766833540397">Kudeatu jarraipena egiten diezun produktuei dagozkien prezio-jaitsieren alertak jasotzeko modua</translation>
+<translation id="5739619009927381786">Desblokeatu pantaila hurrengo estekan, normalean hatz-marka erabiliz. Bestela, <ph name="BEGIN_LINK" />beste modu batean egin dezakezu egiaztapena<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Fitxa taldeak partekatzeko, haietan sartzeko eta elkarlanean jarduteko, sinkronizatu historia eta fitxak</translation>
 <translation id="5740911612628596808">C9 gutun-azala</translation>
 <translation id="5742806904559466333">Tabernak, klubak eta gaugiroa</translation>
@@ -3650,7 +3649,6 @@ Xehetasun gehiago:
 <translation id="7316521168101843192">Fitxategia Microsoft OneDrive-n gordetzen</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Konexioari buruzko laguntza</translation>
-<translation id="7323804146520582233">Ezkutatu "<ph name="SECTION" />" atala</translation>
 <translation id="733354035281974745">Gailuko kontua ordeztea</translation>
 <translation id="7334320624316649418">&amp;Berregin berrantolatzea</translation>
 <translation id="7335157162773372339">Kamera erabiltzea eska dezake</translation>
@@ -3781,7 +3779,6 @@ Xehetasun gehiago:
 <translation id="7517414872996418597">C10 gutun-azala</translation>
 <translation id="7518003948725431193">Ez da aurkitu web-orririk <ph name="URL" /> helbidean</translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">"<ph name="SECTION" />" atala ezkutatuta dago</translation>
 <translation id="752189128961566325">Google-ren produktu guztietan erabil dezakezu</translation>
 <translation id="7523408071729642236">Fabrikazioa</translation>
 <translation id="7525067979554623046">Sortu</translation>
@@ -3858,6 +3855,7 @@ Xehetasun gehiago:
 <translation id="7639968568612851608">Gris iluna</translation>
 <translation id="7646681339175747202">Erabili berri duzun pasahitza datuen isilpekotasunaren urratze batean aurkitu da. Google-ren Pasahitz-kudeatzailea zerbitzuak pasahitza orain aldatzea gomendatzen du.</translation>
 <translation id="7647206758853451655">Inprimatze-kalitatea</translation>
+<translation id="7648527891719919697">Webgune hau blokeatuta geldituko da, <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android-en ezarpenetan<ph name="END_ANDROID_SETTINGS_LINK" /> Babes aurreratua aktibatuta daukazulako. <ph name="BEGIN_LEARN_MORE_LINK" />Lortu abisu honi buruzko informazio gehiago<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Gorde fitxategiak gailu honetan</translation>
 <translation id="7653957176542370971">Ordainketa kudeatzeko orria itxita dago</translation>
 <translation id="7654909834015434372">Oharpenak editatzen dituzunean, jatorrizko biratzera itzuliko da dokumentua</translation>
@@ -4233,7 +4231,6 @@ Xehetasun gehiago:
 <translation id="8297545700510100061">Cookieak eta webguneetako beste datu batzuk zu gogoratzeko erabiltzen dira; adibidez, saioa hasteko edo iragarkiak pertsonalizatzeko. Webgune guztietako cookieak kudeatzeko, ikusi <ph name="SETTINGS" /> atala.</translation>
 <translation id="8298115750975731693">Baliteke darabilzun Wi-Fi konexioaren (<ph name="WIFI_NAME" />) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> orrira joan behar izatea.</translation>
 <translation id="8301894345671534559">Idatzi kodea</translation>
-<translation id="8303854710873047864">"<ph name="SECTION" />" atala ikusten ari zara</translation>
 <translation id="8304912090860925649">Konparazio-taula berria</translation>
 <translation id="830498451218851433">Erdibitzeko tolestura</translation>
 <translation id="8308653357438598313">Zuzeneko bideo-igorpenak</translation>

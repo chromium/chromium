@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">ਪਾਣੀ ਵਾਲੇ ਫਿਲਟਰ ਅਤੇ ਪਿਊਰੀਫਾਇਰ</translation>
 <translation id="1036348656032585052">ਬੰਦ ਕਰੋ</translation>
 <translation id="1036881361735705143">C4 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
-<translation id="1038106730571050514">ਸੁਝਾਅ ਦਿਖਾਓ</translation>
 <translation id="1038842779957582377">ਅਗਿਆਤ ਨਾਮ</translation>
 <translation id="1041998700806130099">ਕਾਰਵਾਈ ਸ਼ੀਟ ਸੁਨੇਹਾ</translation>
 <translation id="1044897699341250361">ਇਸਦਾ ਕੀ ਮਤਲਬ ਹੈ</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">ਗੇਮਾਂ</translation>
 <translation id="2674170444375937751">ਕੀ ਤੁਸੀਂ ਪੱਕੇ ਤੌਰ 'ਤੇ ਇਹਨਾਂ ਪੰਨਿਆਂ ਨੂੰ ਆਪਣੇ ਇਤਿਹਾਸ ਵਿੱਚੋਂ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="2674524144218093528">ਘਰ ਨੂੰ ਰੰਗਣਾ ਅਤੇ ਸਜਾਵਟ</translation>
-<translation id="2674804415323431591">ਸੁਝਾਅ ਲੁਕਾਓ</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> ਟੈਬ ਗਰੁੱਪ ਹੁਣ ਉਪਲਬਧ ਨਹੀਂ ਹਨ</translation>
 <translation id="2677748264148917807">ਛੱਡੋ</translation>
 <translation id="2683195745483370038">ਹੋਰ ਨਤੀਜੇ ਮਿਲੇ</translation>
@@ -2321,6 +2319,7 @@
 <translation id="4998950033665438990">ਸਿੰਗਲ ਫੇਸ</translation>
 <translation id="5001526427543320409">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼</translation>
 <translation id="5002932099480077015">ਜੇਕਰ ਚਾਲੂ ਹੈ, ਤਾਂ Chrome ਤੇਜ਼ੀ ਨਾਲ ਫ਼ਾਰਮ ਭਰਨ ਲਈ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਤੁੁਹਾਡੇ ਕਾਰਡ ਦੀ ਇੱਕ ਕਾਪੀ ਸਟੋਰ ਕਰੇਗਾ।</translation>
+<translation id="5007344584818503324">ਸਾਂਝੀ ਕੀਤੀ ਗਈ ਟੈਬ ਗਰੁੱਪ ਨਾਲ ਸੰਬੰਧਿਤ ਸਰਗਰਮੀ</translation>
 <translation id="5007392906805964215">ਸਮੀਖਿਆ ਕਰੋ</translation>
 <translation id="5010599530303458903">ਮਹੀਨਾਵਾਰ ਜਾਂ 4 ਵਿਆਜ-ਮੁਕਤ ਕਿਸ਼ਤਾਂ ਵਿੱਚ ਭੁਗਤਾਨ ਕਰੋ (ਯੋਗਤਾ ਦੇ ਅਧੀਨ)</translation>
 <translation id="5011561501798487822">ਪਛਾਣੀ ਗਈ ਭਾਸ਼ਾ</translation>
@@ -2629,7 +2628,6 @@
 <translation id="55293785478302737">ਕਿਨਾਰੇ ਤੋਂ ਸਿਲਾਈ</translation>
 <translation id="553377674408670169">ਸਿੱਖਿਆ ਖੇਤਰ ਦੀਆਂ ਨੌਕਰੀਆਂ</translation>
 <translation id="5534785731327961487">ਹੁਣੇ ਖਰੀਦਣ ਲਈ ਬਿਹਤਰੀਨ ਡੀਲ ਹੈ</translation>
-<translation id="5536214594743852365">"<ph name="SECTION" />" ਸੈਕਸ਼ਨ ਦਿਖਾਓ</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{1 ਹੋਰ ਸਾਈਟ (ਸਿੰਕ ਕੀਤੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਹੋਰ ਵੀ ਸਾਈਟਾਂ ਦਾ ਡਾਟਾ ਹੈ)}one{# ਹੋਰ ਸਾਈਟ (ਸਿੰਕ ਕੀਤੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਹੋਰ ਵੀ ਸਾਈਟਾਂ ਦਾ ਡਾਟਾ ਹੈ)}other{# ਹੋਰ ਸਾਈਟਾਂ (ਸਿੰਕ ਕੀਤੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਹੋਰ ਵੀ ਸਾਈਟਾਂ ਦਾ ਡਾਟਾ ਹੈ)}}</translation>
 <translation id="553782666181800029">ਚੋਊ 2 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="5538270463355278784">ਸਵੈਚਲਿਤ ਪੂਰੀ ਸਕ੍ਰੀਨ</translation>
@@ -2748,6 +2746,7 @@
 <translation id="5732392974455271431">ਤੁਹਾਡੇ ਮਾਪੇ ਇਸ ਨੂੰ ਤੁਹਾਡੇ ਲਈ ਅਣਬਲੌਕ ਕਰ ਸਕਦੇ ਹਨ</translation>
 <translation id="573555826359077410">'ਫ਼ਾਰਮ ਬਣਾਓ' ਬਟਨ, Google Forms ਵਿੱਚ ਤੇਜ਼ੀ ਨਾਲ ਨਵਾਂ ਫ਼ਾਰਮ ਬਣਾਉਣ ਲਈ ਇਸਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="5738385766833540397">ਤੁਹਾਡੇ ਵੱਲੋਂ ਟਰੈਕ ਕੀਤੇ ਜਾਣ ਵਾਲੇ ਉਤਪਾਦਾਂ ਵਾਸਤੇ ਕੀਮਤਾਂ ਘਟਣ ਸੰਬੰਧੀ ਅਲਰਟ ਪ੍ਰਾਪਤ ਕਰਨ ਦੇ ਤਰੀਕੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
+<translation id="5739619009927381786">ਆਮ ਤੌਰ 'ਤੇ ਆਪਣਾ ਫਿੰਗਰਪ੍ਰਿੰਟ ਵਰਤ ਕੇ, ਅਗਲੇ ਪੜਾਅ ਵਿੱਚ ਆਪਣੀ ਸਕ੍ਰੀਨ ਨੂੰ ਅਣਲਾਕ ਕਰੋ। ਜਾਂ, ਤੁਸੀਂ <ph name="BEGIN_LINK" />ਕਿਸੇ ਹੋਰ ਤਰੀਕੇ ਨਾਲ ਪੁਸ਼ਟੀ<ph name="END_LINK" /> ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="573974402615125334">ਟੈਬ ਗਰੁੱਪਾਂ ਵਿੱਚ ਸਾਂਝਾ ਕਰਨ, ਸ਼ਾਮਲ ਹੋਣ ਅਤੇ ਸਹਿਯੋਗ ਕਰਨ ਲਈ ਆਪਣੇ ਇਤਿਹਾਸ ਅਤੇ ਟੈਬਾਂ ਨੂੰ ਸਿੰਕ ਕਰੋ</translation>
 <translation id="5740911612628596808">C9 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="5742806904559466333">ਬਾਰ, ਕਲੱਬ ਅਤੇ ਨਾਈਟਲਾਈਫ਼</translation>
@@ -3651,7 +3650,6 @@
 <translation id="7316521168101843192">ਫ਼ਾਈਲ ਨੂੰ Microsoft OneDrive ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">ਕਨੈਕਸ਼ਨ ਸੰਬੰਧੀ ਮਦਦ</translation>
-<translation id="7323804146520582233">"<ph name="SECTION" />" ਸੈਕਸ਼ਨ ਲੁਕਾਓ</translation>
 <translation id="733354035281974745">ਡੀਵਾਈਸ ਦੇ ਸਥਾਨਕ ਖਾਤੇ ਨੂੰ ਓਵਰਰਾਈਡ</translation>
 <translation id="7334320624316649418">&amp;ਦੁਬਾਰਾ ਕ੍ਰਮ ਦੇਣ ਨੂੰ ਰੀਡੂ ਕਰੋ</translation>
 <translation id="7335157162773372339">ਸਾਈਟ ਤੁਹਾਡਾ ਕੈਮਰਾ ਵਰਤਣ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
@@ -3782,7 +3780,6 @@
 <translation id="7517414872996418597">C10 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="7518003948725431193">ਵੈਬ ਪਤੇ ਲਈ ਕੋਈ ਵੈਬਪੇਜ ਨਹੀਂ ਮਿਲਿਆ ਸੀ: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">"<ph name="SECTION" />" ਸੈਕਸ਼ਨ ਲੁਕਾਇਆ ਗਿਆ</translation>
 <translation id="752189128961566325">ਤੁਸੀਂ ਇਸਨੂੰ ਸਾਰੇ Google ਉਤਪਾਦਾਂ ਵਿੱਚ ਵਰਤ ਸਕਦੇ ਹੋ</translation>
 <translation id="7523408071729642236">ਨਿਰਮਾਣ</translation>
 <translation id="7525067979554623046">ਬਣਾਓ</translation>
@@ -3859,6 +3856,7 @@
 <translation id="7639968568612851608">ਗੂੜ੍ਹਾ ਸਲੇਟੀ</translation>
 <translation id="7646681339175747202">ਤੁਹਾਡੇ ਵੱਲੋਂ ਹੁਣੇ ਹੀ ਵਰਤਿਆ ਗਿਆ ਪਾਸਵਰਡ ਡਾਟਾ ਉਲੰਘਣਾ ਵਿੱਚ ਮਿਲਿਆ ਸੀ। Google Password Manager ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਨੂੰ ਹੁਣੇ ਬਦਲਣ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ।</translation>
 <translation id="7647206758853451655">ਪ੍ਰਿੰਟ ਕੁਆਲਿਟੀ</translation>
+<translation id="7648527891719919697">ਇਹ ਸਾਈਟ ਬਲਾਕ ਰਹੇਗੀ ਕਿਉਂਕਿ ਤੁਸੀਂ Android ਸੈਟਿੰਗਾਂ ਵਿੱਚ <ph name="BEGIN_ANDROID_SETTINGS_LINK" />ਅਡਵਾਂਸ ਸੁਰੱਖਿਆ<ph name="END_ANDROID_SETTINGS_LINK" /> ਨੂੰ ਚਾਲੂ ਕੀਤਾ ਹੋਇਆ ਹੈ। <ph name="BEGIN_LEARN_MORE_LINK" />ਇਸ ਚਿਤਾਵਨੀ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਫਾਈਲਾਂ ਸਟੋਰ ਕਰੋ</translation>
 <translation id="7653957176542370971">ਭੁਗਤਾਨ ਹੈਂਡਲਰ ਸ਼ੀਟ ਬੰਦ ਹੈ</translation>
 <translation id="7654909834015434372">ਜਦੋਂ ਤੁਸੀਂ ਐਨੋਟੇਸ਼ਨਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰਦੇ ਹੋ, ਤਾਂ ਇਹ ਦਸਤਾਵੇਜ਼ ਆਪਣੇ ਮੂਲ ਘੁਮਾਅ 'ਤੇ ਵਾਪਸ ਆ ਜਾਵੇਗਾ</translation>
@@ -4234,7 +4232,6 @@
 <translation id="8297545700510100061">ਕੁਕੀਜ਼ ਅਤੇ ਹੋਰ ਸਾਈਟ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਤੁਹਾਨੂੰ ਯਾਦ ਰੱਖਣ ਲਈ ਕੀਤੀ ਜਾਂਦੀ ਹੈ, ਉਦਾਹਰਨ ਦੇ ਤੌਰ 'ਤੇ ਤੁਹਾਨੂੰ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਜਾਂ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਲਈ। ਸਾਰੀਆਂ ਸਾਈਟਾਂ ਲਈ ਕੁਕੀਜ਼ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ, <ph name="SETTINGS" /> ਦੇਖੋ।</translation>
 <translation id="8298115750975731693">ਜੋ Wi-Fi (<ph name="WIFI_NAME" />) ਤੁਸੀਂ ਵਰਤ ਰਹੇ ਹੋ, ਉਸ ਲਈ ਤੁਹਾਨੂੰ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ਤੇ ਵਿਜਿਟ ਕਰਨ ਦੀ ਲੋੜ ਹੋ ਸਕਦੀ ਹੈ।</translation>
 <translation id="8301894345671534559">ਕੋਡ ਦਾਖਲ ਕਰੋ</translation>
-<translation id="8303854710873047864">"<ph name="SECTION" />" ਸੈਕਸ਼ਨ ਦਿਖਾਇਆ ਗਿਆ</translation>
 <translation id="8304912090860925649">ਨਵੀਂ ਤੁਲਨਾ ਸਾਰਨੀ</translation>
 <translation id="830498451218851433">ਅੱਧੀ ਤਹਿ</translation>
 <translation id="8308653357438598313">ਲਾਈਵ ਵੀਡੀਓ ਸਟ੍ਰੀਮਿੰਗ</translation>

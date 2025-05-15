@@ -4531,6 +4531,7 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName 變化版本會控制是否要
 如果將這項政策設為停用，則表示除非使用者停用 PDF 外掛程式，否則系統一律會使用 PDF 外掛程式開啟 PDF 檔案。
 
 如果設定這項政策，使用者將無法在 <ph name="PRODUCT_NAME" /> 中進行變更。如果不設定這項政策，使用者可以選擇是否要從外部開啟 PDF。</translation>
+<translation id="4413764344717830250">在受管理瀏覽器中，控管是否在新分頁顯示擴充功能來源資訊</translation>
 <translation id="4415603335307944578">如果將這項政策設為 True 或不設定，當裝置升級 OS 後，瀏覽器將在首次啟動時重新顯示歡迎頁面。
 
       如果將這項政策設為 False，當裝置升級 OS 後，瀏覽器不會在首次啟動時重新顯示歡迎頁面。</translation>
@@ -6391,6 +6392,11 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName 變化版本會控制是否要
 <translation id="5670249935663090320">如果將這項政策設為啟用或不設定，系統會開啟 <ph name="PRODUCT_NAME" />，使用者可以從應用程式選單、頁面內容選單、支援投放裝置網站的媒體控制選項，以及投放裝置工具列圖示 (如有顯示) 中啟動。
 
 如果將這項政策設為停用，系統會關閉 <ph name="PRODUCT_NAME" />。</translation>
+<translation id="5671392367521500075">如果新分頁 (NTP) 由擴充功能控管，這項政策會控制是否在 NTP 頁尾顯示擴充功能來源資訊。根據預設，NTP 頁尾會顯示控管 NTP 的擴充功能相關資訊。
+
+如果將這項政策設為 True 或未設定，使用擴充功能控管 NTP 的瀏覽器會顯示擴充功能名稱和連結。
+
+如果將這項政策設為 False，就會隱藏擴充功能來源資訊。</translation>
 <translation id="5673254755365419402">啟用 <ph name="PRIVACY_SANDBOX_NAME" /> 數位指紋採集防護功能。</translation>
 <translation id="567377007899266033">如果將這項政策設為 True，系統會將政策觸發的主要擴充功能安裝事件報告傳送給 Google。如果將這項政策設為 False，則系統不會擷取任何事件。如果不設定這項政策，預設值為 True。</translation>
 <translation id="5673780539191375049">設定 <ph name="PRODUCT_OS_NAME" /> 裝置上自動重新載入使用者驗證流程的時間間隔 (以分鐘為單位)。這項政策的作用是，判斷裝置閒置一段時間後，驗證流程中使用的部分服務是否到期。

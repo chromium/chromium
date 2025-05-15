@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">ওয়াটার ফিল্টার ও পিউরিফায়ার</translation>
 <translation id="1036348656032585052">বন্ধ করুন</translation>
 <translation id="1036881361735705143">এনভেলপ C4</translation>
-<translation id="1038106730571050514">সাজেশনগুলি দেখান</translation>
 <translation id="1038842779957582377">অজানা নাম</translation>
 <translation id="1041998700806130099">জব শিট মেসেজ</translation>
 <translation id="1044897699341250361">এর মানে কি</translation>
@@ -979,7 +978,6 @@
 <translation id="2673968385134502798">গেম</translation>
 <translation id="2674170444375937751">আপনি কি আপনার ইতিহাস থেকে এই পৃষ্ঠাগুলি মোছার বিষয়ে নিশ্চিত?</translation>
 <translation id="2674524144218093528">বাড়ি রঙ করা ও ফিনিশিং</translation>
-<translation id="2674804415323431591">সাজেশন মেনু লুকান</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> ট্যাব গ্রুপ আর উপলভ্য নেই</translation>
 <translation id="2677748264148917807">ছেড়ে চলে যান</translation>
 <translation id="2683195745483370038">অন্য ফলাফল পাওয়া গেছে</translation>
@@ -2325,6 +2323,7 @@
 <translation id="4998950033665438990">সিঙ্গেল ফেস</translation>
 <translation id="5001526427543320409">থার্ড-পার্টি কুকি</translation>
 <translation id="5002932099480077015">সক্রিয় করা হলে, ফর্ম পূরণের কাজ দ্রুত করতে Chrome এই ডিভাইসে আপনার কার্ডের একটি কপি স্টোর করবে।</translation>
+<translation id="5007344584818503324">শেয়ার করা ট্যাব গ্রুপের অ্যাক্টিভিটি</translation>
 <translation id="5007392906805964215">পর্যালোচনা করুন</translation>
 <translation id="5010599530303458903">প্রতি মাসে অথবা ৪টি সুদ ছাড়া ইনস্টলমেন্টে পেমেন্ট করুন (যোগ্যতা সাপেক্ষ)</translation>
 <translation id="5011561501798487822">শনাক্ত করা ভাষা</translation>
@@ -2633,7 +2632,6 @@
 <translation id="55293785478302737">ধারের দিকে সেলাই</translation>
 <translation id="553377674408670169">শিক্ষা সংক্রান্ত চাকরি</translation>
 <translation id="5534785731327961487">এখন দারুণ ডিল</translation>
-<translation id="5536214594743852365">"<ph name="SECTION" />" বিভাগ দেখুন</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{১টির বেশি সাইট (সিঙ্ক করা ডিভাইসে আরও রয়েছে)}one{#টির বেশি সাইট (সিঙ্ক করা ডিভাইসে আরও রয়েছে)}other{#টির বেশি সাইট (সিঙ্ক করা ডিভাইসে আরও রয়েছে)}}</translation>
 <translation id="553782666181800029">এনভেলপ চৌ ২</translation>
 <translation id="5538270463355278784">অটোমেটিক ফুল-স্ক্রিন</translation>
@@ -2752,6 +2750,7 @@
 <translation id="5732392974455271431">আপনার পিতামাতা এটি আপনার জন্য অবরোধ মুক্ত করতে পারবেন</translation>
 <translation id="573555826359077410">'ফর্ম তৈরি করুন' বোতাম, Google Forms-এ চটপট নতুন ফর্ম তৈরি করতে এটি চালু করুন</translation>
 <translation id="5738385766833540397">আপনার ট্র্যাক করা প্রোডাক্টের দাম কমার বিজ্ঞপ্তি কীভাবে পাবেন তা ম্যানেজ করুন</translation>
+<translation id="5739619009927381786">পরবর্তী ধাপে আপনার স্ক্রিন আনলক করুন, সাধারণত ফিঙ্গারপ্রিন্ট ব্যবহার করে করা হয়। অথবা আপনি <ph name="BEGIN_LINK" />অন্য উপায়ে যাচাই করতে<ph name="END_LINK" /> পারেন।</translation>
 <translation id="573974402615125334">ট্যাব গ্রুপে শেয়ার করতে, যোগ দিতে ও কোলাবরেট করতে, আপনার ইতিহাস ও ট্যাব সিঙ্ক করুন</translation>
 <translation id="5740911612628596808">এনভেলপ C9</translation>
 <translation id="5742806904559466333">বার, ক্লাব ও নাইটলাইফ</translation>
@@ -3360,6 +3359,7 @@
 <translation id="6789062271869667677">কন্টিনিউআস (লং)</translation>
 <translation id="678982761784843853">সুরক্ষিত কন্টেন্টের আইডি</translation>
 <translation id="6790428901817661496">চালু করুন</translation>
+<translation id="6792631792628412749">পাসকী • <ph name="PROVIDER_NAME" /></translation>
 <translation id="6793213097893210590">কার্ডবোর্ড</translation>
 <translation id="679355240208270552">নীতি অনুযায়ী ডিফল্ট সার্চ সক্ষম করা হয়নি তাই উপেক্ষা করা হয়েছে৷</translation>
 <translation id="6794951432696553238">এখন থেকে কার্ডগুলি আরও দ্রুত কনফার্ম করতে Windows Hello ব্যবহার করুন</translation>
@@ -3655,7 +3655,6 @@
 <translation id="7316521168101843192">Microsoft OneDrive-এ ফাইল সেভ করা হচ্ছে</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">কানেকশন সহায়তা</translation>
-<translation id="7323804146520582233">"<ph name="SECTION" />" বিভাগ লুকান</translation>
 <translation id="733354035281974745">ডিভাইসের স্থানীয় অ্যাকাউন্ট ওভাররাইড করা</translation>
 <translation id="7334320624316649418">&amp;পুনর্বিন্যাসকে আবার করুন</translation>
 <translation id="7335157162773372339">ক্যামেরা ব্যবহার করার অনুমতি চাইতে পারে</translation>
@@ -3786,7 +3785,6 @@
 <translation id="7517414872996418597">এনভেলপ C10</translation>
 <translation id="7518003948725431193">No webpage was found for the web address: <ph name="URL" /></translation>
 <translation id="7521387064766892559">জাভাস্ক্রিপ্ট</translation>
-<translation id="7521825010239864438">"<ph name="SECTION" />" বিভাগটি লুকানো আছে</translation>
 <translation id="752189128961566325">আপনি বিভিন্ন Google প্রোডাক্ট জুড়ে এটি ব্যবহার করতে পারবেন</translation>
 <translation id="7523408071729642236">ম্যানুফ্যাকচারিং</translation>
 <translation id="7525067979554623046">তৈরি করুন</translation>
@@ -3863,6 +3861,7 @@
 <translation id="7639968568612851608">গাঢ় ধূসর</translation>
 <translation id="7646681339175747202">ডেটা লঙ্ঘনের ঘটনাতে আপনার এইমাত্র ব্যবহার করা পাসওয়ার্ডটি পাওয়া গেছে। Google Password Manager আপনার পাসওয়ার্ড এখনই পরিবর্তন করতে সাজেস্ট করছে।</translation>
 <translation id="7647206758853451655">প্রিন্টের কোয়ালিটি</translation>
+<translation id="7648527891719919697">আপনি <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android সেটিংস<ph name="END_ANDROID_SETTINGS_LINK" /> থেকে উন্নত সুরক্ষা চালু করেছেন বলে এই সাইটটি ব্লক করা থাকবে। <ph name="BEGIN_LEARN_MORE_LINK" />এই সতর্কতা সম্পর্কে আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">এই ডিভাইসে ফাইলগুলি জমা করুন</translation>
 <translation id="7653957176542370971">পেমেন্ট হ্যান্ডলার শিট বন্ধ করা আছে</translation>
 <translation id="7654909834015434372">অ্যানোটেশন এডিট করার সময়, এই ডকুমেন্ট তার আসল রোটেশনে ফিরে যাবে</translation>
@@ -4238,7 +4237,6 @@
 <translation id="8297545700510100061">কুকি এবং অন্যন্য সাইটের ডেটা আপনার অ্যাকাউন্টের তথ্য মনে রাখে, যেমন আপনাকে সাইন-ইন করানোর সময় অথবা আপনার পছন্দমতো বিজ্ঞাপন দেখানোর সময়। সব সাইটের জন্য কুকি ম্যানেজ করতে, <ph name="SETTINGS" /> দেখুন।</translation>
 <translation id="8298115750975731693">আপনি যে (<ph name="WIFI_NAME" />) Wi-Fiটি ব্যবহার করছেন সেটির জন্য অপনাকে <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> তে যেতে হতে পারে৷</translation>
 <translation id="8301894345671534559">কোড লিখুন</translation>
-<translation id="8303854710873047864">"<ph name="SECTION" />" বিভাগ দেখানো হয়েছে</translation>
 <translation id="8304912090860925649">তুলনা সম্পর্কিত নতুন সারণী</translation>
 <translation id="830498451218851433">অর্ধেক ফোল্ড করুন</translation>
 <translation id="8308653357438598313">লাইভ ভিডিও স্ট্রিমিং</translation>

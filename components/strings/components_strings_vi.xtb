@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Thiết bị lọc và máy lọc nước</translation>
 <translation id="1036348656032585052">Tắt</translation>
 <translation id="1036881361735705143">Phong bì C4</translation>
-<translation id="1038106730571050514">Hiển thị các đề xuất</translation>
 <translation id="1038842779957582377">tên không biết</translation>
 <translation id="1041998700806130099">Thông báo tờ công việc</translation>
 <translation id="1044897699341250361">Điều này có nghĩa gì</translation>
@@ -978,7 +977,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2673968385134502798">Trò chơi</translation>
 <translation id="2674170444375937751">Bạn có chắc chắn muốn xóa những trang này khỏi nhật ký duyệt web của mình không?</translation>
 <translation id="2674524144218093528">Sơn và hoàn thiện nhà cửa</translation>
-<translation id="2674804415323431591">Ẩn các đề xuất</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> nhóm thẻ không còn hoạt động</translation>
 <translation id="2677748264148917807">Rời khỏi</translation>
 <translation id="2683195745483370038">Kết quả tìm được khác</translation>
@@ -2633,7 +2631,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="55293785478302737">May viền</translation>
 <translation id="553377674408670169">Công việc giáo dục</translation>
 <translation id="5534785731327961487">Đang có giá tốt</translation>
-<translation id="5536214594743852365">Hiển thị phần "<ph name="SECTION" />"</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 trang web (nhiều trang web khác trên các thiết bị đã đồng bộ hoá)}other{+ # trang web (nhiều trang web khác trên các thiết bị đã đồng bộ hoá)}}</translation>
 <translation id="553782666181800029">Phong bì Chou 2</translation>
 <translation id="5538270463355278784">tự động mở toàn màn hình</translation>
@@ -3658,7 +3655,6 @@ Thông tin chi tiết bổ sung:
 <translation id="7316521168101843192">Đang lưu tệp vào Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Trợ giúp kết nối</translation>
-<translation id="7323804146520582233">Ẩn phần "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">Ghi đè tài khoản trên thiết bị</translation>
 <translation id="7334320624316649418">&amp;Làm lại sắp xếp lại</translation>
 <translation id="7335157162773372339">Trang web có thể yêu cầu dùng máy ảnh của bạn</translation>
@@ -3789,7 +3785,6 @@ Thông tin chi tiết bổ sung:
 <translation id="7517414872996418597">Phong bì C10</translation>
 <translation id="7518003948725431193">Không tìm thấy trang web nào ứng với địa chỉ web:<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Đã ẩn phần "<ph name="SECTION" />"</translation>
 <translation id="752189128961566325">Bạn có thể dùng địa chỉ này trên các sản phẩm của Google</translation>
 <translation id="7523408071729642236">Sản xuất</translation>
 <translation id="7525067979554623046">Tạo</translation>
@@ -4242,7 +4237,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8297545700510100061">Cookie và dữ liệu trang web khác được dùng để ghi nhớ bạn, chẳng hạn như giúp bạn đăng nhập hoặc cá nhân hoá quảng cáo. Để quản lý cookie cho tất cả trang web, hãy xem phần <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Wi-Fi mà bạn đang sử dụng (<ph name="WIFI_NAME" />) có thể yêu cầu bạn phải truy cập <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Nhập mã</translation>
-<translation id="8303854710873047864">Đã hiển thị phần "<ph name="SECTION" />"</translation>
 <translation id="8304912090860925649">Bảng so sánh mới</translation>
 <translation id="830498451218851433">Gấp đôi</translation>
 <translation id="8308653357438598313">Truyền video trực tiếp</translation>

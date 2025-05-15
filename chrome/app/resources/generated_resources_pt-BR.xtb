@@ -3626,6 +3626,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3514681096978190000">Este arquivo inclui outros arquivos que podem ocultar malware</translation>
 <translation id="3515983984924808886">Toque na sua chave de segurança novamente para confirmar a redefinição. Todas as informações armazenadas na chave de segurança, inclusive o PIN, serão excluídas.</translation>
 <translation id="3518866566087677312">Adicione itens aos favoritos para consultar depois</translation>
+<translation id="3519014757432845220">Ajude a melhorar a proteção contra spam compartilhando o conteúdo da notificação e o URL do site com o Google. O conteúdo poderá ser analisado por humanos.</translation>
 <translation id="3519382402703204668">Escolha uma guia</translation>
 <translation id="3519564332031442870">Serviço de back-end para impressão</translation>
 <translation id="3519938335881974273">Salvar página como…</translation>
@@ -5707,7 +5708,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" />: <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Transmitir tela</translation>
 <translation id="496185450405387901">Este app foi instalado pelo seu administrador.</translation>
-<translation id="4963079328730030450">Sua organização controla como os dados coletados por esses recursos podem ser usados.</translation>
 <translation id="4963603093937263654">As notificações precisam estar ativadas no <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Remover guia atual</translation>
 <translation id="4964455510556214366">Organização</translation>
@@ -6635,6 +6635,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="563371367637259496">Celular</translation>
 <translation id="5635312199252507107">Permitir em sites específicos</translation>
 <translation id="5636012309446422">Remover o dispositivo <ph name="DEVICE" /> de <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="56360247219959198">O <ph name="DICTIONARY" /> será excluído permanentemente. Você não poderá desfazer essa ação.</translation>
 <translation id="5636140764387862062">Mais ações para o PIN</translation>
 <translation id="5636996382092289526">Para usar <ph name="NETWORK_ID" />, talvez seja necessário primeiro <ph name="LINK_START" />visitar a página de login da rede<ph name="LINK_END" />, que abrirá automaticamente em alguns segundos. Se isso não acontecer, significa que a rede não pode ser usada.</translation>
 <translation id="5637476008227280525">Ativar dados móveis</translation>
@@ -7752,6 +7753,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6459799433792303855">A janela ativa foi movida para outra tela.</translation>
 <translation id="6460601847208524483">Localizar próximo</translation>
 <translation id="6461170143930046705">Procurando redes…</translation>
+<translation id="6463488491707167747">Excluir este dicionário</translation>
 <translation id="6463596731306859179">Recebendo pop-ups indesejados ou outro comportamento inesperado? Às vezes, os apps e as extensões que você instala podem mudar as configurações do ChromeOS sem seu conhecimento.</translation>
 <translation id="6463668944631062248">Aceite a solicitação de transmissão no dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="6463795194797719782">&amp;Editar</translation>

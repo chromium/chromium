@@ -332,6 +332,7 @@
 <translation id="2527779675047087889">隱藏剪貼簿內容</translation>
 <translation id="2532336938189706096">網頁檢視</translation>
 <translation id="253498598929009420">網站將能查看你的畫面內容</translation>
+<translation id="2535807170289627159">所有分頁</translation>
 <translation id="2536728043171574184">目前瀏覽的是這個網頁的離線複本</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />，分頁</translation>
 <translation id="2546283357679194313">Cookie 和網站資料</translation>
@@ -1583,7 +1584,7 @@
 <translation id="8030852056903932865">核准</translation>
 <translation id="8032569120109842252">追蹤中</translation>
 <translation id="8037750541064988519">還剩 <ph name="DAYS" /> 天</translation>
-<translation id="8037801708772278989">剛才已檢查</translation>
+<translation id="8037801708772278989">剛剛檢查</translation>
 <translation id="804335162455518893">找不到 SD 卡</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個無痕分頁}other{<ph name="TAB_COUNT_NORMAL" /> 個無痕分頁}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB 可用空間</translation>

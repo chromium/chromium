@@ -117,7 +117,6 @@
 <translation id="1616111909442424068">Blat</translation>
 <translation id="1618597272655350600">Anuncia una descripció completa de la posició actual.</translation>
 <translation id="1627222324347828322">Blanc fantasma</translation>
-<translation id="1639634871799530612">{COUNT,plural, =1{major que}other{# símbols major que}}</translation>
 <translation id="1653266918374749391">Capçalera del nivell 3 anterior</translation>
 <translation id="1657616855184033958">Mostra els filtres del flux d'esdeveniments</translation>
 <translation id="1659072772017912254">No s'ha comprovat.</translation>
@@ -162,7 +161,6 @@
 <translation id="1964135212174907577">Objecte següent</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Mostra ordres de braille als menús de ChromeVox</translation>
-<translation id="2007545860310005685">{COUNT,plural, =1{claudàtor d'obertura}other{# claudàtors d'obertura}}</translation>
 <translation id="2009187674653301682">No és un superíndex</translation>
 <translation id="2010555995361223825">Menús de ChromeVox</translation>
 <translation id="203030071582665758">No hi ha cap encapçalament anterior de nivell 4</translation>
@@ -185,7 +183,6 @@
 <translation id="2169714232367507776">Feu clic a l'element actual.</translation>
 <translation id="2179452035581866348">ChromeVox fa servir sons per donar-te informació essencial i addicional. Pots aprendre què signifiquen i així utilitzar-los per navegar més de pressa. Un cop t'hi familiaritzis, pots desactivar les descripcions en veu alta detallades i dependre dels sons per obtenir informació essencial de la pàgina. Aquí tens una llista completa dels sons i del que signifiquen.</translation>
 <translation id="2183409941723714159">Navegació amb la tecla de tabulació</translation>
-<translation id="2188751878842439466">{COUNT,plural, =1{parèntesi de tancament}other{# parèntesis de tancament}}</translation>
 <translation id="2197863150503783129">Cuir</translation>
 <translation id="2199994615414171367">Expressió matemàtica anterior</translation>
 <translation id="2203046366315513658">Disminueix el valor</translation>
@@ -231,7 +228,6 @@
 <translation id="2462626033734746142">Grup de botons d'opció</translation>
 <translation id="2467741090055146971">desselecciona</translation>
 <translation id="2471138580042810658">Capçalera 6</translation>
-<translation id="248982282205370495">{COUNT,plural, =1{asterisc}other{# asteriscos}}</translation>
 <translation id="2490721194269245365">Marró rosat</translation>
 <translation id="249330843868392562">Obre la configuració de text a parla</translation>
 <translation id="2497706219848005458">Groc verdós</translation>
@@ -266,7 +262,6 @@
 <translation id="2692503699962701720">Canvia el to en pronunciar tipus d'elements i text amb format</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">Candidat a la conversió de text</translation>
-<translation id="2704429362613743330">{COUNT,plural, =1{parèntesi d'obertura}other{# parèntesis d'obertura}}</translation>
 <translation id="270523456882008230">Suggeriment: fes doble toc amb un dit per activar l'element actual.</translation>
 <translation id="2705875883745373140">Sense prémer.</translation>
 <translation id="2708078563826046398">Préssec clar</translation>
@@ -280,7 +275,6 @@
 <translation id="2756452585631602151">Introdueix una etiqueta personalitzada</translation>
 <translation id="2766299274563946262">No hi ha cap cel·la a l'esquerra</translation>
 <translation id="2770947749427257887">Entra al mode de desplaçament</translation>
-<translation id="2783001728278437613">{COUNT,plural, =1{# més}other{# més}}</translation>
 <translation id="2792200646155001340">També pots fer lliscar un dit de dreta a esquerra per anar a l'element anterior. Prova-ho ara.</translation>
 <translation id="280499067616661124">Cerca a la pàgina amb ChromeVox</translation>
 <translation id="2811204574343810641">Fila</translation>
@@ -299,9 +293,7 @@
 <translation id="2876760662374103627">El control amb gestos facials està actiu</translation>
 <translation id="2879867157561757640">Fes lliscar tres dits cap avall</translation>
 <translation id="288178314850623291">Fes servir les ordres de salt per ometre tipus d'elements específics. Per avançar pels encapçalaments, prem Cerca+H i, per tornar enrere, prem Cerca+Maj+H.</translation>
-<translation id="2885764457467528513">{COUNT,plural, =1{minut}other{minuts}}</translation>
 <translation id="2894654529758326923">Informació</translation>
-<translation id="2899328121302785497">{COUNT,plural, =1{clau d'obertura}other{# claus d'obertura}}</translation>
 <translation id="2909584066358367921">No hi ha cap botó més</translation>
 <translation id="2911433807131383493">Obre el tutorial de ChromeVox</translation>
 <translation id="2912405967290226587">Fes lliscar tres dits cap a la dreta</translation>
@@ -311,7 +303,6 @@
 <translation id="2943596527105977722">Groc daurat fosc</translation>
 <translation id="2964026537669811554">Grup de capçalera</translation>
 <translation id="2968634799764242930">Verd marí</translation>
-<translation id="296951647852255825">{COUNT,plural, =1{tabulació}other{# tabulacions}}</translation>
 <translation id="2972205263822847197">Descripció emergent</translation>
 <translation id="2976476721782829799">També et pots moure d'un lloc a un altre arrossegant un dit per la pantalla. Aquesta acció s'anomena "Exploració tàctil". Prova d'arrossegar el dit per llegir la resta de la lliçó.</translation>
 <translation id="297825089465017871">Fes lliscar dos dits cap a l'esquerra</translation>
@@ -322,7 +313,6 @@
 <translation id="3014130421870723208">@ed 8punts</translation>
 <translation id="3018210433491759145">ChromeVox s'està carregant</translation>
 <translation id="3030432017085518523">Botó d'opció de l'element del menú</translation>
-<translation id="3037392361165431467">{COUNT,plural, =1{apòstrof}other{# apòstrofs}}</translation>
 <translation id="3040901448410802366">Indicador de progrés</translation>
 <translation id="3046838483509668188">Opcions de ChromeVox</translation>
 <translation id="3060756054951570867">S'ha obert el menú <ph name="TITLE" />.</translation>
@@ -358,7 +348,6 @@
 <translation id="3159493096109238499">Beix</translation>
 <translation id="316542773973815724">Navegació</translation>
 <translation id="3167446923957429259">Mou la boca cap a l'esquerra</translation>
-<translation id="3172700825913348768">{COUNT,plural, =1{espai}other{# espais}}</translation>
 <translation id="3179119189286472195">No és un enllaç</translation>
 <translation id="3180990259147710757">Moure la mandíbula cap a l'esquerra</translation>
 <translation id="320041337977930740">Canvia l'estil de pantalla a entrellaçat</translation>
@@ -395,7 +384,6 @@
 <translation id="3359142382821736686">seprtr</translation>
 <translation id="3363015957057974366">També pots fer servir la tecla de tabulació per anar a l'element interactiu següent de la pantalla. Trobaràs aquesta tecla just a sobre de la tecla de cerca. Per continuar, prem la tecla de tabulació.</translation>
 <translation id="3366946046494222386">Tutorial <ph name="TOPIC" />, <ph name="LESSONS" /> lliçons</translation>
-<translation id="3374537878095184207">{COUNT,plural, =1{més}other{# signes més}}</translation>
 <translation id="338583716107319301">Separador</translation>
 <translation id="3389259863310851658">Camp del formulari anterior</translation>
 <translation id="3390740059150071453">Mirar a l'esquerra</translation>
@@ -414,12 +402,8 @@
 <translation id="3469413619751135069">Verd pàl·lid</translation>
 <translation id="3473744269398144689">Inicia el dictat</translation>
 <translation id="3490765818161916458">Quadrícula de llista</translation>
-<translation id="3492609944033322585">{COUNT,plural, =1{claudàtor de tancament}other{# claudàtors de tancament}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
-<translation id="3497063866483065785">{COUNT,plural, =1{signe d'interrogació}other{# signes d'interrogació}}</translation>
 <translation id="3505359110822747654">Replega els menús de ChromeVox</translation>
-<translation id="3514822174137761109">{COUNT,plural, =1{accent circumflex}other{# accents circumflexos}}</translation>
-<translation id="3518600448524470129">{COUNT,plural, =1{pic blanc}other{# pics blancs}}</translation>
 <translation id="352577523970648069">Un camp de text que es pot editar</translation>
 <translation id="3538907380453898475">llistdscrip</translation>
 <translation id="3549141990712742152">retalla <ph name="TEXT" />.</translation>
@@ -436,9 +420,7 @@
 <translation id="3616016838842055984">Si arribes a un element en què vols fer clic, prem la tecla Cerca+barra espaiadora. Prova-ho ara per continuar.</translation>
 <translation id="3616113530831147358">Àudio</translation>
 <translation id="3622350485154495700">Fes doble toc amb un dit</translation>
-<translation id="3646890046000188562">{COUNT,plural, =1{accent agut}other{# accents aguts}}</translation>
 <translation id="3650317109285159359">chkmnuitm</translation>
-<translation id="3655855170848725876">{COUNT,plural, =1{dòlar}other{# símbols de dòlar}}</translation>
 <translation id="3659787053479271466">alerta</translation>
 <translation id="366419593095697301">Suggeriment: si vols sortir del tutorial, prem la tecla d'escapada.</translation>
 <translation id="3676062394766691318">Després de configurar el dispositiu, pots tornar i veure més tutorials prement la tecla Cerca+O i, després, T.</translation>
@@ -497,16 +479,13 @@
 <translation id="4054936709456751127">estat</translation>
 <translation id="4058278702844053247">Una pàgina en procés de càrrega</translation>
 <translation id="4065205963140826639">Fes servir Cerca+fletxa dreta per cercar el botó Següent i, a continuació, prem Cerca+espai per fer-hi clic.</translation>
-<translation id="4081085052247739398">{COUNT,plural, =1{accent}other{# accents}}</translation>
 <translation id="409334809956508737">Objecte anterior</translation>
 <translation id="4099274309791143834">amb submenú</translation>
 <translation id="4101527861445851766">Una casella de selecció marcada</translation>
 <translation id="410225014223200513">Fer una O amb els llavis</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4116415223832267137">Alerta</translation>
-<translation id="4148180433151187540">{COUNT,plural, =1{clau de tancament}other{# claus de tancament}}</translation>
 <translation id="4159784952369912983">Porpra</translation>
-<translation id="4161104397932142764">{COUNT,plural, =1{segon}other{segons}}</translation>
 <translation id="4161663686871496107">Ja podeu utilitzar els avisos de veu de ChromeVox.</translation>
 <translation id="4176463684765177261">Desactivat</translation>
 <translation id="4187322598335821254">Llisca cap amunt o cap avall per moure't d'una línia a una altra</translation>
@@ -518,7 +497,6 @@
 <translation id="4204864733111726379">Blanc floral</translation>
 <translation id="42164919740161077">Blau grisenc</translation>
 <translation id="4217571870635786043">Dictat</translation>
-<translation id="4218529045364428769">{COUNT,plural, =1{guió}other{# guions}}</translation>
 <translation id="4220024144662591089">selecciona de <ph name="START_PHRASE" /> a <ph name="END_PHRASE" /></translation>
 <translation id="4221012616705981690">No hi ha cap llista anterior</translation>
 <translation id="4225355998815256469">Controls de formularis</translation>
@@ -540,7 +518,6 @@
 <translation id="4300318234632215983">Presenta l'URL darrere d'un enllaç.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Siena</translation>
-<translation id="4342180618051828363">{COUNT,plural, =1{punt}=3{punts suspensius}other{# punts}}</translation>
 <translation id="4352022650330571548">escriu "<ph name="PHRASE" />"</translation>
 <translation id="4360738659108163902">Fes clic amb el botó dret del ratolí</translation>
 <translation id="4372435075475052704">mín.: <ph name="X" /></translation>
@@ -569,7 +546,6 @@
 <translation id="4511186779140817916">Blanc ametlla</translation>
 <translation id="451510441928265982">No hi ha cap encapçalament anterior de nivell 2</translation>
 <translation id="4517854969512651305">Augmenta el valor</translation>
-<translation id="4532633738839459153">{COUNT,plural, =1{barra inclinada}other{# barres inclinades}}</translation>
 <translation id="4537277403911487429">Element similar següent</translation>
 <translation id="4547556996012970016">Capçalera del nivell 5 següent</translation>
 <translation id="4562381607973973258">Capçalera</translation>
@@ -678,7 +654,6 @@
 <translation id="5310788376443009632">s'ha suprimit:</translation>
 <translation id="5316825363044614340">ves a la línia següent</translation>
 <translation id="5320727453979144100">S'ha activat el mode permanent</translation>
-<translation id="5321085947096604457">{COUNT,plural, =1{coma}other{# comes}}</translation>
 <translation id="532485153932049746">Format de text
     <ph name="FONT_SIZE_STRING" />
     <ph name="COLOR_STRING" />
@@ -697,10 +672,8 @@
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402791055281059602">Una alerta modal</translation>
 <translation id="5406272775687194041">Inicia l'acció d'arrossegar i deixar anar</translation>
-<translation id="5407530583102765689">{COUNT,plural, =1{punt i coma}other{# punts i coma}}</translation>
 <translation id="5420259671171615858">Cerca als menús</translation>
 <translation id="5435274640623994081">Activa el registre d'icones sonores</translation>
-<translation id="5436105723448703439">{COUNT,plural, =1{menor que}other{# símbols menor que}}</translation>
 <translation id="5444587279251314700">(activa)</translation>
 <translation id="5451268436205074266">punts <ph name="DOT" /></translation>
 <translation id="5452267669091857717">No hi ha cap encapçalament més de nivell 1</translation>
@@ -726,7 +699,6 @@
 <translation id="5597170376237141345">Casella de selecció següent</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, botó d'opció no seleccionat</translation>
 <translation id="5601172225407283979">Duu a terme l'acció predeterminada.</translation>
-<translation id="5604302400025591178">{COUNT,plural, =1{pic quadrat}other{# pics quadrats}}</translation>
 <translation id="5608798115546226984">Compleció automàtica en línia</translation>
 <translation id="5616029807486814372">Lliçó següent</translation>
 <translation id="561939826962581046">time</translation>
@@ -786,21 +758,18 @@
 <translation id="5921587111466148855">Capítol</translation>
 <translation id="5923780477617566089">Data actual</translation>
 <translation id="5926889058434275234">Per veure una llista completa de gestos, visita el Centre d'ajuda.</translation>
-<translation id="5937336320314038555">{COUNT,plural, =1{signe igual}other{# signes igual}}</translation>
 <translation id="5947651424015173580">Fes doble clic amb el ratolí</translation>
 <translation id="5948123859135882163">Canvia la interpretació de les expressions matemàtiques, entre estructural i semàntica.</translation>
 <translation id="5955304353782037793">aplicació</translation>
 <translation id="5956928062748260866">Diàleg</translation>
 <translation id="5963413905009737549">Secció</translation>
 <translation id="5968607524793740041">Mostra el menú contextual</translation>
-<translation id="597121107011153418">{COUNT,plural, =1{amb # element}other{amb # elements}}</translation>
 <translation id="5981446804259161541">Cian clar</translation>
 <translation id="5983179082906765664">Augmenta la granularitat de la navegació</translation>
 <translation id="5988563937187882754">Mirar a la dreta</translation>
 <translation id="5992285135956208197">Document gràfic</translation>
 <translation id="5999630716831179808">Veus</translation>
 <translation id="6006050241733874051">Formulari</translation>
-<translation id="6006064078185310784">{COUNT,plural, =1{barra invertida}other{# barres invertides}}</translation>
 <translation id="6010616110396250088">Ordre descendent</translation>
 <translation id="6017514345406065928">Verd</translation>
 <translation id="602001110135236999">Desplaça't cap a l'esquerra</translation>
@@ -840,7 +809,6 @@
 <translation id="6325241889020214828">copia <ph name="TEXT" />.</translation>
 <translation id="6348657800373377022">Quadre combinat</translation>
 <translation id="6348869651006731065">Gris tènue</translation>
-<translation id="6350358010104919766">{COUNT,plural, =1{pic}other{# pics}}</translation>
 <translation id="6357433033180746873">No hi ha cap cel·la a la dreta</translation>
 <translation id="6364795331201459219">h6</translation>
 <translation id="6368143427468974988">Capçalera anterior</translation>
@@ -852,7 +820,6 @@
 <translation id="6406989068857078334">La velocitat del ratolí s'ha reduït. <ph name="GESTURE" /> de nou per fer clic.</translation>
 <translation id="6411569524720229058">Tardor</translation>
 <translation id="6417265370957905582">Assistent de Google</translation>
-<translation id="641759969622533235">{COUNT,plural, =1{dos punts}other{# dos punts}}</translation>
 <translation id="6444046323172968959">Diàleg d'alerta</translation>
 <translation id="6452403590345320472">Taula de continguts</translation>
 <translation id="6468049171101508116">Botó següent</translation>
@@ -881,7 +848,6 @@
 <translation id="669617842401078250">La baixada del fitxer <ph name="FILE_NAME" /> s'ha posat en pausa</translation>
 <translation id="6696967141280706829">Prefaci</translation>
 <translation id="6697092096875747123">Quadre combinat anterior</translation>
-<translation id="6702609185760332517">{COUNT,plural, =1{exclamació}other{# exclamacions}}</translation>
 <translation id="670717715607710284">Desactiva la pantalla</translation>
 <translation id="6714813999819678458">Capçalera del nivell 2 anterior</translation>
 <translation id="6730312624811567147">Fes servir Cerca+fletxa esquerra/dreta en comptes d'Inici/Fi; Cerca+Control+fletxa esquerra/dreta en comptes de Control+Inici/Fi, i Cerca+fletxa amunt/avall en comptes de Re/Av Pàg</translation>
@@ -978,7 +944,6 @@
 <translation id="7344012264516629579">Altres ordres de salt addicionals són, per exemple, el salt mitjançant enllaç, botó o casella de selecció. Trobaràs la llista completa d'ordres de salt als menús de ChromeVox, que es poden obrir prement la tecla Cerca+punt.</translation>
 <translation id="7356165926712028380">Canvia a braille de vuit punts.</translation>
 <translation id="7356610683936413584">Detall de la llista de descripció</translation>
-<translation id="7370432716629432284">{COUNT,plural, =1{signe &amp;}other{# signes &amp;}}</translation>
 <translation id="737396357417333429">clk</translation>
 <translation id="738899727977260036">Blau pissarra</translation>
 <translation id="7393979322571982935">Sons i configuració</translation>
@@ -1017,7 +982,6 @@
 <translation id="7637342083105831460">Prem la tecla Cerca+fletxa dreta per cercar la zona de pràctiques o el botó Lliçó següent. A continuació, prem la tecla Cerca+barra espaiadora per activar la selecció.</translation>
 <translation id="7639968568612851608">Gris fosc</translation>
 <translation id="7663318257180412551">Capçalera 2</translation>
-<translation id="7668307052366682650">{COUNT,plural, =1{hora}other{hores}}</translation>
 <translation id="7674576868851035240">Enllaç següent</translation>
 <translation id="7674768236845044097">marca</translation>
 <translation id="7676847077928500578">Restableix la configuració de text a parla</translation>
@@ -1053,7 +1017,6 @@
 <translation id="7927711904086083099">Sense seleccionar</translation>
 <translation id="7935627501098484003">Control de temps</translation>
 <translation id="7939428177581522200">s'ha afegit a la selecció</translation>
-<translation id="794091007957014205">{COUNT,plural, =1{arrova}other{# símbols d'arrova}}</translation>
 <translation id="7942349550061667556">Vermell</translation>
 <translation id="7948364528129376623">No hi ha cap enllaç visitat més</translation>
 <translation id="7952460583030260752">Referències d'ordres</translation>
@@ -1064,7 +1027,6 @@
 <translation id="8004507136466386272">Paraules</translation>
 <translation id="8004512796067398576">Incrementa</translation>
 <translation id="8007540374018858731">h3</translation>
-<translation id="8009786657110126785">{COUNT,plural, =1{cometes}other{# cometes}}</translation>
 <translation id="8017588669690167134">Desactiva la veu</translation>
 <translation id="801990297710781303">Nota al peu</translation>
 <translation id="8028833145828956995">Pots fer servir ChromeVox amb la pantalla tàctil</translation>
@@ -1093,7 +1055,6 @@
 <translation id="8158033275290782295">selecciona-ho tot</translation>
 <translation id="816818801578874684">Aquest és el primer encapçalament. Prem la tecla Cerca+H per anar a l'encapçalament següent.</translation>
 <translation id="8173092779156526980">Fes lliscar quatre dits cap a l'esquerra</translation>
-<translation id="817440585505441544">{COUNT,plural, =1{ratlla baixa}other{# ratlles baixes}}</translation>
 <translation id="817529114347680055">Pantalla activada</translation>
 <translation id="8179976553408161302">Retorn</translation>
 <translation id="8184828902145951186">fila</translation>
@@ -1118,7 +1079,6 @@
 <translation id="8313653172105209786">directori</translation>
 <translation id="8316881042119029234">Blanquinós</translation>
 <translation id="8326783648485765113">Verd gespa</translation>
-<translation id="8345569862449483843">{COUNT,plural, =1{lliura}other{# símbols de lliura}}</translation>
 <translation id="8351821207686449674">Commuta els subtítols</translation>
 <translation id="8378855320830505539">Regió</translation>
 <translation id="8382679411218029383">Compleció automàtica en línia i llista</translation>
@@ -1161,10 +1121,8 @@
 <translation id="8659501358298941449">Llistes desplegables</translation>
 <translation id="8666733765751421568">Fi de <ph name="TYPE" /></translation>
 <translation id="867187640362843212">Capçalera 5</translation>
-<translation id="8690400660839620419">{COUNT,plural, =1{}other{nivell imbricat #}}</translation>
 <translation id="8693391540059827073">La meva estació preferida</translation>
 <translation id="8696284982970258155">Verd pàl·lid</translation>
-<translation id="8697111817566059991">{COUNT,plural, =1{barra}other{# barres verticals}}</translation>
 <translation id="8741370088760768424">Suggeriment: per activar l'element actual, prem Cerca+barra espaiadora.</translation>
 <translation id="8743786158317878347">entra al contingut estructurat, com ara les taules</translation>
 <translation id="8746846427395705317">mou a la paraula anterior</translation>
@@ -1214,7 +1172,6 @@
 <translation id="9099429023611373837">retalla</translation>
 <translation id="9108370397979208512">matemàtiques</translation>
 <translation id="9108589040018540527">scbr</translation>
-<translation id="911476240645808512">{COUNT,plural, =1{percentatge}other{# símbols de percentatge}}</translation>
 <translation id="9128414153595658330">diàleg</translation>
 <translation id="9133928141873682933">Caqui</translation>
 <translation id="9149560530563164529">sctn</translation>

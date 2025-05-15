@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Filtros y purificadores de agua</translation>
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1036881361735705143">Sobre C4</translation>
-<translation id="1038106730571050514">Mostrar sugerencias</translation>
 <translation id="1038842779957582377">nombre desconocido</translation>
 <translation id="1041998700806130099">Mensaje de la hoja del trabajo</translation>
 <translation id="1044897699341250361">Qué significa</translation>
@@ -978,7 +977,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2673968385134502798">Juegos</translation>
 <translation id="2674170444375937751">¿Estás seguro de que deseas eliminar estas páginas del historial?</translation>
 <translation id="2674524144218093528">Pintura y terminaciones para casas</translation>
-<translation id="2674804415323431591">Ocultar sugerencias</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> grupos de pestañas ya no están disponibles</translation>
 <translation id="2677748264148917807">Abandonar</translation>
 <translation id="2683195745483370038">Se encontraron otros resultados</translation>
@@ -2325,6 +2323,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4998950033665438990">Simple faz</translation>
 <translation id="5001526427543320409">Cookies de terceros</translation>
 <translation id="5002932099480077015">Si se habilita esta opción, Chrome almacenará una copia de la tarjeta en el dispositivo para llenar más rápidamente los formularios.</translation>
+<translation id="5007344584818503324">Actividad de los grupos de pestañas compartidos</translation>
 <translation id="5007392906805964215">Revisar</translation>
 <translation id="5010599530303458903">Paga de forma mensual o en 4 cuotas sin intereses (sujeto a elegibilidad)</translation>
 <translation id="5011561501798487822">Idioma detectado</translation>
@@ -2633,7 +2632,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="55293785478302737">Costura de borde</translation>
 <translation id="553377674408670169">Trabajos en educación</translation>
 <translation id="5534785731327961487">Buena oferta</translation>
-<translation id="5536214594743852365">Mostrar la sección "<ph name="SECTION" />"</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{y 1 sitio más (y más en dispositivos sincronizados)}other{y # sitios más (y más en dispositivos sincronizados)}}</translation>
 <translation id="553782666181800029">Sobre chou n.º 2</translation>
 <translation id="5538270463355278784">pantalla completa automática</translation>
@@ -2752,6 +2750,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5732392974455271431">Tus padres pueden desbloquearlo por ti</translation>
 <translation id="573555826359077410">Botón Crear formulario: actívalo para crear un formulario nuevo en Formularios de Google rápidamente</translation>
 <translation id="5738385766833540397">Administra cómo recibes alertas de descuentos para los productos que sigues.</translation>
+<translation id="5739619009927381786">Desbloquea la pantalla en el siguiente paso, por lo general, con tu huella dactilar. También puedes <ph name="BEGIN_LINK" />completar la verificación de otra forma<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Para compartir grupos de pestañas, unirte a ellos y colaborar, sincroniza tu historial y tus pestañas</translation>
 <translation id="5740911612628596808">Sobre C9</translation>
 <translation id="5742806904559466333">Bares, clubes y vida nocturna</translation>
@@ -3361,6 +3360,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6789062271869667677">Continuo (largo)</translation>
 <translation id="678982761784843853">IDs de contenido protegidos</translation>
 <translation id="6790428901817661496">Reproducir</translation>
+<translation id="6792631792628412749">Llave de acceso • <ph name="PROVIDER_NAME" /></translation>
 <translation id="6793213097893210590">Cartón</translation>
 <translation id="679355240208270552">Se ignora porque la búsqueda predeterminada no está habilitada según la política.</translation>
 <translation id="6794951432696553238">A partir de ahora, usa Windows Hello para confirmar las tarjetas más rápido</translation>
@@ -3656,7 +3656,6 @@ Detalles adicionales:
 <translation id="7316521168101843192">Guardando el archivo en Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Ayuda con la conexión</translation>
-<translation id="7323804146520582233">Ocultar la sección "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">Se anuló la cuenta local del dispositivo</translation>
 <translation id="7334320624316649418">&amp;Rehacer Reorganizar</translation>
 <translation id="7335157162773372339">Puede solicitar permiso para usar la cámara</translation>
@@ -3787,7 +3786,6 @@ Detalles adicionales:
 <translation id="7517414872996418597">Sobre C10</translation>
 <translation id="7518003948725431193">No se encontró una página web para la siguiente dirección web: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Se ocultó la sección "<ph name="SECTION" />"</translation>
 <translation id="752189128961566325">Puedes usarla en todos los productos de Google.</translation>
 <translation id="7523408071729642236">Fabricación</translation>
 <translation id="7525067979554623046">Crear</translation>
@@ -4239,7 +4237,6 @@ Detalles adicionales:
 <translation id="8297545700510100061">Se utilizan las cookies y otros datos de sitios para recordar tu información y actividad. De esta manera, podrás acceder a tu cuenta y ver anuncios personalizados, entre otras cosas. Para administrar las cookies de todos los sitios, visita la <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Es posible que la red Wi-Fi que estás usando (<ph name="WIFI_NAME" />) requiera que accedas a <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Ingresar código</translation>
-<translation id="8303854710873047864">Se muestra la sección "<ph name="SECTION" />"</translation>
 <translation id="8304912090860925649">Nueva tabla de comparación</translation>
 <translation id="830498451218851433">Plegado a la mitad</translation>
 <translation id="8308653357438598313">Transmisión de video en vivo</translation>

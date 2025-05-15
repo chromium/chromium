@@ -3180,6 +3180,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3188465121994729530">Hlaupandi meðaltal</translation>
 <translation id="3189187154924005138">Stór bendill</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{Eitt aðgangsorð og fleiri atriði eru aðeins vistuð í þessu tæki. Til að nota þau í öðrum tækjum skaltu vista þau á Google-reikningnum þínum.}one{{PASSWORD_COUNT} aðgangsorð og fleiri atriði eru aðeins vistuð í þessu tæki. Til að nota þau í öðrum tækjum skaltu vista þau á Google-reikningnum þínum.}other{{PASSWORD_COUNT} aðgangsorð og fleiri atriði eru aðeins vistuð í þessu tæki. Til að nota þau í öðrum tækjum skaltu vista þau á Google-reikningnum þínum.}}</translation>
+<translation id="319044078641740013">Til að hafa greiðan aðgang að vefsvæðum sem þú hefur heimsótt skaltu samstilla ferilinn þinn og flipa á <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3190558889382726167">Aðgangsorð vistað</translation>
 <translation id="3192586965067888278">Lýstu vandamálinu í smáatriðum. Ábending verður send til Google til yfirferðar hjá mennskum aðilum og verður mögulega notuð til að bæta eða þróa vörur og þjónustu Google.</translation>
 <translation id="3192947282887913208">Hljóðskrár</translation>
@@ -5708,7 +5709,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Varpa skjá</translation>
 <translation id="496185450405387901">Kerfisstjórinn þinn setti þetta forrit upp.</translation>
-<translation id="4963079328730030450">Fyrirtækið þitt stjórnar því hvernig má nota gögnin sem þessir eiginleikar safna.</translation>
 <translation id="4963603093937263654">Gakktu úr skugga um að kveikt sé á tilkynningum fyrir <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Fjarlægja núverandi flipa</translation>
 <translation id="4964455510556214366">Fyrirkomulag</translation>
@@ -10357,6 +10357,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8280848878018088610">Stórar öldur og drungaleg ævintýraborg og kastali í bakgrunni.</translation>
 <translation id="828180235270931531">Aðrir tiltækir prentarar</translation>
 <translation id="8281886186245836920">Sleppa</translation>
+<translation id="8283802069507225582">Til að halda áfram þar sem frá var horfið í öðrum tækjum skaltu samstilla ferilinn þinn og flipa á <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">öllum vefsvæðum <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Skjátextar</translation>
 <translation id="8286036467436129157">Skrá inn</translation>
@@ -11035,6 +11036,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8754200782896249056">&lt;p&gt;Þegar <ph name="PRODUCT_NAME" /> er keyrt á studdu tölvukerfi verða proxy-stillingar kerfisins notaðar. Hins vegar er kerfið þitt annaðhvort ekki stutt eða vandamál kom upp við að ræsa kerfisstillingarnar.&lt;/p&gt;
 
           &lt;p&gt;Þú getur samt sem áður grunnstillt með skipanalínunni. Skoðaðu &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; til að fá frekari upplýsingar um flögg og umhverfisbreytur.&lt;/p&gt;</translation>
+<translation id="8754810799862630650">Til að sjá opna flipa úr öðrum tölvum og símum skaltu samstilla ferilinn þinn og flipa á <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">Framkvæma öryggistengd verkefni fyrir fyrirtækið þitt, svo sem að stjórna vottorðum og lyklum sem geymd eru í tækinu</translation>
 <translation id="875532100880844232">Veldu virkni hvers lykils á <ph name="DEVICE_NAME" /></translation>
 <translation id="8755376271068075440">Stærri</translation>

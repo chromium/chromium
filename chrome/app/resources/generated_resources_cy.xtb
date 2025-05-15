@@ -3182,6 +3182,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3188465121994729530">Cyfartaledd Symudol</translation>
 <translation id="3189187154924005138">Cyrchwr mawr</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{Mae 1 cyfrinair ac eitemau eraill wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}zero{Mae {PASSWORD_COUNT} cyfrinair ac eitemau eraill wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}two{Mae {PASSWORD_COUNT} gyfrinair ac eitemau eraill wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}few{Mae {PASSWORD_COUNT} chyfrinair ac eitemau eraill wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}many{Mae {PASSWORD_COUNT} chyfrinair ac eitemau eraill wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}other{Mae {PASSWORD_COUNT} cyfrinair ac eitemau eraill wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}}</translation>
+<translation id="319044078641740013">I fynd yn ôl yn i wefannau rydych wedi ymweld â nhw'n hawdd, cysonwch eich hanes a'ch tabiau i <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3190558889382726167">Mae'r cyfrinair wedi'i gadw</translation>
 <translation id="3192586965067888278">Disgrifiwch y broblem yn fanwl. Bydd adborth yn cael ei anfon at Google i'w adolygu gan bobl a gellir ei ddefnyddio i wella neu ddatblygu cynhyrchion a gwasanaethau Google.</translation>
 <translation id="3192947282887913208">Ffeiliau Sain</translation>
@@ -3288,6 +3289,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3269689705184377744">{COUNT,plural, =1{Ffeil}zero{# ffeil}two{# ffeil}few{# ffeil}many{# ffeil}other{# ffeil}}</translation>
 <translation id="326999365752735949">Wrthi'n lawrlwytho ffeil diff</translation>
 <translation id="3270965368676314374">Darllen, newid a dileu lluniau, cerddoriaeth a chyfryngau eraill o'ch cyfrifiadur</translation>
+<translation id="3275464924531706548">Crebachu <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Mae eich allwedd ddiogelwch fewnol yn anniogel ar hyn o bryd. Tynnwch hi o unrhyw wasanaethau y gwnaethoch ei defnyddio gyda nhw. Er mwyn datrys y broblem, ailosodwch yr allwedd ddiogelwch.</translation>
 <translation id="3275778913554317645">Agor fel ffenestr</translation>
 <translation id="3277214528693754078">Llywiwch gyda chyrchwr testun (pori caret)</translation>
@@ -3619,6 +3621,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3510471875518562537">Defnyddio'r Cyfeiriad Hwn Ar Eich iPhone</translation>
 <translation id="3511200754045804813">Ail-sganio</translation>
 <translation id="3511307672085573050">Copi Cyfeiriad Dol&amp;en</translation>
+<translation id="3511358375261756531">Ehangu <ph name="HEADER" /></translation>
 <translation id="351152300840026870">Ffont o led bendant</translation>
 <translation id="3511528412952710609">Byr</translation>
 <translation id="3513019849832307207">Ymuno ac agor</translation>
@@ -5710,7 +5713,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Castio'r sgrîn</translation>
 <translation id="496185450405387901">Mae'r ap hwn wedi'i osod gan eich gweinyddwr.</translation>
-<translation id="4963079328730030450">Eich sefydliad sy'n rheoli sut y gellir defnyddio data a gesglir gan y nodweddion hyn.</translation>
 <translation id="4963603093937263654">Gwnewch yn siŵr bod hysbysiadau wedi'u troi ymlaen ar eich <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Tynnu'r tab presennol</translation>
 <translation id="4964455510556214366">Trefniant</translation>
@@ -6173,6 +6175,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5296536303670088158">Mae gennych ddiogelwch cryfaf Chrome yn erbyn gwefannau niweidiol</translation>
 <translation id="5297005732522718715">Adnewyddu Ffurfwedd Rhannu Cysylltiad</translation>
 <translation id="5297082477358294722">Mae'r cyfrinair wedi'i gadw. Gallwch weld a rheoli cyfrineiriau sydd wedi'u cadw yn eich <ph name="SAVED_PASSWORDS_STORE" />.</translation>
+<translation id="5297548311167268289">Mewngofnodi i <ph name="RP_ID" /></translation>
 <translation id="5297946558563358707">Pan fydd rhywun arall yn edrych ar eich sgrîn, dangoswch yr eicon Llygaid preifatrwydd ar gornel dde isaf eich sgrîn</translation>
 <translation id="5297984209202974345">Thema AI diweddar <ph name="INDEX" /> o <ph name="SUBJECT" />, mewn arddull <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Crëwyd thema gan</translation>
@@ -10366,6 +10369,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8280848878018088610">Tonnau'n torri yn y môr, gyda dinas a chastell anhygoel yn y cefndir, mewn naws dywyll.</translation>
 <translation id="828180235270931531">Argraffyddion eraill sydd ar gael</translation>
 <translation id="8281886186245836920">Neidio</translation>
+<translation id="8283802069507225582">I barhau lle y gwnaethoch adael ar ddyfeisiau eraill, cysonwch eich hanes a'ch tabiau i <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8284279544186306258">pob un o'r <ph name="WEBSITE_1" /> o wefannau</translation>
 <translation id="8284326494547611709">Capsiynau</translation>
 <translation id="8286036467436129157">Mewngofnodi</translation>
@@ -11044,6 +11048,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8754200782896249056">&lt;p&gt;Wrth redeg <ph name="PRODUCT_NAME" /> o dan amgylchedd bwrdd gwaith a gefnogir, bydd gosodiadau dirprwyol y system yn cael eu defnyddio.  Fodd bynnag, naill ai nid yw'ch system yn cael ei chefnogi neu roedd problem wrth lansio ffurfweddiad eich system.&lt;/p&gt;
 
           &lt;p&gt;Ond gallwch ffurfweddu drwy'r llinell orchymyn o hyd.  Gweler &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; am ragor o wybodaeth am fflagiau a newidynnau amgylchedd.&lt;/p&gt;</translation>
+<translation id="8754810799862630650">I weld tabiau agored o'ch cyfrifiaduron a'ch ffonau eraill, cysonwch eich hanes a'ch tabiau i <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8755175579224030324">Gwneud tasgau sy'n ymwneud â diogelwch ar gyfer eich sefydliad, megis rheoli tystysgrifau ac allweddi sydd wedi'u storio ar y ddyfais</translation>
 <translation id="875532100880844232">Ar gyfer <ph name="DEVICE_NAME" />, dewiswch weithred ar gyfer pob allwedd</translation>
 <translation id="8755376271068075440">&amp;Mwy</translation>

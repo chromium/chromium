@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">ನೀರಿನ ಫಿಲ್ಟರ್‌ಗಳು ಮತ್ತು ಪ್ಯೂರಿಫೈಯರ್‌ಗಳು</translation>
 <translation id="1036348656032585052">ಆಫ್ ಮಾಡಿ</translation>
 <translation id="1036881361735705143">ಎನ್ವಲಪ್ C4</translation>
-<translation id="1038106730571050514">ಸಲಹೆಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1038842779957582377">ಆಜ್ಞಾತ ಹೆಸರು</translation>
 <translation id="1041998700806130099">ಜಾಬ್ ಶೀಟ್ ಸಂದೇಶ</translation>
 <translation id="1044897699341250361">ಇದರ ಅರ್ಥವೇನು</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">ಗೇಮ್‌ಗಳು</translation>
 <translation id="2674170444375937751">ನಿಮ್ಮ ಇತಿಹಾಸದಿಂದ ನೀವು ಈ ಪುಟಗಳನ್ನು ಖಚಿತವಾಗಿ ಅಳಿಸಲು ಬಯಸುತ್ತಿದ್ದೀರಾ?</translation>
 <translation id="2674524144218093528">ಮನೆಗೆ ಬಣ್ಣ ಬಳಿಯುವುದು ಮತ್ತು ಫಿನಿಶಿಂಗ್</translation>
-<translation id="2674804415323431591">ಸಲಹೆಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> ಟ್ಯಾಬ್ ಗುಂಪುಗಳು ಇನ್ನು ಮುಂದೆ ಲಭ್ಯವಿರುವುದಿಲ್ಲ</translation>
 <translation id="2677748264148917807">ತೊರೆಯಿರಿ</translation>
 <translation id="2683195745483370038">ಇತರ ಫಲಿತಾಂಶಗಳು ಕಂಡುಬಂದಿವೆ</translation>
@@ -2630,7 +2628,6 @@
 <translation id="55293785478302737">ಅಂಚನ್ನು ಹೊಲಿಯಿರಿ</translation>
 <translation id="553377674408670169">ಶಿಕ್ಷಣ ಉದ್ಯೊಗಗಳು</translation>
 <translation id="5534785731327961487">ಈಗ ಉತ್ತಮ ಡೀಲ್ ಲಭ್ಯವಿದೆ</translation>
-<translation id="5536214594743852365">ಈ "<ph name="SECTION" />" ವಿಭಾಗವನ್ನು ತೋರಿಸಿ</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 ಸೈಟ್ (ಸಿಂಕ್ ಮಾಡಿದ ಸಾಧನಗಳಲ್ಲಿ ಇನ್ನಷ್ಟು)}one{+ # ಸೈಟ್‌ಗಳು (ಸಿಂಕ್ ಮಾಡಿದ ಸಾಧನಗಳಲ್ಲಿ ಇನ್ನಷ್ಟು)}other{+ # ಸೈಟ್‌ಗಳು (ಸಿಂಕ್ ಮಾಡಿದ ಸಾಧನಗಳಲ್ಲಿ ಇನ್ನಷ್ಟು)}}</translation>
 <translation id="553782666181800029">ಎನ್ವಲಪ್ ಚೌ 2</translation>
 <translation id="5538270463355278784">ಸ್ವಯಂಚಾಲಿತ ಪೂರ್ಣ ಸ್ಕ್ರೀನ್</translation>
@@ -3359,6 +3356,7 @@
 <translation id="6789062271869667677">ನಿರಂತರ (ಉದ್ದ)</translation>
 <translation id="678982761784843853">ಸಂರಕ್ಷಿತ ವಿಷಯದ ಐಡಿಗಳು</translation>
 <translation id="6790428901817661496">ಪ್ಲೇ ಮಾಡು</translation>
+<translation id="6792631792628412749">ಪಾಸ್‌ಕೀ • <ph name="PROVIDER_NAME" /></translation>
 <translation id="6793213097893210590">ಕಾರ್ಡ್‌ಬೋರ್ಡ್</translation>
 <translation id="679355240208270552">ಡೀಫಾಲ್ಟ್ ಹುಡುಕಾಟವನ್ನು ನೀತಿಯ ಮೂಲಕ ಸಕ್ರಿಯಗೊಳಿಸದ ಕಾರಣ ನಿರ್ಲಕ್ಷಿಸಲಾಗಿದೆ.</translation>
 <translation id="6794951432696553238">ಇನ್ನು ಮುಂದೆ Windows Hello ಅನ್ನು ಬಳಸುವ ಮೂಲಕ ನಿಮ್ಮ ಕಾರ್ಡ್‌ಗಳನ್ನು ವೇಗವಾಗಿ ದೃಢೀಕರಿಸಿ</translation>
@@ -3654,7 +3652,6 @@
 <translation id="7316521168101843192">Microsoft OneDrive ನಲ್ಲಿ ಫೈಲ್ ಅನ್ನು ಸೇವ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">ಸಂಪರ್ಕ ಸಹಾಯ</translation>
-<translation id="7323804146520582233">ಈ "<ph name="SECTION" />" ವಿಭಾಗವನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="733354035281974745">ಸಾಧನದ ಸ್ಥಳೀಯ ಖಾತೆಯು ಅತಿಕ್ರಮಿಸಿದೆ</translation>
 <translation id="7334320624316649418">&amp;ಮರುಕ್ರಮಗೊಳಿಸುವುದನ್ನು ಮತ್ತೆಮಾಡು</translation>
 <translation id="7335157162773372339">ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಬಳಸಲು ಕೇಳಬಹುದು</translation>
@@ -3784,7 +3781,6 @@
 <translation id="7517414872996418597">ಎನ್ವಲಪ್ C10</translation>
 <translation id="7518003948725431193">ಈ ವೆಬ್ ವಿಳಾಸಕ್ಕಾಗಿ ಯಾವುದೇ ವೆಬ್ ಪುಟವು ಕಂಡುಬರಲಿಲ್ಲ: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">"<ph name="SECTION" />" ವಿಭಾಗವನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="752189128961566325">ನೀವು ಇದನ್ನು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಬಹುದು</translation>
 <translation id="7523408071729642236">ಉತ್ಪಾದನೆ</translation>
 <translation id="7525067979554623046">ರಚಿಸಿ</translation>
@@ -3861,6 +3857,7 @@
 <translation id="7639968568612851608">ಕಡು ಬೂದು</translation>
 <translation id="7646681339175747202">ನೀವು ಈಗಷ್ಟೇ ಬಳಸಿದ ಪಾಸ್‌ವರ್ಡ್ ಡೇಟಾ ಉಲ್ಲಂಘನೆಯಲ್ಲಿ ಕಂಡುಬಂದಿದೆ. ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಈಗಲೇ ಬದಲಾಯಿಸಲು Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕವು ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>
 <translation id="7647206758853451655">ಪ್ರಿಂಟ್ ಗುಣಮಟ್ಟ</translation>
+<translation id="7648527891719919697">ನೀವು <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_ANDROID_SETTINGS_LINK" /> ಸುಧಾರಿತ ಸಂರಕ್ಷಣೆಯನ್ನು ಆನ್ ಮಾಡಿರುವುದರಿಂದ ಈ ಸೈಟ್ ನಿರ್ಬಂಧಿತವಾಗಿರುತ್ತದೆ. <ph name="BEGIN_LEARN_MORE_LINK" />ಈ ಎಚ್ಚರಿಕೆಯ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">ಈ ಸಾಧನದಲ್ಲಿ ಫೈಲ್‌ಗಳನ್ನು ಸಂಗ್ರಹಿಸಿ</translation>
 <translation id="7653957176542370971">ಪಾವತಿ ಹ್ಯಾಂಡ್‌ಲರ್ ಶೀಟ್ ಅನ್ನು ಮುಚ್ಚಿದೆ</translation>
 <translation id="7654909834015434372">ನೀವು ಟಿಪ್ಪಣಿಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿದಾಗ, ಈ ಡಾಕ್ಯುಮೆಂಟ್ ತನ್ನ ಮೂಲ ತಿರುಗಿಸುವಿಕೆ ಸ್ಥಾನಕ್ಕೆ ಮರಳುತ್ತದೆ</translation>
@@ -4236,7 +4233,6 @@
 <translation id="8297545700510100061">ಕುಕೀಗಳು ಮತ್ತು ಇತರ ಸೈಟ್ ಡೇಟಾವನ್ನು ಬಳಸಿಕೊಂಡು ನಿಮ್ಮನ್ನು ನೆನಪಿಟ್ಟುಕೊಳ್ಳಲಾಗುತ್ತದೆ, ಉದಾಹರಣೆಗೆ ನಿಮ್ಮನ್ನು ಸೈನ್ ಇನ್ ಮಾಡಲು ಅಥವಾ ಜಾಹೀರಾತುಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಲು ಬಳಸಲಾಗುತ್ತದೆ. ಈ ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಿಗಾಗಿ ಕುಕೀಗಳನ್ನು ನಿರ್ವಹಿಸಲು, <ph name="SETTINGS" /> ನೋಡಿ.</translation>
 <translation id="8298115750975731693">ನೀವು ಬಳಸುತ್ತಿರುವ ವೈ-ಫೈ (<ph name="WIFI_NAME" />) ಗೆ ನೀವು <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ಅನ್ನು ಭೇಟಿ ನೀಡುವ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="8301894345671534559">ಕೋಡ್ ನಮೂದಿಸಿ</translation>
-<translation id="8303854710873047864">"<ph name="SECTION" />" ವಿಭಾಗವನ್ನು ತೋರಿಸಲಾಗಿದೆ</translation>
 <translation id="8304912090860925649">ಹೊಸ ಹೋಲಿಕೆಯ ಟೇಬಲ್</translation>
 <translation id="830498451218851433">ಅರ್ಧ ಮಡಿಸಿ</translation>
 <translation id="8308653357438598313">ಲೈವ್ ವೀಡಿಯೊ ಸ್ಟ್ರೀಮಿಂಗ್</translation>

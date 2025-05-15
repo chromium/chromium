@@ -3175,6 +3175,7 @@
 <translation id="3188465121994729530">አማካኝ በመውሰድ ላይ</translation>
 <translation id="3189187154924005138">ትልቅ ጠቋሚ</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{1 የይለፍ ቃል እና ሌሎች ንጥሎች ብቻ በዚህ መሣሪያ ላይ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እነሱን ለመጠቀም በGoogle መለያዎ ውስጥ ያስቀምጧቸው።}one{{PASSWORD_COUNT} የይለፍ ቃል እና ሌሎች ንጥሎች ብቻ በዚህ መሣሪያ ላይ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እነሱን ለመጠቀም በGoogle መለያዎ ውስጥ ያስቀምጧቸው።}other{{PASSWORD_COUNT} የይለፍ ቃላት እና ሌሎች ንጥሎች ብቻ በዚህ መሣሪያ ላይ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እነሱን ለመጠቀም በGoogle መለያዎ ውስጥ ያስቀምጧቸው።}}</translation>
+<translation id="319044078641740013">ወደጎበኟቸው ጣቢያዎች በቀላሉ ለመመለስ ታሪክዎን እና ትሮችዎን ከ<ph name="ACCOUNT_EMAIL" /> ጋር ያሥምሩ</translation>
 <translation id="3190558889382726167">የይለፍ ቃል ተቀምጧል</translation>
 <translation id="3192586965067888278">ችግሩን በዝርዝር ይግለጹ። ግብረመልስ ለሰው ግምገማ ወደ Google ይላካል እና የጉግል ምርቶችን እና አገልግሎቶችን ለማሻሻል ወይም ለመገንባት ጥቅም ላይ ሊውል ይችላል።</translation>
 <translation id="3192947282887913208">የድምጽ ፋይሎች</translation>
@@ -3281,6 +3282,7 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{ፋይል}one{# ፋይሎች}other{# ፋይሎች}}</translation>
 <translation id="326999365752735949">የማውረድ ችግር</translation>
 <translation id="3270965368676314374">በኮምፒውተርዎ ላይ ያሉ ፎቶዎችን፣ ሙዚቃን እና ሌላ ማህደረመረጃ ያነብባል፣ ይቀይራል እና ይሰርዛል</translation>
+<translation id="3275464924531706548"><ph name="HEADER" />ን ሰብስብ</translation>
 <translation id="3275778809241512831">የእርስዎ ውስጣዊ ደህንነት ቁልፍ አሁን ላይ ደህንነቱ የማያስተማምን ነው። እርስዎ አብረው ከሚጠቀሙበት ከማናቸውም አገልግሎት ላይ እባክዎ ያስወግዱት። ችግሩን መፍትሔ ለመስጠት፣ የደህንነት ቁልፉን እባክዎ ዳግም ያቀናብሩ።</translation>
 <translation id="3275778913554317645">እንደ መስኮት ክፈት</translation>
 <translation id="3277214528693754078">በጽሑፍ ጠቋሚ (የጽሑፍ ጠቋሚ አሰሳ) ያስሱ</translation>
@@ -3612,6 +3614,7 @@
 <translation id="3510471875518562537">ይህን አድራሻ በእርስዎ iPhone ላይ ይጠቀሙበት</translation>
 <translation id="3511200754045804813">ዳግም-ቃኝ</translation>
 <translation id="3511307672085573050">የአገናኝ አድ&amp;ራሻ ቅዳ</translation>
+<translation id="3511358375261756531"><ph name="HEADER" />ን ዘርጋ</translation>
 <translation id="351152300840026870">ውሱን የቅርጸ ቁምፊ ስፋት</translation>
 <translation id="3511528412952710609">አጭር</translation>
 <translation id="3513019849832307207">ተቀላቀል እና ክፈት</translation>
@@ -5701,7 +5704,6 @@
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">የCast ማያ ገፅ</translation>
 <translation id="496185450405387901">ይህ መተግበሪያ በእርስዎ አስተዳዳሪ ተጭኗል።</translation>
-<translation id="4963079328730030450">ድርጅትዎ በእነዚህ ባህሪያት የተሰበሰበ ውሂብ እንዴት ጥቅም ላይ ሊውል እንደሚችል ይቆጣጠራል።</translation>
 <translation id="4963603093937263654">በእርስዎ <ph name="DEVICE_NAME" /> ላይ ማሳወቂያዎች መብራታቸውን ያረጋግጡ</translation>
 <translation id="4963789650715167449">የአሁኑን ትር ያስወግዱ</translation>
 <translation id="4964455510556214366">አደራደር</translation>
@@ -6164,6 +6166,7 @@
 <translation id="5296536303670088158">ከጎጂ ድር ጣቢያዎች የሚከላከል የChrome በጣም ጠንካራ ጥበቃ አለዎት</translation>
 <translation id="5297005732522718715">የእንደ ሞደም መሰካት ውቅረትን አድስ</translation>
 <translation id="5297082477358294722">የይለፍ ቃል ተቀምጧል። የተቀመጡ የይለፍ ቃላትን በእርስዎ <ph name="SAVED_PASSWORDS_STORE" /> ይመልከቱ እና ያስተዳድሩ።</translation>
+<translation id="5297548311167268289">ወደ <ph name="RP_ID" /> ይግቡ</translation>
 <translation id="5297946558563358707">ሌላ ሰው የእርስዎን ማያ ገጽን ሲመለከት የግላዊነት ዓይን አዶ በማያ ገጽዎ ታችኛው ክፍል በስተቀኝ በኩል ያሳዩ</translation>
 <translation id="5297984209202974345">የቅርብ ጊዜ የ<ph name="SUBJECT" /> ሰው ሠራሽ አስተውሎት ገጽታ <ph name="INDEX" />፣ በ<ph name="STYLE" /> ቅጥ</translation>
 <translation id="5298219193514155779">ገጽታ የተፈጠረው በ</translation>
@@ -10357,6 +10360,7 @@ nil</translation>
 <translation id="8280848878018088610">በጨለማ ስሜት ውስጥ የተዋጠ አስደናቂ ከተማ እና ቤተመንግስት ከበስተጀርባ ያለው የባሕር ወጀብ።</translation>
 <translation id="828180235270931531">ሌሎች ተገኚ ማተሚያዎች</translation>
 <translation id="8281886186245836920">ዝለል</translation>
+<translation id="8283802069507225582">በሌሎች መሣሪያዎች ላይ ካቆሙበት ለመቀጠል ታሪክዎን እና ትሮችዎን ከ<ph name="ACCOUNT_EMAIL" /> ጋር ያሥምሩ</translation>
 <translation id="8284279544186306258">ሁሉም የ<ph name="WEBSITE_1" /> ጣቢያዎች</translation>
 <translation id="8284326494547611709">መግለጫ ጽሑፎች</translation>
 <translation id="8286036467436129157">ግባ</translation>
@@ -11035,6 +11039,7 @@ nil</translation>
 <translation id="8754200782896249056">&lt;p&gt;<ph name="PRODUCT_NAME" />ን በተደገፈ የዴስክቶፕ ምህዳር ላይ ሲሄድ የስርዓቱ ተኪ ቅንብሮች ናቸው ሥራ ላይ የሚውሉት። ይሁንና ወይም ስርዓትዎ አይደገፍም ወይም የስርዓት ውቅርዎን ማስጀመር ላይ ችግር ነበር።&lt;/p&gt;
 
         &lt;p&gt;ግን አሁንም በትዕዛዝ መስመሩ በኩል ሊያዋቅሩ ይችላሉ።  በጥቆማዎች እና የምህዳር ተለዋዋጮች ላይ ተጨማሪ መረጃ ለማግኘት እባክዎ &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;ን ይመልከቱ።&lt;/p&gt;</translation>
+<translation id="8754810799862630650">ከሌሎች ኮምፒውተሮችዎ እና ስልኮችዎ ላይ ክፍት ትሮችን ለማየት ታሪክዎን እና ትሮችዎን ከ<ph name="ACCOUNT_EMAIL" /> ጋር ያሥምሩ</translation>
 <translation id="8755175579224030324">እንደ በመሣሪያው ላይ የተከማቹ የዕውቅና ማረጋገጫዎችን እና ቁልፎችን ማቀናበር ያሉ ከድርጅትዎ ደህንነት ጋር የሚዛመዱ ተግባራትን ማከናወን</translation>
 <translation id="875532100880844232">ለ<ph name="DEVICE_NAME" /> ለእያንዳንዱ ቁልፍ ተግባር ይምረጡ</translation>
 <translation id="8755376271068075440">&amp;አስተልቅ</translation>

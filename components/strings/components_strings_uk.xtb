@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Водні фільтри й очисники</translation>
 <translation id="1036348656032585052">Вимкнути</translation>
 <translation id="1036881361735705143">Конверт C4</translation>
-<translation id="1038106730571050514">Показувати пропозиції</translation>
 <translation id="1038842779957582377">Невідоме ім’я</translation>
 <translation id="1041998700806130099">Повідомлення на аркуші вихідних даних</translation>
 <translation id="1044897699341250361">Що це означає</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">Ігри</translation>
 <translation id="2674170444375937751">Ви дійсно бажаєте видалити ці сторінки зі своєї історії?</translation>
 <translation id="2674524144218093528">Малярні й оздоблювальні роботи</translation>
-<translation id="2674804415323431591">Сховати пропозиції</translation>
 <translation id="26774279487328902">Більше не доступно стільки груп вкладок: <ph name="GROUP_COUNT" /></translation>
 <translation id="2677748264148917807">Вийти</translation>
 <translation id="2683195745483370038">Знайдено інші результати</translation>
@@ -2324,6 +2322,7 @@
 <translation id="4998950033665438990">Односторонній друк</translation>
 <translation id="5001526427543320409">Сторонні файли cookie</translation>
 <translation id="5002932099480077015">Коли цю функцію ввімкнено, Chrome зберігає копію даних вашої картки на пристрої, щоб ви могли швидше заповнювати форми.</translation>
+<translation id="5007344584818503324">Дії в спільних групах вкладок</translation>
 <translation id="5007392906805964215">Переглянути</translation>
 <translation id="5010599530303458903">Сплачуйте щомісяця або здійсніть 4 безпроцентні платежі на виплат (за умови відповідності вимогам)</translation>
 <translation id="5011561501798487822">Визначена мова</translation>
@@ -2632,7 +2631,6 @@
 <translation id="55293785478302737">Зшити вздовж краю</translation>
 <translation id="553377674408670169">Вакансії в галузі освіти</translation>
 <translation id="5534785731327961487">Вигідна пропозиція</translation>
-<translation id="5536214594743852365">Показати розділ "<ph name="SECTION" />"</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{і ще 1 сайту (може бути більше на синхронізованих пристроях)}one{і ще # сайту (може бути більше на синхронізованих пристроях)}few{і ще # сайтів (може бути більше на синхронізованих пристроях)}many{і ще # сайтів (може бути більше на синхронізованих пристроях)}other{і ще # сайту (може бути більше на синхронізованих пристроях)}}</translation>
 <translation id="553782666181800029">Конверт Chou 2</translation>
 <translation id="5538270463355278784">автоматично відкривати на весь екран</translation>
@@ -2751,6 +2749,7 @@
 <translation id="5732392974455271431">Батьки можуть розблокувати його</translation>
 <translation id="573555826359077410">Кнопка "Створити форму"; активуйте, щоб швидко створити нову форму в Google Формах</translation>
 <translation id="5738385766833540397">Укажіть, як ви хочете отримувати сповіщення про зниження цін на товари, які відстежуєте</translation>
+<translation id="5739619009927381786">На наступному кроці розблокуйте екран. Зазвичай це можна зробити за допомогою відбитка пальця. Ви також можете <ph name="BEGIN_LINK" />підтвердити особу іншим способом<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Щоб ділитися групами вкладок, приєднуватися до них і працювати в них разом з іншими користувачами, синхронізуйте історію і вкладки</translation>
 <translation id="5740911612628596808">Конверт C9</translation>
 <translation id="5742806904559466333">Бари, клуби й нічне життя</translation>
@@ -3360,6 +3359,7 @@
 <translation id="6789062271869667677">Безперервний друк (довгий)</translation>
 <translation id="678982761784843853">Ідентифікатори для захищеного контенту</translation>
 <translation id="6790428901817661496">Відтворити</translation>
+<translation id="6792631792628412749">Ключ доступу • <ph name="PROVIDER_NAME" /></translation>
 <translation id="6793213097893210590">Картон</translation>
 <translation id="679355240208270552">Ігнорується, оскільки пошукову систему за умовчанням вимкнено правилом.</translation>
 <translation id="6794951432696553238">Відтепер ви можете підтверджувати картки швидше за допомогою Windows Hello</translation>
@@ -3655,7 +3655,6 @@
 <translation id="7316521168101843192">Зберігання файлу в Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Довідка щодо з’єднання</translation>
-<translation id="7323804146520582233">Сховати розділ "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">Заміна локального облікового запису на пристрої</translation>
 <translation id="7334320624316649418">&amp;Повторити перевпорядкування</translation>
 <translation id="7335157162773372339">Може просити доступ до камери</translation>
@@ -3786,7 +3785,6 @@
 <translation id="7517414872996418597">Конверт C10</translation>
 <translation id="7518003948725431193">Не знайдено веб-сторінок для веб-адреси <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Розділ "<ph name="SECTION" />" приховано</translation>
 <translation id="752189128961566325">Ви можете використовувати її в усіх продуктах Google</translation>
 <translation id="7523408071729642236">Обробна промисловість</translation>
 <translation id="7525067979554623046">Створити</translation>
@@ -4238,7 +4236,6 @@
 <translation id="8297545700510100061">Файли cookie й інші дані сайтів використовуються, щоб зберігати інформацію про вас, зокрема для входу в обліковий запис або персоналізації реклами. Щоб керувати файлами cookie для всіх сайтів, перейдіть у <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Можливо, щоб під’єднатися до цієї мережі Wi-Fi (<ph name="WIFI_NAME" />), потрібно відвідати сторінку <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Ввести код</translation>
-<translation id="8303854710873047864">Відображається розділ "<ph name="SECTION" />"</translation>
 <translation id="8304912090860925649">Нова порівняльна таблиця</translation>
 <translation id="830498451218851433">Зігнути посередині</translation>
 <translation id="8308653357438598313">Прямі відеотрансляції</translation>

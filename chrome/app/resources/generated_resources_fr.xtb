@@ -3271,6 +3271,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3269689705184377744">{COUNT,plural, =1{Fichier}one{# fichier}other{# fichiers}}</translation>
 <translation id="326999365752735949">Différence de téléchargement</translation>
 <translation id="3270965368676314374">Accéder aux photos, à la musique et aux autres fichiers multimédias stockés sur votre ordinateur, les modifier et les supprimer</translation>
+<translation id="3275464924531706548">Réduire <ph name="HEADER" /></translation>
 <translation id="3275778809241512831">Votre clé de sécurité interne n'est plus sécurisée. Veuillez la supprimer dans tous les services avec lesquels vous l'utilisez. Pour résoudre ce problème, veuillez réinitialiser la clé de sécurité.</translation>
 <translation id="3275778913554317645">Ouvrir dans une fenêtre</translation>
 <translation id="3277214528693754078">Parcourir avec le curseur de texte (navigation au clavier)</translation>
@@ -3602,6 +3603,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3510471875518562537">Utilisez cette adresse sur votre iPhone</translation>
 <translation id="3511200754045804813">Nouvelle recherche</translation>
 <translation id="3511307672085573050">Copier l'adr&amp;esse du lien</translation>
+<translation id="3511358375261756531">Développer <ph name="HEADER" /></translation>
 <translation id="351152300840026870">Police à largeur fixe</translation>
 <translation id="3511528412952710609">Court</translation>
 <translation id="3513019849832307207">Rejoindre et ouvrir</translation>
@@ -3611,6 +3613,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3514681096978190000">Ce fichier d'archive contient d'autres fichiers susceptibles de dissimuler des logiciels malveillants</translation>
 <translation id="3515983984924808886">Appuyez à nouveau sur votre clé de sécurité pour confirmer la réinitialisation. Cette opération effacera toutes les informations stockées sur la clé de sécurité, y compris son code.</translation>
 <translation id="3518866566087677312">Ajoutez à vos favoris les contenus que vous souhaitez consulter plus tard</translation>
+<translation id="3519014757432845220">Contribuez à améliorer la protection contre le spam en partageant le contenu de la notification et l'URL du site avec Google. Le contenu pourra être examiné manuellement.</translation>
 <translation id="3519382402703204668">Sélectionner un onglet</translation>
 <translation id="3519564332031442870">Service d'impression backend</translation>
 <translation id="3519938335881974273">Enregistrer la page sous…</translation>
@@ -5691,7 +5694,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Caster l'écran</translation>
 <translation id="496185450405387901">Cette application a été installée par votre administrateur.</translation>
-<translation id="4963079328730030450">Votre organisation contrôle la manière dont les données collectées par ces fonctionnalités peuvent être utilisées.</translation>
 <translation id="4963603093937263654">Vérifiez que les notifications sont bien activées sur votre <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Supprimer l'onglet actuel</translation>
 <translation id="4964455510556214366">Organisation</translation>
@@ -5971,7 +5973,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5164530241085602114">Notifications non autorisées pour <ph name="SITE" /></translation>
 <translation id="516747639689914043">Protocole de transfert hypertexte (HTTP)</translation>
 <translation id="5170568018924773124">Afficher dans le dossier</translation>
-<translation id="5171045022955879922">Rechercher ou saisir une URL</translation>
+<translation id="5171045022955879922">Rechercher/Saisir une URL</translation>
 <translation id="5171343362375269016">Espace mémoire d'échange</translation>
 <translation id="5172855596271336236">Il y a 1 imprimante gérée.</translation>
 <translation id="5173668317844998239">Ajouter et supprimer les empreintes enregistrées sur votre clé de sécurité</translation>
@@ -6153,6 +6155,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5296536303670088158">Vous disposez du plus haut niveau de sécurité de Chrome contre les sites dangereux</translation>
 <translation id="5297005732522718715">Actualiser la configuration du partage de connexion</translation>
 <translation id="5297082477358294722">Mot de passe enregistré. Affichez et gérez les mots de passe enregistrés dans votre <ph name="SAVED_PASSWORDS_STORE" />.</translation>
+<translation id="5297548311167268289">Connectez-vous à <ph name="RP_ID" /></translation>
 <translation id="5297946558563358707">Lorsque quelqu'un d'autre regarde votre écran, l'icône de confidentialité représentant un œil s'affiche en bas à droite de l'écran</translation>
 <translation id="5297984209202974345">Thème IA récent <ph name="INDEX" /> sur <ph name="SUBJECT" />, style <ph name="STYLE" /></translation>
 <translation id="5298219193514155779">Thème créé par</translation>
@@ -6618,6 +6621,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="563371367637259496">Mobile</translation>
 <translation id="5635312199252507107">Autoriser sur des sites spécifiques</translation>
 <translation id="5636012309446422">Supprimer <ph name="DEVICE" /> de <ph name="PRIMARY_EMAIL" /> ?</translation>
+<translation id="56360247219959198"><ph name="DICTIONARY" /> sera définitivement supprimé. Cette action est irréversible.</translation>
 <translation id="5636140764387862062">Autres actions pour le code</translation>
 <translation id="5636996382092289526">Pour utiliser <ph name="NETWORK_ID" />, vous devez d'abord <ph name="LINK_START" />accéder à la page de connexion du réseau<ph name="LINK_END" />, qui s'ouvrira automatiquement dans quelques secondes. Dans le cas contraire, ce réseau ne pourra pas être utilisé pour la connexion Internet.</translation>
 <translation id="5637476008227280525">Activation des données mobiles</translation>
@@ -7735,6 +7739,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6459799433792303855">Fenêtre active transférée vers un autre écran.</translation>
 <translation id="6460601847208524483">Rechercher le suivant</translation>
 <translation id="6461170143930046705">Recherche de réseaux…</translation>
+<translation id="6463488491707167747">Supprimer ce dictionnaire</translation>
 <translation id="6463596731306859179">Vous remarquez des pop-ups indésirables ou d'autres comportements inattendus ? Les applis et extensions que vous installez peuvent parfois modifier vos paramètres ChromeOS à votre insu.</translation>
 <translation id="6463668944631062248">Acceptez la demande de diffusion sur votre <ph name="DEVICE_NAME" /></translation>
 <translation id="6463795194797719782">&amp;Modifier</translation>

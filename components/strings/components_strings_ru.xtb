@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Фильтры для воды и водоочистители</translation>
 <translation id="1036348656032585052">Отключить</translation>
 <translation id="1036881361735705143">Конверт C4</translation>
-<translation id="1038106730571050514">Показать подсказки</translation>
 <translation id="1038842779957582377">неизвестное имя</translation>
 <translation id="1041998700806130099">Сообщение на листе задания</translation>
 <translation id="1044897699341250361">Что это значит</translation>
@@ -978,7 +977,6 @@
 <translation id="2673968385134502798">Игры</translation>
 <translation id="2674170444375937751">Удалить эти страницы из истории посещений?</translation>
 <translation id="2674524144218093528">Малярные и отделочные работы</translation>
-<translation id="2674804415323431591">Скрыть подсказки</translation>
 <translation id="26774279487328902">Несколько групп вкладок (<ph name="GROUP_COUNT" />) больше не доступны.</translation>
 <translation id="2677748264148917807">Выйти</translation>
 <translation id="2683195745483370038">Другие результаты</translation>
@@ -2632,7 +2630,6 @@
 <translation id="55293785478302737">Скобы по краю</translation>
 <translation id="553377674408670169">Вакансии в сфере образования</translation>
 <translation id="5534785731327961487">Выгодно</translation>
-<translation id="5536214594743852365">Показать раздел "<ph name="SECTION" />"</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{и ещё 1 сайт, а также данные на синхронизированных устройствах}one{и ещё # сайт, а также данные на синхронизированных устройствах}few{и ещё # сайта, а также данные на синхронизированных устройствах}many{и ещё # сайтов, а также данные на синхронизированных устройствах}other{и ещё # сайта, а также данные на синхронизированных устройствах}}</translation>
 <translation id="553782666181800029">Конверт Chou 2</translation>
 <translation id="5538270463355278784">автопереход в полноэкранный режим</translation>
@@ -3657,7 +3654,6 @@
 <translation id="7316521168101843192">Сохранение файла в Microsoft OneDrive…</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Устранение ошибок при подключении к Интернету</translation>
-<translation id="7323804146520582233">Скрыть раздел "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">Приоритет локального аккаунта на устройстве</translation>
 <translation id="7334320624316649418">&amp;Повторить изменение порядка</translation>
 <translation id="7335157162773372339">Разрешено отправлять запрос на использование камеры</translation>
@@ -3788,7 +3784,6 @@
 <translation id="7517414872996418597">Конверт C10</translation>
 <translation id="7518003948725431193">Не найдена страница для веб-адреса <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Раздел "<ph name="SECTION" />" скрыт.</translation>
 <translation id="752189128961566325">Вы сможете использовать его в продуктах Google.</translation>
 <translation id="7523408071729642236">Производство</translation>
 <translation id="7525067979554623046">Создать</translation>
@@ -4240,7 +4235,6 @@
 <translation id="8297545700510100061">Файлы cookie и другие данные сайтов используются, чтобы хранить информацию о вас, в том числе для входа в систему и персонализации рекламы. Для управления файлами cookie перейдите в <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Возможно, вам нужно перейти на страницу <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> сети Wi-Fi (<ph name="WIFI_NAME" />).</translation>
 <translation id="8301894345671534559">Ввести код</translation>
-<translation id="8303854710873047864">Показан раздел "<ph name="SECTION" />".</translation>
 <translation id="8304912090860925649">Новая сравнительная таблица</translation>
 <translation id="830498451218851433">Фальцовка книжкой</translation>
 <translation id="8308653357438598313">Онлайн-видеотрансляции</translation>

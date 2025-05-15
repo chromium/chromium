@@ -304,6 +304,7 @@
 <translation id="2216366330550244277">Mahsulot sahifasini oching</translation>
 <translation id="2220529011494928058">Muammo haqida xabar yuborish</translation>
 <translation id="2223461067862937305">QR kod yaratish</translation>
+<translation id="2225701818156393674">Kuzatuvdagi mahsulotlar roʻyxatiga mahsulot kiritildi.</translation>
 <translation id="2229345671837147090">Masofaviy sahifa oynasi</translation>
 <translation id="2230173723195178503">Veb-sahifa yuklandi</translation>
 <translation id="2236949375853147973">Harakatlarim</translation>
@@ -533,6 +534,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3208260410153224535">Hisobga kirish tashkilotingiz tomonidan faolsizlantirilgan. Yangi bukmarklar, parollar va boshqalar faqat shu qurilmada saqlanadi.</translation>
 <translation id="3213807041830307252">Kamera yoki galereya rasmi bilan mahsulot toping, matn tarjima qiling va atrofdagi obyektlar axborotini oling.</translation>
 <translation id="3214379938835224220">iPad qurilmasini tiklash mobaynida hisobingizdan chiqarildingiz. Hisobga kirish uchun quyida davom etish ustiga bosing.</translation>
+<translation id="3218296450292600703">Boshqariladigan hisob orqali kirsangiz, varaqlar, parollar va tarix kabi tashkilotingizga oid brauzer maʼlumotlari alohida saqlanadi.</translation>
 <translation id="3224075676564434205">Varaqlar bu qurilmada ochiq qoladi, ammo guruh <ph name="USER_EMAIL" /> hisobidan kirilgan barcha qurilmalardan oʻchirib tashlanadi.</translation>
 <translation id="3224641773458703735">Parollarni eksport qilish uchun qurilmangizni maxfiy kod bilan qulflang.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -1386,6 +1388,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzata olmaydi.</translation>
 <translation id="6672697278890207089">Kodli iborani kiriting</translation>
 <translation id="6674917187596384849">Hisoblarni oson almashtirish mumkin</translation>
+<translation id="6676349090816247042">Kirish parametrlari.</translation>
 <translation id="667999046851023355">Hujjat</translation>
 <translation id="6680416467695217368">Menyuni sozlash</translation>
 <translation id="6681586159478273915">Ovozli qidiruv</translation>

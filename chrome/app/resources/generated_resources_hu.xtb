@@ -3284,6 +3284,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3269689705184377744">{COUNT,plural, =1{Fájl}other{# fájl}}</translation>
 <translation id="326999365752735949">Diff letöltése</translation>
 <translation id="3270965368676314374">Fotók, zeneszámok és más médiatartalmak olvasása, módosítása és törlése a számítógépről</translation>
+<translation id="3275464924531706548"><ph name="HEADER" /> összecsukása</translation>
 <translation id="3275778809241512831">A belső biztonsági hardverkulcs jelenleg nem biztonságos. Távolítsa el az összes olyan szolgáltatásból, amelyben használja. A probléma megoldásához állítsa vissza alaphelyzetbe.</translation>
 <translation id="3275778913554317645">Megnyitás ablakként</translation>
 <translation id="3277214528693754078">Navigálás szövegkurzorral (Caret Browsing)</translation>
@@ -3615,6 +3616,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3510471875518562537">Használhatja ezt a címet az iPhone eszközén</translation>
 <translation id="3511200754045804813">Újraszkennelés</translation>
 <translation id="3511307672085573050">Link címén&amp;ek másolása</translation>
+<translation id="3511358375261756531"><ph name="HEADER" /> kibontása</translation>
 <translation id="351152300840026870">Állandó szélességű betűtípus</translation>
 <translation id="3511528412952710609">Rövid</translation>
 <translation id="3513019849832307207">Csatlakozás és megnyitás</translation>
@@ -3624,6 +3626,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3514681096978190000">Ez az archívumfájl olyan egyéb fájlokat tartalmaz, amelyek esetlegesen rosszindulatú programokat rejthetnek</translation>
 <translation id="3515983984924808886">A visszaállítás megerősítéséhez érintse meg újra a biztonsági hardverkulcsot. Ezzel törli a biztonsági hardverkulcson tárolt összes adatot, köztük a PIN-kódot is.</translation>
 <translation id="3518866566087677312">Felvehet olyan elemeket a könyvjelzők közé, amelyekhez később vissza szeretne térni.</translation>
+<translation id="3519014757432845220">Segítsen a spam elleni védelem továbbfejlesztésében azzal, hogy megosztja az értesítés tartalmát és a webhely URL-jét a Google-lal. A tartalmat emberek is felülvizsgálhatják.</translation>
 <translation id="3519382402703204668">Válasszon lapot</translation>
 <translation id="3519564332031442870">Nyomtatási háttérszolgáltatás</translation>
 <translation id="3519938335881974273">Oldal mentése másként…</translation>
@@ -5704,7 +5707,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Képernyő átküldése</translation>
 <translation id="496185450405387901">Ezt az alkalmazást az Ön adminisztrátora telepítette.</translation>
-<translation id="4963079328730030450">A szervezete szabályozza, hogy miként használhatók fel az ezekkel a funkciókkal gyűjtött adatok.</translation>
 <translation id="4963603093937263654">Ellenőrizze, hogy be vannak-e kapcsolva az értesítések a következőn: <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Jelenlegi lap eltávolítása</translation>
 <translation id="4964455510556214366">Elrendezés</translation>
@@ -6167,6 +6169,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5296536303670088158">A Chrome a legerősebb védelmet biztosítja a kártékony webhelyek ellen</translation>
 <translation id="5297005732522718715">Internetmegosztási beállítások frissítése</translation>
 <translation id="5297082477358294722">Jelszó elmentve. A mentett jelszavakat itt láthatja és kezelheti: <ph name="SAVED_PASSWORDS_STORE" /></translation>
+<translation id="5297548311167268289">Bejelentkezés ide: <ph name="RP_ID" /></translation>
 <translation id="5297946558563358707">Az „Adatvédelmi szem” ikon megjelenítése a képernyő jobb alsó sarkában, amikor valaki más az Ön képernyőjére néz</translation>
 <translation id="5297984209202974345"><ph name="INDEX" />. új AI-téma: <ph name="SUBJECT" />, <ph name="STYLE" /> stílusban</translation>
 <translation id="5298219193514155779">Téma készítője:</translation>
@@ -6632,6 +6635,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="563371367637259496">Mobil</translation>
 <translation id="5635312199252507107">Engedélyezés bizonyos webhelyeken</translation>
 <translation id="5636012309446422">Eltávolítja a következőt a(z) <ph name="PRIMARY_EMAIL" /> fiókból: <ph name="DEVICE" />?</translation>
+<translation id="56360247219959198">A(z) <ph name="DICTIONARY" /> szótár véglegesen törlésre kerül. A művelet nem vonható vissza.</translation>
 <translation id="5636140764387862062">A PIN-kóddal kapcsolatos további műveletek</translation>
 <translation id="5636996382092289526">A(z) <ph name="NETWORK_ID" /> használatához először <ph name="LINK_START" />fel kell keresnie a hálózat bejelentkezési oldalát<ph name="LINK_END" />, amely automatikusan megnyílik néhány másodpercen belül. Ha ez nem történik meg, akkor a hálózat nem használható.</translation>
 <translation id="5637476008227280525">Mobiladatok bekapcsolása</translation>
@@ -7749,6 +7753,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6459799433792303855">Aktív ablak áthelyezve másik kijelzőre.</translation>
 <translation id="6460601847208524483">Következő keresése</translation>
 <translation id="6461170143930046705">Hálózatok keresése…</translation>
+<translation id="6463488491707167747">Szótár törlése</translation>
 <translation id="6463596731306859179">Nem kívánt előugró ablakokat kap, vagy más váratlan viselkedéssel találkozik? Egyes telepített alkalmazások és bővítmények az Ön tudta nélkül módosíthatják a ChromeOS beállításait.</translation>
 <translation id="6463668944631062248">Engedélyezze az átküldést a következőn: <ph name="DEVICE_NAME" /></translation>
 <translation id="6463795194797719782">&amp;Szerkesztés</translation>

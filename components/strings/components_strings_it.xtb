@@ -21,7 +21,6 @@
 <translation id="1035709686865413354">Filtri e depuratori d'acqua</translation>
 <translation id="1036348656032585052">Disattiva</translation>
 <translation id="1036881361735705143">Busta C4</translation>
-<translation id="1038106730571050514">Mostra suggerimenti</translation>
 <translation id="1038842779957582377">nome sconosciuto</translation>
 <translation id="1041998700806130099">Messaggio foglio di lavoro</translation>
 <translation id="1044897699341250361">Cosa significa</translation>
@@ -978,7 +977,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2673968385134502798">Giochi</translation>
 <translation id="2674170444375937751">Eliminare le pagine dalla cronologia?</translation>
 <translation id="2674524144218093528">Verniciatura e finitura case</translation>
-<translation id="2674804415323431591">Nascondi suggerimenti</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> gruppi di schede non sono più disponibili</translation>
 <translation id="2677748264148917807">Esci</translation>
 <translation id="2683195745483370038">Altri risultati trovati</translation>
@@ -2321,6 +2319,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4998950033665438990">Solo fronte</translation>
 <translation id="5001526427543320409">Cookie di terze parti</translation>
 <translation id="5002932099480077015">Se questa opzione viene attivata, Chrome memorizza una copia della carta sul dispositivo per velocizzare la compilazione dei moduli.</translation>
+<translation id="5007344584818503324">Attività dei gruppi di schede condivisi</translation>
 <translation id="5007392906805964215">Visualizza</translation>
 <translation id="5010599530303458903">Paga mensilmente o in 4 rate senza interessi (soggette a idoneità)</translation>
 <translation id="5011561501798487822">Lingua rilevata</translation>
@@ -2629,7 +2628,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="55293785478302737">Impuntura</translation>
 <translation id="553377674408670169">Offerte di lavoro nel settore dell'istruzione</translation>
 <translation id="5534785731327961487">Ottimo prezzo ora</translation>
-<translation id="5536214594743852365">Mostra la sezione "<ph name="SECTION" />"</translation>
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 sito (altro sui dispositivi sincronizzati)}other{+ # siti (altro sui dispositivi sincronizzati)}}</translation>
 <translation id="553782666181800029">Busta Chou 2</translation>
 <translation id="5538270463355278784">schermo intero automatico</translation>
@@ -2748,6 +2746,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5732392974455271431">I tuoi genitori possono sbloccarlo per te</translation>
 <translation id="573555826359077410">Pulsante Crea modulo, attiva per creare rapidamente un nuovo modulo in Moduli Google</translation>
 <translation id="5738385766833540397">Gestisci la modalità di ricezione degli avvisi relativi ai cali di prezzo dei prodotti monitorati</translation>
+<translation id="5739619009927381786">Sblocca lo schermo nel passaggio successivo, in genere usando la tua impronta. In alternativa, puoi ricorrere a un <ph name="BEGIN_LINK" />altro metodo di verifica<ph name="END_LINK" />.</translation>
 <translation id="573974402615125334">Per partecipare e collaborare a gruppi di schede, nonché condividerli, sincronizza la cronologia e le schede</translation>
 <translation id="5740911612628596808">Busta C9</translation>
 <translation id="5742806904559466333">Bar, locali e vita notturna</translation>
@@ -3356,6 +3355,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6789062271869667677">Continuo (lungo)</translation>
 <translation id="678982761784843853">ID contenuti protetti</translation>
 <translation id="6790428901817661496">Riproduci</translation>
+<translation id="6792631792628412749">Passkey • <ph name="PROVIDER_NAME" /></translation>
 <translation id="6793213097893210590">Cartone</translation>
 <translation id="679355240208270552">Ignorato perché la ricerca predefinita non è attiva secondo la norma.</translation>
 <translation id="6794951432696553238">Verifica più velocemente le tue carte usando Windows Hello d'ora in poi</translation>
@@ -3651,7 +3651,6 @@ Ulteriori dettagli:
 <translation id="7316521168101843192">Salvataggio del file su Microsoft OneDrive in corso…</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Guida alla connessione</translation>
-<translation id="7323804146520582233">Nascondi la sezione "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">Override account locale del dispositivo</translation>
 <translation id="7334320624316649418">&amp;Ripeti ridisposizione</translation>
 <translation id="7335157162773372339">Può richiedere l'autorizzazione per utilizzare la videocamera</translation>
@@ -3782,7 +3781,6 @@ Ulteriori dettagli:
 <translation id="7517414872996418597">Busta C10</translation>
 <translation id="7518003948725431193">Nessuna pagina web trovata per l'indirizzo web: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
-<translation id="7521825010239864438">Sezione "<ph name="SECTION" />" nascosta</translation>
 <translation id="752189128961566325">Puoi utilizzarlo su tutti i prodotti Google</translation>
 <translation id="7523408071729642236">Produzione</translation>
 <translation id="7525067979554623046">Crea</translation>
@@ -4234,7 +4232,6 @@ Ulteriori dettagli:
 <translation id="8297545700510100061">I cookie e altri dati dei siti vengono utilizzati per ricordare attività e informazioni dell'utente, ad esempio per eseguire l'accesso o per personalizzare gli annunci. Per gestire i cookie per tutti i siti, consulta le <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">La rete Wi-Fi in uso (<ph name="WIFI_NAME" />) potrebbe richiedere la visita della pagina <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Inserisci codice</translation>
-<translation id="8303854710873047864">Sezione "<ph name="SECTION" />" mostrata</translation>
 <translation id="8304912090860925649">Nuova tabella di confronto</translation>
 <translation id="830498451218851433">Piegatura a metà</translation>
 <translation id="8308653357438598313">Streaming video in diretta</translation>
