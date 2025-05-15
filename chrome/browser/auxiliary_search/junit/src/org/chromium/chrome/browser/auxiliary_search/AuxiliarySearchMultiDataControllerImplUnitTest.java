@@ -189,7 +189,8 @@ public class AuxiliarySearchMultiDataControllerImplUnitTest {
 
         // Verifies the case that the history data list is null.
         List<AuxiliarySearchDataEntry> mvtList =
-                AuxiliarySearchTestHelper.createAuxiliarySearchDataEntries_TopSite(now);
+                AuxiliarySearchTestHelper.createAuxiliarySearchDataEntries_TopSite(
+                        JUnitTestGURLs.BLUE_1, JUnitTestGURLs.BLUE_2, now);
         mAuxiliarySearchMultiDataControllerImpl.onSiteSuggestionsAvailable(mvtList);
         mergedList = mAuxiliarySearchMultiDataControllerImpl.getMergedList(null);
         assertEquals(mvtList, mergedList);
@@ -212,6 +213,16 @@ public class AuxiliarySearchMultiDataControllerImplUnitTest {
         mergedList = mAuxiliarySearchMultiDataControllerImpl.getMergedList(historyEntryList);
         assertEquals(historyEntryList, mergedList);
         histogramWatcher.assertExpected();
+
+        // Verifies the case that both history data list and most visited sites list aren't null but
+        // with duplications.
+        now = TimeUtils.uptimeMillis();
+        mvtList = AuxiliarySearchTestHelper.createAuxiliarySearchDataEntries_TopSite(now);
+        mAuxiliarySearchMultiDataControllerImpl.onSiteSuggestionsAvailable(mvtList);
+        mergedList = mAuxiliarySearchMultiDataControllerImpl.getMergedList(historyEntryList);
+        assertEquals(2, mergedList.size());
+        assertEquals(historyEntryList.get(0), mergedList.get(0));
+        assertEquals(historyEntryList.get(1), mergedList.get(1));
     }
 
     @Test

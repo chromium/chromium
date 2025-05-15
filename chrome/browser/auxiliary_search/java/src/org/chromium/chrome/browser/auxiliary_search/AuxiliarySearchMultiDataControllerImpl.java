@@ -219,16 +219,33 @@ public class AuxiliarySearchMultiDataControllerImpl extends AuxiliarySearchContr
             return donationList;
         }
 
+        // It is possible that mCurrentSiteSuggestionEntries has duplicated URLs which are also in
+        // the historyEntryList, filters out from the mCurrentSiteSuggestionEntries now.
+        Set<GURL> urlSet = new HashSet<>();
+        for (var entry : historyEntryList) {
+            urlSet.add(entry.url);
+        }
+        List<AuxiliarySearchDataEntry> refinedSiteSuggestionEntries = new ArrayList<>();
+        for (var entry : mCurrentSiteSuggestionEntries) {
+            if (!urlSet.contains(entry.url)) {
+                refinedSiteSuggestionEntries.add(entry);
+            }
+        }
+
         // Adds the most visited site suggestion with the highest score as the first one in
         // tht list to donate. This allows to include at least one most visited site
         // suggestion in the first five entries to fetch icons.
-        donationList.add(mCurrentSiteSuggestionEntries.get(0));
+        if (refinedSiteSuggestionEntries.size() >= 1) {
+            donationList.add(refinedSiteSuggestionEntries.get(0));
+        }
         // Adds the Tabs and Custom Tabs.
         donationList.addAll(historyEntryList);
         // Adds the remaining most visited sites suggestions.
-        for (int i = 1; i < mCurrentSiteSuggestionEntries.size(); i++) {
-            donationList.add(mCurrentSiteSuggestionEntries.get(i));
+        for (int i = 1; i < refinedSiteSuggestionEntries.size(); i++) {
+            donationList.add(refinedSiteSuggestionEntries.get(i));
         }
+
+        urlSet.clear();
         return donationList;
     }
 
