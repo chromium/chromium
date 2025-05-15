@@ -4,6 +4,8 @@
 
 #include "components/trusted_vault/trusted_vault_crypto.h"
 
+#include <array>
+
 #include "base/check_op.h"
 #include "components/trusted_vault/securebox.h"
 #include "crypto/hash.h"
