@@ -350,7 +350,6 @@ PrePaintInfo PrePaintTreeWalk::CreatePrePaintInfo(
     const PrePaintTreeWalkContext& context) {
   const auto* fragment = To<PhysicalBoxFragment>(child.fragment.Get());
   return PrePaintInfo(fragment, child.offset,
-                      context.current_container.fragmentainer_idx,
                       fragment->IsFirstForNode(), !fragment->GetBreakToken(),
                       /* is_inside_fragment_child */ false,
                       context.current_container.IsInFragmentationContext());
@@ -623,8 +622,6 @@ const PhysicalBoxFragment* PrePaintTreeWalk::RebuildContextForMissedDescendant(
   const PhysicalBoxFragment* box_fragment = nullptr;
   if (context.tree_builder_context && update_tree_builder_context) {
     PhysicalOffset paint_offset;
-    wtf_size_t fragmentainer_idx = context.current_container.fragmentainer_idx;
-
     // TODO(mstensho): We're doing a simplified version of what
     // WalkLayoutObjectChildren() does. Consider refactoring so that we can
     // share.
@@ -638,7 +635,6 @@ const PhysicalBoxFragment* PrePaintTreeWalk::RebuildContextForMissedDescendant(
           object.IsFixedPositioned() ? context.fixed_positioned_container
                                      : context.absolute_positioned_container;
       search_fragment = oof_containing_fragment_info.fragment;
-      fragmentainer_idx = oof_containing_fragment_info.fragmentainer_idx;
     }
     // If we have a parent fragment to search inside, do that. If we find it, we
     // can use its paint offset and size in the paint property builder. If we
@@ -663,9 +659,8 @@ const PhysicalBoxFragment* PrePaintTreeWalk::RebuildContextForMissedDescendant(
     // PrePaintInfo into one walker part and one builder part, so that we
     // don't have to specify them as false here.
     PrePaintInfo pre_paint_info(
-        box_fragment, paint_offset, fragmentainer_idx,
-        /* is_first_for_node */ false, /* is_last_for_node */ false,
-        /* is_inside_fragment_child */ false,
+        box_fragment, paint_offset, /*is_first_for_node=*/false,
+        /*is_last_for_node=*/false, /*is_inside_fragment_child=*/false,
         context.current_container.IsInFragmentationContext());
 
     // We're going to set up paint properties for the missing ancestors, and
@@ -795,17 +790,13 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
   DCHECK(fragment.IsFragmentationContextRoot());
 
   if (fragment.IsPaginatedRoot()) {
-    wtf_size_t fragmentainer_idx = 0;
     for (PhysicalFragmentLink child : fragment.Children()) {
       const auto* box_fragment = To<PhysicalBoxFragment>(child.fragment.Get());
       DCHECK_EQ(box_fragment->GetBoxType(), PhysicalFragment::kPageContainer);
-      WalkPageContainer(child, object, parent_context, fragmentainer_idx);
-      fragmentainer_idx++;
+      WalkPageContainer(child, object, parent_context);
     }
     return;
   }
-
-  std::optional<wtf_size_t> inner_fragmentainer_idx;
 
   for (PhysicalFragmentLink child : fragment.Children()) {
     const auto* box_fragment = To<PhysicalBoxFragment>(child.fragment.Get());
@@ -836,14 +827,7 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
     // |OwnerLayoutBox()| has a few DCHECKs for this purpose.
     DCHECK(box_fragment->OwnerLayoutBox());
 
-    // Set up |inner_fragmentainer_idx| lazily, as it's O(n) (n == number of
-    // multicol container fragments).
-    if (!inner_fragmentainer_idx)
-      inner_fragmentainer_idx = PreviousInnerFragmentainerIndex(fragment);
-
-    WalkFragmentainer(object, child, parent_context, *inner_fragmentainer_idx);
-
-    (*inner_fragmentainer_idx)++;
+    WalkFragmentainer(object, child, parent_context);
   }
 
   if (!To<LayoutBlockFlow>(&object)->MultiColumnFlowThread()) {
@@ -865,8 +849,7 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
 void PrePaintTreeWalk::WalkPageContainer(
     const PhysicalFragmentLink& page_container_link,
     const LayoutObject& parent_object,
-    const PrePaintTreeWalkContext& parent_context,
-    wtf_size_t fragmentainer_idx) {
+    const PrePaintTreeWalkContext& parent_context) {
   // In paginated layout, each fragmentainer (page area) is wrapped inside a
   // page box and a page border box.
   DCHECK_EQ(page_container_link->GetBoxType(),
@@ -948,8 +931,7 @@ void PrePaintTreeWalk::WalkPageContainer(
           pagination_paint_properties.OverflowClip();
     }
 
-    WalkFragmentainer(parent_object, page_area, page_area_context,
-                      fragmentainer_idx);
+    WalkFragmentainer(parent_object, page_area, page_area_context);
 
     if (containing_block_context) {
       containing_block_context->paint_offset -= pagination_adjustment;
@@ -960,8 +942,7 @@ void PrePaintTreeWalk::WalkPageContainer(
 void PrePaintTreeWalk::WalkFragmentainer(
     const LayoutObject& parent_object,
     const PhysicalFragmentLink& child_link,
-    const PrePaintTreeWalkContext& parent_context,
-    wtf_size_t fragmentainer_idx) {
+    const PrePaintTreeWalkContext& parent_context) {
   DCHECK(child_link->IsFragmentainerBox());
   const auto& fragmentainer = To<PhysicalBoxFragment>(*child_link.get());
 
@@ -975,8 +956,6 @@ void PrePaintTreeWalk::WalkFragmentainer(
   // Always keep track of the current innermost fragmentainer we're handling, as
   // they may serve as containing blocks for OOF descendants.
   fragmentainer_context.current_container.fragment = &fragmentainer;
-
-  fragmentainer_context.current_container.fragmentainer_idx = fragmentainer_idx;
 
   PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext*
       containing_block_context = nullptr;
@@ -1055,7 +1034,6 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
     // chain). Furthermore, culled inlines have no fragments, but they still
     // need to be visited, since the invalidation code marks them for pre-paint.
     const PhysicalBoxFragment* box_fragment = nullptr;
-    wtf_size_t fragmentainer_idx = context.current_container.fragmentainer_idx;
     const ContainingFragment* oof_containing_fragment_info = nullptr;
     PhysicalOffset paint_offset;
     const auto* child_box = DynamicTo<LayoutBox>(child);
@@ -1197,7 +1175,6 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
         }
 
         search_fragment = oof_containing_fragment_info->fragment;
-        fragmentainer_idx = oof_containing_fragment_info->fragmentainer_idx;
       }
 
       if (search_fragment) {
@@ -1234,8 +1211,8 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
         is_in_different_fragmentation_context = true;
       }
       PrePaintInfo pre_paint_info(
-          box_fragment, paint_offset, fragmentainer_idx, is_first_for_node,
-          is_last_for_node, is_inside_fragment_child,
+          box_fragment, paint_offset, is_first_for_node, is_last_for_node,
+          is_inside_fragment_child,
           container_for_child->IsInFragmentationContext());
       if (is_in_different_fragmentation_context) {
         PrePaintTreeWalkContext oof_context(

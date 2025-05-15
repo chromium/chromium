@@ -3678,21 +3678,16 @@ FragmentData& PaintPropertyTreeBuilder::GetFragmentData() const {
 
 void PaintPropertyTreeBuilder::UpdateFragmentData() {
   FragmentData& fragment = GetFragmentData();
-  if (IsInNGFragmentTraversal()) {
-    context_.fragment_context.current.fragmentainer_idx =
-        pre_paint_info_->fragmentainer_idx;
-  } else {
+  if (!IsInNGFragmentTraversal()) {
     DCHECK_EQ(&fragment, &object_.FirstFragment());
     const FragmentDataList& fragment_list =
         object_.GetMutableForPainting().FragmentList();
     wtf_size_t old_fragment_count = fragment_list.size();
     object_.GetMutableForPainting().FragmentList().Shrink(1);
 
-    if (context_.fragment_context.current.fragmentainer_idx == WTF::kNotFound) {
-      // We're not fragmented, but we may have been previously.
-      if (old_fragment_count > 1u) {
-        object_.GetMutableForPainting().FragmentCountChanged();
-      }
+    // We're not fragmented, but we may have been previously.
+    if (old_fragment_count > 1u) {
+      object_.GetMutableForPainting().FragmentCountChanged();
     }
   }
 }

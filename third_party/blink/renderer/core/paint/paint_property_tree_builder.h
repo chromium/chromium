@@ -107,14 +107,6 @@ struct PaintPropertyTreeBuilderFragmentContext {
     // that are baked in PaintOffsetTranslations since we entered the
     // fragmentainer.
     PhysicalOffset paint_offset_for_oof_in_fragmentainer;
-
-    // The fragmentainer index of the nearest ancestor that participates in
-    // block fragmentation. This is updated as we update properties for an
-    // object that participates in block fragmentation. If we enter monolithic
-    // content, the index will be kept and inherited down the tree, so that we
-    // eventually set the correct "NG" fragment index in the FragmentData
-    // object.
-    wtf_size_t fragmentainer_idx = WTF::kNotFound;
   };
 
   ContainingBlockContext current;
@@ -246,14 +238,12 @@ struct PrePaintInfo {
  public:
   PrePaintInfo(const PhysicalBoxFragment* box_fragment,
                PhysicalOffset paint_offset,
-               wtf_size_t fragmentainer_idx,
                bool is_first_for_node,
                bool is_last_for_node,
                bool is_inside_fragment_child,
                bool fragmentainer_is_oof_containing_block)
       : box_fragment(box_fragment),
         paint_offset(paint_offset),
-        fragmentainer_idx(fragmentainer_idx),
         is_first_for_node(is_first_for_node),
         is_last_for_node(is_last_for_node),
         is_inside_fragment_child(is_inside_fragment_child),
@@ -267,7 +257,6 @@ struct PrePaintInfo {
 
   FragmentData* fragment_data = nullptr;
   PhysicalOffset paint_offset;
-  wtf_size_t fragmentainer_idx;
   bool is_first_for_node;
   bool is_last_for_node;
 
