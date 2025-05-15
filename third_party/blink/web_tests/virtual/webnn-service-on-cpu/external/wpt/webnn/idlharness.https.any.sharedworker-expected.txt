@@ -1,19 +1,5 @@
 This is a testharness.js-based test.
-Found 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] MLContext interface: operation createConstantTensor(MLOperandDescriptor, AllowSharedBufferSource)
-  assert_own_property: interface prototype object missing non-static operation expected property "createConstantTensor" missing
-[FAIL] MLContext interface: context must inherit property "createConstantTensor(MLOperandDescriptor, AllowSharedBufferSource)" with the proper type
-  assert_inherits: property "createConstantTensor" not found in prototype chain
-[FAIL] MLContext interface: calling createConstantTensor(MLOperandDescriptor, AllowSharedBufferSource) on context with too few arguments must throw TypeError
-  assert_inherits: property "createConstantTensor" not found in prototype chain
-[FAIL] MLTensor interface: attribute constant
-  assert_true: The prototype object must have a property "constant" expected true got false
-[FAIL] MLGraphBuilder interface: operation constant(MLOperandDescriptor, AllowSharedBufferSource)
-  assert_equals: property has wrong .length expected 1 but got 2
-[FAIL] MLGraphBuilder interface: operation constant(MLOperandDataType, MLNumber)
-  assert_equals: property has wrong .length expected 1 but got 2
-[FAIL] MLGraphBuilder interface: operation constant(MLTensor)
-  assert_equals: property has wrong .length expected 1 but got 2
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] MLGraphBuilder interface: operation softmax(MLOperand, unsigned long, optional MLOperatorOptions)
   assert_equals: property has wrong .length expected 2 but got 1
 Harness: the test ran to completion.

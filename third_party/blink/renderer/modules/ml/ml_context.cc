@@ -1025,7 +1025,7 @@ ScriptPromise<MLTensor> MLContext::createTensor(
   //
   // This assertion protects against the usage flags changing without updating
   // this mapping.
-  static_assert(base::to_underlying(webnn::MLTensorUsageFlags::kMaxValue) == 2);
+  static_assert(base::to_underlying(webnn::MLTensorUsageFlags::kMaxValue) == 3);
   webnn::MLTensorUsage usage;
   if (descriptor->exportableToGPU()) {
     usage.Put(webnn::MLTensorUsageFlags::kWebGpuInterop);
@@ -1037,6 +1037,9 @@ ScriptPromise<MLTensor> MLContext::createTensor(
     usage.Put(webnn::MLTensorUsageFlags::kWrite);
   }
 
+  // MLTensorUsageFlags::kGraphConstant is only assigned for
+  // createConstantTensor().
+
   auto tensor_info =
       webnn::mojom::blink::TensorInfo::New(validated_descriptor, usage);
 
@@ -1046,7 +1049,84 @@ ScriptPromise<MLTensor> MLContext::createTensor(
 
   // Use `WebNNContext` to create `WebNNTensor` message pipe.
   context_remote_->CreateTensor(
-      std::move(tensor_info),
+      std::move(tensor_info), mojo_base::BigBuffer(0),
+      WTF::BindOnce(&MLContext::DidCreateWebNNTensor, WrapPersistent(this),
+                    std::move(scoped_trace), WrapPersistent(resolver),
+                    std::move(validated_descriptor), usage));
+
+  return resolver->Promise();
+}
+
+ScriptPromise<MLTensor> MLContext::createConstantTensor(
+    ScriptState* script_state,
+    const MLOperandDescriptor* descriptor,
+    AllowSharedBufferSource* src_data,
+    ExceptionState& exception_state) {
+  webnn::ScopedTrace scoped_trace("MLContext::createConstantTensor");
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid script state");
+    return EmptyPromise();
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Not implemented");
+    return EmptyPromise();
+  }
+
+  if (!context_remote_.is_bound()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Context is lost.");
+    return EmptyPromise();
+  }
+
+  ASSIGN_OR_RETURN(
+      webnn::OperandDescriptor validated_descriptor,
+      webnn::OperandDescriptor::Create(
+          properties_, FromBlinkDataType(descriptor->dataType().AsEnum()),
+          descriptor->shape(), "constant_tensor"),
+      [&exception_state](std::string error) {
+        exception_state.ThrowTypeError(String(error));
+        return ScriptPromise<MLTensor>();
+      });
+
+  RETURN_IF_ERROR(webnn::ValidateTensor(properties_, validated_descriptor),
+                  [&exception_state](std::string error) {
+                    exception_state.ThrowTypeError(String(error));
+                    return ScriptPromise<MLTensor>();
+                  });
+
+  base::span<const uint8_t> bytes = AsByteSpan(*src_data);
+  if (validated_descriptor.PackedByteLength() != bytes.size()) {
+    exception_state.ThrowTypeError(
+        String::Format("The source data byte length (%zu) doesn't match the "
+                       "expected byte length (%zu).",
+                       bytes.size(), validated_descriptor.PackedByteLength()));
+    return ScriptPromise<MLTensor>();
+  }
+
+  if (!properties_.data_type_limits.constant.Has(
+          validated_descriptor.data_type())) {
+    exception_state.ThrowTypeError(String(webnn::NotSupportedConstantTypeError(
+        validated_descriptor.data_type(),
+        properties_.data_type_limits.constant)));
+    return ScriptPromise<MLTensor>();
+  }
+
+  webnn::MLTensorUsage usage =
+      webnn::MLTensorUsage{webnn::MLTensorUsageFlags::kGraphConstant};
+  auto tensor_info =
+      webnn::mojom::blink::TensorInfo::New(validated_descriptor, usage);
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLTensor>>(
+      script_state, exception_state.GetContext());
+  pending_resolvers_.insert(resolver);
+
+  // Use `WebNNContext` to create `WebNNTensor` message pipe.
+  context_remote_->CreateTensor(
+      std::move(tensor_info), bytes,
       WTF::BindOnce(&MLContext::DidCreateWebNNTensor, WrapPersistent(this),
                     std::move(scoped_trace), WrapPersistent(resolver),
                     std::move(validated_descriptor), usage));

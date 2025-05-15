@@ -47,6 +47,7 @@ class API_AVAILABLE(macos(14.0)) ContextImplCoreml final
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,
+      base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
       CreateGraphImplCallback callback) override;
 
   void CreateTensorImpl(

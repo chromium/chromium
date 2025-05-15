@@ -31,6 +31,7 @@ namespace webnn {
 
 class WebNNConstantOperand;
 class WebNNContextImpl;
+class WebNNTensorImpl;
 
 // Services-side connection to an `MLGraphBuilder`. Responsible for managing
 // data associated with the graph builder.
@@ -66,7 +67,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphBuilderImpl
     ValidateGraphSuccessResult(
         WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
         base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
-            constant_operands);
+            constant_operands,
+        base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands);
     ~ValidateGraphSuccessResult();
 
     ValidateGraphSuccessResult(const ValidateGraphSuccessResult&) = delete;
@@ -83,6 +85,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphBuilderImpl
     // `keep_builder_resources_for_testing` is false.
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands;
+
+    // Constant tensors associated with this graph, which will be used during
+    // graph construction.
+    base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands;
   };
 
   // Transfer ownership of this builder's resources to a returned

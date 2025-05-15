@@ -152,6 +152,7 @@ void BuildGraph(const mojolpm::webnn::mojom::GraphInfo& graph_info_proto,
     base::test::TestFuture<webnn::mojom::CreateTensorResultPtr>
         create_tensor_future;
     webnn_context_remote->CreateTensor(std::move(tensor_info),
+                                       mojo_base::BigBuffer(0),
                                        create_tensor_future.GetCallback());
     webnn::mojom::CreateTensorResultPtr create_tensor_result =
         create_tensor_future.Take();
@@ -186,6 +187,7 @@ void BuildGraph(const mojolpm::webnn::mojom::GraphInfo& graph_info_proto,
     base::test::TestFuture<webnn::mojom::CreateTensorResultPtr>
         create_tensor_future;
     webnn_context_remote->CreateTensor(std::move(tensor_info),
+                                       mojo_base::BigBuffer(0),
                                        create_tensor_future.GetCallback());
     webnn::mojom::CreateTensorResultPtr create_tensor_result =
         create_tensor_future.Take();

@@ -25,6 +25,10 @@ struct StructTraits<webnn::mojom::TensorUsageDataView, webnn::MLTensorUsage> {
     return usage.Has(webnn::MLTensorUsageFlags::kRead);
   }
 
+  static bool graph_constant(const webnn::MLTensorUsage& usage) {
+    return usage.Has(webnn::MLTensorUsageFlags::kGraphConstant);
+  }
+
   static bool Read(webnn::mojom::TensorUsageDataView data,
                    webnn::MLTensorUsage* out) {
     out->Clear();
@@ -39,6 +43,13 @@ struct StructTraits<webnn::mojom::TensorUsageDataView, webnn::MLTensorUsage> {
 
     if (data.write()) {
       out->Put(webnn::MLTensorUsageFlags::kWrite);
+    }
+
+    if (data.graph_constant()) {
+      if (data.read() || data.write()) {
+        return false;
+      }
+      out->Put(webnn::MLTensorUsageFlags::kGraphConstant);
     }
 
     return true;
