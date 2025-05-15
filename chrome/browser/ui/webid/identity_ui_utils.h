@@ -21,6 +21,7 @@ using IdentityRequestAccountPtr =
 
 // This file contains helper methods that are used in FedCM UI on both desktop
 // and Android.
+namespace webid {
 
 #if BUILDFLAG(IS_ANDROID)
 // The desired size of the avatars of user accounts.
@@ -40,6 +41,80 @@ inline constexpr int kIdpBadgeOffset = 8;
 inline constexpr float kMaskableWebIconSafeZoneRatio = 0.8f;
 // The opacity of the avatar when the account is filtered out.
 inline constexpr double kDisabledAvatarOpacity = 0.38;
+
+// This enum is used for histograms. Do not remove or modify existing values,
+// but you may add new values at the end and increase COUNT. This enum should
+// be kept in sync with FedCmSheetType in tools/metrics/histograms/enums.xml.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.android.webid
+enum SheetType {
+  ACCOUNT_SELECTION = 0,
+  VERIFYING = 1,
+  AUTO_REAUTHN = 2,
+  SIGN_IN_TO_IDP_STATIC = 3,
+  SIGN_IN_ERROR = 4,
+  LOADING = 5,
+  COUNT = 6
+};
+
+// This enum describes the outcome of the account chooser and is used for
+// histograms. Do not remove or modify existing values, but you may add new
+// values at the end. This enum should be kept in sync with
+// FedCmAccountChooserResult in tools/metrics/histograms/enums.xml.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.android.webid
+enum class AccountChooserResult {
+  kAccountRow = 0,
+  kCancelButton = 1,
+  kUseOtherAccountButton = 2,
+  kTabClosed = 3,
+  // Android-specific
+  kSwipe = 4,
+  // Android-specific
+  kBackPress = 5,
+  // Android-specific
+  kTapScrim = 6,
+
+  kMaxValue = kTapScrim
+};
+
+// This enum describes the outcome of the loading dialog and is used for
+// histograms. Do not remove or modify existing values, but you may add new
+// values at the end. This enum should be kept in sync with
+// FedCmLoadingDialogResult in tools/metrics/histograms/enums.xml.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.android.webid
+enum class LoadingDialogResult {
+  kProceed = 0,
+  kCancel = 1,
+  kProceedThroughPopup = 2,
+  kDestroy = 3,
+  // Android-specific
+  kSwipe = 4,
+  // Android-specific
+  kBackPress = 5,
+  // Android-specific
+  kTapScrim = 6,
+
+  kMaxValue = kTapScrim
+};
+
+// This enum describes the outcome of the disclosure dialog and is used for
+// histograms. Do not remove or modify existing values, but you may add new
+// values at the end. This enum should be kept in sync with
+// FedCmDisclosureDialogResult in tools/metrics/histograms/enums.xml.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.android.webid
+enum class DisclosureDialogResult {
+  kContinue = 0,
+  kCancel = 1,
+  kBack = 2,
+  kDestroy = 3,
+  // Android-specific
+  kSwipe = 4,
+  // Android-specific
+  kBackPress = 5,
+  // Android-specific
+  kTapScrim = 6,
+
+  kMaxValue = kTapScrim
+};
 
 // Extracts the initial letter from the provided string.
 std::u16string GetInitialLetterAsUppercase(const std::string& utf8_string);
@@ -97,4 +172,7 @@ class CircleCroppedImageSkiaSource : public gfx::CanvasImageSource {
  private:
   gfx::ImageSkia avatar_;
 };
+
+}  // namespace webid
+
 #endif  // CHROME_BROWSER_UI_WEBID_IDENTITY_UI_UTILS_H_

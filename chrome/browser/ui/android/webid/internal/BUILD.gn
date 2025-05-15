@@ -190,8 +190,5 @@ android_library("javatests") {
 }
 
 java_cpp_enum("java_enum_srcjar") {
-  sources = [
-    "//chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h",
-    "//chrome/browser/ui/webid/account_selection_view.h",
-  ]
+  sources = [ "//chrome/browser/ui/webid/identity_ui_utils.h" ]
 }

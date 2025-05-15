@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
+#include "chrome/browser/ui/webid/identity_ui_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/input_event_activation_protector.h"
@@ -61,10 +62,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                                   public content::WebContentsObserver,
                                   public PictureInPictureOcclusionObserver {
  public:
-  // safe_zone_diameter/icon_size as defined in
-  // https://www.w3.org/TR/appmanifest/#icon-masks
-  static constexpr float kMaskableWebIconSafeZoneRatio = 0.8f;
-
   enum class DialogType {
     // FedCM dialog inherits a bubble dialog, which is typically shown on the
     // top-right corner of the browser. The user can switch tabs and interact
@@ -337,69 +334,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
     kMaxValue = kAccountsNotReceivedAndPopupNotClosedByIdp
   };
 
-  // This enum describes the outcome of the account chooser and is used for
-  // histograms. Do not remove or modify existing values, but you may add new
-  // values at the end. This enum should be kept in sync with
-  // FedCmAccountChooserResult in tools/metrics/histograms/enums.xml.
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.android.webid
-  // GENERATED_JAVA_PREFIX_TO_STRIP: k
-  enum class AccountChooserResult {
-    kAccountRow = 0,
-    kCancelButton = 1,
-    kUseOtherAccountButton = 2,
-    kTabClosed = 3,
-    // Android-specific
-    kSwipe = 4,
-    // Android-specific
-    kBackPress = 5,
-    // Android-specific
-    kTapScrim = 6,
-
-    kMaxValue = kTapScrim
-  };
-
-  // This enum describes the outcome of the loading dialog and is used for
-  // histograms. Do not remove or modify existing values, but you may add new
-  // values at the end. This enum should be kept in sync with
-  // FedCmLoadingDialogResult in tools/metrics/histograms/enums.xml.
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.android.webid
-  // GENERATED_JAVA_PREFIX_TO_STRIP: k
-  enum class LoadingDialogResult {
-    kProceed = 0,
-    kCancel = 1,
-    kProceedThroughPopup = 2,
-    kDestroy = 3,
-    // Android-specific
-    kSwipe = 4,
-    // Android-specific
-    kBackPress = 5,
-    // Android-specific
-    kTapScrim = 6,
-
-    kMaxValue = kTapScrim
-  };
-
-  // This enum describes the outcome of the disclosure dialog and is used for
-  // histograms. Do not remove or modify existing values, but you may add new
-  // values at the end. This enum should be kept in sync with
-  // FedCmDisclosureDialogResult in tools/metrics/histograms/enums.xml.
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.android.webid
-  // GENERATED_JAVA_PREFIX_TO_STRIP: k
-  enum class DisclosureDialogResult {
-    kContinue = 0,
-    kCancel = 1,
-    kBack = 2,
-    kDestroy = 3,
-    // Android-specific
-    kSwipe = 4,
-    // Android-specific
-    kBackPress = 5,
-    // Android-specific
-    kTapScrim = 6,
-
-    kMaxValue = kTapScrim
-  };
-
   // Called when the tab's WebContents is discarded.
   void WillDiscardContents(tabs::TabInterface* tab,
                            content::WebContents* old_contents,
@@ -421,7 +355,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   void ShowDialogWidget();
 
   // Returns the SheetType to be used for metrics reporting.
-  AccountSelectionView::SheetType GetSheetType();
+  webid::SheetType GetSheetType();
 
   // Returns whether an IDP sign-in pop-up window is currently open.
   bool IsIdpSigninPopupOpen();
@@ -535,15 +469,15 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // The current state of the modal account chooser, if initiated by user. This
   // is nullopt when no modal account chooser has been opened.
-  std::optional<AccountChooserResult> modal_account_chooser_state_;
+  std::optional<webid::AccountChooserResult> modal_account_chooser_state_;
 
   // The current state of the modal loading dialog. This is nullopt when no
   // modal loading dialog has been opened.
-  std::optional<LoadingDialogResult> modal_loading_dialog_state_;
+  std::optional<webid::LoadingDialogResult> modal_loading_dialog_state_;
 
   // The current state of the modal disclosure dialog. This is nullopt when no
   // modal disclosure dialog has been opened.
-  std::optional<DisclosureDialogResult> modal_disclosure_dialog_state_;
+  std::optional<webid::DisclosureDialogResult> modal_disclosure_dialog_state_;
 
   // Whether the widget is occluded by PIP (and therefore we should ignore
   // inputs).

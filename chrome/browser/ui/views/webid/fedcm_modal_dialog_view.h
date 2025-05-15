@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
+#include "chrome/browser/ui/webid/identity_ui_utils.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -82,8 +83,7 @@ class FedCmModalDialogView : public content::WebContentsObserver {
   virtual void ClosePopupWindow();
   virtual void ResizeAndFocusPopupWindow();
   virtual void SetCustomYPosition(int y);
-  virtual void SetActiveModeSheetType(
-      AccountSelectionView::SheetType sheet_type);
+  virtual void SetActiveModeSheetType(webid::SheetType sheet_type);
   virtual bool UserCloseCancelsFlow();
 
   // content::WebContentsObserver
@@ -116,7 +116,7 @@ class FedCmModalDialogView : public content::WebContentsObserver {
 
   // The sheet type of the active mode dialog which opened this pop-up.
   // `std::nullopt` for non-active mode cases.
-  std::optional<AccountSelectionView::SheetType> active_mode_sheet_type_;
+  std::optional<webid::SheetType> active_mode_sheet_type_;
 
   // Number of times the user lost focus of the pop-up. i.e. number of times
   // `OnWebContentsLostFocus` is called. This is an int because when the user

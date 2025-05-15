@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
+#include "chrome/browser/ui/webid/identity_ui_utils.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -150,7 +151,7 @@ class MockFedCmModalDialogView : public FedCmModalDialogView {
 
   void SetCustomYPosition(int y) override { ++set_custom_y_position_count_; }
 
-  void SetActiveModeSheetType(AccountSelectionView::SheetType) override {
+  void SetActiveModeSheetType(webid::SheetType) override {
     ++set_active_mode_sheet_type_count_;
   }
 
@@ -788,7 +789,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, CloseAutoReauthnSheetMetric) {
   controller->OnCloseButtonClicked(CreateMouseEvent());
   histogram_tester_->ExpectUniqueSample(
       "Blink.FedCm.ClosedSheetType.Desktop",
-      static_cast<int>(AccountSelectionView::SheetType::AUTO_REAUTHN), 1);
+      static_cast<int>(webid::SheetType::AUTO_REAUTHN), 1);
 }
 
 // Tests that when the mismatch dialog is closed through the close icon, the
@@ -2073,13 +2074,11 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, SupportAddAccount) {
 
 // Tests that the correct account chooser result metrics are recorded.
 TEST_F(FedCmAccountSelectionViewDesktopTest, AccountChooserResultMetric) {
-  auto CheckForSampleAndReset(
-      [&](FedCmAccountSelectionView::AccountChooserResult result) {
-        histogram_tester_->ExpectUniqueSample(
-            "Blink.FedCm.Button.AccountChooserResult", static_cast<int>(result),
-            1);
-        histogram_tester_ = std::make_unique<base::HistogramTester>();
-      });
+  auto CheckForSampleAndReset([&](webid::AccountChooserResult result) {
+    histogram_tester_->ExpectUniqueSample(
+        "Blink.FedCm.Button.AccountChooserResult", static_cast<int>(result), 1);
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+  });
 
   // The AccountChooserResult metric is recorded in OnDismiss, therefore, we
   // check for the histogram after the TestFedCmAccountSelectionView goes out
@@ -2090,8 +2089,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, AccountChooserResultMetric) {
         accounts_, SignInMode::kExplicit, blink::mojom::RpMode::kActive);
     controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   }
-  CheckForSampleAndReset(
-      FedCmAccountSelectionView::AccountChooserResult::kAccountRow);
+  CheckForSampleAndReset(webid::AccountChooserResult::kAccountRow);
 
   {
     // User clicks on cancel button.
@@ -2099,8 +2097,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, AccountChooserResultMetric) {
         accounts_, SignInMode::kExplicit, blink::mojom::RpMode::kActive);
     controller->OnCloseButtonClicked(CreateMouseEvent());
   }
-  CheckForSampleAndReset(
-      FedCmAccountSelectionView::AccountChooserResult::kCancelButton);
+  CheckForSampleAndReset(webid::AccountChooserResult::kCancelButton);
 
   {
     // User clicks on use other account button.
@@ -2109,16 +2106,14 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, AccountChooserResultMetric) {
     controller->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl),
                              CreateMouseEvent());
   }
-  CheckForSampleAndReset(
-      FedCmAccountSelectionView::AccountChooserResult::kUseOtherAccountButton);
+  CheckForSampleAndReset(webid::AccountChooserResult::kUseOtherAccountButton);
 
   {
     // User closes the tab or window.
     std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
         accounts_, SignInMode::kExplicit, blink::mojom::RpMode::kActive);
   }
-  CheckForSampleAndReset(
-      FedCmAccountSelectionView::AccountChooserResult::kTabClosed);
+  CheckForSampleAndReset(webid::AccountChooserResult::kTabClosed);
 
   {
     // Returning user signing in via IDP sign-in pop-up when signed-out should
@@ -2133,8 +2128,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, AccountChooserResultMetric) {
               controller->GetTestView()->sheet_type_);
     controller->OnAccountSelected(new_accounts[0], CreateMouseEvent());
   }
-  CheckForSampleAndReset(
-      FedCmAccountSelectionView::AccountChooserResult::kAccountRow);
+  CheckForSampleAndReset(webid::AccountChooserResult::kAccountRow);
 
   {
     // Non-returning user signing in via IDP sign-in pop-up should not record a
@@ -2445,13 +2439,11 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, ClickProtectionNoModalSpinner) {
 
 // Tests that the correct loading dialog result metrics are recorded.
 TEST_F(FedCmAccountSelectionViewDesktopTest, LoadingDialogResultMetric) {
-  auto CheckForSampleAndReset(
-      [&](FedCmAccountSelectionView::LoadingDialogResult result) {
-        histogram_tester_->ExpectUniqueSample(
-            "Blink.FedCm.Button.LoadingDialogResult", static_cast<int>(result),
-            1);
-        histogram_tester_ = std::make_unique<base::HistogramTester>();
-      });
+  auto CheckForSampleAndReset([&](webid::LoadingDialogResult result) {
+    histogram_tester_->ExpectUniqueSample(
+        "Blink.FedCm.Button.LoadingDialogResult", static_cast<int>(result), 1);
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+  });
 
   // The LoadingDialogResult metric is recorded in OnDismiss, therefore, we
   // check for the histogram after the TestFedCmAccountSelectionView goes out
@@ -2463,8 +2455,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, LoadingDialogResultMetric) {
     Show(*controller, accounts_, SignInMode::kExplicit,
          blink::mojom::RpMode::kActive);
   }
-  CheckForSampleAndReset(
-      FedCmAccountSelectionView::LoadingDialogResult::kProceed);
+  CheckForSampleAndReset(webid::LoadingDialogResult::kProceed);
 
   {
     // User proceeds with auto re-authn.
@@ -2475,15 +2466,13 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, LoadingDialogResultMetric) {
     Show(*controller, accounts_, SignInMode::kAuto,
          blink::mojom::RpMode::kActive);
   }
-  CheckForSampleAndReset(
-      FedCmAccountSelectionView::LoadingDialogResult::kProceed);
+  CheckForSampleAndReset(webid::LoadingDialogResult::kProceed);
 
   {
     // User proceeds by completing login to IDP flow.
     CreateAndShowAccountsModalThroughPopupWindow(accounts_, new_accounts_);
   }
-  CheckForSampleAndReset(
-      FedCmAccountSelectionView::LoadingDialogResult::kProceedThroughPopup);
+  CheckForSampleAndReset(webid::LoadingDialogResult::kProceedThroughPopup);
 
   {
     // User clicks on cancel button.
@@ -2491,21 +2480,19 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, LoadingDialogResultMetric) {
         CreateAndShowLoadingDialog();
     controller->OnCloseButtonClicked(CreateMouseEvent());
   }
-  CheckForSampleAndReset(
-      FedCmAccountSelectionView::LoadingDialogResult::kCancel);
+  CheckForSampleAndReset(webid::LoadingDialogResult::kCancel);
 
   {
     // Tab or window is destroyed.
     CreateAndShowLoadingDialog();
   }
-  CheckForSampleAndReset(
-      FedCmAccountSelectionView::LoadingDialogResult::kDestroy);
+  CheckForSampleAndReset(webid::LoadingDialogResult::kDestroy);
 }
 
 // Tests that the correct disclosure dialog result metrics are recorded.
 TEST_F(FedCmAccountSelectionViewDesktopTest, DisclosureDialogResultMetric) {
   auto CheckForSampleAndReset(
-      [&](FedCmAccountSelectionView::DisclosureDialogResult result) {
+      [&](webid::DisclosureDialogResult result) {
         histogram_tester_->ExpectUniqueSample(
             "Blink.FedCm.Button.DisclosureDialogResult",
             static_cast<int>(result), 1);
@@ -2519,8 +2506,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, DisclosureDialogResultMetric) {
     controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
     controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   }
-  CheckForSampleAndReset(
-      FedCmAccountSelectionView::DisclosureDialogResult::kContinue);
+  CheckForSampleAndReset(webid::DisclosureDialogResult::kContinue);
 
   {
     // User clicks on cancel button.
@@ -2529,8 +2515,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, DisclosureDialogResultMetric) {
     controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
     controller->OnCloseButtonClicked(CreateMouseEvent());
   }
-  CheckForSampleAndReset(
-      FedCmAccountSelectionView::DisclosureDialogResult::kCancel);
+  CheckForSampleAndReset(webid::DisclosureDialogResult::kCancel);
 
   {
     // User clicks on back button.
@@ -2539,8 +2524,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, DisclosureDialogResultMetric) {
     controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
     controller->OnBackButtonClicked();
   }
-  CheckForSampleAndReset(
-      FedCmAccountSelectionView::DisclosureDialogResult::kBack);
+  CheckForSampleAndReset(webid::DisclosureDialogResult::kBack);
 
   {
     // Tab or window is destroyed.
@@ -2548,8 +2532,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, DisclosureDialogResultMetric) {
         accounts_, SignInMode::kExplicit, blink::mojom::RpMode::kActive);
     controller->OnAccountSelected(accounts_[0], CreateMouseEvent());
   }
-  CheckForSampleAndReset(
-      FedCmAccountSelectionView::DisclosureDialogResult::kDestroy);
+  CheckForSampleAndReset(webid::DisclosureDialogResult::kDestroy);
 }
 
 }  // namespace webid

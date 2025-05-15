@@ -179,10 +179,10 @@ AccountSelectionModalView::CreatePlaceholderAccountRow() {
   std::unique_ptr<views::View> placeholder_account_icon =
       std::make_unique<views::View>();
   placeholder_account_icon->SetPreferredSize(
-      gfx::Size(kModalAvatarSize, kModalAvatarSize));
+      gfx::Size(webid::kModalAvatarSize, webid::kModalAvatarSize));
   placeholder_account_icon->SizeToPreferredSize();
-  placeholder_account_icon->SetBackground(
-      views::CreateRoundedRectBackground(kPlaceholderColor, kModalAvatarSize));
+  placeholder_account_icon->SetBackground(views::CreateRoundedRectBackground(
+      kPlaceholderColor, webid::kModalAvatarSize));
 
   constexpr int kPlaceholderAccountRowPadding = 16;
   auto row = std::make_unique<views::View>();

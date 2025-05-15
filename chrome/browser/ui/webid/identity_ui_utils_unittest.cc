@@ -7,14 +7,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(IdentityUiUtilsTest, GetInitialLetterAsUppercase) {
-  EXPECT_EQ(GetInitialLetterAsUppercase("😊 starts with an emoji"), u"😊");
-  EXPECT_EQ(GetInitialLetterAsUppercase("English Text"), u"E");
-  EXPECT_EQ(GetInitialLetterAsUppercase("النص العربي"), u"ا");
-  EXPECT_EQ(GetInitialLetterAsUppercase("טקסט בעברית"), u"ט");
-  EXPECT_EQ(GetInitialLetterAsUppercase("中文文本"), u"中");
-  EXPECT_EQ(GetInitialLetterAsUppercase("h́ Text with combining character"),
-            u"H́");
-  EXPECT_EQ(GetInitialLetterAsUppercase(
+  EXPECT_EQ(webid::GetInitialLetterAsUppercase("😊 starts with an emoji"),
+            u"😊");
+  EXPECT_EQ(webid::GetInitialLetterAsUppercase("English Text"), u"E");
+  EXPECT_EQ(webid::GetInitialLetterAsUppercase("النص العربي"), u"ا");
+  EXPECT_EQ(webid::GetInitialLetterAsUppercase("טקסט בעברית"), u"ט");
+  EXPECT_EQ(webid::GetInitialLetterAsUppercase("中文文本"), u"中");
+  EXPECT_EQ(
+      webid::GetInitialLetterAsUppercase("h́ Text with combining character"),
+      u"H́");
+  EXPECT_EQ(webid::GetInitialLetterAsUppercase(
                 "👩🏾‍⚕️ Emoji with skin tone (combining character)"),
             u"👩🏾‍⚕️");
 }

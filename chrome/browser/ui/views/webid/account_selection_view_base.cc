@@ -136,14 +136,14 @@ class AccountImageView : public views::ImageView {
   void SetAccountImage(const content::IdentityRequestAccount& account,
                        int image_size,
                        std::optional<gfx::ImageSkia> idp_image = std::nullopt) {
-    avatar_ =
-        ComputeAccountCircleCroppedPicture(account, image_size, idp_image);
+    avatar_ = webid::ComputeAccountCircleCroppedPicture(account, image_size,
+                                                        idp_image);
     SetImage(ui::ImageModel::FromImageSkia(avatar_));
   }
 
   void SetDisabledOpacity() {
     avatar_ = gfx::ImageSkiaOperations::CreateTransparentImage(
-        avatar_, kDisabledAvatarOpacity);
+        avatar_, webid::kDisabledAvatarOpacity);
     SetImage(ui::ImageModel::FromImageSkia(avatar_));
   }
 
@@ -205,13 +205,13 @@ bool BrandIconImageView::SetBrandIconImage(const gfx::Image& image,
     return false;
   }
   if (should_circle_crop &&
-      image.Width() < (image_size_ / kMaskableWebIconSafeZoneRatio)) {
+      image.Width() < (image_size_ / webid::kMaskableWebIconSafeZoneRatio)) {
     return false;
   }
   const gfx::ImageSkia& original_image = image.AsImageSkia();
   gfx::ImageSkia cropped_idp_image =
       should_circle_crop
-          ? CreateCircleCroppedImage(original_image, image_size_)
+          ? webid::CreateCircleCroppedImage(original_image, image_size_)
           : gfx::ImageSkiaOperations::CreateResizedImage(
                 original_image, skia::ImageOperations::RESIZE_BEST,
                 gfx::Size(image_size_, image_size_));
@@ -343,7 +343,8 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
     bool is_modal_dialog,
     int additional_vertical_padding,
     std::optional<std::u16string> last_used_string) {
-  int avatar_size = is_modal_dialog ? kModalAvatarSize : kDesiredAvatarSize;
+  int avatar_size =
+      is_modal_dialog ? webid::kModalAvatarSize : webid::kDesiredAvatarSize;
   views::style::TextStyle account_display_name_style =
       is_modal_dialog ? views::style::STYLE_BODY_3_MEDIUM
                       : views::style::STYLE_PRIMARY;
@@ -361,8 +362,8 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
   const content::IdentityProviderData& idp_data = *account->identity_provider;
   if (clickable_position) {
     if (should_include_idp) {
-      account_image_view->SetImageSize(
-          {avatar_size + kIdpBadgeOffset, avatar_size + kIdpBadgeOffset});
+      account_image_view->SetImageSize({avatar_size + webid::kIdpBadgeOffset,
+                                        avatar_size + webid::kIdpBadgeOffset});
       account_image_view->SetAccountImage(
           *account, avatar_size,
           std::make_optional<gfx::ImageSkia>(
@@ -370,7 +371,7 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
       // Add a border at the top so that the account avatar is centered, not the
       // whole badged icon.
       account_image_view->SetBorder(views::CreateEmptyBorder(
-          gfx::Insets::TLBR(kIdpBadgeOffset, 0, 0, 0)));
+          gfx::Insets::TLBR(webid::kIdpBadgeOffset, 0, 0, 0)));
     } else {
       account_image_view->SetAccountImage(*account, avatar_size);
     }

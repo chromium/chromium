@@ -87,6 +87,8 @@ gfx::ImageSkia CreateBadgedImageSkia(const gfx::ImageSkia& base_image,
 
 }  // namespace
 
+namespace webid {
+
 LetterCircleCroppedImageSkiaSource::LetterCircleCroppedImageSkiaSource(
     const std::u16string& letter,
     int size)
@@ -192,3 +194,5 @@ gfx::ImageSkia ComputeAccountCircleCroppedPicture(
   }
   return avatar;
 }
+
+}  // namespace webid

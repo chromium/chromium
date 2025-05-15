@@ -58,7 +58,7 @@ ScopedJavaLocalRef<jobject> ConvertToJavaAccount(
   ScopedJavaLocalRef<jobject> circle_cropped_badged_picture = nullptr;
   if (is_multi_idp) {
     circle_cropped_badged_picture = gfx::ConvertToJavaBitmap(
-        gfx::Image(ComputeAccountCircleCroppedPicture(
+        gfx::Image(webid::ComputeAccountCircleCroppedPicture(
                        *account, /*avatar_size=*/kCircleCroppedBadgedAvatarSize,
                        std::make_optional<gfx::ImageSkia>(
                            account->identity_provider->idp_metadata

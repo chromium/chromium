@@ -441,8 +441,8 @@ std::unique_ptr<views::ImageView> GetIconImageView(
     gfx::ImageSkia image = icon->AsImageSkia();
     if (std::holds_alternative<Suggestion::IdentityCredentialPayload>(
             suggestion.payload)) {
-      image =
-          CreateCircleCroppedImage(image, kDesiredAvatarSizeInAutofillDropdown);
+      image = webid::CreateCircleCroppedImage(
+          image, webid::kDesiredAvatarSizeInAutofillDropdown);
     }
     return ConvertModelToImageView(ImageModelFromImageSkia(image),
                                    suggestion.HasDeactivatedStyle());
