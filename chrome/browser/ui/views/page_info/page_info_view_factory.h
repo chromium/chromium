@@ -75,6 +75,7 @@ class PageInfoViewFactory {
     VIEW_ID_PAGE_INFO_EXTENDED_SITE_INFO_SECTION,
     VIEW_ID_PAGE_INFO_COOKIES_SYNC,
     VIEW_ID_PAGE_INFO_ACT_PROTECTIONS_BUTTON,
+    VIEW_ID_PAGE_INFO_BUTTON_INCOGNITO_TRACKING_PROTECTIONS_SETTINGS,
   };
 
   // Creates a separator view with padding on top and bottom. Use with flex
