@@ -10,13 +10,13 @@ import android.content.res.Resources;
 import android.view.MotionEvent;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
@@ -34,6 +34,7 @@ import org.chromium.ui.widget.ViewRectProvider;
  * A coordinator for the menu on tab group cards in GTS. It is responsible for creating a list of
  * menu items, setting up the menu and displaying the menu.
  */
+@NullMarked
 public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator {
     private final Activity mActivity;
     private boolean mShouldShowIcons;
@@ -48,8 +49,8 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
             OnItemClickedCallback<Token> onItemClicked,
             Supplier<TabModel> tabModelSupplier,
             @Nullable TabGroupSyncService tabGroupSyncService,
-            @NonNull CollaborationService collaborationService,
-            @NonNull Activity activity) {
+            CollaborationService collaborationService,
+            Activity activity) {
         super(
                 R.layout.tab_switcher_action_menu_layout,
                 onItemClicked,
@@ -112,7 +113,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
 
     private void createAndShowMenu(
             RectProvider anchorRectProvider,
-            @NonNull Token tabGroupId,
+            Token tabGroupId,
             int animStyle,
             boolean verticalOverlapAnchor,
             Activity activity) {

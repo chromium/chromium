@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -13,6 +15,8 @@ import android.widget.LinearLayout;
 import androidx.collection.ArraySet;
 
 import org.chromium.base.MathUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.NumberRollView;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -22,13 +26,13 @@ import java.util.ArrayList;
 import java.util.Set;
 
 /**
- * A {@link LinearLayout} that displays only the TabListEditorMenuItem ActionViews that fit in
- * the space it contains. Managed by a {@link TabListEditorMenu}.
+ * A {@link LinearLayout} that displays only the TabListEditorMenuItem ActionViews that fit in the
+ * space it contains. Managed by a {@link TabListEditorMenu}.
  */
+@NullMarked
 public class TabListEditorActionViewLayout extends LinearLayout {
     /** All {@link TabListEditoreMenuItem} action views with menu items. */
-    private final ArrayList<TabListEditorMenuItem> mMenuItemsWithActionView =
-            new ArrayList<>();
+    private final ArrayList<TabListEditorMenuItem> mMenuItemsWithActionView = new ArrayList<>();
 
     /** The {@link TabListEditoreMenuItem}s with visible action views. */
     private final Set<TabListEditorMenuItem> mVisibleActions = new ArraySet<>();
@@ -38,7 +42,7 @@ public class TabListEditorActionViewLayout extends LinearLayout {
 
     private final LinearLayout.LayoutParams mActionViewParams;
 
-    private ActionViewLayoutDelegate mDelegate;
+    private @Nullable ActionViewLayoutDelegate mDelegate;
     private boolean mHasMenuOnlyItems;
 
     /** Delegate updates in response to which action views are visible. */
@@ -120,7 +124,7 @@ public class TabListEditorActionViewLayout extends LinearLayout {
 
     private void removeAllActionViews() {
         for (TabListEditorMenuItem menuItem : mMenuItemsWithActionView) {
-            final View actionView = menuItem.getActionView();
+            final View actionView = assumeNonNull(menuItem.getActionView());
             if (this == actionView.getParent()) {
                 removeView(menuItem.getActionView());
             }
@@ -147,7 +151,7 @@ public class TabListEditorActionViewLayout extends LinearLayout {
         final int childMeasureSpec =
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
         for (TabListEditorMenuItem menuItem : mMenuItemsWithActionView) {
-            final View actionView = menuItem.getActionView();
+            final View actionView = assumeNonNull(menuItem.getActionView());
             actionView.measure(childMeasureSpec, childMeasureSpec);
             final int actionViewWidth = actionView.getMeasuredWidth();
             if (usedWidth + actionViewWidth > width || hasForcedAnyActionViewToMenu) {

@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -19,6 +20,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** List of properties used by TabGridDialog. */
+@NullMarked
 class TabGridDialogProperties {
     /** The hashCode() of the {@link TabGridDialogMediator} currently updating the view. */
     public static final PropertyModel.WritableObjectPropertyKey<Integer> BINDING_TOKEN =

@@ -13,6 +13,8 @@ import android.widget.PopupWindow;
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -21,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** This class is used to show the {@link SelectableListLayout} in a {@link PopupWindow}. */
+@NullMarked
 class TabListEditorLayout extends SelectableListLayout<TabListEditorItemSelectionId> {
     private TabListEditorToolbar mToolbar;
     private ViewGroup mRootView;
@@ -57,6 +60,7 @@ class TabListEditorLayout extends SelectableListLayout<TabListEditorItemSelectio
      * @param selectionDelegate The {@link SelectionDelegate} that will inform the toolbar of
      *     selection changes.
      */
+    @Initializer
     void initialize(
             ViewGroup rootView,
             ViewGroup parentView,

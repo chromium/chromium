@@ -21,11 +21,12 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteAnimationGradientDrawable;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
@@ -37,12 +38,13 @@ import java.lang.ref.WeakReference;
 
 // TODO(crbug.com/339038505): De-dupe logic in TabListView.
 /** Holds the view for a selectable tab grid. */
+@NullMarked
 public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelectionId> {
     private static final long RESTORE_ANIMATION_DURATION_MS = 50;
     private static final long BASE_ANIMATION_DURATION_MS = 218;
     private static final float ZOOM_IN_SCALE = 0.8f;
 
-    private static WeakReference<Bitmap> sCloseButtonBitmapWeakRef;
+    private static @Nullable WeakReference<Bitmap> sCloseButtonBitmapWeakRef;
 
     @IntDef({
         AnimationStatus.SELECTED_CARD_ZOOM_IN,
@@ -80,7 +82,7 @@ public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelecti
     private @Nullable ObjectAnimator mQuickDeleteAnimation;
     private @Nullable QuickDeleteAnimationGradientDrawable mQuickDeleteAnimationDrawable;
     private ImageView mActionButton;
-    private ColorStateList mActionButtonTint;
+    private @Nullable ColorStateList mActionButtonTint;
 
     public TabGridView(Context context, AttributeSet attrs) {
         super(context, attrs);

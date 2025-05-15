@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.res.ColorStateList;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** {@link PropertyKey} list for TabListEditor. */
+@NullMarked
 public class TabListEditorProperties {
     public static final PropertyModel.WritableBooleanPropertyKey IS_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();

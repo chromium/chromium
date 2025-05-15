@@ -13,10 +13,12 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import android.view.View;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 
 /** List of properties used by the CustomMessageCardItem. */
+@NullMarked
 public class CustomMessageCardViewProperties {
     public static final ReadableObjectPropertyKey<View> CUSTOM_VIEW =
             new ReadableObjectPropertyKey<>();

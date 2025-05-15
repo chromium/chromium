@@ -10,13 +10,12 @@ import android.util.Pair;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -49,6 +48,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import java.util.function.DoubleConsumer;
 
 /** Interface to get access to components concerning tab management. */
+@NullMarked
 public interface TabManagementDelegate {
     /**
      * Create the {@link TabGroupUi}.
@@ -75,22 +75,22 @@ public interface TabManagementDelegate {
      * @return The {@link TabGroupUi}.
      */
     TabGroupUi createTabGroupUi(
-            @NonNull Activity activity,
-            @NonNull ViewGroup parentView,
-            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull ScrimManager scrimManager,
-            @NonNull ObservableSupplier<Boolean> omniboxFocusStateSupplier,
-            @NonNull BottomSheetController bottomSheetController,
-            @NonNull DataSharingTabManager dataSharingTabManager,
-            @NonNull TabModelSelector tabModelSelector,
-            @NonNull TabContentManager tabContentManager,
-            @NonNull TabCreatorManager tabCreatorManager,
-            @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-            @NonNull ModalDialogManager modalDialogManager,
-            @NonNull ThemeColorProvider themeColorProvider,
+            Activity activity,
+            ViewGroup parentView,
+            BrowserControlsStateProvider browserControlsStateProvider,
+            ScrimManager scrimManager,
+            ObservableSupplier<Boolean> omniboxFocusStateSupplier,
+            BottomSheetController bottomSheetController,
+            DataSharingTabManager dataSharingTabManager,
+            TabModelSelector tabModelSelector,
+            TabContentManager tabContentManager,
+            TabCreatorManager tabCreatorManager,
+            OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
+            ModalDialogManager modalDialogManager,
+            ThemeColorProvider themeColorProvider,
             UndoBarThrottle undoBarThrottle,
-            @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
-            @NonNull Supplier<ShareDelegate> shareDelegateSupplier);
+            ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            Supplier<ShareDelegate> shareDelegateSupplier);
 
     /**
      * Create a {@link TabSwitcher} and {@link Pane} for the Hub.
@@ -130,35 +130,35 @@ public interface TabManagementDelegate {
      *     groups.
      */
     Pair<TabSwitcher, Pane> createTabSwitcherPane(
-            @NonNull Activity activity,
-            @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
-            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
-            @NonNull TabModelSelector tabModelSelector,
-            @NonNull TabContentManager tabContentManager,
-            @NonNull TabCreatorManager tabCreatorManager,
-            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            @NonNull ScrimManager scrimManager,
-            @NonNull SnackbarManager snackbarManager,
-            @NonNull ModalDialogManager modalDialogManager,
-            @NonNull BottomSheetController bottomSheetController,
-            @NonNull DataSharingTabManager dataSharingTabManager,
+            Activity activity,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            TabModelSelector tabModelSelector,
+            TabContentManager tabContentManager,
+            TabCreatorManager tabCreatorManager,
+            BrowserControlsStateProvider browserControlsStateProvider,
+            MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
+            ScrimManager scrimManager,
+            SnackbarManager snackbarManager,
+            ModalDialogManager modalDialogManager,
+            BottomSheetController bottomSheetController,
+            DataSharingTabManager dataSharingTabManager,
             @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
-            @NonNull OnClickListener newTabButtonOnClickListener,
+            OnClickListener newTabButtonOnClickListener,
             boolean isIncognito,
-            @NonNull DoubleConsumer onToolbarAlphaChange,
-            @NonNull BackPressManager backPressManager,
-            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            DoubleConsumer onToolbarAlphaChange,
+            BackPressManager backPressManager,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            @NonNull ObservableSupplier<TabModelDotInfo> tabModelNotificationDotSupplier,
-            @NonNull ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
-            @NonNull ObservableSupplier<ShareDelegate> shareDelegateSupplier,
-            @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
-            @NonNull TabGroupCreationUiDelegate tabGroupCreationUiDelegate,
+            ObservableSupplier<TabModelDotInfo> tabModelNotificationDotSupplier,
+            ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
+            ObservableSupplier<ShareDelegate> shareDelegateSupplier,
+            ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            TabGroupCreationUiDelegate tabGroupCreationUiDelegate,
             UndoBarThrottle undoBarThrottle,
-            @NonNull LazyOneshotSupplier<HubManager> hubManagerSupplier,
-            @NonNull ObservableSupplier<Integer> archivedTabCountSupplier,
-            @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier);
+            LazyOneshotSupplier<HubManager> hubManagerSupplier,
+            ObservableSupplier<Integer> archivedTabCountSupplier,
+            Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier);
 
     /**
      * Create a {@link TabGroupsPane} for the Hub.
@@ -176,15 +176,15 @@ public interface TabManagementDelegate {
      * @return The pane implementation that displays and allows interactions with tab groups.
      */
     Pane createTabGroupsPane(
-            @NonNull Context context,
-            @NonNull TabModelSelector tabModelSelector,
-            @NonNull DoubleConsumer onToolbarAlphaChange,
-            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
-            @NonNull LazyOneshotSupplier<HubManager> hubManagerSupplier,
-            @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
-            @NonNull DataSharingTabManager dataSharingTabManager);
+            Context context,
+            TabModelSelector tabModelSelector,
+            DoubleConsumer onToolbarAlphaChange,
+            OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            LazyOneshotSupplier<HubManager> hubManagerSupplier,
+            Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            DataSharingTabManager dataSharingTabManager);
 
     /**
      * Create a {@link TabGroupCreationUiDelegate} for tab group creation UI flows.
@@ -195,8 +195,8 @@ public interface TabManagementDelegate {
      * @param tabGroupModelFilterSupplier Supplies the current tab group model filter.
      */
     TabGroupCreationUiDelegate createTabGroupCreationUiFlow(
-            @NonNull Context context,
-            @NonNull ModalDialogManager modalDialogManager,
-            @NonNull OneshotSupplier<HubManager> hubManagerSupplier,
-            @NonNull Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier);
+            Context context,
+            ModalDialogManager modalDialogManager,
+            OneshotSupplier<HubManager> hubManagerSupplier,
+            Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier);
 }

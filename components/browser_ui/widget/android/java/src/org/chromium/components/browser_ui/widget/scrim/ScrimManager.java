@@ -277,7 +277,8 @@ public class ScrimManager {
         }
     }
 
-    public @Nullable ScrimView getViewForTesting(PropertyModel model) {
+    public @Nullable ScrimView getViewForTesting(@Nullable PropertyModel model) {
+        if (model == null) return null;
         @Nullable ScrimCoordinator coordinator = mModelToScrim.get(model);
         if (coordinator == null) return null;
         return coordinator.getViewForTesting();
@@ -290,7 +291,8 @@ public class ScrimManager {
         }
     }
 
-    public boolean areAnimationsRunningForTesting(PropertyModel model) {
+    public boolean areAnimationsRunningForTesting(@Nullable PropertyModel model) {
+        if (model == null) return false;
         @Nullable ScrimCoordinator coordinator = mModelToScrim.get(model);
         if (coordinator == null) return false;
         return coordinator.areAnimationsRunningForTesting();

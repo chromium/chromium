@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -16,6 +18,8 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.StringRes;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.NumberRollView;
@@ -27,6 +31,7 @@ import java.util.Collections;
 import java.util.List;
 
 /** Handles toolbar functionality for TabListEditor. */
+@NullMarked
 class TabListEditorToolbar extends SelectableListToolbar<TabListEditorItemSelectionId> {
     private static final List<TabListEditorItemSelectionId> sEmptyIntegerList =
             Collections.emptyList();
@@ -34,7 +39,7 @@ class TabListEditorToolbar extends SelectableListToolbar<TabListEditorItemSelect
     private TabListEditorActionViewLayout mActionViewLayout;
     @ColorInt private int mBackgroundColor;
     @StringRes private int mBackButtonAccessibilityString;
-    private RelatedTabCountProvider mRelatedTabCountProvider;
+    private @Nullable RelatedTabCountProvider mRelatedTabCountProvider;
 
     public interface RelatedTabCountProvider {
         /**
@@ -133,7 +138,7 @@ class TabListEditorToolbar extends SelectableListToolbar<TabListEditorItemSelect
      * @param tint New {@link ColorStateList} to use.
      */
     public void setButtonTint(ColorStateList tint) {
-        TintedDrawable navigation = (TintedDrawable) getNavigationIcon();
+        TintedDrawable navigation = (TintedDrawable) assumeNonNull(getNavigationIcon());
         navigation.setTint(tint);
         ImageViewCompat.setImageTintList(mMenuButton, tint);
     }

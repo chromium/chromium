@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB_GROUP;
@@ -17,12 +18,12 @@ import android.util.Pair;
 import android.view.View;
 import android.view.animation.Interpolator;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
@@ -36,6 +37,7 @@ import java.util.HashMap;
  * DefaultItemAnimator}. See
  * https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/com/android/internal/widget/DefaultItemAnimator.java.
  */
+@NullMarked
 public class TabListItemAnimator extends SimpleItemAnimator {
     private static final float ORIGINAL_SCALE = 1.0f;
     private static final float REMOVE_PART_1_FINAL_SCALE = 0.6f;
@@ -140,9 +142,9 @@ public class TabListItemAnimator extends SimpleItemAnimator {
     private final AnimatorHolder mChanges = new AnimatorHolder("Change");
     private final AnimatorHolder mMoves = new AnimatorHolder("Move");
     private final AnimatorHolder mRemovals = new AnimatorHolder("Removal");
-    private final @NonNull ObservableSupplierImpl<Boolean> mIsAnimatorRunningSupplier;
+    private final ObservableSupplierImpl<Boolean> mIsAnimatorRunningSupplier;
 
-    TabListItemAnimator(@NonNull ObservableSupplierImpl<Boolean> isAnimatorRunningSupplier) {
+    TabListItemAnimator(ObservableSupplierImpl<Boolean> isAnimatorRunningSupplier) {
         setRemoveDuration(DEFAULT_REMOVE_DURATION);
         mIsAnimatorRunningSupplier = isAnimatorRunningSupplier;
     }
@@ -444,7 +446,7 @@ public class TabListItemAnimator extends SimpleItemAnimator {
 
     private static boolean shouldUseShrinkCloseAnimation(ViewHolder holder) {
         if (holder instanceof SimpleRecyclerViewAdapter.ViewHolder adapterHolder) {
-            var model = adapterHolder.model;
+            var model = assumeNonNull(adapterHolder.model);
             if (model.get(CARD_TYPE) == TAB || model.get(CARD_TYPE) == TAB_GROUP) {
                 return model.get(USE_SHRINK_CLOSE_ANIMATION);
             }

@@ -28,6 +28,7 @@ import androidx.annotation.StringRes;
 
 import com.google.android.material.button.MaterialButton;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.theme.ThemeModuleUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
@@ -36,6 +37,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A binder class for color items on the color picker view. */
+@NullMarked
 public class ColorPickerItemViewBinder {
     // When a color picker item is not selected, a full circle of color is shown, and the complex
     // layer drawable that is used here is not needed. But when an item becomes selected, the desire

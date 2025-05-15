@@ -14,12 +14,14 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.color.MaterialColors;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
 import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** Utility class that provides theme related attributes for Tab UI. */
+@NullMarked
 public class TabUiThemeProvider {
     private static final String TAG = "TabUiThemeProvider";
 

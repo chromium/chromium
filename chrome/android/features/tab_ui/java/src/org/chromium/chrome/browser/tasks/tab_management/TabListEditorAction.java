@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListEditorActionProperties.DESTROYABLE;
 
 import android.content.res.ColorStateList;
@@ -11,14 +12,16 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -36,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Defines the core action of a {@link TabListEditorMenuItem}. */
+@NullMarked
 public abstract class TabListEditorAction {
     @IntDef({ShowMode.MENU_ONLY, ShowMode.IF_ROOM, ShowMode.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
@@ -267,8 +271,7 @@ public abstract class TabListEditorAction {
         if (shouldHideEditorAfterAction()) {
             mActionDelegate.hideByAction();
             TabUiMetricsHelper.recordSelectionEditorExitMetrics(
-                    TabListEditorExitMetricGroups.CLOSED_AUTOMATICALLY,
-                    tabs.get(0).getContext());
+                    TabListEditorExitMetricGroups.CLOSED_AUTOMATICALLY, tabs.get(0).getContext());
         }
         return true;
     }
@@ -282,10 +285,11 @@ public abstract class TabListEditorAction {
      * @param editorSupportsActionOnRelatedTabs whether the TabListEditor supports actions on
      *     related tabs.
      */
+    @Initializer
     void configure(
-            @NonNull Supplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
-            @NonNull SelectionDelegate<TabListEditorItemSelectionId> selectionDelegate,
-            @NonNull ActionDelegate actionDelegate,
+            Supplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            SelectionDelegate<TabListEditorItemSelectionId> selectionDelegate,
+            ActionDelegate actionDelegate,
             boolean editorSupportsActionOnRelatedTabs) {
         mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
         mSelectionDelegate = selectionDelegate;
@@ -298,13 +302,13 @@ public abstract class TabListEditorAction {
         return mModel;
     }
 
-    protected @NonNull TabGroupModelFilter getTabGroupModelFilter() {
+    protected TabGroupModelFilter getTabGroupModelFilter() {
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         assert filter != null;
         return filter;
     }
 
-    protected @NonNull ActionDelegate getActionDelegate() {
+    protected ActionDelegate getActionDelegate() {
         assert mActionDelegate != null;
         return mActionDelegate;
     }
@@ -396,11 +400,15 @@ public abstract class TabListEditorAction {
                     tabCount++;
                 }
             } else if (itemId.isTabGroupSyncId()) {
+                Profile profile = assumeNonNull(tabGroupModelFilter.getTabModel().getProfile());
                 TabGroupSyncService tabGroupSyncService =
-                        TabGroupSyncServiceFactory.getForProfile(
-                                tabGroupModelFilter.getTabModel().getProfile());
-                SavedTabGroup savedTabGroup =
-                        tabGroupSyncService.getGroup(itemId.getTabGroupSyncId());
+                        TabGroupSyncServiceFactory.getForProfile(profile);
+                assumeNonNull(tabGroupSyncService);
+
+                String syncId = itemId.getTabGroupSyncId();
+                if (syncId == null) continue;
+
+                SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(syncId);
                 if (savedTabGroup != null) {
                     tabCount += savedTabGroup.savedTabs.size();
                 }

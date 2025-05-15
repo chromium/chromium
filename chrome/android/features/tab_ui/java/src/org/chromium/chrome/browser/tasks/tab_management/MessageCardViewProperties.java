@@ -11,6 +11,7 @@ import android.view.View.OnClickListener;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -19,6 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** List of properties used by TabGridSecondaryItem. */
+@NullMarked
 class MessageCardViewProperties {
     /** An enum interface to specify where the message card can be shown. */
     @IntDef({MessageCardScope.REGULAR, MessageCardScope.INCOGNITO, MessageCardScope.BOTH})

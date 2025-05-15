@@ -17,9 +17,10 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IdRes;
-import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.tab_ui.R;
 
 import java.util.Arrays;
@@ -28,6 +29,7 @@ import java.util.Arrays;
  * A quarter of the combined start image element for tab group rows. It should display in one of the
  * corners of the start image element. The parent of this must be a ConstraintLayout.
  */
+@NullMarked
 public class TabGroupFaviconQuarter extends FrameLayout {
     private GradientDrawable mBackground;
     private ImageView mImageView;

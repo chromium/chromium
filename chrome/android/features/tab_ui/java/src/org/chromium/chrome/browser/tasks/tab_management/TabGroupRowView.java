@@ -19,10 +19,11 @@ import android.widget.Space;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 import androidx.annotation.PluralsRes;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesView;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
@@ -40,11 +41,12 @@ import java.time.Clock;
 import java.util.Objects;
 
 /** Displays a horizontal row for a single tab group. */
+@NullMarked
 public class TabGroupRowView extends LinearLayout {
 
     /** Represents the title data for the tab group row. */
     public static class TabGroupRowViewTitleData {
-        public final String title;
+        public final @Nullable String title;
         public final int numTabs;
         public final @PluralsRes int rowAccessibilityTextResId;
 
@@ -55,7 +57,7 @@ public class TabGroupRowView extends LinearLayout {
          *     describes the row.
          */
         public TabGroupRowViewTitleData(
-                String title, int numTabs, @PluralsRes int rowAccessibilityTextResId) {
+                @Nullable String title, int numTabs, @PluralsRes int rowAccessibilityTextResId) {
             this.title = title;
             this.numTabs = numTabs;
             this.rowAccessibilityTextResId = rowAccessibilityTextResId;

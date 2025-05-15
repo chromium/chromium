@@ -12,6 +12,7 @@ import android.view.View.AccessibilityDelegate;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
@@ -28,6 +29,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** List of properties to designate information about a single tab. */
+@NullMarked
 public class TabProperties {
     /** IDs for possible types of UI in the tab list. */
     @IntDef({

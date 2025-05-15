@@ -9,10 +9,10 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Coordinator for the color picker interface. */
+@NullMarked
 public class ColorPickerCoordinator implements ColorPicker {
     private final ColorPickerContainer mContainerView;
     private final ColorPickerMediator mMediator;
@@ -50,9 +51,9 @@ public class ColorPickerCoordinator implements ColorPicker {
      * @param onColorItemClicked The runnable for performing an action on each color click event.
      */
     public ColorPickerCoordinator(
-            @NonNull Context context,
-            @NonNull List<Integer> colors,
-            @NonNull View colorPickerView,
+            Context context,
+            List<Integer> colors,
+            View colorPickerView,
             @ColorPickerType int colorPickerType,
             boolean isIncognito,
             @ColorPickerLayoutType int layoutType,

@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegate;
 import org.chromium.chrome.tab_ui.R;
@@ -17,6 +18,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import java.util.List;
 
 /** TinkerTank action for the {@link TabListEditorMenu}. */
+@NullMarked
 public class TabListEditorTinkerTankAction extends TabListEditorAction {
     private final Activity mActivity;
 

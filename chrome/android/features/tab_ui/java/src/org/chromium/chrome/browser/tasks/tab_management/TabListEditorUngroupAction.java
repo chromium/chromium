@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.tab_ui.R;
@@ -16,6 +17,7 @@ import org.chromium.chrome.tab_ui.R;
 import java.util.List;
 
 /** Ungroup action for the {@link TabListEditorMenu}. */
+@NullMarked
 public class TabListEditorUngroupAction extends TabListEditorAction {
     /**
      * Create an action for ungrouping tabs.

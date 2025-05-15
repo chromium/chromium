@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherIphController;
@@ -18,6 +19,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
 /** One of the concrete {@link MessageService} that only serves {@link MessageType.IPH}. */
+@NullMarked
 public class IphMessageService extends MessageService {
     private static boolean sSkipIphInTests = true;
 

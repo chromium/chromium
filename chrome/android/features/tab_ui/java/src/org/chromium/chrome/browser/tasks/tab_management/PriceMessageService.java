@@ -5,16 +5,17 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
+import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData.PriceDrop;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -23,6 +24,7 @@ import java.util.Objects;
 /**
  * One of the concrete {@link MessageService} that only serves {@link MessageType#PRICE_MESSAGE}.
  */
+@NullMarked
 public class PriceMessageService extends MessageService {
     private static final String WELCOME_MESSAGE_METRICS_IDENTIFIER = "PriceWelcomeMessageCard";
 
@@ -39,9 +41,9 @@ public class PriceMessageService extends MessageService {
     /** Provides the binding tab ID and the price drop of the binding tab. */
     static class PriceTabData {
         public final int bindingTabId;
-        public final ShoppingPersistedTabData.PriceDrop priceDrop;
+        public final PriceDrop priceDrop;
 
-        PriceTabData(int bindingTabId, ShoppingPersistedTabData.PriceDrop priceDrop) {
+        PriceTabData(int bindingTabId, PriceDrop priceDrop) {
             this.bindingTabId = bindingTabId;
             this.priceDrop = priceDrop;
         }
@@ -91,7 +93,7 @@ public class PriceMessageService extends MessageService {
     /** This is the data type that this MessageService is serving to its Observer. */
     static class PriceMessageData implements MessageData {
         private final int mType;
-        private final ShoppingPersistedTabData.PriceDrop mPriceDrop;
+        private final @Nullable PriceDrop mPriceDrop;
         private final MessageCardView.ReviewActionProvider mReviewActionProvider;
         private final MessageCardView.DismissActionProvider mDismissActionProvider;
 
@@ -116,9 +118,9 @@ public class PriceMessageService extends MessageService {
 
         /**
          * @return The {@link MessageCardViewProperties#PRICE_DROP} for the associated
-         *         PRICE_MESSAGE.
+         *     PRICE_MESSAGE.
          */
-        ShoppingPersistedTabData.PriceDrop getPriceDrop() {
+        @Nullable PriceDrop getPriceDrop() {
             return mPriceDrop;
         }
 
@@ -146,7 +148,7 @@ public class PriceMessageService extends MessageService {
     private final Supplier<PriceWelcomeMessageReviewActionProvider>
             mPriceWelcomeMessageReviewActionProviderSupplier;
 
-    private PriceTabData mPriceTabData;
+    private @Nullable PriceTabData mPriceTabData;
 
     PriceMessageService(
             Profile profile,
@@ -235,7 +237,7 @@ public class PriceMessageService extends MessageService {
         }
     }
 
-    PriceTabData getPriceTabDataForTesting() {
+    @Nullable PriceTabData getPriceTabDataForTesting() {
         return mPriceTabData;
     }
 }

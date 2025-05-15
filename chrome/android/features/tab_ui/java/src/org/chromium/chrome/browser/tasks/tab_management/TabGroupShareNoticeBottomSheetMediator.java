@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupShareNoticeBottomSheetCoordinator.TabGroupShareNoticeBottomSheetCoordinatorDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -17,6 +18,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Mediator class for the Shared Tab Group Notice Bottom Sheet. This mediator contains the logic for
  * bottom sheet user interactions.
  */
+@NullMarked
 public class TabGroupShareNoticeBottomSheetMediator {
     private final BottomSheetController mBottomSheetController;
     private final TabGroupShareNoticeBottomSheetCoordinatorDelegate mDelegate;

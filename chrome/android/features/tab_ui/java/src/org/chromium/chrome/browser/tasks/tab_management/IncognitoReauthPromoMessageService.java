@@ -11,13 +11,13 @@ import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -33,10 +33,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Message service class to show the Incognito re-auth promo inside the incognito tab switcher. */
+@NullMarked
 public class IncognitoReauthPromoMessageService extends MessageService
         implements PauseResumeWithNativeObserver {
     /** TODO(crbug.com/40056462): Remove this when we support all the Android versions. */
-    public static Boolean sIsPromoEnabledForTesting;
+    public static @Nullable Boolean sIsPromoEnabledForTesting;
 
     /**
      * For instrumentation tests, we don't have the supported infrastructure to perform native
@@ -44,12 +45,12 @@ public class IncognitoReauthPromoMessageService extends MessageService
      * simply call the next set of actions which would have been call, if the re-auth was indeed
      * successful.
      */
-    private static Boolean sTriggerReviewActionWithoutReauthForTesting;
+    private static @Nullable Boolean sTriggerReviewActionWithoutReauthForTesting;
 
     @VisibleForTesting public final int mMaxPromoMessageCount = 10;
 
     /** The re-auth manager that is used to trigger the re-authentication. */
-    private final @NonNull IncognitoReauthManager mIncognitoReauthManager;
+    private final IncognitoReauthManager mIncognitoReauthManager;
 
     /** This is the data type that this MessageService is serving to its Observer. */
     static class IncognitoReauthMessageData implements MessageData {
@@ -57,8 +58,8 @@ public class IncognitoReauthPromoMessageService extends MessageService
         private final MessageCardView.DismissActionProvider mDismissActionProvider;
 
         IncognitoReauthMessageData(
-                @NonNull MessageCardView.ReviewActionProvider reviewActionProvider,
-                @NonNull MessageCardView.DismissActionProvider dismissActionProvider) {
+                MessageCardView.ReviewActionProvider reviewActionProvider,
+                MessageCardView.DismissActionProvider dismissActionProvider) {
             mReviewActionProvider = reviewActionProvider;
             mDismissActionProvider = dismissActionProvider;
         }
@@ -72,17 +73,17 @@ public class IncognitoReauthPromoMessageService extends MessageService
         }
     }
 
-    private final @NonNull Profile mProfile;
-    private final @NonNull Context mContext;
-    private final @NonNull SharedPreferencesManager mSharedPreferencesManager;
-    private final @NonNull SnackbarManager mSnackBarManager;
-    private final @NonNull ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private final Profile mProfile;
+    private final Context mContext;
+    private final SharedPreferencesManager mSharedPreferencesManager;
+    private final SnackbarManager mSnackBarManager;
+    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     /**
      * A boolean to indicate when we had temporarily invalidated the promo card due to change of
-     * Android level settings, which is needed to show the promo card. This is set to true in
-     * such cases, where we need to re-prepare the message, in order for it to be shown again when
-     * the Android level settings are on again. See #onResumeWithNative method.
+     * Android level settings, which is needed to show the promo card. This is set to true in such
+     * cases, where we need to re-prepare the message, in order for it to be shown again when the
+     * Android level settings are on again. See #onResumeWithNative method.
      */
     private boolean mShouldTriggerPrepareMessage;
 
@@ -119,12 +120,12 @@ public class IncognitoReauthPromoMessageService extends MessageService
      */
     IncognitoReauthPromoMessageService(
             int mMessageType,
-            @NonNull Profile profile,
-            @NonNull Context context,
-            @NonNull SharedPreferencesManager sharedPreferencesManager,
-            @NonNull IncognitoReauthManager incognitoReauthManager,
-            @NonNull SnackbarManager snackbarManager,
-            @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher) {
+            Profile profile,
+            Context context,
+            SharedPreferencesManager sharedPreferencesManager,
+            IncognitoReauthManager incognitoReauthManager,
+            SnackbarManager snackbarManager,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher) {
         super(mMessageType);
         mProfile = profile;
         mContext = context;

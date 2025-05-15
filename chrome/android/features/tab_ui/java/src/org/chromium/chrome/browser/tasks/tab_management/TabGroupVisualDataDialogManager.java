@@ -4,21 +4,26 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.ComponentDialog;
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.DialogTitle;
 
 import org.chromium.base.Token;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -48,6 +53,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /** Manager of the logic to trigger a modal dialog for setting tab group visual data. */
+@NullMarked
 public class TabGroupVisualDataDialogManager {
     /** Type of the dialog to be created based on expected use case. */
     @IntDef({
@@ -68,7 +74,7 @@ public class TabGroupVisualDataDialogManager {
     // #showDialog call due to the possibility of a double show call being triggered for the
     // didCreateNewGroup observer and a fix that tackles that. Once the root cause has been fixed,
     // revert this to an instanced model within the function call for a proper lifecycle.
-    private PropertyModel mModel;
+    private @Nullable PropertyModel mModel;
     private ModalDialogManagerObserver mModalDialogManagerObserver;
     private View mCustomView;
     private TabGroupVisualDataTextInputLayout mTextInputLayout;
@@ -89,8 +95,8 @@ public class TabGroupVisualDataDialogManager {
      * @param dialogTitleRes The resource id of the string to be used for the dialog title.
      */
     public TabGroupVisualDataDialogManager(
-            @NonNull Context context,
-            @NonNull ModalDialogManager modalDialogManager,
+            Context context,
+            ModalDialogManager modalDialogManager,
             @DialogType int dialogType,
             @StringRes int dialogTitleRes) {
         mContext = context;
@@ -106,6 +112,7 @@ public class TabGroupVisualDataDialogManager {
      * @param filter The current TabGroupModelFilter that this group is modified on.
      * @param dialogController The dialog controller for the modal dialog's actions.
      */
+    @Initializer
     public void showDialog(
             Token tabGroupId,
             TabGroupModelFilter filter,
@@ -114,6 +121,11 @@ public class TabGroupVisualDataDialogManager {
         // Early exit the second attempt so that we don't show another dialog and cause the
         // dialog controller and user actions to freeze when attempting to navigate out.
         if (mModel != null) {
+            assumeNonNull(mModalDialogManagerObserver);
+            assumeNonNull(mCustomView);
+            assumeNonNull(mTextInputLayout);
+            assumeNonNull(mInitialGroupTitle);
+            assumeNonNull(mColorPickerCoordinator);
             return;
         }
 
@@ -164,18 +176,18 @@ public class TabGroupVisualDataDialogManager {
         mModalDialogManagerObserver =
                 new ModalDialogManagerObserver() {
                     @Override
-                    public void onDialogCreated(PropertyModel model, ComponentDialog dialog) {
+                    public void onDialogCreated(
+                            PropertyModel model, @Nullable ComponentDialog dialog) {
                         // Ensure that this dialog's model is the one that's being acted upon.
                         if (model == mModel) {
                             // Focus the edit text and display the keyboard on dialog showing.
                             editTextView.requestFocus();
                             // WHile showing the keyboard, prevent resizing of the modal dialog
                             // which could cause UI issues by setting the window to pan only.
-                            dialog.getWindow()
-                                    .setSoftInputMode(
-                                            WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
-                                                    | WindowManager.LayoutParams
-                                                            .SOFT_INPUT_STATE_VISIBLE);
+                            Window window = assumeNonNull(assumeNonNull(dialog).getWindow());
+                            window.setSoftInputMode(
+                                    WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
+                                            | WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
                             mModalDialogManager.removeObserver(this);
                         }
                     }
@@ -230,7 +242,7 @@ public class TabGroupVisualDataDialogManager {
     private void setDescriptionText(TabGroupModelFilter filter) {
         if (mDialogType == DialogType.TAB_GROUP_CREATION) {
             TabModel tabModel = filter.getTabModel();
-            Profile profile = tabModel.getProfile();
+            Profile profile = assumeNonNull(tabModel.getProfile());
             TextView descriptionView =
                     mCustomView.findViewById(R.id.visual_data_dialog_description);
             Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
@@ -242,7 +254,7 @@ public class TabGroupVisualDataDialogManager {
                             FeatureConstants.TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE)) {
                 mTracker = tracker;
                 descriptionView.setVisibility(View.VISIBLE);
-                SyncService syncService = SyncServiceFactory.getForProfile(profile);
+                SyncService syncService = assumeNonNull(SyncServiceFactory.getForProfile(profile));
                 boolean syncingTabGroups =
                         syncService.getActiveDataTypes().contains(DataType.SAVED_TAB_GROUP);
 
@@ -261,6 +273,7 @@ public class TabGroupVisualDataDialogManager {
         }
     }
 
+    @EnsuresNonNull("mModel")
     private void setModel(ModalDialogProperties.Controller dialogController) {
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)

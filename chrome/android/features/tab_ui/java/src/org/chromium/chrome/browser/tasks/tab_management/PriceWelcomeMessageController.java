@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** An interface to control price welcome message in grid tab switcher. */
+@NullMarked
 interface PriceWelcomeMessageController {
     /**
      * Remove the price welcome message item in the model list. Right now this is used when its
