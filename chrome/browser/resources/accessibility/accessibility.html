@@ -121,57 +121,7 @@ found in the LICENSE file.
         <span id="active_at_is_screen_reader"></span>
       </div>
     </div>
-    </div>
-    <div class="column">
-      <h2>Accessibility tree viewing options:</h2>
-      <div class="api-type-wrapper">
-        <label>API type shown in the tree:
-          <select id="apiType">
-            <option>Error: Not able to load options</option>
-          </select>
-          <label>
-      </div>
-      <h3>Filters:</h3>
-      <p>
-        Use filters to match the attributes and attribute values you want
-        included in the output. Filters can contain simple wildcards (*) only,
-        they're not regular expressions. Attributes are separated by spaces.
-      </p>
-
-      <div>
-        <label for="filter-allow">
-          Allow:
-        </label>
-        <input id="filter-allow" aria-describedby="allow_secondary">
-      </div>
-      <div id="allow_secondary" class="secondary">
-        Include these attributes. Empty attributes are skipped.
-      </div>
-
-      <div>
-        <label for="filter-allow-empty">
-          Allow empty:
-        </label>
-        <input id="filter-allow-empty"
-               aria-describedby="allow-empty_secondary">
-      </div>
-      <div id="allow-empty_secondary" class="secondary">
-        Include these attributes, even if they are empty.
-      </div>
-
-      <div>
-        <label for="filter-deny">
-          Deny:
-        </label>
-        <input id="filter-deny" aria-describedby="deny_secondary">
-      </div>
-      <div id="deny_secondary" class="secondary">
-        Exclude these attributes.
-      </div>
-    </div>
   </div>
-
-  <div class="columns">
     <div class="column">
       <h2>
         Locking the accessibility mode from being changed by other
@@ -223,6 +173,56 @@ found in the LICENSE file.
         To disable accessibility, run Chrome with this flag:
         <pre>--disable-renderer-accessibility</pre>
       </p>
+    </div>
+  </div>
+
+  <div class="columns">
+    <div class="column">
+      <h2>Accessibility tree viewing options:</h2>
+      <div class="api-type-wrapper">
+        <label>API type shown in the tree:
+          <select id="apiType">
+            <option>Error: Not able to load options</option>
+          </select>
+          <label>
+      </div>
+      <h3>Filters:</h3>
+      <p>
+        Use filters to match the attributes and attribute values you want
+        included in the output. Filters can contain simple wildcards (*) only,
+        they're not regular expressions. Attributes are separated by spaces.
+      </p>
+
+      <div>
+        <label for="filter-allow">
+          Allow:
+        </label>
+        <input id="filter-allow" aria-describedby="allow_secondary">
+      </div>
+      <div id="allow_secondary" class="secondary">
+        Include these attributes. Empty attributes are skipped.
+      </div>
+
+      <div>
+        <label for="filter-allow-empty">
+          Allow empty:
+        </label>
+        <input id="filter-allow-empty"
+               aria-describedby="allow-empty_secondary">
+      </div>
+      <div id="allow-empty_secondary" class="secondary">
+        Include these attributes, even if they are empty.
+      </div>
+
+      <div>
+        <label for="filter-deny">
+          Deny:
+        </label>
+        <input id="filter-deny" aria-describedby="deny_secondary">
+      </div>
+      <div id="deny_secondary" class="secondary">
+        Exclude these attributes.
+      </div>
     </div>
   </div>
 
