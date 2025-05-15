@@ -21,7 +21,6 @@ class ScopedSSLKeyConverter {
   ~ScopedSSLKeyConverter();
 
  private:
-  const bool supports_unexportable_;
   std::optional<crypto::ScopedFakeUnexportableKeyProvider>
       unexportable_provider_;
   std::optional<crypto::ScopedNullUnexportableKeyProvider>

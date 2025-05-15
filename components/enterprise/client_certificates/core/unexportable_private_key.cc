@@ -21,7 +21,7 @@ UnexportablePrivateKey::UnexportablePrivateKey(
     std::unique_ptr<crypto::UnexportableSigningKey> key,
     PrivateKeySource key_source)
     : PrivateKey(key_source,
-                 SSLKeyConverter::Get()->ConvertUnexportableKeySlowly(*key)),
+                 SSLPrivateKeyFromUnexportableSigningKeySlowly(*key)),
       key_(std::move(key)) {
   CHECK(key_);
 }
