@@ -299,16 +299,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordBubble.AddUsernameBubble.UsernameAdded"
-    enum="BooleanYesNo" expires_after="2025-06-08">
-  <owner>sygiet@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Whether the user added username and clicked confirmation button on the
-    AddUsername bubble, after successful submission of the generated password.
-  </summary>
-</histogram>
-
 <histogram name="PasswordBubble.BiometricAuthenticationPromo.AcceptClicked"
     enum="BooleanSuccess" expires_after="2025-06-29">
   <owner>vsemeniuk@google.com</owner>
