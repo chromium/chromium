@@ -123,6 +123,12 @@ BASE_FEATURE(kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement,
              "AutofillEnableCvcStorageAndFillingStandaloneFormEnhancement",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, card flat rate benefit will not be shown on merchants in the
+// blocklist.
+BASE_FEATURE(kAutofillEnableFlatRateCardBenefitsBlocklist,
+             "AutofillEnableFlatRateCardBenefitsBlocklist",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, flat rate card benefits sourced from Curinos will be shown in
 // Payments Autofill UI.
 BASE_FEATURE(kAutofillEnableFlatRateCardBenefitsFromCurinos,
