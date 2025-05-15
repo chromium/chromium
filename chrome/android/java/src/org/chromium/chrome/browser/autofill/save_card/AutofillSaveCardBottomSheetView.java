@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill.save_card;
 
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +14,11 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.ui.widget.LoadingView;
 
+@NullMarked
 /*package*/ class AutofillSaveCardBottomSheetView {
     /** The view that contains all other views. */
     final ViewGroup mContentView;
