@@ -82,7 +82,7 @@ void MoveGroupAcrossWindows(Browser* source_browser,
     return;
   }
 
-  std::unique_ptr<DetachedTabGroup> detached_group =
+  std::unique_ptr<DetachedTabCollection> detached_group =
       source_browser->tab_strip_model()->DetachTabGroupForInsertion(group_id);
   target_browser->tab_strip_model()->InsertDetachedTabGroupAt(
       std::move(detached_group), to_index);

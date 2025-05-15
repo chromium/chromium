@@ -1169,7 +1169,7 @@ void TabDragController::AttachToNewContext(
     TabDragContext* attached_context,
     std::unique_ptr<TabDragController> controller,
     std::vector<std::variant<std::unique_ptr<tabs::TabModel>,
-                             std::unique_ptr<DetachedTabGroup>>>
+                             std::unique_ptr<DetachedTabCollection>>>
         owned_tabs_and_groups) {
   // We should already have detached by the time we get here.
   CHECK(!attached_context_);
@@ -1227,7 +1227,7 @@ void TabDragController::AttachToNewContext(
       index++;
     } else {
       auto group = std::move(
-          *std::get_if<std::unique_ptr<DetachedTabGroup>>(&tab_or_group));
+          *std::get_if<std::unique_ptr<DetachedTabCollection>>(&tab_or_group));
       // If it's a group - we add it to the tabstrip. This will add all the
       // tabs.
       const gfx::Range group_indices =
@@ -1279,7 +1279,7 @@ void TabDragController::AttachImpl() {
 
 std::tuple<std::unique_ptr<TabDragController>,
            std::vector<std::variant<std::unique_ptr<tabs::TabModel>,
-                                    std::unique_ptr<DetachedTabGroup>>>>
+                                    std::unique_ptr<DetachedTabCollection>>>>
 TabDragController::Detach(ReleaseCapture release_capture) {
   TRACE_EVENT1("views", "TabDragController::Detach", "release_capture",
                release_capture);
@@ -1326,7 +1326,7 @@ TabDragController::Detach(ReleaseCapture release_capture) {
       attached_model->GetGroupsDestroyedFromRemovingIndices(dragged_indices);
 
   std::vector<std::variant<std::unique_ptr<tabs::TabModel>,
-                           std::unique_ptr<DetachedTabGroup>>>
+                           std::unique_ptr<DetachedTabCollection>>>
       owned_tabs_and_groups;
   for (TabDragData& tab_drag_datum : drag_data_.tab_drag_data_) {
     const int index =

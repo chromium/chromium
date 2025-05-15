@@ -1135,7 +1135,7 @@ void MoveGroupToNewWindow(Browser* browser, tab_groups::TabGroupId group) {
         Browser::Create(Browser::CreateParams(browser->profile(), true));
   }
 
-  std::unique_ptr<DetachedTabGroup> detached_group =
+  std::unique_ptr<DetachedTabCollection> detached_group =
       browser->tab_strip_model()->DetachTabGroupForInsertion(group);
   new_browser->tab_strip_model()->InsertDetachedTabGroupAt(
       std::move(detached_group), 0);
@@ -1260,7 +1260,7 @@ void MoveGroupToExistingWindow(Browser* source,
                                Browser* target,
                                tab_groups::TabGroupId group) {
   CHECK(source->tab_strip_model()->group_model()->ContainsTabGroup(group));
-  std::unique_ptr<DetachedTabGroup> detached_group =
+  std::unique_ptr<DetachedTabCollection> detached_group =
       source->tab_strip_model()->DetachTabGroupForInsertion(group);
   target->tab_strip_model()->InsertDetachedTabGroupAt(std::move(detached_group),
                                                       0);

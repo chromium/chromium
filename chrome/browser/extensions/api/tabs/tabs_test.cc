@@ -1765,7 +1765,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TestGroupDetachedAndReInserted) {
   TestEventRouterObserver event_observer(
       EventRouter::Get(browser()->profile()));
 
-  std::unique_ptr<DetachedTabGroup> detached_group =
+  std::unique_ptr<DetachedTabCollection> detached_group =
       browser()->tab_strip_model()->DetachTabGroupForInsertion(group);
 
   event_observer.WaitForEventWithName(api::tabs::OnUpdated::kEventName);

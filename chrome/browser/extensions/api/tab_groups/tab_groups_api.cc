@@ -398,7 +398,7 @@ bool TabGroupsMoveFunction::MoveTabGroupBetweenBrowsers(
   }
 
   TabStripModel* source_tab_strip = source_browser->tab_strip_model();
-  std::unique_ptr<DetachedTabGroup> detached_group =
+  std::unique_ptr<DetachedTabCollection> detached_group =
       source_tab_strip->DetachTabGroupForInsertion(group);
   target_tab_strip->InsertDetachedTabGroupAt(std::move(detached_group),
                                              new_index);

@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, DetachAndReInsertGroup) {
 
   tab_groups::TabGroupId group = tab_strip_model()->AddToNewGroup({0, 1});
 
-  std::unique_ptr<DetachedTabGroup> detached_group =
+  std::unique_ptr<DetachedTabCollection> detached_group =
       tab_strip_model()->DetachTabGroupForInsertion(group);
 
   EXPECT_EQ(tab_strip()->GetTabCount(), 1);

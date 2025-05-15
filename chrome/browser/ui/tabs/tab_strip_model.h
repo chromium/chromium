@@ -73,17 +73,20 @@ class TabGroupModelFactory {
   std::unique_ptr<TabGroupModel> Create(TabGroupController* controller);
 };
 
-// Holds the collection object for the group. Have DetachedTabGroup object as a
-// container of the collection_ so client does not need to worry or deal with
-// the collection object.
-struct DetachedTabGroup {
-  DetachedTabGroup(std::unique_ptr<tabs::TabGroupTabCollection> collection,
-                   std::optional<int> active_index);
-  DetachedTabGroup(const DetachedTabGroup&) = delete;
-  DetachedTabGroup& operator=(const DetachedTabGroup&) = delete;
-  ~DetachedTabGroup();
-  DetachedTabGroup(DetachedTabGroup&&);
-  std::unique_ptr<tabs::TabGroupTabCollection> collection_;
+// Have DetachedTabCollection object as a container of the `collection_` so
+// client does not need to worry or deal with the collection object.
+struct DetachedTabCollection {
+  DetachedTabCollection(
+      std::variant<std::unique_ptr<tabs::TabGroupTabCollection>,
+                   std::unique_ptr<tabs::SplitTabCollection>> collection,
+      std::optional<int> active_index);
+  DetachedTabCollection(const DetachedTabCollection&) = delete;
+  DetachedTabCollection& operator=(const DetachedTabCollection&) = delete;
+  ~DetachedTabCollection();
+  DetachedTabCollection(DetachedTabCollection&&);
+  std::variant<std::unique_ptr<tabs::TabGroupTabCollection>,
+               std::unique_ptr<tabs::SplitTabCollection>>
+      collection_;
   // Store the index of tab that was active in the detached group.
   std::optional<int> active_index_ = std::nullopt;
 };
@@ -278,12 +281,13 @@ class TabStripModel : public TabGroupController {
   // Removes the group collection from the collection hierarchy and passes it to
   // the client. The client can re-insert into another tabstrip using
   // `InsertDetachedGroupAt` without destroying the group.
-  std::unique_ptr<DetachedTabGroup> DetachTabGroupForInsertion(
+  std::unique_ptr<DetachedTabCollection> DetachTabGroupForInsertion(
       const tab_groups::TabGroupId group_id);
 
   // Inserts a detached tab group into the tabstrip starting at `index`.
-  gfx::Range InsertDetachedTabGroupAt(std::unique_ptr<DetachedTabGroup> group,
-                                      int index);
+  gfx::Range InsertDetachedTabGroupAt(
+      std::unique_ptr<DetachedTabCollection> group,
+      int index);
 
   // Closes the WebContents at the specified index. This causes the
   // WebContents to be destroyed, but it may not happen immediately.
@@ -876,11 +880,11 @@ class TabStripModel : public TabGroupController {
       TabStripModelChange::RemoveReason web_contents_remove_reason,
       tabs::TabInterface::DetachReason tab_detach_reason);
 
-  std::unique_ptr<DetachedTabGroup> DetachTabGroupImpl(
+  std::unique_ptr<DetachedTabCollection> DetachTabGroupImpl(
       const tab_groups::TabGroupId& group);
 
   gfx::Range InsertDetachedTabGroupImpl(
-      std::unique_ptr<DetachedTabGroup> detached_group,
+      std::unique_ptr<DetachedTabCollection> detached_group,
       int index);
 
   // We batch send notifications. This has two benefits:

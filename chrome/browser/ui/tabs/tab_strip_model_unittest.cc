@@ -905,10 +905,14 @@ TEST_F(TabStripModelTest, TestDetachGroupForInsertion) {
 
   tab_groups::TabGroupId group_id =
       tabstrip()->AddToNewGroup(std::vector<int>{1, 2});
-  std::unique_ptr<DetachedTabGroup> detached_group =
+  std::unique_ptr<DetachedTabCollection> detached_group =
       tabstrip()->DetachTabGroupForInsertion(group_id);
+  tabs::TabGroupTabCollection* group_collection =
+      std::get<std::unique_ptr<tabs::TabGroupTabCollection>>(
+          detached_group->collection_)
+          .get();
 
-  EXPECT_EQ(detached_group->collection_->TabCountRecursive(), 2u);
+  EXPECT_EQ(group_collection->TabCountRecursive(), 2u);
   EXPECT_FALSE(tabstrip()->group_model()->ContainsTabGroup(group_id));
   EXPECT_EQ(tabstrip()->count(), 4);
 
@@ -939,7 +943,7 @@ TEST_F(TabStripModelTest, TestDetachGroupNewSelection) {
   tabstrip()->ActivateTabAt(2);
   tabstrip()->ForgetAllOpeners();
   tabstrip()->SetOpenerOfWebContentsAt(0, tabstrip()->GetWebContentsAt(1));
-  std::unique_ptr<DetachedTabGroup> detached_group =
+  std::unique_ptr<DetachedTabCollection> detached_group =
       tabstrip()->DetachTabGroupForInsertion(group_id);
 
   EXPECT_EQ(tabstrip()->active_index(), 0);
@@ -1003,10 +1007,14 @@ TEST_F(TabStripModelTest, TestDetachAndInsertGroupWithSplit) {
   split_tabs::SplitTabId split_id =
       tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabLayout::kVertical);
 
-  std::unique_ptr<DetachedTabGroup> detached_group =
+  std::unique_ptr<DetachedTabCollection> detached_group =
       tabstrip()->DetachTabGroupForInsertion(group_id);
+  tabs::TabGroupTabCollection* group_collection =
+      std::get<std::unique_ptr<tabs::TabGroupTabCollection>>(
+          detached_group->collection_)
+          .get();
 
-  EXPECT_EQ(detached_group->collection_->TabCountRecursive(), 3u);
+  EXPECT_EQ(group_collection->TabCountRecursive(), 3u);
   EXPECT_FALSE(tabstrip()->group_model()->ContainsTabGroup(group_id));
   EXPECT_EQ(tabstrip()->count(), 2);
 
@@ -1038,7 +1046,7 @@ TEST_F(TabStripModelTest, InsertDetachedGroupSelectionObserver) {
   tab_groups::TabGroupId group_id =
       tabstrip()->AddToNewGroup(std::vector<int>{1, 2});
   tabstrip()->ActivateTabAt(1);
-  std::unique_ptr<DetachedTabGroup> detached_group =
+  std::unique_ptr<DetachedTabCollection> detached_group =
       tabstrip()->DetachTabGroupForInsertion(group_id);
 
   tabs::TabInterface* active_tab = tabstrip()->GetActiveTab();
