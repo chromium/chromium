@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Once a transform has been attached, it cannot be reused elsewhere.
+  assert_throws_dom: set a used transform 3 function "() => transceiver2.sender.transform = senderTransform" did not throw
+Harness: the test ran to completion.
+

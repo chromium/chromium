@@ -7616,6 +7616,13 @@
      }
     },
     "canvas": {
+     "canvas-sibling-index-crash.html": [
+      "506a77ebad50c2dd0e292bc7c1d20bb13d16080a",
+      [
+       null,
+       {}
+      ]
+     ],
      "element": {
       "manual": {
        "filters": {
@@ -129885,6 +129892,19 @@
        {}
       ]
      ],
+     "font-family-name-000.xht": [
+      "4eee0d232337fd068e1dc1c8fedf895323bcc59c",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-family-name-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "font-family-name-001.xht": [
       "5bb7a66ebd54dbe9dc78219f77c441654cd27818",
       [
@@ -130185,7 +130205,7 @@
       ]
      ],
      "font-family-name-024.xht": [
-      "20aec304fa45f0cb4f14e56a6cd83046f1c7b0ed",
+      "6630cfd6090f8acced5009002db859565379c5da",
       [
        null,
        [
@@ -133806,6 +133826,19 @@
        {}
       ]
      ],
+     "test-synthetic-bold.html": [
+      "c2337c0a3ce538a573eddec7e75ea191bc394ae0",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/test-synthetic-bold-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
      "test-synthetic-italic-2.html": [
       "6e8910e22c86c309de1403060f9a5061dbbf571c",
       [
@@ -133827,6 +133860,19 @@
         [
          "/css/css-fonts/test-synthetic-italic-3-ref.html",
          "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "test-synthetic-italic.html": [
+      "3f6764ecfa3696310b1395037afbd6aa9c38b853",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/test-synthetic-italic-notref.html",
+         "!="
         ]
        ],
        {}
@@ -134044,6 +134090,21 @@
      ]
     },
     "css-gaps": {
+     "agnostic": {
+      "gap-decorations-003.html": [
+       "2ec4a45beb71f8a0acacb2d14ca5f2f092b13094",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/agnostic/gap-decorations-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ]
+     },
      "flex": {
       "flex-gap-decorations-001.html": [
        "b32e2f13d8cdb39c12e26423f882734f2f5bf4fd",
@@ -325291,6 +325352,22 @@
      "b8a1d0a6098492b615dfae8a1e5e44ade8a2f3db",
      []
     ],
+    "cookieListItem_attributes.https.any-expected.txt": [
+     "4113e2b1cf92a9d65c3349bf8bcf8bfa586a2193",
+     []
+    ],
+    "cookieListItem_attributes.https.any.serviceworker-expected.txt": [
+     "4113e2b1cf92a9d65c3349bf8bcf8bfa586a2193",
+     []
+    ],
+    "cookieStore_delete_arguments.https.any-expected.txt": [
+     "15da17ac05c6ec89748e9218bf26ae4e57696bad",
+     []
+    ],
+    "cookieStore_delete_arguments.https.any.serviceworker-expected.txt": [
+     "c16c1930903402eef917886549bc13454526415b",
+     []
+    ],
     "cookieStore_getAll_arguments.https.any-expected.txt": [
      "31e460be1737dc8d313184a6335a6e95c4533f0c",
      []
@@ -325309,6 +325386,14 @@
     ],
     "cookieStore_in_detached_frame.https-expected.txt": [
      "b7d01ee3a8a66009856be060145c8633f6782001",
+     []
+    ],
+    "cookieStore_set_arguments.https.any-expected.txt": [
+     "fd1a9490d49258d5e7e227a24f063944d389000c",
+     []
+    ],
+    "cookieStore_set_arguments.https.any.serviceworker-expected.txt": [
+     "ad6cdda02b6ce10df09a3774ab7e8e38af20e001",
      []
     ],
     "resources": {
@@ -349996,12 +350081,20 @@
       "ca072086c415b058264e495c46cb4a692d8a0684",
       []
      ],
+     "test-synthetic-bold-notref.html": [
+      "4a952acb46fb5b0f5681176ee3db32758413c48c",
+      []
+     ],
      "test-synthetic-italic-2-ref.html": [
       "d3165b681c86dbe8b0aff6d91df56a9369d2127b",
       []
      ],
      "test-synthetic-italic-3-ref.html": [
       "a0721426016c949369ae0114211136f45ce51b27",
+      []
+     ],
+     "test-synthetic-italic-notref.html": [
+      "3684f3ae804aa109f2da5188556cd3b36ffa2fc9",
       []
      ],
      "test_font_feature_values_parsing-expected.txt": [
@@ -350293,6 +350386,10 @@
       ],
       "gap-decorations-002-ref.html": [
        "42c5ef128b47fc9cdd14c9ce4f8abdffb209d94e",
+       []
+      ],
+      "gap-decorations-003-ref.html": [
+       "52e45c4f65f01e5eb98a98590788a0af7bcf7230",
        []
       ]
      },
@@ -397895,7 +397992,7 @@
       }
      },
      "elements-embedded.js": [
-      "c5b4520cc6e776cf49a15bc983dc1d5220134419",
+      "c10461ed6e8c079d53ea9940acc12e9aeae68f06",
       []
      ],
      "elements-forms-weekmonth.js": [
@@ -397955,11 +398052,11 @@
       []
      ],
      "new-harness.js": [
-      "49f8e40ad7d23f456e110d57b7a33b05364493e9",
+      "ad6214fb64f60fb4197dd0059a2e8cec3f3a13ec",
       []
      ],
      "original-harness.js": [
-      "89a80670334f0559f0f01074adb0487b14d574e6",
+      "6e48a562a6d38fbe63ec268b404f1ee82a97f705",
       []
      ],
      "reflection-embedded-expected.txt": [
@@ -397983,7 +398080,7 @@
       []
      ],
      "reflection.js": [
-      "eeecd450fca8139e924affb298e7feb1a1fb46fb",
+      "3423c9358954fddec9884241769ddc11bf6cdb55",
       []
      ],
      "render-blocking": {
@@ -421496,10 +421593,6 @@
        []
       ]
      },
-     "timeline-scope-parsing.tentative-expected.txt": [
-      "a62b7149bcd3bad7e988c7f324c16f1427d24e54",
-      []
-     ],
      "view-timeline-animation-expected.txt": [
       "720a801407f77c43d623a795ef3e1998b117aa5a",
       []
@@ -467466,7 +467559,7 @@
       ]
      ],
      "rewriter.tentative.https.window.js": [
-      "86b9a2fbccdd2b0ee4ebb11ff34d4385d7a025ab",
+      "ab97765c3e6b50807b64c8249e8735f6d3bbabdb",
       [
        "ai/rewriter/rewriter.tentative.https.window.html",
        {
@@ -467555,7 +467648,7 @@
       ]
      ],
      "summarizer-create-available.tentative.https.window.js": [
-      "c7e27d9766bee9b62d7b8463654dfea7536cb338",
+      "a4a00cf6857268cc0e73b3e0b0da51c5728e69ae",
       [
        "ai/summarizer/summarizer-create-available.tentative.https.window.html",
        {
@@ -467702,7 +467795,7 @@
       ]
      ],
      "translator.optional.https.window.js": [
-      "96eca09d28bd61ccc4d31b746216f1f252d0bf3b",
+      "5abd683caafec136d37c7ec925f221b465dd8107",
       [
        "ai/translator/translator.optional.https.window.html",
        {
@@ -467796,7 +467889,7 @@
       ]
      ],
      "writer.tentative.https.window.js": [
-      "38b1254e3459446e619c6baf9b308d3b4d92f243",
+      "7c20dc3292c2a6b8739dec57b16da9b288c7af84",
       [
        "ai/writer/writer.tentative.https.window.html",
        {
@@ -489259,7 +489352,7 @@
      ]
     ],
     "cookieListItem_attributes.https.any.js": [
-     "4dee907f2ef02e807d1a76e5442b61b68223253f",
+     "b42a745d3e4e1a9f4c8a0c6e7d9c04c02f8d1340",
      [
       "cookie-store/cookieListItem_attributes.https.any.html",
       {
@@ -489422,7 +489515,7 @@
      ]
     ],
     "cookieStore_delete_arguments.https.any.js": [
-     "4b9a9d008f11638b6a1f6fdd63b6e67f1e0a7881",
+     "2503de0abb0fecb3493334cd94355ff8c45e908d",
      [
       "cookie-store/cookieStore_delete_arguments.https.any.html",
       {
@@ -489430,6 +489523,10 @@
         [
          "title",
          "Cookie Store API: cookieStore.delete() arguments"
+        ],
+        [
+         "script",
+         "resources/cookie-test-helpers.js"
         ],
         [
          "global",
@@ -489445,6 +489542,10 @@
         [
          "title",
          "Cookie Store API: cookieStore.delete() arguments"
+        ],
+        [
+         "script",
+         "resources/cookie-test-helpers.js"
         ],
         [
          "global",
@@ -489818,7 +489919,7 @@
      ]
     ],
     "cookieStore_set_arguments.https.any.js": [
-     "e6fe48c9d3bcc1f27568c5ddec21fc3fc407ec6f",
+     "3e9ac5f3e983fa227d3bf35604604a902b11a8d3",
      [
       "cookie-store/cookieStore_set_arguments.https.any.html",
       {
@@ -489826,6 +489927,10 @@
         [
          "title",
          "Cookie Store API: cookieStore.set() arguments"
+        ],
+        [
+         "script",
+         "resources/cookie-test-helpers.js"
         ],
         [
          "global",
@@ -489841,6 +489946,10 @@
         [
          "title",
          "Cookie Store API: cookieStore.set() arguments"
+        ],
+        [
+         "script",
+         "resources/cookie-test-helpers.js"
         ],
         [
          "global",
@@ -511224,7 +511333,7 @@
       ]
      ],
      "dashed-function-cycles.html": [
-      "15305be2b287ca3e4fbfad928f8d101ed8463104",
+      "e711c9ed3678bd3b95eeed589b4f88754940b993",
       [
        null,
        {}
@@ -511350,7 +511459,7 @@
       ]
      ],
      "local-attr-substitution.html": [
-      "575372a96696f6c01870c345d6981b36cca257b0",
+      "de2a20fa470a9268980a403c74df5d9e2c89ef20",
       [
        null,
        {}
@@ -528724,7 +528833,7 @@
       ]
      ],
      "attr-cycle.html": [
-      "1db82c4cad2fc1ca9dc557508a2a5074385cbf1e",
+      "c876f77a8352ec5b5004f21d6973b7a50c58b8cc",
       [
        null,
        {}
@@ -529334,7 +529443,7 @@
       ]
      ],
      "if-cycle.html": [
-      "74d56dc9ed7c382ee8427feaefacc2198b94216f",
+      "ac3ff7df4ee1fe08be9680c36a14850444c012ec",
       [
        null,
        {}
@@ -530154,7 +530263,7 @@
       ]
      ],
      "variable-cycles.html": [
-      "950cffb2ab5117d9282cbef8f00e54f16949d07a",
+      "06b270d3b6603ed64036d743a535f3e00cb20b1e",
       [
        null,
        {}
@@ -530329,7 +530438,7 @@
       ]
      ],
      "variable-substitution-variable-declaration.html": [
-      "5239a05c3047fb2283ec9a4e9a213a51c0f87f3a",
+      "28ca7ca4810ebbe7f11c5bfd7e7fc8242e7b1b83",
       [
        null,
        {}
@@ -703808,15 +703917,15 @@
        {}
       ]
      ],
-     "timeline-scope-computed.tentative.html": [
-      "2e0a024a60007652daa90aaed2125a6dbbb6f051",
+     "timeline-scope-computed.html": [
+      "1096a9aa136eec6efe8b9f2cb30205bcc8683073",
       [
        null,
        {}
       ]
      ],
-     "timeline-scope-parsing.tentative.html": [
-      "61bf6975a81447024d5e814229fdbd987b7c8223",
+     "timeline-scope-parsing.html": [
+      "ff6fcb7e5a5560baf81e147c92e4f1b2fe21e6d4",
       [
        null,
        {}
@@ -797186,7 +797295,7 @@
      ]
     ],
     "RTCRtpScriptTransform-encoded-transform.https.html": [
-     "9eb7020a781c2d2715fcac3583e7142b50b1da2f",
+     "ffb29e7dec6f8901198a12e3ddf8c817ee6d13ed",
      [
       null,
       {
@@ -832878,13 +832987,6 @@
        {}
       ]
      ],
-     "font-family-name-000.xht": [
-      "2afa0bafc0466afb0c5ca27a8c2eaceaad5a520b",
-      [
-       null,
-       {}
-      ]
-     ],
      "font-size-adjust-003.xht": [
       "1886ccc6bfdb027b797efe69f127f41bc6aa46f8",
       [
@@ -832901,20 +833003,6 @@
      ],
      "language-specific-01.html": [
       "dbffdc64b02962fee90d22ad4f367909eeb48ea6",
-      [
-       null,
-       {}
-      ]
-     ],
-     "test-synthetic-bold.xht": [
-      "2d34f02a92a0a65e61623a810337ebb72c1990e7",
-      [
-       null,
-       {}
-      ]
-     ],
-     "test-synthetic-italic.xht": [
-      "05b9cf67984c023a2e41dc52a6cd27e627ca8c0e",
       [
        null,
        {}
