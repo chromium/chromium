@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] CookieListItem - cookieStore.set does not add / to path if it does not end with /
+  assert_equals: expected "/cookie-store" but got "/cookie-store/"
+Harness: the test ran to completion.
+

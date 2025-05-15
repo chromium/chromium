@@ -161,7 +161,7 @@ promise_test(async testCase => {
   assert_equals(cookie.name, 'cookie-name');
   assert_equals(cookie.value, 'cookie-value');
   assert_equals(cookie.domain, null);
-  assert_equals(cookie.path, currentDirectory + '/');
+  assert_equals(cookie.path, currentDirectory);
   assert_equals(cookie.expires, null);
   assert_equals(cookie.secure, true);
   assert_equals(cookie.sameSite, 'strict');
@@ -169,7 +169,7 @@ promise_test(async testCase => {
   for (const key of kCookieListItemKeys) {
     assert_in_array(key, itemKeys);
   }
-}, 'CookieListItem - cookieStore.set adds / to path if it does not end with /');
+}, 'CookieListItem - cookieStore.set does not add / to path if it does not end with /');
 
 ['strict', 'lax', 'none'].forEach(sameSiteValue => {
   promise_test(async testCase => {
