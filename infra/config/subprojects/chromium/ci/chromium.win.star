@@ -668,9 +668,9 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "chrome-desktop-engprod@google.com",
-    # Can flakily hit the default 3 hour timeout due to inconsistent compile
-    # times.
-    execution_timeout = 4 * time.hour,
+    # 20min (bot update) + 3hr (compile time without cache) +
+    # 40min (isolate tests) with 1hr buffer
+    execution_timeout = 5 * time.hour,
     # Increase timeout for connecting to dependency scanner
     reclient_bootstrap_env = {
         "RBE_depsscan_connect_timeout": "120s",
