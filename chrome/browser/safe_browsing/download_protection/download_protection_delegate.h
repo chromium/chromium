@@ -16,6 +16,10 @@ namespace base {
 class FilePath;
 }
 
+namespace content {
+struct FileSystemAccessWriteItem;
+}
+
 namespace download {
 class DownloadItem;
 }
@@ -53,6 +57,11 @@ class DownloadProtectionDelegate {
   // in IsSupportedDownload. This is redundant. Refactor this logic to eliminate
   // IsSupportedDownload().
   virtual bool MayCheckClientDownload(download::DownloadItem* item) const = 0;
+
+  // Returns whether the File System Access write may be checked by
+  // CheckFileSystemAccessWrite().
+  virtual bool MayCheckFileSystemAccessWrite(
+      content::FileSystemAccessWriteItem* item) const = 0;
 
   // Returns enum value indicating whether the download item may be checked by
   // CheckClientDownload() based on whether the file supports the check.

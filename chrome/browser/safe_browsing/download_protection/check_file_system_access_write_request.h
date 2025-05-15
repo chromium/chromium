@@ -43,6 +43,15 @@ class CheckFileSystemAccessWriteRequest
 
   download::DownloadItem* item() const override;
 
+  // Returns enum value indicating whether `file_name` is eligible for
+  // CheckFileSystemAccessWriteRequest. If return value is not
+  // kMayCheckDownload, then `reason` will be populated with the reason why.
+  // Note: Behavior is platform-specific.
+  // TODO(chlily): Rename this method since it does not return a bool.
+  static MayCheckDownloadResult IsSupportedDownload(
+      const base::FilePath& file_name,
+      DownloadCheckResultReason* reason);
+
  private:
   // CheckClientDownloadRequestBase overrides:
   MayCheckDownloadResult IsSupportedDownload(

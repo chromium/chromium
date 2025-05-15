@@ -153,11 +153,13 @@ class DownloadProtectionService {
       Profile* profile,
       CheckDownloadCallback callback);
 
-  // Checks whether the given File System Access write operation is likely to be
-  // malicious or not. The result is delivered asynchronously via the given
-  // callback.  This method must be called on the UI thread, and the callback
-  // will also be invoked on the UI thread.  This method must be called once the
-  // write is finished and data has been written to disk.
+  // If download protection is enabled for `item`, checks whether the given File
+  // System Access write operation is likely to be malicious or not. The result
+  // of the check is delivered asynchronously via the given callback, or the
+  // callback will be invoked with a result of UNKNOWN. This method must be
+  // called on the UI thread, and the callback will also be invoked on the UI
+  // thread. This method must be called once the write is finished and data has
+  // been written to disk.
   virtual void CheckFileSystemAccessWrite(
       std::unique_ptr<content::FileSystemAccessWriteItem> item,
       CheckDownloadCallback callback);

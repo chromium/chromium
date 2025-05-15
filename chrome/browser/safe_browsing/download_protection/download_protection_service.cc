@@ -350,6 +350,10 @@ void DownloadProtectionService::CheckPPAPIDownloadRequest(
 void DownloadProtectionService::CheckFileSystemAccessWrite(
     std::unique_ptr<content::FileSystemAccessWriteItem> item,
     CheckDownloadCallback callback) {
+  if (!delegate_->MayCheckFileSystemAccessWrite(item.get())) {
+    std::move(callback).Run(DownloadCheckResult::UNKNOWN);
+    return;
+  }
   content::BrowserContext* browser_context = item->browser_context;
   auto request = std::make_unique<CheckFileSystemAccessWriteRequest>(
       std::move(item), std::move(callback), this, database_manager_,

@@ -14,6 +14,10 @@ namespace base {
 class FilePath;
 }
 
+namespace content {
+struct FileSystemAccessWriteItem;
+}
+
 namespace download {
 class DownloadItem;
 }
@@ -32,6 +36,8 @@ class DownloadProtectionDelegateDesktop : public DownloadProtectionDelegate {
   // DownloadProtectionDelegate:
   bool ShouldCheckDownloadUrl(download::DownloadItem* item) const override;
   bool MayCheckClientDownload(download::DownloadItem* item) const override;
+  bool MayCheckFileSystemAccessWrite(
+      content::FileSystemAccessWriteItem* item) const override;
   MayCheckDownloadResult IsSupportedDownload(
       download::DownloadItem& item,
       const base::FilePath& target_path) const override;

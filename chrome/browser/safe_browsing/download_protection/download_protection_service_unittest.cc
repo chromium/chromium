@@ -173,6 +173,13 @@ namespace OnDangerousDownloadOpened =
 namespace safe_browsing {
 
 namespace {
+// Default filename that should appear as a a file eligible for download
+// protection checks.
+#if BUILDFLAG(IS_ANDROID)
+const base::FilePath::CharType kEligibleFilename[] = FILE_PATH_LITERAL("a.apk");
+#else
+const base::FilePath::CharType kEligibleFilename[] = FILE_PATH_LITERAL("a.exe");
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 // Fake content-URI values for Android tests.
@@ -3919,6 +3926,26 @@ TEST_F(DeepScanningDownloadTest, LargeFileBlockedByPreference) {
 }
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
+// Android enforces a feature state before checking a File System Access Write.
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(DownloadProtectionServiceTest, FileSystemAccessWriteRequest_NotEnabled) {
+  DisableFeatures({kMaliciousApkDownloadCheck});
+
+  auto item = PrepareBasicFileSystemAccessWriteItem(
+      /*tmp_path_literal=*/FILE_PATH_LITERAL("a.txt.crswap"),
+      /*final_path_literal=*/FILE_PATH_LITERAL(kEligibleFilename));
+
+  RunLoop run_loop;
+  download_service_->CheckFileSystemAccessWrite(
+      std::move(item),
+      base::BindOnce(&DownloadProtectionServiceTest::CheckDoneCallback,
+                     base::Unretained(this), run_loop.QuitClosure()));
+  run_loop.Run();
+  EXPECT_TRUE(IsResult(DownloadCheckResult::UNKNOWN));
+  EXPECT_FALSE(HasClientDownloadRequest());
+}
+#endif
+
 TEST_F(DownloadProtectionServiceTest, FileSystemAccessWriteRequest_NotABinary) {
   auto item = PrepareBasicFileSystemAccessWriteItem(
       /*tmp_path_literal=*/FILE_PATH_LITERAL("a.txt.crswap"),
@@ -4046,7 +4073,7 @@ TEST_F(DownloadProtectionServiceTest,
 
   auto item = PrepareBasicFileSystemAccessWriteItem(
       /*tmp_path_literal=*/FILE_PATH_LITERAL("a.exe.crswap"),
-      /*final_path_literal=*/FILE_PATH_LITERAL("a.exe"));
+      /*final_path_literal=*/kEligibleFilename);
 
   EXPECT_CALL(*sb_service_->mock_database_manager(),
               MatchDownloadAllowlistUrl(_, _))
@@ -4076,7 +4103,7 @@ TEST_F(DownloadProtectionServiceTest, FileSystemAccessWriteRequest_Success) {
 
   auto item = PrepareBasicFileSystemAccessWriteItem(
       /*tmp_path_literal=*/FILE_PATH_LITERAL("a.exe.crswap"),
-      /*final_path_literal=*/FILE_PATH_LITERAL("a.exe"));
+      /*final_path_literal=*/kEligibleFilename);
 
   EXPECT_CALL(*sb_service_->mock_database_manager(),
               MatchDownloadAllowlistUrl(_, _))
@@ -4160,7 +4187,7 @@ TEST_F(DownloadProtectionServiceTest,
 
   auto item = PrepareBasicFileSystemAccessWriteItem(
       /*tmp_path_literal=*/FILE_PATH_LITERAL("a.exe.crswap"),
-      /*final_path_literal=*/FILE_PATH_LITERAL("a.exe"));
+      /*final_path_literal=*/kEligibleFilename);
   item->web_contents = nullptr;
 
   EXPECT_CALL(*sb_service_->mock_database_manager(),
@@ -4193,7 +4220,7 @@ TEST_F(DownloadProtectionServiceTest,
       testing_profile_manager_.CreateTestingProfile("profile 1");
   auto item = PrepareBasicFileSystemAccessWriteItem(
       /*tmp_path_literal=*/FILE_PATH_LITERAL("a.exe.crswap"),
-      /*final_path_literal=*/FILE_PATH_LITERAL("a.exe"));
+      /*final_path_literal=*/kEligibleFilename);
   item->browser_context = profile1;
 
   // Note 'AtMost' is used below because on Mac timing differences make the
@@ -4222,7 +4249,7 @@ TEST_F(DownloadProtectionServiceTest,
 
   auto item = PrepareBasicFileSystemAccessWriteItem(
       /*tmp_path_literal=*/FILE_PATH_LITERAL("a.txt.crswap"),
-      /*final_path_literal=*/FILE_PATH_LITERAL("a.txt"));
+      /*final_path_literal=*/kEligibleFilename);
   item->frame_url = GURL("https://example.com/foo");
   download_service_->CheckFileSystemAccessWrite(
       std::move(item),
@@ -4239,7 +4266,7 @@ TEST_F(DownloadProtectionServiceTest,
        FileSystemAccessWriteRequest_CheckRequest) {
   auto item = PrepareBasicFileSystemAccessWriteItem(
       /*tmp_path_literal=*/FILE_PATH_LITERAL("a.exe.crswap"),
-      /*final_path_literal=*/FILE_PATH_LITERAL("a.exe"));
+      /*final_path_literal=*/kEligibleFilename);
   item->frame_url = GURL("http://www.google.com/");
 
   GURL tab_url("http://tab.com/final");

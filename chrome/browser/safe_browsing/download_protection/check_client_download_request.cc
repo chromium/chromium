@@ -55,10 +55,7 @@ namespace safe_browsing {
 
 namespace {
 
-#if BUILDFLAG(IS_ANDROID)
-// File suffix for APKs.
-const base::FilePath::CharType kApkSuffix[] = FILE_PATH_LITERAL(".apk");
-#else   // BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 bool ShouldUploadToDownloadFeedback(DownloadCheckResult result) {
   switch (result) {
     case DownloadCheckResult::DANGEROUS_HOST:
@@ -86,7 +83,7 @@ bool ShouldUploadToDownloadFeedback(DownloadCheckResult result) {
       return false;
   }
 }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -173,17 +170,8 @@ MayCheckDownloadResult CheckClientDownloadRequest::IsSupportedDownload(
     *reason = final_url.has_host() ? REASON_REMOTE_FILE : REASON_LOCAL_FILE;
     return MayCheckDownloadResult::kMayNotCheckDownload;
   }
-  // On Android, do not use FileTypePolicies, which are currently only
-  // applicable to desktop platforms. Instead, hardcode the APK filetype check
-  // for Android here.
   // This check should be last, so we know the earlier checks passed.
-  // TODO(chlily): Refactor/fix FileTypePolicies and then remove this
-  // platform-specific hardcoded behavior.
-#if BUILDFLAG(IS_ANDROID)
-  if (!file_name.MatchesExtension(kApkSuffix)) {
-#else
-  if (!FileTypePolicies::GetInstance()->IsCheckedBinaryFile(file_name)) {
-#endif
+  if (!IsFiletypeSupportedForFullDownloadProtection(file_name)) {
     *reason = REASON_NOT_BINARY_FILE;
     return MayCheckDownloadResult::kMaySendSampledPingOnly;
   }

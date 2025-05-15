@@ -505,4 +505,43 @@ TEST(DownloadProtectionUtilTest, ShouldSendDangerousDownloadReport) {
 }
 #endif
 
+TEST(DownloadProtectionUtilTest, IsFiletypeSupportedForFullDownloadProtection) {
+  // Set up a fake config that specifies ping types for filetype extensions.
+  safe_browsing::FileTypePoliciesTestOverlay file_type_policies;
+  auto fake_config = std::make_unique<DownloadFileTypeConfig>();
+  fake_config->mutable_default_file_type()->set_ping_setting(
+      DownloadFileType::NO_PING);
+  std::pair<std::string, DownloadFileType::PingSetting> kPingSettings[] = {
+      {"noping", DownloadFileType::NO_PING},
+      {"sampledping", DownloadFileType::SAMPLED_PING},
+      {"fullping", DownloadFileType::FULL_PING}};
+  for (const auto& [extension, ping_setting] : kPingSettings) {
+    auto* file_type = fake_config->add_file_types();
+    file_type->set_extension(extension);
+    file_type->set_ping_setting(ping_setting);
+  }
+  file_type_policies.SwapConfig(fake_config);
+
+  EXPECT_FALSE(IsFiletypeSupportedForFullDownloadProtection(
+      base::FilePath(FILE_PATH_LITERAL("foo.default"))));
+  EXPECT_FALSE(IsFiletypeSupportedForFullDownloadProtection(
+      base::FilePath(FILE_PATH_LITERAL("foo.noping"))));
+  EXPECT_FALSE(IsFiletypeSupportedForFullDownloadProtection(
+      base::FilePath(FILE_PATH_LITERAL("foo.sampledping"))));
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_TRUE(IsFiletypeSupportedForFullDownloadProtection(
+      base::FilePath(FILE_PATH_LITERAL("foo.fullping"))));
+  EXPECT_TRUE(IsFiletypeSupportedForFullDownloadProtection(
+      base::FilePath(FILE_PATH_LITERAL("foo.fUlLpInG"))));
+#else
+  EXPECT_FALSE(IsFiletypeSupportedForFullDownloadProtection(
+      base::FilePath(FILE_PATH_LITERAL("foo.fullping"))));
+  // Android hard-codes that only APK files are supported.
+  EXPECT_TRUE(IsFiletypeSupportedForFullDownloadProtection(
+      base::FilePath(FILE_PATH_LITERAL("foo.apk"))));
+  EXPECT_TRUE(IsFiletypeSupportedForFullDownloadProtection(
+      base::FilePath(FILE_PATH_LITERAL("foo.APK"))));
+#endif
+}
+
 }  // namespace safe_browsing

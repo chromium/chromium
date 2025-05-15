@@ -34,6 +34,11 @@ namespace safe_browsing {
 
 namespace {
 
+#if BUILDFLAG(IS_ANDROID)
+// File suffix for APKs.
+const base::FilePath::CharType kApkSuffix[] = FILE_PATH_LITERAL(".apk");
+#endif
+
 // Escapes a certificate attribute so that it can be used in a allowlist
 // entry.  Currently, we only escape slashes, since they are used as a
 // separator between attributes.
@@ -489,6 +494,20 @@ ShouldUploadBinaryForDeepScanning(download::DownloadItem* item) {
   // Create temporary metadata wrapper on the stack.
   DownloadItemMetadata metadata(item);
   return DeepScanningRequest::ShouldUploadBinary(metadata);
+#endif
+}
+
+bool IsFiletypeSupportedForFullDownloadProtection(
+    const base::FilePath& file_name) {
+  // On Android, do not use FileTypePolicies, which are currently only
+  // applicable to desktop platforms. Instead, hardcode the APK filetype check
+  // for Android here.
+  // TODO(chlily): Refactor/fix FileTypePolicies and then remove this
+  // platform-specific hardcoded behavior.
+#if BUILDFLAG(IS_ANDROID)
+  return file_name.MatchesExtension(kApkSuffix);
+#else
+  return FileTypePolicies::GetInstance()->IsCheckedBinaryFile(file_name);
 #endif
 }
 

@@ -16,6 +16,10 @@ namespace base {
 class FilePath;
 }
 
+namespace content {
+struct FileSystemAccessWriteItem;
+}
+
 namespace download {
 class DownloadItem;
 }
@@ -36,6 +40,8 @@ class DownloadProtectionDelegateAndroid : public DownloadProtectionDelegate {
   // DownloadProtectionDelegate:
   bool ShouldCheckDownloadUrl(download::DownloadItem* item) const override;
   bool MayCheckClientDownload(download::DownloadItem* item) const override;
+  bool MayCheckFileSystemAccessWrite(
+      content::FileSystemAccessWriteItem* item) const override;
   MayCheckDownloadResult IsSupportedDownload(
       download::DownloadItem& item,
       const base::FilePath& target_path) const override;
@@ -58,6 +64,19 @@ class DownloadProtectionDelegateAndroid : public DownloadProtectionDelegate {
   void SetNextShouldSampleForTesting(bool should_sample);
 
  private:
+  // Executes one instance of random sampling for a file that would otherwise
+  // send a download request, taking any testing override into account.
+  // Note: this sampling performed by DownloadProtectionDelegateAndroid is
+  // distinct from sampling for "light" pings for unsupported filetypes, and
+  // sampling of allowlisted files.
+  bool ShouldSampleEligibleFile() const;
+
+  // Translates a MayCheckDownloadResult into a bool to return from
+  // MayCheck{ClientDownload,FileSystemAccessWrite}.
+  // If `download_item` is non-null, this updates metrics data accordingly.
+  bool MayCheckItem(MayCheckDownloadResult may_check_download_result,
+                    download::DownloadItem* download_item = nullptr) const;
+
   const GURL download_request_url_;
 
   // Overrides the next call to ShouldSample() within IsSupportedDownload(), for

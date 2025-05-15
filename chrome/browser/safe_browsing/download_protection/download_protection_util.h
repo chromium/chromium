@@ -208,6 +208,11 @@ bool ShouldSendDangerousDownloadReport(
 std::optional<enterprise_connectors::AnalysisSettings>
 ShouldUploadBinaryForDeepScanning(download::DownloadItem* item);
 
+// Returns whether the filetype is eligible for a full download protection ping,
+// based only on the file name extension.
+bool IsFiletypeSupportedForFullDownloadProtection(
+    const base::FilePath& file_name);
+
 }  // namespace safe_browsing
 
 #endif  // CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DOWNLOAD_PROTECTION_UTIL_H_
