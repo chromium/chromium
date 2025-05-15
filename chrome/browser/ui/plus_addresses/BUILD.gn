@@ -6,8 +6,6 @@ import("//build/config/ui.gni")
 
 assert(toolkit_views || is_android)
 
-# TODO(crbug.com/413572035): Pull in android impl and test sources.
-
 source_set("plus_addresses") {
   public = [
     "plus_address_creation_controller.h",
@@ -36,10 +34,28 @@ source_set("plus_addresses") {
       "//ui/menus",
     ]
   }
+
+  if (is_android) {
+    public += [
+      "android/all_plus_addresses_bottom_sheet_controller.h",
+      "android/all_plus_addresses_bottom_sheet_view.h",
+      "android/plus_address_creation_controller_android.h",
+      "android/plus_address_creation_view_android.h",
+    ]
+    public_deps += [
+      "//base:base",
+      "//components/autofill/core/browser",
+      "//components/autofill/core/common",
+      "//components/plus_addresses:hats_utils",
+      "//components/plus_addresses:plus_address_java_enums",
+      "//components/plus_addresses/metrics",
+      "//ui/gfx",
+    ]
+  }
 }
 
-if (toolkit_views) {
-  source_set("impl") {
+source_set("impl") {
+  if (toolkit_views) {
     sources = [
       "plus_address_error_dialog.cc",
       "plus_address_menu_model.cc",
@@ -76,6 +92,33 @@ if (toolkit_views) {
       deps += [ "//components/plus_addresses/resources:vector_icons" ]
     }
   }
+
+  if (is_android) {
+    sources = [
+      "android/all_plus_addresses_bottom_sheet_controller.cc",
+      "android/all_plus_addresses_bottom_sheet_view.cc",
+      "android/plus_address_creation_controller_android.cc",
+      "android/plus_address_creation_view_android.cc",
+    ]
+    deps = [
+      ":plus_addresses",
+      "//chrome/browser/plus_addresses",
+      "//chrome/browser/profiles",
+      "//chrome/browser/ui/plus_addresses/android:jni_headers",
+      "//components/autofill/content/browser",
+      "//components/plus_addresses",
+      "//components/plus_addresses:features",
+      "//components/plus_addresses:prefs",
+      "//components/plus_addresses/resources/strings",
+      "//components/plus_addresses/settings",
+      "//ui/android",
+
+      # TODO(nickdiego): remove once c/b/ui/android/tab_model gets modularized.
+      # For now this does not cause circular dependencies because, unlike in
+      # non-android builds, c/b/ui:ui does not depend directly on this.
+      "//chrome/browser/ui",
+    ]
+  }
 }
 
 source_set("interactive_ui_tests") {
@@ -107,31 +150,66 @@ source_set("interactive_ui_tests") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = []
+  deps = [
+    ":plus_addresses",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/plus_addresses",
+    "//chrome/test:test_support",
+    "//components/autofill/content/browser:test_support",
+    "//components/plus_addresses",
+    "//components/plus_addresses:features",
+    "//components/plus_addresses:prefs",
+    "//components/plus_addresses:test_support",
+    "//components/plus_addresses/metrics:metrics",
+    "//components/plus_addresses/settings:test_support",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 
-  if (!is_android) {
-    sources += [
+  if (is_android) {
+    sources = [ "android/plus_address_creation_controller_android_unittest.cc" ]
+    deps += [
+      ":impl",
+      "//components/autofill/core/common",
+      "//components/plus_addresses:plus_address_java_enums",
+    ]
+  } else {
+    sources = [
       "plus_address_creation_controller_desktop_unittest.cc",
       "plus_address_menu_model_unittest.cc",
+    ]
+    deps += [
+      "//chrome/browser/ui/hats",
+      "//components/autofill/core/common",
+      "//components/signin/public/identity_manager:test_support",
+    ]
+  }
+}
+
+if (is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "android/all_plus_addresses_bottom_sheet_view_browsertest.cc",
+      "android/plus_address_creation_view_android_browsertest.cc",
     ]
     deps = [
       ":plus_addresses",
       "//base",
       "//base/test:test_support",
       "//chrome/browser/plus_addresses",
-      "//chrome/browser/ui/hats",
+      "//chrome/browser/profiles:profile",
       "//chrome/test:test_support",
-      "//components/autofill/content/browser:test_support",
-      "//components/autofill/core/common",
-      "//components/plus_addresses",
+      "//chrome/test:test_support_ui_android",
       "//components/plus_addresses:features",
-      "//components/plus_addresses:prefs",
+      "//components/plus_addresses:plus_address_java_enums",
+      "//components/plus_addresses:plus_addresses",
       "//components/plus_addresses:test_support",
-      "//components/plus_addresses/settings:test_support",
-      "//components/signin/public/identity_manager:test_support",
-      "//components/sync_preferences:test_support",
       "//content/test:test_support",
-      "//testing/gmock",
       "//testing/gtest",
     ]
   }

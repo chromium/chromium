@@ -405,7 +405,6 @@ static_library("ui") {
     "//chrome/browser/ui/page_action:icon_type",
     "//chrome/browser/ui/page_info",
     "//chrome/browser/ui/page_info:impl",
-    "//chrome/browser/ui/plus_addresses",
     "//chrome/browser/ui/prefs",
     "//chrome/browser/ui/prefs:impl",
     "//chrome/browser/ui/safety_hub",
@@ -553,11 +552,6 @@ static_library("ui") {
     "//components/pdf/common:util",
     "//components/performance_manager",
     "//components/permissions",
-    "//components/plus_addresses",
-    "//components/plus_addresses:features",
-    "//components/plus_addresses/metrics",
-    "//components/plus_addresses/resources/strings",
-    "//components/plus_addresses/settings",
     "//components/policy/content",
     "//components/policy/core/browser",
     "//components/pref_registry",
@@ -896,14 +890,6 @@ static_library("ui") {
       "android/webid/account_selection_view_android.cc",
       "android/webid/account_selection_view_android.h",
       "browser_otr_state_android.cc",
-      "plus_addresses/android/all_plus_addresses_bottom_sheet_controller.cc",
-      "plus_addresses/android/all_plus_addresses_bottom_sheet_controller.h",
-      "plus_addresses/android/all_plus_addresses_bottom_sheet_view.cc",
-      "plus_addresses/android/all_plus_addresses_bottom_sheet_view.h",
-      "plus_addresses/android/plus_address_creation_controller_android.cc",
-      "plus_addresses/android/plus_address_creation_controller_android.h",
-      "plus_addresses/android/plus_address_creation_view_android.cc",
-      "plus_addresses/android/plus_address_creation_view_android.h",
       "screen_capture_notification_ui_stub.cc",
       "webui/feed_internals/feed_internals_ui.cc",
       "webui/feed_internals/feed_internals_ui.h",
@@ -962,9 +948,6 @@ static_library("ui") {
       "//components/page_info/core",
       "//components/page_info/core:proto",
       "//components/password_manager/core/browser:browser",
-      "//components/plus_addresses:hats_utils",
-      "//components/plus_addresses:prefs",
-      "//components/plus_addresses/settings",
       "//components/resources:android_resources",
       "//components/search_provider_logos",
       "//components/security_state/content/android",
@@ -5006,6 +4989,7 @@ static_library("ui") {
       "//chrome/browser/ui/commerce:impl",
       "//chrome/browser/ui/dialogs",
       "//chrome/browser/ui/dialogs:impl",
+      "//chrome/browser/ui/plus_addresses",
       "//chrome/browser/ui/plus_addresses:impl",
       "//chrome/browser/ui/promos:utils",
       "//chrome/browser/ui/qrcode_generator",
@@ -5066,6 +5050,10 @@ static_library("ui") {
       "//ui/lottie",
       "//ui/views:buildflags",
     ]
+
+    # TODO(crbug.com/413572035): Move into build files of the actual modules depending
+    # on this once they are fully modularized. eg: views/autofill, views/user_education.
+    deps += [ "//components/plus_addresses/resources/strings" ]
 
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [
