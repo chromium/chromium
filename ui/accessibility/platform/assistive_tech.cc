@@ -4,7 +4,27 @@
 
 #include "ui/accessibility/platform/assistive_tech.h"
 
+#include "base/notreached.h"
+
 namespace ui {
+
+namespace {
+static constexpr std::string_view kNoneString{"None"};
+static constexpr std::string_view kUnknownString{"Unknown"};
+static constexpr std::string_view kChromeVoxString{"ChromeVox"};
+static constexpr std::string_view kJawsString{"Jaws"};
+static constexpr std::string_view kNarratorString{"Narrator"};
+static constexpr std::string_view kNvdaString{"Nvda"};
+static constexpr std::string_view kOrcaString{"Orca"};
+static constexpr std::string_view kSupernovaString{"Supernova"};
+static constexpr std::string_view kTalkbackString{"Talkback"};
+static constexpr std::string_view kVoiceOverString{"VoiceOver"};
+static constexpr std::string_view kZdsrString{"Zdsr"};
+static constexpr std::string_view kWinMagnifierString{"Magnifier"};
+static constexpr std::string_view kZoomTextString{"ZoomText"};
+static constexpr std::string_view kGenericScreenReaderString{
+    "GenericScreenReader"};
+}  // namespace
 
 bool IsScreenReader(AssistiveTech assistive_tech) {
   switch (assistive_tech) {
@@ -30,6 +50,39 @@ bool IsScreenReader(AssistiveTech assistive_tech) {
     case AssistiveTech::kZoomText:
     case AssistiveTech::kGenericScreenReader:
       return true;
+  }
+}
+
+std::string_view GetAssistiveTechString(AssistiveTech assistive_tech) {
+  switch (assistive_tech) {
+    case AssistiveTech::kNone:
+      return kNoneString;
+    case AssistiveTech::kUnknown:
+      return kUnknownString;
+    case AssistiveTech::kChromeVox:
+      return kChromeVoxString;
+    case AssistiveTech::kJaws:
+      return kJawsString;
+    case AssistiveTech::kNarrator:
+      return kNarratorString;
+    case AssistiveTech::kNvda:
+      return kNvdaString;
+    case AssistiveTech::kOrca:
+      return kOrcaString;
+    case AssistiveTech::kSupernova:
+      return kSupernovaString;
+    case AssistiveTech::kTalkback:
+      return kTalkbackString;
+    case AssistiveTech::kVoiceOver:
+      return kVoiceOverString;
+    case AssistiveTech::kZdsr:
+      return kZdsrString;
+    case AssistiveTech::kWinMagnifier:
+      return kWinMagnifierString;
+    case AssistiveTech::kZoomText:
+      return kZoomTextString;
+    case AssistiveTech::kGenericScreenReader:
+      return kGenericScreenReaderString;
   }
 }
 

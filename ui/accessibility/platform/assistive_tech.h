@@ -5,6 +5,8 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_ASSISTIVE_TECH_H_
 #define UI_ACCESSIBILITY_PLATFORM_ASSISTIVE_TECH_H_
 
+#include <string_view>
+
 #include "base/component_export.h"
 
 namespace ui {
@@ -37,6 +39,8 @@ enum class AssistiveTech {
 
 // Returns true if the given assistive tech is a screen reader.
 COMPONENT_EXPORT(AX_PLATFORM) bool IsScreenReader(AssistiveTech assistive_tech);
+COMPONENT_EXPORT(AX_PLATFORM)
+std::string_view GetAssistiveTechString(AssistiveTech assistive_tech);
 
 }  // namespace ui
 

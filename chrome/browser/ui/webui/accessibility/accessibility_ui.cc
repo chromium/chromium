@@ -50,6 +50,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_updates_and_events.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter.h"
@@ -111,6 +112,10 @@ static const char kScreenReader[] = "screenReader";
 static const char kShowOrRefreshTree[] = "showOrRefreshTree";
 static const char kText[] = "text";
 static const char kWeb[] = "web";
+
+// Screen reader detection.
+static const char kDetectedATName[] = "detectedATName";
+static const char kIsScreenReaderActive[] = "isScreenReaderActive";
 
 using ui::AXPropertyFilter;
 
@@ -205,6 +210,11 @@ void HandleAccessibilityRequestCallback(
   bool allow_platform_activation =
       browser_accessibility_state.IsActivationFromPlatformEnabled();
 
+  ui::AssistiveTech assistive_tech =
+      ui::AXPlatform::GetInstance().active_assistive_tech();
+  bool is_screen_reader_active =
+      ui::AXPlatform::GetInstance().IsScreenReaderActive();
+
   // The "native" and "web" flags are disabled if
   // --disable-renderer-accessibility is set.
   data.Set(kNative, native);
@@ -244,6 +254,9 @@ void HandleAccessibilityRequestCallback(
                    initial_process_mode.has_mode(ui::AXMode::kScreenReader))
           .Set(kHTML, allow_platform_activation &&
                           initial_process_mode.has_mode(ui::AXMode::kHTML)));
+
+  data.Set(kDetectedATName, ui::GetAssistiveTechString(assistive_tech));
+  data.Set(kIsScreenReaderActive, is_screen_reader_active);
 
   std::string pref_api_type =
       pref->GetString(prefs::kShownAccessibilityApiType);

@@ -90,6 +90,9 @@ interface InitData {
     text: boolean,
     screenReader: boolean,
   };
+
+  detectedATName: string;
+  isScreenReaderActive: boolean;
 }
 
 type RequestType = 'showOrRefreshTree';
@@ -267,6 +270,10 @@ function initialize() {
   bindDropdown('apiType', data.supportedApiTypes, data.apiType);
   bindCheckbox('isolate', data.isolate);
   bindCheckbox('locked', data.locked);
+
+  getRequiredElement('active_at_name').textContent = data.detectedATName;
+  getRequiredElement('active_at_is_screen_reader').textContent =
+      data.isScreenReaderActive ? 'Yes' : 'No';
 
   getRequiredElement('pages').textContent = '';
 
