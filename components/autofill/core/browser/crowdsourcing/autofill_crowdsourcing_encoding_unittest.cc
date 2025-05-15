@@ -2572,22 +2572,22 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_UnknownType) {
   ASSERT_EQ(form.field_count(), 3U);
 
   // Validate field 0.
-  EXPECT_EQ(NAME_FIRST, form.field(0)->heuristic_type());
-  EXPECT_EQ(UNKNOWN_TYPE, form.field(0)->server_type());
-  EXPECT_EQ(HtmlFieldType::kUnspecified, form.field(0)->html_type());
-  EXPECT_EQ(UNKNOWN_TYPE, form.field(0)->Type().GetStorableType());
+  EXPECT_EQ(form.field(0)->heuristic_type(), NAME_FIRST);
+  EXPECT_EQ(form.field(0)->server_type(), UNKNOWN_TYPE);
+  EXPECT_EQ(form.field(0)->html_type(), HtmlFieldType::kUnspecified);
+  EXPECT_EQ(form.field(0)->Type().GetStorableType(), UNKNOWN_TYPE);
 
   // Validate field 1.
-  EXPECT_EQ(NAME_LAST, form.field(1)->heuristic_type());
-  EXPECT_EQ(NO_SERVER_DATA, form.field(1)->server_type());
-  EXPECT_EQ(HtmlFieldType::kUnspecified, form.field(1)->html_type());
-  EXPECT_EQ(NAME_LAST, form.field(1)->Type().GetStorableType());
+  EXPECT_EQ(form.field(1)->heuristic_type(), NAME_LAST);
+  EXPECT_EQ(form.field(1)->server_type(), NO_SERVER_DATA);
+  EXPECT_EQ(form.field(1)->html_type(), HtmlFieldType::kUnspecified);
+  EXPECT_EQ(form.field(1)->Type().GetStorableType(), NAME_LAST);
 
   // Validate field 2. Note: HtmlFieldType::kAddressLevel2 -> City
-  EXPECT_EQ(EMAIL_ADDRESS, form.field(2)->heuristic_type());
-  EXPECT_EQ(ADDRESS_HOME_LINE1, form.field(2)->server_type());
-  EXPECT_EQ(HtmlFieldType::kAddressLevel2, form.field(2)->html_type());
-  EXPECT_EQ(ADDRESS_HOME_CITY, form.field(2)->Type().GetStorableType());
+  EXPECT_EQ(form.field(2)->heuristic_type(), EMAIL_ADDRESS);
+  EXPECT_EQ(form.field(2)->server_type(), ADDRESS_HOME_LINE1);
+  EXPECT_EQ(form.field(2)->html_type(), HtmlFieldType::kAddressLevel2);
+  EXPECT_EQ(form.field(2)->Type().GetStorableType(), ADDRESS_HOME_CITY);
 }
 
 struct PredictionPrecedenceTestCase {
@@ -2896,20 +2896,20 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseServerPredictionsQueryResponse) {
   ASSERT_GE(forms[0]->field_count(), 2U);
   ASSERT_GE(forms[1]->field_count(), 2U);
 
-  EXPECT_EQ(NAME_FULL, forms[0]->field(0)->server_type());
+  EXPECT_EQ(forms[0]->field(0)->server_type(), NAME_FULL);
   EXPECT_THAT(forms[0]->field(0)->server_predictions(),
               ElementsAre(EqualsPrediction(NAME_FULL),
                           EqualsPrediction(PHONE_HOME_COUNTRY_CODE)));
 
-  EXPECT_EQ(ADDRESS_HOME_LINE1, forms[0]->field(1)->server_type());
+  EXPECT_EQ(forms[0]->field(1)->server_type(), ADDRESS_HOME_LINE1);
   EXPECT_THAT(forms[0]->field(1)->server_predictions(),
               ElementsAre(EqualsPrediction(ADDRESS_HOME_LINE1)));
 
-  EXPECT_EQ(EMAIL_ADDRESS, forms[1]->field(0)->server_type());
+  EXPECT_EQ(forms[1]->field(0)->server_type(), EMAIL_ADDRESS);
   EXPECT_THAT(forms[1]->field(0)->server_predictions(),
               ElementsAre(EqualsPrediction(EMAIL_ADDRESS)));
 
-  EXPECT_EQ(NO_SERVER_DATA, forms[1]->field(1)->server_type());
+  EXPECT_EQ(forms[1]->field(1)->server_type(), NO_SERVER_DATA);
   EXPECT_THAT(forms[1]->field(1)->server_predictions(),
               ElementsAre(EqualsPrediction(NO_SERVER_DATA)));
 }
@@ -3457,11 +3457,11 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_AuthorDefinedTypes) {
 
   ASSERT_GE(forms[0]->field_count(), 2U);
   // Server type is parsed from the response and is the end result type.
-  EXPECT_EQ(EMAIL_ADDRESS, forms[0]->field(0)->server_type());
-  EXPECT_EQ(EMAIL_ADDRESS, forms[0]->field(0)->Type().GetStorableType());
-  EXPECT_EQ(ACCOUNT_CREATION_PASSWORD, forms[0]->field(1)->server_type());
-  EXPECT_EQ(ACCOUNT_CREATION_PASSWORD,
-            forms[0]->field(1)->Type().GetStorableType());
+  EXPECT_EQ(forms[0]->field(0)->server_type(), EMAIL_ADDRESS);
+  EXPECT_EQ(forms[0]->field(0)->Type().GetStorableType(), EMAIL_ADDRESS);
+  EXPECT_EQ(forms[0]->field(1)->server_type(), ACCOUNT_CREATION_PASSWORD);
+  EXPECT_EQ(forms[0]->field(1)->Type().GetStorableType(),
+            ACCOUNT_CREATION_PASSWORD);
 }
 
 // Tests that, when the flag is off, we will not set the predicted type to
@@ -3507,11 +3507,11 @@ TEST_F(AutofillCrowdsourcingEncoding,
   ASSERT_EQ(4U, forms[0]->field_count());
 
   // Only NAME_LAST should be affected by the flag.
-  EXPECT_EQ(NAME_LAST, forms[0]->field(1)->Type().GetStorableType());
+  EXPECT_EQ(forms[0]->field(1)->Type().GetStorableType(), NAME_LAST);
 
-  EXPECT_EQ(NAME_FIRST, forms[0]->field(0)->Type().GetStorableType());
-  EXPECT_EQ(ADDRESS_HOME_LINE1, forms[0]->field(2)->Type().GetStorableType());
-  EXPECT_EQ(ADDRESS_HOME_COUNTRY, forms[0]->field(3)->Type().GetStorableType());
+  EXPECT_EQ(forms[0]->field(0)->Type().GetStorableType(), NAME_FIRST);
+  EXPECT_EQ(forms[0]->field(2)->Type().GetStorableType(), ADDRESS_HOME_LINE1);
+  EXPECT_EQ(forms[0]->field(3)->Type().GetStorableType(), ADDRESS_HOME_COUNTRY);
 }
 
 // Tests that we never overwrite the CVC heuristic-predicted type, even if there
@@ -3554,16 +3554,15 @@ TEST_F(AutofillCrowdsourcingEncoding, NoServerDataCCFields_CVC_NoOverwrite) {
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
-
-  EXPECT_EQ(CREDIT_CARD_NAME_FULL,
-            forms[0]->field(0)->Type().GetStorableType());
-  EXPECT_EQ(CREDIT_CARD_NUMBER, forms[0]->field(1)->Type().GetStorableType());
-  EXPECT_EQ(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
-            forms[0]->field(2)->Type().GetStorableType());
+  EXPECT_EQ(forms[0]->field(0)->Type().GetStorableType(),
+            CREDIT_CARD_NAME_FULL);
+  EXPECT_EQ(forms[0]->field(1)->Type().GetStorableType(), CREDIT_CARD_NUMBER);
+  EXPECT_EQ(forms[0]->field(2)->Type().GetStorableType(),
+            CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
 
   // Regardless of the flag, the CVC field should not have been overwritten.
-  EXPECT_EQ(CREDIT_CARD_VERIFICATION_CODE,
-            forms[0]->field(3)->Type().GetStorableType());
+  EXPECT_EQ(forms[0]->field(3)->Type().GetStorableType(),
+            CREDIT_CARD_VERIFICATION_CODE);
 }
 
 // Tests that we never overwrite the CVC heuristic-predicted type, even if there
@@ -3612,13 +3611,13 @@ TEST_F(AutofillCrowdsourcingEncoding, WithServerDataCCFields_CVC_NoOverwrite) {
 
   // Regardless of the flag, the fields should not have been overwritten,
   // including the CVC field.
-  EXPECT_EQ(CREDIT_CARD_NAME_FULL,
-            forms[0]->field(0)->Type().GetStorableType());
-  EXPECT_EQ(CREDIT_CARD_NUMBER, forms[0]->field(1)->Type().GetStorableType());
-  EXPECT_EQ(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
-            forms[0]->field(2)->Type().GetStorableType());
-  EXPECT_EQ(CREDIT_CARD_VERIFICATION_CODE,
-            forms[0]->field(3)->Type().GetStorableType());
+  EXPECT_EQ(forms[0]->field(0)->Type().GetStorableType(),
+            CREDIT_CARD_NAME_FULL);
+  EXPECT_EQ(forms[0]->field(1)->Type().GetStorableType(), CREDIT_CARD_NUMBER);
+  EXPECT_EQ(forms[0]->field(2)->Type().GetStorableType(),
+            CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
+  EXPECT_EQ(forms[0]->field(3)->Type().GetStorableType(),
+            CREDIT_CARD_VERIFICATION_CODE);
 }
 
 // When two fields have the same signature and the server response has multiple
@@ -3658,9 +3657,9 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_RankEqualSignatures) {
       response_string, forms, test::GetEncodedSignatures(forms), nullptr);
   ASSERT_EQ(form.field_count(), 3U);
 
-  EXPECT_EQ(NAME_FIRST, form.field(0)->server_type());
-  EXPECT_EQ(NAME_LAST, form.field(1)->server_type());
-  EXPECT_EQ(EMAIL_ADDRESS, form.field(2)->server_type());
+  EXPECT_EQ(form.field(0)->server_type(), NAME_FIRST);
+  EXPECT_EQ(form.field(1)->server_type(), NAME_LAST);
+  EXPECT_EQ(form.field(2)->server_type(), EMAIL_ADDRESS);
 }
 
 // When two fields have the same signature and the server response has one
@@ -3698,11 +3697,11 @@ TEST_F(AutofillCrowdsourcingEncoding,
       response_string, forms, test::GetEncodedSignatures(forms), nullptr);
   ASSERT_EQ(form.field_count(), 3U);
 
-  EXPECT_EQ(NAME_FIRST, form.field(0)->server_type());
+  EXPECT_EQ(form.field(0)->server_type(), NAME_FIRST);
   // This field gets the same signature as the previous one, because they have
   // the same signature.
-  EXPECT_EQ(NAME_FIRST, form.field(1)->server_type());
-  EXPECT_EQ(EMAIL_ADDRESS, form.field(2)->server_type());
+  EXPECT_EQ(form.field(1)->server_type(), NAME_FIRST);
+  EXPECT_EQ(form.field(2)->server_type(), EMAIL_ADDRESS);
 }
 
 // Test that experimental server predictions are not used.
