@@ -1283,6 +1283,9 @@ TYPED_TEST(SooTest, Contains2) {
 
   t.clear();
   EXPECT_FALSE(t.contains(0));
+
+  EXPECT_TRUE(t.insert(0).second);
+  EXPECT_TRUE(t.contains(0));
 }
 
 int decompose_constructed;
@@ -2083,8 +2086,6 @@ TEST(Table, EraseInsertProbing) {
 
 TEST(Table, GrowthInfoDeletedBit) {
   BadTable t;
-  EXPECT_TRUE(
-      RawHashSetTestOnlyAccess::GetCommon(t).growth_info().HasNoDeleted());
   int64_t init_count = static_cast<int64_t>(
       CapacityToGrowth(NormalizeCapacity(Group::kWidth + 1)));
   for (int64_t i = 0; i < init_count; ++i) {
@@ -2604,6 +2605,19 @@ TEST(Table, Merge) {
   EXPECT_THAT(t2, UnorderedElementsAre(Pair("0", "~0")));
 }
 
+TEST(Table, MergeSmall) {
+  StringTable t1, t2;
+  t1.emplace("1", "1");
+  t2.emplace("2", "2");
+
+  EXPECT_THAT(t1, UnorderedElementsAre(Pair("1", "1")));
+  EXPECT_THAT(t2, UnorderedElementsAre(Pair("2", "2")));
+
+  t2.merge(t1);
+  EXPECT_EQ(t1.size(), 0);
+  EXPECT_THAT(t2, UnorderedElementsAre(Pair("1", "1"), Pair("2", "2")));
+}
+
 TEST(Table, IteratorEmplaceConstructibleRequirement) {
   struct Value {
     explicit Value(absl::string_view view) : value(view) {}
@@ -2688,6 +2702,24 @@ TEST(Nodes, ExtractInsert) {
   EXPECT_THAT(*res.position, Pair(k0, ""));
   EXPECT_TRUE(res.node);
   EXPECT_FALSE(node);  // NOLINT(bugprone-use-after-move)
+}
+
+TEST(Nodes, ExtractInsertSmall) {
+  constexpr char k0[] = "Very long string zero.";
+  StringTable t = {{k0, ""}};
+  EXPECT_THAT(t, UnorderedElementsAre(Pair(k0, "")));
+
+  auto node = t.extract(k0);
+  EXPECT_EQ(t.size(), 0);
+  EXPECT_TRUE(node);
+  EXPECT_FALSE(node.empty());
+
+  StringTable t2;
+  StringTable::insert_return_type res = t2.insert(std::move(node));
+  EXPECT_TRUE(res.inserted);
+  EXPECT_THAT(*res.position, Pair(k0, ""));
+  EXPECT_FALSE(res.node);
+  EXPECT_THAT(t2, UnorderedElementsAre(Pair(k0, "")));
 }
 
 TYPED_TEST(SooTest, HintInsert) {
@@ -2828,12 +2860,12 @@ TEST(TableDeathTest, InvalidIteratorAsserts) {
 
   NonSooIntTable t;
   // Extra simple "regexp" as regexp support is highly varied across platforms.
-  EXPECT_DEATH_IF_SUPPORTED(t.erase(t.end()),
-                            "erase.* called on end.. iterator.");
+  EXPECT_DEATH_IF_SUPPORTED(++t.end(), "operator.* called on end.. iterator.");
   typename NonSooIntTable::iterator iter;
   EXPECT_DEATH_IF_SUPPORTED(
       ++iter, "operator.* called on default-constructed iterator.");
   t.insert(0);
+  t.insert(1);
   iter = t.begin();
   t.erase(iter);
   const char* const kErasedDeathMessage =
@@ -3644,11 +3676,13 @@ TEST(Iterator, InvalidComparisonDifferentTables) {
   EXPECT_DEATH_IF_SUPPORTED(void(t1.end() == default_constructed_iter),
                             "Invalid iterator comparison.*default-constructed");
   t1.insert(0);
+  t1.insert(1);
   EXPECT_DEATH_IF_SUPPORTED(void(t1.begin() == t2.end()),
                             "Invalid iterator comparison.*empty hashtable");
   EXPECT_DEATH_IF_SUPPORTED(void(t1.begin() == default_constructed_iter),
                             "Invalid iterator comparison.*default-constructed");
   t2.insert(0);
+  t2.insert(1);
   EXPECT_DEATH_IF_SUPPORTED(void(t1.begin() == t2.end()),
                             "Invalid iterator comparison.*end.. iterator");
   EXPECT_DEATH_IF_SUPPORTED(void(t1.begin() == t2.begin()),
@@ -3687,40 +3721,47 @@ TEST(Table, CountedHash) {
     GTEST_SKIP() << "Only run under NDEBUG: `assert` statements may cause "
                     "redundant hashing.";
   }
+  // When the table is sampled, we need to hash on the first insertion.
+  DisableSampling();
 
   using Table = CountedHashIntTable;
   auto HashCount = [](const Table& t) { return t.hash_function().count; };
   {
     Table t;
+    t.find(0);
     EXPECT_EQ(HashCount(t), 0);
   }
   {
     Table t;
     t.insert(1);
-    EXPECT_EQ(HashCount(t), 1);
+    t.find(1);
+    EXPECT_EQ(HashCount(t), 0);
     t.erase(1);
-    EXPECT_LE(HashCount(t), 2);
+    EXPECT_EQ(HashCount(t), 0);
+    t.insert(1);
+    t.insert(2);
+    EXPECT_EQ(HashCount(t), 2);
   }
   {
     Table t;
     t.insert(3);
-    EXPECT_EQ(HashCount(t), 1);
+    EXPECT_EQ(HashCount(t), 0);
     auto node = t.extract(3);
-    EXPECT_LE(HashCount(t), 2);
+    EXPECT_EQ(HashCount(t), 0);
     t.insert(std::move(node));
-    EXPECT_LE(HashCount(t), 3);
+    EXPECT_EQ(HashCount(t), 0);
   }
   {
     Table t;
     t.emplace(5);
-    EXPECT_EQ(HashCount(t), 1);
+    EXPECT_EQ(HashCount(t), 0);
   }
   {
     Table src;
     src.insert(7);
     Table dst;
     dst.merge(src);
-    EXPECT_EQ(HashCount(dst), 1);
+    EXPECT_EQ(HashCount(dst), 0);
   }
 }
 
@@ -3731,9 +3772,7 @@ TEST(Table, IterateOverFullSlotsEmpty) {
   auto fail_if_any = [](const ctrl_t*, void* i) {
     FAIL() << "expected no slots " << **static_cast<SlotType*>(i);
   };
-  container_internal::IterateOverFullSlots(
-      RawHashSetTestOnlyAccess::GetCommon(t), sizeof(SlotType), fail_if_any);
-  for (size_t i = 0; i < 256; ++i) {
+  for (size_t i = 2; i < 256; ++i) {
     t.reserve(i);
     container_internal::IterateOverFullSlots(
         RawHashSetTestOnlyAccess::GetCommon(t), sizeof(SlotType), fail_if_any);
@@ -3745,7 +3784,9 @@ TEST(Table, IterateOverFullSlotsFull) {
   using SlotType = NonSooIntTableSlotType;
 
   std::vector<int64_t> expected_slots;
-  for (int64_t idx = 0; idx < 128; ++idx) {
+  t.insert(0);
+  expected_slots.push_back(0);
+  for (int64_t idx = 1; idx < 128; ++idx) {
     t.insert(idx);
     expected_slots.push_back(idx);
 
