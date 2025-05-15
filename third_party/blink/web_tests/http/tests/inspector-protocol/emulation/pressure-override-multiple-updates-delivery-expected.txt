@@ -7,10 +7,12 @@ PASS: Received second update.
     [0] : [
         [0] : cpu
         [1] : critical
+        [2] : 0.4
     ]
     [1] : [
         [0] : cpu
         [1] : serious
+        [2] : 0.9
     ]
 ]
 

@@ -986,6 +986,13 @@
       }
     },
     {
+      name: "ComputePressureOwnContributionEstimate",
+      status: {
+        "Android": "",
+        "default": "experimental",
+      }
+    },
+    {
       name: "ConsiderFullChildNodeContentForListify",
       status: "stable",
     },

@@ -219,5 +219,14 @@
     "comments": [
       "Used to test Chrome with Skia Ganesh."
     ]
+  },
+  {
+    "name": "ComputePressureOwnContributionEstimate",
+    "args": [
+      "--enable-features=ComputePressureOwnContributionEstimate"
+    ],
+    "comments": [
+      "Enable experimental attribute onwContributionEstimate."
+    ]
   }
 ]

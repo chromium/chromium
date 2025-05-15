@@ -833,9 +833,13 @@ class ChromeDriver(object):
       params.update(metadata)
     return self.ExecuteCommand(Command.CREATE_VIRTUAL_PRESSURE_SOURCE, params)
 
-  def UpdateVirtualPressureSource(self, type, sample):
-    params = {'type': type, 'sample': sample}
-    return self.ExecuteCommand(Command.UPDATE_VIRTUAL_PRESSURE_SOURCE, params)
+  def UpdateVirtualPressureSource(self, type, sample,
+                                  own_contribution_estimate):
+    params = {'type': type,
+              'sample': sample,
+              'own_contribution_estimate': own_contribution_estimate}
+    return self.ExecuteCommand(Command.UPDATE_VIRTUAL_PRESSURE_SOURCE,
+                               params)
 
   def RemoveVirtualPressureSource(self, type):
     params = {'type': type}

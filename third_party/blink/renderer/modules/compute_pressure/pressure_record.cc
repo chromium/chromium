@@ -11,8 +11,12 @@ namespace blink {
 
 PressureRecord::PressureRecord(V8PressureSource::Enum source,
                                V8PressureState::Enum state,
+                               const double own_contribution_estimate,
                                const DOMHighResTimeStamp time)
-    : source_(source), state_(state), time_(time) {}
+    : source_(source),
+      state_(state),
+      own_contribution_estimate_(own_contribution_estimate),
+      time_(time) {}
 
 PressureRecord::~PressureRecord() = default;
 
@@ -24,6 +28,13 @@ V8PressureState PressureRecord::state() const {
   return V8PressureState(state_);
 }
 
+std::optional<double> PressureRecord::ownContributionEstimate() const {
+  if (own_contribution_estimate_ <= 0) {
+    return std::nullopt;
+  }
+  return own_contribution_estimate_;
+}
+
 DOMHighResTimeStamp PressureRecord::time() const {
   return time_;
 }
@@ -32,6 +43,11 @@ ScriptObject PressureRecord::toJSON(ScriptState* script_state) const {
   V8ObjectBuilder result(script_state);
   result.AddString("source", source().AsCStr());
   result.AddString("state", state().AsCStr());
+  if (ownContributionEstimate().has_value()) {
+    result.AddNumber("ownContributionEstimate", own_contribution_estimate_);
+  } else {
+    result.AddNull("ownContributionEstimate");
+  }
   result.AddNumber("time", time());
   return result.ToScriptObject();
 }

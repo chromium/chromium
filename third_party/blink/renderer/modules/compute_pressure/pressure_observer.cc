@@ -147,16 +147,18 @@ void PressureObserver::Trace(blink::Visitor* visitor) const {
 void PressureObserver::OnUpdate(ExecutionContext* execution_context,
                                 V8PressureSource::Enum source,
                                 V8PressureState::Enum state,
+                                double own_contribution_estimate,
                                 DOMHighResTimeStamp timestamp) {
   if (!PassesRateTest(source, timestamp)) {
     return;
   }
 
-  if (!ShouldDispatch(source, state)) {
+  if (!ShouldDispatch(source, state, own_contribution_estimate)) {
     return;
   }
 
-  auto* record = MakeGarbageCollected<PressureRecord>(source, state, timestamp);
+  auto* record = MakeGarbageCollected<PressureRecord>(
+      source, state, own_contribution_estimate, timestamp);
 
   if (base::FeatureList::IsEnabled(
           features::kComputePressureRateObfuscationMitigation)) {
@@ -281,7 +283,8 @@ bool PressureObserver::PassesRateTest(
 
 // https://w3c.github.io/compute-pressure/#dfn-should-dispach
 bool PressureObserver::ShouldDispatch(V8PressureSource::Enum source,
-                                      V8PressureState::Enum state) const {
+                                      V8PressureState::Enum state,
+                                      double own_contribution_estimate) const {
   const auto& last_record = last_record_map_[ToSourceIndex(source)];
 
   if (sample_interval_ != 0) {
@@ -292,7 +295,14 @@ bool PressureObserver::ShouldDispatch(V8PressureSource::Enum source,
     return true;
   }
 
-  return last_record->state() != state;
+  // conversion to std::optional for the comparison against last_record.
+  std::optional<double> maybe_estimate = own_contribution_estimate;
+  if (maybe_estimate < 0.0 || maybe_estimate > 1.0) {
+    maybe_estimate = std::nullopt;
+  }
+
+  return last_record->state() != state ||
+         last_record->ownContributionEstimate() != maybe_estimate;
 }
 
 // This function only checks the status of the rate obfuscation test.

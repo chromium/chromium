@@ -7612,6 +7612,7 @@ interface PressureObserver
     method unobserve
 interface PressureRecord
     attribute @@toStringTag
+    getter ownContributionEstimate
     getter source
     getter state
     getter time

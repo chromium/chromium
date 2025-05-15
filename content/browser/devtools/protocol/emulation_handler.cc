@@ -490,10 +490,23 @@ Response EmulationHandler::SetPressureSourceOverrideEnabled(
 #endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 }
 
+// TODO: Remove obsolete method.
+// `SetPressureStateOverride` will be replaced by SetPressureDataOverride.
+// The method UpdateVirtualPressureSourceState called previously
+// was removed in //content.
 void EmulationHandler::SetPressureStateOverride(
     const Emulation::PressureSource& source,
     const Emulation::PressureState& state,
     std::unique_ptr<SetPressureStateOverrideCallback> callback) {
+  callback->sendFailure(Response::InternalError());
+  return;
+}
+
+void EmulationHandler::SetPressureDataOverride(
+    const Emulation::PressureSource& source,
+    const Emulation::PressureState& state,
+    std::optional<double> own_contribution_estimate,
+    std::unique_ptr<SetPressureDataOverrideCallback> callback) {
   if (!host_) {
     callback->sendFailure(Response::InternalError());
     return;
@@ -519,8 +532,8 @@ void EmulationHandler::SetPressureStateOverride(
     return;
   }
   it->second->UpdateVirtualPressureSourceData(
-      mojo_state, /*own_contribution_estimate=*/0.0,
-      base::BindOnce(&SetPressureStateOverrideCallback::sendSuccess,
+      mojo_state, own_contribution_estimate.value_or(0.0),
+      base::BindOnce(&SetPressureDataOverrideCallback::sendSuccess,
                      std::move(callback)));
 #else
   callback->sendFailure(Response::InternalError());

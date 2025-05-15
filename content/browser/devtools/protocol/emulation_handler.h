@@ -158,10 +158,19 @@ class EmulationHandler : public DevToolsDomainHandler,
       bool enabled,
       const Emulation::PressureSource& source,
       std::unique_ptr<Emulation::PressureMetadata> metadata) override;
+  // TODO: Remove obsolete method.
+  // `SetPressureStateOverride` will be replaced by SetPressureDataOverride.
+  // The method UpdateVirtualPressureSourceState called previously
+  // was removed in //content.
   void SetPressureStateOverride(
       const Emulation::PressureSource& source,
       const Emulation::PressureState& state,
       std::unique_ptr<SetPressureStateOverrideCallback>) override;
+  void SetPressureDataOverride(
+      const Emulation::PressureSource& source,
+      const Emulation::PressureState& state,
+      std::optional<double> own_contribution_estimate,
+      std::unique_ptr<SetPressureDataOverrideCallback>) override;
 
   bool touch_emulation_enabled_;
   std::string touch_emulation_configuration_;

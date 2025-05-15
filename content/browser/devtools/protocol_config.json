@@ -49,6 +49,7 @@
 
                   "setPressureSourceOverrideEnabled",
                   "setPressureStateOverride",
+                  "setPressureDataOverride",
 
                   "setIdleOverride",
                   "clearIdleOverride",
@@ -66,7 +67,8 @@
                 "async": [
                   "getOverriddenSensorInformation",
                   "setSensorOverrideReadings",
-                  "setPressureStateOverride"
+                  "setPressureStateOverride",
+                  "setPressureDataOverride"
                 ]
             },
             {

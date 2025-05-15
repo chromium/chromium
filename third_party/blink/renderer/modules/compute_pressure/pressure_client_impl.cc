@@ -71,6 +71,7 @@ void PressureClientImpl::OnPressureUpdated(
   for (const auto& observer : observers) {
     observer->OnUpdate(GetExecutionContext(), source,
                        PressureStateToV8PressureState(update->state),
+                       update->own_contribution_estimate,
                        CalculateTimestamp(update->timestamp));
   }
 }

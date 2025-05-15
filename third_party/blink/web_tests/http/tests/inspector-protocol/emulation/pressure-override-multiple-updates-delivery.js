@@ -9,9 +9,10 @@
 
   testRunner.expectedSuccess(
       'Set pressure state override to \'critical\'',
-      await dp.Emulation.setPressureStateOverride({
+      await dp.Emulation.setPressureDataOverride({
         source: 'cpu',
         state: 'critical',
+        ownContributionEstimate: 0.4,
       }));
 
   // Ensure that the system focus and focused frame checks in
@@ -27,7 +28,7 @@
 
     const observer = new PressureObserver((records) => {
       for (record of records) {
-        states.push([record.source, record.state]);
+        states.push([record.source, record.state, record.ownContributionEstimate]);
       }
       if (states.length == 1) {
         firstUpdate.resolve(states);
@@ -45,9 +46,10 @@
 
   testRunner.expectedSuccess(
       'Set pressure state override to \'serious\'',
-      await dp.Emulation.setPressureStateOverride({
+      await dp.Emulation.setPressureDataOverride({
         source: 'cpu',
         state: 'serious',
+        ownContributionEstimate: 0.9,
       }));
 
   testRunner.expectedSuccess(

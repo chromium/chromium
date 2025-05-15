@@ -140,10 +140,12 @@ InternalsComputePressure::removeVirtualPressureSource(ScriptState* script_state,
 
 // static
 ScriptPromise<IDLUndefined>
-InternalsComputePressure::updateVirtualPressureSource(ScriptState* script_state,
-                                                      Internals&,
-                                                      V8PressureSource source,
-                                                      V8PressureState state) {
+InternalsComputePressure::updateVirtualPressureSource(
+    ScriptState* script_state,
+    Internals&,
+    V8PressureSource source,
+    V8PressureState state,
+    double own_contribution_estimate) {
   auto* execution_context = GetExecutionContext(script_state);
   mojo::Remote<test::mojom::blink::WebPressureManagerAutomation>
       web_pressure_manager_automation;
@@ -156,7 +158,7 @@ InternalsComputePressure::updateVirtualPressureSource(ScriptState* script_state,
   auto* raw_pressure_manager_automation = web_pressure_manager_automation.get();
   raw_pressure_manager_automation->UpdateVirtualPressureSourceData(
       ToMojoPressureSource(source.AsEnum()),
-      ToMojoPressureState(state.AsEnum()), /*own_contribution_estimate=*/0.0,
+      ToMojoPressureState(state.AsEnum()), own_contribution_estimate,
       WTF::BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
