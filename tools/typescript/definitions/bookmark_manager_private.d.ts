@@ -33,6 +33,7 @@ declare global {
       export function paste(parentId: string, selectedIdList?: string[]):
           Promise<void>;
       export function canPaste(parentId: string): Promise<boolean>;
+      export function isActiveTabInSplit(): Promise<boolean>;
       export function sortChildren(parentId: string): void;
       export function startDrag(
           idList: string[], dragNodeIndex: number, isFromTouch: boolean,

@@ -18,6 +18,7 @@ export interface BookmarkManagerApiProxy {
       y: number): void;
   removeTrees(idList: string[]): Promise<void>;
   canPaste(parentId: string): Promise<boolean>;
+  isActiveTabInSplit(): Promise<boolean>;
   openInNewWindow(idList: string[], incognito: boolean): void;
   openInNewTab(id: string, params?: OpenInNewTabParams): void;
   openInNewTabGroup(idList: string[]): void;
@@ -46,6 +47,10 @@ export class BookmarkManagerApiProxyImpl implements BookmarkManagerApiProxy {
 
   canPaste(parentId: string) {
     return chrome.bookmarkManagerPrivate.canPaste(parentId);
+  }
+
+  isActiveTabInSplit() {
+    return chrome.bookmarkManagerPrivate.isActiveTabInSplit();
   }
 
   openInNewWindow(idList: string[], incognito: boolean) {

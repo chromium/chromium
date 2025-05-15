@@ -69,6 +69,7 @@ export class BookmarksCommandManagerElement extends
       menuIds_: {type: Object},
       menuSource_: {type: Number},
       canPaste_: {type: Boolean},
+      isActiveTabInSplit_: {type: Boolean},
       globalCanEdit_: {type: Boolean},
       showEditDialog_: {type: Boolean},
       showOpenDialog_: {type: Boolean},
@@ -83,6 +84,7 @@ export class BookmarksCommandManagerElement extends
   private accessor menuSource_: MenuSource = MenuSource.NONE;
   private confirmOpenCallback_: (() => void)|null = null;
   private accessor canPaste_: boolean = false;
+  private accessor isActiveTabInSplit_: boolean = false;
   private accessor globalCanEdit_: boolean = false;
   protected accessor menuIds_: Set<string> = new Set<string>();
   protected accessor showEditDialog_: boolean = false;
@@ -288,7 +290,8 @@ export class BookmarksCommandManagerElement extends
             state.prefs.incognitoAvailability !==
             IncognitoAvailability.DISABLED;
       case Command.OPEN_SPLIT_VIEW:
-        return this.expandIds_(itemIds).length === 1;
+        return this.expandIds_(itemIds).length === 1 &&
+            !this.isActiveTabInSplit_;
       case Command.SORT:
         return this.canChangeList_() &&
             state.nodes[state.selectedFolder]!.children!.length > 1;
@@ -800,20 +803,16 @@ export class BookmarksCommandManagerElement extends
     getToastManager().showForStringPieces(pieces, /*hideSlotted*/ !canUndo);
   }
 
-  private updateCanPaste_(targetId: string): Promise<void> {
-    return BookmarkManagerApiProxyImpl.getInstance().canPaste(targetId).then(
-        result => {
-          this.canPaste_ = result;
-        });
-  }
-
   ////////////////////////////////////////////////////////////////////////////
   // Event handlers:
 
   private async onOpenCommandMenu_(
       e: CustomEvent<OpenCommandMenuDetail>): Promise<void> {
+    this.isActiveTabInSplit_ =
+        await BookmarkManagerApiProxyImpl.getInstance().isActiveTabInSplit();
     if (e.detail.targetId) {
-      await this.updateCanPaste_(e.detail.targetId);
+      this.canPaste_ = await BookmarkManagerApiProxyImpl.getInstance().canPaste(
+          e.detail.targetId);
     }
     if (e.detail.targetElement) {
       this.openCommandMenuAtElement(e.detail.targetElement, e.detail.source);

@@ -139,6 +139,21 @@
         }
       },
       {
+        "name": "isActiveTabInSplit",
+        "type": "function",
+        "description": "Whether the active tab is in a split view.",
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      {
         "name": "sortChildren",
         "type": "function",
         "description": "Sorts the children of a given folder.",

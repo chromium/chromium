@@ -83,6 +83,8 @@ namespace extensions {
 
 namespace bookmark_manager_private = api::bookmark_manager_private;
 namespace CanPaste = api::bookmark_manager_private::CanPaste;
+namespace IsActiveTabInSplit =
+    api::bookmark_manager_private::IsActiveTabInSplit;
 namespace Copy = api::bookmark_manager_private::Copy;
 namespace Cut = api::bookmark_manager_private::Cut;
 namespace Drop = api::bookmark_manager_private::Drop;
@@ -473,6 +475,21 @@ BookmarkManagerPrivateCanPasteFunction::RunOnReady() {
       BookmarkUIOperationsHelperNonMergedSurfaces(model, parent_node)
           .CanPasteFromClipboard();
   return WithArguments(can_paste);
+}
+
+ExtensionFunction::ResponseValue
+BookmarkManagerPrivateIsActiveTabInSplitFunction::RunOnReady() {
+  Browser* browser = ChromeExtensionFunctionDetails(this)
+                         .GetCurrentWindowController()
+                         ->GetBrowser();
+
+  if (!browser) {
+    return Error(kInvalidBrowserError);
+  }
+
+  const bool is_active_tab_in_split_view =
+      browser->GetActiveTabInterface()->IsSplit();
+  return WithArguments(is_active_tab_in_split_view);
 }
 
 ExtensionFunction::ResponseValue

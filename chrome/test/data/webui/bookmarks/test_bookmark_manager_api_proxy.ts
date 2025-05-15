@@ -17,6 +17,7 @@ export class TestBookmarkManagerApiProxy extends TestBrowserProxy implements
       'copy',
       'cut',
       'drop',
+      'isActiveTabInSplit',
       'openInNewTab',
       'openInNewWindow',
       'openInNewTabGroup',
@@ -49,6 +50,11 @@ export class TestBookmarkManagerApiProxy extends TestBrowserProxy implements
   canPaste(_parentId: string) {
     this.methodCalled('canPaste');
     return Promise.resolve(this.canPaste_);
+  }
+
+  isActiveTabInSplit() {
+    this.methodCalled('isActiveTabInSplit');
+    return Promise.resolve(false);
   }
 
   openInNewWindow(idList: string[], incognito: boolean) {

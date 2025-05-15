@@ -298,8 +298,8 @@ suite('<bookmarks-list> command manager integration test', function() {
         'contextmenu',
         {bubbles: true, composed: true, detail: {clientX: 0, clientY: 0}}));
 
-    assertEquals(MenuSource.LIST, commandManager.getMenuSourceForTesting());
     await microtasksFinished();
+    assertEquals(MenuSource.LIST, commandManager.getMenuSourceForTesting());
     const menuCommands =
         commandManager.shadowRoot.querySelectorAll<HTMLElement>(
             '.dropdown-item');
