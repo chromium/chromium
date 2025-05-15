@@ -1369,8 +1369,9 @@ void SerializeAriaNotificationAttributes(const AriaNotifications& notifications,
 }  // namespace
 
 void AXObject::Serialize(ui::AXNodeData* node_data,
-                         ui::AXMode accessibility_mode,
-                         bool is_snapshot) const {
+                         ui::AXMode accessibility_mode) const {
+  bool is_snapshot = AXObjectCache().IsForSnapshot();
+
   // Reduce redundant ancestor chain walking for display lock computations.
   auto memoization_scope =
       DisplayLockUtilities::CreateLockCheckMemoizationScope();

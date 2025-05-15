@@ -5868,6 +5868,10 @@ void AXNodeObject::AddImageMapChildren() {
 }
 
 void AXNodeObject::AddPopupChildren() {
+  if (AXObjectCache().IsForSnapshot()) {
+    // The snapshotter is unaware of the popup document.
+    return;
+  }
   auto* html_select_element = DynamicTo<HTMLSelectElement>(GetNode());
   if (html_select_element) {
     if (html_select_element->UsesMenuList()) {

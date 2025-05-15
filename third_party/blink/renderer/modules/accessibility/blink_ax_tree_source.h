@@ -32,14 +32,11 @@ class MODULES_EXPORT BlinkAXTreeSource
  public:
   // Pass truncate_inline_textboxes_ if inline textboxes should be removed
   // from the serialized tree, even if they are already available in the cache.
-  explicit BlinkAXTreeSource(AXObjectCacheImpl& ax_object_cache,
-                             bool is_snapshot);
+  explicit BlinkAXTreeSource(AXObjectCacheImpl& ax_object_cache);
   ~BlinkAXTreeSource() override;
 
-  static BlinkAXTreeSource* Create(AXObjectCacheImpl& ax_object_cache,
-                                   bool is_snapshot = false) {
-    return MakeGarbageCollected<BlinkAXTreeSource>(ax_object_cache,
-                                                   is_snapshot);
+  static BlinkAXTreeSource* Create(AXObjectCacheImpl& ax_object_cache) {
+    return MakeGarbageCollected<BlinkAXTreeSource>(ax_object_cache);
   }
 
   // AXTreeSource implementation.
@@ -80,11 +77,6 @@ class MODULES_EXPORT BlinkAXTreeSource
 
   const AXObject* GetFocusedObject() const;
 
-  // Truncate inline text boxes in snapshots, as they are just extra noise for
-  // consumers of the entire tree (e.g. AXTreeSnapshotter). This avoids passing
-  // the inline text boxes, even if a previous AXContext had built them.
-  bool ShouldTruncateInlineTextBoxes() const { return is_snapshot_; }
-
   // Whether we should highlight annotation results visually on the page
   // for debugging.
   bool image_annotation_debugging_ = false;
@@ -101,8 +93,6 @@ class MODULES_EXPORT BlinkAXTreeSource
   // Used to ensure that the tutor message that explains to screen reader users
   // how to turn on automatic image labels is provided only once.
   mutable std::optional<int32_t> first_unlabeled_image_id_ = std::nullopt;
-
-  const bool is_snapshot_;
 };
 
 }  // namespace blink

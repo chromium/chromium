@@ -350,8 +350,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Serialize the properties of this node into |node_data|.
   void Serialize(ui::AXNodeData* node_data,
-                 ui::AXMode accessibility_mode,
-                 bool is_snapshot = false) const;
+                 ui::AXMode accessibility_mode) const;
 
   // Determine subclass type.
   virtual bool IsImageMapLink() const;

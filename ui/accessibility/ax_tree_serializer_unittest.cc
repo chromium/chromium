@@ -577,29 +577,6 @@ TEST_F(AXTreeSerializerTest, TestPartialSerialization) {
     // The tree should be incomplete; it should have too few nodes.
     EXPECT_LT(update.nodes.size(), treedata1_.nodes.size());
     EXPECT_LT(dst_tree.size(), static_cast<int>(treedata1_.nodes.size()));
-
-    // The serializer should give us a list of nodes that have yet to
-    // be serialized.
-    std::vector<AXNodeID> incomplete_node_ids =
-        serializer_->GetIncompleteNodeIds();
-    EXPECT_FALSE(incomplete_node_ids.empty());
-
-    // Serialize the incomplete nodes, with no more limit.
-    serializer_->set_max_node_count(0);
-    for (AXNodeID id : incomplete_node_ids) {
-      update = AXTreeUpdate();
-      ASSERT_TRUE(
-          serializer_->SerializeChanges(tree1_->GetFromId(id), &update));
-      EXPECT_TRUE(dst_tree.Unserialize(update)) << dst_tree.error();
-    }
-
-    // The result should be indistinguishable from the source tree.
-    std::unique_ptr<AXTreeSource<const AXNode*, AXTreeData*, AXNodeData>>
-        dst_tree_source(dst_tree.CreateTreeSource());
-    BasicAXTreeSerializer serializer(dst_tree_source.get());
-    AXTreeUpdate dst_update;
-    CHECK(serializer.SerializeChanges(dst_tree.root(), &dst_update));
-    ASSERT_EQ(treedata1_.ToString(), dst_update.ToString());
   }
 }
 

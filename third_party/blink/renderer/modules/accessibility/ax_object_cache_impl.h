@@ -110,9 +110,11 @@ struct TextChangedOperation {
 // This class should only be used from inside the accessibility directory.
 class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
  public:
-  static AXObjectCache* Create(Document&, const ui::AXMode&);
+  static AXObjectCache* Create(Document&,
+                               const ui::AXMode&,
+                               bool for_snapshot_only = false);
 
-  AXObjectCacheImpl(Document&, const ui::AXMode&);
+  AXObjectCacheImpl(Document&, const ui::AXMode&, bool for_snapshot_only);
 
   AXObjectCacheImpl(const AXObjectCacheImpl&) = delete;
   AXObjectCacheImpl& operator=(const AXObjectCacheImpl&) = delete;
@@ -144,6 +146,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   void SetAXMode(const ui::AXMode&) override;
   // Contact accessibility owners before using.
   bool IsScreenReaderActive() const override;
+  bool IsForSnapshot() const { return for_snapshot_only_; }
 
   const AXObjectCacheLifecycle& lifecycle() const { return lifecycle_; }
 
@@ -567,11 +570,11 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   void SerializeLocationChanges();
 
   // This method is used to fulfill AXTreeSnapshotter requests.
-  bool SerializeEntireTree(
-      size_t max_node_count,
+  void SerializeEntireTreeAndDispose(
+      size_t max_nodes,
       base::TimeDelta timeout,
       ui::AXTreeUpdate*,
-      std::set<ui::AXSerializationErrorFlag>* out_error = nullptr) override;
+      std::set<ui::AXSerializationErrorFlag>* out_error) override;
 
   // Marks an object as dirty to be serialized in the next serialization.
   // If |subtree| is true, the entire subtree is dirty.
@@ -1367,6 +1370,12 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // when another tree with some generated content should be stitched into the
   // current tree.
   HashMap<AXID, ui::AXTreeID> ax_id_to_child_tree_id_;
+
+  // The current AXObjectCacheImpl is only being used for an AX tree snapshot,
+  // and will be disposed at the end of SerializeEntireTreeAndDispose().
+  // TODO(accessibility): create an AXObjectCacheForSnapshots that separates
+  // that use from the "keep a11y alive" use more cleanly.
+  bool for_snapshot_only_;
 };
 
 // This is the only subclass of AXObjectCache.

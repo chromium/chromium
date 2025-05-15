@@ -65,6 +65,7 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
       HashCountedSet<BlinkAXEventIntent, BlinkAXEventIntentHashTraits>;
 
   static AXObjectCache* Create(Document&, const ui::AXMode&);
+  static AXObjectCache* CreateSnapshotter(Document&, const ui::AXMode&);
 
   AXObjectCache(const AXObjectCache&) = delete;
   AXObjectCache& operator=(const AXObjectCache&) = delete;
@@ -201,7 +202,8 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual AXID GenerateAXID() const = 0;
 
   typedef AXObjectCache* (*AXObjectCacheCreateFunction)(Document&,
-                                                        const ui::AXMode&);
+                                                        const ui::AXMode&,
+                                                        bool for_snapshot_only);
   static void Init(AXObjectCacheCreateFunction);
 
   // Static helper functions.
@@ -210,12 +212,12 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   // Returns true if there are any pending updates that need processing.
   virtual bool IsDirty() = 0;
 
-  // Serialize entire tree, returning true if successful.
-  virtual bool SerializeEntireTree(
-      size_t max_node_count,
+  // Serialize entire tree, then Dispose().
+  virtual void SerializeEntireTreeAndDispose(
+      size_t max_nodes,
       base::TimeDelta timeout,
       ui::AXTreeUpdate*,
-      std::set<ui::AXSerializationErrorFlag>* out_error = nullptr) = 0;
+      std::set<ui::AXSerializationErrorFlag>* out_error) = 0;
 
   // Recompute the entire tree and reserialize it.
   // This method is useful when something that potentially affects most of the

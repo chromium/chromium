@@ -850,6 +850,7 @@ _CONFIG = [
             'ui::AXMode',
             'ui::AXNodeData',
             'ui::AXRelativeBounds',
+            'ui::AXSerializationErrorFlag',
             'ui::AXTreeChecks',
             'ui::AXTreeData',
             'ui::AXTreeID',
@@ -1330,6 +1331,17 @@ _CONFIG = [
             # Blink code shouldn't need to be qualified with the Blink namespace,
             # but there are exceptions, e.g. traits for Mojo.
             'blink::.+',
+        ],
+    },
+    {
+        'paths': [
+            'third_party/blink/public/web/web_document.h',
+        ],
+        'allowed': [
+            # For accessibility tree snapshots.
+            'ui::AXMode',
+            'ui::AXSerializationErrorFlag',
+            'ui::AXTreeUpdate',
         ],
     },
     {

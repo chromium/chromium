@@ -54,7 +54,13 @@ void AXObjectCache::Init(AXObjectCacheCreateFunction function) {
 AXObjectCache* AXObjectCache::Create(Document& document,
                                      const ui::AXMode& ax_mode) {
   DCHECK(create_function_);
-  return create_function_(document, ax_mode);
+  return create_function_(document, ax_mode, /*for_snapshot_only*/ false);
+}
+
+AXObjectCache* AXObjectCache::CreateSnapshotter(Document& document,
+                                                const ui::AXMode& ax_mode) {
+  DCHECK(create_function_);
+  return create_function_(document, ax_mode, /*for_snapshot_only*/ true);
 }
 
 namespace {

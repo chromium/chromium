@@ -2216,6 +2216,11 @@ void WebContentsImpl::RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
                                             AXTreeSnapshotPolicy policy) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RequestAXTreeSnapshot",
                         "mode", ax_mode.ToString());
+
+  // Inline text boxes are not supported in snapshots, as they are extra noise
+  // and expensive. If they are needed in the future, remove this line.
+  ax_mode.set_mode(ui::AXMode::kInlineTextBoxes, false);
+
   // Send a request to each of the frames in parallel. Each one will return
   // an accessibility tree snapshot, and AXTreeSnapshotCombiner will combine
   // them into a single tree and call |callback| with that result, then

@@ -97,9 +97,14 @@ TEST_F(AccessibilityTest, HistogramTest) {
 
   {
     ui::AXTreeUpdate response;
-    ScopedFreezeAXCache freeze(cache);
-    cache.SerializeEntireTree(/* max_node_count */ 1000,
-                              base::TimeDelta::FiniteMax(), &response);
+    // Create a secondary AXObjectCache for a snapshot.
+    Member<blink::AXObjectCache> snapshot_cache =
+        blink::AXObjectCache::CreateSnapshotter(GetDocument(),
+                                                ui::kAXModeBasic);
+    std::set<ui::AXSerializationErrorFlag> out_error;
+    snapshot_cache->SerializeEntireTreeAndDispose(/* max_node_count */ 1000,
+                                                  base::TimeDelta::FiniteMax(),
+                                                  &response, &out_error);
     histogram_tester.ExpectTotalCount(
         "Accessibility.Performance.AXObjectCacheImpl.Snapshot", 1);
     histogram_tester.ExpectTotalCount(

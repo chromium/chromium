@@ -22,9 +22,8 @@
 
 namespace blink {
 
-BlinkAXTreeSource::BlinkAXTreeSource(AXObjectCacheImpl& ax_object_cache,
-                                     bool is_snapshot)
-    : ax_object_cache_(ax_object_cache), is_snapshot_(is_snapshot) {}
+BlinkAXTreeSource::BlinkAXTreeSource(AXObjectCacheImpl& ax_object_cache)
+    : ax_object_cache_(ax_object_cache) {}
 
 BlinkAXTreeSource::~BlinkAXTreeSource() = default;
 
@@ -224,10 +223,6 @@ int32_t BlinkAXTreeSource::GetId(const AXObject* node) const {
 }
 
 size_t BlinkAXTreeSource::GetChildCount(const AXObject* node) const {
-  if (ShouldTruncateInlineTextBoxes() &&
-      ui::CanHaveInlineTextBoxChildren(node->RoleValue())) {
-    return 0;
-  }
   if (ax_object_cache_->GetAXMode().HasFilterFlags(ui::AXMode::kOnScreenOnly)) {
     // If kOnScreenOnly is set, we don't want to serialize children of nodes
     // that are off-screen, thus pruning the tree that is sent to
@@ -240,9 +235,6 @@ size_t BlinkAXTreeSource::GetChildCount(const AXObject* node) const {
 }
 
 AXObject* BlinkAXTreeSource::ChildAt(const AXObject* node, size_t index) const {
-  if (ShouldTruncateInlineTextBoxes()) {
-    CHECK(!ui::CanHaveInlineTextBoxChildren(node->RoleValue()));
-  }
   auto* child = node->ChildAtIncludingIgnored(static_cast<int>(index));
 
   // The child may be invalid due to issues in blink accessibility code.
@@ -311,7 +303,7 @@ void BlinkAXTreeSource::SerializeNode(const AXObject* src,
     NOTREACHED();
   }
 
-  src->Serialize(dst, ax_object_cache_->GetAXMode(), is_snapshot_);
+  src->Serialize(dst, ax_object_cache_->GetAXMode());
 }
 
 void BlinkAXTreeSource::Trace(Visitor* visitor) const {

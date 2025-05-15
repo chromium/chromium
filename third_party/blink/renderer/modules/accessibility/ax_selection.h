@@ -41,6 +41,8 @@ class MODULES_EXPORT AXSelection final {
 
   static void ClearCurrentSelection(Document&);
 
+  // These constructors will use the default AXObjectCache for the
+  // document unless a different one is passed in.
   static AXSelection FromCurrentSelection(
       const Document&,
       const AXObjectCacheImpl& ax_object_cache,

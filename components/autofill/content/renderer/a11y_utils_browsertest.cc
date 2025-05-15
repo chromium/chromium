@@ -25,7 +25,7 @@ TEST_F(A11yUtilsTest, SetAutofillSuggestionAvailability) {
   // Creating context imitates a screen reader enabled, so that all ax nodes
   // are created and attributes/state are updatable.
   auto ax_context = std::make_unique<blink::WebAXContext>(
-      document, ui::AXMode::kExtendedProperties);
+      document, ui::kAXModeDefaultForTests);
   ax_context->UpdateAXForAllDocuments();
 
   blink::WebInputElement element =
