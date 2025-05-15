@@ -1,10 +1,10 @@
 Name: Implementation of WebDriver BiDi standard
 Short Name: chromium-bidi
-URL: https://registry.npmjs.org/chromium-bidi/-/chromium-bidi-4.2.0.tgz
-Version: 4.2.0
-Date: 2025-05-02
-Revision: ebed730e38a73a63f80517ae8d8c92ba1177d714
-SHA-512: a6cbe4f3fecd16445d84bc27bc901f56c59c29243bac02d21d098aafd8d4cc48f81a8c1291f26dce3043b6e3aba74a9973507a93daafbc6b896697303bd995ba
+URL: https://registry.npmjs.org/chromium-bidi/-/chromium-bidi-5.2.0.tgz
+Version: 5.2.0
+Date: 2025-05-15
+Revision: 9564ee597ad4e4aba2edac19dd66584445eb5110
+SHA-512: 62e073997342f1a4b49dc940b580c11cbee36a78a7230eb6042d7c7984c0b20bf860e3758afc4e80e02fd32768c957ff423db4f87c0bd7b1a1ddac483fb41c6e
 License: Apache-2.0
 License File: LICENSE
 Shipped: yes
@@ -33,7 +33,7 @@ Local modifications are not allowed.
 The upstream is maintained by the Chromium developers.
 All the changes must be done there.
 
-The source code of the current revision can be found at the following url: https://github.com/GoogleChromeLabs/chromium-bidi/archive/ebed730e38a73a63f80517ae8d8c92ba1177d714.zip
+The source code of the current revision can be found at the following url: https://github.com/GoogleChromeLabs/chromium-bidi/archive/9564ee597ad4e4aba2edac19dd66584445eb5110.zip
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
@@ -50,9 +50,9 @@ License File: licenses/LICENSE.mitt
 
 Name: zod
 URL: https://zod.dev
-Version: 3.24.3
+Version: 3.24.4
 License: MIT
-Revision: a18d25b297d1a47dca8f1701afb18079c05e1e4c
+Revision: e62341b1aaf720709ee5f31785db25d5c0491659
 Security Critical: no
 Shipped: yes
 License File: licenses/LICENSE.zod
