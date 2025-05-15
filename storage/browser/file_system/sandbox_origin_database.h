@@ -74,7 +74,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxOriginDatabase
   void ReportInitStatus(const leveldb::Status& status);
   bool GetLastPathNumber(int* number);
 
-  base::FilePath file_system_directory_;
+  const base::FilePath file_system_directory_;
   raw_ptr<leveldb::Env> env_override_;
   std::unique_ptr<leveldb::DB> db_;
   base::Time last_reported_time_;
