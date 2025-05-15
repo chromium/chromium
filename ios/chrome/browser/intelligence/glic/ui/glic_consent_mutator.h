@@ -15,6 +15,9 @@
 // Did refuse GLIC consent. Triggered by cancel.
 - (void)didRefuseGLICConsent;
 
+// Did close GLIC Promo UI.
+- (void)didCloseGLICPromo;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_GLIC_UI_GLIC_CONSENT_MUTATOR_H_

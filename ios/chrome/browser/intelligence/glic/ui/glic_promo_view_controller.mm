@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/glic/ui/glic_consent_view_controller.h"
+#import "ios/chrome/browser/intelligence/glic/ui/glic_promo_view_controller.h"
 
 #import "ios/chrome/browser/intelligence/glic/ui/glic_consent_mutator.h"
 #import "ios/chrome/browser/intelligence/glic/ui/glic_constants.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/browser/intelligence/glic/ui/glic_view_controller_delegate.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -19,33 +19,29 @@ const CGFloat kGLICConsentMainStackHorizontalInset = 20.0;
 const CGFloat kGLICConsentMainStackTopInset = 24.0;
 const CGFloat kGLICConsentMainStackSpacing = 16.0;
 
+// Spacing the title label.
+const CGFloat kMainTitleLabelSpacing = 8.0;
+
 }  // namespace
 
-@interface GLICConsentViewController () <PromoStyleViewControllerDelegate>
+@interface GLICPromoViewController () <PromoStyleViewControllerDelegate>
 @end
 
-@implementation GLICConsentViewController {
-  // Main stack view containing all the others views.
+@implementation GLICPromoViewController {
   UIStackView* _mainStackView;
 }
 
 #pragma mark - UIViewController
 
-// TODO(crbug.com/414777915): Implement a basic UI.
 - (void)viewDidLoad {
   self.navigationItem.hidesBackButton = YES;
   [self configurePromoStyleProperties];
-  [self setupStackView];
+  [self configureMainStackView];
+  [_mainStackView addArrangedSubview:[self createMainTitle]];
   [super viewDidLoad];
 }
 
 #pragma mark - Private
-
-// Configure all the stacks.
-- (void)setupStackView {
-  [self configureMainStackView];
-  [_mainStackView addArrangedSubview:[self createSubtextLabel]];
-}
 
 // Configure promo style properties to add buttons. Ignores header image type.
 - (void)configurePromoStyleProperties {
@@ -54,7 +50,7 @@ const CGFloat kGLICConsentMainStackSpacing = 16.0;
   self.headerImageType = PromoStyleImageType::kNone;
 
   self.primaryActionString =
-      l10n_util::GetNSString(IDS_IOS_GLIC_CONSENT_PRIMARY_BUTTON);
+      l10n_util::GetNSString(IDS_IOS_GLIC_PROMO_PRIMARY_BUTTON);
   self.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_GLIC_FIRST_RUN_SECONDARY_BUTTON);
 }
@@ -87,24 +83,44 @@ const CGFloat kGLICConsentMainStackSpacing = 16.0;
   ]];
 }
 
-// Create the subtext label.
-- (UILabel*)createSubtextLabel {
-  UILabel* subText = [[UILabel alloc] init];
-  subText.text = kGLIConsentSubText;
-  subText.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
-  subText.numberOfLines = 2;
-  subText.textAlignment = NSTextAlignmentCenter;
-  return subText;
+// Create a view containing the main title.
+- (UIView*)createMainTitle {
+  UILabel* mainTitleLabel = [[UILabel alloc] init];
+  mainTitleLabel.text = kGLICPromoMainTitleText;
+  mainTitleLabel.numberOfLines = 2;
+  mainTitleLabel.textAlignment = NSTextAlignmentCenter;
+  mainTitleLabel.adjustsFontSizeToFitWidth = YES;
+  mainTitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+
+  mainTitleLabel.font = PreferredFontForTextStyle(UIFontTextStyleTitle2,
+                                                  UIFontWeightSemibold, 22);
+
+  UIView* titleContainer = [[UIView alloc] init];
+  titleContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  [titleContainer addSubview:mainTitleLabel];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [mainTitleLabel.leadingAnchor
+        constraintEqualToAnchor:titleContainer.leadingAnchor
+                       constant:kMainTitleLabelSpacing],
+    [mainTitleLabel.trailingAnchor
+        constraintEqualToAnchor:titleContainer.trailingAnchor
+                       constant:-kMainTitleLabelSpacing],
+    [mainTitleLabel.topAnchor constraintEqualToAnchor:titleContainer.topAnchor],
+    [mainTitleLabel.bottomAnchor
+        constraintEqualToAnchor:titleContainer.bottomAnchor],
+  ]];
+  return titleContainer;
 }
 
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
-  [self.mutator didConsentGLIC];
+  [self.glicConsentDelegate didAcceptPromo];
 }
 
 - (void)didTapSecondaryActionButton {
-  [self.mutator didRefuseGLICConsent];
+  [self.mutator didCloseGLICPromo];
 }
 
 @end

@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/intelligence/glic/coordinator/glic_consent_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/glic/metrics/glic_metrics.h"
 #import "ios/chrome/browser/intelligence/glic/ui/glic_consent_view_controller.h"
+#import "ios/chrome/browser/intelligence/glic/ui/glic_navigation_controller.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 @interface GLICConsentCoordinator () <UISheetPresentationControllerDelegate,
@@ -20,9 +21,8 @@
 @implementation GLICConsentCoordinator {
   // Mediator of GLIC consent handling logic for accepting the consent.
   GLICConsentMediator* _mediator;
-
-  // View controller of GLIC consent presenting the UI.
-  GLICConsentViewController* _viewController;
+  // Navigation view controller owning the promo and the consent UI.
+  GLICNavigationController* _navigationController;
 }
 
 #pragma mark - ChromeCoordinator
@@ -35,11 +35,11 @@
   _mediator = [[GLICConsentMediator alloc] initWithPrefService:pref_service];
   _mediator.delegate = self;
 
-  _viewController = [[GLICConsentViewController alloc] init];
-  _viewController.sheetPresentationController.delegate = self;
-  _viewController.mutator = _mediator;
+  _navigationController = [[GLICNavigationController alloc] init];
+  _navigationController.sheetPresentationController.delegate = self;
+  _navigationController.mutator = _mediator;
 
-  [self.baseViewController presentViewController:_viewController
+  [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
   [super start];
@@ -47,12 +47,12 @@
 
 // Stops the coordinator.
 - (void)stop {
-  if (_viewController.presentingViewController) {
+  if (_navigationController.presentingViewController) {
     [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
   }
 
   _mediator = nil;
-  _viewController = nil;
+  _navigationController = nil;
   [super stop];
 }
 

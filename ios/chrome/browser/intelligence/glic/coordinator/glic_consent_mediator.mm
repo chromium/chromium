@@ -42,4 +42,9 @@
   [_delegate dismissGLICConsentUI];
 }
 
+// Did close GLIC Promo UI.
+- (void)didCloseGLICPromo {
+  [_delegate dismissGLICConsentUI];
+}
+
 @end

@@ -2524,6 +2524,15 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_GENERIC_PASSKIT_ERROR" desc="Generic error message on failure reading a PassKit object. [Length: 60em] [iOS only]">
         Sorry, your Pass cannot be installed to Passbook at this time.
       </message>
+      <message name="IDS_IOS_GLIC_CONSENT_PRIMARY_BUTTON" desc="Text for the GLIC Consent primary button.">
+        Yes, I'm in
+      </message>
+      <message name="IDS_IOS_GLIC_FIRST_RUN_SECONDARY_BUTTON" desc="Text for the GLIC First Run secondary button.">
+        No thanks
+      </message>
+      <message name="IDS_IOS_GLIC_PROMO_PRIMARY_BUTTON" desc="Text for the GLIC Promo primary button.">
+        Try it out
+      </message>
       <message name="IDS_IOS_GOOGLE_ACCOUNTS_MANAGEMENT_FROM_ACCOUNT_SETTINGS_TITLE" desc="Title of a page that shows all accounts on the user's device and lets them add, remove and otherwise manage their accounts. Avoid long strings given the limited space between surrounding buttons.">
         Accounts on this device
       </message>
