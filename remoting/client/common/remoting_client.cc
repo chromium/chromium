@@ -19,8 +19,8 @@
 #include "remoting/base/directory_service_client.h"
 #include "remoting/base/oauth_token_info.h"
 #include "remoting/base/passthrough_oauth_token_getter.h"
+#include "remoting/client/common/frame_consumer_wrapper.h"
 #include "remoting/client/common/logging.h"
-#include "remoting/client/common/software_video_renderer.h"
 #include "remoting/proto/remoting/v1/host_info.pb.h"
 #include "remoting/proto/remoting/v1/remote_support_host_messages.pb.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
@@ -29,7 +29,6 @@
 #include "remoting/protocol/connection_to_host.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/ice_config_fetcher_default.h"
-#include "remoting/protocol/ice_connection_to_host.h"
 #include "remoting/protocol/jingle_session.h"
 #include "remoting/protocol/jingle_session_manager.h"
 #include "remoting/protocol/negotiating_client_authenticator.h"
@@ -37,6 +36,7 @@
 #include "remoting/protocol/session_config.h"
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/transport_context.h"
+#include "remoting/protocol/webrtc_connection_to_host.h"
 #include "remoting/signaling/ftl_client_uuid_device_id_provider.h"
 #include "remoting/signaling/ftl_signal_strategy.h"
 #include "remoting/signaling/signaling_address.h"
@@ -136,11 +136,7 @@ void RemotingClient::StartConnection() {
   CLIENT_LOG << "Creating session manager...";
   auto protocol_config = protocol::CandidateSessionConfig::CreateDefault();
   protocol_config->DisableAudioChannel();
-  // TODO: joedow - If we end up using this code in production, get WebRTC
-  // working and switch to it. The current WebRTC implementation is host-centric
-  // and expected a video encoder which is not useful on the client-side of the
-  // connection.
-  protocol_config->set_webrtc_supported(false);
+  protocol_config->set_webrtc_supported(true);
   session_manager_ =
       std::make_unique<protocol::JingleSessionManager>(signal_strategy_.get());
   session_manager_->set_protocol_config(std::move(protocol_config));
@@ -162,10 +158,10 @@ void RemotingClient::StartConnection() {
           std::move(client_auth_config)));
 
   CLIENT_LOG << "Creating video renderer...";
-  video_renderer_ = std::make_unique<SoftwareVideoRenderer>(frame_consumer_);
+  video_renderer_ = std::make_unique<FrameConsumerWrapper>(frame_consumer_);
 
   CLIENT_LOG << "Establishing connection to host...";
-  connection_ = std::make_unique<protocol::IceConnectionToHost>();
+  connection_ = std::make_unique<protocol::WebrtcConnectionToHost>();
   connection_->set_client_stub(this);
   connection_->set_clipboard_stub(this);
   connection_->set_video_renderer(video_renderer_.get());
