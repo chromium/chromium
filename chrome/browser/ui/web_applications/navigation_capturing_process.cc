@@ -304,6 +304,7 @@ NavigationCapturingProcess::NavigationCapturingProcess(
       navigation_capturing_settings_->GetCapturingWebAppForUrl(params.url);
 
   if (first_navigation_app_id_) {
+    CHECK(registrar.GetAppById(*first_navigation_app_id_));
     first_navigation_app_display_mode_ =
         registrar.GetAppEffectiveDisplayMode(*first_navigation_app_id_);
   }
@@ -827,6 +828,7 @@ NavigationCapturingProcess::HandleRedirect() {
     return content::NavigationThrottle::PROCEED;
   }
 
+  CHECK(registrar.GetAppById(*target_app_id));
   blink::mojom::DisplayMode target_display_mode =
       registrar.GetAppEffectiveDisplayMode(*target_app_id);
   CHECK(WebAppRegistrar::IsSupportedDisplayModeForNavigationCapture(
