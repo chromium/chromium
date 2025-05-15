@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_relative_color_value.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -25,8 +26,8 @@ TEST(ColorFunctionParserTest, RelativeColorWithKeywordBase_LateResolveEnabled) {
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
 
   ColorFunctionParser parser;
-  const CSSValue* result =
-      parser.ConsumeFunctionalSyntaxColor(stream, *context);
+  const CSSValue* result = parser.ConsumeFunctionalSyntaxColor(
+      stream, *context, css_parsing_utils::ColorParserContext());
   EXPECT_TRUE(result->IsRelativeColorValue());
   const cssvalue::CSSRelativeColorValue* color =
       To<cssvalue::CSSRelativeColorValue>(result);
@@ -63,8 +64,8 @@ TEST(ColorFunctionParserTest,
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
 
   ColorFunctionParser parser;
-  const CSSValue* result =
-      parser.ConsumeFunctionalSyntaxColor(stream, *context);
+  const CSSValue* result = parser.ConsumeFunctionalSyntaxColor(
+      stream, *context, css_parsing_utils::ColorParserContext());
   EXPECT_TRUE(result->IsColorValue());
   const cssvalue::CSSColor* color = To<cssvalue::CSSColor>(result);
   EXPECT_EQ(color->Value(),
@@ -79,8 +80,8 @@ TEST(ColorFunctionParserTest, RelativeColorWithInvalidChannelReference) {
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
 
   ColorFunctionParser parser;
-  const CSSValue* result =
-      parser.ConsumeFunctionalSyntaxColor(stream, *context);
+  const CSSValue* result = parser.ConsumeFunctionalSyntaxColor(
+      stream, *context, css_parsing_utils::ColorParserContext());
   EXPECT_EQ(result, nullptr);
 }
 
@@ -92,8 +93,8 @@ TEST(ColorFunctionParserTest, RelativeColorWithCurrentcolorBase_NoAlpha) {
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
 
   ColorFunctionParser parser;
-  const CSSValue* result =
-      parser.ConsumeFunctionalSyntaxColor(stream, *context);
+  const CSSValue* result = parser.ConsumeFunctionalSyntaxColor(
+      stream, *context, css_parsing_utils::ColorParserContext());
   EXPECT_TRUE(result->IsRelativeColorValue());
   const cssvalue::CSSRelativeColorValue* color =
       To<cssvalue::CSSRelativeColorValue>(result);
@@ -129,8 +130,8 @@ TEST(ColorFunctionParserTest, RelativeColorWithCurrentcolorBase_CalcAlpha) {
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
 
   ColorFunctionParser parser;
-  const CSSValue* result =
-      parser.ConsumeFunctionalSyntaxColor(stream, *context);
+  const CSSValue* result = parser.ConsumeFunctionalSyntaxColor(
+      stream, *context, css_parsing_utils::ColorParserContext());
   EXPECT_TRUE(result->IsRelativeColorValue());
   const cssvalue::CSSRelativeColorValue* color =
       To<cssvalue::CSSRelativeColorValue>(result);
@@ -167,8 +168,8 @@ TEST(ColorFunctionParserTest, RelativeColorWithCurrentcolorBase_NoneKeyword) {
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
 
   ColorFunctionParser parser;
-  const CSSValue* result =
-      parser.ConsumeFunctionalSyntaxColor(stream, *context);
+  const CSSValue* result = parser.ConsumeFunctionalSyntaxColor(
+      stream, *context, css_parsing_utils::ColorParserContext());
   EXPECT_TRUE(result->IsRelativeColorValue());
   const cssvalue::CSSRelativeColorValue* color =
       To<cssvalue::CSSRelativeColorValue>(result);
@@ -206,8 +207,8 @@ TEST(ColorFunctionParserTest, RelativeColorWithColorMixWithCurrentColorBase) {
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
 
   ColorFunctionParser parser;
-  const CSSValue* result =
-      parser.ConsumeFunctionalSyntaxColor(stream, *context);
+  const CSSValue* result = parser.ConsumeFunctionalSyntaxColor(
+      stream, *context, css_parsing_utils::ColorParserContext());
   EXPECT_TRUE(result->IsRelativeColorValue());
   const cssvalue::CSSRelativeColorValue* color =
       To<cssvalue::CSSRelativeColorValue>(result);

@@ -35,6 +35,8 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/dom/text_link_colors.h"
@@ -71,9 +73,10 @@ static ColorParseResult ParseColor(Color& parsed_color,
                                   color_provider, is_in_web_app_scope)) {
     return ColorParseResult::kColor;
   }
-  const CSSValue* parsed_value = CSSParser::ParseSingleValue(
-      CSSPropertyID::kColor, color_string,
-      StrictCSSParserContext(SecureContextMode::kInsecureContext));
+  CSSParserTokenStream stream(color_string);
+  const CSSValue* parsed_value =
+      css_parsing_utils::ConsumeColorWithoutElementContext(
+          stream, *StrictCSSParserContext(SecureContextMode::kInsecureContext));
   if (parsed_value && (parsed_value->IsColorMixValue() ||
                        parsed_value->IsRelativeColorValue())) {
     static const TextLinkColors kDefaultTextLinkColors{};

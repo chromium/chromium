@@ -204,10 +204,12 @@ bool IsInGamutRec2020(Color color) {
 bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
     CSSParserTokenStream& stream,
     CSSValueID function_id,
-    const CSSParserContext& context) {
+    const CSSParserContext& context,
+    const css_parsing_utils::ColorParserContext& color_parser_context) {
   // [from <color>]?
   if (css_parsing_utils::ConsumeIdent<CSSValueID::kFrom>(stream)) {
-    unresolved_origin_color_ = css_parsing_utils::ConsumeColor(stream, context);
+    unresolved_origin_color_ =
+        css_parsing_utils::ConsumeColor(stream, context, color_parser_context);
     if (!unresolved_origin_color_) {
       return false;
     }
@@ -278,9 +280,25 @@ bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
   return true;
 }
 
-bool ColorFunctionParser::ConsumeChannel(CSSParserTokenStream& stream,
-                                         const CSSParserContext& context,
-                                         int i) {
+namespace {
+
+bool IsAllowedValueInParserContext(
+    const CSSValue* value,
+    const css_parsing_utils::ColorParserContext& color_parser_context) {
+  if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
+    return color_parser_context.InElementContext() ||
+           !primitive_value->IsElementDependent();
+  }
+  return true;
+}
+
+}  // namespace
+
+bool ColorFunctionParser::ConsumeChannel(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    int i,
+    const css_parsing_utils::ColorParserContext& color_parser_context) {
   if (css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(stream)) {
     unresolved_channels_[i] = CSSIdentifierValue::Create(CSSValueID::kNone);
     channel_types_[i] = ChannelType::kNone;
@@ -307,19 +325,22 @@ bool ColorFunctionParser::ConsumeChannel(CSSParserTokenStream& stream,
       return false;
     }
 
-    return true;
+    return IsAllowedValueInParserContext(unresolved_channels_[i],
+                                         color_parser_context);
   }
 
   if ((unresolved_channels_[i] = css_parsing_utils::ConsumeNumber(
            stream, context, CSSPrimitiveValue::ValueRange::kAll))) {
     channel_types_[i] = ChannelType::kNumber;
-    return true;
+    return IsAllowedValueInParserContext(unresolved_channels_[i],
+                                         color_parser_context);
   }
 
   if ((unresolved_channels_[i] = css_parsing_utils::ConsumePercent(
            stream, context, CSSPrimitiveValue::ValueRange::kAll))) {
     channel_types_[i] = ChannelType::kPercentage;
-    return true;
+    return IsAllowedValueInParserContext(unresolved_channels_[i],
+                                         color_parser_context);
   }
 
   if (IsRelativeColor()) {
@@ -327,7 +348,8 @@ bool ColorFunctionParser::ConsumeChannel(CSSParserTokenStream& stream,
     if ((unresolved_channels_[i] = ConsumeRelativeColorChannel(
              stream, context, color_channel_map_, {kCalcNumber, kCalcPercent},
              function_metadata_->channel_percentage[i]))) {
-      return true;
+      return IsAllowedValueInParserContext(unresolved_channels_[i],
+                                           color_parser_context);
     }
   }
 
@@ -335,18 +357,22 @@ bool ColorFunctionParser::ConsumeChannel(CSSParserTokenStream& stream,
   return false;
 }
 
-bool ColorFunctionParser::ConsumeAlpha(CSSParserTokenStream& stream,
-                                       const CSSParserContext& context) {
+bool ColorFunctionParser::ConsumeAlpha(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const css_parsing_utils::ColorParserContext& color_parser_context) {
   if ((unresolved_alpha_ = css_parsing_utils::ConsumeNumber(
            stream, context, CSSPrimitiveValue::ValueRange::kAll))) {
     alpha_channel_type_ = ChannelType::kNumber;
-    return true;
+    return IsAllowedValueInParserContext(unresolved_alpha_,
+                                         color_parser_context);
   }
 
   if ((unresolved_alpha_ = css_parsing_utils::ConsumePercent(
            stream, context, CSSPrimitiveValue::ValueRange::kAll))) {
     alpha_channel_type_ = ChannelType::kPercentage;
-    return true;
+    return IsAllowedValueInParserContext(unresolved_alpha_,
+                                         color_parser_context);
   }
 
   if (css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(stream)) {
@@ -360,7 +386,8 @@ bool ColorFunctionParser::ConsumeAlpha(CSSParserTokenStream& stream,
                                 stream, context, color_channel_map_,
                                 {kCalcNumber, kCalcPercent}, 1.0))) {
     alpha_channel_type_ = ChannelType::kRelative;
-    return true;
+    return IsAllowedValueInParserContext(unresolved_alpha_,
+                                         color_parser_context);
   }
 
   return false;
@@ -572,7 +599,8 @@ bool ColorFunctionParser::AllChannelsAreResolvable() const {
 
 CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
     CSSParserTokenStream& stream,
-    const CSSParserContext& context) {
+    const CSSParserContext& context,
+    const css_parsing_utils::ColorParserContext& color_parser_context) {
   CSSValueID function_id = stream.Peek().FunctionId();
   if (!IsValidColorFunction(function_id)) {
     return nullptr;
@@ -587,13 +615,14 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
   {
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
     stream.ConsumeWhitespace();
-    if (!ConsumeColorSpaceAndOriginColor(stream, function_id, context)) {
+    if (!ConsumeColorSpaceAndOriginColor(stream, function_id, context,
+                                         color_parser_context)) {
       return nullptr;
     }
 
     // Parse the three color channel params.
     for (int i = 0; i < 3; i++) {
-      if (!ConsumeChannel(stream, context, i)) {
+      if (!ConsumeChannel(stream, context, i, color_parser_context)) {
         return nullptr;
       }
       // Potentially expect a separator after the first and second channel. The
@@ -632,7 +661,7 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
       }
     }
     if (has_alpha) {
-      if (!ConsumeAlpha(stream, context)) {
+      if (!ConsumeAlpha(stream, context, color_parser_context)) {
         return nullptr;
       }
     }

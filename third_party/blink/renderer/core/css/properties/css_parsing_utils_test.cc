@@ -25,6 +25,7 @@ namespace {
 
 using css_parsing_utils::AtDelimiter;
 using css_parsing_utils::AtIdent;
+using css_parsing_utils::ConsumeAbsoluteColor;
 using css_parsing_utils::ConsumeAngle;
 using css_parsing_utils::ConsumeIfDelimiter;
 using css_parsing_utils::ConsumeIfIdent;
@@ -204,10 +205,16 @@ TEST(CSSParsingUtilsTest, DashedIdent) {
 }
 
 TEST(CSSParsingUtilsTest, ConsumeAbsoluteColor) {
-  auto ConsumeColorForTest = [](String css_text, auto func) {
+  auto ConsumeColorForTest = [](String css_text) {
     CSSParserTokenStream stream(css_text);
     CSSParserContext* context = MakeContext();
-    return func(stream, *context);
+    return ConsumeColor(stream, *context,
+                        css_parsing_utils::ColorParserContext());
+  };
+  auto ConsumeAbsoluteColorForTest = [](String css_text) {
+    CSSParserTokenStream stream(css_text);
+    CSSParserContext* context = MakeContext();
+    return ConsumeAbsoluteColor(stream, *context);
   };
 
   struct {
@@ -233,11 +240,9 @@ TEST(CSSParsingUtilsTest, ConsumeAbsoluteColor) {
        nullptr},
   };
   for (auto& expectation : expectations) {
-    EXPECT_EQ(ConsumeColorForTest(expectation.css_text,
-                                  css_parsing_utils::ConsumeColor),
+    EXPECT_EQ(ConsumeColorForTest(expectation.css_text),
               expectation.consume_color_expectation);
-    EXPECT_EQ(ConsumeColorForTest(expectation.css_text,
-                                  css_parsing_utils::ConsumeAbsoluteColor),
+    EXPECT_EQ(ConsumeAbsoluteColorForTest(expectation.css_text),
               expectation.consume_absolute_color_expectation);
   }
 }

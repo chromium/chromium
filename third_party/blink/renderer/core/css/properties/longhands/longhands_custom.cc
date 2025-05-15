@@ -1036,7 +1036,10 @@ const CSSValue* BackgroundImage::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumeImageOrNone, stream, context);
+      static_cast<CSSValue* (*)(CSSParserTokenStream&,
+                                const CSSParserContext&)>(
+          css_parsing_utils::ConsumeImageOrNone),
+      stream, context);
 }
 
 const CSSValue* BackgroundImage::CSSValueFromComputedStyleInternal(
@@ -10934,7 +10937,10 @@ const CSSValue* MaskImage::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumeImageOrNone, stream, context);
+      static_cast<CSSValue* (*)(CSSParserTokenStream&,
+                                const CSSParserContext&)>(
+          css_parsing_utils::ConsumeImageOrNone),
+      stream, context);
 }
 
 const CSSValue* MaskImage::CSSValueFromComputedStyleInternal(

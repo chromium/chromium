@@ -823,9 +823,11 @@ CSSFunctionValue* ConsumeFilterFunction(CSSParserTokenStream& stream,
 }
 
 template <typename Func>
-CSSLightDarkValuePair* ConsumeLightDark(Func consume_value,
-                                        CSSParserTokenStream& stream,
-                                        const CSSParserContext& context) {
+CSSLightDarkValuePair* ConsumeLightDark(
+    Func consume_value,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const ColorParserContext& color_parser_context) {
   if (stream.Peek().FunctionId() != CSSValueID::kLightDark) {
     return nullptr;
   }
@@ -838,11 +840,11 @@ CSSLightDarkValuePair* ConsumeLightDark(Func consume_value,
   {
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
     stream.ConsumeWhitespace();
-    light_value = consume_value(stream, context);
+    light_value = consume_value(stream, context, color_parser_context);
     if (!light_value || !ConsumeCommaIncludingWhitespace(stream)) {
       return nullptr;
     }
-    dark_value = consume_value(stream, context);
+    dark_value = consume_value(stream, context, color_parser_context);
     if (!dark_value || !stream.AtEnd()) {
       return nullptr;
     }
@@ -1859,14 +1861,25 @@ namespace {
 CSSValue* ConsumeColorInternal(CSSParserTokenStream&,
                                const CSSParserContext&,
                                bool accept_quirky_colors,
-                               AllowedColors);
+                               const ColorParserContext&);
+
+bool IsAllowedValueInParserContext(
+    const CSSValue* value,
+    const ColorParserContext& color_parser_context) {
+  if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
+    return color_parser_context.InElementContext() ||
+           !primitive_value->IsElementDependent();
+  }
+  return true;
+}
 
 }  // namespace
 
 // https://www.w3.org/TR/css-color-5/#color-mix
-static CSSValue* ConsumeColorMixFunction(CSSParserTokenStream& stream,
-                                         const CSSParserContext& context,
-                                         AllowedColors allowed_colors) {
+static CSSValue* ConsumeColorMixFunction(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const ColorParserContext& color_parser_context) {
   DCHECK(stream.Peek().FunctionId() == CSSValueID::kColorMix);
   context.Count(WebFeature::kCSSColorMixFunction);
 
@@ -1892,14 +1905,17 @@ static CSSValue* ConsumeColorMixFunction(CSSParserTokenStream& stream,
 
     const bool no_quirky_colors = false;
 
-    CSSValue* color1 =
-        ConsumeColorInternal(stream, context, no_quirky_colors, allowed_colors);
+    CSSValue* color1 = ConsumeColorInternal(stream, context, no_quirky_colors,
+                                            color_parser_context);
     CSSPrimitiveValue* p1 =
         ConsumePercent(stream, context, CSSPrimitiveValue::ValueRange::kAll);
+    if (!IsAllowedValueInParserContext(p1, color_parser_context)) {
+      return nullptr;
+    }
     // Color can come after the percentage
     if (!color1) {
       color1 = ConsumeColorInternal(stream, context, no_quirky_colors,
-                                    allowed_colors);
+                                    color_parser_context);
       if (!color1) {
         return nullptr;
       }
@@ -1915,14 +1931,17 @@ static CSSValue* ConsumeColorMixFunction(CSSParserTokenStream& stream,
       return nullptr;
     }
 
-    CSSValue* color2 =
-        ConsumeColorInternal(stream, context, no_quirky_colors, allowed_colors);
+    CSSValue* color2 = ConsumeColorInternal(stream, context, no_quirky_colors,
+                                            color_parser_context);
     CSSPrimitiveValue* p2 =
         ConsumePercent(stream, context, CSSPrimitiveValue::ValueRange::kAll);
+    if (!IsAllowedValueInParserContext(p2, color_parser_context)) {
+      return nullptr;
+    }
     // Color can come after the percentage
     if (!color2) {
       color2 = ConsumeColorInternal(stream, context, no_quirky_colors,
-                                    allowed_colors);
+                                    color_parser_context);
       if (!color2) {
         return nullptr;
       }
@@ -2023,7 +2042,7 @@ Color ResolveColor(CSSValue* value,
 
 CSSValue* ConsumeColorContrast(CSSParserTokenStream& stream,
                                const CSSParserContext& context,
-                               AllowedColors allowed_colors) {
+                               const ColorParserContext& color_parser_context) {
   DCHECK_EQ(stream.Peek().FunctionId(), CSSValueID::kColorContrast);
 
   VectorOf<CSSValue> colors_to_compare_against;
@@ -2038,8 +2057,8 @@ CSSValue* ConsumeColorContrast(CSSParserTokenStream& stream,
 
     const bool no_quirky_colors = false;
 
-    CSSValue* background_color =
-        ConsumeColorInternal(stream, context, no_quirky_colors, allowed_colors);
+    CSSValue* background_color = ConsumeColorInternal(
+        stream, context, no_quirky_colors, color_parser_context);
     if (!background_color) {
       return nullptr;
     }
@@ -2050,7 +2069,7 @@ CSSValue* ConsumeColorContrast(CSSParserTokenStream& stream,
 
     do {
       CSSValue* color = ConsumeColorInternal(stream, context, no_quirky_colors,
-                                             allowed_colors);
+                                             color_parser_context);
       if (!color) {
         return nullptr;
       }
@@ -2163,14 +2182,15 @@ bool SystemAccentColorAllowed(const CSSParserContext& context) {
 CSSValue* ConsumeColorInternal(CSSParserTokenStream& stream,
                                const CSSParserContext& context,
                                bool accept_quirky_colors,
-                               AllowedColors allowed_colors) {
+                               const ColorParserContext& color_parser_context) {
   if (RuntimeEnabledFeatures::CSSColorContrastEnabled() &&
       stream.Peek().FunctionId() == CSSValueID::kColorContrast) {
-    return ConsumeColorContrast(stream, context, allowed_colors);
+    return ConsumeColorContrast(stream, context, color_parser_context);
   }
 
   if (stream.Peek().FunctionId() == CSSValueID::kColorMix) {
-    CSSValue* color = ConsumeColorMixFunction(stream, context, allowed_colors);
+    CSSValue* color =
+        ConsumeColorMixFunction(stream, context, color_parser_context);
     return color;
   }
 
@@ -2183,7 +2203,7 @@ CSSValue* ConsumeColorInternal(CSSParserTokenStream& stream,
     if (!IsValueAllowedInMode(id, context.Mode())) {
       return nullptr;
     }
-    if (allowed_colors == AllowedColors::kAbsolute &&
+    if (color_parser_context.OnlyAbsoluteColorsAllowed() &&
         (id == CSSValueID::kCurrentcolor ||
          StyleColor::IsSystemColorIncludingDeprecated(id) ||
          StyleColor::IsSystemColor(id))) {
@@ -2201,13 +2221,14 @@ CSSValue* ConsumeColorInternal(CSSParserTokenStream& stream,
   // Parses the color inputs rgb(), rgba(), hsl(), hsla(), hwb(), lab(),
   // oklab(), lch(), oklch() and color(). https://www.w3.org/TR/css-color-4/
   ColorFunctionParser parser;
-  if (CSSValue* functional_syntax_color =
-          parser.ConsumeFunctionalSyntaxColor(stream, context)) {
+  if (CSSValue* functional_syntax_color = parser.ConsumeFunctionalSyntaxColor(
+          stream, context, color_parser_context)) {
     return functional_syntax_color;
   }
 
-  if (allowed_colors == AllowedColors::kAll) {
-    return ConsumeLightDark(ConsumeColor, stream, context);
+  if (!color_parser_context.OnlyAbsoluteColorsAllowed()) {
+    return ConsumeLightDark(ConsumeColor, stream, context,
+                            color_parser_context);
   }
   return nullptr;
 }
@@ -2218,19 +2239,26 @@ CSSValue* ConsumeColorMaybeQuirky(CSSParserTokenStream& stream,
                                   const CSSParserContext& context) {
   return ConsumeColorInternal(stream, context,
                               IsQuirksModeBehavior(context.Mode()),
-                              AllowedColors::kAll);
+                              ColorParserContext());
 }
 
 CSSValue* ConsumeColor(CSSParserTokenStream& stream,
-                       const CSSParserContext& context) {
+                       const CSSParserContext& context,
+                       const ColorParserContext& color_parser_context) {
   return ConsumeColorInternal(stream, context, false /* accept_quirky_colors */,
-                              AllowedColors::kAll);
+                              color_parser_context);
 }
 
 CSSValue* ConsumeAbsoluteColor(CSSParserTokenStream& stream,
                                const CSSParserContext& context) {
   return ConsumeColorInternal(stream, context, false /* accept_quirky_colors */,
-                              AllowedColors::kAbsolute);
+                              ColorParserContext::AbsoluteColorContext());
+}
+
+CSSValue* ConsumeColorWithoutElementContext(CSSParserTokenStream& stream,
+                                            const CSSParserContext& context) {
+  return ConsumeColorInternal(stream, context, false /* accept_quirky_colors */,
+                              ColorParserContext::NoElementContext());
 }
 
 CSSValue* ConsumeLineWidth(CSSParserTokenStream& stream,
@@ -3100,6 +3128,12 @@ CSSValue* ConsumeImageOrNone(CSSParserTokenStream& stream,
   return ConsumeImage(stream, context);
 }
 
+CSSValue* ConsumeImageOrNone(CSSParserTokenStream& stream,
+                             const CSSParserContext& context,
+                             const ColorParserContext& color_parser_context) {
+  return ConsumeImageOrNone(stream, context);
+}
+
 CSSValue* ConsumeAxis(CSSParserTokenStream& stream,
                       const CSSParserContext& context) {
   CSSValueID axis_id = stream.Peek().Id();
@@ -3523,9 +3557,10 @@ CSSValue* ConsumeImage(
     if (IsUASheetBehavior(context.Mode())) {
       return ConsumeLightDark(
           static_cast<CSSValue* (*)(CSSParserTokenStream&,
-                                    const CSSParserContext&)>(
+                                    const CSSParserContext&,
+                                    const ColorParserContext&)>(
               ConsumeImageOrNone),
-          stream, context);
+          stream, context, ColorParserContext());
     }
   }
   return nullptr;
@@ -8307,7 +8342,7 @@ CSSValue* ConsumeBorderColorSide(CSSParserTokenStream& stream,
                              (shorthand == CSSPropertyID::kInvalid ||
                               shorthand == CSSPropertyID::kBorderColor);
   return ConsumeColorInternal(stream, context, allow_quirky_colors,
-                              AllowedColors::kAll);
+                              ColorParserContext());
 }
 
 CSSValue* ConsumeBorderWidth(CSSParserTokenStream& stream,

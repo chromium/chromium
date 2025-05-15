@@ -71,7 +71,27 @@ enum class AllowCalcSize {
   kAllowWithAutoAndContent,
   kForbid
 };
-enum class AllowedColors { kAll, kAbsolute };
+class ColorParserContext {
+  STACK_ALLOCATED();
+
+ public:
+  static ColorParserContext AbsoluteColorContext() {
+    return {.absolute_colors_ = true};
+  }
+  static ColorParserContext NoElementContext() { return {.no_element_ = true}; }
+
+  bool AllColorsAllowed() const { return !absolute_colors_ && !no_element_; }
+  bool OnlyAbsoluteColorsAllowed() const { return absolute_colors_; }
+  bool InElementContext() const { return !(no_element_ || absolute_colors_); }
+
+  // Parsing absolute <color> values:
+  // https://drafts.csswg.org/css-color-5/#absolute-color
+  bool absolute_colors_ = false;
+
+  // Parsing <color> values without an element context.
+  // Disallow tree counting functions.
+  bool no_element_ = false;
+};
 enum class EmptyPathStringHandling { kFailure, kTreatAsNone };
 
 using ConsumeAnimationItemValue = CSSValue* (*)(CSSPropertyID,
@@ -186,9 +206,15 @@ cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenStream&,
 CORE_EXPORT CSSValue* ConsumeColorMaybeQuirky(CSSParserTokenStream&,
                                               const CSSParserContext&);
 
-// https://drafts.csswg.org/css-color-5/#typedef-color
-CORE_EXPORT CSSValue* ConsumeColor(CSSParserTokenStream&,
-                                   const CSSParserContext&);
+CORE_EXPORT CSSValue* ConsumeColor(
+    CSSParserTokenStream&,
+    const CSSParserContext&,
+    const ColorParserContext& = ColorParserContext());
+
+// To parse in context without element (e.g. to prevent sibling-index()).
+CORE_EXPORT CSSValue* ConsumeColorWithoutElementContext(
+    CSSParserTokenStream&,
+    const CSSParserContext&);
 
 // https://drafts.csswg.org/css-color-5/#absolute-color
 CORE_EXPORT CSSValue* ConsumeAbsoluteColor(CSSParserTokenStream&,
@@ -231,6 +257,9 @@ CSSValue* ConsumeImage(
     const ConsumeStringUrlImagePolicy = ConsumeStringUrlImagePolicy::kForbid,
     const ConsumeImageSetImagePolicy = ConsumeImageSetImagePolicy::kAllow);
 CSSValue* ConsumeImageOrNone(CSSParserTokenStream&, const CSSParserContext&);
+CSSValue* ConsumeImageOrNone(CSSParserTokenStream&,
+                             const CSSParserContext&,
+                             const ColorParserContext&);
 
 CSSValue* ConsumeAxis(CSSParserTokenStream&, const CSSParserContext& context);
 
