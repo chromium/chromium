@@ -1151,6 +1151,20 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.AndroidAutofillManagerErrors"
+    enum="AutofillManagerMethod" expires_after="2025-09-28">
+  <owner>friedrichh@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Clank and WebView only. Logs failures when calling Android Autofill's
+    AutofillManager. All logged failures are caught and silently ignores since
+    they are RuntimeExceptions neither the user nor the browser can affect and
+    may be recoverable with later invocations. This includes but is not limited
+    to timeouts. Emitted for every failed API call. No success metric exists
+    since the call volume is quite high but the expected error volume is not.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.Autocomplete.NotOff.EditedAutofilledFieldAtSubmission2{AutofillFormType}"
     enum="AutofilledFieldUserEditingStatus" expires_after="2025-10-12">

@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.AndroidAutofillFeatures;
+import org.chromium.components.autofill.AutofillManagerWrapper;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -32,6 +33,8 @@ import org.chromium.components.user_prefs.UserPrefs;
 @NullMarked
 @JNINamespace("autofill")
 public class AutofillClientProviderUtils {
+    private static final String TAG = "AutofillClientProviderUtils";
+
     public static final String AUTOFILL_OPTIONS_DEEP_LINK_SHARED_PREFS_FILE =
             "autofill_options_deep_link_shared_prefs_file";
     public static final String AUTOFILL_OPTIONS_DEEP_LINK_FEATURE_KEY =
@@ -100,14 +103,11 @@ public class AutofillClientProviderUtils {
         if (manager == null) {
             return AndroidAutofillAvailabilityStatus.ANDROID_AUTOFILL_MANAGER_NOT_AVAILABLE;
         }
-        if (!manager.isAutofillSupported()) {
+        if (!AutofillManagerWrapper.isAutofillSupported(manager)) {
             return AndroidAutofillAvailabilityStatus.ANDROID_AUTOFILL_NOT_SUPPORTED;
         }
-        ComponentName componentName = null;
-        try {
-            componentName = manager.getAutofillServiceComponentName();
-        } catch (Exception e) {
-        }
+        ComponentName componentName =
+                AutofillManagerWrapper.getAutofillServiceComponentName(manager);
         if (componentName == null) {
             return AndroidAutofillAvailabilityStatus.UNKNOWN_ANDROID_AUTOFILL_SERVICE;
         }

@@ -71,14 +71,46 @@ public class AutofillManagerWrapper {
     // Indicates if AwG is the current Android autofill service.
     private final boolean mIsAwGCurrentAutofillService;
 
+    public static boolean isEnabled(AutofillManager autofillManager) {
+        try {
+            return autofillManager != null && autofillManager.isEnabled();
+        } catch (Exception e) {
+            AutofillProviderUMA.recordException(
+                    e, AutofillProviderUMA.AutofillManagerMethod.IS_ENABLED);
+            return false;
+        }
+    }
+
+    public static boolean isAutofillSupported(AutofillManager autofillManager) {
+        try {
+            return autofillManager != null && autofillManager.isAutofillSupported();
+        } catch (Exception e) {
+            AutofillProviderUMA.recordException(
+                    e, AutofillProviderUMA.AutofillManagerMethod.IS_AUTOFILL_SUPPORTED);
+            return false;
+        }
+    }
+
+    @RequiresApi(VERSION_CODES.P)
+    public static @Nullable ComponentName getAutofillServiceComponentName(
+            AutofillManager autofillManager) {
+        try {
+            return autofillManager.getAutofillServiceComponentName();
+        } catch (Exception e) {
+            AutofillProviderUMA.recordException(
+                    e,
+                    AutofillProviderUMA.AutofillManagerMethod.GET_AUTOFILL_SERVICE_COMPONENT_NAME);
+            return null;
+        }
+    }
+
     public AutofillManagerWrapper(Context context) {
         updateLogStat();
         if (isLoggable()) log("constructor");
         AutofillManager autofillManager = context.getSystemService(AutofillManager.class);
         if (!AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID_IN_CCT
                         .isEnabled()
-                && autofillManager != null
-                && !autofillManager.isEnabled()) {
+                && !isEnabled(autofillManager)) {
             autofillManager = null;
         }
         mAutofillManager = autofillManager;
@@ -91,17 +123,7 @@ public class AutofillManagerWrapper {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            ComponentName componentName = null;
-            try {
-                componentName = autofillManager.getAutofillServiceComponentName();
-            } catch (Exception e) {
-                // Can't catch com.android.internal.util.SyncResultReceiver.TimeoutException,
-                // because
-                // - The exception isn't Android API.
-                // - Different version of Android handle it differently.
-                // Uses Exception to catch various cases. (refer to crbug.com/1186406)
-                Log.e(TAG, "getAutofillServiceComponentName", e);
-            }
+            ComponentName componentName = getAutofillServiceComponentName(autofillManager);
             if (componentName != null) {
                 mPackageName = componentName.getPackageName();
                 mIsAwGCurrentAutofillService =
@@ -116,7 +138,12 @@ public class AutofillManagerWrapper {
             mIsAwGCurrentAutofillService = false;
         }
         mMonitor = new AutofillInputUiMonitor(this);
-        autofillManager.registerCallback(mMonitor);
+        try {
+            autofillManager.registerCallback(mMonitor);
+        } catch (Exception e) {
+            AutofillProviderUMA.recordException(
+                    e, AutofillProviderUMA.AutofillManagerMethod.REGISTER_CALLBACK);
+        }
     }
 
     public String getPackageName() {
@@ -126,19 +153,34 @@ public class AutofillManagerWrapper {
     public void notifyVirtualValueChanged(View parent, int childId, AutofillValue value) {
         if (isDisabled() || checkAndWarnIfDestroyed()) return;
         if (isLoggable()) log("notifyVirtualValueChanged");
-        mAutofillManager.notifyValueChanged(parent, childId, value);
+        try {
+            mAutofillManager.notifyValueChanged(parent, childId, value);
+        } catch (Exception e) {
+            AutofillProviderUMA.recordException(
+                    e, AutofillProviderUMA.AutofillManagerMethod.NOTIFY_VALUE_CHANGED);
+        }
     }
 
     public void commit(int submissionSource) {
         if (isDisabled() || checkAndWarnIfDestroyed()) return;
         if (isLoggable()) log("commit source:" + submissionSource);
-        mAutofillManager.commit();
+        try {
+            mAutofillManager.commit();
+        } catch (Exception e) {
+            AutofillProviderUMA.recordException(
+                    e, AutofillProviderUMA.AutofillManagerMethod.COMMIT);
+        }
     }
 
     public void cancel() {
         if (isDisabled() || checkAndWarnIfDestroyed()) return;
         if (isLoggable()) log("cancel");
-        mAutofillManager.cancel();
+        try {
+            mAutofillManager.cancel();
+        } catch (Exception e) {
+            AutofillProviderUMA.recordException(
+                    e, AutofillProviderUMA.AutofillManagerMethod.CANCEL);
+        }
     }
 
     public void notifyVirtualViewsReady(
@@ -146,9 +188,13 @@ public class AutofillManagerWrapper {
         // notifyVirtualViewsReady was added in Android U.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return;
         if (isDisabled() || checkAndWarnIfDestroyed()) return;
-
         if (isLoggable()) log("notifyVirtualViewsReady");
-        mAutofillManager.notifyVirtualViewsReady(parent, viewFillInfos);
+        try {
+            mAutofillManager.notifyVirtualViewsReady(parent, viewFillInfos);
+        } catch (Exception e) {
+            AutofillProviderUMA.recordException(
+                    e, AutofillProviderUMA.AutofillManagerMethod.NOTIFY_VIRTUAL_VIEWS_READY);
+        }
     }
 
     public void notifyVirtualViewEntered(View parent, int childId, Rect absBounds) {
@@ -159,7 +205,12 @@ public class AutofillManagerWrapper {
         }
         if (checkAndWarnIfDestroyed()) return;
         if (isLoggable()) log("notifyVirtualViewEntered");
-        mAutofillManager.notifyViewEntered(parent, childId, absBounds);
+        try {
+            mAutofillManager.notifyViewEntered(parent, childId, absBounds);
+        } catch (Exception e) {
+            AutofillProviderUMA.recordException(
+                    e, AutofillProviderUMA.AutofillManagerMethod.NOTIFY_VIEW_ENTERED);
+        }
     }
 
     @RequiresApi(VERSION_CODES.TIRAMISU)
@@ -171,13 +222,24 @@ public class AutofillManagerWrapper {
         }
         if (checkAndWarnIfDestroyed()) return false;
         if (isLoggable()) log("showAutofillDialog");
-        return mAutofillManager.showAutofillDialog(parent, childId);
+        try {
+            return mAutofillManager.showAutofillDialog(parent, childId);
+        } catch (Exception e) {
+            AutofillProviderUMA.recordException(
+                    e, AutofillProviderUMA.AutofillManagerMethod.SHOW_AUTOFILL_DIALOG);
+            return false;
+        }
     }
 
     public void notifyVirtualViewExited(View parent, int childId) {
         if (isDisabled() || checkAndWarnIfDestroyed()) return;
         if (isLoggable()) log("notifyVirtualViewExited");
-        mAutofillManager.notifyViewExited(parent, childId);
+        try {
+            mAutofillManager.notifyViewExited(parent, childId);
+        } catch (Exception e) {
+            AutofillProviderUMA.recordException(
+                    e, AutofillProviderUMA.AutofillManagerMethod.NOTIFY_VIEW_EXITED);
+        }
     }
 
     public void notifyVirtualViewVisibilityChanged(View parent, int childId, boolean isVisible) {
@@ -185,13 +247,23 @@ public class AutofillManagerWrapper {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1) return;
         if (isDisabled() || checkAndWarnIfDestroyed()) return;
         if (isLoggable()) log("notifyVirtualViewVisibilityChanged");
-        mAutofillManager.notifyViewVisibilityChanged(parent, childId, isVisible);
+        try {
+            mAutofillManager.notifyViewVisibilityChanged(parent, childId, isVisible);
+        } catch (Exception e) {
+            AutofillProviderUMA.recordException(
+                    e, AutofillProviderUMA.AutofillManagerMethod.NOTIFY_VIEW_VISIBILITY_CHANGED);
+        }
     }
 
     public void requestAutofill(View parent, int virtualId, Rect absBounds) {
         if (isDisabled() || checkAndWarnIfDestroyed()) return;
         if (isLoggable()) log("requestAutofill");
-        mAutofillManager.requestAutofill(parent, virtualId, absBounds);
+        try {
+            mAutofillManager.requestAutofill(parent, virtualId, absBounds);
+        } catch (Exception e) {
+            AutofillProviderUMA.recordException(
+                    e, AutofillProviderUMA.AutofillManagerMethod.REQUEST_AUTOFILL);
+        }
     }
 
     public boolean isAutofillInputUiShowing() {
@@ -208,10 +280,9 @@ public class AutofillManagerWrapper {
             // unregisterCallback() will cause various exceptions in this
             // scenario (see crbug.com/1078337), catching RuntimeException here prevents crash.
             mAutofillManager.unregisterCallback(mMonitor);
-        } catch (RuntimeException e) {
-            // We are not logging anything here since some of the exceptions are raised as 'generic'
-            // RuntimeException which makes it difficult to catch and ignore separately; and the
-            // RuntimeException seemed only happen in Android O, therefore, isn't actionable.
+        } catch (Exception e) {
+            AutofillProviderUMA.recordException(
+                    e, AutofillProviderUMA.AutofillManagerMethod.UNREGISTER_CALLBACK);
         } finally {
             mAutofillManager = null;
             mDestroyed = true;
@@ -225,7 +296,7 @@ public class AutofillManagerWrapper {
         }
         return AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID_IN_CCT
                         .isEnabled()
-                && !mAutofillManager.isEnabled();
+                && !isEnabled(mAutofillManager);
     }
 
     /**
@@ -288,5 +359,4 @@ public class AutofillManagerWrapper {
         // Check the system setting directly.
         sIsLoggable = android.util.Log.isLoggable(TAG, Log.DEBUG);
     }
-
 }

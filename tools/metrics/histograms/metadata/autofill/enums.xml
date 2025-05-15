@@ -2287,6 +2287,27 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Manage cards button pressed"/>
 </enum>
 
+<enum name="AutofillManagerMethod">
+  <summary>
+    Describes which method of Android Autofill's AutofillManager was called.
+    Ordered alphabetically.
+  </summary>
+  <int value="1" label="cancel"/>
+  <int value="2" label="commit"/>
+  <int value="3" label="getAutofillServiceComponentName"/>
+  <int value="4" label="isAutofillSupported"/>
+  <int value="5" label="isEnabled"/>
+  <int value="6" label="notifyValueChanged"/>
+  <int value="7" label="notifyViewEntered"/>
+  <int value="8" label="notifyViewExited"/>
+  <int value="9" label="notifyViewVisibilityChanged"/>
+  <int value="10" label="notifyVirtualViewsReady"/>
+  <int value="11" label="registerCallback"/>
+  <int value="12" label="requestAutofill"/>
+  <int value="13" label="showAutofillDialog"/>
+  <int value="14" label="unregisterCallback"/>
+</enum>
+
 <enum name="AutofillManuallyAddedAddressSurface">
   <summary>
     Describes the surface used by the user for adding a new address.

@@ -12,6 +12,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.autofill.mojom.SubmissionSource;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -21,13 +22,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.TimeUnit;
 
 /**
- * The class for AutofillProvider-related UMA. Note that most of the concrete histogram
- * names include "WebView"; when this class was originally developed it was WebView-specific,
- * and when generalizing it we did not change these names to maintain continuity when
- * analyzing the histograms.
+ * The class for AutofillProvider-related UMA. Note that most of the concrete histogram names
+ * include "WebView"; when this class was originally developed it was WebView-specific, and when
+ * generalizing it we did not change these names to maintain continuity when analyzing the
+ * histograms.
  */
 @NullMarked
 public class AutofillProviderUMA {
+    public static final String TAG = "AutofillProvider"; // Part of the provider.
+
     // Records whether the Autofill service is enabled or not.
     public static final String UMA_AUTOFILL_ENABLED = "Autofill.WebView.Enabled";
 
@@ -108,6 +111,8 @@ public class AutofillProviderUMA {
     // 4) Update tools/metrics/histograms/enums.xml with the new entry.
     // 5) Look for switch statements that uses those values and update them accordingly.
     private static final String UMA_AUTOFILL_PROVIDER = "Autofill.WebView.Provider.PackageName";
+    private static final String UMA_AUTOFILL_MANAGER_ERROR =
+            "Autofill.AndroidAutofillManagerErrors";
     private static final String AWG_PACKAGE_NAME = "com.google.android.gms";
     private static final String SAMSUNG_PASS_PACKAGE_NAME =
             "com.samsung.android.samsungpassautofill";
@@ -136,6 +141,42 @@ public class AutofillProviderUMA {
         int ONE_PASSWORD = 5;
         int BITWARDEN = 6;
         int MAX_VALUE = 7;
+    }
+
+    @IntDef({
+        AutofillManagerMethod.CANCEL,
+        AutofillManagerMethod.COMMIT,
+        AutofillManagerMethod.GET_AUTOFILL_SERVICE_COMPONENT_NAME,
+        AutofillManagerMethod.IS_AUTOFILL_SUPPORTED,
+        AutofillManagerMethod.IS_ENABLED,
+        AutofillManagerMethod.NOTIFY_VALUE_CHANGED,
+        AutofillManagerMethod.NOTIFY_VIEW_ENTERED,
+        AutofillManagerMethod.NOTIFY_VIEW_EXITED,
+        AutofillManagerMethod.NOTIFY_VIEW_VISIBILITY_CHANGED,
+        AutofillManagerMethod.NOTIFY_VIRTUAL_VIEWS_READY,
+        AutofillManagerMethod.REGISTER_CALLBACK,
+        AutofillManagerMethod.REQUEST_AUTOFILL,
+        AutofillManagerMethod.SHOW_AUTOFILL_DIALOG,
+        AutofillManagerMethod.UNREGISTER_CALLBACK,
+        AutofillManagerMethod.MAX_VALUE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface AutofillManagerMethod {
+        int CANCEL = 1;
+        int COMMIT = 2;
+        int GET_AUTOFILL_SERVICE_COMPONENT_NAME = 3;
+        int IS_AUTOFILL_SUPPORTED = 4;
+        int IS_ENABLED = 5;
+        int NOTIFY_VALUE_CHANGED = 6;
+        int NOTIFY_VIEW_ENTERED = 7;
+        int NOTIFY_VIEW_EXITED = 8;
+        int NOTIFY_VIEW_VISIBILITY_CHANGED = 9;
+        int NOTIFY_VIRTUAL_VIEWS_READY = 10;
+        int REGISTER_CALLBACK = 11;
+        int REQUEST_AUTOFILL = 12;
+        int SHOW_AUTOFILL_DIALOG = 13;
+        int UNREGISTER_CALLBACK = 14;
+        int MAX_VALUE = 15;
     }
 
     private static void recordTimesHistogram(String name, long durationMillis) {
@@ -480,6 +521,21 @@ public class AutofillProviderUMA {
             mRecorder.recordHistogram(mCurrentProvider);
         }
         mRecorder = null;
+    }
+
+    /**
+     * Android R changed the Exceptions thrown in AutofillManager from an internal TimeoutException
+     * to a generic RuntimeException. Therefore, catch all Exceptions. This silences the internal
+     * TimeoutException pre-R but may catch others, too, so log them. It's acceptable because
+     * Autofill exceptions should not crash and may even be recoverable.
+     *
+     * @param e An {@link Exception} that's expected to be either an {@link RuntimeException} or a
+     *     {@code TimeoutException} internal to the Android Autofill Framework.
+     */
+    static void recordException(Exception e, @AutofillManagerMethod int calledMethod) {
+        RecordHistogram.recordEnumeratedHistogram(
+                UMA_AUTOFILL_MANAGER_ERROR, calledMethod, AutofillManagerMethod.MAX_VALUE);
+        Log.e(TAG, "Calling AutofillManager#mAutofillManager failed: " + e.getMessage());
     }
 
     private static void recordUmaAutofillProvider(@Provider int autofillProvider) {
