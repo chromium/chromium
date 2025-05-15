@@ -473,9 +473,9 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeFullSyncDataWithExistingData) {
   base::Uuid group_guid = group.saved_guid();
   base::Uuid tab_1_guid = tab_1.saved_tab_guid();
   base::Uuid tab_2_guid = tab_2.saved_tab_guid();
-  base::Time group_creation_time = group.creation_time_windows_epoch_micros();
-  base::Time tab_1_creation_time = tab_1.creation_time_windows_epoch_micros();
-  base::Time tab_2_creation_time = tab_2.creation_time_windows_epoch_micros();
+  base::Time group_creation_time = group.creation_time();
+  base::Time tab_1_creation_time = tab_1.creation_time();
+  base::Time tab_2_creation_time = tab_2.creation_time();
 
   saved_tab_group_model_.AddedLocally(std::move(group));
 
@@ -637,8 +637,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, OprhanedTabDiscardedAfter30Days) {
   base::Uuid orphaned_guid = base::Uuid::GenerateRandomV4();
   SavedTabGroupTab orphaned_tab(GURL("https://mail.google.com"), u"Mail",
                                 orphaned_guid, /*position=*/0);
-  orphaned_tab.SetUpdateTimeWindowsEpochMicros(base::Time::Now() -
-                                               kDiscardOrphanedTabsThreshold);
+  orphaned_tab.SetUpdateTime(base::Time::Now() - kDiscardOrphanedTabsThreshold);
 
   syncer::EntityChangeList orphaned_tab_change_list;
   orphaned_tab_change_list.push_back(CreateEntityChange(
@@ -693,8 +692,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, OprhanedTabGroupFoundAfter30Days) {
 
   SavedTabGroupTab orphaned_tab(GURL("https://mail.google.com"), u"Mail",
                                 orphaned_guid, /*position=*/0);
-  orphaned_tab.SetUpdateTimeWindowsEpochMicros(base::Time::Now() -
-                                               kDiscardOrphanedTabsThreshold);
+  orphaned_tab.SetUpdateTime(base::Time::Now() - kDiscardOrphanedTabsThreshold);
   syncer::EntityChangeList orphaned_tab_change_list;
   orphaned_tab_change_list.push_back(CreateEntityChange(
       SavedTabGroupSyncBridge::SavedTabGroupTabToSpecificsForTest(orphaned_tab),
@@ -1551,7 +1549,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, NewlyOrphanedGroupsDontGetDestroyed) {
   // position must be set or the update time will be overridden during model
   // save.
   group.SetPosition(0);
-  group.SetUpdateTimeWindowsEpochMicros(base::Time::Now());
+  group.SetUpdateTime(base::Time::Now());
 
   saved_tab_group_model_.AddedLocally(std::move(group));
   EXPECT_EQ(1u, saved_tab_group_model_.saved_tab_groups().size());
@@ -1568,8 +1566,8 @@ TEST_F(SavedTabGroupSyncBridgeTest, OldOrphanedGroupsGetDestroyed) {
   // save.
   group.SetPosition(0);
 
-  group.SetUpdateTimeWindowsEpochMicros(
-      (base::Time::Now() - kDiscardOrphanedTabsThreshold) - base::Days(1));
+  group.SetUpdateTime((base::Time::Now() - kDiscardOrphanedTabsThreshold) -
+                      base::Days(1));
 
   saved_tab_group_model_.AddedLocally(std::move(group));
   EXPECT_EQ(1u, saved_tab_group_model_.saved_tab_groups().size());

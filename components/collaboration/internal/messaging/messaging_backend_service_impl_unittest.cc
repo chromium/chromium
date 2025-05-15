@@ -792,7 +792,7 @@ TEST_F(MessagingBackendServiceImplTest, TestReceivingTabEventsFromSync) {
   tab1->SetCreatedByAttribution(gaia1);
   tab1->SetUpdatedByAttribution(gaia2);
   // Make creation and update time unique.
-  tab1->SetUpdateTimeWindowsEpochMicros(now + base::Seconds(1));
+  tab1->SetUpdateTime(now + base::Seconds(1));
 
   // Create a second tab to check for update from sync.
   base::Uuid tab2_sync_id = tab_group.saved_tabs().at(1).saved_tab_guid();
@@ -801,7 +801,7 @@ TEST_F(MessagingBackendServiceImplTest, TestReceivingTabEventsFromSync) {
   tab2->SetCreatedByAttribution(gaia1);
   tab2->SetUpdatedByAttribution(gaia2);
   // Make creation and update time unique.
-  tab2->SetUpdateTimeWindowsEpochMicros(now + base::Seconds(1));
+  tab2->SetUpdateTime(now + base::Seconds(1));
 
   // Create a third tab to check for removal from sync.
   base::Uuid tab3_sync_id = base::Uuid::GenerateRandomV4();
@@ -851,8 +851,7 @@ TEST_F(MessagingBackendServiceImplTest, TestReceivingTabEventsFromSync) {
             message.tab_data().sync_tab_group_id());
   EXPECT_EQ(tab_group.saved_guid().AsLowercaseString(),
             message.tab_data().sync_tab_group_id());
-  EXPECT_EQ(tab1->creation_time_windows_epoch_micros().ToTimeT(),
-            message.event_timestamp());
+  EXPECT_EQ(tab1->creation_time().ToTimeT(), message.event_timestamp());
   EXPECT_EQ(tab1_sync_id,
             last_persistent_message_chip.attribution.tab_metadata->sync_tab_id);
   EXPECT_EQ(tab_group.saved_guid(), last_persistent_message_chip.attribution
@@ -904,8 +903,7 @@ TEST_F(MessagingBackendServiceImplTest, TestReceivingTabEventsFromSync) {
             message.tab_data().sync_tab_group_id());
   EXPECT_EQ(tab_group.saved_guid().AsLowercaseString(),
             message.tab_data().sync_tab_group_id());
-  EXPECT_EQ(tab2->update_time_windows_epoch_micros().ToTimeT(),
-            message.event_timestamp());
+  EXPECT_EQ(tab2->update_time().ToTimeT(), message.event_timestamp());
   EXPECT_EQ(tab2_sync_id,
             last_persistent_message_chip.attribution.tab_metadata->sync_tab_id);
   EXPECT_EQ(tab_group.saved_guid(), last_persistent_message_chip.attribution
@@ -962,8 +960,7 @@ TEST_F(MessagingBackendServiceImplTest, TestReceivingTabEventsFromSync) {
             message.tab_data().sync_tab_group_id());
   EXPECT_EQ(tab3.saved_group_guid().AsLowercaseString(),
             message.tab_data().sync_tab_group_id());
-  EXPECT_EQ(tab3.update_time_windows_epoch_micros().ToTimeT(),
-            message.event_timestamp());
+  EXPECT_EQ(tab3.update_time().ToTimeT(), message.event_timestamp());
   EXPECT_EQ(tab3.url().spec(), message.tab_data().last_url());
   EXPECT_EQ(tab3_sync_id,
             last_persistent_message_chip.attribution.tab_metadata->sync_tab_id);
@@ -1004,7 +1001,7 @@ TEST_F(MessagingBackendServiceImplTest, TestOnTabAddedFromLocal) {
   tab1->SetCreatedByAttribution(gaia1);
   tab1->SetUpdatedByAttribution(gaia2);
   // Make creation and update time unique.
-  tab1->SetUpdateTimeWindowsEpochMicros(now + base::Seconds(1));
+  tab1->SetUpdateTime(now + base::Seconds(1));
 
   EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
       .WillRepeatedly(Return(tab_group));
@@ -1052,7 +1049,7 @@ TEST_F(MessagingBackendServiceImplTest, TestOnTabUpdatedFromLocal) {
   tab2->SetCreatedByAttribution(gaia1);
   tab2->SetUpdatedByAttribution(gaia2);
   // Make creation and update time unique.
-  tab2->SetUpdateTimeWindowsEpochMicros(now + base::Seconds(1));
+  tab2->SetUpdateTime(now + base::Seconds(1));
 
   EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
       .WillRepeatedly(Return(tab_group));
@@ -1164,7 +1161,7 @@ TEST_F(MessagingBackendServiceImplTest, TestOnTabAddedFromRemoteByYourself) {
   tab1->SetCreatedByAttribution(account_info_.gaia);
   tab1->SetUpdatedByAttribution(account_info_.gaia);
   // Make creation and update time unique.
-  tab1->SetUpdateTimeWindowsEpochMicros(now + base::Seconds(1));
+  tab1->SetUpdateTime(now + base::Seconds(1));
 
   EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
       .WillRepeatedly(Return(tab_group));
@@ -1211,7 +1208,7 @@ TEST_F(MessagingBackendServiceImplTest, TestOnTabUpdatedFromRemoteByYourself) {
   tab2->SetCreatedByAttribution(account_info_.gaia);
   tab2->SetUpdatedByAttribution(account_info_.gaia);
   // Make creation and update time unique.
-  tab2->SetUpdateTimeWindowsEpochMicros(now + base::Seconds(1));
+  tab2->SetUpdateTime(now + base::Seconds(1));
 
   EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
       .WillRepeatedly(Return(tab_group));

@@ -349,13 +349,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
               UnorderedElementsAre(HasSharedGroupMetadata(
                   "title", TabGroupColorId::kCyan, collaboration_id)));
   const SavedTabGroup& group = service_groups.front();
-  EXPECT_FALSE(group.creation_time_windows_epoch_micros().is_null());
+  EXPECT_FALSE(group.creation_time().is_null());
   EXPECT_THAT(
       group.saved_tabs(),
       UnorderedElementsAre(HasTabMetadata("tab 1", "http://google.com/1"),
                            HasTabMetadata("tab 2", "http://google.com/2")));
   for (const SavedTabGroupTab& tab : group.saved_tabs()) {
-    EXPECT_FALSE(tab.creation_time_windows_epoch_micros().is_null());
+    EXPECT_FALSE(tab.creation_time().is_null());
   }
 }
 

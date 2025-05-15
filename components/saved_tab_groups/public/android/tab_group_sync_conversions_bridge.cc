@@ -61,9 +61,9 @@ JNI_TabGroupSyncConversionsBridge_createTabAndMaybeAddToGroup(
       env, j_sync_tab_id, j_local_tab_id, j_sync_group_id,
       static_cast<int32_t>(tab.position().value_or(kInvalidTabPosition)), j_url,
       ConvertUTF16ToJavaString(env, tab.title()),
-      tab.creation_time_windows_epoch_micros().InMillisecondsSinceUnixEpoch(),
-      tab.update_time_windows_epoch_micros().InMillisecondsSinceUnixEpoch(),
-      j_creator_cache_guid, j_last_updater_cache_guid, j_tab_group);
+      tab.creation_time().InMillisecondsSinceUnixEpoch(),
+      tab.update_time().InMillisecondsSinceUnixEpoch(), j_creator_cache_guid,
+      j_last_updater_cache_guid, j_tab_group);
 }
 
 // Helper method to create a Java SavedTabGroup. This doesn't include the tabs.
@@ -87,10 +87,9 @@ ScopedJavaLocalRef<jobject> JNI_TabGroupSyncConversionsBridge_createGroup(
   return Java_TabGroupSyncConversionsBridge_createGroup(
       env, j_sync_id, j_local_id, ConvertUTF16ToJavaString(env, group.title()),
       static_cast<int32_t>(group.color()),
-      group.creation_time_windows_epoch_micros().InMillisecondsSinceUnixEpoch(),
-      group.update_time_windows_epoch_micros().InMillisecondsSinceUnixEpoch(),
-      j_creator_cache_guid, j_last_updater_cache_guid, j_collaboration_id,
-      j_archival_time);
+      group.creation_time().InMillisecondsSinceUnixEpoch(),
+      group.update_time().InMillisecondsSinceUnixEpoch(), j_creator_cache_guid,
+      j_last_updater_cache_guid, j_collaboration_id, j_archival_time);
 }
 
 }  // namespace

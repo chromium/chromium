@@ -43,10 +43,8 @@ class SavedTabGroup {
       std::optional<std::string> creator_cache_guid = std::nullopt,
       std::optional<std::string> last_updater_cache_guid = std::nullopt,
       bool created_before_syncing_tab_groups = false,
-      std::optional<base::Time> creation_time_windows_epoch_micros =
-          std::nullopt,
-      std::optional<base::Time> update_time_windows_epoch_micros =
-          std::nullopt);
+      std::optional<base::Time> creation_time = std::nullopt,
+      std::optional<base::Time> update_time = std::nullopt);
   SavedTabGroup(const SavedTabGroup& other);
   SavedTabGroup& operator=(const SavedTabGroup& other);
   SavedTabGroup(SavedTabGroup&& other);
@@ -70,12 +68,8 @@ class SavedTabGroup {
   const std::optional<LocalTabGroupID>& local_group_id() const {
     return local_group_id_;
   }
-  const base::Time& creation_time_windows_epoch_micros() const {
-    return creation_time_windows_epoch_micros_;
-  }
-  const base::Time& update_time_windows_epoch_micros() const {
-    return update_time_windows_epoch_micros_;
-  }
+  const base::Time& creation_time() const { return creation_time_; }
+  const base::Time& update_time() const { return update_time_; }
   const base::Time& last_user_interaction_time() const {
     return last_user_interaction_time_;
   }
@@ -158,8 +152,7 @@ class SavedTabGroup {
   SavedTabGroup& SetLastUpdaterCacheGuid(std::optional<std::string> cache_guid);
   SavedTabGroup& SetCreatedBeforeSyncingTabGroups(
       bool created_before_syncing_tab_groups);
-  SavedTabGroup& SetUpdateTimeWindowsEpochMicros(
-      base::Time update_time_windows_epoch_micros);
+  SavedTabGroup& SetUpdateTime(base::Time update_time);
   SavedTabGroup& SetLastUserInteractionTime(
       base::Time last_user_interaction_time);
   SavedTabGroup& SetArchivalTime(std::optional<base::Time> archival_time);
@@ -325,12 +318,13 @@ class SavedTabGroup {
   // Whether the tab group was created when sync was disabled.
   bool created_before_syncing_tab_groups_;
 
-  // Timestamp for when the tab was created using windows epoch microseconds.
-  base::Time creation_time_windows_epoch_micros_;
+  // Timestamp for when the tab group was created.
+  base::Time creation_time_;
 
-  // Timestamp for when the tab was last updated using windows epoch
-  // microseconds.
-  base::Time update_time_windows_epoch_micros_;
+  // Timestamp for when the tab group was last updated.
+  // Only accounts for the tab group property updates such as title and color
+  // but doesn't include structural modifications such as tab updates.
+  base::Time update_time_;
 
   // Timestamp of last explicit user interaction with the group, which currently
   // refers to tab addition, tab removal and tab navigation only. Only for

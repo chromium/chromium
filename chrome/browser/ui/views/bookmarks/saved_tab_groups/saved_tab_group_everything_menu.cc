@@ -143,8 +143,8 @@ STGEverythingMenu::GetGroupsForDisplaySortedByCreationTime(
       return false;
     }
 
-    return saved_tab_group_a->creation_time_windows_epoch_micros() >
-           saved_tab_group_b->creation_time_windows_epoch_micros();
+    return saved_tab_group_a->creation_time() >
+           saved_tab_group_b->creation_time();
   };
   std::sort(sorted_tab_groups.begin(), sorted_tab_groups.end(),
             compare_by_creation_time);

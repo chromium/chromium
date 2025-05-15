@@ -2099,8 +2099,8 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
   ASSERT_THAT(group.saved_tabs(), SizeIs(1));
   const SavedTabGroupTab& tab = group.saved_tabs()[0];
 
-  EXPECT_EQ(group.creation_time_windows_epoch_micros(), kCreationTime);
-  EXPECT_EQ(tab.creation_time_windows_epoch_micros(), kCreationTime);
+  EXPECT_EQ(group.creation_time(), kCreationTime);
+  EXPECT_EQ(tab.creation_time(), kCreationTime);
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest,
@@ -2115,16 +2115,12 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
       "http://google.com/1", u"tab", group.saved_guid(), /*position=*/0);
   group.AddTabLocally(tab);
 
-  EXPECT_CALL(
-      mock_processor(),
-      Put(StorageKeyForTab(tab),
-          Pointee(HasCreationTime(tab.creation_time_windows_epoch_micros())),
-          _));
-  EXPECT_CALL(
-      mock_processor(),
-      Put(StorageKeyForGroup(group),
-          Pointee(HasCreationTime(group.creation_time_windows_epoch_micros())),
-          _));
+  EXPECT_CALL(mock_processor(),
+              Put(StorageKeyForTab(tab),
+                  Pointee(HasCreationTime(tab.creation_time())), _));
+  EXPECT_CALL(mock_processor(),
+              Put(StorageKeyForGroup(group),
+                  Pointee(HasCreationTime(group.creation_time())), _));
   model()->AddedLocally(group);
 }
 

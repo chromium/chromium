@@ -298,7 +298,7 @@ class SavedTabGroupInteractiveTest
                          /*creator_cache_guid=*/std::nullopt,
                          /*last_updater_cache_guid=*/std::nullopt,
                          /*created_before_syncing_tab_groups=*/false,
-                         /*creation_time_windows_epoch_micros=*/std::nullopt});
+                         /*creation_time=*/std::nullopt});
     });
   }
 
@@ -306,19 +306,18 @@ class SavedTabGroupInteractiveTest
     return Do([=, this]() {
       const base::Uuid group_guid = base::Uuid::GenerateRandomV4();
       const base::Uuid tab_guid = base::Uuid::GenerateRandomV4();
-      SavedTabGroup group = {
-          /*title=*/u"group_title",
-          /*color=*/tab_groups::TabGroupColorId::kBlue,
-          /*urls=*/
-          {{GetURL("/favicon/page_with_favicon.html"), u"tab_title", group_guid,
-            0, tab_guid}},
-          /*position=*/std::nullopt,
-          /*saved_guid=*/group_guid,
-          /*local_group_id=*/std::nullopt,
-          /*creator_cache_guid=*/std::nullopt,
-          /*last_updater_cache_guid=*/std::nullopt,
-          /*created_before_syncing_tab_groups=*/false,
-          /*creation_time_windows_epoch_micros=*/std::nullopt};
+      SavedTabGroup group = {/*title=*/u"group_title",
+                             /*color=*/tab_groups::TabGroupColorId::kBlue,
+                             /*urls=*/
+                             {{GetURL("/favicon/page_with_favicon.html"),
+                               u"tab_title", group_guid, 0, tab_guid}},
+                             /*position=*/std::nullopt,
+                             /*saved_guid=*/group_guid,
+                             /*local_group_id=*/std::nullopt,
+                             /*creator_cache_guid=*/std::nullopt,
+                             /*last_updater_cache_guid=*/std::nullopt,
+                             /*created_before_syncing_tab_groups=*/false,
+                             /*creation_time=*/std::nullopt};
 
       TabGroupSyncService* service =
           SavedTabGroupUtils::GetServiceForProfile(browser()->profile());

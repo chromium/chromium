@@ -289,7 +289,7 @@ syncer::ConflictResolution SavedTabGroupSyncBridge::ResolveConflict(
   base::Time local_timestamp;
   if (remote_specifics.has_group()) {
     if (const SavedTabGroup* group = model_wrapper_->GetGroup(guid)) {
-      local_timestamp = group->update_time_windows_epoch_micros();
+      local_timestamp = group->update_time();
     }
   } else {
     CHECK(remote_specifics.has_tab());
@@ -297,7 +297,7 @@ syncer::ConflictResolution SavedTabGroupSyncBridge::ResolveConflict(
         base::Uuid::ParseLowercase(remote_specifics.tab().group_guid());
     const SavedTabGroup* group = model_wrapper_->GetGroup(group_guid);
     if (const SavedTabGroupTab* tab = group ? group->GetTab(guid) : nullptr) {
-      local_timestamp = tab->update_time_windows_epoch_micros();
+      local_timestamp = tab->update_time();
     }
   }
 
@@ -794,7 +794,7 @@ void SavedTabGroupSyncBridge::ResolveGroupsMissingTabs(
       continue;
     }
 
-    if ((base::Time::Now() - group->update_time_windows_epoch_micros()) <
+    if ((base::Time::Now() - group->update_time()) <
         kOrphanedObjectDiscardThreshold) {
       continue;
     }

@@ -71,8 +71,7 @@ using ScopedTabGroupSyncObservation =
 // Comparator for groups by creation date.
 bool CompareGroupByCreationDate(const tab_groups::SavedTabGroup& a,
                                 const tab_groups::SavedTabGroup& b) {
-  return a.creation_time_windows_epoch_micros() >
-         b.creation_time_windows_epoch_micros();
+  return a.creation_time() > b.creation_time();
 }
 
 // Converts deletion notifications from the messaging service into a
@@ -369,8 +368,7 @@ NSString* CreationText(base::Time creation_date) {
         IDS_IOS_TAB_GROUP_TABS_NUMBER, numberOfTabs);
   }
   itemData.color = tab_groups::ColorForTabGroupColorId(group->color());
-  itemData.creationText =
-      CreationText(group->creation_time_windows_epoch_micros());
+  itemData.creationText = CreationText(group->creation_time());
   itemData.numberOfTabs = static_cast<NSUInteger>(numberOfTabs);
 
   return itemData;

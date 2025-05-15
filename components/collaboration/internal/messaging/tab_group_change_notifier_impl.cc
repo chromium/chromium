@@ -80,13 +80,12 @@ std::vector<tab_groups::SavedTabGroupTab> GetRemovedTabs(
         const tab_groups::SavedTabGroup::RemovedTabMetadata& metadata =
             it->second;
         removed_tabs.back().SetUpdatedByAttribution(metadata.removed_by);
-        removed_tabs.back().SetUpdateTimeWindowsEpochMicros(
-            metadata.removal_time);
+        removed_tabs.back().SetUpdateTime(metadata.removal_time);
       } else if (source == tab_groups::TriggerSource::LOCAL) {
         // If it's a local tab removal, it must by by the current signed-in
         // user.
         removed_tabs.back().SetUpdatedByAttribution(account_gaia);
-        removed_tabs.back().SetUpdateTimeWindowsEpochMicros(base::Time::Now());
+        removed_tabs.back().SetUpdateTime(base::Time::Now());
       }
     }
   }

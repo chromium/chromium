@@ -597,15 +597,12 @@ void AddSharedTabToFakeServer(const tab_groups::SavedTabGroupTab& tab,
   specifics.mutable_tab()->set_shared_tab_group_guid(
       tab.saved_group_guid().AsLowercaseString());
   specifics.set_update_time_windows_epoch_micros(
-      tab.update_time_windows_epoch_micros()
-          .ToDeltaSinceWindowsEpoch()
-          .InMicroseconds());
+      tab.update_time().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
-  AddSharedTabGroupDataToFakeServer(specifics,
-                                    tab.creation_time_windows_epoch_micros()
-                                        .ToDeltaSinceWindowsEpoch()
-                                        .InMicroseconds(),
-                                    collaboration_id);
+  AddSharedTabGroupDataToFakeServer(
+      specifics,
+      tab.creation_time().ToDeltaSinceWindowsEpoch().InMicroseconds(),
+      collaboration_id);
 }
 
 void DeleteTabOrGroupFromFakeServer(const base::Uuid& uuid) {

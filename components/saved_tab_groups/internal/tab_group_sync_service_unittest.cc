@@ -1361,9 +1361,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabSelected) {
     CHECK(group);
 
     // Local Tab 2 should start with no last_seen time.
-    EXPECT_FALSE(group->GetTab(local_tab_id_2)
-                     ->last_seen_time_windows_epoch_micros()
-                     .has_value());
+    EXPECT_FALSE(group->GetTab(local_tab_id_2)->last_seen_time().has_value());
   }
 
   EXPECT_CALL(*observer_,
@@ -1381,9 +1379,8 @@ TEST_F(TabGroupSyncServiceTest, OnTabSelected) {
 
   // Local Tab 2 should get a last_seen time.
   const SavedTabGroupTab* tab = group->GetTab(local_tab_id_2);
-  EXPECT_TRUE(tab->last_seen_time_windows_epoch_micros().has_value());
-  EXPECT_GT(tab->last_seen_time_windows_epoch_micros().value(),
-            test_start_time);
+  EXPECT_TRUE(tab->last_seen_time().has_value());
+  EXPECT_GT(tab->last_seen_time().value(), test_start_time);
 
   histogram_tester.ExpectTotalCount(
       "TabGroups.Sync.TabGroup.TabSelected.GroupCreateOrigin", 1u);
@@ -1398,7 +1395,7 @@ TEST_F(TabGroupSyncServiceTest,
   CHECK(group);
   base::Uuid shared_group_id = group->saved_guid();
   const SavedTabGroupTab* tab = group->GetTab(local_tab_id_1_);
-  EXPECT_FALSE(tab->last_seen_time_windows_epoch_micros().has_value());
+  EXPECT_FALSE(tab->last_seen_time().has_value());
 
   // Fake that the tab is selected.
   EXPECT_CALL(*coordinator_, GetSelectedTabs())
@@ -1413,7 +1410,7 @@ TEST_F(TabGroupSyncServiceTest,
   model_->UpdatedVisualDataFromSync(shared_group_id, &visual_data);
   WaitForPostedTasks();
 
-  EXPECT_TRUE(tab->last_seen_time_windows_epoch_micros().has_value());
+  EXPECT_TRUE(tab->last_seen_time().has_value());
 }
 
 TEST_F(TabGroupSyncServiceTest, OnTabSelectedForNonExistingTab) {
@@ -2061,10 +2058,8 @@ TEST_F(TabGroupSyncServiceTest, MakeTabGroupShared) {
   EXPECT_EQ(shared_group->color(), group_1_.color());
 
   // Verify that the shared group has updated fields.
-  EXPECT_GT(shared_group->creation_time_windows_epoch_micros(),
-            originating_group->creation_time_windows_epoch_micros());
-  EXPECT_GT(shared_group->update_time_windows_epoch_micros(),
-            originating_group->update_time_windows_epoch_micros());
+  EXPECT_GT(shared_group->creation_time(), originating_group->creation_time());
+  EXPECT_GT(shared_group->update_time(), originating_group->update_time());
   EXPECT_EQ(shared_group->creator_cache_guid(), std::nullopt);
   EXPECT_EQ(shared_group->last_updater_cache_guid(), std::nullopt);
   EXPECT_EQ(shared_group->position(), std::nullopt);
@@ -2089,10 +2084,8 @@ TEST_F(TabGroupSyncServiceTest, MakeTabGroupShared) {
     EXPECT_NE(saved_tab.creator_cache_guid(), std::nullopt);
     EXPECT_EQ(shared_tab.last_updater_cache_guid(), std::nullopt);
     EXPECT_NE(saved_tab.last_updater_cache_guid(), std::nullopt);
-    EXPECT_GT(shared_group->creation_time_windows_epoch_micros(),
-              saved_tab.creation_time_windows_epoch_micros());
-    EXPECT_GT(shared_tab.update_time_windows_epoch_micros(),
-              saved_tab.update_time_windows_epoch_micros());
+    EXPECT_GT(shared_group->creation_time(), saved_tab.creation_time());
+    EXPECT_GT(shared_tab.update_time(), saved_tab.update_time());
     EXPECT_NE(shared_tab.local_tab_id(), std::nullopt);
     EXPECT_EQ(saved_tab.local_tab_id(), std::nullopt);
 
@@ -2316,10 +2309,8 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupUnShareSucceeded) {
 
   // Verify that the shared group has updated fields.
   ASSERT_FALSE(saved_group->is_shared_tab_group());
-  EXPECT_GT(saved_group->creation_time_windows_epoch_micros(),
-            shared_group->creation_time_windows_epoch_micros());
-  EXPECT_GT(saved_group->update_time_windows_epoch_micros(),
-            shared_group->update_time_windows_epoch_micros());
+  EXPECT_GT(saved_group->creation_time(), shared_group->creation_time());
+  EXPECT_GT(saved_group->update_time(), shared_group->update_time());
   EXPECT_EQ(saved_group->creator_cache_guid(), kTestCacheGuid);
   EXPECT_EQ(saved_group->last_updater_cache_guid(), std::nullopt);
   EXPECT_EQ(saved_group->position(), std::nullopt);
@@ -2348,10 +2339,8 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupUnShareSucceeded) {
 
     // Verify updated fields.
     EXPECT_NE(saved_tab.saved_tab_guid(), shared_tab.saved_tab_guid());
-    EXPECT_GT(saved_group->creation_time_windows_epoch_micros(),
-              shared_tab.creation_time_windows_epoch_micros());
-    EXPECT_GT(saved_tab.update_time_windows_epoch_micros(),
-              shared_tab.update_time_windows_epoch_micros());
+    EXPECT_GT(saved_group->creation_time(), shared_tab.creation_time());
+    EXPECT_GT(saved_tab.update_time(), shared_tab.update_time());
     EXPECT_NE(saved_tab.local_tab_id(), std::nullopt);
     EXPECT_EQ(shared_tab.local_tab_id(), std::nullopt);
 

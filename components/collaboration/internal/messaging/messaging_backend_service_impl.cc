@@ -91,9 +91,8 @@ collaboration_pb::Message CreateTabGroupMessage(
     const tab_groups::SavedTabGroup& tab_group,
     collaboration_pb::EventType event_type,
     DirtyType dirty_type) {
-  collaboration_pb::Message message =
-      CreateMessage(collaboration_group_id, event_type, dirty_type,
-                    tab_group.update_time_windows_epoch_micros());
+  collaboration_pb::Message message = CreateMessage(
+      collaboration_group_id, event_type, dirty_type, tab_group.update_time());
   message.mutable_tab_group_data()->set_sync_tab_group_id(
       tab_group.saved_guid().AsLowercaseString());
   message.mutable_tab_group_data()->set_title(
@@ -120,11 +119,10 @@ collaboration_pb::Message CreateTabMessage(
     const tab_groups::SavedTabGroupTab& tab,
     collaboration_pb::EventType event_type,
     DirtyType dirty_type) {
-  collaboration_pb::Message message =
-      CreateMessage(collaboration_group_id, event_type, dirty_type,
-                    event_type == collaboration_pb::TAB_ADDED
-                        ? tab.creation_time_windows_epoch_micros()
-                        : tab.update_time_windows_epoch_micros());
+  collaboration_pb::Message message = CreateMessage(
+      collaboration_group_id, event_type, dirty_type,
+      event_type == collaboration_pb::TAB_ADDED ? tab.creation_time()
+                                                : tab.update_time());
   message.mutable_tab_data()->set_sync_tab_id(
       tab.saved_tab_guid().AsLowercaseString());
   message.mutable_tab_data()->set_sync_tab_group_id(

@@ -53,8 +53,7 @@ bool CompareSavedTabGroups(const SavedTabGroup& g1, const SavedTabGroup& g2) {
   if (g1.saved_guid() != g2.saved_guid()) {
     return false;
   }
-  if (g1.creation_time_windows_epoch_micros() !=
-      g2.creation_time_windows_epoch_micros()) {
+  if (g1.creation_time() != g2.creation_time()) {
     return false;
   }
 
@@ -90,7 +89,7 @@ SavedTabGroup CreateTestSavedTabGroup(std::optional<base::Time> creation_date) {
                       /*creator_cache_guid=*/std::nullopt,
                       /*last_updater_cache_guid=*/std::nullopt,
                       /*created_before_syncing_tab_groups=*/false,
-                      /*creation_time_windows_epoch_micros=*/creation_date);
+                      /*creation_time=*/creation_date);
   return group;
 }
 

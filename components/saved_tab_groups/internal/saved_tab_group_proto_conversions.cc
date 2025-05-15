@@ -190,7 +190,7 @@ SavedTabGroup DataToSavedTabGroup(const proto::SavedTabGroupData& data) {
       title, color, {}, position, guid, local_group_id,
       std::move(creator_cache_guid), std::move(last_updater_cache_guid),
       created_before_syncing_tab_groups, creation_time);
-  group.SetUpdateTimeWindowsEpochMicros(update_time);
+  group.SetUpdateTime(update_time);
   group.SetLastUserInteractionTime(last_user_interaction_time);
   if (originating_tab_group_guid.is_valid()) {
     // The user is always an owner of saved tab groups.
@@ -208,13 +208,9 @@ proto::SavedTabGroupData SavedTabGroupToData(const SavedTabGroup& group) {
   auto* pb_specific = pb_data.mutable_specifics();
   pb_specific->set_guid(group.saved_guid().AsLowercaseString());
   pb_specific->set_creation_time_windows_epoch_micros(
-      group.creation_time_windows_epoch_micros()
-          .ToDeltaSinceWindowsEpoch()
-          .InMicroseconds());
+      group.creation_time().ToDeltaSinceWindowsEpoch().InMicroseconds());
   pb_specific->set_update_time_windows_epoch_micros(
-      group.update_time_windows_epoch_micros()
-          .ToDeltaSinceWindowsEpoch()
-          .InMicroseconds());
+      group.update_time().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
   sync_pb::SavedTabGroup* pb_group = pb_specific->mutable_group();
   pb_group->set_color(TabGroupColorToSyncColor(group.color()));
@@ -304,13 +300,9 @@ proto::SavedTabGroupData SavedTabGroupTabToData(const SavedTabGroupTab& tab) {
 
   pb_specific->set_guid(tab.saved_tab_guid().AsLowercaseString());
   pb_specific->set_creation_time_windows_epoch_micros(
-      tab.creation_time_windows_epoch_micros()
-          .ToDeltaSinceWindowsEpoch()
-          .InMicroseconds());
+      tab.creation_time().ToDeltaSinceWindowsEpoch().InMicroseconds());
   pb_specific->set_update_time_windows_epoch_micros(
-      tab.update_time_windows_epoch_micros()
-          .ToDeltaSinceWindowsEpoch()
-          .InMicroseconds());
+      tab.update_time().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
   if (tab.creator_cache_guid().has_value()) {
     pb_specific->mutable_attribution_metadata()

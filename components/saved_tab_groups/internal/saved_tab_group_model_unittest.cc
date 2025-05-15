@@ -645,17 +645,14 @@ TEST_F(SavedTabGroupModelTest, MergeGroupsFromModel) {
       saved_tab_group_model_->MergeRemoteGroupMetadata(
           group2.saved_guid(), group2.title(), group2.color(),
           group2.position(), group2.creator_cache_guid(),
-          group2.last_updater_cache_guid(),
-          group2.update_time_windows_epoch_micros(),
+          group2.last_updater_cache_guid(), group2.update_time(),
           /*updated_by=*/GaiaId());
 
   EXPECT_EQ(group2.title(), merged_group->title());
   EXPECT_EQ(group2.color(), merged_group->color());
   EXPECT_EQ(group2.saved_guid(), merged_group->saved_guid());
-  EXPECT_EQ(group2.creation_time_windows_epoch_micros(),
-            merged_group->creation_time_windows_epoch_micros());
-  EXPECT_EQ(group2.update_time_windows_epoch_micros(),
-            merged_group->update_time_windows_epoch_micros());
+  EXPECT_EQ(group2.creation_time(), merged_group->creation_time());
+  EXPECT_EQ(group2.update_time(), merged_group->update_time());
 }
 
 TEST_F(SavedTabGroupModelTest, MergePinnedGroupRetainPosition) {
@@ -689,7 +686,7 @@ TEST_F(SavedTabGroupModelTest, MergePinnedGroupRetainPosition) {
           updated_group2.color(), updated_group2.position(),
           updated_group2.creator_cache_guid(),
           updated_group2.last_updater_cache_guid(),
-          updated_group2.update_time_windows_epoch_micros(),
+          updated_group2.update_time(),
           /*updated_by=*/GaiaId());
   EXPECT_EQ(1, merged_group->position());
 
@@ -718,7 +715,7 @@ TEST_F(SavedTabGroupModelTest, MergeSharedTabGroupAttribution) {
   saved_tab_group_model_->MergeRemoteGroupMetadata(
       group.saved_guid(), group.title(), group.color(), group.position(),
       group.creator_cache_guid(), group.last_updater_cache_guid(),
-      group.update_time_windows_epoch_micros(), kUpdater);
+      group.update_time(), kUpdater);
 
   EXPECT_EQ(model_group->shared_attribution().created_by, kCreator);
   EXPECT_EQ(model_group->shared_attribution().updated_by, kUpdater);
@@ -738,10 +735,8 @@ TEST_F(SavedTabGroupModelTest, MergeTabsFromModel) {
   EXPECT_EQ(tab2.url(), merged_tab->url());
   EXPECT_EQ(tab2.saved_tab_guid(), merged_tab->saved_tab_guid());
   EXPECT_EQ(tab2.saved_group_guid(), merged_tab->saved_group_guid());
-  EXPECT_EQ(tab2.creation_time_windows_epoch_micros(),
-            merged_tab->creation_time_windows_epoch_micros());
-  EXPECT_EQ(tab2.update_time_windows_epoch_micros(),
-            merged_tab->update_time_windows_epoch_micros());
+  EXPECT_EQ(tab2.creation_time(), merged_tab->creation_time());
+  EXPECT_EQ(tab2.update_time(), merged_tab->update_time());
 }
 
 TEST_F(SavedTabGroupModelTest, MergeTabsWithUnsupportedURLFromModel) {
@@ -756,10 +751,8 @@ TEST_F(SavedTabGroupModelTest, MergeTabsWithUnsupportedURLFromModel) {
   EXPECT_EQ(tab1.url(), merged_tab->url());
   EXPECT_EQ(remote_tab.saved_tab_guid(), merged_tab->saved_tab_guid());
   EXPECT_EQ(remote_tab.saved_group_guid(), merged_tab->saved_group_guid());
-  EXPECT_EQ(remote_tab.creation_time_windows_epoch_micros(),
-            merged_tab->creation_time_windows_epoch_micros());
-  EXPECT_EQ(remote_tab.update_time_windows_epoch_micros(),
-            merged_tab->update_time_windows_epoch_micros());
+  EXPECT_EQ(remote_tab.creation_time(), merged_tab->creation_time());
+  EXPECT_EQ(remote_tab.update_time(), merged_tab->update_time());
 }
 
 // Tests that groups inserted in the model are in order stay inserted in sorted
@@ -987,7 +980,7 @@ TEST_F(SavedTabGroupModelTest, SetsLastSeenTime) {
   EXPECT_FALSE(saved_tab_group_model_->Get(group_id)
                    ->saved_tabs()
                    .front()
-                   .last_seen_time_windows_epoch_micros()
+                   .last_seen_time()
                    .has_value());
 
   base::Time last_seen_time = base::Time::Now();
@@ -999,12 +992,12 @@ TEST_F(SavedTabGroupModelTest, SetsLastSeenTime) {
   EXPECT_TRUE(saved_tab_group_model_->Get(group_id)
                   ->saved_tabs()
                   .front()
-                  .last_seen_time_windows_epoch_micros()
+                  .last_seen_time()
                   .has_value());
   EXPECT_EQ(last_seen_time, saved_tab_group_model_->Get(group_id)
                                 ->saved_tabs()
                                 .front()
-                                .last_seen_time_windows_epoch_micros());
+                                .last_seen_time());
 }
 
 // Tests that SavedTabGroupModelObserver::Added passes the correct element from
@@ -1364,7 +1357,7 @@ TEST_F(SavedTabGroupModelObserverTest,
   EXPECT_FALSE(saved_tab_group_model_->Get(group_id)
                    ->saved_tabs()
                    .front()
-                   .last_seen_time_windows_epoch_micros()
+                   .last_seen_time()
                    .has_value());
 
   base::Time last_seen_time = base::Time::Now();
@@ -1381,12 +1374,12 @@ TEST_F(SavedTabGroupModelObserverTest,
   EXPECT_TRUE(saved_tab_group_model_->Get(group_id)
                   ->saved_tabs()
                   .front()
-                  .last_seen_time_windows_epoch_micros()
+                  .last_seen_time()
                   .has_value());
   EXPECT_EQ(last_seen_time, saved_tab_group_model_->Get(group_id)
                                 ->saved_tabs()
                                 .front()
-                                .last_seen_time_windows_epoch_micros());
+                                .last_seen_time());
 }
 
 }  // namespace

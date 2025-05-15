@@ -1800,7 +1800,7 @@ void TabGroupSyncServiceImpl::CleanUpOriginatingSavedTabGroupsIfNeeded() {
       continue;
     }
 
-    if (base::Time::Now() - group.update_time_windows_epoch_micros() >=
+    if (base::Time::Now() - group.update_time() >=
         GetOriginatingSavedGroupCleanUpTimeInterval()) {
       group_ids.push_back(group.saved_guid());
     }

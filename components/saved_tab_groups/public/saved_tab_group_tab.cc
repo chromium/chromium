@@ -20,8 +20,8 @@ SavedTabGroupTab::SavedTabGroupTab(
     std::optional<LocalTabID> local_tab_id,
     std::optional<std::string> creator_cache_guid,
     std::optional<std::string> last_updater_cache_guid,
-    std::optional<base::Time> creation_time_windows_epoch_micros,
-    std::optional<base::Time> update_time_windows_epoch_micros,
+    std::optional<base::Time> creation_time,
+    std::optional<base::Time> update_time,
     std::optional<gfx::Image> favicon,
     bool is_pending_ntp)
     : saved_tab_guid_(saved_tab_guid.has_value()
@@ -34,14 +34,10 @@ SavedTabGroupTab::SavedTabGroupTab(
       title_(title),
       creator_cache_guid_(std::move(creator_cache_guid)),
       last_updater_cache_guid_(std::move(last_updater_cache_guid)),
-      creation_time_windows_epoch_micros_(
-          creation_time_windows_epoch_micros.has_value()
-              ? creation_time_windows_epoch_micros.value()
-              : base::Time::Now()),
-      update_time_windows_epoch_micros_(
-          update_time_windows_epoch_micros.has_value()
-              ? update_time_windows_epoch_micros.value()
-              : base::Time::Now()),
+      creation_time_(creation_time.has_value() ? creation_time.value()
+                                               : base::Time::Now()),
+      update_time_(update_time.has_value() ? update_time.value()
+                                           : base::Time::Now()),
       favicon_(favicon),
       is_pending_ntp_(is_pending_ntp) {}
 
@@ -81,8 +77,7 @@ void SavedTabGroupTab::MergeRemoteTab(const SavedTabGroupTab& remote_tab) {
   SetCreatorCacheGuid(remote_tab.creator_cache_guid());
   SetLastUpdaterCacheGuid(remote_tab.last_updater_cache_guid());
   SetUpdatedByAttribution(remote_tab.shared_attribution().updated_by);
-  SetUpdateTimeWindowsEpochMicros(
-      remote_tab.update_time_windows_epoch_micros());
+  SetUpdateTime(remote_tab.update_time());
 }
 
 bool SavedTabGroupTab::IsSyncEquivalent(const SavedTabGroupTab& other) const {

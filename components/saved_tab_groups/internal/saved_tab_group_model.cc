@@ -34,7 +34,7 @@ namespace {
 
 void RecordGroupDeletedMetric(const SavedTabGroup& removed_group) {
   const base::TimeDelta duration_saved =
-      base::Time::Now() - removed_group.creation_time_windows_epoch_micros();
+      base::Time::Now() - removed_group.creation_time();
 
   base::UmaHistogramCounts1M("TabGroups.SavedTabGroupLifespan",
                              duration_saved.InMinutes());
@@ -60,16 +60,14 @@ bool ShouldPlaceBefore(const SavedTabGroup& group1,
     if (position1.value() != position2.value()) {
       return position1.value() < position2.value();
     } else {
-      return group1.update_time_windows_epoch_micros() >=
-             group2.update_time_windows_epoch_micros();
+      return group1.update_time() >= group2.update_time();
     }
   } else if (position1.has_value() && !position2.has_value()) {
     return true;
   } else if (!position1.has_value() && position2.has_value()) {
     return false;
   } else {
-    return group1.update_time_windows_epoch_micros() >=
-           group2.update_time_windows_epoch_micros();
+    return group1.update_time() >= group2.update_time();
   }
 }
 
@@ -539,13 +537,12 @@ void SavedTabGroupModel::UpdateTabLastSeenTime(const base::Uuid& group_id,
   // If the new time is not more recent than the one in the model,
   // ignore it. This data is managed by the account data sync bridge,
   // which always prefers the more recent time.
-  const std::optional<base::Time>& current_model_time =
-      tab->last_seen_time_windows_epoch_micros();
+  const std::optional<base::Time>& current_model_time = tab->last_seen_time();
   if (current_model_time.has_value() && current_model_time.value() >= time) {
     return;
   }
 
-  tab->SetLastSeenTimeWindowsEpochMicros(time);
+  tab->SetLastSeenTime(time);
 
   for (SavedTabGroupModelObserver& observer : observers_) {
     observer.SavedTabGroupTabLastSeenTimeUpdated(tab_id, source);

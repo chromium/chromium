@@ -283,8 +283,7 @@ void TabGroupSyncMetricsLoggerImpl::RecordMetricsOnStartup(
   for (size_t i = 0; i < saved_tab_groups.size(); ++i) {
     const auto& group = saved_tab_groups[i];
     bool is_remote_group = is_remote[i];
-    const base::TimeDelta tab_group_age =
-        current_time - group.creation_time_windows_epoch_micros();
+    const base::TimeDelta tab_group_age = current_time - group.creation_time();
     const base::TimeDelta duration_since_last_user_interaction =
         current_time - group.last_user_interaction_time();
 
@@ -344,7 +343,7 @@ void TabGroupSyncMetricsLoggerImpl::RecordMetricsOnStartup(
 
     for (const SavedTabGroupTab& tab : group.saved_tabs()) {
       const base::TimeDelta duration_since_tab_modification =
-          current_time - tab.update_time_windows_epoch_micros();
+          current_time - tab.update_time();
       if (duration_since_tab_modification.is_negative()) {
         continue;
       }
