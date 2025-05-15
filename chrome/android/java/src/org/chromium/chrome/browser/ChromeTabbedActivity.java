@@ -307,6 +307,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragAndDropDelegateImpl;
 import org.chromium.ui.dragdrop.DragDropMetricUtils;
+import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
@@ -1532,13 +1533,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
             super.onNewIntentWithNative(intent);
             if (!IntentHandler.shouldIgnoreIntent(intent, this, /* isCustomTab= */ false)) {
-                @Nullable
-                TabGroupMetadata tabGroupMetadata = IntentHandler.getTabGroupMetadata(intent);
-                if (tabGroupMetadata != null) {
-                    maybeHandleGroupUrlsIntent(intent, tabGroupMetadata);
-                } else {
-                    maybeHandleUrlIntent(intent);
-                }
+                maybeHandleUrlIntent(intent);
             }
 
             if (IntentUtils.isMainIntentFromLauncher(intent)) {
@@ -1561,6 +1556,17 @@ public class ChromeTabbedActivity extends ChromeActivity {
      * @return Whether the Intent was successfully handled.
      */
     private boolean maybeHandleUrlIntent(Intent intent) {
+        @Nullable TabGroupMetadata tabGroupMetadata = IntentHandler.getTabGroupMetadata(intent);
+        return tabGroupMetadata != null
+                ? maybeHandleGroupUrlsIntent(intent, tabGroupMetadata)
+                : maybeHandleSingleUrlIntent(intent);
+    }
+
+    /**
+     * @param intent The received intent.
+     * @return Whether the Intent was successfully handled.
+     */
+    private boolean maybeHandleSingleUrlIntent(Intent intent) {
         String url = IntentHandler.getUrlFromIntent(intent);
         @TabOpenType int tabOpenType = IntentHandler.getTabOpenType(intent);
         int tabIdToBringToFront = IntentHandler.getBringTabToFrontId(intent);
@@ -1637,11 +1643,15 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         .getTabGroupModelFilterProvider()
                         .getTabGroupModelFilter(tabGroupMetadata.isIncognito);
 
-        StripLayoutHelperManager layoutHelperManager = mLayoutManager.getStripLayoutHelperManager();
-        boolean isTabStripVisible =
-                layoutHelperManager != null
-                        && layoutHelperManager.getStripVisibilityState()
-                                == StripVisibilityState.VISIBLE;
+        boolean isTabStripVisible = true;
+        if (mLayoutManager != null) {
+            StripLayoutHelperManager layoutHelperManager =
+                    mLayoutManager.getStripLayoutHelperManager();
+            isTabStripVisible =
+                    layoutHelperManager != null
+                            && layoutHelperManager.getStripVisibilityState()
+                                    == StripVisibilityState.VISIBLE;
+        }
         int dropIndex =
                 intent.getIntExtra(IntentHandler.EXTRA_TAB_INDEX, TabModel.INVALID_TAB_INDEX);
         TabGroupUtils.regroupTabs(
@@ -1653,6 +1663,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         tabGroupMetadata.tabGroupCollapsed,
                         isTabStripVisible,
                         dropIndex));
+        IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_TAB_GROUP_METADATA);
         return true;
     }
 
@@ -2393,8 +2404,15 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
     private boolean maybeLaunchDraggedTabGroupInWindow(
             Intent intent, @NonNull TabGroupMetadata tabGroupMetadata) {
+        @UrlIntentSource
+        int intentSource =
+                IntentUtils.safeGetIntExtra(
+                        intent, IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.UNKNOWN);
+        if (intentSource != UrlIntentSource.TAB_GROUP_IN_STRIP) return false;
         if (mMultiInstanceManager == null) return false;
 
+        // The metadata was attached as part of a drag and drop operation, so detach the target
+        // group and reparent them to this instance now.
         mMultiInstanceManager.moveTabGroupToWindow(this, tabGroupMetadata, /* atIndex= */ 0);
         DragDropMetricUtils.recordDragDropType(
                 ChromeDragDropUtils.getDragDropTypeFromIntent(intent),

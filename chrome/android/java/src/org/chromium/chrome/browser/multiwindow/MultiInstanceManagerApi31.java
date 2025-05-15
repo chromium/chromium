@@ -28,6 +28,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
@@ -210,9 +211,17 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     @VisibleForTesting
     void moveTabGroupAction(InstanceInfo info, TabGroupMetadata tabGroupMetadata, int startIndex) {
         Activity targetActivity = getActivityById(info.instanceId);
-        assert targetActivity != null;
-        reparentTabGroupToRunningActivity(
-                (ChromeTabbedActivity) targetActivity, tabGroupMetadata, startIndex);
+        if (targetActivity != null) {
+            reparentTabGroupToRunningActivity(
+                    (ChromeTabbedActivity) targetActivity, tabGroupMetadata, startIndex);
+        } else {
+            moveAndReparentTabGroupToNewWindow(
+                    tabGroupMetadata,
+                    info.instanceId,
+                    /* preferNew= */ false,
+                    /* openAdjacently= */ true,
+                    /* addTrustedIntentExtras= */ true);
+        }
     }
 
     @VisibleForTesting
@@ -226,8 +235,22 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
                         mActivity, instanceId, preferNew, openAdjacently, addTrustedIntentExtras);
-        beginReparenting(
+        beginReparentingTab(
                 tab, intent, /* startActivityOptions= */ null, /* finalizeCallback= */ null);
+    }
+
+    @VisibleForTesting
+    void moveAndReparentTabGroupToNewWindow(
+            TabGroupMetadata tabGroupMetadata,
+            int instanceId,
+            boolean preferNew,
+            boolean openAdjacently,
+            boolean addTrustedIntentExtras) {
+        onMultiInstanceModeStarted();
+        Intent intent =
+                MultiWindowUtils.createNewWindowIntent(
+                        mActivity, instanceId, preferNew, openAdjacently, addTrustedIntentExtras);
+        beginReparentingTabGroup(tabGroupMetadata, intent);
     }
 
     @VisibleForTesting
@@ -251,33 +274,25 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         RecordHistogram.recordCount1000Histogram(
                 "Android.Reparent.TabGroup.GroupSize", tabGroupSizeBeforeReparent);
 
-        // 1. Temporarily disable sync service from observing local changes to prevent unintended
-        // updates during tab group re-parenting.
-        @Nullable
-        TabGroupSyncService syncService =
-                getTabGroupSyncService(
-                        tabGroupMetadata.sourceWindowId, tabGroupMetadata.isIncognito);
-        setSyncServiceLocalObservationMode(syncService, /* shouldObserve= */ false);
+        // 1. Pause the relevant observers prior to detaching the grouped tabs.
+        pauseObserversForGroupReparenting(tabGroupMetadata);
 
-        // 2. Pause writes to TabPersistentStore while detaching the grouped Tabs.
-        TabPersistentStore tabPersistentStore =
-                mTabModelOrchestratorSupplier.get().getTabPersistentStore();
-        tabPersistentStore.pauseSaveTabList();
-
-        // 3. Setup the re-parenting intent, detaching the grouped tabs from the current activity.
+        // 2. Setup the re-parenting intent, detaching the grouped tabs from the current activity.
         Intent intent = createIntentForGeneralReparenting(targetActivity, tabAtIndex);
         setupIntentForGroupReparenting(tabGroupMetadata, intent, null);
 
-        // 4. Resume writes to TabPersistentStore after detaching the grouped Tabs. Don't begin
+        // 3. Resume writes to TabPersistentStore after detaching the grouped Tabs. Don't begin
         // re-attaching the Tabs to the target activity until they have been cleared from this
         // activity's TabPersistentStore.
+        TabPersistentStore tabPersistentStore =
+                mTabModelOrchestratorSupplier.get().getTabPersistentStore();
         tabPersistentStore.resumeSaveTabList(
                 () -> {
                     targetActivity.onNewIntent(intent);
                     bringTaskForeground(targetActivity.getTaskId());
                     // Re-enable sync service observation after re-parenting is completed to resume
                     // normal sync behavior.
-                    setSyncServiceLocalObservationMode(syncService, /* shouldObserve= */ true);
+                    resumeSyncService(tabGroupMetadata);
 
                     // Records tab group reparenting duration histogram.
                     long currentTime = SystemClock.elapsedRealtime();
@@ -313,6 +328,29 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             intent.putExtra(IntentHandler.EXTRA_TAB_INDEX, tabAtIndex);
         }
         return intent;
+    }
+
+    private void pauseObserversForGroupReparenting(TabGroupMetadata tabGroupMetadata) {
+        // Temporarily disable sync service from observing local changes to prevent unintended
+        // updates during tab group re-parenting.
+        @Nullable
+        TabGroupSyncService syncService =
+                getTabGroupSyncService(
+                        tabGroupMetadata.sourceWindowId, tabGroupMetadata.isIncognito);
+        setSyncServiceLocalObservationMode(syncService, /* shouldObserve= */ false);
+
+        // Pause writes to TabPersistentStore while detaching the grouped Tabs.
+        TabPersistentStore tabPersistentStore =
+                mTabModelOrchestratorSupplier.get().getTabPersistentStore();
+        tabPersistentStore.pauseSaveTabList();
+    }
+
+    private void resumeSyncService(TabGroupMetadata tabGroupMetadata) {
+        @Nullable
+        TabGroupSyncService syncService =
+                getTabGroupSyncService(
+                        tabGroupMetadata.sourceWindowId, tabGroupMetadata.isIncognito);
+        setSyncServiceLocalObservationMode(syncService, /* shouldObserve= */ true);
     }
 
     @Override
@@ -983,9 +1021,28 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     @VisibleForTesting
-    void beginReparenting(
+    void beginReparentingTab(
             Tab tab, Intent intent, Bundle startActivityOptions, Runnable finalizeCallback) {
         ReparentingTask.from(tab).begin(mActivity, intent, startActivityOptions, finalizeCallback);
+    }
+
+    @VisibleForTesting
+    void beginReparentingTabGroup(TabGroupMetadata tabGroupMetadata, Intent intent) {
+        // Pause observers before detaching tabs.
+        pauseObserversForGroupReparenting(tabGroupMetadata);
+
+        // Create the task, detaching the grouped tabs from the current activity.
+        ReparentingTabGroupTask reparentingTask = ReparentingTabGroupTask.from(tabGroupMetadata);
+        reparentingTask.setupIntent(intent, CallbackUtils.emptyRunnable());
+
+        // Create the new window and reparent once the TabPersistentStore has resumed.
+        TabPersistentStore tabPersistentStore =
+                mTabModelOrchestratorSupplier.get().getTabPersistentStore();
+        tabPersistentStore.resumeSaveTabList(
+                () -> {
+                    reparentingTask.begin(mActivity, intent);
+                    resumeSyncService(tabGroupMetadata);
+                });
     }
 
     private Profile getProfile() {
@@ -1085,14 +1142,38 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
     @Override
     public void moveTabToNewWindow(Tab tab) {
+        moveToNewWindowIfPossible(
+                () ->
+                        moveAndReparentTabToNewWindow(
+                                tab,
+                                INVALID_WINDOW_ID,
+                                /* preferNew= */ true,
+                                /* openAdjacently= */ false,
+                                /* addTrustedIntentExtras= */ true));
+    }
+
+    @Override
+    public void moveTabGroupToNewWindow(TabGroupMetadata tabGroupMetadata) {
+        moveToNewWindowIfPossible(
+                () ->
+                        moveAndReparentTabGroupToNewWindow(
+                                tabGroupMetadata,
+                                INVALID_WINDOW_ID,
+                                /* preferNew= */ true,
+                                /* openAdjacently= */ false,
+                                /* addTrustedIntentExtras= */ true));
+    }
+
+    /**
+     * Runs the given runnable to create a new window and reparent if the max instances has not been
+     * reached. Otherwise, shows a toast indicating this action failed.
+     *
+     * @param moveToNewWindow Runnable to create a new window and reparent the given tab or group.
+     */
+    private void moveToNewWindowIfPossible(Runnable moveToNewWindow) {
         // Check if the new Chrome instance can be opened.
         if (MultiWindowUtils.getInstanceCount() < mMaxInstances) {
-            moveAndReparentTabToNewWindow(
-                    tab,
-                    INVALID_WINDOW_ID,
-                    /* preferNew= */ true,
-                    /* openAdjacently= */ false,
-                    /* addTrustedIntentExtras= */ true);
+            moveToNewWindow.run();
         } else {
             // Just try to launch a Chrome window to inform user that maximum number of instances
             // limit is exceeded. This will pop up a toast message and the tab will not be removed
