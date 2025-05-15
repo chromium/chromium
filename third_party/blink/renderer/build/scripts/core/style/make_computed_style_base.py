@@ -103,10 +103,10 @@ ALIGNMENT_ORDER = [
     'int',
     'PositionArea',
     # Aligns like short
+    'StyleFlexWrapData',
     'unsigned short',
     'short',
     # Aligns like char
-    'StyleFlexWrapData',
     'StyleSelfAlignmentData',
     'StyleContentAlignmentData',
     'uint8_t',

@@ -13,5 +13,10 @@ test_invalid_value("flex-wrap", "balance nowrap");
 test_invalid_value("flex-wrap", "nowrap balance");
 test_invalid_value("flex-wrap", "wrap balance wrap");
 test_invalid_value("flex-wrap", "balance wrap balance");
+test_invalid_value("flex-wrap", "wrap 2 balance");
+test_invalid_value("flex-wrap", "2 balance wrap");
+test_invalid_value("flex-wrap", "balance 0");
+test_invalid_value("flex-wrap", "balance 1.5");
+test_invalid_value("flex-wrap", "balance -1");
 </script>
 </body>
