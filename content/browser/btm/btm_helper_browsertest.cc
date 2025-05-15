@@ -161,6 +161,7 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
 
   // The top-level page is on a.test.
   ASSERT_TRUE(NavigateToURL(web_contents, url_a));
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
 
   // Before clicking, no BTM state for either site.
   EXPECT_FALSE(GetBtmState(GetBtmService(web_contents), url_a).has_value());
@@ -223,6 +224,7 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
   SetBtmTime(time);
   // Navigate to a.test.
   ASSERT_TRUE(NavigateToURL(web_contents, url));
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
   RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
   WaitForHitTestData(frame);  // Wait until we can click.
 
