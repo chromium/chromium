@@ -917,6 +917,42 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   </summary>
 </histogram>
 
+<histogram
+    name="Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant.DaysSinceProposedRevocation"
+    units="days" expires_after="2026-02-26">
+  <owner>olesiamarukhnno@google.com</owner>
+  <owner>antoniosartori@chromium.org</owner>
+  <summary>
+    Recorded when users regrant notification permissions after a disruptive
+    notification revocation. Measures how many days passed since the proposed
+    revocation.
+  </summary>
+</histogram>
+
+<histogram
+    name="Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant.NewSiteEngagement"
+    units="days" expires_after="2026-02-26">
+  <owner>olesiamarukhnno@google.com</owner>
+  <owner>antoniosartori@chromium.org</owner>
+  <summary>
+    Recorded when users regrant notification permissions after a disruptive
+    notification revocation. Measures how many days passed since the proposed
+    revocation.
+  </summary>
+</histogram>
+
+<histogram
+    name="Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant.PreviousNotificationCount"
+    units="count" expires_after="2026-02-26">
+  <owner>olesiamarukhnno@google.com</owner>
+  <owner>antoniosartori@chromium.org</owner>
+  <summary>
+    Recorded when users regrant notification permissions after a disruptive
+    notification revocation. Reports the average daily notification count when
+    the revocation was proposed.
+  </summary>
+</histogram>
+
 <histogram name="Settings.SafetyHub.EntryPointImpression"
     enum="SafetyHubEntryPoint" expires_after="2025-09-28">
   <owner>sideyilmaz@chromium.org</owner>

@@ -395,7 +395,19 @@ void DisruptiveNotificationPermissionsManager::OnContentSettingChanged(
       revocation_entry->lifetime = base::TimeDelta();
       ContentSettingHelper(*hcsm_).PersistRevocationEntry(url,
                                                           *revocation_entry);
-      // TODO(antoniosartori): Report metrics.
+
+      base::UmaHistogramCounts100(
+          "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
+          "DaysSinceProposedRevocation",
+          (clock_->Now() - revocation_entry->timestamp).InDays());
+      base::UmaHistogramCounts100(
+          "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
+          "NewSiteEngagement",
+          site_engagement_service_->GetScore(url));
+      base::UmaHistogramCounts100(
+          "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
+          "PreviousNotificationCount",
+          revocation_entry->daily_notification_count);
     }
   }
 }

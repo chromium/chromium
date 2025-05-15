@@ -898,6 +898,35 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   }
 }
 
+TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
+       ReportMetricsOnUserRegrant) {
+  base::HistogramTester t;
+  GURL url("https://www.example1.com");
+  ContentSettingHelper(*hcsm()).PersistRevocationEntry(
+      url, RevocationEntry{
+               .revocation_state = RevocationState::kRevoked,
+               .site_engagement = 0.0,
+               .daily_notification_count = 3,
+               .timestamp = base::Time::Now(),
+               .lifetime = base::Days(14),
+           });
+  clock()->Advance(base::Days(5));
+  site_engagement_service()->ResetBaseScoreForURL(url, 7.0);
+  SetNotificationPermission(url, ContentSetting::CONTENT_SETTING_ALLOW);
+  t.ExpectUniqueSample(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
+      "DaysSinceProposedRevocation",
+      5, 1);
+  t.ExpectUniqueSample(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
+      "NewSiteEngagement",
+      7, 1);
+  t.ExpectUniqueSample(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
+      "PreviousNotificationCount",
+      3, 1);
+}
+
 class DisruptiveNotificationPermissionsManagerShadowRunTest
     : public DisruptiveNotificationPermissionsManagerTest {
  public:
