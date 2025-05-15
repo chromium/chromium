@@ -2103,6 +2103,14 @@ std::string SerializeContentAnalysisRequest(
           base::Base64Encode(request.request_data().csd().SerializeAsString());
       request_data.Set("csd", std::move(csd_base64));
     }
+    if (request.request_data().referrer_chain_size() > 0) {
+      base::Value::List referrers;
+      for (const auto& referrer_chain_entry :
+           request.request_data().referrer_chain()) {
+        referrers.Append(SerializeReferrer(referrer_chain_entry));
+      }
+      request_data.Set("referrers", std::move(referrers));
+    }
     request_data.Set("content_type", request.request_data().content_type());
     request_data.Set("tab_url", request.request_data().tab_url());
     request_data.Set("source", request.request_data().source());
