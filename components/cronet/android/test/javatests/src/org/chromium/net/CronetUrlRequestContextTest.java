@@ -14,6 +14,7 @@ import static org.chromium.net.CronetTestRule.getTestStorage;
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
 import android.net.Network;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.ConditionVariable;
 import android.os.Handler;
@@ -35,11 +36,13 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.net.CronetTestRule.BoolFlag;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.DisableAutomaticNetLog;
 import org.chromium.net.CronetTestRule.Flags;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.IntFlag;
+import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.NetworkChangeNotifierAutoDetect.ConnectivityManagerDelegate;
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
@@ -54,6 +57,7 @@ import org.chromium.net.impl.CronetManifestInterceptor;
 import org.chromium.net.impl.CronetUrlRequestContext;
 import org.chromium.net.impl.ImplVersion;
 import org.chromium.net.impl.NativeCronetEngineBuilderImpl;
+import org.chromium.net.impl.NativeCronetProvider;
 import org.chromium.net.impl.NetworkExceptionImpl;
 
 import java.io.BufferedReader;
@@ -183,6 +187,9 @@ public class CronetUrlRequestContextTest {
                                                 .addConstrainedValues(constrainedValueBuilder)
                                                 .build())
                                 .build());
+        // Httpflags might have been cached if it has been requested before we changed the flags.
+        // Flush the cached flags to make sure that subsequent calls read the new flag.
+        HttpFlagsLoader.flushHttpFlags();
     }
 
     private void runOneRequest() {
@@ -374,6 +381,9 @@ public class CronetUrlRequestContextTest {
                                         .build())
                         .build();
         mTestRule.getTestFramework().setHttpFlags(flags);
+        // Httpflags might have been cached if it has been requested before we changed the flags.
+        // Flush the cached flags to make sure that subsequent calls read the new flag.
+        HttpFlagsLoader.flushHttpFlags();
     }
 
     @Test
@@ -2099,6 +2109,44 @@ public class CronetUrlRequestContextTest {
         assertThat(engine).isNotNull();
         assertThat(loader.wasCalled()).isFalse();
         engine.shutdown();
+    }
+
+    @Test
+    @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason = "This test is intended specifically for NativeCronetProvider")
+    @Flags(
+            boolFlags = {
+                @BoolFlag(
+                        name = NativeCronetProvider.OVERRIDE_NATIVE_CRONET_WITH_HTTPENGINE_FLAG,
+                        value = true)
+            })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testNativeCronetProviderShouldServeHttpEngineWithFlagEnabled() throws Exception {
+        CronetProvider nativeProvider =
+                new NativeCronetProvider(mTestRule.getTestFramework().getContext());
+        assertThat(nativeProvider.createBuilder().getDefaultUserAgent())
+                .contains("AndroidHttpClient");
+    }
+
+    @Test
+    @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason = "This test is intended specifically for NativeCronetProvider")
+    @Flags(
+            boolFlags = {
+                @BoolFlag(
+                        name = NativeCronetProvider.OVERRIDE_NATIVE_CRONET_WITH_HTTPENGINE_FLAG,
+                        value = false)
+            })
+    public void testNativeCronetProviderShouldNotServeHttpEngineWithFlagDisabled()
+            throws Exception {
+        CronetProvider nativeProvider =
+                new NativeCronetProvider(mTestRule.getTestFramework().getContext());
+        assertThat(nativeProvider.createBuilder().getDefaultUserAgent())
+                .doesNotContain("AndroidHttpClient");
     }
 
     // Creates a CronetEngine on another thread and then one on the main thread.  This shouldn't

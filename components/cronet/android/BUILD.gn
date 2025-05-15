@@ -577,6 +577,7 @@ android_library("cronet_impl_native_java") {
     ":cronet_impl_common_java",
     ":cronet_shared_java",
     ":flags_java_proto",
+    ":httpengine_native_provider_java",
     "//base:log_java",
     "//build/android:build_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
@@ -623,7 +624,6 @@ android_library("httpengine_native_provider_java") {
     "//base:metrics_ScopedSysTraceEvent_java",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_core_core_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
 }
@@ -683,6 +683,7 @@ android_library("cronet_sample_apk_java") {
   deps = [
     ":cronet_sample_apk_resources",
     ":package_api_java",
+    ":package_httpengine_native_provider_java",
     ":package_impl_common_java",
     ":package_impl_native_java",
     ":package_shared_java",
