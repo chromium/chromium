@@ -196,6 +196,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 
   UIStackView* labelsStackView = [[UIStackView alloc]
       initWithArrangedSubviews:@[ self.titleLabel, self.subTitleLabel ]];
+  labelsStackView.insetsLayoutMarginsFromSafeArea = NO;
   labelsStackView.axis = UILayoutConstraintAxisVertical;
   labelsStackView.layoutMarginsRelativeArrangement = YES;
   labelsStackView.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
