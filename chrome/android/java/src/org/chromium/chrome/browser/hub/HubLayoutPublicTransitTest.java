@@ -28,8 +28,6 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.NewTabGroupDialogFacility;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
-import org.chromium.chrome.test.transit.hub.TabGroupDialogFacility;
-import org.chromium.chrome.test.transit.hub.TabGroupPaneStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherAppMenuFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
@@ -115,15 +113,49 @@ public class HubLayoutPublicTransitTest {
         dialog = dialog.pickColor(TabGroupColorId.RED);
         dialog.pressDone();
 
-        TabGroupPaneStation tabGroupPane =
-                tabSwitcher.selectPane(PaneId.TAB_GROUPS, TabGroupPaneStation.class);
+        RegularNewTabPageStation finalStation =
+                tabSwitcher
+                        .selectTabGroupsPane()
+                        .createNewTabGroup()
+                        .pressDoneAsPartOfFlow()
+                        // Go back to a PageStation for BlankCTATabInitialStateRule to reset state.
+                        .openNewRegularTab();
+        assertFinalDestination(finalStation);
+    }
 
-        NewTabGroupDialogFacility<TabGroupPaneStation> newGroupDialog =
-                tabGroupPane.createNewTabGroup();
-        TabGroupDialogFacility<TabGroupPaneStation> groupDialog =
-                newGroupDialog.pressDoneAsPartOfFlow();
-        RegularNewTabPageStation secondPage = groupDialog.openNewRegularTab();
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
+    public void testRegularTabSwitcher_newTabGroup() {
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        RegularNewTabPageStation finalPage =
+                firstPage
+                        .openRegularTabSwitcher()
+                        .openAppMenu()
+                        .openNewTabGroup()
+                        .pressDoneAsPartOfFlow()
+                        // Go back to a PageStation for BlankCTATabInitialStateRule to reset state.
+                        .openNewRegularTab();
 
+        assertFinalDestination(finalPage);
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
+    public void testIncognitoTabSwitcherStation_newTabGroup() {
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        IncognitoNewTabPageStation incognitoNewTabPageStation =
+                firstPage
+                        .openNewIncognitoTabFast()
+                        .openIncognitoTabSwitcher()
+                        .openAppMenu()
+                        .openNewTabGroup()
+                        .pressDoneAsPartOfFlow()
+                        .openNewIncognitoTab();
+
+        // Go back to a PageStation for BlankCTATabInitialStateRule to reset state.
+        RegularNewTabPageStation secondPage = incognitoNewTabPageStation.openAppMenu().openNewTab();
         assertFinalDestination(secondPage);
     }
 

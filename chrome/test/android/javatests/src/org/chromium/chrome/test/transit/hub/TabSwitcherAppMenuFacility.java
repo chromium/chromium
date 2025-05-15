@@ -4,10 +4,17 @@
 
 package org.chromium.chrome.test.transit.hub;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import androidx.annotation.Nullable;
+
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Station;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.transit.CtaAppMenuFacility;
+import org.chromium.chrome.test.transit.Journeys;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.quick_delete.QuickDeleteDialogFacility;
@@ -29,6 +36,7 @@ public class TabSwitcherAppMenuFacility<HostStationT extends TabSwitcherStation>
     private final boolean mIsIncognito;
     private Item<RegularNewTabPageStation> mNewTab;
     private Item<IncognitoNewTabPageStation> mNewIncognitoTab;
+    private @Nullable Item<NewTabGroupDialogFacility<HostStationT>> mNewTabGroup;
     private Item<Void> mCloseAllTabs;
     private Item<Void> mCloseIncognitoTabs;
     private Item<TabSwitcherListEditorFacility<HostStationT>> mSelectTabs;
@@ -47,6 +55,10 @@ public class TabSwitcherAppMenuFacility<HostStationT extends TabSwitcherStation>
         mNewIncognitoTab =
                 declareMenuItemToStation(
                         items, NEW_INCOGNITO_TAB_ID, this::createIncognitoNewTabPageStation);
+        if (ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled()) {
+            mNewTabGroup =
+                    declareMenuItem(items, NEW_TAB_GROUP_ID, this::createNewTabGroupFacility);
+        }
         if (!mIsIncognito) {
             // Regular Hub Tab Switcher
             int tabCount =
@@ -98,6 +110,18 @@ public class TabSwitcherAppMenuFacility<HostStationT extends TabSwitcherStation>
     /** Select "New Incognito tab" from the app menu. */
     public IncognitoNewTabPageStation openNewIncognitoTab() {
         return mNewIncognitoTab.scrollToAndSelect();
+    }
+
+    /** Select "New tab group" from the app menu. */
+    public NewTabGroupDialogFacility<HostStationT> openNewTabGroup() {
+        assertTrue(ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled());
+        assertNotNull(mNewTabGroup);
+        return mNewTabGroup.scrollToAndSelect();
+    }
+
+    private NewTabGroupDialogFacility<HostStationT> createNewTabGroupFacility(
+            ItemOnScreenFacility<NewTabGroupDialogFacility<HostStationT>> item) {
+        return Journeys.beginNewTabGroupUiFlow(mHostStation, item.viewElement.getClickTrigger());
     }
 
     /** Select "Settings" from the app menu. */

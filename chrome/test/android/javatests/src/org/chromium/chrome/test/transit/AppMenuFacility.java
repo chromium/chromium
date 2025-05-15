@@ -125,6 +125,7 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
 
     public static final @IdRes int NEW_TAB_ID = R.id.new_tab_menu_id;
     public static final @IdRes int NEW_INCOGNITO_TAB_ID = R.id.new_incognito_tab_menu_id;
+    public static final @IdRes int NEW_TAB_GROUP_ID = R.id.new_tab_group_menu_id;
     public static final @IdRes int NEW_WINDOW_ID = R.id.new_window_menu_id;
     public static final @IdRes int HISTORY_ID = R.id.open_history_menu_id;
     public static final @IdRes int DELETE_BROWSING_DATA_ID = R.id.quick_delete_menu_id;
