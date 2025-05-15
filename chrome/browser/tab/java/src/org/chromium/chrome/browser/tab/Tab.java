@@ -331,9 +331,14 @@ public interface Tab extends TabLifecycle {
     void goForward();
 
     /**
-     * @return true if the {@link Tab} is a custom tab.
+     * @return true if the {@link Tab} is a custom tab, including CCTs, TWAs and WebAPKs.
      */
     boolean isCustomTab();
+
+    /**
+     * @return true if the {@link Tab} is in either a TWA or a WebAPK, both types of PWA.
+     */
+    boolean isTabInPWA();
 
     /**
      * @return the last time this tab was shown or the time of its initialization if it wasn't yet

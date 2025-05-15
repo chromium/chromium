@@ -1252,6 +1252,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tab") {
     "src/org/chromium/chrome/browser/tab/SadTabTest.java",
     "src/org/chromium/chrome/browser/tab/TabArchiverTest.java",
     "src/org/chromium/chrome/browser/tab/TabContextMenuItemDelegateTest.java",
+    "src/org/chromium/chrome/browser/tab/TabImplPWATest.java",
     "src/org/chromium/chrome/browser/tab/TabImplTest.java",
     "src/org/chromium/chrome/browser/tab/TabStateTest.java",
     "src/org/chromium/chrome/browser/tab/TabUmaTest.java",
