@@ -207,7 +207,9 @@ void DataTypeManagerImpl::Configure(DataTypeSet preferred_types,
     allowed_types.Put(type);
   }
 
-  ConfigureImpl(Intersection(preferred_types, allowed_types), context);
+  last_requested_context_ = context;
+  preferred_types_ = Intersection(preferred_types, allowed_types);
+  ConfigureImpl();
 }
 
 void DataTypeManagerImpl::DataTypePreconditionChanged(DataType type) {
@@ -260,18 +262,17 @@ void DataTypeManagerImpl::ResetDataTypeErrors() {
 
 void DataTypeManagerImpl::PurgeForMigration(DataTypeSet undesired_types) {
   CHECK(configurer_);
-  DataTypeSet remainder = Difference(preferred_types_, undesired_types);
+  preferred_types_ = Difference(preferred_types_, undesired_types);
   last_requested_context_.reason = CONFIGURE_REASON_MIGRATION;
-  ConfigureImpl(remainder, last_requested_context_);
+  ConfigureImpl();
 }
 
-void DataTypeManagerImpl::ConfigureImpl(DataTypeSet preferred_types,
-                                        const ConfigureContext& context) {
+void DataTypeManagerImpl::ConfigureImpl() {
   CHECK(configurer_);
-  CHECK_NE(context.reason, CONFIGURE_REASON_UNKNOWN);
+  CHECK_NE(last_requested_context_.reason, CONFIGURE_REASON_UNKNOWN);
 
-  DVLOG(1) << "Configuring for " << DataTypeSetToDebugString(preferred_types)
-           << " with reason " << context.reason;
+  DVLOG(1) << "Configuring for " << DataTypeSetToDebugString(preferred_types_)
+           << " with reason " << last_requested_context_.reason;
   if (state_ == STOPPING) {
     // You can not set a configuration while stopping.
     LOG(ERROR) << "Configuration set while stopping.";
@@ -279,13 +280,11 @@ void DataTypeManagerImpl::ConfigureImpl(DataTypeSet preferred_types,
   }
 
   if (state_ != STOPPED) {
-    DCHECK_EQ(context.authenticated_gaia_id,
+    DCHECK_EQ(last_requested_context_.authenticated_gaia_id,
               last_requested_context_.authenticated_gaia_id);
-    DCHECK_EQ(context.cache_guid, last_requested_context_.cache_guid);
+    DCHECK_EQ(last_requested_context_.cache_guid,
+              last_requested_context_.cache_guid);
   }
-
-  preferred_types_ = preferred_types;
-  last_requested_context_ = context;
 
   // Only proceed if we're in a steady state or retrying.
   switch (state_) {
@@ -643,7 +642,7 @@ void DataTypeManagerImpl::ProcessReconfigure() {
   // types may be reset before the purging was performed.
   state_ = RETRYING;
   needs_reconfigure_ = false;
-  ConfigureImpl(preferred_types_, last_requested_context_);
+  ConfigureImpl();
 }
 
 void DataTypeManagerImpl::ConfigurationCompleted(

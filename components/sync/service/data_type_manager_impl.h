@@ -109,8 +109,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   void NotifyStart();
   void NotifyDone(ConfigureStatus status);
 
-  void ConfigureImpl(DataTypeSet preferred_types,
-                     const ConfigureContext& context);
+  void ConfigureImpl();
 
   // Calls data type controllers of requested types to connect.
   void ConnectDataTypes();
