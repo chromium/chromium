@@ -99,4 +99,39 @@ std::vector<ui::AXTreeUpdate> CreateSimpleUpdateList(
   return updates;
 }
 
+testing::Matcher<ReadAloudTextSegment> TextSegmentMatcher(TextRange range) {
+  return testing::AllOf(
+      ::testing::Field(&ReadAloudTextSegment::id, ::testing::Eq(range.id)),
+      ::testing::Field(&ReadAloudTextSegment::text_start,
+                       ::testing::Eq(range.start)),
+      ::testing::Field(&ReadAloudTextSegment::text_end,
+                       ::testing::Eq(range.end)));
+}
+
+base::File GetValidModelFile() {
+  base::FilePath source_root_dir;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
+  base::FilePath model_file_path = source_root_dir.AppendASCII("chrome")
+                                       .AppendASCII("test")
+                                       .AppendASCII("data")
+                                       .AppendASCII("accessibility")
+                                       .AppendASCII("phrase_segmentation")
+                                       .AppendASCII("model.tflite");
+  base::File file(model_file_path,
+                  (base::File::FLAG_OPEN | base::File::FLAG_READ));
+  return file;
+}
+
+base::File GetInvalidModelFile() {
+  base::ScopedTempDir temp_dir;
+  EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path =
+      temp_dir.GetPath().AppendASCII("model_file.tflite");
+  base::File file(file_path, (base::File::FLAG_CREATE | base::File::FLAG_READ |
+                              base::File::FLAG_WRITE |
+                              base::File::FLAG_CAN_DELETE_ON_CLOSE));
+  EXPECT_EQ(5u, file.WriteAtCurrentPos(base::byte_span_from_cstring("12345")));
+  return file;
+}
+
 }  // namespace test
