@@ -24,7 +24,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/elapsed_timer.h"
-#include "crypto/secure_hash.h"
+#include "crypto/hash.h"
 #include "net/base/hash_value.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -90,14 +90,6 @@ bool TruncatePath(const FilePath& filename_to_truncate,
   if (!file_to_truncate.SetLength(0))
     return false;
   return true;
-}
-
-void CalculateSHA256OfKey(const std::string& key,
-                          net::SHA256HashValue* out_hash_value) {
-  std::unique_ptr<crypto::SecureHash> hash(
-      crypto::SecureHash::Create(crypto::SecureHash::SHA256));
-  hash->Update(key.data(), key.size());
-  hash->Finish(*out_hash_value);
 }
 
 SimpleFileTracker::SubFile SubFileForFileIndex(int file_index) {
@@ -1099,8 +1091,7 @@ void SimpleSynchronousEntry::Close(
         DVLOG(1) << "Could not write stream 0 data.";
         DoomInternal(file_operations.get());
       }
-      net::SHA256HashValue hash_value;
-      CalculateSHA256OfKey(key, &hash_value);
+      auto hash_value = crypto::hash::Sha256(key);
       if (!file->WriteAndCheck(stream_0_offset + entry_stat.data_size(0),
                                hash_value)) {
         RecordCloseResult(cache_type_, CLOSE_RESULT_WRITE_FAILURE);
@@ -1705,8 +1696,7 @@ int SimpleSynchronousEntry::ReadAndValidateStream0AndMaybe1(
 
   // If present, check the key SHA256.
   if (has_key_sha256) {
-    net::SHA256HashValue hash_value;
-    CalculateSHA256OfKey(key, &hash_value);
+    auto hash_value = crypto::hash::Sha256(key);
     if (base::byte_span_from_ref(hash_value) !=
         stream_prefetch_data[0].data->span().subspan(
             static_cast<uint32_t>(stream_0_size), sizeof(hash_value))) {
