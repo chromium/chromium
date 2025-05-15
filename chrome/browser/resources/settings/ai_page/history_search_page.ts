@@ -34,11 +34,6 @@ export class SettingsHistorySearchPageElement extends
 
   static get properties() {
     return {
-      enableAiSettingsPageRefresh_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enableAiSettingsPageRefresh'),
-      },
-
       featureOptInStateEnum_: {
         type: Object,
         value: FeatureOptInState,
@@ -56,16 +51,7 @@ export class SettingsHistorySearchPageElement extends
             [FeatureOptInState.DISABLED, FeatureOptInState.NOT_INITIALIZED],
       },
 
-      toggleSubLabel_: {
-        type: String,
-        value: () => {
-          return loadTimeData.getBoolean(
-                     'historyEmbeddingsAnswersFeatureEnabled') ?
-              loadTimeData.getString('historySearchAnswersSettingSublabel') :
-              loadTimeData.getString('historySearchSettingSublabel');
-        },
-      },
-
+      // TODO(crbug.com/362225975): Remove V2 suffixes.
       toggleSubLabelV2_: {
         type: String,
         value: () => {
@@ -89,10 +75,8 @@ export class SettingsHistorySearchPageElement extends
     };
   }
 
-  declare private enableAiSettingsPageRefresh_: boolean;
   declare private isAnswersFeatureEnabled_: boolean;
   declare private numericUncheckedValues_: FeatureOptInState[];
-  declare private toggleSubLabel_: string;
   declare private toggleSubLabelV2_: string;
   declare private enterprisePref_: chrome.settingsPrivate.PrefObject;
   private metricsBrowserProxy_: MetricsBrowserProxy =

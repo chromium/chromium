@@ -207,18 +207,6 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
           return map;
         },
       },
-
-      enableAiSettingsPageRefresh_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enableAiSettingsPageRefresh'),
-      },
-
-      showHistorySearchControl_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showHistorySearchControl');
-        },
-      },
     };
   }
 
@@ -231,8 +219,6 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   declare private profileIconUrl_: string;
   declare private isProfileActionable_: boolean;
   declare private profileName_: string;
-  declare private enableAiSettingsPageRefresh_: boolean;
-  declare private showHistorySearchControl_: boolean;
 
   // <if expr="not chromeos_ash">
   declare storedAccounts: StoredAccount[]|null;
@@ -442,10 +428,6 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   private isSyncing_() {
     return !!this.syncStatus &&
         this.syncStatus.signedInState === SignedInState.SYNCING;
-  }
-
-  private shouldShowHistorySearchControl_(): boolean {
-    return this.showHistorySearchControl_ && !this.enableAiSettingsPageRefresh_;
   }
 }
 

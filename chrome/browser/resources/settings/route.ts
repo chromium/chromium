@@ -199,10 +199,6 @@ function createRoutes(): SettingsRoutes {
 
     r.SYNC = r.PEOPLE.createChild('/syncSetup');
     r.SYNC_ADVANCED = r.SYNC.createChild('/syncSetup/advanced');
-    if (!loadTimeData.getBoolean('enableAiSettingsPageRefresh') &&
-        loadTimeData.getBoolean('showHistorySearchControl')) {
-      r.HISTORY_SEARCH = r.SYNC.createChild('/historySearch');
-    }
   }
 
   const visibility = pageVisibility || {};

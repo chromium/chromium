@@ -42,7 +42,6 @@ import {loadTimeData} from '../i18n_setup.js';
 import type {PrivacyPageVisibility} from '../page_visibility.js';
 import type {SettingsSignoutDialogElement} from '../people_page/signout_dialog.js';
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
-import {Router} from '../router.js';
 
 import {getTemplate} from './personalization_options.html.js';
 
@@ -126,18 +125,6 @@ export class SettingsPersonalizationOptionsElement extends
         value: ChromeSigninUserChoice,
       },
       // </if>
-
-      enableAiSettingsPageRefresh_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enableAiSettingsPageRefresh'),
-      },
-
-      showHistorySearchControl_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showHistorySearchControl');
-        },
-      },
     };
   }
 
@@ -159,9 +146,6 @@ export class SettingsPersonalizationOptionsElement extends
 
   declare private chromeSigninUserChoiceInfo_: ChromeSigninUserChoiceInfo;
   // </if>
-
-  declare private enableAiSettingsPageRefresh_: boolean;
-  declare private showHistorySearchControl_: boolean;
 
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();
@@ -332,15 +316,6 @@ export class SettingsPersonalizationOptionsElement extends
   private onRestartClick_(e: Event) {
     e.stopPropagation();
     this.performRestart(RestartType.RESTART);
-  }
-
-  private shouldShowHistorySearchControl_(): boolean {
-    return this.showHistorySearchControl_ && !this.enableAiSettingsPageRefresh_;
-  }
-
-  private onHistorySearchRowClick_() {
-    const router = Router.getInstance();
-    router.navigateTo(router.getRoutes().HISTORY_SEARCH);
   }
 
   // <if expr="not is_chromeos">

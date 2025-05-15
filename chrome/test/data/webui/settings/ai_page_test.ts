@@ -106,12 +106,6 @@ suite('ExperimentalAdvancedPage', function() {
     await verifyFeatureVisibilityMetrics(
         'Settings.AiPage.ElementVisibility.PasswordChange', false);
 
-    // The old UI should not be visible if the refresh flag is enabled.
-    const toggles1 =
-        page.shadowRoot!.querySelectorAll('settings-toggle-button');
-    assertEquals(0, toggles1.length);
-    assertFalse(isChildVisible(page, '#historySearchRow'));
-
     metricsBrowserProxy.resetResolver('recordBooleanHistogram');
 
     // No new metrics should get recorded on next AI page navigation.
@@ -154,12 +148,6 @@ suite('ExperimentalAdvancedPage', function() {
     assertTrue(isChildVisible(page, '#passwordChangeRowV2'));
     await verifyFeatureVisibilityMetrics(
         'Settings.AiPage.ElementVisibility.PasswordChange', true);
-
-    // The old UI should not be visible if the refresh flag is enabled.
-    const toggles2 =
-        page.shadowRoot!.querySelectorAll('settings-toggle-button');
-    assertEquals(0, toggles2.length);
-    assertFalse(isChildVisible(page, '#historySearchRow'));
 
     metricsBrowserProxy.resetResolver('recordBooleanHistogram');
 
@@ -325,47 +313,5 @@ suite('ExperimentalAdvancedPage', function() {
         page.shadowRoot!.querySelector<HTMLElement>('#passwordChangeRowV2');
     assertTrue(!!passwordChangeRow);
     assertFalse(isVisible(passwordChangeRow));
-  });
-});
-
-// TODO(crbug.com/362225975): Remove after AiSettingsPageRefresh is launched.
-suite('ExperimentalAdvancedPageRefreshDisabled', () => {
-  let page: SettingsAiPageElement;
-  let settingsPrefs: SettingsPrefsElement;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({enableAiSettingsPageRefresh: false});
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  function createPage() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page = document.createElement('settings-ai-page');
-    page.prefs = settingsPrefs.prefs;
-    document.body.appendChild(page);
-    return flushTasks();
-  }
-
-  test('HistorySearchVisibility', () => {
-    // Hide history search row.
-    loadTimeData.overrideValues({
-      showHistorySearchControl: false,
-    });
-    createPage();
-
-    assertFalse(isChildVisible(page, '#historySearchRow'));
-    // V2 UI should be hidden while the refresh flag is disabled.
-    assertFalse(isChildVisible(page, '#historySearchRowV2'));
-
-    // Show history search row.
-    loadTimeData.overrideValues({
-      showHistorySearchControl: true,
-    });
-    createPage();
-
-    assertTrue(isChildVisible(page, '#historySearchRow'));
-    // V2 UI should still be hidden while the refresh flag is disabled.
-    assertFalse(isChildVisible(page, '#historySearchRowV2'));
   });
 });

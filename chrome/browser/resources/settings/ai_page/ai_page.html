@@ -1,112 +1,96 @@
 <style include="cr-shared-style settings-shared"></style>
 
-<template is="dom-if" if="[[!enableAiSettingsPageRefresh_]]" restamp>
-  <cr-link-row id="historySearchRow"
-      class="hr"
-      hidden="[[!showHistorySearchControl_]]"
-      label="$i18n{historySearchSettingLabel}"
-      sub-label="[[historySearchRowSublabel_]]"
-      role-description="$i18n{subpageArrowRoleDescription}"
-      on-click="onHistorySearchRowClick_">
-  </cr-link-row>
-</template>
-
-<template is="dom-if" if="[[enableAiSettingsPageRefresh_]]" restamp>
-  <settings-animated-pages id="pages" section="ai"
-      focus-config="[[focusConfig_]]">
-    <div route-path="default">
-      <cr-link-row id="passwordChangeRowV2" class="hr"
-          hidden="[[!showPasswordChangeControl_]]"
-          start-icon="cr20:password"
-          label="$i18n{passwordChangeSettingLabel}"
-          sub-label="$i18n{passwordChangeSettingSubLabel}"
-          on-click="onPasswordChangeRowClick_" external>
-      </cr-link-row>
-      <cr-link-row id="autofillAiRowV2" class="hr"
-          hidden="[[!showAutofillAiControl_]]"
-          start-icon="settings20:text-analysis"
-          label="$i18n{autofillAiPageTitle}"
-          sub-label="$i18n{autofillAiDescription}"
-          role-description="$i18n{subpageArrowRoleDescription}"
-          on-click="onAutofillAiRowClick_">
-      </cr-link-row>
-      <cr-link-row id="historySearchRowV2" class="hr"
-          hidden="[[!showHistorySearchControl_]]"
-          start-icon="settings20:search-spark"
-          label="$i18n{historySearchSettingLabel}"
-          sub-label="[[getHistorySearchSublabel_(
-            prefs.optimization_guide.history_search_setting_state.value)]]"
-          role-description="$i18n{subpageArrowRoleDescription}"
-          on-click="onHistorySearchRowClick_">
-      </cr-link-row>
-      <cr-link-row id="compareRowV2" class="hr"
-          hidden="[[!showCompareControl_]]"
-          start-icon="settings20:table-chart-organize"
-          label="$i18n{aiCompareLabel}"
-          sub-label="$i18n{aiCompareSublabel}"
-          role-description="$i18n{subpageArrowRoleDescription}"
-          on-click="onCompareRowClick_">
-      </cr-link-row>
-      <cr-link-row id="composeRowV2" class="hr"
-          hidden="[[!showComposeControl_]]"
-          start-icon="settings20:pen-spark"
-          label="$i18n{aiComposeLabel}"
-          sub-label="$i18n{aiComposeSublabelV2}"
-          role-description="$i18n{subpageArrowRoleDescription}"
-          on-click="onComposeRowClick_">
-      </cr-link-row>
-      <cr-link-row id="tabOrganizationRowV2" class="hr"
-          hidden="[[!showTabOrganizationControl_]]"
-          start-icon="settings20:auto-tab-group"
-          label="$i18n{tabOrganizationSettingLabel}"
-          sub-label="$i18n{tabOrganizationSettingSublabelV2}"
-          role-description="$i18n{subpageArrowRoleDescription}"
-          on-click="onTabOrganizationRowClick_">
-      </cr-link-row>
-    </div>
-
-    <template is="dom-if" if="[[showHistorySearchControl_]]">
-      <template is="dom-if" route-path="/ai/historySearch">
-        <settings-subpage id="historySearch"
-            associated-control="[[$$('#historySearchRowV2')]]"
-            page-title="$i18n{historySearchSettingLabel}">
-          <settings-history-search-page prefs="{{prefs}}">
-          </settings-history-search-page>
-        </settings-subpage>
-      </template>
+<!-- TODO(crbug.com/362225975): Remove V2 suffixes. -->
+<settings-animated-pages id="pages" section="ai"
+    focus-config="[[focusConfig_]]">
+  <div route-path="default">
+    <cr-link-row id="passwordChangeRowV2" class="hr"
+        hidden="[[!showPasswordChangeControl_]]"
+        start-icon="cr20:password"
+        label="$i18n{passwordChangeSettingLabel}"
+        sub-label="$i18n{passwordChangeSettingSubLabel}"
+        on-click="onPasswordChangeRowClick_" external>
+    </cr-link-row>
+    <cr-link-row id="autofillAiRowV2" class="hr"
+        hidden="[[!showAutofillAiControl_]]"
+        start-icon="settings20:text-analysis"
+        label="$i18n{autofillAiPageTitle}"
+        sub-label="$i18n{autofillAiDescription}"
+        role-description="$i18n{subpageArrowRoleDescription}"
+        on-click="onAutofillAiRowClick_">
+    </cr-link-row>
+    <cr-link-row id="historySearchRowV2" class="hr"
+        hidden="[[!showHistorySearchControl_]]"
+        start-icon="settings20:search-spark"
+        label="$i18n{historySearchSettingLabel}"
+        sub-label="[[getHistorySearchSublabel_(
+          prefs.optimization_guide.history_search_setting_state.value)]]"
+        role-description="$i18n{subpageArrowRoleDescription}"
+        on-click="onHistorySearchRowClick_">
+    </cr-link-row>
+    <cr-link-row id="compareRowV2" class="hr"
+        hidden="[[!showCompareControl_]]"
+        start-icon="settings20:table-chart-organize"
+        label="$i18n{aiCompareLabel}"
+        sub-label="$i18n{aiCompareSublabel}"
+        role-description="$i18n{subpageArrowRoleDescription}"
+        on-click="onCompareRowClick_">
+    </cr-link-row>
+    <cr-link-row id="composeRowV2" class="hr"
+        hidden="[[!showComposeControl_]]"
+        start-icon="settings20:pen-spark"
+        label="$i18n{aiComposeLabel}"
+        sub-label="$i18n{aiComposeSublabelV2}"
+        role-description="$i18n{subpageArrowRoleDescription}"
+        on-click="onComposeRowClick_">
+    </cr-link-row>
+    <cr-link-row id="tabOrganizationRowV2" class="hr"
+        hidden="[[!showTabOrganizationControl_]]"
+        start-icon="settings20:auto-tab-group"
+        label="$i18n{tabOrganizationSettingLabel}"
+        sub-label="$i18n{tabOrganizationSettingSublabelV2}"
+        role-description="$i18n{subpageArrowRoleDescription}"
+        on-click="onTabOrganizationRowClick_">
+    </cr-link-row>
+  </div>
+  <template is="dom-if" if="[[showHistorySearchControl_]]">
+    <template is="dom-if" route-path="/ai/historySearch">
+      <settings-subpage id="historySearch"
+          associated-control="[[$$('#historySearchRowV2')]]"
+          page-title="$i18n{historySearchSettingLabel}">
+        <settings-history-search-page prefs="{{prefs}}">
+        </settings-history-search-page>
+      </settings-subpage>
     </template>
-
-    <template is="dom-if" if="[[showCompareControl_]]">
-      <template is="dom-if" route-path="/ai/compareProducts">
-        <settings-subpage id="compare"
-            associated-control="[[$$('#compareRowV2')]]"
-            page-title="$i18n{aiCompareLabel}">
-          <settings-ai-compare-subpage prefs="{{prefs}}">
-          </settings-ai-compare-subpage>
-        </settings-subpage>
-      </template>
+  </template>
+  <template is="dom-if" if="[[showCompareControl_]]">
+    <template is="dom-if" route-path="/ai/compareProducts">
+      <settings-subpage id="compare"
+          associated-control="[[$$('#compareRowV2')]]"
+          page-title="$i18n{aiCompareLabel}">
+        <settings-ai-compare-subpage prefs="{{prefs}}">
+        </settings-ai-compare-subpage>
+      </settings-subpage>
     </template>
-
-    <template is="dom-if" if="[[showComposeControl_]]">
-      <template is="dom-if" route-path="/ai/helpMeWrite">
-        <settings-subpage id="compose"
-            associated-control="[[$$('#composeRowV2')]]"
-            page-title="$i18n{aiComposeLabel}">
-          <settings-offer-writing-help-page prefs="{{prefs}}">
-          </settings-offer-writing-help-page>
-        </settings-subpage>
-      </template>
+  </template>
+  <template is="dom-if" if="[[showComposeControl_]]">
+    <template is="dom-if" route-path="/ai/helpMeWrite">
+      <settings-subpage id="compose"
+          associated-control="[[$$('#composeRowV2')]]"
+          page-title="$i18n{aiComposeLabel}">
+        <settings-offer-writing-help-page prefs="{{prefs}}">
+        </settings-offer-writing-help-page>
+      </settings-subpage>
     </template>
-
-    <template is="dom-if" if="[[showTabOrganizationControl_]]">
-      <template is="dom-if" route-path="/ai/tabOrganizer">
-        <settings-subpage id="tabOrganization"
-            associated-control="[[$$('#tabOrganizationRowV2')]]"
-            page-title="$i18n{tabOrganizationSettingLabel}">
-          <settings-ai-tab-organization-subpage prefs="{{prefs}}">
-          </settings-ai-tab-organization-subpage>
-        </settings-subpage>
-      </template>
+  </template>
+  <template is="dom-if" if="[[showTabOrganizationControl_]]">
+    <template is="dom-if" route-path="/ai/tabOrganizer">
+      <settings-subpage id="tabOrganization"
+          associated-control="[[$$('#tabOrganizationRowV2')]]"
+          page-title="$i18n{tabOrganizationSettingLabel}">
+        <settings-ai-tab-organization-subpage prefs="{{prefs}}">
+        </settings-ai-tab-organization-subpage>
+      </settings-subpage>
     </template>
-  </settings-animated-pages>
-</template>
+  </template>
+</settings-animated-pages>

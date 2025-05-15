@@ -96,16 +96,6 @@
         label="$i18n{urlKeyedAnonymizedDataCollection}"
         sub-label="$i18n{urlKeyedAnonymizedDataCollectionDesc}">
     </settings-toggle-button>
-    <template is="dom-if" if="[[shouldShowHistorySearchControl_(
-        showHistorySearchControl_, enableAiSettingsPageRefresh_)]]" restamp>
-      <cr-link-row id="historySearchRow"
-          class="hr"
-          label="$i18n{historySearchSettingLabel}"
-          sub-label="$i18n{historySearchSettingSublabel}"
-          role-description="$i18n{subpageArrowRoleDescription}"
-          on-click="onHistorySearchRowClick_">
-      </cr-link-row>
-    </template>
 <if expr="_google_chrome">
 <if expr="not chromeos_ash">
     <settings-toggle-button id="spellCheckControl"

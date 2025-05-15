@@ -20,12 +20,6 @@ import {Router} from '../router.js';
 import {getTemplate} from './ai_page.html.js';
 import {FeatureOptInState, SettingsAiPageFeaturePrefName} from './constants.js';
 
-export interface SettingsAiPageElement {
-  $: {
-    historySearchRow: HTMLElement,
-  };
-}
-
 // BaseMixin is needed to populate the associatedControl field for search in
 // subpages, see crbug.com/378927854.
 const SettingsAiPageElementBase = PrefsMixin(BaseMixin(PolymerElement));
@@ -103,16 +97,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
           return map;
         },
       },
-
-      historySearchRowSublabel_: {
-        type: String,
-        value: () => {
-          return loadTimeData.getBoolean(
-                     'historyEmbeddingsAnswersFeatureEnabled') ?
-              loadTimeData.getString('historySearchAnswersSettingSublabel') :
-              loadTimeData.getString('historySearchSettingSublabel');
-        },
-      },
     };
   }
 
@@ -124,7 +108,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   declare private showTabOrganizationControl_: boolean;
   declare private showPasswordChangeControl_: boolean;
   declare private focusConfig_: FocusConfig;
-  declare private historySearchRowSublabel_: string;
   private shouldRecordMetrics_: boolean = true;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -161,11 +144,9 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   }
 
   private onHistorySearchRowClick_() {
-    if (this.enableAiSettingsPageRefresh_) {
-      this.recordInteractionMetrics_(
-          AiPageInteractions.HISTORY_SEARCH_CLICK,
-          'Settings.AiPage.HistorySearchEntryPointClick');
-    }
+    this.recordInteractionMetrics_(
+        AiPageInteractions.HISTORY_SEARCH_CLICK,
+        'Settings.AiPage.HistorySearchEntryPointClick');
 
     const router = Router.getInstance();
     router.navigateTo(router.getRoutes().HISTORY_SEARCH);

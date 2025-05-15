@@ -196,12 +196,6 @@ IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, ExperimentalAdvancedPage) {
           "runMochaSuite('ExperimentalAdvancedPage')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsAiPageTest,
-                       ExperimentalAdvancedPageRefreshDisabled) {
-  RunTest("settings/ai_page_test.js",
-          "runMochaSuite('ExperimentalAdvancedPageRefreshDisabled')");
-}
-
 IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, AiInfoCard) {
   RunTest("settings/ai_info_card_test.js", "mocha.run()");
 }
