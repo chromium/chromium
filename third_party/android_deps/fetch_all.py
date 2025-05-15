@@ -358,7 +358,8 @@ def _GenerateSettingsGradle(subproject_dirs: Dict[str, str],
         f.write(template_content)
 
 
-def _InitSubprojects(android_deps_dir, build_android_deps_dir):
+def _InitSubprojects(android_deps_dir, build_android_deps_dir,
+                     using_build_dir: bool):
     subprojects = _ParseSubprojects(
         os.path.join(android_deps_dir, 'subprojects.txt'))
     subdirs = {name: f'subproject_{name}' for name in subprojects}
@@ -373,7 +374,7 @@ def _InitSubprojects(android_deps_dir, build_android_deps_dir):
             data = data.replace('// <ANDROIDX_REPO>',
                                 f'maven {{ url "{repo_url}" }}')
         dst_path = pathlib.Path(build_android_deps_dir) / build_gradle
-        dst_path.parent.mkdir()
+        dst_path.parent.mkdir(exist_ok=using_build_dir)
         dst_path.write_text(data)
 
     _GenerateSettingsGradle(
@@ -601,7 +602,8 @@ def main():
         CopyFileOrDirectory(os.path.join(_CHROMIUM_SRC, _DEPS),
                             os.path.join(build_dir, _DEPS))
 
-        _InitSubprojects(args.android_deps_dir, build_android_deps_dir)
+        _InitSubprojects(args.android_deps_dir, build_android_deps_dir,
+                         bool(args.build_dir))
 
         logging.info('Running Gradle.')
 
