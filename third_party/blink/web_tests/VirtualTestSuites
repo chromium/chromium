@@ -4342,17 +4342,6 @@
     "expires": "Jul 1, 2025"
   },
   {
-    "prefix": "sec-purpose-prefetch-rel-prefetch-enabled",
-    "owners": ["stevenwei@microsoft.com"],
-    "platforms": ["Mac", "Win", "Linux"],
-    "bases": ["external/wpt/preload/prefetch-headers.https.html"],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=SecPurposePrefetchHeaderRelPrefetch"
-    ],
-    "expires": "Aug 1, 2025"
-  },
-  {
     "prefix": "force-allow-storage-access",
     "owners": ["arichiv@chromium.org", "cfredric@chromium.org"],
     "platforms": ["Android", "Fuchsia", "Linux", "Mac", "Win"],

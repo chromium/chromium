@@ -2363,7 +2363,7 @@ BASE_FEATURE(kScriptStreamingForNonHTTP,
 // Enables sending Sec-Purpose: "prefetch" header for rel="prefetch".
 BASE_FEATURE(kSecPurposePrefetchHeaderRelPrefetch,
              "SecPurposePrefetchHeaderRelPrefetch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSelectiveInOrderScript,
              "SelectiveInOrderScript",
