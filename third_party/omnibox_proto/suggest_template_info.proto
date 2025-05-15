@@ -32,8 +32,8 @@ message SuggestTemplateInfo {
   enum IconType {
     // Unspecified.
     ICON_TYPE_UNSPECIFIED = 0;
-    // Recent search icon.
-    RECENT_SEARCH = 1;
+    // History clock icon.
+    HISTORY = 1;
     // Search loop icon.
     SEARCH_LOOP = 2;
     // Search loop with sparkle icon.
