@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_instant_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
@@ -62,6 +63,7 @@
 #include "components/lens/lens_features.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/saved_tab_groups/public/features.h"
+#include "components/search/search.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/pdf/infobar/pdf_infobar_controller.h"
@@ -116,6 +118,11 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   // with an omnibox and a tab strip). By default most features should be
   // instantiated in this block.
   if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
+    if (search::IsInstantExtendedAPIEnabled()) {
+      instant_controller_ = std::make_unique<BrowserInstantController>(
+          browser->GetProfile(), browser->GetTabStripModel());
+    }
+
     if (browser->GetProfile()->IsRegularProfile()) {
       auto* shopping_service =
           commerce::ShoppingServiceFactory::GetForBrowserContext(

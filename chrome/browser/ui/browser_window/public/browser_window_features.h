@@ -18,6 +18,7 @@ class GlicIphController;
 #endif
 
 class Browser;
+class BrowserInstantController;
 class BrowserView;
 class BrowserWindowInterface;
 class ChromeLabsCoordinator;
@@ -238,6 +239,8 @@ class BrowserWindowFeatures {
  private:
   // Features that are per-browser window will each have a controller. e.g.
   // std::unique_ptr<FooFeature> foo_feature_;
+
+  std::unique_ptr<BrowserInstantController> instant_controller_;
 
   std::unique_ptr<send_tab_to_self::SendTabToSelfToolbarBubbleController>
       send_tab_to_self_toolbar_bubble_controller_;

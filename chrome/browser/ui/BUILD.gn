@@ -578,7 +578,6 @@ static_library("ui") {
     "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/schema_org/common:improved_mojom",
-    "//components/search",
     "//components/search_engines",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/security_interstitials/core",

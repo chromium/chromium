@@ -49,6 +49,7 @@ source_set("impl") {
     "//components/lens:features",
     "//components/profile_metrics",
     "//components/saved_tab_groups/public",
+    "//components/search",
   ]
 
   if (is_win || is_mac) {

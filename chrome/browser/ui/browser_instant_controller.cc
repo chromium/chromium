@@ -26,10 +26,14 @@
 
 // BrowserInstantController ---------------------------------------------------
 
-BrowserInstantController::BrowserInstantController(Browser* browser)
-    : browser_(browser), instant_(profile(), browser_->tab_strip_model()) {
+BrowserInstantController::BrowserInstantController(
+    Profile* profile,
+    TabStripModel* tab_strip_model)
+    : profile_(profile),
+      tab_strip_model_(tab_strip_model),
+      instant_(profile, tab_strip_model) {
   TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile());
+      TemplateURLServiceFactory::GetForProfile(profile_.get());
   // TemplateURLService can be null in tests.
   if (template_url_service) {
     search_engine_base_url_tracker_ =
@@ -45,10 +49,9 @@ BrowserInstantController::~BrowserInstantController() = default;
 
 void BrowserInstantController::OnSearchEngineBaseURLChanged(
     SearchEngineBaseURLTracker::ChangeReason change_reason) {
-  TabStripModel* tab_model = browser_->tab_strip_model();
-  int count = tab_model->count();
+  int count = tab_strip_model_->count();
   for (int index = 0; index < count; ++index) {
-    content::WebContents* contents = tab_model->GetWebContentsAt(index);
+    content::WebContents* contents = tab_strip_model_->GetWebContentsAt(index);
     if (!contents) {
       continue;
     }
@@ -60,7 +63,7 @@ void BrowserInstantController::OnSearchEngineBaseURLChanged(
 
     if (!is_ntp) {
       InstantService* instant_service =
-          InstantServiceFactory::GetForProfile(profile());
+          InstantServiceFactory::GetForProfile(profile_.get());
       if (instant_service) {
         content::RenderProcessHost* rph =
             contents->GetPrimaryMainFrame()->GetProcess();
@@ -81,8 +84,4 @@ void BrowserInstantController::OnSearchEngineBaseURLChanged(
     params.transition_type = ui::PAGE_TRANSITION_RELOAD;
     contents->GetController().LoadURLWithParams(params);
   }
-}
-
-Profile* BrowserInstantController::profile() const {
-  return browser_->profile();
 }
