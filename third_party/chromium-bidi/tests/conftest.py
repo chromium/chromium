@@ -128,7 +128,8 @@ async def capabilities(request):
 
 
 @pytest_asyncio.fixture
-async def websocket(_websocket_connection, test_headless_mode, capabilities):
+async def websocket(_websocket_connection, test_headless_mode, capabilities,
+                    request):
     """Return a websocket with an active BiDi session."""
     default_capabilities = {"webSocketUrl": True, "goog:chromeOptions": {}}
     maybe_browser_bin = os.getenv("BROWSER_BIN")
@@ -163,6 +164,22 @@ async def websocket(_websocket_connection, test_headless_mode, capabilities):
         # The session.new command can take a long time to complete, so we need
         # to increase the timeout.
         20)
+
+    if os.getenv(
+            "VERBOSE"
+    ) == "true" and request and request.node and request.node.name:
+        with pytest.raises(Exception):
+            # Send not existing command with the test name in params, so that it
+            # can be used to anchor the specific test in the log to ease
+            # debugging.
+            await execute_command(
+                _websocket_connection, {
+                    "method": "goog:debug.log",
+                    "params": {
+                        "message": f'Create session for test: "{request.node.name}"'
+                    }
+                })
+
     yield _websocket_connection
 
     try:
