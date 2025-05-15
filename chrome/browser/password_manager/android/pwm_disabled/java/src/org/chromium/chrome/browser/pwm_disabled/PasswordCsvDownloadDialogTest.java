@@ -76,7 +76,12 @@ public class PasswordCsvDownloadDialogTest {
     public void testDialogContentsWithGms() {
         mController =
                 new PasswordCsvDownloadDialogController(
-                        mActivity, true, () -> {}, () -> {}, mSettingsCustomTabLauncher);
+                        mActivity,
+                        true,
+                        () -> {},
+                        () -> {},
+                        mSettingsCustomTabLauncher,
+                        (Uri uri) -> {});
         mController.showDialog();
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
@@ -112,7 +117,12 @@ public class PasswordCsvDownloadDialogTest {
     public void testDialogContentsNoGms() {
         mController =
                 new PasswordCsvDownloadDialogController(
-                        mActivity, false, () -> {}, () -> {}, mSettingsCustomTabLauncher);
+                        mActivity,
+                        false,
+                        () -> {},
+                        () -> {},
+                        mSettingsCustomTabLauncher,
+                        (Uri uri) -> {});
         mController.showDialog();
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
@@ -145,7 +155,8 @@ public class PasswordCsvDownloadDialogTest {
                         false,
                         positiveButtonCalback,
                         () -> {},
-                        mSettingsCustomTabLauncher);
+                        mSettingsCustomTabLauncher,
+                        (Uri uri) -> {});
         mController.showDialog();
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
@@ -163,7 +174,8 @@ public class PasswordCsvDownloadDialogTest {
                         false,
                         () -> {},
                         negativeButtonCalback,
-                        mSettingsCustomTabLauncher);
+                        mSettingsCustomTabLauncher,
+                        (Uri uri) -> {});
         mController.showDialog();
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
@@ -176,7 +188,12 @@ public class PasswordCsvDownloadDialogTest {
     public void testHelpLinkClick() {
         mController =
                 new PasswordCsvDownloadDialogController(
-                        mActivity, true, () -> {}, () -> {}, mSettingsCustomTabLauncher);
+                        mActivity,
+                        true,
+                        () -> {},
+                        () -> {},
+                        mSettingsCustomTabLauncher,
+                        (Uri uri) -> {});
         mController.showDialog();
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
@@ -190,17 +207,21 @@ public class PasswordCsvDownloadDialogTest {
 
     @Test
     public void testOpensDocumentCreationAndReturnsUri() {
+        final AtomicReference<Uri> uri = new AtomicReference<>();
         mController =
                 new PasswordCsvDownloadDialogController(
-                        mActivity, false, () -> {}, () -> {}, mSettingsCustomTabLauncher);
+                        mActivity,
+                        false,
+                        () -> {},
+                        () -> {},
+                        mSettingsCustomTabLauncher,
+                        (destinationUri) -> {
+                            uri.set(destinationUri);
+                        });
         mController.showDialog();
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
-        final AtomicReference<Uri> uri = new AtomicReference<>();
-        mController.askForDownloadLocation(
-                (destinationUri) -> {
-                    uri.set(destinationUri);
-                });
+        mController.askForDownloadLocation();
 
         ShadowActivity shadowActivity = shadowOf(mActivity);
         Intent startedIntent = shadowActivity.getNextStartedActivityForResult().intent;

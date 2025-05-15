@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.pwm_disabled;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import androidx.fragment.app.FragmentActivity;
+
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -31,6 +35,21 @@ public class PasswordCsvDownloadFlowControllerFactory {
                             PasswordCsvDownloadFlowControllerFactory::releaseController);
         }
         return sController;
+    }
+
+    /**
+     * Re-initializes the component after the activity and fragment have been re-created. This is
+     * needed in cases in which the system temporarily destroys the activity hosting the export flow
+     * while the file chooser activity is open. Upon coming back to Chrome, the activity and
+     * fragment are re-created and they need to be rewired.
+     *
+     * @param fragmentActivity The newly created activity.
+     * @param fragment The newly created fragment.
+     */
+    static void reinitializeComponent(
+            FragmentActivity fragmentActivity, PasswordCsvDownloadDialogFragment fragment) {
+        assumeNonNull(sController);
+        sController.reinitializeComponent(fragmentActivity, fragment);
     }
 
     private static void releaseController() {

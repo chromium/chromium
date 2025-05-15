@@ -31,25 +31,31 @@ class PasswordCsvDownloadDialogController {
     private static final String HELP_ARTICLE_LINK =
             "https://support.google.com/chrome/?p=password_manager_update";
     private final FragmentActivity mActivity;
-    private final PasswordCsvDownloadDialogFragment mFragment;
+    private final View mDialogView;
     private final boolean mIsGooglePlayServicesAvailable;
+
     private final SettingsCustomTabLauncher mSettingsCustomTabLauncher;
+    private final Callback<Uri> mOnDestinationDocumentCreated;
+
+    private PasswordCsvDownloadDialogFragment mFragment;
 
     PasswordCsvDownloadDialogController(
             FragmentActivity activity,
             boolean isGooglePlayServicesAvailable,
             Runnable onExportClicked,
             Runnable onCancel,
-            SettingsCustomTabLauncher settingsCustomTabLauncher) {
+            SettingsCustomTabLauncher settingsCustomTabLauncher,
+            Callback<Uri> onDestinationDocumentCreated) {
         mActivity = activity;
         mIsGooglePlayServicesAvailable = isGooglePlayServicesAvailable;
         mSettingsCustomTabLauncher = settingsCustomTabLauncher;
-        View dialogView =
+        mOnDestinationDocumentCreated = onDestinationDocumentCreated;
+        mDialogView =
                 LayoutInflater.from(mActivity)
                         .inflate(R.layout.password_csv_download_dialog_view, null);
         mFragment = new PasswordCsvDownloadDialogFragment();
-
-        initialize(dialogView, onExportClicked, onCancel);
+        mFragment.initialize(mDialogView, mOnDestinationDocumentCreated);
+        bindDialogView(mDialogView, onExportClicked, onCancel);
     }
 
     /** Displays the dialog asking users if they want to export passwords. */
@@ -63,17 +69,22 @@ class PasswordCsvDownloadDialogController {
     }
 
     /**
-     * Starts an activity allowing users to select the download location for the exported passwords.
+     * Re-initializes the dialog fragment. Called in case the activity (and the fragment) were
+     * destroyed and recreated. This can happen when the activity for setting the downlaod location
+     * is displayed.
      *
-     * @param onDownloadLocationSet called when the URI of the destination file is set.
+     * @param fragment The newly created fragment, replacing the original one.
      */
-    void askForDownloadLocation(Callback<Uri> onDownloadLocationSet) {
-        mFragment.runCreateFileOnDiskIntent(onDownloadLocationSet);
+    void reinitializeFragment(PasswordCsvDownloadDialogFragment fragment) {
+        mFragment = fragment;
+        mFragment.initialize(mDialogView, mOnDestinationDocumentCreated);
     }
 
-    private void initialize(View dialogView, Runnable onExportClicked, Runnable onCancel) {
-        mFragment.setView(dialogView);
-        bindDialogView(dialogView, onExportClicked, onCancel);
+    /**
+     * Starts an activity allowing users to select the download location for the exported passwords.
+     */
+    void askForDownloadLocation() {
+        mFragment.runCreateFileOnDiskIntent();
     }
 
     private void bindDialogView(View dialogView, Runnable onExportClicked, Runnable onClose) {

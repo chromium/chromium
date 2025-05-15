@@ -74,7 +74,8 @@ public class PasswordCsvDownloadFlowController {
                             dismissDownloadDialog();
                             endFlow();
                         },
-                        settingsCustomTabLauncher);
+                        settingsCustomTabLauncher,
+                        this::onDownloadLocationSet);
         mCsvDownloadDialogController.showDialog();
         mLastFlowStep = DownloadCsvFlowStep.DISMISSED_DIALOG;
         mDialogType =
@@ -102,7 +103,7 @@ public class PasswordCsvDownloadFlowController {
 
     private void onReauthResult(boolean success) {
         if (success) {
-            mCsvDownloadDialogController.askForDownloadLocation(this::onDownloadLocationSet);
+            mCsvDownloadDialogController.askForDownloadLocation();
             return;
         }
         mLastFlowStep = DownloadCsvFlowStep.REAUTH_FAILED;
@@ -110,7 +111,7 @@ public class PasswordCsvDownloadFlowController {
         endFlow();
     }
 
-    private void onDownloadLocationSet(Uri destinationFileUri) {
+    public void onDownloadLocationSet(Uri destinationFileUri) {
         dismissDownloadDialog();
         if (destinationFileUri == null) {
             mLastFlowStep = DownloadCsvFlowStep.CANCELLED_FILE_SELECTION;
@@ -222,5 +223,20 @@ public class PasswordCsvDownloadFlowController {
         // isn't, the only possible reason is that the Google Play Services version on the device
         // is too old and doesn't have full UPM support.
         return DownloadCsvDialogType.OLD_GMS;
+    }
+
+    /**
+     * Re-initializes the component after the activity and fragment have been re-created. This is
+     * needed in cases in which the system temporarily destroys the current activity, when the file
+     * chooser activity if open. Upon coming back to Chrome, the activity and fragment are
+     * re-created and they need to be rewired.
+     *
+     * @param activity The newly created activity.
+     * @param fragment The newly created fragment.
+     */
+    void reinitializeComponent(
+            FragmentActivity activity, PasswordCsvDownloadDialogFragment fragment) {
+        mFragmentActivity = activity;
+        mCsvDownloadDialogController.reinitializeFragment(fragment);
     }
 }

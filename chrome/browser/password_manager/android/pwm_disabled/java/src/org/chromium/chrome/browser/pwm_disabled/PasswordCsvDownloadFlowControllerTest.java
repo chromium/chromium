@@ -350,6 +350,39 @@ public class PasswordCsvDownloadFlowControllerTest {
     }
 
     @Test
+    public void testDownloadFlowForRecreatedActivity() throws IOException {
+        mController = new PasswordCsvDownloadFlowController(mEndOfFlowCallback);
+        PasswordCsvDownloadFlowControllerFactory.setControllerForTesting(mController);
+        mController.showDialogAndStartFlow(
+                mActivity, mProfile, true, true, mSettingsCustomTabLauncher);
+        mActivity.getSupportFragmentManager().executePendingTransactions();
+
+        ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorBridge);
+        when(mReauthenticatorBridge.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
+
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        dialog.findViewById(R.id.positive_button).performClick();
+
+        ArgumentCaptor<Callback<Boolean>> resultCallbackCaptor =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mReauthenticatorBridge).reauthenticate(resultCallbackCaptor.capture());
+        resultCallbackCaptor.getValue().onResult(true);
+
+        ShadowActivity shadowActivity = shadowOf(mActivity);
+        Intent startedIntent = shadowActivity.peekNextStartedActivityForResult().intent;
+        // Verify that the create document intent was triggered (creating file in Downloads for
+        // exported passwords).
+        assertEquals(Intent.ACTION_CREATE_DOCUMENT, startedIntent.getAction());
+
+        // Recreate the activity to simulate its previous destruction and check that no
+        // crashes occur. This scenario could happen in case of system resource pressure while the
+        // file chooser activity is shown.
+        mActivity.recreate();
+        ShadowLooper.idleMainLooper();
+    }
+
+    @Test
     public void testRecordsCorrectDialogTypeOldGms() throws IOException {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
