@@ -11,8 +11,12 @@
 
 namespace media::android {
 
-// This enum must be in sync with the constants in the Java
-// `android.media.AudioDeviceInfo`.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. This enum must also be in sync with
+// the constants in the Java `android.media.AudioDeviceInfo`, which are
+// themselves expected not to be renumbered or reused.
+//
+// LINT.IfChange(AudioDeviceType)
 enum class AudioDeviceType {
   kUnknown = 0,
   kBuiltinEarpiece = 1,
@@ -49,6 +53,7 @@ enum class AudioDeviceType {
   kMultichannelGroup = 32,
   kMaxValue = kMultichannelGroup,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:AndroidAudioDeviceType)
 
 // Converts an integer device type value to an `AudioDeviceType`. Returns
 // `std::nullopt` if the value does not map to a known `AudioDeviceType`.

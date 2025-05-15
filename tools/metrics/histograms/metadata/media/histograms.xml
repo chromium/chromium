@@ -550,6 +550,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Android.AAudioSetDeviceId.{Direction}.{Result}"
+    enum="AndroidAudioDeviceType" expires_after="2025-11-09">
+  <owner>mjel@google.com</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    For every AAudio {Direction} stream that is opened without resulting in an
+    internal AAudio error and with a non-default device requested, records if
+    setting the device ID was a {Result}. This operation is considered
+    successful if the requested device (passed to
+    AAudioStreamBuilder_setDeviceId) is the same as the actual device assigned
+    to the stream (received via AAudioStream_getDeviceId).
+  </summary>
+  <token key="Direction">
+    <variant name="Input"/>
+    <variant name="Output"/>
+  </token>
+  <token key="Result">
+    <variant name="Failure"/>
+    <variant name="Success"/>
+  </token>
+</histogram>
+
 <histogram name="Media.Audio.Autoplay" enum="AutoplaySource"
     expires_after="2025-11-25">
   <owner>evliu@google.com</owner>

@@ -13,6 +13,8 @@
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/trace_event.h"
@@ -287,7 +289,9 @@ bool AAudioStreamWrapper::Open() {
     // device.
     const int32_t expected_device_id = device_.GetId().ToAAudioDeviceId();
     const int32_t actual_device_id = AAudioStream_getDeviceId(aaudio_stream_);
-    if (expected_device_id != actual_device_id) {
+    bool device_id_matches = expected_device_id == actual_device_id;
+    EmitSetDeviceIdResultToHistogram(device_id_matches);
+    if (!device_id_matches) {
       DLOG(WARNING) << "Failed to set device ID for AAudio stream. Expected: "
                     << expected_device_id << "; actual: " << actual_device_id;
       return false;
@@ -440,6 +444,25 @@ void AAudioStreamWrapper::OnStreamError(aaudio_result_t error) {
   } else {
     callback_->OnError();
   }
+}
+
+void AAudioStreamWrapper::EmitSetDeviceIdResultToHistogram(bool success) {
+  std::string_view direction_string;
+  switch (stream_type_) {
+    case StreamType::kInput:
+      direction_string = "Input";
+      break;
+    case StreamType::kOutput:
+      direction_string = "Output";
+      break;
+  }
+
+  std::string_view success_string = success ? "Success" : "Failure";
+
+  std::string histogram_name =
+      base::StrCat({"Media.Audio.Android.AAudioSetDeviceId.", direction_string,
+                    ".", success_string});
+  base::UmaHistogramEnumeration(histogram_name, device_.GetType());
 }
 
 }  // namespace media

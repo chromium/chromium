@@ -79,6 +79,8 @@ class REQUIRES_ANDROID_API(AAUDIO_MIN_API) AAudioStreamWrapper {
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
+  void EmitSetDeviceIdResultToHistogram(bool success);
+
   const AudioParameters params_;
   const android::AudioDevice device_;
 

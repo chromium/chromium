@@ -21,12 +21,14 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/audio/android/aaudio_stream_wrapper.h"
+#include "media/audio/android/audio_device_type.h"
 #include "media/audio/android/audio_manager_android.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_device_info_accessor_for_tests.h"
@@ -585,6 +587,11 @@ class AudioAndroidOutputTest : public testing::TestWithParam<AudioApi> {
         base::BindOnce(&AudioOutputStream::Close, base::Unretained(stream)));
   }
 
+  void OpenAudioOutputStreamOnAudioThread() {
+    RunOnAudioThread(
+        base::BindOnce(&AudioAndroidOutputTest::Open, base::Unretained(this)));
+  }
+
   void OpenAndCloseAudioOutputStreamOnAudioThread() {
     RunOnAudioThread(base::BindOnce(&AudioAndroidOutputTest::OpenAndClose,
                                     base::Unretained(this)));
@@ -661,16 +668,21 @@ class AudioAndroidOutputTest : public testing::TestWithParam<AudioApi> {
     EXPECT_TRUE(audio_output_stream_);
   }
 
-  void OpenAndClose() {
+  void Open() {
     DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
     EXPECT_TRUE(audio_output_stream_->Open());
+  }
+
+  void OpenAndClose() {
+    DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
+    Open();
     audio_output_stream_->Close();
     audio_output_stream_ = nullptr;
   }
 
   void OpenAndStart(AudioOutputStream::AudioSourceCallback* source) {
     DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
-    EXPECT_TRUE(audio_output_stream_->Open());
+    Open();
     audio_output_stream_->Start(source);
   }
 
@@ -738,6 +750,11 @@ class AudioAndroidInputTest : public AudioAndroidOutputTest {
   void CloseAudioInputStreamOnAudioThread(raw_ptr<AudioInputStream> stream) {
     RunOnAudioThread(
         base::BindOnce(&AudioInputStream::Close, base::Unretained(stream)));
+  }
+
+  void OpenAudioInputStreamOnAudioThread() {
+    RunOnAudioThread(
+        base::BindOnce(&AudioAndroidInputTest::Open, base::Unretained(this)));
   }
 
   void OpenAndCloseAudioInputStreamOnAudioThread() {
@@ -817,18 +834,22 @@ class AudioAndroidInputTest : public AudioAndroidOutputTest {
     EXPECT_TRUE(audio_input_stream_);
   }
 
-  void OpenAndClose() {
+  void Open() {
     DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
     EXPECT_EQ(audio_input_stream_->Open(),
               AudioInputStream::OpenOutcome::kSuccess);
+  }
+
+  void OpenAndClose() {
+    DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
+    Open();
     audio_input_stream_->Close();
     audio_input_stream_ = nullptr;
   }
 
   void OpenAndStart(AudioInputStream::AudioInputCallback* sink) {
     DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
-    EXPECT_EQ(audio_input_stream_->Open(),
-              AudioInputStream::OpenOutcome::kSuccess);
+    Open();
     audio_input_stream_->Start(sink);
   }
 
@@ -926,7 +947,8 @@ TEST_P(AudioAndroidInputTest, OpenAndCloseInputStream) {
 }
 
 // Ensure that an input stream with a non-default device can be opened and
-// closed.
+// closed, emitting a histogram value for successfully setting the
+// device ID if AAudioWithPerStreamDeviceSelection is enabled.
 TEST_P(AudioAndroidInputTest, OpenAndCloseInputStreamWithDevice) {
   std::optional<AudioDeviceDescription> device =
       GetFirstNonDefaultInputDevice();
@@ -935,7 +957,25 @@ TEST_P(AudioAndroidInputTest, OpenAndCloseInputStreamWithDevice) {
   }
   AudioParameters params = GetDefaultInputStreamParametersOnAudioThread();
   MakeAudioInputStreamOnAudioThread(params, device->unique_id);
-  OpenAndCloseAudioInputStreamOnAudioThread();
+
+  base::HistogramTester histogram_tester;
+  OpenAudioInputStreamOnAudioThread();
+
+  if (GetParam() == AudioApi::AAudioWithPerStreamDeviceSelection) {
+    constexpr std::string_view kHistogramPrefix =
+        "Media.Audio.Android.AAudioSetDeviceId.Input.";
+    const std::string kSuccessHistogram =
+        base::StrCat({kHistogramPrefix, "Success"});
+    const std::string kFailureHistogram =
+        base::StrCat({kHistogramPrefix, "Failure"});
+    // Emitted a success with a known device type.
+    histogram_tester.ExpectTotalCount(kSuccessHistogram, 1);
+    histogram_tester.ExpectBucketCount(kSuccessHistogram,
+                                       android::AudioDeviceType::kUnknown, 0);
+    histogram_tester.ExpectTotalCount(kFailureHistogram, 0);
+  }
+
+  CloseAudioInputStreamOnAudioThread(audio_input_stream_);
 }
 
 // Ensure that a default output stream can be opened and closed.
@@ -945,8 +985,9 @@ TEST_P(AudioAndroidOutputTest, OpenAndCloseOutputStream) {
   OpenAndCloseAudioOutputStreamOnAudioThread();
 }
 
-// Ensure that an output stream with a non-default device can be opened and
-// closed. This test is only relevant for AAudioWithPerStreamDeviceSelection.
+// Ensure that an output stream with a non-default device can be successfully
+// opened and closed, emitting a histogram value for successfully setting the
+// device ID. This test is only relevant for AAudioWithPerStreamDeviceSelection.
 TEST_F(AudioAndroidOutputTest, OpenAndCloseOutputStreamWithDevice) {
   InitFeatures(AudioApi::AAudioWithPerStreamDeviceSelection);
   std::optional<AudioDeviceDescription> device =
@@ -956,7 +997,24 @@ TEST_F(AudioAndroidOutputTest, OpenAndCloseOutputStreamWithDevice) {
   }
   AudioParameters params = GetDefaultOutputStreamParametersOnAudioThread();
   MakeAudioOutputStreamOnAudioThread(params, device->unique_id);
-  OpenAndCloseAudioOutputStreamOnAudioThread();
+
+  base::HistogramTester histogram_tester;
+  OpenAudioOutputStreamOnAudioThread();
+
+  constexpr std::string_view kHistogramPrefix =
+      "Media.Audio.Android.AAudioSetDeviceId.Output.";
+  const std::string kSuccessHistogram =
+      base::StrCat({kHistogramPrefix, "Success"});
+  const std::string kFailureHistogram =
+      base::StrCat({kHistogramPrefix, "Failure"});
+  // Emitted a success with a known device type.
+  histogram_tester.ExpectTotalCount(kSuccessHistogram, 1);
+  histogram_tester.ExpectBucketCount(kSuccessHistogram,
+                                     android::AudioDeviceType::kUnknown, 0);
+  histogram_tester.ExpectTotalCount(base::StrCat({kHistogramPrefix, "Failure"}),
+                                    0);
+
+  CloseAudioOutputStreamOnAudioThread(audio_output_stream_);
 }
 
 // Start input streaming using default input parameters and ensure that the

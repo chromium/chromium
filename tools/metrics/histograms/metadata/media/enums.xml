@@ -45,6 +45,46 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="kXNonStandard"/>
 </enum>
 
+<!-- LINT.IfChange(AndroidAudioDeviceType) -->
+
+<enum name="AndroidAudioDeviceType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="BuiltinEarpiece"/>
+  <int value="2" label="BuiltinSpeaker"/>
+  <int value="3" label="WiredHeadset"/>
+  <int value="4" label="WiredHeadphones"/>
+  <int value="5" label="LineAnalog"/>
+  <int value="6" label="LineDigital"/>
+  <int value="7" label="BluetoothSco"/>
+  <int value="8" label="BluetoothA2dp"/>
+  <int value="9" label="Hdmi"/>
+  <int value="10" label="HdmiArc"/>
+  <int value="11" label="UsbDevice"/>
+  <int value="12" label="UsbAccessory"/>
+  <int value="13" label="Dock"/>
+  <int value="14" label="Fm"/>
+  <int value="15" label="BuiltinMic"/>
+  <int value="16" label="FmTuner"/>
+  <int value="17" label="TvTuner"/>
+  <int value="18" label="Telephony"/>
+  <int value="19" label="AuxLine"/>
+  <int value="20" label="Ip"/>
+  <int value="21" label="Bus"/>
+  <int value="22" label="UsbHeadset"/>
+  <int value="23" label="HearingAid"/>
+  <int value="24" label="BuiltinSpeakerSafe"/>
+  <int value="25" label="RemoteSubmix"/>
+  <int value="26" label="BleHeadset"/>
+  <int value="27" label="BleSpeaker"/>
+  <int value="28" label="EchoReference"/>
+  <int value="29" label="HdmiEarc"/>
+  <int value="30" label="BleBroadcast"/>
+  <int value="31" label="DockAnalog"/>
+  <int value="32" label="MultichannelGroup"/>
+</enum>
+
+<!-- LINT.ThenChange(//media/audio/android/audio_device_type.h:AudioDeviceType) -->
+
 <enum name="ApplySubCaptureTargetResult">
   <int value="0" label="Ok"/>
   <int value="1" label="TimedOut"/>
