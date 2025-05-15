@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.pdf;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.SystemClock;
 import android.view.LayoutInflater;
@@ -24,6 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.chromium.base.Log;
+import org.chromium.base.PackageManagerUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.gsa.GSAUtils;
@@ -273,6 +276,15 @@ public class PdfCoordinator {
         }
         mActivity.grantUriPermission(
                 GSAUtils.GSA_PACKAGE_NAME, mUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        var intent = new Intent(Intent.ACTION_VOICE_COMMAND);
+        var intentActivities =
+                PackageManagerUtils.queryIntentActivities(intent, PackageManager.MATCH_ALL);
+        for (ResolveInfo packageInfo : intentActivities) {
+            mActivity.grantUriPermission(
+                    packageInfo.activityInfo.packageName,
+                    mUri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
         PdfUtils.recordIsWorkProfile(isWorkProfile);
         return structuredData;
     }
