@@ -11,11 +11,11 @@ source_set("model") {
   ]
 
   deps = [
-    "//components/device_reauth:device_reauth",
+    "//components/device_reauth",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/common/ui/reauthentication",
-    "//ui/base:base",
+    "//ui/base",
   ]
 }
 
@@ -25,7 +25,7 @@ source_set("unit_tests") {
   deps = [
     "//base/test:test_proto",
     "//base/test:test_support",
-    "//ios/chrome/browser/device_reauth/model:model",
+    "//ios/chrome/browser/device_reauth/model",
     "//ios/chrome/test/app:test_support",
     "//testing/gtest",
   ]

@@ -66,7 +66,7 @@ source_set("model") {
     "//ios/third_party/material_components_ios",
     "//ios/web/common",
     "//ios/web/public",
-    "//ios/web/public/js_messaging:js_messaging",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/security",
     "//net",
     "//services/metrics/public/cpp:ukm_builders",

@@ -21,7 +21,7 @@ source_set("model") {
   deps = [
     "//components/feed/core/v2/public/ios:feed_ios_public",
     "//components/search_engines",
-    "//components/variations:variations",
+    "//components/variations",
     "//ios/chrome/browser/metrics/model:accessor",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/public/provider/chrome/browser/signin:signin_sso_api",

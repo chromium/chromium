@@ -23,7 +23,7 @@ source_set("omnibox_util") {
   deps = [
     "//base",
     "//components/omnibox/browser",
-    "//components/safe_browsing/core/common:common",
+    "//components/safe_browsing/core/common",
     "//components/security_state/core",
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/shared/public/features",

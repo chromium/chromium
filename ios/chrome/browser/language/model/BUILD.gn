@@ -40,7 +40,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/web",
     "//ios/web/public/test",
-    "//testing/gmock:gmock",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

@@ -33,7 +33,7 @@ source_set("default_browser") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/common/ui/confirmation_alert:confirmation_alert",
+    "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/instruction_view:instructions_half_sheet",
     "//ios/chrome/common/ui/promo_style",
   ]
@@ -63,7 +63,7 @@ source_set("default_browser_ui") {
     "//ios/chrome/common/ui/instruction_view",
     "//ios/chrome/common/ui/instruction_view:instructions_half_sheet",
     "//ios/chrome/common/ui/promo_style",
-    "//ios/chrome/common/ui/util:util",
+    "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
     "//ui/base",
   ]

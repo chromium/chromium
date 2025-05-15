@@ -41,7 +41,7 @@ source_set("results_page_presenter") {
     "//base",
     "//ios/chrome/browser/lens_overlay/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
-    "//ios/chrome/common/ui/colors:colors",
+    "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]

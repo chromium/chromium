@@ -171,7 +171,7 @@ source_set("eg2_tests") {
     "//components/enterprise:test_support",
     "//components/policy:policy_code_generate",
     "//components/policy/core/common:common_constants",
-    "//components/policy/test_support:test_support",
+    "//components/policy/test_support",
     "//components/regional_capabilities",
     "//components/search_engines",
     "//components/signin/internal/identity_manager",

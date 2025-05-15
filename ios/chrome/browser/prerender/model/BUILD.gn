@@ -30,7 +30,7 @@ source_set("model") {
     "//components/signin/ios/browser",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
-    "//ios/chrome/browser/app_launcher/model:model",
+    "//ios/chrome/browser/app_launcher/model",
     "//ios/chrome/browser/crash_report/model:model_internal",
     "//ios/chrome/browser/download/model:mime_types",
     "//ios/chrome/browser/geolocation/model",

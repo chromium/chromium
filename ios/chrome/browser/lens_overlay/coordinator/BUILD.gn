@@ -13,7 +13,7 @@ source_set("lens_overlay_availability") {
     "//components/prefs",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/shared/public/features:features",
+    "//ios/chrome/browser/shared/public/features",
     "//ui/base",
   ]
 }
@@ -142,7 +142,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
-    "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:authentication_service",
