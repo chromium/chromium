@@ -108,13 +108,13 @@ struct CardMetadataLoggingContext {
   std::optional<base::flat_map<std::string, bool>>
       selected_issuer_or_network_to_metadata_availability;
 
-  // Keeps record of the instrument ids to issuer ids for credit card
+  // Keeps record of the instrument ids to benefit sources for credit card
   // suggestions shown to the user with a card benefit.
   base::flat_map<int64_t, std::string>
-      instrument_ids_to_issuer_ids_with_benefits_available;
+      instrument_ids_to_available_benefit_sources;
 
-  // Keeps record of the issuer of a selected card suggestion.
-  std::string selected_issuer_id;
+  // Keeps record of the selected card benefit source for later events logging.
+  std::string selected_benefit_source;
 
   // Keeps record of the selected card instrument id for later events logging.
   int64_t selected_card_instrument_id;
@@ -155,14 +155,16 @@ void LogAcceptanceLatency(base::TimeDelta latency,
 // Logs if credit card benefits are enabled when a new profile is launched.
 void LogIsCreditCardBenefitsEnabledAtStartup(bool enabled);
 
-void LogBenefitFormEventToIssuerHistogram(const std::string& issuer_id,
-                                          FormEvent event);
+// Log the given `event` for card benefits on a benefit source level.
+void LogBenefitFormEventToBenefitSourceHistogram(
+    const std::string& benefit_source,
+    FormEvent event);
 
-// Log the given `event` for every issuer with card with benefits available
+// Log the given `event` for every card benefit source with benefits available
 // shown.
-void LogBenefitFormEventForAllIssuersWithBenefitAvailable(
+void LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailable(
     const base::flat_map<int64_t, std::string>&
-        instrument_ids_to_issuer_ids_with_benefits_available,
+        instrument_ids_to_available_benefit_sources,
     FormEvent event);
 
 }  // namespace autofill::autofill_metrics

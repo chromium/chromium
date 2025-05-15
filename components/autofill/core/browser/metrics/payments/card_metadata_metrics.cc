@@ -46,11 +46,11 @@ CardMetadataLoggingContext& CardMetadataLoggingContext::operator=(
 CardMetadataLoggingContext::~CardMetadataLoggingContext() = default;
 
 bool CardMetadataLoggingContext::DidShowCardWithBenefitAvailable() const {
-  return !instrument_ids_to_issuer_ids_with_benefits_available.empty();
+  return !instrument_ids_to_available_benefit_sources.empty();
 }
 
 bool CardMetadataLoggingContext::SelectedCardHasBenefitAvailable() const {
-  return instrument_ids_to_issuer_ids_with_benefits_available.contains(
+  return instrument_ids_to_available_benefit_sources.contains(
       selected_card_instrument_id);
 }
 
@@ -62,10 +62,10 @@ bool CardMetadataLoggingContext::SelectedCardHasMetadataAvailable() const {
 void CardMetadataLoggingContext::SetSelectedCardInfo(
     const CreditCard& credit_card) {
   selected_card_instrument_id = credit_card.instrument_id();
-  selected_issuer_id = credit_card.issuer_id();
+  selected_benefit_source = credit_card.benefit_source();
 
   selected_issuer_or_network_to_metadata_availability = {
-      {selected_issuer_id, SelectedCardHasMetadataAvailable()},
+      {credit_card.issuer_id(), SelectedCardHasMetadataAvailable()},
       {credit_card.network(), SelectedCardHasMetadataAvailable()}};
 }
 
@@ -254,39 +254,39 @@ void LogCardWithBenefitFormEventMetric(
     const CardMetadataLoggingContext& context) {
   switch (event) {
     case CardMetadataLoggingEvent::kShown: {
-      LogBenefitFormEventForAllIssuersWithBenefitAvailable(
-          context.instrument_ids_to_issuer_ids_with_benefits_available,
+      LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailable(
+          context.instrument_ids_to_available_benefit_sources,
           FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE);
       break;
     }
     case CardMetadataLoggingEvent::kSelected:
       if (context.SelectedCardHasBenefitAvailable()) {
-        LogBenefitFormEventToIssuerHistogram(
-            context.selected_issuer_id,
+        LogBenefitFormEventToBenefitSourceHistogram(
+            context.selected_benefit_source,
             FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED_ONCE);
       }
-      LogBenefitFormEventForAllIssuersWithBenefitAvailable(
-          context.instrument_ids_to_issuer_ids_with_benefits_available,
+      LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailable(
+          context.instrument_ids_to_available_benefit_sources,
           FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SELECTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE);
       break;
     case CardMetadataLoggingEvent::kFilled:
       if (context.SelectedCardHasBenefitAvailable()) {
-        LogBenefitFormEventToIssuerHistogram(
-            context.selected_issuer_id,
+        LogBenefitFormEventToBenefitSourceHistogram(
+            context.selected_benefit_source,
             FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED_ONCE);
       }
-      LogBenefitFormEventForAllIssuersWithBenefitAvailable(
-          context.instrument_ids_to_issuer_ids_with_benefits_available,
+      LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailable(
+          context.instrument_ids_to_available_benefit_sources,
           FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_FILLED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE);
       break;
     case CardMetadataLoggingEvent::kSubmitted:
       if (context.SelectedCardHasBenefitAvailable()) {
-        LogBenefitFormEventToIssuerHistogram(
-            context.selected_issuer_id,
+        LogBenefitFormEventToBenefitSourceHistogram(
+            context.selected_benefit_source,
             FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SUBMITTED_ONCE);
       }
-      LogBenefitFormEventForAllIssuersWithBenefitAvailable(
-          context.instrument_ids_to_issuer_ids_with_benefits_available,
+      LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailable(
+          context.instrument_ids_to_available_benefit_sources,
           FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SUBMITTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE);
       break;
     case CardMetadataLoggingEvent::kWillSubmit:
@@ -326,28 +326,29 @@ void LogIsCreditCardBenefitsEnabledAtStartup(bool enabled) {
       "Autofill.PaymentMethods.CardBenefitsIsEnabled.Startup", enabled);
 }
 
-void LogBenefitFormEventToIssuerHistogram(const std::string& issuer_id,
-                                          FormEvent event) {
+void LogBenefitFormEventToBenefitSourceHistogram(
+    const std::string& benefit_source,
+    FormEvent event) {
   base::UmaHistogramEnumeration(
       base::StrCat({"Autofill.FormEvents.CreditCard."
                     "WithBenefits.",
-                    GetCardIssuerIdOrNetworkSuffix(issuer_id)}),
+                    GetCardBenefitSourceSuffix(benefit_source)}),
       event, NUM_FORM_EVENTS);
 }
 
-void LogBenefitFormEventForAllIssuersWithBenefitAvailable(
+void LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailable(
     const base::flat_map<int64_t, std::string>&
-        instrument_ids_to_issuer_ids_with_benefits_available,
+        instrument_ids_to_available_benefit_sources,
     FormEvent event) {
-  // `issuers_shown` holds all credit card issuers that were shown with
-  // benefits available to the user and logged for the `event`.
-  std::unordered_set<std::string> issuers_shown;
+  // `benefit_sources_shown` holds all credit card benefit sources that were
+  // shown with benefits available to the user and logged for the `event`.
+  std::unordered_set<std::string> benefit_sources_shown;
 
-  for (const auto& [instrument_id, issuer_id] :
-       instrument_ids_to_issuer_ids_with_benefits_available) {
-    if (!issuers_shown.contains(issuer_id)) {
-      LogBenefitFormEventToIssuerHistogram(issuer_id, event);
-      issuers_shown.insert(issuer_id);
+  for (const auto& [instrument_id, benefit_source] :
+       instrument_ids_to_available_benefit_sources) {
+    if (!benefit_sources_shown.contains(benefit_source)) {
+      LogBenefitFormEventToBenefitSourceHistogram(benefit_source, event);
+      benefit_sources_shown.insert(benefit_source);
     }
   }
 }

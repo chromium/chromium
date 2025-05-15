@@ -407,9 +407,8 @@ void SetSuggestionLabelsForCard(
       // of users with benefit-eligible cards and assess how actually
       // displaying the benefit in the experiment influences the users autofill
       // interactions.
-      metadata_logging_context
-          .instrument_ids_to_issuer_ids_with_benefits_available.insert(
-              {credit_card.instrument_id(), credit_card.issuer_id()});
+      metadata_logging_context.instrument_ids_to_available_benefit_sources
+          .insert({credit_card.instrument_id(), credit_card.benefit_source()});
       if (client.GetPersonalDataManager()
               .payments_data_manager()
               .IsCardEligibleForBenefits(credit_card)) {
@@ -1374,9 +1373,8 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
       // IsCardEligibleForBenefits() == false. This helps denote a control
       // group of users with benefit-eligible cards to help determine how
       // benefit availability affects autofill usage.
-      metadata_logging_context
-          .instrument_ids_to_issuer_ids_with_benefits_available.insert(
-              {credit_card.instrument_id(), credit_card.issuer_id()});
+      metadata_logging_context.instrument_ids_to_available_benefit_sources
+          .insert({credit_card.instrument_id(), credit_card.benefit_source()});
       if (client.GetPersonalDataManager()
               .payments_data_manager()
               .IsCardEligibleForBenefits(credit_card)) {
