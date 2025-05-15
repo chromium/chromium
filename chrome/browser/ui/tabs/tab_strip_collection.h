@@ -107,6 +107,11 @@ class TabStripCollection : public TabCollection {
                    split_tabs::SplitTabVisualData visual_data);
   void Unsplit(split_tabs::SplitTabId split_id);
   void MoveSplit(split_tabs::SplitTabId split_id, bool pinned);
+  void InsertSplitTabAt(std::unique_ptr<SplitTabCollection> split_collection,
+                        int index,
+                        int pinned,
+                        std::optional<tab_groups::TabGroupId> group);
+  std::unique_ptr<SplitTabCollection> RemoveSplit(SplitTabCollection* split);
 
   void ValidateData() const;
 
@@ -136,6 +141,14 @@ class TabStripCollection : public TabCollection {
   // be updated in the `split_mapping_`.
   void AddCollectionMapping(TabCollection* root_collection);
   void RemoveCollectionMapping(TabCollection* root_collection);
+
+  // Helper to compute the parent collection and direct index in the collection
+  // to insert a tab or collection based on insertion properties like the
+  // recursive index, pinned state and group to insert.
+  std::pair<tabs::TabCollection*, int> GetInsertionDetails(
+      int index,
+      int pinned,
+      std::optional<tab_groups::TabGroupId> group);
 
   // All of the pinned tabs for this tabstrip is present in this collection.
   // This should be below `impl_` to avoid being a dangling pointer during

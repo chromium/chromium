@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <memory>
 #include <optional>
+#include <utility>
 #include <variant>
 
 #include "base/containers/adapters.h"
@@ -50,14 +51,12 @@ void TabStripCollection::AddTabRecursive(
   // been added.
   CHECK(index >= 0 && index <= TabCountRecursive());
 
-  if (new_group_id.has_value()) {
+  // First tab needs to be added to the group. In this case we need to create a
+  // group collection.
+  if (new_group_id.has_value() &&
+      !GetTabGroupCollection(new_group_id.value())) {
     // Attempt to create a new group for the tab.
-    CHECK(!new_pinned_state);
     TabGroupTabCollection* group_collection =
-        GetTabGroupCollection(new_group_id.value());
-
-    if (!group_collection) {
-      group_collection =
           MaybeAttachDetachedGroupCollection(index, new_group_id.value());
 
       // New empty group was attached, append tab to the group.
@@ -65,29 +64,11 @@ void TabStripCollection::AddTabRecursive(
       TabInterface* inserted_tab = group_collection->AddTab(std::move(tab), 0);
       CHECK(GetIndexOfTabRecursive(inserted_tab) == index);
       return;
-    }
-    // Group already exists, add to that group at the index offsetted by the
-    // index of the first tab in the group.
-    CHECK(group_collection->ChildCount() > 0);
-    size_t offset =
-        GetIndexOfTabRecursive(group_collection->GetTabAtIndexRecursive(0))
-            .value();
-    CHECK(index >= offset);
-    group_collection->AddTab(std::move(tab),
-                             group_collection->ToDirectIndex(index - offset));
-    return;
   }
 
-  if (new_pinned_state) {
-    pinned_collection_->AddTab(std::move(tab),
-                               pinned_collection_->ToDirectIndex(index));
-    return;
-  }
-
-  size_t offset = pinned_collection_->TabCountRecursive();
-  CHECK(index >= offset);
-  unpinned_collection_->AddTab(
-      std::move(tab), unpinned_collection_->ToDirectIndex(index - offset));
+  auto [tab_collection_ptr, insert_index] =
+      GetInsertionDetails(index, new_pinned_state, new_group_id);
+  tab_collection_ptr->AddTab(std::move(tab), insert_index);
 }
 
 void TabStripCollection::MoveTabRecursive(
@@ -150,50 +131,24 @@ void TabStripCollection::MoveTabsRecursive(
     }
   }
 
-  // `insert_collection` is the final collection to directly insert
-  // `moved_datas`. `direct_dst_index` refers to the index within
-  // `insert_collection` to start inserting `moved_datas`.
-  size_t direct_dst_index;
-  TabCollection* insert_collection = nullptr;
-
-  // The `insert_collection` can only either be `pinned_collection_` ,
-  // `unpinned_collection_` or `group_collection_`. The `insert_collection` will
-  // be `group_collection_` if the tabs need to be moved to a new group.
-  // Otherwise depending on `new_pinned_state` they will either be in the
-  // `pinned_collection_` or `unpinned_collection_`.
-  if (new_pinned_state) {
-    direct_dst_index = pinned_collection_->ToDirectIndex(destination_index);
-    insert_collection = pinned_collection_;
-  } else if (new_group_id.has_value()) {
-    TabGroupTabCollection* group_collection =
-        GetTabGroupCollection(new_group_id.value());
-    CHECK(group_collection);
-
-    size_t offset =
-        GetIndexOfTabRecursive(group_collection->GetTabAtIndexRecursive(0))
-            .value();
-
-    direct_dst_index =
-        group_collection->ToDirectIndex(destination_index - offset);
-    insert_collection = group_collection;
-  } else {
-    size_t offset = pinned_collection_->TabCountRecursive();
-    direct_dst_index =
-        unpinned_collection_->ToDirectIndex(destination_index - offset);
-    insert_collection = unpinned_collection_;
-  }
+  // `tab_collection_ptr` is the final collection to insert `moved_datas`
+  // starting at `insert_index`.
+  auto [tab_collection_ptr, insert_index] =
+      GetInsertionDetails(destination_index, new_pinned_state, new_group_id);
+  CHECK(tab_collection_ptr);
 
   // Insert tabs and collections left to right so destination index can be used
-  // in an incremental manner from `direct_dst_index`.
+  // in an incremental manner from the direct destination index computed from
+  // `insertion_details`.
   for (size_t i = 0; i < moved_datas.size(); i++) {
     if (std::holds_alternative<std::unique_ptr<TabInterface>>(moved_datas[i])) {
-      insert_collection->AddTab(
+      tab_collection_ptr->AddTab(
           std::move(std::get<std::unique_ptr<TabInterface>>(moved_datas[i])),
-          direct_dst_index + i);
+          insert_index + i);
     } else {
-      insert_collection->AddCollection(
+      tab_collection_ptr->AddCollection(
           std::move(std::get<std::unique_ptr<TabCollection>>(moved_datas[i])),
-          direct_dst_index + i);
+          insert_index + i);
     }
   }
 }
@@ -436,6 +391,28 @@ void TabStripCollection::MoveSplit(split_tabs::SplitTabId split_id,
   }
 }
 
+void TabStripCollection::InsertSplitTabAt(
+    std::unique_ptr<SplitTabCollection> split_collection,
+    int index,
+    int pinned,
+    std::optional<tab_groups::TabGroupId> group) {
+  AddCollectionMapping(split_collection.get());
+
+  auto [tab_collection_ptr, insert_index] =
+      GetInsertionDetails(index, pinned, group);
+  CHECK(tab_collection_ptr);
+  tab_collection_ptr->AddCollection(std::move(split_collection), insert_index);
+}
+
+std::unique_ptr<SplitTabCollection> TabStripCollection::RemoveSplit(
+    SplitTabCollection* split) {
+  CHECK(split_mapping_.contains(split->GetSplitTabId()));
+  RemoveCollectionMapping(split);
+
+  return base::WrapUnique(static_cast<SplitTabCollection*>(
+      split->GetParentCollection()->MaybeRemoveCollection(split).release()));
+}
+
 void TabStripCollection::ValidateData() const {
   CHECK(detached_group_collections_.empty());
   for (const auto& [_, group] : group_mapping_) {
@@ -530,6 +507,36 @@ void TabStripCollection::RemoveCollectionMapping(
         static_cast<SplitTabCollection*>(root_collection);
     split_mapping_.erase(split_collection->GetSplitTabId());
   }
+}
+
+std::pair<tabs::TabCollection*, int> TabStripCollection::GetInsertionDetails(
+    int index,
+    int pinned,
+    std::optional<tab_groups::TabGroupId> group) {
+  size_t direct_dst_index;
+  TabCollection* insert_collection = nullptr;
+
+  if (pinned) {
+    direct_dst_index = pinned_collection_->ToDirectIndex(index);
+    insert_collection = pinned_collection_;
+  } else if (group.has_value()) {
+    TabGroupTabCollection* group_collection =
+        GetTabGroupCollection(group.value());
+    CHECK(group_collection);
+
+    size_t offset =
+        GetIndexOfTabRecursive(group_collection->GetTabAtIndexRecursive(0))
+            .value();
+    direct_dst_index = group_collection->ToDirectIndex(index - offset);
+    insert_collection = group_collection;
+  } else {
+    size_t offset = pinned_collection_->TabCountRecursive();
+    direct_dst_index = unpinned_collection_->ToDirectIndex(index - offset);
+    insert_collection = unpinned_collection_;
+  }
+
+  return std::pair<tabs::TabCollection*, int>(insert_collection,
+                                              direct_dst_index);
 }
 
 }  // namespace tabs
