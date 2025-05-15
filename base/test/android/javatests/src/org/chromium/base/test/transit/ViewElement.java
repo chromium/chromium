@@ -4,8 +4,6 @@
 
 package org.chromium.base.test.transit;
 
-import static org.hamcrest.core.Is.is;
-
 import android.view.View;
 
 import androidx.test.espresso.Espresso;
@@ -133,10 +131,7 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
 
     /** Trigger an Espresso action on this View. */
     public Transition.Trigger getPerformTrigger(ViewAction action) {
-        return () -> {
-            View view = get();
-            Espresso.onView(is(view)).perform(action);
-        };
+        return () -> Espresso.onView(mViewSpec.getViewMatcher()).perform(action);
     }
 
     /**
@@ -180,8 +175,7 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
 
     /** Trigger an Espresso ViewAssertion on this View. */
     public void check(ViewAssertion assertion) {
-        View view = get();
-        Espresso.onView(is(view)).check(assertion);
+        Espresso.onView(mViewSpec.getViewMatcher()).check(assertion);
     }
 
     /** Extra options for declaring ViewElements. */
