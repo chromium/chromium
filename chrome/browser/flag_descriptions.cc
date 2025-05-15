@@ -7194,11 +7194,6 @@ const char kListAllDisplayModesName[] = "List all display modes";
 const char kListAllDisplayModesDescription[] =
     "Enables listing all external displays' modes in the display settings.";
 
-const char kEnableHardwareMirrorModeName[] =
-    "Enable Hardware Mirror Mode (Deprecated)";
-const char kEnableHardwareMirrorModeDescription[] =
-    "Enables hardware support when multiple displays are set to mirror mode.";
-
 const char kHindiInscriptLayoutName[] = "Hindi Inscript Layout on CrOS";
 const char kHindiInscriptLayoutDescription[] =
     "Enables Hindi Inscript Layout on ChromeOS.";

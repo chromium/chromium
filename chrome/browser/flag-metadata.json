@@ -3457,17 +3457,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-hardware_mirror-mode-deprecated",
-    "owners": [
-      "vincentchiang@chromium.org",
-      "//ui/display/OWNERS"
-    ],
-    // A temporary flag to control hardware mirroring until it is decided
-    // whether to permanently remove hardware mirroring. See b/207072219 for
-    // more details.
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-hardware-secure-decryption",
     "owners": [
       "xhwang@chromium.org", "media-dev@chromium.org"
