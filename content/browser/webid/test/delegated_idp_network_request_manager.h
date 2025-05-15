@@ -71,6 +71,13 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
 
   void DownloadAndDecodeImage(const GURL& url, ImageCallback callback) override;
 
+  void DownloadAndDecodeCachedImage(const url::Origin& idp_origin,
+                                    const GURL& url,
+                                    ImageCallback callback) override;
+
+  void CacheAccountPictures(const url::Origin& idp_origin,
+                            const std::vector<GURL>& picture_urls) override;
+
  private:
   raw_ptr<IdpNetworkRequestManager, DanglingUntriaged> delegate_;
 };

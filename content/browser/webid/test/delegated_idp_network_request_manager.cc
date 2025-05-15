@@ -105,4 +105,17 @@ void DelegatedIdpNetworkRequestManager::DownloadAndDecodeImage(
   delegate_->DownloadAndDecodeImage(url, std::move(callback));
 }
 
+void DelegatedIdpNetworkRequestManager::DownloadAndDecodeCachedImage(
+    const url::Origin& idp_origin,
+    const GURL& url,
+    ImageCallback callback) {
+  delegate_->DownloadAndDecodeCachedImage(idp_origin, url, std::move(callback));
+}
+
+void DelegatedIdpNetworkRequestManager::CacheAccountPictures(
+    const url::Origin& idp_origin,
+    const std::vector<GURL>& picture_urls) {
+  delegate_->CacheAccountPictures(idp_origin, picture_urls);
+}
+
 }  // namespace content

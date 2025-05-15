@@ -103,6 +103,11 @@ class CONTENT_EXPORT IdentityRequestAccount
   // due to login hint, domain hint, or account label.
   bool is_filtered_out = false;
 
+  // Whether this account was retrieved from the Lightweight FedCM Accounts Push
+  // storage. If this is true, the request for the account picture will only
+  // check against cache, and will fail on cache miss.
+  bool from_accounts_push = false;
+
  private:
   friend class base::RefCounted<IdentityRequestAccount>;
 

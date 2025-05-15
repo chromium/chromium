@@ -655,6 +655,19 @@ void FederatedAuthRequestImpl::SetIdpSigninStatus(
         idp_origin, status == blink::mojom::IdpSigninStatus::kSignedIn,
         std::nullopt);
   } else {
+    if (options.has_value()) {
+      std::vector<GURL> picture_urls;
+      for (const blink::common::webid::LoginStatusAccount& account :
+           options->accounts) {
+        if (account.picture.has_value() && account.picture->is_valid()) {
+          picture_urls.emplace_back(account.picture.value());
+        }
+      }
+      if (!network_manager_) {
+        network_manager_ = CreateNetworkManager();
+      }
+      network_manager_->CacheAccountPictures(idp_origin, picture_urls);
+    }
     permission_delegate_->SetIdpSigninStatus(
         idp_origin, status == blink::mojom::IdpSigninStatus::kSignedIn,
         options);

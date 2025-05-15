@@ -7,6 +7,7 @@
 
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/webid/login_status_options.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
 namespace url {
@@ -74,6 +75,15 @@ class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
   MOCK_METHOD(void,
               DownloadAndDecodeImage,
               (const GURL&, ImageCallback),
+              (override));
+  MOCK_METHOD(void,
+              DownloadAndDecodeCachedImage,
+              (const url::Origin& idp_origin, const GURL&, ImageCallback),
+              (override));
+
+  MOCK_METHOD(void,
+              CacheAccountPictures,
+              (const url::Origin&, const std::vector<GURL>&),
               (override));
 };
 

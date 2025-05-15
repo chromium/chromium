@@ -1812,6 +1812,15 @@
     "expires": "Aug 1, 2025"
   },
   {
+    "prefix": "fedcm-accounts-push",
+    "owners": ["ekovac@chromium.org", "web-identity-eng@google.com"],
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/fedcm/fedcm-accounts-push/"],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-features=FedCmLightweightMode"],
+    "expires": "Aug 1, 2025"
+  },
+  {
     "prefix": "scoped-custom-element-registry-disabled",
     "owners": ["masonf@chromium.org", "tgivens@microsoft.com"],
     "platforms": ["Linux", "Mac", "Win"],

@@ -92,6 +92,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     // positive and net errors are negative.
     int response_code;
     bool cors_error = false;
+    bool from_accounts_push = false;
   };
 
   enum class LogoutResponse {
@@ -335,8 +336,26 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   void FetchIdpBrandIcon(std::unique_ptr<IdentityProviderInfo> idp_info,
                          FetchIdpBrandIconCallback callback);
 
+  // Download and decode an image. The request is made uncredentialed, using
+  // `idp_origin` as the top-level-frame origin for the network isolation key,
+  // and using the LOAD_ONLY_FROM_CACHE load flag; effectively, this will never
+  // actually create network traffic and only retrieve the image from cache.
+  virtual void DownloadAndDecodeCachedImage(const url::Origin& idp_origin,
+                                            const GURL& url,
+                                            ImageCallback callback);
+
+  // Fetch account picture URLs that have been provided by accounts push;
+  // this allows for retrieval from cache later when a credential request is
+  // made later. The requests are made without credentials using `idp_origin`
+  // as the top-level-frame origin.
+  virtual void CacheAccountPictures(const url::Origin& idp_origin,
+                                    const std::vector<GURL>& picture_urls);
+
  private:
   void FetchImage(const GURL& url, base::OnceClosure callback);
+  void FetchCachedAccountImage(const url::Origin& idp_origin,
+                               const GURL& url,
+                               base::OnceClosure callback);
   void OnImageReceived(base::OnceClosure callback,
                        GURL url,
                        const gfx::Image& image);
@@ -394,6 +413,11 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
       const GURL& target_url,
       CredentialedResourceRequestType type) const;
+
+  std::unique_ptr<network::ResourceRequest> CreateCachedAccountPictureRequest(
+      const url::Origin& idp_origin,
+      const GURL& target_url,
+      bool cache_only) const;
 
   url::Origin relying_party_origin_;
   url::Origin rp_embedding_origin_;
