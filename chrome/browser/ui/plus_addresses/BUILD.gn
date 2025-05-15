@@ -23,6 +23,7 @@ source_set("plus_addresses") {
       "plus_address_creation_controller_desktop.h",
       "plus_address_error_dialog.h",
       "plus_address_menu_model.h",
+      "views/plus_address_creation_dialog_delegate.h",
     ]
     public_deps += [
       "//base",
@@ -32,6 +33,7 @@ source_set("plus_addresses") {
       "//components/plus_addresses/metrics",
       "//components/plus_addresses/settings",
       "//ui/menus",
+      "//ui/views",
     ]
   }
 
@@ -61,7 +63,6 @@ source_set("impl") {
       "plus_address_menu_model.cc",
       "views/plus_address_creation_controller_desktop.cc",
       "views/plus_address_creation_dialog_delegate.cc",
-      "views/plus_address_creation_dialog_delegate.h",
     ]
     deps = [
       ":plus_addresses",
@@ -85,7 +86,6 @@ source_set("impl") {
       "//ui/color",
       "//ui/events",
       "//ui/gfx",
-      "//ui/views",
     ]
 
     if (is_chrome_branded) {
@@ -113,9 +113,9 @@ source_set("impl") {
       "//components/plus_addresses/settings",
       "//ui/android",
 
-      # TODO(nickdiego): remove once c/b/ui/android/tab_model gets modularized.
-      # For now this does not cause circular dependencies because, unlike in
-      # non-android builds, c/b/ui:ui does not depend directly on this.
+      # TODO(crbug.com/418007764): remove once c/b/ui/android/tab_model gets
+      # modularized. For now this does not cause circular dependencies because,
+      # unlike in non-android builds, c/b/ui:ui does not depend directly on this.
       "//chrome/browser/ui",
     ]
   }
