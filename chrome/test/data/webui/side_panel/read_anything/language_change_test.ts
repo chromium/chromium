@@ -8,7 +8,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {BrowserProxy, VoicePackController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -18,7 +18,7 @@ import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.j
 
 suite('LanguageChanged', () => {
   let app: AppElement;
-  let voicePackController: VoicePackController;
+  let voiceLanguageController: VoiceLanguageController;
 
   setup(async () => {
     // Clearing the DOM should always be done first.
@@ -27,8 +27,8 @@ suite('LanguageChanged', () => {
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     chrome.readingMode.isReadAloudEnabled = true;
-    voicePackController = new VoicePackController();
-    VoicePackController.setInstance(voicePackController);
+    voiceLanguageController = new VoiceLanguageController();
+    VoiceLanguageController.setInstance(voiceLanguageController);
     app = await createApp();
   });
 
@@ -51,14 +51,14 @@ suite('LanguageChanged', () => {
 
     chrome.readingMode.baseLanguageForSpeech = lang1;
     app.languageChanged();
-    assertEquals(lang1, voicePackController.getCurrentLanguage());
+    assertEquals(lang1, voiceLanguageController.getCurrentLanguage());
 
     chrome.readingMode.baseLanguageForSpeech = lang2;
     app.languageChanged();
-    assertEquals(lang2, voicePackController.getCurrentLanguage());
+    assertEquals(lang2, voiceLanguageController.getCurrentLanguage());
 
     chrome.readingMode.baseLanguageForSpeech = lang3;
     app.languageChanged();
-    assertEquals(lang3, voicePackController.getCurrentLanguage());
+    assertEquals(lang3, voiceLanguageController.getCurrentLanguage());
   });
 });

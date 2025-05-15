@@ -1,7 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {BrowserProxy, currentReadHighlightClass, MAX_SPEECH_LENGTH, NodeStore, ReadAloudHighlighter, SpeechBrowserProxyImpl, SpeechController, VoicePackController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, currentReadHighlightClass, MAX_SPEECH_LENGTH, NodeStore, ReadAloudHighlighter, SpeechBrowserProxyImpl, SpeechController, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertNotEquals, assertStringContains, assertStringExcludes, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechErrorEvent, createSpeechSynthesisVoice, mockMetrics, setSimpleNodeStoreWithText} from './common.js';
@@ -21,7 +21,7 @@ suite('SpeechController', () => {
   let wordBoundaries: WordBoundaries;
   let nodeStore: NodeStore;
   let highlighter: ReadAloudHighlighter;
-  let voicePackController: VoicePackController;
+  let voiceLanguageController: VoiceLanguageController;
 
   setup(() => {
     // Clearing the DOM should always be done first.
@@ -54,10 +54,10 @@ suite('SpeechController', () => {
       },
     };
 
-    voicePackController = new VoicePackController();
-    voicePackController.setUserPreferredVoice(
+    voiceLanguageController = new VoiceLanguageController();
+    voiceLanguageController.setUserPreferredVoice(
         createSpeechSynthesisVoice({lang: 'en', name: 'Google Alpaca'}));
-    VoicePackController.setInstance(voicePackController);
+    VoiceLanguageController.setInstance(voiceLanguageController);
     nodeStore = new NodeStore();
     NodeStore.setInstance(nodeStore);
     wordBoundaries = new WordBoundaries();
@@ -361,7 +361,7 @@ suite('SpeechController', () => {
     });
 
     test('on text-too-long error smaller text segment plays', () => {
-      voicePackController.setUserPreferredVoice(createSpeechSynthesisVoice(
+      voiceLanguageController.setUserPreferredVoice(createSpeechSynthesisVoice(
           {lang: 'en', name: 'Google Dinosaur', localService: true}));
       speechController.onPlayPauseToggle(null, longSentences);
       assertEquals(longSentences, getSpokenText());
@@ -389,7 +389,7 @@ suite('SpeechController', () => {
     setSimpleNodeStoreWithText(textContent);
     assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
     chrome.readingMode.baseLanguageForSpeech = pageLanguage;
-    voicePackController.onPageLanguageChanged();
+    voiceLanguageController.onPageLanguageChanged();
     speechController.initializeSpeechTree(1);
 
     speechController.onPlayPauseToggle(null, textContent);
@@ -416,7 +416,7 @@ suite('SpeechController', () => {
     setSimpleNodeStoreWithText(textContent);
     assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
     chrome.readingMode.baseLanguageForSpeech = pageLanguage;
-    voicePackController.onPageLanguageChanged();
+    voiceLanguageController.onPageLanguageChanged();
     speechController.initializeSpeechTree(1);
 
     speechController.onPlayPauseToggle(null, textContent);
@@ -443,7 +443,7 @@ suite('SpeechController', () => {
     assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
     chrome.readingMode.speechRate = 4;
     chrome.readingMode.baseLanguageForSpeech = pageLanguage;
-    voicePackController.onPageLanguageChanged();
+    voiceLanguageController.onPageLanguageChanged();
     speechController.initializeSpeechTree(1);
 
     speechController.onPlayPauseToggle(null, textContent);
@@ -469,7 +469,7 @@ suite('SpeechController', () => {
     assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
     chrome.readingMode.speechRate = 4;
     chrome.readingMode.baseLanguageForSpeech = pageLanguage;
-    voicePackController.onPageLanguageChanged();
+    voiceLanguageController.onPageLanguageChanged();
     speechController.initializeSpeechTree(1);
 
     speechController.onPlayPauseToggle(null, textContent);
@@ -497,7 +497,7 @@ suite('SpeechController', () => {
     assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
     chrome.readingMode.speechRate = 4;
     chrome.readingMode.baseLanguageForSpeech = pageLanguage;
-    voicePackController.onPageLanguageChanged();
+    voiceLanguageController.onPageLanguageChanged();
     speechController.initializeSpeechTree(1);
 
     speechController.onPlayPauseToggle(null, textContent);
@@ -653,7 +653,7 @@ suite('SpeechController', () => {
   test('onVoiceSelected sets current voice', () => {
     const voice1 = createSpeechSynthesisVoice({lang: 'pt-pt', name: 'Donkey'});
     const voice2 = createSpeechSynthesisVoice({lang: 'pt-br', name: 'Corgi'});
-    voicePackController.setUserPreferredVoice(voice1);
+    voiceLanguageController.setUserPreferredVoice(voice1);
     let sentName = '';
     let sentLang = '';
     chrome.readingMode.onVoiceChange = (name, lang) => {
@@ -663,7 +663,7 @@ suite('SpeechController', () => {
 
     speechController.onVoiceSelected(voice2);
 
-    assertEquals(voice2, voicePackController.getCurrentVoice());
+    assertEquals(voice2, voiceLanguageController.getCurrentVoice());
     assertEquals(voice2.name, sentName);
     assertEquals(voice2.lang, sentLang);
   });
@@ -672,7 +672,7 @@ suite('SpeechController', () => {
     const voice1 = createSpeechSynthesisVoice({lang: 'pt-pt', name: 'Tabby'});
     const voice2 = createSpeechSynthesisVoice({lang: 'pt-PT', name: 'Cheetah'});
     const voice3 = createSpeechSynthesisVoice({lang: 'pt-br', name: 'Leopard'});
-    voicePackController.setUserPreferredVoice(voice1);
+    voiceLanguageController.setUserPreferredVoice(voice1);
     wordBoundaries.updateBoundary(10);
 
     speechController.onVoiceSelected(voice2);

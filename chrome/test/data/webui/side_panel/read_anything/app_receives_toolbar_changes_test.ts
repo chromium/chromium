@@ -5,7 +5,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {BrowserProxy, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoicePackController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {hasStyle, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -19,7 +19,7 @@ suite('AppReceivesToolbarChanges', () => {
   let app: AppElement;
   let speech: TestSpeechBrowserProxy;
   let metrics: TestMetricsBrowserProxy;
-  let voicePackController: VoicePackController;
+  let voiceLanguageController: VoiceLanguageController;
   let speechController: SpeechController;
 
   function containerLetterSpacing(): number {
@@ -89,8 +89,8 @@ suite('AppReceivesToolbarChanges', () => {
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     metrics = mockMetrics();
-    voicePackController = new VoicePackController();
-    VoicePackController.setInstance(voicePackController);
+    voiceLanguageController = new VoiceLanguageController();
+    VoiceLanguageController.setInstance(voiceLanguageController);
     speechController = new SpeechController();
     SpeechController.setInstance(speechController);
     app = await createApp();
@@ -179,13 +179,13 @@ suite('AppReceivesToolbarChanges', () => {
     test('enabled languages are added', () => {
       const firstLanguage = 'en-us';
       emitLanguageToggle(firstLanguage);
-      assertTrue(voicePackController.isLangEnabled(firstLanguage));
+      assertTrue(voiceLanguageController.isLangEnabled(firstLanguage));
       assertTrue(chrome.readingMode.getLanguagesEnabledInPref().includes(
           firstLanguage));
 
       const secondLanguage = 'fr';
       emitLanguageToggle(secondLanguage);
-      assertTrue(voicePackController.isLangEnabled(secondLanguage));
+      assertTrue(voiceLanguageController.isLangEnabled(secondLanguage));
       assertTrue(chrome.readingMode.getLanguagesEnabledInPref().includes(
           secondLanguage));
     });
@@ -193,12 +193,12 @@ suite('AppReceivesToolbarChanges', () => {
     test('disabled languages are removed', () => {
       const firstLanguage = 'en-us';
       emitLanguageToggle(firstLanguage);
-      assertTrue(voicePackController.isLangEnabled(firstLanguage));
+      assertTrue(voiceLanguageController.isLangEnabled(firstLanguage));
       assertTrue(chrome.readingMode.getLanguagesEnabledInPref().includes(
           firstLanguage));
 
       emitLanguageToggle(firstLanguage);
-      assertFalse(voicePackController.isLangEnabled(firstLanguage));
+      assertFalse(voiceLanguageController.isLangEnabled(firstLanguage));
       assertFalse(chrome.readingMode.getLanguagesEnabledInPref().includes(
           firstLanguage));
     });
@@ -232,7 +232,7 @@ suite('AppReceivesToolbarChanges', () => {
   test('on voice selected, current voice updated', () => {
     const voice = createSpeechSynthesisVoice({lang: 'es-us', name: 'Poodle'});
     emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice: voice}});
-    assertEquals(voice, voicePackController.getCurrentVoice());
+    assertEquals(voice, voiceLanguageController.getCurrentVoice());
   });
 
   suite('play/pause', () => {

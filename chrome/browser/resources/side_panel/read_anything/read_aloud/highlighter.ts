@@ -8,7 +8,7 @@ import {getCurrentSpeechRate, isRectVisible} from '../common.js';
 import {NodeStore} from '../node_store.js';
 import {isEspeak} from '../voice_language_util.js';
 
-import {VoicePackController} from './voice_pack_controller.js';
+import {VoiceLanguageController} from './voice_language_controller.js';
 import {WordBoundaries} from './word_boundaries.js';
 
 // Characters that should be ignored for word highlighting when not accompanied
@@ -31,7 +31,7 @@ export class ReadAloudHighlighter {
   private wordBoundaries_: WordBoundaries = WordBoundaries.getInstance();
   private nodeStore_: NodeStore = NodeStore.getInstance();
   private allowAutoScroll_ = true;
-  private voicePackController_ = VoicePackController.getInstance();
+  private voiceLanguageController_ = VoiceLanguageController.getInstance();
 
   hasCurrentHighlights(): boolean {
     return this.previousHighlights_.some(
@@ -184,7 +184,7 @@ export class ReadAloudHighlighter {
     }
 
     if (this.wordBoundaries_.notSupported() ||
-        isEspeak(this.voicePackController_.getCurrentVoice())) {
+        isEspeak(this.voiceLanguageController_.getCurrentVoice())) {
       // Fall back where word highlighting is not possible. Since espeak
       // boundaries are different than Google TTS word boundaries, fall back
       // to sentence boundaries in that case too.

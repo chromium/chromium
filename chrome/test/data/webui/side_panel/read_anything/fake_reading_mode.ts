@@ -280,7 +280,7 @@ export class FakeReadingMode {
 
   // Sends an async request to install a Natural voice pack for a
   // specific language. The response is sent back to the UI via
-  // updateVoicePackStatus()
+  // updateLanguageStatus()
   // TODO(crbug.com/377697173) Rename `VoicePack` to `Voice`
   sendInstallVoicePackRequest(_language: string) {}
 
@@ -345,7 +345,7 @@ export class FakeReadingMode {
 
   // Called with the response of sendGetVoicePackInfoRequest() or
   // sendInstallVoicePackRequest()
-  updateVoicePackStatus(_lang: string, _status: string) {}
+  updateLanguageStatus(_lang: string, _status: string) {}
 
   // Ping that the theme choices of the user have been retrieved from
   // preferences and can be used to set up the page.

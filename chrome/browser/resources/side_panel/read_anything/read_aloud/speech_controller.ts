@@ -13,7 +13,7 @@ import {SpeechBrowserProxyImpl} from '../speech_browser_proxy.js';
 import {ReadAloudHighlighter} from './highlighter.js';
 import {PauseActionSource, SpeechEngineState, SpeechModel} from './speech_model.js';
 import type {SpeechPlayingState} from './speech_model.js';
-import {VoicePackController} from './voice_pack_controller.js';
+import {VoiceLanguageController} from './voice_language_controller.js';
 import {WordBoundaries} from './word_boundaries.js';
 
 // The maximum speech length that should be used with remote voices
@@ -32,8 +32,8 @@ export class SpeechController {
   private speech_: SpeechBrowserProxy = SpeechBrowserProxyImpl.getInstance();
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
   private nodeStore_: NodeStore = NodeStore.getInstance();
-  private voicePackController_: VoicePackController =
-      VoicePackController.getInstance();
+  private voiceLanguageController_: VoiceLanguageController =
+      VoiceLanguageController.getInstance();
   private wordBoundaries_: WordBoundaries = WordBoundaries.getInstance();
   private highlighter_: ReadAloudHighlighter =
       ReadAloudHighlighter.getInstance();
@@ -190,12 +190,11 @@ export class SpeechController {
   }
 
   onVoiceSelected(selectedVoice: SpeechSynthesisVoice) {
-    const currentVoice = this.voicePackController_.getCurrentVoice();
-    this.voicePackController_.setUserPreferredVoice(selectedVoice);
+    const currentVoice = this.voiceLanguageController_.getCurrentVoice();
+    this.voiceLanguageController_.setUserPreferredVoice(selectedVoice);
 
     // If the locales are identical, the voices are likely from the same
-    // voice pack and use the same TTS engine, therefore, we don't need
-    // to reset the word boundary state.
+    // TTS engine, therefore, we don't need to reset the word boundary state.
     if (currentVoice?.lang.toLowerCase() !== selectedVoice.lang.toLowerCase()) {
       this.wordBoundaries_.resetToDefaultState(
           /*possibleWordBoundarySupportChange=*/ true);
@@ -577,13 +576,13 @@ export class SpeechController {
     // No appropriate voice is available for the language designated in
     // SpeechSynthesisUtterance lang.
     if (error.error === 'language-unavailable') {
-      this.voicePackController_.onLanguageUnavailableError();
+      this.voiceLanguageController_.onLanguageUnavailableError();
     }
 
     // The voice designated in SpeechSynthesisUtterance voice attribute
     // is not available.
     if (error.error === 'voice-unavailable') {
-      this.voicePackController_.onVoiceUnavailableError();
+      this.voiceLanguageController_.onVoiceUnavailableError();
     }
   }
 
@@ -667,7 +666,7 @@ export class SpeechController {
   }
 
   private speakMessage_(message: SpeechSynthesisUtterance) {
-    const voice = this.voicePackController_.getCurrentVoiceOrDefault();
+    const voice = this.voiceLanguageController_.getCurrentVoiceOrDefault();
     if (!voice) {
       // TODO: crbug.com/40927698 - Handle when no voices are available.
       return;
@@ -850,7 +849,7 @@ export class SpeechController {
   }
 
   private isTextTooLong_(text: string): boolean {
-    return !this.voicePackController_.getCurrentVoice()?.localService &&
+    return !this.voiceLanguageController_.getCurrentVoice()?.localService &&
         text.length > MAX_SPEECH_LENGTH;
   }
 
@@ -898,7 +897,7 @@ export class SpeechController {
     const startTime = this.model_.getPlaySessionStartTime();
     if (startTime) {
       this.logger_.logSpeechPlaySession(
-          startTime, this.voicePackController_.getCurrentVoice());
+          startTime, this.voiceLanguageController_.getCurrentVoice());
       this.model_.setPlaySessionStartTime(null);
     }
   }

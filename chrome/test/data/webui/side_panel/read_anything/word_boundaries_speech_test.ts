@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement, WordBoundaryState} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoicePackController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createApp, createSpeechSynthesisVoice, emitEvent, setupBasicSpeech} from './common.js';
@@ -14,7 +14,7 @@ suite('WordBoundariesUsedForSpeech', () => {
   let app: AppElement;
   let wordBoundaries: WordBoundaries;
   let speechController: SpeechController;
-  let voicePackController: VoicePackController;
+  let voiceLanguageController: VoiceLanguageController;
 
   // root htmlTag='#document' id=1
   // ++link htmlTag='a' url='http://www.google.com' id=2
@@ -66,8 +66,8 @@ suite('WordBoundariesUsedForSpeech', () => {
     chrome.readingMode.onConnected = () => {};
     const speech = new TestSpeechBrowserProxy();
     SpeechBrowserProxyImpl.setInstance(speech);
-    voicePackController = new VoicePackController();
-    VoicePackController.setInstance(voicePackController);
+    voiceLanguageController = new VoiceLanguageController();
+    VoiceLanguageController.setInstance(voiceLanguageController);
     speechController = new SpeechController();
     SpeechController.setInstance(speechController);
 
@@ -108,7 +108,7 @@ suite('WordBoundariesUsedForSpeech', () => {
 
       const state: WordBoundaryState = wordBoundaries.state;
       assertTrue(wordBoundaries.hasBoundaries());
-      assertTrue(!!voicePackController.getCurrentVoice());
+      assertTrue(!!voiceLanguageController.getCurrentVoice());
       assertEquals(10, state.speechUtteranceStartIndex);
       assertEquals(0, state.previouslySpokenIndex);
       assertEquals(5, state.speechUtteranceLength);

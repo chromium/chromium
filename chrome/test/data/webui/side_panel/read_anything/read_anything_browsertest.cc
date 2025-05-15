@@ -285,13 +285,13 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Highlighter) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoicePackController) {
-  RunSidePanelTest("side_panel/read_anything/voice_pack_controller_test.js",
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceLanguageController) {
+  RunSidePanelTest("side_panel/read_anything/voice_language_controller_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoicePackModel) {
-  RunSidePanelTest("side_panel/read_anything/voice_pack_model_test.js",
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceLanguageModel) {
+  RunSidePanelTest("side_panel/read_anything/voice_language_model_test.js",
                    "mocha.run()");
 }
 

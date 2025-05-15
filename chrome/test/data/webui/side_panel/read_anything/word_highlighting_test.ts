@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ReadAloudHighlighter, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoicePackController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ReadAloudHighlighter, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createApp, createSpeechSynthesisVoice, emitEvent, playFromSelectionWithMockTimer, setSimpleAxTreeWithText} from './common.js';
@@ -65,7 +65,7 @@ suite('WordHighlighting', () => {
     chrome.readingMode.onConnected = () => {};
     speech = new TestSpeechBrowserProxy();
     SpeechBrowserProxyImpl.setInstance(speech);
-    VoicePackController.setInstance(new VoicePackController());
+    VoiceLanguageController.setInstance(new VoiceLanguageController());
     wordBoundaries = new WordBoundaries();
     WordBoundaries.setInstance(wordBoundaries);
     ReadAloudHighlighter.setInstance(new ReadAloudHighlighter());

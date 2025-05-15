@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy, SpeechBrowserProxyImpl, ToolbarEvent, VoiceClientSideStatusCode, VoicePackController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, SpeechBrowserProxyImpl, ToolbarEvent, VoiceClientSideStatusCode, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement, LanguageToastElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
@@ -16,7 +16,7 @@ import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 suite('Download notification', () => {
   let app: AppElement;
   let speech: TestSpeechBrowserProxy;
-  let voicePackController: VoicePackController;
+  let voiceLanguageController: VoiceLanguageController;
 
   const lang = 'en-us';
   let toast: LanguageToastElement;
@@ -24,13 +24,13 @@ suite('Download notification', () => {
   function installLanguage(): Promise<void> {
     setNaturalVoicesForLang(lang);
     // existing status
-    voicePackController.updateVoicePackStatus(lang, 'kNotInstalled');
+    voiceLanguageController.updateLanguageStatus(lang, 'kNotInstalled');
     // then we request install
-    voicePackController.setLocalStatus(
+    voiceLanguageController.setLocalStatus(
         lang, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
-    voicePackController.updateVoicePackStatus(lang, 'kInstalling');
+    voiceLanguageController.updateLanguageStatus(lang, 'kInstalling');
     // install completes
-    voicePackController.updateVoicePackStatus(lang, 'kInstalled');
+    voiceLanguageController.updateLanguageStatus(lang, 'kInstalled');
     return microtasksFinished();
   }
 
@@ -50,8 +50,8 @@ suite('Download notification', () => {
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     speech = new TestSpeechBrowserProxy();
     SpeechBrowserProxyImpl.setInstance(speech);
-    voicePackController = new VoicePackController();
-    VoicePackController.setInstance(voicePackController);
+    voiceLanguageController = new VoiceLanguageController();
+    VoiceLanguageController.setInstance(voiceLanguageController);
     app = await createApp();
 
     toast = app.$.languageToast;
@@ -60,7 +60,7 @@ suite('Download notification', () => {
   test('does not show if already installed', async () => {
     // The first call to update status should be the existing status from
     // the server.
-    voicePackController.updateVoicePackStatus(lang, 'kInstalled');
+    voiceLanguageController.updateLanguageStatus(lang, 'kInstalled');
     await microtasksFinished();
 
     assertFalse(toast.$.toast.open);
@@ -68,9 +68,9 @@ suite('Download notification', () => {
 
   test('does not show if still installing', async () => {
     // existing status
-    voicePackController.updateVoicePackStatus(lang, 'kNotInstalled');
+    voiceLanguageController.updateLanguageStatus(lang, 'kNotInstalled');
     // then we request install
-    voicePackController.updateVoicePackStatus(lang, 'kInstalling');
+    voiceLanguageController.updateLanguageStatus(lang, 'kInstalling');
     await microtasksFinished();
 
     assertFalse(toast.$.toast.open);
@@ -78,11 +78,11 @@ suite('Download notification', () => {
 
   test('does not show if error while installing', async () => {
     // existing status
-    voicePackController.updateVoicePackStatus(lang, 'kNotInstalled');
+    voiceLanguageController.updateLanguageStatus(lang, 'kNotInstalled');
     // then we request install
-    voicePackController.updateVoicePackStatus(lang, 'kInstalling');
+    voiceLanguageController.updateLanguageStatus(lang, 'kInstalling');
     // install error
-    voicePackController.updateVoicePackStatus(lang, 'kOther');
+    voiceLanguageController.updateLanguageStatus(lang, 'kOther');
     await microtasksFinished();
 
     assertFalse(toast.$.toast.open);

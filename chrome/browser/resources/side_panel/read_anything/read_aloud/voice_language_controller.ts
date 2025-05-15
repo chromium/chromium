@@ -14,7 +14,7 @@ import type {VoicePackStatus} from '../voice_language_util.js';
 import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, doesLanguageHaveNaturalVoices, EXTENSION_RESPONSE_TIMEOUT_MS, getFilteredVoiceList, getNaturalVoiceOrDefault, getVoicePackConvertedLangIfExists, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from '../voice_language_util.js';
 import {VoiceNotificationManager} from '../voice_notification_manager.js';
 
-import {VoicePackModel} from './voice_pack_model.js';
+import {VoiceLanguageModel} from './voice_language_model.js';
 
 export interface VoiceLanguageListener {
   onEnabledLangsChange(): void;
@@ -22,10 +22,10 @@ export interface VoiceLanguageListener {
   onCurrentVoiceChange(): void;
 }
 
-export class VoicePackController {
+export class VoiceLanguageController {
   private notificationManager_: VoiceNotificationManager =
       VoiceNotificationManager.getInstance();
-  private model_: VoicePackModel = new VoicePackModel();
+  private model_: VoiceLanguageModel = new VoiceLanguageModel();
   private speech_: SpeechBrowserProxy = SpeechBrowserProxyImpl.getInstance();
   private listeners_: VoiceLanguageListener[] = [];
 
@@ -127,13 +127,13 @@ export class VoicePackController {
     this.updateUnavailableVoiceToDefaultVoice_();
   }
 
-  // Kicks off a workflow to install a voice pack.
-  // 1) Checks if Language Pack Manager supports a version of this
-  // voice/locale 2) If so, adds voice to installVoicePackIfPossible set 3)
-  // Kicks off request GetVoicePackInfo to see if the voice is installed 4)
-  // Upon response, if we see the voice is not installed and that it's in
-  // installVoicePackIfPossible, then we trigger an install request
-  private installVoicePackIfPossible_(
+  // Kicks off a workflow to install a language.
+  // 1) Checks if the tts engine supports a version of this voice/locale
+  // 2) If so, adds language for downloading
+  // 3) Kicks off request GetVoicePackInfo to see if the voice is installed
+  // 4) Upon response, if we see the voice is not installed and that it's in
+  // the languages for downloading, then we trigger an install request
+  private installLanguageIfPossible_(
       langOrLocale: string, onlyInstallExactGoogleLocaleMatch: boolean,
       retryIfPreviousInstallFailed: boolean) {
     // Don't attempt to install a language if it's not a Google TTS language
@@ -208,7 +208,7 @@ export class VoicePackController {
     const lang = chrome.readingMode.baseLanguageForSpeech;
     this.model_.setCurrentLanguage(lang);
     // Don't check for Google locales when the language has changed.
-    this.installVoicePackIfPossible_(
+    this.installLanguageIfPossible_(
         lang,
         /* onlyInstallExactGoogleLocaleMatch=*/ false,
         /* retryIfPreviousInstallFailed= */ false);
@@ -219,7 +219,7 @@ export class VoicePackController {
 
     if (!currentlyEnabled) {
       this.autoSwitchVoice_(toggledLanguage);
-      this.installVoicePackIfPossible_(
+      this.installLanguageIfPossible_(
           toggledLanguage, /* onlyInstallExactGoogleLocaleMatch=*/ true,
           /* retryIfPreviousInstallFailed= */ true);
       this.enableLang(toggledLanguage);
@@ -271,7 +271,7 @@ export class VoicePackController {
     this.setCurrentVoice_(naturalVoicesForLang[0]);
   }
 
-  // Checks the voice pack status of the current voice and updates to the
+  // Checks the install status of the current voice and updates to the
   // default voice if it's no longer available.
   private updateUnavailableVoiceToDefaultVoice_(): void {
     for (const lang of this.model_.getServerLanguages()) {
@@ -496,26 +496,25 @@ export class VoicePackController {
     }
   }
 
-  updateVoicePackStatus(lang: string, status: string) {
+  updateLanguageStatus(lang: string, status: string) {
     this.stopWaitingForSpeechExtension();
     if (!lang.length) {
       return;
     }
 
-    const newVoicePackStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
-    this.setServerStatus(lang, newVoicePackStatus);
-    this.updateApplicationState_(lang, newVoicePackStatus);
+    const newStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
+    this.setServerStatus(lang, newStatus);
+    this.updateApplicationState_(lang, newStatus);
 
-    if (isVoicePackStatusError(newVoicePackStatus)) {
+    if (isVoicePackStatusError(newStatus)) {
       this.disableLangIfNoVoices_(lang);
     }
   }
 
-  // Store client side voice pack state and trigger side effects.
-  private updateApplicationState_(
-      lang: string, newVoicePackStatus: VoicePackStatus) {
-    if (isVoicePackStatusSuccess(newVoicePackStatus)) {
-      const newStatusCode = newVoicePackStatus.code;
+  // Store client side language state and trigger side effects.
+  private updateApplicationState_(lang: string, newStatus: VoicePackStatus) {
+    if (isVoicePackStatusSuccess(newStatus)) {
+      const newStatusCode = newStatus.code;
 
       switch (newStatusCode) {
         case VoicePackServerStatusSuccessCode.NOT_INSTALLED:
@@ -532,7 +531,7 @@ export class VoicePackController {
           this.refreshAvailableVoices_(/*forceRefresh=*/ true);
           this.autoSwitchVoice_(lang);
 
-          // Some languages may require a download from the voice pack
+          // Some languages may require a download from the tts engine
           // but may not have associated natural voices.
           const languageHasNaturalVoices = doesLanguageHaveNaturalVoices(lang);
 
@@ -557,9 +556,9 @@ export class VoicePackController {
           // This ensures the switch statement is exhaustive
           return newStatusCode satisfies never;
       }
-    } else if (isVoicePackStatusError(newVoicePackStatus)) {
+    } else if (isVoicePackStatusError(newStatus)) {
       this.autoSwitchVoice_(lang);
-      const newStatusCode = newVoicePackStatus.code;
+      const newStatusCode = newStatus.code;
 
       switch (newStatusCode) {
         case VoicePackServerStatusErrorCode.OTHER:
@@ -582,56 +581,50 @@ export class VoicePackController {
     }
   }
 
-  private triggerInstall_(voicePackLanguage: string) {
+  private triggerInstall_(language: string) {
     // Install the voice if it's not currently installed and it's marked
     // as a language that should be installed
-    if (this.model_.hasLanguageForDownload(voicePackLanguage)) {
+    if (this.model_.hasLanguageForDownload(language)) {
       // Don't re-send install request if it's already been sent
-      if (this.getLocalStatus(voicePackLanguage) !==
+      if (this.getLocalStatus(language) !==
           VoiceClientSideStatusCode.SENT_INSTALL_REQUEST) {
-        this.forceInstallRequest_(voicePackLanguage, /* isRetry = */ false);
+        this.forceInstallRequest_(language, /* isRetry = */ false);
       }
     } else {
-      this.setLocalStatus(
-          voicePackLanguage, VoiceClientSideStatusCode.NOT_INSTALLED);
+      this.setLocalStatus(language, VoiceClientSideStatusCode.NOT_INSTALLED);
     }
   }
 
   // Returns true if this requested either an install or more info.
   private requestInstall_(
-      voicePackLanguage: string,
-      retryIfPreviousInstallFailed: boolean): boolean {
-    const serverStatus = this.getServerStatus(voicePackLanguage);
+      language: string, retryIfPreviousInstallFailed: boolean): boolean {
+    const serverStatus = this.getServerStatus(language);
     if (!serverStatus) {
       if (retryIfPreviousInstallFailed) {
-        this.forceInstallRequest_(voicePackLanguage, /* isRetry = */ false);
+        this.forceInstallRequest_(language, /* isRetry = */ false);
       } else {
-        // Inquire if the voice pack is downloaded. If not, it'll trigger a
-        // download in updateVoicePackStatus().
-        this.model_.addLanguageForDownload(voicePackLanguage);
-        this.requestInfo_(voicePackLanguage);
+        this.model_.addLanguageForDownload(language);
+        this.requestInfo_(language);
       }
       return true;
     }
 
     if (isVoicePackStatusSuccess(serverStatus) &&
         serverStatus.code === VoicePackServerStatusSuccessCode.NOT_INSTALLED) {
-      // Inquire if the voice pack is downloaded. If not, it'll trigger a
-      // download in updateVoicePackStatus().
-      this.model_.addLanguageForDownload(voicePackLanguage);
-      this.requestInfo_(voicePackLanguage);
+      this.model_.addLanguageForDownload(language);
+      this.requestInfo_(language);
       return true;
     }
 
     if (retryIfPreviousInstallFailed && isVoicePackStatusError(serverStatus)) {
-      this.model_.addLanguageForDownload(voicePackLanguage);
+      this.model_.addLanguageForDownload(language);
 
       // If the previous install attempt failed (e.g. due to no internet
       // connection), the PackManager sends a failure for subsequent GetInfo
       // requests. Therefore, bypass the normal flow of calling
       // GetInfo to see if the voice is available to install, and just call
       // sendInstallVoicePackRequest directly
-      this.forceInstallRequest_(voicePackLanguage, /* isRetry = */ true);
+      this.forceInstallRequest_(language, /* isRetry = */ true);
       return true;
     }
 
@@ -658,7 +651,7 @@ export class VoicePackController {
       onlyInstallExactGoogleLocaleMatch: boolean,
       retryIfPreviousInstallFailed: boolean) {
     for (const lang of this.getEnabledLangs()) {
-      this.installVoicePackIfPossible_(
+      this.installLanguageIfPossible_(
           lang, onlyInstallExactGoogleLocaleMatch,
           retryIfPreviousInstallFailed);
     }
@@ -674,13 +667,13 @@ export class VoicePackController {
     }
   }
 
-  private forceInstallRequest_(voicePackLanguage: string, isRetry: boolean) {
+  private forceInstallRequest_(language: string, isRetry: boolean) {
     this.setLocalStatus(
-        voicePackLanguage,
+        language,
         isRetry ? VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY :
                   VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
 
-    chrome.readingMode.sendInstallVoicePackRequest(voicePackLanguage);
+    chrome.readingMode.sendInstallVoicePackRequest(language);
   }
 
   // Schedules a timer that will notify the user if the speech extension is
@@ -780,13 +773,13 @@ export class VoicePackController {
     return getNaturalVoiceOrDefault(voicesForCurrentEnabledLocale);
   }
 
-  static getInstance(): VoicePackController {
-    return instance || (instance = new VoicePackController());
+  static getInstance(): VoiceLanguageController {
+    return instance || (instance = new VoiceLanguageController());
   }
 
-  static setInstance(obj: VoicePackController) {
+  static setInstance(obj: VoiceLanguageController) {
     instance = obj;
   }
 }
 
-let instance: VoicePackController|null = null;
+let instance: VoiceLanguageController|null = null;

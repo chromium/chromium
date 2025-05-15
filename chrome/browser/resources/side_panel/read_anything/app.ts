@@ -24,8 +24,8 @@ import type {LanguageToastElement} from './language_toast.js';
 import {NodeStore} from './node_store.js';
 import {SpeechController} from './read_aloud/speech_controller.js';
 import type {SpeechListener} from './read_aloud/speech_controller.js';
-import {VoicePackController} from './read_aloud/voice_pack_controller.js';
-import type {VoiceLanguageListener} from './read_aloud/voice_pack_controller.js';
+import {VoiceLanguageController} from './read_aloud/voice_language_controller.js';
+import type {VoiceLanguageListener} from './read_aloud/voice_language_controller.js';
 import {ReadAnythingLogger, TimeFrom} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 import {VoiceNotificationManager} from './voice_notification_manager.js';
@@ -124,8 +124,8 @@ export class AppElement extends AppElementBase implements
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
   private styleUpdater_: AppStyleUpdater;
   private nodeStore_: NodeStore = NodeStore.getInstance();
-  private voicePackController_: VoicePackController =
-      VoicePackController.getInstance();
+  private voiceLanguageController_: VoiceLanguageController =
+      VoiceLanguageController.getInstance();
   private speechController_: SpeechController = SpeechController.getInstance();
   protected accessor settingsPrefs_: SettingsPrefs = {
     letterSpacing: 0,
@@ -157,7 +157,7 @@ export class AppElement extends AppElementBase implements
     // Even though disconnectedCallback isn't always called reliably in prod,
     // it is called in tests, and the speech extension timeout can cause
     // flakiness.
-    this.voicePackController_.stopWaitingForSpeechExtension();
+    this.voiceLanguageController_.stopWaitingForSpeechExtension();
   }
 
   override connectedCallback() {
@@ -177,7 +177,7 @@ export class AppElement extends AppElementBase implements
 
     if (this.isReadAloudEnabled_) {
       this.speechController_.addListener(this);
-      this.voicePackController_.addListener(this);
+      this.voiceLanguageController_.addListener(this);
       this.notificationManager_.addListener(this.$.languageToast);
 
       // Clear state. We don't do this in disconnectedCallback because that's
@@ -279,7 +279,7 @@ export class AppElement extends AppElementBase implements
 
     chrome.readingMode.updateVoicePackStatus =
         (lang: string, status: string) => {
-          this.voicePackController_.updateVoicePackStatus(lang, status);
+          this.voiceLanguageController_.updateLanguageStatus(lang, status);
         };
 
     chrome.readingMode.showLoading = () => {
@@ -303,7 +303,7 @@ export class AppElement extends AppElementBase implements
     };
 
     chrome.readingMode.onTtsEngineInstalled = () => {
-      this.voicePackController_.onTtsEngineInstalled();
+      this.voiceLanguageController_.onTtsEngineInstalled();
     };
 
     chrome.readingMode.onNodeWillBeDeleted = (nodeId: number) => {
@@ -801,17 +801,17 @@ export class AppElement extends AppElementBase implements
   }
 
   onEnabledLangsChange(): void {
-    this.enabledLangs_ = this.voicePackController_.getEnabledLangs();
+    this.enabledLangs_ = this.voiceLanguageController_.getEnabledLangs();
   }
 
   onAvailableVoicesChange(): void {
-    this.availableVoices_ = this.voicePackController_.getAvailableVoices();
+    this.availableVoices_ = this.voiceLanguageController_.getAvailableVoices();
     this.localeToDisplayName_ =
-        this.voicePackController_.getDisplayNamesForLocaleCodes();
+        this.voiceLanguageController_.getDisplayNamesForLocaleCodes();
   }
 
   onCurrentVoiceChange(): void {
-    this.selectedVoice_ = this.voicePackController_.getCurrentVoice();
+    this.selectedVoice_ = this.voiceLanguageController_.getCurrentVoice();
     this.speechController_.onSpeechSettingsChange();
   }
 
@@ -833,7 +833,7 @@ export class AppElement extends AppElementBase implements
   protected onVoiceLanguageToggle_(event: CustomEvent<{language: string}>) {
     event.preventDefault();
     event.stopPropagation();
-    this.voicePackController_.onLanguageToggle(event.detail.language);
+    this.voiceLanguageController_.onLanguageToggle(event.detail.language);
   }
 
   protected onSpeechRateChange_() {
@@ -842,7 +842,7 @@ export class AppElement extends AppElementBase implements
 
   private restoreSettingsFromPrefs_() {
     if (this.isReadAloudEnabled_) {
-      this.voicePackController_.restoreFromPrefs();
+      this.voiceLanguageController_.restoreFromPrefs();
     }
     this.settingsPrefs_ = {
       ...this.settingsPrefs_,
@@ -911,7 +911,7 @@ export class AppElement extends AppElementBase implements
   languageChanged() {
     this.$.toolbar.updateFonts();
     if (this.isReadAloudEnabled_) {
-      this.voicePackController_.onPageLanguageChanged();
+      this.voiceLanguageController_.onPageLanguageChanged();
     }
   }
 

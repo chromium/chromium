@@ -4,7 +4,7 @@
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {MetricsBrowserProxyImpl, NodeStore, playFromSelectionTimeout, ReadAnythingLogger, ToolbarEvent, VoicePackController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {MetricsBrowserProxyImpl, NodeStore, playFromSelectionTimeout, ReadAnythingLogger, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -63,7 +63,7 @@ export function createSpeechErrorEvent(
 }
 
 export function setupBasicSpeech(speech: TestSpeechBrowserProxy) {
-  VoicePackController.getInstance().enableLang('en');
+  VoiceLanguageController.getInstance().enableLang('en');
   createAndSetVoices(
       speech, [{lang: 'en', name: 'Google Basic', default: true}]);
 }
@@ -83,7 +83,7 @@ export function createAndSetVoices(
 export function setVoices(
     speech: TestSpeechBrowserProxy, voices: SpeechSynthesisVoice[]) {
   speech.setVoices(voices);
-  VoicePackController.getInstance().onVoicesChanged();
+  VoiceLanguageController.getInstance().onVoicesChanged();
 }
 
 export function createSpeechSynthesisVoice(

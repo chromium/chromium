@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {playFromSelectionTimeout, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoicePackController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {playFromSelectionTimeout, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
@@ -15,7 +15,7 @@ import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 suite('Speech', () => {
   let app: AppElement;
   let speech: TestSpeechBrowserProxy;
-  let voicePackController: VoicePackController;
+  let voiceLanguageController: VoiceLanguageController;
   let speechController: SpeechController;
 
   const paragraph1: string[] = [
@@ -86,8 +86,8 @@ suite('Speech', () => {
     chrome.readingMode.languageChanged = () => {};
     chrome.readingMode.onTtsEngineInstalled = () => {};
     mockMetrics();
-    voicePackController = new VoicePackController();
-    VoicePackController.setInstance(voicePackController);
+    voiceLanguageController = new VoiceLanguageController();
+    VoiceLanguageController.setInstance(voiceLanguageController);
     speechController = new SpeechController();
     SpeechController.setInstance(speechController);
 
