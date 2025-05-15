@@ -7045,6 +7045,54 @@ TEST_F(HttpCacheTest, ConditionalizedRequestUpdatesCache10) {
                                            kNetResponse1, kExtraRequestHeaders);
 }
 
+// Tests that a conditional request with an empty "If-Modified-Since" header
+// value bypasses the cache for that request due to the malformed header,
+// and does not update the existing cache entry. The original cache entry
+// (kNetResponse1) should still be served from cache subsequently.
+TEST_F(HttpCacheTest, ConditionalizedRequestEmptyIfModifiedSince) {
+  static const Response kNetResponse1 = {
+      "HTTP/1.1 200 OK",
+      "Date: Fri, 12 Jun 2009 21:46:42 GMT\n"
+      "Last-Modified: Wed, 06 Feb 2008 22:38:21 GMT\n",
+      "body1"};
+
+  static const Response kNetResponse2 = {
+      "HTTP/1.1 200 OK",
+      "Date: Wed, 22 Jul 2009 03:15:26 GMT\n"
+      "Last-Modified: Fri, 03 Jul 2009 02:14:27 GMT\n",
+      "body2"};
+
+  const char kExtraRequestHeaders[] = "If-Modified-Since:\r\n";
+
+  ConditionalizedRequestUpdatesCacheHelper(kNetResponse1, kNetResponse2,
+                                           kNetResponse1, kExtraRequestHeaders);
+}
+
+// Tests that a conditional request with an empty "If-None-Match" header
+// value bypasses the cache for that request due to the malformed header,
+// and does not update the existing cache entry. The original cache entry
+// (kNetResponse1) should still be served from cache subsequently.
+TEST_F(HttpCacheTest, ConditionalizedRequestEmptyIfNoneMatch) {
+  static const Response kNetResponse1 = {
+      "HTTP/1.1 200 OK",
+      "Date: Fri, 12 Jun 2009 21:46:42 GMT\n"
+      "Etag: \"Foo1\"\n"
+      "Last-Modified: Wed, 06 Feb 2008 22:38:21 GMT\n",
+      "body1"};
+
+  static const Response kNetResponse2 = {
+      "HTTP/1.1 200 OK",
+      "Date: Wed, 22 Jul 2009 03:15:26 GMT\n"
+      "Etag: \"Foo2\"\n"
+      "Last-Modified: Fri, 03 Jul 2009 02:14:27 GMT\n",
+      "body2"};
+
+  const char kExtraRequestHeaders[] = "If-None-Match:\r\n";
+
+  ConditionalizedRequestUpdatesCacheHelper(kNetResponse1, kNetResponse2,
+                                           kNetResponse1, kExtraRequestHeaders);
+}
+
 TEST_F(HttpCacheTest, UrlContainingHash) {
   MockHttpCache cache;
 

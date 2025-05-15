@@ -102,14 +102,6 @@ bool ShouldByPassCacheForFirstPartySets(
           written_at_run_id.value() < clear_at_run_id.value());
 }
 
-struct ValidationHeaderInfo {
-  std::string_view request_header_name;
-  std::string_view related_response_header_name;
-};
-
-constexpr auto kValidationHeaders = std::to_array<ValidationHeaderInfo>(
-    {{"if-modified-since", "last-modified"}, {"if-none-match", "etag"}});
-
 // Methods other than "GET" or "HEAD" can have request bodies, which causes
 // problems for the request matching.
 // TODO(https://crbug.com/390459312): Consider supporting additional methods.
@@ -133,10 +125,6 @@ HttpCache::Transaction::Transaction(RequestPriority priority, HttpCache* cache)
       priority_(priority),
       cache_(cache->GetWeakPtr()),
       read_no_vary_search_cache_(cache->no_vary_search_cache_) {
-  static_assert(HttpCache::Transaction::kNumValidationHeaders ==
-                    std::size(kValidationHeaders),
-                "invalid number of validation headers");
-
   io_callback_ = base::BindRepeating(&Transaction::OnIOComplete,
                                      weak_factory_.GetWeakPtr());
   cache_io_callback_ = base::BindRepeating(&Transaction::OnCacheIOComplete,
@@ -1059,7 +1047,7 @@ int HttpCache::Transaction::DoGetBackendComplete(int result) {
     }
 
     // Downgrade to UPDATE if the request has been externally conditionalized.
-    if (external_validation_.initialized) {
+    if (external_validation_) {
       if (mode_ & WRITE) {
         // Strip off the READ_DATA bit (and maybe add back a READ_META bit
         // in case READ was off).
@@ -2555,7 +2543,7 @@ void HttpCache::Transaction::SetRequest(const NetLogWithSource& net_log) {
   // Reset the variables that might get set in this function. This is done
   // because this function can be invoked multiple times for a transaction.
   cache_entry_status_ = CacheEntryStatus::ENTRY_UNDEFINED;
-  external_validation_.Reset();
+  external_validation_.reset();
   range_requested_ = false;
   partial_.reset();
 
@@ -2580,25 +2568,20 @@ void HttpCache::Transaction::SetRequest(const NetLogWithSource& net_log) {
       http_cache_util::GetLoadFlagsForExtraHeaders(request_->extra_headers);
   effective_load_flags_ |= load_flags_for_extra_headers;
 
-  bool external_validation_error = false;
-  // Check for conditionalization headers which may correspond with a
-  // cache validation request.
-  for (size_t i = 0; i < std::size(kValidationHeaders); ++i) {
-    const ValidationHeaderInfo& info = kValidationHeaders[i];
-    if (std::optional<std::string> validation_value =
-            request_->extra_headers.GetHeader(info.request_header_name);
-        validation_value) {
-      if (!external_validation_.values[i].empty() ||
-          validation_value->empty()) {
-        external_validation_error = true;
-      }
-      external_validation_.values[i] = std::move(validation_value).value();
-      external_validation_.initialized = true;
-    }
+  base::expected<std::optional<http_cache_util::ValidationHeaders>,
+                 std::string_view>
+      maybe_validation_headers =
+          http_cache_util::ValidationHeaders::MaybeCreate(
+              request_->extra_headers);
+  std::optional<std::string_view> external_validation_error;
+  if (maybe_validation_headers.has_value()) {
+    external_validation_ = std::move(maybe_validation_headers.value());
+  } else {
+    external_validation_error = maybe_validation_headers.error();
   }
 
-  if (range_found || load_flags_for_extra_headers ||
-      external_validation_.initialized) {
+  if (range_found || load_flags_for_extra_headers || external_validation_ ||
+      external_validation_error) {
     // Log the headers before request_ is modified.
     std::string empty;
     NetLogRequestHeaders(net_log_,
@@ -2607,16 +2590,15 @@ void HttpCache::Transaction::SetRequest(const NetLogWithSource& net_log) {
   }
 
   // We don't support ranges and validation headers.
-  if (range_found && external_validation_.initialized) {
+  if (range_found && external_validation_) {
     LOG(WARNING) << "Byte ranges AND validation headers found.";
     effective_load_flags_ |= LOAD_DISABLE_CACHE;
   }
 
-  // If there is more than one validation header, we can't treat this request as
-  // a cache validation, since we don't know for sure which header the server
-  // will give us a response for (and they could be contradictory).
+  // If there is an invalid validation header, we can't treat this request as
+  // a cache validation.
   if (external_validation_error) {
-    LOG(WARNING) << "Multiple or malformed validation headers found.";
+    LOG(WARNING) << *external_validation_error;
     effective_load_flags_ |= LOAD_DISABLE_CACHE;
   }
 
@@ -2859,33 +2841,12 @@ int HttpCache::Transaction::ValidateEntryHeadersAndContinue() {
   return OK;
 }
 
-bool HttpCache::Transaction::
-    ExternallyConditionalizedValidationHeadersMatchEntry() const {
-  DCHECK(external_validation_.initialized);
-
-  for (size_t i = 0; i < std::size(kValidationHeaders); i++) {
-    if (external_validation_.values[i].empty()) {
-      continue;
-    }
-
-    // Retrieve either the cached response's "etag" or "last-modified" header.
-    std::optional<std::string_view> validator =
-        response_.headers->EnumerateHeader(
-            nullptr, kValidationHeaders[i].related_response_header_name);
-
-    if (validator && *validator != external_validation_.values[i]) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
 int HttpCache::Transaction::BeginExternallyConditionalizedRequest() {
   DCHECK_EQ(UPDATE, mode_);
+  CHECK(external_validation_);
 
   if (response_.headers->response_code() != HTTP_OK || truncated_ ||
-      !ExternallyConditionalizedValidationHeadersMatchEntry()) {
+      !external_validation_->Match(*response_.headers)) {
     // The externally conditionalized request is not a validation request
     // for our existing cache entry. Proceed with caching disabled.
     UpdateCacheEntryStatus(CacheEntryStatus::ENTRY_OTHER);
@@ -3953,9 +3914,6 @@ bool HttpCache::Transaction::InWriters() const {
   return entry_ && entry_->HasWriters() &&
          entry_->writers()->HasTransaction(this);
 }
-
-HttpCache::Transaction::ValidationHeaders::ValidationHeaders() = default;
-HttpCache::Transaction::ValidationHeaders::~ValidationHeaders() = default;
 
 HttpCache::Transaction::NetworkTransactionInfo::NetworkTransactionInfo() =
     default;
