@@ -248,7 +248,8 @@ TouchInjector::~TouchInjector() {
   if (!played_with_game_controls_) {
     // Record the game never played with Game Controls before shutting down the
     // game.
-    RecordPlayGameWithGameControls(/*played_with_game_controls=*/false);
+    RecordPlayGameWithGameControls(package_name_,
+                                   /*played_with_game_controls=*/false);
   }
   UnRegisterEventRewriter();
 }
@@ -558,7 +559,8 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
       played_with_game_controls_ = true;
       // Record once only when it is played with Game Controls for the first
       // time.
-      RecordPlayGameWithGameControls(/*played_with_game_controls=*/true);
+      RecordPlayGameWithGameControls(package_name_,
+                                     /*played_with_game_controls=*/true);
     }
 
     if (keep_original_event) {

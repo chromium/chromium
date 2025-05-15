@@ -142,7 +142,8 @@ void RecordToggleWithMappingSource(const std::string& package_name,
 // `played_with_game_controls` is set to true.
 // - Otherwise, the event is logged when the game shuts down, with
 // `played_with_game_controls` set to false.
-void RecordPlayGameWithGameControls(bool played_with_game_controls);
+void RecordPlayGameWithGameControls(const std::string& package_name,
+                                    bool played_with_game_controls);
 
 }  // namespace arc::input_overlay
 
