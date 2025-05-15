@@ -43,7 +43,7 @@ SendTabToSelfSyncService::~SendTabToSelfSyncService() = default;
 void SendTabToSelfSyncService::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
   sync_service_ = sync_service;
-  sync_service_->AddObserver(this);
+  sync_service_observation_.Observe(sync_service);
 }
 
 std::optional<EntryPointDisplayReason>
@@ -70,7 +70,7 @@ SendTabToSelfSyncService::GetControllerDelegate() {
 }
 
 void SendTabToSelfSyncService::OnSyncShutdown(syncer::SyncService*) {
-  sync_service_->RemoveObserver(this);
+  sync_service_observation_.Reset();
   sync_service_ = nullptr;
 }
 
