@@ -982,12 +982,21 @@ export class AppElement extends AppElementBase {
         case $$(this, '#modules'):
           recordClick(NtpElement.MODULE);
           return;
-        case $$(this.$.customizeButtons, '#customizeButton'):
-          recordClick(NtpElement.CUSTOMIZE_BUTTON);
-          return;
-        case $$(this.$.customizeButtons, '#wallpaperSearchButton'):
-          recordClick(NtpElement.WALLPAPER_SEARCH_BUTTON);
-          return;
+      }
+    }
+
+    const customizeButtonsElement =
+        this.shadowRoot.querySelector('ntp-customize-buttons');
+    if (customizeButtonsElement) {
+      for (const target of e.composedPath()) {
+        switch (target) {
+          case $$(customizeButtonsElement, '#customizeButton'):
+            recordClick(NtpElement.CUSTOMIZE_BUTTON);
+            return;
+          case $$(customizeButtonsElement, '#wallpaperSearchButton'):
+            recordClick(NtpElement.WALLPAPER_SEARCH_BUTTON);
+            return;
+        }
       }
     }
 
