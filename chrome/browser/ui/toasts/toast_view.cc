@@ -210,6 +210,7 @@ void ToastView::Init() {
     action_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
     action_button_->SetProperty(views::kElementIdentifierKey,
                                 kToastActionButton);
+    action_button_->SetAppearDisabledInInactiveWidget(false);
     action_button_->SetProperty(
         views::kMarginsKey,
         GetLeftMargin(lp->GetDistanceMetric(
