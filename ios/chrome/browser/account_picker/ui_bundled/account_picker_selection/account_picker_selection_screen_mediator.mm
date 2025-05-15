@@ -9,6 +9,7 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_consumer.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_identity_item_configurator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -115,6 +116,19 @@
   configurator.avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
       identity, IdentityAvatarSize::TableViewIcon);
   configurator.selected = [identity isEqual:self.selectedIdentity];
+
+  if (std::optional<BOOL> isManaged = IsIdentityManaged(identity);
+      isManaged.has_value()) {
+    configurator.managed = isManaged.value();
+    return;
+  }
+  configurator.managed = NO;
+  __weak __typeof(self) weakSelf = self;
+  FetchManagedStatusForIdentity(identity, base::BindOnce(^(bool managed) {
+                                  if (managed) {
+                                    [weakSelf handleIdentityUpdated:identity];
+                                  }
+                                }));
 }
 
 - (void)handleIdentityUpdated:(id<SystemIdentity>)identity {

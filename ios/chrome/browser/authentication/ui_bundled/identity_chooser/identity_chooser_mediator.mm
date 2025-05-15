@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_identity_item.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_consumer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -131,6 +132,20 @@
       [self.selectedIdentity.gaiaID isEqualToString:identity.gaiaID];
   item.avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
       identity, IdentityAvatarSize::Regular);
+
+  if (std::optional<BOOL> isManaged = IsIdentityManaged(identity);
+      isManaged.has_value()) {
+    item.managed = isManaged.value();
+  } else {
+    __weak __typeof(self) weakSelf = self;
+    FetchManagedStatusForIdentity(
+        identity, base::BindOnce(^(bool managed) {
+          if (managed) {
+            [weakSelf updateTableViewIdentityItem:item withIdentity:identity];
+          }
+        }));
+  }
+
   [self.consumer itemHasChanged:item];
 }
 

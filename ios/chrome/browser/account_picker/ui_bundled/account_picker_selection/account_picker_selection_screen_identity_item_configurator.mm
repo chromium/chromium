@@ -14,6 +14,7 @@
   item.email = self.email;
   item.avatar = self.avatar;
   item.selected = self.selected;
+  item.managed = self.managed;
   item.useCustomSeparator = NO;
 }
 
