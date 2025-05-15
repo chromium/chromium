@@ -8,7 +8,6 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/extensions/chrome_extension_host_delegate.h"
 #include "chrome/browser/extensions/chrome_extensions_browser_client.h"
@@ -31,7 +30,6 @@ namespace extensions {
 
 void ChromeExtensionsBrowserClient::Init() {
   process_manager_delegate_ = std::make_unique<ChromeProcessManagerDelegate>();
-  api_client_ = std::make_unique<ChromeExtensionsAPIClient>();
 
   // Must occur after g_browser_process is initialized.
   user_script_listener_ = std::make_unique<UserScriptListener>();

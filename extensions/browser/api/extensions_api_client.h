@@ -216,14 +216,19 @@ class ExtensionsAPIClient {
   // MetricsPrivateAPI behavior.
   virtual MetricsPrivateDelegate* GetMetricsPrivateDelegate();
 
-  // Returns a delegate for embedder-specific chrome.fileSystem behavior.
-  virtual FileSystemDelegate* GetFileSystemDelegate();
-
   // Returns a delegate for embedder-specific extension messaging.
   virtual MessagingDelegate* GetMessagingDelegate();
 
+// The APIs that need these methods are not supported on desktop Android.
+#if !BUILDFLAG(IS_ANDROID)
+  // Returns a delegate for embedder-specific chrome.fileSystem behavior.
+  virtual FileSystemDelegate* GetFileSystemDelegate();
+
   // Returns a delegate for the chrome.feedbackPrivate API.
   virtual FeedbackPrivateDelegate* GetFeedbackPrivateDelegate();
+
+  virtual AutomationInternalApiDelegate* GetAutomationInternalApiDelegate();
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
   // If supported by the embedder, returns a delegate for querying non-native
@@ -242,8 +247,6 @@ class ExtensionsAPIClient {
       base::OnceClosure success_callback,
       base::OnceCallback<void(const std::string&)> error_callback);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-  virtual AutomationInternalApiDelegate* GetAutomationInternalApiDelegate();
 
   // Gets keyed service factories that are used in the other methods on this
   // class.

@@ -151,17 +151,24 @@ MetricsPrivateDelegate* ExtensionsAPIClient::GetMetricsPrivateDelegate() {
   return nullptr;
 }
 
-FileSystemDelegate* ExtensionsAPIClient::GetFileSystemDelegate() {
+MessagingDelegate* ExtensionsAPIClient::GetMessagingDelegate() {
   return nullptr;
 }
 
-MessagingDelegate* ExtensionsAPIClient::GetMessagingDelegate() {
+#if !BUILDFLAG(IS_ANDROID)
+FileSystemDelegate* ExtensionsAPIClient::GetFileSystemDelegate() {
   return nullptr;
 }
 
 FeedbackPrivateDelegate* ExtensionsAPIClient::GetFeedbackPrivateDelegate() {
   return nullptr;
 }
+
+AutomationInternalApiDelegate*
+ExtensionsAPIClient::GetAutomationInternalApiDelegate() {
+  return nullptr;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
 NonNativeFileSystemDelegate*
@@ -181,11 +188,6 @@ void ExtensionsAPIClient::SaveImageDataToClipboard(
     base::OnceClosure success_callback,
     base::OnceCallback<void(const std::string&)> error_callback) {}
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-AutomationInternalApiDelegate*
-ExtensionsAPIClient::GetAutomationInternalApiDelegate() {
-  return nullptr;
-}
 
 std::unique_ptr<NativeMessagePortDispatcher>
 ExtensionsAPIClient::CreateNativeMessagePortDispatcher(

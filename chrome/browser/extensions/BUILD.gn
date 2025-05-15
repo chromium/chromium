@@ -53,6 +53,8 @@ source_set("extensions") {
     "api/bookmarks/bookmarks_api_watcher.h",
     "api/bookmarks_core/bookmarks_function.cc",
     "api/bookmarks_core/bookmarks_function.h",
+    "api/chrome_extensions_api_client.cc",
+    "api/chrome_extensions_api_client.h",
     "api/commands/commands.cc",
     "api/commands/commands.h",
     "api/declarative_content/content_condition.cc",
@@ -480,6 +482,7 @@ source_set("extensions") {
     "//extensions/browser",
     "//extensions/browser/api/storage:settings_namespace",
     "//extensions/browser/api/storage:settings_observer",
+    "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
     "//extensions/browser/updater",
     "//extensions/browser/updater:keepalive",
     "//extensions/common",
@@ -493,12 +496,14 @@ source_set("extensions") {
   ]
   public_deps = [
     "//components/safe_browsing/core/browser/db:util",
+    "//components/signin/core/browser",
     "//extensions/buildflags",
   ]
   defines = []
 
   if (is_android) {
     sources += [
+      "api/chrome_extensions_api_client_android.cc",
       "api/developer_private/developer_private_event_router_android.h",
       "api/developer_private/developer_private_functions_android.cc",
       "api/developer_private/developer_private_functions_android.h",
@@ -512,7 +517,10 @@ source_set("extensions") {
       "external_install_error_android.cc",
       "external_install_error_android.h",
     ]
+  } else {
+    sources += [ "api/chrome_extensions_api_client_non_android.cc" ]
   }
+
   if (enable_extensions) {
     sources += [
       "account_extension_tracker.cc",
@@ -527,8 +535,6 @@ source_set("extensions") {
       "api/bookmark_manager_private/bookmark_manager_private_api.cc",
       "api/bookmark_manager_private/bookmark_manager_private_api.h",
       "api/chrome_device_permissions_prompt.h",
-      "api/chrome_extensions_api_client.cc",
-      "api/chrome_extensions_api_client.h",
       "api/declarative_content/chrome_content_rules_registry.cc",
       "api/declarative_content/chrome_content_rules_registry.h",
       "api/declarative_content/content_action.cc",
@@ -822,7 +828,6 @@ source_set("extensions") {
       "//components/omnibox/browser",
       "//components/safe_browsing/core/common/proto:csd_proto",
       "//components/safe_browsing/core/common/proto:realtimeapi_proto",
-      "//components/signin/core/browser",
       "//components/translate/content/browser",
       "//content/public/browser",
       "//mojo/public/cpp/bindings",
@@ -991,7 +996,6 @@ source_set("extensions") {
       "//extensions/browser/api:extensions_api_client",
       "//extensions/browser/api/content_settings:content_settings",
       "//extensions/browser/api/system_display:display_info_provider",
-      "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
       "//extensions/common:mojom",
       "//extensions/common/api",
       "//extensions/strings",

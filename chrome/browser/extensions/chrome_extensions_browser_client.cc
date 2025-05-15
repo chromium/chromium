@@ -25,6 +25,7 @@
 #include "chrome/browser/extensions/activity_log/activity_action_constants.h"
 #include "chrome/browser/extensions/activity_log/activity_actions.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
+#include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
 #include "chrome/browser/extensions/api/preference/cookie_controls_mode_transformer.h"
 #include "chrome/browser/extensions/api/preference/network_prediction_transformer.h"
 #include "chrome/browser/extensions/api/preference/privacy_sandbox_transformer.h"
@@ -204,6 +205,7 @@ bool RegisterTransformers() {
 ChromeExtensionsBrowserClient::ChromeExtensionsBrowserClient()
     : resource_manager_(
           std::make_unique<ChromeComponentExtensionResourceManager>()),
+      api_client_(std::make_unique<ChromeExtensionsAPIClient>()),
       event_router_forwarder_(base::MakeRefCounted<EventRouterForwarder>()) {
   AddAPIProvider(std::make_unique<CoreExtensionsBrowserAPIProvider>());
   AddAPIProvider(std::make_unique<ChromeExtensionsBrowserAPIProvider>());
