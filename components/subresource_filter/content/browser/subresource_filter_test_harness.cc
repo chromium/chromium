@@ -138,7 +138,7 @@ void SubresourceFilterTestHarness::DidStartNavigation(
   content::MockNavigationThrottleRegistry registry(navigation_handle);
   ContentSubresourceFilterThrottleManager::FromNavigationHandle(
       *navigation_handle)
-      ->MaybeAppendNavigationThrottles(registry);
+      ->MaybeCreateAndAddNavigationThrottles(registry);
 
   AppendCustomNavigationThrottles(registry);
 }

@@ -133,8 +133,8 @@ bool ShouldBlockNavigationToPlatformAppResource(
 }  // namespace
 
 ExtensionNavigationThrottle::ExtensionNavigationThrottle(
-    content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 ExtensionNavigationThrottle::~ExtensionNavigationThrottle() = default;
 

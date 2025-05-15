@@ -529,8 +529,9 @@ void ContentSubresourceFilterThrottleManager::OnChildFrameNavigationEvaluated(
       InterpretLoadPolicyAsEvidence(load_policy));
 }
 
-void ContentSubresourceFilterThrottleManager::MaybeAppendNavigationThrottles(
-    content::NavigationThrottleRegistry& registry) {
+void ContentSubresourceFilterThrottleManager::
+    MaybeCreateAndAddNavigationThrottles(
+        content::NavigationThrottleRegistry& registry) {
   content::NavigationHandle& navigation_handle = registry.GetNavigationHandle();
   CHECK(!navigation_handle.IsSameDocument(), base::NotFatalUntil::M129);
   CHECK(!ShouldInheritActivation(navigation_handle.GetURL()),

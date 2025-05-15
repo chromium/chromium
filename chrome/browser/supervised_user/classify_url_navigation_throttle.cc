@@ -261,17 +261,16 @@ const GURL& ClassifyUrlNavigationThrottle::currently_navigated_url() const {
   return navigation_handle()->GetURL();
 }
 
-std::unique_ptr<content::NavigationThrottle>
-MaybeCreateClassifyUrlNavigationThrottleFor(
-    content::NavigationHandle* navigation_handle) {
+void MaybeCreateAndAddClassifyUrlNavigationThrottle(
+    content::NavigationThrottleRegistry& registry) {
   Profile* profile = Profile::FromBrowserContext(
-      navigation_handle->GetWebContents()->GetBrowserContext());
+      registry.GetNavigationHandle().GetWebContents()->GetBrowserContext());
   CHECK(profile);
 
   if (!IsSubjectToParentalControls(*profile->GetPrefs())) {
     base::UmaHistogramEnumeration(kClassifyUrlThrottleUseCaseHistogramName,
                                   ClassifyUrlThrottleUseCase::kNotAllowed);
-    return nullptr;
+    return;
   }
 
   SupervisedUserService* supervised_user_service =
@@ -279,7 +278,7 @@ MaybeCreateClassifyUrlNavigationThrottleFor(
   if (!supervised_user_service) {
     base::UmaHistogramEnumeration(kClassifyUrlThrottleUseCaseHistogramName,
                                   ClassifyUrlThrottleUseCase::kNotAllowed);
-    return nullptr;
+    return;
   }
 
   SupervisedUserURLFilter* filter = supervised_user_service->GetURLFilter();
@@ -288,7 +287,7 @@ MaybeCreateClassifyUrlNavigationThrottleFor(
   base::UmaHistogramEnumeration(
       kClassifyUrlThrottleUseCaseHistogramName,
       ClassifyUrlThrottleUseCase::kFamilyLinkSupervisedUser);
-  return ClassifyUrlNavigationThrottle::MakeUnique(navigation_handle, filter);
+  ClassifyUrlNavigationThrottle::CreateAndAdd(registry, filter);
 }
 
 std::optional<ClassifyUrlNavigationThrottle::ThrottleCheckResult>
@@ -355,12 +354,12 @@ void ClassifyUrlNavigationThrottle::CancelDeferredNavigation(
   NextNavigationState(ClassifyUrlThrottleStatus::kCancelDeferredNavigation);
 }
 
-std::unique_ptr<ClassifyUrlNavigationThrottle>
-ClassifyUrlNavigationThrottle::MakeUnique(
-    content::NavigationHandle* navigation_handle,
+void ClassifyUrlNavigationThrottle::CreateAndAdd(
+    content::NavigationThrottleRegistry& registry,
     SupervisedUserURLFilter* url_filter) {
-  return base::WrapUnique(
-      new ClassifyUrlNavigationThrottle(navigation_handle, url_filter));
+  registry.AddThrottle(
+      base::WrapUnique(
+      new ClassifyUrlNavigationThrottle(registry, url_filter)));
 }
 
 const char* ClassifyUrlNavigationThrottle::GetNameForLogging() {
@@ -368,9 +367,9 @@ const char* ClassifyUrlNavigationThrottle::GetNameForLogging() {
 }
 
 ClassifyUrlNavigationThrottle::ClassifyUrlNavigationThrottle(
-    content::NavigationHandle* navigation_handle,
+    content::NavigationThrottleRegistry& registry,
     SupervisedUserURLFilter* url_filter)
-    : content::NavigationThrottle(navigation_handle), url_filter_(url_filter) {}
+    : content::NavigationThrottle(registry), url_filter_(url_filter) {}
 ClassifyUrlNavigationThrottle::~ClassifyUrlNavigationThrottle() = default;
 
 ClassifyUrlNavigationThrottle::ClassifyUrlCheckList::ClassifyUrlCheckList() =

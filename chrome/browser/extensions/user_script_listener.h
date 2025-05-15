@@ -25,9 +25,8 @@ class ProfileManager;
 
 namespace content {
 class BrowserContext;
-class NavigationHandle;
-class NavigationThrottle;
-}
+class NavigationThrottleRegistry;
+}  // namespace content
 
 namespace extensions {
 class Extension;
@@ -49,9 +48,9 @@ class UserScriptListener : public ExtensionRegistryObserver,
   ~UserScriptListener() override;
 
   // Constructs a NavigationThrottle if the UserScriptListener needs to delay
-  // the given navigation. Otherwise, this method returns NULL.
-  std::unique_ptr<content::NavigationThrottle> CreateNavigationThrottle(
-      content::NavigationHandle* navigation_handle);
+  // the given navigation.
+  void CreateAndAddNavigationThrottle(
+      content::NavigationThrottleRegistry& registry);
 
   // Called when manifest scripts have finished loading for the given
   // BrowserContext.

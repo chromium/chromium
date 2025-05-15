@@ -278,13 +278,12 @@ void CreateAndAddChromeThrottlesForNavigation(
     navigation_interception::InterceptNavigationDelegate::MaybeCreateAndAdd(
         registry, navigation_interception::SynchronyMode::kAsync);
   }
-  registry.AddThrottle(InterceptOMADownloadNavigationThrottle::Create(&handle));
+  InterceptOMADownloadNavigationThrottle::CreateAndAdd(registry);
 
 #if BUILDFLAG(DFMIFY_DEV_UI)
   // If the DevUI DFM is already installed, then this is a no-op, except for the
   // side effect of ensuring that the DevUI DFM is loaded.
-  registry.MaybeAddThrottle(
-      dev_ui::DevUiLoaderThrottle::MaybeCreateThrottleFor(&handle));
+  dev_ui::DevUiLoaderThrottle::MaybeCreateAndAdd(registry);
 #endif  // BUILDFLAG(DFMIFY_DEV_UI)
 
 #elif BUILDFLAG(ENABLE_PLATFORM_APPS)
@@ -303,13 +302,11 @@ void CreateAndAddChromeThrottlesForNavigation(
     if (ash::merge_session_throttling_utils::ShouldAttachNavigationThrottle() &&
         !ash::merge_session_throttling_utils::AreAllSessionMergedAlready() &&
         handle.GetURL().SchemeIsHTTPOrHTTPS()) {
-      registry.AddThrottle(
-          ash::MergeSessionNavigationThrottle::Create(&handle));
+      ash::MergeSessionNavigationThrottle::CreateAndAdd(registry);
     }
   }
 
-  registry.MaybeAddThrottle(
-      apps::ChromeOsDisabledAppsThrottle::MaybeCreate(&handle));
+  apps::ChromeOsDisabledAppsThrottle::MaybeCreateAndAdd(registry);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -334,18 +331,15 @@ void CreateAndAddChromeThrottlesForNavigation(
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/366547977): This currently does nothing and allows all
   // navigations to proceed if v2 is enabled on ChromeOS. Implement.
-  std::unique_ptr<content::NavigationThrottle>
-      chromeos_reimpl_navigation_throttle =
-          apps::ChromeOsReimplNavigationCapturingThrottle::MaybeCreate(&handle);
-  if (chromeos_reimpl_navigation_throttle) {
-    // Verify the v1 throttle has not been created.
-    CHECK(!url_to_apps_throttle_created);
-    registry.AddThrottle(std::move(chromeos_reimpl_navigation_throttle));
-  }
+  bool chromeos_reimpl_navigation_throttle_created =
+      apps::ChromeOsReimplNavigationCapturingThrottle::MaybeCreateAndAdd(
+          registry);
+  // Verify the v1 and reimpl throttles have not been created at the same time.
+  CHECK(!chromeos_reimpl_navigation_throttle_created ||
+        !url_to_apps_throttle_created);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  registry.MaybeAddThrottle(
-      web_app::NavigationCapturingRedirectionThrottle::MaybeCreate(&handle));
+  web_app::NavigationCapturingRedirectionThrottle::MaybeCreateAndAdd(registry);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   Profile* profile =
@@ -355,30 +349,30 @@ void CreateAndAddChromeThrottlesForNavigation(
   if (!extensions::ChromeContentBrowserClientExtensionsPart::
           AreExtensionsDisabledForProfile(profile)) {
     registry.AddThrottle(
-        std::make_unique<extensions::ExtensionNavigationThrottle>(&handle));
+        std::make_unique<extensions::ExtensionNavigationThrottle>(registry));
 
-    registry.MaybeAddThrottle(extensions::ExtensionsBrowserClient::Get()
-                                  ->GetUserScriptListener()
-                                  ->CreateNavigationThrottle(&handle));
+    extensions::ExtensionsBrowserClient::Get()
+        ->GetUserScriptListener()
+        ->CreateAndAddNavigationThrottle(registry);
   }
 #endif
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
-  registry.MaybeAddThrottle(
-      extensions::WebViewGuest::MaybeCreateNavigationThrottle(&handle));
+  extensions::WebViewGuest::MaybeCreateAndAddNavigationThrottle(registry);
 #endif
 
-  registry.MaybeAddThrottle(
-      SupervisedUserGoogleAuthNavigationThrottle::MaybeCreate(&handle));
+  SupervisedUserGoogleAuthNavigationThrottle::MaybeCreateAndAdd(registry);
 
-  registry.MaybeAddThrottle(
-      supervised_user::MaybeCreateClassifyUrlNavigationThrottleFor(&handle));
+  supervised_user::MaybeCreateAndAddClassifyUrlNavigationThrottle(registry);
 
   if (auto* throttle_manager =
           subresource_filter::ContentSubresourceFilterThrottleManager::
               FromNavigationHandle(handle)) {
-    throttle_manager->MaybeAppendNavigationThrottles(registry);
+    throttle_manager->MaybeCreateAndAddNavigationThrottles(registry);
   }
+
+  // TODO(https://crbug.com/412524375): Needs a NavigationThrottle ctor
+  // migration follow-up of https://crrev.com/c/6510776 below.
 
   if (fingerprinting_protection_filter::features::
           IsFingerprintingProtectionEnabledForIncognitoState(

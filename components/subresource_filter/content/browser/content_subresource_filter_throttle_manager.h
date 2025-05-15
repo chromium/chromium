@@ -178,7 +178,7 @@ class ContentSubresourceFilterThrottleManager
   // frame is activated.
   //
   // Note that there is currently no constraints on the ordering of throttles.
-  void MaybeAppendNavigationThrottles(
+  void MaybeCreateAndAddNavigationThrottles(
       content::NavigationThrottleRegistry& registry);
 
   PageLoadStatistics* page_load_statistics() const { return statistics_.get(); }

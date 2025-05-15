@@ -18,10 +18,10 @@
 using content::BrowserThread;
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-InterceptOMADownloadNavigationThrottle::Create(
-    content::NavigationHandle* handle) {
-  return base::WrapUnique(new InterceptOMADownloadNavigationThrottle(handle));
+void InterceptOMADownloadNavigationThrottle::CreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
+  registry.AddThrottle(
+      base::WrapUnique(new InterceptOMADownloadNavigationThrottle(registry)));
 }
 
 InterceptOMADownloadNavigationThrottle::
@@ -31,23 +31,28 @@ content::NavigationThrottle::ThrottleCheckResult
 InterceptOMADownloadNavigationThrottle::WillProcessResponse() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!navigation_handle()->IsDownload())
+  if (!navigation_handle()->IsDownload()) {
     return content::NavigationThrottle::PROCEED;
+  }
 
-  if (!navigation_handle()->GetURL().SchemeIsHTTPOrHTTPS())
+  if (!navigation_handle()->GetURL().SchemeIsHTTPOrHTTPS()) {
     return content::NavigationThrottle::PROCEED;
+  }
 
-  if (navigation_handle()->IsPost())
+  if (navigation_handle()->IsPost()) {
     return content::NavigationThrottle::PROCEED;
+  }
 
   const net::HttpResponseHeaders* headers =
       navigation_handle()->GetResponseHeaders();
-  if (!headers)
+  if (!headers) {
     return content::NavigationThrottle::PROCEED;
+  }
 
   std::string mime_type;
-  if (!headers->GetMimeType(&mime_type))
+  if (!headers->GetMimeType(&mime_type)) {
     return content::NavigationThrottle::PROCEED;
+  }
 
   if (!base::EqualsCaseInsensitiveASCII(mime_type, kOMADrmMessageMimeType) &&
       !base::EqualsCaseInsensitiveASCII(mime_type, kOMADrmContentMimeType) &&
@@ -82,14 +87,15 @@ const char* InterceptOMADownloadNavigationThrottle::GetNameForLogging() {
 }
 
 InterceptOMADownloadNavigationThrottle::InterceptOMADownloadNavigationThrottle(
-    content::NavigationHandle* handle)
-    : content::NavigationThrottle(handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 void InterceptOMADownloadNavigationThrottle::InterceptDownload() {
   GURL original_url;
   const std::vector<GURL>& url_chain = navigation_handle()->GetRedirectChain();
-  if (!url_chain.empty())
+  if (!url_chain.empty()) {
     original_url = url_chain.front();
+  }
 
   std::string mime_type;
   const net::HttpResponseHeaders* headers =

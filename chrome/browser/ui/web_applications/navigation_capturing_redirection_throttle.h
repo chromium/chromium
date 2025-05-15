@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_NAVIGATION_CAPTURING_REDIRECTION_THROTTLE_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_NAVIGATION_CAPTURING_REDIRECTION_THROTTLE_H_
 
-#include <memory>
-
 #include "content/public/browser/navigation_throttle.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -20,8 +18,7 @@ class NavigationCapturingRedirectionThrottle
  public:
   using ThrottleCheckResult = content::NavigationThrottle::ThrottleCheckResult;
 
-  static std::unique_ptr<content::NavigationThrottle> MaybeCreate(
-      content::NavigationHandle* handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
   NavigationCapturingRedirectionThrottle(
       const NavigationCapturingRedirectionThrottle&) = delete;
@@ -38,7 +35,7 @@ class NavigationCapturingRedirectionThrottle
 
  private:
   explicit NavigationCapturingRedirectionThrottle(
-      content::NavigationHandle* navigation_handle);
+      content::NavigationThrottleRegistry& registry);
 };
 
 }  // namespace web_app

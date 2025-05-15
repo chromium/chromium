@@ -57,17 +57,15 @@ enum class InterstitialResultCallbackActions {
 
 // Returns a new throttle for the given navigation, or nullptr if no
 // throttling is required.
-std::unique_ptr<content::NavigationThrottle>
-MaybeCreateClassifyUrlNavigationThrottleFor(
-    content::NavigationHandle* navigation_handle);
+void MaybeCreateAndAddClassifyUrlNavigationThrottle(
+    content::NavigationThrottleRegistry& registry);
 
 // Navigation throttle that processes requests and redirects in parallel with
 // their verification against ClassifyUrl, up until the response is ready for
 // processing. Only then the navigation can be deferred.
 class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
  public:
-  static std::unique_ptr<ClassifyUrlNavigationThrottle> MakeUnique(
-      content::NavigationHandle* navigation_handle,
+  static void CreateAndAdd(content::NavigationThrottleRegistry& registry,
       SupervisedUserURLFilter* url_filter);
 
   ClassifyUrlNavigationThrottle(const ClassifyUrlNavigationThrottle&) = delete;
@@ -120,7 +118,7 @@ class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
     std::optional<base::ElapsedTimer> elapsed_;
   };
 
-  ClassifyUrlNavigationThrottle(content::NavigationHandle* navigation_handle,
+  ClassifyUrlNavigationThrottle(content::NavigationThrottleRegistry& registry,
                                 SupervisedUserURLFilter* url_filter);
 
   // content::NavigationThrottle implementation:

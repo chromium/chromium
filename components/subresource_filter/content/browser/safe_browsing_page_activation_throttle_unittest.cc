@@ -237,7 +237,7 @@ class SafeBrowsingPageActivationThrottleTest
     content::MockNavigationThrottleRegistry registry(navigation_handle);
     ContentSubresourceFilterThrottleManager::FromNavigationHandle(
         *navigation_handle)
-        ->MaybeAppendNavigationThrottles(registry);
+        ->MaybeCreateAndAddNavigationThrottles(registry);
   }
 
   // Returns the frame host the navigation committed in, or nullptr if it did

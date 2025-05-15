@@ -27,6 +27,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_navigation_throttle_registry.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
@@ -72,10 +73,9 @@ scoped_refptr<Extension> LoadExtension(const std::string& filename,
                                        std::string* error) {
   base::FilePath path;
   base::PathService::Get(chrome::DIR_TEST_DATA, &path);
-  path = path.
-      AppendASCII("extensions").
-      AppendASCII("manifest_tests").
-      AppendASCII(filename.c_str());
+  path = path.AppendASCII("extensions")
+             .AppendASCII("manifest_tests")
+             .AppendASCII(filename.c_str());
   std::optional<base::Value::Dict> manifest = LoadManifestFile(path, error);
   if (!manifest) {
     return nullptr;
@@ -157,14 +157,14 @@ class UserScriptListenerTest : public testing::Test {
         (*extensions.begin())->id(), UnloadedExtensionReason::DISABLE);
   }
 
-  std::unique_ptr<NavigationThrottle> CreateListenerNavigationThrottle(
-      content::NavigationHandle* handle) {
-    std::unique_ptr<NavigationThrottle> throttle =
-        listener_->CreateNavigationThrottle(handle);
-    throttle->set_resume_callback_for_testing(
+  void CreateListenerNavigationThrottle(
+      content::MockNavigationThrottleRegistry& registry) {
+    ASSERT_TRUE(registry.throttles().empty());
+    listener_->CreateAndAddNavigationThrottle(registry);
+    ASSERT_EQ(registry.throttles().size(), 1u);
+    registry.throttles().back()->set_resume_callback_for_testing(
         base::BindRepeating(&UserScriptListenerTest::MarkNavigationResumed,
                             base::Unretained(this)));
-    return throttle;
   }
 
   void AddPersistentScriptingURLPatternToPrefs() {
@@ -195,9 +195,12 @@ TEST_F(UserScriptListenerTest, DelayAndUpdate) {
 
   content::MockNavigationHandle handle(GURL(kMatchingUrl),
                                        web_contents_->GetPrimaryMainFrame());
-  std::unique_ptr<NavigationThrottle> throttle =
-      CreateListenerNavigationThrottle(&handle);
-  EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest());
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  CreateListenerNavigationThrottle(registry);
+  EXPECT_EQ(NavigationThrottle::DEFER,
+            registry.throttles().back()->WillStartRequest());
 
   listener_->TriggerUserScriptsReadyForTesting(profile_);
   EXPECT_TRUE(was_navigation_resumed_);
@@ -212,10 +215,12 @@ TEST_F(UserScriptListenerTest, DelayForPersistentScriptPatterns) {
 
   content::MockNavigationHandle handle(GURL(kMatchingPrefsUrl),
                                        web_contents_->GetPrimaryMainFrame());
-
-  std::unique_ptr<NavigationThrottle> throttle =
-      CreateListenerNavigationThrottle(&handle);
-  EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest());
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  CreateListenerNavigationThrottle(registry);
+  EXPECT_EQ(NavigationThrottle::DEFER,
+            registry.throttles().back()->WillStartRequest());
 
   listener_->TriggerUserScriptsReadyForTesting(profile_);
   EXPECT_TRUE(was_navigation_resumed_);
@@ -226,9 +231,12 @@ TEST_F(UserScriptListenerTest, DelayAndUnload) {
 
   content::MockNavigationHandle handle(GURL(kMatchingUrl),
                                        web_contents_->GetPrimaryMainFrame());
-  std::unique_ptr<NavigationThrottle> throttle =
-      CreateListenerNavigationThrottle(&handle);
-  EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest());
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  CreateListenerNavigationThrottle(registry);
+  EXPECT_EQ(NavigationThrottle::DEFER,
+            registry.throttles().back()->WillStartRequest());
 
   UnloadTestExtension();
   base::RunLoop().RunUntilIdle();
@@ -244,9 +252,11 @@ TEST_F(UserScriptListenerTest, DelayAndUnload) {
 TEST_F(UserScriptListenerTest, NoDelayNoExtension) {
   content::MockNavigationHandle handle(GURL(kMatchingUrl),
                                        web_contents_->GetPrimaryMainFrame());
-  std::unique_ptr<NavigationThrottle> throttle =
-      listener_->CreateNavigationThrottle(&handle);
-  EXPECT_EQ(nullptr, throttle);
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  listener_->CreateAndAddNavigationThrottle(registry);
+  EXPECT_EQ(registry.throttles().size(), 0u);
 }
 
 TEST_F(UserScriptListenerTest, NoDelayNotMatching) {
@@ -255,9 +265,11 @@ TEST_F(UserScriptListenerTest, NoDelayNotMatching) {
 
   content::MockNavigationHandle handle(GURL(kNotMatchingUrl),
                                        web_contents_->GetPrimaryMainFrame());
-  std::unique_ptr<NavigationThrottle> throttle =
-      listener_->CreateNavigationThrottle(&handle);
-  EXPECT_EQ(nullptr, throttle);
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  listener_->CreateAndAddNavigationThrottle(registry);
+  EXPECT_EQ(registry.throttles().size(), 0u);
 }
 
 TEST_F(UserScriptListenerTest, MultiProfile) {
@@ -269,19 +281,22 @@ TEST_F(UserScriptListenerTest, MultiProfile) {
       profile_manager_->CreateTestingProfile("test-profile2");
   ASSERT_TRUE(profile2);
   std::string error;
-  scoped_refptr<Extension> extension = LoadExtension(
-      "content_script_yahoo.json", &error);
+  scoped_refptr<Extension> extension =
+      LoadExtension("content_script_yahoo.json", &error);
   ASSERT_TRUE(extension.get());
 
-  ExtensionRegistry* registry = ExtensionRegistry::Get(profile2);
-  registry->AddEnabled(extension);
-  registry->TriggerOnLoaded(extension.get());
+  ExtensionRegistry* extension_registry = ExtensionRegistry::Get(profile2);
+  extension_registry->AddEnabled(extension);
+  extension_registry->TriggerOnLoaded(extension.get());
 
   content::MockNavigationHandle handle(GURL(kMatchingUrl),
                                        web_contents_->GetPrimaryMainFrame());
-  std::unique_ptr<NavigationThrottle> throttle =
-      CreateListenerNavigationThrottle(&handle);
-  EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest());
+  content::MockNavigationThrottleRegistry throttle_registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  CreateListenerNavigationThrottle(throttle_registry);
+  EXPECT_EQ(NavigationThrottle::DEFER,
+            throttle_registry.throttles().back()->WillStartRequest());
 
   // When the first profile's user scripts are ready, the request should still
   // be blocked waiting for profile2.
@@ -300,9 +315,12 @@ TEST_F(UserScriptListenerTest, ResumeBeforeStart) {
   LoadTestExtension();
   content::MockNavigationHandle handle(GURL(kMatchingUrl),
                                        web_contents_->GetPrimaryMainFrame());
-  std::unique_ptr<NavigationThrottle> throttle =
-      listener_->CreateNavigationThrottle(&handle);
-  ASSERT_TRUE(throttle);
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  listener_->CreateAndAddNavigationThrottle(registry);
+  CHECK_EQ(registry.throttles().size(), 1u);
+  auto throttle = std::move(registry.throttles().back());
 
   listener_->TriggerUserScriptsReadyForTesting(profile_);
 

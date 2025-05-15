@@ -26,9 +26,9 @@
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom.h"
 
 namespace content {
-class NavigationThrottle;
+class NavigationThrottleRegistry;
 class StoragePartitionConfig;
-}
+}  // namespace content
 
 namespace extensions {
 
@@ -64,14 +64,13 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
       content::RenderProcessHost* render_process_host);
 
   // Create a throttle deferring navigation until attachment.
-  static std::unique_ptr<content::NavigationThrottle>
-  MaybeCreateNavigationThrottle(content::NavigationHandle* handle);
+  static void MaybeCreateAndAddNavigationThrottle(
+      content::NavigationThrottleRegistry& registry);
 
   // Returns the stored rules registry ID of the given webview. Will generate
   // an ID for the first query.
-  static int GetOrGenerateRulesRegistryID(
-      int embedder_process_id,
-      int web_view_instance_id);
+  static int GetOrGenerateRulesRegistryID(int embedder_process_id,
+                                          int web_view_instance_id);
 
   // Get the current zoom.
   double GetZoom() const;

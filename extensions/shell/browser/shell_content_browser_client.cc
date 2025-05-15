@@ -260,10 +260,9 @@ void ShellContentBrowserClient::CreateThrottlesForNavigation(
            ->AreExtensionsDisabledForContext(
                navigation_handle.GetWebContents()->GetBrowserContext())) {
     registry.AddThrottle(
-        std::make_unique<ExtensionNavigationThrottle>(&navigation_handle));
+        std::make_unique<ExtensionNavigationThrottle>(registry));
   }
-  registry.MaybeAddThrottle(
-      WebViewGuest::MaybeCreateNavigationThrottle(&navigation_handle));
+  WebViewGuest::MaybeCreateAndAddNavigationThrottle(registry);
 }
 
 std::unique_ptr<content::NavigationUIData>

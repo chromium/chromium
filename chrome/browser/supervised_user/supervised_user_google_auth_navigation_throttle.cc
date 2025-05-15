@@ -50,24 +50,24 @@ bool IsYouTubeInfrastructureSubframe(content::NavigationHandle* handle) {
 #endif
 
 // static
-std::unique_ptr<SupervisedUserGoogleAuthNavigationThrottle>
-SupervisedUserGoogleAuthNavigationThrottle::MaybeCreate(
-    content::NavigationHandle* navigation_handle) {
+void SupervisedUserGoogleAuthNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
   Profile* profile = Profile::FromBrowserContext(
-      navigation_handle->GetWebContents()->GetBrowserContext());
+      registry.GetNavigationHandle().GetWebContents()->GetBrowserContext());
   if (!profile->IsChild()) {
-    return nullptr;
+    return;
   }
 
-  return base::WrapUnique(new SupervisedUserGoogleAuthNavigationThrottle(
-      profile, navigation_handle));
+  registry.AddThrottle(
+      base::WrapUnique(new SupervisedUserGoogleAuthNavigationThrottle(
+      profile, registry)));
 }
 
 SupervisedUserGoogleAuthNavigationThrottle::
     SupervisedUserGoogleAuthNavigationThrottle(
         Profile* profile,
-        content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle),
+        content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry),
       child_account_service_(ChildAccountServiceFactory::GetForProfile(profile))
 #if BUILDFLAG(IS_ANDROID)
       ,

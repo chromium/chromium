@@ -21,10 +21,10 @@ using ThrottleCheckResult = content::NavigationThrottle::ThrottleCheckResult;
 }  // namespace
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-NavigationCapturingRedirectionThrottle::MaybeCreate(
-    content::NavigationHandle* handle) {
-  return base::WrapUnique(new NavigationCapturingRedirectionThrottle(handle));
+void NavigationCapturingRedirectionThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
+  registry.AddThrottle(
+      base::WrapUnique(new NavigationCapturingRedirectionThrottle(registry)));
 }
 
 NavigationCapturingRedirectionThrottle::
@@ -62,7 +62,7 @@ NavigationCapturingRedirectionThrottle::WillProcessResponse() {
 }
 
 NavigationCapturingRedirectionThrottle::NavigationCapturingRedirectionThrottle(
-    content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 }  // namespace web_app

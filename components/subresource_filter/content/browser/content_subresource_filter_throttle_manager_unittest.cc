@@ -377,7 +377,7 @@ class ContentSubresourceFilterThrottleManagerTest
 
     ContentSubresourceFilterThrottleManager::FromNavigationHandle(
         *navigation_handle)
-        ->MaybeAppendNavigationThrottles(registry);
+        ->MaybeCreateAndAddNavigationThrottles(registry);
 
     created_safe_browsing_throttle_for_last_navigation_ =
         registry.ContainsHeldThrottle("SafeBrowsingPageActivationThrottle");

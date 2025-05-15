@@ -25,8 +25,7 @@ class ChromeOsReimplNavigationCapturingThrottle
  public:
   using ThrottleCheckResult = content::NavigationThrottle::ThrottleCheckResult;
 
-  static std::unique_ptr<content::NavigationThrottle> MaybeCreate(
-      content::NavigationHandle* handle);
+  static bool MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
   // Set clock used for timing to enable manipulation during tests.
   static base::AutoReset<const base::TickClock*> SetClockForTesting(
@@ -45,7 +44,7 @@ class ChromeOsReimplNavigationCapturingThrottle
 
  private:
   ChromeOsReimplNavigationCapturingThrottle(
-      content::NavigationHandle* navigation_handle,
+      content::NavigationThrottleRegistry& registry,
       Profile* profile);
 
   ThrottleCheckResult HandleRequest();

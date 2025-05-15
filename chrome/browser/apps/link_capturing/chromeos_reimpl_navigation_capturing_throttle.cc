@@ -357,39 +357,39 @@ bool ShouldThrottleCaptureNavigation(
 }  // namespace
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-ChromeOsReimplNavigationCapturingThrottle::MaybeCreate(
-    content::NavigationHandle* handle) {
+bool ChromeOsReimplNavigationCapturingThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
   if (!features::IsNavigationCapturingReimplEnabled()) {
-    return nullptr;
+    return false;
   }
 
-  content::WebContents* contents = handle->GetWebContents();
+  auto& handle = registry.GetNavigationHandle();
+  content::WebContents* contents = handle.GetWebContents();
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
   if (!AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
-    return nullptr;
+    return false;
   }
 
   // Don't handle navigations in subframes or main frames that are in a nested
   // frame tree (e.g. fenced-frame).
-  if (!handle->IsInOutermostMainFrame()) {
-    return nullptr;
+  if (!handle.IsInOutermostMainFrame()) {
+    return false;
   }
 
   if (prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
           contents) != nullptr) {
-    return nullptr;
+    return false;
   }
 
-  if (handle->ExistingDocumentWasDiscarded()) {
-    return nullptr;
+  if (handle.ExistingDocumentWasDiscarded()) {
+    return false;
   }
 
   // If there is no browser attached to this web-contents yet, this was a
   // middle-mouse-click action, which should not be captured.
   // TODO(crbug.com/40279479): Find a better way to detect middle-clicks.
   if (chrome::FindBrowserWithTab(contents) == nullptr) {
-    return nullptr;
+    return false;
   }
 
   // Never link capture links that open in a popup window. Popups are closely
@@ -399,7 +399,7 @@ ChromeOsReimplNavigationCapturingThrottle::MaybeCreate(
       GetLinkCapturingSourceDisposition(contents);
   if (disposition == WindowOpenDisposition::NEW_POPUP &&
       !contents->GetLastCommittedURL().is_valid()) {
-    return nullptr;
+    return false;
   }
 
   // Note: We specifically allow prerendering navigations so that we can destroy
@@ -408,8 +408,9 @@ ChromeOsReimplNavigationCapturingThrottle::MaybeCreate(
   // doesn't run throttles so we must cancel it during initial loading to get a
   // standard (non-prerendering) navigation at link-click-time.
 
-  return base::WrapUnique(
-      new ChromeOsReimplNavigationCapturingThrottle(handle, profile));
+  registry.AddThrottle(base::WrapUnique(
+      new ChromeOsReimplNavigationCapturingThrottle(registry, profile)));
+  return true;
 }
 
 ChromeOsReimplNavigationCapturingThrottle::
@@ -449,9 +450,9 @@ ChromeOsReimplNavigationCapturingThrottle::WillRedirectRequest() {
 
 ChromeOsReimplNavigationCapturingThrottle::
     ChromeOsReimplNavigationCapturingThrottle(
-        content::NavigationHandle* navigation_handle,
+        content::NavigationThrottleRegistry& registry,
         Profile* profile)
-    : content::NavigationThrottle(navigation_handle), profile_(*profile) {}
+    : content::NavigationThrottle(registry), profile_(*profile) {}
 
 ThrottleCheckResult ChromeOsReimplNavigationCapturingThrottle::HandleRequest() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

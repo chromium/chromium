@@ -19,6 +19,7 @@
 #include "components/sync/test/mock_sync_service.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_navigation_throttle_registry.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -85,7 +86,7 @@ class SupervisedUserGoogleAuthNavigationThrottleTest
                 base::BindRepeating(&BuildTestSigninClient)}};
   }
 
-  std::unique_ptr<SupervisedUserGoogleAuthNavigationThrottle>
+  std::unique_ptr<content::MockNavigationThrottleRegistry>
   CreateNavigationThrottle(const GURL& url,
                            bool skip_jni_call = true,
                            bool for_subframe = false) {
@@ -103,10 +104,18 @@ class SupervisedUserGoogleAuthNavigationThrottleTest
               url, main_rfh());
     }
 
-    std::unique_ptr<SupervisedUserGoogleAuthNavigationThrottle> throttle =
-        SupervisedUserGoogleAuthNavigationThrottle::MaybeCreate(handle_.get());
+    auto registry = std::make_unique<content::MockNavigationThrottleRegistry>(
+        handle_.get(),
+        content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+    SupervisedUserGoogleAuthNavigationThrottle::MaybeCreateAndAdd(
+        *registry.get());
 
     if (skip_jni_call) {
+      CHECK_EQ(registry->throttles().size(), 1u);
+      raw_ptr<SupervisedUserGoogleAuthNavigationThrottle> throttle =
+          static_cast<SupervisedUserGoogleAuthNavigationThrottle*>(
+              registry->throttles().back().get());
+
       throttle->set_skip_jni_call_for_testing(true);
       throttle->set_cancel_deferred_navigation_callback_for_testing(
           base::BindRepeating(
@@ -115,7 +124,7 @@ class SupervisedUserGoogleAuthNavigationThrottleTest
                           result);
               }));
     }
-    return throttle;
+    return registry;
   }
 
   network::TestURLLoaderFactory* GetTestURLLoaderFactory() {
@@ -149,25 +158,39 @@ TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest,
 
   // For authenticated supervised users all URIs are available.
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            CreateNavigationThrottle(GURL(kExampleURL))->WillStartRequest());
-  EXPECT_EQ(
-      content::NavigationThrottle::PROCEED,
-      CreateNavigationThrottle(GURL(kGoogleSearchURL))->WillStartRequest());
+            CreateNavigationThrottle(GURL(kExampleURL))
+                ->throttles()
+                .back()
+                ->WillStartRequest());
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            CreateNavigationThrottle(GURL(kGoogleHomeURL))->WillStartRequest());
+            CreateNavigationThrottle(GURL(kGoogleSearchURL))
+                ->throttles()
+                .back()
+                ->WillStartRequest());
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            CreateNavigationThrottle(GURL(kYoutubeDomain))->WillStartRequest());
+            CreateNavigationThrottle(GURL(kGoogleHomeURL))
+                ->throttles()
+                .back()
+                ->WillStartRequest());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            CreateNavigationThrottle(GURL(kYoutubeDomain))
+                ->throttles()
+                .back()
+                ->WillStartRequest());
 
   // Prerendering is not supported for supervised users.
-  std::unique_ptr<SupervisedUserGoogleAuthNavigationThrottle>
-      prenderedThrottle = CreateNavigationThrottle(GURL(kExampleURL));
+  std::unique_ptr<content::MockNavigationThrottleRegistry> registry =
+      CreateNavigationThrottle(GURL(kExampleURL));
+  raw_ptr<SupervisedUserGoogleAuthNavigationThrottle> prerendered_throttle =
+      static_cast<SupervisedUserGoogleAuthNavigationThrottle*>(
+          registry->throttles().back().get());
 
-  EXPECT_CALL(
-      *(content::MockNavigationHandle*)prenderedThrottle->navigation_handle(),
-      IsInPrerenderedMainFrame())
+  EXPECT_CALL(*static_cast<content::MockNavigationHandle*>(
+                  prerendered_throttle->navigation_handle()),
+              IsInPrerenderedMainFrame())
       .WillRepeatedly(testing::Return(true));
   EXPECT_EQ(content::NavigationThrottle::CANCEL,
-            prenderedThrottle->WillStartRequest());
+            prerendered_throttle->WillStartRequest());
 }
 
 TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest,
@@ -194,18 +217,29 @@ TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest,
   // For a supervised account that is in the pending state, navigation to Google
   // and YouTube can be subject to throttling.
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            CreateNavigationThrottle(GURL(kExampleURL))->WillStartRequest());
+            CreateNavigationThrottle(GURL(kExampleURL))
+                ->throttles()
+                .back()
+                ->WillStartRequest());
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // On desktop platforms, non-YouTube navigation are permitted.
-  EXPECT_EQ(
-      content::NavigationThrottle::PROCEED,
-      CreateNavigationThrottle(GURL(kGoogleSearchURL))->WillStartRequest());
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            CreateNavigationThrottle(GURL(kGoogleHomeURL))->WillStartRequest());
+            CreateNavigationThrottle(GURL(kGoogleSearchURL))
+                ->throttles()
+                .back()
+                ->WillStartRequest());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            CreateNavigationThrottle(GURL(kGoogleHomeURL))
+                ->throttles()
+                .back()
+                ->WillStartRequest());
   // YouTube navigation is cancelled and accompanied with a re-authentication
   // interstitial.
   content::NavigationThrottle::ThrottleCheckResult youtube_navigation_throttle =
-      CreateNavigationThrottle(GURL(kYoutubeDomain))->WillStartRequest();
+      CreateNavigationThrottle(GURL(kYoutubeDomain))
+          ->throttles()
+          .back()
+          ->WillStartRequest();
   EXPECT_EQ(content::NavigationThrottle::CANCEL,
             youtube_navigation_throttle.action());
   EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT,
@@ -215,34 +249,53 @@ TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest,
                 "supervised-user-verify"));
 #elif BUILDFLAG(IS_CHROMEOS)
   // For ChromeOS, navigation to Google and YouTube are deferred.
-  EXPECT_EQ(
-      content::NavigationThrottle::DEFER,
-      CreateNavigationThrottle(GURL(kGoogleSearchURL))->WillStartRequest());
   EXPECT_EQ(content::NavigationThrottle::DEFER,
-            CreateNavigationThrottle(GURL(kGoogleHomeURL))->WillStartRequest());
+            CreateNavigationThrottle(GURL(kGoogleSearchURL))
+                ->throttles()
+                .back()
+                ->WillStartRequest());
   EXPECT_EQ(content::NavigationThrottle::DEFER,
-            CreateNavigationThrottle(GURL(kYoutubeDomain))->WillStartRequest());
+            CreateNavigationThrottle(GURL(kGoogleHomeURL))
+                ->throttles()
+                .back()
+                ->WillStartRequest());
+  EXPECT_EQ(content::NavigationThrottle::DEFER,
+            CreateNavigationThrottle(GURL(kYoutubeDomain))
+                ->throttles()
+                .back()
+                ->WillStartRequest());
 #elif BUILDFLAG(IS_ANDROID)
   // For Android, navigation to Google and YouTube are deferred.
   EXPECT_EQ(content::NavigationThrottle::DEFER,
             CreateNavigationThrottle(GURL(kGoogleSearchURL), true)
+                ->throttles()
+                .back()
                 ->WillStartRequest());
   EXPECT_EQ(content::NavigationThrottle::DEFER,
-            CreateNavigationThrottle(GURL(kGoogleHomeURL))->WillStartRequest());
+            CreateNavigationThrottle(GURL(kGoogleHomeURL))
+                ->throttles()
+                .back()
+                ->WillStartRequest());
   EXPECT_EQ(content::NavigationThrottle::DEFER,
-            CreateNavigationThrottle(GURL(kYoutubeDomain))->WillStartRequest());
+            CreateNavigationThrottle(GURL(kYoutubeDomain))
+                ->throttles()
+                .back()
+                ->WillStartRequest());
 #endif
 
   // Prerendering is not supported for supervised users.
-  std::unique_ptr<SupervisedUserGoogleAuthNavigationThrottle>
-      prenderedThrottle = CreateNavigationThrottle(GURL(kExampleURL));
+  std::unique_ptr<content::MockNavigationThrottleRegistry> registry =
+      CreateNavigationThrottle(GURL(kExampleURL));
+  raw_ptr<SupervisedUserGoogleAuthNavigationThrottle> prerendered_throttle =
+      static_cast<SupervisedUserGoogleAuthNavigationThrottle*>(
+          registry->throttles().back().get());
 
-  EXPECT_CALL(
-      *(content::MockNavigationHandle*)prenderedThrottle->navigation_handle(),
-      IsInPrerenderedMainFrame())
+  EXPECT_CALL(*static_cast<content::MockNavigationHandle*>(
+                  prerendered_throttle->navigation_handle()),
+              IsInPrerenderedMainFrame())
       .WillRepeatedly(testing::Return(true));
   EXPECT_EQ(content::NavigationThrottle::CANCEL,
-            prenderedThrottle->WillStartRequest());
+            prerendered_throttle->WillStartRequest());
 }
 
 // In order to correctly perform authentication to youtube.com, its
@@ -274,11 +327,15 @@ TEST_F(
       content::NavigationThrottle::CANCEL,
       CreateNavigationThrottle(GURL(kYoutubeDomain), /*skip_jni_call=*/true,
                                /*for_subframe=*/true)
+          ->throttles()
+          .back()
           ->WillStartRequest());
   EXPECT_EQ(
       content::NavigationThrottle::CANCEL,
       CreateNavigationThrottle(GURL(kYoutubeDomain), /*skip_jni_call=*/true,
                                /*for_subframe=*/false)
+          ->throttles()
+          .back()
           ->WillStartRequest());
 
   // But youtube accounts infrastructure is allowed (only in subframes).
@@ -286,11 +343,15 @@ TEST_F(
             CreateNavigationThrottle(GURL(kYoutubeAccountsDomain),
                                      /*skip_jni_call=*/true,
                                      /*for_subframe=*/true)
+                ->throttles()
+                .back()
                 ->WillStartRequest());
   EXPECT_EQ(content::NavigationThrottle::CANCEL,
             CreateNavigationThrottle(GURL(kYoutubeAccountsDomain),
                                      /*skip_jni_call=*/true,
                                      /*for_subframe=*/false)
+                ->throttles()
+                .back()
                 ->WillStartRequest());
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -303,30 +364,45 @@ TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest,
   // For supervised users that are stale, navigation to Google and
   //  Youtube are deferred.
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            CreateNavigationThrottle(GURL(kExampleURL))->WillStartRequest());
-  EXPECT_EQ(
-      content::NavigationThrottle::DEFER,
-      CreateNavigationThrottle(GURL(kGoogleSearchURL))->WillStartRequest());
+            CreateNavigationThrottle(GURL(kExampleURL))
+                ->throttles()
+                .back()
+                ->WillStartRequest());
   EXPECT_EQ(content::NavigationThrottle::DEFER,
-            CreateNavigationThrottle(GURL(kGoogleHomeURL))->WillStartRequest());
+            CreateNavigationThrottle(GURL(kGoogleSearchURL))
+                ->throttles()
+                .back()
+                ->WillStartRequest());
   EXPECT_EQ(content::NavigationThrottle::DEFER,
-            CreateNavigationThrottle(GURL(kYoutubeDomain))->WillStartRequest());
+            CreateNavigationThrottle(GURL(kGoogleHomeURL))
+                ->throttles()
+                .back()
+                ->WillStartRequest());
+  EXPECT_EQ(content::NavigationThrottle::DEFER,
+            CreateNavigationThrottle(GURL(kYoutubeDomain))
+                ->throttles()
+                .back()
+                ->WillStartRequest());
 
   // Prerendering is not supported for supervised users.
-  std::unique_ptr<SupervisedUserGoogleAuthNavigationThrottle>
-      prenderedThrottle = CreateNavigationThrottle(GURL(kExampleURL));
+  std::unique_ptr<content::MockNavigationThrottleRegistry> registry =
+      CreateNavigationThrottle(GURL(kExampleURL));
+  raw_ptr<SupervisedUserGoogleAuthNavigationThrottle> prerendered_throttle =
+      static_cast<SupervisedUserGoogleAuthNavigationThrottle*>(
+          registry->throttles().back().get());
 
-  EXPECT_CALL(
-      *(content::MockNavigationHandle*)prenderedThrottle->navigation_handle(),
-      IsInPrerenderedMainFrame())
+  EXPECT_CALL(*static_cast<content::MockNavigationHandle*>(
+                  prerendered_throttle->navigation_handle()),
+              IsInPrerenderedMainFrame())
       .WillRepeatedly(testing::Return(true));
   EXPECT_EQ(content::NavigationThrottle::CANCEL,
-            prenderedThrottle->WillStartRequest());
+            prerendered_throttle->WillStartRequest());
 }
 
 TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest, NavigationForNonUsers) {
-  // Throttling is not required for non supervised accounts.
-  EXPECT_EQ(nullptr, CreateNavigationThrottle(GURL(kExampleURL), false));
+  EXPECT_EQ(
+      0u,
+      CreateNavigationThrottle(GURL(kExampleURL), false)->throttles().size());
 }
 
 }  // namespace
