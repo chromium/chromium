@@ -445,8 +445,6 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_OFFER_WRITING_HELP_TOGGLE_LABEL},
       {"offerWritingHelpToggleSublabel",
        IDS_SETTINGS_OFFER_WRITING_HELP_TOGGLE_SUB_LABEL},
-      {"offerWritingHelpDisabledSitesLabel",
-       IDS_SETTINGS_OFFER_WRITING_HELP_DISABLED_SITES_LABEL},
       {"offerWritingHelpDisabledSitesLabelV2",
        IDS_SETTINGS_OFFER_WRITING_HELP_DISABLED_SITES_LABEL_V2},
       {"offerWritingHelpNoDisabledSites",

@@ -724,11 +724,6 @@ IN_PROC_BROWSER_TEST_F(SettingsComposePageTest, ComposePage) {
   RunTest("settings/offer_writing_help_page_test.js",
           "runMochaSuite('ComposePage')");
 }
-
-IN_PROC_BROWSER_TEST_F(SettingsComposePageTest, ComposePageRefreshDisabled) {
-  RunTest("settings/offer_writing_help_page_test.js",
-          "runMochaSuite('ComposePageRefreshDisabled')");
-}
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, ZoomLevels) {

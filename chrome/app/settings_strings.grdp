@@ -1484,9 +1484,6 @@
   <message name="IDS_SETTINGS_OFFER_WRITING_HELP_DISABLED_SUB_LABEL" desc="Sub-label for the site settings writing help page link, used when the offer writing help preference is disabled.">
     Don't allow "Help me write" to automatically open
   </message>
-  <message name="IDS_SETTINGS_OFFER_WRITING_HELP_DISABLED_SITES_LABEL" desc="Label of the list of sites on which the writing help suggestion feature is disabled.">
-    Never offer writing help on these sites
-  </message>
   <message name="IDS_SETTINGS_OFFER_WRITING_HELP_DISABLED_SITES_LABEL_V2" desc="Label of the list of sites on which the writing help suggestion feature is disabled.">
     Not allowed to offer writing help
   </message>

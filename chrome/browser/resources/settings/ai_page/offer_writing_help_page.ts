@@ -41,19 +41,11 @@ export class SettingsOfferWritingHelpPageElement extends
     return {
       siteList_: {
         type: Array,
-        value: [],
-      },
-      enableAiSettingsPageRefresh_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enableAiSettingsPageRefresh'),
+        value: () => [],
       },
       enableComposeProactiveNudge_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableComposeProactiveNudge'),
-      },
-      disabledSitesLabel_: {
-        type: String,
-        computed: 'computeDisabledSitesLabel_(enableAiSettingsPageRefresh_)',
       },
       enterprisePref_: {
         type: Object,
@@ -68,9 +60,7 @@ export class SettingsOfferWritingHelpPageElement extends
   }
 
   declare private siteList_: string[];
-  declare private enableAiSettingsPageRefresh_: boolean;
   declare private enableComposeProactiveNudge_: boolean;
-  declare private disabledSitesLabel_: string;
   declare private enterprisePref_: chrome.settingsPrivate.PrefObject;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -117,17 +107,6 @@ export class SettingsOfferWritingHelpPageElement extends
     const newSites = Object.keys(prefDict);
 
     this.updateList('siteList_', (entry: string) => entry, newSites);
-  }
-
-  private getProactiveNudgeToggleHrCssClass_(): string {
-    return this.enableAiSettingsPageRefresh_ ? 'hr' : '';
-  }
-
-  private computeDisabledSitesLabel_(): string {
-    return loadTimeData.getString(
-        this.enableAiSettingsPageRefresh_ ?
-            'offerWritingHelpDisabledSitesLabelV2' :
-            'offerWritingHelpDisabledSitesLabel');
   }
 
   private getLearnMoreUrl_(): string {

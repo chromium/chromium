@@ -205,16 +205,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: () => loadTimeData.getBoolean('capturedSurfaceControlEnabled'),
       },
 
-      enableAiSettingsPageRefresh_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enableAiSettingsPageRefresh'),
-      },
-
-      enableComposeProactiveNudge_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enableComposeProactiveNudge'),
-      },
-
       /**
        * Whether the File System Access Persistent Permissions UI should be
        * displayed.
@@ -379,8 +369,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private privateStateTokensEnabled_: boolean;
   declare private autoPictureInPictureEnabled_: boolean;
   declare private capturedSurfaceControlEnabled_: boolean;
-  declare private enableAiSettingsPageRefresh_: boolean;
-  declare private enableComposeProactiveNudge_: boolean;
   declare private shouldShowSafetyHub_: boolean;
   declare private enableWebAppInstallation_: boolean;
   declare private enableLocalNetworkAccessSetting_: boolean;
@@ -569,11 +557,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private shouldShowAdPrivacy_(): boolean {
     return !this.isPrivacySandboxRestricted_ ||
         this.isPrivacySandboxRestrictedNoticeEnabled_;
-  }
-
-  private shouldShowComposeProactiveNudge_(): boolean {
-    return this.enableComposeProactiveNudge_ &&
-        !this.enableAiSettingsPageRefresh_;
   }
 }
 

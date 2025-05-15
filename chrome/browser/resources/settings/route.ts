@@ -97,10 +97,6 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   }
   // </if>
   r.SITE_SETTINGS_AUTO_VERIFY = r.SITE_SETTINGS.createChild('autoVerify');
-  if (!loadTimeData.getBoolean('enableAiSettingsPageRefresh') &&
-      loadTimeData.getBoolean('enableComposeProactiveNudge')) {
-    r.OFFER_WRITING_HELP = r.SITE_SETTINGS.createChild('offerWritingHelp');
-  }
   r.SITE_SETTINGS_BACKGROUND_SYNC =
       r.SITE_SETTINGS.createChild('backgroundSync');
   r.SITE_SETTINGS_CAMERA = r.SITE_SETTINGS.createChild('camera');
