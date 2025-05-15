@@ -95,7 +95,7 @@ LayoutObject* CounterContentData::CreateLayoutObject(
 }
 
 void CounterContentData::Trace(Visitor* visitor) const {
-  visitor->Trace(tree_scope_);
+  visitor->Trace(counter_data_);
   ContentData::Trace(visitor);
 }
 

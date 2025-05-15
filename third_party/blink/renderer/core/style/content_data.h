@@ -35,8 +35,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
-#include <iosfwd>
-
 namespace blink {
 
 class LayoutObject;
@@ -237,24 +235,45 @@ struct DowncastTraits<AltTextContentData> {
   }
 };
 
+struct CounterData {
+  DISALLOW_NEW();
+
+ public:
+  CounterData(const AtomicString& identifier,
+              const AtomicString& style,
+              const AtomicString& separator,
+              const TreeScope* tree_scope)
+      : identifier(identifier),
+        list_style(style),
+        separator(separator),
+        tree_scope(tree_scope) {}
+
+  void Trace(Visitor* v) const { v->Trace(tree_scope); }
+
+  AtomicString identifier;
+  AtomicString list_style;
+  AtomicString separator;
+  Member<const TreeScope> tree_scope;
+};
+
 class CounterContentData final : public ContentData {
  public:
-  explicit CounterContentData(const AtomicString& identifier,
-                              const AtomicString& style,
-                              const AtomicString& separator,
-                              const TreeScope* tree_scope)
-      : identifier_(identifier),
-        list_style_(style),
-        separator_(separator),
-        tree_scope_(tree_scope) {}
+  CounterContentData(const AtomicString& identifier,
+                     const AtomicString& style,
+                     const AtomicString& separator,
+                     const TreeScope* tree_scope)
+      : counter_data_(identifier, style, separator, tree_scope) {}
+
+  explicit CounterContentData(CounterData counter_data)
+      : counter_data_(std::move(counter_data)) {}
 
   bool IsCounter() const override { return true; }
   LayoutObject* CreateLayoutObject(LayoutObject& owner) const override;
 
-  const AtomicString& Identifier() const { return identifier_; }
-  const AtomicString& ListStyle() const { return list_style_; }
-  const AtomicString& Separator() const { return separator_; }
-  const TreeScope* GetTreeScope() const { return tree_scope_.Get(); }
+  const AtomicString& Identifier() const { return counter_data_.identifier; }
+  const AtomicString& ListStyle() const { return counter_data_.list_style; }
+  const AtomicString& Separator() const { return counter_data_.separator; }
+  const TreeScope* GetTreeScope() const { return counter_data_.tree_scope; }
 
   void Trace(Visitor*) const override;
 
@@ -262,8 +281,7 @@ class CounterContentData final : public ContentData {
 
  private:
   ContentData* CloneInternal() const override {
-    return MakeGarbageCollected<CounterContentData>(identifier_, list_style_,
-                                                    separator_, tree_scope_);
+    return MakeGarbageCollected<CounterContentData>(counter_data_);
   }
 
   bool Equals(const ContentData& data) const override {
@@ -278,10 +296,7 @@ class CounterContentData final : public ContentData {
            GetTreeScope() == other.GetTreeScope();
   }
 
-  AtomicString identifier_;
-  AtomicString list_style_;
-  AtomicString separator_;
-  Member<const TreeScope> tree_scope_;
+  CounterData counter_data_;
 };
 
 template <>
