@@ -446,10 +446,8 @@ class ComplexOutlinePainter {
     } else if (width_ == 1 && (outline_style_ == EBorderStyle::kRidge ||
                                outline_style_ == EBorderStyle::kGroove)) {
       outline_style_ = EBorderStyle::kSolid;
-      Color dark = color_.Dark();
-      color_ = Color(
-          (color_.Red() + dark.Red()) / 2, (color_.Green() + dark.Green()) / 2,
-          (color_.Blue() + dark.Blue()) / 2, color_.AlphaAsInteger());
+      color_ = Color::FromColorMix(Color::ColorSpace::kSRGB, std::nullopt,
+                                   color_, color_.Dark(), 0.5f, 1.0f);
     }
   }
 
