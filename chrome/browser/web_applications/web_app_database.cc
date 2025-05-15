@@ -16,9 +16,11 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_launch_handler.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app_database_serialization.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -31,6 +33,7 @@
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
+#include "url/gurl.h"
 
 namespace web_app {
 
@@ -94,7 +97,7 @@ void WebAppDatabase::Write(
 
 // static
 int WebAppDatabase::GetCurrentDatabaseVersion() {
-  return 2;
+  return 3;
 }
 
 WebAppDatabase::ProtobufState::ProtobufState() = default;
@@ -154,6 +157,16 @@ void WebAppDatabase::MigrateDatabase(ProtobufState& state) {
     MigratePartiallyInstalledAppsToCorrectState(state, changed_apps);
     base::UmaHistogramSparse("WebApp.Database.VersionUpgradedTo", 2);
     state.metadata.set_version(2);
+    did_change_metadata = true;
+  }
+
+  // Upgrade from version 2 to version 3.
+  if (state.metadata.version() < 3 && GetCurrentDatabaseVersion() >= 3) {
+    MigrateDeprecatedLaunchHandlerToClientMode(state, changed_apps);
+    MigrateScopeToRemoveRefAndQuery(state, changed_apps);
+    MigrateToRelativeManifestIdNoFragment(state, changed_apps);
+    base::UmaHistogramSparse("WebApp.Database.VersionUpgradedTo", 3);
+    state.metadata.set_version(3);
     did_change_metadata = true;
   }
 
@@ -300,6 +313,179 @@ void WebAppDatabase::MigratePartiallyInstalledAppsToCorrectState(
   base::UmaHistogramCounts1000(
       "WebApp.Migrations.PartiallyInstalledAppsToCorrectState",
       install_state_fixed_count);
+}
+
+void WebAppDatabase::MigrateDeprecatedLaunchHandlerToClientMode(
+    ProtobufState& state,
+    std::set<webapps::AppId>& changed_apps) {
+  // Migrating from version 2 to version 3.
+  CHECK_LT(state.metadata.version(), 3);
+  int apps_migrated_count = 0;
+  for (auto& [app_id, app_proto] : state.apps) {
+    if (!app_proto.has_launch_handler()) {
+      continue;
+    }
+
+    bool changed = false;
+    proto::LaunchHandler* launch_handler = app_proto.mutable_launch_handler();
+
+    // If client_mode is unspecified, try migrating from deprecated fields.
+    if (launch_handler->client_mode() ==
+        proto::LaunchHandler::CLIENT_MODE_UNSPECIFIED) {
+      proto::LaunchHandler::ClientMode migrated_client_mode =
+          proto::LaunchHandler::CLIENT_MODE_UNSPECIFIED;
+      switch (launch_handler->route_to()) {
+        case proto::LaunchHandler_DeprecatedRouteTo_UNSPECIFIED_ROUTE:
+          break;
+        case proto::LaunchHandler_DeprecatedRouteTo_AUTO_ROUTE:
+          migrated_client_mode = proto::LaunchHandler::CLIENT_MODE_AUTO;
+          break;
+        case proto::LaunchHandler_DeprecatedRouteTo_NEW_CLIENT:
+          migrated_client_mode = proto::LaunchHandler::CLIENT_MODE_NAVIGATE_NEW;
+          break;
+        case proto::LaunchHandler_DeprecatedRouteTo_EXISTING_CLIENT:
+          if (launch_handler->navigate_existing_client() ==
+              proto::LaunchHandler_DeprecatedNavigateExistingClient_NEVER) {
+            migrated_client_mode =
+                proto::LaunchHandler::CLIENT_MODE_FOCUS_EXISTING;
+          } else {
+            migrated_client_mode =
+                proto::LaunchHandler::CLIENT_MODE_NAVIGATE_EXISTING;
+          }
+          break;
+        case proto::LaunchHandler_DeprecatedRouteTo_EXISTING_CLIENT_NAVIGATE:
+          migrated_client_mode =
+              proto::LaunchHandler::CLIENT_MODE_NAVIGATE_EXISTING;
+          break;
+        case proto::LaunchHandler_DeprecatedRouteTo_EXISTING_CLIENT_RETAIN:
+          migrated_client_mode =
+              proto::LaunchHandler::CLIENT_MODE_FOCUS_EXISTING;
+          break;
+      }
+      launch_handler->set_client_mode(migrated_client_mode);
+      changed = true;
+    } else if (launch_handler->client_mode() ==
+               proto::LaunchHandler::CLIENT_MODE_AUTO) {
+      // If client_mode is set to auto, and client_mode_valid_and_specified is
+      // explicitly false, treat client_mode as unspecified.
+      if (launch_handler->has_client_mode_valid_and_specified() &&
+          !launch_handler->client_mode_valid_and_specified()) {
+        launch_handler->set_client_mode(
+            proto::LaunchHandler::CLIENT_MODE_UNSPECIFIED);
+        changed = true;
+      }
+    }
+
+    // Clear deprecated fields if they exist.
+    if (launch_handler->has_route_to()) {
+      launch_handler->clear_route_to();
+      changed = true;
+    }
+    if (launch_handler->has_navigate_existing_client()) {
+      launch_handler->clear_navigate_existing_client();
+      changed = true;
+    }
+    if (launch_handler->has_client_mode_valid_and_specified()) {
+      launch_handler->clear_client_mode_valid_and_specified();
+      changed = true;
+    }
+
+    if (changed) {
+      changed_apps.insert(app_id);
+      apps_migrated_count++;
+    }
+  }
+  base::UmaHistogramCounts1000(
+      "WebApp.Migrations.DeprecatedLaunchHandlerToClientMode",
+      apps_migrated_count);
+}
+
+void WebAppDatabase::MigrateScopeToRemoveRefAndQuery(
+    ProtobufState& state,
+    std::set<webapps::AppId>& changed_apps) {
+  // Migrating from version 2 to version 3.
+  CHECK_LT(state.metadata.version(), 3);
+  int apps_migrated_count = 0;
+  for (auto& [app_id, app_proto] : state.apps) {
+    if (!app_proto.has_scope()) {
+      continue;
+    }
+    GURL scope(app_proto.scope());
+    if (!scope.is_valid()) {
+      continue;
+    }
+
+    if (scope.has_query() || scope.has_ref()) {
+      GURL::Replacements replacements;
+      replacements.ClearQuery();
+      replacements.ClearRef();
+      GURL clean_scope = scope.ReplaceComponents(replacements);
+      app_proto.set_scope(clean_scope.spec());
+      changed_apps.insert(app_id);
+      apps_migrated_count++;
+    }
+  }
+  base::UmaHistogramCounts1000("WebApp.Migrations.ScopeRefQueryRemoved",
+                               apps_migrated_count);
+}
+
+void WebAppDatabase::MigrateToRelativeManifestIdNoFragment(
+    ProtobufState& state,
+    std::set<webapps::AppId>& changed_apps) {
+  // Migrating from version 2 to version 3.
+  CHECK_LT(state.metadata.version(), 3);
+  int apps_migrated_count = 0;
+  int fragment_removed_count = 0;
+  for (auto& [app_id, app_proto] : state.apps) {
+    if (!app_proto.has_sync_data()) {
+      continue;
+    }
+    sync_pb::WebAppSpecifics* sync_data = app_proto.mutable_sync_data();
+    if (!sync_data->has_start_url()) {
+      continue;
+    }
+    GURL start_url(sync_data->start_url());
+    if (!start_url.is_valid()) {
+      continue;
+    }
+
+    // Calculate the expected manifest_id and relative path without fragment.
+    webapps::ManifestId expected_manifest_id;
+    if (sync_data->has_relative_manifest_id()) {
+      expected_manifest_id =
+          GenerateManifestId(sync_data->relative_manifest_id(), start_url);
+    } else {
+      expected_manifest_id = GenerateManifestIdFromStartUrlOnly(start_url);
+    }
+    if (!expected_manifest_id.is_valid()) {
+      continue;
+    }
+    std::string expected_relative_path =
+        RelativeManifestIdPath(expected_manifest_id);
+
+    bool changed = false;
+    if (!sync_data->has_relative_manifest_id()) {
+      // Populate if missing.
+      sync_data->set_relative_manifest_id(expected_relative_path);
+      changed = true;
+    } else if (sync_data->relative_manifest_id() != expected_relative_path) {
+      // Correct if different (e.g., had a fragment).
+      sync_data->set_relative_manifest_id(expected_relative_path);
+      changed = true;
+      fragment_removed_count++;
+    }
+
+    if (changed) {
+      changed_apps.insert(app_id);
+      apps_migrated_count++;
+    }
+  }
+  base::UmaHistogramCounts1000(
+      "WebApp.Migrations.RelativeManifestIdFragmentRemoved",
+      fragment_removed_count);
+  base::UmaHistogramCounts1000(
+      "WebApp.Migrations.RelativeManifestIdPopulatedOrFixed",
+      apps_migrated_count);
 }
 
 void WebAppDatabase::OnDatabaseOpened(

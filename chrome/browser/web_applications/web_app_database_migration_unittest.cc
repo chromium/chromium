@@ -66,7 +66,8 @@ void VerifyDatabaseRegistryEqualToRegistrar(FakeWebAppProvider* provider) {
       provider->GetDatabaseFactory().AsFakeWebAppDatabaseFactory();
   ASSERT_NE(database_factory, nullptr);
 
-  Registry db_registry = database_factory->ReadRegistry();
+  Registry db_registry =
+      database_factory->ReadRegistry(/*allow_invalid_protos=*/true);
   const Registry& registrar_registry =
       provider->registrar_unsafe().registry_for_testing();
 
@@ -518,6 +519,349 @@ TEST_F(WebAppDatabaseMigrationTest,
   // App 3: Should remain not integrated
   EXPECT_EQ(app3->install_state(),
             proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION);
+
+  // Check that the data was also updated in the database.
+  VerifyDatabaseRegistryEqualToRegistrar(&fake_provider());
+}
+
+TEST_F(WebAppDatabaseMigrationTest,
+       MigrateDeprecatedLaunchHandlerToClientMode) {
+  FakeWebAppDatabaseFactory* database_factory =
+      fake_provider().GetDatabaseFactory().AsFakeWebAppDatabaseFactory();
+
+  // App 1: No launch handler (should remain null, no migration)
+  proto::WebApp app_no_handler =
+      CreateWebAppProtoForTesting("App 1", GURL("https://app1.com/"));
+
+  // App 2: Modern client_mode already set (should not change, no migration)
+  proto::WebApp app_modern =
+      CreateWebAppProtoForTesting("App 2", GURL("https://app2.com/"));
+  {
+    proto::LaunchHandler* launch_handler = app_modern.mutable_launch_handler();
+    launch_handler->set_client_mode(
+        proto::LaunchHandler::CLIENT_MODE_NAVIGATE_NEW);
+  }
+
+  // App 3: Old route_to = NEW_CLIENT
+  proto::WebApp app_old_new =
+      CreateWebAppProtoForTesting("App 3", GURL("https://app3.com/"));
+  {
+    proto::LaunchHandler* launch_handler = app_old_new.mutable_launch_handler();
+    launch_handler->set_route_to(
+        proto::LaunchHandler_DeprecatedRouteTo_NEW_CLIENT);
+    // Default to unspecified if not explicitly set, mimicking old state.
+    launch_handler->set_client_mode(
+        proto::LaunchHandler::CLIENT_MODE_UNSPECIFIED);
+  }
+
+  // App 4: Old route_to = EXISTING_CLIENT, navigate = ALWAYS
+  proto::WebApp app_old_existing_navigate =
+      CreateWebAppProtoForTesting("App 4", GURL("https://app4.com/"));
+  {
+    proto::LaunchHandler* launch_handler =
+        app_old_existing_navigate.mutable_launch_handler();
+    launch_handler->set_route_to(
+        proto::LaunchHandler_DeprecatedRouteTo_EXISTING_CLIENT);
+    launch_handler->set_navigate_existing_client(
+        proto::LaunchHandler_DeprecatedNavigateExistingClient_ALWAYS);
+    // Default to unspecified if not explicitly set, mimicking old state.
+    launch_handler->set_client_mode(
+        proto::LaunchHandler::CLIENT_MODE_UNSPECIFIED);
+  }
+
+  // App 5: Old route_to = EXISTING_CLIENT, navigate = NEVER (Focus)
+  proto::WebApp app_old_existing_focus =
+      CreateWebAppProtoForTesting("App 5", GURL("https://app5.com/"));
+  {
+    proto::LaunchHandler* launch_handler =
+        app_old_existing_focus.mutable_launch_handler();
+    launch_handler->set_route_to(
+        proto::LaunchHandler_DeprecatedRouteTo_EXISTING_CLIENT);
+    launch_handler->set_navigate_existing_client(
+        proto::LaunchHandler_DeprecatedNavigateExistingClient_NEVER);
+    // Default to unspecified if not explicitly set, mimicking old state.
+    launch_handler->set_client_mode(
+        proto::LaunchHandler::CLIENT_MODE_UNSPECIFIED);
+  }
+
+  // App 6: client_mode_valid_and_specified = false (should be impossible state,
+  // and migrate).
+  proto::WebApp app_invalid_specified =
+      CreateWebAppProtoForTesting("App 6", GURL("https://app6.com/"));
+  {
+    proto::LaunchHandler* launch_handler =
+        app_invalid_specified.mutable_launch_handler();
+    launch_handler->set_client_mode(
+        proto::LaunchHandler::CLIENT_MODE_NAVIGATE_NEW);
+    launch_handler->set_client_mode_valid_and_specified(false);
+  }
+
+  // App 7: client_mode = UNSPECIFIED, but old fields present (should migrate)
+  proto::WebApp app_unspecified_with_old =
+      CreateWebAppProtoForTesting("App 7", GURL("https://app7.com/"));
+  {
+    proto::LaunchHandler* launch_handler =
+        app_unspecified_with_old.mutable_launch_handler();
+    launch_handler->set_route_to(
+        proto::LaunchHandler_DeprecatedRouteTo_NEW_CLIENT);
+    launch_handler->set_client_mode(
+        proto::LaunchHandler::CLIENT_MODE_UNSPECIFIED);
+  }
+
+  // App 8: Modern client_mode, but with the deprecated
+  // client_mode_valid_and_specified field set, so migration occurs.
+  proto::WebApp app_modern_with_deprecated_field =
+      CreateWebAppProtoForTesting("App 8", GURL("https://app8.com/"));
+  {
+    proto::LaunchHandler* launch_handler =
+        app_modern_with_deprecated_field.mutable_launch_handler();
+    launch_handler->set_client_mode(
+        proto::LaunchHandler::CLIENT_MODE_NAVIGATE_NEW);
+    launch_handler->set_client_mode_valid_and_specified(true);
+  }
+
+  database_factory->WriteProtos(
+      {app_no_handler, app_modern, app_old_new, app_old_existing_navigate,
+       app_old_existing_focus, app_invalid_specified, app_unspecified_with_old,
+       app_modern_with_deprecated_field});
+
+  // Set version to 2 to trigger the migration to version 3.
+  proto::DatabaseMetadata metadata;
+  metadata.set_version(2);
+  database_factory->WriteMetadata(metadata);
+
+  base::HistogramTester histograms;
+  // Start the system, which should run the migration.
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  // Apps 3, 4, 5, 6, 7, 8 should have been migrated.
+  EXPECT_THAT(histograms.GetAllSamples(
+                  "WebApp.Migrations.DeprecatedLaunchHandlerToClientMode"),
+              base::BucketsAre(base::Bucket(/*min=*/6, /*count=*/1)));
+
+  WebAppRegistrar& registrar = fake_provider().registrar_unsafe();
+
+  // Verify migration results
+  const WebApp* migrated_app1 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_no_handler));
+  const WebApp* migrated_app2 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_modern));
+  const WebApp* migrated_app3 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_old_new));
+  const WebApp* migrated_app4 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_old_existing_navigate));
+  const WebApp* migrated_app5 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_old_existing_focus));
+  const WebApp* migrated_app6 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_invalid_specified));
+  const WebApp* migrated_app7 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_unspecified_with_old));
+  const WebApp* migrated_app8 = registrar.GetAppById(
+      GetAppIdFromWebAppProto(app_modern_with_deprecated_field));
+
+  ASSERT_TRUE(migrated_app1);
+  ASSERT_TRUE(migrated_app2);
+  ASSERT_TRUE(migrated_app3);
+  ASSERT_TRUE(migrated_app4);
+  ASSERT_TRUE(migrated_app5);
+  ASSERT_TRUE(migrated_app6);
+  ASSERT_TRUE(migrated_app7);
+  ASSERT_TRUE(migrated_app8);
+
+  EXPECT_FALSE(
+      migrated_app1->launch_handler().has_value());          // App 1: No change
+  ASSERT_TRUE(migrated_app2->launch_handler().has_value());  // App 2: No change
+  EXPECT_EQ(migrated_app2->launch_handler()->parsed_client_mode(),
+            LaunchHandler::ClientMode::kNavigateNew);
+  ASSERT_TRUE(migrated_app3->launch_handler().has_value());  // App 3: Migrated
+  EXPECT_EQ(migrated_app3->launch_handler()->parsed_client_mode(),
+            LaunchHandler::ClientMode::kNavigateNew);
+  ASSERT_TRUE(migrated_app4->launch_handler().has_value());  // App 4: Migrated
+  EXPECT_EQ(migrated_app4->launch_handler()->parsed_client_mode(),
+            LaunchHandler::ClientMode::kNavigateExisting);
+  ASSERT_TRUE(migrated_app5->launch_handler().has_value());  // App 5: Migrated
+  EXPECT_EQ(migrated_app5->launch_handler()->parsed_client_mode(),
+            LaunchHandler::ClientMode::kFocusExisting);
+  ASSERT_TRUE(migrated_app6->launch_handler().has_value());  // App 6: Migrated
+  EXPECT_EQ(
+      migrated_app6->launch_handler()->parsed_client_mode(),
+      LaunchHandler::ClientMode::kNavigateNew);  // Became unspecified -> auto
+  ASSERT_TRUE(migrated_app7->launch_handler().has_value());  // App 7: Migrated
+  EXPECT_EQ(migrated_app7->launch_handler()->parsed_client_mode(),
+            LaunchHandler::ClientMode::kNavigateNew);
+  ASSERT_TRUE(migrated_app8->launch_handler().has_value());  // App 8: Migrated
+  EXPECT_EQ(migrated_app8->launch_handler()->parsed_client_mode(),
+            LaunchHandler::ClientMode::kNavigateNew);
+
+  // Check that the data was also updated in the database.
+  VerifyDatabaseRegistryEqualToRegistrar(&fake_provider());
+}
+
+TEST_F(WebAppDatabaseMigrationTest, MigrateScopeToRemoveRefAndQuery) {
+  FakeWebAppDatabaseFactory* database_factory =
+      fake_provider().GetDatabaseFactory().AsFakeWebAppDatabaseFactory();
+  ASSERT_TRUE(database_factory);
+
+  // App 1: Clean scope
+  proto::WebApp app_clean =
+      CreateWebAppProtoForTesting("App 1", GURL("https://app1.com/start"));
+  app_clean.set_scope("https://app1.com/");
+
+  // App 2: Scope with query
+  proto::WebApp app_query =
+      CreateWebAppProtoForTesting("App 2", GURL("https://app2.com/start"));
+  app_query.set_scope("https://app2.com/?query=1");
+
+  // App 3: Scope with ref
+  proto::WebApp app_ref =
+      CreateWebAppProtoForTesting("App 3", GURL("https://app3.com/start"));
+  app_ref.set_scope("https://app3.com/#ref");
+
+  // App 4: Scope with query and ref
+  proto::WebApp app_both =
+      CreateWebAppProtoForTesting("App 4", GURL("https://app4.com/start"));
+  app_both.set_scope("https://app4.com/path/?query=1#ref");
+
+  // App 5: Invalid scope (should be skipped)
+  proto::WebApp app_invalid =
+      CreateWebAppProtoForTesting("App 5", GURL("https://app5.com/start"));
+  app_invalid.set_scope("invalid-url");
+
+  // App 6: No scope field (should be skipped)
+  proto::WebApp app_no_scope =
+      CreateWebAppProtoForTesting("App 6", GURL("https://app6.com/start"));
+  app_no_scope.clear_scope();
+
+  database_factory->WriteProtos(
+      {app_clean, app_query, app_ref, app_both, app_invalid, app_no_scope});
+
+  // Set version to 2 to trigger the migration to version 3.
+  proto::DatabaseMetadata metadata;
+  metadata.set_version(2);
+  database_factory->WriteMetadata(metadata);
+
+  base::HistogramTester histograms;
+  // Start the system, which should run the migration.
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  // Apps 2, 3, 4 should have been migrated.
+  EXPECT_THAT(
+      histograms.GetAllSamples("WebApp.Migrations.ScopeRefQueryRemoved"),
+      base::BucketsAre(base::Bucket(/*min=*/3, /*count=*/1)));
+
+  WebAppRegistrar& registrar = fake_provider().registrar_unsafe();
+
+  // Verify migration results
+  const WebApp* migrated_app1 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_clean));
+  const WebApp* migrated_app2 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_query));
+  const WebApp* migrated_app3 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_ref));
+  const WebApp* migrated_app4 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_both));
+  const WebApp* migrated_app5 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_invalid));
+  const WebApp* migrated_app6 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_no_scope));
+
+  ASSERT_TRUE(migrated_app1);
+  ASSERT_TRUE(migrated_app2);
+  ASSERT_TRUE(migrated_app3);
+  ASSERT_TRUE(migrated_app4);
+  EXPECT_FALSE(migrated_app5);
+  EXPECT_FALSE(migrated_app6);
+
+  EXPECT_EQ(migrated_app1->scope(), GURL("https://app1.com/"));  // No change
+  EXPECT_EQ(migrated_app2->scope(),
+            GURL("https://app2.com/"));  // Query removed
+  EXPECT_EQ(migrated_app3->scope(), GURL("https://app3.com/"));  // Ref removed
+  EXPECT_EQ(migrated_app4->scope(),
+            GURL("https://app4.com/path/"));  // Both removed
+
+  // Check that the data was also updated in the database.
+  VerifyDatabaseRegistryEqualToRegistrar(&fake_provider());
+}
+
+TEST_F(WebAppDatabaseMigrationTest, MigrateToRelativeManifestIdNoFragment) {
+  FakeWebAppDatabaseFactory* database_factory =
+      fake_provider().GetDatabaseFactory().AsFakeWebAppDatabaseFactory();
+  ASSERT_TRUE(database_factory);
+
+  GURL start_url1("https://app1.com/start");
+  webapps::ManifestId manifest_id1 =
+      GenerateManifestIdFromStartUrlOnly(start_url1);
+  std::string correct_relative_path1 = RelativeManifestIdPath(manifest_id1);
+
+  // App 1: Correct relative_manifest_id
+  proto::WebApp app_correct = CreateWebAppProtoForTesting("App 1", start_url1);
+  app_correct.mutable_sync_data()->set_relative_manifest_id(
+      correct_relative_path1);
+
+  // App 2: Missing relative_manifest_id
+  GURL start_url2("https://app2.com/start?p=1");
+  webapps::ManifestId manifest_id2 =
+      GenerateManifestIdFromStartUrlOnly(start_url2);
+  std::string correct_relative_path2 = RelativeManifestIdPath(manifest_id2);
+  proto::WebApp app_missing = CreateWebAppProtoForTesting("App 2", start_url2);
+  app_missing.mutable_sync_data()->clear_relative_manifest_id();
+  webapps::AppId app_id2 = GenerateAppIdFromManifestId(manifest_id2);
+
+  // App 3: relative_manifest_id with fragment
+  GURL start_url3("https://app3.com/start#frag");
+  webapps::ManifestId manifest_id3 =
+      GenerateManifestIdFromStartUrlOnly(start_url3);
+  std::string correct_relative_path3 = RelativeManifestIdPath(manifest_id3);
+  proto::WebApp app_fragment = CreateWebAppProtoForTesting("App 3", start_url3);
+  // Manually set incorrect path with fragment
+  app_fragment.mutable_sync_data()->set_relative_manifest_id(
+      correct_relative_path3 + "#fragment");
+
+  database_factory->WriteProtos({app_correct, app_missing, app_fragment});
+
+  // Set version to 2 to trigger the migration to version 3.
+  proto::DatabaseMetadata metadata;
+  metadata.set_version(2);
+  database_factory->WriteMetadata(metadata);
+
+  base::HistogramTester histograms;
+  // Start the system, which should run the migration.
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  // App 3 had fragment removed.
+  EXPECT_THAT(histograms.GetAllSamples(
+                  "WebApp.Migrations.RelativeManifestIdFragmentRemoved"),
+              base::BucketsAre(base::Bucket(/*min=*/1, /*count=*/1)));
+  // Apps 2 and 3 were populated or fixed.
+  EXPECT_THAT(histograms.GetAllSamples(
+                  "WebApp.Migrations.RelativeManifestIdPopulatedOrFixed"),
+              base::BucketsAre(base::Bucket(/*min=*/2, /*count=*/1)));
+
+  WebAppRegistrar& registrar = fake_provider().registrar_unsafe();
+
+  // Verify migration results
+  const WebApp* migrated_app1 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_correct));
+  const WebApp* migrated_app2 = registrar.GetAppById(app_id2);
+  const WebApp* migrated_app3 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_fragment));
+
+  ASSERT_TRUE(migrated_app1);
+  ASSERT_TRUE(migrated_app2) << app_id2;
+  ASSERT_TRUE(migrated_app3);
+
+  // Check the relative_manifest_id in the sync_proto
+  EXPECT_TRUE(migrated_app1->sync_proto().has_relative_manifest_id());
+  EXPECT_EQ(migrated_app1->sync_proto().relative_manifest_id(),
+            correct_relative_path1);  // No change
+
+  EXPECT_TRUE(migrated_app2->sync_proto().has_relative_manifest_id());
+  EXPECT_EQ(migrated_app2->sync_proto().relative_manifest_id(),
+            correct_relative_path2);  // Populated
+
+  EXPECT_TRUE(migrated_app3->sync_proto().has_relative_manifest_id());
+  EXPECT_EQ(migrated_app3->sync_proto().relative_manifest_id(),
+            correct_relative_path3);  // Fragment removed
 
   // Check that the data was also updated in the database.
   VerifyDatabaseRegistryEqualToRegistrar(&fake_provider());

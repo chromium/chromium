@@ -39,5 +39,5 @@ message LaunchHandler {
   optional DeprecatedNavigateExistingClient navigate_existing_client = 2
       [deprecated = true];
   optional ClientMode client_mode = 3;
-  optional bool client_mode_valid_and_specified = 4;
+  optional bool client_mode_valid_and_specified = 4 [deprecated = true];
 }

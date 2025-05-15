@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "components/sync/base/time.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
@@ -101,6 +102,15 @@ TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_InvalidStartUrl) {
   EXPECT_THAT(ParseWebAppProto(proto), IsNull());
 }
 
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_MissingRelativeManifestId) {
+  proto::WebApp proto =
+      CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+  // Clear the field that should be populated by migration.
+  proto.mutable_sync_data()->clear_relative_manifest_id();
+  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+}
+
 TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_MissingScope) {
   proto::WebApp proto =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
@@ -112,6 +122,22 @@ TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_InvalidScope) {
   proto::WebApp proto =
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
   proto.set_scope("invalid-scope");
+  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+}
+
+TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_ScopeWithQuery) {
+  proto::WebApp proto =
+      CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+  // Set a scope with a query, which should have been removed by migration.
+  proto.set_scope("https://example.com/path?query=1");
+  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+}
+
+TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_ScopeWithRef) {
+  proto::WebApp proto =
+      CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+  // Set a scope with a ref, which should have been removed by migration.
+  proto.set_scope("https://example.com/path#ref");
   EXPECT_THAT(ParseWebAppProto(proto), IsNull());
 }
 

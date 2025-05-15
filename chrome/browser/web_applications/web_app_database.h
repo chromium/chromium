@@ -68,6 +68,9 @@ class WebAppDatabase {
   //   0 and 1 add or remove this source.
   // - Version 2 migrates shortcut apps to DIY apps, ensures platform user
   //   display mode is set, and fixes partial install state inconsistencies.
+  // - Version 3 migrates deprecated launch handler fields to client_mode,
+  //   removes query/ref from scope, and ensures relative_manifest_id exists
+  //   without fragments.
   static int GetCurrentDatabaseVersion();
 
  private:
@@ -102,6 +105,21 @@ class WebAppDatabase {
   // Corrects the install_state for apps that claim OS integration but lack the
   // necessary OS integration state data.
   void MigratePartiallyInstalledAppsToCorrectState(
+      ProtobufState& state,
+      std::set<webapps::AppId>& changed_apps);
+  // Migrates deprecated launch handler fields (`route_to`,
+  // `navigate_existing_client`) to the `client_mode` field. Also handles the
+  // `client_mode_valid_and_specified` field correctly.
+  void MigrateDeprecatedLaunchHandlerToClientMode(
+      ProtobufState& state,
+      std::set<webapps::AppId>& changed_apps);
+  // Migrates the `scope` field by removing any query or ref components.
+  void MigrateScopeToRemoveRefAndQuery(ProtobufState& state,
+                                       std::set<webapps::AppId>& changed_apps);
+  // Ensures the `relative_manifest_id` field exists and does not contain URL
+  // fragments. Populates it from the start_url if missing. Records a histogram
+  // if an existing fragment needed removal.
+  void MigrateToRelativeManifestIdNoFragment(
       ProtobufState& state,
       std::set<webapps::AppId>& changed_apps);
 

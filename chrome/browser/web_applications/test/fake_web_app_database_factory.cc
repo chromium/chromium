@@ -16,6 +16,7 @@
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/test/data_type_store_test_util.h"
+#include "components/webapps/common/web_app_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {
@@ -66,7 +67,7 @@ proto::DatabaseMetadata FakeWebAppDatabaseFactory::ReadMetadata() {
   return loaded_metadata.Take();
 }
 
-Registry FakeWebAppDatabaseFactory::ReadRegistry() {
+Registry FakeWebAppDatabaseFactory::ReadRegistry(bool allow_invalid_protos) {
   Registry registry;
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
 
@@ -81,7 +82,12 @@ Registry FakeWebAppDatabaseFactory::ReadRegistry() {
           }
 
           auto app = ParseWebAppProtoForTesting(record.id, record.value);
-          CHECK(app);
+          if (allow_invalid_protos && !app) {
+            DLOG(ERROR) << "Failed to parse web app proto for id: "
+                        << record.id;
+            continue;
+          }
+          CHECK(app) << "Failed to parse web app proto for id: " << record.id;
 
           webapps::AppId app_id = app->app_id();
           registry.emplace(std::move(app_id), std::move(app));
@@ -159,8 +165,14 @@ void FakeWebAppDatabaseFactory::WriteProtos(
   for (const proto::WebApp& proto : protos) {
     GURL start_url(proto.sync_data().start_url());
     CHECK(start_url.is_valid());
-    webapps::AppId app_id =
-        GenerateAppId(proto.sync_data().relative_manifest_id(), start_url);
+    webapps::ManifestId manifest_id;
+    if (proto.sync_data().has_relative_manifest_id()) {
+      manifest_id = GenerateManifestId(proto.sync_data().relative_manifest_id(),
+                                       start_url);
+    } else {
+      manifest_id = GenerateManifestIdFromStartUrlOnly(start_url);
+    }
+    webapps::AppId app_id = GenerateAppIdFromManifestId(manifest_id);
     write_batch->WriteData(app_id, proto.SerializeAsString());
   }
 

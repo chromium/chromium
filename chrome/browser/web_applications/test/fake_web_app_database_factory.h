@@ -42,7 +42,7 @@ class FakeWebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
   FakeWebAppDatabaseFactory* AsFakeWebAppDatabaseFactory() override;
 
   proto::DatabaseMetadata ReadMetadata();
-  Registry ReadRegistry();
+  Registry ReadRegistry(bool allow_invalid_protos = false);
 
   std::set<webapps::AppId> ReadAllAppIds();
 
