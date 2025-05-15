@@ -10904,23 +10904,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid, MULTI_VALUE_TYPE(kReplaceSyncPromosWithSignInPromosChoices)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
-    {"cert-management-v2-ui", flag_descriptions::kEnableCertManagementV2UIName,
-     flag_descriptions::kEnableCertManagementV2UIDescription,
-     kOsLinux | kOsMac | kOsWin | kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kEnableCertManagementUIV2)},
-    {"cert-management-v2-ui-write",
-     flag_descriptions::kEnableCertManagementV2UIWriteName,
-     flag_descriptions::kEnableCertManagementV2UIWriteDescription,
-     kOsLinux | kOsMac | kOsWin | kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kEnableCertManagementUIV2Write)},
-    {"cert-management-v2-ui-edit-certs",
-     flag_descriptions::kEnableCertManagementV2UIEditCertsName,
-     flag_descriptions::kEnableCertManagementV2UIEditCertsDescription,
-     kOsLinux | kOsMac | kOsWin | kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kEnableCertManagementUIV2EditCerts)},
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
-
     {"pwm-show-suggestions-on-autofocus",
      flag_descriptions::kPasswordManagerShowSuggestionsOnAutofocusName,
      flag_descriptions::kPasswordManagerShowSuggestionsOnAutofocusDescription,

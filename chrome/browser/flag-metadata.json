@@ -1518,21 +1518,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "cert-management-v2-ui",
-    "owners": [ "hchao@chromium.org", "mattm@chromium.org", "chrome-secure-web-and-net@google.com" ],
-    "expiry_milestone": 138
-  },
-  {
-    "name": "cert-management-v2-ui-edit-certs",
-    "owners": [ "hchao@chromium.org", "mattm@chromium.org", "chrome-secure-web-and-net@google.com" ],
-    "expiry_milestone": 145
-  },
-  {
-    "name": "cert-management-v2-ui-write",
-    "owners": [ "hchao@chromium.org", "mattm@chromium.org", "chrome-secure-web-and-net@google.com" ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "cert-verification-network-time",
     "owners": [ "carlosil@chromium.org", "chrome-secure-web-and-net@google.com" ],
     "expiry_milestone": 134

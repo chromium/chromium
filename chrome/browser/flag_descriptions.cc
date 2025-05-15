@@ -8375,27 +8375,6 @@ const char kEnableStandardBoundSessionRefreshQuotaDescription[] =
     "maximum rate of refreshes. This flag disables that quota in order to "
     "simplify manual testing.";
 
-#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
-const char kEnableCertManagementV2UIName[] = "Cert Management V2 UI";
-const char kEnableCertManagementV2UIDescription[] =
-    "Enables the Cert Management V2 UI; accessible at "
-    "chrome://certificate-manager";
-const char kEnableCertManagementV2UIWriteName[] =
-    "Cert Management V2 UI Write features";
-const char kEnableCertManagementV2UIWriteDescription[] =
-    "Enables the Cert Management V2 UI write features, using a chrome managed "
-    "DB "
-    "to store user added certs. This is new functionality for Windows and Mac. "
-    "For Linux and ChromeOS, this is a change as previously user-added certs "
-    "would be written to the platform cert store. The UI is accessible at "
-    "chrome://certificate-manager";
-const char kEnableCertManagementV2UIEditCertsName[] =
-    "Cert Management V2 UI Edit Certs";
-const char kEnableCertManagementV2UIEditCertsDescription[] =
-    "Enables the ability to edit trust and constraints on the cert viewer "
-    "for user-added certs that are added via chrome://certificate-manager";
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
-
 #if !BUILDFLAG(IS_ANDROID)
 const char kEnablePolicyPromotionBannerName[] =
     "Enable Policy Promotion Banner";

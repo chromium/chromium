@@ -4958,15 +4958,6 @@ extern const char kEnableStandardBoundSessionPersistenceDescription[];
 extern const char kEnableStandardBoundSessionRefreshQuotaName[];
 extern const char kEnableStandardBoundSessionRefreshQuotaDescription[];
 
-#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
-extern const char kEnableCertManagementV2UIName[];
-extern const char kEnableCertManagementV2UIDescription[];
-extern const char kEnableCertManagementV2UIWriteName[];
-extern const char kEnableCertManagementV2UIWriteDescription[];
-extern const char kEnableCertManagementV2UIEditCertsName[];
-extern const char kEnableCertManagementV2UIEditCertsDescription[];
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
-
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kEnablePolicyPromotionBannerName[];
 extern const char kEnablePolicyPromotionBannerDescription[];
