@@ -54,6 +54,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
+import org.chromium.blink_public.common.ContextMenuDataMediaType;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
@@ -327,7 +328,7 @@ public class ContextMenuTest extends AwParameterizedTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
-                        0,
+                        ContextMenuDataMediaType.NONE,
                         new GURL("http://www.example.com/page_url"),
                         new GURL("http://www.example.com/other_example"),
                         "BLAH!",
@@ -373,7 +374,7 @@ public class ContextMenuTest extends AwParameterizedTest {
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
-                        0,
+                        ContextMenuDataMediaType.NONE,
                         new GURL("http://www.example.com/page_url"),
                         GURL.emptyGURL(),
                         "BLAH!",
@@ -446,6 +447,34 @@ public class ContextMenuTest extends AwParameterizedTest {
                     return mRule.getActivity().hasWindowFocus();
                 },
                 "Context menu should not have window focus on a video");
+    }
+
+    @Test
+    @SmallTest
+    @Feature("AndroidWebView")
+    public void doNotShowContextMenuForNonLinkItems() {
+        final ContextMenuParams params =
+                new ContextMenuParams(
+                        /* nativePtr= */ 0,
+                        ContextMenuDataMediaType.NONE,
+                        /* pageUrl= */ GURL.emptyGURL(),
+                        /* linkUrl= */ GURL.emptyGURL(),
+                        /* linkText= */ "Test link text",
+                        /* unfilteredLinkUrl= */ GURL.emptyGURL(),
+                        /* srcUrl= */ GURL.emptyGURL(),
+                        /* titleText= */ "Test title",
+                        /* referrer= */ null,
+                        /* canSaveMedia= */ false,
+                        /* triggeringTouchXDp= */ 0,
+                        /* triggeringTouchYDp= */ 0,
+                        /* sourceType= */ 0,
+                        /* openedFromHighlight= */ false,
+                        /* openedFromInterestTarget= */ false,
+                        /* interestTargetNodeID= */ 0,
+                        /* additionalNavigationParams= */ null);
+
+        AwContextMenuHelper helper = AwContextMenuHelper.create(mAwContents.getWebContents());
+        Assert.assertFalse(helper.showContextMenu(params, mTestContainerView));
     }
 
     private void loadUrlSync(String url) throws Exception {

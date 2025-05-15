@@ -7,6 +7,8 @@ package org.chromium.android_webview.contextmenu;
 import android.util.Pair;
 import android.view.View;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.Callback;
@@ -39,7 +41,8 @@ public class AwContextMenuHelper {
     }
 
     @CalledByNative
-    private static AwContextMenuHelper create(WebContents webContents) {
+    @VisibleForTesting
+    public static AwContextMenuHelper create(WebContents webContents) {
         return new AwContextMenuHelper(webContents);
     }
 
@@ -53,12 +56,14 @@ public class AwContextMenuHelper {
      *
      * @param params The {@link ContextMenuParams} that indicate what menu items to show.
      * @param view container view for the menu.
+     * @return whether the menu was displayed.
      */
     @CalledByNative
-    private void showContextMenu(ContextMenuParams params, View view) {
+    @VisibleForTesting
+    public boolean showContextMenu(ContextMenuParams params, View view) {
         WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
 
-        if (((params.isFile() || params.isImage() || params.isVideo()) && !params.isAnchor())
+        if (!params.isAnchor()
                 || view == null
                 || view.getVisibility() != View.VISIBLE
                 || view.getParent() == null
@@ -70,7 +75,7 @@ public class AwContextMenuHelper {
             if (sMenuShownCallbackForTesting != null) {
                 sMenuShownCallbackForTesting.onResult(null);
             }
-            return;
+            return false;
         }
 
         ContextMenuItemDelegate contextMenuItemDelegate =
@@ -109,13 +114,14 @@ public class AwContextMenuHelper {
                 sMenuShownCallbackForTesting.onResult(null);
             }
             Log.w(TAG, "Could not create items for context menu");
-            return;
+            return false;
         }
 
         mCurrentContextMenu = new AwContextMenuCoordinator();
 
         mCurrentContextMenu.displayMenu(
                 windowAndroid, mWebContents, params, items, callback, onMenuShown, onMenuClosed);
+        return true;
     }
 
     public static void setMenuShownCallbackForTests(
