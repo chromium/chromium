@@ -458,8 +458,8 @@ bool DoReplaceComponents(const char* spec,
     // the existing spec.
     STACK_UNINITIALIZED RawCanonOutput<128> scheme_replaced;
     Component scheme_replaced_parsed;
-    CanonicalizeScheme(replacements.sources().scheme,
-                       replacements.components().scheme,
+    CanonicalizeScheme(replacements.components().scheme.as_string_view_on(
+                           replacements.sources().scheme),
                        &scheme_replaced, &scheme_replaced_parsed);
 
     // We can assume that the input is canonicalized, which means it always has

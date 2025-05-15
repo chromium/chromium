@@ -142,7 +142,8 @@ bool CanonicalizeAndroidFacetURI(const std::string& input_uri,
 
   url::Component unused;
   bool success = url::CanonicalizeScheme(
-      input_uri.c_str(), input_parsed.scheme, &canonical_output, &unused);
+      input_parsed.scheme.as_string_view_on(input_uri.c_str()),
+      &canonical_output, &unused);
 
   canonical_output.push_back('/');
   canonical_output.push_back('/');

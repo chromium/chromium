@@ -334,8 +334,8 @@ TEST_F(URLCanonTest, Scheme) {
 
     out_str.clear();
     StdStringCanonOutput output1(&out_str);
-    bool success =
-        CanonicalizeScheme(scheme_case.input, in_comp, &output1, &out_comp);
+    bool success = CanonicalizeScheme(
+        in_comp.as_string_view_on(scheme_case.input), &output1, &out_comp);
     output1.Complete();
 
     EXPECT_EQ(scheme_case.expected_success, success);
@@ -349,8 +349,8 @@ TEST_F(URLCanonTest, Scheme) {
 
     std::u16string wide_input(base::UTF8ToUTF16(scheme_case.input));
     in_comp.len = static_cast<int>(wide_input.length());
-    success = CanonicalizeScheme(wide_input.c_str(), in_comp, &output2,
-                                 &out_comp);
+    success = CanonicalizeScheme(in_comp.as_string_view_on(wide_input.c_str()),
+                                 &output2, &out_comp);
     output2.Complete();
 
     EXPECT_EQ(scheme_case.expected_success, success);
@@ -365,7 +365,8 @@ TEST_F(URLCanonTest, Scheme) {
   out_str.clear();
   StdStringCanonOutput output(&out_str);
 
-  EXPECT_FALSE(CanonicalizeScheme("", Component(0, -1), &output, &out_comp));
+  EXPECT_FALSE(CanonicalizeScheme(std::optional<std::string_view>(std::nullopt),
+                                  &output, &out_comp));
   output.Complete();
 
   EXPECT_EQ(":", out_str);

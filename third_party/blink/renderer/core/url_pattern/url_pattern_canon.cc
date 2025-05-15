@@ -59,12 +59,11 @@ String CanonicalizeProtocol(const String& input,
   url::Component component;
   if (stripped.Is8Bit()) {
     StringUTF8Adaptor utf8(stripped);
-    result = url::CanonicalizeScheme(
-        utf8.data(), url::Component(0, utf8.size()), &canon_output, &component);
+    result =
+        url::CanonicalizeScheme(utf8.AsStringView(), &canon_output, &component);
   } else {
-    result = url::CanonicalizeScheme(stripped.Characters16(),
-                                     url::Component(0, stripped.length()),
-                                     &canon_output, &component);
+    result =
+        url::CanonicalizeScheme(stripped.View16(), &canon_output, &component);
   }
 
   if (!result) {

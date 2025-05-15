@@ -177,9 +177,7 @@ std::optional<std::string> AuthSessionRequest::CanonicalizeScheme(
     std::string scheme) {
   url::RawCanonOutputT<char> canon_output;
   url::Component component;
-  bool result = url::CanonicalizeScheme(
-      scheme.data(), url::Component(0, static_cast<int>(scheme.size())),
-      &canon_output, &component);
+  bool result = url::CanonicalizeScheme(scheme, &canon_output, &component);
   if (!result)
     return std::nullopt;
 

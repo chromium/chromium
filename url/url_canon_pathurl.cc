@@ -59,8 +59,9 @@ bool DoCanonicalizePathURL(const URLComponentSource<CHAR>& source,
                            CanonOutput* output,
                            Parsed* new_parsed) {
   // Scheme: this will append the colon.
-  bool success = CanonicalizeScheme(source.scheme, parsed.scheme,
-                                    output, &new_parsed->scheme);
+  bool success =
+      CanonicalizeScheme(parsed.scheme.maybe_as_string_view_on(source.scheme),
+                         output, &new_parsed->scheme);
 
   // We assume there's no authority for path URLs. Note that hosts should never
   // have -1 length.

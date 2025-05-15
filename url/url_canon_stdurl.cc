@@ -28,8 +28,9 @@ bool DoCanonicalizeStandardURL(const URLComponentSource<CHAR>& source,
   DCHECK(!parsed.has_opaque_path);
 
   // Scheme: this will append the colon.
-  bool success = CanonicalizeScheme(source.scheme, parsed.scheme,
-                                    output, &new_parsed->scheme);
+  bool success =
+      CanonicalizeScheme(parsed.scheme.maybe_as_string_view_on(source.scheme),
+                         output, &new_parsed->scheme);
 
   bool scheme_supports_user_info =
       (scheme_type == SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION);

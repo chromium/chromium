@@ -118,16 +118,17 @@ inline bool IsSchemeFirstChar(unsigned char c) {
 }
 
 template <typename CHAR, typename UCHAR>
-bool DoScheme(const CHAR* spec,
-              const Component& scheme,
+bool DoScheme(std::optional<std::basic_string_view<CHAR>> input,
               CanonOutput* output,
               Component* out_scheme) {
-  if (scheme.is_empty()) {
+  if (!input.has_value() || input->empty()) {
     // Scheme is unspecified or empty, convert to empty by appending a colon.
     *out_scheme = Component(output->length(), 0);
     output->push_back(':');
     return false;
   }
+
+  auto input_value = input.value();
 
   // The output scheme starts from the current position.
   out_scheme->begin = output->length();
@@ -138,13 +139,11 @@ bool DoScheme(const CHAR* spec,
   // FindAndCompareScheme, which could cause some security checks on
   // schemes to be incorrect.
   bool success = true;
-  size_t begin = static_cast<size_t>(scheme.begin);
-  size_t end = static_cast<size_t>(scheme.end());
-  for (size_t i = begin; i < end; i++) {
-    UCHAR ch = static_cast<UCHAR>(spec[i]);
+  for (size_t i = 0; i < input_value.length(); i++) {
+    UCHAR ch = static_cast<UCHAR>(input_value[i]);
     char replacement = 0;
     if (ch < 0x80) {
-      if (i == begin) {
+      if (i == 0) {
         // Need to do a special check for the first letter of the scheme.
         if (IsSchemeFirstChar(static_cast<unsigned char>(ch)))
           replacement = kSchemeCanonical[ch];
@@ -167,7 +166,8 @@ bool DoScheme(const CHAR* spec,
 
       // This will escape the output and also handle encoding issues.
       // Ignore the return value since we already failed.
-      AppendUTF8EscapedChar(spec, &i, end, output);
+      AppendUTF8EscapedChar(input_value.data(), &i, input_value.length(),
+                            output);
     }
   }
 
@@ -363,18 +363,16 @@ char CanonicalSchemeChar(char16_t ch) {
   return kSchemeCanonical[ch];
 }
 
-bool CanonicalizeScheme(const char* spec,
-                        const Component& scheme,
+bool CanonicalizeScheme(std::optional<std::string_view> input,
                         CanonOutput* output,
                         Component* out_scheme) {
-  return DoScheme<char, unsigned char>(spec, scheme, output, out_scheme);
+  return DoScheme<char, unsigned char>(input, output, out_scheme);
 }
 
-bool CanonicalizeScheme(const char16_t* spec,
-                        const Component& scheme,
+bool CanonicalizeScheme(std::optional<std::u16string_view> input,
                         CanonOutput* output,
                         Component* out_scheme) {
-  return DoScheme<char16_t, char16_t>(spec, scheme, output, out_scheme);
+  return DoScheme<char16_t, char16_t>(input, output, out_scheme);
 }
 
 bool CanonicalizeUserInfo(const char* username_source,

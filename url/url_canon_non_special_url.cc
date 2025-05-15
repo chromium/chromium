@@ -32,8 +32,9 @@ bool DoCanonicalizeNonSpecialURL(const URLComponentSource<CHAR>& source,
   DCHECK(!parsed.has_opaque_path);
 
   // Scheme: this will append the colon.
-  bool success = CanonicalizeScheme(source.scheme, parsed.scheme, &output,
-                                    &new_parsed.scheme);
+  bool success =
+      CanonicalizeScheme(parsed.scheme.maybe_as_string_view_on(source.scheme),
+                         &output, &new_parsed.scheme);
   bool have_authority =
       (parsed.username.is_valid() || parsed.password.is_valid() ||
        parsed.host.is_valid() || parsed.port.is_valid());

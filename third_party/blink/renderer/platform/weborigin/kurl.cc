@@ -483,11 +483,11 @@ bool KURL::SetProtocol(const String& protocol) {
   // the URL and set "m_isValid."
   url::RawCanonOutputT<char> canon_protocol;
   url::Component protocol_component;
-  if (!url::CanonicalizeScheme(new_protocol_utf8.data(),
-                               url::Component(0, new_protocol_utf8.size()),
+  if (!url::CanonicalizeScheme(new_protocol_utf8.AsStringView(),
                                &canon_protocol, &protocol_component) ||
-      protocol_component.is_empty())
+      protocol_component.is_empty()) {
     return false;
+  }
 
   DCHECK_EQ(protocol_component.begin, 0);
   const wtf_size_t protocol_length =
