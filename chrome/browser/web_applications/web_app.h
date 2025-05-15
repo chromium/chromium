@@ -60,15 +60,28 @@ class TabbedModeScopeMatcher;
 
 class WebApp {
  public:
+  // Deprecated, use the other constructor instead.
   explicit WebApp(const webapps::AppId& app_id);
+
+  // This creates a web app object, and will CHECK-fail if the arguments are
+  // invalid. To be valid, the following invariants must hold:
+  // - All GURLs and the `manifest_id` must be non-empty and valid.
+  // - `start_url`, `manifest_id` and `scope` must be same-origin.
+  // - `manifest_id` must not contain a fragment.
+  // - `scope` must not contain a query or fragment.
+  // - `scope` must be a prefix of `start_url`.
+  WebApp(const webapps::ManifestId& manifest_id,
+         const GURL& start_url,
+         const GURL& scope,
+         std::optional<webapps::AppId> parent_app_id = std::nullopt,
+         std::optional<webapps::ManifestId> parent_manifest_id = std::nullopt);
   ~WebApp();
 
   // Copyable and move-assignable to support Copy-on-Write with Commit.
   WebApp(const WebApp& web_app);
   WebApp& operator=(WebApp&& web_app);
+  WebApp(WebApp&&);
 
-  // Explicitly disallow other copy ctors and assign operators.
-  WebApp(WebApp&&) = delete;
   WebApp& operator=(const WebApp&) = delete;
 
   const webapps::AppId& app_id() const { return app_id_; }

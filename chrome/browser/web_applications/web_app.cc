@@ -39,6 +39,7 @@
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/url_constants.h"
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
@@ -343,9 +344,42 @@ WebApp::WebApp(const webapps::AppId& app_id)
                          ? std::make_optional<WebAppChromeOsData>()
                          : std::nullopt) {}
 
-WebApp::~WebApp() = default;
+WebApp::WebApp(const webapps::ManifestId& manifest_id,
+               const GURL& start_url,
+               const GURL& scope,
+               std::optional<webapps::AppId> parent_app_id,
+               std::optional<webapps::ManifestId> parent_manifest_id)
+    : app_id_(GenerateAppIdFromManifestId(manifest_id, parent_manifest_id)),
+      start_url_(start_url),
+      scope_(scope),
+      chromeos_data_(IsChromeOsDataMandatory()
+                         ? std::make_optional<WebAppChromeOsData>()
+                         : std::nullopt),
+      manifest_id_(manifest_id),
+      parent_app_id_(parent_app_id) {
+  CHECK(manifest_id.is_valid());
+  CHECK(start_url.is_valid());
+  CHECK(scope.is_valid());
+  CHECK(url::IsSameOriginWith(manifest_id_, start_url_))
+      << manifest_id_.spec() << " vs " << start_url_.spec();
+  CHECK(url::IsSameOriginWith(start_url_, scope_))
+      << start_url_.spec() << " vs " << scope_.spec();
+  CHECK(!scope_.has_ref() && !scope_.has_query());
+  CHECK(!manifest_id_.has_ref());
+  CHECK(base::StartsWith(start_url_.spec(), scope_.spec(),
+                         base::CompareCase::SENSITIVE))
+      << "Start URL " << start_url_ << " must be nested in scope " << scope_;
+  if (parent_app_id_.has_value()) {
+    CHECK(!parent_app_id_->empty());
+  }
+  CHECK(!!parent_app_id == !!parent_manifest_id);
+  // Ensure sync proto is initialized.
+  SetSyncProto(sync_proto_);
+}
 
+WebApp::~WebApp() = default;
 WebApp::WebApp(const WebApp& web_app) = default;
+WebApp::WebApp(WebApp&& web_app) = default;
 
 WebApp& WebApp::operator=(WebApp&& web_app) = default;
 
@@ -471,8 +505,7 @@ void WebApp::SetStartUrl(const GURL& start_url) {
   if (manifest_id_.is_empty()) {
     manifest_id_ = GenerateManifestIdFromStartUrlOnly(start_url);
   }
-  CHECK(url::Origin::Create(manifest_id())
-            .IsSameOriginWith(url::Origin::Create(start_url)))
+  CHECK(url::IsSameOriginWith(manifest_id(), start_url))
       << manifest_id().spec() << " " << start_url.spec();
   start_url_ = start_url;
 
@@ -715,9 +748,7 @@ void WebApp::SetManifestUrl(const GURL& manifest_url) {
 
 void WebApp::SetManifestId(const webapps::ManifestId& manifest_id) {
   CHECK(manifest_id.is_valid());
-  CHECK(start_url_.is_empty() ||
-        url::Origin::Create(start_url_)
-            .IsSameOriginWith(url::Origin::Create(manifest_id)))
+  CHECK(start_url_.is_empty() || url::IsSameOriginWith(start_url_, manifest_id))
       << start_url_.spec() << " vs " << manifest_id.spec();
   CHECK(!manifest_id.has_ref(), base::NotFatalUntil::M127);
   manifest_id_ = manifest_id;
@@ -776,6 +807,8 @@ void WebApp::SetCurrentOsIntegrationStates(
 }
 
 void WebApp::SetIsolationData(IsolationData isolation_data) {
+  CHECK(manifest_id_.is_valid() &&
+        manifest_id_.SchemeIs(chrome::kIsolatedAppScheme));
   if (isolation_data.pending_update_info().has_value()) {
     DCHECK_EQ(isolation_data.location().dev_mode(),
               isolation_data.pending_update_info()->location.dev_mode())

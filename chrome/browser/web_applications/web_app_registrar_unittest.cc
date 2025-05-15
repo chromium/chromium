@@ -29,7 +29,6 @@
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-data-view.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
@@ -1100,7 +1099,8 @@ TEST_F(WebAppRegistrarTest,
   base::test::ScopedFeatureList scoped_feature_list(features::kIsolatedWebApps);
   StartWebAppProvider();
 
-  auto web_app = test::CreateWebApp();
+  std::unique_ptr<WebApp> web_app =
+      test::CreateWebApp(GURL("isolated-app://random_name"));
   const webapps::AppId app_id = web_app->app_id();
   web_app->SetDisplayMode(DisplayMode::kStandalone);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
@@ -1122,7 +1122,8 @@ TEST_F(WebAppRegistrarTest,
   base::test::ScopedFeatureList scoped_feature_list(features::kIsolatedWebApps);
   StartWebAppProvider();
 
-  std::unique_ptr<WebApp> web_app = test::CreateWebApp();
+  std::unique_ptr<WebApp> web_app =
+      test::CreateWebApp(GURL("isolated-app://random_name"));
   const webapps::AppId app_id = web_app->app_id();
 
   // Valid manifest must have standalone display mode
@@ -1146,7 +1147,8 @@ TEST_F(WebAppRegistrarTest,
   base::test::ScopedFeatureList scoped_feature_list(features::kIsolatedWebApps);
   StartWebAppProvider();
 
-  std::unique_ptr<WebApp> web_app = test::CreateWebApp();
+  std::unique_ptr<WebApp> web_app =
+      test::CreateWebApp(GURL("isolated-app://random_name"));
   const webapps::AppId app_id = web_app->app_id();
 
   web_app->SetDisplayMode(DisplayMode::kBorderless);
@@ -1615,7 +1617,15 @@ class WebAppRegistrarDisplayModeTest
       mojom::UserDisplayMode user_display_mode,
       std::vector<DisplayMode> display_mode_overrides,
       bool is_isolated = false) {
-    auto web_app = test::CreateWebApp();
+    GURL start_url = GURL("https://example.com/start");
+    if (is_isolated) {
+      constexpr char kIwaHostname[] =
+          "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
+      start_url =
+          GURL(base::StrCat({chrome::kIsolatedAppScheme,
+                             url::kStandardSchemeSeparator, kIwaHostname}));
+    }
+    auto web_app = test::CreateWebApp(start_url);
     const webapps::AppId app_id = web_app->app_id();
 
     // Get the display mode from the parameterized inputs.
@@ -1801,6 +1811,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                                NOTREACHED();
                            }
                          });
+
 
 class WebAppRegistrarParameterizedTest
     : public WebAppRegistrarTest,

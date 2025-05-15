@@ -369,8 +369,9 @@ TEST(WebAppTest, IsolationDataStartsEmpty) {
 }
 
 TEST(WebAppTest, IsolationDataDebugValue) {
-  WebApp app{GenerateAppId(/*manifest_id_path=*/std::nullopt,
-                           GURL("https://example.com"))};
+  GURL kStartUrl("isolated-app://random_name");
+  WebApp app(GenerateManifestIdFromStartUrlOnly(kStartUrl),
+             /*start_url=*/kStartUrl, /*scope=*/kStartUrl);
   app.SetIsolationData(
       IsolationData::Builder(
           IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
@@ -401,8 +402,9 @@ TEST(WebAppTest, IsolationDataDebugValue) {
 }
 
 TEST(WebAppTest, IsolationDataPendingUpdateInfoDebugValue) {
-  WebApp app{GenerateAppId(/*manifest_id_path=*/std::nullopt,
-                           GURL("https://example.com"))};
+  GURL kStartUrl("isolated-app://random_name");
+  WebApp app(GenerateManifestIdFromStartUrlOnly(kStartUrl),
+             /*start_url=*/kStartUrl, /*scope=*/kStartUrl);
 
   static constexpr std::string_view kUpdateManifestUrl =
       "https://update-manifest.com";

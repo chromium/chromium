@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/generated_icon_fix_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
@@ -70,6 +72,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/web_app_run_on_os_login_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace web_app {
 
 using ::testing::_;
@@ -83,30 +89,6 @@ using ::testing::VariantWith;
 
 class WebAppDatabaseTest : public WebAppTest {
  public:
-  void SetUp() override {
-    WebAppTest::SetUp();
-    provider_ = FakeWebAppProvider::Get(profile());
-
-    auto sync_bridge = std::make_unique<WebAppSyncBridge>(
-        &provider_->GetRegistrarMutable(),
-        mock_processor_.CreateForwardingProcessor());
-    sync_bridge_ = sync_bridge.get();
-
-    auto database_factory = std::make_unique<FakeWebAppDatabaseFactory>();
-    database_factory_ = database_factory.get();
-
-    provider_->SetDatabaseFactory(std::move(database_factory));
-    provider_->SetSyncBridge(std::move(sync_bridge));
-
-    sync_bridge_->SetSubsystems(
-        database_factory_, &provider_->GetCommandManager(),
-        &provider_->scheduler(), &provider_->GetInstallManager());
-
-    provider_->Start();
-    ON_CALL(mock_processor_, IsTrackingMetadata())
-        .WillByDefault(testing::Return(true));
-  }
-
   bool IsDatabaseRegistryEqualToRegistrar() {
     Registry registry = database_factory().ReadRegistry();
     return IsRegistryEqual(mutable_registrar().registry(), registry);
@@ -127,13 +109,17 @@ class WebAppDatabaseTest : public WebAppTest {
     run_loop.Run();
   }
 
-  Registry WriteWebApps(uint32_t num_apps) {
+  Registry WriteWebApps(uint32_t num_apps,
+                        bool only_non_external_management_types = false) {
     Registry registry;
 
     auto write_batch = database_factory().GetStore()->CreateWriteBatch();
 
     for (uint32_t i = 0; i < num_apps; ++i) {
-      std::unique_ptr<WebApp> app = test::CreateRandomWebApp({.seed = i});
+      std::unique_ptr<WebApp> app =
+          test::CreateRandomWebApp({.seed = i,
+                                    .only_non_external_management_types =
+                                        only_non_external_management_types});
       std::unique_ptr<proto::WebApp> proto = WebAppToProto(*app);
       const webapps::AppId app_id = app->app_id();
 
@@ -151,20 +137,18 @@ class WebAppDatabaseTest : public WebAppTest {
   }
 
  protected:
-  FakeWebAppDatabaseFactory& database_factory() { return *database_factory_; }
-
-  WebAppRegistrar& registrar() { return provider_->GetRegistrarMutable(); }
-
-  WebAppRegistrarMutable& mutable_registrar() {
-    return provider_->GetRegistrarMutable();
+  FakeWebAppDatabaseFactory& database_factory() {
+    return *fake_provider().GetDatabaseFactory().AsFakeWebAppDatabaseFactory();
   }
 
-  WebAppSyncBridge& sync_bridge() { return *sync_bridge_; }
+  WebAppRegistrar& registrar() { return fake_provider().GetRegistrarMutable(); }
 
-  void InitSyncBridge() {
-    base::RunLoop loop;
-    sync_bridge_->Init(loop.QuitClosure());
-    loop.Run();
+  WebAppRegistrarMutable& mutable_registrar() {
+    return fake_provider().GetRegistrarMutable();
+  }
+
+  WebAppSyncBridge& sync_bridge() {
+    return fake_provider().sync_bridge_unsafe();
   }
 
   void RegisterApp(std::unique_ptr<WebApp> web_app) {
@@ -183,19 +167,10 @@ class WebAppDatabaseTest : public WebAppTest {
       update->DeleteApp(app_id);
     }
   }
-
- private:
-  raw_ptr<WebAppSyncBridge, DanglingUntriaged> sync_bridge_ = nullptr;
-  raw_ptr<FakeWebAppDatabaseFactory, DanglingUntriaged> database_factory_ =
-      nullptr;
-  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
-  base::test::ScopedFeatureList feature_list_;
-
-  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
 };
 
 TEST_F(WebAppDatabaseTest, WriteAndReadRegistry) {
-  InitSyncBridge();
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
   EXPECT_TRUE(registrar().is_empty());
 
   const uint32_t num_apps = 1000;
@@ -219,7 +194,7 @@ TEST_F(WebAppDatabaseTest, WriteAndReadRegistry) {
 }
 
 TEST_F(WebAppDatabaseTest, WriteAndDeleteAppsWithCallbacks) {
-  InitSyncBridge();
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
   EXPECT_TRUE(registrar().is_empty());
 
   const uint32_t num_apps = 100;
@@ -279,11 +254,31 @@ TEST_F(WebAppDatabaseTest, WriteAndDeleteAppsWithCallbacks) {
 // Read a database where all apps are already in a valid state, so there should
 // be no difference between the apps written and read.
 TEST_F(WebAppDatabaseTest, OpenDatabaseAndReadRegistry) {
-  Registry registry = WriteWebApps(100);
-
-  InitSyncBridge();
-  EXPECT_TRUE(IsRegistryEqual(mutable_registrar().registry(), registry));
-  EXPECT_TRUE(IsRegistryEqual(database_factory().ReadRegistry(), registry));
+  constexpr int kNumApps = 20;
+  auto disable_sync_install_and_missing_os_integration = WebAppSyncBridge::
+      DisableResumeSyncInstallAndMissingOsIntegrationForTesting();
+  auto disable_generated_icon_fixes =
+      GeneratedIconFixManager::DisableGeneratedIconFixesForTesting();
+#if BUILDFLAG(IS_CHROMEOS)
+  // Some random apps will be configured to run on login, and by doing so we
+  // will 'fix' the InstallState if the OS integration is not there. So disable
+  // this behavior to prevent this from occurring.
+  auto disable_run_on_os_login =
+      WebAppRunOnOsLoginManager::SkipStartupForTesting();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  base::HistogramTester histogram_tester;
+  Registry registry =
+      WriteWebApps(kNumApps, /*only_non_external_management_types=*/true);
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+  histogram_tester.ExpectBucketCount("WebApp.Database.ValidProto", true,
+                                     kNumApps);
+  histogram_tester.ExpectBucketCount("WebApp.Database.AppIdMatch", true,
+                                     kNumApps);
+  fake_provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  EXPECT_TRUE(IsRegistryEqual(mutable_registrar().registry(), registry,
+                              /*exclude_current_os_integration=*/true));
+  EXPECT_TRUE(IsRegistryEqual(database_factory().ReadRegistry(), registry,
+                              /*exclude_current_os_integration=*/true));
   EXPECT_EQ(database_factory().ReadMetadata().version(),
             WebAppDatabase::GetCurrentDatabaseVersion());
 }
@@ -328,7 +323,7 @@ TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
 
   // Read the registry: the proto parsing may fail while reading the proto
   // above.
-  InitSyncBridge();
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
 
   const WebApp* app = registrar().GetAppById(app_id);
   EXPECT_EQ(app_id, app->app_id());
@@ -351,7 +346,7 @@ TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
 }
 
 TEST_F(WebAppDatabaseTest, WebAppWithManyIcons) {
-  InitSyncBridge();
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
 
   const GURL base_url("https://example.com/path");
   // A number of icons of each IconPurpose.
@@ -561,360 +556,6 @@ TEST_F(WebAppDatabaseTest, RemovesFragmentAndQueriesFromScopeDuringParsing) {
   EXPECT_EQ(reparsed_app->scope(), basic_scope_path);
   EXPECT_FALSE(reparsed_app->scope().has_ref());
   EXPECT_FALSE(reparsed_app->scope().has_query());
-}
-
-class WebAppDatabaseProtoDataTest : public ::testing::Test {
- public:
-  std::unique_ptr<WebApp> CreateMinimalWebApp() {
-    GURL start_url{"https://example.com/"};
-    webapps::AppId app_id =
-        GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
-    auto web_app = std::make_unique<WebApp>(app_id);
-    web_app->SetStartUrl(start_url);
-    web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
-    web_app->AddSource(WebAppManagement::Type::kDefault);
-    return web_app;
-  }
-
-  std::unique_ptr<WebApp> CreateIsolatedWebApp(
-      const IsolationData& isolation_data) {
-    std::unique_ptr<WebApp> web_app = CreateMinimalWebApp();
-    web_app->SetIsolationData(isolation_data);
-    return web_app;
-  }
-
-  std::unique_ptr<WebApp> CreateWebAppWithPermissionsPolicy(
-      const network::ParsedPermissionsPolicy& permissions_policy) {
-    std::unique_ptr<WebApp> web_app = CreateMinimalWebApp();
-    web_app->SetPermissionsPolicy(permissions_policy);
-    return web_app;
-  }
-
-  std::unique_ptr<WebApp> ToAndFromProto(const WebApp& web_app) {
-    return ParseWebAppProto(*WebAppToProto(web_app));
-  }
-};
-
-TEST_F(WebAppDatabaseProtoDataTest, DoesNotSetIsolationDataIfNotIsolated) {
-  std::unique_ptr<WebApp> web_app = CreateMinimalWebApp();
-  std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
-  EXPECT_THAT(*web_app, AllOf(Eq(*protoed_web_app),
-                              Property("isolation_data",
-                                       &WebApp::isolation_data, std::nullopt)));
-}
-
-TEST_F(WebAppDatabaseProtoDataTest, SavesOwnedBundleIsolationData) {
-  std::string dir_name_ascii = "folder_name";
-  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
-      IsolationData::Builder(
-          IwaStorageOwnedBundle{dir_name_ascii, /*dev_mode=*/false},
-          base::Version("1.0.0"))
-          .Build());
-
-  std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
-  EXPECT_THAT(*web_app, Eq(*protoed_web_app));
-  EXPECT_THAT(web_app,
-              test::IwaIs(_, IsolationData::Builder(
-                                 IwaStorageOwnedBundle(dir_name_ascii,
-                                                       /*dev_mode=*/false),
-                                 base::Version("1.0.0"))
-                                 .Build()));
-}
-
-TEST_F(WebAppDatabaseProtoDataTest, HandlesCorruptedOwnedBundleIsolationData) {
-  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
-      IsolationData::Builder(
-          IwaStorageOwnedBundle{"folder_name", /*dev_mode=*/false},
-          base::Version("1.0.0"))
-          .Build());
-
-  std::unique_ptr<proto::WebApp> web_app_proto = WebAppToProto(*web_app);
-  ASSERT_THAT(web_app_proto, NotNull());
-
-  // Setting non-ASCII characters should break deserialization.
-  web_app_proto->mutable_isolation_data()
-      ->mutable_owned_bundle()
-      ->mutable_dir_name_ascii()
-      ->assign("日本");
-
-  std::unique_ptr<WebApp> protoed_web_app = ParseWebAppProto(*web_app_proto);
-  EXPECT_THAT(protoed_web_app, IsNull());
-}
-
-TEST_F(WebAppDatabaseProtoDataTest, SavesUnownedBundleIsolationData) {
-  base::FilePath path(FILE_PATH_LITERAL("dev_bundle_path"));
-  std::unique_ptr<WebApp> web_app =
-      CreateIsolatedWebApp(IsolationData::Builder(IwaStorageUnownedBundle{path},
-                                                  base::Version("1.0.0"))
-                               .Build());
-
-  std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
-  EXPECT_THAT(*web_app, Eq(*protoed_web_app));
-  EXPECT_THAT(web_app, test::IwaIs(_, IsolationData::Builder(
-                                          IwaStorageUnownedBundle{path},
-                                          base::Version("1.0.0"))
-                                          .Build()));
-}
-
-TEST_F(WebAppDatabaseProtoDataTest,
-       HandlesCorruptedUnownedBundleIsolationData) {
-  base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
-  std::unique_ptr<WebApp> web_app =
-      CreateIsolatedWebApp(IsolationData::Builder(IwaStorageUnownedBundle{path},
-                                                  base::Version("1.0.0"))
-                               .Build());
-
-  std::unique_ptr<proto::WebApp> web_app_proto = WebAppToProto(*web_app);
-  ASSERT_THAT(web_app_proto, NotNull());
-
-  // The path is encoded with Pickle, thus setting some non-pickle data here
-  // should break deserialization.
-  web_app_proto->mutable_isolation_data()
-      ->mutable_unowned_bundle()
-      ->mutable_path()
-      ->assign("foo");
-
-  std::unique_ptr<WebApp> protoed_web_app = ParseWebAppProto(*web_app_proto);
-  EXPECT_THAT(protoed_web_app, IsNull());
-}
-
-TEST_F(WebAppDatabaseProtoDataTest, SavesProxyIsolationData) {
-  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
-      IsolationData::Builder(IwaStorageProxy{url::Origin::Create(
-                                 GURL("https://proxy-example.com/"))},
-                             base::Version("1.0.0"))
-          .Build());
-
-  std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
-  EXPECT_THAT(*web_app, Eq(*protoed_web_app));
-  EXPECT_THAT(web_app,
-              test::IwaIs(_, IsolationData::Builder(
-                                 IwaStorageProxy{url::Origin::Create(
-                                     GURL("https://proxy-example.com/"))},
-                                 base::Version("1.0.0"))
-                                 .Build()));
-}
-
-TEST_F(WebAppDatabaseProtoDataTest, HandlesCorruptedProxyIsolationData) {
-  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
-      IsolationData::Builder(IwaStorageProxy{url::Origin::Create(
-                                 GURL("https://proxy-example.com/"))},
-                             base::Version("1.0.0"))
-          .Build());
-
-  std::unique_ptr<proto::WebApp> web_app_proto = WebAppToProto(*web_app);
-  ASSERT_THAT(web_app_proto, NotNull());
-
-  web_app_proto->mutable_isolation_data()
-      ->mutable_proxy()
-      ->mutable_proxy_url()
-      ->assign("");
-
-  std::unique_ptr<WebApp> protoed_web_app = ParseWebAppProto(*web_app_proto);
-  EXPECT_THAT(protoed_web_app, IsNull());
-}
-
-TEST_F(WebAppDatabaseProtoDataTest, HandlesCorruptedIsolationDataVersion) {
-  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
-      IsolationData::Builder(
-          IwaStorageOwnedBundle{"folder_name", /*dev_mode=*/false},
-          base::Version("1.2.3"))
-          .Build());
-
-  std::unique_ptr<proto::WebApp> web_app_proto = WebAppToProto(*web_app);
-  ASSERT_THAT(web_app_proto, NotNull());
-  web_app_proto->mutable_isolation_data()->mutable_version()->assign("abc");
-
-  std::unique_ptr<WebApp> protoed_web_app = ParseWebAppProto(*web_app_proto);
-  EXPECT_THAT(protoed_web_app, IsNull());
-}
-
-TEST_F(WebAppDatabaseProtoDataTest,
-       HandlesCorruptedIsolationDataPendingUpdateVersion) {
-  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
-      IsolationData::Builder(
-          IwaStorageOwnedBundle{"folder_name", /*dev_mode=*/false},
-          base::Version("1.2.3"))
-          .SetPendingUpdateInfo(IsolationData::PendingUpdateInfo(
-              IwaStorageOwnedBundle{"folder_name", /*dev_mode=*/false},
-              base::Version("1.2.3")))
-          .Build());
-
-  std::unique_ptr<proto::WebApp> web_app_proto = WebAppToProto(*web_app);
-  ASSERT_THAT(web_app_proto, NotNull());
-  web_app_proto->mutable_isolation_data()
-      ->mutable_pending_update_info()
-      ->mutable_version()
-      ->assign("abc");
-
-  std::unique_ptr<WebApp> protoed_web_app = ParseWebAppProto(*web_app_proto);
-  EXPECT_THAT(protoed_web_app, IsNull());
-}
-
-TEST_F(WebAppDatabaseProtoDataTest,
-       HandlesDifferentTypeOfIsolationDataPendingUpdateLocation) {
-  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
-      IsolationData::Builder(
-          IwaStorageOwnedBundle{"folder_name", /*dev_mode*/ true},
-          base::Version("1.0.0"))
-          .SetPendingUpdateInfo(IsolationData::PendingUpdateInfo(
-              IwaStorageProxy{url::Origin::Create(GURL("https://example.com"))},
-              base::Version("2.0.0")))
-          .Build());
-
-  std::unique_ptr<proto::WebApp> web_app_proto = WebAppToProto(*web_app);
-  std::unique_ptr<WebApp> protoed_web_app = ParseWebAppProto(*web_app_proto);
-  EXPECT_THAT(protoed_web_app, NotNull());
-}
-
-TEST_F(WebAppDatabaseProtoDataTest,
-       HandlesMismatchedIsolationDataPendingUpdateLocation) {
-  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
-      IsolationData::Builder(
-          IwaStorageOwnedBundle{"folder_name", /*dev_mode*/ false},
-          base::Version("1.0.0"))
-          .SetPendingUpdateInfo(IsolationData::PendingUpdateInfo(
-              IwaStorageOwnedBundle{"folder_name", /*dev_mode*/ false},
-              base::Version("2.0.0")))
-          .Build());
-
-  // Test what happens if both are owned bundles, but one is dev mode and
-  // the other one is not.
-  {
-    std::unique_ptr<proto::WebApp> web_app_proto = WebAppToProto(*web_app);
-    ASSERT_THAT(web_app_proto, NotNull());
-    web_app_proto->mutable_isolation_data()
-        ->mutable_pending_update_info()
-        ->mutable_owned_bundle()
-        ->set_dev_mode(true);
-    web_app_proto->mutable_isolation_data()
-        ->mutable_pending_update_info()
-        ->mutable_proxy();
-
-    std::unique_ptr<WebApp> protoed_web_app = ParseWebAppProto(*web_app_proto);
-    EXPECT_THAT(protoed_web_app, IsNull());
-  }
-
-  // Test what happens if one is an owned non-dev-mode bundle, but the other one
-  // is a proxy.
-  {
-    std::unique_ptr<proto::WebApp> web_app_proto = WebAppToProto(*web_app);
-    ASSERT_THAT(web_app_proto, NotNull());
-    web_app_proto->mutable_isolation_data()
-        ->mutable_pending_update_info()
-        ->clear_location();
-    web_app_proto->mutable_isolation_data()
-        ->mutable_pending_update_info()
-        ->mutable_proxy()
-        ->set_proxy_url("https://example.com");
-
-    std::unique_ptr<WebApp> protoed_web_app = ParseWebAppProto(*web_app_proto);
-    EXPECT_THAT(protoed_web_app, IsNull());
-  }
-}
-
-TEST_F(WebAppDatabaseProtoDataTest, SavesIsolationDataUpdateInfo) {
-  base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
-  base::FilePath update_path(FILE_PATH_LITERAL("update_path"));
-
-  static constexpr std::string_view kUpdateManifestUrl =
-      "https://update-manifest.com";
-  static const UpdateChannel kUpdateChannel = UpdateChannel::default_channel();
-
-  auto integrity_block_data =
-      IsolatedWebAppIntegrityBlockData(test::CreateSignatures());
-
-  IsolationData isolation_data =
-      IsolationData::Builder(IwaStorageUnownedBundle{path},
-                             base::Version("1.0.0"))
-          .SetPendingUpdateInfo(IsolationData::PendingUpdateInfo(
-              IwaStorageUnownedBundle{update_path}, base::Version("2.0.0"),
-              integrity_block_data))
-          .SetIntegrityBlockData(integrity_block_data)
-          .SetUpdateManifestUrl(GURL(kUpdateManifestUrl))
-          .SetUpdateChannel(kUpdateChannel)
-          .Build();
-
-  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(isolation_data);
-
-  std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
-  EXPECT_THAT(*web_app, Eq(*protoed_web_app));
-  EXPECT_THAT(web_app, test::IwaIs(_, isolation_data));
-}
-
-TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyRoundTrip) {
-  const network::ParsedPermissionsPolicy policy = {
-      {network::mojom::PermissionsPolicyFeature::kGyroscope,
-       /*allowed_origins=*/{},
-       /*self_if_matches=*/std::nullopt,
-       /*matches_all_origins=*/false,
-       /*matches_opaque_src=*/true},
-      {network::mojom::PermissionsPolicyFeature::kGeolocation,
-       /*allowed_origins=*/{},
-       /*self_if_matches=*/std::nullopt,
-       /*matches_all_origins=*/true,
-       /*matches_opaque_src=*/false},
-      {network::mojom::PermissionsPolicyFeature::kGamepad,
-       {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
-            url::Origin::Create(GURL("https://example.com")),
-            /*has_subdomain_wildcard=*/false),
-        *network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
-            url::Origin::Create(GURL("https://example.net")),
-            /*has_subdomain_wildcard=*/true)},
-       /*self_if_matches=*/std::nullopt,
-       /*matches_all_origins=*/false,
-       /*matches_opaque_src=*/false},
-  };
-  std::unique_ptr<WebApp> web_app = CreateWebAppWithPermissionsPolicy(policy);
-
-  std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
-  EXPECT_THAT(*web_app, Eq(*protoed_web_app));
-  EXPECT_EQ(policy, protoed_web_app->permissions_policy());
-}
-
-TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyProto) {
-  const network::ParsedPermissionsPolicy policy = {
-      {network::mojom::PermissionsPolicyFeature::kGyroscope,
-       /*allowed_origins=*/{},
-       /*self_if_matches=*/std::nullopt,
-       /*matches_all_origins=*/false,
-       /*matches_opaque_src=*/true},
-      {network::mojom::PermissionsPolicyFeature::kGeolocation,
-       /*allowed_origins=*/{},
-       /*self_if_matches=*/std::nullopt,
-       /*matches_all_origins=*/true,
-       /*matches_opaque_src=*/false},
-      {network::mojom::PermissionsPolicyFeature::kGamepad,
-       {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
-            url::Origin::Create(GURL("https://example.com")),
-            /*has_subdomain_wildcard=*/false),
-        *network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
-            url::Origin::Create(GURL("https://example.net")),
-            /*has_subdomain_wildcard=*/true)},
-       /*self_if_matches=*/std::nullopt,
-       /*matches_all_origins=*/false,
-       /*matches_opaque_src=*/false},
-  };
-  std::unique_ptr<WebApp> web_app = CreateWebAppWithPermissionsPolicy(policy);
-
-  std::unique_ptr<proto::WebApp> proto = WebAppToProto(*web_app);
-  ASSERT_EQ(proto->permissions_policy().size(), 3);
-  EXPECT_EQ(proto->permissions_policy().at(0).feature(), "gyroscope");
-  EXPECT_EQ(proto->permissions_policy().at(0).allowed_origins_size(), 0);
-  EXPECT_EQ(proto->permissions_policy().at(0).matches_all_origins(), false);
-  EXPECT_EQ(proto->permissions_policy().at(0).matches_opaque_src(), true);
-  EXPECT_EQ(proto->permissions_policy().at(1).feature(), "geolocation");
-  EXPECT_EQ(proto->permissions_policy().at(1).allowed_origins_size(), 0);
-  EXPECT_EQ(proto->permissions_policy().at(1).matches_all_origins(), true);
-  EXPECT_EQ(proto->permissions_policy().at(1).matches_opaque_src(), false);
-  EXPECT_EQ(proto->permissions_policy().at(2).feature(), "gamepad");
-  ASSERT_EQ(proto->permissions_policy().at(2).allowed_origins_size(), 2);
-  EXPECT_EQ(proto->permissions_policy().at(2).allowed_origins(0),
-            "https://example.com");
-  EXPECT_EQ(proto->permissions_policy().at(2).allowed_origins(1),
-            "https://*.example.net");
-  EXPECT_EQ(proto->permissions_policy().at(2).matches_all_origins(), false);
-  EXPECT_EQ(proto->permissions_policy().at(2).matches_opaque_src(), false);
 }
 
 }  // namespace web_app

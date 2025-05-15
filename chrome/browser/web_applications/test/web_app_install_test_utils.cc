@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
+#include "base/functional/concurrent_callbacks.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -212,38 +213,46 @@ bool UninstallAllWebApps(Profile* profile) {
   provider->command_manager().AwaitAllCommandsCompleteForTesting();
   std::vector<webapps::AppId> app_ids =
       provider->registrar_unsafe().GetAppIds();
+
+  base::ConcurrentCallbacks<webapps::UninstallResultCode> uninstall_callbacks;
   for (auto& app_id : app_ids) {
     const WebApp* app = provider->registrar_unsafe().GetAppById(app_id);
     WebAppManagementTypes sources = app->GetSources();
 
     // Non-user installs first, as they block user uninstalls.
-    for (WebAppManagement::Type source : sources) {
-      if (source == WebAppManagement::kSync)
+    for (WebAppManagement::Type app_source : sources) {
+      if (kUserUninstallableSources.Has(app_source)) {
         continue;
-      base::test::TestFuture<webapps::UninstallResultCode> result;
-      provider->scheduler().RemoveInstallManagementMaybeUninstall(
-          app_id, source, webapps::WebappUninstallSource::kTestCleanup,
-          result.GetCallback());
-      if (!result.Wait() ||
-          result.Get() == webapps::UninstallResultCode::kError) {
-        LOG(ERROR) << "Error uninstalling " << app_id;
-        success = false;
       }
+      provider->scheduler().RemoveInstallManagementMaybeUninstall(
+          app_id, app_source, webapps::WebappUninstallSource::kTestCleanup,
+          uninstall_callbacks.CreateCallback());
     }
-
-    // User uninstalls now, which should be unblocked now.
-    for (WebAppManagement::Type source : sources) {
-      if (source != WebAppManagement::kSync)
+    // Then schedule the user uninstalls if applicable.
+    for (WebAppManagement::Type user_uninstallable_source :
+         kUserUninstallableSources) {
+      if (!sources.Has(user_uninstallable_source)) {
         continue;
-      base::test::TestFuture<webapps::UninstallResultCode> result;
-      provider->scheduler().RemoveInstallManagementMaybeUninstall(
-          app_id, source, webapps::WebappUninstallSource::kTestCleanup,
-          result.GetCallback());
-      if (!result.Wait() ||
-          result.Get() == webapps::UninstallResultCode::kError) {
-        LOG(ERROR) << "Error uninstalling " << app_id;
-        success = false;
       }
+      provider->scheduler().RemoveInstallManagementMaybeUninstall(
+          app_id, user_uninstallable_source,
+          webapps::WebappUninstallSource::kTestCleanup,
+          uninstall_callbacks.CreateCallback());
+    }
+  }
+  base::test::TestFuture<std::vector<webapps::UninstallResultCode>>
+      uninstalls_future;
+  std::move(uninstall_callbacks).Done(uninstalls_future.GetCallback());
+
+  if (!uninstalls_future.Wait()) {
+    LOG(ERROR) << "Uninstall timeout";
+    return false;
+  }
+
+  for (webapps::UninstallResultCode result : uninstalls_future.Get()) {
+    if (result == webapps::UninstallResultCode::kError) {
+      LOG(ERROR) << "Error uninstalling";
+      success = false;
     }
   }
   return success;

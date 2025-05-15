@@ -72,11 +72,7 @@ class TwoClientGeneratedIconFixSyncTest : public WebAppsSyncTestBase {
     return generated_icon_fix;
   }
 
-  TwoClientGeneratedIconFixSyncTest() : WebAppsSyncTestBase(TWO_CLIENT) {
-    // Because the retry happens asynchronously it causes flakiness in the
-    // metric expectations.
-    GeneratedIconFixManager::DisableAutoRetryForTesting();
-  }
+  TwoClientGeneratedIconFixSyncTest() : WebAppsSyncTestBase(TWO_CLIENT) {}
   ~TwoClientGeneratedIconFixSyncTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -173,6 +169,10 @@ class TwoClientGeneratedIconFixSyncTest : public WebAppsSyncTestBase {
           })};
 
   base::flat_map<raw_ptr<Profile>, raw_ptr<FakeWebAppProvider>> fake_providers_;
+  // Because the retry happens asynchronously it causes flakiness in the
+  // metric expectations.
+  base::AutoReset<bool> disable_generated_icon_fixes_for_testing_ =
+      GeneratedIconFixManager::DisableAutoRetryForTesting();
 
   OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };

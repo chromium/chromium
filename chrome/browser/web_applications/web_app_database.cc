@@ -338,11 +338,16 @@ void WebAppDatabase::OnAllDataAndMetadataRead(
   Registry registry;
   for (const auto& [app_id, app_proto] : state.apps) {
     std::unique_ptr<WebApp> web_app = ParseWebAppProto(app_proto);
+    base::UmaHistogramBoolean("WebApp.Database.ValidProto", web_app != nullptr);
     if (!web_app) {
       continue;
     }
 
-    if (web_app->app_id() != app_id) {
+    // Record whether the derived app_id matches the database key.
+    bool mismatch = (web_app->app_id() != app_id);
+    base::UmaHistogramBoolean("WebApp.Database.AppIdMatch", !mismatch);
+
+    if (mismatch) {
       DLOG(ERROR) << "WebApps LevelDB error: app_id doesn't match storage key "
                   << app_id << " vs " << web_app->app_id() << ", from "
                   << web_app->manifest_id();

@@ -11,6 +11,8 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -57,6 +59,26 @@ proto::WebApp CreateWebAppProtoForTesting(const std::string& name,
 }
 
 using WebAppDatabaseSerializationTest = WebAppTest;
+
+TEST_F(WebAppDatabaseSerializationTest, RandomWebApps) {
+  // This tests attempts to ensure that the WebApp serialization code and
+  // deserialization code is consistent when serialized back and forth from the
+  // proto representation. The random web app generation should ensure that all
+  // fields in all relevant combinations are tested.
+  for (int i = 0; i < 1000; ++i) {
+    std::unique_ptr<WebApp> app = test::CreateRandomWebApp(
+        {.seed = static_cast<uint32_t>(i), .non_zero = i == 0});
+    std::unique_ptr<proto::WebApp> proto = WebAppToProto(*app);
+    std::unique_ptr<WebApp> parsed_app = ParseWebAppProto(*proto);
+    ASSERT_THAT(parsed_app, NotNull());
+    ASSERT_EQ(*app, *parsed_app);
+    std::unique_ptr<proto::WebApp> round_trip_proto =
+        WebAppToProto(*parsed_app);
+    ASSERT_THAT(round_trip_proto, NotNull());
+    ASSERT_EQ(proto->SerializeAsString(),
+              round_trip_proto->SerializeAsString());
+  }
+}
 
 TEST_F(WebAppDatabaseSerializationTest, ParseWebAppProto_MissingSyncData) {
   proto::WebApp proto =

@@ -522,7 +522,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
   base::Version version("1.2.3");
 
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("https://foo.example"));
+      GURL("isolated-app://random_app"));
   info->title = u"Foo Title";
   info->isolated_web_app_version = version;
 

@@ -375,6 +375,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Database.AppIdMatch" enum="Boolean"
+    expires_after="2026-04-18">
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records whether the app_id derived from a parsed WebApp proto matches the
+    key used to store it in the database. Recorded for each app proto read from
+    the database during profile startup. 'true' indicates a match (success), and
+    'false' indicates an error state.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Database.ValidProto" enum="Boolean"
+    expires_after="2026-04-18">
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records whether parsing a proto::WebApp read from the database was
+    successful. Recorded for each app proto read from the database during
+    profile startup. A value of 'true' indicates parsing succeeded, and 'false'
+    indicates the proto was invalid or incomplete.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Database.VersionUpgradedTo" units="version"
     expires_after="2025-12-19">
   <owner>dmurph@chromium.org</owner>

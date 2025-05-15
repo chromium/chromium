@@ -175,13 +175,16 @@ LaunchHandler ProtoLaunchHandlerToLaunchHandlerClientMode(
     proto::LaunchHandler::DeprecatedNavigateExistingClient
         navigate_existing_client,
     proto::LaunchHandler::ClientMode client_mode,
-    std::optional<bool> client_mode_valid_and_specified) {
+    bool client_mode_valid_and_specified) {
   // When migrating from a database that doesn't have the
   // client_mode_valid_and_specified field saved yet, set it to `true` when the
   // client mode is non-auto. If the site did set the client_mode to 'auto',
   // then this is corrected on the next manifest update.
   switch (client_mode) {
     case proto::LaunchHandler::CLIENT_MODE_AUTO:
+      if (!client_mode_valid_and_specified) {
+        return LaunchHandler{std::nullopt};
+      }
       return LaunchHandler{LaunchHandler::ClientMode::kAuto};
     case proto::LaunchHandler::CLIENT_MODE_NAVIGATE_NEW:
       return LaunchHandler{LaunchHandler::ClientMode::kNavigateNew};
@@ -1105,10 +1108,7 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
         launch_handler_proto.route_to(),
         launch_handler_proto.navigate_existing_client(),
         launch_handler_proto.client_mode(),
-        launch_handler_proto.has_client_mode_valid_and_specified()
-            ? std::optional(
-                  launch_handler_proto.client_mode_valid_and_specified())
-            : std::nullopt);
+        launch_handler_proto.client_mode_valid_and_specified());
     web_app->SetLaunchHandler(launch_handler);
   }
 

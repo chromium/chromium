@@ -28,12 +28,20 @@ namespace web_app {
 namespace {
 
 bool g_disable_auto_retry_for_testing = false;
+bool g_disable_generated_icon_fixes_for_testing = false;
 
 }  // namespace
 
 // static
-void GeneratedIconFixManager::DisableAutoRetryForTesting() {
-  g_disable_auto_retry_for_testing = true;
+base::AutoReset<bool> GeneratedIconFixManager::DisableAutoRetryForTesting() {
+  return base::AutoReset<bool>(&g_disable_auto_retry_for_testing, true);
+}
+
+// static
+base::AutoReset<bool>
+GeneratedIconFixManager::DisableGeneratedIconFixesForTesting() {
+  return base::AutoReset<bool>(&g_disable_generated_icon_fixes_for_testing,
+                               true);
 }
 
 GeneratedIconFixManager::GeneratedIconFixManager() = default;
@@ -46,6 +54,9 @@ void GeneratedIconFixManager::SetProvider(base::PassKey<WebAppProvider>,
 }
 
 void GeneratedIconFixManager::Start() {
+  if (g_disable_generated_icon_fixes_for_testing) {
+    return;
+  }
   provider_->scheduler().ScheduleCallback(
       "GeneratedIconFixManager::Start", AllAppsLockDescription(),
       base::BindOnce(&GeneratedIconFixManager::ScheduleFixes,

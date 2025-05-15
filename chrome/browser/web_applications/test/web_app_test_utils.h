@@ -50,6 +50,12 @@ struct CreateRandomWebAppParams {
   uint32_t seed = 0;
   bool non_zero = false;
   bool allow_system_source = true;
+  // External management types are often managed by systems that synchronize
+  // their installed apps, so if a test is writing apps and then starting the
+  // system, the external app managers will touch & modify apps that apply to
+  // them. Setting this to 'true' will prevent a generated app from having one
+  // of these management sources.
+  bool only_non_external_management_types = false;
 };
 std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params);
 

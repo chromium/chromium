@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
@@ -67,6 +68,10 @@
 
 namespace web_app {
 namespace {
+
+bool g_disable_resume_sync_install_and_missing_os_integration_for_testing =
+    false;
+
 // Returns the manifest id from the sync entity. Does not validate whether the
 // manifest_id is valid.
 base::expected<webapps::ManifestId, StorageKeyParseResult>
@@ -189,6 +194,15 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_proto,
   }
   app->SetSyncProto(std::move(modified_sync_proto));
   CHECK(HasCurrentPlatformUserDisplayMode(app->sync_proto()));
+}
+
+// static
+base::AutoReset<bool>
+WebAppSyncBridge::DisableResumeSyncInstallAndMissingOsIntegrationForTesting() {
+  CHECK_IS_TEST();
+  return base::AutoReset<bool>(
+      &g_disable_resume_sync_install_and_missing_os_integration_for_testing,
+      true);
 }
 
 WebAppSyncBridge::WebAppSyncBridge(WebAppRegistrarMutable* registrar)
@@ -977,7 +991,11 @@ void WebAppSyncBridge::MaybeUninstallAppsPendingUninstall() {
   }
 }
 
-void WebAppSyncBridge::MaybeInstallAppsFromSyncAndPendingInstallOrSyncOsIntegration() {
+void WebAppSyncBridge::
+    MaybeInstallAppsFromSyncAndPendingInstallOrSyncOsIntegration() {
+  if (g_disable_resume_sync_install_and_missing_os_integration_for_testing) {
+    return;
+  }
   for (WebApp& app : registrar_->GetAppsIncludingStubs()) {
     if (app.is_from_sync_and_pending_installation()) {
       command_scheduler_->InstallFromSync(app, base::DoNothing());
@@ -991,12 +1009,11 @@ void WebAppSyncBridge::MaybeInstallAppsFromSyncAndPendingInstallOrSyncOsIntegrat
       // for all apps that are installed with OS integration but don't have
       // shortcut fields set to complete this operation.
       command_scheduler_->SynchronizeOsIntegration(
-          app.app_id(),
-          base::BindOnce([]() {
+          app.app_id(), base::BindOnce([]() {
             base::UmaHistogramBoolean(
                 "WebApp.Install.CompletedOsIntegrationOnStartup", true);
           }));
-      }
+    }
   }
 }
 
