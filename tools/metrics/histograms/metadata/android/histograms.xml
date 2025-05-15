@@ -7434,8 +7434,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.RelatedSitesVisitedWeekly" units="sites"
-    expires_after="2025-06-25">
-  <owner>bewise@chromium.org</owner>
+    expires_after="2026-01-15">
+  <owner>mvanouwerkerk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     This is the same as Android.WebView.SitesVisitedWeekly. The only difference
