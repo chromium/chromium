@@ -15,14 +15,16 @@
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/test_send_tab_to_self_model.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/test/fake_data_type_controller_delegate.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -114,35 +116,45 @@ std::unique_ptr<KeyedService> BuildTestNotificationDisplayService(
   return std::make_unique<NotificationDisplayServiceMock>();
 }
 
-class DesktopNotificationHandlerTest : public BrowserWithTestWindowTest {
+class DesktopNotificationHandlerBrowserTest : public InProcessBrowserTest {
  public:
-  DesktopNotificationHandlerTest() = default;
-  ~DesktopNotificationHandlerTest() override = default;
+  DesktopNotificationHandlerBrowserTest() = default;
+  ~DesktopNotificationHandlerBrowserTest() override = default;
 
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+  // InProcessBrowserTest:
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    InProcessBrowserTest::SetUpBrowserContextKeyedServices(context);
+    NotificationDisplayServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildTestNotificationDisplayService));
+    SendTabToSelfSyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildTestSendTabToSelfSyncService));
+  }
 
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
     display_service_mock_ = static_cast<NotificationDisplayServiceMock*>(
-        NotificationDisplayServiceFactory::GetInstance()
-            ->SetTestingFactoryAndUse(
-                profile(),
-                base::BindRepeating(&BuildTestNotificationDisplayService)));
-
-    SendTabToSelfSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile(), base::BindRepeating(&BuildTestSendTabToSelfSyncService));
-
+        NotificationDisplayServiceFactory::GetForProfile(profile()));
     model_mock_ = static_cast<SendTabToSelfModelMock*>(
         SendTabToSelfSyncServiceFactory::GetForProfile(profile())
             ->GetSendTabToSelfModel());
   }
 
+  void TearDownOnMainThread() override {
+    model_mock_ = nullptr;
+    display_service_mock_ = nullptr;
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  Profile* profile() { return browser()->profile(); }
+
  protected:
-  raw_ptr<SendTabToSelfModelMock, DanglingUntriaged> model_mock_;
-  raw_ptr<NotificationDisplayServiceMock, DanglingUntriaged>
-      display_service_mock_;
+  raw_ptr<SendTabToSelfModelMock> model_mock_;
+  raw_ptr<NotificationDisplayServiceMock> display_service_mock_;
 };
 
-TEST_F(DesktopNotificationHandlerTest, DisplayNewEntries) {
+IN_PROC_BROWSER_TEST_F(DesktopNotificationHandlerBrowserTest,
+                       DisplayNewEntries) {
   const GURL& url = GURL(kDesktopNotificationOrigin);
   message_center::RichNotificationData optional_fields;
   optional_fields.never_timeout = true;
@@ -168,7 +180,7 @@ TEST_F(DesktopNotificationHandlerTest, DisplayNewEntries) {
   handler.DisplayNewEntries(entries);
 }
 
-TEST_F(DesktopNotificationHandlerTest, DismissEntries) {
+IN_PROC_BROWSER_TEST_F(DesktopNotificationHandlerBrowserTest, DismissEntries) {
   DesktopNotificationHandler handler(profile());
   EXPECT_CALL(*display_service_mock_,
               Close(NotificationHandler::Type::SEND_TAB_TO_SELF,
@@ -180,7 +192,7 @@ TEST_F(DesktopNotificationHandlerTest, DismissEntries) {
   handler.DismissEntries(guids);
 }
 
-TEST_F(DesktopNotificationHandlerTest, CloseHandler) {
+IN_PROC_BROWSER_TEST_F(DesktopNotificationHandlerBrowserTest, CloseHandler) {
   DesktopNotificationHandler handler(profile());
 
   EXPECT_CALL(*model_mock_, DismissEntry(kDesktopNotificationId))
@@ -196,7 +208,7 @@ TEST_F(DesktopNotificationHandlerTest, CloseHandler) {
                   kDesktopNotificationId, /*by_user=*/true, base::DoNothing());
 }
 
-TEST_F(DesktopNotificationHandlerTest, ClickHandler) {
+IN_PROC_BROWSER_TEST_F(DesktopNotificationHandlerBrowserTest, ClickHandler) {
   DesktopNotificationHandler handler(profile());
 
   EXPECT_CALL(*display_service_mock_,
