@@ -608,13 +608,13 @@
     To get this address on all your devices, verify it's you
     </message>
     <message name="IDS_AUTOFILL_IPH_LOYALTY_CARD_SUGGESTION_TITLE" desc="IPH toast for a suggestion item with a loyalty card from Google Wallet.">
-    Autofill loyalty cards from Google Wallet
+    Now you can autofill loyalty cards from Google Wallet
     </message>
     <message name="IDS_AUTOFILL_IPH_LOYALTY_CARD_SUGGESTION_BODY" desc="IPH toast for a suggestion item with a loyalty card from Google Wallet.">
-    Manage in payment methods settings
+    Manage loyalty cards or turn these suggestions off in Google Wallet
     </message>
     <message name="IDS_AUTOFILL_IPH_LOYALTY_CARD_SUGGESTION_SCREENREADER" is_accessibility_with_no_ui="true" desc="IPH toast for a suggestion item with a loyalty card from Google Wallet.">
-    Autofill loyalty cards from Google Wallet
+    Now you can autofill loyalty cards from Google Wallet
   </message>
   </if>
 
