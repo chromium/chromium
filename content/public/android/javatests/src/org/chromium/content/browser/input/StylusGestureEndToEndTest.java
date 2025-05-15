@@ -35,7 +35,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content.browser.RenderCoordinatesImpl;
@@ -54,7 +53,6 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ContentJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@CommandLineFlags.Add({"enable-features=StylusRichGestures"})
 @MinAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 public class StylusGestureEndToEndTest {

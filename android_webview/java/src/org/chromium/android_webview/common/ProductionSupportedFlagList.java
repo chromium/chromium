@@ -532,10 +532,6 @@ public final class ProductionSupportedFlagList {
                         + " updater downloading service in nonembedded WebView."
                         + " See https://crbug.com/1170468."),
         Flag.baseFeature(
-                BlinkFeatures.STYLUS_RICH_GESTURES,
-                "When enabled, stylus input can be used to draw rich gestures which "
-                        + "affect text in editable web content."),
-        Flag.baseFeature(
                 ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE,
                 "When enabled, the following ads APIs will be available: Attribution Reporting,"
                         + "FLEDGE, Topics."),

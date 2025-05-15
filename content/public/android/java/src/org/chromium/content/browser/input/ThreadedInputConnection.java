@@ -33,10 +33,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.blink.mojom.StylusWritingGestureData;
-import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.content_public.browser.ContentFeatureMap;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
@@ -804,9 +802,6 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
             HandwritingGesture gesture,
             @Nullable Executor executor,
             @Nullable IntConsumer consumer) {
-        if (!ContentFeatureMap.isEnabled(BlinkFeatures.STYLUS_RICH_GESTURES)) {
-            return;
-        }
         StylusWritingGestureData gestureData = createGestureData(gesture);
         if (gestureData == null) {
             assumeNonNull(executor);
