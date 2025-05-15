@@ -6428,6 +6428,11 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
+    {"lens-overlay-omnibox-entry-point",
+     flag_descriptions::kLensOverlayOmniboxEntryPointName,
+     flag_descriptions::kLensOverlayOmniboxEntryPointDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(lens::features::kLensOverlayOmniboxEntryPoint)},
+
     {"omnibox-domain-suggestions",
      flag_descriptions::kOmniboxDomainSuggestionsName,
      flag_descriptions::kOmniboxDomainSuggestionsDescription, kOsDesktop,

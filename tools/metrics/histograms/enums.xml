@@ -14063,6 +14063,7 @@ from previous Chrome versions.
   <int value="-69427025" label="OfflinePagesPrefetchingUI:enabled"/>
   <int value="-69224661" label="FeedAblation:enabled"/>
   <int value="-68877684" label="BackgroundVideoTrackOptimization:enabled"/>
+  <int value="-68832811" label="LensOverlayOmniboxEntryPoint:disabled"/>
   <int value="-68797870" label="BuiltInHlsPlayer:disabled"/>
   <int value="-68619312" label="PassiveDocumentWheelEventListeners:disabled"/>
   <int value="-68613812" label="DarkLightMode:disabled"/>
@@ -15504,6 +15505,7 @@ from previous Chrome versions.
   <int value="485957747" label="finch-seed-ignore-pending-download"/>
   <int value="486667213" label="TabstripComboButton:disabled"/>
   <int value="487542146" label="Bruschetta:enabled"/>
+  <int value="487598416" label="LensOverlayOmniboxEntryPoint:enabled"/>
   <int value="487605950" label="PerformantSplitViewResizing:disabled"/>
   <int value="487677879" label="SendTabToSelfIOSPushNotifications:enabled"/>
   <int value="487810392" label="EnablePalmOnToolTypePalm:enabled"/>

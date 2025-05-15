@@ -65,6 +65,10 @@ BASE_DECLARE_FEATURE(kLensOverlayUpdatedClientContext);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayMGTInSidePanel);
 
+// Enables the Lens Overlay omnibox entry point.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayOmniboxEntryPoint);
+
 // Enables uploading chunking for the Lens overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayUploadChunking);
