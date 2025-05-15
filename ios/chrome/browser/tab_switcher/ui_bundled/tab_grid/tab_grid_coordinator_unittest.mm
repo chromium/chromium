@@ -135,13 +135,15 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
 
     AddAgentsToBrowser(incognito_browser_.get());
 
+    id mockApplicationCommandHandler =
+        OCMProtocolMock(@protocol(ApplicationCommands));
     IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
-        initWithReauthModule:[[ReauthenticationModule alloc] init]];
+              initWithReauthModule:[[ReauthenticationModule alloc] init]
+        applicationCommandsHandler:mockApplicationCommandHandler];
     [scene_state_ addAgent:reauth_agent];
 
     coordinator_ = [[TabGridCoordinator alloc]
-        initWithApplicationCommandEndpoint:OCMProtocolMock(
-                                               @protocol(ApplicationCommands))
+        initWithApplicationCommandEndpoint:mockApplicationCommandHandler
                             regularBrowser:browser_.get()
                            inactiveBrowser:browser_->CreateInactiveBrowser()
                           incognitoBrowser:incognito_browser_.get()];

@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -67,6 +68,11 @@
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
+  // Handler for application commands, used to change active surfaces.
+  id<ApplicationCommands> _applicationCommandsHandler;
+  // Tracks whether the lock surface was switched during the current foreground
+  // session.
+  BOOL _didSwitchSurfaces;
 }
 
 @synthesize lastBackgroundedTime = _lastBackgroundedTime;
@@ -89,12 +95,14 @@
 
 #pragma mark - public
 
-- (instancetype)initWithReauthModule:
-    (id<ReauthenticationProtocol>)reauthModule {
+- (instancetype)initWithReauthModule:(id<ReauthenticationProtocol>)reauthModule
+          applicationCommandsHandler:
+              (id<ApplicationCommands>)applicationCommandsHandler {
   self = [super init];
   if (self) {
     DCHECK(reauthModule);
     _reauthModule = reauthModule;
+    _applicationCommandsHandler = applicationCommandsHandler;
     _observers = [IncognitoReauthObserverList
         observersWithProtocol:@protocol(IncognitoReauthObserver)];
   }
@@ -225,12 +233,16 @@
     [self updateWindowHasIncognitoContent:sceneState];
     [self updateBackgroundedForEnoughTimeOnBackground];
     self.authenticatedSinceLastForeground = NO;
+    if (IsIOSSoftLockEnabled()) {
+      _didSwitchSurfaces = NO;
+    }
   } else if (level >= SceneActivationLevelForegroundInactive) {
     [self updateWindowHasIncognitoContent:sceneState];
     [self updateBackgroundedForEnoughTimeOnForeground];
     // Close media presentations when the app is foregrounded rather than
     // backgrounded to avoid freezes.
     [self closeMediaPresentations];
+    [self maybeEnterTabGridWithSceneState:sceneState];
   }
 
   if (IsIOSSoftLockEnabled()) {
@@ -242,6 +254,8 @@
   [self logEnabledHistogramOnce];
   if (IsIOSSoftLockEnabled()) {
     [self setUpPrefObservers];
+    [self maybeEnterTabGridWithSceneState:sceneState];
+
     [self logIncognitoLockStateHistogramOnce];
     [self recordIncognitoLockImpressionForSceneState:sceneState];
   }
@@ -253,12 +267,6 @@
   }
 }
 
-#pragma mark - PrefObserverDelegate
-
-- (void)onPreferenceChanged:(const std::string&)preferenceName {
-  [self notifyObservers];
-}
-
 - (void)sceneState:(SceneState*)sceneState
     isDisplayingIncognitoContent:(BOOL)level {
   if (IsIOSSoftLockEnabled()) {
@@ -266,7 +274,33 @@
   }
 }
 
+#pragma mark - PrefObserverDelegate
+
+- (void)onPreferenceChanged:(const std::string&)preferenceName {
+  [self notifyObservers];
+}
+
 #pragma mark - private
+
+// Switch from tab to tab switcher, if the current surface is a locked Incognito
+// tab.
+- (void)maybeEnterTabGridWithSceneState:(SceneState*)sceneState {
+  if (!IsIOSSoftLockEnabled()) {
+    return;
+  }
+
+  BOOL isIncognitoTabVisible = sceneState.UIEnabled &&
+                               sceneState.incognitoContentVisible &&
+                               !sceneState.controller.tabGridVisible;
+  if (!_didSwitchSurfaces && isIncognitoTabVisible &&
+      self.authenticationRequired) {
+    _didSwitchSurfaces = YES;
+    // TODO(crbug.com/417621249): Add callback that allows specifying animation
+    // type.
+    [_applicationCommandsHandler
+        displayTabGridInMode:TabGridOpeningMode::kIncognito];
+  }
+}
 
 // Log authentication setting histogram to determine the feature usage.
 // This is done once per app launch.

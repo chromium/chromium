@@ -142,13 +142,7 @@ class BrowserCoordinatorTest : public PlatformTest {
         WebUsageEnablerBrowserAgent::FromBrowser(browser_.get());
     enabler->SetWebUsageEnabled(true);
 
-    IncognitoReauthSceneAgent* reauthAgent = [[IncognitoReauthSceneAgent alloc]
-        initWithReauthModule:[[ReauthenticationModule alloc] init]];
-    [scene_state_ addAgent:reauthAgent];
-
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-    [dispatcher startDispatchingToTarget:reauthAgent
-                             forProtocol:@protocol(IncognitoReauthCommands)];
 
     // Set up ApplicationCommands mock. Because ApplicationCommands conforms
     // to SettingsCommands, that needs to be mocked and dispatched
@@ -161,6 +155,13 @@ class BrowserCoordinatorTest : public PlatformTest {
                              forProtocol:@protocol(ApplicationCommands)];
     [dispatcher startDispatchingToTarget:mockSettingsCommandHandler
                              forProtocol:@protocol(SettingsCommands)];
+
+    IncognitoReauthSceneAgent* reauthAgent = [[IncognitoReauthSceneAgent alloc]
+              initWithReauthModule:[[ReauthenticationModule alloc] init]
+        applicationCommandsHandler:mockApplicationCommandHandler];
+    [scene_state_ addAgent:reauthAgent];
+    [dispatcher startDispatchingToTarget:reauthAgent
+                             forProtocol:@protocol(IncognitoReauthCommands)];
   }
 
   BrowserCoordinator* GetBrowserCoordinator() {
