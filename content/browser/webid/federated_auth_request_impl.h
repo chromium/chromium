@@ -242,6 +242,21 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void MaybeShowActiveModeModalDialog(const GURL& idp_config_url,
                                       const GURL& idp_login_url);
 
+  void SetAccountsFetchedTime(base::TimeTicks time) {
+    accounts_fetched_time_ = time;
+  }
+
+  // Updates the IdpSigninStatus in case of accounts fetch failure and shows a
+  // failure UI if applicable.
+  void HandleAccountsFetchFailure(
+      std::unique_ptr<IdentityProviderInfo> idp_info,
+      std::optional<bool> old_idp_signin_status,
+      blink::mojom::FederatedAuthRequestResult result,
+      std::optional<content::FedCmRequestIdTokenStatus> token_status,
+      const IdpNetworkRequestManager::FetchStatus& status);
+
+  url::Origin GetEmbeddingOrigin() const;
+
   // TODO(crbug.com/417197032): Remove these once code has been refactored.
   base::flat_map<GURL, IdentityProviderGetInfo>& GetTokenRequestGetInfos() {
     return token_request_get_infos_;
@@ -250,10 +265,17 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
                           const GURL& metrics_endpoint) {
     metrics_endpoints_[idp_config_url] = metrics_endpoint;
   }
-  void SendAccountsRequest(std::unique_ptr<IdentityProviderInfo> idp_info,
-                           const GURL& config_url,
-                           const GURL& accounts_endpoint,
-                           const std::string& client_id);
+  GURL login_url() { return login_url_; }
+  bool HadAccoundIdBeforeLogin(const std::string& account_id) {
+    return account_ids_before_login_.contains(account_id);
+  }
+  void OnAccountsFetched(std::unique_ptr<IdentityProviderInfo> idp_info,
+                         IdpNetworkRequestManager::FetchStatus status,
+                         std::vector<IdentityRequestAccountPtr> accounts);
+  // Return the FedCmMetrics for use by FedCmAccountsFetcher.
+  // TODO(crbug.com/417784830): Remove this once code has been refactored and
+  // FedCmAccountsFetcher can hold a raw pointer to FedCmMetrics.
+  FedCmMetrics* fedcm_metrics() { return fedcm_metrics_.get(); }
 
  private:
   friend class FederatedAuthRequestImplTest;
@@ -318,14 +340,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // account fetch resulted in a mismatch with its login status.
   void ShowSingleIdpFailureDialog();
   void OnAccountsDisplayed();
-
-  // Updates the IdpSigninStatus in case of accounts fetch failure and shows a
-  // failure UI if applicable.
-  void HandleAccountsFetchFailure(
-      std::unique_ptr<IdentityProviderInfo> idp_info,
-      std::optional<bool> old_idp_signin_status,
-      blink::mojom::FederatedAuthRequestResult result,
-      std::optional<content::FedCmRequestIdTokenStatus> token_status);
 
   void OnAccountsResponseReceived(
       std::unique_ptr<IdentityProviderInfo> idp_info,
@@ -434,14 +448,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void MaybeAddResponseCodeToConsole(const char* fetch_description,
                                      int response_code);
 
-  // Computes the login state of accounts. It uses the IDP-provided signal, if
-  // it had been populated. Otherwise, it uses the browser knowledge on which
-  // accounts are returning and which are not.
-  void ComputeLoginStates(const GURL& idp_config_url,
-                          std::vector<IdentityRequestAccountPtr>& accounts);
-
-  url::Origin GetEmbeddingOrigin() const;
-
   // Returns true and the `IdentityProviderData` + `IdentityRequestAccount` for
   // the only returning account. Returns false if there are multiple returning
   // accounts or no returning account.
@@ -482,22 +488,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void MaybeCreateFedCmMetrics();
 
   bool IsNewlyLoggedIn(const IdentityRequestAccount& account);
-
-  // Returns whether the algorithm should terminate after applying the account
-  // label filter.
-  bool FilterAccountsWithLabel(
-      const std::string& label,
-      std::vector<IdentityRequestAccountPtr>& accounts);
-  // Returns whether the algorithm should terminate after applying the login
-  // hint filter.
-  bool FilterAccountsWithLoginHint(
-      const std::string& login_hint,
-      std::vector<IdentityRequestAccountPtr>& accounts);
-  // Returns whether the algorithm should terminate after applying the domain
-  // hint filter.
-  bool FilterAccountsWithDomainHint(
-      const std::string& domain_hint,
-      std::vector<IdentityRequestAccountPtr>& accounts);
 
   RpMode GetRpMode() const { return rp_mode_; }
 
@@ -669,7 +659,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // "vc+sd-jwt".
   std::unique_ptr<crypto::ECPrivateKey> private_key_;
 
-  // A list of discloures that were parsed in the token response, when
+  // A list of disclosures that were parsed in the token response, when
   // the token's format is "vc+sd-jwt".
   std::vector<std::pair<std::string, content::sdjwt::JSONString>> disclosures_;
 

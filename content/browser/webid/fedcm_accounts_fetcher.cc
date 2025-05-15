@@ -7,6 +7,7 @@
 #include <set>
 
 #include "base/containers/contains.h"
+#include "content/browser/webid/fedcm_mappers.h"
 #include "content/browser/webid/federated_auth_request_impl.h"
 #include "content/browser/webid/federated_provider_fetcher.h"
 #include "content/browser/webid/flags.h"
@@ -15,6 +16,8 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-data-view.h"
 
 using ::blink::mojom::FederatedAuthRequestResult;
+using LoginState = content::IdentityRequestAccount::LoginState;
+using SignInStateMatchStatus = content::FedCmSignInStateMatchStatus;
 using TokenStatus = content::FedCmRequestIdTokenStatus;
 
 namespace {
@@ -53,11 +56,13 @@ FedCmAccountsFetcher::IdentityProviderGetInfo::operator=(
 FedCmAccountsFetcher::FedCmAccountsFetcher(
     RenderFrameHost& render_frame_host,
     IdpNetworkRequestManager* network_manager,
+    FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
     FederatedIdentityPermissionContextDelegate* permission_delegate,
     RpMode rp_mode,
     FederatedAuthRequestImpl* federated_auth_request_impl)
     : render_frame_host_(render_frame_host),
       network_manager_(network_manager),
+      api_permission_delegate_(api_permission_delegate),
       permission_delegate_(permission_delegate),
       rp_mode_(rp_mode),
       federated_auth_request_impl_(federated_auth_request_impl) {}
@@ -195,8 +200,255 @@ void FedCmAccountsFetcher::OnAllConfigAndWellKnownFetched(
     GURL accounts_endpoint = idp_info->endpoints.accounts;
     std::string client_id = idp_info->provider->config->client_id;
     const GURL& config_url = idp_info->provider->config->config_url;
-    federated_auth_request_impl_->SendAccountsRequest(
-        std::move(idp_info), config_url, accounts_endpoint, client_id);
+
+    network_manager_->SendAccountsRequest(
+        url::Origin::Create(config_url), accounts_endpoint, client_id,
+        base::BindOnce(&FedCmAccountsFetcher::OnAccountsResponseReceived,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(idp_info)));
+    federated_auth_request_impl_->fedcm_metrics()->RecordAccountsRequestSent(
+        config_url);
+  }
+}
+
+void FedCmAccountsFetcher::OnAccountsResponseReceived(
+    std::unique_ptr<IdentityProviderInfo> idp_info,
+    IdpNetworkRequestManager::FetchStatus status,
+    std::vector<IdentityRequestAccountPtr> accounts) {
+  federated_auth_request_impl_->SetAccountsFetchedTime(base::TimeTicks::Now());
+
+  GURL idp_config_url = idp_info->provider->config->config_url;
+  const std::optional<bool> old_idp_signin_status =
+      permission_delegate_->GetIdpSigninStatus(
+          url::Origin::Create(idp_config_url));
+  webid::UpdateIdpSigninStatusForAccountsEndpointResponse(
+      *render_frame_host_, idp_config_url, status,
+      idp_info->has_failing_idp_signin_status, permission_delegate_);
+
+  if (status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess) {
+    std::pair<FederatedAuthRequestResult, TokenStatus> resultAndTokenStatus =
+        AccountParseStatusToRequestResultAndTokenStatus(status.parse_status);
+    federated_auth_request_impl_->HandleAccountsFetchFailure(
+        std::move(idp_info), old_idp_signin_status, resultAndTokenStatus.first,
+        resultAndTokenStatus.second, status);
+    return;
+  }
+  RecordRawAccountsSize(accounts.size());
+  if (!FilterAccountsWithLabel(idp_info->metadata.requested_label, accounts)) {
+    // No accounts remain, so treat as account fetch failure.
+    render_frame_host_->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "Accounts were received, but none matched the label.");
+    // If there are no accounts after filtering based on the label,
+    // treat this exactly the same as if we had received an empty accounts
+    // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.
+    federated_auth_request_impl_->HandleAccountsFetchFailure(
+        std::move(idp_info), old_idp_signin_status,
+        FederatedAuthRequestResult::kAccountsListEmpty,
+        TokenStatus::kAccountsListEmpty, status);
+    return;
+  }
+  if (!FilterAccountsWithLoginHint(idp_info->provider->login_hint, accounts)) {
+    // No accounts remain, so treat as account fetch failure.
+    render_frame_host_->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "Accounts were received, but none matched the loginHint.");
+    // If there are no accounts after filtering based on the login hint,
+    // treat this exactly the same as if we had received an empty accounts
+    // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.
+    federated_auth_request_impl_->HandleAccountsFetchFailure(
+        std::move(idp_info), old_idp_signin_status,
+        FederatedAuthRequestResult::kAccountsListEmpty,
+        TokenStatus::kAccountsListEmpty, status);
+    return;
+  }
+  if (!FilterAccountsWithDomainHint(idp_info->provider->domain_hint,
+                                    accounts)) {
+    // No accounts remain, so treat as account fetch failure.
+    render_frame_host_->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "Accounts were received, but none matched the domainHint.");
+    // If there are no accounts after filtering based on the domain hint,
+    // treat this exactly the same as if we had received an empty accounts
+    // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.
+    federated_auth_request_impl_->HandleAccountsFetchFailure(
+        std::move(idp_info), old_idp_signin_status,
+        FederatedAuthRequestResult::kAccountsListEmpty,
+        TokenStatus::kAccountsListEmpty, status);
+    return;
+  }
+  auto filter = [](const IdentityRequestAccountPtr& account) {
+    return account->is_filtered_out;
+  };
+  if (!IsFedCmShowFilteredAccountsEnabled() ||
+      !federated_auth_request_impl_->HasUserTriedToSignInToIdp(
+          idp_config_url) ||
+      federated_auth_request_impl_->login_url() !=
+          idp_info->metadata.idp_login_url) {
+    std::erase_if(accounts, filter);
+  } else {
+    // If the user is logging in to new accounts, only show filtered
+    // accounts if there are no new unfiltered accounts. This includes in
+    // particular the case where all accounts are filtered out.
+    size_t new_unfiltered = std::count_if(
+        accounts.begin(), accounts.end(),
+        [&](const IdentityRequestAccountPtr& account) {
+          return !account->is_filtered_out &&
+                 !federated_auth_request_impl_->HadAccoundIdBeforeLogin(
+                     account->id);
+        });
+    if (new_unfiltered > 0u) {
+      std::erase_if(accounts, filter);
+    }
+  }
+  if (accounts.size() == 0u) {
+    // No accounts remain, so treat as account fetch failure.
+    render_frame_host_->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "Accounts were received, but none matched the login hint, domain "
+        "hint, and/or account labels provided.");
+    // If there are no accounts after filtering,treat this exactly the same
+    // as if we had received an empty accounts list, i.e.
+    // IdpNetworkRequestManager::ParseStatus::kEmptyListError.
+    federated_auth_request_impl_->HandleAccountsFetchFailure(
+        std::move(idp_info), old_idp_signin_status,
+        FederatedAuthRequestResult::kAccountsListEmpty,
+        TokenStatus::kAccountsListEmpty, status);
+    return;
+  }
+  RecordReadyToShowAccountsSize(accounts.size());
+  ComputeLoginStates(idp_info->provider->config->config_url, accounts);
+
+  federated_auth_request_impl_->OnAccountsFetched(std::move(idp_info), status,
+                                                  std::move(accounts));
+}
+
+bool FedCmAccountsFetcher::FilterAccountsWithLabel(
+    const std::string& label,
+    std::vector<IdentityRequestAccountPtr>& accounts) {
+  if (label.empty()) {
+    return true;
+  }
+
+  // Filter out all accounts whose labels do not match the requested label.
+  // Note that it is technically possible for us to end up with more than one
+  // account afterwards, in which case the multiple account chooser would be
+  // shown.
+  size_t accounts_remaining = 0u;
+  for (auto& account : accounts) {
+    if (!base::Contains(account->labels, label)) {
+      account->is_filtered_out = true;
+    } else {
+      ++accounts_remaining;
+    }
+  }
+  federated_auth_request_impl_->fedcm_metrics()->RecordNumMatchingAccounts(
+      accounts_remaining, "AccountLabel");
+  return IsFedCmShowFilteredAccountsEnabled() || accounts_remaining > 0u;
+}
+
+bool FedCmAccountsFetcher::FilterAccountsWithLoginHint(
+    const std::string& login_hint,
+    std::vector<IdentityRequestAccountPtr>& accounts) {
+  if (login_hint.empty()) {
+    return true;
+  }
+
+  // Filter out all accounts whose ID and whose email do not match the login
+  // hint. Note that it is technically possible for us to end up with more than
+  // one account afterwards, in which case the multiple account chooser would be
+  // shown.
+  size_t accounts_remaining = 0u;
+  for (auto& account : accounts) {
+    if (account->is_filtered_out) {
+      continue;
+    }
+    if (!base::Contains(account->login_hints, login_hint)) {
+      account->is_filtered_out = true;
+    } else {
+      ++accounts_remaining;
+    }
+  }
+  federated_auth_request_impl_->fedcm_metrics()->RecordNumMatchingAccounts(
+      accounts_remaining, "LoginHint");
+  return IsFedCmShowFilteredAccountsEnabled() || accounts_remaining > 0u;
+}
+
+bool FedCmAccountsFetcher::FilterAccountsWithDomainHint(
+    const std::string& domain_hint,
+    std::vector<IdentityRequestAccountPtr>& accounts) {
+  if (domain_hint.empty()) {
+    return true;
+  }
+
+  size_t accounts_remaining = 0u;
+  for (auto& account : accounts) {
+    if (account->is_filtered_out) {
+      continue;
+    }
+    if (domain_hint == FederatedAuthRequestImpl::kWildcardDomainHint) {
+      if (account->domain_hints.empty()) {
+        account->is_filtered_out = true;
+        continue;
+      }
+    } else if (!base::Contains(account->domain_hints, domain_hint)) {
+      account->is_filtered_out = true;
+      continue;
+    }
+    ++accounts_remaining;
+  }
+  federated_auth_request_impl_->fedcm_metrics()->RecordNumMatchingAccounts(
+      accounts_remaining, "DomainHint");
+  return IsFedCmShowFilteredAccountsEnabled() || accounts_remaining > 0u;
+}
+
+void FedCmAccountsFetcher::ComputeLoginStates(
+    const GURL& idp_config_url,
+    std::vector<IdentityRequestAccountPtr>& accounts) {
+  url::Origin idp_origin = url::Origin::Create(idp_config_url);
+  // Populate the accounts login state.
+  for (auto& account : accounts) {
+    // Record when IDP and browser have different user sign-in states.
+    bool idp_claimed_sign_in = account->login_state == LoginState::kSignIn;
+    account->last_used_timestamp = permission_delegate_->GetLastUsedTimestamp(
+        render_frame_host_->GetLastCommittedOrigin(),
+        federated_auth_request_impl_->GetEmbeddingOrigin(), idp_origin,
+        account->id);
+
+    if (idp_claimed_sign_in == account->last_used_timestamp.has_value()) {
+      federated_auth_request_impl_->fedcm_metrics()
+          ->RecordSignInStateMatchStatus(idp_config_url,
+                                         SignInStateMatchStatus::kMatch);
+    } else if (idp_claimed_sign_in) {
+      federated_auth_request_impl_->fedcm_metrics()
+          ->RecordSignInStateMatchStatus(
+              idp_config_url, SignInStateMatchStatus::kIdpClaimedSignIn);
+    } else {
+      federated_auth_request_impl_->fedcm_metrics()
+          ->RecordSignInStateMatchStatus(
+              idp_config_url, SignInStateMatchStatus::kBrowserObservedSignIn);
+    }
+
+    // We set the login state based on the IDP response if it sends
+    // back an approved_clients list. If it does not, we need to set
+    // it here based on browser state.
+    if (!account->login_state) {
+      // Consider this a sign-in if we have seen a successful sign-up for
+      // this account before.
+      account->login_state = account->last_used_timestamp.has_value()
+                                 ? LoginState::kSignIn
+                                 : LoginState::kSignUp;
+    }
+
+    if (webid::HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
+            *render_frame_host_, /*provider_url=*/idp_config_url,
+            federated_auth_request_impl_->GetEmbeddingOrigin(),
+            render_frame_host_->GetLastCommittedOrigin(), account->id,
+            permission_delegate_, api_permission_delegate_)) {
+      // At this moment we can trust login_state even though it's controlled
+      // by IdP. If it's kSignUp, it could mean that the browser's sharing
+      // permission is obsolete.
+      account->browser_trusted_login_state = account->login_state.value();
+    }
   }
 }
 

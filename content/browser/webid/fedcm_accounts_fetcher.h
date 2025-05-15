@@ -14,6 +14,8 @@
 
 namespace content {
 
+class FederatedIdentityPermissionContextDelegate;
+class FederatedIdentityApiPermissionContextDelegate;
 class FederatedAuthRequestImpl;
 class RenderFrameHost;
 
@@ -40,6 +42,7 @@ class FedCmAccountsFetcher {
   FedCmAccountsFetcher(
       RenderFrameHost& render_frame_host,
       IdpNetworkRequestManager* network_manager,
+      FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
       FederatedIdentityPermissionContextDelegate* permission_delegate,
       RpMode rp_mode,
       FederatedAuthRequestImpl* federated_auth_request_impl);
@@ -55,16 +58,44 @@ class FedCmAccountsFetcher {
   void OnAllConfigAndWellKnownFetched(
       std::vector<FederatedProviderFetcher::FetchResult> fetch_results);
 
+  void OnAccountsResponseReceived(
+      std::unique_ptr<IdentityProviderInfo> idp_info,
+      IdpNetworkRequestManager::FetchStatus status,
+      std::vector<IdentityRequestAccountPtr> accounts);
+
+  // Returns whether the algorithm should terminate after applying the account
+  // label filter.
+  bool FilterAccountsWithLabel(
+      const std::string& label,
+      std::vector<IdentityRequestAccountPtr>& accounts);
+  // Returns whether the algorithm should terminate after applying the login
+  // hint filter.
+  bool FilterAccountsWithLoginHint(
+      const std::string& login_hint,
+      std::vector<IdentityRequestAccountPtr>& accounts);
+  // Returns whether the algorithm should terminate after applying the domain
+  // hint filter.
+  bool FilterAccountsWithDomainHint(
+      const std::string& domain_hint,
+      std::vector<IdentityRequestAccountPtr>& accounts);
+
+  // Computes the login state of accounts. It uses the IDP-provided signal, if
+  // it had been populated. Otherwise, it uses the browser knowledge on which
+  // accounts are returning and which are not.
+  void ComputeLoginStates(const GURL& idp_config_url,
+                          std::vector<IdentityRequestAccountPtr>& accounts);
+
   std::unique_ptr<FederatedProviderFetcher> provider_fetcher_;
 
   // Owned by FederatedAuthRequestImpl.
   raw_ref<RenderFrameHost> render_frame_host_;
   raw_ptr<IdpNetworkRequestManager> network_manager_;
+  raw_ptr<FederatedIdentityApiPermissionContextDelegate>
+      api_permission_delegate_;
   raw_ptr<FederatedIdentityPermissionContextDelegate> permission_delegate_;
 
   RpMode rp_mode_;
 
-  // TODO(crbug.com/417197032): Remove this once code has been refactored.
   raw_ptr<FederatedAuthRequestImpl> federated_auth_request_impl_;
 
   base::WeakPtrFactory<FedCmAccountsFetcher> weak_ptr_factory_{this};
