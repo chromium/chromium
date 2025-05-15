@@ -24,6 +24,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -39,20 +40,19 @@ public class EnterpriseInfoImpl extends EnterpriseInfo {
     private final Handler mHandler;
 
     // Only ever read/written on the UI thread.
-    private @Nullable OwnedState mOwnedState;
+    private @MonotonicNonNull OwnedState mOwnedState;
     private final Queue<Callback<@Nullable OwnedState>> mCallbackList;
 
     private boolean mSkipAsyncCheckForTesting;
 
     EnterpriseInfoImpl() {
-        mOwnedState = null;
         mCallbackList = new LinkedList<>();
         mHandler = new Handler(assumeNonNull(Looper.myLooper()));
     }
 
     @Override
     @SuppressWarnings("QueryPermissionsNeeded")
-    public void getDeviceEnterpriseInfo(Callback<@Nullable OwnedState> callback) {
+    public void getDeviceEnterpriseInfo(Callback<OwnedState> callback) {
         // AsyncTask requires being called from UI thread.
         ThreadUtils.assertOnUiThread();
         assert callback != null;

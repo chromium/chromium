@@ -61,7 +61,7 @@ public abstract class EnterpriseInfo {
      *
      * @param callback to invoke with results.
      */
-    public abstract void getDeviceEnterpriseInfo(Callback<@Nullable OwnedState> callback);
+    public abstract void getDeviceEnterpriseInfo(Callback<OwnedState> callback);
 
     /**
      * Returns whether the device has a device owner or a profile owner synchronously. Returns null

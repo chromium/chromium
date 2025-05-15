@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
 import org.chromium.chrome.browser.signin.AppRestrictionSupplier;
@@ -26,6 +27,7 @@ import org.chromium.components.policy.PolicyService;
  * avoided when this pref is true. This class checks if the enterprise policy is ever reset such
  * that the FRE should be run, and will clear the shared pref.
  */
+@NullMarked
 public class TosDialogBehaviorSharedPrefInvalidator {
     private static final String TAG = "TosPolicyStatus";
 

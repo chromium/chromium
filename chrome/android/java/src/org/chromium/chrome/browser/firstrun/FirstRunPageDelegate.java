@@ -8,11 +8,14 @@ import android.os.Bundle;
 
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninMediator;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Defines the host interface for First Run Experience pages. */
+@NullMarked
 public interface FirstRunPageDelegate {
     /** Returns FRE properties bundle. */
     Bundle getProperties();
@@ -100,7 +103,7 @@ public interface FirstRunPageDelegate {
      * Returns the promise that provides information about native initialization. Callers can use
      * {@link Promise#isFulfilled()} to check whether the native has already been initialized.
      */
-    Promise<Void> getNativeInitializationPromise();
+    Promise<@Nullable Void> getNativeInitializationPromise();
 
     /** Return the {@link WindowAndroid} for the FirstRunActivity. */
     WindowAndroid getWindowAndroid();

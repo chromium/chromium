@@ -10,13 +10,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 
 /**
  * View that is used when asking the user to choose between options during First Run.
  *
- * Manages the appearance of a large header at the top of the dialog.
+ * <p>Manages the appearance of a large header at the top of the dialog.
  */
+@NullMarked
 public class FirstRunChooserView extends ScrollView {
     private View mChooserTitleView;
 
