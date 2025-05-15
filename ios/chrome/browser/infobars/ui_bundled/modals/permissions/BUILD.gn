@@ -17,7 +17,7 @@ source_set("permissions") {
     "//ios/chrome/browser/permissions/ui_bundled",
     "//ios/chrome/browser/permissions/ui_bundled:constants",
     "//ios/chrome/browser/permissions/ui_bundled:permission_info",
-    "//ios/chrome/browser/settings/ui_bundled/cells:cells",
+    "//ios/chrome/browser/settings/ui_bundled/cells",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/common:string_util",

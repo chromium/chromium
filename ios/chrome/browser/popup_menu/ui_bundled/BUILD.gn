@@ -190,7 +190,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
-    "//ui/base:base",
+    "//ui/base",
   ]
 }
 
@@ -218,7 +218,7 @@ source_set("eg2_tests") {
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/web/common:features",
     "//ios/web/common:user_agent",
-    "//ios/web/public/test/http_server:http_server",
+    "//ios/web/public/test/http_server",
     "//net",
     "//ui/base",
   ]

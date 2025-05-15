@@ -63,7 +63,7 @@ source_set("model") {
     "//components/password_manager/core/browser/affiliation:affiliation_fetching",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/form_parsing",
-    "//components/password_manager/core/browser/leak_detection:leak_detection",
+    "//components/password_manager/core/browser/leak_detection",
     "//components/password_manager/core/browser/leak_detection:leak_detection_interface_headers",
     "//components/password_manager/core/common",
     "//components/password_manager/ios",
@@ -74,7 +74,7 @@ source_set("model") {
     "//components/security_state/core",
     "//components/strings",
     "//components/sync",
-    "//components/translate/core/browser:browser",
+    "//components/translate/core/browser",
     "//components/ukm",
     "//components/ukm/ios:ukm_url_recorder",
     "//google_apis",
@@ -102,7 +102,7 @@ source_set("model") {
     "//ios/chrome/browser/ssl/model",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model/glue",
-    "//ios/chrome/browser/translate/model:model",
+    "//ios/chrome/browser/translate/model",
     "//ios/chrome/browser/web/model",
     "//ios/chrome/browser/webauthn/model",
     "//ios/chrome/browser/webdata_services/model",
@@ -356,7 +356,7 @@ source_set("eg2_tests") {
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/web/public/test/http_server",
     "//net:test_support",
-    "//ui/base:base",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }

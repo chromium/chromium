@@ -99,7 +99,7 @@ source_set("unit_tests") {
     ":extension_search_engine_data_updater",
     ":model",
     ":search_engines_util",
-    "//base:base",
+    "//base",
     "//base/test:test_support",
     "//components/country_codes",
     "//components/favicon/core",
@@ -171,7 +171,7 @@ source_set("eg_app_support+eg2") {
     "//ios/testing/earl_grey:eg_app_support+eg2",
     "//ios/third_party/earl_grey2:app_framework+link",
     "//testing/gmock",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
 }
 

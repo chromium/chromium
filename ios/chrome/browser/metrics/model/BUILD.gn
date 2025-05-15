@@ -215,7 +215,7 @@ source_set("unit_tests") {
     "//components/metrics",
     "//components/metrics:test_support",
     "//components/metrics/dwa",
-    "//components/network_time:network_time",
+    "//components/network_time",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/previous_session_info",
@@ -392,7 +392,7 @@ source_set("eg2_tests") {
     "//ios/web/public/test:element_selector",
     "//ios/web/public/test/http_server",
     "//net:test_support",
-    "//ui/base:base",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }

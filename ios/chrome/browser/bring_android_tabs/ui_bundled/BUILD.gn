@@ -109,7 +109,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/synced_sessions/model",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
 }
 

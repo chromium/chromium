@@ -17,7 +17,7 @@ source_set("net_export") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/webui/model",
-    "//ios/chrome/common:common",
+    "//ios/chrome/common",
     "//ios/web/public",
     "//net",
   ]

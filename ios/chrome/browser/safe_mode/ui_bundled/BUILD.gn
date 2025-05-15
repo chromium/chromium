@@ -59,7 +59,7 @@ source_set("eg2_tests") {
   sources = [ "safe_mode_egtest.mm" ]
   deps = [
     ":eg_test_support+eg2",
-    "//base:base",
+    "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
     "//ios/chrome/browser/shared/public/features",

@@ -171,7 +171,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/search_engines",
     "//components/strings",
-    "//components/sync_preferences:sync_preferences",
+    "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/browser/lens/model",
@@ -204,7 +204,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",
-    "//url:url",
+    "//url",
   ]
 }
 
@@ -381,7 +381,7 @@ source_set("unit_tests_internal") {
     "//components/security_interstitials/core:unsafe_resource",
     "//components/strings",
     "//components/version_info",
-    "//ios/chrome/browser/content_settings/model:model",
+    "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/find_in_page/model",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
@@ -497,7 +497,7 @@ source_set("eg2_tests") {
     "//components/security_interstitials/core",
     "//components/strings",
     "//components/url_formatter",
-    "//components/version_info:version_info",
+    "//components/version_info",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars/ui_bundled/banners:public",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",

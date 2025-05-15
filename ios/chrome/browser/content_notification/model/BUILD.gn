@@ -11,7 +11,7 @@ source_set("content_notification_service") {
   ]
   deps = [
     "//components/keyed_service/core",
-    "//url:url",
+    "//url",
   ]
 }
 
@@ -48,7 +48,7 @@ source_set("content_notification_client") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile:features",
     "//ui/base",
-    "//url:url",
+    "//url",
   ]
 
   frameworks = [ "UserNotifications.framework" ]
@@ -65,7 +65,7 @@ source_set("content_notification_nau_configuration") {
     "//base",
     "//ios/chrome/browser/push_notification/model:constants",
     "//ui/base",
-    "//url:url",
+    "//url",
   ]
 
   frameworks = [ "UserNotifications.framework" ]

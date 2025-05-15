@@ -12,7 +12,7 @@ source_set("ui_bundled") {
   deps = [
     ":constants",
     ":permission_info",
-    "//base:base",
+    "//base",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
     "//components/page_info/core",

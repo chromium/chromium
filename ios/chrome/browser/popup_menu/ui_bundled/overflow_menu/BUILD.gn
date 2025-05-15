@@ -250,7 +250,7 @@ source_set("unit_tests") {
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
-    "//ui/base:base",
+    "//ui/base",
   ]
 }
 

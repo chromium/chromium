@@ -80,7 +80,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/web/model/choose_file",
     "//ios/chrome/browser/web/model/choose_file:test_support",
     "//ios/chrome/test:test_support",
-    "//ios/web/public/test:test",
+    "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//services/network:test_support",
     "//testing/gtest",

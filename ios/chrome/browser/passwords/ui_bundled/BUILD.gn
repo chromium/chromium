@@ -133,7 +133,7 @@ source_set("eg2_tests") {
     "//ios/web/public/test/http_server",
     "//net:test_support",
     "//testing/gtest",
-    "//ui/base:base",
+    "//ui/base",
   ]
   frameworks = [
     "UIKit.framework",

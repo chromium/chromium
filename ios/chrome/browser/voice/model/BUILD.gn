@@ -64,7 +64,7 @@ source_set("tts") {
     "//components/prefs",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/web/public",
-    "//ios/web/public/js_messaging:js_messaging",
+    "//ios/web/public/js_messaging",
     "//net",
     "//url",
   ]

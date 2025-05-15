@@ -15,7 +15,7 @@ source_set("model") {
     "//ios/chrome/browser/download/model",
     "//ios/chrome/browser/shared/public/features",
     "//ios/web/public",
-    "//ui/base:base",
+    "//ui/base",
     "//url",
   ]
 }
