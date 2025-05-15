@@ -4577,24 +4577,11 @@ TEST_F(
   FormsSeen({form});
 
   EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly(
-          [&](const FormStructure&, const FormFieldData&, const AutofillField&,
-              const AutofillClient&,
-              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
-            return false;
-          });
+      .WillRepeatedly(Return(false));
   EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly(
-          [&](const FormFieldData&, const AutofillField&, const AutofillClient&,
-              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
-            return false;
-          });
+      .WillRepeatedly(Return(false));
   EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly(
-          [&](const FormFieldData&, const AutofillClient&,
-              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
-            return false;
-          });
+      .WillRepeatedly(Return(false));
 
   OnAskForValuesToFill(form, email_field);
 
@@ -4619,24 +4606,11 @@ TEST_F(BrowserAutofillManagerTest,
   field.set_should_autocomplete(false);
 
   EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly(
-          [&](const FormStructure&, const FormFieldData&, const AutofillField&,
-              const AutofillClient&,
-              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
-            return false;
-          });
+      .WillRepeatedly(Return(false));
   EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly(
-          [&](const FormFieldData&, const AutofillField&, const AutofillClient&,
-              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
-            return false;
-          });
+      .WillRepeatedly(Return(false));
   EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly(
-          [&](const FormFieldData&, const AutofillClient&,
-              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
-            return false;
-          });
+      .WillRepeatedly(Return(false));
 
   OnAskForValuesToFill(form, field);
 
@@ -7985,24 +7959,11 @@ TEST_F(BrowserAutofillManagerTest,
   // Autocomplete suggestions (and all others for that matter) should be empty
   // in order to `SuggestionType::kAddressEntryOnTyping` to exist.
   EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly(
-          [&](const FormStructure&, const FormFieldData&, const AutofillField&,
-              const AutofillClient&,
-              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
-            return false;
-          });
+      .WillRepeatedly(Return(false));
   EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly(
-          [&](const FormFieldData&, const AutofillField&, const AutofillClient&,
-              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
-            return false;
-          });
+      .WillRepeatedly(Return(false));
   EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly(
-          [&](const FormFieldData&, const AutofillClient&,
-              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
-            return false;
-          });
+      .WillRepeatedly(Return(false));
   FormsSeen({form});
   OnAskForValuesToFill(form, form.fields()[0]);
 
@@ -8290,24 +8251,11 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
           Suggestion(SuggestionType::kCreateNewPlusAddress)}));
   // Single field form fill suggestions request - No results.
   EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly(
-          [&](const FormStructure&, const FormFieldData&, const AutofillField&,
-              const AutofillClient&,
-              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
-            return false;
-          });
+      .WillRepeatedly(Return(false));
   EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly(
-          [&](const FormFieldData&, const AutofillField&, const AutofillClient&,
-              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
-            return false;
-          });
+      .WillRepeatedly(Return(false));
   EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly(
-          [&](const FormFieldData&, const AutofillClient&,
-              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
-            return false;
-          });
+      .WillRepeatedly(Return(false));
 
   EXPECT_CALL(plus_address_delegate(),
               OnPlusAddressSuggestionShown(
@@ -8347,12 +8295,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
       .Times(0);
   // Single field form fill suggestions request.
   EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly(
-          [&](const FormStructure&, const FormFieldData&, const AutofillField&,
-              const AutofillClient&,
-              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
-            return false;
-          });
+      .WillRepeatedly(Return(false));
   EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
       .WillRepeatedly([&](const FormFieldData& field, const AutofillField&,
                           const AutofillClient&,
@@ -8451,18 +8394,9 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
           Suggestion(SuggestionType::kFillExistingPlusAddress)}));
   // Single field form fill suggestions request.
   EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly(
-          [&](const FormStructure&, const FormFieldData&, const AutofillField&,
-              const AutofillClient&,
-              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
-            return false;
-          });
+      .WillRepeatedly(Return(false));
   EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly(
-          [&](const FormFieldData&, const AutofillField&, const AutofillClient&,
-              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
-            return false;
-          });
+      .WillRepeatedly(Return(false));
   EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
       .WillRepeatedly([&](const FormFieldData& field, const AutofillClient&,
                           SingleFieldFillRouter::OnSuggestionsReturnedCallback&
@@ -8518,24 +8452,11 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   EXPECT_CALL(plus_address_delegate(), OnPlusAddressSuggestionShown).Times(0);
   // Single field form fill suggestions request - No results.
   EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly(
-          [&](const FormStructure&, const FormFieldData&, const AutofillField&,
-              const AutofillClient&,
-              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
-            return false;
-          });
+      .WillRepeatedly(Return(false));
   EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly(
-          [&](const FormFieldData&, const AutofillField&, const AutofillClient&,
-              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
-            return false;
-          });
+      .WillRepeatedly(Return(false));
   EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly(
-          [&](const FormFieldData&, const AutofillClient&,
-              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
-            return false;
-          });
+      .WillRepeatedly(Return(false));
 
   // Set up our form data. Notably, the first field is an email address.
   FormData form = test::GetFormData(
