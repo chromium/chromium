@@ -2722,7 +2722,7 @@
     },
     {
       name: "LanguageDetectionAPI",
-      status: "experimental",
+      status: "stable",
       origin_trial_feature_name: "LanguageDetectionAPI",
       origin_trial_allows_third_party: true,
       base_feature_status: "enabled",
