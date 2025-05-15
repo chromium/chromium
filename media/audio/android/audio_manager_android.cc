@@ -458,8 +458,8 @@ AudioOutputStream* AudioManagerAndroid::MakeLowLatencyOutputStream(
 
   if (__builtin_available(android AAUDIO_MIN_API, *)) {
     if (UseAAudioOutput()) {
-      DCHECK(UseAAudioPerStreamDeviceSelection() ||
-             AudioDeviceDescription::IsDefaultDevice(device_id))
+      DLOG_IF(WARNING, !UseAAudioPerStreamDeviceSelection() &&
+                           !AudioDeviceDescription::IsDefaultDevice(device_id))
           << "Non-default output device requested for output communication "
              "stream.";
 
