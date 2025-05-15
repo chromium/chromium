@@ -80,4 +80,8 @@ FakeAffiliationFetcherFactory::CreateInstance(
   return fetcher;
 }
 
+bool FakeAffiliationFetcherFactory::CanCreateFetcher() const {
+  return true;
+}
+
 }  // namespace affiliations

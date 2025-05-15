@@ -22,6 +22,7 @@ class MockAffiliationFetcherFactory : public AffiliationFetcherFactory {
       CreateInstance,
       (scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory),
       (override));
+  MOCK_METHOD(bool, CanCreateFetcher, (), (override, const));
 };
 
 }  // namespace affiliations

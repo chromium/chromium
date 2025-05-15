@@ -21,4 +21,8 @@ AffiliationFetcherFactoryImpl::CreateInstance(
              : nullptr;
 }
 
+bool AffiliationFetcherFactoryImpl::CanCreateFetcher() const {
+  return HashAffiliationFetcher::IsFetchPossible();
+}
+
 }  // namespace affiliations

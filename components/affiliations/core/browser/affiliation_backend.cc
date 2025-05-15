@@ -401,17 +401,21 @@ bool AffiliationBackend::OnCanSendNetworkRequest() {
   if (requested_facet_uris.empty())
     return false;
 
+  if (!fetcher_manager_->IsFetchPossible()) {
+    return false;
+  }
+
   // TODO(crbug.com/40858918): There is no need to request psl extension every
   // time, find a better way of caching it.
   ReportStatistics(requested_facet_uris.size());
-  return fetcher_manager_->Fetch(
-      requested_facet_uris,
-      {.branding_info = true,
-       .change_password_info =
-           base::FeatureList::IsEnabled(kFetchChangePasswordUrl),
-       .psl_extension_list = true},
-      base::BindOnce(&AffiliationBackend::OnFetchFinished,
-                     weak_ptr_factory_.GetWeakPtr()));
+  fetcher_manager_->Fetch(requested_facet_uris,
+                          {.branding_info = true,
+                           .change_password_info = base::FeatureList::IsEnabled(
+                               kFetchChangePasswordUrl),
+                           .psl_extension_list = true},
+                          base::BindOnce(&AffiliationBackend::OnFetchFinished,
+                                         weak_ptr_factory_.GetWeakPtr()));
+  return true;
 }
 
 void AffiliationBackend::ReportStatistics(size_t requested_facet_uri_count) {

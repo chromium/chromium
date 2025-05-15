@@ -25,7 +25,7 @@ AffiliationFetcherManager::AffiliationFetcherManager(
 
 AffiliationFetcherManager::~AffiliationFetcherManager() = default;
 
-bool AffiliationFetcherManager::Fetch(
+void AffiliationFetcherManager::Fetch(
     const std::vector<FacetURI>& facet_uris,
     AffiliationFetcherInterface::RequestInfo request_info,
     base::OnceCallback<void(AffiliationFetcherInterface::FetchResult)>
@@ -35,7 +35,7 @@ bool AffiliationFetcherManager::Fetch(
   if (!fetcher) {
     std::move(completion_callback)
         .Run(AffiliationFetcherInterface::FetchResult());
-    return false;
+    return;
   }
 
   auto cleanup_callback =
@@ -44,7 +44,6 @@ bool AffiliationFetcherManager::Fetch(
                                weak_ptr_factory_.GetWeakPtr(), fetcher.get()));
   fetcher->StartRequest(facet_uris, request_info, std::move(cleanup_callback));
   fetchers_.push_back(std::move(fetcher));
-  return true;
 }
 
 void AffiliationFetcherManager::CleanUpFetcher(
@@ -67,4 +66,9 @@ std::vector<FacetURI> AffiliationFetcherManager::GetRequestedFacetURIs() const {
   }
   return requested_facet_uris;
 }
+
+bool AffiliationFetcherManager::IsFetchPossible() const {
+  return fetcher_factory_->CanCreateFetcher();
+}
+
 }  // namespace affiliations

@@ -28,19 +28,19 @@ class AffiliationFetcherManager {
       delete;
   ~AffiliationFetcherManager();
 
-  // Starts a fetch for the given facet_uris and request_info.
-  // Returns true if the fetch was started and false if the fetch is not
-  // possible, e.g. because the required API keys are not available. See
-  // |HashAffiliationFetcher::IsFetchPossible| for details. Internally this will
-  // create a new |AffiliationFetcherInterface|, store it in |fetchers_| and
-  // clean in up once the fetch is completed.
-  bool Fetch(const std::vector<FacetURI>& facet_uris,
+  // Starts a fetch for the given facet_uris and request_info. Internally this
+  // will create a new |AffiliationFetcherInterface|, store it in |fetchers_|
+  // and clean in up once the fetch is completed.
+  void Fetch(const std::vector<FacetURI>& facet_uris,
              AffiliationFetcherInterface::RequestInfo request_info,
              base::OnceCallback<void(AffiliationFetcherInterface::FetchResult)>
                  completion_callback);
 
   // Returns all the |FacetURI|s that are currently being fetched.
   std::vector<FacetURI> GetRequestedFacetURIs() const;
+
+  // Returns whether Fetch can be scheduled.
+  bool IsFetchPossible() const;
 
 #if defined(UNIT_TEST)
   // Only for use in tests.

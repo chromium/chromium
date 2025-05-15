@@ -58,6 +58,8 @@ class KeylessFetcherFactory : public AffiliationFetcherFactory {
     can_create_fetcher_ = can_create_fetcher;
   }
 
+  bool CanCreateFetcher() const override { return can_create_fetcher_; }
+
  private:
   bool can_create_fetcher_ = true;
 };
@@ -155,10 +157,8 @@ TEST_F(AffiliationFetcherManagerTest, OneFetchCallCreatesOneFetcher) {
   requested_uris.push_back(
       FacetURI::FromCanonicalSpec(kNotExampleAndroidFacetURI));
 
-  bool fetch_started =
-      manager()->Fetch(requested_uris, kRequestInfo, base::DoNothing());
+  manager()->Fetch(requested_uris, kRequestInfo, base::DoNothing());
 
-  EXPECT_TRUE(fetch_started);
   EXPECT_EQ(1u, manager()->GetFetchersForTesting()->size());
   EXPECT_EQ(1, GetNumPendingRequests());
 }
@@ -170,16 +170,10 @@ TEST_F(AffiliationFetcherManagerTest,
   requested_uris.push_back(
       FacetURI::FromCanonicalSpec(kNotExampleAndroidFacetURI));
 
-  bool fetch_started_1 =
-      manager()->Fetch(requested_uris, kRequestInfo, base::DoNothing());
-  bool fetch_started_2 =
-      manager()->Fetch(requested_uris, kRequestInfo, base::DoNothing());
-  bool fetch_started_3 =
-      manager()->Fetch(requested_uris, kRequestInfo, base::DoNothing());
+  manager()->Fetch(requested_uris, kRequestInfo, base::DoNothing());
+  manager()->Fetch(requested_uris, kRequestInfo, base::DoNothing());
+  manager()->Fetch(requested_uris, kRequestInfo, base::DoNothing());
 
-  EXPECT_TRUE(fetch_started_1);
-  EXPECT_TRUE(fetch_started_2);
-  EXPECT_TRUE(fetch_started_3);
   EXPECT_EQ(3u, manager()->GetFetchersForTesting()->size());
   EXPECT_EQ(3, GetNumPendingRequests());
 }
@@ -194,10 +188,10 @@ TEST_F(AffiliationFetcherManagerTest,
       completion_callback;
   DisallowFetcherCreation();
 
-  bool fetch_started = manager()->Fetch(requested_uris, kRequestInfo,
-                                        completion_callback.GetCallback());
+  manager()->Fetch(requested_uris, kRequestInfo,
+                   completion_callback.GetCallback());
 
-  EXPECT_FALSE(fetch_started);
+  EXPECT_FALSE(manager()->IsFetchPossible());
   EXPECT_EQ(0u, manager()->GetFetchersForTesting()->size());
   EXPECT_EQ(0, GetNumPendingRequests());
   EXPECT_TRUE(completion_callback.IsReady());
@@ -212,11 +206,10 @@ TEST_F(AffiliationFetcherManagerTest,
   base::test::TestFuture<HashAffiliationFetcher::FetchResult>
       completion_callback;
 
-  bool fetch_started = manager()->Fetch(requested_uris, kRequestInfo,
-                                        completion_callback.GetCallback());
+  manager()->Fetch(requested_uris, kRequestInfo,
+                   completion_callback.GetCallback());
   SetupSuccessfulResponse(GetSuccessfulAffiliationResponse());
 
-  ASSERT_TRUE(fetch_started);
   EXPECT_EQ(0, GetNumPendingRequests());
   EXPECT_TRUE(completion_callback.Take().data);
   EXPECT_EQ(0u, manager()->GetFetchersForTesting()->size());
@@ -235,18 +228,15 @@ TEST_F(AffiliationFetcherManagerTest,
   base::test::TestFuture<HashAffiliationFetcher::FetchResult>
       completion_callback_3;
 
-  bool fetch_started_1 = manager()->Fetch(requested_uris, kRequestInfo,
-                                          completion_callback_1.GetCallback());
-  bool fetch_started_2 = manager()->Fetch(requested_uris, kRequestInfo,
-                                          completion_callback_2.GetCallback());
-  bool fetch_started_3 = manager()->Fetch(requested_uris, kRequestInfo,
-                                          completion_callback_3.GetCallback());
+  manager()->Fetch(requested_uris, kRequestInfo,
+                   completion_callback_1.GetCallback());
+  manager()->Fetch(requested_uris, kRequestInfo,
+                   completion_callback_2.GetCallback());
+  manager()->Fetch(requested_uris, kRequestInfo,
+                   completion_callback_3.GetCallback());
   // All requests have the same URL, so this will serve all of them
   SetupSuccessfulResponse(GetSuccessfulAffiliationResponse());
 
-  ASSERT_TRUE(fetch_started_1);
-  ASSERT_TRUE(fetch_started_2);
-  ASSERT_TRUE(fetch_started_3);
   EXPECT_EQ(0, GetNumPendingRequests());
   EXPECT_TRUE(completion_callback_1.Take().data);
   EXPECT_TRUE(completion_callback_2.Take().data);
@@ -266,10 +256,9 @@ TEST_F(AffiliationFetcherManagerTest, DelegateInvokedOnFetchSuccess) {
       completion_callback;
   SetupSuccessfulResponse(GetSuccessfulAffiliationResponse());
 
-  bool fetch_started = manager()->Fetch(requested_uris, kRequestInfo,
-                                        completion_callback.GetCallback());
+  manager()->Fetch(requested_uris, kRequestInfo,
+                   completion_callback.GetCallback());
 
-  ASSERT_TRUE(fetch_started);
   auto affiliation_response = completion_callback.Take().data;
   EXPECT_EQ(0, GetNumPendingRequests());
   EXPECT_TRUE(affiliation_response);
@@ -296,10 +285,9 @@ TEST_F(AffiliationFetcherManagerTest, CallbackInvokedOnFetchFailed) {
       completion_callback;
   SetupServerErrorResponse();
 
-  bool fetch_started = manager()->Fetch(requested_uris, kRequestInfo,
-                                        completion_callback.GetCallback());
+  manager()->Fetch(requested_uris, kRequestInfo,
+                   completion_callback.GetCallback());
 
-  ASSERT_TRUE(fetch_started);
   EXPECT_EQ(0, GetNumPendingRequests());
   EXPECT_TRUE(completion_callback.IsReady());
   EXPECT_EQ(0u, manager()->GetFetchersForTesting()->size());
@@ -314,10 +302,9 @@ TEST_F(AffiliationFetcherManagerTest, CallbackInvokedOnMalformedResponse) {
       completion_callback;
   SetupSuccessfulResponse("gibberish");
 
-  bool fetch_started = manager()->Fetch(requested_uris, kRequestInfo,
-                                        completion_callback.GetCallback());
+  manager()->Fetch(requested_uris, kRequestInfo,
+                   completion_callback.GetCallback());
 
-  ASSERT_TRUE(fetch_started);
   EXPECT_EQ(0, GetNumPendingRequests());
   EXPECT_TRUE(completion_callback.IsReady());
   EXPECT_EQ(0u, manager()->GetFetchersForTesting()->size());
@@ -344,20 +331,17 @@ TEST_F(AffiliationFetcherManagerTest, DelegateInvokedOnAllPossibleResponses) {
 
   // Successful response
   SetupSuccessfulResponse(GetSuccessfulAffiliationResponse());
-  bool fetch_started_1 = manager()->Fetch(requested_uris, kRequestInfo,
-                                          completion_callback_1.GetCallback());
+  manager()->Fetch(requested_uris, kRequestInfo,
+                   completion_callback_1.GetCallback());
   // Failing response
   SetupServerErrorResponse();
-  bool fetch_started_2 = manager()->Fetch(requested_uris, kRequestInfo,
-                                          completion_callback_2.GetCallback());
+  manager()->Fetch(requested_uris, kRequestInfo,
+                   completion_callback_2.GetCallback());
   // Malformed response
   SetupSuccessfulResponse("gibberish");
-  bool fetch_started_3 = manager()->Fetch(requested_uris, kRequestInfo,
-                                          completion_callback_3.GetCallback());
+  manager()->Fetch(requested_uris, kRequestInfo,
+                   completion_callback_3.GetCallback());
 
-  ASSERT_TRUE(fetch_started_1);
-  ASSERT_TRUE(fetch_started_2);
-  ASSERT_TRUE(fetch_started_3);
   EXPECT_EQ(0, GetNumPendingRequests());
   EXPECT_EQ(0u, manager()->GetFetchersForTesting()->size());
   // First response
@@ -387,17 +371,14 @@ TEST_F(AffiliationFetcherManagerTest, CallbackIsCalledOnManagerDestruction) {
   base::test::TestFuture<HashAffiliationFetcher::FetchResult>
       completion_callback_3;
 
-  bool fetch_started_1 = manager()->Fetch(requested_uris, kRequestInfo,
-                                          completion_callback_1.GetCallback());
-  bool fetch_started_2 = manager()->Fetch(requested_uris, kRequestInfo,
-                                          completion_callback_2.GetCallback());
-  bool fetch_started_3 = manager()->Fetch(requested_uris, kRequestInfo,
-                                          completion_callback_3.GetCallback());
+  manager()->Fetch(requested_uris, kRequestInfo,
+                   completion_callback_1.GetCallback());
+  manager()->Fetch(requested_uris, kRequestInfo,
+                   completion_callback_2.GetCallback());
+  manager()->Fetch(requested_uris, kRequestInfo,
+                   completion_callback_3.GetCallback());
   DestroyManager();
 
-  ASSERT_TRUE(fetch_started_1);
-  ASSERT_TRUE(fetch_started_2);
-  ASSERT_TRUE(fetch_started_3);
   EXPECT_TRUE(completion_callback_1.IsReady());
   EXPECT_TRUE(completion_callback_2.IsReady());
   EXPECT_TRUE(completion_callback_3.IsReady());
