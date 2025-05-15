@@ -6,17 +6,20 @@ package org.chromium.chrome.browser.feed;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -25,6 +28,7 @@ import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
+import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
@@ -35,6 +39,7 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.jank_tracker.JankScenario;
 import org.chromium.base.jank_tracker.JankTracker;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
@@ -48,6 +53,8 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -163,6 +170,7 @@ public class FeedSurfaceCoordinator
     // Used to handle padding adjustment when edge to edge is enabled.
     private @Nullable EdgeToEdgePadAdjuster mEdgePadAdjuster;
     private final boolean mIsNewTabPageCustomizationEnabled;
+    private @Nullable ImageButton mNtpCustomizationButton;
 
     /** Provides the additional capabilities needed for the container view. */
     private class RootView extends FrameLayout {
@@ -185,6 +193,9 @@ public class FeedSurfaceCoordinator
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)) {
                 mRecyclerView.post(mRecyclerView::invalidateItemDecorations);
                 updateNtpHeaderMargins();
+            }
+            if (mIsNewTabPageCustomizationEnabled && mUseStaggeredLayout) {
+                updateNtpCustomizationButtonVisibility();
             }
         }
 
@@ -471,6 +482,35 @@ public class FeedSurfaceCoordinator
             mSwipeRefreshLayout.addOnRefreshListener(this);
         }
 
+        // The NTP customization button needs to be added after the RecyclerView to make it float
+        // above the RecyclerView.
+        if (mIsNewTabPageCustomizationEnabled && mUseStaggeredLayout) {
+            mNtpCustomizationButton = new ImageButton(mActivity);
+            mNtpCustomizationButton.setImageResource(R.drawable.edit_icon);
+            mNtpCustomizationButton.setBackgroundResource(R.drawable.edit_icon_circle_background);
+            ImageViewCompat.setImageTintList(
+                    mNtpCustomizationButton,
+                    ColorStateList.valueOf(
+                            ContextCompat.getColor(
+                                    mActivity, R.color.ntp_customization_edit_icon_fill_color)));
+            FrameLayout.LayoutParams layoutParams =
+                    new FrameLayout.LayoutParams(
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.gravity = Gravity.BOTTOM | Gravity.END;
+            int margin =
+                    mActivity
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.ntp_customization_button_margin);
+            layoutParams.setMargins(0, 0, margin, margin);
+            mNtpCustomizationButton.setLayoutParams(layoutParams);
+            mNtpCustomizationButton.setOnClickListener(
+                    v -> {
+                        showNtpCustomizationBottomSheet();
+                    });
+            mRootView.addView(mNtpCustomizationButton);
+        }
+
         mHandler = new Handler(Looper.getMainLooper());
 
         // MVC setup for feed header.
@@ -580,6 +620,29 @@ public class FeedSurfaceCoordinator
         layoutParams.setMarginStart(margin);
         layoutParams.setMarginEnd(margin);
         mNtpHeader.setLayoutParams(layoutParams);
+    }
+
+    void updateNtpCustomizationButtonVisibility() {
+        int min_margin =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.min_margin_for_ntp_customization_button);
+        mNtpCustomizationButton.setVisibility(
+                mRecyclerView.getPaddingLeft() >= min_margin ? View.VISIBLE : View.GONE);
+    }
+
+    void showNtpCustomizationBottomSheet() {
+        new NtpCustomizationCoordinator(
+                        mActivity,
+                        mBottomSheetController,
+                        () -> {
+                            return mProfile;
+                        },
+                        NtpCustomizationCoordinator.BottomSheetType.MAIN)
+                .showBottomSheet();
+        NtpCustomizationMetricsUtils.recordOpenBottomSheetEntry(
+                NtpCustomizationCoordinator.EntryPointType.NEW_TAB_PAGE);
+        RecordUserAction.record("MobileNewTabPageNtpCustomization");
     }
 
     int getToolbarHeight() {

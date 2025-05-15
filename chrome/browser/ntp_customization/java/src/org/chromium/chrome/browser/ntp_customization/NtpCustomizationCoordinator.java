@@ -60,12 +60,13 @@ public class NtpCustomizationCoordinator {
         int NUM_ENTRIES = 3;
     }
 
-    @IntDef({EntryPointType.MAIN_MENU, EntryPointType.TOOL_BAR})
+    @IntDef({EntryPointType.MAIN_MENU, EntryPointType.TOOL_BAR, EntryPointType.NEW_TAB_PAGE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface EntryPointType {
         int MAIN_MENU = 0;
         int TOOL_BAR = 1;
-        int NUM_ENTRIES = 2;
+        int NEW_TAB_PAGE = 2;
+        int NUM_ENTRIES = 3;
     }
 
     /**

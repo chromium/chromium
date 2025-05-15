@@ -24840,6 +24840,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileNewTabPageNtpCustomization">
+  <owner>hanxi@chromium.org</owner>
+  <owner>jianli@chromium.org</owner>
+  <owner>yanlinghu@google.com</owner>
+  <owner>clank-start@google.com</owner>
+  <description>
+    User pressed the NTP customization button in the new tab page.
+  </description>
+</action>
+
 <action name="MobileNTP.Interests.Click">
   <owner>knn@chromium.org</owner>
   <description>
