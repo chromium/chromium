@@ -469,14 +469,6 @@ bool IpProtectionCoreHost::ShouldDisableIpProtectionForEnterpriseForTesting() {
 }
 
 bool IpProtectionCoreHost::ShouldDisableIpProtectionForEnterprise() {
-  if (IsLikelyDogfoodClient()) {
-    // For Googler/Dogfood devices we don't want to disable IP Protection by
-    // default so that we can carry out dogfood experiments via Finch
-    // instead of also needing to coordinate internal enterprise policy
-    // rollouts.
-    return false;
-  }
-
   return tracking_protection_settings_->IsIpProtectionDisabledForEnterprise();
 }
 

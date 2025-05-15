@@ -165,13 +165,6 @@ class IpProtectionCoreHostInterceptor
   bool should_intercept_;
 };
 
-void SetIsLikelyDogfoodClient(bool is_dogfood) {
-  CHECK(g_browser_process);
-  CHECK(g_browser_process->variations_service());
-  g_browser_process->variations_service()->SetIsLikelyDogfoodClientForTesting(
-      is_dogfood);
-}
-
 constexpr base::Time kDontRetry = base::Time::Max();
 }  // namespace
 
@@ -378,25 +371,6 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
     EXPECT_TRUE(getter->IsIpProtectionEnabled());
   }
 }
-
-IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
-                       NotDisabledForManagedDogfoodDevice) {
-  IpProtectionCoreHost* getter =
-      IpProtectionCoreHostFactory::GetForProfile(GetProfile());
-  ASSERT_TRUE(getter);
-  ASSERT_TRUE(getter->IsIpProtectionEnabled());
-
-  {
-    policy::ScopedManagementServiceOverrideForTesting browser_management{
-        policy::ManagementServiceFactory::GetForPlatform(),
-        policy::EnterpriseManagementAuthority::COMPUTER_LOCAL};
-    SetIsLikelyDogfoodClient(true);
-
-    EXPECT_TRUE(getter->IsIpProtectionEnabled());
-
-    SetIsLikelyDogfoodClient(false);
-  }
-}
 #endif
 
 class IpProtectionBrowserTestEnterpriseKillSwitchEnabled
@@ -429,26 +403,6 @@ IN_PROC_BROWSER_TEST_F(IpProtectionBrowserTestEnterpriseKillSwitchEnabled,
         policy::EnterpriseManagementAuthority::COMPUTER_LOCAL};
 
     EXPECT_FALSE(getter->IsIpProtectionEnabled());
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(IpProtectionBrowserTestEnterpriseKillSwitchEnabled,
-                       NotDisabledForManagedDogfoodDevice) {
-  IpProtectionCoreHost* getter =
-      IpProtectionCoreHostFactory::GetForProfile(GetProfile());
-  ASSERT_TRUE(getter);
-
-  {
-    policy::ScopedManagementServiceOverrideForTesting browser_management{
-        policy::ManagementServiceFactory::GetForPlatform(),
-        policy::EnterpriseManagementAuthority::COMPUTER_LOCAL};
-
-    EXPECT_FALSE(getter->IsIpProtectionEnabled());
-
-    SetIsLikelyDogfoodClient(true);
-    EXPECT_TRUE(getter->IsIpProtectionEnabled());
-
-    SetIsLikelyDogfoodClient(false);
   }
 }
 #endif
@@ -888,19 +842,6 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostPolicyBrowserTest,
   UnsetPolicyValues();
   EXPECT_TRUE(provider->IsIpProtectionEnabled());
 }
-IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostPolicyBrowserTest,
-                       NotDisabledForManagedDogfoodBrowser) {
-  IpProtectionCoreHost* provider =
-      IpProtectionCoreHostFactory::GetForProfile(GetProfile());
-  ASSERT_TRUE(provider);
-
-  EnableUnrelatedPolicy();
-  SetIsLikelyDogfoodClient(true);
-  EXPECT_TRUE(provider->IsIpProtectionEnabled());
-
-  UnsetPolicyValues();
-  SetIsLikelyDogfoodClient(false);
-}
 #else
 IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostPolicyBrowserTest,
                        NotDisabledForEnterpriseUser) {
@@ -914,20 +855,6 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostPolicyBrowserTest,
 
   UnsetPolicyValues();
   ASSERT_TRUE(provider->IsIpProtectionEnabled());
-}
-
-IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostPolicyBrowserTest,
-                       NotDisabledForEnterpriseDogfoodUser) {
-  IpProtectionCoreHost* provider =
-      IpProtectionCoreHostFactory::GetForProfile(GetProfile());
-  ASSERT_TRUE(provider);
-
-  SetChromeOSEnterpriseUserDefaults();
-  SetIsLikelyDogfoodClient(true);
-  EXPECT_TRUE(provider->IsIpProtectionEnabled());
-
-  UnsetPolicyValues();
-  SetIsLikelyDogfoodClient(false);
 }
 #endif
 
@@ -966,21 +893,6 @@ IN_PROC_BROWSER_TEST_F(IpProtectionPolicyBrowserTestEnterpriseKillSwitchEnabled,
   UnsetPolicyValues();
   EXPECT_TRUE(provider->IsIpProtectionEnabled());
 }
-IN_PROC_BROWSER_TEST_F(IpProtectionPolicyBrowserTestEnterpriseKillSwitchEnabled,
-                       NotDisabledForManagedDogfoodBrowser) {
-  IpProtectionCoreHost* provider =
-      IpProtectionCoreHostFactory::GetForProfile(GetProfile());
-  ASSERT_TRUE(provider);
-
-  EnableUnrelatedPolicy();
-  EXPECT_FALSE(provider->IsIpProtectionEnabled());
-
-  SetIsLikelyDogfoodClient(true);
-  EXPECT_TRUE(provider->IsIpProtectionEnabled());
-
-  UnsetPolicyValues();
-  SetIsLikelyDogfoodClient(false);
-}
 #else
 IN_PROC_BROWSER_TEST_F(IpProtectionPolicyBrowserTestEnterpriseKillSwitchEnabled,
                        NotDisabledForEnterpriseUser) {
@@ -994,21 +906,5 @@ IN_PROC_BROWSER_TEST_F(IpProtectionPolicyBrowserTestEnterpriseKillSwitchEnabled,
 
   UnsetPolicyValues();
   ASSERT_TRUE(provider->IsIpProtectionEnabled());
-}
-
-IN_PROC_BROWSER_TEST_F(IpProtectionPolicyBrowserTestEnterpriseKillSwitchEnabled,
-                       NotDisabledForEnterpriseDogfoodUser) {
-  IpProtectionCoreHost* provider =
-      IpProtectionCoreHostFactory::GetForProfile(GetProfile());
-  ASSERT_TRUE(provider);
-
-  SetChromeOSEnterpriseUserDefaults();
-  EXPECT_TRUE(provider->IsIpProtectionEnabled());
-
-  SetIsLikelyDogfoodClient(true);
-  EXPECT_TRUE(provider->IsIpProtectionEnabled());
-
-  UnsetPolicyValues();
-  SetIsLikelyDogfoodClient(false);
 }
 #endif
