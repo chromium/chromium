@@ -431,38 +431,63 @@ status::Code GenerateBufferCommon(ConstBufferView old_image,
 
 status::Code GenerateBuffer(ConstBufferView old_image,
                             ConstBufferView new_image,
+                            const GenerateOptions& options,
                             EnsemblePatchWriter* patch_writer) {
-  return GenerateBufferCommon(
-      old_image, new_image, std::make_unique<HeuristicEnsembleMatcher>(nullptr),
-      patch_writer);
+  if (!options.imposed_matches.empty()) {
+    if (options.start_scan_at) {
+      LOG(WARNING) << "-start-scan-at option is meaningless under -imposed.";
+    }
+    return GenerateBufferCommon(
+        old_image, new_image,
+        std::make_unique<ImposedEnsembleMatcher>(options.imposed_matches),
+        patch_writer);
+
+  } else if (options.is_raw) {
+    if (options.start_scan_at) {
+      LOG(WARNING) << "-start-scan-at option is meaningless under -raw.";
+    }
+
+    ImageIndex old_image_index(old_image);
+    EncodedView old_view(old_image_index);
+    std::vector<offset_t> old_sa =
+        MakeSuffixArray<InducedSuffixSort>(old_view, old_view.Cardinality());
+
+    PatchElementWriter patch_element(
+        {Element(old_image.local_region()), Element(new_image.local_region())});
+    if (!GenerateRawElement(old_sa, old_image, new_image, &patch_element)) {
+      return status::kStatusFatal;
+    }
+
+    patch_writer->AddElement(std::move(patch_element));
+    return status::kStatusSuccess;
+  }
+
+  return GenerateBufferCommon(old_image, new_image,
+                              std::make_unique<HeuristicEnsembleMatcher>(
+                                  options.start_scan_at, nullptr),
+                              patch_writer);
+}
+
+status::Code GenerateBuffer(ConstBufferView old_image,
+                            ConstBufferView new_image,
+                            EnsemblePatchWriter* patch_writer) {
+  GenerateOptions options;
+  return GenerateBuffer(old_image, new_image, options, patch_writer);
 }
 
 status::Code GenerateBufferImposed(ConstBufferView old_image,
                                    ConstBufferView new_image,
                                    std::string imposed_matches,
                                    EnsemblePatchWriter* patch_writer) {
-  if (imposed_matches.empty())
-    return GenerateBuffer(old_image, new_image, patch_writer);
-
-  return GenerateBufferCommon(
-      old_image, new_image,
-      std::make_unique<ImposedEnsembleMatcher>(imposed_matches), patch_writer);
+  GenerateOptions options{.imposed_matches = imposed_matches};
+  return GenerateBuffer(old_image, new_image, options, patch_writer);
 }
 
 status::Code GenerateBufferRaw(ConstBufferView old_image,
                                ConstBufferView new_image,
                                EnsemblePatchWriter* patch_writer) {
-  ImageIndex old_image_index(old_image);
-  EncodedView old_view(old_image_index);
-  std::vector<offset_t> old_sa =
-      MakeSuffixArray<InducedSuffixSort>(old_view, old_view.Cardinality());
-
-  PatchElementWriter patch_element(
-      {Element(old_image.local_region()), Element(new_image.local_region())});
-  if (!GenerateRawElement(old_sa, old_image, new_image, &patch_element))
-    return status::kStatusFatal;
-  patch_writer->AddElement(std::move(patch_element));
-  return status::kStatusSuccess;
+  GenerateOptions options{.is_raw = true};
+  return GenerateBuffer(old_image, new_image, options, patch_writer);
 }
 
 }  // namespace zucchini

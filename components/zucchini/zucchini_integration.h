@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_ZUCCHINI_ZUCCHINI_INTEGRATION_H_
 #define COMPONENTS_ZUCCHINI_ZUCCHINI_INTEGRATION_H_
 
-#include <string>
-
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "components/zucchini/zucchini.h"
@@ -21,28 +19,20 @@ namespace zucchini {
 // code is kStatusSuccess or if |force_keep == true|, and is deleted otherwise.
 // For UNIX systems the caller needs to do cleanup since it has ownership of the
 // base::File params, and Zucchini has no knowledge of which base::FilePath to
-// delete. If |is_raw == true| then uses Raw Zucchini. If |imposed_matches| is
-// non-empty, then overrides default element detection and matching heuristics
-// with custom element matching encoded in |imposed_matches|, which should be
-// formatted as:
-//   "#+#=#+#,#+#=#+#,..."  (e.g., "1+2=3+4", "1+2=3+4,5+6=7+8"),
-// where "#+#=#+#" encodes a match as 4 unsigned integers:
-//   [offset in "old", size in "old", offset in "new", size in "new"].
+// delete. |options| contains settings that directly affect patch generation.
 status::Code Generate(base::File old_file,
                       base::File new_file,
                       base::File patch_file,
-                      bool force_keep = false,
-                      bool is_raw = false,
-                      std::string imposed_matches = "");
+                      const GenerateOptions& options,
+                      bool force_keep = false);
 
 // Alternative Generate() interface that takes base::FilePath as arguments.
 // Performs proper cleanup in Windows and UNIX if failure occurs.
 status::Code Generate(const base::FilePath& old_path,
                       const base::FilePath& new_path,
                       const base::FilePath& patch_path,
-                      bool force_keep = false,
-                      bool is_raw = false,
-                      std::string imposed_matches = "");
+                      const GenerateOptions& options,
+                      bool force_keep = false);
 
 // Applies the patch in |patch_file| to |old_file|, and writes the result to
 // |new_file|. Since this uses memory mapped files, crashes are expected in case
