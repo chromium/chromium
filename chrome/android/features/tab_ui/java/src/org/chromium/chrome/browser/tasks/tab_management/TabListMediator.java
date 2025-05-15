@@ -298,7 +298,7 @@ class TabListMediator implements TabListNotificationHandler {
          */
         ShoppingPersistedTabDataFetcher(
                 Tab tab,
-                @NonNull
+                @Nullable
                         Supplier<PriceWelcomeMessageController>
                                 priceWelcomeMessageControllerSupplier) {
             mTab = tab;

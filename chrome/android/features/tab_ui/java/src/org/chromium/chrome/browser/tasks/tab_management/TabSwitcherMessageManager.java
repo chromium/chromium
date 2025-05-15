@@ -25,8 +25,6 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
-import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -128,7 +126,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
 
     private final @NonNull ObserverList<MessageUpdateObserver> mObservers = new ObserverList<>();
     private final @NonNull Activity mActivity;
-    private final @NonNull ActivityLifecycleDispatcher mLifecylceDispatcher;
+    private final @NonNull ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final @NonNull ObservableSupplier<TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
     private final @NonNull TabGridIphDialogCoordinator mTabGridIphDialogCoordinator;
@@ -196,7 +194,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
             @NonNull Supplier<PaneManager> paneManagerSupplier,
             @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier) {
         mActivity = activity;
-        mLifecylceDispatcher = lifecycleDispatcher;
+        mLifecycleDispatcher = lifecycleDispatcher;
         mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
         mSnackbarManager = snackbarManager;
@@ -342,7 +340,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                             ChromeSharedPreferences.getInstance(),
                             incognitoReauthManager,
                             mSnackbarManager,
-                            mLifecylceDispatcher);
+                            mLifecycleDispatcher);
             mMessageCardProviderCoordinator.subscribeMessageService(
                     mIncognitoReauthPromoMessageService);
         }
@@ -617,17 +615,16 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
     private void setUpPriceTracking() {
         assert mProfile != null;
         if (PriceTrackingFeatures.isPriceAnnotationsEnabled(mProfile)) {
-            PriceDropNotificationManager notificationManager =
-                    PriceDropNotificationManagerFactory.create(mProfile);
             if (mPriceMessageService == null) {
+                Supplier<PriceWelcomeMessageProvider> priceWelcomeMessageProviderSupplier =
+                        (Supplier<PriceWelcomeMessageProvider>)
+                                ((Supplier<? extends PriceWelcomeMessageProvider>)
+                                        mTabListCoordinatorSupplier);
                 mPriceMessageService =
                         new PriceMessageService(
                                 mProfile,
-                                (Supplier<PriceWelcomeMessageProvider>)
-                                        ((Supplier<? extends PriceWelcomeMessageProvider>)
-                                                mTabListCoordinatorSupplier),
-                                mPriceWelcomeMessageReviewActionProviderSupplier,
-                                notificationManager);
+                                priceWelcomeMessageProviderSupplier,
+                                mPriceWelcomeMessageReviewActionProviderSupplier);
             }
             mMessageCardProviderCoordinator.subscribeMessageService(mPriceMessageService);
         }

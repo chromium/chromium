@@ -30,7 +30,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -55,7 +54,6 @@ public class PriceMessageServiceUnitTest {
     @Mock PriceMessageService.PriceWelcomeMessageProvider mMessageProvider;
     @Mock PriceMessageService.PriceWelcomeMessageReviewActionProvider mReviewActionProvider;
     @Mock MessageService.MessageObserver mMessageObserver;
-    @Mock PriceDropNotificationManager mNotificationManager;
     @Mock Profile mProfile;
 
     private PriceMessageService mMessageService;
@@ -84,10 +82,7 @@ public class PriceMessageServiceUnitTest {
 
         mMessageService =
                 new PriceMessageService(
-                        mProfile,
-                        () -> mMessageProvider,
-                        () -> mReviewActionProvider,
-                        mNotificationManager);
+                        mProfile, () -> mMessageProvider, () -> mReviewActionProvider);
         mMessageService.addObserver(mMessageObserver);
     }
 

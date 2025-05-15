@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.INCOG
 import android.content.Context;
 import android.os.Build;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
@@ -167,10 +168,10 @@ public class IncognitoReauthPromoMessageService extends MessageService
             return;
         }
 
-        increasePomoImpressionCount();
+        increasePromoImpressionCount();
     }
 
-    private void increasePomoImpressionCount() {
+    private void increasePromoImpressionCount() {
         mSharedPreferencesManager.writeInt(
                 INCOGNITO_REAUTH_PROMO_SHOW_COUNT,
                 mSharedPreferencesManager.readInt(INCOGNITO_REAUTH_PROMO_SHOW_COUNT, 0) + 1);
@@ -214,6 +215,7 @@ public class IncognitoReauthPromoMessageService extends MessageService
                         Snackbar.UMA_INCOGNITO_REAUTH_ENABLED_FROM_PROMO);
         // TODO(crbug.com/40056462):  Confirm with UX to see how the background color of the
         // snackbar needs to be revised.
+        @ColorInt
         int snackbarBackgroundColor =
                 SnackbarManager.isFloatingSnackbarEnabled()
                         ? mContext.getColor(R.color.floating_snackbar_background_incognito)

@@ -52,7 +52,6 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
-import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
@@ -265,15 +264,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             .build();
 
             mContainerViewModel = containerViewModel;
-
-            TabGroupModelFilter filter = tabGroupModelFilterSupplier.get();
             Profile profile = mProfileProviderSupplier.get().getOriginalProfile();
-            ActionConfirmationManager actionConfirmationManager =
-                    filter.getTabModel().isIncognitoBranded()
-                            ? null
-                            : new ActionConfirmationManager(
-                                    profile, mActivity, mModalDialogManager);
-
             mDialogControllerSupplier =
                     LazyOneshotSupplier.fromSupplier(
                             () -> {
@@ -291,7 +282,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                                 TabSwitcherPaneCoordinator.this
                                                         ::getTabGridDialogAnimationSourceView,
                                                 scrimManager,
-                                                actionConfirmationManager,
                                                 mModalDialogManager,
                                                 desktopWindowStateManager,
                                                 undoBarThrottle,
@@ -342,7 +332,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             tabGroupModelFilterSupplier,
                             mMultiThumbnailCardProvider,
                             /* actionOnRelatedTabs= */ true,
-                            actionConfirmationManager,
                             dataSharingTabManager,
                             getGridCardOnClickListenerProvider(),
                             /* dialogHandler= */ null,

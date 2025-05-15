@@ -266,10 +266,6 @@ public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelecti
     }
 
     // SelectableItemViewBase implementation.
-
-    @Override
-    protected void updateView(boolean animate) {}
-
     @Override
     protected void handleNonSelectionClick() {}
 

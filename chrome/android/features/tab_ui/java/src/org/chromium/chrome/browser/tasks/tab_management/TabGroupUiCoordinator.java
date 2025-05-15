@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -78,7 +77,6 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     private final BottomSheetController mBottomSheetController;
     private final DataSharingTabManager mDataSharingTabManager;
     private final TabModelSelector mTabModelSelector;
-    private final LazyOneshotSupplier<ActionConfirmationManager> mActionConfirmationSupplier;
     private final OneshotSupplier<LayoutStateProvider> mLayoutStateProviderSupplier;
     private final TabCreatorManager mTabCreatorManager;
     private final TabContentManager mTabContentManager;
@@ -134,8 +132,6 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             mBottomSheetController = bottomSheetController;
             mDataSharingTabManager = dataSharingTabManager;
             mTabModelSelector = tabModelSelector;
-            mActionConfirmationSupplier =
-                    LazyOneshotSupplier.fromSupplier(this::createActionConfirmationManager);
             mLayoutStateProviderSupplier = layoutStateProviderSupplier;
             mTabCreatorManager = tabCreatorManager;
             mTabContentManager = tabContentManager;
@@ -146,11 +142,6 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             mShareDelegateSupplier = shareDelegateSupplier;
             parentView.addView(mToolbarView);
         }
-    }
-
-    private ActionConfirmationManager createActionConfirmationManager() {
-        Profile profile = mTabModelSelector.getModel(false).getProfile();
-        return new ActionConfirmationManager(profile, mActivity, mModalDialogManager);
     }
 
     private TabGridDialogMediator.DialogController initTabGridDialogCoordinator() {
@@ -174,7 +165,6 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                         null,
                         null,
                         mScrimManager,
-                        mActionConfirmationSupplier.get(),
                         mModalDialogManager,
                         /* desktopWindowStateManager= */ null,
                         mUndoBarThrottle,
@@ -210,7 +200,6 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                             currentTabGroupModelFilterSupplier,
                             /* thumbnailProvider= */ null,
                             /* actionOnRelatedTabs= */ false,
-                            mActionConfirmationSupplier.get(),
                             mDataSharingTabManager,
                             /* gridCardOnClickListenerProvider= */ null,
                             /* dialogHandler= */ null,

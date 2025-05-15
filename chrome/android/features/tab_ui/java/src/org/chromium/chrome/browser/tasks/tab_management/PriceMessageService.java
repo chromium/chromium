@@ -11,7 +11,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -154,8 +153,7 @@ public class PriceMessageService extends MessageService {
             Profile profile,
             Supplier<PriceWelcomeMessageProvider> priceWelcomeMessageProviderSupplier,
             Supplier<PriceWelcomeMessageReviewActionProvider>
-                    priceWelcomeMessageReviewActionProviderSupplier,
-            PriceDropNotificationManager notificationManager) {
+                    priceWelcomeMessageReviewActionProviderSupplier) {
         super(MessageType.PRICE_MESSAGE);
         mProfile = profile;
         mPriceTabData = null;
