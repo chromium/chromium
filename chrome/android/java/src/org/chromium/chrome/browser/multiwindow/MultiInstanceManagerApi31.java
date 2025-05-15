@@ -193,6 +193,26 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 getInstanceInfo());
     }
 
+    @Override
+    public void moveTabGroupToOtherWindow(TabGroupMetadata tabGroupMetadata) {
+        if (MultiWindowUtils.getInstanceCount() == 1) {
+            moveTabGroupToNewWindow(tabGroupMetadata);
+            return;
+        }
+
+        TargetSelectorCoordinator.showDialog(
+                mActivity,
+                mModalDialogManagerSupplier.get(),
+                new LargeIconBridge(getProfile()),
+                (instanceInfo) -> {
+                    moveTabGroupAction(instanceInfo, tabGroupMetadata, TabList.INVALID_TAB_INDEX);
+
+                    // Close the source instance window, if needed.
+                    closeChromeWindowIfEmpty(mInstanceId);
+                },
+                getInstanceInfo());
+    }
+
     @VisibleForTesting
     void moveTabAction(InstanceInfo info, Tab tab, int tabAtIndex) {
         Activity targetActivity = getActivityById(info.instanceId);

@@ -2092,7 +2092,11 @@ public class StripLayoutHelper
         if (mTabGroupContextMenuCoordinator == null) {
             mTabGroupContextMenuCoordinator =
                     TabGroupContextMenuCoordinator.createContextMenuCoordinator(
-                            mModel, mTabGroupModelFilter, mWindowAndroid, mDataSharingTabManager);
+                            mModel,
+                            mTabGroupModelFilter,
+                            mMultiInstanceManager,
+                            mWindowAndroid,
+                            mDataSharingTabManager);
         }
         StripLayoutUtils.performHapticFeedback(mToolbarContainerView);
 

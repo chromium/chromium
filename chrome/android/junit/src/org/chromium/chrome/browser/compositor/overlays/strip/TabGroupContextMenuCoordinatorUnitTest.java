@@ -39,11 +39,15 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
@@ -87,20 +91,27 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
     private OnItemClickedCallback<Token> mOnItemClickedCallback;
     private MockTabModel mTabModel;
+    private View mMenuView;
     private final SavedTabGroup mSavedTabGroup = new SavedTabGroup();
+
+    // Tab state
     @Mock private TabRemover mTabRemover;
     @Mock private TabUngrouper mTabUngrouper;
-    @Mock private View mMenuView;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
-    @Mock private Profile mProfile;
     @Mock private TabCreator mTabCreator;
-    @Mock private WindowAndroid mWindowAndroid;
-    @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
+
+    // Share state
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private CollaborationService mCollaborationService;
     @Mock private ServiceStatus mServiceStatus;
     @Mock private DataSharingTabManager mDataSharingTabManager;
+
+    // Other dependencies
+    @Mock private Profile mProfile;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock private WeakReference<Activity> mWeakReferenceActivity;
+    @Mock private MultiInstanceManager mMultiInstanceManager;
 
     @Before
     public void setUp() {
@@ -108,6 +119,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
         when(mServiceStatus.isAllowedToCreate()).thenReturn(true);
         CollaborationServiceFactory.setForTesting(mCollaborationService);
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
 
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         LayoutInflater inflater = LayoutInflater.from(activity);
@@ -116,6 +128,8 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         when(mWindowAndroid.getActivity()).thenReturn(mWeakReferenceActivity);
         when(mWeakReferenceActivity.get()).thenReturn(activity);
         mTabModel = spy(new MockTabModel(mProfile, null));
+        mTabModel.addTab(0);
+        mTabModel.setIndex(0, TabSelectionType.FROM_NEW);
         when(mTabModel.isIncognito()).thenReturn(false);
         mTabModel.setTabRemoverForTesting(mTabRemover);
         mTabModel.setTabCreatorForTesting(mTabCreator);
@@ -124,10 +138,18 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         mSavedTabGroup.collaborationId = COLLABORATION_ID;
         mOnItemClickedCallback =
                 TabGroupContextMenuCoordinator.getMenuItemClickedCallback(
-                        activity, mTabGroupModelFilter, mDataSharingTabManager);
+                        activity,
+                        () -> mTabModel,
+                        mTabGroupModelFilter,
+                        mMultiInstanceManager,
+                        mDataSharingTabManager);
         mTabGroupContextMenuCoordinator =
                 TabGroupContextMenuCoordinator.createContextMenuCoordinator(
-                        mTabModel, mTabGroupModelFilter, mWindowAndroid, mDataSharingTabManager);
+                        mTabModel,
+                        mTabGroupModelFilter,
+                        mMultiInstanceManager,
+                        mWindowAndroid,
+                        mDataSharingTabManager);
 
         // Set group ids manually to bypass showMenu() call.
         mTabGroupContextMenuCoordinator.setGroupDataForTesting(ROOT_ID, TAB_GROUP_ID);
@@ -147,7 +169,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         mTabGroupContextMenuCoordinator.buildMenuActionItems(modelList, TAB_GROUP_ID);
 
         // Assert: verify number of items in the model list.
-        assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
 
         // Assert: verify divider and normal menu items.
         verifyNormalListItems(modelList, 4);
@@ -157,10 +179,10 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 R.id.share_group, modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // Assert: verify divider and delete group menu item.
-        verifyDivider(modelList.get(5));
+        verifyDivider(modelList.get(6));
         assertEquals(
                 R.id.delete_tab_group,
-                modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -175,7 +197,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         mTabGroupContextMenuCoordinator.buildMenuActionItems(modelList, TAB_GROUP_ID);
 
         // Assert: verify number of items in the model list.
-        assertEquals("Number of items in the list menu is incorrect", 4, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
 
         // Assert: verify normal menu items.
         verifyNormalListItems(modelList, 3);
@@ -196,13 +218,33 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         mTabGroupContextMenuCoordinator.buildMenuActionItems(modelList, TAB_GROUP_ID);
 
         // Assert: verify number of items in the model list.
-        assertEquals("Number of items in the list menu is incorrect", 6, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
 
         // Assert: verify share group option does not show.
         for (int i = 0; i < modelList.size(); i++) {
             if (modelList.get(i).model.containsKey(ListMenuItemProperties.MENU_ITEM_ID)) {
                 assertNotEquals(
                         R.id.share_group,
+                        modelList.get(i).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+            }
+        }
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.DATA_SHARING)
+    @Feature("Tab Strip Group Context Menu")
+    public void testListMenuItems_belowApi31() {
+        // Build custom view first to setup menu view.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
+        mTabGroupContextMenuCoordinator.buildCustomView(mMenuView, /* isIncognito= */ false);
+        ModelList modelList = new ModelList();
+        mTabGroupContextMenuCoordinator.buildMenuActionItems(modelList, TAB_GROUP_ID);
+
+        // Assert: verify move group option does not show.
+        for (int i = 0; i < modelList.size(); i++) {
+            if (modelList.get(i).model.containsKey(ListMenuItemProperties.MENU_ITEM_ID)) {
+                assertNotEquals(
+                        R.id.move_to_other_window_menu_id,
                         modelList.get(i).model.get(ListMenuItemProperties.MENU_ITEM_ID));
             }
         }
@@ -243,7 +285,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         mTabGroupContextMenuCoordinator.buildCollaborationMenuItems(modelList, MemberRole.OWNER);
 
         // Assert: verify number of items in the model list.
-        assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
 
         // Assert: verify collaboration menu items; shared group should not have the option to
         // ungroup.
@@ -268,7 +310,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         mTabGroupContextMenuCoordinator.buildCollaborationMenuItems(modelList, MemberRole.MEMBER);
 
         // Assert: verify number of items in the model list.
-        assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
 
         // Assert: verify collaboration menu items; shared group should not have the option to
         // ungroup.
@@ -342,6 +384,20 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
+    public void testMenuItemClicked_MoveGroup() {
+        // Initialize.
+        setUpTabGroupModelFilter();
+
+        // Fake a click on the move group action.
+        mOnItemClickedCallback.onClick(
+                R.id.move_to_other_window_menu_id, TAB_GROUP_ID, /* collaborationId= */ null);
+
+        // Verify.
+        verify(mMultiInstanceManager).moveTabGroupToOtherWindow(any(TabGroupMetadata.class));
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
     public void testUpdateGroupTitleOnKeyboardHide() {
         // Initialize
         setUpTabGroupModelFilter();
@@ -398,6 +454,12 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         assertEquals(
                 R.id.close_tab_group,
                 modelList.get(closeGroupPosition).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(
+                R.id.move_to_other_window_menu_id,
+                modelList
+                        .get(closeGroupPosition + 1)
+                        .model
+                        .get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     private void verifyCollaborationListItems(ModelList modelList, @MemberRole int memberRole) {
@@ -418,19 +480,23 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 R.id.close_tab_group,
                 modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
         assertEquals(0, modelList.get(4).model.get(ListMenuItemProperties.START_ICON_ID));
-        verifyDivider(modelList.get(5));
+        assertEquals(
+                R.id.move_to_other_window_menu_id,
+                modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(0, modelList.get(4).model.get(ListMenuItemProperties.START_ICON_ID));
+        verifyDivider(modelList.get(6));
 
         // Verify delete group or leave group depending on the member role.
         if (memberRole == MemberRole.OWNER) {
             assertEquals(
                     R.id.delete_shared_group,
-                    modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                    modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
         } else if (memberRole == MemberRole.MEMBER) {
             assertEquals(
                     R.id.leave_group,
-                    modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                    modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
         }
-        assertEquals(0, modelList.get(6).model.get(ListMenuItemProperties.START_ICON_ID));
+        assertEquals(0, modelList.get(7).model.get(ListMenuItemProperties.START_ICON_ID));
     }
 
     private void verifyDivider(ListItem item) {

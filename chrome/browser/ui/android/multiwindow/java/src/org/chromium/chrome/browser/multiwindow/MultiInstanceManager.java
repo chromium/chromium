@@ -137,6 +137,16 @@ public abstract class MultiInstanceManager {
     }
 
     /**
+     * If there's only one window currently, moves the matching group to a new window. Otherwise,
+     * opens a dialog to select which window to move the matching group to.
+     *
+     * @param tabGroupMetadata The metadata for the group to move.
+     */
+    public void moveTabGroupToOtherWindow(TabGroupMetadata tabGroupMetadata) {
+        // Not implemented
+    }
+
+    /**
      * @return List of {@link InstanceInfo} structs for an activity that can be switched to, or
      *     newly launched.
      */

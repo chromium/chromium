@@ -27,13 +27,18 @@ import androidx.core.content.res.ResourcesCompat;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
+import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
+import org.chromium.chrome.browser.tabmodel.TabGroupMetadataExtractor;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
@@ -106,6 +111,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     private TabGroupContextMenuCoordinator(
             Supplier<TabModel> tabModelSupplier,
             TabGroupModelFilter tabGroupModelFilter,
+            MultiInstanceManager multiInstanceManager,
             WindowAndroid windowAndroid,
             TabGroupSyncService tabGroupSyncService,
             DataSharingTabManager dataSharingTabManager,
@@ -114,7 +120,9 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 R.layout.tab_strip_group_menu_layout,
                 getMenuItemClickedCallback(
                         windowAndroid.getActivity().get(),
+                        tabModelSupplier,
                         tabGroupModelFilter,
+                        multiInstanceManager,
                         dataSharingTabManager),
                 tabModelSupplier,
                 tabGroupSyncService,
@@ -135,6 +143,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
      *
      * @param tabModel The tab model.
      * @param tabGroupModelFilter The {@link TabGroupModelFilter} to act on.
+     * @param multiInstanceManager The {@link MultiInstanceManager} that may be used to move the
+     *     group to another window.
      * @param windowAndroid The {@link WindowAndroid} current window.
      * @param dataSharingTabManager The {@link} DataSharingTabManager managing communication between
      *     UI and DataSharing services.
@@ -142,6 +152,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     public static TabGroupContextMenuCoordinator createContextMenuCoordinator(
             TabModel tabModel,
             TabGroupModelFilter tabGroupModelFilter,
+            MultiInstanceManager multiInstanceManager,
             WindowAndroid windowAndroid,
             DataSharingTabManager dataSharingTabManager) {
         Profile profile = tabModel.getProfile();
@@ -155,6 +166,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         return new TabGroupContextMenuCoordinator(
                 () -> tabModel,
                 tabGroupModelFilter,
+                multiInstanceManager,
                 windowAndroid,
                 tabGroupSyncService,
                 dataSharingTabManager,
@@ -164,7 +176,9 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     @VisibleForTesting
     static OnItemClickedCallback<Token> getMenuItemClickedCallback(
             Activity activity,
+            Supplier<TabModel> tabModelSupplier,
             TabGroupModelFilter tabGroupModelFilter,
+            MultiInstanceManager multiInstanceManager,
             DataSharingTabManager dataSharingTabManager) {
         return (menuId, tabGroupId, collaborationId) -> {
             int tabId = tabGroupModelFilter.getGroupLastShownTabId(tabGroupId);
@@ -198,6 +212,15 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         tabId,
                         TabLaunchType.FROM_TAB_GROUP_UI);
                 recordUserAction("NewTabInGroup");
+            } else if (menuId == R.id.move_to_other_window_menu_id) {
+                TabModel tabModel = tabModelSupplier.get();
+                TabGroupMetadata tabGroupMetadata =
+                        TabGroupMetadataExtractor.extractTabGroupMetadata(
+                                tabGroupModelFilter.getTabsInGroup(tabGroupId),
+                                TabWindowManagerSingleton.getInstance().getIdForWindow(activity),
+                                tabModel.getTabAt(tabModel.index()).getId(),
+                                TabShareUtils.isCollaborationIdValid(collaborationId));
+                multiInstanceManager.moveTabGroupToOtherWindow(tabGroupMetadata);
             } else if (menuId == org.chromium.chrome.R.id.share_group) {
                 // Create the group share flow and display the share bottom sheet.
                 dataSharingTabManager.createOrManageFlow(
@@ -305,6 +328,21 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         R.id.close_tab_group,
                         isIncognito,
                         /* enabled= */ true));
+
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            // TODO(crbug.com/417272356): Update text; Currently shows "Move to new window" instead
+            //  of "Move _group_ to new window."
+            Activity activity = mWindowAndroid.getActivity().get();
+            itemList.add(
+                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                            activity.getResources()
+                                    .getQuantityString(
+                                            R.plurals.move_tab_to_another_window,
+                                            MultiWindowUtils.getInstanceCount()),
+                            R.id.move_to_other_window_menu_id,
+                            isIncognito,
+                            /* enabled= */ true));
+        }
 
         // Delete does not make sense for incognito since the tab group is not saved to sync.
         if ((mTabGroupSyncService != null) && !isIncognito && !hasCollaborationData) {
