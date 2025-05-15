@@ -81,8 +81,6 @@ class WebContentsAccessibility;
 class DelegatedFrameHost;
 class SyntheticGestureTarget;
 
-using CopyOutputIpcPriority = viz::CopyOutputRequest::IpcPriority;
-
 // Basic implementation shared by concrete RenderWidgetHostView subclasses.
 class CONTENT_EXPORT RenderWidgetHostViewBase
     : public RenderWidgetHostView,
@@ -175,11 +173,11 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
       base::OnceCallback<void(const SkBitmap&)> callback);
 
 #if BUILDFLAG(IS_ANDROID)
-  virtual void CopyFromExactSurfaceWithIpcPriority(
+  virtual void CopyFromExactSurfaceWithIpcDelay(
       const gfx::Rect& src_rect,
       const gfx::Size& output_size,
       base::OnceCallback<void(const SkBitmap&)> callback,
-      CopyOutputIpcPriority ipc_priority);
+      base::TimeDelta ipc_delay);
 #endif
 
   // For HiDPI capture mode, allow applying a render scale multiplier
