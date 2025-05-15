@@ -606,6 +606,7 @@ HRESULT RunDeElevatedCmdLine(const std::wstring& cmd_line) {
     return E_INVALIDARG;
   }
 
+  const base::FilePath program(argv->at(0));
   return base::win::RunDeElevatedNoWait(
       argv->at(0),
       base::JoinString(
@@ -623,7 +624,8 @@ HRESULT RunDeElevatedCmdLine(const std::wstring& cmd_line) {
                 });
             return parameters;
           }(),
-          L" "));
+          L" "),
+      program.DirName().value());
 }
 
 std::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope) {
