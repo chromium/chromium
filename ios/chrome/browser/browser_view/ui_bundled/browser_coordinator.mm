@@ -1948,13 +1948,14 @@ enum class ToolbarKind {
 
 - (void)presentAutoDeletionActionSheetWithDownloadTask:
     (web::DownloadTask*)task {
-  // Do not present the action sheet if it is already being presented.
-  if (_autoDeletionCoordinator) {
+  // Do not present the action sheet if it is already being presented or the
+  // DownloadManagerCoordinator is null.
+  if (_autoDeletionCoordinator || !self.downloadManagerCoordinator) {
     return;
   }
 
   _autoDeletionCoordinator = [[AutoDeletionCoordinator alloc]
-      initWithBaseViewController:self.viewController
+      initWithBaseViewController:self.downloadManagerCoordinator.viewController
                          browser:self.browser
                     downloadTask:task];
   [_autoDeletionCoordinator start];
