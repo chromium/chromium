@@ -112,7 +112,6 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
   void ResetLayer();
   void ClearLayerTexture();
   void SetNeedsPushProperties();
-  cc::TextureLayer* GetOrCreateCcLayerIfNeeded();
   cc::TextureLayer* CcLayer() { return cc_layer_.get(); }
   void DoPaintInvalidation(const gfx::Rect& dirty_rect);
   void SetOpacityMode(OpacityMode opacity_mode);
@@ -122,6 +121,13 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
 
  protected:
   virtual CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl() = 0;
+
+  bool is_opaque() { return is_opaque_; }
+
+  // TODO(399587138): Move this field to be held by HTMLCanvasElement and
+  // eventually by CanvasRenderingContext2D, as it's only instantiated by the
+  // latter.
+  scoped_refptr<cc::TextureLayer> cc_layer_;
 
  private:
   bool is_displayed_ = false;
@@ -133,10 +139,6 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
   RasterModeHint preferred_2d_raster_mode_ = RasterModeHint::kPreferCPU;
   gfx::Size size_;
   bool always_enable_raster_timers_for_testing_ = false;
-  // TODO(380896841): Extremely confusingly, this cc::TextureLayer, which in
-  // this superclass of CanvasRenderingContextHost, is only used by 2D
-  // canvases.
-  scoped_refptr<cc::TextureLayer> cc_layer_;
 };
 
 }  // namespace blink

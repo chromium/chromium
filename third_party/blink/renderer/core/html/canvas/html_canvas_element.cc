@@ -1574,6 +1574,21 @@ void HTMLCanvasElement::UpdatePreferred2DRasterMode() {
   SetPreferred2DRasterMode(hint);
 }
 
+cc::TextureLayer* HTMLCanvasElement::GetOrCreateCcLayerIfNeeded() {
+  if (!IsComposited()) {
+    return nullptr;
+  }
+  if (!cc_layer_) [[unlikely]] {
+    cc_layer_ = cc::TextureLayer::Create(this);
+    InitializeLayerWithCSSProperties(cc_layer_.get());
+    cc_layer_->SetIsDrawable(true);
+    cc_layer_->SetHitTestable(true);
+    cc_layer_->SetContentsOpaque(is_opaque());
+    cc_layer_->SetBlendBackgroundColor(!is_opaque());
+  }
+  return cc_layer_.get();
+}
+
 Canvas2DLayerBridge* HTMLCanvasElement::GetOrCreateCanvas2DLayerBridge() {
   DCHECK(IsRenderingContext2D());
 

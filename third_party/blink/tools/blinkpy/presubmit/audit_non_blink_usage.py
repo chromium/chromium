@@ -593,6 +593,7 @@ _CONFIG = [
             'cc::LayerTreeHost',
             'cc::PictureLayer',
             'cc::SurfaceLayer',
+            'cc::TextureLayer',
             'cc::TextureLayerImpl',
 
             # cc::Layer helper data structs.

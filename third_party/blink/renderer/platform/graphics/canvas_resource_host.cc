@@ -138,21 +138,6 @@ void CanvasResourceHost::SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {
   hdr_metadata_ = hdr_metadata;
 }
 
-cc::TextureLayer* CanvasResourceHost::GetOrCreateCcLayerIfNeeded() {
-  if (!IsComposited()) {
-    return nullptr;
-  }
-  if (!cc_layer_) [[unlikely]] {
-    cc_layer_ = cc::TextureLayer::Create(this);
-    InitializeLayerWithCSSProperties(cc_layer_.get());
-    cc_layer_->SetIsDrawable(true);
-    cc_layer_->SetHitTestable(true);
-    cc_layer_->SetContentsOpaque(is_opaque_);
-    cc_layer_->SetBlendBackgroundColor(!is_opaque_);
-  }
-  return cc_layer_.get();
-}
-
 namespace {
 
 // Adapter for wrapping a CanvasResourceReleaseCallback into a

@@ -168,6 +168,7 @@ class CORE_EXPORT HTMLCanvasElement final
 
   CanvasHibernationHandler* GetHibernationHandler() const;
 
+  cc::TextureLayer* GetOrCreateCcLayerIfNeeded();
   Canvas2DLayerBridge* GetOrCreateCanvas2DLayerBridge();
 
   void DiscardResourceProvider() override;
