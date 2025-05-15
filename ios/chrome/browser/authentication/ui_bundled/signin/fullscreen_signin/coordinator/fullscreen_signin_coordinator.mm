@@ -68,6 +68,12 @@
 
   [self presentScreen:[self.screenProvider nextScreenType]];
 
+  // Note: If the user was already signed in, then the `presentScreen` call
+  // above may have already synchronously completed all the screens, and then
+  // `self.navigationController` would already be nil again. That is invalid;
+  // the caller must have checked for this case before.
+  CHECK(self.navigationController);
+
   [self.navigationController setNavigationBarHidden:YES animated:NO];
   [self.baseViewController presentViewController:self.navigationController
                                         animated:YES

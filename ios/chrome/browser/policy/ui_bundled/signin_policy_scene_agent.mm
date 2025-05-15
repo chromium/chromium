@@ -250,6 +250,12 @@
 
 // Shows the forced sign-in prompt using the application command.
 - (void)showForcedSigninPrompt {
+  // It's possible that the force-signin is *not* required anymore at this point
+  // (either because the policy changed, or because the user is already signed
+  // in now). In that case, nothing to do here.
+  if (![self isForcedSignInRequiredByPolicy]) {
+    return;
+  }
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kForcedSigninAndSync
                identity:nil
