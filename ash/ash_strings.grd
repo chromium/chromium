@@ -6740,11 +6740,8 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_SETTING_OFF_STATE" desc="Description for a setting toggle off state.">
         off
       </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_OPEN" desc="Alert spoken by screen readers on entering capture mode.">
-        Capture Mode, default is <ph name="SOURCE">$1<ex>partial</ex></ph> <ph name="TYPE">$2<ex>screenshot</ex></ph>. Press tab for keyboard navigation.
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_KEYBOARD_NAVIGATION_ALERT_OPEN" desc="Alert spoken by screen readers on entering capture mode. Contains details about using keyboard navigation in a session.">
-        In screen capture, set to <ph name="SOURCE">$1<ex>partial</ex></ph> <ph name="TYPE">$2<ex>screenshot</ex></ph>. Press tab to choose capture type. Press space to select region. Press enter to capture.
+      <message name="IDS_ASH_SCREEN_CAPTURE_KEYBOARD_NAVIGATION_ALERT_OPEN_REVISED" desc="Alert spoken by screen readers on entering capture mode. Contains details about using keyboard navigation in a session.">
+        In screen capture, set to <ph name="SOURCE">$1<ex>partial</ex></ph> <ph name="TYPE">$2<ex>screenshot</ex></ph>. Press tab to choose capture type. Press enter to capture. To select capture area, set to partial screenshot. If not already active, press space to select region.
       </message>
       <message name="IDS_ASH_SUNFISH_MODE_ALERT_OPEN" desc="Alert spoken by screen readers on entering a mode where users can select a region on their screen to search.">
         Select to search my screen. Press tab then space for keyboard navigation.
