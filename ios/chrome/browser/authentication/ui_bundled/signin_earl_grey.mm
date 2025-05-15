@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -84,6 +85,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
     waitForSyncTransportActive:(BOOL)waitForSync {
   [SigninEarlGreyAppInterface signinWithFakeIdentity:identity];
   [self closeManagedAccountSignInDialogIfAny:identity];
+  [self closeSwitchAndDeleteAlertIfAny];
   [self verifySignedInWithFakeIdentity:identity];
   if (waitForSync) {
     [ChromeEarlGrey
@@ -101,6 +103,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   [SigninEarlGreyAppInterface
       signinWithFakeManagedIdentityInPersonalProfile:identity];
   [self closeManagedAccountSignInDialogIfAny:identity];
+  [self closeSwitchAndDeleteAlertIfAny];
   [self verifySignedInWithFakeIdentity:identity];
   if (waitForSync) {
     [ChromeEarlGrey
@@ -285,6 +288,24 @@ using base::test::ios::WaitUntilConditionOrTimeout;
       [ChromeEarlGrey testUIElementAppearanceWithMatcher:acceptButton];
   if (hasDialog) {
     [[EarlGrey selectElementWithMatcher:acceptButton] performAction:grey_tap()];
+  }
+}
+
+// Confirms "Switch and Delete" when the alert dialog that data will be cleared
+// is shown. This dialog is only shown when multi profiles are not available.
+// Otherwise, this does nothing.
+- (void)closeSwitchAndDeleteAlertIfAny {
+  if (![SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
+    id<GREYMatcher> switchAndDeleteAlert =
+        grey_allOf(chrome_test_util::AlertAction(l10n_util::GetNSString(
+                       IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BUTTON)),
+                   grey_sufficientlyVisible(), nil);
+    BOOL hasAlert = [ChromeEarlGrey
+        testUIElementAppearanceWithMatcher:switchAndDeleteAlert];
+    if (hasAlert) {
+      [[EarlGrey selectElementWithMatcher:switchAndDeleteAlert]
+          performAction:grey_tap()];
+    }
   }
 }
 
