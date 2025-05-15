@@ -124,8 +124,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="SafeBrowsing.AdvancedProtection.Enabled"
-    enum="AdvancedProtectionEnabledStatus" expires_after="2025-12-04">
-  <owner>pkotwicz@google.com</owner>
+    enum="AdvancedProtectionEnabledStatus" expires_after="2024-02-04">
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -133,9 +132,6 @@ chromium-metrics-reviews@google.com.
     on startup when the enabled status changes. Can be logged multiple times for
     a user. In practice, this counts the number of Chrome startups with Advanced
     Protection enabled/disabled, rather than the actual user count.
-
-    Warning: This histogram was expired between Feb 2024 and May 2025. Data may
-    be missing.
   </summary>
 </histogram>
 
@@ -144,9 +140,10 @@ chromium-metrics-reviews@google.com.
   <owner>pkotwicz@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Records whether the user has Advanced Protection enabled. Logged on startup.
-    In practice, this counts the number of Chrome startups with Advanced
-    Protection enabled/disabled, rather than the actual user count.
+    Records whether the user has Advanced Protection enabled in Android
+    settings. Logged on startup. In practice, this counts the number of Chrome
+    startups with Advanced Protection enabled/disabled, rather than the actual
+    user count.
   </summary>
 </histogram>
 
@@ -736,6 +733,19 @@ useful for Chirp alerts (go/crca-alerts). -->
     hours and at startup if the last recording was more than 24 hours ago.
   </summary>
   <token key="UserState" variants="MetricsCollectorUserState"/>
+</histogram>
+
+<histogram name="SafeBrowsing.Desktop.AdvancedProtection.Enabled"
+    enum="BooleanEnabled" expires_after="2025-12-01">
+  <owner>pkotwicz@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the user's signed-in account is enrolled in the Google
+    Advanced Protection Program. Records false if the profile is not signed-in.
+    Logged on startup. In practice, this counts the number of Chrome startups
+    with Advanced Protection enabled/disabled, rather than the actual user
+    count.
+  </summary>
 </histogram>
 
 <histogram name="SafeBrowsing.Enhanced.ProtegoRequestSentInLast24Hours"

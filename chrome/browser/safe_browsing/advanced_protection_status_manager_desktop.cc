@@ -38,9 +38,9 @@ const base::TimeDelta kRefreshAdvancedProtectionDelay = base::Days(1);
 const base::TimeDelta kRetryDelay = base::Minutes(5);
 const base::TimeDelta kMinimumRefreshDelay = base::Minutes(1);
 
-void RecordUMA(AdvancedProtectionStatusManagerDesktop::UmaEvent event) {
-  base::UmaHistogramEnumeration("SafeBrowsing.AdvancedProtection.Enabled",
-                                event);
+void RecordStartupUma(bool is_under_advanced_protection) {
+  base::UmaHistogramBoolean("SafeBrowsing.Desktop.AdvancedProtection.Enabled",
+                            is_under_advanced_protection);
 }
 
 }  // namespace
@@ -64,12 +64,12 @@ void AdvancedProtectionStatusManagerDesktop::MaybeRefreshOnStartUp() {
   CoreAccountInfo core_info =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   if (core_info.account_id.empty()) {
+    RecordStartupUma(/*is_under_advanced_protection=*/false);
     return;
   }
 
   is_under_advanced_protection_ = core_info.is_under_advanced_protection;
-  RecordUMA(is_under_advanced_protection_ ? UmaEvent::kEnabled
-                                          : UmaEvent::kDisabled);
+  RecordStartupUma(is_under_advanced_protection_);
   NotifyObserversStatusChanged();
 
   if (pref_service_->HasPrefPath(prefs::kAdvancedProtectionLastRefreshInUs)) {
@@ -176,9 +176,6 @@ void AdvancedProtectionStatusManagerDesktop::OnPrimaryAccountChanged(
 }
 
 void AdvancedProtectionStatusManagerDesktop::OnAdvancedProtectionEnabled() {
-  if (!is_under_advanced_protection_) {
-    RecordUMA(UmaEvent::kEnabledAfterDisabled);
-  }
   is_under_advanced_protection_ = true;
   UpdateLastRefreshTime();
   ScheduleNextRefresh();
@@ -186,9 +183,6 @@ void AdvancedProtectionStatusManagerDesktop::OnAdvancedProtectionEnabled() {
 }
 
 void AdvancedProtectionStatusManagerDesktop::OnAdvancedProtectionDisabled() {
-  if (is_under_advanced_protection_) {
-    RecordUMA(UmaEvent::kDisabledAfterEnabled);
-  }
   is_under_advanced_protection_ = false;
   UpdateLastRefreshTime();
   CancelFutureRefresh();
