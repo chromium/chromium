@@ -925,7 +925,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
                             getToolbarManager(),
                             mRootUiCoordinator.getDesktopWindowStateManager(),
                             actionConfirmationManager,
-                            getModalDialogManagerSupplier().get(),
                             mRootUiCoordinator.getDataSharingTabManager(),
                             mRootUiCoordinator.getBottomSheetController(),
                             mRootUiCoordinator.getShareDelegateSupplier());

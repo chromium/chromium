@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
-import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
@@ -60,7 +59,6 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.EmptyTextWatcher;
@@ -108,8 +106,6 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     private TabGroupContextMenuCoordinator(
             Supplier<TabModel> tabModelSupplier,
             TabGroupModelFilter tabGroupModelFilter,
-            ActionConfirmationManager actionConfirmationManager,
-            ModalDialogManager modalDialogManager,
             WindowAndroid windowAndroid,
             TabGroupSyncService tabGroupSyncService,
             DataSharingTabManager dataSharingTabManager,
@@ -119,8 +115,6 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 getMenuItemClickedCallback(
                         windowAndroid.getActivity().get(),
                         tabGroupModelFilter,
-                        actionConfirmationManager,
-                        modalDialogManager,
                         dataSharingTabManager),
                 tabModelSupplier,
                 tabGroupSyncService,
@@ -141,7 +135,6 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
      *
      * @param tabModel The tab model.
      * @param tabGroupModelFilter The {@link TabGroupModelFilter} to act on.
-     * @param actionConfirmationManager Used to show a confirmation dialog.
      * @param windowAndroid The {@link WindowAndroid} current window.
      * @param dataSharingTabManager The {@link} DataSharingTabManager managing communication between
      *     UI and DataSharing services.
@@ -149,8 +142,6 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     public static TabGroupContextMenuCoordinator createContextMenuCoordinator(
             TabModel tabModel,
             TabGroupModelFilter tabGroupModelFilter,
-            ActionConfirmationManager actionConfirmationManager,
-            ModalDialogManager modalDialogManager,
             WindowAndroid windowAndroid,
             DataSharingTabManager dataSharingTabManager) {
         Profile profile = tabModel.getProfile();
@@ -164,8 +155,6 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         return new TabGroupContextMenuCoordinator(
                 () -> tabModel,
                 tabGroupModelFilter,
-                actionConfirmationManager,
-                modalDialogManager,
                 windowAndroid,
                 tabGroupSyncService,
                 dataSharingTabManager,
@@ -176,8 +165,6 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     static OnItemClickedCallback<Token> getMenuItemClickedCallback(
             Activity activity,
             TabGroupModelFilter tabGroupModelFilter,
-            ActionConfirmationManager actionConfirmationManager,
-            ModalDialogManager modalDialogManager,
             DataSharingTabManager dataSharingTabManager) {
         return (menuId, tabGroupId, collaborationId) -> {
             int tabId = tabGroupModelFilter.getGroupLastShownTabId(tabGroupId);

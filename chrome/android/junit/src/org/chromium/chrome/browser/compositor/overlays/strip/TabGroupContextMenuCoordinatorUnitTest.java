@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
-import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
@@ -63,7 +62,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListSectionDividerProperties;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
@@ -95,8 +93,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     @Mock private View mMenuView;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private Profile mProfile;
-    @Mock private ActionConfirmationManager mActionConfirmationManager;
-    @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabCreator mTabCreator;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
@@ -128,19 +124,10 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         mSavedTabGroup.collaborationId = COLLABORATION_ID;
         mOnItemClickedCallback =
                 TabGroupContextMenuCoordinator.getMenuItemClickedCallback(
-                        activity,
-                        mTabGroupModelFilter,
-                        mActionConfirmationManager,
-                        mModalDialogManager,
-                        mDataSharingTabManager);
+                        activity, mTabGroupModelFilter, mDataSharingTabManager);
         mTabGroupContextMenuCoordinator =
                 TabGroupContextMenuCoordinator.createContextMenuCoordinator(
-                        mTabModel,
-                        mTabGroupModelFilter,
-                        mActionConfirmationManager,
-                        mModalDialogManager,
-                        mWindowAndroid,
-                        mDataSharingTabManager);
+                        mTabModel, mTabGroupModelFilter, mWindowAndroid, mDataSharingTabManager);
 
         // Set group ids manually to bypass showMenu() call.
         mTabGroupContextMenuCoordinator.setGroupDataForTesting(ROOT_ID, TAB_GROUP_ID);

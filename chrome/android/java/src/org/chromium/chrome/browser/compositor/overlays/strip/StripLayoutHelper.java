@@ -122,7 +122,6 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.MotionEventUtils;
 import org.chromium.ui.widget.RectProvider;
@@ -528,7 +527,6 @@ public class StripLayoutHelper
     @Nullable private DataSharingService.Observer mDataSharingObserver;
     @Nullable private TabGroupSyncService mTabGroupSyncService;
     @Nullable private TabGroupSyncService.Observer mTabGroupSyncObserver;
-    private final ModalDialogManager mModalDialogManager;
 
     // IPH on tab strip.
     private TabStripIphController mTabStripIphController;
@@ -554,7 +552,6 @@ public class StripLayoutHelper
      *     drop.
      * @param windowAndroid The @{@link WindowAndroid} instance to access Activity.
      * @param actionConfirmationManager The {@link ActionConfirmationManager} for group actions.
-     * @param modalDialogManager The {@link ModalDialogManager} for the context menu.
      * @param dataSharingTabManager The {@link DataSharingTabManager} for shared groups.
      * @param tabStripVisibleSupplier Supplier of the boolean indicating whether the tab strip is
      *     visible. The tab strip can be hidden due to the tab switcher being displayed or the
@@ -575,7 +572,6 @@ public class StripLayoutHelper
             @NonNull View toolbarContainerView,
             @NonNull WindowAndroid windowAndroid,
             ActionConfirmationManager actionConfirmationManager,
-            ModalDialogManager modalDialogManager,
             DataSharingTabManager dataSharingTabManager,
             Supplier<Boolean> tabStripVisibleSupplier,
             @NonNull BottomSheetController bottomSheetController,
@@ -594,7 +590,6 @@ public class StripLayoutHelper
         mLastHoverCardExitTime = INVALID_TIME;
         mTabStripVisibleSupplier = tabStripVisibleSupplier;
         mDataSharingTabManager = dataSharingTabManager;
-        mModalDialogManager = modalDialogManager;
         mBottomSheetController = bottomSheetController;
         mMultiInstanceManager = multiInstanceManager;
         mShareDelegateSupplier = shareDelegateSupplier;
@@ -2097,12 +2092,7 @@ public class StripLayoutHelper
         if (mTabGroupContextMenuCoordinator == null) {
             mTabGroupContextMenuCoordinator =
                     TabGroupContextMenuCoordinator.createContextMenuCoordinator(
-                            mModel,
-                            mTabGroupModelFilter,
-                            mActionConfirmationManager,
-                            mModalDialogManager,
-                            mWindowAndroid,
-                            mDataSharingTabManager);
+                            mModel, mTabGroupModelFilter, mWindowAndroid, mDataSharingTabManager);
         }
         StripLayoutUtils.performHapticFeedback(mToolbarContainerView);
 
