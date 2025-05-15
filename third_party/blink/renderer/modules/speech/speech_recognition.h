@@ -147,7 +147,8 @@ class MODULES_EXPORT SpeechRecognition final
 
  private:
   void OnConnectionError();
-  void StartInternal(ExceptionState* exception_state);
+  void CheckAvailabilityAndStart(ExceptionState* exception_state);
+  void StartInternal();
   void StartController(
       mojo::PendingReceiver<media::mojom::blink::SpeechRecognitionSession>
           session_receiver,

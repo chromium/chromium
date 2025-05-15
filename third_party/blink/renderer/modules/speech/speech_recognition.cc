@@ -124,7 +124,7 @@ void SpeechRecognition::setMode(const V8SpeechRecognitionMode& mode) {
   // changing mode after the speech recognition session started does not update
   // the mode in the system, so we limit the check to only apply before the
   // session starts.
-  if (phrases_->length() > 0 &&
+  if (phrases_ && phrases_->length() > 0 &&
       mode == V8SpeechRecognitionMode::Enum::kCloudOnly && !started_) {
     ErrorOccurred(media::mojom::blink::SpeechRecognitionError::New(
         media::mojom::blink::SpeechRecognitionErrorCode::kPhrasesNotSupported,
@@ -139,11 +139,11 @@ void SpeechRecognition::start(ExceptionState& exception_state) {
   // If this is called in prerendering, it should be deferred.
   if (DomWindow() && DomWindow()->document()->IsPrerendering()) {
     DomWindow()->document()->AddPostPrerenderingActivationStep(
-        WTF::BindOnce(&SpeechRecognition::StartInternal,
+        WTF::BindOnce(&SpeechRecognition::CheckAvailabilityAndStart,
                       WrapWeakPersistent(this), /*exception_state=*/nullptr));
     return;
   }
-  StartInternal(&exception_state);
+  CheckAvailabilityAndStart(&exception_state);
 }
 
 // TODO(crbug.com/384797834): Add Web Platform Tests for MediaStreamTrack
@@ -422,7 +422,8 @@ void SpeechRecognition::OnConnectionError() {
   Ended();
 }
 
-void SpeechRecognition::StartInternal(ExceptionState* exception_state) {
+void SpeechRecognition::CheckAvailabilityAndStart(
+    ExceptionState* exception_state) {
   if (!controller_ || !GetExecutionContext()) {
     if (exception_state) {
       exception_state->ThrowDOMException(
@@ -446,6 +447,37 @@ void SpeechRecognition::StartInternal(ExceptionState* exception_state) {
     }
     return;
   }
+
+  if (mode_ == V8SpeechRecognitionMode::Enum::kOndeviceOnly && lang_) {
+    controller_->OnDeviceWebSpeechAvailable(
+        lang_,
+        WTF::BindOnce(
+            [](SpeechRecognition* speech_recognition,
+               media::mojom::blink::AvailabilityStatus status) {
+              if (!speech_recognition) {
+                return;
+              }
+
+              if (status !=
+                  media::mojom::blink::AvailabilityStatus::kAvailable) {
+                speech_recognition->ErrorOccurred(
+                    media::mojom::blink::SpeechRecognitionError::New(
+                        media::mojom::blink::SpeechRecognitionErrorCode::
+                            kLanguageNotSupported,
+                        media::mojom::blink::SpeechAudioErrorDetails::kNone));
+                return;
+              }
+
+              speech_recognition->StartInternal();
+            },
+            WrapWeakPersistent(this)));
+    return;
+  }
+
+  StartInternal();
+}
+
+void SpeechRecognition::StartInternal() {
   final_results_.clear();
 
   auto task_runner =
