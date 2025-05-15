@@ -228,7 +228,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                 SafetyHubMagicStackViewProperties.ICON_DRAWABLE,
                 SettingsUtils.getTintedIcon(
                         mContext,
-                        R.drawable.ic_gshield_24,
+                        R.drawable.secured_by_brand_shield_24,
                         R.color.default_icon_color_accent1_tint_list));
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,

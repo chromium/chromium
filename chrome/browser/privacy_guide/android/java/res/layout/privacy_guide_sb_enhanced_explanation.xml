@@ -47,7 +47,7 @@ found in the LICENSE file.
         <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:iconImage="@drawable/ic_gshield_24"
+            app:iconImage="@drawable/secured_by_brand_shield_24"
             app:iconTint="@macro/default_icon_color"
             app:summaryText="@string/safe_browsing_enhanced_protection_bullet_three" />
 

@@ -135,7 +135,7 @@ public class SafetyHubMagicStackMediatorTest {
         assertEquals(
                 shadowOf(mModel.get(SafetyHubMagicStackViewProperties.ICON_DRAWABLE))
                         .getCreatedFromResId(),
-                R.drawable.ic_gshield_24);
+                R.drawable.secured_by_brand_shield_24);
         verify(mSafetyHubHatsHelper, times(1))
                 .triggerProactiveHatsSurveyWhenCardShown(
                         mTabModelSelector, MagicStackEntry.ModuleType.SAFE_BROWSING);
