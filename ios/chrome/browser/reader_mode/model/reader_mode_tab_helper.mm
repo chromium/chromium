@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_distiller_page.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -204,6 +205,15 @@ void ReaderModeTabHelper::SetActive(bool active) {
 UIView* ReaderModeTabHelper::GetReaderModeContentView() {
   CHECK(reader_mode_web_state_);
   return reader_mode_web_state_->GetView();
+}
+
+bool ReaderModeTabHelper::CurrentPageSupportsReaderMode() const {
+  if (!web_state_ || web_state_->IsBeingDestroyed()) {
+    return false;
+  }
+  // TODO(crbug.com/416226085): Maybe return false if the page is not
+  // distillable.
+  return !IsUrlNtp(web_state_->GetVisibleURL()) && web_state_->ContentIsHTML();
 }
 
 void ReaderModeTabHelper::SetSnackbarHandler(

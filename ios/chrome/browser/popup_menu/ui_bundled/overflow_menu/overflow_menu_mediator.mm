@@ -1476,6 +1476,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     self.lensOverlayAction.enabled =
         isSupported && (isPortrait || portraitOverride);
   }
+
+  if (IsReaderModeAvailable()) {
+    self.readerModeAction.enabled = [self isReaderModeEnabled];
+  }
 }
 
 // Updates the order of the items in each section or group.
@@ -1562,6 +1566,17 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   auto* helper = GetConcreteFindTabHelperFromWebState(self.webState);
   return (helper && helper->CurrentPageSupportsFindInPage() &&
           !helper->IsFindUIActive());
+}
+
+// Whether Reader mode is enabled.
+- (BOOL)isReaderModeEnabled {
+  if (!self.webState) {
+    return NO;
+  }
+
+  ReaderModeTabHelper* helper =
+      ReaderModeTabHelper::FromWebState(self.webState);
+  return helper && helper->CurrentPageSupportsReaderMode();
 }
 
 // Whether or not text zoom is enabled for this page.

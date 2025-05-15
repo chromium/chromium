@@ -7,7 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
-#import "ios/chrome/browser/shared/model/url/url_util.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
@@ -20,9 +20,9 @@ ReaderModeModel::~ReaderModeModel() = default;
 void ReaderModeModel::FetchConfigurationForWebState(
     web::WebState* web_state,
     FetchConfigurationForWebStateCallback callback) {
-  // TODO(crbug.com/416224001): Use ReaderModeTabHelper to determine whether the
-  // page is actually eligible for Reading mode.
-  if (IsUrlNtp(web_state->GetVisibleURL()) || !web_state->ContentIsHTML()) {
+  ReaderModeTabHelper* reader_mode_tab_helper =
+      ReaderModeTabHelper::FromWebState(web_state);
+  if (!reader_mode_tab_helper->CurrentPageSupportsReaderMode()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(nullptr)));
     return;

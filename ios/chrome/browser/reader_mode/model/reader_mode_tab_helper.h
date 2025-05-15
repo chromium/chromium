@@ -37,6 +37,8 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   // Returns the Reader mode content view. A precondition for calling this
   // method is for Reader mode to be active in this tab.
   UIView* GetReaderModeContentView();
+  // Returns whether the current page supports Reading mode.
+  bool CurrentPageSupportsReaderMode() const;
 
   // Sets the snackbar handler.
   void SetSnackbarHandler(id<SnackbarCommands> snackbar_handler);
