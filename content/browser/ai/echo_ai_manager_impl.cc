@@ -10,7 +10,6 @@
 #include "components/language/core/common/locale_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/browser/ai/echo_ai_language_model.h"
-#include "content/browser/ai/echo_ai_proofreader.h"
 #include "content/browser/ai/echo_ai_rewriter.h"
 #include "content/browser/ai/echo_ai_summarizer.h"
 #include "content/browser/ai/echo_ai_writer.h"
@@ -140,50 +139,18 @@ void EchoAIManagerImpl::CreateLanguageModel(
 void EchoAIManagerImpl::CanCreateSummarizer(
     blink::mojom::AISummarizerCreateOptionsPtr options,
     CanCreateSummarizerCallback callback) {
-  if (options && !SupportedLanguages(options->expected_input_languages,
-                                     options->expected_context_languages,
-                                     options->output_language)) {
-    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
-                                kUnavailableUnsupportedLanguage);
-    return;
-  }
-  if (!model_downloaded_) {
-    std::move(callback).Run(
-        blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
-  } else {
-    std::move(callback).Run(
-        blink::mojom::ModelAvailabilityCheckResult::kAvailable);
-  }
+  CanCreateWritingAssistanceClient<blink::mojom::AISummarizerCreateOptionsPtr,
+                                   CanCreateSummarizerCallback>(
+      std::move(options), std::move(callback));
 }
 
 void EchoAIManagerImpl::CreateSummarizer(
     mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client,
     blink::mojom::AISummarizerCreateOptionsPtr options) {
-  mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient> client_remote(
-      std::move(client));
-  if (options && !SupportedLanguages(options->expected_input_languages,
-                                     options->expected_context_languages,
-                                     options->output_language)) {
-    client_remote->OnError(
-        blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
-    return;
-  }
-  auto return_summarizer_task =
-      base::BindOnce(&EchoAIManagerImpl::ReturnAISummarizerCreationResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(client_remote));
-  if (!model_downloaded_) {
-    // In order to test the model download progress handling, the
-    // `EchoAIManagerImpl` will always start from the `after-download` state,
-    // and we simulate the downloading time by posting a delayed task.
-    content::GetUIThreadTaskRunner()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&EchoAIManagerImpl::DoMockDownloadingAndReturn,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(return_summarizer_task)),
-        base::Milliseconds(kMockDownloadPreparationTimeMillisecond));
-  } else {
-    std::move(return_summarizer_task).Run();
-  }
+  CreateWritingAssistanceClient<blink::mojom::AISummarizerCreateOptionsPtr,
+                                blink::mojom::AIManagerCreateSummarizerClient,
+                                blink::mojom::AISummarizer, EchoAISummarizer>(
+      std::move(client), std::move(options));
 }
 
 void EchoAIManagerImpl::GetLanguageModelParams(
@@ -200,37 +167,100 @@ void EchoAIManagerImpl::GetLanguageModelParams(
 void EchoAIManagerImpl::CanCreateWriter(
     blink::mojom::AIWriterCreateOptionsPtr options,
     CanCreateWriterCallback callback) {
-  std::move(callback).Run(
-      blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+  CanCreateWritingAssistanceClient<blink::mojom::AIWriterCreateOptionsPtr,
+                                   CanCreateWriterCallback>(
+      std::move(options), std::move(callback));
 }
 
 void EchoAIManagerImpl::CreateWriter(
     mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client,
     blink::mojom::AIWriterCreateOptionsPtr options) {
-  mojo::Remote<blink::mojom::AIManagerCreateWriterClient> client_remote(
-      std::move(client));
-  mojo::PendingRemote<blink::mojom::AIWriter> writer;
-  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAIWriter>(),
-                              writer.InitWithNewPipeAndPassReceiver());
-  client_remote->OnResult(std::move(writer));
+  CreateWritingAssistanceClient<blink::mojom::AIWriterCreateOptionsPtr,
+                                blink::mojom::AIManagerCreateWriterClient,
+                                blink::mojom::AIWriter, EchoAIWriter>(
+      std::move(client), std::move(options));
 }
 
 void EchoAIManagerImpl::CanCreateRewriter(
     blink::mojom::AIRewriterCreateOptionsPtr options,
     CanCreateRewriterCallback callback) {
-  std::move(callback).Run(
-      blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+  CanCreateWritingAssistanceClient<blink::mojom::AIRewriterCreateOptionsPtr,
+                                   CanCreateRewriterCallback>(
+      std::move(options), std::move(callback));
 }
 
 void EchoAIManagerImpl::CreateRewriter(
     mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client,
     blink::mojom::AIRewriterCreateOptionsPtr options) {
-  mojo::Remote<blink::mojom::AIManagerCreateRewriterClient> client_remote(
-      std::move(client));
-  mojo::PendingRemote<::blink::mojom::AIRewriter> rewriter;
-  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAIRewriter>(),
-                              rewriter.InitWithNewPipeAndPassReceiver());
-  client_remote->OnResult(std::move(rewriter));
+  CreateWritingAssistanceClient<blink::mojom::AIRewriterCreateOptionsPtr,
+                                blink::mojom::AIManagerCreateRewriterClient,
+                                blink::mojom::AIRewriter, EchoAIRewriter>(
+      std::move(client), std::move(options));
+}
+
+template <typename AICreateOptions, typename CanCreateCallback>
+void EchoAIManagerImpl::CanCreateWritingAssistanceClient(
+    AICreateOptions options,
+    CanCreateCallback callback) {
+  if (options && !SupportedLanguages(options->expected_input_languages,
+                                     options->expected_context_languages,
+                                     options->output_language)) {
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableUnsupportedLanguage);
+    return;
+  }
+  if (!model_downloaded_) {
+    std::move(callback).Run(
+        blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
+  } else {
+    std::move(callback).Run(
+        blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+  }
+}
+
+template <typename AICreateOptions,
+          typename AIClientRemote,
+          typename AIPendingRemote,
+          typename EchoAIClient>
+void EchoAIManagerImpl::CreateWritingAssistanceClient(
+    mojo::PendingRemote<AIClientRemote> client,
+    AICreateOptions options) {
+  mojo::Remote<AIClientRemote> client_remote(std::move(client));
+  if (options && !SupportedLanguages(options->expected_input_languages,
+                                     options->expected_context_languages,
+                                     options->output_language)) {
+    client_remote->OnError(
+        blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
+    return;
+  }
+  auto return_task =
+      base::BindOnce(&EchoAIManagerImpl::ReturnAIClientCreationResult<
+                         AIClientRemote, AIPendingRemote, EchoAIClient>,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(client_remote));
+  if (!model_downloaded_) {
+    // In order to test the model download progress handling, the
+    // `EchoAIManagerImpl` will always start from the `after-download` state,
+    // and we simulate the downloading time by posting a delayed task.
+    content::GetUIThreadTaskRunner()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&EchoAIManagerImpl::DoMockDownloadingAndReturn,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(return_task)),
+        base::Milliseconds(kMockDownloadPreparationTimeMillisecond));
+  } else {
+    std::move(return_task).Run();
+  }
+}
+
+template <typename AIClientRemote,
+          typename AIPendingRemote,
+          typename EchoAIClient>
+void EchoAIManagerImpl::ReturnAIClientCreationResult(
+    mojo::Remote<AIClientRemote> client_remote) {
+  model_downloaded_ = true;
+  mojo::PendingRemote<AIPendingRemote> pending_remote;
+  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAIClient>(),
+                              pending_remote.InitWithNewPipeAndPassReceiver());
+  client_remote->OnResult(std::move(pending_remote));
 }
 
 void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
@@ -259,25 +289,6 @@ void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
           /*current_tokens=*/0, std::move(model_sampling_params),
           std::vector<blink::mojom::AILanguageModelPromptType>(
               enabled_input_types.begin(), enabled_input_types.end())));
-}
-
-void EchoAIManagerImpl::ReturnAISummarizerCreationResult(
-    mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient> client_remote) {
-  model_downloaded_ = true;
-  mojo::PendingRemote<blink::mojom::AISummarizer> summarizer;
-  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAISummarizer>(),
-                              summarizer.InitWithNewPipeAndPassReceiver());
-  client_remote->OnResult(std::move(summarizer));
-}
-
-void EchoAIManagerImpl::ReturnAIProofreaderCreationResult(
-    mojo::Remote<blink::mojom::AIManagerCreateProofreaderClient>
-        client_remote) {
-  model_downloaded_ = true;
-  mojo::PendingRemote<blink::mojom::AIProofreader> proofreader;
-  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAIProofreader>(),
-                              proofreader.InitWithNewPipeAndPassReceiver());
-  client_remote->OnResult(std::move(proofreader));
 }
 
 void EchoAIManagerImpl::DoMockDownloadingAndReturn(base::OnceClosure callback) {

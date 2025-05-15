@@ -9,13 +9,6 @@ promise_test(async () => {
 }, 'Rewriter must be defined.');
 
 promise_test(async () => {
-  // TODO(crbug.com/382615217): Test availability with various options.
-  assert_equals(await Rewriter.availability(), 'available');
-  assert_equals(
-      await Rewriter.availability({outputLanguage: 'en'}), 'available');
-}, 'Rewriter.availability');
-
-promise_test(async () => {
   const rewriter = await Rewriter.create();
   assert_equals(Object.prototype.toString.call(rewriter), '[object Rewriter]');
 }, 'Rewriter.create() must be return a Rewriter.');

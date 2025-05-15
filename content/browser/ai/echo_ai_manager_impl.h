@@ -69,18 +69,28 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
       mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
           observer_remote) override;
 
+  template <typename AICreateOptions, typename CanCreateCallback>
+  void CanCreateWritingAssistanceClient(AICreateOptions options,
+                                        CanCreateCallback callback);
+
+  template <typename AICreateOptions,
+            typename AIClientRemote,
+            typename AIPendingRemote,
+            typename EchoAIClient>
+  void CreateWritingAssistanceClient(mojo::PendingRemote<AIClientRemote> client,
+                                     AICreateOptions options);
+
+  template <typename AIClientRemote,
+            typename AIPendingRemote,
+            typename EchoAIClient>
+  void ReturnAIClientCreationResult(mojo::Remote<AIClientRemote> client_remote);
+
   void ReturnAILanguageModelCreationResult(
       mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
           client_remote,
       blink::mojom::AILanguageModelSamplingParamsPtr sampling_params,
       base::flat_set<blink::mojom::AILanguageModelPromptType>
           enabled_input_types);
-  void ReturnAISummarizerCreationResult(
-      mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient>
-          client_remote);
-  void ReturnAIProofreaderCreationResult(
-      mojo::Remote<blink::mojom::AIManagerCreateProofreaderClient>
-          client_remot);
 
   void DoMockDownloadingAndReturn(base::OnceClosure callback);
 
