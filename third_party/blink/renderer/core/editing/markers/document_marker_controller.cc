@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/highlight/highlight_style_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
@@ -1399,6 +1400,15 @@ void DocumentMarkerController::StartGlicMarkerAnimationIfNeeded() {
       glic_animation_state_ != GlicAnimationState::kNotStarted) {
     return;
   }
+
+  if (document_->GetSettings()->GetPrefersReducedMotion()) {
+    UpdateGlicMarkerOpacity(base::TimeDelta::Max());
+    InvalidatePaintForGlicMarkers();
+    glic_marker_animation_start_ = std::nullopt;
+    glic_animation_state_ = GlicAnimationState::kFinished;
+    return;
+  }
+
   // Always make sure we start from a clean state.
   glic_marker_animation_start_ = std::nullopt;
   glic_animation_state_ = GlicAnimationState::kRunning;

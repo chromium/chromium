@@ -34,10 +34,9 @@ Color GlicMarker::BackgroundColor() const {
 }
 
 bool GlicMarker::UpdateOpacityForDuration(base::TimeDelta duration) {
-  float progress = duration / kAnimationDuration;
-  bool is_last_frame = static_cast<int>(progress) == 1;
-  opacity_ = is_last_frame ? GetOpacity(1.0)
-                           : GetOpacity(duration / kAnimationDuration);
+  double progress = duration / kAnimationDuration;
+  bool is_last_frame = progress >= 1;
+  opacity_ = is_last_frame ? GetOpacity(1.0) : GetOpacity(progress);
   return is_last_frame;
 }
 }  // namespace blink
