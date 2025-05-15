@@ -970,9 +970,9 @@ std::optional<int> ChromeBrowserMainPartsWin::MaybeAutoDeElevate() {
     }
     new_command_line.AppendSwitch(switches::kDoNotDeElevateOnLaunch);
 
-    const HRESULT hr =
-        base::win::RunDeElevatedNoWait(new_command_line.GetProgram().value(),
-                                       new_command_line.GetArgumentsString());
+    const HRESULT hr = base::win::RunDeElevated(new_command_line).IsValid()
+                           ? S_OK
+                           : HRESULT_FROM_WIN32(::GetLastError());
     base::UmaHistogramSparse("Windows.AutoDeElevateResult", hr);
     // If it fails, it doesn't matter why, just proceed with the normal launch.
     if (SUCCEEDED(hr)) {
