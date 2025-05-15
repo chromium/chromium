@@ -162,7 +162,7 @@ source_set("cwt_chromedriver_tests") {
   deps = [
     ":cwt_constants",
     ":shared_helper_headers",
-    "//components/version_info:version_info",
+    "//components/version_info",
     "//ios/third_party/edo",
     "//net:test_support",
   ]
