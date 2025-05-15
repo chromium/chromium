@@ -140,6 +140,7 @@ public class RenderTestRule extends TestWatcher {
         Component.UI_BROWSER_AUTOFILL,
         Component.UI_BROWSER_BOOKMARKS,
         Component.UI_BROWSER_BUBBLES_PAGE_INFO,
+        Component.UI_BROWSER_CHROME_TABS_CHROME_TAB_GROUPS_SHARED_TAB_GROUPS,
         Component.UI_BROWSER_CONTENT_SUGGESTIONS,
         Component.UI_BROWSER_CONTENT_SUGGESTIONS_FEED,
         Component.UI_BROWSER_CONTENT_SUGGESTIONS_HISTORY,
@@ -174,7 +175,7 @@ public class RenderTestRule extends TestWatcher {
         Component.UI_BROWSER_TOOLBAR,
         Component.UI_BROWSER_THUMBNAIL,
         Component.UI_BROWSER_WEB_APP_INSTALLS,
-        Component.UI_SETTINGS_PRIVACY
+        Component.UI_SETTINGS_PRIVACY,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Component {
@@ -190,6 +191,8 @@ public class RenderTestRule extends TestWatcher {
         String UI_BROWSER_AUTOFILL = "UI>Browser>Autofill";
         String UI_BROWSER_BOOKMARKS = "UI>Browser>Bookmarks";
         String UI_BROWSER_BUBBLES_PAGE_INFO = "UI>Browser>Bubbles>PageInfo";
+        String UI_BROWSER_CHROME_TABS_CHROME_TAB_GROUPS_SHARED_TAB_GROUPS =
+                "UI>Browser>ChromeTabs>ChromeTabGroups>SharedTabGroups";
         String UI_BROWSER_CONTENT_SUGGESTIONS = "UI>Browser>ContentSuggestions";
         String UI_BROWSER_CONTENT_SUGGESTIONS_FEED = "UI>Browser>ContentSuggestions>Feed";
         String UI_BROWSER_CONTENT_SUGGESTIONS_HISTORY = "UI>Browser>ContentSuggestions>History";
