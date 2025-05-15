@@ -11,6 +11,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_translator_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_translator_translate_options.h"
+#include "third_party/blink/renderer/core/dom/abort_controller.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/modules/ai/availability.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -25,10 +27,12 @@ class Translator final : public ScriptWrappable {
 
  public:
   explicit Translator(
+      ScriptState* script_state,
       mojo::PendingRemote<mojom::blink::Translator> pending_remote,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       String source_language,
-      String target_language);
+      String target_language,
+      AbortSignal* abort_signal);
   ~Translator() override = default;
 
   mojo::PendingReceiver<blink::mojom::blink::Translator>
@@ -68,14 +72,25 @@ class Translator final : public ScriptWrappable {
 
   double inputQuota() const;
 
-  void destroy(ScriptState*);
+  void destroy(ScriptState* script_state);
 
  private:
+  void DestroyImpl();
+
+  void OnCreateAbortSignalAborted(ScriptState* script_state);
+
+  AbortSignal* CreateCompositeSignal(ScriptState* script_state,
+                                     TranslatorTranslateOptions* options);
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<blink::mojom::blink::Translator> translator_remote_{nullptr};
 
   String source_language_;
   String target_language_;
+
+  Member<AbortController> destruction_abort_controller_;
+  Member<AbortSignal> create_abort_signal_;
+  Member<AbortSignal::AlgorithmHandle> create_abort_handle_;
 };
 }  // namespace blink
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_AI_ON_DEVICE_TRANSLATION_TRANSLATOR_H_

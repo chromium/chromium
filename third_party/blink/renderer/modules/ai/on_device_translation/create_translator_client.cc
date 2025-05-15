@@ -149,8 +149,9 @@ void CreateTranslatorClient::OnResult(
   }
 
   GetResolver()->Resolve(MakeGarbageCollected<Translator>(
-      std::move(result->get_translator()), task_runner_,
-      std::move(source_language_), std::move(target_language_)));
+      GetScriptState(), std::move(result->get_translator()), task_runner_,
+      std::move(source_language_), std::move(target_language_),
+      GetAbortSignal()));
 }
 
 void CreateTranslatorClient::OnGotAvailability(

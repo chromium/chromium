@@ -28,26 +28,36 @@
 namespace blink {
 namespace {
 using mojom::blink::CanCreateTranslatorResult;
-
-const char kExceptionMessageTranslatorDestroyed[] =
-    "The translator has been destroyed.";
-
 }  // namespace
 
 Translator::Translator(
+    ScriptState* script_state,
     mojo::PendingRemote<mojom::blink::Translator> pending_remote,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     String source_language,
-    String target_language)
+    String target_language,
+    AbortSignal* abort_signal)
     : task_runner_(std::move(task_runner)),
       source_language_(std::move(source_language)),
-      target_language_(std::move(target_language)) {
+      target_language_(std::move(target_language)),
+      destruction_abort_controller_(AbortController::Create(script_state)),
+      create_abort_signal_(abort_signal) {
   translator_remote_.Bind(std::move(pending_remote), task_runner_);
+
+  if (create_abort_signal_) {
+    CHECK(!create_abort_signal_->aborted());
+    create_abort_handle_ = create_abort_signal_->AddAlgorithm(WTF::BindOnce(
+        &Translator::OnCreateAbortSignalAborted, WrapWeakPersistent(this),
+        WrapWeakPersistent(script_state)));
+  }
 }
 
 void Translator::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   visitor->Trace(translator_remote_);
+  visitor->Trace(destruction_abort_controller_);
+  visitor->Trace(create_abort_signal_);
+  visitor->Trace(create_abort_handle_);
 }
 
 String Translator::sourceLanguage() const {
@@ -155,16 +165,8 @@ ScriptPromise<IDLString> Translator::translate(
     return EmptyPromise();
   }
 
-  // TODO(crbug.com/399693771): This should be a composite signal of the passed
-  // in abort signal and the create abort signal.
-  AbortSignal* signal = options->getSignalOr(nullptr);
-  if (HandleAbortSignal(signal, script_state, exception_state)) {
-    return EmptyPromise();
-  }
-
-  if (!translator_remote_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kExceptionMessageTranslatorDestroyed);
+  AbortSignal* composite_signal = CreateCompositeSignal(script_state, options);
+  if (HandleAbortSignal(composite_signal, script_state, exception_state)) {
     return EmptyPromise();
   }
 
@@ -174,7 +176,7 @@ ScriptPromise<IDLString> Translator::translate(
   ScriptPromise<IDLString> promise = resolver->Promise();
 
   auto pending_remote = CreateModelExecutionResponder(
-      script_state, signal, resolver, task_runner_,
+      script_state, composite_signal, resolver, task_runner_,
       AIMetrics::AISessionType::kTranslator,
       /*complete_callback=*/base::DoNothing(),
       /*overflow_callback=*/base::DoNothing());
@@ -199,23 +201,15 @@ ReadableStream* Translator::translateStreaming(
     return nullptr;
   }
 
-  // TODO(crbug.com/399693771): This should be a composite signal of the passed
-  // in abort signal and the create abort signal.
   CHECK(options);
-  AbortSignal* signal = options->getSignalOr(nullptr);
-  if (HandleAbortSignal(signal, script_state, exception_state)) {
-    return nullptr;
-  }
-
-  if (!translator_remote_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kExceptionMessageTranslatorDestroyed);
+  AbortSignal* composite_signal = CreateCompositeSignal(script_state, options);
+  if (HandleAbortSignal(composite_signal, script_state, exception_state)) {
     return nullptr;
   }
 
   auto [readable_stream, pending_remote] =
       CreateModelExecutionStreamingResponder(
-          script_state, signal, task_runner_,
+          script_state, composite_signal, task_runner_,
           AIMetrics::AISessionType::kTranslator,
           /*complete_callback=*/base::DoNothing(),
           /*overflow_callback=*/base::DoNothing());
@@ -227,8 +221,25 @@ ReadableStream* Translator::translateStreaming(
   return readable_stream;
 }
 
-void Translator::destroy(ScriptState*) {
+void Translator::destroy(ScriptState* script_state) {
+  destruction_abort_controller_->abort(script_state);
+  DestroyImpl();
+}
+
+void Translator::DestroyImpl() {
   translator_remote_.reset();
+  if (create_abort_handle_) {
+    create_abort_signal_->RemoveAlgorithm(create_abort_handle_);
+    create_abort_handle_ = nullptr;
+  }
+}
+
+void Translator::OnCreateAbortSignalAborted(ScriptState* script_state) {
+  if (script_state) {
+    destruction_abort_controller_->abort(
+        script_state, create_abort_signal_->reason(script_state));
+  }
+  DestroyImpl();
 }
 
 ScriptPromise<IDLDouble> Translator::measureInputUsage(
@@ -236,32 +247,23 @@ ScriptPromise<IDLDouble> Translator::measureInputUsage(
     const WTF::String& input,
     TranslatorTranslateOptions* options,
     ExceptionState& exception_state) {
-  // https://webmachinelearning.github.io/writing-assistance-apis/#measure-ai-model-input-usage
-  //
-  // If modelObject’s relevant global object is a Window whose associated
-  // Document is not fully active, then return a promise rejected with an
-  // "InvalidStateError" DOMException.
-  auto* context = ExecutionContext::From(script_state);
-  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
-    auto* document = window->document();
-    if (document && !document->IsActive()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "The document is not active");
-      return EmptyPromise();
-    }
+  ExecutionContext* context = ExecutionContext::From(script_state);
+
+  if (!ValidateScriptState(
+          script_state, exception_state,
+          RuntimeEnabledFeatures::TranslationAPIForWorkersEnabled(context))) {
+    return EmptyPromise();
   }
 
-  // TODO(crbug.com/399693771): This should be a composite signal of the passed
-  // in abort signal and the create abort signal.
   CHECK(options);
-  AbortSignal* signal = options->getSignalOr(nullptr);
-  if (HandleAbortSignal(signal, script_state, exception_state)) {
+  AbortSignal* composite_signal = CreateCompositeSignal(script_state, options);
+  if (HandleAbortSignal(composite_signal, script_state, exception_state)) {
     return EmptyPromise();
   }
 
   ResolverWithAbortSignal<IDLDouble>* resolver =
-      MakeGarbageCollected<ResolverWithAbortSignal<IDLDouble>>(script_state,
-                                                               signal);
+      MakeGarbageCollected<ResolverWithAbortSignal<IDLDouble>>(
+          script_state, composite_signal);
 
   task_runner_->PostTask(
       FROM_HERE,
@@ -273,6 +275,21 @@ ScriptPromise<IDLDouble> Translator::measureInputUsage(
 
 double Translator::inputQuota() const {
   return std::numeric_limits<double>::infinity();
+}
+
+AbortSignal* Translator::CreateCompositeSignal(
+    ScriptState* script_state,
+    TranslatorTranslateOptions* options) {
+  HeapVector<Member<AbortSignal>> signals;
+
+  signals.push_back(destruction_abort_controller_->signal());
+
+  CHECK(options);
+  if (options->hasSignal()) {
+    signals.push_back(options->signal());
+  }
+
+  return MakeGarbageCollected<AbortSignal>(script_state, signals);
 }
 
 }  // namespace blink
