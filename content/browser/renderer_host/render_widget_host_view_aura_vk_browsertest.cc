@@ -244,6 +244,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
   web_contents->GetPrimaryFrameTree().SetFocusedFrame(
       root, root->current_frame_host()->GetSiteInstance()->group());
 
+  // End paint-holding to enable input event processing.
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
+
   // Send a touch event so that RenderWidgetHostViewAura will create the
   // keyboard observer (requires last_pointer_type_ to be TOUCH).
   // Tap on the third textarea to open VK.
@@ -271,6 +274,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
   GURL start_url = server_.GetURL("a.test", "/virtual-keyboard.html");
   ASSERT_TRUE(NavigateToURL(shell(), start_url));
   show_ime_observer_false.Wait();
+
+  // End paint-holding to enable input event processing.
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
 
   // Send a touch event so that RenderWidgetHostViewAura will create the
   // keyboard observer (requires last_pointer_type_ to be TOUCH).
@@ -390,6 +396,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
+  // End paint-holding to enable input event processing.
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
+
   auto* root = web_contents->GetPrimaryFrameTree().root();
   web_contents->GetPrimaryFrameTree().SetFocusedFrame(
       root, root->current_frame_host()->GetSiteInstance()->group());
