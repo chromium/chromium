@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -97,6 +98,13 @@ AccountConsistencyModeManager::AccountConsistencyModeManager(Profile* profile)
   // pref.
   bool signin_allowed = IsDiceSignInAllowed(entry) &&
                         prefs->GetBoolean(prefs::kSigninAllowedOnNextStartup);
+
+  // Disable sign-in if experimental-ai is enabled, regardless of channel.
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(::switches::kExperimentalAiStableChannel)) {
+    signin_allowed = false;
+  }
+
   prefs->SetBoolean(prefs::kSigninAllowed, signin_allowed);
 
   UMA_HISTOGRAM_BOOLEAN("Signin.SigninAllowed", signin_allowed);

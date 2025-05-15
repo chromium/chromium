@@ -99,6 +99,7 @@ extern const char kEnableHangoutServicesExtensionForTesting[];
 extern const char kEnableNaCl[];
 extern const char kEnableNetBenchmarking[];
 extern const char kEnablePotentiallyAnnoyingSecurityFeatures[];
+extern const char kExperimentalAiStableChannel[];
 extern const char kExplicitlyAllowedPorts[];
 extern const char kExtensionAiDataCollection[];
 extern const char kExtensionContentVerification[];

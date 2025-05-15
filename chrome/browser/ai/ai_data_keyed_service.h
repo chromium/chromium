@@ -51,6 +51,9 @@ class AiDataKeyedService : public KeyedService {
   // Returns the list of extensions that are allowlisted for actions.
   static bool IsExtensionAllowlistedForActions(const std::string& extension_id);
 
+  // Returns whether an extension is allowed to run on stable channel.
+  static bool IsExtensionAllowlistedForStable(const std::string& extension_id);
+
   // Fills an AiData and returns the result via the passed in callback. If the
   // AiData is empty, data collection failed. |callback| is guaranteed to be
   // called, and guaranteed to be called asynchronously. This method uses a set

@@ -16,10 +16,10 @@
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/common/extensions/api/experimental_ai_data.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/common/features/feature_channel.h"
 
 namespace extensions {
 
@@ -34,12 +34,9 @@ bool ExperimentalAiDataApiFunction::PreRunValidation(std::string* error) {
     return false;
   }
 
-  // In addition to the extension framework channel restriction, we make sure
-  // the API is not available on Stable. In particular,
-  // extension::switches::kEnableExperimentalExtensionApis allows ignoring those
-  // channel restrictions.
-  if (chrome::GetChannel() == version_info::Channel::STABLE) {
-    *error = "API access restricted to non-Stable channels.";
+  if (GetCurrentChannel() == version_info::Channel::STABLE &&
+      !AiDataKeyedService::IsExtensionAllowlistedForStable(extension_id())) {
+    *error = "API access not allowed on this channel.";
     return false;
   }
 

@@ -10,6 +10,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/base64.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/form_processing/optimization_guide_proto_util.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -838,6 +840,20 @@ bool AiDataKeyedService::IsExtensionAllowlistedForActions(
   }
 
   return false;
+}
+
+bool AiDataKeyedService::IsExtensionAllowlistedForStable(
+    const std::string& extension_id) {
+  // Stable channel always requires --experimental-ai-stable-channel flag.
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(::switches::kExperimentalAiStableChannel)) {
+    return false;
+  }
+
+  // And the extension must be on this list.
+  static const base::NoDestructor<std::vector<std::string>>
+      kStableChannelAllowlistedIds({});
+  return base::Contains(*kStableChannelAllowlistedIds, extension_id);
 }
 
 void AiDataKeyedService::StartTask(

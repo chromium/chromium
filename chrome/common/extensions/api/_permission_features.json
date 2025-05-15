@@ -367,12 +367,12 @@
   },
   "experimentalActor": {
     "extension_types": ["extension"],
-    "channel": "beta",
+    "channel": "stable",
     "command_line_switch": "extension-actor-api"
   },
   "experimentalAiData": {
     "extension_types": ["extension"],
-    "channel": "beta",
+    "channel": "stable",
     "command_line_switch": "extension-ai-data-collection"
   },
   "favicon": {

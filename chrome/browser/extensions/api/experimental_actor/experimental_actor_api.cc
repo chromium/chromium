@@ -15,10 +15,10 @@
 #include "chrome/browser/ai/ai_data_keyed_service_factory.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/common/extensions/api/experimental_actor.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
+#include "extensions/common/features/feature_channel.h"
 
 namespace extensions {
 
@@ -31,12 +31,9 @@ bool ExperimentalActorApiFunction::PreRunValidation(std::string* error) {
   *error = "Actions not supported for this build configuration.";
   return false;
 #else
-  // In addition to the extension framework channel restriction, we make sure
-  // the API is not available on Stable. In particular,
-  // extension::switches::kEnableExperimentalExtensionApis allows ignoring those
-  // channel restrictions.
-  if (chrome::GetChannel() == version_info::Channel::STABLE) {
-    *error = "API access restricted to non-Stable channels.";
+  if (GetCurrentChannel() == version_info::Channel::STABLE &&
+      !AiDataKeyedService::IsExtensionAllowlistedForStable(extension_id())) {
+    *error = "API access not allowed on this channel.";
     return false;
   }
 
