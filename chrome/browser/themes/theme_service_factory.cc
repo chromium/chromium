@@ -146,10 +146,9 @@ void ThemeServiceFactory::RegisterProfilePrefs(
       prefs::kBrowserColorVariant,
       static_cast<int>(ui::mojom::BrowserColorVariant::kSystem));
   registry->RegisterBooleanPref(
-      prefs::kGrayscaleThemeEnabledDoNotUse, false,
+      prefs::kDeprecatedGrayscaleThemeEnabledDoNotUse, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(prefs::kNonSyncingGrayscaleThemeEnabledDoNotUse,
-                                false);
+  registry->RegisterBooleanPref(prefs::kGrayscaleThemeEnabled, false);
   registry->RegisterBooleanPref(prefs::kBrowserFollowsSystemThemeColors,
                                 BUILDFLAG(IS_CHROMEOS));
   registry->RegisterBooleanPref(prefs::kSyncingThemePrefsMigratedToNonSyncing,

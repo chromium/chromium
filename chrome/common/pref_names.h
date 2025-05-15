@@ -1384,12 +1384,10 @@ extern inline constexpr char kBrowserFollowsSystemThemeColors[] =
     "browser.theme.follows_system_colors";
 
 // Boolean pref tracking whether the grayscale theme has been enabled.
-// Note: In the process of migration. Please use `GetThemePrefNameInMigration()`
-// instead. See crbug.com/356148174.
-inline constexpr char kGrayscaleThemeEnabledDoNotUse[] =
+// Use `kGrayscaleThemeEnabled` only.
+inline constexpr char kDeprecatedGrayscaleThemeEnabledDoNotUse[] =
     "browser.theme.is_grayscale";
-inline constexpr char kNonSyncingGrayscaleThemeEnabledDoNotUse[] =
-    "browser.theme.is_grayscale2";
+inline constexpr char kGrayscaleThemeEnabled[] = "browser.theme.is_grayscale2";
 
 // Boolean pref which persists whether the extensions_ui is in developer mode
 // (showing developer packing tools and extensions details)

@@ -1137,8 +1137,7 @@ TEST_F(RealThemeSyncableServiceTest, ShouldDownloadGrayscale) {
             ThemeService::BrowserColorScheme::kSystem);
 
   // Verify that the new pref is used.
-  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
-      prefs::kNonSyncingGrayscaleThemeEnabledDoNotUse));
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kGrayscaleThemeEnabled));
 }
 
 TEST_F(RealThemeSyncableServiceTest, ShouldUploadGrayscale) {
@@ -1163,8 +1162,8 @@ TEST_F(RealThemeSyncableServiceTest, ShouldUploadGrayscale) {
       ProtoEnumToBrowserColorScheme(change_specifics.browser_color_scheme()));
 
   // Verify that the old pref is updated.
-  EXPECT_TRUE(
-      profile()->GetPrefs()->GetBoolean(prefs::kGrayscaleThemeEnabledDoNotUse));
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
+      prefs::kDeprecatedGrayscaleThemeEnabledDoNotUse));
 }
 
 TEST_F(RealThemeSyncableServiceTest, ShouldDownloadBrowserColorScheme) {
@@ -1991,7 +1990,7 @@ TEST_F(RealThemeSyncableServiceTest, ShouldUpdateOldSyncingThemePrefs) {
   ASSERT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
       prefs::kDeprecatedBrowserColorVariantDoNotUse));
   ASSERT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kGrayscaleThemeEnabledDoNotUse));
+      prefs::kDeprecatedGrayscaleThemeEnabledDoNotUse));
   ASSERT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
       prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
 
@@ -2012,7 +2011,7 @@ TEST_F(RealThemeSyncableServiceTest, ShouldUpdateOldSyncingThemePrefs) {
 
   // Other prefs are cleared.
   EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kGrayscaleThemeEnabledDoNotUse));
+      prefs::kDeprecatedGrayscaleThemeEnabledDoNotUse));
   EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
       prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
 
@@ -2020,9 +2019,9 @@ TEST_F(RealThemeSyncableServiceTest, ShouldUpdateOldSyncingThemePrefs) {
   theme_service()->SetIsGrayscale(true);
 
   ASSERT_TRUE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kGrayscaleThemeEnabledDoNotUse));
-  EXPECT_TRUE(
-      profile()->GetPrefs()->GetBoolean(prefs::kGrayscaleThemeEnabledDoNotUse));
+      prefs::kDeprecatedGrayscaleThemeEnabledDoNotUse));
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
+      prefs::kDeprecatedGrayscaleThemeEnabledDoNotUse));
 
   // Other prefs are cleared.
   EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
@@ -2045,7 +2044,7 @@ TEST_F(RealThemeSyncableServiceTest, ShouldUpdateOldSyncingThemePrefs) {
 
   // Other prefs are left as-is.
   EXPECT_TRUE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kGrayscaleThemeEnabledDoNotUse));
+      prefs::kDeprecatedGrayscaleThemeEnabledDoNotUse));
   EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
       prefs::kDeprecatedUserColorDoNotUse));
   EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
@@ -2060,7 +2059,7 @@ TEST_F(RealThemeSyncableServiceTest, ShouldUpdateOldSyncingThemePrefs) {
   EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
       prefs::kDeprecatedBrowserColorVariantDoNotUse));
   EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kGrayscaleThemeEnabledDoNotUse));
+      prefs::kDeprecatedGrayscaleThemeEnabledDoNotUse));
   EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
       prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
 }
@@ -3613,10 +3612,9 @@ class ThemePrefsMigrationTest : public ::testing::Test {
         prefs::kBrowserColorVariant,
         static_cast<int>(ui::mojom::BrowserColorVariant::kSystem));
     registry->RegisterBooleanPref(
-        prefs::kGrayscaleThemeEnabledDoNotUse, false,
+        prefs::kDeprecatedGrayscaleThemeEnabledDoNotUse, false,
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-    registry->RegisterBooleanPref(
-        prefs::kNonSyncingGrayscaleThemeEnabledDoNotUse, false);
+    registry->RegisterBooleanPref(prefs::kGrayscaleThemeEnabled, false);
     registry->RegisterDictionaryPref(prefs::kNtpCustomBackgroundDictDoNotUse);
     registry->RegisterDictionaryPref(
         prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse);
