@@ -85,6 +85,10 @@ public class AwWebContentsObserver extends WebContentsObserver
         return null;
     }
 
+    public AwNavigation getAwNavigationFor(NavigationHandle navigation) {
+        return getOrUpdateAwNavigationFor(navigation);
+    }
+
     private AwNavigation getOrUpdateAwNavigationFor(NavigationHandle navigation) {
         WeakReference<AwNavigation> awNavigationRef = mNavigationMap.get(navigation);
         if (awNavigationRef != null) {

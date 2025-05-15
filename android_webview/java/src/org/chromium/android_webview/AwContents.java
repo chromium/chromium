@@ -2246,6 +2246,52 @@ public class AwContents implements SmartClipProvider {
         loadUrl(url, null);
     }
 
+    @Nullable
+    public AwNavigation navigate(String url) {
+        return navigate(new AwNavigationParams(url));
+    }
+
+    @Nullable
+    public AwNavigation navigate(AwNavigationParams params) {
+        if (isDestroyed(NO_WARN)) {
+            throw new IllegalStateException("Called navigate on a destroyed WebView.");
+        }
+
+        recordLoadUrlScheme(schemeForUrl(params.url));
+
+        if (params.url == null) {
+            throw new IllegalArgumentException("Navigate called with null URL.");
+        }
+
+        final String javaScriptScheme = "javascript:";
+        if (params.url.startsWith(javaScriptScheme)) {
+            throw new IllegalArgumentException("This API does not support javascript URLs");
+        }
+
+        // TODO(crbug.com/408128748): Add support for extra headers.
+        // TODO(crbug.com/408974593): Consider adding a fixupUrl option.
+        // TODO(crbug.com/408974593): Allow developers to set the PageTransition type.
+        LoadUrlParams loadUrlParams = new LoadUrlParams(params.url, PageTransition.TYPED);
+        loadUrlParams.setShouldReplaceCurrentEntry(params.shouldReplaceCurrentEntry);
+
+        loadUrlParams.setOverrideUserAgent(UserAgentOverrideOption.TRUE);
+
+        NavigationHandle handle = mNavigationController.loadUrl(loadUrlParams);
+        if (handle == null) {
+            throw new IllegalArgumentException("Invalid URL: " + params.url);
+        }
+
+        // The behavior of WebViewClassic uses the populateVisitedLinks callback in WebKit.
+        // Chromium does not use this use code path and the best emulation of this behavior to call
+        // request visited links once on the first URL load of the WebView.
+        if (!mHasRequestedVisitedHistoryFromClient) {
+            mHasRequestedVisitedHistoryFromClient = true;
+            requestVisitedHistoryFromClient();
+        }
+
+        return mWebContentsObserver.getAwNavigationFor(handle);
+    }
+
     /** WebView.postUrl. */
     public void postUrl(String url, byte[] postData) {
         if (TRACE) Log.i(TAG, "%s postUrl=%s", this, url);
