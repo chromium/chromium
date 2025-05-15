@@ -1423,6 +1423,19 @@ const FeatureEntry::FeatureVariation
         {"(retroactive)", kInvalidateChoiceOnRestoreIsRetroactiveOption,
          std::size(kInvalidateChoiceOnRestoreIsRetroactiveOption), nullptr}};
 
+const FeatureEntry::FeatureParam kSingleScreenForGLICPromoConsent[] = {
+    {kGLICPromoConsentParams, "1"}};
+const FeatureEntry::FeatureParam kDoubleScreenForGLICPromoConsent[] = {
+    {kGLICPromoConsentParams, "2"}};
+
+const FeatureEntry::FeatureVariation kGLICPromoConsentVariations[] = {
+    {"Single screen for GLIC Promo Consent Flow",
+     kSingleScreenForGLICPromoConsent,
+     std::size(kSingleScreenForGLICPromoConsent), nullptr},
+    {"Double screen for GLIC Promo Consent Flow",
+     kDoubleScreenForGLICPromoConsent,
+     std::size(kDoubleScreenForGLICPromoConsent), nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2601,6 +2614,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"page-action-menu", flag_descriptions::kPageActionMenuName,
      flag_descriptions::kPageActionMenuDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kPageActionMenu)},
+    {"glic-promo-consent", flag_descriptions::kGLICPromoConsentName,
+     flag_descriptions::kGLICPromoConsentDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kGLICPromoConsent,
+                                    kGLICPromoConsentVariations,
+                                    "IOSGLICPromoConsent")},
     {"feedback-include-variations",
      flag_descriptions::kFeedbackIncludeVariationsName,
      flag_descriptions::kFeedbackIncludeVariationsDescription, flags_ui::kOsIos,

@@ -22,6 +22,27 @@ bool IsPageActionMenuEnabled() {
   return base::FeatureList::IsEnabled(kPageActionMenu);
 }
 
+const char kGLICPromoConsentParams[] = "GLICPromoConsentVariations";
+
+GLICPromoConsentVariations GLICPromoConsentVariationsParam() {
+  int param = base::GetFieldTrialParamByFeatureAsInt(
+      kGLICPromoConsent, kGLICPromoConsentParams, 0);
+  if (!IsPageActionMenuEnabled()) {
+    return GLICPromoConsentVariations::kDisabled;
+  }
+  if (param == 1) {
+    return GLICPromoConsentVariations::kSinglePage;
+  }
+  if (param == 2) {
+    return GLICPromoConsentVariations::kDoublePage;
+  }
+  return GLICPromoConsentVariations::kDisabled;
+}
+
+BASE_FEATURE(kGLICPromoConsent,
+             "GLICPromoConsent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kExplainGeminiEditMenuParams[] = "PositionForExplainGeminiEditMenu";
 
 PositionForExplainGeminiEditMenu ExplainGeminiEditMenuPosition() {

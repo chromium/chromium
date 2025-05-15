@@ -19,6 +19,21 @@ BASE_DECLARE_FEATURE(kPageActionMenu);
 // Returns true if the page action menu is enabled.
 bool IsPageActionMenuEnabled();
 
+extern const char kGLICPromoConsentParams[];
+
+// Holds the variations of the GLIC Promo Consent flow.
+enum class GLICPromoConsentVariations {
+  kDisabled = 0,
+  kSinglePage = 1,
+  kDoublePage = 2,
+};
+
+// Returns the variation of the GLIC Promo Consent flow.
+GLICPromoConsentVariations GLICPromoConsentVariationsParam();
+
+// Feature flag to enable GLIC Promo Consent.
+BASE_DECLARE_FEATURE(kGLICPromoConsent);
+
 extern const char kExplainGeminiEditMenuParams[];
 
 // Holds the position of Explain Gemini button in the EditMenu.
