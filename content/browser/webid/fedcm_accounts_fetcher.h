@@ -8,7 +8,7 @@
 #include <set>
 
 #include "base/memory/weak_ptr.h"
-#include "content/browser/webid/federated_provider_fetcher.h"
+#include "content/browser/webid/fedcm_config_fetcher.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "url/gurl.h"
 
@@ -56,7 +56,7 @@ class FedCmAccountsFetcher {
 
  private:
   void OnAllConfigAndWellKnownFetched(
-      std::vector<FederatedProviderFetcher::FetchResult> fetch_results);
+      std::vector<FedCmConfigFetcher::FetchResult> fetch_results);
 
   void OnAccountsResponseReceived(
       std::unique_ptr<IdentityProviderInfo> idp_info,
@@ -85,7 +85,7 @@ class FedCmAccountsFetcher {
   void ComputeLoginStates(const GURL& idp_config_url,
                           std::vector<IdentityRequestAccountPtr>& accounts);
 
-  std::unique_ptr<FederatedProviderFetcher> provider_fetcher_;
+  std::unique_ptr<FedCmConfigFetcher> config_fetcher_;
 
   // Owned by FederatedAuthRequestImpl.
   raw_ref<RenderFrameHost> render_frame_host_;

@@ -17,7 +17,6 @@
 #include "content/browser/webid/fedcm_accounts_fetcher.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/fedcm_url_computations.h"
-#include "content/browser/webid/federated_provider_fetcher.h"
 #include "content/browser/webid/identity_provider_info.h"
 #include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/identity_registry_delegate.h"

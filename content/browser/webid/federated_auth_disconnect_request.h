@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "content/browser/webid/federated_provider_fetcher.h"
+#include "content/browser/webid/fedcm_config_fetcher.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
@@ -19,7 +19,7 @@ namespace content {
 class FedCmMetrics;
 class FederatedIdentityApiPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
-class FederatedProviderFetcher;
+class FedCmConfigFetcher;
 class RenderFrameHost;
 
 // Fetches data for a FedCM disconnect request.
@@ -57,7 +57,7 @@ class CONTENT_EXPORT FederatedAuthDisconnectRequest {
       blink::mojom::IdentityCredentialDisconnectOptionsPtr options);
 
   void OnAllConfigAndWellKnownFetched(
-      std::vector<FederatedProviderFetcher::FetchResult> fetch_results);
+      std::vector<FedCmConfigFetcher::FetchResult> fetch_results);
 
   void OnDisconnectResponse(IdpNetworkRequestManager::FetchStatus fetch_status,
                             const std::string& account_id);
@@ -77,7 +77,7 @@ class CONTENT_EXPORT FederatedAuthDisconnectRequest {
   raw_ptr<FedCmMetrics> metrics_;
   raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_;
 
-  std::unique_ptr<FederatedProviderFetcher> provider_fetcher_;
+  std::unique_ptr<FedCmConfigFetcher> config_fetcher_;
   blink::mojom::IdentityCredentialDisconnectOptionsPtr options_;
 
   url::Origin origin_;

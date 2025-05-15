@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/federated_provider_fetcher.h"
+#include "content/browser/webid/fedcm_config_fetcher.h"
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -24,20 +24,20 @@ using ::testing::WithArg;
 
 namespace content {
 
-class FederatedProviderFetcherTest : public RenderViewHostImplTestHarness {
+class FedCmConfigFetcherTest : public RenderViewHostImplTestHarness {
  protected:
-  FederatedProviderFetcherTest() = default;
-  ~FederatedProviderFetcherTest() override = default;
+  FedCmConfigFetcherTest() = default;
+  ~FedCmConfigFetcherTest() override = default;
 
   void SetUp() override { RenderViewHostImplTestHarness::SetUp(); }
 
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(FederatedProviderFetcherTest, FailedToFetchWellKnown) {
+TEST_F(FedCmConfigFetcherTest, FailedToFetchWellKnown) {
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   EXPECT_CALL(*network_manager, FetchConfig)
       .WillOnce(WithArg<4>(
@@ -73,7 +73,7 @@ TEST_F(FederatedProviderFetcherTest, FailedToFetchWellKnown) {
       /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindLambdaForTesting(
-          [&loop](std::vector<FederatedProviderFetcher::FetchResult> result) {
+          [&loop](std::vector<FedCmConfigFetcher::FetchResult> result) {
             EXPECT_EQ(result.size(), 1ul);
             EXPECT_TRUE(result[0].error);
             EXPECT_EQ(result[0].error->result,
@@ -85,13 +85,13 @@ TEST_F(FederatedProviderFetcherTest, FailedToFetchWellKnown) {
   loop.Run();
 }
 
-TEST_F(FederatedProviderFetcherTest, FailedToFetchWellKnownButNoEnforcement) {
+TEST_F(FedCmConfigFetcherTest, FailedToFetchWellKnownButNoEnforcement) {
   feature_list_.InitAndEnableFeature(
       features::kFedCmWithoutWellKnownEnforcement);
 
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   EXPECT_CALL(*network_manager, FetchConfig)
       .WillOnce(WithArg<4>(
@@ -127,7 +127,7 @@ TEST_F(FederatedProviderFetcherTest, FailedToFetchWellKnownButNoEnforcement) {
       /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindLambdaForTesting(
-          [&loop](std::vector<FederatedProviderFetcher::FetchResult> result) {
+          [&loop](std::vector<FedCmConfigFetcher::FetchResult> result) {
             EXPECT_EQ(result.size(), 1ul);
             EXPECT_FALSE(result[0].error);
             EXPECT_TRUE(result[0].wellknown.provider_urls.empty());
@@ -139,10 +139,10 @@ TEST_F(FederatedProviderFetcherTest, FailedToFetchWellKnownButNoEnforcement) {
   loop.Run();
 }
 
-TEST_F(FederatedProviderFetcherTest, FailedToFetchConfig) {
+TEST_F(FedCmConfigFetcherTest, FailedToFetchConfig) {
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   // Returns a 404 for the fetch of the config file.
   EXPECT_CALL(*network_manager, FetchConfig)
@@ -172,7 +172,7 @@ TEST_F(FederatedProviderFetcherTest, FailedToFetchConfig) {
       /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindLambdaForTesting(
-          [&loop](std::vector<FederatedProviderFetcher::FetchResult> result) {
+          [&loop](std::vector<FedCmConfigFetcher::FetchResult> result) {
             EXPECT_EQ(result.size(), 1ul);
             EXPECT_TRUE(result[0].error);
             EXPECT_EQ(
@@ -184,10 +184,10 @@ TEST_F(FederatedProviderFetcherTest, FailedToFetchConfig) {
   loop.Run();
 }
 
-TEST_F(FederatedProviderFetcherTest, SucceedsToFetchConfigButInvalidResponse) {
+TEST_F(FedCmConfigFetcherTest, SucceedsToFetchConfigButInvalidResponse) {
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   // Returns a 200 but with an empty and invalid response.
   EXPECT_CALL(*network_manager, FetchConfig)
@@ -216,7 +216,7 @@ TEST_F(FederatedProviderFetcherTest, SucceedsToFetchConfigButInvalidResponse) {
       /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindLambdaForTesting(
-          [&loop](std::vector<FederatedProviderFetcher::FetchResult> result) {
+          [&loop](std::vector<FedCmConfigFetcher::FetchResult> result) {
             EXPECT_EQ(result.size(), 1ul);
             EXPECT_TRUE(result[0].error);
             EXPECT_EQ(result[0].error->result,
@@ -228,10 +228,10 @@ TEST_F(FederatedProviderFetcherTest, SucceedsToFetchConfigButInvalidResponse) {
   loop.Run();
 }
 
-TEST_F(FederatedProviderFetcherTest, SuccessfullAndValidResponse) {
+TEST_F(FedCmConfigFetcherTest, SuccessfullAndValidResponse) {
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   // Returns a 200 but with an empty and invalid response.
   EXPECT_CALL(*network_manager, FetchConfig)
@@ -267,7 +267,7 @@ TEST_F(FederatedProviderFetcherTest, SuccessfullAndValidResponse) {
       /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindLambdaForTesting(
-          [&loop](std::vector<FederatedProviderFetcher::FetchResult> result) {
+          [&loop](std::vector<FedCmConfigFetcher::FetchResult> result) {
             EXPECT_EQ(result.size(), 1ul);
             EXPECT_FALSE(result[0].error);
             loop.Quit();
@@ -276,11 +276,11 @@ TEST_F(FederatedProviderFetcherTest, SuccessfullAndValidResponse) {
   loop.Run();
 }
 
-TEST_F(FederatedProviderFetcherTest,
+TEST_F(FedCmConfigFetcherTest,
        TooManyProvidersInWellKnownLeadsToErrorWellKnownTooBig) {
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   // Returns a 200 but with an empty and invalid response.
   EXPECT_CALL(*network_manager, FetchConfig)
@@ -318,7 +318,7 @@ TEST_F(FederatedProviderFetcherTest,
       /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindLambdaForTesting(
-          [&loop](std::vector<FederatedProviderFetcher::FetchResult> result) {
+          [&loop](std::vector<FedCmConfigFetcher::FetchResult> result) {
             EXPECT_EQ(result.size(), 1ul);
             EXPECT_TRUE(result[0].error);
             EXPECT_EQ(
@@ -330,11 +330,10 @@ TEST_F(FederatedProviderFetcherTest,
   loop.Run();
 }
 
-TEST_F(FederatedProviderFetcherTest,
-       ProvidersUrlsIgnoredWhenAccountEndpointsMatch) {
+TEST_F(FedCmConfigFetcherTest, ProvidersUrlsIgnoredWhenAccountEndpointsMatch) {
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   // Returns a 200 but with an empty and invalid response.
   EXPECT_CALL(*network_manager, FetchConfig)
@@ -373,7 +372,7 @@ TEST_F(FederatedProviderFetcherTest,
       /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindLambdaForTesting(
-          [&loop](std::vector<FederatedProviderFetcher::FetchResult> result) {
+          [&loop](std::vector<FedCmConfigFetcher::FetchResult> result) {
             EXPECT_EQ(result.size(), 1ul);
             EXPECT_FALSE(result[0].error);
             loop.Quit();
@@ -382,11 +381,11 @@ TEST_F(FederatedProviderFetcherTest,
   loop.Run();
 }
 
-TEST_F(FederatedProviderFetcherTest,
+TEST_F(FedCmConfigFetcherTest,
        ProvidersUrlsCanbeEmptyWhenAccountEndpointsMatch) {
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   // Returns a 200 but with an empty and invalid response.
   EXPECT_CALL(*network_manager, FetchConfig)
@@ -424,7 +423,7 @@ TEST_F(FederatedProviderFetcherTest,
       /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindLambdaForTesting(
-          [&loop](std::vector<FederatedProviderFetcher::FetchResult> result) {
+          [&loop](std::vector<FedCmConfigFetcher::FetchResult> result) {
             EXPECT_EQ(result.size(), 1ul);
             EXPECT_FALSE(result[0].error);
             EXPECT_TRUE(result[0].wellknown.provider_urls.empty());
@@ -434,14 +433,14 @@ TEST_F(FederatedProviderFetcherTest,
   loop.Run();
 }
 
-TEST_F(FederatedProviderFetcherTest, ValidFetchResult) {
+TEST_F(FedCmConfigFetcherTest, ValidFetchResult) {
   // The most basic valid fetch result is one where:
   // (a) both the well-known and the config files were loaded successfully
   // (b) there is an accounts and token endpoint in the config file
   // (c) the well-known file contains the configURL
   IdentityProviderMetadata metadata;
   metadata.idp_login_url = GURL("https://idp.example/sign-in");
-  FederatedProviderFetcher::FetchResult result;
+  FedCmConfigFetcher::FetchResult result;
   result.endpoints.accounts = GURL("https://idp.example/accounts");
   result.endpoints.token = GURL("https://idp.example/token");
   result.wellknown.provider_urls = {GURL("https://idp.example/fedcm.json")};
@@ -450,21 +449,21 @@ TEST_F(FederatedProviderFetcherTest, ValidFetchResult) {
 
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   fetcher.ValidateAndMaybeSetError(result);
   EXPECT_FALSE(result.error);
 }
 
-TEST_F(FederatedProviderFetcherTest, InvalidMissingAcccountsEndpoint) {
-  FederatedProviderFetcher::FetchResult result;
+TEST_F(FedCmConfigFetcherTest, InvalidMissingAcccountsEndpoint) {
+  FedCmConfigFetcher::FetchResult result;
   result.endpoints.token = GURL("https://idp.example/token");
   result.wellknown.provider_urls = {GURL("https://idp.example/fedcm.json")};
   result.identity_provider_config_url = GURL("https://idp.example/fedcm.json");
 
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   fetcher.ValidateAndMaybeSetError(result);
   EXPECT_TRUE(result.error);
@@ -472,8 +471,8 @@ TEST_F(FederatedProviderFetcherTest, InvalidMissingAcccountsEndpoint) {
             blink::mojom::FederatedAuthRequestResult::kConfigInvalidResponse);
 }
 
-TEST_F(FederatedProviderFetcherTest, InvalidCrossOriginAcccountsEndpoint) {
-  FederatedProviderFetcher::FetchResult result;
+TEST_F(FedCmConfigFetcherTest, InvalidCrossOriginAcccountsEndpoint) {
+  FedCmConfigFetcher::FetchResult result;
   result.endpoints.accounts = GURL("https://cross-origin.example/accounts");
   result.endpoints.token = GURL("https://idp.example/token");
   result.wellknown.provider_urls = {GURL("https://idp.example/fedcm.json")};
@@ -481,7 +480,7 @@ TEST_F(FederatedProviderFetcherTest, InvalidCrossOriginAcccountsEndpoint) {
 
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   fetcher.ValidateAndMaybeSetError(result);
   EXPECT_TRUE(result.error);
@@ -489,15 +488,15 @@ TEST_F(FederatedProviderFetcherTest, InvalidCrossOriginAcccountsEndpoint) {
             blink::mojom::FederatedAuthRequestResult::kConfigInvalidResponse);
 }
 
-TEST_F(FederatedProviderFetcherTest, InvalidMissingTokenEndpoint) {
-  FederatedProviderFetcher::FetchResult result;
+TEST_F(FedCmConfigFetcherTest, InvalidMissingTokenEndpoint) {
+  FedCmConfigFetcher::FetchResult result;
   result.endpoints.accounts = GURL("https://idp.example/accounts");
   result.wellknown.provider_urls = {GURL("https://idp.example/fedcm.json")};
   result.identity_provider_config_url = GURL("https://idp.example/fedcm.json");
 
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   fetcher.ValidateAndMaybeSetError(result);
   EXPECT_TRUE(result.error);
@@ -505,8 +504,8 @@ TEST_F(FederatedProviderFetcherTest, InvalidMissingTokenEndpoint) {
             blink::mojom::FederatedAuthRequestResult::kConfigInvalidResponse);
 }
 
-TEST_F(FederatedProviderFetcherTest, InvalidCrossOriginTokenEndpoint) {
-  FederatedProviderFetcher::FetchResult result;
+TEST_F(FedCmConfigFetcherTest, InvalidCrossOriginTokenEndpoint) {
+  FedCmConfigFetcher::FetchResult result;
   result.endpoints.accounts = GURL("https://idp.example/accounts");
   result.endpoints.token = GURL("https://cross-origin.example/token");
   result.wellknown.provider_urls = {GURL("https://idp.example/fedcm.json")};
@@ -514,7 +513,7 @@ TEST_F(FederatedProviderFetcherTest, InvalidCrossOriginTokenEndpoint) {
 
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   fetcher.ValidateAndMaybeSetError(result);
 
@@ -523,8 +522,8 @@ TEST_F(FederatedProviderFetcherTest, InvalidCrossOriginTokenEndpoint) {
             blink::mojom::FederatedAuthRequestResult::kConfigInvalidResponse);
 }
 
-TEST_F(FederatedProviderFetcherTest, InvalidCrossOriginSigninUrl) {
-  FederatedProviderFetcher::FetchResult result;
+TEST_F(FedCmConfigFetcherTest, InvalidCrossOriginSigninUrl) {
+  FedCmConfigFetcher::FetchResult result;
   result.endpoints.accounts = GURL("https://idp.example/accounts");
   result.endpoints.token = GURL("https://idp.example/token");
   IdentityProviderMetadata metadata;
@@ -535,7 +534,7 @@ TEST_F(FederatedProviderFetcherTest, InvalidCrossOriginSigninUrl) {
 
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   fetcher.ValidateAndMaybeSetError(result);
 
@@ -544,11 +543,11 @@ TEST_F(FederatedProviderFetcherTest, InvalidCrossOriginSigninUrl) {
             blink::mojom::FederatedAuthRequestResult::kConfigInvalidResponse);
 }
 
-TEST_F(FederatedProviderFetcherTest, InvalidConfigUrlNotInProviders) {
+TEST_F(FedCmConfigFetcherTest, InvalidConfigUrlNotInProviders) {
   IdentityProviderMetadata metadata;
   metadata.idp_login_url = GURL("https://idp.example/idp_login_url.php");
 
-  FederatedProviderFetcher::FetchResult result;
+  FedCmConfigFetcher::FetchResult result;
   result.endpoints.accounts = GURL("https://idp.example/accounts");
   result.endpoints.token = GURL("https://idp.example/token");
   result.wellknown.provider_urls = {
@@ -558,7 +557,7 @@ TEST_F(FederatedProviderFetcherTest, InvalidConfigUrlNotInProviders) {
 
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   fetcher.ValidateAndMaybeSetError(result);
 
@@ -567,11 +566,11 @@ TEST_F(FederatedProviderFetcherTest, InvalidConfigUrlNotInProviders) {
             blink::mojom::FederatedAuthRequestResult::kConfigNotInWellKnown);
 }
 
-TEST_F(FederatedProviderFetcherTest, InvalidConfigUrlNotInWellKnown) {
+TEST_F(FedCmConfigFetcherTest, InvalidConfigUrlNotInWellKnown) {
   IdentityProviderMetadata metadata;
   metadata.idp_login_url = GURL("https://idp.example/idp_login_url.php");
 
-  FederatedProviderFetcher::FetchResult result;
+  FedCmConfigFetcher::FetchResult result;
   result.endpoints.accounts = GURL("https://idp.example/accounts");
   result.endpoints.token = GURL("https://idp.example/token");
   result.wellknown.provider_urls = {
@@ -581,7 +580,7 @@ TEST_F(FederatedProviderFetcherTest, InvalidConfigUrlNotInWellKnown) {
 
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   fetcher.ValidateAndMaybeSetError(result);
 
@@ -590,11 +589,11 @@ TEST_F(FederatedProviderFetcherTest, InvalidConfigUrlNotInWellKnown) {
             blink::mojom::FederatedAuthRequestResult::kConfigNotInWellKnown);
 }
 
-TEST_F(FederatedProviderFetcherTest, InvalidWellKnownTooManyProviders) {
+TEST_F(FedCmConfigFetcherTest, InvalidWellKnownTooManyProviders) {
   IdentityProviderMetadata metadata;
   metadata.idp_login_url = GURL("https://idp.example/idp_login_url.php");
 
-  FederatedProviderFetcher::FetchResult result;
+  FedCmConfigFetcher::FetchResult result;
   result.endpoints.accounts = GURL("https://idp.example/accounts");
   result.endpoints.token = GURL("https://idp.example/token");
   result.wellknown.provider_urls = {
@@ -605,7 +604,7 @@ TEST_F(FederatedProviderFetcherTest, InvalidWellKnownTooManyProviders) {
 
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   fetcher.ValidateAndMaybeSetError(result);
 
@@ -614,14 +613,14 @@ TEST_F(FederatedProviderFetcherTest, InvalidWellKnownTooManyProviders) {
             blink::mojom::FederatedAuthRequestResult::kWellKnownTooBig);
 }
 
-TEST_F(FederatedProviderFetcherTest, SkippingTheChecksWithTheWellKnownFlag) {
+TEST_F(FedCmConfigFetcherTest, SkippingTheChecksWithTheWellKnownFlag) {
   feature_list_.InitAndEnableFeature(
       features::kFedCmWithoutWellKnownEnforcement);
 
   IdentityProviderMetadata metadata;
   metadata.idp_login_url = GURL("https://idp.example/idp_login_url.php");
 
-  FederatedProviderFetcher::FetchResult result;
+  FedCmConfigFetcher::FetchResult result;
   result.endpoints.accounts = GURL("https://idp.example/accounts");
   result.endpoints.token = GURL("https://idp.example/token");
   result.wellknown.provider_urls = {
@@ -631,15 +630,15 @@ TEST_F(FederatedProviderFetcherTest, SkippingTheChecksWithTheWellKnownFlag) {
 
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   fetcher.ValidateAndMaybeSetError(result);
 
   EXPECT_FALSE(result.error);
 }
 
-TEST_F(FederatedProviderFetcherTest, InvalidWellKnownWithoutSignInUrl) {
-  FederatedProviderFetcher::FetchResult result;
+TEST_F(FedCmConfigFetcherTest, InvalidWellKnownWithoutSignInUrl) {
+  FedCmConfigFetcher::FetchResult result;
   result.endpoints.accounts = GURL("https://idp.example/accounts");
   result.endpoints.token = GURL("https://idp.example/token");
   result.wellknown.provider_urls = {GURL("https://idp.example/fedcm.json")};
@@ -649,15 +648,15 @@ TEST_F(FederatedProviderFetcherTest, InvalidWellKnownWithoutSignInUrl) {
 
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   fetcher.ValidateAndMaybeSetError(result);
 
   EXPECT_TRUE(result.error);
 }
 
-TEST_F(FederatedProviderFetcherTest, InvalidWellKnownWithoutAccountsEndpoint) {
-  FederatedProviderFetcher::FetchResult result;
+TEST_F(FedCmConfigFetcherTest, InvalidWellKnownWithoutAccountsEndpoint) {
+  FedCmConfigFetcher::FetchResult result;
   result.endpoints.accounts = GURL("https://idp.example/accounts");
   result.endpoints.token = GURL("https://idp.example/token");
   result.wellknown.provider_urls = {GURL("https://idp.example/fedcm.json")};
@@ -667,16 +666,15 @@ TEST_F(FederatedProviderFetcherTest, InvalidWellKnownWithoutAccountsEndpoint) {
 
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   fetcher.ValidateAndMaybeSetError(result);
 
   EXPECT_TRUE(result.error);
 }
 
-TEST_F(FederatedProviderFetcherTest,
-       ValidWellKnownWithMatchingAccountsAndSignInUrl) {
-  FederatedProviderFetcher::FetchResult result;
+TEST_F(FedCmConfigFetcherTest, ValidWellKnownWithMatchingAccountsAndSignInUrl) {
+  FedCmConfigFetcher::FetchResult result;
   IdentityProviderMetadata metadata;
   metadata.idp_login_url = GURL("https://idp.example/sign-in");
   result.metadata = metadata;
@@ -690,20 +688,20 @@ TEST_F(FederatedProviderFetcherTest,
 
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   fetcher.ValidateAndMaybeSetError(result);
 
   EXPECT_FALSE(result.error);
 }
 
-TEST_F(FederatedProviderFetcherTest,
+TEST_F(FedCmConfigFetcherTest,
        FailResultEvenIfConfigUrlMatchesWhenAccountsEndpointIsAvailable) {
   // In this test, we verify that when the accounts endpoint is available and
   // not matching the one provided in the configURL, we do to allow falling
   // back to checking based on the fact that the provider_url contains the
   // configURL.
-  FederatedProviderFetcher::FetchResult result;
+  FedCmConfigFetcher::FetchResult result;
   IdentityProviderMetadata metadata;
   metadata.idp_login_url = GURL("https://idp.example/sign-in");
   result.metadata = metadata;
@@ -719,7 +717,7 @@ TEST_F(FederatedProviderFetcherTest,
 
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   fetcher.ValidateAndMaybeSetError(result);
 
@@ -728,12 +726,12 @@ TEST_F(FederatedProviderFetcherTest,
   //                                     kConfigInvalidResponse);
 }
 
-TEST_F(FederatedProviderFetcherTest,
+TEST_F(FedCmConfigFetcherTest,
        SuccessResultEvenWithEmptyAccountsEndpointWithLightweightFedCm) {
   // Validate that when LightweightFedCM is enabled, it's permissible to have an
   // empty accounts_endpoint set.
   feature_list_.InitAndEnableFeature(features::kFedCmLightweightMode);
-  FederatedProviderFetcher::FetchResult result;
+  FedCmConfigFetcher::FetchResult result;
   IdentityProviderMetadata metadata;
   metadata.idp_login_url = GURL("https://idp.example/sign-in");
   result.metadata = metadata;
@@ -746,21 +744,21 @@ TEST_F(FederatedProviderFetcherTest,
   result.identity_provider_config_url = GURL("https://idp.example/fedcm.json");
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   fetcher.ValidateAndMaybeSetError(result);
 
   EXPECT_FALSE(result.error);
 }
 
-TEST_F(FederatedProviderFetcherTest,
+TEST_F(FedCmConfigFetcherTest,
        ProvidersUrlsCanbeEmptyWhenLightweightIsEnabled) {
   // Validate that when LightweightFedCM is enabled,
   // it's permissible to have an empty accounts_endpoint set and
   // no provider_config_urls, so long as the accounts url is empty in both the
   // wellknown and config.
   feature_list_.InitAndEnableFeature(features::kFedCmLightweightMode);
-  FederatedProviderFetcher::FetchResult result;
+  FedCmConfigFetcher::FetchResult result;
   IdentityProviderMetadata metadata;
   metadata.idp_login_url = GURL("https://idp.example/sign-in");
   result.metadata = metadata;
@@ -773,19 +771,19 @@ TEST_F(FederatedProviderFetcherTest,
   result.identity_provider_config_url = GURL("https://idp.example/fedcm.json");
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   fetcher.ValidateAndMaybeSetError(result);
 
   EXPECT_FALSE(result.error);
 }
 
-TEST_F(FederatedProviderFetcherTest,
+TEST_F(FedCmConfigFetcherTest,
        FailureResultWithMismatchingAccountsEndpointWithLightweightFedCm) {
   // Validate that when LightweightFedCM is enabled, it's still an error to have
   // a non-same-origin accounts endpoint.
   feature_list_.InitAndEnableFeature(features::kFedCmLightweightMode);
-  FederatedProviderFetcher::FetchResult result;
+  FedCmConfigFetcher::FetchResult result;
   IdentityProviderMetadata metadata;
   metadata.idp_login_url = GURL("https://idp.example/sign-in");
   result.metadata = metadata;
@@ -798,18 +796,18 @@ TEST_F(FederatedProviderFetcherTest,
   result.identity_provider_config_url = GURL("https://idp.example/fedcm.json");
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   fetcher.ValidateAndMaybeSetError(result);
 
   EXPECT_TRUE(result.error);
 }
 
-TEST_F(FederatedProviderFetcherTest,
+TEST_F(FedCmConfigFetcherTest,
        FailureResultWithEmptyAccountsEndpointWithoutLightweightFedCm) {
   // Validate that when LightweightFedCM is disabled, it's still an error to not
   // define an accounts endpoint.
-  FederatedProviderFetcher::FetchResult result;
+  FedCmConfigFetcher::FetchResult result;
   IdentityProviderMetadata metadata;
   metadata.idp_login_url = GURL("https://idp.example/sign-in");
   result.metadata = metadata;
@@ -822,19 +820,19 @@ TEST_F(FederatedProviderFetcherTest,
   result.identity_provider_config_url = GURL("https://idp.example/fedcm.json");
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   fetcher.ValidateAndMaybeSetError(result);
 
   EXPECT_TRUE(result.error);
 }
 
-TEST_F(FederatedProviderFetcherTest, InvalidEmptyConfig) {
-  FederatedProviderFetcher::FetchResult result;
+TEST_F(FedCmConfigFetcherTest, InvalidEmptyConfig) {
+  FedCmConfigFetcher::FetchResult result;
 
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   fetcher.ValidateAndMaybeSetError(result);
 
@@ -843,16 +841,16 @@ TEST_F(FederatedProviderFetcherTest, InvalidEmptyConfig) {
             blink::mojom::FederatedAuthRequestResult::kConfigInvalidResponse);
 }
 
-TEST_F(FederatedProviderFetcherTest, InvalidNetworkError) {
-  FederatedProviderFetcher::FetchResult result;
-  result.error = FederatedProviderFetcher::FetchError(
+TEST_F(FedCmConfigFetcherTest, InvalidNetworkError) {
+  FedCmConfigFetcher::FetchResult result;
+  result.error = FedCmConfigFetcher::FetchError(
       blink::mojom::FederatedAuthRequestResult::kConfigHttpNotFound,
       FedCmRequestIdTokenStatus::kConfigHttpNotFound,
       /*additional_console_error_message=*/std::nullopt);
 
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   fetcher.ValidateAndMaybeSetError(result);
 
@@ -861,12 +859,12 @@ TEST_F(FederatedProviderFetcherTest, InvalidNetworkError) {
             blink::mojom::FederatedAuthRequestResult::kConfigHttpNotFound);
 }
 
-TEST_F(FederatedProviderFetcherTest, RegisteredIdpSkipsWellKnownCheck) {
+TEST_F(FedCmConfigFetcherTest, RegisteredIdpSkipsWellKnownCheck) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmIdPRegistration);
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
-  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+  FedCmConfigFetcher fetcher(*main_rfh(), network_manager.get());
 
   EXPECT_CALL(*network_manager, FetchConfig)
       .WillOnce(WithArg<4>(
@@ -902,7 +900,7 @@ TEST_F(FederatedProviderFetcherTest, RegisteredIdpSkipsWellKnownCheck) {
       /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindLambdaForTesting(
-          [&loop](std::vector<FederatedProviderFetcher::FetchResult> result) {
+          [&loop](std::vector<FedCmConfigFetcher::FetchResult> result) {
             EXPECT_EQ(result.size(), 1ul);
             EXPECT_FALSE(result[0].error);
             loop.Quit();

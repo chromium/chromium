@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/federated_provider_fetcher.h"
+#include "content/browser/webid/fedcm_config_fetcher.h"
 
 #include "base/check.h"
 #include "content/browser/webid/flags.h"
@@ -19,11 +19,11 @@ namespace {
 // TODO(cbiesinger): Determine what the right number is.
 static constexpr size_t kMaxProvidersInWellKnownFile = 1ul;
 
-void SetError(FederatedProviderFetcher::FetchResult& fetch_result,
+void SetError(FedCmConfigFetcher::FetchResult& fetch_result,
               blink::mojom::FederatedAuthRequestResult result,
               content::FedCmRequestIdTokenStatus token_status,
               std::optional<std::string> additional_console_error_message) {
-  fetch_result.error = FederatedProviderFetcher::FetchError(
+  fetch_result.error = FedCmConfigFetcher::FetchError(
       result, token_status, additional_console_error_message);
 }
 
@@ -32,9 +32,9 @@ void SetError(FederatedProviderFetcher::FetchResult& fetch_result,
 using blink::mojom::FederatedAuthRequestResult;
 using TokenStatus = FedCmRequestIdTokenStatus;
 
-FederatedProviderFetcher::FetchError::FetchError(const FetchError&) = default;
+FedCmConfigFetcher::FetchError::FetchError(const FetchError&) = default;
 
-FederatedProviderFetcher::FetchError::FetchError(
+FedCmConfigFetcher::FetchError::FetchError(
     blink::mojom::FederatedAuthRequestResult result,
     FedCmRequestIdTokenStatus token_status,
     std::optional<std::string> additional_console_error_message)
@@ -43,22 +43,21 @@ FederatedProviderFetcher::FetchError::FetchError(
       additional_console_error_message(
           std::move(additional_console_error_message)) {}
 
-FederatedProviderFetcher::FetchError::~FetchError() = default;
+FedCmConfigFetcher::FetchError::~FetchError() = default;
 
-FederatedProviderFetcher::FetchResult::FetchResult() = default;
-FederatedProviderFetcher::FetchResult::FetchResult(const FetchResult&) =
-    default;
-FederatedProviderFetcher::FetchResult::~FetchResult() = default;
+FedCmConfigFetcher::FetchResult::FetchResult() = default;
+FedCmConfigFetcher::FetchResult::FetchResult(const FetchResult&) = default;
+FedCmConfigFetcher::FetchResult::~FetchResult() = default;
 
-FederatedProviderFetcher::FederatedProviderFetcher(
+FedCmConfigFetcher::FedCmConfigFetcher(
     RenderFrameHost& render_frame_host,
     IdpNetworkRequestManager* network_manager)
     : render_frame_host_(render_frame_host),
       network_manager_(network_manager) {}
 
-FederatedProviderFetcher::~FederatedProviderFetcher() = default;
+FedCmConfigFetcher::~FedCmConfigFetcher() = default;
 
-void FederatedProviderFetcher::Start(
+void FedCmConfigFetcher::Start(
     const std::vector<FetchRequest>& requested_providers,
     blink::mojom::RpMode rp_mode,
     int icon_ideal_size,
@@ -83,17 +82,17 @@ void FederatedProviderFetcher::Start(
   for (FetchResult& fetch_result : fetch_results_) {
     network_manager_->FetchWellKnown(
         fetch_result.identity_provider_config_url,
-        base::BindOnce(&FederatedProviderFetcher::OnWellKnownFetched,
+        base::BindOnce(&FedCmConfigFetcher::OnWellKnownFetched,
                        weak_ptr_factory_.GetWeakPtr(), std::ref(fetch_result)));
     network_manager_->FetchConfig(
         fetch_result.identity_provider_config_url, rp_mode, icon_ideal_size,
         icon_minimum_size,
-        base::BindOnce(&FederatedProviderFetcher::OnConfigFetched,
+        base::BindOnce(&FedCmConfigFetcher::OnConfigFetched,
                        weak_ptr_factory_.GetWeakPtr(), std::ref(fetch_result)));
   }
 }
 
-void FederatedProviderFetcher::OnWellKnownFetched(
+void FedCmConfigFetcher::OnWellKnownFetched(
     FetchResult& fetch_result,
     IdpNetworkRequestManager::FetchStatus status,
     const IdpNetworkRequestManager::WellKnown& well_known) {
@@ -152,7 +151,7 @@ void FederatedProviderFetcher::OnWellKnownFetched(
   RunCallbackIfDone();
 }
 
-void FederatedProviderFetcher::OnConfigFetched(
+void FedCmConfigFetcher::OnConfigFetched(
     FetchResult& fetch_result,
     IdpNetworkRequestManager::FetchStatus status,
     IdpNetworkRequestManager::Endpoints endpoints,
@@ -227,7 +226,7 @@ void FederatedProviderFetcher::OnConfigFetched(
   RunCallbackIfDone();
 }
 
-void FederatedProviderFetcher::OnError(
+void FedCmConfigFetcher::OnError(
     FetchResult& fetch_result,
     blink::mojom::FederatedAuthRequestResult result,
     content::FedCmRequestIdTokenStatus token_status,
@@ -237,7 +236,7 @@ void FederatedProviderFetcher::OnError(
   RunCallbackIfDone();
 }
 
-void FederatedProviderFetcher::ValidateAndMaybeSetError(FetchResult& result) {
+void FedCmConfigFetcher::ValidateAndMaybeSetError(FetchResult& result) {
   // This function validates fetch results, by analyzing the config file and
   // the well-known file.
   // If the validation fails, this function sets the "error" property in the
@@ -363,7 +362,7 @@ void FederatedProviderFetcher::ValidateAndMaybeSetError(FetchResult& result) {
   }
 }
 
-void FederatedProviderFetcher::RunCallbackIfDone() {
+void FedCmConfigFetcher::RunCallbackIfDone() {
   if (!pending_config_fetches_.empty() ||
       !pending_well_known_fetches_.empty()) {
     return;
@@ -376,7 +375,7 @@ void FederatedProviderFetcher::RunCallbackIfDone() {
   std::move(callback_).Run(std::move(fetch_results_));
 }
 
-bool FederatedProviderFetcher::ShouldSkipWellKnownEnforcementForIdp(
+bool FedCmConfigFetcher::ShouldSkipWellKnownEnforcementForIdp(
     const FetchResult& fetch_result) {
   if (IsFedCmWithoutWellKnownEnforcementEnabled()) {
     return true;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_WEBID_FEDERATED_PROVIDER_FETCHER_H_
-#define CONTENT_BROWSER_WEBID_FEDERATED_PROVIDER_FETCHER_H_
+#ifndef CONTENT_BROWSER_WEBID_FEDCM_CONFIG_FETCHER_H_
+#define CONTENT_BROWSER_WEBID_FEDCM_CONFIG_FETCHER_H_
 
 #include <memory>
 #include <optional>
@@ -23,7 +23,7 @@ class RenderFrameHost;
 
 // Fetches the config and well-known files for a list of identity providers.
 // Validates returned information and calls callback when done.
-class CONTENT_EXPORT FederatedProviderFetcher {
+class CONTENT_EXPORT FedCmConfigFetcher {
  public:
   struct CONTENT_EXPORT FetchError {
     FetchError(const FetchError& info);
@@ -62,15 +62,15 @@ class CONTENT_EXPORT FederatedProviderFetcher {
 
   // TODO(crbug.com/40283354): Remove |render_frame_host| when the IDP signin
   // status API is enabled by default.
-  FederatedProviderFetcher(RenderFrameHost& render_frame_host,
-                           IdpNetworkRequestManager* network_manager);
-  ~FederatedProviderFetcher();
+  FedCmConfigFetcher(RenderFrameHost& render_frame_host,
+                     IdpNetworkRequestManager* network_manager);
+  ~FedCmConfigFetcher();
 
-  FederatedProviderFetcher(const FederatedProviderFetcher&) = delete;
-  FederatedProviderFetcher& operator=(const FederatedProviderFetcher&) = delete;
+  FedCmConfigFetcher(const FedCmConfigFetcher&) = delete;
+  FedCmConfigFetcher& operator=(const FedCmConfigFetcher&) = delete;
 
   // Starts fetch of config and well-known files. Start() should be called at
-  // most once per FederatedProviderFetcher instance.
+  // most once per FedCmConfigFetcher instance.
   void Start(const std::vector<FetchRequest>& requested_providers,
              blink::mojom::RpMode rp_mode,
              int icon_ideal_size,
@@ -119,9 +119,9 @@ class CONTENT_EXPORT FederatedProviderFetcher {
   // Fetches the config and well-known files.
   raw_ptr<IdpNetworkRequestManager, DanglingUntriaged> network_manager_;
 
-  base::WeakPtrFactory<FederatedProviderFetcher> weak_ptr_factory_{this};
+  base::WeakPtrFactory<FedCmConfigFetcher> weak_ptr_factory_{this};
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_WEBID_FEDERATED_PROVIDER_FETCHER_H_
+#endif  // CONTENT_BROWSER_WEBID_FEDCM_CONFIG_FETCHER_H_
