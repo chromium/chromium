@@ -535,24 +535,43 @@ suite('ExperimentalAdvanced', () => {
     flush();
   }
 
-  test('sectionNotVisible', function() {
-    loadTimeData.overrideValues({showAdvancedFeaturesMainControl: false});
+  test('mainControlHidesAiFeaturesSection', function() {
+    loadTimeData.overrideValues({
+      showAdvancedFeaturesMainControl: false,
+      showAiPageAiFeatureSection: true,
+    });
     resetRouterForTesting();
 
     createBasicPage();
-    const sectionElement =
+    const aiFeaturesSectionElement =
         page.shadowRoot!.querySelector('settings-section[section=ai]');
-    assertFalse(!!sectionElement);
+    assertFalse(!!aiFeaturesSectionElement);
   });
 
-  test('sectionVisible', function() {
-    loadTimeData.overrideValues({showAdvancedFeaturesMainControl: true});
+  test('aiFeaturesSectionNotVisible', function() {
+    loadTimeData.overrideValues({
+      showAdvancedFeaturesMainControl: true,
+      showAiPageAiFeatureSection: false,
+    });
     resetRouterForTesting();
 
     createBasicPage();
-    const sectionElement =
+    const aiFeaturesSectionElement =
         page.shadowRoot!.querySelector('settings-section[section=ai]');
-    assertTrue(!!sectionElement);
+    assertFalse(!!aiFeaturesSectionElement);
+  });
+
+  test('aiFeaturesSectionVisible', function() {
+    loadTimeData.overrideValues({
+      showAdvancedFeaturesMainControl: true,
+      showAiPageAiFeatureSection: true,
+    });
+    resetRouterForTesting();
+
+    createBasicPage();
+    const aiFeaturesSectionElement =
+        page.shadowRoot!.querySelector('settings-section[section=ai]');
+    assertTrue(!!aiFeaturesSectionElement);
   });
 
   test('infoCardNotVisible', function() {

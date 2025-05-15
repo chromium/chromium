@@ -174,6 +174,11 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         computed: 'computeAiPageTitle_(enableAiSettingsPageRefresh_)',
       },
 
+      showAiPageAiFeatureSection_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showAiPageAiFeatureSection'),
+      },
+
       // <if expr="enable_glic">
       showGlicSection_: {
         type: Boolean,
@@ -203,6 +208,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   declare private showAdvancedFeaturesMainControl_: boolean;
   declare private enableAiSettingsPageRefresh_: boolean;
   declare private aiPageTitle_: string;
+  declare private showAiPageAiFeatureSection_: boolean;
   // <if expr="enable_glic">
   declare private showGlicSection_: boolean;
   // </if>
