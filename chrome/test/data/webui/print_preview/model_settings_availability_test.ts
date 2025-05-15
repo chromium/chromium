@@ -4,11 +4,11 @@
 
 import 'chrome://print/print_preview.js';
 
-import type {Cdd, DocumentSettings, DuplexOption, MediaSizeOption, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
-import {createDocumentSettings as createDefaultDocumentSettings, Destination, DestinationOrigin, DuplexType, Margins, MarginsType, Size} from 'chrome://print/print_preview.js';
+import type {Cdd, DuplexOption, MediaSizeOption, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
+import {Destination, DestinationOrigin, DuplexType, Margins, MarginsType, Size} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {getCddTemplate, getSaveAsPdfDestination} from './print_preview_test_utils.js';
+import {createDocumentSettings, getCddTemplate, getSaveAsPdfDestination} from './print_preview_test_utils.js';
 
 suite('ModelSettingsAvailabilityTest', function() {
   let model: PrintPreviewModelElement;
@@ -18,11 +18,6 @@ suite('ModelSettingsAvailabilityTest', function() {
     // In prod code, capabilities changes are detected by print-preview-app
     // which then calls updateSettingsFromDestination().
     model.updateSettingsFromDestination();
-  }
-
-  function createDocumentSettings(
-      ...overrides: Array<Partial<DocumentSettings>>): DocumentSettings {
-    return Object.assign(createDefaultDocumentSettings(), ...overrides);
   }
 
   setup(function() {

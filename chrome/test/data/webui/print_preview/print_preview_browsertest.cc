@@ -317,6 +317,10 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, GetPrintTicket) {
   RunTestCase("GetPrintTicket");
 }
 
+IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, GetPrintTicketPdf) {
+  RunTestCase("GetPrintTicketPdf");
+}
+
 IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, GetCloudPrintTicket) {
   RunTestCase("GetCloudPrintTicket");
 }

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {CapabilitiesResponse, Cdd, ColorOption, DpiOption, DuplexOption, ExtensionDestinationInfo, LocalDestinationInfo, MediaSizeCapability, MediaSizeOption, NativeInitialSettings, PageOrientationOption} from 'chrome://print/print_preview.js';
-import {DEFAULT_MAX_COPIES, Destination, DestinationOrigin, DestinationStore, GooglePromotedDestinationId, MeasurementSystemUnitType, VendorCapabilityValueType} from 'chrome://print/print_preview.js';
+import type {CapabilitiesResponse, Cdd, ColorOption, DocumentSettings, DpiOption, DuplexOption, ExtensionDestinationInfo, LocalDestinationInfo, MediaSizeCapability, MediaSizeOption, NativeInitialSettings, PageOrientationOption} from 'chrome://print/print_preview.js';
+import {createDocumentSettings as createDefaultDocumentSettings, DEFAULT_MAX_COPIES, Destination, DestinationOrigin, DestinationStore, GooglePromotedDestinationId, MeasurementSystemUnitType, VendorCapabilityValueType} from 'chrome://print/print_preview.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -31,6 +31,11 @@ export function getDefaultInitialSettings(isPdf: boolean = false):
     uiLocale: 'en-us',
     unitType: MeasurementSystemUnitType.IMPERIAL,
   };
+}
+
+export function createDocumentSettings(
+    ...overrides: Array<Partial<DocumentSettings>>): DocumentSettings {
+  return Object.assign(createDefaultDocumentSettings(), ...overrides);
 }
 
 export function getCddTemplate(
