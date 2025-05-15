@@ -255,28 +255,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.DirectRenderer.SkipAllNonRootRenderPassesPerFrame"
-    enum="BooleanSkipped" expires_after="2025-05-11">
-  <owner>magchen@chromium.org</owner>
-  <owner>ccameron@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Whether all non-root render passes in a frame are skipped. Logged once per
-    frame during DrawFrame for the frames with non-root render passes.
-  </summary>
-</histogram>
-
-<histogram name="Compositing.DirectRenderer.SkipNonRootRenderPass"
-    enum="BooleanSkipped" expires_after="2025-05-11">
-  <owner>magchen@chromium.org</owner>
-  <owner>ccameron@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Logged for every non-root render pass in DrawRenderPass during DrawFrame.
-    True if there is no damages to the render pass and the rendering is skipped.
-  </summary>
-</histogram>
-
 <histogram name="Compositing.DirectRenderer.{FocusType}" units="pixels"
     expires_after="2025-10-12">
   <owner>petermcneeley@chromium.org</owner>

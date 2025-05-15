@@ -431,16 +431,6 @@ void DirectRenderer::DrawFrame(
   if (overlay_processor_)
     overlay_processor_->ScheduleOverlays(resource_provider_);
 
-  // Total non-root render pass count, excluding root render pass and bypassed
-  // render passes.
-  auto nonroot_render_pass_count = render_passes_in_draw_order->size() - 1 -
-                                   render_pass_bypass_quads_.size();
-  if (nonroot_render_pass_count > 0) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "Compositing.DirectRenderer.SkipAllNonRootRenderPassesPerFrame",
-        skipped_render_pass_ids_.size() == nonroot_render_pass_count);
-  }
-
   // The current drawing frame is valid only during the duration of this
   // function. Clear the pointers held inside to avoid holding dangling
   // pointers.
@@ -691,13 +681,7 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
   TRACE_EVENT1("viz", "DirectRenderer::DrawRenderPass", "NumberOfQuads",
                render_pass->quad_list.size());
 
-  bool can_skip_rp = CanSkipRenderPass(render_pass);
-  if (render_pass != current_frame()->root_render_pass) {
-    UMA_HISTOGRAM_BOOLEAN("Compositing.DirectRenderer.SkipNonRootRenderPass",
-                          can_skip_rp);
-  }
-
-  if (can_skip_rp) {
+  if (CanSkipRenderPass(render_pass)) {
     skipped_render_pass_ids_.insert(render_pass->id);
     return;
   }
