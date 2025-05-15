@@ -681,7 +681,14 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, RemovePopup) {
       << "a specific tab id.";
 }
 
-IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoBasic) {
+// TODO(crbug.com/414519997): Flaky on Linux_ASan_LSan.
+#if defined(SANITIZER_LINUX)
+#define MAYBE_IncognitoBasic DISABLED_IncognitoBasic
+#else
+#define MAYBE_IncognitoBasic IncognitoBasic
+#endif
+IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
+                       MAYBE_IncognitoBasic) {
   ExtensionTestMessageListener ready_listener("ready");
   ASSERT_TRUE(embedded_test_server()->Start());
   scoped_refptr<const Extension> extension =
