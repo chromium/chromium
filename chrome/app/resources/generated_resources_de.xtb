@@ -11491,7 +11491,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9101691533782776290">App starten</translation>
 <translation id="9102610709270966160">Erweiterung aktivieren</translation>
 <translation id="9102864637938129124">Websites und Werbetreibende können die Leistung ihrer Werbung analysieren. Diese Einstellung ist aktiviert.</translation>
-<translation id="9103341231213089378">Zum Streamen von Inhalten gewähre Chrome über <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; „Lokales Netzwerk“ &gt; „Chrome“ Zugriff</translation>
+<translation id="9103341231213089378">Gewähre Chrome zum Streamen Zugriff über <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" /> &gt; „Lokales Netzwerk“ &gt; „Chrome“</translation>
 <translation id="9103868373786083162">Drücken, um zurückzugehen. Kontextmenü, um Verlauf aufzurufen</translation>
 <translation id="9107096627210171112">Übe&amp;rsetzen…</translation>
 <translation id="9107624673674616016">Buntstift</translation>

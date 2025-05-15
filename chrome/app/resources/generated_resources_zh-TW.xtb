@@ -9955,7 +9955,7 @@
 <translation id="8037117027592400564">讀取使用合成語音朗讀的所有文字</translation>
 <translation id="8037357227543935929">詢問 (預設)</translation>
 <translation id="803771048473350947">檔案</translation>
-<translation id="8037801708772278989">剛才已檢查</translation>
+<translation id="8037801708772278989">剛剛檢查</translation>
 <translation id="8038111231936746805">(預設)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{正在將 1 個檔案複製到「<ph name="CLOUD_PROVIDER" />」}other{正在將 {NUM_OF_FILES} 個檔案複製到「<ph name="CLOUD_PROVIDER" />」}}</translation>
 <translation id="8041089156583427627">提供意見</translation>
