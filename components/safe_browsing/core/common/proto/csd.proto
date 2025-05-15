@@ -1101,6 +1101,54 @@ message ClientDownloadRequest {
   // This information may be spoofed so do not rely solely on its correctness
   // for anti-abuse purposes.
   optional ReferringAppInfo referring_app_info = 97;
+
+  // Encapsulates available visual data associated with a download. This
+  // corresponds to a screenshot of a single page associated with the download.
+  message DownloadVisualFeatures {
+    // Required. The URL associated with this screenshot, i.e. the main frame
+    // URL of the displayed page content in the screenshot.
+    optional string main_frame_url = 1;
+
+    // Optional. This field is empty in the initial ClientDownloadRequest that
+    // merely advertises the available visual features. This is populated with
+    // screenshot data in the follow-up ClientDownloadRequest, when responding
+    // to the server's `visual_features_requested`. The `image` field of
+    // `visual_features` will contain image data for the blurred image.
+    optional VisualFeatures visual_features = 2;
+
+    // Describes the role of the page from which the screenshot is taken.
+    enum PageType {
+      PAGE_TYPE_UNSPECIFIED = 0;
+      // The page from which the download originated, i.e. the page loaded in
+      // the tab responsible for the download at the time of download
+      // initiation.
+      DOWNLOAD_ORIGINATED_PAGE = 1;
+      // The page loaded in the active tab at the time of download initiation.
+      // Note: This denotes a weaker association with the download than
+      // DOWNLOAD_ORIGINATED_PAGE.
+      ACTIVE_PAGE = 2;
+    }
+
+    // One of the following is required. Identifies the page on which the
+    // screenshot was captured.
+    oneof page {
+      // If there is a ReferrerChainEntry associated with the page of this
+      // screenshot, this field is its index in the `referrer_chain` field of
+      // the enclosing ClientDownloadRequest.
+      int32 referrer_chain_index = 3;
+      // This enum value is used if there is no ReferrerChainEntry associated
+      // with the page.
+      PageType related_page = 4;
+    }
+  }
+
+  // This field is used to both advertise the available visual features to the
+  // server, and in the follow-up request to actually provide the requested
+  // visual features. When visual features are provided here, this
+  // ClientDownloadRequest will populate `previous_token` with the token value
+  // from the ClientDownloadResponse that requested the visual features.
+  // This is only populated for Enhanced Protection users.
+  repeated DownloadVisualFeatures download_visual_features = 98;
 }
 
 message ReferrerChainOptions {
@@ -1330,6 +1378,16 @@ message ClientDownloadResponse {
   // Whether this archive is suspicious and we should prompt the user for a
   // password for use in local decryption.
   optional bool is_suspicious_encrypted_archive = 21;
+
+  // Reserved server-side fields.
+  reserved 22;
+  reserved 23;
+
+  // List of DownloadVisualFeatures requested from the client, provided as a
+  // list of indices into the `download_visual_features` advertised in the
+  // ClientDownloadRequest. A `token` to use in the follow-up request must be
+  // provided if there are any `visual_features_requested`.
+  repeated int32 visual_features_requested = 24 [packed = true];
 }
 
 // The following protocol buffer holds the feedback report gathered
