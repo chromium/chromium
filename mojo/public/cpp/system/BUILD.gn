@@ -31,6 +31,7 @@ component("system") {
     "invitation.h",
     "isolated_connection.cc",
     "isolated_connection.h",
+    "message.cc",
     "message.h",
     "message_pipe.cc",
     "message_pipe.h",
