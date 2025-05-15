@@ -23,6 +23,7 @@
 #include "third_party/omnibox_proto/entity_info.pb.h"
 #include "third_party/omnibox_proto/navigational_intent.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
+#include "third_party/omnibox_proto/suggest_template_info.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
 #include "url/gurl.h"
 
@@ -202,6 +203,16 @@ class SearchSuggestionParser {
     void SetEntityInfo(const omnibox::EntityInfo&);
     const omnibox::EntityInfo& entity_info() const { return entity_info_; }
 
+    void SetSuggestTemplateInfo(
+        const omnibox::SuggestTemplateInfo& suggest_template_info);
+    const std::optional<omnibox::SuggestTemplateInfo>& suggest_template_info()
+        const {
+      return suggest_template_info_;
+    }
+
+    void SetMatchContents(const std::u16string& match_contents);
+    void SetAnnotation(const std::u16string& annotation);
+
     bool should_prefetch() const { return should_prefetch_; }
     bool should_prerender() const { return should_prerender_; }
 
@@ -243,6 +254,9 @@ class SearchSuggestionParser {
 
     // Proto containing various pieces of data related to entity suggestions.
     omnibox::EntityInfo entity_info_;
+
+    // Proto containing generalized suggestion information.
+    std::optional<omnibox::SuggestTemplateInfo> suggest_template_info_;
 
     // Should this result be prefetched?
     bool should_prefetch_;

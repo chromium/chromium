@@ -105,6 +105,9 @@ class BaseSearchProvider : public AutocompleteProvider {
       const TemplateURLRef::SearchTermsArgs& original_search_terms,
       const SearchTermsData& search_terms_data);
 
+  static std::string CreateQueryParamStringFromMap(
+      const google::protobuf::Map<std::string, std::string>& query_param_map);
+
   static scoped_refptr<OmniboxAction> CreateAnswerAction(
       omnibox::SuggestionEnhancement enhancement,
       TemplateURLRef::SearchTermsArgs search_terms_args,

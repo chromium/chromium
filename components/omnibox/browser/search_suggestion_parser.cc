@@ -43,6 +43,7 @@
 #include "third_party/omnibox_proto/entity_info.pb.h"
 #include "third_party/omnibox_proto/navigational_intent.pb.h"
 #include "third_party/omnibox_proto/rich_suggest_template.pb.h"
+#include "third_party/omnibox_proto/suggest_template_info.pb.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/url_constants.h"
@@ -416,6 +417,21 @@ void SearchSuggestionParser::SuggestResult::SetAnswerType(
 void SearchSuggestionParser::SuggestResult::SetEntityInfo(
     const omnibox::EntityInfo& entity_info) {
   entity_info_ = entity_info;
+}
+
+void SearchSuggestionParser::SuggestResult::SetSuggestTemplateInfo(
+    const omnibox::SuggestTemplateInfo& suggest_template_info) {
+  suggest_template_info_ = suggest_template_info;
+}
+
+void SearchSuggestionParser::SuggestResult::SetMatchContents(
+    const std::u16string& match_contents) {
+  match_contents_ = match_contents;
+}
+
+void SearchSuggestionParser::SuggestResult::SetAnnotation(
+    const std::u16string& annotation) {
+  annotation_ = annotation;
 }
 
 int SearchSuggestionParser::SuggestResult::CalculateRelevance(
@@ -857,11 +873,13 @@ bool SearchSuggestionParser::ParseSuggestResults(
 
       omnibox::RichSuggestTemplate suggest_template;
       omnibox::EntityInfo entity_info;
+      omnibox::SuggestTemplateInfo suggest_template_info;
       std::u16string match_contents_prefix;
       std::optional<int> suggestion_group_id;
       bool answer_parsed_successfully = false;
       omnibox::RichAnswerTemplate answer_template;
       omnibox::AnswerType answer_type = omnibox::ANSWER_TYPE_UNSPECIFIED;
+      bool has_suggest_template = false;
 
       if (suggestion_details && (*suggestion_details)[index].is_dict() &&
           !(*suggestion_details)[index].GetDict().empty()) {
@@ -879,6 +897,13 @@ bool SearchSuggestionParser::ParseSuggestResults(
             suggestion_detail.FindString("google:entityinfo");
         DecodeProtoFromBase64<omnibox::EntityInfo>(entity_info_string,
                                                    entity_info);
+
+        // Suggest Template Info.
+        const auto* suggest_info_string =
+            suggestion_detail.FindString("google:suggesttemplate");
+        has_suggest_template =
+            DecodeProtoFromBase64<omnibox::SuggestTemplateInfo>(
+                suggest_info_string, suggest_template_info);
 
         // Tail Suggest.
         std::string match_contents_tail =
@@ -939,6 +964,21 @@ bool SearchSuggestionParser::ParseSuggestResults(
         DCHECK(answer_template.answers_size() > 0);
         results->suggest_results.back().SetAnswerType(answer_type);
         results->suggest_results.back().SetRichAnswerTemplate(answer_template);
+      }
+
+      // Update suggest result match contents and annotation to use
+      // SuggestTemplateInfo if it is sent from server.
+      if (has_suggest_template) {
+        results->suggest_results.back().SetSuggestTemplateInfo(
+            suggest_template_info);
+        if (!suggest_template_info.primary_text().text().empty()) {
+          results->suggest_results.back().SetMatchContents(
+              base::UTF8ToUTF16(suggest_template_info.primary_text().text()));
+        }
+        if (!suggest_template_info.secondary_text().text().empty()) {
+          results->suggest_results.back().SetAnnotation(
+              base::UTF8ToUTF16(suggest_template_info.secondary_text().text()));
+        }
       }
 
       if (suggestion_group_id) {

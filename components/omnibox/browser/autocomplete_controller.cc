@@ -253,18 +253,6 @@ std::string ConstructAvailableAutocompletion(
   return result.str();
 }
 
-// Whether this autocomplete match type supports custom descriptions.
-bool AutocompleteMatchHasCustomDescription(const AutocompleteMatch& match) {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP &&
-      match.type == AutocompleteMatchType::CALCULATOR) {
-    return true;
-  }
-  return match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY ||
-         match.type == AutocompleteMatchType::SEARCH_SUGGEST_PROFILE ||
-         match.type == AutocompleteMatchType::CLIPBOARD_TEXT ||
-         match.type == AutocompleteMatchType::CLIPBOARD_IMAGE;
-}
-
 // Returns whether this match is provided by an extension in unscoped mode.
 bool IsUnscopedExtensionMatch(const AutocompleteMatch& match) {
   return match.provider && match.provider->type() ==
@@ -1771,8 +1759,7 @@ void AutocompleteController::UpdateKeywordDescriptions(
   bool last_contextual = false;
   for (auto i(result->begin()); i != result->end(); ++i) {
     if (AutocompleteMatch::IsSearchType(i->type)) {
-      if (AutocompleteMatchHasCustomDescription(*i) ||
-          IsUnscopedExtensionMatch(*i)) {
+      if (i->HasCustomDescription() || IsUnscopedExtensionMatch(*i)) {
         continue;
       }
       i->description.clear();

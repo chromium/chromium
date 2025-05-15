@@ -125,11 +125,22 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   if (!template_url)
     return match;
   match.keyword = template_url->keyword();
-  match.image_dominant_color = suggestion.entity_info().dominant_color();
-  match.image_url = GURL(suggestion.entity_info().image_url());
+  // If SuggestTemplateInfo is available, use it. Otherwise, continue
+  // populating information from EntityInfo.
+  const auto& suggest_template_info = suggestion.suggest_template_info();
+  if (suggest_template_info) {
+    match.suggest_template = *suggest_template_info;
+    if (suggest_template_info->has_image()) {
+      match.image_dominant_color =
+          suggest_template_info->image().dominant_color();
+      match.image_url = GURL(suggest_template_info->image().url());
+    }
+  } else {
+    match.image_dominant_color = suggestion.entity_info().dominant_color();
+    match.image_url = GURL(suggestion.entity_info().image_url());
+  }
   match.entity_id = suggestion.entity_info().entity_id();
   match.website_uri = suggestion.entity_info().website_uri();
-
   match.contents = suggestion.match_contents();
   match.contents_class = suggestion.match_contents_class();
   if (OmniboxFieldTrial::kAnswerActionsShowRichCard.Get() &&
@@ -158,6 +169,7 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
 
   if (!suggestion.annotation().empty()) {
     match.description = suggestion.annotation();
+    // Descriptions should always have dimmed text.
     AutocompleteMatch::AddLastClassificationIfNecessary(
         &match.description_class, 0, ACMatchClassification::DIM);
   }
@@ -201,8 +213,14 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   match.search_terms_args->request_source = input.request_source();
   match.search_terms_args->original_query = original_query;
   match.search_terms_args->accepted_suggestion = accepted_suggestion;
-  match.search_terms_args->additional_query_params =
-      suggestion.entity_info().suggest_search_parameters();
+  if (suggest_template_info) {
+    match.search_terms_args->additional_query_params =
+        CreateQueryParamStringFromMap(
+            suggest_template_info->default_search_parameters());
+  } else {
+    match.search_terms_args->additional_query_params =
+        suggestion.entity_info().suggest_search_parameters();
+  }
   match.search_terms_args->append_extra_query_params_from_command_line =
       append_extra_query_params_from_command_line;
   // Must be set for deduplication and navigation. AutocompleteController will
@@ -218,6 +236,8 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   // Attach Actions in Suggest to the newly created match on Android if Google
   // is the default search engine.
   if ((is_android || is_ios) && is_google) {
+    // TODO(crbug.com/417745802): Use TemplateAction from SuggestTemplateInfo
+    // if available.
     for (const omnibox::ActionInfo& action_info :
          suggestion.entity_info().action_suggestions()) {
       match.actions.emplace_back(CreateActionInSuggest(action_info, search_url,
@@ -253,15 +273,8 @@ scoped_refptr<OmniboxAction> BaseSearchProvider::CreateActionInSuggest(
   if (action_info.action_uri().empty() &&
       !action_info.search_parameters().empty()) {
     action_search_terms_args = original_search_terms_args;
-    std::string query_params;
-    for (const auto& param : action_info.search_parameters()) {
-      // Supply additional Query Parameters as instructed by the provider.
-      if (!query_params.empty()) {
-        query_params += '&';
-      }
-      query_params += param.first + "=" + param.second;
-    }
-    action_search_terms_args->additional_query_params = query_params;
+    action_search_terms_args->additional_query_params =
+        CreateQueryParamStringFromMap(action_info.search_parameters());
   }
 
   return base::MakeRefCounted<OmniboxActionInSuggest>(
@@ -274,18 +287,26 @@ scoped_refptr<OmniboxAction> BaseSearchProvider::CreateAnswerAction(
     TemplateURLRef::SearchTermsArgs search_terms_args,
     omnibox::AnswerType answer_type) {
   // Define actions destination URL.
-  std::string query_params;
-  for (const auto& param : enhancement.query_cgi_params()) {
-    if (!query_params.empty()) {
-      query_params += '&';
-    }
-    query_params += param.first + "=" + param.second;
-  }
-  search_terms_args.additional_query_params = query_params;
+  search_terms_args.additional_query_params =
+      CreateQueryParamStringFromMap(enhancement.query_cgi_params());
   search_terms_args.search_terms = base::UTF8ToUTF16(enhancement.query());
 
   return base::MakeRefCounted<OmniboxAnswerAction>(
       std::move(enhancement), search_terms_args, answer_type);
+}
+
+// static
+std::string BaseSearchProvider::CreateQueryParamStringFromMap(
+    const google::protobuf::Map<std::string, std::string>& query_param_map) {
+  std::string query_params_string;
+  for (const auto& param : query_param_map) {
+    // Supply additional Query Parameters as instructed by the provider.
+    if (!query_params_string.empty()) {
+      query_params_string += '&';
+    }
+    query_params_string += param.first + "=" + param.second;
+  }
+  return query_params_string;
 }
 
 // static
