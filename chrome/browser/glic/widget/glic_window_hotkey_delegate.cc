@@ -97,9 +97,8 @@ bool GlicWindowHotkeyDelegate::AcceleratorPressed(
 #endif  //  BUILDFLAG(IS_WIN)
 
     default:
-      NOTREACHED()
-          << "no handling implemented for "
-          << LocalHotkeyManager::GetAccelerator(hotkey).GetShortcutText();
+      NOTREACHED() << "no handling implemented for "
+                   << LocalHotkeyManager::HotkeyToString(hotkey);
   }
 }
 

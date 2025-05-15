@@ -141,11 +141,16 @@ TEST_F(LocalHotkeyManagerTest, InitializationRegistersSupportedHotkeys) {
 
   manager_->InitializeAccelerators();
 
-  // Close and FocusToggle should be registered by default.
-  EXPECT_EQ(fake_delegate_->registration_count(), 2);
-  EXPECT_TRUE(
-      fake_delegate_->IsRegistered(LocalHotkeyManager::GetDefaultAccelerator(
-          LocalHotkeyManager::Hotkey::kClose)));
+  // Default FakeLocalHotkeyDelegate supports kClose and kFocusToggle.
+  // kClose has 2 static accelerators (Escape, Ctrl/Cmd+W).
+  // kFocusToggle has 1 configurable accelerator.
+  // Total = 3.
+  EXPECT_EQ(fake_delegate_->registration_count(), 3);
+
+  for (const auto& acc : LocalHotkeyManager::GetStaticAccelerators(
+           LocalHotkeyManager::Hotkey::kClose)) {
+    EXPECT_TRUE(fake_delegate_->IsRegistered(acc));
+  }
   EXPECT_TRUE(
       fake_delegate_->IsRegistered(LocalHotkeyManager::GetDefaultAccelerator(
           LocalHotkeyManager::Hotkey::kFocusToggle)));
@@ -153,8 +158,9 @@ TEST_F(LocalHotkeyManagerTest, InitializationRegistersSupportedHotkeys) {
 
 TEST_F(LocalHotkeyManagerTest, AcceleratorPressedCallsDelegate) {
   manager_->InitializeAccelerators();
-  ui::Accelerator close_acc = LocalHotkeyManager::GetDefaultAccelerator(
-      LocalHotkeyManager::Hotkey::kClose);
+  // Use the first static accelerator for kClose (Escape)
+  ui::Accelerator close_acc = LocalHotkeyManager::GetStaticAccelerators(
+      LocalHotkeyManager::Hotkey::kClose)[0];
 
   EXPECT_FALSE(fake_delegate_->last_pressed_hotkey().has_value());
   EXPECT_TRUE(manager_->AcceleratorPressed(close_acc));
@@ -173,7 +179,8 @@ TEST_F(LocalHotkeyManagerTest, CanHandleAcceleratorsDependsOnController) {
 
 TEST_F(LocalHotkeyManagerTest, PrefChangeUpdatesRegistration) {
   manager_->InitializeAccelerators();
-  EXPECT_EQ(fake_delegate_->registration_count(), 2);
+  // Initial: kClose (2 accelerators) + kFocusToggle (1 accelerator) = 3
+  EXPECT_EQ(fake_delegate_->registration_count(), 3);
   EXPECT_EQ(fake_delegate_->destruction_count(), 0);
 
   ui::Accelerator default_focus_acc = LocalHotkeyManager::GetDefaultAccelerator(
@@ -187,7 +194,7 @@ TEST_F(LocalHotkeyManagerTest, PrefChangeUpdatesRegistration) {
       ui::Command::AcceleratorToString(new_focus_acc));
 
   // Should destroy the old registration and create a new one.
-  EXPECT_EQ(fake_delegate_->registration_count(), 3);
+  EXPECT_EQ(fake_delegate_->registration_count(), 4);
   EXPECT_EQ(fake_delegate_->destruction_count(), 1);
   EXPECT_FALSE(fake_delegate_->IsRegistered(default_focus_acc));
   EXPECT_TRUE(fake_delegate_->IsRegistered(new_focus_acc));
@@ -196,7 +203,9 @@ TEST_F(LocalHotkeyManagerTest, PrefChangeUpdatesRegistration) {
   local_state_.Get()->SetString(prefs::kGlicFocusToggleHotkey, "");
 
   // Should destroy the custom registration, no new one created.
-  EXPECT_EQ(fake_delegate_->registration_count(), 3);
+  // Registration count remains the same as the previous step because one was
+  // destroyed but no new one was added.
+  EXPECT_EQ(fake_delegate_->registration_count(), 4);
   EXPECT_EQ(fake_delegate_->destruction_count(), 2);
   EXPECT_FALSE(fake_delegate_->IsRegistered(new_focus_acc));
 }
@@ -204,16 +213,9 @@ TEST_F(LocalHotkeyManagerTest, PrefChangeUpdatesRegistration) {
 TEST_F(LocalHotkeyManagerTest, GetAcceleratorRespectsPrefs) {
   ui::Accelerator default_focus_acc = LocalHotkeyManager::GetDefaultAccelerator(
       LocalHotkeyManager::Hotkey::kFocusToggle);
-  ui::Accelerator default_close_acc = LocalHotkeyManager::GetDefaultAccelerator(
-      LocalHotkeyManager::Hotkey::kClose);
-
-  // Close is not backed by a pref, should always return default.
-  EXPECT_EQ(
-      LocalHotkeyManager::GetAccelerator(LocalHotkeyManager::Hotkey::kClose),
-      default_close_acc);
 
   // FocusToggle is backed by a pref. Default initially.
-  EXPECT_EQ(LocalHotkeyManager::GetAccelerator(
+  EXPECT_EQ(LocalHotkeyManager::GetConfigurableAccelerator(
                 LocalHotkeyManager::Hotkey::kFocusToggle),
             default_focus_acc);
 
@@ -222,13 +224,13 @@ TEST_F(LocalHotkeyManagerTest, GetAcceleratorRespectsPrefs) {
   local_state_.Get()->SetString(
       prefs::kGlicFocusToggleHotkey,
       ui::Command::AcceleratorToString(new_focus_acc));
-  EXPECT_EQ(LocalHotkeyManager::GetAccelerator(
+  EXPECT_EQ(LocalHotkeyManager::GetConfigurableAccelerator(
                 LocalHotkeyManager::Hotkey::kFocusToggle),
             new_focus_acc);
 
   // Set an invalid pref string (e.g., just a modifier).
   local_state_.Get()->SetString(prefs::kGlicFocusToggleHotkey, "Ctrl");
-  EXPECT_TRUE(LocalHotkeyManager::GetAccelerator(
+  EXPECT_TRUE(LocalHotkeyManager::GetConfigurableAccelerator(
                   LocalHotkeyManager::Hotkey::kFocusToggle)
                   .IsEmpty());
 }

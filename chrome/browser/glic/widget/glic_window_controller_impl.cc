@@ -336,7 +336,7 @@ void GlicWindowControllerImpl::OnWidgetActivationChanged(views::Widget* widget,
     GetGlicView()->GetViewAccessibility().AnnounceAlert(
         l10n_util::GetStringFUTF16(
             IDS_GLIC_WINDOW_FIRST_FOCUS_LOST_ANNOUNCEMENT,
-            LocalHotkeyManager::GetAccelerator(
+            LocalHotkeyManager::GetConfigurableAccelerator(
                 LocalHotkeyManager::Hotkey::kFocusToggle)
                 .GetShortcutText()));
     do_focus_loss_announcement_ = false;
@@ -675,11 +675,11 @@ void GlicWindowControllerImpl::SetupGlicWidget(Browser* browser) {
 void GlicWindowControllerImpl::SetupGlicWidgetAccessibilityText() {
   auto* widget_delegate = glic_widget_->widget_delegate();
   if (opening_source_ == mojom::InvocationSource::kFre) {
-    widget_delegate->SetAccessibleTitle(
-        l10n_util::GetStringFUTF16(IDS_GLIC_WINDOW_TITLE_FIRST_LOAD,
-                                   LocalHotkeyManager::GetAccelerator(
-                                       LocalHotkeyManager::Hotkey::kFocusToggle)
-                                       .GetShortcutText()));
+    widget_delegate->SetAccessibleTitle(l10n_util::GetStringFUTF16(
+        IDS_GLIC_WINDOW_TITLE_FIRST_LOAD,
+        LocalHotkeyManager::GetConfigurableAccelerator(
+            LocalHotkeyManager::Hotkey::kFocusToggle)
+            .GetShortcutText()));
     do_focus_loss_announcement_ = true;
   } else {
     widget_delegate->SetAccessibleTitle(

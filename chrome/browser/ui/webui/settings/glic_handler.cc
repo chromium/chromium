@@ -124,7 +124,7 @@ void GlicHandler::HandleGetGlicFocusToggleShortcut(
   AllowJavascript();
   ResolveJavascriptCallback(
       callback_id,
-      base::UTF16ToUTF8(glic::LocalHotkeyManager::GetAccelerator(
+      base::UTF16ToUTF8(glic::LocalHotkeyManager::GetConfigurableAccelerator(
                             glic::LocalHotkeyManager::Hotkey::kFocusToggle)
                             .GetShortcutText()));
 }

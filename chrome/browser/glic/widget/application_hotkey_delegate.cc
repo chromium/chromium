@@ -111,9 +111,8 @@ bool ApplicationHotkeyDelegate::AcceleratorPressed(
       base::RecordAction(base::UserMetricsAction("Glic.FocusHotKey"));
       return true;
     default:
-      NOTREACHED()
-          << "no handling implemented for "
-          << LocalHotkeyManager::GetAccelerator(hotkey).GetShortcutText();
+      NOTREACHED() << "no handling implemented for "
+                   << LocalHotkeyManager::HotkeyToString(hotkey);
   }
 }
 

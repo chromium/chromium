@@ -36,6 +36,19 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
 #endif
   };
 
+  constexpr static const char* HotkeyToString(Hotkey hotkey) {
+    switch (hotkey) {
+      case Hotkey::kClose:
+        return "kClose";
+      case Hotkey::kFocusToggle:
+        return "kFocusToggle";
+#if BUILDFLAG(IS_WIN)
+      case Hotkey::kTitleBarContextMenu:
+        return "kTitleBarContextMenu";
+#endif
+    }
+  }
+
   // Interface for managing the lifetime of a registered hotkey.
   // Implementations handle the specific registration/unregistration logic
   // for their scope (e.g., adding/removing from a views::View or
@@ -71,12 +84,20 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
       std::unique_ptr<Delegate> delegate);
   ~LocalHotkeyManager() override;
 
+  // Returns the default accelerator for a given hotkey.
   static ui::Accelerator GetDefaultAccelerator(Hotkey hotkey_enum);
 
-  // Returns the current accelerator for a given hotkey, potentially reading
-  // from user preferences. Falls back to the default if no preference is set
-  // or the preference is invalid.
-  static ui::Accelerator GetAccelerator(Hotkey hotkey_enum);
+  // Returns the hardcoded, non-configurable accelerators for a given hotkey.
+  // CHECKs if the hotkey is not defined as static (i.e., not in
+  // kHotkeyToStaticAcceleratorsMap).
+  static base::span<const ui::Accelerator> GetStaticAccelerators(
+      LocalHotkeyManager::Hotkey hotkey);
+
+  // Returns the current configurable accelerator for a given hotkey,
+  // potentially reading from user preferences. Falls back to the default if
+  // no preference is set or the preference is invalid. CHECKs if the passed
+  // hotkey_enum is not defined as configurable.
+  static ui::Accelerator GetConfigurableAccelerator(Hotkey hotkey_enum);
 
   // Returns the Hotkey enum value corresponding to the given accelerator.
   // CHECKs if the accelerator is not supported by this manager.
@@ -93,13 +114,14 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
   }
 
  private:
+  std::vector<ui::Accelerator> GetAccelerators(Hotkey hotkey);
   void RegisterHotkey(Hotkey hotkey_enum);
 
   base::WeakPtr<GlicWindowController> window_controller_;
   std::unique_ptr<Delegate> delegate_;
 
   PrefChangeRegistrar pref_registrar_;
-  base::flat_map<Hotkey, std::unique_ptr<ScopedHotkeyRegistration>>
+  base::flat_map<Hotkey, std::vector<std::unique_ptr<ScopedHotkeyRegistration>>>
       hotkey_registrations_;
   base::WeakPtrFactory<LocalHotkeyManager> weak_ptr_factory_{this};
 };
