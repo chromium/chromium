@@ -88,8 +88,9 @@ class PredictionBasedPermissionUiSelector
       GetPredictionTypeToUse);
   FRIEND_TEST_ALL_PREFIXES(PredictionBasedPermissionUiSelectorTest,
                            GetPredictionTypeToUseCpssV1);
-  FRIEND_TEST_ALL_PREFIXES(PredictionBasedPermissionUiSelectorTest,
-                           HoldbackHistogramTest);
+  FRIEND_TEST_ALL_PREFIXES(
+      PredictionBasedPermissionUiExpectedHoldbackChanceTest,
+      HoldbackHistogramTest);
   FRIEND_TEST_ALL_PREFIXES(PredictionBasedPermissionUiSelectorTest,
                            HoldbackDecisionTest);
 

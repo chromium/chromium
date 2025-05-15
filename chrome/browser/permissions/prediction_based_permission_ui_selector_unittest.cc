@@ -5,9 +5,11 @@
 #include "chrome/browser/permissions/prediction_based_permission_ui_selector.h"
 
 #include <memory>
+#include <string>
 
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
@@ -40,6 +42,16 @@ using base::test::FeatureRef;
       permissions::features::kPermissionOnDeviceNotificationPredictions, \
       permissions::features::kPermissionOnDeviceGeolocationPredictions,  \
       features::kQuietNotificationPrompts
+
+constexpr char kOnDevPredServiceResponseNotificationsHistogram[] =
+    "Permissions.OnDevicePredictionService.Response.Notifications";
+constexpr char kOnDevPredServiceResponseGeolocationHistogram[] =
+    "Permissions.OnDevicePredictionService.Response.Geolocation";
+constexpr char kPredServiceResponseNotificationsHistogram[] =
+    "Permissions.PredictionService.Response.Notifications";
+constexpr char kPredServiceResponseGeolocationHistogram[] =
+    "Permissions.PredictionService.Response.Geolocation";
+
 }  // namespace
 
 class PredictionBasedPermissionUiSelectorTestBase : public testing::Test {
@@ -340,136 +352,145 @@ TEST_P(PredictionBasedPermissionUiExpectedPredictionSourceTest,
                 permissions::RequestType::kGeolocation));
 }
 
-TEST_F(PredictionBasedPermissionUiSelectorTest, HoldbackHistogramTest) {
+struct HoldbackChanceTestCase {
+  int holdback_chance;
+  bool is_on_device;
+  permissions::RequestType request_type;
+};
+
+class PredictionBasedPermissionUiExpectedHoldbackChanceTest
+    : public PredictionBasedPermissionUiSelectorTestBase,
+      public testing::WithParamInterface<HoldbackChanceTestCase> {
+ public:
+  void SetUp() override {
+    PredictionBasedPermissionUiSelectorTestBase::SetUp();
+    feature_list_->Reset();
+    feature_list_->InitWithFeaturesAndParameters(
+        {
+            {permissions::features::kPermissionPredictionsV2,
+             {{permissions::feature_params::
+                   kPermissionPredictionsV2HoldbackChance.name,
+               GetParam().holdback_chance == 1 ? "1" : "0"}}},
+        },
+        {});
+  }
+
+  // Checks for the selected histogram that is has a bucket count of 1 and
+  // also ensures that no other histogram was changed.
+  void CheckHistogramsAreEmptyExcept(const std::string histogram) const {
+    // Static list of all histogram names to check
+    static const std::vector<std::string> kAllHistogramNames = {
+        kOnDevPredServiceResponseNotificationsHistogram,
+        kOnDevPredServiceResponseGeolocationHistogram,
+        kPredServiceResponseNotificationsHistogram,
+        kPredServiceResponseGeolocationHistogram,
+    };
+
+    // Iterate through all histogram names in the static list
+    for (const auto& histogram_name : kAllHistogramNames) {
+      if (histogram_name != histogram) {
+        // If the histogram is not in the allowed set, ensure its count is 0
+        histogram_tester_.ExpectTotalCount(histogram_name, 0);
+      }
+    }
+    histogram_tester_.ExpectBucketCount(
+        histogram,
+        /*sample=*/GetParam().holdback_chance == 1,
+        /*expected_count=*/1);
+
+    histogram_tester_.ExpectTotalCount(histogram, /*count=*/1);
+  }
+
+ private:
+  base::HistogramTester histogram_tester_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    HoldbackChanceTest,
+    PredictionBasedPermissionUiExpectedHoldbackChanceTest,
+    testing::ValuesIn<HoldbackChanceTestCase>({
+        {
+            /*holdback_chance=*/0,
+            /*is_on_device=*/true,
+            /*request_type=*/permissions::RequestType::kNotifications,
+        },
+        {
+            /*holdback_chance=*/0,
+            /*is_on_device=*/false,
+            /*request_type=*/permissions::RequestType::kNotifications,
+        },
+        {
+            /*holdback_chance=*/0,
+            /*is_on_device=*/true,
+            /*request_type=*/permissions::RequestType::kGeolocation,
+        },
+        {
+            /*holdback_chance=*/0,
+            /*is_on_device=*/false,
+            /*request_type=*/permissions::RequestType::kGeolocation,
+        },
+        {
+            /*holdback_chance=*/1,
+            /*is_on_device=*/true,
+            /*request_type=*/permissions::RequestType::kNotifications,
+        },
+        {
+            /*holdback_chance=*/1,
+            /*is_on_device=*/false,
+            /*request_type=*/permissions::RequestType::kNotifications,
+        },
+        {
+            /*holdback_chance=*/1,
+            /*is_on_device=*/true,
+            /*request_type=*/permissions::RequestType::kGeolocation,
+        },
+        {
+            /*holdback_chance=*/1,
+            /*is_on_device=*/false,
+            /*request_type=*/permissions::RequestType::kGeolocation,
+        },
+    }),
+    /*name_generator=*/
+    [](const testing::TestParamInfo<
+        PredictionBasedPermissionUiExpectedHoldbackChanceTest::ParamType>&
+           info) {
+      return base::StrCat(
+          {(info.param.holdback_chance == 1) ? "FullHoldbackChance"
+                                             : "NoHoldbackChance",
+           "For", info.param.is_on_device ? "OnDevice" : "ServerSide",
+           "Execution", "And",
+           (info.param.request_type == permissions::RequestType::kNotifications)
+               ? "Notifications"
+               : "Geolocation",
+           "Permission"});
+    });
+
+TEST_P(PredictionBasedPermissionUiExpectedHoldbackChanceTest,
+       HoldbackHistogramTest) {
   PredictionBasedPermissionUiSelector prediction_selector(profile());
-  base::HistogramTester histogram_tester;
+  prediction_selector.cpss_v1_model_holdback_probability_ =
+      GetParam().holdback_chance;
 
-  // No holdback.
-  feature_list_->Reset();
-  feature_list_->InitWithFeaturesAndParameters(
-      {
-          {permissions::features::kPermissionPredictionsV2,
-           {{permissions::feature_params::kPermissionPredictionsV2HoldbackChance
-                 .name,
-             "0"}}},
-      },
-      {});
-  prediction_selector.cpss_v1_model_holdback_probability_ = 0;
+  // 1 means 100% holdback chance and as we only test with 0 or 1 here this is
+  // basically the expected result.
+  bool is_held_back = GetParam().holdback_chance == 1;
+  EXPECT_EQ(is_held_back,
+            prediction_selector.ShouldHoldBack(GetParam().is_on_device,
+                                               GetParam().request_type));
 
-  EXPECT_EQ(false, prediction_selector.ShouldHoldBack(
-                       /*is_on_device=*/true,
-                       permissions::RequestType::kNotifications));
-  histogram_tester.ExpectBucketCount(
-      "Permissions.OnDevicePredictionService.Response.Notifications",
-      /*sample=*/false, /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Permissions.PredictionService.Response.Notifications",
-      /*sample=*/false, /*expected_count=*/0);
-  histogram_tester.ExpectBucketCount(
-      "Permissions.PredictionService.Response.Geolocation",
-      /*sample=*/false, /*expected_count=*/0);
-
-  EXPECT_EQ(false, prediction_selector.ShouldHoldBack(
-                       /*is_on_device=*/false,
-                       permissions::RequestType::kNotifications));
-  histogram_tester.ExpectBucketCount(
-      "Permissions.OnDevicePredictionService.Response.Notifications",
-      /*sample=*/false, /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Permissions.PredictionService.Response.Notifications",
-      /*sample=*/false, /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Permissions.PredictionService.Response.Geolocation",
-      /*sample=*/false, /*expected_count=*/0);
-
-  EXPECT_EQ(false, prediction_selector.ShouldHoldBack(
-                       /*is_on_device=*/false,
-                       permissions::RequestType::kGeolocation));
-  histogram_tester.ExpectBucketCount(
-      "Permissions.OnDevicePredictionService.Response.Notifications",
-      /*sample=*/false, /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Permissions.PredictionService.Response.Notifications",
-      /*sample=*/false, /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Permissions.PredictionService.Response.Geolocation",
-      /*sample=*/false, /*expected_count=*/1);
-
-  // 100% Holdback chance.
-  feature_list_->Reset();
-  feature_list_->InitWithFeaturesAndParameters(
-      {
-          {permissions::features::kPermissionPredictionsV2,
-           {{permissions::feature_params::kPermissionPredictionsV2HoldbackChance
-                 .name,
-             "1"}}},
-      },
-      {});
-  prediction_selector.cpss_v1_model_holdback_probability_ = 1;
-
-  EXPECT_EQ(true, prediction_selector.ShouldHoldBack(
-                      /*is_on_device=*/true,
-                      permissions::RequestType::kNotifications));
-  histogram_tester.ExpectBucketCount(
-      "Permissions.OnDevicePredictionService.Response.Notifications",
-      /*sample=*/true, /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount(
-      "Permissions.OnDevicePredictionService.Response.Notifications",
-      /*count=*/2);
-  histogram_tester.ExpectBucketCount(
-      "Permissions.PredictionService.Response.Notifications",
-      /*sample=*/true, /*expected_count=*/0);
-  histogram_tester.ExpectTotalCount(
-      "Permissions.PredictionService.Response.Notifications",
-      /*count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Permissions.PredictionService.Response.Geolocation",
-      /*sample=*/true, /*expected_count=*/0);
-  histogram_tester.ExpectTotalCount(
-      "Permissions.PredictionService.Response.Geolocation",
-      /*count=*/1);
-
-  EXPECT_EQ(true, prediction_selector.ShouldHoldBack(
-                      /*is_on_device=*/false,
-                      permissions::RequestType::kNotifications));
-  histogram_tester.ExpectBucketCount(
-      "Permissions.OnDevicePredictionService.Response.Notifications",
-      /*sample=*/true, /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount(
-      "Permissions.OnDevicePredictionService.Response.Notifications",
-      /*count=*/2);
-  histogram_tester.ExpectBucketCount(
-      "Permissions.PredictionService.Response.Notifications",
-      /*sample=*/true, /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount(
-      "Permissions.PredictionService.Response.Notifications",
-      /*count=*/2);
-  histogram_tester.ExpectBucketCount(
-      "Permissions.PredictionService.Response.Geolocation",
-      /*sample=*/true, /*expected_count=*/0);
-  histogram_tester.ExpectTotalCount(
-      "Permissions.PredictionService.Response.Geolocation",
-      /*count=*/1);
-
-  EXPECT_EQ(true, prediction_selector.ShouldHoldBack(
-                      /*is_on_device=*/false,
-                      permissions::RequestType::kGeolocation));
-  histogram_tester.ExpectBucketCount(
-      "Permissions.OnDevicePredictionService.Response.Notifications",
-      /*sample=*/true, /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount(
-      "Permissions.OnDevicePredictionService.Response.Notifications",
-      /*count=*/2);
-  histogram_tester.ExpectBucketCount(
-      "Permissions.PredictionService.Response.Notifications",
-      /*sample=*/true, /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount(
-      "Permissions.PredictionService.Response.Notifications",
-      /*count=*/2);
-  histogram_tester.ExpectBucketCount(
-      "Permissions.PredictionService.Response.Geolocation",
-      /*sample=*/true, /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount(
-      "Permissions.PredictionService.Response.Geolocation",
-      /*count=*/2);
+  if (GetParam().is_on_device) {
+    if (GetParam().request_type == permissions::RequestType::kNotifications) {
+      CheckHistogramsAreEmptyExcept(
+          kOnDevPredServiceResponseNotificationsHistogram);
+    } else {
+      CheckHistogramsAreEmptyExcept(
+          kOnDevPredServiceResponseGeolocationHistogram);
+    }
+  } else {
+    if (GetParam().request_type == permissions::RequestType::kNotifications) {
+      CheckHistogramsAreEmptyExcept(kPredServiceResponseNotificationsHistogram);
+    } else {
+      CheckHistogramsAreEmptyExcept(kPredServiceResponseGeolocationHistogram);
+    }
+  }
 }
