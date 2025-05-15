@@ -39,7 +39,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//ios/web/public/test/http_server:http_server",
+    "//ios/web/public/test/http_server",
     "//net",
   ]
   frameworks = [ "UIKit.framework" ]

@@ -71,7 +71,7 @@ source_set("push_notification_util") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/public/features:features",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/web/public/thread",
   ]
   frameworks = [
@@ -173,7 +173,7 @@ source_set("push_notification_service") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:features",
     "//ios/chrome/browser/shared/model/utils",
-    "//ios/chrome/browser/shared/public/features:features",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
@@ -196,7 +196,7 @@ source_set("push_notification_client") {
   ]
   public_deps = [
     "//base",
-    "//url:url",
+    "//url",
   ]
   deps = [
     ":constants",
@@ -262,7 +262,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
-    "//ios/chrome/browser/shared/public/features:features",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/tips_notifications/model:utils",
     "//ios/chrome/test:test_support",

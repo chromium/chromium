@@ -37,7 +37,7 @@ source_set("unit_tests") {
     "//base",
     "//components/infobars/core",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/infobars/model:model",
+    "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/infobars/ui_bundled/banners",
     "//ios/chrome/browser/infobars/ui_bundled/banners/test",

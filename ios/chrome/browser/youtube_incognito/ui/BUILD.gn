@@ -15,7 +15,7 @@ source_set("ui") {
     "//ios/chrome/browser/ntp/ui_bundled/incognito",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/confirmation_alert:confirmation_alert",
+    "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/util",
     "//ui/base",
   ]

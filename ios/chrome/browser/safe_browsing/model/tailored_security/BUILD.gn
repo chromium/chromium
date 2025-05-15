@@ -59,7 +59,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/safe_browsing/core/browser/tailored_security_service",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/sync_preferences:sync_preferences",
+    "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/safe_browsing/model/tailored_security/test",

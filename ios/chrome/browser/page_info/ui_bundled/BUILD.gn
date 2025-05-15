@@ -177,7 +177,7 @@ source_set("unit_tests") {
     "//ios/chrome/test:test_support",
     "//ios/web/public/permissions",
     "//ios/web/public/test/fakes",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
     "//third_party/ocmock",
   ]
 }
@@ -222,7 +222,7 @@ source_set("features") {
   ]
   public_deps = [
     "//base",
-    "//components/page_info/core:core",
+    "//components/page_info/core",
     "//ios/chrome/browser/shared/model/application_context",
   ]
 }
@@ -245,11 +245,11 @@ source_set("eg_app_support+eg2") {
   ]
   deps = [
     "//base",
-    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/core",
     "//components/optimization_guide/core:features",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/page_info/core:proto",
-    "//ios/chrome/browser/optimization_guide/model:model",
+    "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/test/app:test_support",
     "//ios/web/common:uikit",
   ]

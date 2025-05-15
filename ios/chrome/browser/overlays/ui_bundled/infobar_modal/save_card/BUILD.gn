@@ -64,7 +64,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/overlays/ui_bundled/infobar_modal/save_card",
     "//ios/chrome/browser/overlays/ui_bundled/test",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/profile/test:test",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gmock",

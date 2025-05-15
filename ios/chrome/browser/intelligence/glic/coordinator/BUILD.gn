@@ -16,7 +16,7 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/glic/metrics",
     "//ios/chrome/browser/intelligence/glic/ui",

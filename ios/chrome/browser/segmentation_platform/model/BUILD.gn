@@ -17,7 +17,7 @@ source_set("model") {
     "//components/leveldb_proto",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:features",
-    "//components/pref_registry:pref_registry",
+    "//components/pref_registry",
     "//components/prefs",
     "//components/segmentation_platform/embedder",
     "//components/segmentation_platform/embedder/default_model",

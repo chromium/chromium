@@ -30,7 +30,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/common/ui/confirmation_alert",
-    "//ios/chrome/common/ui/promo_style:promo_style",
+    "//ios/chrome/common/ui/promo_style",
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//ios/public/provider/chrome/browser/signin:signin_resources_api",
     "//ui/base",

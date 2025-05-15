@@ -21,7 +21,7 @@ source_set("model") {
     "new_tab_page_tab_helper_delegate.h",
   ]
   deps = [
-    "//base:base",
+    "//base",
     "//components/prefs",
     "//components/strings",
     "//components/url_formatter",
@@ -35,7 +35,7 @@ source_set("model") {
     "//ios/components/webui:url_constants",
     "//ios/web/common:features",
     "//ios/web/public",
-    "//ui/base:base",
+    "//ui/base",
   ]
 }
 
@@ -69,7 +69,7 @@ source_set("set_up_list") {
     ":set_up_list_prefs",
     "//base",
     "//components/password_manager/core/browser",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/prefs/ios",
     "//components/sync/base",
     "//components/sync/service",
@@ -157,10 +157,10 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/test:test_support",
-    "//ios/web/public/test:test",
+    "//ios/web/public/test",
     "//ios/web/public/test/fakes",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
     "//third_party/ocmock",
-    "//ui/base:base",
+    "//ui/base",
   ]
 }

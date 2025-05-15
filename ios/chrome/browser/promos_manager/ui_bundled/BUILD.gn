@@ -17,7 +17,7 @@ source_set("promos") {
   public_deps = [
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/common/ui/confirmation_alert",
-    "//ios/chrome/common/ui/promo_style:promo_style",
+    "//ios/chrome/common/ui/promo_style",
   ]
   deps = [
     "//ios/chrome/browser/promos_manager/model:constants",
@@ -115,7 +115,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/whats_new/coordinator:util",
     "//ios/chrome/browser/whats_new/coordinator/promo",
     "//ios/chrome/common/ui/confirmation_alert",
-    "//ios/chrome/common/ui/promo_style:promo_style",
+    "//ios/chrome/common/ui/promo_style",
     "//ui/base",
   ]
 }

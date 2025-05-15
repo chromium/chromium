@@ -20,7 +20,7 @@ source_set("model") {
   deps = [
     "//base",
     "//components/policy/core/browser",
-    "//components/reading_list/core:core",
+    "//components/reading_list/core",
     "//ios/chrome/browser/mailto_handler/model",
     "//ios/chrome/browser/mailto_handler/model:mailto_handler_factory",
     "//ios/chrome/browser/overlays/model",
@@ -71,7 +71,7 @@ source_set("unit_tests") {
     "//components/policy/core/common:test_support",
     "//components/pref_registry",
     "//components/prefs",
-    "//components/reading_list/core:core",
+    "//components/reading_list/core",
     "//components/sync_preferences",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/browser/overlays/model",

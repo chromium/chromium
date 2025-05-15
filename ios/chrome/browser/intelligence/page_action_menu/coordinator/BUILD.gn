@@ -10,7 +10,7 @@ source_set("coordinator") {
     "page_action_menu_mediator.mm",
   ]
   deps = [
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/signin/public/identity_manager",
     "//ios/chrome/browser/intelligence/glic/coordinator",
     "//ios/chrome/browser/intelligence/glic/model",
