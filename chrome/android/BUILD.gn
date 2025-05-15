@@ -445,6 +445,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/password_manager/android/account_storage_toggle:java",
       "//chrome/browser/password_manager/android/bottom_sheet:java",
       "//chrome/browser/password_manager/android/grouped_affiliations:java",
+      "//chrome/browser/password_manager/android/one_time_passwords:java",
       "//chrome/browser/password_manager/android/pwd_migration:java",
       "//chrome/browser/password_manager/android/pwd_migration:java_resources",
       "//chrome/browser/policy/android:java",

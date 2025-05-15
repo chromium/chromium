@@ -2,18 +2,50 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
 source_set("backend") {
   sources = [
     "android_sms_otp_backend.cc",
     "android_sms_otp_backend.h",
     "android_sms_otp_backend_factory.cc",
     "android_sms_otp_backend_factory.h",
+    "android_sms_otp_fetch_receiver_bridge.cc",
+    "android_sms_otp_fetch_receiver_bridge.h",
+    "sms_otp_retrieval_api_error_codes.h",
   ]
 
   deps = [
+    ":jni_headers",
+    "//base",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
     "//components/password_manager/core/browser:browser",
     "//content/public/browser",
   ]
+}
+
+generate_jni("jni_headers") {
+  visibility = [
+    ":*",
+    "//chrome/browser",
+  ]
+  sources = [ "java/src/org/chromium/chrome/browser/password_manager/one_time_passwords/AndroidSmsOtpFetchReceiverBridge.java" ]
+}
+
+android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
+  sources = [ "java/src/org/chromium/chrome/browser/password_manager/one_time_passwords/AndroidSmsOtpFetchReceiverBridge.java" ]
+
+  deps = [
+    "$google_play_services_package:google_play_services_basement_java",
+    "//base:base_java",
+    "//build/android:build_java",
+    "//third_party/jni_zero:gendeps_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+
+  resources_package =
+      "org.chromium.chrome.browser.password_manager.one_time_passwords"
 }
