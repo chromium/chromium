@@ -34,7 +34,7 @@ namespace content {
 class DevToolsAgentHost;
 struct NativeWebKeyboardEvent;
 class NavigationHandle;
-class NavigationThrottle;
+class NavigationThrottleRegistry;
 class RenderFrameHost;
 }
 
@@ -189,8 +189,8 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   // Logs UKM event when DevTools is opened.
   static void LogDevToolsOpenedUKM(content::WebContents* web_contents);
 
-  static std::unique_ptr<content::NavigationThrottle>
-  MaybeCreateNavigationThrottle(content::NavigationHandle* handle);
+  static void MaybeCreateAndAddNavigationThrottle(
+      content::NavigationThrottleRegistry& registry);
 
   // Sets closure to be called after load is done. If already loaded, calls
   // closure immediately.

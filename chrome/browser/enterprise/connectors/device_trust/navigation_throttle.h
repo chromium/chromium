@@ -36,13 +36,12 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
  public:
   // Create a navigation throttle for the given navigation if device trust is
   // enabled.  Returns nullptr if no throttling should be done.
-  static std::unique_ptr<DeviceTrustNavigationThrottle> MaybeCreateThrottleFor(
-      content::NavigationHandle* navigation_handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
   DeviceTrustNavigationThrottle(
       DeviceTrustService* device_trust_service,
       device_signals::UserPermissionService* user_permission_service,
-      content::NavigationHandle* navigation_handle);
+      content::NavigationThrottleRegistry& registry);
 
   DeviceTrustNavigationThrottle(const DeviceTrustNavigationThrottle&) = delete;
   DeviceTrustNavigationThrottle& operator=(

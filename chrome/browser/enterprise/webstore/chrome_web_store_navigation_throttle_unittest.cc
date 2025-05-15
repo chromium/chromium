@@ -10,6 +10,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_navigation_throttle_registry.h"
 #include "content/public/test/web_contents_tester.h"
 
 using content::NavigationThrottle;
@@ -28,10 +29,12 @@ class ChromeWebStoreNavigationThrottleTest
  public:
   ChromeWebStoreNavigationThrottleTest() = default;
 
-  std::unique_ptr<ChromeWebStoreNavigationThrottle> CreateThrottle(
-      content::NavigationHandle* navigation_handle) {
-    return std::make_unique<ChromeWebStoreNavigationThrottle>(
-        navigation_handle);
+  content::NavigationThrottle* CreateThrottle(
+      content::MockNavigationThrottleRegistry& registry) {
+    registry.AddThrottle(
+        std::make_unique<ChromeWebStoreNavigationThrottle>(registry));
+    CHECK_EQ(registry.throttles().size(), 1u);
+    return registry.throttles().back().get();
   }
 
   void SetUp() override {
@@ -53,11 +56,14 @@ class ChromeWebStoreNavigationThrottleTest
 TEST_F(ChromeWebStoreNavigationThrottleTest, ChromeWebStoreSetHeaders) {
   content::MockNavigationHandle test_handle(GURL(kChromeWebStoreUrl),
                                             main_rfh());
-  std::unique_ptr<ChromeWebStoreNavigationThrottle> throttle =
-      CreateThrottle(&test_handle);
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  raw_ptr<content::NavigationThrottle> throttle = CreateThrottle(test_registry);
 
   EXPECT_CALL(test_handle, SetRequestHeader(kBrowserDmTokenHeader, "dm_token"));
   EXPECT_CALL(test_handle, SetRequestHeader(kDeviceIdHeader, "client_id"));
+
   EXPECT_STREQ(throttle->GetNameForLogging(),
                "ChromeWebStoreNavigationThrottle");
   EXPECT_EQ(throttle->WillStartRequest().action(), NavigationThrottle::PROCEED);
@@ -74,8 +80,11 @@ TEST_F(ChromeWebStoreNavigationThrottleTest, ChromeWebStoreSetHeaders) {
 TEST_F(ChromeWebStoreNavigationThrottleTest, NonChromeWebStoreDoNotSetHeaders) {
   content::MockNavigationHandle test_handle(
       GURL("https://www.notchromewebstore.test/"), main_rfh());
-  std::unique_ptr<ChromeWebStoreNavigationThrottle> throttle =
-      CreateThrottle(&test_handle);
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+
+  raw_ptr<content::NavigationThrottle> throttle = CreateThrottle(test_registry);
 
   EXPECT_CALL(test_handle, SetRequestHeader(_, _)).Times(0);
   EXPECT_STREQ(throttle->GetNameForLogging(),
@@ -98,8 +107,10 @@ TEST_F(ChromeWebStoreNavigationThrottleTest, IncognitoMode) {
                                                         nullptr);
   content::MockNavigationHandle test_handle(
       GURL(kChromeWebStoreUrl), web_contents->GetPrimaryMainFrame());
-  std::unique_ptr<ChromeWebStoreNavigationThrottle> throttle =
-      CreateThrottle(&test_handle);
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  raw_ptr<content::NavigationThrottle> throttle = CreateThrottle(test_registry);
 
   EXPECT_CALL(test_handle, SetRequestHeader(_, _)).Times(0);
   EXPECT_STREQ(throttle->GetNameForLogging(),
@@ -117,8 +128,10 @@ TEST_F(ChromeWebStoreNavigationThrottleTest, GuestProfile) {
                                                         nullptr);
   content::MockNavigationHandle test_handle(
       GURL(kChromeWebStoreUrl), web_contents->GetPrimaryMainFrame());
-  std::unique_ptr<ChromeWebStoreNavigationThrottle> throttle =
-      CreateThrottle(&test_handle);
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  raw_ptr<content::NavigationThrottle> throttle = CreateThrottle(test_registry);
 
   EXPECT_CALL(test_handle, SetRequestHeader(_, _)).Times(0);
   EXPECT_STREQ(throttle->GetNameForLogging(),
@@ -131,8 +144,10 @@ TEST_F(ChromeWebStoreNavigationThrottleTest, InvalidDmToken) {
   browser_dm_token_storage()->SetDMToken("");
   content::MockNavigationHandle test_handle(GURL(kChromeWebStoreUrl),
                                             main_rfh());
-  std::unique_ptr<ChromeWebStoreNavigationThrottle> throttle =
-      CreateThrottle(&test_handle);
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  raw_ptr<content::NavigationThrottle> throttle = CreateThrottle(test_registry);
 
   EXPECT_CALL(test_handle, SetRequestHeader(_, _)).Times(0);
   EXPECT_STREQ(throttle->GetNameForLogging(),
@@ -145,8 +160,10 @@ TEST_F(ChromeWebStoreNavigationThrottleTest,
        RedirectToChromeWebStoreSetHeaders) {
   content::MockNavigationHandle test_handle(
       GURL("https://www.notchromewebstore.test/"), main_rfh());
-  std::unique_ptr<ChromeWebStoreNavigationThrottle> throttle =
-      CreateThrottle(&test_handle);
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  raw_ptr<content::NavigationThrottle> throttle = CreateThrottle(test_registry);
   EXPECT_CALL(test_handle, SetRequestHeader(_, _)).Times(0);
   EXPECT_STREQ(throttle->GetNameForLogging(),
                "ChromeWebStoreNavigationThrottle");
@@ -166,8 +183,10 @@ TEST_F(ChromeWebStoreNavigationThrottleTest,
        RedirectToNonChromeWebStoreDoNotSetHeaders) {
   content::MockNavigationHandle test_handle(GURL(kChromeWebStoreUrl),
                                             main_rfh());
-  std::unique_ptr<ChromeWebStoreNavigationThrottle> throttle =
-      CreateThrottle(&test_handle);
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  raw_ptr<content::NavigationThrottle> throttle = CreateThrottle(test_registry);
   EXPECT_CALL(test_handle, SetRequestHeader(kBrowserDmTokenHeader, "dm_token"));
   EXPECT_CALL(test_handle, SetRequestHeader(kDeviceIdHeader, "client_id"));
   EXPECT_STREQ(throttle->GetNameForLogging(),

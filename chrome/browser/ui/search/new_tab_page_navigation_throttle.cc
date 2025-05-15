@@ -18,8 +18,8 @@
 #include "url/gurl.h"
 
 NewTabPageNavigationThrottle::NewTabPageNavigationThrottle(
-    content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 NewTabPageNavigationThrottle::~NewTabPageNavigationThrottle() = default;
 
@@ -28,18 +28,19 @@ const char* NewTabPageNavigationThrottle::GetNameForLogging() {
 }
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-NewTabPageNavigationThrottle::MaybeCreateThrottleFor(
-    content::NavigationHandle* handle) {
-  content::WebContents* web_contents = handle->GetWebContents();
+void NewTabPageNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
+  content::NavigationHandle& handle = registry.GetNavigationHandle();
+  content::WebContents* web_contents = handle.GetWebContents();
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   if (web_contents->GetVisibleURL() != chrome::kChromeUINewTabURL ||
-      !search::IsInstantNTPURL(handle->GetURL(), profile)) {
-    return nullptr;
+      !search::IsInstantNTPURL(handle.GetURL(), profile)) {
+    return;
   }
 
-  return std::make_unique<NewTabPageNavigationThrottle>(handle);
+  registry.AddThrottle(
+      std::make_unique<NewTabPageNavigationThrottle>(registry));
 }
 
 content::NavigationThrottle::ThrottleCheckResult

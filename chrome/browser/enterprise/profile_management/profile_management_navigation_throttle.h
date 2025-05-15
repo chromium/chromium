@@ -13,10 +13,6 @@
 
 class GURL;
 
-namespace content {
-class NavigationHandle;
-}  // namespace content
-
 namespace profile_management {
 
 class SAMLResponseParser;
@@ -31,11 +27,10 @@ class ProfileManagementNavigationThrottle : public content::NavigationThrottle {
   // Create a navigation throttle for the given navigation if third-party
   // profile management is enabled. Returns nullptr if no throttling should be
   // done.
-  static std::unique_ptr<ProfileManagementNavigationThrottle>
-  MaybeCreateThrottleFor(content::NavigationHandle* navigation_handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
   explicit ProfileManagementNavigationThrottle(
-      content::NavigationHandle* navigation_handle);
+      content::NavigationThrottleRegistry& registry);
 
   ProfileManagementNavigationThrottle(
       const ProfileManagementNavigationThrottle&) = delete;

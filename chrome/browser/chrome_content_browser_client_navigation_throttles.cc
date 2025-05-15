@@ -389,7 +389,6 @@ void CreateAndAddChromeThrottlesForNavigation(
       registry, std::make_unique<ChromePdfStreamDelegate>()));
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-
   TabUnderNavigationThrottle::MaybeCreateAndAdd(registry);
 
   WellKnownChangePasswordNavigationThrottle::MaybeCreateAndAdd(registry);
@@ -411,56 +410,46 @@ void CreateAndAddChromeThrottlesForNavigation(
 
   registry.AddThrottle(std::make_unique<LoginNavigationThrottle>(registry));
 
-  // TODO(https://crbug.com/412524375): Needs a NavigationThrottle ctor
-  // migration follow-up of https://crrev.com/c/6510776 below. (33)
-
   if (base::FeatureList::IsEnabled(omnibox::kDefaultTypedNavigationsToHttps)) {
-    registry.MaybeAddThrottle(
-        TypedNavigationUpgradeThrottle::MaybeCreateThrottleFor(&handle));
+    TypedNavigationUpgradeThrottle::MaybeCreateAndAdd(registry);
   }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  registry.MaybeAddThrottle(
-      WebAppSettingsNavigationThrottle::MaybeCreateThrottleFor(&handle));
-  registry.MaybeAddThrottle(
-      profile_management::ProfileManagementNavigationThrottle::
-          MaybeCreateThrottleFor(&handle));
-  registry.MaybeAddThrottle(
-      profile_management::OidcAuthResponseCaptureNavigationThrottle::
-          MaybeCreateThrottleFor(&handle));
-  registry.MaybeAddThrottle(
-      ManagedProfileRequiredNavigationThrottle::MaybeCreateThrottleFor(
-          &handle));
+  WebAppSettingsNavigationThrottle::MaybeCreateAndAdd(registry);
+  profile_management::ProfileManagementNavigationThrottle::MaybeCreateAndAdd(
+      registry);
+  profile_management::OidcAuthResponseCaptureNavigationThrottle::
+      MaybeCreateAndAdd(registry);
+
+  ManagedProfileRequiredNavigationThrottle::MaybeCreateAndAdd(registry);
 
   if (base::FeatureList::IsEnabled(
           enterprise::webstore::kChromeWebStoreNavigationThrottle)) {
     registry.AddThrottle(
         std::make_unique<enterprise_webstore::ChromeWebStoreNavigationThrottle>(
-            &handle));
+            registry));
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
-  registry.MaybeAddThrottle(
-      enterprise_connectors::DeviceTrustNavigationThrottle::
-          MaybeCreateThrottleFor(&handle));
+  enterprise_connectors::DeviceTrustNavigationThrottle::MaybeCreateAndAdd(
+      registry);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
-  registry.MaybeAddThrottle(
-      DevToolsWindow::MaybeCreateNavigationThrottle(&handle));
+  DevToolsWindow::MaybeCreateAndAddNavigationThrottle(registry);
 
-  registry.MaybeAddThrottle(
-      NewTabPageNavigationThrottle::MaybeCreateThrottleFor(&handle));
+  NewTabPageNavigationThrottle::MaybeCreateAndAdd(registry);
 
-  registry.MaybeAddThrottle(
-      web_app::TabbedWebAppNavigationThrottle::MaybeCreateThrottleFor(&handle));
+  web_app::TabbedWebAppNavigationThrottle::MaybeCreateAndAdd(registry);
 
-  registry.MaybeAddThrottle(
-      web_app::WebUIWebAppNavigationThrottle::MaybeCreateThrottleFor(&handle));
+  web_app::WebUIWebAppNavigationThrottle::MaybeCreateAndAdd(registry);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // TODO(https://crbug.com/412524375): Needs a NavigationThrottle ctor
+  // migration follow-up of https://crrev.com/c/6510776 below.
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // g_browser_process->safe_browsing_service() may be null in unittests.

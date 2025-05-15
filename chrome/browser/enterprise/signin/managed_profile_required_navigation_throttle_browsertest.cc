@@ -27,6 +27,7 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_navigation_throttle_registry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -60,9 +61,11 @@ IN_PROC_BROWSER_TEST_F(
     NoThrottle) {
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   content::MockNavigationHandle mock_nav_handle(web_contents);
-
-  EXPECT_FALSE(ManagedProfileRequiredNavigationThrottle::MaybeCreateThrottleFor(
-      &mock_nav_handle));
+  content::MockNavigationThrottleRegistry registry(
+      &mock_nav_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  ManagedProfileRequiredNavigationThrottle::MaybeCreateAndAdd(registry);
+  CHECK_EQ(0u, registry.throttles().size());
 }
 
 class ManagedProfileRequiredNavigationThrottleTest
@@ -86,16 +89,18 @@ IN_PROC_BROWSER_TEST_F(ManagedProfileRequiredNavigationThrottleTest,
       content::NavigationThrottle::ThrottleAction::CANCEL,
       net::ERR_BLOCKED_BY_CLIENT, error_page_content);
 
-  auto throttle =
-      ManagedProfileRequiredNavigationThrottle::MaybeCreateThrottleFor(
-          &mock_nav_handle);
-  ASSERT_FALSE(throttle);
+  content::MockNavigationThrottleRegistry registry(
+      &mock_nav_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  ManagedProfileRequiredNavigationThrottle::MaybeCreateAndAdd(registry);
+  ASSERT_EQ(0u, registry.throttles().size());
 
   auto enable_navigations = ManagedProfileRequiredNavigationThrottle::
       BlockNavigationUntilEnterpriseActionTaken(browser()->profile(),
                                                 web_contents, nullptr, kEmail);
-  throttle = ManagedProfileRequiredNavigationThrottle::MaybeCreateThrottleFor(
-      &mock_nav_handle);
+  ManagedProfileRequiredNavigationThrottle::MaybeCreateAndAdd(registry);
+  ASSERT_EQ(1u, registry.throttles().size());
+  auto* throttle = registry.throttles().back().get();
   ASSERT_TRUE(throttle);
   EXPECT_TRUE(Equals(expected_result, throttle->WillStartRequest()));
   EXPECT_TRUE(Equals(expected_result, throttle->WillRedirectRequest()));
@@ -128,16 +133,18 @@ IN_PROC_BROWSER_TEST_F(
       content::NavigationThrottle::ThrottleAction::CANCEL,
       net::ERR_BLOCKED_BY_CLIENT, error_page_content);
 
-  auto throttle =
-      ManagedProfileRequiredNavigationThrottle::MaybeCreateThrottleFor(
-          &mock_nav_handle);
-  ASSERT_FALSE(throttle);
+  content::MockNavigationThrottleRegistry registry(
+      &mock_nav_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  ManagedProfileRequiredNavigationThrottle::MaybeCreateAndAdd(registry);
+  ASSERT_EQ(0u, registry.throttles().size());
 
   auto enable_navigations = ManagedProfileRequiredNavigationThrottle::
       BlockNavigationUntilEnterpriseActionTaken(browser()->profile(),
                                                 web_contents, nullptr, kEmail);
-  throttle = ManagedProfileRequiredNavigationThrottle::MaybeCreateThrottleFor(
-      &mock_nav_handle);
+  ManagedProfileRequiredNavigationThrottle::MaybeCreateAndAdd(registry);
+  ASSERT_EQ(1u, registry.throttles().size());
+  auto* throttle = registry.throttles().back().get();
   ASSERT_TRUE(throttle);
   EXPECT_TRUE(Equals(expected_result, throttle->WillStartRequest()));
   EXPECT_TRUE(Equals(expected_result, throttle->WillRedirectRequest()));

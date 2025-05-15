@@ -18,8 +18,8 @@ char kDeviceIdHeader[] = "X-Client-Device-Id";
 char kDmTokenHeader[] = "X-Browser-Dm-Token";
 
 ChromeWebStoreNavigationThrottle::ChromeWebStoreNavigationThrottle(
-    content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 ChromeWebStoreNavigationThrottle::~ChromeWebStoreNavigationThrottle() = default;
 

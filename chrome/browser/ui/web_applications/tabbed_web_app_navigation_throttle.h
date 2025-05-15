@@ -15,10 +15,10 @@ class TabbedWebAppNavigationThrottle : public content::NavigationThrottle {
  public:
   // Returns a navigation throttle when the navigation is happening inside
   // a tabbed web app and the tabbed web app has a pinned home tab.
-  static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
-      content::NavigationHandle* handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
-  explicit TabbedWebAppNavigationThrottle(content::NavigationHandle* handle);
+  explicit TabbedWebAppNavigationThrottle(
+      content::NavigationThrottleRegistry& registry);
   ~TabbedWebAppNavigationThrottle() override;
 
   // content::NavigationThrottle:

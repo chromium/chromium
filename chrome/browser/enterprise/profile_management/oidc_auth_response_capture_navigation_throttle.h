@@ -13,10 +13,6 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
-namespace content {
-class NavigationHandle;
-}  // namespace content
-
 namespace profile_management {
 
 // This throttle looks for redirection from Oidc authentications to the hard
@@ -29,11 +25,10 @@ class OidcAuthResponseCaptureNavigationThrottle
   // Create a navigation throttle for the given navigation if Oidc
   // authentication based enrollment is enabled. Returns nullptr if no
   // throttling should be done.
-  static std::unique_ptr<OidcAuthResponseCaptureNavigationThrottle>
-  MaybeCreateThrottleFor(content::NavigationHandle* navigation_handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
   explicit OidcAuthResponseCaptureNavigationThrottle(
-      content::NavigationHandle* navigation_handle);
+      content::NavigationThrottleRegistry& registry);
 
   OidcAuthResponseCaptureNavigationThrottle(
       const OidcAuthResponseCaptureNavigationThrottle&) = delete;

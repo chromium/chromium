@@ -17,8 +17,8 @@
 namespace web_app {
 
 WebUIWebAppNavigationThrottle::WebUIWebAppNavigationThrottle(
-    content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 WebUIWebAppNavigationThrottle::~WebUIWebAppNavigationThrottle() = default;
 
@@ -27,39 +27,40 @@ const char* WebUIWebAppNavigationThrottle::GetNameForLogging() {
 }
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-WebUIWebAppNavigationThrottle::MaybeCreateThrottleFor(
-    content::NavigationHandle* handle) {
-  if (!handle->IsInPrimaryMainFrame()) {
-    return nullptr;
+void WebUIWebAppNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
+  content::NavigationHandle& handle = registry.GetNavigationHandle();
+  if (!handle.IsInPrimaryMainFrame()) {
+    return;
   }
 
   // Reloading the page should not cause the tab to change.
-  if (handle->GetReloadType() != content::ReloadType::NONE) {
-    return nullptr;
+  if (handle.GetReloadType() != content::ReloadType::NONE) {
+    return;
   }
 
-  content::WebContents* web_contents = handle->GetWebContents();
+  content::WebContents* web_contents = handle.GetWebContents();
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser || !browser->app_controller()) {
-    return nullptr;
+    return;
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Exclude system web apps.
   if (browser->app_controller()->system_app()) {
-    return nullptr;
+    return;
   }
 #endif
 
   // Proceed only if the app is coming from Chrome WebUI.
   GURL start_url = browser->app_controller()->GetAppStartUrl();
   if (!content::HasWebUIScheme(start_url)) {
-    return nullptr;
+    return;
   }
 
-  return std::make_unique<WebUIWebAppNavigationThrottle>(handle);
+  registry.AddThrottle(
+      std::make_unique<WebUIWebAppNavigationThrottle>(registry));
 }
 
 content::NavigationThrottle::ThrottleCheckResult

@@ -83,42 +83,42 @@ const void* const kNavigationBlockedForManagedProfileCreationInfo =
 }  // namespace
 
 // static
-std::unique_ptr<ManagedProfileRequiredNavigationThrottle>
-ManagedProfileRequiredNavigationThrottle::MaybeCreateThrottleFor(
-    content::NavigationHandle* navigation_handle) {
+void ManagedProfileRequiredNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
   if (!base::FeatureList::IsEnabled(
           features::kManagedProfileRequiredInterstitial)) {
-    return nullptr;
+    return;
   }
 
-  if (!navigation_handle->IsInPrimaryMainFrame()) {
-    return nullptr;
+  content::NavigationHandle& navigation_handle = registry.GetNavigationHandle();
+  if (!navigation_handle.IsInPrimaryMainFrame()) {
+    return;
   }
 
   auto* navigation_blocked_for_managed_profile_creation_info =
-      navigation_handle->GetWebContents()->GetBrowserContext()->GetUserData(
+      navigation_handle.GetWebContents()->GetBrowserContext()->GetUserData(
           kNavigationBlockedForManagedProfileCreationInfo);
 
   // If nothing should be blocked, continue.
   if (!navigation_blocked_for_managed_profile_creation_info) {
-    return nullptr;
+    return;
   }
   BlockingInfo* blocking_info = static_cast<BlockingInfo*>(
       navigation_blocked_for_managed_profile_creation_info);
   CHECK(blocking_info);
 
   if (blocking_info->allowed_web_contents() ==
-      navigation_handle->GetWebContents()) {
-    return nullptr;
+      navigation_handle.GetWebContents()) {
+    return;
   }
-  return std::make_unique<ManagedProfileRequiredNavigationThrottle>(
-      navigation_handle);
+  registry.AddThrottle(
+      std::make_unique<ManagedProfileRequiredNavigationThrottle>(registry));
 }
 
 ManagedProfileRequiredNavigationThrottle::
     ManagedProfileRequiredNavigationThrottle(
-        content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {}
+        content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 ManagedProfileRequiredNavigationThrottle::
     ~ManagedProfileRequiredNavigationThrottle() = default;

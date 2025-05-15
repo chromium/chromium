@@ -5,13 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_WEBSTORE_CHROME_WEB_STORE_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_ENTERPRISE_WEBSTORE_CHROME_WEB_STORE_NAVIGATION_THROTTLE_H_
 
-#include <memory>
-
 #include "content/public/browser/navigation_throttle.h"
-
-namespace content {
-class NavigationHandle;
-}  // namespace content
 
 // This throttle checks if the navigation is to the Chrome Web Store. If so,
 // sets a DM token and client ID in the HTTP request headers if available.
@@ -19,7 +13,7 @@ namespace enterprise_webstore {
 class ChromeWebStoreNavigationThrottle : public content::NavigationThrottle {
  public:
   explicit ChromeWebStoreNavigationThrottle(
-      content::NavigationHandle* navigation_handle);
+      content::NavigationThrottleRegistry& registry);
   ChromeWebStoreNavigationThrottle(const ChromeWebStoreNavigationThrottle&) =
       delete;
   ChromeWebStoreNavigationThrottle& operator=(

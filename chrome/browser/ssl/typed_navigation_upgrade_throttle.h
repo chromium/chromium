@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_SSL_TYPED_NAVIGATION_UPGRADE_THROTTLE_H_
 #define CHROME_BROWSER_SSL_TYPED_NAVIGATION_UPGRADE_THROTTLE_H_
 
-#include <memory>
-
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -20,11 +18,10 @@ class NavigationHandle;
 // and defaulted to HTTPS scheme and falling back to HTTP version when needed.
 class TypedNavigationUpgradeThrottle : public content::NavigationThrottle {
  public:
-  static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
-      content::NavigationHandle* handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
   static bool IsNavigationUsingHttpsAsDefaultScheme(
-      content::NavigationHandle* handle);
+      content::NavigationHandle& handle);
 
   ~TypedNavigationUpgradeThrottle() override;
 
@@ -48,7 +45,8 @@ class TypedNavigationUpgradeThrottle : public content::NavigationThrottle {
   static int GetHttpsPortForTesting();
 
  private:
-  explicit TypedNavigationUpgradeThrottle(content::NavigationHandle* handle);
+  explicit TypedNavigationUpgradeThrottle(
+      content::NavigationThrottleRegistry& registry);
 
   TypedNavigationUpgradeThrottle(const TypedNavigationUpgradeThrottle&) =
       delete;

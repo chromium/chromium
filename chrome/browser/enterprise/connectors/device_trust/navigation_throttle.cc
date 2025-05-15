@@ -68,13 +68,13 @@ bool VerifyURL(GURL url) {
   return (url.is_valid() && url.SchemeIsHTTPOrHTTPS());
 }
 
-Profile* GetProfile(content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle || !navigation_handle->GetWebContents()) {
+Profile* GetProfile(content::NavigationHandle& navigation_handle) {
+  if (!navigation_handle.GetWebContents()) {
     return nullptr;
   }
 
   return Profile::FromBrowserContext(
-      navigation_handle->GetWebContents()->GetBrowserContext());
+      navigation_handle.GetWebContents()->GetBrowserContext());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -98,9 +98,9 @@ constexpr char kVerifiedAccessResponseHeader[] =
     "X-Verified-Access-Challenge-Response";
 
 // static
-std::unique_ptr<DeviceTrustNavigationThrottle>
-DeviceTrustNavigationThrottle::MaybeCreateThrottleFor(
-    content::NavigationHandle* navigation_handle) {
+void DeviceTrustNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
+  content::NavigationHandle& navigation_handle = registry.GetNavigationHandle();
   auto* profile = GetProfile(navigation_handle);
   auto* device_trust_service =
       DeviceTrustServiceFactory::GetForProfile(profile);
@@ -110,22 +110,22 @@ DeviceTrustNavigationThrottle::MaybeCreateThrottleFor(
   if ((!device_trust_service || !device_trust_service->IsEnabled()) &&
       (!user_permission_service ||
        !user_permission_service->ShouldCollectConsent())) {
-    return nullptr;
+    return;
   }
 
-  return std::make_unique<DeviceTrustNavigationThrottle>(
-      device_trust_service, user_permission_service, navigation_handle);
+  registry.AddThrottle(std::make_unique<DeviceTrustNavigationThrottle>(
+      device_trust_service, user_permission_service, registry));
 }
 
 DeviceTrustNavigationThrottle::DeviceTrustNavigationThrottle(
     DeviceTrustService* device_trust_service,
     device_signals::UserPermissionService* user_permission_service,
-    content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle),
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry),
       device_trust_service_(device_trust_service),
       user_permission_service_(user_permission_service),
       consent_requester_(ConsentRequester::CreateConsentRequester(
-          GetProfile(navigation_handle))) {}
+          GetProfile(registry.GetNavigationHandle()))) {}
 
 DeviceTrustNavigationThrottle::~DeviceTrustNavigationThrottle() = default;
 

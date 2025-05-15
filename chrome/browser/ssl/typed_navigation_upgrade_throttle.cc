@@ -66,26 +66,27 @@ GURL GetHttpUrl(const GURL& url, int http_fallback_port_for_testing) {
 }  // namespace
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-TypedNavigationUpgradeThrottle::MaybeCreateThrottleFor(
-    content::NavigationHandle* handle) {
+void TypedNavigationUpgradeThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Check if the omnibox added https as the default scheme for this navigation.
   // If not, no need to create the throttle.
+  content::NavigationHandle& handle = registry.GetNavigationHandle();
   if (!IsNavigationUsingHttpsAsDefaultScheme(handle)) {
-    return nullptr;
+    return;
   }
   // Typed main frame navigations can only be GET requests.
-  DCHECK(!handle->IsPost());
+  DCHECK(!handle.IsPost());
 
-  return base::WrapUnique(new TypedNavigationUpgradeThrottle(handle));
+  registry.AddThrottle(
+      base::WrapUnique(new TypedNavigationUpgradeThrottle(registry)));
 }
 
 // static
 bool TypedNavigationUpgradeThrottle::IsNavigationUsingHttpsAsDefaultScheme(
-    content::NavigationHandle* handle) {
-  content::NavigationUIData* ui_data = handle->GetNavigationUIData();
+    content::NavigationHandle& handle) {
+  content::NavigationUIData* ui_data = handle.GetNavigationUIData();
   // UI data can be null in the case of navigations to interstitials.
   if (!ui_data) {
     return false;
@@ -100,9 +101,9 @@ bool TypedNavigationUpgradeThrottle::IsNavigationUsingHttpsAsDefaultScheme(
   bool is_using_https_as_default_scheme =
       static_cast<ChromeNavigationUIData*>(ui_data)
           ->is_using_https_as_default_scheme();
-  return is_using_https_as_default_scheme && handle->IsInPrimaryMainFrame() &&
-         !handle->IsSameDocument() &&
-         handle->GetURL().SchemeIs(url::kHttpsScheme);
+  return is_using_https_as_default_scheme && handle.IsInPrimaryMainFrame() &&
+         !handle.IsSameDocument() &&
+         handle.GetURL().SchemeIs(url::kHttpsScheme);
 }
 
 TypedNavigationUpgradeThrottle::~TypedNavigationUpgradeThrottle() = default;
@@ -184,9 +185,10 @@ void TypedNavigationUpgradeThrottle::SetHttpPortForTesting(
 }
 
 TypedNavigationUpgradeThrottle::TypedNavigationUpgradeThrottle(
-    content::NavigationHandle* handle)
-    : content::NavigationThrottle(handle),
-      http_url_(GetHttpUrl(handle->GetURL(), g_http_port_for_testing)) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry),
+      http_url_(GetHttpUrl(registry.GetNavigationHandle().GetURL(),
+                           g_http_port_for_testing)) {}
 
 void TypedNavigationUpgradeThrottle::OnHttpsLoadTimeout() {
   RecordUMA(Event::kHttpsLoadTimedOut);
@@ -218,8 +220,9 @@ void TypedNavigationUpgradeThrottle::FallbackToHttp(bool stop_navigation) {
       base::BindOnce(
           [](base::WeakPtr<content::WebContents> web_contents,
              const content::OpenURLParams& url_params, bool stop_navigation) {
-            if (!web_contents)
+            if (!web_contents) {
               return;
+            }
             if (stop_navigation) {
               // This deletes the NavigationThrottle and NavigationHandle.
               web_contents->Stop();

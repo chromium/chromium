@@ -32,11 +32,10 @@ class ManagedProfileRequiredNavigationThrottle
   // Create a navigation throttle for the given navigation if third-party
   // profile management is enabled. Returns nullptr if no throttling should be
   // done.
-  static std::unique_ptr<ManagedProfileRequiredNavigationThrottle>
-  MaybeCreateThrottleFor(content::NavigationHandle* navigation_handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
   explicit ManagedProfileRequiredNavigationThrottle(
-      content::NavigationHandle* navigation_handle);
+      content::NavigationThrottleRegistry& registry);
 
   ManagedProfileRequiredNavigationThrottle(
       const ManagedProfileRequiredNavigationThrottle&) = delete;

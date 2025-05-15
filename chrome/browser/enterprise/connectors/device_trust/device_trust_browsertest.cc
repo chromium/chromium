@@ -28,6 +28,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_navigation_throttle_registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -214,10 +215,14 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest,
   auto* incognito_browser = CreateIncognitoBrowser(browser()->profile());
   content::MockNavigationHandle mock_nav_handle(
       web_contents(incognito_browser));
+  content::MockNavigationThrottleRegistry registry(
+      &mock_nav_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
 
   // Try to create the device trust navigation throttle.
-  EXPECT_FALSE(enterprise_connectors::DeviceTrustNavigationThrottle::
-                   MaybeCreateThrottleFor(&mock_nav_handle));
+  enterprise_connectors::DeviceTrustNavigationThrottle::
+                   MaybeCreateAndAdd(registry);
+  EXPECT_EQ(registry.throttles().size(), 0u);
 }
 
 class DeviceTrustDelayedManagementBrowserTest

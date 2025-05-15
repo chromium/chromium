@@ -21,19 +21,20 @@ bool g_disable_throttle_for_testing_ = false;
 }  // namespace
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-WebAppSettingsNavigationThrottle::MaybeCreateThrottleFor(
-    content::NavigationHandle* handle) {
+void WebAppSettingsNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
   // Check the current url scheme is chrome://
-  if (!handle->GetURL().SchemeIs(content::kChromeUIScheme)) {
-    return nullptr;
+  content::NavigationHandle& handle = registry.GetNavigationHandle();
+  if (!handle.GetURL().SchemeIs(content::kChromeUIScheme)) {
+    return;
   }
   // Check the current url is chrome://app-settings
-  if (handle->GetURL().host_piece() != chrome::kChromeUIWebAppSettingsHost) {
-    return nullptr;
+  if (handle.GetURL().host_piece() != chrome::kChromeUIWebAppSettingsHost) {
+    return;
   }
 
-  return std::make_unique<WebAppSettingsNavigationThrottle>(handle);
+  registry.AddThrottle(
+      std::make_unique<WebAppSettingsNavigationThrottle>(registry));
 }
 
 // static
@@ -42,8 +43,8 @@ void WebAppSettingsNavigationThrottle::DisableForTesting() {
 }
 
 WebAppSettingsNavigationThrottle::WebAppSettingsNavigationThrottle(
-    content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 WebAppSettingsNavigationThrottle::~WebAppSettingsNavigationThrottle() = default;
 

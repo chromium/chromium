@@ -21,8 +21,8 @@
 namespace web_app {
 
 TabbedWebAppNavigationThrottle::TabbedWebAppNavigationThrottle(
-    content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 TabbedWebAppNavigationThrottle::~TabbedWebAppNavigationThrottle() = default;
 
@@ -31,28 +31,28 @@ const char* TabbedWebAppNavigationThrottle::GetNameForLogging() {
 }
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-TabbedWebAppNavigationThrottle::MaybeCreateThrottleFor(
-    content::NavigationHandle* handle) {
-  if (!handle->IsInPrimaryMainFrame()) {
-    return nullptr;
+void TabbedWebAppNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
+  content::NavigationHandle& handle = registry.GetNavigationHandle();
+  if (!handle.IsInPrimaryMainFrame()) {
+    return;
   }
 
   // Reloading the page should not cause the tab to change.
-  if (handle->GetReloadType() != content::ReloadType::NONE) {
-    return nullptr;
+  if (handle.GetReloadType() != content::ReloadType::NONE) {
+    return;
   }
 
-  content::WebContents* web_contents = handle->GetWebContents();
+  content::WebContents* web_contents = handle.GetWebContents();
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser || !browser->app_controller()) {
-    return nullptr;
+    return;
   }
 
   WebAppProvider* provider = WebAppProvider::GetForWebContents(web_contents);
   if (!provider) {
-    return nullptr;
+    return;
   }
 
   const webapps::AppId& app_id = browser->app_controller()->app_id();
@@ -64,10 +64,9 @@ TabbedWebAppNavigationThrottle::MaybeCreateThrottleFor(
   if (WebAppTabHelper::GetAppId(web_contents) &&
       provider->registrar_unsafe().IsTabbedWindowModeEnabled(app_id) &&
       home_tab_url.has_value()) {
-    return std::make_unique<TabbedWebAppNavigationThrottle>(handle);
+    registry.AddThrottle(
+        std::make_unique<TabbedWebAppNavigationThrottle>(registry));
   }
-
-  return nullptr;
 }
 
 content::NavigationThrottle::ThrottleCheckResult
