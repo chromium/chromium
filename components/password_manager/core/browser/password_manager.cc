@@ -662,8 +662,7 @@ void PasswordManager::DidNavigateMainFrame(bool form_may_be_submitted) {
     possible_usernames_.Clear();
   }
 
-  if (form_may_be_submitted ||
-      !on_successful_submission_closure_.IsCancelled()) {
+  if (form_may_be_submitted) {
     std::unique_ptr<PasswordFormManager> submitted_manager =
         password_form_cache_.MoveOwnedSubmittedManager();
     if (submitted_manager) {
@@ -786,7 +785,7 @@ void PasswordManager::OnDynamicFormSubmission(
   submitted_manager->UpdateSubmissionIndicatorEvent(event);
 
   if (IsAutomaticSavePromptAvailable()) {
-    ScheduleOnLoginsSuccessful();
+    OnLoginSuccessful();
   }
 }
 
@@ -821,9 +820,9 @@ void PasswordManager::OnPasswordFormCleared(
 #if BUILDFLAG(IS_ANDROID)
       SignalFormSubmissionIfEligibleForSaving(manager, client_);
 #endif
-      ScheduleOnLoginsSuccessful();
+      OnLoginSuccessful();
+      return;
     }
-    return;
   }
 
   // If it's neither change or reset form it must be a sign-in or a sign-up
@@ -846,7 +845,7 @@ void PasswordManager::OnSubframeFormSubmission(PasswordManagerDriver* driver,
   ProvisionallySaveForm(form_data, driver, false);
 
   if (IsAutomaticSavePromptAvailable()) {
-    ScheduleOnLoginsSuccessful();
+    OnLoginSuccessful();
   }
 }
 #endif  // BUILDFLAG(IS_IOS)
@@ -1434,23 +1433,7 @@ void PasswordManager::OnPasswordFormsRendered(
   // automatically save the login data. We prompt when the user hasn't
   // already given consent, either through previously accepting the infobar
   // or by having the browser generate the password.
-  ScheduleOnLoginsSuccessful();
-}
-
-void PasswordManager::ScheduleOnLoginsSuccessful() {
-  if (!base::FeatureList::IsEnabled(features::kPostponeOnLoginSuccessful)) {
-    OnLoginSuccessful();
-    return;
-  }
-  if (!on_successful_submission_closure_.IsCancelled()) {
-    // If successful submission already scheduled, no need to do anything.
-    return;
-  }
-  on_successful_submission_closure_.Reset(base::BindOnce(
-      &PasswordManager::OnLoginSuccessful, weak_ptr_factory_.GetWeakPtr()));
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, on_successful_submission_closure_.callback(),
-      kDelayBeforeSuccessfulLogin);
+  OnLoginSuccessful();
 }
 
 void PasswordManager::OnLoginSuccessful() {
@@ -1461,15 +1444,9 @@ void PasswordManager::OnLoginSuccessful() {
   }
 
   PasswordFormManager* submitted_manager = GetSubmittedManager();
-
-  if (!submitted_manager || !submitted_manager->GetSubmittedForm()) {
-    if (logger) {
-      logger->LogMessage(Logger::STRING_NO_SUBMITTED_MANAGER_AVAILABLE);
-    }
-    return;
-  }
-
+  CHECK(submitted_manager);
   const PasswordForm* submitted_form = submitted_manager->GetSubmittedForm();
+  CHECK(submitted_form);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   MaybeTriggerHatsSurvey(*submitted_manager);
@@ -1592,7 +1569,6 @@ void PasswordManager::OnLoginFailed(BrowserSavePasswordProgressLogger* logger) {
   if (logger) {
     logger->LogMessage(Logger::STRING_DECISION_DROP);
   }
-  on_successful_submission_closure_.Cancel();
 
   PasswordFormManager* submitted_manager = GetSubmittedManager();
   DCHECK(submitted_manager);
@@ -1907,7 +1883,7 @@ bool PasswordManager::DetectPotentialSubmission(
   // If the manager was set to be submitted, either prior to this function call
   // or on provisional save above, consider submission successful.
   if (IsAutomaticSavePromptAvailable(form_manager)) {
-    ScheduleOnLoginsSuccessful();
+    OnLoginSuccessful();
     return true;
   }
   return false;

@@ -3230,11 +3230,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 class PasswordManagerDialogBrowserTest
     : public SupportsTestDialog<PasswordManagerBrowserTestBase> {
  public:
-  PasswordManagerDialogBrowserTest() {
-    // TODO(crbug.com/407501588): Tests fail with kPostponeOnLoginSuccessful
-    // enabled. Fix tests before launching the feature.
-    feature_list_.InitAndDisableFeature(features::kPostponeOnLoginSuccessful);
-  }
+  PasswordManagerDialogBrowserTest() = default;
 
   PasswordManagerDialogBrowserTest(const PasswordManagerDialogBrowserTest&) =
       delete;
@@ -3263,9 +3259,6 @@ class PasswordManagerDialogBrowserTest
     ASSERT_TRUE(content::ExecJs(WebContents(), fill_and_submit));
     ASSERT_TRUE(observer.Wait());
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerDialogBrowserTest, InvokeUi_normal) {
