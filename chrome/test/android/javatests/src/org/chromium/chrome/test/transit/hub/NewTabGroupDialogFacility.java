@@ -19,22 +19,29 @@ import android.content.Context;
 import android.view.View;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.test.espresso.Espresso;
 
 import org.hamcrest.Matcher;
 
+import org.chromium.base.Token;
+import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
+import org.chromium.chrome.test.transit.tabmodel.TabGroupCreatedCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
 import org.chromium.chrome.test.util.TabBinningUtil;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -48,14 +55,19 @@ import java.util.List;
  */
 public class NewTabGroupDialogFacility<HostStationT extends Station<ChromeTabbedActivity>>
         extends Facility<HostStationT> {
-    private final List<Integer> mTabIdsToGroup;
-    private final String mTitle;
     private final @Nullable @TabGroupColorId Integer mSelectedColor;
     private final SoftKeyboardFacility mSoftKeyboard;
     public ViewElement<View> dialogElement;
     public ViewElement<View> titleInputElement;
     public ViewElement<View>[] colorElements;
     public ViewElement<View> doneButtonElement;
+    private @Nullable String mTitle;
+    private @Nullable List<Integer> mTabIdsToGroup;
+
+    /** Constructor. Expects no particular title or selected color. */
+    public NewTabGroupDialogFacility(SoftKeyboardFacility softKeyboard) {
+        this(/* tabIdsToGroup= */ null, /* title= */ null, /* selectedColor= */ null, softKeyboard);
+    }
 
     /** Constructor. Expects no particular title or selected color. */
     public NewTabGroupDialogFacility(
@@ -81,19 +93,19 @@ public class NewTabGroupDialogFacility<HostStationT extends Station<ChromeTabbed
 
     @Override
     public void declareExtraElements() {
+        // Handles the case for when a new tab group is created on showing this dialog.
+        if (mTabIdsToGroup == null) {
+            initTabGroupCreatedCondition();
+        } else {
+            titleInputElement = declareView(createTitleViewSpec());
+        }
+
         dialogElement =
                 declareView(
                         viewSpec(withId(R.id.visual_data_dialog_layout)),
                         ViewElement.displayingAtLeastOption(80));
         declareView(
                 viewSpec(allOf(withId(R.id.visual_data_dialog_title), withText("New tab group"))));
-
-        titleInputElement =
-                declareView(
-                        viewSpec(
-                                withId(R.id.title_input_text),
-                                isAssignableFrom(EditText.class),
-                                withText(mTitle)));
 
         // TODO(crbug.com/346377124): Partially cut off in android_30_google_apis_x86.textpb
         declareView(
@@ -118,6 +130,34 @@ public class NewTabGroupDialogFacility<HostStationT extends Station<ChromeTabbed
         }
 
         doneButtonElement = declareView(viewSpec(withId(R.id.positive_button)));
+    }
+
+    @NonNull
+    private ViewSpec<View> createTitleViewSpec() {
+        return viewSpec(
+                withId(R.id.title_input_text), isAssignableFrom(EditText.class), withText(mTitle));
+    }
+
+    private void initTabGroupCreatedCondition() {
+        ChromeTabbedActivity activity = mHostStation.getActivity();
+        boolean isIncognito = activity.getCurrentTabModel().isIncognitoBranded();
+        TabGroupModelFilter filter =
+                activity.getTabModelSelector()
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(isIncognito);
+        Element<Token> tabGroupIdElement =
+                declareEnterConditionAsElement(
+                        new TabGroupCreatedCondition(
+                                isIncognito, activity.getTabModelSelectorSupplier()));
+
+        declareElementFactory(
+                tabGroupIdElement,
+                delayedElements -> {
+                    List<Tab> tabsInGroup = filter.getTabsInGroup(tabGroupIdElement.get());
+                    mTabIdsToGroup = TabModelUtils.getTabIds(tabsInGroup);
+                    mTitle = TabGroupUtil.getNumberOfTabsString(mTabIdsToGroup.size());
+                    titleInputElement = delayedElements.declareView(createTitleViewSpec());
+                });
     }
 
     private ViewSpec<View> colorPickerIconSpec(
@@ -171,6 +211,22 @@ public class NewTabGroupDialogFacility<HostStationT extends Station<ChromeTabbed
         return mHostStation.swapFacilitySync(
                 this,
                 new TabSwitcherGroupCardFacility(expectedCardIndex, mTabIdsToGroup, mTitle),
+                doneButtonElement.getClickTrigger());
+    }
+
+    /**
+     * Press "Done" to confirm the tab group name and color. This method should only be called when
+     * a TabGroupDialog will open on clicking 'Done'.
+     */
+    public TabGroupDialogFacility<HostStationT> pressDoneAsPartOfFlow() {
+        ensureSoftKeyboardClosed();
+
+        // The reason we can pass an expected card index is because the tab group has already been
+        // created.
+        TabModel currentModel = mHostStation.getActivity().getCurrentTabModel();
+        return mHostStation.swapFacilitySync(
+                this,
+                new TabGroupDialogFacility<>(mTabIdsToGroup, currentModel.isIncognitoBranded()),
                 doneButtonElement.getClickTrigger());
     }
 

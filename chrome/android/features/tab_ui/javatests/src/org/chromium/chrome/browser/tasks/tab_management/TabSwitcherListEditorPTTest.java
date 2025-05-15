@@ -85,7 +85,8 @@ public class TabSwitcherListEditorPTTest {
     public void testLeaveEditorViaBackPress() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
-        TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
+        TabSwitcherListEditorFacility<RegularTabSwitcherStation> editor =
+                tabSwitcher.openAppMenu().clickSelectTabs();
         editor.pressBackToExit();
 
         // Go back to PageStation for InitialStateRule to reset
@@ -99,7 +100,8 @@ public class TabSwitcherListEditorPTTest {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         int firstTabId = firstPage.loadedTabElement.get().getId();
         RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
-        TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
+        TabSwitcherListEditorFacility<RegularTabSwitcherStation> editor =
+                tabSwitcher.openAppMenu().clickSelectTabs();
         editor = editor.addTabToSelection(0, firstTabId);
 
         NewTabGroupDialogFacility<RegularTabSwitcherStation> dialog =

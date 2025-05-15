@@ -26,12 +26,17 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
+import org.chromium.chrome.test.transit.hub.NewTabGroupDialogFacility;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
+import org.chromium.chrome.test.transit.hub.TabGroupDialogFacility;
+import org.chromium.chrome.test.transit.hub.TabGroupPaneStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherAppMenuFacility;
+import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
+import org.chromium.components.tab_groups.TabGroupColorId;
 
 /** Public transit instrumentation/integration test of Hub. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -91,6 +96,35 @@ public class HubLayoutPublicTransitTest {
 
         // Go back to a PageStation for BlankCTATabInitialStateRule to reset state.
         incognitoTabSwitcher.selectTabAtIndex(0, IncognitoNewTabPageStation.newBuilder());
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
+    public void testTabGroupPane_newTabGroup() {
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        int firstTabId = firstPage.loadedTabElement.get().getId();
+        RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
+        TabSwitcherListEditorFacility<RegularTabSwitcherStation> editor =
+                tabSwitcher.openAppMenu().clickSelectTabs();
+        editor = editor.addTabToSelection(0, firstTabId);
+
+        NewTabGroupDialogFacility<RegularTabSwitcherStation> dialog =
+                editor.openAppMenuWithEditor().groupTabs();
+        dialog = dialog.inputName("test_tab_group_name");
+        dialog = dialog.pickColor(TabGroupColorId.RED);
+        dialog.pressDone();
+
+        TabGroupPaneStation tabGroupPane =
+                tabSwitcher.selectPane(PaneId.TAB_GROUPS, TabGroupPaneStation.class);
+
+        NewTabGroupDialogFacility<TabGroupPaneStation> newGroupDialog =
+                tabGroupPane.createNewTabGroup();
+        TabGroupDialogFacility<TabGroupPaneStation> groupDialog =
+                newGroupDialog.pressDoneAsPartOfFlow();
+        RegularNewTabPageStation secondPage = groupDialog.openNewRegularTab();
+
+        assertFinalDestination(secondPage);
     }
 
     @Test

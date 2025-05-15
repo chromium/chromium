@@ -4,16 +4,23 @@
 
 package org.chromium.chrome.test.transit;
 
+import static org.junit.Assert.assertTrue;
+
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.Station;
+import org.chromium.base.test.transit.Transition.Trigger;
 import org.chromium.base.test.transit.TravelException;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.test.transit.hub.NewTabGroupDialogFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherGroupCardFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
@@ -303,6 +310,25 @@ public class Journeys {
 
         verifyTabGroupMergeSuccessful(tabs, currentModel);
         return groupCard;
+    }
+
+    /**
+     * Begins a new tab group creation UI flow. See {@link TabGroupCreationUiDelegate}
+     *
+     * @param <HostStationT> The type of station this is scoped to.
+     * @param station the station to begin the flow from.
+     * @param trigger The trigger used to begin the flow.
+     */
+    public static <HostStationT extends Station<ChromeTabbedActivity>>
+            NewTabGroupDialogFacility<HostStationT> beginNewTabGroupUiFlow(
+                    HostStationT station, Trigger trigger) {
+        assertTrue(ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled());
+
+        SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
+        NewTabGroupDialogFacility<HostStationT> dialog =
+                new NewTabGroupDialogFacility<>(softKeyboard);
+        station.enterFacilitiesSync(List.of(dialog, softKeyboard), trigger);
+        return dialog;
     }
 
     /**
