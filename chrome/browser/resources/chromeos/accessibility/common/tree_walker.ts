@@ -220,3 +220,5 @@ function falsePredicate(_node: AutomationNode): boolean {
 }
 
 TestImportManager.exportForTesting(AutomationTreeWalker);
+TestImportManager.exportForTesting(
+    ['AutomationTreeWalkerPhase', AutomationTreeWalkerPhase]);
