@@ -128,10 +128,6 @@ constexpr base::FilePath::CharType kProductBundleName[] =
     FILE_PATH_LITERAL(PRODUCT_FULLNAME_STRING ".app");
 constexpr base::FilePath::CharType kKeystoneBundleName[] =
     FILE_PATH_LITERAL(KEYSTONE_NAME ".bundle");
-constexpr int kPermissionsMask = base::FILE_PERMISSION_USER_MASK |
-                                 base::FILE_PERMISSION_GROUP_MASK |
-                                 base::FILE_PERMISSION_READ_BY_OTHERS |
-                                 base::FILE_PERMISSION_EXECUTE_BY_OTHERS;
 
 // Exit codes
 constexpr int kSuccess = 0;
@@ -306,7 +302,7 @@ void PrivilegedHelperService::SetupSystemUpdater(
     }
   }
 
-  if (!ConfirmFilePermissions(base::FilePath(browser_path), kPermissionsMask)) {
+  if (!SetFilePermissionsRecursive(base::FilePath(browser_path))) {
     main_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(result), kFailedToConfirmPermissionChanges));

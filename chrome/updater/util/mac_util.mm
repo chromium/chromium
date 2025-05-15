@@ -5,6 +5,8 @@
 #import "chrome/updater/util/mac_util.h"
 
 #import <CoreFoundation/CoreFoundation.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include <optional>
 #include <string>
@@ -269,34 +271,33 @@ std::optional<base::FilePath> GetKeystoneFolderPath(UpdaterScope scope) {
       .Append(FILE_PATH_LITERAL(KEYSTONE_NAME));
 }
 
-bool ConfirmFilePermissions(const base::FilePath& root_path,
-                            int kPermissionsMask) {
-  base::FileEnumerator file_enumerator(
-      root_path, false,
-      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES |
-          base::FileEnumerator::SHOW_SYM_LINKS);
-
-  for (base::FilePath path = file_enumerator.Next(); !path.empty();
-       path = file_enumerator.Next()) {
-    if (!SetPosixFilePermissions(path, kPermissionsMask)) {
-      VLOG(0) << "Couldn't set file permissions for for: " << path.value();
-      return false;
-    }
-
-    base::File::Info file_info;
-    if (!base::GetFileInfo(path, &file_info)) {
-      VLOG(0) << "Couldn't get file info for: " << path.value();
-      return false;
-    }
-
-    // If file path is real directory and not a link, recurse into it.
-    if (file_info.is_directory && !base::IsLink(path)) {
-      if (!ConfirmFilePermissions(path, kPermissionsMask)) {
+bool SetFilePermissionsRecursive(const base::FilePath& path) {
+  constexpr mode_t executable_mode =
+      S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+  constexpr mode_t normal_mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+  struct stat stat_buf;
+  if (lstat(path.value().c_str(), &stat_buf) != 0) {
+    VPLOG(2) << "Couldn't stat: " << path.value();
+    return false;
+  }
+  if (lchmod(path.value().c_str(),
+             (stat_buf.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH) ||
+              S_ISDIR(stat_buf.st_mode))
+                 ? executable_mode
+                 : normal_mode) != 0) {
+    VPLOG(2) << "Couldn't set file permissions for: " << path.value();
+    return S_ISLNK(stat_buf.st_mode);  // Tolerate failures on symbolic links.
+  }
+  if (S_ISDIR(stat_buf.st_mode)) {
+    base::FileEnumerator file_enumerator(path, false,
+                                         base::FileEnumerator::NAMES_ONLY);
+    for (base::FilePath child_path = file_enumerator.Next();
+         !child_path.empty(); child_path = file_enumerator.Next()) {
+      if (!SetFilePermissionsRecursive(child_path)) {
         return false;
       }
     }
   }
-
   return true;
 }
 

@@ -43,11 +43,6 @@
 namespace updater {
 namespace {
 
-constexpr int kPermissionsMask = base::FILE_PERMISSION_USER_MASK |
-                                 base::FILE_PERMISSION_GROUP_MASK |
-                                 base::FILE_PERMISSION_READ_BY_OTHERS |
-                                 base::FILE_PERMISSION_EXECUTE_BY_OTHERS;
-
 bool RunHDIUtil(const std::vector<std::string>& args,
                 std::string* command_output) {
   base::FilePath hdiutil_path("/usr/bin/hdiutil");
@@ -363,7 +358,7 @@ int InstallFromZip(const base::FilePath& zip_file_path,
     return static_cast<int>(InstallErrors::kFailedToExpandZip);
   }
 
-  if (!ConfirmFilePermissions(dest_path, kPermissionsMask)) {
+  if (!SetFilePermissionsRecursive(dest_path)) {
     return static_cast<int>(InstallErrors::kCouldNotConfirmAppPermissions);
   }
 
@@ -389,7 +384,7 @@ int InstallFromApp(const base::FilePath& app_file_path,
 
   // Need to make sure that the app at the path being installed has the correect
   // permissions.
-  if (!ConfirmFilePermissions(app_file_path, kPermissionsMask)) {
+  if (!SetFilePermissionsRecursive(app_file_path)) {
     return static_cast<int>(InstallErrors::kCouldNotConfirmAppPermissions);
   }
 
