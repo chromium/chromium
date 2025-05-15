@@ -449,7 +449,7 @@ class HttpStreamPool::AttemptManager
 
   // Helper methods to post a task to notify a job of preconnect completion. If
   // `this` is deleted the notification is canceled.
-  void NotifyJobOfPreconnectCompleteLater(Job* job, int rv);
+  void NotifyJobOfPreconnectCompleteLater(raw_ptr<Job> job, int rv);
   void NotifyJobOfPreconnectComplete(Job* job, int rv);
 
   // Creates a text based stream. Notifies the highest priority job if there are
@@ -560,6 +560,8 @@ class HttpStreamPool::AttemptManager
 
   // Holds jobs that are waiting for notifications.
   JobQueue jobs_;
+  // Holds preconnect requests.
+  std::set<raw_ptr<Job>> preconnect_jobs_;
   // Holds jobs that are already notified results. We need to keep them to avoid
   // dangling pointers.
   std::set<raw_ptr<Job>> notified_jobs_;
@@ -569,10 +571,6 @@ class HttpStreamPool::AttemptManager
   base::flat_set<raw_ptr<Job>> ip_based_pooling_disabling_jobs_;
 
   base::flat_set<raw_ptr<Job>> alternative_service_disabling_jobs_;
-
-  // Holds preconnect requests.
-  std::set<raw_ptr<Job>> preconnect_jobs_;
-  size_t notifying_preconnect_completion_count_ = 0;
 
   std::unique_ptr<HostResolver::ServiceEndpointRequest>
       service_endpoint_request_;

@@ -773,8 +773,6 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetInfoAsValue() const {
   dict.Set("preconnect_count_all", static_cast<int>(preconnect_jobs_.size()));
   dict.Set("preconnect_count_pending",
            static_cast<int>(PendingPreconnectCount()));
-  dict.Set("preconnect_count_notifying",
-           static_cast<int>(notifying_preconnect_completion_count_));
   dict.Set("tcp_based_attempt_count", static_cast<int>(TcpBasedAttemptCount()));
   dict.Set("slow_tcp_based_attempt_count",
            static_cast<int>(slow_tcp_based_attempt_count_));
@@ -1537,12 +1535,13 @@ void HttpStreamPool::AttemptManager::ProcessPreconnectsAfterAttemptComplete(
 }
 
 void HttpStreamPool::AttemptManager::NotifyJobOfPreconnectCompleteLater(
-    Job* job,
+    raw_ptr<Job> job,
     int rv) {
-  ++notifying_preconnect_completion_count_;
+  Job* raw_job = job.get();
+  notified_jobs_.emplace(std::move(job));
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&AttemptManager::NotifyJobOfPreconnectComplete,
-                                weak_ptr_factory_.GetWeakPtr(), job, rv));
+                                weak_ptr_factory_.GetWeakPtr(), raw_job, rv));
 }
 
 // TODO(crbug.com/396998469): Ensure `job` isn't a dangling pointer. There are
@@ -1559,8 +1558,6 @@ void HttpStreamPool::AttemptManager::NotifyJobOfPreconnectComplete(Job* job,
   TRACE_EVENT_INSTANT("net.stream",
                       "AttemptManager::NotifyJobOfPreconnectComplete", track_,
                       NetLogWithSourceToFlow(job->request_net_log()));
-  CHECK_GT(notifying_preconnect_completion_count_, 0u);
-  --notifying_preconnect_completion_count_;
   // We don't need to call MaybeCompleteLater() here, since `job` will call
   // OnJobComplete() later.
   job->OnPreconnectComplete(rv);
@@ -2090,7 +2087,6 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetStatesAsNetLogParams()
 
 bool HttpStreamPool::AttemptManager::CanComplete() const {
   return jobs_.empty() && notified_jobs_.empty() && preconnect_jobs_.empty() &&
-         notifying_preconnect_completion_count_ == 0 &&
          tcp_based_attempts_.empty() && !quic_attempt_;
 }
 
