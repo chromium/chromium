@@ -8245,6 +8245,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="337" label="LightDark"/>
   <int value="338" label="Requestidlecallback"/>
   <int value="339" label="ClearSiteData"/>
+  <int value="340" label="LinkRelExpect"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

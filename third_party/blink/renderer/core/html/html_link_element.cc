@@ -74,7 +74,6 @@ void HTMLLinkElement::ParseAttribute(
     RemoveExpectRenderBlockingLink();
 
     rel_attribute_ = LinkRelAttribute(value);
-    // TODO(vmpstr): Add rel=expect to UseCounter.
     AddExpectRenderBlockingLinkIfNeeded();
 
     if (rel_attribute_.IsMonetization() &&
@@ -523,6 +522,8 @@ void HTMLLinkElement::AddExpectRenderBlockingLinkIfNeeded(
   if (!rel_attribute_.IsExpect()) {
     return;
   }
+
+  UseCounter::CountWebDXFeature(&GetDocument(), WebDXFeature::kLinkRelExpect);
 
   bool media_matches = media_known_to_match || MediaQueryMatches();
   RenderBlockingLevel blocking_level = blocking_attribute_->GetBlockingLevel();
