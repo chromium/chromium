@@ -165,9 +165,6 @@ class GlicWindowControllerImpl : public GlicWindowController,
   // attached to the browser. Otherwise glic will be detached.
   void Show(Browser* browser, mojom::InvocationSource source);
 
-  // Close the widget and reopen in detached mode.
-  void CloseAndReopenDetached(mojom::InvocationSource source);
-
   void SetupGlicWidget(Browser* browser);
   void SetupGlicWidgetAccessibilityText();
 
@@ -182,21 +179,8 @@ class GlicWindowControllerImpl : public GlicWindowController,
 
   void SetDraggingAreasAndWatchForMouseEvents();
 
-  // Internal closing implementation. reopen_detached_source must be set
-  // if and only if the internal state is kClosingToReopenDetached.
-  void CloseInternal(
-      std::optional<mojom::InvocationSource> reopen_detached_source);
-
-  // Finishes closing off the widget after running the closing animation.
-  void CloseFinish(
-      bool reopen_detached,
-      std::optional<mojom::InvocationSource> reopen_detached_source);
-
   // Called when the Detach() animation ends.
   void DetachFinished();
-
-  // Causes an immediate close (eg, for during shutdown).
-  void ForceClose();
 
   // Save the top-right corner position for re-opening.
   void SaveWidgetPosition();

@@ -212,12 +212,10 @@ class GlicWindowController : public Host::Delegate {
   //   * Waiting for glic to load (the open animation has finished, but the
   //     glic window contents is not yet ready)
   //   * Open (aka showing, visible)
-  //   * ClosingToReopenDetached
   enum class State {
     kClosed,
     kWaitingForGlicToLoad,
     kOpen,
-    kClosingToReopenDetached,
   };
   virtual State state() const = 0;
 

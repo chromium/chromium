@@ -546,7 +546,6 @@ void GlicWindowControllerImpl::ToggleWhenNotAlwaysDetached(
       } else {
         // Hotkey when neither attached browser nor glic are active: open
         // detached.
-        CloseAndReopenDetached(source);
       }
       return;
     }
@@ -858,7 +857,7 @@ gfx::Point GlicWindowControllerImpl::GetTopRightPositionForAttachedGlicWindow(
 
 void GlicWindowControllerImpl::AttachedBrowserDidClose(
     BrowserWindowInterface* browser) {
-  ForceClose();
+  Close();
 }
 
 void GlicWindowControllerImpl::Attach() {
@@ -998,24 +997,6 @@ void GlicWindowControllerImpl::CloseWithReason(
 }
 
 void GlicWindowControllerImpl::Close() {
-  GlicWindowControllerImpl::CloseInternal(std::nullopt);
-}
-
-void GlicWindowControllerImpl::CloseInternal(
-    std::optional<mojom::InvocationSource> reopen_detached_source) {
-  if (state_ == State::kClosed) {
-    return;
-  }
-
-  const bool reopen_detached = state_ == State::kClosingToReopenDetached;
-  DCHECK(!reopen_detached || reopen_detached_source.has_value());
-
-  CloseFinish(reopen_detached, reopen_detached_source);
-}
-
-void GlicWindowControllerImpl::CloseFinish(
-    bool reopen_detached,
-    std::optional<mojom::InvocationSource> reopen_detached_source) {
   if (state_ == State::kClosed) {
     return;
   }
@@ -1044,25 +1025,6 @@ void GlicWindowControllerImpl::CloseFinish(
   if (base::FeatureList::IsEnabled(features::kGlicUnloadOnClose)) {
     host().Shutdown();
   }
-
-  if (reopen_detached) {
-    Show(nullptr, *reopen_detached_source);
-  }
-}
-
-void GlicWindowControllerImpl::ForceClose() {
-  CloseFinish(/*reopen_detached=*/false,
-              /*reopen_detached_source=*/std::nullopt);
-}
-
-void GlicWindowControllerImpl::CloseAndReopenDetached(
-    mojom::InvocationSource source) {
-  if (state_ != State::kOpen) {
-    return;
-  }
-
-  SetWindowState(State::kClosingToReopenDetached);
-  CloseInternal(source);
 }
 
 void GlicWindowControllerImpl::SaveWidgetPosition() {
@@ -1370,7 +1332,7 @@ base::WeakPtr<GlicWindowController> GlicWindowControllerImpl::GetWeakPtr() {
 
 void GlicWindowControllerImpl::Shutdown() {
   // Hide first, then clean up (but do not animate).
-  ForceClose();
+  Close();
   fre_controller_->Shutdown();
   window_activation_callback_list_.Notify(false);
 }
