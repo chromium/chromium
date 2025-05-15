@@ -22,6 +22,7 @@ include_rules = [
   "+chrome/browser/ash/child_accounts",
   "+chrome/browser/ash/crostini",
   "+chrome/browser/ash/drive",
+  "+chrome/browser/enterprise/util/affiliation.h",
   "+chrome/browser/ash/extensions/file_manager",
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/file_system_provider",

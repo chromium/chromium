@@ -194,6 +194,9 @@ BASE_FEATURE(kBluetoothQualityReport,
              "BluetoothQualityReport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables entire Boca feature on ChromeOS. Use as kill switch.
+BASE_FEATURE(kBocaUber, "BocaUber", base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables or disables Boca feature on ChromeOS
 BASE_FEATURE(kBoca, "Boca", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -3460,6 +3463,10 @@ bool IsBatterySaverAlwaysOn() {
 
 bool IsBluetoothQualityReportEnabled() {
   return base::FeatureList::IsEnabled(kBluetoothQualityReport);
+}
+
+bool IsBocaUberEnabled() {
+  return base::FeatureList::IsEnabled(kBocaUber);
 }
 
 bool IsBocaEnabled() {

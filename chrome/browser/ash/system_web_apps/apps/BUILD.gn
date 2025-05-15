@@ -153,6 +153,7 @@ static_library("apps") {
     "//chrome/common:constants",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/scalable_iph",
     "//chromeos/constants",
     "//chromeos/strings:strings_grit",

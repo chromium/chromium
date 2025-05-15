@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/system_web_apps/apps/boca_web_app_info.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/webui/boca_ui/boca_app_page_handler.h"
 #include "ash/webui/boca_ui/boca_ui.h"
 #include "ash/webui/boca_ui/url_constants.h"
@@ -12,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
+#include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -23,21 +25,51 @@
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
-
 namespace {
+
+inline constexpr std::string_view kDisabled = "disabled";
 
 bool IsConsumerProfile(Profile* profile) {
   return ash::boca_util::IsConsumer(
       ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile));
 }
 
+// A clone of the method in boca_role_util.cc IsEnabled(). The difference is we
+// read prefs from profile instead of from user. The previous function read from
+// user to de-couple from browser profile. But user prefs are not guaranteed to
+// be loaded before the check happens, so we check from profile prefs instead.
 bool IsEnabled(Profile* profile) {
-  return ash::boca_util::IsEnabled(
-      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile));
+  // Uber switch for boca.
+  if (!ash::features::IsBocaUberEnabled()) {
+    return false;
+  }
+
+  if (ash::features::IsBocaEnabled()) {
+    return true;
+  }
+
+  if (!profile) {
+    return false;
+  }
+
+  if (!ash::InstallAttributes::IsInitialized() ||
+      !enterprise_util::IsProfileAffiliated(profile)) {
+    return false;
+  }
+
+  auto* prefs = profile->GetPrefs();
+  if (!prefs) {
+    return false;
+  }
+
+  auto setting =
+      prefs->GetString(ash::prefs::kClassManagementToolsAvailabilitySetting);
+  return !setting.empty() && setting != kDisabled;
 }
 
 }  // namespace
@@ -104,7 +136,7 @@ bool BocaSystemAppDelegate::ShouldPinTab(GURL url) const {
 }
 
 bool BocaSystemAppDelegate::IsAppEnabled() const {
-  return true;
+  return IsEnabled(profile());
 }
 
 bool BocaSystemAppDelegate::HasCustomTabMenuModel() const {
@@ -112,11 +144,11 @@ bool BocaSystemAppDelegate::HasCustomTabMenuModel() const {
 }
 
 bool BocaSystemAppDelegate::ShouldShowInSearchAndShelf() const {
-  return IsEnabled(profile());
+  return true;
 }
 
 bool BocaSystemAppDelegate::ShouldShowInLauncher() const {
-  return IsEnabled(profile());
+  return true;
 }
 
 gfx::Size BocaSystemAppDelegate::GetMinimumWindowSize() const {
