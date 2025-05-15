@@ -10,11 +10,16 @@ import("//chrome/common/features.gni")
 import("//chrome/test/base/ash/js2gtest.gni")
 import("//testing/test.gni")
 import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/bundle_js.gni")
+import("//ui/webui/resources/tools/minify_js.gni")
 
 assert(is_chromeos)
 
 group("build") {
-  deps = [ ":copied_files" ]
+  deps = [
+    ":copy_misc_files",
+    ":minify_js",
+  ]
 }
 
 switch_access_dir =
@@ -96,16 +101,30 @@ ts_library("ts_build") {
   tsconfig_base = "../../tsconfig.base.json"
 }
 
-# Instead of setting up one copy target for each subdirectory, use a script
-# to copy all files.
-run_jsbundler("copied_files") {
-  mode = "copy"
-  dest_dir = switch_access_dir
-  clear_dest_dirs = [ "." ]
+bundle_js("bundle_js") {
+  visibility = [ ":minify_js" ]
+
+  host = "_ignored_"
+  input = rebase_path("$tsc_out_dir", root_build_dir)
+  js_module_in_files = [ "switch_access_loader.js" ]
+  out_folder = "$target_gen_dir/bundle"
+
   deps = [
     ":ts_build",
     "../../common:copied_files",
   ]
+}
+
+minify_js("minify_js") {
+  visibility = [ ":build" ]
+
+  deps = [ ":bundle_js" ]
+  in_folder = "$target_gen_dir/bundle"
+  in_files = [ "switch_access_loader.rollup.js" ]
+  out_folder = "$switch_access_dir"
+}
+
+copy("copy_misc_files") {
   sources = [
     "background.html",
     "icons/back.svg",
@@ -135,13 +154,8 @@ run_jsbundler("copied_files") {
     "icons/textSelectionEnd.svg",
     "icons/textSelectionStart.svg",
   ]
-  sources += filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
 
-  rewrite_rules = [
-    rebase_path("$tsc_out_dir", root_build_dir) + ":",
-    rebase_path(".", root_build_dir) + ":",
-    rebase_path(closure_library_dir, root_build_dir) + ":closure",
-  ]
+  outputs = [ "$switch_access_dir/{{source_target_relative}}" ]
 }
 
 # Copy all JS and TS sources to a staging folder. All generated TS/JS files
