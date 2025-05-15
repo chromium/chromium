@@ -107,21 +107,6 @@ std::optional<data_sharing::GroupMember> GetRelevantUserForActivity(
   return user;
 }
 
-// Gets the string for the metadata line to describe an event.
-std::u16string GetMetadataText(const ActivityLogItem& item) {
-  if (item.description_text == u"") {
-    // If there is no description, the line simply contains elapsed time
-    // since the action.
-    return item.time_delta_text;
-  } else {
-    // The metadata line contains the item's description, a bullet point,
-    // and the elapsed time since the action, separated by spaces.
-    std::u16string_view separator = u" ";
-    return base::JoinString(
-        {item.description_text, kBulletPoint, item.time_delta_text}, separator);
-  }
-}
-
 // TODO(crbug.com/392150086): Refactor this into utilities.
 std::optional<tab_groups::LocalTabGroupID> UnwrapGroupId(
     const ActivityLogItem& item) {
@@ -389,24 +374,64 @@ RecentActivityRowView::RecentActivityRowView(
   // Let hover button process events.
   label_container->SetCanProcessEventsWithinSubtree(false);
 
-  activity_text_ = item.title_text;
   auto* activity_label =
       label_container->AddChildView(std::make_unique<views::Label>());
-  activity_label->SetText(activity_text_);
+  activity_label->SetText(item.title_text);
   activity_label->SetTextStyle(views::style::TextStyle::STYLE_BODY_4_MEDIUM);
   activity_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
-  metadata_text_ = GetMetadataText(item_);
-  auto* metadata_label =
-      label_container->AddChildView(std::make_unique<views::Label>());
-  metadata_label->SetText(metadata_text_);
-  metadata_label->SetTextStyle(views::style::TextStyle::STYLE_BODY_5);
-  metadata_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  metadata_label->SetEnabledColor(ui::kColorSysOnSurfaceSubtle);
+  auto* metadata_container =
+      label_container->AddChildView(std::make_unique<views::View>());
+  auto* metadata_layout = metadata_container->SetLayoutManager(
+      std::make_unique<views::FlexLayout>());
+  metadata_layout->SetOrientation(views::LayoutOrientation::kHorizontal);
+
+  auto* description_label = metadata_container->AddChildView(
+      std::make_unique<views::Label>(item.description_text));
+  description_label->SetTextStyle(views::style::TextStyle::STYLE_BODY_5);
+  description_label->SetHorizontalAlignment(
+      gfx::HorizontalAlignment::ALIGN_LEFT);
+  description_label->SetEnabledColor(ui::kColorSysOnSurfaceSubtle);
+
+  // The email will be elided by using up all available space in the layout.
+  description_label->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred));
+
+  // The time text is not elided and takes up as much space as possible. It only
+  // has a delimiter if there is a description.
+  std::u16string time_text;
+  if (item.description_text.size() > 0) {
+    time_text += kBulletPoint + u" ";
+  }
+  time_text += item_.time_delta_text;
+
+  auto* time_label = metadata_container->AddChildView(
+      std::make_unique<views::Label>(time_text));
+  time_label->SetTextStyle(views::style::TextStyle::STYLE_BODY_5);
+  time_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
+  time_label->SetEnabledColor(ui::kColorSysOnSurfaceSubtle);
+
+  // The time value will be completely shown on the right.
+  time_label->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kPreferred));
+
+  // Add extra padding matching the ImageView on the left.
+  gfx::Insets margins;
+  margins.set_right(ChromeLayoutProvider::Get()
+                        ->GetInsetsMetric(INSETS_RECENT_ACTIVITY_IMAGE_MARGIN)
+                        .left());
+  time_label->SetProperty(views::kMarginsKey, margins);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kRow);
-  GetViewAccessibility().SetName(activity_text_);
-  GetViewAccessibility().SetDescription(metadata_text_);
+  GetViewAccessibility().SetName(item.title_text);
+  GetViewAccessibility().SetDescription((item_.description_text.size() > 0
+                                             ? item_.description_text + u" "
+                                             : u"") +
+                                        time_text);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
   SetEnabled(GetActionEnabledForItem(item_));
