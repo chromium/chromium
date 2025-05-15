@@ -980,7 +980,6 @@ class LayerTreeHostTestInvisibleLayersSkipRenderPass
     kOneVisible,
     kAllVisible,
     kAllInvisibleAgain,
-    kDone,
   };
 
   void SetupTree() override {
@@ -993,6 +992,8 @@ class LayerTreeHostTestInvisibleLayersSkipRenderPass
 
   scoped_refptr<Layer> CreateChild(scoped_refptr<Layer> root) {
     auto child = Layer::Create();
+    child->SetBounds(gfx::Size(10, 10));
+    child->SetIsDrawable(true);
     // Initially hidden.
     child->SetHideLayerAndSubtree(true);
     AddBackgroundBlurFilter(child.get());
@@ -1026,16 +1027,13 @@ class LayerTreeHostTestInvisibleLayersSkipRenderPass
         child1_->SetHideLayerAndSubtree(true);
         child2_->SetHideLayerAndSubtree(true);
         break;
-      case kDone:
-        EndTest();
-        break;
     }
   }
 
   void DisplayReceivedCompositorFrameOnThread(
       const viz::CompositorFrame& frame) override {
     size_t num_render_passes = frame.render_pass_list.size();
-    switch (index_) {
+    switch (display_index_) {
       case kAllInvisible:
         // There is only a root render pass.
         EXPECT_EQ(1u, num_render_passes);
@@ -1048,14 +1046,14 @@ class LayerTreeHostTestInvisibleLayersSkipRenderPass
         break;
       case kAllInvisibleAgain:
         EXPECT_EQ(1u, num_render_passes);
-        break;
-      case kDone:
         EndTest();
         break;
     }
+    ++display_index_;
   }
 
   int index_ = kAllInvisible;
+  int display_index_ = kAllInvisible;
   scoped_refptr<Layer> child1_;
   scoped_refptr<Layer> child2_;
 };
