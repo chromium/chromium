@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Observable} from 'chrome://print/print_preview.js';
+import {Observable, setValueAtPath} from 'chrome://print/print_preview.js';
 import type {WildcardChangeRecord} from 'chrome://print/print_preview.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
@@ -27,6 +27,14 @@ suite('Observable', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     observable = new Observable(createPrefs());
     prefs = observable.getProxy();
+  });
+
+  test('SetValueAtPath', function() {
+    setValueAtPath(['foo', 'value'], prefs, 3);
+    assertEquals(3, prefs.foo.value);
+
+    setValueAtPath(['foo'], prefs, {value: 4});
+    assertEquals(4, prefs.foo.value);
   });
 
   test('ObserversAddedRemoved', () => {

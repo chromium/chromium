@@ -17,7 +17,7 @@ export {ExtensionDestinationInfo, LocalDestinationInfo} from './data/local_parse
 export {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from './data/margins.js';
 export {MeasurementSystem, MeasurementSystemUnitType} from './data/measurement_system.js';
 export {DuplexMode, getInstance, PolicyObjectEntry, PrintPreviewModelElement, PrintTicket, SerializedSettings, Setting, Settings, whenReady} from './data/model.js';
-export {Observable, WildcardChangeRecord} from './data/observable.js';
+export {Observable, setValueAtPath, WildcardChangeRecord} from './data/observable.js';
 export {ScalingType} from './data/scaling.js';
 export {Size} from './data/size.js';
 export {Error, State} from './data/state.js';

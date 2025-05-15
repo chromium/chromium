@@ -109,7 +109,7 @@ suite('OtherOptionsSettingsTest', function() {
             '#headerFooter')!;
     // Set true and then false.
     for (const value of [true, false]) {
-      model.set('settings.headerFooter.setByGlobalPolicy', value);
+      model.setSettingSetByGlobalPolicyForTesting('headerFooter', value);
       await microtasksFinished();
       // Element expected to be disabled when policy is set.
       assertEquals(value, checkbox.disabled);

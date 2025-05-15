@@ -4,7 +4,8 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Policies} from '../native_layer.js';
 import {BackgroundGraphicsModeRestriction} from '../native_layer.js';
@@ -16,7 +17,7 @@ import {DestinationOrigin, PrinterType} from './destination.js';
 import type {DocumentSettings} from './document_info.js';
 import type {Margins, MarginsSetting} from './margins.js';
 import {CustomMarginsOrientation, MarginsType} from './margins.js';
-import {Observable} from './observable.js';
+import {Observable, setValueAtPath} from './observable.js';
 import {ScalingType} from './scaling.js';
 import type {Size} from './size.js';
 
@@ -470,16 +471,12 @@ function createSettings(): Settings {
 }
 
 
-export class PrintPreviewModelElement extends PolymerElement {
+export class PrintPreviewModelElement extends CrLitElement {
   static get is() {
     return 'print-preview-model';
   }
 
-  static get template() {
-    return null;
-  }
-
-  static get properties() {
+  static override get properties() {
     return {
       /**
        * Object containing current settings of Print Preview, for use by Polymer
@@ -496,41 +493,21 @@ export class PrintPreviewModelElement extends PolymerElement {
       settingsManaged: {
         type: Boolean,
         notify: true,
-        value: false,
       },
 
-      destination: {
-        type: Object,
-        observer: 'updateSettingsFromDestination',
-      },
-
-      documentSettings: Object,
-
-      margins: Object,
-
-      pageSize: Object,
+      destination: {type: Object},
+      documentSettings: {type: Object},
+      margins: {type: Object},
+      pageSize: {type: Object},
     };
   }
 
-  static get observers() {
-    return [
-      'updateSettingsAvailabilityFromDocumentSettings_(' +
-          'documentSettings.isModifiable,' +
-          'documentSettings.allPagesHaveCustomSize,' +
-          'documentSettings.allPagesHaveCustomOrientation,' +
-          'documentSettings.hasSelection)',
-      'updateHeaderFooterAvailable_(' +
-          'margins, settings.margins.value, settings.mediaSize.value)',
-
-    ];
-  }
-
-  declare settings: Settings;
-  declare settingsManaged: boolean;
-  declare destination: Destination;
-  declare documentSettings: DocumentSettings;
-  declare margins: Margins;
-  declare pageSize: Size;
+  accessor settings: Settings;
+  accessor settingsManaged: boolean = false;
+  accessor destination: Destination;
+  accessor documentSettings: DocumentSettings;
+  accessor margins: Margins;
+  accessor pageSize: Size;
 
   observable: Observable<Settings>;
   private initialized_: boolean = false;
@@ -550,6 +527,12 @@ export class PrintPreviewModelElement extends PolymerElement {
     assert(!instance);
     instance = this;
     whenReadyResolver.resolve();
+
+    this.observable.addObserver(
+        'margins.value', this.updateHeaderFooterAvailable_.bind(this));
+    this.observable.addObserver(
+        'mediaSize.value', this.updateHeaderFooterAvailable_.bind(this));
+    this.updateHeaderFooterAvailable_();
   }
 
   override disconnectedCallback() {
@@ -561,11 +544,25 @@ export class PrintPreviewModelElement extends PolymerElement {
     this.observable.removeAllObservers();
   }
 
-  private fire_(eventName: string, detail?: any) {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('destination')) {
+      this.updateSettingsFromDestination();
+    }
+
+    if (changedProperties.has('documentSettings')) {
+      this.updateSettingsAvailabilityFromDocumentSettings_();
+    }
+
+    if (changedProperties.has('margins')) {
+      this.updateHeaderFooterAvailable_();
+    }
   }
 
+  // Returns a direct reference to the non-proxied Settings object. The returned
+  // object should never be mutated manually by callers, since such mutation
+  // will not generate any Observable notifications.
   getSetting(settingName: keyof Settings): Setting {
     const setting = this.observable.getTarget()[settingName];
     assert(setting, 'Setting is missing: ' + settingName);
@@ -587,13 +584,15 @@ export class PrintPreviewModelElement extends PolymerElement {
    * getSettingValue().
    */
   private setSettingPath_(settingPath: string, value: any) {
-    const settingName = settingPath.split('.')[0] as keyof Settings;
+    const parts = settingPath.split('.');
+    assert(parts.length >= 2);
+    const settingName = parts[0] as keyof Settings;
     const setting = this.getSetting(settingName);
     const oldValue = this.getSettingValue(settingName);
-    this.set(`settings.${settingPath}`, value);
+    setValueAtPath(parts, this.settings, value);
     const newValue = this.getSettingValue(settingName);
     if (newValue !== oldValue && setting.updatesPreview) {
-      this.fire_('preview-setting-changed');
+      this.fire('preview-setting-changed');
     }
   }
 
@@ -617,34 +616,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       this.setSettingPath_(`${settingName}.setFromUi`, true);
     }
     if (fireStickyEvent && this.initialized_) {
-      this.fire_('sticky-setting-changed', this.getStickySettings_());
-    }
-  }
-
-  /**
-   * @param settingName Name of the setting to set
-   * @param start
-   * @param end
-   * @param newValue The value to add (if any).
-   * @param noSticky Whether to avoid stickying the setting. Defaults to false.
-   */
-  setSettingSplice(
-      settingName: keyof Settings, start: number, end: number, newValue: any,
-      noSticky?: boolean) {
-    const setting = this.getSetting(settingName);
-    if (setting.setByGlobalPolicy) {
-      return;
-    }
-    if (newValue) {
-      this.splice(`settings.${settingName}.value`, start, end, newValue);
-    } else {
-      this.splice(`settings.${settingName}.value`, start, end);
-    }
-    if (!noSticky) {
-      this.setSettingPath_(`${settingName}.setFromUi`, true);
-    }
-    if (!noSticky && setting.key && this.initialized_) {
-      this.fire_('sticky-setting-changed', this.getStickySettings_());
+      this.fire('sticky-setting-changed', this.getStickySettings_());
     }
   }
 
@@ -662,9 +634,9 @@ export class PrintPreviewModelElement extends PolymerElement {
       assert(setting.available, 'Setting is not available: ' + settingName);
     }
     const shouldFireEvent = valid !== setting.valid;
-    this.set(`settings.${settingName}.valid`, valid);
+    this.settings[settingName].valid = valid;
     if (shouldFireEvent) {
-      this.fire_('setting-valid-changed', valid);
+      this.fire('setting-valid-changed', valid);
     }
   }
 
@@ -675,7 +647,16 @@ export class PrintPreviewModelElement extends PolymerElement {
    */
   setSettingAvailableForTesting(
       settingName: keyof Settings, available: boolean) {
-    this.set(`settings.${settingName}.available`, available);
+    this.settings[settingName].available = available;
+  }
+
+  /**
+   * Sets the setByGlobalPolicy of |settingName| to |setByGlobalPolicy|, exposed
+   * only for testing purposes, where `policySettings_` aren't always set.
+   */
+  setSettingSetByGlobalPolicyForTesting(
+      settingName: keyof Settings, setByGlobalPolicy: boolean) {
+    this.settings[settingName].setByGlobalPolicy = setByGlobalPolicy;
   }
 
   /**
@@ -1200,9 +1181,9 @@ export class PrintPreviewModelElement extends PolymerElement {
   applyStickySettings() {
     if (this.stickySettings_) {
       STICKY_SETTING_NAMES.forEach(settingName => {
-        const setting = this.get(settingName, this.settings) as Setting;
+        const stickySettingsKey = this.getSetting(settingName).key;
         const value =
-            (this.stickySettings_ as {[key: string]: any})[setting.key];
+            (this.stickySettings_ as {[key: string]: any})[stickySettingsKey];
         if (value !== undefined) {
           this.setSetting(settingName, value);
         } else {
@@ -1215,7 +1196,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     this.initialized_ = true;
     this.updateManaged_();
     this.stickySettings_ = null;
-    this.fire_('sticky-setting-changed', this.getStickySettings_());
+    this.fire('sticky-setting-changed', this.getStickySettings_());
   }
 
   /**
@@ -1270,10 +1251,10 @@ export class PrintPreviewModelElement extends PolymerElement {
         }
         if (policyEntry.value !== undefined &&
             !policyEntry.applyOnDestinationUpdate) {
-          this.setSetting(
-              settingName as keyof Settings, policyEntry.value, true);
+          const settingKey = settingName as keyof Settings;
+          this.setSetting(settingKey, policyEntry.value, true);
           if (policyEntry.managed) {
-            this.set(`settings.${settingName}.setByGlobalPolicy`, true);
+            this.settings[settingKey].setByGlobalPolicy = true;
           }
         }
       }
@@ -1393,7 +1374,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     serialization['version'] = 2;
 
     STICKY_SETTING_NAMES.forEach(settingName => {
-      const setting = this.get(settingName, this.settings);
+      const setting = this.getSetting(settingName);
       if (setting.setFromUi) {
         serialization[setting.key] = setting.value;
       }

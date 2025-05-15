@@ -7,7 +7,7 @@ import 'chrome://print/print_preview.js';
 import type {ColorOption, DocumentSettings, DpiOption, DuplexOption, PrintPreviewModelElement, PrintTicket, RecentDestination, Settings} from 'chrome://print/print_preview.js';
 import {Destination, DestinationOrigin, DuplexMode, makeRecentDestination, MarginsType, PrinterType, ScalingType, Size} from 'chrome://print/print_preview.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createDocumentSettings, getCddTemplateWithAdvancedSettings} from './print_preview_test_utils.js';
 
@@ -232,7 +232,7 @@ suite('ModelTest', function() {
    * Tests that toggling each setting results in the expected change to the
    * print ticket.
    */
-  test('GetPrintTicket', function() {
+  test('GetPrintTicket', async function() {
     const origin = DestinationOrigin.LOCAL;
     const testDestination = new Destination('FooDevice', origin, 'FooName');
     testDestination.capabilities =
@@ -246,6 +246,7 @@ suite('ModelTest', function() {
     }));
     assertTrue(model.documentSettings.isModifiable);
     model.destination = testDestination;
+    await microtasksFinished();
     const defaultTicket =
         model.createPrintTicket(testDestination, false, false);
 
@@ -316,7 +317,7 @@ suite('ModelTest', function() {
     assertEquals(JSON.stringify(expectedNewTicketObject), newTicket);
   });
 
-  test('GetPrintTicketPdf', function() {
+  test('GetPrintTicketPdf', async function() {
     const origin = DestinationOrigin.LOCAL;
     const testDestination = new Destination('FooDevice', origin, 'FooName');
     testDestination.capabilities =
@@ -330,6 +331,7 @@ suite('ModelTest', function() {
     assertFalse(model.documentSettings.isModifiable);
 
     model.destination = testDestination;
+    await microtasksFinished();
     const defaultTicket =
         model.createPrintTicket(testDestination, false, false);
 
@@ -403,7 +405,7 @@ suite('ModelTest', function() {
    * Tests that toggling each setting results in the expected change to the
    * cloud job print ticket.
    */
-  test('GetCloudPrintTicket', function() {
+  test('GetCloudPrintTicket', async function() {
     initializeModel(createDocumentSettings({
       hasSelection: true,
       isModifiable: true,
@@ -417,6 +419,7 @@ suite('ModelTest', function() {
     testDestination.capabilities =
         getCddTemplateWithAdvancedSettings(2, 'FooDevice').capabilities;
     model.destination = testDestination;
+    await microtasksFinished();
 
     const defaultTicket = model.createCloudJobTicket(testDestination);
     const expectedDefaultTicket = JSON.stringify({
@@ -518,7 +521,7 @@ suite('ModelTest', function() {
     assertEquals('FooDevice', recentDestinations[0]!.id);
   });
 
-  test('ChangeDestination', function() {
+  test('ChangeDestination', async function() {
     const testDestination =
         new Destination('FooDevice', DestinationOrigin.LOCAL, 'FooName');
     testDestination.capabilities =
@@ -544,6 +547,7 @@ suite('ModelTest', function() {
       title: 'title',
     }));
     model.destination = testDestination;
+    await microtasksFinished();
     model.applyStickySettings();
 
     // Confirm some defaults.
@@ -571,6 +575,7 @@ suite('ModelTest', function() {
     // everything stays the same.
     const oldSettings = JSON.stringify(model.settings);
     model.destination = testDestination2;
+    await microtasksFinished();
     const newSettings = JSON.stringify(model.settings);
 
     // Should be the same (same printer capabilities).
@@ -610,6 +615,7 @@ suite('ModelTest', function() {
     };
 
     model.destination = testDestination3;
+    await microtasksFinished();
 
     // Verify things changed.
     const updatedSettings = JSON.stringify(model.settings);

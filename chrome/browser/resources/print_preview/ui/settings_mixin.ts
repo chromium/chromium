@@ -35,13 +35,6 @@ export const SettingsMixin = dedupingMixin(
           getInstance().setSetting(settingName, value, noSticky);
         }
 
-        setSettingSplice(
-            settingName: keyof Settings, start: number, end: number,
-            newValue: any, noSticky?: boolean) {
-          getInstance().setSettingSplice(
-              settingName, start, end, newValue, noSticky);
-        }
-
         setSettingValid(settingName: keyof Settings, valid: boolean) {
           getInstance().setSettingValid(settingName, valid);
         }
@@ -75,15 +68,6 @@ export interface SettingsMixinInterface {
    * @param noSticky Whether to avoid stickying the setting. Defaults to false.
    */
   setSetting(settingName: keyof Settings, value: any, noSticky?: boolean): void;
-
-  /**
-   * @param settingName Name of the setting to set
-   * @param newValue The value to add (if any).
-   * @param noSticky Whether to avoid stickying the setting. Defaults to false.
-   */
-  setSettingSplice(
-      settingName: keyof Settings, start: number, end: number, newValue: any,
-      noSticky?: boolean): void;
 
   /**
    * Sets the validity of |settingName| to |valid|. If the validity is changed,

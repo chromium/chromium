@@ -86,6 +86,18 @@ function getValueAtPath(pathParts: string[], obj: Record<string, any>) {
   return result[pathParts.at(-1)!];
 }
 
+export function setValueAtPath(
+    pathParts: string[], obj: Record<string, any>, value: any) {
+  let parent: Record<string, any> = obj;
+  let counter = pathParts.length;
+  while (counter > 1) {
+    const current = pathParts[pathParts.length - counter--];
+    parent = parent[current];
+  }
+
+  parent[pathParts.at(-1)!] = value;
+}
+
 interface ObserverEntry {
   id: number;
   callback: ChangeCallback|WildcardChangeCallback;
