@@ -99,7 +99,7 @@ public class ExternalNavigationParams {
     private final boolean mIsRendererInitiated;
     private final @Nullable Origin mInitiatorOrigin;
     private final long mNavigationId;
-    private final boolean mIsCustomTab;
+    private final boolean mIsTabInPWA;
 
     // Populated when an async action is taken, ensuring the callback gets called.
     private @Nullable RequiredCallback<AsyncActionTakenParams> mRequiredAsyncActionTakenCallback;
@@ -124,7 +124,7 @@ public class ExternalNavigationParams {
             boolean isHiddenCrossFrameNavigation,
             boolean isSandboxedMainFrame,
             long navigationId,
-            boolean isCustomTab) {
+            boolean isTabInPWA) {
         mUrl = url;
         mIsIncognito = isIncognito;
         mPageTransition = pageTransition;
@@ -144,7 +144,7 @@ public class ExternalNavigationParams {
         mIsHiddenCrossFrameNavigation = isHiddenCrossFrameNavigation;
         mIsSandboxedMainFrame = isSandboxedMainFrame;
         mNavigationId = navigationId;
-        mIsCustomTab = isCustomTab;
+        mIsTabInPWA = isTabInPWA;
     }
 
     public void onAsyncActionStarted() {
@@ -265,10 +265,10 @@ public class ExternalNavigationParams {
     }
 
     /**
-     * @return whether this WebContents is a Custom Tab, false otherwise.
+     * @return whether this Tab is in a PWA (TWA or WebAPK), false otherwise.
      */
-    public boolean isCustomTab() {
-        return mIsCustomTab;
+    public boolean isTabInPWA() {
+        return mIsTabInPWA;
     }
 
     /** The builder for {@link ExternalNavigationParams} objects. */
@@ -292,7 +292,7 @@ public class ExternalNavigationParams {
         private boolean mIsHiddenCrossFrameNavigation;
         private boolean mIsSandboxedMainFrame;
         private long mNavigationId;
-        private boolean mIsCustomTab;
+        private boolean mIsTabInPWA;
 
         public Builder(GURL url, boolean isIncognito) {
             mUrl = url;
@@ -395,9 +395,9 @@ public class ExternalNavigationParams {
             return this;
         }
 
-        /** Sets whether this navigation was started in a custom tab (e.g. PWA) */
-        public Builder setIsCustomTab(boolean isCustomTab) {
-            mIsCustomTab = isCustomTab;
+        /** Sets whether this navigation was started in a PWA (TWA or WebAPK). */
+        public Builder setIsTabInPWA(boolean isTabInPWA) {
+            mIsTabInPWA = isTabInPWA;
             return this;
         }
 
@@ -425,7 +425,7 @@ public class ExternalNavigationParams {
                     mIsHiddenCrossFrameNavigation,
                     mIsSandboxedMainFrame,
                     mNavigationId,
-                    mIsCustomTab);
+                    mIsTabInPWA);
         }
     }
 }

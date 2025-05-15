@@ -35,6 +35,7 @@ android_library("java") {
     "//third_party/blink/public/mojom:web_feature_mojo_bindings_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
+    "//ui/base/mojom:mojom_java",
     "//url:gurl_java",
   ]
   resources_package = "org.chromium.components.external_intents"

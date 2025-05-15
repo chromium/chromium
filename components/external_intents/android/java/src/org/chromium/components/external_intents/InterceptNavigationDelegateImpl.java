@@ -41,6 +41,7 @@ import org.chromium.content_public.common.ConsoleMessageLevel;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -260,6 +261,15 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             startTimeoutForDeferredNavigation();
         }
 
+        // Catches all cases where a navigation that starts in a PWA should cause a Tab reparenting
+        // towards the Chrome browser.
+        // TODO(crbug.com/416562397): eventually consider in-scope PWAs in the reparenting process.
+        if (shouldReparentTab(navigationHandle.getWebContents())) {
+            resultCallback.onResult(false);
+            mClient.startReparentingTask();
+            return;
+        }
+
         mShouldIgnoreResultCallback = resultCallback;
         OverrideUrlLoadingResult result =
                 shouldOverrideUrlLoading(
@@ -449,7 +459,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         .setIsHiddenCrossFrameNavigation(hiddenCrossFrame)
                         .setIsSandboxedMainFrame(isSandboxedMainFrame)
                         .setNavigationId(navigationId)
-                        .setIsCustomTab(mClient.isCustomTab())
+                        .setIsTabInPWA(mClient.isTabInPWA())
                         .build();
         if (!shouldRunAsync) return doShouldOverrideUrlLoading(params, isExternalProtocol);
         Runnable shouldIgnoreCheck =
@@ -607,6 +617,16 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             return !mClient.getOrCreateRedirectHandler().hasUserStartedNonInitialNavigation();
         }
         return false;
+    }
+
+    /** Returns whether a Tab instance should be reparented from the PWA to the browser. */
+    public boolean shouldReparentTab(WebContents webContents) {
+        return ExternalIntentsFeatures.NAVIGATION_CAPTURE_REFACTOR_ANDROID.isEnabled()
+                && mClient.isTabInPWA()
+                && mClient.isInDesktopWindowingMode()
+                && webContents.hasOpener()
+                && webContents.getOriginalWindowOpenDisposition()
+                        == WindowOpenDisposition.NEW_FOREGROUND_TAB;
     }
 
     private void onDidAsyncActionInMainFrame(AsyncActionTakenParams params) {

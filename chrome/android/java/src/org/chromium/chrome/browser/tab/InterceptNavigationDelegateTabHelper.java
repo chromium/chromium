@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.tab;
 
 import org.chromium.base.UserData;
+import org.chromium.base.UserDataHost;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.external_intents.InterceptNavigationDelegateImpl;
 
 /** Class that glues InterceptNavigationDelegateImpl objects to Tabs. */
@@ -36,5 +38,22 @@ public class InterceptNavigationDelegateTabHelper implements UserData {
     @Override
     public void destroy() {
         mInterceptNavigationDelegateClient.destroy();
+    }
+
+    /** Retrieve an InterceptNavigationDelegateTabHelper instance for a Tab. */
+    public static @Nullable InterceptNavigationDelegateTabHelper getFromTab(Tab tab) {
+        UserDataHost host = tab.getUserDataHost();
+        if (host == null) {
+            return null;
+        }
+        return host.getUserData(USER_DATA_KEY);
+    }
+
+    /**
+     * Returns this InterceptNavigationDelegateTabHelper instance implementation of
+     * InterceptNavigationDelegate
+     */
+    public InterceptNavigationDelegateImpl getInterceptNavigationDelegate() {
+        return mInterceptNavigationDelegate;
     }
 }

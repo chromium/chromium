@@ -51,6 +51,16 @@ public interface InterceptNavigationDelegateClient {
      */
     void loadUrlIfPossible(LoadUrlParams loadUrlParams);
 
-    /* Returns whether the tab associated with this client is a custom tab or not */
-    boolean isCustomTab();
+    /* Returns true if the client hosting this tab is a PWA (WebAPK or TWA). */
+    boolean isTabInPWA();
+
+    /** Returns whether this Activity is currently in Android desktop windowing mode. */
+    boolean isInDesktopWindowingMode();
+
+    /**
+     * Starts the repareting process for this Tab. Reparenting is an async task that "moves" an
+     * existing tab into a separate Activity. Currently, only reparenting towards Chrome browser is
+     * supported.
+     */
+    void startReparentingTask();
 }

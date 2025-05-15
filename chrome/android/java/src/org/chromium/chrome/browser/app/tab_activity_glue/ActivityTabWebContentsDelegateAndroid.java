@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.policy.PolicyAuditor.AuditEvent;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
+import org.chromium.chrome.browser.tab.InterceptNavigationDelegateTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -54,6 +55,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
+import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.WindowAndroid;
@@ -203,13 +205,28 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                 PopupCreator.arePopupsEnabled(mActivity)
                         && (disposition == WindowOpenDisposition.NEW_POPUP);
 
+        // Auxiliary navigations starting in a PWA will always cause a tab reparenting, we
+        // want to prevent UI effects caused by adding the Tab to the TabModel.
+        // This check is done before the tab is even created and the Tab where navigation started
+        // will be used to extract some information. The destination WebContents is provided to
+        // extract the missing features of this navigation that cannot be extracted from this
+        // InterceptNavigationDelegateImpl instance.
+        // TODO(crbug.com/404767741): enable early navigation capturing to address captured
+        // navigations UI jank.
+        var navigationTabHelper = InterceptNavigationDelegateTabHelper.getFromTab(mTab);
+        boolean willReparentTab =
+                navigationTabHelper != null
+                        && navigationTabHelper
+                                .getInterceptNavigationDelegate()
+                                .shouldReparentTab(webContents);
+
         Tab tab =
                 tabCreator.createTabWithWebContents(
                         mTab,
                         webContents,
                         TabLaunchType.FROM_LONGPRESS_FOREGROUND,
                         url,
-                        !openingPopup);
+                        !openingPopup && !willReparentTab);
         if (tab == null) return false;
 
         if (openingPopup) {
