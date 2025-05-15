@@ -1374,12 +1374,10 @@ inline constexpr char kDeprecatedUserColorDoNotUse[] =
 inline constexpr char kUserColor[] = "browser.theme.user_color2";
 
 // Enum tracking the color variant preference for the browser.
-// Note: In the process of migration. Please use `GetThemePrefNameInMigration()`
-// instead. See crbug.com/356148174.
-extern inline constexpr char kBrowserColorVariantDoNotUse[] =
+// Use `kBrowserColorVariant` only.
+inline constexpr char kDeprecatedBrowserColorVariantDoNotUse[] =
     "browser.theme.color_variant";
-inline constexpr char kNonSyncingBrowserColorVariantDoNotUse[] =
-    "browser.theme.color_variant2";
+inline constexpr char kBrowserColorVariant[] = "browser.theme.color_variant2";
 
 // Boolean pref tracking whether chrome follows the system's color theme.
 extern inline constexpr char kBrowserFollowsSystemThemeColors[] =

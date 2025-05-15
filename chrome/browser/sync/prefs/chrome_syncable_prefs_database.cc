@@ -1334,7 +1334,7 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kBrowserColorScheme, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-    {prefs::kBrowserColorVariantDoNotUse,
+    {prefs::kDeprecatedBrowserColorVariantDoNotUse,
      {syncable_prefs_ids::kBrowserColorVariant, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
