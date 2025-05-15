@@ -99,7 +99,7 @@ interface VideoEncodeAcceleratorProvider {
 // 3) The browser process calls CreateVideoEncodeAcceleratorProvider() passing
 //    the pending_receiver<VideoEncodeAcceleratorProvider> received from the
 //    renderer process.
-[EnableIf=is_chromeos|is_linux,
+[EnableIf=allow_linux_video_acceleration,
     ServiceSandbox=sandbox.mojom.Sandbox.kHardwareVideoEncoding]
 interface VideoEncodeAcceleratorProviderFactory {
   // Creates a VideoEncodeAcceleratorProvider and should be called by the

@@ -74,7 +74,6 @@ extern sandbox::TargetServices* g_utility_target_services;
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include "media/mojo/services/mojo_video_encode_accelerator_provider_factory.h"
 #include "sandbox/linux/services/libc_interceptor.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
@@ -101,6 +100,7 @@ extern sandbox::TargetServices* g_utility_target_services;
 
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 #include "content/common/features.h"
+#include "media/mojo/services/mojo_video_encode_accelerator_provider_factory.h"
 #include "media/mojo/services/oop_video_decoder_factory_process_service.h"  // nogncheck
 #endif
 

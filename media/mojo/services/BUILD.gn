@@ -133,7 +133,7 @@ component("services") {
         [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
   }
 
-  if (is_linux || is_chromeos) {
+  if (use_linux_video_acceleration) {
     sources += [
       "mojo_video_encode_accelerator_provider_factory.cc",
       "mojo_video_encode_accelerator_provider_factory.h",
