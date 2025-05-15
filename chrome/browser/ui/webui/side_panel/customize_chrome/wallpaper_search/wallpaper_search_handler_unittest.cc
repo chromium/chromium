@@ -36,6 +36,8 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/image_fetcher/core/mock_image_decoder.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
@@ -131,9 +133,8 @@ class MockWallpaperSearchStringMap : public WallpaperSearchStringMap {
 };
 
 std::unique_ptr<TestingProfile> MakeTestingProfile(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    TestingPrefServiceSimple* local_state) {
-  MockOptimizationGuideKeyedService::Initialize(local_state);
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  MockOptimizationGuideKeyedService::InitializeWithExistingTestLocalState();
   TestingProfile::Builder profile_builder;
   profile_builder.AddTestingFactory(
       OptimizationGuideKeyedServiceFactory::GetInstance(),
@@ -155,8 +156,7 @@ class WallpaperSearchHandlerTest : public testing::Test {
  public:
   WallpaperSearchHandlerTest()
       : profile_(
-            MakeTestingProfile(test_url_loader_factory_.GetSafeWeakWrapper(),
-                               &local_state_)),
+            MakeTestingProfile(test_url_loader_factory_.GetSafeWeakWrapper())),
         mock_optimization_guide_keyed_service_(
             static_cast<MockOptimizationGuideKeyedService*>(
                 OptimizationGuideKeyedServiceFactory::GetForProfile(
@@ -180,14 +180,15 @@ class WallpaperSearchHandlerTest : public testing::Test {
         /*disabled_features=*/{});
 
     auto logs_uploader = std::make_unique<
-        optimization_guide::TestModelQualityLogsUploaderService>(&local_state_);
+        optimization_guide::TestModelQualityLogsUploaderService>(
+        scoped_testing_local_state_.Get());
     mock_optimization_guide_keyed_service_
         ->SetModelQualityLogsUploaderServiceForTesting(
             std::move(logs_uploader));
   }
 
   void TearDown() override {
-    MockOptimizationGuideKeyedService::TearDown();
+    MockOptimizationGuideKeyedService::ResetForTesting();
     test_url_loader_factory_.ClearResponses();
   }
 
@@ -307,8 +308,9 @@ class WallpaperSearchHandlerTest : public testing::Test {
   // NOTE: The initialization order of these members matters.
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  ScopedTestingLocalState scoped_testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
   network::TestURLLoaderFactory test_url_loader_factory_;
-  TestingPrefServiceSimple local_state_;
   std::unique_ptr<TestingProfile> profile_;
   base::test::ScopedFeatureList feature_list_;
   raw_ptr<MockOptimizationGuideKeyedService>

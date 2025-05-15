@@ -6,20 +6,9 @@
 
 #include "base/path_service.h"
 #include "chrome/browser/optimization_guide/chrome_prediction_model_store.h"
-#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/prefs/testing_pref_service.h"
-
-// static
-void MockOptimizationGuideKeyedService::Initialize(
-    TestingPrefServiceSimple* local_state) {
-  TestingBrowserProcess::GetGlobal()->SetLocalState(local_state);
-  RegisterLocalState(local_state->registry());
-  InitializeWithExistingTestLocalState();
-}
 
 // static
 void MockOptimizationGuideKeyedService::InitializeWithExistingTestLocalState() {
@@ -30,12 +19,6 @@ void MockOptimizationGuideKeyedService::InitializeWithExistingTestLocalState() {
       optimization_guide::kOptimizationGuideModelStoreDirPrefix);
   optimization_guide::ChromePredictionModelStore::GetInstance()->Initialize(
       model_downloads_dir);
-}
-
-// static
-void MockOptimizationGuideKeyedService::TearDown() {
-  ResetForTesting();
-  TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 }
 
 // static
