@@ -3070,24 +3070,46 @@ TEST_F(HoldingSpaceKeyedServiceNearbySharingTest, AddNearbyShareItem) {
   EXPECT_EQ(u"File 2.png", item_2->GetText());
 }
 
+// Test parameters for tests of Photoshop Web integration. Used to wrap `GURL`
+// so that value-param representation can be overridden. See `PrintToString()`
+// below as well as https://crbug.com/410764102 for additional details.
+struct HoldingSpaceKeyedServicePhotoshopWebIntegrationTestParams {
+  GURL file_picker_binding_context;
+};
+
+// NOTE: Used by `::testing::PrintToStringParamName()`. Per
+// https://crbug.com/410764102, return value must be non-empty.
+std::string PrintToString(
+    const HoldingSpaceKeyedServicePhotoshopWebIntegrationTestParams& params) {
+  const GURL& context = params.file_picker_binding_context;
+  return context.is_empty() ? "(empty)" : context.spec();
+}
+
 // Base class for tests of Photoshop Web integration. Parameterized by the
 // binding context to use for the file picker during testing.
 class HoldingSpaceKeyedServicePhotoshopWebIntegrationTest
     : public HoldingSpaceKeyedServiceTest,
       public ::testing::WithParamInterface<
-          /*file_picker_binding_context=*/GURL> {
+          HoldingSpaceKeyedServicePhotoshopWebIntegrationTestParams> {
  public:
   // The binding context to use for the file picker given test parameterization.
-  const GURL& GetFilePickerBindingContext() const { return GetParam(); }
+  const GURL& GetFilePickerBindingContext() const {
+    return GetParam().file_picker_binding_context;
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     HoldingSpaceKeyedServicePhotoshopWebIntegrationTest,
     /*file_picker_binding_context=*/
-    ::testing::Values(GURL(),
-                      GURL("https://google.com/"),
-                      GURL("https://photoshop.adobe.com/")));
+    ::testing::Values(
+        HoldingSpaceKeyedServicePhotoshopWebIntegrationTestParams{
+            .file_picker_binding_context = GURL()},
+        HoldingSpaceKeyedServicePhotoshopWebIntegrationTestParams{
+            .file_picker_binding_context = GURL("https://google.com/")},
+        HoldingSpaceKeyedServicePhotoshopWebIntegrationTestParams{
+            .file_picker_binding_context =
+                GURL("https://photoshop.adobe.com/")}));
 
 // Verifies that a Photoshop Web item will be added to the user's Holding Space
 // under expected circumstances.
