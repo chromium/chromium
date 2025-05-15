@@ -11621,9 +11621,9 @@ const CSSValue* TimelineScope::ParseSingleValue(
     return css_parsing_utils::ConsumeIdent(stream);
   }
   using css_parsing_utils::ConsumeCommaSeparatedList;
-  using css_parsing_utils::ConsumeCustomIdent;
+  using css_parsing_utils::ConsumeDashedIdent;
   return ConsumeCommaSeparatedList<CSSCustomIdentValue*(
-      CSSParserTokenStream&, const CSSParserContext&)>(ConsumeCustomIdent,
+      CSSParserTokenStream&, const CSSParserContext&)>(ConsumeDashedIdent,
                                                        stream, context);
 }
 
