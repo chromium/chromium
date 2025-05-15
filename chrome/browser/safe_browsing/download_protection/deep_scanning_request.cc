@@ -756,6 +756,12 @@ DeepScanningRequest::reason() const {
   return reason_;
 }
 
+google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
+DeepScanningRequest::referrer_chain() const {
+  return google::protobuf::RepeatedPtrField<
+      ::safe_browsing::ReferrerChainEntry>();
+}
+
 void DeepScanningRequest::MaybeFinishRequest(DownloadCheckResult result) {
   download_check_result_ =
       GetHighestPrecedenceResult(download_check_result_, result);

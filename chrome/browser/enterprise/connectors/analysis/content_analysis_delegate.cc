@@ -38,10 +38,12 @@
 #include "chrome/browser/file_util_service.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/files_scan_data.h"
@@ -52,8 +54,10 @@
 #include "components/policy/core/common/chrome_schema.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/url_matcher/url_matcher.h"
 #include "content/public/browser/web_contents.h"
 #include "crypto/secure_hash.h"
@@ -520,6 +524,7 @@ ContentAnalysisDelegate::ContentAnalysisDelegate(
     CompletionCallback callback,
     safe_browsing::DeepScanAccessPoint access_point)
     : data_(std::move(data)),
+      tab_id_(sessions::SessionTabHelper::IdForTab(web_contents)),
       callback_(std::move(callback)),
       access_point_(access_point) {
   DCHECK(web_contents);
@@ -804,6 +809,12 @@ BinaryUploadService* ContentAnalysisDelegate::GetBinaryUploadService() {
                                                            data_.settings);
 }
 
+safe_browsing::SafeBrowsingNavigationObserverManager*
+ContentAnalysisDelegate::GetNavigationObserverManager() const {
+  return safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
+      GetForBrowserContext(profile_);
+}
+
 bool ContentAnalysisDelegate::UpdateDialog() {
   // In the case of fail-closed, show the final result UI regardless of cloud or
   // local analysis. Otherwise, only show the result for cloud analysis.
@@ -1001,6 +1012,15 @@ const GURL& ContentAnalysisDelegate::tab_url() const {
 
 ContentAnalysisRequest::Reason ContentAnalysisDelegate::reason() const {
   return data_.reason;
+}
+
+google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
+ContentAnalysisDelegate::referrer_chain() const {
+  ReferrerChain referrers;
+  GetNavigationObserverManager()->IdentifyReferrerChainByEventURL(
+      url_, tab_id_, enterprise_connectors::kReferrerUserGestureLimit,
+      &referrers);
+  return referrers;
 }
 
 }  // namespace enterprise_connectors

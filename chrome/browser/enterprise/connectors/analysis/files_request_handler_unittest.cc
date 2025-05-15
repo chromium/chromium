@@ -47,6 +47,7 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/file_access/test/mock_scoped_file_access_delegate.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -194,6 +195,12 @@ class TestContentAnalysisInfo : public ContentAnalysisInfo {
 
   ContentAnalysisRequest::Reason reason() const override {
     return ContentAnalysisRequest::FILE_PICKER_DIALOG;
+  }
+
+  google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
+  referrer_chain() const override {
+    return google::protobuf::RepeatedPtrField<
+        ::safe_browsing::ReferrerChainEntry>();
   }
 
  private:
@@ -345,6 +352,9 @@ class FilesRequestHandlerTest : public BaseTest {
     enterprise_connectors::test::SetAnalysisConnector(
         profile_->GetPrefs(), AnalysisConnector::FILE_ATTACHED,
         kBlockingScansForDlpAndMalware);
+
+    scoped_feature_list_.InitAndEnableFeature(
+        safe_browsing::kEnhancedFieldsForSecOps);
   }
 
   void FakeFileUploadCallback(

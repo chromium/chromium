@@ -457,6 +457,12 @@ ContentAnalysisRequest::Reason FileTransferAnalysisDelegate::reason() const {
   return ContentAnalysisRequest::UNKNOWN;
 }
 
+google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
+FileTransferAnalysisDelegate::referrer_chain() const {
+  return google::protobuf::RepeatedPtrField<
+      ::safe_browsing::ReferrerChainEntry>();
+}
+
 void FileTransferAnalysisDelegate::OnGotFileURLs(
     std::vector<storage::FileSystemURL> scanning_urls) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

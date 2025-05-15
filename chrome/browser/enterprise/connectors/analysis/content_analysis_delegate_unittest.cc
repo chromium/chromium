@@ -138,6 +138,8 @@ class BaseTest : public testing::Test {
     EXPECT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("test-user");
     ContentAnalysisDelegate::DisableUIForTesting();
+    scoped_feature_list_.InitAndEnableFeature(
+        safe_browsing::kEnhancedFieldsForSecOps);
   }
 
   void ScanUpload(content::WebContents* web_contents,
@@ -570,10 +572,12 @@ class ContentAnalysisDelegateAuditOnlyTest : public BaseTest {
             ? it->second
             : test::FakeContentAnalysisDelegate::SuccessfulResponse([this]() {
                 std::set<std::string> tags;
-                if (include_dlp_ && !dlp_response_.has_value())
+                if (include_dlp_ && !dlp_response_.has_value()) {
                   tags.insert("dlp");
-                if (include_malware_)
+                }
+                if (include_malware_) {
                   tags.insert("malware");
+                }
                 return tags;
               }());
 
@@ -1489,8 +1493,9 @@ TEST_P(ContentAnalysisDelegateResultHandlingTest, Test) {
   // This is not a desktop platform don't try the non-cloud case since it
   // is not supported.
 #if !BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
-  if (!is_cloud())
+  if (!is_cloud()) {
     return;
+  }
 #endif
 
   GURL url(kTestUrl);

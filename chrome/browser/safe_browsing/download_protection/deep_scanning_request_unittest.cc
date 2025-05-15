@@ -235,6 +235,9 @@ class FakeDownloadProtectionService : public DownloadProtectionService {
 class DeepScanningRequestTest : public testing::Test {
  public:
   void SetUp() override {
+    SetFeatures(
+        /*enabled=*/{safe_browsing::kEnhancedFieldsForSecOps},
+        /*disabled=*/{});
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     EXPECT_TRUE(profile_manager_->SetUp());

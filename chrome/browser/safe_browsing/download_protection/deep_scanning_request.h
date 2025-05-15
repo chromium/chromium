@@ -26,6 +26,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/obfuscation/core/download_obfuscator.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 namespace download {
 class DownloadItem;
@@ -115,6 +116,8 @@ class DeepScanningRequest : public download::DownloadItem::Observer,
   std::string url() const override;
   const GURL& tab_url() const override;
   enterprise_connectors::ContentAnalysisRequest::Reason reason() const override;
+  google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
+  referrer_chain() const override;
 
  private:
   // Starts the deep scanning request when there is a one-to-one mapping from
