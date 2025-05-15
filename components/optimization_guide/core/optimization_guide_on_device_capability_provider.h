@@ -9,6 +9,7 @@
 
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "services/on_device_model/public/cpp/capabilities.h"
 
 namespace optimization_guide {
 
@@ -24,6 +25,7 @@ class OptimizationGuideOnDeviceCapabilityProvider {
   // the performance class before returning the eligibility.
   virtual void GetOnDeviceModelEligibilityAsync(
       ModelBasedCapabilityKey feature,
+      const on_device_model::Capabilities& capabilities,
       base::OnceCallback<void(OnDeviceModelEligibilityReason)> callback) = 0;
   virtual std::optional<SamplingParamsConfig> GetSamplingParamsConfig(
       ModelBasedCapabilityKey feature) = 0;

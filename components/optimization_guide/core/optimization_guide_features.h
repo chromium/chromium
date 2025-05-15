@@ -107,6 +107,14 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FeatureParam<std::string>
     kLowTierPerformanceClassListForOnDeviceModel;
 
+// Comma-separated list of performance classes that have image input enabled.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const base::FeatureParam<std::string> kPerformanceClassListForImageInput;
+
+// Comma-separated list of performance classes that have audio input enabled.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const base::FeatureParam<std::string> kPerformanceClassListForAudioInput;
+
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationGuideIconView);
 

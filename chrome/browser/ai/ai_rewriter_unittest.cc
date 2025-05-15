@@ -219,8 +219,8 @@ TEST_F(AIRewriterTest, CreateRewriterModelNotEligible) {
               const std::optional<optimization_guide::SessionConfigParams>&
                   config_params) { return nullptr; }));
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              GetOnDeviceModelEligibilityAsync(_, _))
-      .WillOnce([](auto feature, auto callback) {
+              GetOnDeviceModelEligibilityAsync(_, _, _))
+      .WillOnce([](auto feature, auto capabilities, auto callback) {
         std::move(callback).Run(
             optimization_guide::OnDeviceModelEligibilityReason::
                 kModelNotEligible);
@@ -265,8 +265,8 @@ TEST_F(AIRewriterTest, CreateRewriterRetryAfterConfigNotAvailableForFeature) {
           }));
 
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              GetOnDeviceModelEligibilityAsync(_, _))
-      .WillOnce([](auto feature, auto callback) {
+              GetOnDeviceModelEligibilityAsync(_, _, _))
+      .WillOnce([](auto feature, auto capabilities, auto callback) {
         // Returning kConfigNotAvailableForFeature should trigger retry.
         std::move(callback).Run(
             optimization_guide::OnDeviceModelEligibilityReason::
@@ -368,8 +368,8 @@ TEST_F(AIRewriterTest, CreateRewriterAbortAfterConfigNotAvailableForFeature) {
                   config_params) { return nullptr; }));
 
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              GetOnDeviceModelEligibilityAsync(_, _))
-      .WillOnce([](auto feature, auto callback) {
+              GetOnDeviceModelEligibilityAsync(_, _, _))
+      .WillOnce([](auto feature, auto capabilities, auto callback) {
         // Returning kConfigNotAvailableForFeature should trigger retry.
         std::move(callback).Run(
             optimization_guide::OnDeviceModelEligibilityReason::
@@ -417,8 +417,8 @@ TEST_F(AIRewriterTest, CreateRewriterAbortAfterConfigNotAvailableForFeature) {
 TEST_F(AIRewriterTest, CanCreateDefaultOptions) {
   SetupMockOptimizationGuideKeyedService();
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              GetOnDeviceModelEligibilityAsync(_, _))
-      .WillOnce([](auto feature, auto callback) {
+              GetOnDeviceModelEligibilityAsync(_, _, _))
+      .WillOnce([](auto feature, auto capabilities, auto callback) {
         std::move(callback).Run(
             optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
       });
@@ -432,8 +432,8 @@ TEST_F(AIRewriterTest, CanCreateDefaultOptions) {
 TEST_F(AIRewriterTest, CanCreateIsLanguagesSupported) {
   SetupMockOptimizationGuideKeyedService();
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              GetOnDeviceModelEligibilityAsync(_, _))
-      .WillOnce([](auto feature, auto callback) {
+              GetOnDeviceModelEligibilityAsync(_, _, _))
+      .WillOnce([](auto feature, auto capabilities, auto callback) {
         std::move(callback).Run(
             optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
       });

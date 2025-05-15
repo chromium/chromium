@@ -35,6 +35,7 @@ class MockOptimizationGuideOnDeviceCapabilityProvider
   MOCK_METHOD(void,
               GetOnDeviceModelEligibilityAsync,
               (ModelBasedCapabilityKey,
+               const on_device_model::Capabilities&,
                base::OnceCallback<void(OnDeviceModelEligibilityReason)>),
               (override));
 

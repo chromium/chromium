@@ -712,9 +712,10 @@ void AIManager::CanCreateSession(
   }
 
   service->GetOnDeviceModelEligibilityAsync(
-      capability, base::BindOnce(&AIManager::FinishCanCreateSession,
-                                 weak_factory_.GetWeakPtr(), capability,
-                                 capabilities, std::move(callback)));
+      capability, capabilities,
+      base::BindOnce(&AIManager::FinishCanCreateSession,
+                     weak_factory_.GetWeakPtr(), capability, capabilities,
+                     std::move(callback)));
 }
 
 void AIManager::FinishCanCreateSession(

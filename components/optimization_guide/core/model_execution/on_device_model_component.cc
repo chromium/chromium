@@ -176,6 +176,20 @@ bool OnDeviceModelComponentStateManager::IsLowTierDevice() const {
       PerformanceClassFromPref(*local_state_));
 }
 
+bool OnDeviceModelComponentStateManager::SupportsImageInput() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return IsPerformanceClassCompatible(
+      features::kPerformanceClassListForImageInput.Get(),
+      PerformanceClassFromPref(*local_state_));
+}
+
+bool OnDeviceModelComponentStateManager::SupportsAudioInput() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return IsPerformanceClassCompatible(
+      features::kPerformanceClassListForAudioInput.Get(),
+      PerformanceClassFromPref(*local_state_));
+}
+
 void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(
     ModelBasedCapabilityKey feature) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

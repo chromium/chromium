@@ -184,9 +184,9 @@ TEST_F(AIManagerTest, CanCreate) {
 
 TEST_F(AIManagerTest, CanCreateNotEnabled) {
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              GetOnDeviceModelEligibilityAsync(_, _))
+              GetOnDeviceModelEligibilityAsync(_, _, _))
       .Times(4)
-      .WillRepeatedly([](auto feature, auto callback) {
+      .WillRepeatedly([](auto feature, auto capabilities, auto callback) {
         std::move(callback).Run(
             optimization_guide::OnDeviceModelEligibilityReason::
                 kFeatureNotEnabled);

@@ -1093,14 +1093,17 @@ IN_PROC_BROWSER_TEST_F(
   // Call multiple times, should only get performance class once.
   service->GetOnDeviceModelEligibilityAsync(
       kKey,
+      /*capabilities=*/{},
       base::IgnoreArgs<optimization_guide::OnDeviceModelEligibilityReason>(
           loop1.QuitClosure()));
   service->GetOnDeviceModelEligibilityAsync(
       kKey,
+      /*capabilities=*/{},
       base::IgnoreArgs<optimization_guide::OnDeviceModelEligibilityReason>(
           loop2.QuitClosure()));
   service->GetOnDeviceModelEligibilityAsync(
       kKey,
+      /*capabilities=*/{},
       base::IgnoreArgs<optimization_guide::OnDeviceModelEligibilityReason>(
           loop3.QuitClosure()));
 
@@ -1117,6 +1120,7 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop loop4;
   service->GetOnDeviceModelEligibilityAsync(
       kKey,
+      /*capabilities=*/{},
       base::IgnoreArgs<optimization_guide::OnDeviceModelEligibilityReason>(
           loop4.QuitClosure()));
   loop4.Run();

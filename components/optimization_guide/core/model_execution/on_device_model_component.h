@@ -249,6 +249,11 @@ class OnDeviceModelComponentStateManager
   // Returns true if this is determined to be a low tier device.
   bool IsLowTierDevice() const;
 
+  // Returns true if the device supports image input.
+  bool SupportsImageInput() const;
+  // Returns true if the device supports audio input.
+  bool SupportsAudioInput() const;
+
   // Returns the performance hint for this device based on the supported
   // performance hints in the manifest.
   std::optional<proto::OnDeviceModelPerformanceHint>

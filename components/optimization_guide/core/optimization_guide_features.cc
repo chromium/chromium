@@ -210,6 +210,14 @@ const base::FeatureParam<std::string>
         &kOnDeviceModelPerformanceParams,
         "compatible_low_tier_on_device_performance_classes", "3,4"};
 
+const base::FeatureParam<std::string> kPerformanceClassListForImageInput{
+    &kOnDeviceModelPerformanceParams,
+    "compatible_on_device_performance_classes_image_input", "3,4,5,6"};
+
+const base::FeatureParam<std::string> kPerformanceClassListForAudioInput{
+    &kOnDeviceModelPerformanceParams,
+    "compatible_on_device_performance_classes_audio_input", "5,6"};
+
 BASE_FEATURE(kOptimizationGuideIconView,
              "OptimizationGuideIconView",
              base::FEATURE_DISABLED_BY_DEFAULT);

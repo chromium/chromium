@@ -635,7 +635,9 @@ OptimizationGuideKeyedService::GetOnDeviceCapabilities() {
   if (!model_execution_manager_) {
     return {};
   }
-  return model_execution_manager_->GetOnDeviceCapabilities();
+  auto capabilities = model_execution_manager_->GetOnDeviceCapabilities();
+  capabilities.RetainAll(GetPossibleOnDeviceCapabilities());
+  return capabilities;
 }
 
 void OptimizationGuideKeyedService::OnProfileInitializationComplete(
@@ -826,11 +828,12 @@ OptimizationGuideKeyedService::GetOnDeviceModelEligibility(
 
 void OptimizationGuideKeyedService::GetOnDeviceModelEligibilityAsync(
     optimization_guide::ModelBasedCapabilityKey feature,
+    const on_device_model::Capabilities& capabilities,
     base::OnceCallback<void(optimization_guide::OnDeviceModelEligibilityReason)>
         callback) {
   EnsurePerformanceClassAvailable(base::BindOnce(
       &OptimizationGuideKeyedService::FinishGetOnDeviceModelEligibility,
-      weak_factory_.GetWeakPtr(), feature, std::move(callback)));
+      weak_factory_.GetWeakPtr(), feature, capabilities, std::move(callback)));
 }
 
 std::optional<optimization_guide::SamplingParamsConfig>
@@ -861,7 +864,30 @@ void OptimizationGuideKeyedService::EnsurePerformanceClassAvailable(
 
 void OptimizationGuideKeyedService::FinishGetOnDeviceModelEligibility(
     optimization_guide::ModelBasedCapabilityKey feature,
+    const on_device_model::Capabilities& capabilities,
     base::OnceCallback<void(optimization_guide::OnDeviceModelEligibilityReason)>
         callback) {
+  // If this device will never support the requested capabilities, return not
+  // available.
+  if (!GetPossibleOnDeviceCapabilities().HasAll(capabilities)) {
+    std::move(callback).Run(optimization_guide::OnDeviceModelEligibilityReason::
+                                kModelAdaptationNotAvailable);
+    return;
+  }
   std::move(callback).Run(GetOnDeviceModelEligibility(feature));
+}
+
+on_device_model::Capabilities
+OptimizationGuideKeyedService::GetPossibleOnDeviceCapabilities() const {
+  if (!on_device_component_manager_) {
+    return {};
+  }
+  on_device_model::Capabilities capabilities;
+  if (on_device_component_manager_->SupportsImageInput()) {
+    capabilities.Put(on_device_model::CapabilityFlags::kImageInput);
+  }
+  if (on_device_component_manager_->SupportsAudioInput()) {
+    capabilities.Put(on_device_model::CapabilityFlags::kAudioInput);
+  }
+  return capabilities;
 }

@@ -174,6 +174,7 @@ class OptimizationGuideKeyedService
       optimization_guide::ModelBasedCapabilityKey feature) override;
   void GetOnDeviceModelEligibilityAsync(
       optimization_guide::ModelBasedCapabilityKey feature,
+      const on_device_model::Capabilities& capabilities,
       base::OnceCallback<
           void(optimization_guide::OnDeviceModelEligibilityReason)> callback)
       override;
@@ -361,8 +362,14 @@ class OptimizationGuideKeyedService
 
   void FinishGetOnDeviceModelEligibility(
       optimization_guide::ModelBasedCapabilityKey feature,
+      const on_device_model::Capabilities& capabilities,
       base::OnceCallback<
           void(optimization_guide::OnDeviceModelEligibilityReason)> callback);
+
+  // Gets the possible capabilities that this device can support. This can be
+  // used to get all the capabilities this device supports before downloading
+  // the model. This will be a superset of GetOnDeviceCapabilities().
+  on_device_model::Capabilities GetPossibleOnDeviceCapabilities() const;
 
   raw_ptr<content::BrowserContext> browser_context_;
 

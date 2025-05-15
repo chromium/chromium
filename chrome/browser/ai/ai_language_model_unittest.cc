@@ -1020,10 +1020,11 @@ TEST_F(AILanguageModelTest, MAYBE_CanCreate_WaitsForEligibility) {
       optimization_guide::OnDeviceModelEligibilityReason)>>
       eligibility_future;
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              GetOnDeviceModelEligibilityAsync(_, _))
-      .WillOnce(testing::Invoke([&](auto feature, auto callback) {
-        eligibility_future.SetValue(std::move(callback));
-      }));
+              GetOnDeviceModelEligibilityAsync(_, _, _))
+      .WillOnce(
+          testing::Invoke([&](auto feature, auto capabilities, auto callback) {
+            eligibility_future.SetValue(std::move(callback));
+          }));
 
   base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult>
       result_future;

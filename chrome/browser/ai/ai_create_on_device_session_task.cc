@@ -63,8 +63,9 @@ void CreateOnDeviceSessionTask::Start() {
 
   SetState(State::kPending);
   service->GetOnDeviceModelEligibilityAsync(
-      feature_, base::BindOnce(&CreateOnDeviceSessionTask::OnGetEligibility,
-                               weak_factory_.GetWeakPtr()));
+      feature_, /*capabilities=*/{},
+      base::BindOnce(&CreateOnDeviceSessionTask::OnGetEligibility,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void CreateOnDeviceSessionTask::OnGetEligibility(
