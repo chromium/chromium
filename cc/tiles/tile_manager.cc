@@ -578,13 +578,16 @@ void TileManager::Release(Tile* tile) {
     num_of_tiles_with_checker_images_--;
   DCHECK_GE(num_of_tiles_with_checker_images_, 0);
 
-  FreeResourcesForTile(tile);
-
-  // Notify client that the tile state has changed. Note that
-  // TileManager::Release() is only called when a Tile is being deleted. In this
-  // case we never update the damage. So make sure that NotifyTileStateChanged()
-  // does not update the damage for this tile.
-  client_->NotifyTileStateChanged(tile, /*update_damage=*/false);
+  // Notify client that the tile state has changed only when a tile resource
+  // is released. Note that TileManager::Release() is only called when a Tile
+  // is being deleted. In this case we never update the damage. So make sure
+  // that NotifyTileStateChanged() does not update the damage for this tile.
+  // If a tile was a solid color, there is no resource associated with it.
+  // We do need to notify about tile deletion in that case.
+  if (FreeResourcesForTile(tile) ||
+      tile->draw_info().mode() == TileDrawInfo::SOLID_COLOR_MODE) {
+    client_->NotifyTileStateChanged(tile, /*update_damage=*/false);
+  }
   tiles_.erase(tile->id());
 }
 
@@ -1125,8 +1128,8 @@ void TileManager::FreeResourcesForOccludedTiles() {
   std::unique_ptr<TilesWithResourceIterator> iterator =
       client_->CreateTilesWithResourceIterator();
   for (; !iterator->AtEnd(); iterator->Next()) {
-    if (iterator->IsCurrentTileOccluded()) {
-      FreeResourcesForTile(iterator->GetCurrent());
+    if (iterator->IsCurrentTileOccluded() &&
+        FreeResourcesForTile(iterator->GetCurrent())) {
       // We don't update the damage when Occluded tiles are released.
       client_->NotifyTileStateChanged(iterator->GetCurrent(),
                                       /*update_damage=*/false);
@@ -1134,26 +1137,29 @@ void TileManager::FreeResourcesForOccludedTiles() {
   }
 }
 
-void TileManager::FreeResourcesForTile(Tile* tile) {
+bool TileManager::FreeResourcesForTile(Tile* tile) {
   TileDrawInfo& draw_info = tile->draw_info();
 
-  if (draw_info.is_checker_imaged())
+  if (draw_info.is_checker_imaged()) {
     num_of_tiles_with_checker_images_--;
+  }
   DCHECK_GE(num_of_tiles_with_checker_images_, 0);
 
   if (draw_info.has_resource()) {
     resource_pool_->ReleaseResource(draw_info.TakeResource());
     pending_gpu_work_tiles_.erase(tile);
+    return true;
   }
+  return false;
 }
 
 void TileManager::FreeResourcesForTileAndNotifyClientIfTileWasReadyToDraw(
     Tile* tile) {
   TRACE_EVENT0("viz", __PRETTY_FUNCTION__);
   bool was_ready_to_draw = tile->draw_info().IsReadyToDraw();
-  FreeResourcesForTile(tile);
-  if (was_ready_to_draw)
-    client_->NotifyTileStateChanged(tile);
+  if (FreeResourcesForTile(tile)) {
+    client_->NotifyTileStateChanged(tile, /*update_damage=*/was_ready_to_draw);
+  }
 }
 
 void TileManager::PartitionImagesForCheckering(

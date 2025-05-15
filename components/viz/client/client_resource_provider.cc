@@ -452,7 +452,7 @@ ResourceId ClientResourceProvider::ImportResource(
       id, ImportedResource(id, resource, std::move(impl_release_callback),
                            std::move(main_thread_release_callback),
                            std::move(evicted_callback)));
-  DCHECK(result.second);  // If false, the id was already in the map.
+  CHECK(result.second);  // If false, the id was already in the map.
   return id;
 }
 
