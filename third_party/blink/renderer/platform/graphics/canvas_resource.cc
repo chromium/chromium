@@ -125,7 +125,7 @@ static void ReleaseFrameResources(
     // Allow the resource to determine whether it wants to preserve itself for
     // reuse.
     auto* raw_resource = resource.get();
-    raw_resource->OnReturnedFromCompositor(std::move(resource));
+    raw_resource->OnRefReturned(std::move(resource));
   }
 }
 
@@ -378,16 +378,20 @@ scoped_refptr<CanvasResourceSharedImage> CanvasResourceSharedImage::Create(
   return resource->IsValid() ? resource : nullptr;
 }
 
-void CanvasResourceSharedImage::OnReturnedFromCompositor(
+void CanvasResourceSharedImage::OnRefReturned(
     scoped_refptr<CanvasResource>&& resource) {
+  // Create a downcast ref to the resource as a CanvasResourceSI to pass over to
+  // the provider.
   auto downcast_ref = scoped_refptr<CanvasResourceSharedImage>(this);
   CHECK_EQ(downcast_ref, resource);
 
-  // Reset the compositor ref to ensure that there is still only one outstanding
-  // ref (necessary for the provider to actually recycle the resource).
+  // Reset the passed-in ref now that we've added a ref in `downcast_ref` to
+  // ensure that the provider sees the actual number of currently-outstanding
+  // refs (necessary for the provider to actually recycle the resource in the
+  // case where there this is the last outstanding ref).
   resource.reset();
   if (Provider()) {
-    Provider()->OnResourceReturnedFromCompositor(std::move(downcast_ref));
+    Provider()->OnResourceRefReturned(std::move(downcast_ref));
   }
 }
 

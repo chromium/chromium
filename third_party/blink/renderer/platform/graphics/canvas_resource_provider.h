@@ -217,7 +217,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   // CanvasResourceProviderSharedImage overrides these methods as part of
   // implementing resource recycling.
-  virtual void OnResourceReturnedFromCompositor(
+  virtual void OnResourceRefReturned(
       scoped_refptr<CanvasResourceSharedImage>&&) {}
   virtual void SetResourceRecyclingEnabled(bool) {}
   virtual void ClearUnusedResources() {}

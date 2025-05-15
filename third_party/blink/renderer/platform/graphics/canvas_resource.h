@@ -78,8 +78,7 @@ class PLATFORM_EXPORT CanvasResource
   // GPU compositing.
   virtual bool CreatesAcceleratedTransferableResources() const = 0;
 
-  virtual void OnReturnedFromCompositor(
-      scoped_refptr<CanvasResource>&& resource) {}
+  virtual void OnRefReturned(scoped_refptr<CanvasResource>&& resource) {}
 
   // Returns true if the resource is still usable. It maybe not be valid in the
   // case of a context loss or if we fail to initialize the memory backing for
@@ -221,7 +220,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   bool CreatesAcceleratedTransferableResources() const override {
     return !GetClientSharedImage()->is_software();
   }
-  void OnReturnedFromCompositor(scoped_refptr<CanvasResource>&& resource) final;
+  void OnRefReturned(scoped_refptr<CanvasResource>&& resource) final;
   bool IsValid() const final;
   scoped_refptr<StaticBitmapImage> Bitmap() final;
   void Transfer() final;
