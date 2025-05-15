@@ -75,6 +75,7 @@ void AwContentRendererClient::RenderThreadStarted() {
   browser_interface_broker_ =
       blink::Platform::Current()->GetBrowserInterfaceBroker();
 
+#if BUILDFLAG(SUPPORTS_CODE_ORDERING)
   if (base::FeatureList::IsEnabled(features::kWebViewPrefetchNativeLibrary) &&
       features::kWebViewPrefetchFromRenderer.Get()) {
     base::ThreadPool::PostTask(
@@ -83,6 +84,7 @@ void AwContentRendererClient::RenderThreadStarted() {
               false);
         }));
   }
+#endif
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   if (!spellcheck_)
