@@ -53,6 +53,7 @@ class NegativeFeedbackMenuSheetContent extends MenuSheetContent {
         Resources res = mContext.getResources();
         // Set up options menu
         mOptionsMenu = (Menu) layoutInflater.inflate(R.layout.readaloud_menu, null);
+        mOptionsMenu.findViewById(R.id.readaloud_menu_footer).setVisibility(View.VISIBLE);
         mOptionsMenu.addItem(
                 NegativeFeedbackReason.NOT_FACTUALLY_CORRECT.getValue(),
                 /* iconId= */ 0,

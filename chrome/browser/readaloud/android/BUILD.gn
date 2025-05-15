@@ -156,7 +156,6 @@ android_resources("java_resources") {
     "java/res/layout/readaloud_menu.xml",
     "java/res/layout/readaloud_menu_item.xml",
     "java/res/layout/readaloud_mini_player_layout.xml",
-    "java/res/layout/readaloud_negative_feedback_menu.xml",
     "java/res/layout/readaloud_radio_button.xml",
     "java/res/layout/readaloud_toggle_switch.xml",
     "java/res/values/attrs.xml",

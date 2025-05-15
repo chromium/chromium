@@ -201,6 +201,9 @@
       <message name="IDS_READALOUD_NEGATIVE_FEEDBACK_MENU_TITLE" desc="Menu title for negative feedback.">
         What went wrong?
       </message>
+      <message name="IDS_READALOUD_NEGATIVE_FEEDBACK_MENU_DISCLAIMER" desc="Disclaimer message for the user that the feedback content will be sent to google servers.">
+        Your URL will be uploaded with the feedback to improve quality and research.
+      </message>
       <message name="IDS_READALOUD_NEGATIVE_FEEDBACK_MENU_DESCRIPTION" desc="Menu content description for negative feedback.">
         Negative feedback options menu
       </message>
