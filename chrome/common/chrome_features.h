@@ -311,18 +311,6 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicUnloadOnClose);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
-COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kTabstripComboButton);
-COMPONENT_EXPORT(CHROME_FEATURES) bool IsTabSearchMoving();
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<bool> kTabstripComboButtonHasBackground;
-COMPONENT_EXPORT(CHROME_FEATURES) bool HasTabstripComboButtonWithBackground();
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<bool> kTabstripComboButtonHasReverseButtonOrder;
-COMPONENT_EXPORT(CHROME_FEATURES)
-bool HasTabstripComboButtonWithReverseButtonOrder();
-extern const base::FeatureParam<bool> kTabSearchToolbarButton;
-COMPONENT_EXPORT(CHROME_FEATURES) bool HasTabSearchToolbarButton();
-
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacyGuideForceAvailable);
 
