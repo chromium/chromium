@@ -34,7 +34,6 @@
 #include "components/sync/service/sync_service_observer.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
-#include "ui/message_center/public/cpp/notification.h"
 
 class Profile;
 
@@ -46,31 +45,11 @@ struct SyncedSession;
 
 namespace ash {
 
-extern const char kNotificationForNoNetworkConnection[];
-extern const char kNotificationForSyncErrorOrTimeOut[];
-extern const char kNotificationForProgressStatus[];
-
-// The restore from error notification button index.
-enum class RestoreFromErrorNotificationButtonIndex {
-  kRestore = 0,
-  kCancel,
-};
-
-// The notification type for floating workspace service.
-enum class FloatingWorkspaceServiceNotificationType {
-  kUnknown = 0,
-  kNoNetworkConnection,
-  kSyncErrorOrTimeOut,
-  kProgressStatus,
-  kSafeMode
-};
-
 // A keyed service to support floating workspace. Note that a periodical
 // task `CaptureAndUploadActiveDesk` will be dispatched during service
 // initialization.
 class FloatingWorkspaceService
     : public KeyedService,
-      public message_center::NotificationObserver,
       public syncer::SyncServiceObserver,
       public apps::AppRegistryCache::Observer,
       public apps::AppRegistryCacheWrapper::Observer,
@@ -111,10 +90,6 @@ class FloatingWorkspaceService
   void OnStateChanged(syncer::SyncService* sync) override;
   void OnSyncShutdown(syncer::SyncService* sync) override;
 
-  // message_center::NotificationObserver overrides:
-  void Click(const std::optional<int>& button_index,
-             const std::optional<std::u16string>& reply) override;
-
   // ash::SessionObserver overrides:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
   void OnLockStateChanged(bool locked) override;
@@ -138,8 +113,6 @@ class FloatingWorkspaceService
   // syncer::DeviceInfoTracker::Observer:
   void OnDeviceInfoChange() override;
   void OnDeviceInfoShutdown() override;
-
-  void MaybeCloseNotification();
 
   std::vector<const ash::DeskTemplate*> GetFloatingWorkspaceTemplateEntries();
 
@@ -199,13 +172,6 @@ class FloatingWorkspaceService
   void StartCaptureAndUploadActiveDesk();
   void StopCaptureAndUploadActiveDesk();
 
-  // Start and stop the progress bar notification.
-  void MaybeStartProgressBarNotification();
-  void StopProgressBarNotification();
-
-  // Handles the updating of progress bar notification.
-  void HandleProgressBarStatus();
-
   // Stops the progress bar and resumes the latest floating workspace. This is
   // called when the app cache is ready and sync data is available.
   void StopProgressBarAndRestoreFloatingWorkspace();
@@ -256,12 +222,6 @@ class FloatingWorkspaceService
   // an std::nullopt if there is no floating workspace uuid that is associated
   // with the current device.
   std::optional<base::Uuid> GetFloatingWorkspaceUuidForCurrentDevice();
-  // When sync passes an error status to floating workspace service,
-  // floating workspace service should send notification to user asking
-  // whether to restore the most recent FWS desk from local storage.
-  void HandleSyncError();
-
-  void SendNotification(const std::string& id);
 
   // Performs garbage collection of stale floating workspace templates. A
   // floating workspace template is considered stale if it's older than 30
@@ -282,13 +242,11 @@ class FloatingWorkspaceService
   bool AreRequiredAppTypesInitialized();
 
   // Once network state or sync feature active state changes have been detected,
-  // handle the internet connectivity notification appropriately based on
-  // connection.
+  // handle the startup UI appropriately based on connection.
   void OnNetworkStateOrSyncServiceStateChanged();
 
-  // Initial task start. This involves checking the network connectivity upon
-  // log in and sending a notification if no network is connected or start
-  // posting a task for waiting for sync server downloads to complete.
+  // Initial task start. This includes checking the network connectivity upon
+  // login and setting the appropriate state for startup UI.
   void InitiateSigninTask();
 
   // Returns true if we should exclude the `floating_workspace_template` from
@@ -396,8 +354,6 @@ class FloatingWorkspaceService
   // populated when we first capture a floating workspace template.
   std::optional<base::Uuid> floating_workspace_uuid_;
 
-  std::unique_ptr<message_center::Notification> notification_;
-  std::string progress_notification_id_;
 
   // The in memory cache of the floating workspace that should be restored
   // after downloading latest updates. Saved in case the user delays resuming
