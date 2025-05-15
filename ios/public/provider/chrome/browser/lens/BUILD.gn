@@ -21,7 +21,7 @@ source_set("lens_api") {
   public_deps = [ ":lens_api_model" ]
   deps = [
     "//base",
-    "//ios/web/public/navigation:navigation",
+    "//ios/web/public/navigation",
   ]
 }
 

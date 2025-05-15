@@ -18,10 +18,10 @@ source_set("https_only_mode") {
   deps = [
     ":feature",
     "//base",
-    "//components/keyed_service/core:core",
+    "//components/keyed_service/core",
     "//components/security_interstitials/core",
     "//ios/components/security_interstitials",
-    "//ios/web/public:public",
+    "//ios/web/public",
     "//ios/web/public/navigation",
     "//net",
     "//services/metrics/public/cpp:metrics_cpp",
