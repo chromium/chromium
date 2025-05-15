@@ -18,6 +18,8 @@
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
 #import "ios/chrome/browser/omnibox/coordinator/omnibox_coordinator.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
@@ -88,9 +90,11 @@ class LensOverlayMediatorTest : public PlatformTest {
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
 
-    mediator_ =
-        [[LensOverlayMediator alloc] initWithProfilePrefs:profile_->GetPrefs()
-                                              isIncognito:NO];
+    SceneState* mock_scene_state = OCMClassMock([SceneState class]);
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), mock_scene_state);
+    mediator_ = [[LensOverlayMediator alloc]
+        initWithWebStateList:browser_.get()->GetWebStateList()
+                profilePrefs:browser_.get()->GetProfile()->GetPrefs()];
     mediator_.templateURLService =
         search_engines_test_environment_.template_url_service();
     mock_omnibox_coordinator_ =
@@ -267,6 +271,7 @@ class LensOverlayMediatorTest : public PlatformTest {
   std::unique_ptr<feature_engagement::Tracker> tracker_;
   FakeLensWebProviderImpl* fake_web_provider_;
   std::unique_ptr<LensOmniboxClient> lens_omnibox_client_;
+  std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<TestProfileIOS> profile_;
 };
 

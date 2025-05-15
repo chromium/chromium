@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/base64url.h"
+#import "base/memory/weak_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/timer/elapsed_timer.h"
@@ -26,6 +27,9 @@
 #import "ios/chrome/browser/orchestrator/ui_bundled/edit_view_animatee.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
@@ -50,7 +54,8 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
 }  // namespace
 
 @interface LensOverlayMediator () <LensOverlayNavigationMutator,
-                                   SearchEngineObserving>
+                                   SearchEngineObserving,
+                                   WebStateListObserving>
 
 /// Current lens result.
 @property(nonatomic, strong, readwrite) id<ChromeLensOverlayResult>
@@ -61,8 +66,6 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
 @end
 
 @implementation LensOverlayMediator {
-  /// Whether the browser is off the record.
-  BOOL _isIncognito;
   /// The profile pref service.
   raw_ptr<const PrefService> _profilePrefs;
   /// Search engine observer.
@@ -75,15 +78,22 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
   BOOL _thumbnailRemoved;
   /// Tracks the Lens filter currently in use.
   LensOverlayFilterState _currentFilterState;
+  /// The web state list for which the mediator is scoped.
+  base::WeakPtr<WebStateList> _webStateList;
+  // Bridge for observing WebStateList events.
+  std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
 }
 
-- (instancetype)initWithProfilePrefs:(const PrefService*)profilePrefs
-                         isIncognito:(BOOL)isIncognito {
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                        profilePrefs:(const PrefService*)profilePrefs {
   self = [super init];
   if (self) {
+    _webStateList = webStateList->AsWeakPtr();
     _profilePrefs = profilePrefs;
-    _isIncognito = isIncognito;
     _navigationManager = std::make_unique<LensOverlayNavigationManager>(self);
+    _webStateListObserverBridge =
+        std::make_unique<WebStateListObserverBridge>(self);
+    webStateList->AddObserver(_webStateListObserverBridge.get());
   }
   return self;
 }
@@ -100,6 +110,11 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
 }
 
 - (void)disconnect {
+  if (_webStateList) {
+    _webStateList->RemoveObserver(_webStateListObserverBridge.get());
+  }
+  _webStateList = nullptr;
+  _webStateListObserverBridge.reset();
   _searchEngineObserver.reset();
   _navigationManager.reset();
   _currentLensResult = nil;
@@ -370,6 +385,24 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
     }
   }
   [self updateOmniboxText:omniboxText];
+}
+
+#pragma mark - WebStateListObserving
+
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                       status:(const WebStateListStatus&)status {
+  BOOL didDetach = change.type() == WebStateListChange::Type::kDetach;
+  BOOL activeWebStateChange = status.active_web_state_change();
+
+  // Because Lens Overlay doesn't support inter-window changes of the active
+  // web state, it must be close immediately if the active web state
+  // gets detached.
+  if (didDetach && activeWebStateChange) {
+    [self.commandsHandler
+        destroyLensUI:NO
+               reason:lens::LensOverlayDismissalSource::kTabClosed];
+  }
 }
 
 #pragma mark - LensResultPageMediatorDelegate

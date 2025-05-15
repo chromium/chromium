@@ -24,6 +24,7 @@ class LensOmniboxClient;
 @class OmniboxCoordinator;
 class PrefService;
 class TemplateURLService;
+class WebStateList;
 
 /// Main mediator for Lens Overlay.
 /// Manages data flow between Selection, Omnibox and Results.
@@ -68,8 +69,8 @@ class TemplateURLService;
 /// Number of tabs opened by the lens overlay during this session.
 @property(nonatomic, assign, readonly) NSInteger generatedTabCount;
 
-- (instancetype)initWithProfilePrefs:(const PrefService*)profilePrefs
-                         isIncognito:(BOOL)isIncognito
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                        profilePrefs:(const PrefService*)profilePrefs
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

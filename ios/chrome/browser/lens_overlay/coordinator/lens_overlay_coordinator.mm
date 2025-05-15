@@ -258,10 +258,9 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     return;
   }
   Browser* browser = self.browser;
-  ProfileIOS* profile = browser->GetProfile();
   _mediator = [[LensOverlayMediator alloc]
-      initWithProfilePrefs:profile->GetPrefs()
-               isIncognito:profile->IsOffTheRecord()];
+      initWithWebStateList:browser->GetWebStateList()
+              profilePrefs:browser->GetProfile()->GetPrefs()];
   _mediator.applicationHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
 
