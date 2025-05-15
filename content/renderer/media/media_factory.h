@@ -76,10 +76,6 @@ struct RenderFrameMediaPlaybackOptions;
 // Assist to RenderFrameImpl in creating various media clients.
 class MediaFactory {
  public:
-  // Helper function returning whether VideoSurfaceLayer should be enabled for
-  // MediaStreams.
-  static bool VideoSurfaceLayerEnabledForMS();
-
   // Create a MediaFactory to assist the |render_frame| with media tasks.
   // |request_routing_token_cb| bound to |render_frame| IPC functions for
   // obtaining overlay tokens.
