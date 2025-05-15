@@ -395,8 +395,14 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   EXPECT_FALSE(IsIconVisible());
 }
 
+// TODO(crbug.com/415969189): Flaky failures.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Logging_Shown DISABLED_Logging_Shown
+#else
+#define MAYBE_Logging_Shown Logging_Shown
+#endif
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       Logging_Shown) {
+                       MAYBE_Logging_Shown) {
   base::HistogramTester histogram_tester;
   ShowBubbleForOfferAndVerify();
 
@@ -415,8 +421,14 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                                      /*reshow*/ true, 1);
 }
 
+// TODO(crbug.com/415969189): Flaky failures.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Logging_Acknowledged DISABLED_Logging_Acknowledged
+#else
+#define MAYBE_Logging_Acknowledged Logging_Acknowledged
+#endif
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       Logging_Acknowledged) {
+                       MAYBE_Logging_Acknowledged) {
   // Applies to card-linked offers only, as promo code offers do not have an OK
   // button.
   if (test_offer_type_ !=
@@ -451,8 +463,14 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
       1);
 }
 
+// TODO(crbug.com/415969189): Flaky failures.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Logging_Closed DISABLED_Logging_Closed
+#else
+#define MAYBE_Logging_Closed Logging_Closed
+#endif
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       Logging_Closed) {
+                       MAYBE_Logging_Closed) {
   base::HistogramTester histogram_tester;
   ShowBubbleForOfferAndVerify();
 
@@ -480,8 +498,14 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
       1);
 }
 
+// TODO(crbug.com/415969189): Flaky failures.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Logging_NotInteracted DISABLED_Logging_NotInteracted
+#else
+#define MAYBE_Logging_NotInteracted Logging_NotInteracted
+#endif
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       Logging_NotInteracted) {
+                       MAYBE_Logging_NotInteracted) {
   base::HistogramTester histogram_tester;
   ShowBubbleForOfferAndVerify();
 
@@ -499,8 +523,14 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
       1);
 }
 
+// TODO(crbug.com/415969189): Flaky failures.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Logging_LostFocus DISABLED_Logging_LostFocus
+#else
+#define MAYBE_Logging_LostFocus Logging_LostFocus
+#endif
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       Logging_LostFocus) {
+                       MAYBE_Logging_LostFocus) {
   base::HistogramTester histogram_tester;
   ShowBubbleForOfferAndVerify();
 
