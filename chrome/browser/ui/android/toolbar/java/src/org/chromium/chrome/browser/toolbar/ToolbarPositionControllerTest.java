@@ -808,15 +808,18 @@ public class ToolbarPositionControllerTest {
 
         mKeyboardAccessoryHeightSupplier.set(100);
         verify(mControlContainerView).setTranslationY(12 - 100);
+        assertEquals(12 - 100, mBottomToolbarOffsetSupplier.get().intValue());
 
         mKeyboardAccessoryHeightSupplier.set(0);
         verify(mControlContainerView, times(2)).setTranslationY(12);
 
         mControlContainerTranslationSupplier.set(10);
         verify(mControlContainerView).setTranslationY(22);
+        assertEquals(22, mBottomToolbarOffsetSupplier.get().intValue());
 
         mControlContainerTranslationSupplier.set(20);
         verify(mControlContainerView).setTranslationY(32);
+        assertEquals(32, mBottomToolbarOffsetSupplier.get().intValue());
     }
 
     private void assertControlsAtBottom() {

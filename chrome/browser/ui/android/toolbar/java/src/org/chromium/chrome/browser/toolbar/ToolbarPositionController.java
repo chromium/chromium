@@ -460,6 +460,9 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                         - mKeyboardAccessoryHeightSupplier.get()
                         + mControlContainerTranslationSupplier.get();
         viewForLayer.setTranslationY(layerYOffset);
+        if (layer == mBottomToolbarLayer) {
+            mBrowserControlsOffsetSupplier.set(layerYOffset);
+        }
     }
 
     /** Returns whether the toolbar will be shown on top for the supplied tab. */
