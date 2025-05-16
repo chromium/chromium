@@ -1,0 +1,32 @@
+Tests that the inspector can inspect private properties
+{
+    result : {
+        className : A
+        description : A
+        objectId : <string>
+        type : object
+    }
+}
+[
+    [0] : {
+        get : {
+            className : Function
+            description : get #bar() { return 42; }
+            objectId : <string>
+            type : function
+        }
+        name : #bar
+    }
+]
+{
+    id : <number>
+    result : {
+        result : {
+            description : 42
+            type : number
+            value : 42
+        }
+    }
+    sessionId : <string>
+}
+
