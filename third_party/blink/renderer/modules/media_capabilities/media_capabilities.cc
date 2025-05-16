@@ -1000,11 +1000,21 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::decodingInfo(
         config->audio(), audio_mime_str, audio_codec_str);
   }
 
-  // No need to check video capabilities if video not included in configuration
-  // or when audio is already known to be unsupported.
-  if (!audio_supported || !config->hasVideo()) {
-    return CreateResolvedPromiseToDecodingInfoWith(audio_supported,
-                                                   script_state, config);
+  if (!audio_supported) {
+    return CreateResolvedPromiseToDecodingInfoWith(false, script_state, config);
+  }
+
+  // Audio-only
+  if (!config->hasVideo()) {
+    // Clear audio
+    if (!config->hasKeySystemConfiguration()) {
+      return CreateResolvedPromiseToDecodingInfoWith(audio_supported,
+                                                     script_state, config);
+    } else {
+      return GetEmeSupport(script_state, video_codec, video_profile,
+                           video_color_space, config, request_time,
+                           exception_state);
+    }
   }
 
   DCHECK(message.empty());
