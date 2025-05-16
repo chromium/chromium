@@ -699,7 +699,6 @@ android_library("cronet_sample_apk_java") {
     ":package_impl_common_java",
     ":package_impl_native_java",
     ":package_shared_java",
-    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/androidx:androidx_annotation_annotation_experimental_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",

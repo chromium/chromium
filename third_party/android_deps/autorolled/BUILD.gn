@@ -20,6 +20,15 @@ template("define_autorolled_targets") {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("com_google_code_findbugs_jsr305_java") {
+    jar_path =
+        "autorolled/cipd/libs/com_google_code_findbugs_jsr305/jsr305-3.0.2.jar"
+    output_name = "com_google_code_findbugs_jsr305"
+    supports_android = true
+    enable_bytecode_checks = false
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("com_google_errorprone_error_prone_annotations_java") {
     jar_path = "autorolled/cipd/libs/com_google_errorprone_error_prone_annotations/error_prone_annotations-2.36.0.jar"
     output_name = "com_google_errorprone_error_prone_annotations"
@@ -32,20 +41,12 @@ template("define_autorolled_targets") {
     jar_path =
         "autorolled/cipd/libs/com_google_guava_guava/guava-33.4.8-android.jar"
     output_name = "com_google_guava_guava"
-    supports_android = true
     enable_bytecode_checks = false
     deps = [
       "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
       "//third_party/android_deps:com_google_j2objc_j2objc_annotations_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
     ]
-
-    jar_excluded_patterns = []
-    if (!enable_java_asserts) {
-      # Omit the file since we use our own copy.
-      jar_excluded_patterns += [ "com/google/common/base/Preconditions.class" ]
-      deps += [ "//third_party/android_deps/local_modifications/preconditions:guava_stub_preconditions_java" ]
-    }
 
     # Dep needed to fix:
     #   warning: unknown enum constant ReflectionSupport$Level.FULL
@@ -59,6 +60,14 @@ template("define_autorolled_targets") {
   java_prebuilt("com_google_j2objc_j2objc_annotations_java") {
     jar_path = "autorolled/cipd/libs/com_google_j2objc_j2objc_annotations/j2objc-annotations-3.0.0.jar"
     output_name = "com_google_j2objc_j2objc_annotations"
+    supports_android = true
+    enable_bytecode_checks = false
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("org_checkerframework_checker_qual_java") {
+    jar_path = "autorolled/cipd/libs/org_checkerframework_checker_qual/checker-qual-3.43.0.jar"
+    output_name = "org_checkerframework_checker_qual"
     supports_android = true
     enable_bytecode_checks = false
   }
@@ -266,7 +275,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_cast_java") {
-        aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_cast/play-services-cast-22.1.0.aar"
+        aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_cast/play-services-cast-22.0.0.aar"
         info_path = "autorolled/committed/libs/com_google_android_gms_play_services_cast/com_google_android_gms_play_services_cast.info"
         enable_bytecode_checks = false
         deps = [
@@ -276,7 +285,6 @@ template("define_autorolled_targets") {
           "$google_play_services_package:google_play_services_tasks_java",
           "//third_party/androidx:androidx_core_core_java",
           "//third_party/androidx:androidx_mediarouter_mediarouter_java",
-          "//third_party/kotlin_stdlib:kotlin_stdlib_java",
         ]
       }
     }
@@ -284,7 +292,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_cast_framework_java") {
-        aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_cast_framework/play-services-cast-framework-22.1.0.aar"
+        aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_cast_framework/play-services-cast-framework-22.0.0.aar"
         info_path = "autorolled/committed/libs/com_google_android_gms_play_services_cast_framework/com_google_android_gms_play_services_cast_framework.info"
         enable_bytecode_checks = false
         deps = [
@@ -304,7 +312,6 @@ template("define_autorolled_targets") {
           "//third_party/androidx:androidx_media_media_java",
           "//third_party/androidx:androidx_mediarouter_mediarouter_java",
           "//third_party/androidx:androidx_recyclerview_recyclerview_java",
-          "//third_party/kotlin_stdlib:kotlin_stdlib_java",
         ]
       }
     }
@@ -346,7 +353,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_identity_credentials_java") {
-        aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_identity_credentials/play-services-identity-credentials-16.0.0-alpha07.aar"
+        aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_identity_credentials/play-services-identity-credentials-16.0.0-alpha06.aar"
         info_path = "autorolled/committed/libs/com_google_android_gms_play_services_identity_credentials/com_google_android_gms_play_services_identity_credentials.info"
         enable_bytecode_checks = false
         deps = [
@@ -540,18 +547,45 @@ template("define_autorolled_targets") {
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-    java_prebuilt("com_google_code_findbugs_jsr305_java") {
-      jar_path = "autorolled/cipd/libs/com_google_code_findbugs_jsr305/jsr305-3.0.2.jar"
-      output_name = "com_google_code_findbugs_jsr305"
-      supports_android = true
-      requires_android = true
-      enable_bytecode_checks = false
+    if (!defined(guava_android_target)) {
+      java_prebuilt("com_google_guava_guava_android_java") {
+        jar_path = "autorolled/cipd/libs/com_google_guava_guava_android/guava-33.3.1-android.jar"
+        output_name = "com_google_guava_guava_android"
+        supports_android = true
+        requires_android = true
+        enable_bytecode_checks = false
+
+        # Target is swapped out when internal code is enabled.
+        # Please depend on //third_party/android_deps:guava_android_java instead.
+        visibility = [ "//third_party/android_deps:*" ]
+        deps = [
+          "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+          "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
+          "//third_party/android_deps:com_google_j2objc_j2objc_annotations_java",
+          "//third_party/android_deps:org_checkerframework_checker_qual_java",
+        ]
+
+        jar_excluded_patterns = []
+        if (!enable_java_asserts) {
+          # Omit the file since we use our own copy.
+          jar_excluded_patterns +=
+              [ "com/google/common/base/Preconditions.class" ]
+          deps += [ "//third_party/android_deps/local_modifications/preconditions:guava_stub_preconditions_java" ]
+        }
+
+        # Dep needed to fix:
+        #   warning: unknown enum constant ReflectionSupport$Level.FULL
+        deps += [ ":com_google_j2objc_j2objc_annotations_java" ]
+
+        # Always bundle this part of guava in with the main target.
+        public_deps = [ ":com_google_guava_failureaccess_java" ]
+      }
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     if (!defined(android_proto_runtime)) {
       java_prebuilt("com_google_protobuf_protobuf_javalite_java") {
-        jar_path = "autorolled/cipd/libs/com_google_protobuf_protobuf_javalite/protobuf-javalite-4.31.0.jar"
+        jar_path = "autorolled/cipd/libs/com_google_protobuf_protobuf_javalite/protobuf-javalite-4.31.0-RC2.jar"
         output_name = "com_google_protobuf_protobuf_javalite"
         supports_android = true
         requires_android = true
@@ -603,15 +637,6 @@ template("define_autorolled_targets") {
       jar_path =
           "autorolled/cipd/libs/javax_inject_javax_inject/javax.inject-1.jar"
       output_name = "javax_inject_javax_inject"
-      supports_android = true
-      requires_android = true
-      enable_bytecode_checks = false
-    }
-
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-    java_prebuilt("org_checkerframework_checker_qual_java") {
-      jar_path = "autorolled/cipd/libs/org_checkerframework_checker_qual/checker-qual-3.25.0.jar"
-      output_name = "org_checkerframework_checker_qual"
       supports_android = true
       requires_android = true
       enable_bytecode_checks = false
@@ -887,42 +912,6 @@ template("define_autorolled_targets") {
           "$google_play_services_package:google_firebase_firebase_encoders_java",
           "//third_party/androidx:androidx_annotation_annotation_java",
         ]
-      }
-    }
-
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-    if (!defined(guava_android_target)) {
-      java_prebuilt("com_google_guava_guava_android_java") {
-        jar_path = "autorolled/cipd/libs/com_google_guava_guava_android/guava-31.1-android.jar"
-        output_name = "com_google_guava_guava_android"
-        supports_android = true
-        requires_android = true
-        enable_bytecode_checks = false
-
-        # Target is swapped out when internal code is enabled.
-        # Please depend on //third_party/android_deps:guava_android_java instead.
-        visibility = [ "//third_party/android_deps:*" ]
-        deps = [
-          "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
-          "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
-          "//third_party/android_deps:com_google_j2objc_j2objc_annotations_java",
-          "//third_party/android_deps:org_checkerframework_checker_qual_java",
-        ]
-
-        jar_excluded_patterns = []
-        if (!enable_java_asserts) {
-          # Omit the file since we use our own copy.
-          jar_excluded_patterns +=
-              [ "com/google/common/base/Preconditions.class" ]
-          deps += [ "//third_party/android_deps/local_modifications/preconditions:guava_stub_preconditions_java" ]
-        }
-
-        # Dep needed to fix:
-        #   warning: unknown enum constant ReflectionSupport$Level.FULL
-        deps += [ ":com_google_j2objc_j2objc_annotations_java" ]
-
-        # Always bundle this part of guava in with the main target.
-        public_deps = [ ":com_google_guava_failureaccess_java" ]
       }
     }
 

@@ -885,7 +885,6 @@ No modifications.
     private static void addPreconditionsOverrideTreatment(StringBuilder sb, String dependencyId) {
         String targetName = translateTargetName(dependencyId)
         switch (targetName) {
-            case 'com_google_guava_guava':
             case 'com_google_guava_guava_android':
             case 'google_play_services_basement':
                 String libraryDep = '//third_party/android_deps/local_modifications/preconditions:' +
@@ -909,7 +908,6 @@ No modifications.
     private static String computePreconditionsStubLibraryForDep(String dependencyId) {
         String targetName = translateTargetName(dependencyId)
         switch (targetName) {
-            case 'com_google_guava_guava':
             case 'com_google_guava_guava_android':
                 return 'guava_stub_preconditions_java'
             case 'google_play_services_basement':
@@ -921,7 +919,6 @@ No modifications.
     private static String computePreconditionsClassForDep(String dependencyId) {
         String targetName = translateTargetName(dependencyId)
         switch (targetName) {
-            case 'com_google_guava_guava':
             case 'com_google_guava_guava_android':
                 return 'com/google/common/base/Preconditions.class'
             case 'google_play_services_basement':
