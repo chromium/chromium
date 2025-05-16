@@ -2383,11 +2383,10 @@ inline constexpr char kNtpCollapsedSnapshotDocument[] =
 inline constexpr char kNtpCollapsedSyncPromo[] = "ntp.collapsed_sync_promo";
 #else
 // Holds info for New Tab Page custom background
-// Note: In the process of migration. Please use `GetThemePrefNameInMigration()`
-// instead. See crbug.com/356148174.
-inline constexpr char kNtpCustomBackgroundDictDoNotUse[] =
+// Use `kNtpCustomBackgroundDict` only.
+inline constexpr char kDeprecatedNtpCustomBackgroundDictDoNotUse[] =
     "ntp.custom_background_dict";
-inline constexpr char kNonSyncingNtpCustomBackgroundDictDoNotUse[] =
+inline constexpr char kNtpCustomBackgroundDict[] =
     "ntp.custom_background_dict2";
 inline constexpr char kNtpCustomBackgroundLocalToDevice[] =
     "ntp.custom_background_local_to_device";

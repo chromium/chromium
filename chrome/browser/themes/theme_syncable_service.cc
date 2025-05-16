@@ -65,8 +65,8 @@ constexpr auto kThemePrefsInMigration =
          {prefs::kDeprecatedGrayscaleThemeEnabledDoNotUse,
           prefs::kGrayscaleThemeEnabled}},
         {ThemePrefInMigration::kNtpCustomBackgroundDict,
-         {prefs::kNtpCustomBackgroundDictDoNotUse,
-          prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse}},
+         {prefs::kDeprecatedNtpCustomBackgroundDictDoNotUse,
+          prefs::kNtpCustomBackgroundDict}},
     });
 
 static_assert(
@@ -276,7 +276,7 @@ ThemeSyncableService::ThemeSyncableService(Profile* profile,
   // ThemeService doesn't convey ntp background change notifications.
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(
-      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse,
+      prefs::kNtpCustomBackgroundDict,
       base::BindRepeating(&ThemeSyncableService::OnThemeChanged,
                           base::Unretained(this)));
 
@@ -627,15 +627,14 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
     DVLOG(1) << "Applying custom NTP background";
     // TODO(crbug.com/356148174): Set via NtpCustomBackgroundService instead
     // of setting the pref directly.
-    prefs->SetDict(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse,
-                   std::move(*dict));
+    prefs->SetDict(prefs::kNtpCustomBackgroundDict, std::move(*dict));
   } else if (has_all_theme_attributes) {
     // Clear the current ntp background if none received from remote.
     // NOTE: Ntp background is only cleared if the incoming ThemeSpecifics
     // is the new one and is missing the ntp_background field because it was
     // committed by an old client.
     DVLOG(1) << "Removing custom NTP background";
-    prefs->ClearPref(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse);
+    prefs->ClearPref(prefs::kNtpCustomBackgroundDict);
   }
   return ThemeSyncState::kApplied;
 }
@@ -702,8 +701,8 @@ ThemeSyncableService::GetThemeSpecificsFromCurrentTheme() const {
   if (!prefs->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice)) {
     // Fetch ntp background dict from pref.
     // TODO(crbug.com/356148174): Query NtpCustomBackgroundService instead.
-    if (const base::Value* pref = prefs->GetUserPrefValue(
-            prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse)) {
+    if (const base::Value* pref =
+            prefs->GetUserPrefValue(prefs::kNtpCustomBackgroundDict)) {
       *theme_specifics.mutable_ntp_background() =
           SpecificsNtpBackgroundFromDict(pref->GetDict());
     }

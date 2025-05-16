@@ -25,12 +25,7 @@ void NtpCustomBackgroundEnabledPolicyHandler::ApplyPolicySettings(
   const base::Value* value =
       policies.GetValue(policy_name(), base::Value::Type::BOOLEAN);
   if (value && !value->GetBool()) {
-    // NOTE: Using GetThemePrefNameInMigration is invalid since FeatureList is
-    // not initialized yet (see crbug.com/361121492). As a workaround, both the
-    // prefs are written to instead.
-    prefs->SetValue(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse,
-                    base::Value(base::Value::Type::DICT));
-    prefs->SetValue(prefs::kNtpCustomBackgroundDictDoNotUse,
+    prefs->SetValue(prefs::kNtpCustomBackgroundDict,
                     base::Value(base::Value::Type::DICT));
   }
 }

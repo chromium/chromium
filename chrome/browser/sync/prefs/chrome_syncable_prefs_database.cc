@@ -518,7 +518,7 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kHomePageIsNewTabPage, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-    {prefs::kNtpCustomBackgroundDictDoNotUse,
+    {prefs::kDeprecatedNtpCustomBackgroundDictDoNotUse,
      {syncable_prefs_ids::kNtpCustomBackgroundDict, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},

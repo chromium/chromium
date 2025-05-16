@@ -1262,8 +1262,8 @@ TEST_F(RealThemeSyncableServiceTest, ShouldDownloadNtpBackground) {
           .Set(kNtpCustomBackgroundRefreshTimestamp,
                static_cast<int>(1234567890))
           .Set(kNtpCustomBackgroundMainColor, static_cast<int>(SK_ColorRED));
-  const base::Value* value = profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse);
+  const base::Value* value =
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kNtpCustomBackgroundDict);
   ASSERT_TRUE(value);
   EXPECT_EQ(*value, expected_value);
 }
@@ -1290,7 +1290,7 @@ TEST_F(RealThemeSyncableServiceTest, ShouldUploadNtpBackground) {
                static_cast<int>(1234567890))
           .Set(kNtpCustomBackgroundMainColor, static_cast<int>(SK_ColorRED));
 
-  profile()->GetPrefs()->Set(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse,
+  profile()->GetPrefs()->Set(prefs::kNtpCustomBackgroundDict,
                              base::Value(new_value.Clone()));
 
   const syncer::SyncChangeList& changes = fake_change_processor()->changes();
@@ -1308,7 +1308,7 @@ TEST_F(RealThemeSyncableServiceTest, ShouldUploadNtpBackground) {
 
   // Verify that the old pref is updated.
   EXPECT_THAT(profile()->GetPrefs()->GetUserPrefValue(
-                  prefs::kNtpCustomBackgroundDictDoNotUse),
+                  prefs::kDeprecatedNtpCustomBackgroundDictDoNotUse),
               DictionaryValuePtrHas(kNtpCustomBackgroundURL, kTestUrl));
 }
 
@@ -1327,7 +1327,7 @@ TEST_F(RealThemeSyncableServiceTest,
                static_cast<int>(1234567890))
           .Set(kNtpCustomBackgroundMainColor, static_cast<int>(SK_ColorRED));
 
-  profile()->GetPrefs()->Set(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse,
+  profile()->GetPrefs()->Set(prefs::kNtpCustomBackgroundDict,
                              base::Value(new_value.Clone()));
 
   // Mark ntp background set from local resource.
@@ -1351,7 +1351,7 @@ TEST_F(RealThemeSyncableServiceTest,
 
   // Verify that the old pref is not updated.
   EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kNtpCustomBackgroundDictDoNotUse));
+      prefs::kDeprecatedNtpCustomBackgroundDictDoNotUse));
 }
 
 TEST_F(RealThemeSyncableServiceTest, ShouldApplyRemoteNtpBackgroundChange) {
@@ -1363,8 +1363,8 @@ TEST_F(RealThemeSyncableServiceTest, ShouldApplyRemoteNtpBackgroundChange) {
               fake_change_processor()));
   ASSERT_FALSE(error.has_value()) << error.value().message();
 
-  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kNtpCustomBackgroundDict));
 
   // Process change with background set.
   {
@@ -1375,17 +1375,16 @@ TEST_F(RealThemeSyncableServiceTest, ShouldApplyRemoteNtpBackgroundChange) {
         FROM_HERE, MakeThemeChangeList(theme_specifics)));
   }
 
-  EXPECT_THAT(profile()->GetPrefs()->GetUserPrefValue(
-                  prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse),
-              DictionaryValuePtrHas(kNtpCustomBackgroundURL, kTestUrl));
+  EXPECT_THAT(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kNtpCustomBackgroundDict),
+      DictionaryValuePtrHas(kNtpCustomBackgroundURL, kTestUrl));
 }
 
 TEST_F(RealThemeSyncableServiceTest,
        ShouldNotApplyEmptyRemoteNtpBackgroundChange) {
   {
-    ScopedDictPrefUpdate dict(
-        profile()->GetPrefs(),
-        prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse);
+    ScopedDictPrefUpdate dict(profile()->GetPrefs(),
+                              prefs::kNtpCustomBackgroundDict);
     dict->Set(kNtpCustomBackgroundURL, kTestUrl);
   }
 
@@ -1397,9 +1396,9 @@ TEST_F(RealThemeSyncableServiceTest,
               fake_change_processor()));
   ASSERT_FALSE(error.has_value()) << error.value().message();
 
-  EXPECT_THAT(profile()->GetPrefs()->GetUserPrefValue(
-                  prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse),
-              DictionaryValuePtrHas(kNtpCustomBackgroundURL, kTestUrl));
+  EXPECT_THAT(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kNtpCustomBackgroundDict),
+      DictionaryValuePtrHas(kNtpCustomBackgroundURL, kTestUrl));
 
   // Process change with empty background.
   {
@@ -1410,16 +1409,15 @@ TEST_F(RealThemeSyncableServiceTest,
   }
 
   // Removed as the default theme is applied.
-  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kNtpCustomBackgroundDict));
 }
 
 TEST_F(RealThemeSyncableServiceTest,
        ShouldNotApplyMissingRemoteNtpBackgroundChange) {
   {
-    ScopedDictPrefUpdate dict(
-        profile()->GetPrefs(),
-        prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse);
+    ScopedDictPrefUpdate dict(profile()->GetPrefs(),
+                              prefs::kNtpCustomBackgroundDict);
     dict->Set(kNtpCustomBackgroundURL, kTestUrl);
   }
 
@@ -1431,9 +1429,9 @@ TEST_F(RealThemeSyncableServiceTest,
               fake_change_processor()));
   ASSERT_FALSE(error.has_value()) << error.value().message();
 
-  EXPECT_THAT(profile()->GetPrefs()->GetUserPrefValue(
-                  prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse),
-              DictionaryValuePtrHas(kNtpCustomBackgroundURL, kTestUrl));
+  EXPECT_THAT(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kNtpCustomBackgroundDict),
+      DictionaryValuePtrHas(kNtpCustomBackgroundURL, kTestUrl));
 
   // Process change with background not set.
   {
@@ -1445,8 +1443,8 @@ TEST_F(RealThemeSyncableServiceTest,
   }
 
   // Removed as the default theme is applied.
-  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kNtpCustomBackgroundDict));
 }
 
 TEST_F(RealThemeSyncableServiceTest,
@@ -1825,9 +1823,9 @@ TEST_F(RealThemeSyncableServiceTest,
   EXPECT_EQ(theme_service()->GetUserColor(), SK_ColorRED);
   EXPECT_EQ(theme_service()->GetBrowserColorVariant(),
             ui::mojom::BrowserColorVariant::kTonalSpot);
-  EXPECT_THAT(profile()->GetPrefs()->GetUserPrefValue(
-                  prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse),
-              DictionaryValuePtrHas(kNtpCustomBackgroundURL, kTestUrl));
+  EXPECT_THAT(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kNtpCustomBackgroundDict),
+      DictionaryValuePtrHas(kNtpCustomBackgroundURL, kTestUrl));
 }
 
 TEST_F(RealThemeSyncableServiceTest, ShouldApplyNtpBackgroundWithGrayscale) {
@@ -1852,9 +1850,9 @@ TEST_F(RealThemeSyncableServiceTest, ShouldApplyNtpBackgroundWithGrayscale) {
   EXPECT_EQ(theme_service()->GetBrowserColorVariant(),
             ui::mojom::BrowserColorVariant::kSystem);
   EXPECT_TRUE(theme_service()->GetIsGrayscale());
-  EXPECT_THAT(profile()->GetPrefs()->GetUserPrefValue(
-                  prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse),
-              DictionaryValuePtrHas(kNtpCustomBackgroundURL, kTestUrl));
+  EXPECT_THAT(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kNtpCustomBackgroundDict),
+      DictionaryValuePtrHas(kNtpCustomBackgroundURL, kTestUrl));
 }
 
 TEST_F(RealThemeSyncableServiceTest,
@@ -1881,9 +1879,9 @@ TEST_F(RealThemeSyncableServiceTest,
   EXPECT_EQ(theme_service()->GetBrowserColorVariant(),
             ui::mojom::BrowserColorVariant::kSystem);
   EXPECT_FALSE(theme_service()->GetIsGrayscale());
-  EXPECT_THAT(profile()->GetPrefs()->GetUserPrefValue(
-                  prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse),
-              DictionaryValuePtrHas(kNtpCustomBackgroundURL, kTestUrl));
+  EXPECT_THAT(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kNtpCustomBackgroundDict),
+      DictionaryValuePtrHas(kNtpCustomBackgroundURL, kTestUrl));
 }
 
 TEST_F(RealThemeSyncableServiceTest,
@@ -1991,8 +1989,8 @@ TEST_F(RealThemeSyncableServiceTest, ShouldUpdateOldSyncingThemePrefs) {
       prefs::kDeprecatedBrowserColorVariantDoNotUse));
   ASSERT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
       prefs::kDeprecatedGrayscaleThemeEnabledDoNotUse));
-  ASSERT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+  ASSERT_FALSE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kNtpCustomBackgroundDict));
 
   // Set user color theme.
   theme_service()->SetUserColorAndBrowserColorVariant(
@@ -2012,8 +2010,8 @@ TEST_F(RealThemeSyncableServiceTest, ShouldUpdateOldSyncingThemePrefs) {
   // Other prefs are cleared.
   EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
       prefs::kDeprecatedGrayscaleThemeEnabledDoNotUse));
-  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kNtpCustomBackgroundDict));
 
   // Set grayscale theme.
   theme_service()->SetIsGrayscale(true);
@@ -2028,19 +2026,18 @@ TEST_F(RealThemeSyncableServiceTest, ShouldUpdateOldSyncingThemePrefs) {
       prefs::kDeprecatedUserColorDoNotUse));
   EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
       prefs::kDeprecatedBrowserColorVariantDoNotUse));
-  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kNtpCustomBackgroundDict));
 
   // Set ntp background.
   {
-    ScopedDictPrefUpdate dict(
-        profile()->GetPrefs(),
-        prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse);
+    ScopedDictPrefUpdate dict(profile()->GetPrefs(),
+                              prefs::kNtpCustomBackgroundDict);
     dict->Set(kNtpCustomBackgroundURL, kTestUrl);
   }
 
-  EXPECT_TRUE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kNtpCustomBackgroundDict));
 
   // Other prefs are left as-is.
   EXPECT_TRUE(profile()->GetPrefs()->GetUserPrefValue(
@@ -2060,8 +2057,8 @@ TEST_F(RealThemeSyncableServiceTest, ShouldUpdateOldSyncingThemePrefs) {
       prefs::kDeprecatedBrowserColorVariantDoNotUse));
   EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
       prefs::kDeprecatedGrayscaleThemeEnabledDoNotUse));
-  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kNtpCustomBackgroundDict));
 }
 
 // Regression test for crbug.com/389026436.
@@ -2079,7 +2076,7 @@ TEST_F(RealThemeSyncableServiceTest, ClearLocalNtpBackgroundIfRemoteEmpty) {
           .Set(kNtpCustomBackgroundRefreshTimestamp, 1234567890)
           .Set(kNtpCustomBackgroundMainColor, static_cast<int>(SK_ColorRED));
 
-  profile()->GetPrefs()->Set(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse,
+  profile()->GetPrefs()->Set(prefs::kNtpCustomBackgroundDict,
                              base::Value(new_value.Clone()));
 
   // Remote theme.
@@ -2102,8 +2099,8 @@ TEST_F(RealThemeSyncableServiceTest, ClearLocalNtpBackgroundIfRemoteEmpty) {
   ASSERT_FALSE(error.has_value()) << error.value().message();
 
   // Local ntp background is cleared.
-  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kNtpCustomBackgroundDict));
 }
 
 // Regression test for crbug.com/391114025.
@@ -2122,7 +2119,7 @@ TEST_F(RealThemeSyncableServiceTest,
           .Set(kNtpCustomBackgroundRefreshTimestamp, 1234567890)
           .Set(kNtpCustomBackgroundMainColor, static_cast<int>(SK_ColorRED));
 
-  profile()->GetPrefs()->Set(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse,
+  profile()->GetPrefs()->Set(prefs::kNtpCustomBackgroundDict,
                              base::Value(new_value.Clone()));
 
   // Remote theme does not contain new fields, thus an old ThemeSpecifics.
@@ -2143,10 +2140,9 @@ TEST_F(RealThemeSyncableServiceTest,
   // intentionally clear the background, just left it unset.
   EXPECT_TRUE(theme_service()->UsingAutogeneratedTheme());
   EXPECT_EQ(theme_service()->GetAutogeneratedThemeColor(), SK_ColorBLUE);
-  EXPECT_TRUE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
-  EXPECT_EQ(profile()->GetPrefs()->GetDict(
-                prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse),
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kNtpCustomBackgroundDict));
+  EXPECT_EQ(profile()->GetPrefs()->GetDict(prefs::kNtpCustomBackgroundDict),
             new_value);
 
   // The merged theme should be committed to the server.
@@ -2177,7 +2173,7 @@ TEST_F(RealThemeSyncableServiceTest,
           .Set(kNtpCustomBackgroundRefreshTimestamp, 1234567890)
           .Set(kNtpCustomBackgroundMainColor, static_cast<int>(SK_ColorRED));
 
-  profile()->GetPrefs()->Set(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse,
+  profile()->GetPrefs()->Set(prefs::kNtpCustomBackgroundDict,
                              base::Value(new_value.Clone()));
 
   // Remote theme does not contain new fields, thus an old ThemeSpecifics.
@@ -2194,10 +2190,9 @@ TEST_F(RealThemeSyncableServiceTest,
 
   // Local ntp background is still there since default remote themes are ignored
   // in the initial update.
-  EXPECT_TRUE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
-  EXPECT_EQ(profile()->GetPrefs()->GetDict(
-                prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse),
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kNtpCustomBackgroundDict));
+  EXPECT_EQ(profile()->GetPrefs()->GetDict(prefs::kNtpCustomBackgroundDict),
             new_value);
 
   sync_pb::ThemeSpecifics current_specifics =
@@ -2223,7 +2218,7 @@ TEST_F(RealThemeSyncableServiceTest,
           .Set(kNtpCustomBackgroundRefreshTimestamp, 1234567890)
           .Set(kNtpCustomBackgroundMainColor, static_cast<int>(SK_ColorRED));
 
-  profile()->GetPrefs()->Set(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse,
+  profile()->GetPrefs()->Set(prefs::kNtpCustomBackgroundDict,
                              base::Value(new_value.Clone()));
 
   // Remote theme contains new fields, thus a new ThemeSpecifics.
@@ -2244,8 +2239,8 @@ TEST_F(RealThemeSyncableServiceTest,
   // Local ntp background is cleared, because the remote client must have
   // explicitly cleared it.
   EXPECT_TRUE(theme_service()->UsingAutogeneratedTheme());
-  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kNtpCustomBackgroundDict));
 
   // The remote theme wins and nothing is committed to the server.
   ASSERT_EQ(fake_change_processor()->changes().size(), 0u);
@@ -2266,7 +2261,7 @@ TEST_F(RealThemeSyncableServiceTest,
           .Set(kNtpCustomBackgroundRefreshTimestamp, 1234567890)
           .Set(kNtpCustomBackgroundMainColor, static_cast<int>(SK_ColorRED));
 
-  profile()->GetPrefs()->Set(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse,
+  profile()->GetPrefs()->Set(prefs::kNtpCustomBackgroundDict,
                              base::Value(new_value.Clone()));
 
   // Remote theme contains new fields, thus a new ThemeSpecifics.
@@ -2285,10 +2280,9 @@ TEST_F(RealThemeSyncableServiceTest,
 
   // Local ntp background is still there since default remote themes are ignored
   // in the initial update.
-  EXPECT_TRUE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
-  EXPECT_EQ(profile()->GetPrefs()->GetDict(
-                prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse),
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kNtpCustomBackgroundDict));
+  EXPECT_EQ(profile()->GetPrefs()->GetDict(prefs::kNtpCustomBackgroundDict),
             new_value);
 
   sync_pb::ThemeSpecifics current_specifics =
@@ -2377,8 +2371,8 @@ TEST_F(RealThemeSyncableServiceTest,
   theme_specifics.set_browser_color_scheme(
       ::sync_pb::ThemeSpecifics_BrowserColorScheme_SYSTEM);
   theme_specifics.mutable_ntp_background()->set_url(kTestUrl);
-  ASSERT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+  ASSERT_FALSE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kNtpCustomBackgroundDict));
 
   // Start syncing.
   std::optional<syncer::ModelError> error =
@@ -2388,8 +2382,8 @@ TEST_F(RealThemeSyncableServiceTest,
               fake_change_processor()));
   ASSERT_FALSE(error.has_value()) << error.value().message();
 
-  EXPECT_TRUE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kNtpCustomBackgroundDict));
   // Local user color is cleared since the remote client must have explicitly
   // cleared it.
   EXPECT_NE(theme_service()->GetThemeID(), ThemeService::kUserColorThemeID);
@@ -2498,9 +2492,8 @@ TEST_F(RealThemeSyncableServiceTest,
 
   // Set custom ntp background pref.
   {
-    ScopedDictPrefUpdate dict(
-        profile()->GetPrefs(),
-        prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse);
+    ScopedDictPrefUpdate dict(profile()->GetPrefs(),
+                              prefs::kNtpCustomBackgroundDict);
     dict->Set(kNtpCustomBackgroundURL, kTestUrl);
   }
   task_environment()->RunUntilIdle();
@@ -2706,9 +2699,8 @@ TEST_P(ThemeSyncableServiceVerifyFinalStateTest, LocalGrayscaleTheme) {
 TEST_P(ThemeSyncableServiceVerifyFinalStateTest, LocalBackground) {
   // Local custom ntp background.
   {
-    ScopedDictPrefUpdate dict(
-        profile()->GetPrefs(),
-        prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse);
+    ScopedDictPrefUpdate dict(profile()->GetPrefs(),
+                              prefs::kNtpCustomBackgroundDict);
     dict->Set(kNtpCustomBackgroundURL, kTestUrl);
   }
 
@@ -2963,7 +2955,7 @@ TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
                static_cast<int>(1234567890))
           .Set(kNtpCustomBackgroundMainColor, static_cast<int>(SK_ColorRED));
 
-  profile()->GetPrefs()->Set(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse,
+  profile()->GetPrefs()->Set(prefs::kNtpCustomBackgroundDict,
                              base::Value(background_dict.Clone()));
 
   // Start initial sync.
@@ -3303,8 +3295,8 @@ TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
     waiter.WaitForThemeChanged();
   }
   EXPECT_TRUE(theme_service()->UsingExtensionTheme());
-  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kNtpCustomBackgroundDict));
 
   // Set saved local theme pref.
   sync_pb::ThemeSpecifics local_theme_specifics;
@@ -3333,8 +3325,7 @@ TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
   }
   EXPECT_FALSE(theme_service()->UsingExtensionTheme());
   EXPECT_EQ(
-      profile()->GetPrefs()->GetDict(
-          prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse),
+      profile()->GetPrefs()->GetDict(prefs::kNtpCustomBackgroundDict),
       base::Value::Dict()
           .Set(kNtpCustomBackgroundURL, kTestUrl)
           .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
@@ -3372,8 +3363,8 @@ TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
     waiter.WaitForThemeChanged();
   }
   EXPECT_TRUE(theme_service()->UsingExtensionTheme());
-  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kNtpCustomBackgroundDict));
 
   base::HistogramTester histogram_tester;
   // Stop syncing.
@@ -3615,9 +3606,9 @@ class ThemePrefsMigrationTest : public ::testing::Test {
         prefs::kDeprecatedGrayscaleThemeEnabledDoNotUse, false,
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
     registry->RegisterBooleanPref(prefs::kGrayscaleThemeEnabled, false);
-    registry->RegisterDictionaryPref(prefs::kNtpCustomBackgroundDictDoNotUse);
     registry->RegisterDictionaryPref(
-        prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse);
+        prefs::kDeprecatedNtpCustomBackgroundDictDoNotUse);
+    registry->RegisterDictionaryPref(prefs::kNtpCustomBackgroundDict);
   }
 
  protected:
@@ -3651,7 +3642,7 @@ TEST_F(ThemePrefsMigrationTest, MigrateSyncingNtpPrefToNonSyncing) {
   EXPECT_FALSE(pref_service_.HasPrefPath(prefs::kUserColor));
 
   pref_service_.SetDict(
-      prefs::kNtpCustomBackgroundDictDoNotUse,
+      prefs::kDeprecatedNtpCustomBackgroundDictDoNotUse,
       base::Value::Dict()
           .Set(kNtpCustomBackgroundURL, kTestUrl)
           .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")

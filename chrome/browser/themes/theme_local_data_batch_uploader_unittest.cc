@@ -579,7 +579,7 @@ TEST_P(ThemeLocalDataBatchUploaderTest, LocalNtpBackground) {
                static_cast<int>(1234567890))
           .Set(kNtpCustomBackgroundMainColor, static_cast<int>(SK_ColorRED));
 
-  profile()->GetPrefs()->Set(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse,
+  profile()->GetPrefs()->Set(prefs::kNtpCustomBackgroundDict,
                              base::Value(background_dict.Clone()));
 
   const sync_pb::ThemeSpecifics local_theme_specifics =
@@ -598,16 +598,14 @@ TEST_P(ThemeLocalDataBatchUploaderTest, LocalNtpBackground) {
                   /*item_count=*/0u, /*domains=*/IsEmpty(),
                   /*domain_count=*/0u));
 
-  EXPECT_NE(profile()->GetPrefs()->GetDict(
-                prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse),
+  EXPECT_NE(profile()->GetPrefs()->GetDict(prefs::kNtpCustomBackgroundDict),
             background_dict);
   EXPECT_THAT(
       theme_sync_service()->GetThemeSpecificsFromCurrentThemeForTesting(),
       EqualsProto(remote_theme_specifics));
 
   TriggerLocalDataMigration();
-  EXPECT_EQ(profile()->GetPrefs()->GetDict(
-                prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse),
+  EXPECT_EQ(profile()->GetPrefs()->GetDict(prefs::kNtpCustomBackgroundDict),
             background_dict);
   EXPECT_THAT(
       theme_sync_service()->GetThemeSpecificsFromCurrentThemeForTesting(),
@@ -620,8 +618,8 @@ TEST_P(ThemeLocalDataBatchUploaderTest, LocalNtpBackground) {
   EXPECT_THAT(GetLocalDataDescription(), IsEmptyLocalDataDescription());
 
   theme_sync_service()->StopSyncing(syncer::THEMES);
-  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
-      prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kNtpCustomBackgroundDict));
   EXPECT_TRUE(theme_service()->UsingDefaultTheme());
 }
 
