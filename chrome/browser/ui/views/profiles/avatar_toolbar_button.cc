@@ -266,7 +266,7 @@ bool AvatarToolbarButton::ShouldPaintBorder() const {
 }
 
 bool AvatarToolbarButton::ShouldBlendHighlightColor() const {
-  return this->GetWidget() && this->GetWidget()->GetCustomTheme();
+  return delegate_->ShouldBlendHighlightColor();
 }
 
 base::ScopedClosureRunner AvatarToolbarButton::ShowExplicitText(

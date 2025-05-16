@@ -39,10 +39,12 @@
   E_CPONLY(kColorAvatarButtonHighlightSigninPaused) \
   E_CPONLY(kColorAvatarButtonHighlightExplicitText) \
   E_CPONLY(kColorAvatarButtonHighlightIncognito) \
+  E_CPONLY(kColorAvatarButtonHighlightManagement) \
   E_CPONLY(kColorAvatarButtonHighlightNormalForeground) \
   E_CPONLY(kColorAvatarButtonHighlightDefaultForeground) \
   E_CPONLY(kColorAvatarButtonHighlightSyncErrorForeground) \
   E_CPONLY(kColorAvatarButtonHighlightIncognitoForeground) \
+  E_CPONLY(kColorAvatarButtonHighlightManagementForeground) \
   E_CPONLY(kColorAvatarButtonIncognitoHover) \
   E_CPONLY(kColorAvatarButtonNormalRipple) \
   E_CPONLY(kColorAvatarStroke) \

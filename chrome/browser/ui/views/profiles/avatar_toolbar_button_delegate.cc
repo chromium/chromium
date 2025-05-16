@@ -1713,6 +1713,11 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
     }
     case ButtonState::kManagement: {
       text = enterprise_util::GetEnterpriseLabel(profile_, /*truncated=*/true);
+      if (base::FeatureList::IsEnabled(
+              features::
+                  kEnableAppMenuButtonColorsForDefaultAvatarButtonStates)) {
+        color = color_provider->GetColor(kColorAvatarButtonHighlightManagement);
+      }
       break;
     }
     case ButtonState::kNormal:
@@ -1798,7 +1803,6 @@ SkColor AvatarToolbarButtonDelegate::GetHighlightTextColor(
             kColorAvatarButtonHighlightSyncErrorForeground);
       }
       [[fallthrough]];
-    case ButtonState::kManagement:
     case ButtonState::kSigninPending:
     case ButtonState::kUpgradeClientError:
     case ButtonState::kPassphraseError:
@@ -1814,6 +1818,14 @@ SkColor AvatarToolbarButtonDelegate::GetHighlightTextColor(
     case ButtonState::kNormal:
       return color_provider->GetColor(
           kColorAvatarButtonHighlightNormalForeground);
+    case ButtonState::kManagement:
+      return base::FeatureList::IsEnabled(
+                 features::
+                     kEnableAppMenuButtonColorsForDefaultAvatarButtonStates)
+                 ? color_provider->GetColor(
+                       kColorAvatarButtonHighlightManagementForeground)
+                 : color_provider->GetColor(
+                       kColorAvatarButtonHighlightDefaultForeground);
   }
 }
 
@@ -1958,6 +1970,33 @@ bool AvatarToolbarButtonDelegate::ShouldPaintBorder() const {
     case ButtonState::kSyncPaused:
     case ButtonState::kSyncError:
       return false;
+  }
+}
+
+bool AvatarToolbarButtonDelegate::ShouldBlendHighlightColor() const {
+  switch (state_manager_->GetButtonActiveState()) {
+    case ButtonState::kManagement:
+      return base::FeatureList::IsEnabled(
+                 features::
+                     kEnableAppMenuButtonColorsForDefaultAvatarButtonStates)
+                 ? false
+                 : avatar_toolbar_button_->GetWidget() &&
+                       avatar_toolbar_button_->GetWidget()->GetCustomTheme();
+    case ButtonState::kShowIdentityName:
+    case ButtonState::kNormal:
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    case ButtonState::kHistorySyncOptin:
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+    case ButtonState::kIncognitoProfile:
+    case ButtonState::kExplicitTextShowing:
+    case ButtonState::kSigninPending:
+    case ButtonState::kUpgradeClientError:
+    case ButtonState::kPassphraseError:
+    case ButtonState::kSyncPaused:
+    case ButtonState::kSyncError:
+    case ButtonState::kGuestSession:
+      return avatar_toolbar_button_->GetWidget() &&
+             avatar_toolbar_button_->GetWidget()->GetCustomTheme();
   }
 }
 
