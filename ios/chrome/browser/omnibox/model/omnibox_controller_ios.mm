@@ -103,9 +103,7 @@ void OmniboxControllerIOS::OnResultChanged(AutocompleteController* controller,
       edit_model_->OnCurrentMatchChanged();
     } else {
       edit_model_->OnPopupResultChanged();
-      edit_model_->OnPopupDataChanged(std::u16string(),
-                                      /*is_temporary_text=*/false,
-                                      std::u16string(), std::u16string(),
+      edit_model_->OnPopupDataChanged(std::u16string(), std::u16string(),
                                       AutocompleteMatch());
     }
   } else {
@@ -118,9 +116,6 @@ void OmniboxControllerIOS::OnResultChanged(AutocompleteController* controller,
   }
 
   if (popup_was_open && !popup_is_open) {
-    // Accept the temporary text as the user text, because it makes little sense
-    // to have temporary text when the popup is closed.
-    edit_model_->AcceptTemporaryTextAsUserText();
     // Closing the popup can change the default suggestion. This usually occurs
     // when it's unclear whether the input represents a search or URL; e.g.,
     // 'a.com/b c' or when title autocompleting. Clear the additional text to

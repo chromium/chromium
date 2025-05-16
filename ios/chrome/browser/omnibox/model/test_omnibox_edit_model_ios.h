@@ -28,16 +28,11 @@ class TestOmniboxEditModelIOS : public OmniboxEditModelIOS {
 
   void SetCurrentMatchForTest(const AutocompleteMatch& match);
 
-  void OnPopupDataChanged(const std::u16string& temporary_text,
-                          bool is_temporary_text,
-                          const std::u16string& inline_autocompletion,
+  void OnPopupDataChanged(const std::u16string& inline_autocompletion,
                           const std::u16string& additional_text,
                           const AutocompleteMatch& match) override;
 
-  bool HasTemporaryText() { return has_temporary_text_; }
-
   const std::u16string& text() const { return text_; }
-  bool is_temporary_text() const { return is_temporary_text_; }
 
  protected:
   PrefService* GetPrefService() override;
@@ -49,7 +44,6 @@ class TestOmniboxEditModelIOS : public OmniboxEditModelIOS {
 
   // Contains the most recent text passed by the popup model to the edit model.
   std::u16string text_;
-  bool is_temporary_text_ = false;
   raw_ptr<PrefService> pref_service_;
 };
 

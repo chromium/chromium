@@ -256,9 +256,7 @@ TEST_F(OmniboxEditModelIOSTest, DISABLED_InlineAutocompleteText) {
   // Test if the model updates the inline autocomplete text in the view.
   EXPECT_EQ(std::u16string(), view()->inline_autocompletion());
   model()->SetUserText(u"he");
-  model()->OnPopupDataChanged(std::u16string(),
-                              /*is_temporary_text=*/false, u"llo",
-                              std::u16string(), {});
+  model()->OnPopupDataChanged(u"llo", std::u16string(), {});
   EXPECT_EQ(u"hello", view()->GetText());
   EXPECT_EQ(u"llo", view()->inline_autocompletion());
 
@@ -268,9 +266,7 @@ TEST_F(OmniboxEditModelIOSTest, DISABLED_InlineAutocompleteText) {
       &text_before, &text_after, 3, 3, false, true, false};
   model()->OnAfterPossibleChange(state_changes);
   EXPECT_EQ(std::u16string(), view()->inline_autocompletion());
-  model()->OnPopupDataChanged(std::u16string(),
-                              /*is_temporary_text=*/false, u"lo",
-                              std::u16string(), {});
+  model()->OnPopupDataChanged(u"lo", std::u16string(), {});
   EXPECT_EQ(u"hello", view()->GetText());
   EXPECT_EQ(u"lo", view()->inline_autocompletion());
 
@@ -279,36 +275,9 @@ TEST_F(OmniboxEditModelIOSTest, DISABLED_InlineAutocompleteText) {
   EXPECT_EQ(std::u16string(), view()->inline_autocompletion());
 
   model()->SetUserText(u"he");
-  model()->OnPopupDataChanged(std::u16string(),
-                              /*is_temporary_text=*/false, u"llo",
-                              std::u16string(), {});
+  model()->OnPopupDataChanged(u"llo", std::u16string(), {});
   EXPECT_EQ(u"hello", view()->GetText());
   EXPECT_EQ(u"llo", view()->inline_autocompletion());
-
-  model()->AcceptTemporaryTextAsUserText();
-  EXPECT_EQ(u"hello", view()->GetText());
-  EXPECT_EQ(std::u16string(), view()->inline_autocompletion());
-}
-
-TEST_F(OmniboxEditModelIOSTest, RevertZeroSuggestTemporaryText) {
-  location_bar_model()->set_url(GURL("https://www.example.com/"));
-  location_bar_model()->set_url_for_display(u"https://www.example.com/");
-
-  EXPECT_TRUE(model()->ResetDisplayTexts());
-  model()->Revert();
-
-  // Simulate getting ZeroSuggestions and arrowing to a different match.
-  view()->SelectAll(true);
-  model()->StartZeroSuggestRequest();
-  model()->OnPopupDataChanged(u"fake_temporary_text",
-                              /*is_temporary_text=*/true, std::u16string(),
-                              std::u16string(), {});
-
-  // Test that reverting brings back the original input text.
-  EXPECT_TRUE(model()->OnEscapeKeyPressed());
-  EXPECT_EQ(u"https://www.example.com/", view()->GetText());
-  EXPECT_FALSE(model()->user_input_in_progress());
-  EXPECT_TRUE(view()->IsSelectAll());
 }
 
 // This verifies the fix for a bug where calling OpenMatch() with a valid
@@ -450,20 +419,6 @@ TEST_F(OmniboxEditModelIOSTest, CtrlEnterNavigatesToDesiredTLD) {
             model()->GetInputForTesting().canonicalized_url());
 }
 
-TEST_F(OmniboxEditModelIOSTest, CtrlEnterNavigatesToDesiredTLDTemporaryText) {
-  // But if it's the temporary text, the View text should be used.
-  view()->SetUserText(u"foo");
-  model()->StartAutocomplete(false, false);
-  model()->OnPopupDataChanged(u"foobar",
-                              /*is_temporary_text=*/true, std::u16string(),
-                              std::u16string(), {});
-
-  model()->OnControlKeyChanged(true);
-  model()->OpenSelection();
-  EXPECT_EQ(GURL("http://www.foobar.com/"),
-            model()->GetInputForTesting().canonicalized_url());
-}
-
 TEST_F(OmniboxEditModelIOSTest,
        CtrlEnterNavigatesToDesiredTLDSteadyStateElisions) {
   location_bar_model()->set_url(GURL("https://www.example.com/"));
@@ -540,7 +495,7 @@ class OmniboxEditModelIOSPopupTest : public PlatformTest {
 };
 
 TEST_F(OmniboxEditModelIOSTest, OmniboxEscapeHistogram) {
-  // Escape should incrementally revert temporary text, close the popup, clear
+  // Escape should incrementally close the popup, clear
   // input, and blur the omnibox.
   AutocompleteMatch match;
   match.type = AutocompleteMatchType::NAVSUGGEST;
@@ -551,27 +506,11 @@ TEST_F(OmniboxEditModelIOSTest, OmniboxEscapeHistogram) {
   model()->OnSetFocus(false);
   model()->SetInputInProgress(true);
   model()->SetPopupIsOpen(true);
-  model()->OnPopupDataChanged(/*temporary_text=*/u"fake_temporary_text",
-                              /*is_temporary_text=*/true, std::u16string(),
-                              std::u16string(), {});
+  model()->OnPopupDataChanged(std::u16string(), std::u16string(), {});
 
-  EXPECT_TRUE(model()->HasTemporaryText());
   EXPECT_TRUE(model()->PopupIsOpen());
-  EXPECT_EQ(view()->GetText(), u"fake_temporary_text");
   EXPECT_TRUE(model()->user_input_in_progress());
   EXPECT_TRUE(model()->has_focus());
-
-  {
-    // Revert temporary text.
-    base::HistogramTester histogram_tester;
-    EXPECT_TRUE(model()->OnEscapeKeyPressed());
-    histogram_tester.ExpectUniqueSample("Omnibox.Escape", 1, 1);
-    EXPECT_FALSE(model()->HasTemporaryText());
-    EXPECT_TRUE(model()->PopupIsOpen());
-    EXPECT_EQ(view()->GetText(), u"");
-    EXPECT_TRUE(model()->user_input_in_progress());
-    EXPECT_TRUE(model()->has_focus());
-  }
 
   {
     // Close the popup.
@@ -580,9 +519,8 @@ TEST_F(OmniboxEditModelIOSTest, OmniboxEscapeHistogram) {
     histogram_tester.ExpectUniqueSample("Omnibox.Escape", 2, 1);
     model()->SetPopupIsOpen(
         false);  // `TestOmniboxEditModelIOS` stubs the popup.
-    EXPECT_FALSE(model()->HasTemporaryText());
     EXPECT_FALSE(model()->PopupIsOpen());
-    EXPECT_EQ(view()->GetText(), u"");
+    EXPECT_EQ(view()->GetText(), u"user text");
     EXPECT_TRUE(model()->user_input_in_progress());
     EXPECT_TRUE(model()->has_focus());
   }
@@ -592,7 +530,6 @@ TEST_F(OmniboxEditModelIOSTest, OmniboxEscapeHistogram) {
     base::HistogramTester histogram_tester;
     EXPECT_TRUE(model()->OnEscapeKeyPressed());
     histogram_tester.ExpectUniqueSample("Omnibox.Escape", 3, 1);
-    EXPECT_FALSE(model()->HasTemporaryText());
     EXPECT_FALSE(model()->PopupIsOpen());
     EXPECT_EQ(view()->GetText(), u"");
     EXPECT_FALSE(model()->user_input_in_progress());
@@ -606,7 +543,6 @@ TEST_F(OmniboxEditModelIOSTest, OmniboxEscapeHistogram) {
     histogram_tester.ExpectUniqueSample("Omnibox.Escape", 5, 1);
     model()->OnKillFocus();  // `TestOmniboxEditModelIOS` stubs the client which
                              // handles blurring the omnibox.
-    EXPECT_FALSE(model()->HasTemporaryText());
     EXPECT_FALSE(model()->PopupIsOpen());
     EXPECT_EQ(view()->GetText(), u"");
     EXPECT_FALSE(model()->user_input_in_progress());

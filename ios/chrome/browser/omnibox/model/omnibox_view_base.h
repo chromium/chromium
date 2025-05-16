@@ -124,17 +124,6 @@ class OmniboxViewBase {
                                      const AutocompleteMatch& match,
                                      bool notify_text_changed) {}
 
-  // Called when the temporary text in the model may have changed.
-  // `display_text` is the new text to show; `match_type` is the type of the
-  // match the new text came from. `save_original_selection` is true when there
-  // wasn't previously a temporary text and thus we need to save off the user's
-  // existing selection. `notify_text_changed` is true if the model should be
-  // notified of the change.
-  virtual void OnTemporaryTextMaybeChanged(const std::u16string& display_text,
-                                           const AutocompleteMatch& match,
-                                           bool save_original_selection,
-                                           bool notify_text_changed) = 0;
-
   // Called when the inline autocomplete text in the model may have changed.
   // `user_text` is the portion of omnibox text the user typed.
   // `inline`_autocompletion` is the autocompleted part.
@@ -144,11 +133,6 @@ class OmniboxViewBase {
 
   // Called when the inline autocomplete text in the model has been cleared.
   virtual void OnInlineAutocompleteTextCleared() = 0;
-
-  // Called when the temporary text has been reverted by the user.  This will
-  // reset the user's original selection.
-  virtual void OnRevertTemporaryText(const std::u16string& display_text,
-                                     const AutocompleteMatch& match) = 0;
 
   // Checkpoints the current edit state before an operation that might trigger
   // a new autocomplete run to open or modify the popup. Call this before

@@ -260,7 +260,6 @@ OmniboxEditModelIOS::OmniboxEditModelIOS(OmniboxControllerIOS* controller,
       user_input_in_progress_(false),
       focus_resulted_in_navigation_(false),
       just_deleted_text_(false),
-      has_temporary_text_(false),
       paste_state_(NONE),
       control_key_state_(UP),
       in_revert_(false),
@@ -323,7 +322,6 @@ void OmniboxEditModelIOS::SetUserText(const std::u16string& text) {
   InternalSetUserText(text);
   GetInfoForCurrentText(&current_match_, nullptr);
   paste_state_ = NONE;
-  has_temporary_text_ = false;
 }
 
 void OmniboxEditModelIOS::OnChanged() {
@@ -497,7 +495,6 @@ void OmniboxEditModelIOS::Revert() {
   input_.Clear();
   paste_state_ = NONE;
   InternalSetUserText(std::u16string());
-  has_temporary_text_ = false;
   size_t start, end;
   if (view_) {
     view_->GetSelectionBounds(&start, &end);
@@ -609,15 +606,6 @@ void OmniboxEditModelIOS::OpenSelection(OmniboxPopupSelection selection,
 void OmniboxEditModelIOS::OpenSelection(base::TimeTicks timestamp,
                                         WindowOpenDisposition disposition) {
   OpenSelection(popup_selection_, timestamp, disposition);
-}
-
-void OmniboxEditModelIOS::AcceptTemporaryTextAsUserText() {
-  InternalSetUserText(GetText());
-  has_temporary_text_ = false;
-
-  if (user_input_in_progress_ || !in_revert_) {
-    controller_->client()->OnInputStateChanged();
-  }
 }
 
 void OmniboxEditModelIOS::ClearAdditionalText() {
@@ -732,15 +720,6 @@ void OmniboxEditModelIOS::OnKillFocus() {
 bool OmniboxEditModelIOS::OnEscapeKeyPressed() {
   const char* kOmniboxEscapeHistogramName = "Omnibox.Escape";
 
-  // If there is temporary text (i.e. a non default suggestion is selected),
-  // revert it.
-  if (has_temporary_text_) {
-    base::UmaHistogramEnumeration(kOmniboxEscapeHistogramName,
-                                  OmniboxEscapeAction::kRevertTemporaryText);
-    RevertTemporaryTextAndPopup();
-    return true;
-  }
-
   // We do not clear the pending entry from the omnibox when a load is first
   // stopped.  If the user presses Escape while stopped, whether editing or not,
   // we clear it.
@@ -818,39 +797,10 @@ void OmniboxEditModelIOS::OpenMatchForTesting(
 }
 
 void OmniboxEditModelIOS::OnPopupDataChanged(
-    const std::u16string& temporary_text,
-    bool is_temporary_text,
     const std::u16string& inline_autocompletion,
     const std::u16string& additional_text,
     const AutocompleteMatch& new_match) {
   current_match_ = new_match;
-
-  // Handle changes to temporary text.
-  if (is_temporary_text) {
-    const bool save_original_selection = !has_temporary_text_;
-    if (save_original_selection) {
-      // Save the original selection and URL so it can be reverted later.
-      has_temporary_text_ = true;
-      inline_autocompletion_.clear();
-      if (view_) {
-        view_->OnInlineAutocompleteTextCleared();
-      }
-    }
-    // Arrowing around the popup cancels control-enter.
-    ConsumeCtrlKey();
-    // Now things are a bit screwy: the desired_tld has changed, but if we
-    // update the popup, the new order of entries won't match the old, so the
-    // user's selection gets screwy; and if we don't update the popup, and the
-    // user reverts, then the selected item will be as if control is still
-    // pressed, even though maybe it isn't any more.  There is no obvious
-    // right answer here :(
-
-    if (view_) {
-      view_->OnTemporaryTextMaybeChanged(temporary_text, current_match_,
-                                         save_original_selection, true);
-    }
-    return;
-  }
 
   inline_autocompletion_ = inline_autocompletion;
   if (inline_autocompletion_.empty() && view_) {
@@ -907,7 +857,6 @@ bool OmniboxEditModelIOS::OnAfterPossibleChange(
   }
 
   InternalSetUserText(*state_changes.new_text);
-  has_temporary_text_ = false;
   just_deleted_text_ = state_changes.just_deleted_text;
 
   if (view_) {
@@ -920,7 +869,6 @@ bool OmniboxEditModelIOS::OnAfterPossibleChange(
 // Merge OnPopupDataChanged with this method once the popup
 // handling has completely migrated to omnibox_controller.
 void OmniboxEditModelIOS::OnCurrentMatchChanged() {
-  has_temporary_text_ = false;
 
   DCHECK(autocomplete_controller()->result().default_match());
   const AutocompleteMatch& match =
@@ -931,8 +879,7 @@ void OmniboxEditModelIOS::OnCurrentMatchChanged() {
   // OnPopupDataChanged() resets OmniboxControllerIOS's `current_match_` early
   // on.  Therefore, copy match.inline_autocompletion to a temp to preserve
   // its value across the entire call.
-  OnPopupDataChanged(std::u16string(),
-                     /*is_temporary_text=*/false, match.inline_autocompletion,
+  OnPopupDataChanged(match.inline_autocompletion,
 
                      match.additional_text, match);
 }
@@ -996,34 +943,6 @@ void OmniboxEditModelIOS::GetInfoForCurrentText(AutocompleteMatch* match,
     controller_->client()->GetAutocompleteClassifier()->Classify(
         text_for_match_generation, false, true, GetPageClassification(), match,
         alternate_nav_url);
-  }
-}
-
-void OmniboxEditModelIOS::RevertTemporaryTextAndPopup() {
-  // The user typed something, then selected a different item.  Restore the
-  // text they typed and change back to the default item.
-  // NOTE: This purposefully does not reset paste_state_.
-  just_deleted_text_ = false;
-  has_temporary_text_ = false;
-
-  // There are two cases in which resetting to the default match doesn't restore
-  // the proper original text:
-  //  1. If user input is not in progress, we are reverting an on-focus
-  //     suggestion. These may be unrelated to the original input.
-  //  2. If there's no default match at all.
-  //
-  // The original selection will be restored in OnRevertTemporaryText() below.
-  if ((!user_input_in_progress_ ||
-       !autocomplete_controller()->result().default_match()) &&
-      view_) {
-    view_->SetWindowTextAndCaretPos(input_.text(), /*caret_pos=*/0,
-                                    /*update_popup=*/false,
-                                    /*notify_text_changed=*/true);
-  }
-
-  if (view_) {
-    const AutocompleteMatch& match = CurrentMatch(nullptr);
-    view_->OnRevertTemporaryText(match.fill_into_edit, match);
   }
 }
 
@@ -1114,9 +1033,7 @@ void OmniboxEditModelIOS::AcceptInput(
     //  2. If the user has never edited the text, use the current page's full
     //     URL instead of the elided URL to avoid HTTPS downgrading.
     std::u16string text_for_desired_tld_navigation = input_.text();
-    if (has_temporary_text_) {
-      text_for_desired_tld_navigation = GetText();
-    } else if (!user_input_in_progress()) {
+    if (!user_input_in_progress()) {
       text_for_desired_tld_navigation = url_for_editing_;
     }
 

@@ -14,7 +14,6 @@
 #import "components/omnibox/browser/location_bar_model.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_view_base.h"
 
-struct AutocompleteMatch;
 class OmniboxClient;
 @protocol OmniboxCommands;
 @protocol OmniboxFocusDelegate;
@@ -49,10 +48,6 @@ class OmniboxViewIOS : public OmniboxViewBase {
   void SetCaretPos(size_t caret_pos) override;
   void RevertAll() override;
   void UpdatePopup() override;
-  void OnTemporaryTextMaybeChanged(const std::u16string& display_text,
-                                   const AutocompleteMatch& match,
-                                   bool save_original_selection,
-                                   bool notify_text_changed) override;
   void OnInlineAutocompleteTextMaybeChanged(
       const std::u16string& user_text,
       const std::u16string& inline_autocompletion) override;
@@ -71,8 +66,6 @@ class OmniboxViewIOS : public OmniboxViewBase {
   void SetFocus(bool is_user_initiated) override {}
   void ApplyCaretVisibility() override {}
   void OnInlineAutocompleteTextCleared() override {}
-  void OnRevertTemporaryText(const std::u16string& display_text,
-                             const AutocompleteMatch& match) override {}
   gfx::NativeView GetNativeView() const override;
   gfx::NativeView GetRelativeWindowForPopup() const override;
 

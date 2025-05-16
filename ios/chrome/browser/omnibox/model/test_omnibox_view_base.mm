@@ -50,18 +50,6 @@ void TestOmniboxViewBase::SelectAll(bool reversed) {
   }
 }
 
-void TestOmniboxViewBase::OnTemporaryTextMaybeChanged(
-    const std::u16string& display_text,
-    const AutocompleteMatch& match,
-    bool save_original_selection,
-    bool notify_text_changed) {
-  text_ = display_text;
-
-  if (save_original_selection) {
-    saved_temporary_selection_ = selection_;
-  }
-}
-
 void TestOmniboxViewBase::OnInlineAutocompleteTextMaybeChanged(
     const std::u16string& user_text,
     const std::u16string& inline_autocompletion) {
@@ -79,12 +67,6 @@ void TestOmniboxViewBase::OnInlineAutocompleteTextMaybeChanged(
 
 void TestOmniboxViewBase::OnInlineAutocompleteTextCleared() {
   inline_autocompletion_.clear();
-}
-
-void TestOmniboxViewBase::OnRevertTemporaryText(
-    const std::u16string& display_text,
-    const AutocompleteMatch& match) {
-  selection_ = saved_temporary_selection_;
 }
 
 bool TestOmniboxViewBase::OnAfterPossibleChange() {

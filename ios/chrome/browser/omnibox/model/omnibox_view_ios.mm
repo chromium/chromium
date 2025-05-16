@@ -16,7 +16,6 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/omnibox/browser/autocomplete_input.h"
-#import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/clipboard_provider.h"
 #import "components/omnibox/browser/location_bar_model.h"
 #import "components/omnibox/common/omnibox_focus_state.h"
@@ -90,20 +89,6 @@ void OmniboxViewIOS::RevertAll() {
 
 void OmniboxViewIOS::UpdatePopup() {
   [omnibox_text_controller_ startAutocompleteAfterEdit];
-}
-
-void OmniboxViewIOS::OnTemporaryTextMaybeChanged(
-    const std::u16string& display_text,
-    const AutocompleteMatch& match,
-    bool save_original_selection,
-    bool notify_text_changed) {
-  [omnibox_text_controller_ setWindowText:display_text
-                                 caretPos:display_text.length()
-                        startAutocomplete:NO
-                        notifyTextChanged:NO];
-  if (model()) {
-    model()->OnChanged();
-  }
 }
 
 void OmniboxViewIOS::OnInlineAutocompleteTextMaybeChanged(

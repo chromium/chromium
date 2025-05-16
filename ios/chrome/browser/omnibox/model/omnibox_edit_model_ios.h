@@ -167,9 +167,6 @@ class OmniboxEditModelIOS {
     return focus_state_ == OMNIBOX_FOCUS_VISIBLE;
   }
 
-  // Accepts the current temporary text as the user text.
-  void AcceptTemporaryTextAsUserText();
-
   // Clears additional text.
   void ClearAdditionalText();
 
@@ -221,26 +218,15 @@ class OmniboxEditModelIOS {
 
   // Called when any relevant data changes.  This rolls together several
   // separate pieces of data into one call so we can update all the UI
-  // efficiently. Specifically, it's invoked for temporary text, autocompletion.
-  //   `temporary_text` is the new temporary text from the user selecting a
-  //     different match. This will be empty when selecting a suggestion
-  //     without a `fill_into_edit` (e.g. FOCUSED_BUTTON_HEADER) and when
-  //     `is_temporary_test` is false.
-  //   `is_temporary_text` is true if invoked because of a temporary text change
-  //     or false if `temporary_text` should be ignored.
+  // efficiently. Specifically, it's invoked for autocompletion.
   //   `inline_autocompletion` is the autocompletion.
-  //   `destination_for_temporary_text_change` is NULL (if temporary text should
-  //     not change) or the pre-change destination URL (if temporary text should
-  //     change) so we can save it off to restore later.
   //   `additional_text` is additional omnibox text to be displayed adjacent to
   //     the omnibox view.
   //   `new_match` is the selected match when the user is changing selection,
   //     the default match if the user is typing, or an empty match when
   //     selecting a header.
   // Virtual to allow testing.
-  virtual void OnPopupDataChanged(const std::u16string& temporary_text,
-                                  bool is_temporary_text,
-                                  const std::u16string& inline_autocompletion,
+  virtual void OnPopupDataChanged(const std::u16string& inline_autocompletion,
                                   const std::u16string& additional_text,
                                   const AutocompleteMatch& new_match);
 
@@ -264,10 +250,6 @@ class OmniboxEditModelIOS {
 
   // Just forwards the call to the OmniboxViewBase referred within.
   void SetAccessibilityLabel(const AutocompleteMatch& match);
-
-  // Reverts the edit box from a temporary text back to the original user text.
-  // Also resets the popup to the initial state.
-  void RevertTemporaryTextAndPopup();
 
   // Returns true if the destination URL of the match is bookmarked.
   bool IsStarredMatch(const AutocompleteMatch& match) const;
@@ -469,26 +451,15 @@ class OmniboxEditModelIOS {
   // but user_input_in_progress_ is not being cleared.
   std::u16string url_for_remembered_user_selection_;
 
-  // Inline autocomplete is allowed if the user has not just deleted text, and
-  // no temporary text is showing.  In this case, inline_autocompletion_ is
-  // appended to the user_text_ and displayed selected (at least initially).
+  // Inline autocomplete is allowed if the user has not just deleted text. In
+  // this case, inline_autocompletion_ is appended to the user_text_ and
+  // displayed selected (at least initially).
   //
   // NOTE: When the popup is closed there should never be inline autocomplete
   // text (actions that close the popup should either accept the text, convert
   // it to a normal selection, or change the edit entirely).
   bool just_deleted_text_;
   std::u16string inline_autocompletion_;
-
-  // Used by OnPopupDataChanged to keep track of whether there is currently a
-  // temporary text.
-  //
-  // Example of use: If the user types "goog", then arrows down in the
-  // autocomplete popup until, say, "google.com" appears in the edit box, then
-  // the user_text_ is still "goog", and "google.com" is "temporary text".
-  // When the user hits <esc>, the edit box reverts to "goog".  Hit <esc> again
-  // and the popup is closed and "goog" is replaced by the permanent display
-  // URL, which is the URL of the current page.
-  bool has_temporary_text_;
 
   // When the user's last action was to paste, we disallow inline autocomplete
   // (on the theory that the user is trying to paste in a new URL or part of
