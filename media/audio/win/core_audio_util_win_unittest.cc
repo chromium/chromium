@@ -398,15 +398,18 @@ TEST_F(CoreAudioUtilWinTest, GetPreferredAudioParameters) {
   for (size_t i = 0; i < std::size(data); ++i) {
     AudioParameters params;
     const bool is_output_device = (data[i] == eRender);
-    EXPECT_TRUE(SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
-        AudioDeviceDescription::kDefaultDeviceId, is_output_device, &params)));
+    EXPECT_HRESULT_SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
+        AudioDeviceDescription::kDefaultDeviceId, is_output_device, &params));
     EXPECT_TRUE(params.IsValid());
     if (!is_output_device) {
       // Loopack devices are supported for input streams.
-      EXPECT_TRUE(SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
+      EXPECT_HRESULT_SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
           AudioDeviceDescription::kLoopbackInputDeviceId, is_output_device,
-          &params)));
+          &params));
       EXPECT_TRUE(params.IsValid());
+      EXPECT_HRESULT_SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
+          AudioDeviceDescription::kApplicationLoopbackDeviceId,
+          is_output_device, &params));
       {
         base::test::ScopedFeatureList feature_list;
         base::HistogramTester histogram_tester;
@@ -415,9 +418,9 @@ TEST_F(CoreAudioUtilWinTest, GetPreferredAudioParameters) {
         // version and device hardware. This code is behind a flag currently.
         feature_list.InitAndEnableFeature(
             media::kEnforceSystemEchoCancellation);
-        EXPECT_TRUE(SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
+        EXPECT_HRESULT_SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
             AudioDeviceDescription::kDefaultDeviceId, is_output_device, &params,
-            false /*is_offload_stream*/)));
+            false /*is_offload_stream*/));
         EXPECT_TRUE(params.IsValid());
         // If GetPreferredAudioParameters() runs we know that at least one
         // sample is created since, even if the method fails or if the device
@@ -438,9 +441,9 @@ TEST_F(CoreAudioUtilWinTest, GetPreferredAudioParameters) {
         feature_list.InitAndDisableFeature(
             media::kEnforceSystemEchoCancellation);
         base::HistogramTester histogram_tester;
-        EXPECT_TRUE(SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
+        EXPECT_HRESULT_SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
             AudioDeviceDescription::kDefaultDeviceId, is_output_device, &params,
-            false /*is_offload_stream*/)));
+            false /*is_offload_stream*/));
         EXPECT_TRUE(params.IsValid());
         histogram_tester.ExpectTotalCount(
             "Media.Audio.Capture.Win.VoiceProcessingEffects", 0);

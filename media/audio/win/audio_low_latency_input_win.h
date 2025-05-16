@@ -112,7 +112,7 @@ class MEDIA_EXPORT WASAPIAudioInputStream
     OPEN_RESULT_ACTIVATION_FAILED = 5,
     OPEN_RESULT_FORMAT_NOT_SUPPORTED = 6,
     OPEN_RESULT_AUDIO_CLIENT_INIT_FAILED = 7,
-    OPEN_RESULT_GET_BUFFER_SIZE_FAILED = 8,
+    OPEN_RESULT_GET_BUFFER_SIZE_FAILED = 8,  // Obsolete.
     OPEN_RESULT_LOOPBACK_ACTIVATE_FAILED = 9,
     OPEN_RESULT_LOOPBACK_INIT_FAILED = 10,
     OPEN_RESULT_SET_EVENT_HANDLE = 11,
@@ -121,6 +121,13 @@ class MEDIA_EXPORT WASAPIAudioInputStream
     OPEN_RESULT_OK_WITH_RESAMPLING = 14,
     OPEN_RESULT_MAX = OPEN_RESULT_OK_WITH_RESAMPLING
   };
+
+  using ActivateAudioInterfaceAsyncCallback =
+      base::RepeatingCallback<HRESULT(LPCWSTR,
+                                      REFIID,
+                                      PROPVARIANT*,
+                                      IActivateAudioInterfaceCompletionHandler*,
+                                      IActivateAudioInterfaceAsyncOperation**)>;
 
   // The ctor takes all the usual parameters, plus |manager| which is the
   // the audio manager who is creating this object.
@@ -151,9 +158,21 @@ class MEDIA_EXPORT WASAPIAudioInputStream
 
   void SendLogMessage(std::string message);
 
+  // Overrides the function pointer used to activate an IAudioClient during
+  // application loopback captures. This is used for testing purposes only to
+  // add a hook to obtain fake implementations of Windows interfaces.
+  static void OverrideActivateAudioInterfaceAsyncCallbackForTesting(
+      ActivateAudioInterfaceAsyncCallback callback);
+
+  void OverrideAsyncActivationTimeoutForTesting(
+      base::TimeDelta async_activation_timeout_ms) {
+    async_activation_timeout_ms_ = async_activation_timeout_ms;
+  }
+
  private:
   class DataDiscontinuityReporter;
   class EchoCancellationConfig;
+  class AudioClientActivationHandler;
 
   PRINTF_FORMAT(2, 3) void SendLogMessage(const char* format, ...);
 
@@ -168,6 +187,12 @@ class MEDIA_EXPORT WASAPIAudioInputStream
 
   // The Open() method is divided into these sub methods.
   HRESULT SetCaptureDevice();
+  // Activates the IAudioClient interface with the adequate parameters. If
+  // `device_id_` represents an application device, the function will call
+  // ActivateAudioInterfaceAsync to activate an audio interface for process
+  // loopback capture. If `device_id_` does not represent an application device,
+  // it will activate the selected audio endpoint `endpoint_device_`.
+  HRESULT ActivateAudioClientInterface();
   // Returns whether raw audio processing is supported or not for the selected
   // capture device.
   bool RawProcessingSupported();
@@ -200,6 +225,10 @@ class MEDIA_EXPORT WASAPIAudioInputStream
 
   // Reports glitch stats and resets associated variables.
   void ReportAndResetGlitchStats();
+
+  // Creates the FIFO used to store audio data between the audio engine and the
+  // converter.
+  void CreateFifoIfNeeded();
 
   // Our creator, the audio manager needs to be notified when we close.
   const raw_ptr<AudioManagerWin> manager_;
@@ -239,20 +268,17 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   bool started_ = false;
   StreamOpenResult open_result_ = OPEN_RESULT_OK;
 
-  // Size in bytes of each audio frame before the converter (4 bytes for 16-bit
-  // stereo PCM). Note that this is the same before and after the fifo.
+  // Size in bytes of each audio frame before the converter (e.g. 4 bytes for
+  // 16-bit stereo PCM). Note that this is the same before and after the FIFO.
   size_t frame_size_bytes_ = 0;
 
-  // Size in audio frames of each audio packet (buffer) after the fifo but
+  // Size in audio frames of each audio packet (buffer) after the FIFO but
   // before the converter.
   size_t packet_size_frames_ = 0;
 
-  // Size in bytes of each audio packet (buffer) after the fifo but before the
+  // Size in bytes of each audio packet (buffer) after the FIFO but before the
   // converter.
   size_t packet_size_bytes_ = 0;
-
-  // Length of the audio endpoint buffer, i.e. the buffer size before the fifo.
-  uint32_t endpoint_buffer_size_frames_ = 0;
 
   // Contains the unique name of the selected endpoint device.
   // Note that AudioDeviceDescription::kDefaultDeviceId represents the default
@@ -300,7 +326,7 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // indicates that we need to unmute the system audio when stopping capturing.
   bool mute_done_ = false;
 
-  // Used for the captured audio on the callback thread.
+  // Used to store data between the audio engine and the converter.
   std::unique_ptr<AudioBlockFifo> fifo_;
 
   // If the caller requires resampling (should only be in exceptional cases and
@@ -342,6 +368,19 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // Utility class which wraps support of system AEC functionality.
   // Will be set to nullptr during construction if AEC is not supported.
   std::unique_ptr<EchoCancellationConfig> aec_config_;
+
+  // It's is possible to check this using
+  // AudioDeviceDescription::IsApplicationLoopbackDevice. However, we need to
+  // perform this check every time we need to pull data from the audio engine,
+  // which can be expensive. Checking the variable is cheaper than calling the
+  // function.
+  const bool is_application_loopback_capture_;
+
+  // Timeout period for waiting on the OS to activate the audio interface for
+  // application loopback capture.
+  // TODO(crbug.com/40947205): Add UMA stats to track the actual wait time in
+  // the field
+  base::TimeDelta async_activation_timeout_ms_ = base::Seconds(10);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

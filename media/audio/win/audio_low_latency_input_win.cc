@@ -6,6 +6,10 @@
 
 #include <objbase.h>
 
+#include <mmdeviceapi.h>
+
+#include <audioclient.h>
+#include <audioclientactivationparams.h>
 #include <combaseapi.h>
 #include <ksmedia.h>
 #include <propkey.h>
@@ -15,6 +19,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
@@ -25,6 +30,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/core_winrt_util.h"
@@ -32,6 +38,7 @@
 #include "base/win/scoped_variant.h"
 #include "base/win/vector.h"
 #include "base/win/windows_version.h"
+#include "media/audio/application_loopback_device_helper.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_device_name.h"
 #include "media/audio/audio_features.h"
@@ -189,6 +196,15 @@ void LogFakeAudioCaptureTimestamps(bool use_fake_audio_capture_timestamps,
                             use_fake_audio_capture_timestamps);
   base::UmaHistogramLongTimes("Media.Audio.Capture.Win.AbsTimestampDiffMs",
                               abs_delta_time);
+}
+
+WASAPIAudioInputStream::ActivateAudioInterfaceAsyncCallback&
+GetActivateAudioInterfaceAsyncCallback() {
+  static base::NoDestructor<
+      WASAPIAudioInputStream::ActivateAudioInterfaceAsyncCallback>
+      activate_audio_interface_async_callback{
+          base::BindRepeating(&ActivateAudioInterfaceAsync)};
+  return *activate_audio_interface_async_callback;
 }
 
 }  // namespace
@@ -447,6 +463,66 @@ class WASAPIAudioInputStream::EchoCancellationConfig {
       AudioDeviceDescription::kDefaultDeviceId;
 };
 
+// Helper class to synchronously wait for the activation of an audio client
+// during a call to ActivateAudioInterfaceAsync.
+class WASAPIAudioInputStream::AudioClientActivationHandler
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          Microsoft::WRL::FtmBase,
+          IActivateAudioInterfaceCompletionHandler> {
+ public:
+  friend class FakeWinWASAPIEnvironment;
+
+  AudioClientActivationHandler() = default;
+  ~AudioClientActivationHandler() override = default;
+
+  // When called, returns only after the activation is completed.
+  HRESULT WaitAndGetAudioClient(ComPtr<IAudioClient>* audio_client,
+                                base::TimeDelta async_activation_timeout_ms) {
+    // Wait for a maximum of 10 seconds for the activation to complete.
+    if (!wait_event_.TimedWait(async_activation_timeout_ms)) {
+      return E_FAIL;
+    }
+
+    // If the activation was successful, move the audio client to the output
+    // parameter.
+    if (SUCCEEDED(activation_result_)) {
+      *audio_client = std::move(audio_client_);
+    }
+    return activation_result_;
+  }
+
+ private:
+  // IActivateAudioInterfaceAudioClientActivationHandler::ActivateCompleted
+  // implementation.
+  // Called by the OS when the activation is completed.
+  IFACEMETHODIMP ActivateCompleted(
+      IActivateAudioInterfaceAsyncOperation* activate_operation) override {
+    HRESULT hr_activate = S_OK;
+    ComPtr<IAudioClient> audio_client = nullptr;
+    activation_result_ =
+        activate_operation->GetActivateResult(&hr_activate, &audio_client);
+    if (FAILED(activation_result_)) {
+      return activation_result_;
+    }
+
+    activation_result_ = hr_activate;
+    if (SUCCEEDED(activation_result_)) {
+      audio_client_ = std::move(audio_client);
+    }
+    wait_event_.Signal();
+
+    // If the activation was successful, the audio client is now available.
+    return activation_result_;
+  }
+
+  ComPtr<IAudioClient> audio_client_ = nullptr;
+  HRESULT activation_result_ = E_FAIL;
+  base::WaitableEvent wait_event_{
+      base::WaitableEvent::ResetPolicy::AUTOMATIC,
+      base::WaitableEvent::InitialState::NOT_SIGNALED};
+};
+
 // Creates an audio input stream given preferred audio parameters in `params`
 // and an input device given by `device_id`.
 // Support for system effects exists behind a command-line flag called
@@ -512,7 +588,9 @@ WASAPIAudioInputStream::WASAPIAudioInputStream(
           base::BindRepeating(
               static_cast<void (WASAPIAudioInputStream::*)(std::string)>(
                   &WASAPIAudioInputStream::SendLogMessage),
-              base::Unretained(this)))) {
+              base::Unretained(this)))),
+      is_application_loopback_capture_(
+          AudioDeviceDescription::IsApplicationLoopbackDevice(device_id)) {
   DCHECK(manager_);
   DCHECK(!device_id_.empty());
   DCHECK(!log_callback_.is_null());
@@ -605,25 +683,36 @@ AudioInputStream::OpenOutcome WASAPIAudioInputStream::Open() {
     return OpenOutcome::kAlreadyOpen;
   }
 
-  // Obtain a reference to the IMMDevice interface of the capturing device with
-  // the specified unique identifier or role which was set at construction.
-  HRESULT hr = SetCaptureDevice();
-  if (FAILED(hr)) {
-    ReportOpenResult(hr);
-    return OpenOutcome::kFailed;
+  HRESULT hr = S_OK;
+  // Application loopback captures do not get audio from an endpoint device, but
+  // rather from an audio interface.
+  if (!is_application_loopback_capture_) {
+    // Obtain a reference to the IMMDevice interface of the capturing device
+    // with the specified unique identifier or role which was set at
+    // construction.
+    hr = SetCaptureDevice();
+    if (FAILED(hr)) {
+      ReportOpenResult(hr);
+      return OpenOutcome::kFailed;
+    }
   }
 
-  // Check if raw audio processing is supported for the selected capture device.
-  raw_processing_supported_ = RawProcessingSupported();
-
-  // Obtain an IAudioClient interface which enables us to create and initialize
-  // an audio stream between an audio application and the audio engine.
-  hr = endpoint_device_->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr,
-                                  &audio_client_);
+  // Activate the AudioClient interface. This is done differently depending on
+  // whether the device is an application device or not. For application
+  // devices, a special activation method must be used to activate the audio
+  // client asynchronously.
+  hr = ActivateAudioClientInterface();
   if (FAILED(hr)) {
     open_result_ = OPEN_RESULT_ACTIVATION_FAILED;
     ReportOpenResult(hr);
     return OpenOutcome::kFailed;
+  }
+
+  // Application loopback captures do not get audio from an endpoint device.
+  if (!is_application_loopback_capture_) {
+    // Check if raw audio processing is supported for the selected capture
+    // device.
+    raw_processing_supported_ = RawProcessingSupported();
   }
 
   // Raw audio capture suppresses processing that down mixes e.g. a microphone
@@ -631,15 +720,15 @@ AudioInputStream::OpenOutcome WASAPIAudioInputStream::Open() {
   // format. Chrome only supports a maximum number of input channels given by
   // media::kMaxConcurrentChannels. Therefore, one additional test is needed
   // before stating that raw audio processing can be supported.
-  // Failure will not prevent opening but the method must succeed to be able to
-  // select raw input capture mode.
+  // Failure will not prevent opening but the method must succeed to be able
+  // to select raw input capture mode.
   WORD audio_engine_channels = 0;
   hr = GetAudioEngineNumChannels(&audio_engine_channels);
 
-  // Attempt to enable communications category and raw capture mode on the audio
-  // stream. Avoid using raw capture if echo cancellation has been requested.
-  // Ignoring return value since the method logs its own error messages
-  // and it should be OK to continue opening the stream even after a failure.
+  // Attempt to enable communications category and raw capture mode on the
+  // audio stream. Ignoring return value since the method logs its own error
+  // messages and it should be OK to continue opening the stream even after a
+  // failure.
   if (raw_processing_supported_ &&
       !AudioDeviceDescription::IsLoopbackDevice(device_id_) && SUCCEEDED(hr)) {
     SetCommunicationsCategoryAndMaybeRawCaptureMode(audio_engine_channels);
@@ -716,6 +805,15 @@ void WASAPIAudioInputStream::Start(AudioInputCallback* callback) {
   // Starts periodic AGC microphone measurements if the AGC has been enabled
   // using SetAutomaticGainControl().
   StartAgc();
+
+  // Waiting for the first audio sample ready event to be signaled is only
+  // needed for application devices. We need to do it because, due to a Windows
+  // bug, the value returned by GetBufferSize() can not be trusted until we get
+  // the first sample.
+  // https://crbug.com/411452039
+  if (!is_application_loopback_capture_) {
+    CreateFifoIfNeeded();
+  }
 
   // Create and start the thread that will drive the capturing by waiting for
   // capture events.
@@ -826,8 +924,9 @@ void WASAPIAudioInputStream::SetVolume(double volume) {
   DCHECK_LE(volume, 1.0);
   SendLogMessage("%s({volume=%.2f} [opened=%s])", __func__, volume,
                  opened_ ? "true" : "false");
-  if (!opened_)
+  if (!opened_ || !simple_audio_volume_) {
     return;
+  }
 
   // Set a new master volume level. Valid volume levels are in the range
   // 0.0 to 1.0. Ignore volume-change events.
@@ -848,8 +947,9 @@ void WASAPIAudioInputStream::SetVolume(double volume) {
 
 double WASAPIAudioInputStream::GetVolume() {
   DCHECK(opened_) << "Open() has not been called successfully";
-  if (!opened_)
+  if (!simple_audio_volume_) {
     return 0.0;
+  }
 
   // Retrieve the current volume level. The value is in the range 0.0 to 1.0.
   float level = 0.0f;
@@ -865,8 +965,9 @@ double WASAPIAudioInputStream::GetVolume() {
 bool WASAPIAudioInputStream::IsMuted() {
   DCHECK(opened_) << "Open() has not been called successfully";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!opened_)
+  if (!simple_audio_volume_) {
     return false;
+  }
 
   // Retrieves the current muting state for the audio session.
   BOOL is_muted = FALSE;
@@ -906,6 +1007,52 @@ void WASAPIAudioInputStream::SendLogMessage(const char* format, ...) {
   log_callback_.Run(std::move(msg));
 }
 
+// static
+void WASAPIAudioInputStream::
+    OverrideActivateAudioInterfaceAsyncCallbackForTesting(
+        ActivateAudioInterfaceAsyncCallback callback) {
+  GetActivateAudioInterfaceAsyncCallback() = callback;
+}
+
+void WASAPIAudioInputStream::CreateFifoIfNeeded() {
+  if (fifo_) {
+    return;
+  }
+
+  // Retrieve the length of the endpoint buffer shared between the client
+  // and the audio engine. The buffer length determines the maximum amount
+  // of capture data that the audio engine can read from the endpoint buffer
+  // during a single processing pass.
+  uint32_t endpoint_buffer_size_frames = 0;
+  HRESULT hr = audio_client_->GetBufferSize(&endpoint_buffer_size_frames);
+  if (FAILED(hr)) {
+    return;
+  }
+
+  // Allocate a buffer with a size that enables us to take care of cases like:
+  // 1) The recorded buffer size is smaller, or does not match exactly with,
+  //    the selected packet size used in each callback.
+  // 2) The selected buffer size is larger than the recorded buffer size in
+  //    each event.
+  // In the case where no resampling is required, a single buffer should be
+  // enough but in case we get buffers that don't match exactly, we'll go with
+  // two. Same applies if we need to resample and the buffer ratio is perfect.
+  // However if the buffer ratio is imperfect, we will need 3 buffers to safely
+  // be able to buffer up data in cases where a conversion requires two audio
+  // buffers (and we need to be able to write to the third one).
+  size_t capture_buffer_size =
+      std::max(2 * endpoint_buffer_size_frames * frame_size_bytes_,
+               2 * packet_size_frames_ * frame_size_bytes_);
+  int buffers_required = capture_buffer_size / packet_size_bytes_;
+  if (converter_ && imperfect_buffer_size_conversion_)
+    ++buffers_required;
+
+  DCHECK(!fifo_);
+  fifo_ = std::make_unique<AudioBlockFifo>(
+      input_format_.Format.nChannels, packet_size_frames_, buffers_required);
+  DVLOG(1) << "AudioBlockFifo buffer count: " << buffers_required;
+}
+
 void WASAPIAudioInputStream::Run() {
   ScopedCOMInitializer com_init(ScopedCOMInitializer::kMTA);
 
@@ -924,29 +1071,6 @@ void WASAPIAudioInputStream::Run() {
                << " => (ERROR: Failed to enable MMCSS (error code=" << err
                << "))";
   }
-
-  // Allocate a buffer with a size that enables us to take care of cases like:
-  // 1) The recorded buffer size is smaller, or does not match exactly with,
-  //    the selected packet size used in each callback.
-  // 2) The selected buffer size is larger than the recorded buffer size in
-  //    each event.
-  // In the case where no resampling is required, a single buffer should be
-  // enough but in case we get buffers that don't match exactly, we'll go with
-  // two. Same applies if we need to resample and the buffer ratio is perfect.
-  // However if the buffer ratio is imperfect, we will need 3 buffers to safely
-  // be able to buffer up data in cases where a conversion requires two audio
-  // buffers (and we need to be able to write to the third one).
-  size_t capture_buffer_size =
-      std::max(2 * endpoint_buffer_size_frames_ * frame_size_bytes_,
-               2 * packet_size_frames_ * frame_size_bytes_);
-  int buffers_required = capture_buffer_size / packet_size_bytes_;
-  if (converter_ && imperfect_buffer_size_conversion_)
-    ++buffers_required;
-
-  DCHECK(!fifo_);
-  fifo_ = std::make_unique<AudioBlockFifo>(
-      input_format_.Format.nChannels, packet_size_frames_, buffers_required);
-  DVLOG(1) << "AudioBlockFifo buffer count: " << buffers_required;
 
   bool recording = true;
   bool error = false;
@@ -968,6 +1092,14 @@ void WASAPIAudioInputStream::Run() {
         break;
       case WAIT_OBJECT_0 + 1:
         // |audio_samples_ready_event_| has been set.
+        CreateFifoIfNeeded();
+        if (!fifo_) {
+          // An error happened while creating the FIFO.
+          error = true;
+          LOG(ERROR) << "WAIS::" << __func__
+                     << " => (ERROR: failed to create FIFO)";
+          break;
+        }
         PullCaptureDataAndPushToSink();
         break;
       case WAIT_FAILED:
@@ -980,6 +1112,8 @@ void WASAPIAudioInputStream::Run() {
   if (recording && error) {
     // TODO(henrika): perhaps it worth improving the cleanup here by e.g.
     // stopping the audio client, joining the thread etc.?
+    // TODO(crbug.com/417505389): We should handle pipeline errors in a more
+    // graceful way instead of using NOTREACHED() here.
     auto saved_last_error = GetLastError();
     NOTREACHED() << "WASAPI capturing failed with error code "
                  << saved_last_error;
@@ -1146,7 +1280,11 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
     // was monotonic.
     if (!last_capture_time_.is_null()) {
       const auto delta_ts = capture_time - last_capture_time_;
-      DCHECK_GT(device_position, 0u);
+      if (is_application_loopback_capture_) {
+        DCHECK_EQ(device_position, 0u);
+      } else {
+        DCHECK_GT(device_position, 0u);
+      }
       DCHECK_GT(delta_ts, base::TimeDelta::Min());
       if (delta_ts > max_timestamp_diff_) {
         max_timestamp_diff_ = delta_ts;
@@ -1237,6 +1375,7 @@ void WASAPIAudioInputStream::HandleError(HRESULT err) {
 }
 
 HRESULT WASAPIAudioInputStream::SetCaptureDevice() {
+  DCHECK(!is_application_loopback_capture_);
   DCHECK_EQ(OPEN_RESULT_OK, open_result_);
   DCHECK(!endpoint_device_.Get());
   SendLogMessage("%s()", __func__);
@@ -1304,7 +1443,56 @@ HRESULT WASAPIAudioInputStream::SetCaptureDevice() {
   return hr;
 }
 
+HRESULT WASAPIAudioInputStream::ActivateAudioClientInterface() {
+  if (!is_application_loopback_capture_) {
+    // Obtain an IAudioClient interface for the endpoint device which enables us
+    // to create and initialize an audio stream between an audio application and
+    // the audio engine.
+    return endpoint_device_->Activate(__uuidof(IAudioClient), CLSCTX_ALL,
+                                      nullptr, &audio_client_);
+  }
+
+  // Detailed information about AUDIOCLIENT_ACTIVATION_PARAMS can be found at:
+  // https://learn.microsoft.com/en-us/windows/win32/api/audioclientactivationparams/ns-audioclientactivationparams-audioclient_activation_params
+  AUDIOCLIENT_ACTIVATION_PARAMS params = {
+      //  Specify the process capture.
+      .ActivationType = AUDIOCLIENT_ACTIVATION_TYPE_PROCESS_LOOPBACK,
+      .ProcessLoopbackParams =
+          {
+              .TargetProcessId =
+                  GetApplicationIdFromApplicationLoopbackDeviceId(device_id_),
+              // Specify that this process capture should capture audio coming
+              // from all the processes in the tree in which `TargetProcessId`
+              // is the tree root.
+              .ProcessLoopbackMode =
+                  PROCESS_LOOPBACK_MODE_INCLUDE_TARGET_PROCESS_TREE,
+          },
+  };
+  PROPVARIANT propvariant = {
+      .vt = VT_BLOB,
+      .blob =
+          {
+              .cbSize = sizeof(params),
+              .pBlobData = reinterpret_cast<BYTE*>(&params),
+          },
+  };
+
+  ComPtr<AudioClientActivationHandler> completion_handler =
+      Microsoft::WRL::Make<AudioClientActivationHandler>();
+  ComPtr<IActivateAudioInterfaceAsyncOperation> async_op;
+  HRESULT hr = GetActivateAudioInterfaceAsyncCallback().Run(
+      VIRTUAL_AUDIO_DEVICE_PROCESS_LOOPBACK, __uuidof(IAudioClient),
+      &propvariant, completion_handler.Get(), &async_op);
+  if (FAILED(hr)) {
+    return hr;
+  }
+
+  return completion_handler->WaitAndGetAudioClient(
+      &audio_client_, async_activation_timeout_ms_);
+}
+
 bool WASAPIAudioInputStream::RawProcessingSupported() {
+  DCHECK(!is_application_loopback_capture_);
   DCHECK(endpoint_device_.Get());
   // Check if System.Devices.AudioDevice.RawProcessingSupported can be found
   // and queried in the Windows Property System. It corresponds to raw
@@ -1402,6 +1590,15 @@ WASAPIAudioInputStream::SetCommunicationsCategoryAndMaybeRawCaptureMode(
 
 bool WASAPIAudioInputStream::DesiredFormatIsSupported(HRESULT* hr) {
   SendLogMessage("%s()", __func__);
+
+  // Process loopback mode is a virtual device. Therefore, neither
+  // IAudioClient::GetMixFormat nor IAudioClient::IsFormatSupported are
+  // supported. We are free to pick whichever format we want and can pass it
+  // into the call to IAudioClient::Initialize.
+  if (is_application_loopback_capture_) {
+    return true;
+  }
+
   // An application that uses WASAPI to manage shared-mode streams can rely
   // on the audio engine to perform only limited format conversions. The audio
   // engine can convert between a standard PCM sample size used by the
@@ -1514,8 +1711,12 @@ HRESULT WASAPIAudioInputStream::InitializeAudioEngine() {
   SendLogMessage("%s()", __func__);
 
   // Use event-driven mode for regular input devices and for loopback.
-  DWORD flags =
-      AUDCLNT_STREAMFLAGS_EVENTCALLBACK | AUDCLNT_STREAMFLAGS_NOPERSIST;
+  DWORD flags = AUDCLNT_STREAMFLAGS_EVENTCALLBACK;
+  if (!is_application_loopback_capture_) {
+    // Application loopback capture does not support the
+    // AUDCLNT_STREAMFLAGS_NOPERSIST flag.
+    flags |= AUDCLNT_STREAMFLAGS_NOPERSIST;
+  }
   if (AudioDeviceDescription::IsLoopbackDevice(device_id_)) {
     // Create a loopback stream that captures what the system is playing
     // instead of the microphone input.
@@ -1547,22 +1748,6 @@ HRESULT WASAPIAudioInputStream::InitializeAudioEngine() {
     MaybeReportFormatRelatedInitError(hr);
     return hr;
   }
-
-  // Retrieve the length of the endpoint buffer shared between the client
-  // and the audio engine. The buffer length determines the maximum amount
-  // of capture data that the audio engine can read from the endpoint buffer
-  // during a single processing pass.
-  hr = audio_client_->GetBufferSize(&endpoint_buffer_size_frames_);
-  if (FAILED(hr)) {
-    open_result_ = OPEN_RESULT_GET_BUFFER_SIZE_FAILED;
-    return hr;
-  }
-  const int endpoint_buffer_size_ms =
-      static_cast<double>(endpoint_buffer_size_frames_ * 1000) /
-          input_format_.Format.nSamplesPerSec +
-      0.5;
-  SendLogMessage("%s => (endpoint_buffer_size_frames=%u (%d ms))", __func__,
-                 endpoint_buffer_size_frames_, endpoint_buffer_size_ms);
 
 #ifndef NDEBUG
   // The period between processing passes by the audio engine is fixed for a
@@ -1605,11 +1790,17 @@ HRESULT WASAPIAudioInputStream::InitializeAudioEngine() {
     return hr;
   }
 
-  // Obtain a reference to the ISimpleAudioVolume interface which enables
-  // us to control the master volume level of an audio session.
-  hr = audio_client_->GetService(IID_PPV_ARGS(&simple_audio_volume_));
-  if (FAILED(hr))
-    open_result_ = OPEN_RESULT_NO_AUDIO_VOLUME;
+  // WASAPI does not allow the AudioClient to control the process loopback
+  // device volume. The AudioEndpointVolume interface is not available for
+  // process loopback devices.
+  if (!is_application_loopback_capture_) {
+    // Obtain a reference to the ISimpleAudioVolume interface which enables
+    // us to control the master volume level of an audio session.
+    hr = audio_client_->GetService(IID_PPV_ARGS(&simple_audio_volume_));
+    if (FAILED(hr)) {
+      open_result_ = OPEN_RESULT_NO_AUDIO_VOLUME;
+    }
+  }
 
   return hr;
 }
@@ -1649,7 +1840,7 @@ double WASAPIAudioInputStream::ProvideInput(
     AudioBus* audio_bus,
     uint32_t frames_delayed,
     const AudioGlitchInfo& glitch_info) {
-  fifo_->Consume()->CopyTo(audio_bus);
+  CHECK_DEREF(fifo_.get()).Consume()->CopyTo(audio_bus);
   return 1.0;
 }
 
