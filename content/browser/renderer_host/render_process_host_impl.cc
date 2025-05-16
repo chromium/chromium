@@ -689,6 +689,12 @@ const void* const kEmptySiteProcessCountTrackerKey =
 // flag, enables the browser to track and reuse free and empty renderer
 // processes to optimize process creation and navigation performance.
 bool IsEmptyRendererProcessesReuseAllowed() {
+  // In single-process mode (run_renderer_in_process()), there's no separate
+  // renderer process to track for reuse. This logic is therefore skipped
+  // to prevent issues and because reuse is not applicable.
+  if (RenderProcessHost::run_renderer_in_process()) {
+    return false;
+  }
   return base::FeatureList::IsEnabled(
       features::kTrackEmptyRendererProcessesForReuse);
 }
