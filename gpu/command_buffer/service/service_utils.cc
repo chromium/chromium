@@ -324,25 +324,12 @@ GrContextType ParseGrContextType(const base::CommandLine* command_line) {
     [[maybe_unused]] auto value =
         command_line->GetSwitchValueASCII(switches::kSkiaGraphiteBackend);
 #if BUILDFLAG(SKIA_USE_DAWN)
-#if !BUILDFLAG(IS_IOS)
-    // TODO(sunnyps): Temporarily use Graphite Metal as the default backend on
-    // iOS Blink until the Dawn backend can be brought up.
-    if (value.empty()) {
-      return GrContextType::kGraphiteDawn;
-    }
-#endif  // !BUILDFLAG(IS_IOS)
-    if (base::StartsWith(value, switches::kSkiaGraphiteBackendDawn)) {
+    if (value.empty() ||
+        base::StartsWith(value, switches::kSkiaGraphiteBackendDawn)) {
       return GrContextType::kGraphiteDawn;
     }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 #if BUILDFLAG(SKIA_USE_METAL)
-#if BUILDFLAG(IS_IOS)
-    // TODO(sunnyps): Temporarily use Graphite Metal as the default backend on
-    // iOS Blink until the Dawn backend can be brought up.
-    if (value.empty()) {
-      return GrContextType::kGraphiteMetal;
-    }
-#endif  // BUILDFLAG(IS_IOS)
     if (value == switches::kSkiaGraphiteBackendMetal) {
       return GrContextType::kGraphiteMetal;
     }
