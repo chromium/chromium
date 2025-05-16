@@ -11,7 +11,7 @@ source_set("progress_dialog") {
     "autofill_progress_dialog_mediator_delegate.h",
   ]
   deps = [
-    "//base:base",
+    "//base",
     "//components/autofill/core/browser",
     "//components/strings",
     "//ios/chrome/browser/alert_view/ui_bundled",
@@ -36,7 +36,7 @@ source_set("unit_tests") {
     "//components/autofill/ios/browser:test_support",
     "//components/strings",
     "//ios/chrome/browser/alert_view/ui_bundled",
-    "//ios/chrome/browser/shared/ui/symbols:symbols",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//testing/gtest",
     "//third_party/ocmock",
   ]
@@ -52,7 +52,7 @@ source_set("eg2_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/ui_bundled:autofill_ui_constants",
     "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
-    "//ios/chrome/browser/shared/ui/symbols:symbols",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net:test_support",

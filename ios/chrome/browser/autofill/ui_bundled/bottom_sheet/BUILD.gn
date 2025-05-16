@@ -105,15 +105,15 @@ source_set("bottom_sheet_ui") {
     "//ios/chrome/browser/autofill/ui_bundled/address_editor:constants",
     "//ios/chrome/browser/shared/ui/bottom_sheet:table_view_bottom_sheet_view_controller",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:styler",
-    "//ios/chrome/browser/shared/ui/table_view:table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/table_view:cells_constants",
-    "//ui/base:base",
+    "//ui/base",
     "//url",
   ]
 }
@@ -344,7 +344,7 @@ source_set("virtual_card_enrollment_bottom_sheet_coordinator") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/web/public:public",
+    "//ios/web/public",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -455,10 +455,10 @@ source_set("virtual_card_enrollment_bottom_sheet_view_controller") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/common/ui/colors:colors",
-    "//ios/chrome/common/ui/confirmation_alert:confirmation_alert",
-    "//ios/chrome/common/ui/util:util",
-    "//url:url",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/util",
+    "//url",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -475,7 +475,7 @@ source_set("virtual_card_enrollment_bottom_sheet_egtest") {
   deps = [
     "//components/autofill/core/browser:test_support",
     "//components/autofill/ios/browser:autofill_test_bundle_data",
-    "//components/strings:strings",
+    "//components/strings",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
