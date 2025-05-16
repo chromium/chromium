@@ -40,6 +40,8 @@ proto_library("concierge_proto_lib") {
     "//third_party/cros_system_api/dbus/vm_concierge/concierge_service.proto",
   ]
   proto_deps = [ "//chromeos/ash/components/dbus/arc:arc_proto" ]
+  deps = [ "//chromeos/ash/components/dbus/arc:arc_proto_lib" ]
+
   import_dirs = [ "//third_party/cros_system_api/dbus" ]
   proto_out_dir = "chromeos/ash/components/dbus/vm_concierge"
 }
