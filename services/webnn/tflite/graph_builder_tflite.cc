@@ -2445,15 +2445,24 @@ auto GraphBuilderTflite::SerializeCastOperation(
     ::tflite::TensorType input_tensor_type,
     TensorIndex output_tensor_index,
     ::tflite::TensorType output_tensor_type) -> OperatorOffset {
-  const auto cast_options = ::tflite::CreateCastOptions(
-      builder_, input_tensor_type, output_tensor_type);
-
-  const OperatorCodeIndex operator_code_index =
-      GetOperatorCodeIndex(::tflite::BuiltinOperator_CAST);
   const std::array<TensorIndex, 1> op_inputs = {input_tensor_index};
   const std::array<TensorIndex, 1> op_outputs = {output_tensor_index};
+
+  if (input_tensor_type == ::tflite::TensorType_FLOAT16 &&
+      output_tensor_type == ::tflite::TensorType_FLOAT32) {
+    // TFLite expects the DEQUANTIZE operator to be used to pass float16
+    // weights to float32 operators, but WebNN represents this with the cast
+    // operator.
+    return ::tflite::CreateOperator(
+        builder_, GetOperatorCodeIndex(::tflite::BuiltinOperator_DEQUANTIZE),
+        builder_.CreateVector<TensorIndex>(op_inputs),
+        builder_.CreateVector<TensorIndex>(op_outputs));
+  }
+
+  const auto cast_options = ::tflite::CreateCastOptions(
+      builder_, input_tensor_type, output_tensor_type);
   return ::tflite::CreateOperator(
-      builder_, operator_code_index,
+      builder_, GetOperatorCodeIndex(::tflite::BuiltinOperator_CAST),
       builder_.CreateVector<TensorIndex>(op_inputs),
       builder_.CreateVector<TensorIndex>(op_outputs),
       ::tflite::BuiltinOptions_CastOptions, cast_options.Union());
